@@ -48,7 +48,8 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
  		abort();
 	}
 
-	_tagPath = "\\S7:\\Supervisore\\aliases\\SS.";
+	_tagPathSup = "\\S7:\\Supervisore\\aliases\\SS.";
+	_tagPathPol = "\\S7:\\Poloidale\\aliases\\SS.";
 
 
 	_status = MdsConnect(_mdsip_address);
@@ -83,8 +84,8 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
              abort();
 	}
 
-	write(*, 'Activity: ', _tagPath//"Activity", _activity);
-	_status = MdsValue("OpcPut($1, $2)", _tagPath//"Activity", _activity );
+	write(*, 'Activity: ', _tagPathSup//"Activity", _activity);
+	_status = MdsValue("OpcPut($1, $2)", _tagPathSup//"Activity", _activity );
 	if( _status == 1)
 	{
 	    _errMsg = MdsValue("OpcErrorMessage()");
@@ -92,6 +93,18 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
              abort();
 	}
 
+/*
+	write(*, 'Activity: ', _tagPathPol//"Activity", _activity);
+	_status = MdsValue("OpcPut($1, $2)", _tagPathPol//"Activity", _activity );
+	if( _status == 1)
+	{
+	    _errMsg = MdsValue("OpcErrorMessage()");
+    	     DevLogErr(_nid, _errMsg);
+             abort();
+	}
+*/
+
+	_mopBuffer = [];
 
 
 	for( _i = 0; _i < _N_NUM_TASK; _i++)
@@ -103,9 +116,9 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		_task_name = if_error( data(DevNodeRef(_nid, (_head_task + _N_TASK_NAME) )), "" );
 		if(len(_task_name) == 0)
 			_tast_name ="  ";
-        
-		write(*, "Name: ", _tagPath//"TaskName"//_taskPath, _task_name);
 
+/*        
+		write(*, "Name: ", _tagPath//"TaskName"//_taskPath, _task_name);
 		_status = MdsValue('OpcPut($1, $2)', _tagPath//"TaskName"//_taskPath, _task_name );
 		if( _status == 1)
 		{
@@ -113,7 +126,7 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 			DevLogErr(_nid, _errMsg);
  			abort();
 		}
-
+*/
 
 	        DevNodeCvt(_nid, (_head_task + _N_TASK_FUNCTION), ['INACTIVE', 'ACTIVE', 'QUIESCENT' ], [1,4,2], _funct=-1);
 		if(_funct < 0 )
@@ -122,8 +135,8 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 			abort();
 		}
 
+/*
 		write(*, "Funct: ", _tagPath//"Function"//_taskPath, _funct);
-
 		_status = MdsValue('OpcPut($1, $2)', _tagPath//"Funct"//_taskPath, _funct );
 		if( _status == 1)
 		{
@@ -132,7 +145,7 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
  			abort();
 		}
 
-
+*/
 		_mode = if_error(data(DevNodeRef(_nid, (_head_task + _N_TASK_MODE) )), -1);
 		if(_mode < 0 )
 		{
@@ -140,8 +153,8 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
  		   abort();
 		}
 
+/*
 		write(*, "Mode: ", _tagPath//"Mode"//_taskPath, _mode);
-
 		_status = MdsValue('OpcPut($1, $2)', _tagPath//"Mod"//_taskPath, _mode );
 		if( _status == 1)
 		{
@@ -149,11 +162,51 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
     		        DevLogErr(_nid, _errMsg);
  			abort();
 		}
+*/
 
+		write(*, _task_name, _funct, _mode, ichar(extract(0,1,_task_name)), ichar(extract(1,1,_task_name)) );
+		_mopBuffer = [_mopBuffer, ichar(extract(0,1,_task_name)), ichar(extract(1,1,_task_name)), byte_unsigned(_funct), byte_unsigned(_mode) ];
 
 	}
-	
 
+	write(*, "MOP Array: ", _tagPathSup//"Mop", _mopBuffer);
+	_status = MdsValue('OpcPut($1, $2, $3)', _tagPathSup//"Mop", _mopBuffer, size(_mopBuffer));
+	if( _status == 1)
+	{
+	        _errMsg = MdsValue("OpcErrorMessage()");
+	        DevLogErr(_nid, _errMsg);
+		abort();
+	}
+	
+	write(*, "MOP End: ", _tagPathSup//"MOP_END_FROM_ENGDA");
+	_status = MdsValue('OpcPut($1, $2)', _tagPathSup//"MOP_END_FROM_ENGDA", 1);
+	if( _status == 1)
+	{
+	        _errMsg = MdsValue("OpcErrorMessage()");
+	        DevLogErr(_nid, _errMsg);
+		abort();
+	}	
+
+
+/*
+	write(*, "MOP Array: ", _tagPathPol//"Mop", _mopBuffer);
+	_status = MdsValue('OpcPut($1, $2, $3)', _tagPathPol//"Mop", _mopBuffer, size(_mopBuffer));
+	if( _status == 1)
+	{
+	        _errMsg = MdsValue("OpcErrorMessage()");
+	        DevLogErr(_nid, _errMsg);
+		abort();
+	}
+	
+	write(*, "MOP End: ", _tagPathPol//"MOP_END_FROM_ENGDA");
+	_status = MdsValue('OpcPut($1, $2)', _tagPathPol//"MOP_END_FROM_ENGDA", 1);
+	if( _status == 1)
+	{
+	        _errMsg = MdsValue("OpcErrorMessage()");
+	        DevLogErr(_nid, _errMsg);
+		abort();
+	}	
+*/		
 	MdsValue("OpcDisconnect()");
 
 	MdsDisconnect();

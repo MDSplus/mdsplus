@@ -26,6 +26,9 @@ public fun TR10__store(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
+    _tr10_read_bug = 0;
+
+
 	_max_samples = _2M;
 
 write(*, 'TR10 STORE');
@@ -96,8 +99,17 @@ write(*, 'TR10 START STORE');
 			}
 			else
 			{
-write(*, 'TR10 READ CHAN');
-				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);					  }						
+				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
+				
+				/* TEST FOR TR10 READOUT BUG */
+				if(sum(_data) == 0)
+				{
+				    _tr10_read_bug = 1;
+				    wait(0.5);
+				    _data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts);	
+				   
+				}
+			}						
 
 	/* Build signal */
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
@@ -118,6 +130,13 @@ write(*, 'TR10 READ CHAN');
 	}
 	else
 		TR10HWClose(_handle);
+
+	if(_tr10_read_bug)
+	{
+		DevLogErr(_nid, 'TR10 Readout error!!!!');
+		abort();
+	
+	}
 
     return(1);
 }
