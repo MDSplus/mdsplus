@@ -183,7 +183,7 @@ int   mdsdcl_spawn(			/* Return: status		*/
            }
        }
 #else
-	sts = system(cmdstring);
+	sts = system(cmdstring) == 0;
 #endif
 #endif
     return(sts);
