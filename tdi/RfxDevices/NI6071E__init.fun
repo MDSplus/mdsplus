@@ -39,7 +39,9 @@ public fun NI6071E__init(as_is _nid, optional _method)
 /* First initialize and acquire immediate channels */
 	if(_scan_number_1 > 0)
 	{
-		_status =  NI_6071E->init(WORD(_device_id),
+write(*, 'Device ID: ', _device_id);
+
+		_status =  NI_6071E->NI6071init(WORD(_device_id),
 								  WORD(0),
 								  WORD(_trig_slope),
 								  INT(_trig_level),
@@ -62,7 +64,7 @@ public fun NI6071E__init(as_is _nid, optional _method)
 		wait(_wait_time);
 
 		_tree_status = 1;
-   		_status = NI_6071E->prepareToRead(WORD(_device_id), 
+   		_status = NI_6071E->NI6071prepareToRead(WORD(_device_id), 
 										 INT(_scan_number_1), 
 										 WORD(_num_channels_1),
 										 _channels_1);
@@ -75,7 +77,7 @@ public fun NI6071E__init(as_is _nid, optional _method)
 			_t_end = _scan_number_1 * _dt;
 			for(_chan = 0; _chan < _num_channels_1 && ( _status == 0) && ( _tree_status & 1); _chan++)
 			{
-				_status = NI_6071E->readChannelData(WORD(_device_id), 
+				_status = NI_6071E->NI6071readChannelData(WORD(_device_id), 
 												   WORD(_chan), 		  
 												   INT(_scan_number_1),
 												   WORD(_num_channels_1),
@@ -102,7 +104,7 @@ public fun NI6071E__init(as_is _nid, optional _method)
 
 
 
-	_status =  NI_6071E->init(WORD(_device_id),
+	_status =  NI_6071E->NI6071init(WORD(_device_id),
 							  WORD(1),
 							  WORD(_trig_slope),
 							  INT(_trig_level),

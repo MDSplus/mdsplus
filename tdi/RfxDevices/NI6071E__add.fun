@@ -1,6 +1,6 @@
 public fun NI6071E__add(in _path, out _nidout)
 {
-    DevAddStart(_path,'NI6071E', 147, _nidout);
+    DevAddStart(_path,'NI6071E', 146, _nidout);
     DevAddNode(_path//':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path//':DEVICE_ID', 'NUMERIC', 1, *, _nid);
     DevAddNode(_path//':TRIG_SOURCE', 'NUMERIC', 0., *, _nid);
