@@ -23,7 +23,11 @@ pro MdsPut,node,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,ar
     mds$sendarg,sock,n+1,0,lexpression
     mds$sendarg,sock,n+1,1,node
     mds$sendarg,sock,n+1,2,expression
-    for i=1,n-2 do x = execute('mds$sendarg,sock,n+1,i+2,arg'+strtrim(i,2))
+    for i=1,n-2 do begin
+      argstr = 'arg'+strtrim(i,2)
+      x = execute('if (n_elements('+argstr+') eq 0) then '+argstr+'=0 & mds$sendarg,sock,n+1,i+2,'+argstr)
+;;      x = execute('mds$sendarg,sock,n+1,i+2,arg'+strtrim(i,2))
+    endfor
     dtype = 0b
     ndims = 0b
     dims = lonarr(8)
