@@ -63,6 +63,7 @@ static int RemoteAccessConnect(char *host, int inc_count)
   struct _host_list **nextone;
   static int (*rtn)(char *) = 0;
   int socket = -1;
+  int connections = -1;
   if (rtn == 0)
   {
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
@@ -76,6 +77,7 @@ static int RemoteAccessConnect(char *host, int inc_count)
       if (inc_count)
         hostchk->connections++;
       socket = hostchk->socket;
+      connections = hostchk->connections;
     }
   }
   if (socket == -1)
@@ -89,6 +91,7 @@ static int RemoteAccessConnect(char *host, int inc_count)
       (*nextone)->connections = inc_count ? 1 : 0;
       (*nextone)->time = time(0);
       (*nextone)->next = 0;
+      connections = (*nextone)->connections;
     }
   }
   return socket;
@@ -107,7 +110,9 @@ static int RemoteAccessDisconnect(int socket,int force)
   }
   for (hostchk = host_list; hostchk && hostchk->socket != socket; hostchk = hostchk->next);
   if (hostchk)
+  {
     hostchk->connections--;
+  }
   previous = 0;
   hostchk = host_list;
   while(hostchk)
@@ -115,7 +120,7 @@ static int RemoteAccessDisconnect(int socket,int force)
     if (force || (hostchk->connections <= 0 && ((time(0) - hostchk->time) > 60)))
     {
       struct _host_list *next = hostchk->next;
-      status = (*rtn)(socket);
+      status = (*rtn)(hostchk->socket);
       free(hostchk->host);
       free(hostchk);
       if (previous)
