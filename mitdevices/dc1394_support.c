@@ -158,6 +158,12 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
 
   /* eventually the same for the shutter and gain */
 
+  if (dc1394_set_trigger_on_off(Cams[cam].handle, Cams[cam].camera.node,
+				trig_on) != DC1394_SUCCESS)
+    {
+      fprintf(stderr, "unable to set trigger on to %d\n", trig_on);
+    }
+
 
   /*-----------------------------------------------------------------------
    *  have the camera start sending us data
