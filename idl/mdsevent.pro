@@ -1,7 +1,26 @@
 function EventImage
   case !version.os of
   'OSF' : ans = 'libIdlMdsEvent.so'
+  'sunos' : ans = 'libIdlMdsEvent.so'
   'Win32' : ans = 'IDLMDSEVENT'
+  'hp-ux' : begin
+        file=''
+        path = getenv('SHLIB_PATH')
+        if (strlen(path) gt 0) then begin
+          paths = str_sep(path, ':')
+          i = 0
+          while i lt n_elements(paths) and strlen(file) eq 0 do begin
+            file = findfile(paths(i)+'/libIdlMdsEvent.sl', count=count)
+            if (count gt 0) then file = file(0)
+            i = i + 1
+          end
+        endif
+        if strlen(file) eq 0 then $
+          file = findfile('/urs/local/lib/libIdlMdsEvent.sl')
+        if strlen(file) eq 0 then $
+           message, 'Could not find libIdlMdsEvent.sl in SHLIB_PATH'
+        ans = file
+      end
    else : ans = 'NotImplemented'
   endcase
   return, ans
@@ -10,6 +29,8 @@ end
 function PointerSize
   case !version.os of
   'OSF' : ans = 8
+  'sunos' : ans = 4
+  'hp-ux' : ans = 4
   else  : ans = 4
   endcase
   return, ans
