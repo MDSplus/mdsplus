@@ -9,11 +9,13 @@ public fun TR32__init(as_is _nid, optional _method)
 	private _N_TRIG_MODE = 6;
 	private _N_TRIG_SOURCE = 7;
 	private _N_CLOCK_SOURCE = 8;
-	private _N_FREQUENCY = 9;
-	private _N_USE_TIME = 10;
-	private _N_PTS = 11;
-	private _N_TRIG_EDGE = 12;
-	private _N_CHANNEL_0= 13;
+	private _N_INT_FREQUENCY = 9;
+	private _N_CK_RESAMPLING = 10;
+	private _N_CK_TERMINATION = 11;
+	private _N_USE_TIME = 12;
+	private _N_PTS = 13;
+	private _N_TRIG_EDGE = 14;
+	private _N_CHANNEL_0= 15;
 
 	private _K_NODES_PER_CHANNEL = 7;
 	private _N_CHAN_RANGE = 1;
@@ -49,6 +51,8 @@ public fun TR32__init(as_is _nid, optional _method)
 
 	DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0, 1], _ext_trig = 0);
 
+	DevNodeCvt(_nid, _N_CK_TERMINATION, ['ENABLED', 'DISABLED'], [1, 0], _clock_term = 0);
+
 	DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0, 1], _ext_clock = 0);
     if(_ext_clock)
     {
@@ -60,7 +64,14 @@ public fun TR32__init(as_is _nid, optional _method)
 			abort();
   		}
 		_clock_val = execute('`_clk');
-		_clk_div = 0;
+		_clk_div = if_error(DevNodeRef(_nid, _N_CK_RESAMPLING), _INVALID);
+		if(_trig == _INVALID)
+		{
+    		DevLogErr(_nid, "Cannot resolve clock resampling in external clock");
+ 			abort();
+		}
+		if(_clk_div > 1)
+			_clock_val = make_range(,,slope_of(_clock_val)/_clk_div);
     }
     else
     {
@@ -153,7 +164,7 @@ public fun TR32__init(as_is _nid, optional _method)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('TR32HWInit(0, $1, $2, $3, $4)', _board_id, _clk_div, _pts, _ranges);
+	    _status = MdsValue('TR32HWInit(0, $1, $2, $3, $4, $5, $6, $7)', _board_id, _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
 		MdsDisconnect();
 		if(_status == 0)
 		{
@@ -163,7 +174,7 @@ public fun TR32__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		_status = TR32HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig, _trig_edge, _ranges);
+		_status = TR32HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig, _trig_edge, _clock_term, _ranges);
 		if(_status == 0)
 			abort();
 	}

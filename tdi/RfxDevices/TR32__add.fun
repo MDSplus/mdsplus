@@ -1,6 +1,6 @@
 public fun TR32__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'TR32', 43, _nidout);
+    DevAddStart(_path, 'TR32', 45, _nidout);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 1, *, _nid);
     DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
@@ -10,6 +10,8 @@ public fun TR32__add(in _path, out _nidout)
     DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':CLOCK_SOURCE', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', 1E4, *, _nid);
+    DevAddNode(_path // ':CK_RESAMP', 'NUMERIC', 1, *, _nid);
+    DevAddNode(_path // ':CK_TERM', 'TEXT', "NO", *, _nid);
     DevAddNode(_path // ':USE_TIME', 'TEXT', 'TRUE', *, _nid);
     DevAddNode(_path // ':PTS', 'NUMERIC', *, *, _nid);
  	DevAddNode(_path // ':TRIG_EDGE', 'TEXT', 'RISING', *, _nid);
