@@ -825,7 +825,7 @@ static int readMessage(char *event_name, int *data_len, char *data)
 {
     struct EventMessage message;
     int status; 
-    if((status = msgrcv(msgId, &message, sizeof(message), 1, 0)) != -1)
+    if((status = msgrcv(msgId, &message, sizeof(message)-sizeof(message.mtype), 1, 0)) != -1)
     {
 	strncpy(event_name, message.name, MAX_EVENTNAME_LEN - 1);
 	*data_len = message.length;
@@ -907,7 +907,7 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 		}
 	    }
 	}
-    	if((status = msgsnd(msgid, &message, sizeof(message), /*IPC_NOWAIT*/0)) == -1)
+    	if((status = msgsnd(msgid, &message, sizeof(message)-sizeof(message.mtype), /*IPC_NOWAIT*/0)) == -1)
 	    perror("msgsend");
     }
     return status;
