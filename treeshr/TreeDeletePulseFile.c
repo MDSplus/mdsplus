@@ -138,6 +138,7 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
     {
       struct stat stat_info;
       char *sfile = 0;
+      char *dfile = 0;
       char *type = types[itype];
       char *part;
       strcpy(path,pathin);
@@ -159,20 +160,22 @@ static int  TreeDeleteTreeFiles(char *tree, int shot)
 	  strcat(sfile,TREE_PATH_DELIM);
 	  strcat(sfile,name);
 	  strcat(sfile,type);
-          if (stat(sfile,&stat_info) == 0)
+	  dfile = MaskReplace(sfile,tree_lower,shot);
+          free(sfile);
+          if (stat(dfile,&stat_info) == 0)
             break;
           else
 	  {
-            free(sfile);
-            sfile = 0;
+            free(dfile);
+            dfile = 0;
 	    part = &path[i+1];
           }
         }
       }
-      if (sfile)
+      if (dfile)
       {
-        retstatus = DeleteFile(sfile);
-        free(sfile);
+        retstatus = DeleteFile(dfile);
+        free(dfile);
       }
     }
     free(path);
