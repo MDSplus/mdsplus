@@ -270,6 +270,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice3.setLabelString("Function:");
 		JPanel53.add(deviceChoice3);
 		deviceField118.setNumCols(25);
+		deviceField118.setTextOnly(true);
 		deviceField118.setOffsetNid(23);
 		deviceField118.setLabelString("Comment: ");
 		JPanel53.add(deviceField118);
@@ -453,6 +454,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice16.setLabelString("Function:");
 		JPanel54.add(deviceChoice16);
 		deviceField119.setNumCols(25);
+		deviceField119.setTextOnly(true);
 		deviceField119.setOffsetNid(40);
 		deviceField119.setLabelString("Comment:");
 		JPanel54.add(deviceField119);
@@ -636,6 +638,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice23.setLabelString("Function:");
 		JPanel55.add(deviceChoice23);
 		deviceField120.setNumCols(25);
+		deviceField120.setTextOnly(true);
 		deviceField120.setOffsetNid(57);
 		deviceField120.setLabelString("Comment:");
 		JPanel55.add(deviceField120);
@@ -819,6 +822,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice30.setLabelString("Function:");
 		JPanel56.add(deviceChoice30);
 		deviceField121.setNumCols(25);
+		deviceField121.setTextOnly(true);
 		deviceField121.setOffsetNid(74);
 		deviceField121.setLabelString("Comment:");
 		JPanel56.add(deviceField121);
@@ -1002,6 +1006,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice37.setLabelString("Function:");
 		JPanel57.add(deviceChoice37);
 		deviceField122.setNumCols(25);
+		deviceField122.setTextOnly(true);
 		deviceField122.setOffsetNid(91);
 		deviceField122.setLabelString("Comment:");
 		JPanel57.add(deviceField122);
@@ -1185,6 +1190,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice44.setLabelString("Function:");
 		JPanel58.add(deviceChoice44);
 		deviceField123.setNumCols(25);
+		deviceField123.setTextOnly(true);
 		deviceField123.setOffsetNid(108);
 		deviceField123.setLabelString("Comment:");
 		JPanel58.add(deviceField123);
@@ -1368,6 +1374,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice51.setLabelString("Function:");
 		JPanel59.add(deviceChoice51);
 		deviceField124.setNumCols(25);
+		deviceField124.setTextOnly(true);
 		deviceField124.setOffsetNid(125);
 		deviceField124.setLabelString("Comment:");
 		JPanel59.add(deviceField124);
@@ -1551,6 +1558,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice58.setLabelString("Function:");
 		JPanel60.add(deviceChoice58);
 		deviceField125.setNumCols(25);
+		deviceField125.setTextOnly(true);
 		deviceField125.setOffsetNid(142);
 		deviceField125.setLabelString("Comment:");
 		JPanel60.add(deviceField125);
