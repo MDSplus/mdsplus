@@ -16,6 +16,12 @@ public fun T2Control__init(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
+	private _N_ZERO_START = 130;
+	private _N_ZERO_END = 131;
+	private _N_ZERO = 132;
+	private _N_MAPPING_ID = 133;
+	private _N_MAPPING = 134;
+
 
 
 write(*, 'T2Control init');
@@ -107,8 +113,20 @@ write(*, 'T2Control init');
 	_out_calibration = data(DevNodeRef(_nid, _N_OUT_CALIB));
 /*	write(*, 'Calibration: ', _calibration);*/
 	_status = MdsValue('Feedback->setOutputCalibration($1, $2)', float(_out_calibration), 32);
+
+	_mapping_id = data(DevNodeRef(_nid, _N_MAPPING_ID));
+	_status = MdsValue('Feedback->setIntVariable('feedbackMappingId', $1)', long(_mapping_id));
+
+	_zero_start = data(DevNodeRef(_nid, _N_ZERO_START));
+	_status = MdsValue('Feedback->setFloatVariable('feedbackAutozeroStart', $1)', float(_zero_start));
+	_zero_end = data(DevNodeRef(_nid, _N_ZERO_END));
+	_status = MdsValue('Feedback->setFloatVariable('feedbackAutozeroEnd', $1)', float(_zero_end));
+
+
+
+
 	
-    for(_par = 0; _par < 48; _par++)
+    for(_par = 0; _par < 47; _par++)
 	{
 		_par_name = data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2));
 		_par_value = data(DevNodeRef(_nid, _N_PAR1_VALUE + _par * 2));

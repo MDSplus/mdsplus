@@ -17,11 +17,22 @@ public fun T2Control__store(as_is _nid, optional _method)
     private _N_PAR1_NAME = 13;
     private _N_PAR1_VALUE = 14; 
 
-    private _N_INPUT_1 = 109;
+	private _N_ZERO_START = 130;
+	private _N_ZERO_END = 131;
+	private _N_ZERO = 132;
+	private _N_MAPPING_ID = 133;
+	private _N_MAPPING = 134;
+
+    private _N_INPUT_1 = 135;
+    private _N_OUTPUT_1 = 199;
+    private _N_MODES_1 = 231;
+    private _N_CURRENT_1= 295;
+
+/*    private _N_INPUT_1 = 109;
     private _N_OUTPUT_1 = 173;
     private _N_MODES_1 = 205;
     private _N_CURRENT_1= 269;
-
+*/
 
 write(*, 'T2Control store');
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
@@ -89,7 +100,6 @@ write(*, _c);
 	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);*/
 	for(_c = 0; _c < 32; _c++)
 	{
-write(*, _c);
 		_data = MdsValue( 'Feedback->getMode:dsc($1, 1)', _c);
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
@@ -109,8 +119,18 @@ write(*, _c);
 		}
 	}
 	_zero = MdsValue('Feedback->getZero:dsc()');
-        for(_i = 0; _i < size(_zero); _i++)
-	    write(*, _zero[_i]); 
+	_status = DevPut(_nid, _N_ZERO, _zero);
+	if(! _status)
+	{
+		DevLogErr(_nid, 'Error writing offset values in pulse file:'//getmsg(_status));
+	}
+
+	_mapping = MdsValue('Feedback->getMapping:dsc()');
+	_status = DevPut(_nid, _N_MAPPING, _mapping);
+	if(! _status)
+	{
+		DevLogErr(_nid, 'Error writing mapping in pulse file:'//getmsg(_status));
+	}
 
     MdsDisconnect();
     return (1);
