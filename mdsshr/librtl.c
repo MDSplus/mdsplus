@@ -1207,6 +1207,33 @@ int LibCreateVmZone(ZoneList **zone)
   }
   return (*zone != NULL);
 }
+
+int LibDeleteVmZone(ZoneList **zone)
+{
+  int found = 0;
+  ZoneList *list,*prev;
+  LibResetVmZone(zone);
+  if (*zone == MdsZones)
+  {
+    found = 1;
+    MdsZones = (*zone)->next;
+  }
+  else
+  {
+    for (prev=0,list = MdsZones; list && list != *zone; prev=list,list = list->next);
+    if (list && prev)
+    {
+      prev->next = list->next;
+      found = 1;
+    }
+  }
+  if (found)
+  {
+    free(*zone);
+    *zone=0;
+  }
+  return found;
+}
    
 int LibResetVmZone(ZoneList **zone)
 {

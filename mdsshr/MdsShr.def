@@ -102,3 +102,4 @@ cstring_to_dsc
 MdsUsageString
 MdsClassString
 MdsDtypeString
+LibDeleteVmZone
