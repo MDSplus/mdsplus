@@ -42,16 +42,15 @@
 #define KEY_UP    0403
 #define KEY_LEFT  0404
 #define KEY_RIGHT 0405
-#define setupterm(A,B,IERR)  (*IERR=1, 0)
-static char  key_up[] =    "\033OA";
-static char  key_down[] =  "\033OB";
-static char  key_right[] = "\033OC";
-static char  key_left[] =  "\033OD";
-static char  save_cursor[] =    "\0337";
-static char  restore_cursor[] = "\0338";
-static char  cursor_left[] =  "\010";
-static char  cursor_right[] = "\033[C";
-static char  clr_eol[] =      "\033[K";
+static char  *key_up;
+static char  *key_down;
+static char  *key_right;
+static char  *key_left;
+static char  *save_cursor;
+static char  *restore_cursor;
+static char  *cursor_left;
+static char  *cursor_right;
+static char  *clr_eol;
 #endif
 
 static int   insert_mode = 1;	/* flag					*/
@@ -166,7 +165,31 @@ static char  *get_history_line(	/* Returns:  ptr to cmd from history[]	*/
     idx = irecall % MAX_HISTORY;
     return(history[idx]);
    }
-#endif   /* end:  #ifndef vms	*/
+
+
+
+#ifndef CURSES
+static int   setupterm(
+    char  *term
+   ,int   fd
+   ,int   *ierr
+   )
+   {
+    key_up =    "\033OA";
+    key_down =  "\033OB";
+    key_right = "\033OC";
+    key_left =  "\033OD";
+    save_cursor =    "\0337";
+    restore_cursor = "\0338";
+    cursor_left =  "\010";
+    cursor_right = "\033[C";
+    clr_eol =      "\033[K";
+
+    *ierr = 1;
+    return(0);
+   }
+#endif		/* CURSES	*/
+#endif   	/* vms		*/
 
 
 
