@@ -45,8 +45,8 @@ public class MethodEditor extends JPanel implements Editor
     
     public Data getData()
     {
-	return new MethodData(timeout_edit.getData(), device_edit.getData(),
-	    method_edit.getData(), arg_edit.getData());
+	return new MethodData(timeout_edit.getData(), method_edit.getData(), 
+	    device_edit.getData(), arg_edit.getData());
     }
     
     public void setData(Data data)
