@@ -53,6 +53,14 @@ clean: ; rm $(CLASSES) @MAKEBINDIR@jScope @MAKEJAVADIR@classes/jScope.jar
 
 depend: ; @ :
 
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@jScope @bindir@
+
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
