@@ -407,7 +407,8 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr,int depth)
     str_concat(&out_str,&spaces,dstr,"Array [ ",0);
     if (in_dsc_ptr->aflags.dscV_bounds)
        {
-        bptr = (int *) ((char *) in_dsc_ptr + sizeof(struct descriptor_a) + sizeof(void *) + (in_dsc_ptr->dscB_dimct) * sizeof(int));
+        bptr = (int *) ((char *)in_dsc_ptr + sizeof(struct descriptor_a) +
+                sizeof(void *) + (in_dsc_ptr->dscB_dimct) * sizeof(int));
         for (dim = 0; dim < in_dsc_ptr->dscB_dimct; dim++)
            {
             lbptr = bptr++;
@@ -419,7 +420,8 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr,int depth)
        }
     else if (in_dsc_ptr->aflags.dscV_coeff)
        {
-        bptr = (int *) ((int) in_dsc_ptr + sizeof(struct descriptor_a) + 4);
+        bptr = (int *) ((char *)in_dsc_ptr + sizeof(struct descriptor_a) +
+                        sizeof(void *));
         for (dim = 0; dim < in_dsc_ptr->dscB_dimct; dim++)
            {
             sprintf(bchars,"%d%s",*bptr++,

@@ -5,7 +5,6 @@
 
 dummy(TclDispatch_abort_server)
 dummy(TclCleanDatafile)
-dummy(TclClose)
 dummy(TclCompressDatafile)
 dummy(TclDecompile)
 dummy(TclDeleteNode)
@@ -28,12 +27,10 @@ dummy(TclRundownTree)
 dummy(TclDispatch_set_server)
 dummy(TclSetEvent)
 dummy(TclShowCurrent)
-/*dummy(TclShowData)		/*  */
 dummy(TclShowDB)
 dummy(TclDispatch_show_server)
 dummy(TclDispatch_start_server)
 dummy(TclDispatch_stop_server)
-dummy(TclVerifyTree)
 dummy(TclWfevent)
 dummy(TclWrite)
 
@@ -41,7 +38,6 @@ dummy(TclWrite)
 	/* Some MDS and TREESHR routines not implemented on unix ...	*/
 #ifndef __vms
 dummy(ServerCreatePulse)
-dummy(TreeSetSubtree)
 dummy(TreeSetNoSubtree)
-dummy(TreeAddConglom)
+dummy(TreeVerifyTree)
 #endif

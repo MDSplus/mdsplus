@@ -4,6 +4,7 @@
 * TCL_SET_DEFAULT.C --
 *
 * TclSetDefault:  Set default
+* TclShowDefault:  Show default
 *
 * History:
 *  15-Jan-1998  TRG  Create.  Ported from original mds code.
@@ -30,4 +31,22 @@ int   TclSetDefault()
     else
         mdsMsg(sts,"Error trying to set %s",dsc_nodename.dscA_pointer);
     return sts;
+   }
+
+
+
+	/***************************************************************
+	 * TclShowDefault:
+	 ***************************************************************/
+int   TclShowDefault()		/* Returns: status			*/
+   {
+    char  *p;
+    int nid;
+    TreeGetDefaultNid(&nid);
+    if (p = TreeGetPath(nid))
+       {
+        TclTextOut(p);
+        TreeFree(p);
+       }
+    return(p ? 1 : 0);
    }
