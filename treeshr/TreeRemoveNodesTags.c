@@ -62,8 +62,8 @@ int       _TreeRemoveNodesTags(void *dbid, int nid)
 
   status = TreeTNF;
   nid_to_node(dblist, nid_ptr, node);
-  for (tagidx=node->tag_link; tagidx !=0; tagidx = next_tag) {
-    next_tag = dblist->tree_info->tag_info[tagidx-1].tag_link;
+  for (tagidx=swapint((char *)&node->tag_link); tagidx !=0; tagidx = next_tag) {
+    next_tag = swapint((char *)&dblist->tree_info->tag_info[tagidx-1].tag_link);
     _RemoveTagIdx(dblist, tagidx);
   }
   node->tag_link=0;
@@ -107,15 +107,16 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
   *****************************************/
 
     remove_info_ptr = dblist->tree_info->tag_info + tagidx - 1;
-    node_ptr = dblist->tree_info->node + remove_info_ptr->node_idx;
-    if ((int)node_ptr->tag_link == tagidx)
+    node_ptr = dblist->tree_info->node + swapint((char *)&remove_info_ptr->node_idx);
+    if (swapint((char *)&node_ptr->tag_link) == tagidx)
       node_ptr->tag_link = remove_info_ptr->tag_link;
     else
     {
-      for (info_ptr = dblist->tree_info->tag_info + node_ptr->tag_link - 1;
-           (info_ptr->tag_link != tagidx) && (info_ptr->tag_link >= 0);
-           info_ptr = dblist->tree_info->tag_info + info_ptr->tag_link - 1);
-      if (info_ptr->tag_link == tagidx)
+      int tag_link;
+      for (tag_link = swapint((char *)&node_ptr->tag_link), info_ptr = dblist->tree_info->tag_info + tag_link - 1;
+           (tag_link != tagidx) && (tag_link >= 0);
+           info_ptr = dblist->tree_info->tag_info + swapint((char *)&info_ptr->tag_link) - 1);
+      if (swapint((char *)&info_ptr->tag_link) == tagidx)
         info_ptr->tag_link = remove_info_ptr->tag_link;
     }
 
@@ -130,13 +131,19 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
   for (info_ptr = dblist->tree_info->tag_info;
        info_ptr < dblist->tree_info->tag_info + dblist->tree_info->header->tags; 
        info_ptr++)
-      if (info_ptr->tag_link >= tagidx)
-	info_ptr->tag_link--;
+      if (swapint((char *)&info_ptr->tag_link) >= tagidx)
+      {
+        int tmp = swapint((char *)&info_ptr->tag_link)-1;
+	info_ptr->tag_link = swapint((char *)&tmp);
+      }
     for (node_ptr = dblist->tree_info->node;
 	 node_ptr < dblist->tree_info->node + dblist->tree_info->header->nodes; 
 	 node_ptr++)
-      if ((int)node_ptr->tag_link >= tagidx)
-	node_ptr->tag_link--;
+      if (swapint((char *)&node_ptr->tag_link) >= tagidx)
+      {
+        int tmp = swapint((char *)&node_ptr->tag_link) - 1;
+	node_ptr->tag_link = swapint((char *)&tmp);
+      }
 
   /*************************************************
     Next we must fix up all the tag index pointers
@@ -147,9 +154,13 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
 	 tags_ptr < dblist->tree_info->tags + dblist->tree_info->header->tags; 
 	 tags_ptr++)
     {
-      if (*tags_ptr == (tagidx-1)) this_tags_ptr = tags_ptr;
-      if (*tags_ptr >= tagidx)
-	(*tags_ptr)--;
+      int tags = swapint((char *)tags_ptr);
+      if (tags == (tagidx-1)) this_tags_ptr = tags_ptr;
+      if (tags >= tagidx)
+      {
+        tags--;
+        *tags_ptr = swapint((char *)&tags);
+      }
     }
 
   /*******************************************
