@@ -164,24 +164,26 @@ ident:
 	status = StrConcat(&file, list[0] ? (struct descriptor *)&image : (struct descriptor *)&def_path, &entry, 
                              &dfun MDS_END_ARG);
 	if (status & 1) {
-	char cs[163840];
-        void *ctx = 0;
-	struct descriptor dcs = {0,DTYPE_T,CLASS_S,0};
-                dcs.pointer = (char *)cs;
-                LibFindFileRecurseCaseBlind(&file, &file, &ctx);
-                LibFindFileEnd(&ctx);
-                StrAppend(&file,&dnul);
-		unit = fopen(file.pointer, "r");
-		if (unit) {
-			for (j = 0; ;) {
-				if (fgets(&cs[j], sizeof(cs)-j, unit) == NULL) break;
-				j += strlen(&cs[j]);
-			}
-			fclose(unit);
-			dcs.length = (unsigned short)j;
-			status = TdiCompile(&dcs, out_ptr MDS_END_ARG);
-		}
-		else status = TdiUNKNOWN_VAR;
+	  void *ctx = 0;
+	  struct descriptor dcs = {0,DTYPE_T,CLASS_S,0};
+	  LibFindFileRecurseCaseBlind(&file, &file, &ctx);
+	  LibFindFileEnd(&ctx);
+	  StrAppend(&file,&dnul);
+	  unit = fopen(file.pointer, "r");
+	  if (unit) {
+            long flen;
+            fseek(unit,0,SEEK_END);
+            flen=ftell(unit);
+            flen = (flen > 0xffff) ? 0xffff : flen;           
+            fseek(unit,0,SEEK_SET);
+            dcs.pointer = (char *)malloc(flen);
+	    dcs.length = (unsigned short)flen;
+            fread(dcs.pointer, (size_t)flen,1,unit); 
+	    fclose(unit);
+	    status = TdiCompile(&dcs, out_ptr MDS_END_ARG);
+            free(dcs.pointer);
+	  }
+	  else status = TdiUNKNOWN_VAR;
 	}
 
 	/******************************************************
