@@ -10,20 +10,22 @@ public class CompileTree extends Thread
     Database tree;
     String experiment;
     int shot;
-    
+
     //originalNames and renamedNames keep info about nodes to be renamed
     Vector renamedDevices = new Vector();
     Vector renamedFieldNids = new Vector();
     Vector newNames = new Vector();
-    
-    
+    Vector unresolvedExprV = new Vector();
+    Vector unresolvedNidV = new Vector();
+
+
     public static void main(String args[])
     {
         String experiment;
         int shot = -1;
         if(args.length < 1)
         {
-            
+
             System.out.println("Usage: java CompileTree <experiment> [<shot>]");
             System.exit(0);
         }
@@ -39,16 +41,16 @@ public class CompileTree extends Thread
                 System.exit(0);
             }
         }
-        (new CompileTree(experiment, shot)).start(); 
+        (new CompileTree(experiment, shot)).start();
     }
-      
-        
+
+
     CompileTree(String experiment, int shot)
     {
         this.experiment = experiment;
         this.shot = shot;
     }
-        
+
     public void run()
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -68,7 +70,7 @@ public class CompileTree extends Thread
            if (spe.getException() != null)
                x = spe.getException();
            x.printStackTrace();
- 
+
         } catch (SAXException sxe) {
            // Error generated during parsing)
            Exception  x = sxe;
@@ -84,8 +86,8 @@ public class CompileTree extends Thread
            // I/O error
            ioe.printStackTrace();
         }
-        
-        
+
+
         tree = new Database(experiment, shot);
         tree.setEditable(true);
         try {
@@ -95,7 +97,7 @@ public class CompileTree extends Thread
             System.out.println("Error opening tree " + experiment +" : " + exc);
             System.exit(0);
         }
-        
+
         Element rootNode = document.getDocumentElement();
         NodeList nodes = rootNode.getChildNodes();
         for(int i = 0; i < nodes.getLength(); i++)
@@ -104,8 +106,8 @@ public class CompileTree extends Thread
             if(currNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) //Only element nodes at this
                 recCompile((Element)currNode);
         }
-        
-        
+
+
         //handle renamed nodes
         for(int i = 0; i < newNames.size(); i++)
         {
@@ -122,6 +124,25 @@ public class CompileTree extends Thread
                 System.out.println("Error renaming node of " + deviceName + " to " + newName + " : " + exc);
             }
         }
+
+        for (int i = 0; i < unresolvedNidV.size(); i++) {
+          Data data = null;
+          try {
+            data = Data.fromExpr( (String) unresolvedExprV.elementAt(i));
+          }
+          catch (Exception exc) {
+             System.out.println("Error parsing expression " + unresolvedExprV.elementAt(i) + " : " + exc);
+          }
+          try {
+            tree.putData( (NidData) unresolvedNidV.elementAt(i), data, 0);
+          }
+          catch (Exception exc) {
+            System.out.println("Error writing data: " + exc);
+          }
+
+        }
+
+
         try {
             tree.write(0);
             tree.close(0);
@@ -130,7 +151,7 @@ public class CompileTree extends Thread
             System.out.println("Error closeing tree: " + exc);
         }
     }
-    
+
     void recCompile(Element node)
     {
         String type = node.getNodeName();
@@ -142,7 +163,7 @@ public class CompileTree extends Thread
         try {
             NidData parentNid = tree.getDefault(0);
             success = false;
-            if(type.equals("data")) 
+            if(type.equals("data"))
             {
                 Element parentNode = (Element)node.getParentNode();
                 boolean isDeviceField = node.getNodeName().equals("field");
@@ -150,14 +171,15 @@ public class CompileTree extends Thread
                 if(dataNode != null)
                 {
                     String dataStr = dataNode.getData();
-                    
+
                     Data data = null;
                     try {
                         data = Data.fromExpr(dataStr);
                     }catch(Exception exc)
                     {
-                        System.out.println("Error parsing expression " + dataStr + " : " + exc);
-                    }
+                      unresolvedExprV.addElement(dataStr);
+                      unresolvedNidV.addElement(tree.getDefault(0));
+                     }
                     try {
                         nid = tree.getDefault(0);
                         if(isDeviceField)
@@ -182,7 +204,7 @@ public class CompileTree extends Thread
             //First handle renamed nodes: they do not need to be created, but to be renamed
             String originalDevice = node.getAttribute("DEVICE");
             String deviceOffsetStr = node.getAttribute("OFFSET_NID");
-            if(originalDevice != null && deviceOffsetStr != null && 
+            if(originalDevice != null && deviceOffsetStr != null &&
                 !originalDevice.equals("") && !deviceOffsetStr.equals(""))
             {
                 String newName;
@@ -237,15 +259,15 @@ public class CompileTree extends Thread
                     System.out.println("Error adding member " + name + " : "+ exc);
                 }
             }
-            
+
             if(type.equals("device"))
             {
                 String model = node.getAttribute("MODEL");
                 NodeInfo info = tree.getInfo(parentNid, 0);
-                
+
                 try {
                     Thread.currentThread().sleep(100);
-                    
+
                     nid = tree.addDevice(name.trim(), model, 0);
                     if(nid != null)
                     {
@@ -255,7 +277,7 @@ public class CompileTree extends Thread
                 }
                 catch(Exception exc){}
             }
-            
+
             if(type.equals("field"))
             {
                 nid= tree.resolve(new PathData(name), 0);
@@ -281,7 +303,7 @@ public class CompileTree extends Thread
                         System.out.println("Error adding tags " + tagsStr + " : " + exc);
                     }
                 }
-                
+
                 //flags
                 String flagsStr = node.getAttribute("FLAGS");
                 if(flagsStr != null && flagsStr.length() > 0)
@@ -309,7 +331,7 @@ public class CompileTree extends Thread
                         System.out.println("Error setting flags to node " + name + " : " + exc);
                     }
                 }
-                
+
                 //state
                 String stateStr = node.getAttribute("STATE");
                 if(stateStr != null && stateStr.length() > 0)
@@ -324,7 +346,7 @@ public class CompileTree extends Thread
                         //System.out.println("Error setting state of node " + name + " : " + exc);
                     }
                 }
-                
+
                 //Descend
                 NodeList nodes = node.getChildNodes();
                 for(int i = 0; i < nodes.getLength(); i++)
@@ -340,7 +362,7 @@ public class CompileTree extends Thread
             System.out.println("Internal error in recCompile: " + exc);
         }
     }
-    
-     
+
+
 }
-            
+
