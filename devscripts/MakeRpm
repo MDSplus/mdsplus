@@ -3,13 +3,19 @@
 tag=`devscripts/GetRelease`
 version=`devscripts/GetRelease version $tag`
 release=`devscripts/GetRelease release $tag`
-if (test "$GLOBUS_LOCATION" = "")
+if (test "$XIO" = "")
 then
-  globuskit=
-  enableglobus=
+    if (test "$GLOBUS_LOCATION" = "")
+	then
+	globuskit=
+	enableglobus=
+    else
+	globuskit=-globus
+	enableglobus=--enable-globus
+    fi
 else
-  globuskit=-globus
-  enableglobus=--enable-globus
+    globuskit=-xio
+    enableglobus=--with-xio=$GLOBUS_LOCATION\:$GLOBUS_FLAVOR
 fi
 mkdir mdskit$globuskit
 cd mdskit$globuskit
@@ -19,9 +25,10 @@ find . -name CVS -exec rm -Rf {} \; > /dev/null 2> /dev/null
 tar cf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar mdsplus$globuskit-$version 
 gzip -f $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar
 echo "s/#GLOBUS#/$globuskit/g" > tmp.sed
-echo "s/#ENABLEGLOBUS#/$enableglobus/g" >> tmp.sed
+echo "s+#ENABLEGLOBUS#+$enableglobus+g" >> tmp.sed
 echo "s/#VERSION#/$version/g" >> tmp.sed
 echo "s/#RELEASE#/$release/g" >> tmp.sed
+cat tmp.sed
 sed -f tmp.sed mdsplus$globuskit-$version/rpm/rpm.spec > rpm.spec 
 rpmbuild -ba rpm.spec
 cd ..
