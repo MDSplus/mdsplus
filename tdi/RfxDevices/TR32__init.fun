@@ -77,7 +77,8 @@ public fun TR32__init(as_is _nid, optional _method)
     }
     else
     {
-        DevNodeCvt(_nid, _N_INT_FREQUENCY, [3E6,1.5E6,1E6,500E3,200E3,100E3,50E3,20E3,10E3,5E3,2E3,1E3,500],[1,2,3,6,15,30,60,150,300,600,1500, 3000,6000], _clk_div = 0);
+        DevNodeCvt(_nid, _N_INT_FREQUENCY, [3E6,1.5E6,1E6,500E3,200E3,100E3,50E3,20E3,10E3,5E3,2E3,1E3,500],/*[1,2,3,6,15,30,60,150,300,600,1500, 3000,6000], _clk_div = 0);*/
+[2,4,6,12,30,60,120,300,600,1200,3000, 6000,12000], _clk_div = 0);
 
         _freq = data(DevNodeRef(_nid, _N_INT_FREQUENCY));
 

@@ -83,12 +83,15 @@ public class DeviceChoice extends DeviceComponent
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(initializing || updateIdentifier == null || updateIdentifier.equals("")) return;
-                String currItem = (String)comboB.getSelectedItem();
-                master.fireUpdate(updateIdentifier, new StringData(currItem));
+                if(initializing) return;
                 reportingChange = true;
                 reportDataChanged(new Integer(comboB.getSelectedIndex()));
                 reportingChange = false;
+
+                if(updateIdentifier == null || updateIdentifier.equals(""))
+                  return;
+                String currItem = (String)comboB.getSelectedItem();
+                master.fireUpdate(updateIdentifier, new StringData(currItem));
             }
         });
         initializing = false;

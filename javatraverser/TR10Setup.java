@@ -23,7 +23,7 @@ public class TR10Setup extends DeviceSetup
 		setDeviceTitle("INCAA TR10 CPCI Transient Recorder");
 		setDeviceType("TR10");
 		getContentPane().setLayout(new BorderLayout(0,0));
-		setSize(601,532);
+		setSize(675,532);
 		JPanel2.setLayout(new BorderLayout(0,0));
 		getContentPane().add(BorderLayout.NORTH, JPanel2);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -125,6 +125,14 @@ public class TR10Setup extends DeviceSetup
 		}
 		deviceChoice3.setLabelString("Trig. Mode");
 		JPanel6.add(deviceChoice3);
+		deviceChoice6.setOffsetNid(10);
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "TRUE";
+			tempString[1] = "FALSE";
+			deviceChoice6.setChoiceItems(tempString);
+		}
+		deviceChoice6.setLabelString("Use Time:");
 		JPanel6.add(deviceChoice6);
 		{
 			String[] tempString = new String[3];
@@ -137,16 +145,16 @@ public class TR10Setup extends DeviceSetup
 		getContentPane().add(BorderLayout.CENTER, JTabbedPane1);
 		JScrollPane1.setAutoscrolls(true);
 		JTabbedPane1.add(JScrollPane1);
-		JScrollPane1.setBounds(2,24,596,254);
+		JScrollPane1.setBounds(2,24,670,254);
 		JScrollPane1.setVisible(false);
 		JViewport1.setExtentSize(new java.awt.Dimension(578,496));
 		JViewport1.setView(JPanel1);
 		JViewport1.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane1.getViewport().add(JViewport1);
-		JViewport1.setBounds(0,0,578,496);
+		JViewport1.setBounds(0,0,652,496);
 		JPanel1.setLayout(new GridLayout(16,1,0,0));
 		JViewport1.add(JPanel1);
-		JPanel1.setBounds(0,0,578,496);
+		JPanel1.setBounds(0,0,652,496);
 		timeChannel1.setInSameLine(true);
 		timeChannel1.setOffsetNid(12);
 		timeChannel1.setLabelString("Ch1:");
@@ -372,16 +380,16 @@ public class TR10Setup extends DeviceSetup
 		deviceField48.setLabelString("End :");
 		timeChannel16.add(deviceField48);
 		JTabbedPane1.add(JScrollPane2);
-		JScrollPane2.setBounds(2,24,596,254);
+		JScrollPane2.setBounds(2,24,670,254);
 		JScrollPane2.setVisible(false);
 		JViewport2.setExtentSize(new java.awt.Dimension(578,496));
 		JViewport2.setView(JPanel4);
 		JViewport2.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane2.getViewport().add(JViewport2);
-		JViewport2.setBounds(0,0,578,496);
+		JViewport2.setBounds(0,0,652,496);
 		JPanel4.setLayout(new GridLayout(16,1,0,0));
 		JViewport2.add(JPanel4);
-		JPanel4.setBounds(0,0,578,496);
+		JPanel4.setBounds(0,0,652,496);
 		idxChannel1.setInSameLine(true);
 		idxChannel1.setOffsetNid(12);
 		idxChannel1.setLabelString("Ch1:");
@@ -445,7 +453,7 @@ public class TR10Setup extends DeviceSetup
 		idxChannel5.setLayout(new BorderLayout(0,0));
 		JPanel4.add(idxChannel5);
 		deviceField25.setNumCols(15);
-		deviceField25.setOffsetNid(37);
+		deviceField25.setOffsetNid(39);
 		deviceField25.setLabelString("Start :");
 		idxChannel5.add(deviceField25);
 		deviceField26.setNumCols(15);
