@@ -104,6 +104,11 @@ public class MdsConnection
 	        }
 	        catch(IOException e)
 	        {
+                   synchronized(this)
+                    {
+		      killed = true;
+                      notify();
+                    }
 	            if(connected)
 	            {
 	                message = null;
@@ -112,16 +117,12 @@ public class MdsConnection
 	                MdsConnection.this.dispatchConnectionEvent(ce);
 	                MdsConnection.this.NotifyMessage();
 	            }
-                    killed = true;
-                    synchronized(this)
-                    {
-                      notify();
-                    }
 	        }
 	    }
 
             public synchronized void waitExited()
             {
+	    
               while(!killed)
                 try{
                   wait();
@@ -365,6 +366,7 @@ public class MdsConnection
                 connection_listener.removeAllElements();
 	        dos.close();
             dis.close();
+	    
             receiveThread.waitExited();
             connected = false;
 	    }
