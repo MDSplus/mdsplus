@@ -179,7 +179,9 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
 #else /* WIN32 */
 
+#ifndef _LINUX
 #include <unistd.h>
+#endif
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
@@ -1440,6 +1442,15 @@ static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
       else
         return 0;
     dp = readdir(ctx->dir_ptr);
+#ifdef _LINUX
+    if (dp != NULL)
+    {
+      if( dp->d_type)
+      {
+        dp = (struct dirent *)(((char *)dp)-1);
+      }
+    }
+#endif
     if (dp != NULL) {
       struct descriptor upname = {0,DTYPE_T,CLASS_D,0};
       DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)

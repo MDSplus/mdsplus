@@ -20,7 +20,7 @@ EXPORTS = MdsShr.export
 mdsshr : ../shlib ../shlib/libMdsShr.$(SHARE_TYPE) ../shlib/libMdsShr.a
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(DLD)
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) $(DLD)
 
 ../shlib/libMdsShr.a : $(OBJECTS)
 	$(AR) -r $@ $(OBJECTS)

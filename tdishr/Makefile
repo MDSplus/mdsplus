@@ -83,7 +83,7 @@ EXPORTS = TdiShr.export
 tdishr : ../shlib ../shlib/libTdiShr.$(SHARE_TYPE) ../shlib/libTdiShr.a
 
 ../shlib/libTdiShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm -L../shlib -lMdsShr -lTreeShr
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lm -L../shlib -lMdsShr -lTreeShr
 
 ../shlib/libTdiShr.a : $(OBJECTS)
 	$(AR) -r $@ $(OBJECTS)
