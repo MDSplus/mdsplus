@@ -263,7 +263,8 @@ int 	rblob;
 		if (bufs) {
 			FreeBuffers();
 		}
-		bufs = (struct ans_buf *)calloc(ncol,sizeof(struct ans_buf));
+                if (ncol > 0)
+		  bufs = (struct ans_buf *)calloc(ncol,sizeof(struct ans_buf));
 		num_bufs = ncol;
 		
 		/*
