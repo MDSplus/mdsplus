@@ -22,6 +22,8 @@ int MDSEvent(char *evname){}
 #include <unistd.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <mds_stdarg.h>
+
 /* Just to avoid compiler complains */
 #undef DTYPE_DOUBLE
 #undef DTYPE_EVENT
@@ -102,12 +104,20 @@ static void removeDeadMsg(int key);
 
 
 static int remote_local_initialized = 0;
-static int remote_socket = 0;  		/* Socket to remote MDS event server */
+static int receive_sockets[256];  	/* Socket to receive external events  */
+static int send_sockets[256];  		/* Socket to send external events  */
+static char *receive_servers[256];	/* Receive server names */
+static char *send_servers[256];		/* Send server names */
 static pthread_t thread;       		/* Thread for local event handling */
 static pthread_t external_thread;	/* Thread for remote event handling */
 static int external_shutdown = 0;	/* flag to request remote events thread termination */
 static int fds[2];			/* file descriptors used by the pipe */
 static int external_count = 0;          /* remote event pendings count */
+static int num_receive_servers = 0;	/* numer of external event sources */
+static int num_send_servers = 0;	/* numer of external event destination */
+
+
+
 /************* OS dependent part ******************/
 
 static char *getEnvironmentVar(char *name)
@@ -278,11 +288,26 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
     return status;
 }
 
+/*static void attachExitHandler(void (*handler)())
+{
+    struct sigaction action, old_action;
+
+    action.sa_handler = (void (*)(int)) handler;
+    action.sa_mask = 0;
+    action.sa_mask = 0;
+    
+
+    if(atexit(handler) == -1)
+	perror("atexit");
+    if(sigaction(SIGINT, &action, &old_action) == -1)
+	perror("signal");
+}*/
+
 static void attachExitHandler(void (*handler)())
 {
     if(atexit(handler) == -1)
 	perror("atexit");
-    signal(SIGTERM,handler);
+    signal(SIGINT,handler);
 }
 
 
@@ -404,7 +429,6 @@ static void cleanup(int dummy)
 /* remove all events declared by the process and not removed by MdsEventCan */
     int i, j, curr_id, prev_id;
 
-
     if(is_exiting) return;
 
     is_exiting = 1;
@@ -438,36 +462,82 @@ static void cleanup(int dummy)
     releaseLock();
 
     releaseMessages();
+    exit(0);
 
 }
 
-static void initializeLocalRemote()
+
+/* eventid stuff: when using multiple event servers, the code has to deal with multiple eventids */
+static struct {
+    int used;
+    int local_id; 
+    int *external_ids; 
+} event_info[MAX_ACTIVE_EVENTS];
+
+static void newRemoteId(int *id)
 {
-    char *env_name;
-    struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
-    int status;
-    int (*rtn)();
+    int i;
+    for(i = 0; i < MAX_ACTIVE_EVENTS - 1 && event_info[i].used; i++);
+    event_info[i].used = 1;
+    event_info[i].external_ids = (int *)malloc(sizeof(int) * 256);
+    *id = i;
+}
+
+static void deleteId(int id)
+{
+    if(!event_info[id].used) return;
+    event_info[id].used = 0;
+    free((char *)event_info[id].external_ids);
+}
+
+static void setLocalId(int id, int evid)
+{
+    event_info[id].local_id = evid;
+}
+
+static void setRemoteId(int id, int ofs, int evid)
+{
+    event_info[id].external_ids[ofs] = evid;
+}
+
+static int getLocalId(int id)
+{
+     return event_info[id].local_id;
+}
+
+static int getRemoteId(int id, int ofs)
+{
+    return event_info[id].external_ids[ofs];
+}
 
 
-    if(!remote_local_initialized)
+
+static void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
+{
+    int i, j;
+    char *envname = getEnvironmentVar(env_var);
+    char curr_name[256];
+    if(!envname || !*envname)
     {
-	remote_local_initialized = 1;
-	env_name = getEnvironmentVar("mds_event_server");
-	if(env_name != NULL)
+	*use_local = 1;
+	*num_servers = 0;
+ 	return;
+    }
+    i = *num_servers = 0;
+    *use_local = 0;
+    while(i < strlen(envname))
+    {
+	for(j = 0; i < strlen(envname) && envname[i] != ':'; i++, j++)
+	    curr_name[j] = envname[i];
+	curr_name[j] = 0;
+	i++;
+	if(!strcmp(curr_name, "0"))
+	    *use_local = 1; 
+	else
 	{
-    	    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
-    	    if (status & 1)
-	    {
-	 	remote_socket = (*rtn) (env_name);
-	    	if(remote_socket == -1)
-	    	{
-		    perror("ConnectToMds");
-	    	    remote_socket = 0;
-		}
-	    }
-	    else printf(MdsGetMsg(status));
+	    servers[*num_servers] = malloc(strlen(curr_name) + 1);
+	    strcpy(servers[*num_servers], curr_name);
+	    (*num_servers)++;
 	}
     }
 }
@@ -479,11 +549,12 @@ static void handleRemoteAst()
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
-    int status;
+    int status, i;
     int (*rtn)();
     Message *m;
     int tablesize = FD_SETSIZE, selectstat;
-    fd_set readfds, writefds, exceptfs;
+    fd_set readfds;
+
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if(!(status & 1))
     {
@@ -492,16 +563,11 @@ static void handleRemoteAst()
     }
     while(1)
     {
-
         FD_ZERO(&readfds);
-        FD_SET(remote_socket,&readfds);
+	for(i = 0; i < num_receive_servers; i++)
+	    if(receive_sockets[i])
+        	FD_SET(receive_sockets[i],&readfds);
         FD_SET(fds[0],&readfds);
-        FD_ZERO(&writefds);
-        FD_SET(fds[1],&writefds);
-        FD_ZERO(&exceptfs);
-        FD_SET(remote_socket,&exceptfs);
-        FD_SET(fds[0],&exceptfs);
-        FD_SET(fds[1],&exceptfs);
 	selectstat = select(tablesize, &readfds, 0, 0, NULL);
   	if (selectstat == -1) {
       	perror("select error"); return; }
@@ -510,14 +576,131 @@ static void handleRemoteAst()
 	    read(fds[0], buf, 1);
 	    pthread_exit(0);
 	}
-	m = ((Message *(*)())(*rtn))(remote_socket, &status);
-        if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
-        {
-            MdsEventInfo *event = (MdsEventInfo *)m->bytes;
-            (*event->astadr)(event->astprm, 12, event->data);
+	for(i = 0; i < num_receive_servers; i++)
+	{
+	    if(receive_sockets[i] && FD_ISSET( receive_sockets[i], &readfds))
+	    {
+		m = ((Message *(*)())(*rtn))(receive_sockets[i], &status);
+        	if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
+        	{
+            	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
+            	    ((void (*)())(*event->astadr))(event->astprm,  12, event->data);
+		}
+	    }
  	}
     }
 }
+
+
+static int searchOpenServer(char *server) 
+/* Avoid doing MdsConnect on a server already connected before */
+/* for now, allow socket duplications */
+{
+    int i;
+	return 0;
+}
+
+/*
+    for(i = 0; i < num_receive_servers; i++)
+	if(receive_servers[i] && !strcmp(server, receive_servers[i])) 
+	    return receive_sockets[i];
+    for(i = 0; i < num_send_servers; i++)
+	if(send_servers[i] && !strcmp(server, send_servers[i])) 
+   return 0;
+}
+*/
+
+static void initializeLocalRemote(int receive_events, int *use_local)
+{
+    static int receive_initialized;
+    static int send_initialized;
+    static int use_local_send;
+    static int use_local_receive;
+
+    char *servers[256];
+    int num_servers;
+    struct descriptor 
+	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+    int status, i;
+    int (*rtn)();
+    void *dummy;
+
+    if(receive_initialized && receive_events)
+    {
+	*use_local = use_local_receive;
+	return;
+    }
+    if(send_initialized && !receive_events)
+    {
+	*use_local = use_local_send;
+	return;
+    }
+
+    if(receive_events)
+    {
+	receive_initialized = 1;
+	getServerDefinition("mds_event_server", servers, &num_servers, use_local);   
+	num_receive_servers = num_servers;
+	use_local_receive = *use_local;
+    }
+    else
+    {
+	send_initialized = 1;
+   	getServerDefinition("mds_event_target", servers, &num_servers, use_local);
+	num_send_servers = num_servers;
+	use_local_send = *use_local;
+    }
+    if(num_servers > 0)
+    {
+        status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+        if (status & 1)
+        {
+	    if(external_thread)
+	    {
+	    	external_shutdown = 1;
+	    	write(fds[1], "x", 1);
+	    	pthread_join(external_thread, &dummy);
+	    	external_shutdown = 0;
+	    	external_thread = 0;
+	    }	
+	    for(i = 0; i < num_servers; i++)
+	    {
+		if(receive_events)
+		{
+		    receive_sockets[i] = searchOpenServer(servers[i]);
+	 	    if(!receive_sockets[i]) receive_sockets[i] = (*rtn) (servers[i]);
+	    	    if(receive_sockets[i] == -1)
+	    	    {
+			printf("\nError connecting to %s", servers[i]);
+		        perror("ConnectToMds");
+	    	        receive_sockets[i] = 0;
+		    }
+		    else
+			receive_servers[i] = servers[i];
+
+		}
+		else
+		{
+		    send_sockets[i] = searchOpenServer(servers[i]);
+	 	    if(!send_sockets[i]) send_sockets[i] = (*rtn) (servers[i]);
+	    	    if(send_sockets[i] == -1)
+	    	    {
+			printf("\nError connecting to %s", servers[i]);
+		        perror("ConnectToMds");
+	    	        send_sockets[i] = 0;
+		    }
+		    else
+			send_servers[i] = servers[i];
+		}
+	    }
+	    createThread(handleRemoteAst);
+	}
+	else printf(MdsGetMsg(status));
+    }
+}
+
+
 
 	    
 static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
@@ -525,10 +708,10 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
-    int status;
+    int status, i;
+    int curr_eventid;
     void *dummy;
     int (*rtn)();
-
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
@@ -540,8 +723,16 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 	    pthread_join(external_thread, &dummy);
 	    external_shutdown = 0;
 	    external_thread = 0;
-	}	
-	status = (*rtn) (remote_socket, eventnam, astadr, astprm, eventid);
+	}
+	newRemoteId(eventid);
+	for(i = 0; i < num_receive_servers; i++)
+	{
+	    if(receive_sockets[i])
+	    { 
+		status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
+	        setRemoteId(*eventid, i, curr_eventid);
+	    }
+	}
 /* now external thread must be created in any case */
         if (status & 1)
 	{
@@ -557,15 +748,18 @@ static int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *e
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
     int status;
-    int i, j;    
+    int i, j, use_local;    
     int name_already_in_use;
-    
+
+    *eventid = -1;
     if(!eventnam || !*eventnam) return 1;
+    initializeLocalRemote(1, &use_local);
+    if(num_receive_servers > 0)
+	eventAstRemote(eventnam, astadr, astprm, eventid);
+    if(!use_local) return;
 
-    initializeLocalRemote();
-    if(remote_socket)
-	return eventAstRemote(eventnam, astadr, astprm, eventid);
 
+    /* Local stuff */
 
     /* First check wether the same name is already in use */
     for(i = 0; i < MAX_EVENTNAMES; i++)
@@ -594,9 +788,13 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
     private_info[i].astprm = (void *)(void *)astprm;
 
 
-    *eventid = i; 
+    /* *eventid = i; */
+    if(*eventid == -1) /* if no external event receivers */
+	*eventid = i;
+    else
+	setLocalId(*eventid, i);
 
-    if(name_already_in_use || remote_socket)
+    if(name_already_in_use)
 	return 1;
 
     setHandle();
@@ -657,7 +855,7 @@ static int canEventRemote(int eventid)
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
-    int status;
+    int status, i;
     void *dummy;
     int (*rtn)();
 
@@ -665,15 +863,16 @@ static int canEventRemote(int eventid)
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
-	external_count--;
     	external_shutdown = 1;
     	write(fds[1], "x", 1);
     	pthread_join(external_thread, &dummy);
     	external_shutdown = 0;
 	external_thread = 0;
-	status = (*rtn) (remote_socket, eventid);
-	if(external_count > 0)
-	    createThread(handleRemoteAst);
+	for(i = 0; i < num_receive_servers; i++)
+	{
+	    if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
+	}
+	createThread(handleRemoteAst);
     }
     return status;
 }
@@ -681,15 +880,21 @@ static int canEventRemote(int eventid)
 	
 int MDSEventCan(int eventid)
 {
-    int i, j, k, curr_id, prev_id;
+    int i, j, k, curr_id, prev_id, use_local, local_eventid;
     struct PrivateEventInfo *evinfo;
 
-    initializeLocalRemote();
-    if(remote_socket)
-	return canEventRemote(eventid);
+    initializeLocalRemote(1, &use_local);
+    if(num_receive_servers > 0)
+	canEventRemote(eventid);
+    if(!use_local) return 1;
 
-    evinfo = &private_info[eventid];
- 
+    if(num_receive_servers > 0)
+    	local_eventid = getLocalId(eventid);
+     else
+	local_eventid = eventid;
+    deleteId(eventid);
+/* local stuff */
+    evinfo = &private_info[local_eventid];
     if(!shared_info) return 0; /*must follow MdsEventAst */
 
     getLock();
@@ -730,36 +935,51 @@ int MDSEventCan(int eventid)
 
 static int sendRemoteEvent(char *evname, int data_len, char *data)
 {
+    int (*rtn)(), (*curr_rtn)();
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
 	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
-    char expression[128];
-    int status;
-    int (*rtn)();
+    int status, i;
+    char expression[256];
     EMPTYXD(ansarg);
-    struct descrip dsc;
+    struct descrip desc;
 
-    dsc.dtype = DTYPE_T;
-    dsc.ptr = data;
-    dsc.ndims = 0;
-    dsc.length = data_len;
+/*struct descrip { char dtype;
+                 char ndims;
+                 int  dims[MAX_DIMS];
+                 int  length;
+		 void *ptr;
+	       };
+*/
+    desc.dtype = DTYPE_T;
+    desc.ptr = data;
+    desc.length = data_len;
+    desc.ndims = 0;
 
     sprintf(expression, "setevent(\"%s\", $)", evname);
-   status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
-	  status = (*rtn) (remote_socket, expression, &dsc, &ansarg, NULL);
+    {
+	for(i = 0; i < num_send_servers; i++)
+	{
+	    curr_rtn = rtn;
+	    if(send_sockets[i]) status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+	    MdsFree1Dx(&ansarg, 0);
+	}
+    }
     return status;
 }
 
 int MDSEvent(char *evname, int data_len, char *data)
 {
-    int i, j, name_idx, curr_id;
+    int i, j, name_idx, curr_id, use_local;
     
-    initializeLocalRemote();
-    if(remote_socket)
-	return sendRemoteEvent(evname, data_len, data);
+    initializeLocalRemote(0, &use_local);
+    if(num_send_servers > 0)
+	sendRemoteEvent(evname, data_len, data);
+    if(!use_local) return 1;
 
-
+/* Local stuff */
     getLock();
     if(!shared_info)
     {
