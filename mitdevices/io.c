@@ -4,17 +4,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "acq32ioctl.h"
+
 #ifndef MAX
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 #endif
-#ifdef FOPEN
-#undef FOPEN
-#endif
-#ifdef FWRITE
-#undef FWRITE
-#endif
-#ifdef FREAD
-#undef FREAD
+#ifndef MIN
+#define MIN(a,b) ((a) < (b)) ? (a) : (b)
 #endif
 
 FILE *FOPEN(const char *fname, const char *mode)
@@ -148,6 +144,68 @@ int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *act
     
   return out;
 }
+
+int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, float *coeffs, int *num_coeffs)
+{
+  int linc = (*num_coeffs <= 1) ?  *inc :  1;
+  int samples = (*end - *start + 1)/linc;
+  unsigned length = samples*sizeof(short);
+  int fd;
+  short *region;
+  struct READ_LOCALBUF_DESCR buffer_def;
+  int rc;
+  int idx, cidx, sam;
+    
+  printf("Starting DMARead3 start = %d end = %d linc = %d\n", *start, *end, linc);
+  if ( (fd = open( fname, O_RDONLY)) < 0 ) {
+        fprintf( stderr, "DMARead: failed to open device \"%s\" - ", fname );
+        perror( "" );
+        return -1;
+  }
+  printf("about to mmap (null, %d, PROT_READ, MAP_SHARED, %d, 0)\n", length, fd);
+  region = (short *)mmap( NULL, length, PROT_READ, MAP_SHARED, fd, 0 );
+
+  if ( region == (short *)-1 ){
+        perror( "DMARead mmap" );
+        return 1;
+  }
+  buffer_def.istart = *start;
+  buffer_def.istride = linc;
+  buffer_def.nsamples = samples;
+  buffer_def.buffer = (short *)region;
+
+  printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n", buffer_def.istart, buffer_def.istride, buffer_def.nsamples);
+
+  rc = ioctl( fd, ACQ32_IOREAD_LOCALBUF, &buffer_def );
+  printf("back from ioctl *num_coeffs=%d\n", *num_coeffs);
+  if (rc < 0) {
+    printf("got back %d from ioctl\n", rc);
+    perror("call to ioctl");
+  }
+  if (*num_coeffs > 1) {
+    for (idx = 0; idx < (*end - *start + 1)/ *inc; idx ++) {
+      sam = 0;
+      /*      printf("."); */ 
+      for (cidx=0; cidx < *num_coeffs; cidx++) {
+        int iidx = MIN(MAX(idx * *inc + cidx-*num_coeffs/2, 0), *end-1);
+        sam += region[iidx]* coeffs[cidx];
+      }
+      buffer[idx] = (int)sam;
+    }
+    /*  printf("\n"); */
+  } else {
+    memcpy(buffer, region, buffer_def.nsamples*sizeof(short));
+  }
+  printf("about to umap...\n");
+  rc = munmap((void *)region, length);
+  if (rc != 0) {
+    printf("error unmapping %d\n", length);
+    perror("munmap");
+  }
+  close(fd);
+  return (*end - *start + 1)/ *inc;
+}
+
 int Convolve(short *outbuf, short *inbuf, int inbuf_len, float *coeffs, int num_coeffs, int inc)
 {
   int i,j,idx;
