@@ -269,20 +269,24 @@ public class Node
     
 	ImageIcon icon = null;
 	String base = System.getProperty("icon_base");
+	if(base == null) 
+	    base = "";
+	else
+	    base = base + "/";
     	switch (info.usage) {
-	    case NodeInfo.USAGE_NONE: icon = new ImageIcon(base + "/structure.gif");break;
-	    case NodeInfo.USAGE_ACTION: icon = new ImageIcon(base + "/action.gif");break;
-	    case NodeInfo.USAGE_DEVICE: icon = new ImageIcon(base + "/device.gif");break;
-	    case NodeInfo.USAGE_DISPATCH: icon = new ImageIcon(base + "/dispatch.gif");break;
+	    case NodeInfo.USAGE_NONE: icon = new ImageIcon(base + "structure.gif");break;
+	    case NodeInfo.USAGE_ACTION: icon = new ImageIcon(base + "action.gif");break;
+	    case NodeInfo.USAGE_DEVICE: icon = new ImageIcon(base + "device.gif");break;
+	    case NodeInfo.USAGE_DISPATCH: icon = new ImageIcon(base + "dispatch.gif");break;
 	    case NodeInfo.USAGE_ANY:
-	    case NodeInfo.USAGE_NUMERIC: icon = new ImageIcon(base + "/numeric.gif");break;
-	    case NodeInfo.USAGE_TASK: icon = new ImageIcon(base + "/task.gif");break;
-	    case NodeInfo.USAGE_TEXT: icon = new ImageIcon(base + "/text.gif");break;
-	    case NodeInfo.USAGE_WINDOW: icon = new ImageIcon(base + "/window.gif");break;
-	    case NodeInfo.USAGE_AXIS: icon = new ImageIcon(base + "/axis.gif");break;
-	    case NodeInfo.USAGE_SIGNAL: icon = new ImageIcon(base + "/signal.gif");break;
-	    case NodeInfo.USAGE_SUBTREE: icon = new ImageIcon(base + "/subtree.gif");break;
-	    case NodeInfo.USAGE_COMPOUND_DATA: icon = new ImageIcon(base + "/compound.gif");break;
+	    case NodeInfo.USAGE_NUMERIC: icon = new ImageIcon(base + "numeric.gif");break;
+	    case NodeInfo.USAGE_TASK: icon = new ImageIcon(base + "task.gif");break;
+	    case NodeInfo.USAGE_TEXT: icon = new ImageIcon(base + "text.gif");break;
+	    case NodeInfo.USAGE_WINDOW: icon = new ImageIcon(base + "window.gif");break;
+	    case NodeInfo.USAGE_AXIS: icon = new ImageIcon(base + "axis.gif");break;
+	    case NodeInfo.USAGE_SIGNAL: icon = new ImageIcon(base + "signal.gif");break;
+	    case NodeInfo.USAGE_SUBTREE: icon = new ImageIcon(base + "subtree.gif");break;
+	    case NodeInfo.USAGE_COMPOUND_DATA: icon = new ImageIcon(base + "compound.gif");break;
 	}
 	
 	if(is_member)
