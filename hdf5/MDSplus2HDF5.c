@@ -39,13 +39,18 @@ extern int TdiExecute();
   Since MDSplus can have both members and children with the same name at any given
   level in the tree, the possibility exists that when we try to add the data for a 
   member to the HDF5 file, its name will already be taken.  If this is the case, try
-  sticking an '_' in the front, and try again.
+  sticking an '_' at the back, and try again.
+
+  Note: when the '_' is put in the front, certain HDF5 readers (IDL) have trouble 
+  reading in files with an attribute called _name in them.  Hence the descision to 
+  put the '_' at the end.
 */
 static char *MemberMangle(char * name)
 {
   static char ans[MAX_TREENAME+2];
-  ans[0]='_'; ans[1]=0;
-  strcat(ans, name);
+  ans[0]=0;
+  strcpy(ans, name);
+  strcat(ans, "_");
   return(ans);
 }
 /*
@@ -298,7 +303,7 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
 {
   int status;
   switch (dsc->dtype) {
-  case DTYPE_T : {
+  case DTYPE_T : if (dsc->length > 0) {
     herr_t status;
     hid_t ds_id = H5Screate(H5S_SCALAR);
     hsize_t size = dsc->length;
@@ -320,8 +325,7 @@ static void PutScalar(hid_t parent, char *name, struct descriptor *dsc)
   }
   default : PutNumeric(parent, name, dsc); break;
   }
-  printf("\t\tWriting data to %s\n", name);
-  return;
+   return;
 }
 typedef RECORD(MAX_DESCRS) RDSC;
 
@@ -494,7 +498,11 @@ static void AddBranch(int nid, hid_t parent_id)
   }
 
   if (!_is_child) {
-    WriteDataNID(parent_id, name, nid);
+    if (_has_descendants) {
+      char *member_name = MemberMangle(name);
+      WriteDataNID(parent_id, member_name, nid);
+    } else
+      WriteDataNID(parent_id, name, nid);
   } 
   if (_is_child || _has_descendants)
     H5Gclose(g_id);
