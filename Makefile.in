@@ -32,7 +32,8 @@ PARTS = \
         wfevent \
         setevent \
 	@JAVA_APS@ \
-        @IDLSQL@ 
+        @IDLSQL@ \
+	@IDLMDSEVENT@
 
 all:
 	cdir=`pwd`;\
