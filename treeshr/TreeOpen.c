@@ -917,10 +917,19 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   case -2: status = TreeOPEN_EDIT & 0xfffffffa; break;
   default:
     info->alq = (int)MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512;
-    MDS_IO_LSEEK(*fd, 0, SEEK_SET);
-    status = TreeNORMAL;
-    info->filespec=resnam;
-    *nomap = info->channel == 0;
+    if (info->alq < 1)
+    {
+      fprintf(stderr,"Corrupted/truncated tree file: %s\n",resnam);
+      MDS_IO_CLOSE(*fd);
+      status = TreeFILE_NOT_FOUND;
+    }
+    else
+    {
+      MDS_IO_LSEEK(*fd, 0, SEEK_SET);
+      status = TreeNORMAL;
+      info->filespec=resnam;
+      *nomap = info->channel == 0;
+    }
   }
   return status;
 }
