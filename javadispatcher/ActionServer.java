@@ -17,6 +17,10 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     javax.swing.Timer timer;
     static final int RECONNECT_TIME = 5;
 
+    public ActionServer(String tree, String ip_address, String server_class)
+    {
+      this (tree, ip_address,  server_class, null);
+    }
 
     public ActionServer(String tree, String ip_address, String server_class, String subtree)
     {
