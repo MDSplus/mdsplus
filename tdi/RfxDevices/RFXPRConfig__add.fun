@@ -1,6 +1,6 @@
 public fun RFXPRConfig__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPRConfig', 36, _nidout);
+    DevAddStart(_path, 'RFXPRConfig', 37, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 
 /*Parameters to be sent */
@@ -23,6 +23,8 @@ public fun RFXPRConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':SENT_157_168', 'NUMERIC', ZERO(72, 0.), *, _nid);
     DevAddNode(_path // ':SENT_169_180', 'NUMERIC', ZERO(72, 0.), *, _nid);
     DevAddNode(_path // ':SENT_181_192', 'NUMERIC', ZERO(72, 0.), *, _nid);
+    DevAddNode(_path // ':GTO_STATE', 'NUMERIC', ZERO(192, 1), *, _nid);
+
 
 /* Parameters Received */
 	
