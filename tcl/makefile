@@ -37,7 +37,8 @@ all:	../bin/tcl tcl_commands.o  libTcl.a	\
 
 clean:
 	find . -name libTcl.a -exec rm {} \;
-	rm *.o ../shlib/tcl_commands.$(SHARE_TYPE)
+	find ../shlib -name tcl_commands.$(SHARE_TYPE) -exec rm {} \;
+	rm tcl_commands.c
 
 ../bin/tcl:	tcl
 	chmod +x tcl

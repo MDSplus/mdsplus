@@ -49,12 +49,17 @@ static int   DispatchCreatePulse(Server *s);
 #pragma extern_model globalvalue
 extern SS$_CONNECFAIL;
 #pragma extern_model __restore
+#define TdiExecute  TDI$EXECUTE
 #else
 static char  unixMsg[] = "\n==> unix not yet handling %s <==\n\n";
 #endif
 
+
+extern int   TdiExecute();
+
+
 	/****************************************************************
-         * CheckCondtiont:
+         * CheckCondtion:
          ****************************************************************/
 static int   CheckCondition(int   nid)
    {
@@ -403,17 +408,26 @@ static int   DistributedCreate(int   shot,int   *nids,int   num)
 	 **************************************************************/
 int   TclCreatePulse()
    {
+    static int   shot;
+    static DESCRIPTOR_LONG(dsc_shot,&shot);
     static DYNAMIC_DESCRIPTOR(dsc_nodename);
-    static DYNAMIC_DESCRIPTOR(dsc_shot);
-    int   ishot;
+    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
     int   status = 1;
     int   old_default;
     int   conditional = cli_present("CONDITIONAL") & 1;
     int   dispatch = cli_present("DISPATCH") & 1;
     int   i;
+    int   sts;
 
-    cli_get_value("SHOT",&dsc_shot);
-    if (sscanf(dsc_shot.dscA_pointer,"%d",&ishot) == 1)
+    cli_get_value("SHOT",&dsc_asciiShot);
+#ifdef vms
+    dsc_asciiShot.dscB_class = CLASS_S;		/* vms: malloc vs str$	*/
+    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+    dsc_asciiShot.dscB_class = CLASS_D;
+#else
+    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+#endif
+    if (sts & 1)
        {
         if ((cli_present("INCLUDE") | cli_present("EXCLUDE") | cli_present("NOMAIN") | conditional | dispatch) & 1)
            {
@@ -480,13 +494,13 @@ int   TclCreatePulse()
             if (num)
                {
                 if (dispatch)
-                    status = DistributedCreate(ishot,nids,num);
+                    status = DistributedCreate(shot,nids,num);
                 else
-                    status = TreeCreatePulseFile(ishot,num,nids);
+                    status = TreeCreatePulseFile(shot,num,nids);
                }
            }
         else
-            status = TreeCreatePulseFile(ishot,0,0);
+            status = TreeCreatePulseFile(shot,0,0);
        }
 #ifdef vms
     if (~status & 1)

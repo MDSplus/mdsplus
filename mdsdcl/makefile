@@ -17,7 +17,9 @@ libMdsdcl.a(mdsdcl_wait.o)
 all:	libMdsdcl.a  ../bin/mdsdcl  ../shlib/libMdsdcl.$(SHARE_TYPE)
 
 clean:
-	rm  *.a  *.o  ../shlib/libMdsdcl.$(SHARE_TYPE)  ../bin/mdsdcl
+	find ../shlib -name libMdsdcl.$(SHARE_TYPE) -exec rm {} \;
+	find ../bin  -name mdsdcl  -exec rm {} \;
+	rm  *.a  *.o
 
 mdsdcl_tables.o:	mdsdcl_tables.c
 

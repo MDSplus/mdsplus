@@ -12,31 +12,45 @@
 ************************************************************************/
 
 
+#ifdef vms
+#define TdiExecute  TDI$EXECUTE
+#endif
+
+extern int   TdiExecute();
+
+
 	/*****************************************************************
 	 * TclSetCurrent:
 	 *****************************************************************/
 int TclSetCurrent()
    {
-    int   ishot;
     int   sts;
     char  *experiment;
+    static int   shot;
+    static DESCRIPTOR_LONG(dsc_shot,&shot);
     static DYNAMIC_DESCRIPTOR(dsc_experiment);
-    static DYNAMIC_DESCRIPTOR(dsc_shot);
+    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
 
     cli_get_value("EXPERIMENT",&dsc_experiment);
     experiment = dsc_experiment.dscA_pointer;
     if (cli_present("INCREMENT") & 1)
        {
-        ishot = MdsGetCurrentShotId(experiment);
-        ishot++;
-        sts = MdsSetCurrentShotId(experiment,ishot);
+        shot = MdsGetCurrentShotId(experiment);
+        shot++;
+        sts = MdsSetCurrentShotId(experiment,shot);
        }
     else
        {
-        cli_get_value("SHOT",&dsc_shot);
-        sts = (sscanf(dsc_shot.dscA_pointer,"%d",&ishot) == 1) ? 1 : 0;
+        cli_get_value("SHOT",&dsc_asciiShot);
+#ifdef vms
+        dsc_asciiShot.dscB_class = CLASS_S;	/* vms: malloc vs str$	*/
+        sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+        dsc_asciiShot.dscB_class = CLASS_D;
+#else
+        sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+#endif
         if (sts & 1)
-            sts = MdsSetCurrentShotId(experiment,ishot);
+            sts = MdsSetCurrentShotId(experiment,shot);
        }
 
     if ((sts & 1) != 1)

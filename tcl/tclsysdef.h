@@ -5,6 +5,7 @@
 #include        <mdsdescrip.h>
 #include        "nodetouch.h"
 #include        "mdsshr.h"
+#include        "mds_stdarg.h"
 #include        "treeshr.h"
 
 	/*****************************************************************

@@ -10,6 +10,7 @@ OBJFILES =		\
 all:	libCdu.a  ../bin/cdu
 
 clean:
+	find ../bin -name cdu -exec rm {} \;
 	rm *.o *.a
 
 libCdu.a:	$(OBJFILES)

@@ -4,7 +4,8 @@ LFLAGS = -g -L$(MDSPLUS)/shlib
 all:	../shlib/ccl_commands.$(SHARE_TYPE)  ../bin/ccl
 
 clean:
-	rm *.a *.o ../shlib/ccl_commands.$(SHARE_TYPE)
+	find ../shlib -name ccl_commands.$(SHARE_TYPE) -exec rm {} \;
+	rm *.a *.o
 
 ccl_commands.o:	ccl_commands.c
 

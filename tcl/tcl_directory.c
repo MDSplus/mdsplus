@@ -252,7 +252,7 @@ int   TclDirectory()
                             TclTextOut("      not writeable in model");
                         if (nciFlags & NciM_NO_WRITE_SHOT)
                             TclTextOut("      not writeable in pulse file");
-                        if (usage == TreeUSAGE_SUBTREE)
+                        if (nodeUsage == TreeUSAGE_SUBTREE)
                            {
                             sprintf(textLine,
                                "      subtree %sincluded in pulse file.",
@@ -335,10 +335,8 @@ int   TclDirectory()
                    {
                     if (previous_relationship != relationship)
                        {
-			 if (dsc_outline.dscW_length != 0) {
-			   TclTextOut(dsc_outline.dscA_pointer);
-			   str_free1_dx(&dsc_outline);
-			 }
+                        TclTextOut(dsc_outline.dscA_pointer);
+                        str_free1_dx(&dsc_outline);
                         TclTextOut("  ");
                         previous_relationship = relationship;
                        }

@@ -1,38 +1,25 @@
+#include        <mds_stdarg.h>
 #include        "tclsysdef.h"
 
-
-/*------------------------------------------------------------------------
-
-		Name: TclSetTree
-
-		Type:   C function
-
-		Author:	Thomas W. Fredian
-			MIT Plasma Fusion Center
-
-		Date:    4-JAN-1988
-
-		Purpose: Open a tree file for perusing
-
---------------------------------------------------------------------------
-
-	Call sequence:
-
---------------------------------------------------------------------------
-   Copyright (c) 1988
-   Property of Massachusetts Institute of Technology, Cambridge MA 02139.
-   This program cannot be copied or distributed in any form for non-MIT
-   use without specific written approval of MIT Plasma Fusion Center
-   Management.
----------------------------------------------------------------------------
-
-	Description:
-
-
-+-------------------------------------------------------------------------*/
+/**********************************************************************
+* TCL_DIRECTORY.C --
+*
+* TclDirectory:  Perform directory function.
+*
+* History:
+*  11-May-1998  TRG  Use TdiExecute to decode ascii shotnumber.
+*  xx-Dec-1997  TRG  Create.  Ported from original mds code.
+*
+************************************************************************/
 
 
 #define READONLY    1
+#ifdef vms
+#define TdiExecute    TDI$EXECUTE
+#endif
+
+
+extern int   TdiExecute();
 
 
 	/***************************************************************
@@ -40,18 +27,25 @@
 	 **************************************************************/
 int TclSetTree()
    {
-    int   shot;
     int   sts;
+    static int   shot;
+    static DESCRIPTOR_LONG(dsc_shot,&shot);
     char  *filnam;
     static DYNAMIC_DESCRIPTOR(dsc_filnam);
-    static DYNAMIC_DESCRIPTOR(dsc_ascShot);
+    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
 
 		/*--------------------------------------------------------
 		 * Executable ...
 		 *-------------------------------------------------------*/
     cli_get_value("FILE",&dsc_filnam);
-    cli_get_value("SHOTID",&dsc_ascShot);
-    sts = (sscanf(dsc_ascShot.dscA_pointer,"%d",&shot)==1) ? 1 : 0;
+    cli_get_value("SHOTID",&dsc_asciiShot);
+#ifdef vms
+    dsc_asciiShot.dscB_class = CLASS_S;		/* vms: malloc vs str$	*/
+    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+    dsc_asciiShot.dscB_class = CLASS_D;
+#else
+    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
+#endif
     if (sts & 1)
        {
         filnam = dsc_filnam.dscA_pointer;
@@ -66,6 +60,6 @@ int TclSetTree()
         MdsMsg(sts,"Failed to open tree '%s', shot %d",filnam,shot);
 
     str_free1_dx(&dsc_filnam);
-    str_free1_dx(&dsc_ascShot);
+    str_free1_dx(&dsc_asciiShot);
     return sts;
    }
