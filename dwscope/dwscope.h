@@ -95,7 +95,7 @@ typedef struct _WaveInfo
   } _global;
   Dimension height;
   Widget    w;
-  int       eventid;
+  void      *eventid;
   Boolean   received;
   String    print_title_evaluated;
 }         WaveInfo;

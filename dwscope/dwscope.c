@@ -280,7 +280,7 @@ extern void XmdsManageChildCallback();
 extern void XmdsRegisterWidgetCallback();
 extern void XmdsUnmanageChildCallback();
 
-extern void  SetupEvent(String event, Boolean *received, int *id);
+extern void  SetupEvent(String event, Boolean *received, void **id);
 extern void SetupEventInput(XtAppContext app_context);
 extern Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned int length, XtPointer header, WaveInfo *info);
 extern Boolean ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom target, Atom *type, XtPointer *header,
@@ -415,8 +415,8 @@ static String ScopeTitleEvent = 0;
 static String ScopePrintFile = 0;
 static int ScopePrintWindowTitle = 0;
 static int ScopePrintToFile = 0;
-static int ScopePrintEventId = 0;
-static int ScopeTitleEventId = 0;
+static void *ScopePrintEventId = 0;
+static void *ScopeTitleEventId = 0;
 static int pointermode = XmdsPOINTER_MODE_ZOOM;
 static int Rows[MaxCols];
 static int Columns;
@@ -503,7 +503,7 @@ int       main(int argc, String *argv)
   Cursor    cursor;
   int       r;
   int       c;
-  int       cds_id = 0;
+  void *cds_id = 0;
   XmString  deffile;
   MrmHierarchy drm_hierarchy;
   MrmInitialize();

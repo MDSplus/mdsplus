@@ -321,7 +321,7 @@ static void  EventAst(Boolean *received)
   *received = True;
 }
 
-void SetupEvent(String event, Boolean *received, int **id)
+void SetupEvent(String event, Boolean *received, void **id)
 {
   if (*id)
   {
@@ -570,7 +570,7 @@ static void  EventAst(Boolean *received)
 {
 }
 
-void SetupEvent(String event, Boolean *received, int **id)
+void SetupEvent(String event, Boolean *received, void **id)
 {
   if (*id)
   {
@@ -724,7 +724,7 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String 
   return(status);
 }
 void CloseDataSources(){}  
-void SetupEvent(String event, Boolean *received, int *id){}
+void SetupEvent(String event, Boolean *received, void **id){}
 void SetupEventInput(XtAppContext app_context){}
 
 #elif defined(_DUMMY_)
@@ -805,7 +805,7 @@ static void  EventReceived(Boolean *received)
 {
 }
 
-void SetupEvent(String event, Boolean *received, int *id)
+void SetupEvent(String event, Boolean *received, void **id)
 {
 }
 
@@ -1027,7 +1027,7 @@ static void  EventReceived(Boolean *received)
   *received = True;
 }
 
-void SetupEvent(String event, Boolean *received, int *id)
+void SetupEvent(String event, Boolean *received, void **id)
 {
   if (*id) {
     MdsEventCan(ConnectEvents(), *id);
