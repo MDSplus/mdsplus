@@ -25,7 +25,7 @@ int DT200$DW_SETUP( struct dsc$descriptor *niddsc, struct dsc$descriptor *method
   return XmdsDeviceSetup(parent, (int *)niddsc->dsc$a_pointer, uids, XtNumber(uids), "DT200", uilnames, XtNumber(uilnames), 0);
 }
 #else
-int DT200__DW_SETUP( struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+int dt200__dw_setup( struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 { 
   static String uids[] = {"DT200.uid"};
   static int nid;

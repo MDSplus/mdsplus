@@ -175,7 +175,7 @@ static int OctaIsSet(unsigned int *base, int bit);
 static int GetSetup(int chan_nid, DecoderSetup *regs);
 static int GetPseudoDevNid( struct descriptor_xd *pseudo_xd, int *dev_nid);
 
-int mpb__decoder___init(struct descriptor_s *niddsc_ptr, IninitStruct *setup)
+int mpb__decoder___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
 {
   int status;
   static struct descriptor_xd xd = {0,DTYPE_T,CLASS_XD,0,0};
