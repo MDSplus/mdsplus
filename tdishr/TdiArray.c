@@ -19,6 +19,7 @@
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
+#include <time.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -186,6 +187,12 @@ double norm = half/2147483648.;
 int	status = 1, n, length = out_ptr->length;
 int	i;
 
+        if (Tdi_RandomSeed == 1234567)
+	{
+          srandom(time(0));
+          Tdi_RandomSeed = random();
+          printf("Seed=%d\n",Tdi_RandomSeed);
+        }
 	N_ELEMENTS(out_ptr, n);
 	switch (out_ptr->dtype) {
 	default : status = TdiINVDTYDSC; break;
