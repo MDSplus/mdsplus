@@ -20,4 +20,5 @@ then
   fi
 fi
 . $MDSPLUS_DIR/setup.sh
+$MDSPLUS_DIR/bin/mkdirhier $2
 exec $MDSPLUS_DIR/bin/mdsip -p $1 -h ${3:-/etc/mdsip.hosts} -c 9 >> $2/access 2>> $2/errors
