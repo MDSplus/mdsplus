@@ -39,24 +39,20 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1; _first = 1;));
 
 
-
 /* Open device */
 	_handle = 0L;
 	_status = DIO2->DIO2_Open(val(long(_board_id)), ref(_handle));
 	if(_status != 0)
 	{
-		if(_nid != 0)
-			DevLogErr(_nid, "Error opening DIO2 device, board ID = "// _board_id);
-		else
-			write(*, "Error opening DIO2 device, board ID = "// _board_id);
+		DevLogErr(_nid, "Error opening DIO2 device, board ID = "// _board_id);
 		return(0);
 	}
-
 /* Reset module */
  /*       if(_first) 
 		DIO2->DIO2_Reset(val(_handle));
 */
 	_status = DIO2->DIO2_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
+
 
 /* Set clock functions */
 	if(_ext_clock)
@@ -75,12 +71,10 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	}
 	else
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
+
 		
 	for(_c = 1; _c <= 8; _c++)
 		_status = DIO2->DIO2_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(_c)), val(byte(_DIO2_CLOCK_SOURCE_RISING_EDGE)));
-
-write(*,'status',_status);
-
 	if(_status != 0)
 	{
 		if(_nid != 0)

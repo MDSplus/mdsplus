@@ -100,6 +100,8 @@ public fun DIO2__init(as_is _nid, optional _method)
 	else
 	{
 		_status = DIO2HWInit(_nid, _board_id, _ext_clock, _rec_event, _synch_event);
+
+write("HWINIT: ", _status);
 		if(_status == 0)
 			abort();
 	}
