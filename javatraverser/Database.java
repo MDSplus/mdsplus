@@ -46,6 +46,8 @@ public class Database {
     public native NidData addDevice(String path, String model) throws DatabaseException;
     public native void doAction(NidData nid) throws DatabaseException;
     public native void doDeviceMethod(NidData nid, String method) throws DatabaseException;
+    public native NidData [] getWild(int usage_mask) throws DatabaseException;
+    public native void create(int shot) throws DatabaseException;
   }  
     
     

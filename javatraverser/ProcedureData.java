@@ -18,7 +18,7 @@ public class ProcedureData extends CompoundData
 	descs[1] = language;
 	descs[2] = procedure;
 	for(int i = 3; i < ndescs; i++)
-	    descs[i] = arguments[3-i];
+	    descs[i] = arguments[i-3];
     }
     
      public final Data getTimeout() {return descs[0]; }

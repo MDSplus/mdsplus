@@ -11,6 +11,13 @@ public class ConditionData extends CompoundData
 	descs = new Data[1];
 	descs[0] = argument;
     }
+    public ConditionData(Data argument)
+    {
+	dtype = DTYPE_CONDITION;
+	opcode = 0;
+	descs = new Data[1];
+	descs[0] = argument;
+    }
     
     public final int getModifier() {return opcode; }
     public final Data getArgument() {return descs[0]; }

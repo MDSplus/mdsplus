@@ -14,4 +14,5 @@ class CompoundData extends Data
     {
 	this.descs = descs;
     }
+    public Data [] getDescs() {return descs; }
 }

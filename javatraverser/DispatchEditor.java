@@ -48,16 +48,16 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	    case 0: return;
 	    case 1: 
 		if(dtype_idx == curr_dtype_idx) 
-		    dispatch_edit = new DispatchEdt((DispatchData)data);
+		    dispatch_edit = new DispatchEdt((DispatchData)data, false);
 		else
-		    dispatch_edit = new DispatchEdt(null);
+		    dispatch_edit = new DispatchEdt(null, false);
 		add(dispatch_edit, "South");
 		break;
 	    case 2: 
 		if(dtype_idx == curr_dtype_idx) 
-		    dispatch_edit = new DispatchEdt((DispatchData)data);
+		    dispatch_edit = new DispatchEdt((DispatchData)data, true);
 		else
-		    dispatch_edit = new DispatchEdt(null);
+		    dispatch_edit = new DispatchEdt(null, true);
 		add(dispatch_edit, "South");
 		break;
 	    case 3: 
@@ -148,11 +148,16 @@ class DispatchEdt extends JPanel
     boolean is_sequential = false;
     DispatchData data;
     LabeledExprEditor ident_edit, phase_edit, sequence_edit, completion_edit;
-    public DispatchEdt(DispatchData data)
+    public DispatchEdt(DispatchData data, boolean is_conditional)
     {
 	this.data = data;
 	if(this.data == null)
-	    this.data = new DispatchData(DispatchData.SCHED_SEQ, null, null, null, null);
+	{
+	    if(is_conditional)
+	        this.data = new DispatchData(DispatchData.SCHED_COND, null, null, null, null);
+        else
+	        this.data = new DispatchData(DispatchData.SCHED_SEQ, null, null, null, null);
+    }
 	if(this.data.getType() == DispatchData.SCHED_SEQ)
 	    is_sequential = true;
 
