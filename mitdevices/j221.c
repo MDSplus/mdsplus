@@ -154,6 +154,7 @@ static int merge_data(int nid, int **data, int **times, int *ndata)
     {
       printf("Bad j221 channel data\n");
       status = J221$_INVALID_DATA;
+      wave_arsize[i] = 0;
     }
   }
   if (!*ndata) return status;
