@@ -281,7 +281,9 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
     }
     else
     {
-      link_it(dblist->tree_info->header->free,node, dblist->tree_info->node);
+      int tmp;
+      link_it(tmp,node, dblist->tree_info->node);
+      dblist->tree_info->header->free = swapint((char *)&tmp);
       node->child = 0;
     }
     if (firstempty)
