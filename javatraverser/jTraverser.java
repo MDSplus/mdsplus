@@ -112,6 +112,13 @@ public class jTraverser extends JFrame implements ActionListener{
 	else
 	    setTitle("jTraverser - no tree open");
 	getContentPane().add(tree);
+	
+	
+	addWindowListener(new WindowAdapter() {
+	    public void windowClosing(WindowEvent e)
+	    {
+	        System.exit(0);
+	    }});
 	pack();
 	show(); 
     }
@@ -202,6 +209,8 @@ public void actionPerformed(ActionEvent e)
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)
 {
+    
+System.out.println("reportChange");    
     String title;
     if(exp != null)
     {
