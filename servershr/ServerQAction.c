@@ -755,11 +755,13 @@ static int StartThread()
   if (WorkerThreadRunning == 0)
   {
 #ifdef HAVE_WINDOWS_H
+    	WorkerThreadRunning = 1;
 	  status = pthread_create(&WorkerThread,0,Worker,0);
 #else
     pthread_attr_t att;
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att,0xffffff);
+    WorkerThreadRunning = 1;
 #ifdef __hpux
     status = pthread_create(&WorkerThread,att, Worker, 0);
     pthread_detach(&WorkerThread);
