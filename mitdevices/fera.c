@@ -137,7 +137,6 @@ int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup )
         static short ecl_cam = 0x2400;
         return_on_error(DevCamChk(CamPiow(name,0,9,0,16,0),&one,&one),status);   /* reset digitizer */
         return_on_error(DevCamChk(CamPiow(name,0,16, &ecl_cam, 16, 0),&one,&one),status);   /* goto ECL/CAM mode */
-        free(name);
       }
       else {
         status = FERA$_DIGNOTSTRARRAY;
@@ -159,7 +158,6 @@ int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup )
           return_on_error(DevCamChk(CamPiow(name, 0, 24, 0, 16, 0),&one,&one),status);
           return_on_error(DevCamChk(CamPiow(name, 0, 17, &zero, 16, 0),&one,&one),status);
           return_on_error(DevCamChk(CamPiow(name, 1, 17, &three, 16, 0),&one,&one),status);
-          free(name);
         }
         else {
           status = FERA$_MEMNOTSTRARRAY;
@@ -218,7 +216,6 @@ int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
           mem_status = FERA$_OVER_RUN;
       }
       total_data += num_pts[i];
-      free(name);
     }
   }
   if (total_data % num_chan != 0) {
@@ -231,7 +228,6 @@ int fera___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
       char *name = ArrayRef(setup->head_nid+FERA_N_MEM_NAME, i);
       if (name) {
         return_on_error(DevCamChk(CamQstopw(name, 0, 2, num_pts[i], &buffer[ind], 16, 0), &one, &one), status)
-        free(name);
       }
     }
   }                                          
