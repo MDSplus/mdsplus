@@ -220,6 +220,6 @@ typedef struct _msghdr { int msglen bits32;
 #endif
                        } MsgHdr;
 
-typedef struct _message { MsgHdr h;
+typedef struct _mds_message { MsgHdr h;
                           char bytes[1];
 			} Message, *MsgPtr;
