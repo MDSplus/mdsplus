@@ -144,8 +144,6 @@ static char buf[1000];
     }
   else
  { 
-   printf("APRO %s %d\n", name, shot);
-
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
   printf("APERTO: %s\n", MdsGetMsg(status));
