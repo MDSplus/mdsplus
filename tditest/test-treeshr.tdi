@@ -126,11 +126,55 @@ TreeAddTag('task','task')
 TreeAddTag('text','text')
 TreeAddTag('window','window')
 TreeAddTag('axis','axis')
-TreeAddNode('tobedeleted',0)
+TreeAddNode('tobedeleted',_nid,0)
 _count=0
 TreeShr->TreeDeleteNodeInitialize(val(getnci(tobedeleted,'nid_number')),ref(_count),val(0))
 _count
 TreeShr->TreeDeleteNodeExecute()
 TreeShr->TreeEditing()
+getnci(\child,'nid_number')
+getnci(\child_tag2,'nid_number')
+getnci(\child_tag3,'nid_number')
+getnci(\child_tag4,'nid_number')
+getnci(\child_tag5,'nid_number')
 TreeShr->TreeRemoveTag(ref('child_tag2\0'))
+getnci(\child,'nid_number')
+getnci('\\child_tag2','nid_number')
+getnci(\child_tag3,'nid_number')
+getnci(\child_tag4,'nid_number')
+getnci(\child_tag5,'nid_number')
+TreeShr->TreeVerify()
+TreePutRecord(action,Build_Action(Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *), Build_Method(*, "INIT", ACTION), *, *, *))
+action
+TreePutRecord(device,Build_Conglom("MIT$DEVICES", "A12", *, *))
+device
+TreePutRecord(dispatch,Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *))
+dispatch
+TreePutRecord(numeric,42)
+numeric
+TreePutRecord(signal,build_signal($value*100,`data(1:40),build_dim(build_window(1,40,-4.),* : * : 1E-4)))
+signal
+TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_window(1,8140,-4.),* : * : 1E-4)))
+signal,1
+TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_window(1,8140,-4.),* : * : 1E-4)))
+signal,1
+getnci(signal,'length')
+getnci(signal,'rlength')
+TreePutRecord(task,Build_Method(*, "INIT", ACTION))
+task
+TreePutRecord(text,"This is a test")
+text
+TreePutRecord(window,build_window(1,40,-4.))
+window
+TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
+axis
 TreeShr->TreeWriteTree(ref('main\0'),val(1))
+TreeClose()
+TreeShr->TreeCompressDatafile(ref('main\0'),val(1))
+TreeOpen('main',1)
+getnci(signal,'length')
+getnci(signal,'rlength')
+data(signal)[1:100]
+TreeClose()
+TreeOpen('main',-1)
+TreeDeletePulseFile(1)
