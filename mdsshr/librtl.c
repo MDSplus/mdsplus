@@ -1157,7 +1157,7 @@ char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-#ifdef _linux
+#ifdef linux
 static int dlopen_mutex_initialized = 0;
 static pthread_mutex_t dlopen_mutex;
 
@@ -1204,7 +1204,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     free(FIS_Error);
     FIS_Error = 0;
   }
-#ifdef _linux
+#ifdef linux
   dlopen_lock();
   dlopen_mode = RTLD_NOW | RTLD_GLOBAL;
 #endif
@@ -1242,7 +1242,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
       strlen(full_filename)*2+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
   }
-#ifdef _linux
+#ifdef linux
   dlopen_unlock();
 #endif
   if (tmp_error1)
@@ -1382,10 +1382,14 @@ int StrCopyDx(struct descriptor *out, struct descriptor *in)
   if (out->class == CLASS_D && (in->length != out->length))
     StrGet1Dx(&in->length, out);
   if (out->length && out->pointer != NULL)
-    memcpy(out->pointer, in->pointer, out->length > in->length ?
-	   in->length : out->length);
-  if (out->length > in->length)
-    memset(out->pointer+in->length, 32, out->length - in->length);
+  {
+    int outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
+    int inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
+    memcpy(out->pointer, in->pointer, outlength > inlength ?
+	   inlength : outlength);
+    if (outlength > inlength)
+      memset(out->pointer+inlength, 32, outlength - inlength);
+  }
   return 1;
 }
 
@@ -1402,13 +1406,12 @@ int StrCompare(struct descriptor *str1, struct descriptor *str2)
 
 int StrUpcase(struct descriptor *out, struct descriptor *in)
 {
-  struct descriptor s = {0,DTYPE_T,CLASS_D,0};
+  int outlength;
   int i;
-  StrCopyDx(&s,in);
-  for (i=0; i<s.length && i<s.length; i++)
-    s.pointer[i] = (char)toupper(in->pointer[i]);
-  StrCopyDx(out,&s);
-  StrFree1Dx(&s);
+  StrCopyDx(out,in);
+  outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
+  for (i=0; i<outlength; i++)
+    out->pointer[i] = (char)toupper(out->pointer[i]);
   return 1;
 }
 
