@@ -29,7 +29,8 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
                property("labelString", "Field label"),
                property("numCols", "Number of columns"),
                property("identifier", "Optional field identifier"),
-               property("showState", "Display on/off state")
+               property("showState", "Display on/off state"),
+               property("editable", "Text field editable"),
             };
             return props;
         }catch(IntrospectionException e)

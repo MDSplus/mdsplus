@@ -6,6 +6,7 @@ public class DeviceField extends DeviceComponent
 {
     public boolean textOnly = false;
     public boolean showState = false;
+    public boolean editable = true;
     public String labelString = "";
     public int numCols = 10;
     private boolean initial_state;
@@ -17,6 +18,8 @@ public class DeviceField extends DeviceComponent
         redisplay();
     }
     public int getNumCols() {return numCols; }
+    public void setEditable(boolean editable) {this.editable = editable;}
+    public boolean getEditable() { return editable; }
     public void setLabelString(String labelString) 
     {
         this.labelString = labelString; 
@@ -49,6 +52,7 @@ public class DeviceField extends DeviceComponent
         checkB.setVisible(false);
         add(label = new JLabel());
         add(textF = new JTextField(10));
+        textF.setEditable(editable);
         setSize(30, 10);
         initializing = false;
     }
@@ -72,7 +76,6 @@ public class DeviceField extends DeviceComponent
                 }
             });
         }
-        
         displayData(data, is_on);
         initializing = false;
     }       
@@ -96,6 +99,7 @@ public class DeviceField extends DeviceComponent
         else
             textF.setText("");
         label.setEnabled(is_on);
+        textF.setEditable(editable);
         //textF.setEnabled(is_on);
     }
     

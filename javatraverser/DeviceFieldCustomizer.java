@@ -14,6 +14,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
     Button doneButton;
     Checkbox showState;
     Checkbox textOnly;
+    Checkbox editable;
     
     public DeviceFieldCustomizer()
     {
@@ -38,6 +39,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
         jp1 = new Panel();
         jp1.add(showState = new Checkbox("Show state: ", bean.getShowState()));
         jp1.add(textOnly = new Checkbox("Text only: ", bean.getTextOnly()));
+        jp1.add(editable = new Checkbox("Editable: ", bean.getEditable()));
         jp1.add(new Label("Offset nid: "));
         jp1.add(nids = new Choice());
         
@@ -65,6 +67,7 @@ public class DeviceFieldCustomizer extends DeviceCustomizer implements Customize
                 String colStr = numCols.getText();
                 bean.setNumCols(Integer.parseInt(colStr));
                 bean.setTextOnly(textOnly.getState());
+                bean.setEditable(editable.getState());
                 bean.setShowState(showState.getState());
                 bean.setOffsetNid(nids.getSelectedIndex() + 1);
                 bean.setIdentifier(identifier.getText());

@@ -63,7 +63,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel1.setLabelString("ch1");
 		deviceChannel1.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel1);
-		deviceChannel1.setBounds(2,42,463,153);
+		deviceChannel1.setBounds(2,42,463,135);
 		JPanel2.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel1.add(JPanel2);
 		JPanel3.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -87,7 +87,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel2.setLabelString("ch2");
 		deviceChannel2.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel2);
-		deviceChannel2.setBounds(2,42,463,153);
+		deviceChannel2.setBounds(2,42,463,135);
 		JPanel4.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel2.add(JPanel4);
 		JPanel5.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -111,7 +111,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel3.setLabelString("ch3");
 		deviceChannel3.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel3);
-		deviceChannel3.setBounds(2,42,463,153);
+		deviceChannel3.setBounds(2,42,463,135);
 		JPanel6.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel3.add(JPanel6);
 		JPanel7.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -135,7 +135,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel4.setLabelString("ch4");
 		deviceChannel4.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel4);
-		deviceChannel4.setBounds(2,42,463,153);
+		deviceChannel4.setBounds(2,42,463,135);
 		JPanel8.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel4.add(JPanel8);
 		JPanel9.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -159,7 +159,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel5.setLabelString("ch5");
 		deviceChannel5.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel5);
-		deviceChannel5.setBounds(2,42,463,153);
+		deviceChannel5.setBounds(2,42,463,135);
 		JPanel10.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel5.add(JPanel10);
 		JPanel11.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -183,7 +183,7 @@ public class VMEWavesSetup extends DeviceSetup
 		deviceChannel6.setLabelString("ch6");
 		deviceChannel6.setBorderVisible(true);
 		JTabbedPane1.add(deviceChannel6);
-		deviceChannel6.setBounds(2,42,463,153);
+		deviceChannel6.setBounds(2,42,463,135);
 		JPanel12.setLayout(new GridLayout(3,1,0,0));
 		deviceChannel6.add(JPanel12);
 		JPanel13.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
