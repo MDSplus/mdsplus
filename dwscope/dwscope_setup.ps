@@ -1,0 +1,79 @@
+%!
+/dorectangleclip {
+    /height exch def
+    /width exch def
+    /y exch def
+    /x exch def
+
+    newpath
+    x y moveto 
+    width 0 rlineto
+    0 height rlineto
+    width neg 0 rlineto
+    closepath
+    clip
+    stroke
+} def
+
+/dorectangle {
+    /height exch def
+    /width exch def
+    /y exch def
+    /x exch def
+
+    newpath
+    x y moveto 
+    width 0 rlineto
+    0 height neg rlineto
+    width neg 0 rlineto
+    closepath
+    stroke
+} def
+
+% Routine to show text
+
+/overlayshow {
+    /y exch def			% Note: x & y are lower left corner of text
+    /x exch def
+
+				% Old code which erased background
+%    newpath			% Create white rectangle to erase text area
+%    /y y 1 sub def		% Rectangle should be at least 1 point lower than text
+%    x y moveto
+%    dup stringwidth pop	% Put string on stack, replace with string length (discard y)
+%    /width exch def
+%    1 setgray
+%    width 0 rlineto
+%    0 fontsize 1 sub rlineto
+%    width neg 0 rlineto
+%    closepath
+%    fill
+%    0 setgray
+%    /y y 1 add def
+
+    x y moveto 
+    (A) stringwidth pop .222 mul neg
+    0
+    3 -1 roll
+    ashow
+} def
+
+/centershow {
+    /y exch def
+    /x exch 2 div def
+    dup stringwidth pop	% Put string on stack, replace with string length (discard y)
+    /width exch 2 div def
+    /x x width sub def
+    x 0 lt {/x 0 def} if 
+    x y moveto
+    show
+} def
+
+/mv {moveto} def
+/ln {lineto} def
+/rl {rlineto} def
+/v {newpath moveto {rlineto} repeat stroke} def
+1 setlinejoin
+
+% End of prologue.
+
