@@ -1177,7 +1177,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 sparc-sun-solaris2*)  
        GROFF=nroff;
        GROFF_MAN_FLAGS="-t -man ";
-       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D=_ILP32 "; else CFLAGS="$CFLAGS -D=_LP64 "; fi;
+       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
        if test $CC = gcc; then
 	 LD=gcc;
          LINKSHARED="-Wl,-G -symbolic ";
