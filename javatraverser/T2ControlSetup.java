@@ -329,23 +329,23 @@ public class T2ControlSetup extends DeviceSetup
 		JTabbedPane1.setTitleAt(3,"Rot. Perturbation");
 		{
 			String[] tempString = new String[8];
-			tempString[0] = "Id 1 must be between 1 and 16";
-			tempString[1] = "Id 2 must be between 1 and 16";
-			tempString[2] = "Id 3 must be between 1 and 16";
-			tempString[3] = "Id 4 must be between 1 and 16";
-			tempString[4] = "N1 must be between 0 and 31";
-			tempString[5] = "N2 must be between 0 and 31";
-			tempString[6] = "N3 must be between 0 and 31";
-			tempString[7] = "N4 must be between 0 and 31";
+			tempString[0] = "Id 1 must be between 1 and 32";
+			tempString[1] = "Id 2 must be between 1 and 32";
+			tempString[2] = "Id 3 must be between 1 and 32";
+			tempString[3] = "Id 4 must be between 1 and 32";
+			tempString[4] = "N1 must be between 1 and 32";
+			tempString[5] = "N2 must be between 1 and 32";
+			tempString[6] = "N3 must be between 1 and 32";
+			tempString[7] = "N4 must be between 1 and 32";
 			deviceButtons1.setCheckMessages(tempString);
 		}
 		{
 			String[] tempString = new String[8];
-			tempString[0] = "_id1 > 0 && _id1 < 16";
-			tempString[1] = "_id2 > 0 && _id2 < 16";
-			tempString[2] = "_id3 > 0 && _id3 < 16";
-			tempString[3] = "_id4 > 0 && _id4 < 16";
-			tempString[4] = "_n1 >= 0 && _n1 < 32";
+			tempString[0] = "_id1 > 0 && _id1 < 33";
+			tempString[1] = "_id2 > 0 && _id2 < 33";
+			tempString[2] = "_id3 > 0 && _id3 < 33";
+			tempString[3] = "_id4 > 0 && _id4 < 33";
+			tempString[4] = "_n1 > 0 && _n1 < 33";
 			tempString[5] = "_n2 > 0 && _n2< 33";
 			tempString[6] = "_n3 > 0 && _n3< 33";
 			tempString[7] = "_n4 > 0 && _n4< 33";
