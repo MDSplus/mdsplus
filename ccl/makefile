@@ -7,7 +7,9 @@ all:	../shlib/ccl_commands.$(SHARE_TYPE)  ../bin/ccl
 
 clean:
 	find ../shlib -name ccl_commands.$(SHARE_TYPE) -exec rm {} \;
-	rm *.a *.o
+	rm -f *.a *.o
+	rm -f ../bin/ccl
+	rm ccl_commands.c
 
 ccl_commands.o:	ccl_commands.c
 
