@@ -32,7 +32,7 @@ public fun TR10__add(in _path, out _nidout)
         DevAddNode(_cn // ':END_IDX', 'NUMERIC', *, *, _nid);
         DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
-	DevAddNode(_path // ':TRIG_EDGE', 'ETXT', 'RISING', *, _nid);
+	DevAddNode(_path // ':TRIG_EDGE', 'TEXT', 'RISING', *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
