@@ -21,6 +21,7 @@
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
+#include <Xm/TextF.h>
 #include <Xm/ToggleB.h>
 #include <X11/Intrinsic.h>
 #include <xmdsshr.h>
