@@ -22,7 +22,7 @@ install:
 	done
 
 @MAKEBINDIR@remote_submit : remote_submit
-        cp remote_submit @MAKEBINDIR@remote_submit
+	cp remote_submit @MAKEBINDIR@remote_submit
 
 @MAKEBINDIR@unix_submit : unix_submit
 	cp unix_submit @MAKEBINDIR@unix_submit
