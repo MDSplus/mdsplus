@@ -59,11 +59,11 @@ libTcl.a:	$(OBJFILES)
 	$(AR) -r libTcl.a $(OBJFILES)
 	$(RANLIB)
 
-../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
+../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a 
 	$(LD)  -o $@ $(LFLAGS)	\
 		$(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
-		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr -lc
+		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr -lMdsServerShr -lc
 
 .depend :
 	- find *.c -exec $(MAKE_DEPEND)
