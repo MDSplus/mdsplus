@@ -665,8 +665,8 @@ fi
 if test "${enable_globus+set}" = set; then
   enableval="$enable_globus"
   if test "$enableval" = yes; then
-               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_INSTALL_PATH)/include"
-               GLOBUS_LIBS="-L\$(GLOBUS_INSTALL_PATH)/lib -lglobus_io -lglobus_gss_assist -lglobus_gss -lglobus_gaa -lssl -lcrypto -lglobus_common"
+               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_DEVELOPMENT_PATH)/include"
+               GLOBUS_LIBS="-L\$(GLOBUS_DEVELOPMENT_PATH)/lib -lglobus_io -lglobus_gss_assist -lglobus_gss -lglobus_gaa -lssl -lcrypto -lglobus_common"
         else
                GLOBUS_CFLAGS=""
                GLOBUS_LIBS=""
