@@ -1,6 +1,8 @@
 include $(MAKE_OPTIONS)
 LFLAGS = -g -L$(MDSPLUS)/shlib
 
+EXPORTS = ccl_commands.export
+
 all:	../shlib/ccl_commands.$(SHARE_TYPE)  ../bin/ccl
 
 clean:
