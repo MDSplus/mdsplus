@@ -19,7 +19,7 @@ FUN PUBLIC PTHEAD_INT32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
         }
 
 	_error=0;
-	_size=PTHEAD_SIZE(_pointname//"          ",_shot,_error)[1];
+	_size=PTHEAD_SIZE(_pointname//"          ",_shot,_error)[2];
 	if (_size == 0) {
 		_error=-1;
 	}
