@@ -7,6 +7,6 @@ else
   then
 	cat $MDSPLUS_DIR/local/scope_printers
   else
-	grep '|' /etc/printcap | awk -F\| '{print $1}'
+	grep '|' /etc/printcap | awk -F\| '{print $1}' | grep -v \:
   fi
 fi

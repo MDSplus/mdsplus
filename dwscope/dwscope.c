@@ -1,222 +1,3 @@
-/*  CMS REPLACEMENT HISTORY, Element DWSCOPE.C */
-/*  *217  18-SEP-1997 14:21:11 TWF "Add brief/full messages" */
-/*  *216  18-SEP-1997 14:19:31 TWF "Add brief/full messages" */
-/*  *215  18-SEP-1997 13:39:50 TWF "Add brief/full messages" */
-/*  *214  27-AUG-1997 15:38:07 TWF "Fix it" */
-/*  *213  27-AUG-1997 15:07:06 TWF "Fix inline error messages" */
-/*  *212  27-AUG-1997 14:52:53 TWF "Add multiline error messages" */
-/*  *211  27-AUG-1997 14:50:36 TWF "Add multiline error messages" */
-/*  *210  22-AUG-1997 08:35:12 TWF "Add print to file capability" */
-/*  *209  18-MAR-1997 10:25:02 TWF "Fix for DECC 5.3" */
-/*  *208  30-JAN-1997 09:14:57 TWF "Add cancel button" */
-/*  *207  30-JAN-1997 09:03:26 TWF "Add cancel button" */
-/*  *206  30-JAN-1997 09:01:48 TWF "Add cancel button" */
-/*  *205  30-JAN-1997 09:00:32 TWF "Add cancel button" */
-/*  *204  30-JAN-1997 08:41:29 TWF "Add cancel button" */
-/*  *203  30-JAN-1997 08:11:35 TWF "Add cancel button" */
-/*  *202  30-JAN-1997 08:10:16 TWF "Add cancel button" */
-/*  *201  29-JAN-1997 16:19:16 TWF "Add cancel button" */
-/*  *200  29-JAN-1997 14:33:38 TWF "Add snap save" */
-/*  *199  29-JAN-1997 13:53:34 TWF "Add zoom save" */
-/*  *198  29-JAN-1997 13:33:25 TWF "Add max/min settings" */
-/*  *197  29-JAN-1997 13:29:57 TWF "Add max/min settings" */
-/*  *196  27-NOV-1996 13:48:31 TWF "Fix for linux" */
-/*  *195  23-AUG-1996 10:08:31 JAS "Destroy the resource database when done with it" */
-/*  *194  23-APR-1996 15:53:37 TWF "Fix positionmark" */
-/*  *193  23-APR-1996 15:51:35 TWF "Fix positionmark" */
-/*  *192  23-APR-1996 15:39:59 TWF "Fix mark" */
-/*  *191  23-APR-1996 15:32:48 TWF "Fix mark" */
-/*  *190  23-APR-1996 15:11:11 TWF "Fix" */
-/*  *189  23-APR-1996 15:09:58 TWF "dwscope" */
-/*  *188  23-APR-1996 14:40:18 TWF "Fix mark" */
-/*  *187  23-APR-1996 14:25:44 TWF "Fix positionmark" */
-/*  *186  23-APR-1996 14:20:41 TWF "mark" */
-/*  *185  23-APR-1996 11:52:44 TWF "Add measure" */
-/*  *184  22-APR-1996 16:57:00 TWF "Add offset measurement" */
-/*  *183  22-APR-1996 16:54:31 TWF "Add offset measurement" */
-/*  *182  22-APR-1996 15:55:39 TWF "Add offset measurement" */
-/*  *181  22-APR-1996 15:37:15 TWF "Add offset measurement" */
-/*  *180  22-APR-1996 15:23:58 TWF "Add offset measurement" */
-/*  *179  22-APR-1996 15:11:58 TWF "Add offset measurement" */
-/*  *178  22-APR-1996 15:10:41 TWF "Add offset measurement" */
-/*  *177  22-APR-1996 15:04:10 TWF "Add offset measurement" */
-/*  *176  22-APR-1996 14:41:43 TWF "Add offset measurement" */
-/*  *175  22-APR-1996 14:40:03 TWF "Add offset measurement" */
-/*  *174  22-APR-1996 14:36:58 TWF "Add offset measurement" */
-/*  *173  22-APR-1996 14:25:50 TWF "Add offset measurement" */
-/*  *172   6-FEB-1996 16:47:07 TWF "Close files whether updating or not" */
-/*  *171   5-JUL-1995 09:26:35 TWF "Fix EqualPanes" */
-/*  *170   5-JUL-1995 08:45:40 TWF "Add button2 for equal panes" */
-/*  *169  30-MAY-1995 16:51:59 TWF "Add all same x auto y and reset scales" */
-/*  *168  30-MAY-1995 16:50:46 TWF "Add all same x auto y and reset scales" */
-/*  *167  19-JAN-1995 11:44:56 TWF "Portability" */
-/*  *166  14-NOV-1994 12:33:34 TWF "put default print file in sys$login" */
-/*  *165   9-NOV-1994 15:36:52 TWF "port to unix" */
-/*  *164   4-NOV-1994 16:13:36 TWF "Fix resize" */
-/*  *163   4-NOV-1994 15:33:03 TWF "fix resize" */
-/*  *162   4-NOV-1994 15:28:10 TWF "Fix resize" */
-/*  *161   4-NOV-1994 15:22:38 TWF "Try fixing resize" */
-/*  *160   4-OCT-1994 08:03:17 TWF "Unix" */
-/*  *159   4-OCT-1994 08:00:32 TWF "Unix" */
-/*  *158  29-SEP-1994 08:53:48 TWF "Unix porting" */
-/*  *157  29-SEP-1994 08:36:56 TWF "Unix porting" */
-/*  *156  23-JUN-1994 15:29:53 TWF "For Motif 1.2" */
-/*  *155  23-JUN-1994 15:26:35 TWF "For Motif 1.2" */
-/*  *154  22-APR-1994 08:51:12 TWF "Change crosshairs string to []" */
-/*  *153  22-APR-1994 08:43:47 TWF "Add x,y text selection on Crosshairs" */
-/*  *152   4-APR-1994 10:58:28 TWF "Do DWSCOPE_IDL in separate make" */
-/*  *151  31-MAR-1994 13:19:13 MRL "Fix window title print." */
-/*  *150  31-MAR-1994 10:53:35 MRL "Fix print." */
-/*  *149  30-MAR-1994 14:22:17 MRL "Fix window title print." */
-/*  *148  29-MAR-1994 16:18:06 MRL "Fix print." */
-/*  *147  29-MAR-1994 13:25:22 MRL "Add print window title." */
-/*  *146  24-MAR-1994 14:55:28 TWF "Fix waveformprint" */
-/*  *145  24-MAR-1994 09:23:49 TWF "Revert" */
-/*  *144  24-MAR-1994 09:20:16 TWF "Fix call to xmdswaveformprint" */
-/*  *143  23-MAR-1994 17:11:26 TWF "Take out no x gbls" */
-/*  *142  23-MAR-1994 16:50:27 TWF "New DECW includes" */
-/*  *141  15-MAR-1994 13:24:16 TWF "Update only if" */
-/*  *140  15-MAR-1994 13:11:21 TWF "Add update only if not event or not current" */
-/*  *139  15-MAR-1994 13:08:56 TWF "Add update only if not event or not current" */
-/*  *138  15-MAR-1994 13:06:43 TWF "Update only if " */
-/*  *137  15-MAR-1994 11:57:00 TWF "Add row col index" */
-/*  *136  15-MAR-1994 11:38:46 TWF "Add row col event to evaluate calls" */
-/*  *135  15-MAR-1994 11:37:18 TWF "Add row col event to evaluate calls" */
-/*  *134  15-MAR-1994 11:07:49 TWF "Add all same y" */
-/*  *133  14-MAR-1994 16:43:11 TWF "Fix processtraversal" */
-/*  *132  14-MAR-1994 16:37:28 TWF "Add accelerators" */
-/*  *131  14-MAR-1994 16:35:07 TWF "Traverse to the shot override widget" */
-/*  *130   2-MAR-1994 15:56:40 TWF "Fix accvio" */
-/*  *129   2-MAR-1994 12:34:33 TWF "Add autoscale all" */
-/*  *128   6-DEC-1993 15:13:10 TWF "change tick marks" */
-/*  *127   6-DEC-1993 15:11:51 TWF "change tick marks" */
-/*  *126   6-DEC-1993 15:10:41 TWF "change tick marks" */
-/*  *125   3-NOV-1993 13:01:19 TWF "Fix uid ref" */
-/*  *124   3-NOV-1993 12:21:59 TWF "Add font selection" */
-/*  *123   7-OCT-1993 16:08:51 TWF "Reset scales on restore" */
-/*  *122   7-OCT-1993 15:37:12 TWF "Reset scales on restore" */
-/*  *121  21-SEP-1993 12:00:46 TWF "AXP" */
-/*  *120  20-SEP-1993 14:14:21 TWF "Add autoscale y" */
-/*  *119  25-AUG-1993 09:14:39 TWF "Auto update on expand from icon" */
-/*  *118  20-AUG-1993 12:09:41 TWF "Add disable icon updates" */
-/*  *117  20-AUG-1993 11:59:09 TWF "Add disable icon updates" */
-/*  *116  20-AUG-1993 11:55:54 TWF "Add disable icon updates" */
-/*  *115  20-AUG-1993 11:47:39 TWF "Add disable icon updates" */
-/*  *114  20-AUG-1993 11:46:40 TWF "Add disable icon updates" */
-/*  *113  20-AUG-1993 11:43:39 TWF "Add noupdate on shrink" */
-/*  *112  20-AUG-1993 10:04:28 TWF "Add noupdate on shrink" */
-/*  *111  20-AUG-1993 09:59:34 TWF "Add noupdate on shrink" */
-/*  *110  20-AUG-1993 09:55:56 TWF "Add noupdate on shrink" */
-/*  *109  20-AUG-1993 09:53:58 TWF "Add noupdate on shrink" */
-/*  *108  20-AUG-1993 09:50:26 TWF "Add noupdate on shrink" */
-/*  *107  20-AUG-1993 09:48:22 TWF "Fix grab again" */
-/*  *106  20-AUG-1993 09:24:26 TWF "Fix grab again" */
-/*  *105  20-AUG-1993 09:17:40 TWF "Fix grab again" */
-/*  *104  20-AUG-1993 09:04:10 TWF "Add auto disable updates" */
-/*  *103  20-AUG-1993 08:20:54 TWF "Add live updates" */
-/*  *102  20-AUG-1993 08:20:21 TWF "Add live updates" */
-/*  *101  20-AUG-1993 08:13:12 TWF "Add live updates" */
-/*  *100  23-JUL-1993 15:37:39 TWF "New disabled resource on waveform widget" */
-/*  *99   19-JUL-1993 10:09:41 TWF "Ungrab pointer on button3 combos" */
-/*  *98   15-JUL-1993 14:49:28 TWF "Do not popup Setup if any other buttons are pressed" */
-/*  *97   15-JUL-1993 14:47:54 TWF "Do not popup Setup if any other buttons are pressed" */
-/*  *96    9-JUL-1993 16:34:25 TWF "Fix ACCVIO" */
-/*  *95    9-JUL-1993 16:15:37 TWF "Fix compile errors" */
-/*  *94   16-JUN-1993 08:06:14 TWF "Fix window title when using shot override" */
-/*  *93   11-JUN-1993 17:03:58 TWF "Fix erase global" */
-/*  *92   11-JUN-1993 16:46:50 TWF "add new features" */
-/*  *91   11-JUN-1993 16:45:15 TWF "Add new attachment" */
-/*  *90    9-JUN-1993 08:11:59 TWF "Avoid zoom during equalpanes" */
-/*  *89   27-MAY-1993 12:28:32 TWF "Fix hang" */
-/*  *88   27-MAY-1993 12:15:53 TWF "Fix hang" */
-/*  *87   27-MAY-1993 12:14:36 TWF "Fix hang" */
-/*  *86   27-MAY-1993 11:58:15 TWF "Fix hang" */
-/*  *85   27-MAY-1993 10:38:22 TWF "Fix hang" */
-/*  *84   27-MAY-1993 10:20:26 TWF "Can't use get_ef for ef" */
-/*  *83   27-MAY-1993 10:13:01 TWF "Fix menu hang" */
-/*  *82   27-MAY-1993 10:11:57 TWF "Fix menu hang" */
-/*  *81   19-MAY-1993 15:24:44 TWF "Remove close data source calls" */
-/*  *80   19-MAY-1993 14:37:38 TWF "Add TREE$SET_STACK_SIZE" */
-/*  *79   17-MAY-1993 17:53:15 TWF "Use preopen event" */
-/*  *78   12-MAY-1993 15:47:54 TWF "Setup event after paste" */
-/*  *77    1-MAY-1993 11:08:56 JAS "change the way atoms are delt with" */
-/*  *76   22-APR-1993 09:04:11 TWF "Fix % in complain" */
-/*  *75   19-MAR-1993 12:43:09 TWF "Free paste data" */
-/*  *74   12-MAR-1993 15:28:53 TWF "Fix writing in constant string" */
-/*  *73   12-MAR-1993 13:59:49 TWF "Make few lines" */
-/*  *72   24-FEB-1993 17:51:26 TWF "Use DECC" */
-/*  *71   18-NOV-1992 15:13:16 TWF "Use same widgets for save and restore" */
-/*  *70    4-AUG-1992 16:06:23 JAS "Change paste to ask about avail types" */
-/*  *69   13-APR-1992 08:10:50 TWF "Fix resize" */
-/*  *68    9-APR-1992 17:04:33 TWF "Fix resize" */
-/*  *67    9-APR-1992 16:46:11 TWF "Fix resize" */
-/*  *66    9-APR-1992 16:44:13 TWF "Fix resize" */
-/*  *65    9-APR-1992 16:01:43 TWF "Fix resize" */
-/*  *64    9-APR-1992 15:48:39 TWF "Fix resize" */
-/*  *63    9-APR-1992 15:29:34 TWF "Fix resize" */
-/*  *62    9-APR-1992 14:31:32 TWF "Fix resize" */
-/*  *61    9-APR-1992 14:26:08 TWF "Fix resize" */
-/*  *60    9-APR-1992 14:11:37 TWF "Fix resize" */
-/*  *59    9-APR-1992 13:57:37 TWF "Fix resize" */
-/*  *58    9-APR-1992 13:40:05 TWF "Fix resize" */
-/*  *57    9-APR-1992 12:57:51 TWF "Fix resize" */
-/*  *56    8-APR-1992 14:40:57 TWF "Fix sizing" */
-/*  *55   19-MAR-1992 11:25:09 JAS "trim the events" */
-/*  *54   19-MAR-1992 11:23:11 JAS "trim the events" */
-/*  *53   19-MAR-1992 11:20:50 JAS "trim the events" */
-/*  *52    9-JAN-1992 09:31:19 TWF "Fix accvio" */
-/*  *51    2-JAN-1992 10:09:32 MRL "Fix print orientation." */
-/*  *50   17-DEC-1991 16:14:57 TWF "remove show timer" */
-/*  *49   12-DEC-1991 12:56:15 TWF "Speedup print" */
-/*  *48   12-DEC-1991 08:40:51 TWF "Reduce print time" */
-/*  *47   12-DEC-1991 08:09:52 TWF "Reduce print time" */
-/*  *46   12-DEC-1991 07:59:16 TWF "Reduce print time" */
-/*  *45   11-DEC-1991 13:47:24 TWF "put blank lines between panels in saved setting" */
-/*  *44   11-DEC-1991 13:45:45 TWF "put blank lines between panels in saved setting" */
-/*  *43   11-DEC-1991 11:25:35 TWF "Busy getting stuck?" */
-/*  *42   11-DEC-1991 09:05:31 TWF "Set topwidget size" */
-/*  *41   10-DEC-1991 13:14:46 TWF "Fix calls to evaluatedata" */
-/*  *40    6-DEC-1991 15:05:48 TWF "Make ApplyDataSetup update window title if global" */
-/*  *39    6-DEC-1991 14:54:58 TWF "Make sure global wave is filled in" */
-/*  *38    6-DEC-1991 14:43:16 TWF "Open global shot, if specified, when setting window title" */
-/*  *37    6-DEC-1991 14:41:09 TWF "Open global shot, if specified, when setting window title" */
-/*  *36    4-DEC-1991 11:34:46 TWF "Update data only when needed" */
-/*  *35    4-DEC-1991 10:46:58 TWF "Update data only when needed" */
-/*  *34    4-DEC-1991 10:40:29 TWF "Update data only when needed" */
-/*  *33    2-DEC-1991 14:19:01 TWF "Fix icon on multiplane systems" */
-/*  *32    2-DEC-1991 12:39:03 TWF "Fix icon on multiplane systems" */
-/*  *31    2-DEC-1991 12:38:18 TWF "" */
-/*  *30    2-DEC-1991 09:26:32 TWF "Close database at appropriate times" */
-/*  *29    2-DEC-1991 09:07:25 TWF "Fix resizing" */
-/*  *28   27-NOV-1991 17:16:46 TWF "fix icon on color screens" */
-/*  *27   27-NOV-1991 16:14:15 TWF "Fix icon on color screens" */
-/*  *26   27-NOV-1991 15:49:44 TWF "Fix icon on color screens" */
-/*  *25   27-NOV-1991 15:33:24 TWF "fix vertical pane" */
-/*  *24   27-NOV-1991 13:17:10 TWF "Use globals during restore" */
-/*  *23   27-NOV-1991 12:57:08 TWF "Fix sizing during resize" */
-/*  *22   27-NOV-1991 12:38:40 TWF "Fix sizing during resize" */
-/*  *21   27-NOV-1991 11:52:05 TWF "Fix restoreinprog" */
-/*  *20   27-NOV-1991 10:26:36 TWF "Fix restoreinprog" */
-/*  *19   26-NOV-1991 08:25:30 TWF "Disable resize when restoring database" */
-/*  *18   25-NOV-1991 16:52:34 TWF "Disable resize when restoring database" */
-/*  *17   25-NOV-1991 16:28:23 TWF "Fix window sizing" */
-/*  *16   25-NOV-1991 16:10:31 TWF "Fix window sizing" */
-/*  *15   25-NOV-1991 15:39:52 TWF "Fix window sizing" */
-/*  *14   25-NOV-1991 15:25:41 TWF "Fix window sizing" */
-/*  *13   25-NOV-1991 14:54:35 TWF "Fix window sizing" */
-/*  *12   25-NOV-1991 14:51:34 TWF "Fix window sizing" */
-/*  *11   25-NOV-1991 14:18:55 TWF "Fix window sizing" */
-/*  *10   25-NOV-1991 13:15:36 TWF "Fix default" */
-/*  *9    25-NOV-1991 13:06:58 TWF "Fix restore data setup" */
-/*  *8    25-NOV-1991 12:10:11 TWF "remove excess setvalues on waveforms" */
-/*  *7    25-NOV-1991 10:36:08 TWF "add show mode" */
-/*  *6    25-NOV-1991 10:32:01 TWF "add show mode" */
-/*  *5    15-NOV-1991 11:44:17 TWF "prepare for MDSV1" */
-/*  *4    15-NOV-1991 10:46:08 TWF "Prepare to make MDSV1 version" */
-/*  *3    13-NOV-1991 14:07:01 TWF "Fix printall code" */
-/*  *2    12-NOV-1991 15:01:42 TWF "Make title update happen first" */
-/*  *1    12-NOV-1991 14:32:17 TWF "Scope program" */
-/*  CMS REPLACEMENT HISTORY, Element DWSCOPE.C */
 /*------------------------------------------------------------------------------
 
  		Name:   DWScope
@@ -590,58 +371,20 @@ int       main(int argc, String *argv)
 
 static void DoPrint(char *filename)
 {
-  char *sh = "/bin/sh";
   char cmd[512];
-  struct descriptor cmdd = {0,DTYPE_T,CLASS_S,0};
-  pid_t  pid,xpid;
-  int   sts=0;
-  sprintf(cmd,"DwscopePrint %s %s",filename,ScopePrinter);
-  cmdd.pointer=cmd;
-  cmdd.length=strlen(cmd);
-  LibSpawn(&cmdd,1,0);
-/*
-  signal(SIGCHLD,SIG_IGN);
-  pid = fork();
-  if (!pid)
-  {
-    char  *arglist[4];
-    char  *p;
-    int i=0;
-    arglist[0] = getenv("SHELL");
-    if (arglist[0] == 0)
-      arglist[0] = sh;
-    i++;
-    arglist[i++] = "-c";
-    arglist[i++] = cmd;
-    arglist[i] = 0;
-    sts = execvp(arglist[0],arglist);
-  }
-  if (pid == -1)
-  {
-    fprintf(stderr,"Error %d from fork()\n",errno);
-  }
-*/
+  sprintf(cmd,"dwscopePrint %s %s",filename,ScopePrinter);
+  system(cmd);
 }
 
 static char *GetPrinterList()
 {
-  char buff[256];
-  size_t bytes;
   char *printers = 0;
-  int fd[2];
-  pipe(fd);
-  if (fork() == 0)
+  FILE *fp = popen("ScopePrinters","r");
+  if (fp != NULL)
   {
-    close(fd[0]);    
-    dup2(fd[1],1);   
-    close(fd[1]);    
-    execlp("ScopePrinters","ScopePrinters",NULL);
-    _exit(1);
-  }
-  else
-  {
-    close(fd[1]);
-    while ((bytes=read(fd[0],buff,sizeof(buff)-1)))
+    char buff[256];
+    size_t bytes;
+    while ((bytes=fread(buff,1,sizeof(buff)-1,fp)))
     {
       buff[bytes]=0;
       if (printers)
@@ -655,7 +398,7 @@ static char *GetPrinterList()
       }
     }
   }
-  close(fd[1]);
+  pclose(fp);
   return printers;
 }
 
