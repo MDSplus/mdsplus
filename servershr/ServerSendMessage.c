@@ -494,10 +494,10 @@ static void signal_handler(int dummy)
 }
 */
 
-static void ResetFdactive(int try, int sock, fd_set *active)
+static void ResetFdactive(int rep, int sock, fd_set *active)
 {
   Client *c;
-  if (try > 0)
+  if (rep > 0)
   {
     int done=0;
     while(!done)
@@ -534,7 +534,7 @@ static void *Worker(void *sockptr)
   int tablesize = FD_SETSIZE;
   int num = 0;
   int last_client_addr=0;
-  int try;
+  int rep;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
   /*
@@ -552,12 +552,12 @@ static void *Worker(void *sockptr)
   pthread_mutex_unlock(&worker_mutex);
   FD_ZERO(&fdactive);
   FD_SET(sock,&fdactive);
-  for (try=0;try < 10; try++)
+  for (rep=0;rep < 10; rep++)
   {
   readfds = fdactive;
   while ((num = select(tablesize, &readfds, 0, 0, 0)) != -1)
   {
-    try=0;
+    rep=0;
     if (FD_ISSET(sock, &readfds))
     {
       unsigned int len = sizeof(struct sockaddr_in);
@@ -586,7 +586,7 @@ static void *Worker(void *sockptr)
   }
   perror("Dispatcher select loop failed");
   printf("Last client addr = %d\n",last_client_addr);
-  ResetFdactive(try,sock,&fdactive);
+  ResetFdactive(rep,sock,&fdactive);
   }
   printf("Cannot recover from select errors in ServerSendMessage, exitting\n");
   exit(0);
