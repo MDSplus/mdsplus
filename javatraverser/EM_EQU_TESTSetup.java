@@ -244,8 +244,7 @@ public class EM_EQU_TESTSetup extends DeviceSetup {
     deviceChannel4.setShowVal("");
     deviceChannel4.setUpdateIdentifier("");
     deviceChannel4.setInSameLine(true);
-    deviceChannel4.setOffsetNid(47);
-    deviceChannel4.setLines(40);
+    deviceChannel4.setOffsetNid(40);
     deviceChannel4.setLabelString("08");
     deviceField116.setOffsetNid(41);
     deviceField116.setNumCols(5);
