@@ -26,8 +26,15 @@ public fun E1463__store(as_is _nid, optional _method)
     _synch_mode = if_error(data(DevNodeRef(_nid, _N_SYNCH_MODE)),(DevLogErr(_nid, "No valid synch mode defined"); abort();));
     if(_synch_mode == 'EXTERNAL')
     {
-	_synch_clock = if_error(data(DevNodeRef(_nid, _N_SYNCH_SOURCE)),(DevLogErr(_nid, "No synch source defined"); abort();));    
-	_synch_time = if_error(data(slope(_synch_clock)),(DevLogErr(_nid, "No valid synch source defined"); abort();)); 
+	_status = 1;
+	_synch_clk = if_error(DevNodeRef(_nid, _N_SYNCH_SOURCE), _status = 0);    
+	_synch_clock = execute('`_synch_clk');
+	if(_status == 0)
+	{
+		DevLogErr(_nid, "No synch source defined"); 
+		abort();
+	}
+	_synch_time = if_error(data(slope_of(_synch_clock)),(DevLogErr(_nid, "No valid synch source defined"); abort();)); 
     }
     else
 	_synch_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)),(DevLogErr(_nid, "No exposure time defined"); abort();));
