@@ -88,7 +88,7 @@ typedef union
   struct
   {
     short     s1,
-                s0;
+              s0;
   }         s;
 }        *PF;
 
@@ -109,7 +109,7 @@ typedef union
   struct
   {
     short     s0,
-                s1;
+              s1;
   }         s;
 }        *PF;
 
@@ -136,7 +136,7 @@ struct HEADER
 #pragma pack(0)
 #endif
 
-static int FIELDSY = BITSY + BITSX;
+static char FIELDSY = BITSY + BITSX;
 static int FIELDSX = 2;
 
 int       MdsCmprs(
