@@ -1,4 +1,3 @@
-
 ;+
 ; NAME:
 ;	MDSCLOSE (Native and TCP/IP version) 
@@ -44,6 +43,10 @@ pro MdsClose,tree,shot,quiet=quiet,status=status
     status = MdsValue('TreeClose($,$)',string(tree),long(shot),/quiet,status=retstatus)
   endif else begin
     status = MdsValue('TreeClose()',/quiet,status=retstatus)
+    dummy=status
+    while (dummy and 1) do begin
+      dummy=MdsValue('TreeClose()',/quiet,status=retstatus)
+    endwhile
   endelse
   if (status) then status = retstatus
   if not status then begin
