@@ -1,0 +1,8 @@
+#!/bin/sh
+#!
+#
+env \
+LD_LIBRARY_PATH=/usr/local/mdsplus/lib \
+SHLIB_PATH=/usr/local/mdsplus/lib \
+CLASSPATH=$HOME:/usr/local/mdsplus/java/classes/jScope.jar:/usr/local/mdsplus/java/classes/jTraverser.jar:/usr/local/mdsplus/java/classes/jDispatcher.jar:/usr/local/mdsplus/java/classes: \
+java jDispatcherIp

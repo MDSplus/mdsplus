@@ -1,0 +1,61 @@
+SHELL=/bin/sh
+prefix=@prefix@
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+JAVADIR = @MAKEJAVADIR@classes
+JAVAC = @JAVAC@
+JAR = @JAR@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = Action.java   MdsHelper.java          MdsServerEvent.java     NetworkListener.java    jDispatcher.java \
+ActionServer.java       MdsIp.java              MdsServerListener.java  Server.java             jDispatcherIp.java \
+Balancer.java           MdsMonitor.java         MonitorEvent.java       ServerEvent.java \
+Descriptor.java         MdsMonitorEvent.java    MonitorListener.java    ServerListener.java \
+InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java
+
+
+CLASSES = $(SOURCES:.java=.class)
+
+all:	@MAKEBINDIR@ @MAKEBINDIR@jDispatcherIp @MAKEBINDIR@jDispatchMonitor @MAKEJAVADIR@ @MAKEJAVADIR@classes  @MAKEJAVADIR@classes/jDispatcher.jar 
+
+clean: 
+	@ $(RM) *.class
+	@ $(RM) @MAKEBINDIR@jDispatcherIp
+	@ $(RM) @MAKEBINDIR@jDispatchMonitor
+	@ $(RM) @MAKEJAVADIR@classes/jDispatcher.jar
+
+depend: ; @ :
+
+install:
+	if [ ! -d @exec_prefix@/java/classes ] ; then \
+                mkdirhier @exec_prefix@/java/classes ; \
+                chmod -R 755 @exec_prefix@/java; \
+        fi;
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jDispatcher.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 644  jDispatcher.properties @exec_prefix@/java/classes
+	$(INSTALL) -m 755  @MAKEBINDIR@jDispatcherIp @exec_prefix@/bin
+	$(INSTALL) -m 755  @MAKEBINDIR@jDispatchMonitor @exec_prefix@/bin
+
+@MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
+
+@MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
+
+@MAKEJAVADIR@classes/jDispatcher.jar: jDispatcherIp.class jDispatchMonitor.class
+	$(JAR) c0f $@ *.class
+
+jDispatcherIp.class: 	$(SOURCES)
+	$(JAVAC) -g jDispatcherIp.java
+
+jDispatchMonitor.class: 	$(SOURCES)
+	$(JAVAC) -g jDispatchMonitor.java
+
+@MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@jDispatcherIp : jDispatcherIp.template
+	cp jDispatcherIp.template $@
+	chmod a+x $@
+
+@MAKEBINDIR@jDispatchMonitor : jDispatchMonitor.template
+	cp jDispatchMonitor.template $@
+	chmod a+x $@
+
