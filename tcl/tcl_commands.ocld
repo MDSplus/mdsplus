@@ -37,7 +37,7 @@ Define syntax add_tag
 	Routine TclAddTag
         parameter p1,prompt="What",value(required,type=ADD_TYPE)
         parameter p2,LABEL=NODE,prompt="Node",value(required)
-        parameter p3,LABEL=TAG,prompt="Tag",value(required)
+        parameter p3,LABEL=TAGNAME,prompt="Tag",value(required)
 define verb clean												       ! 53 
         Routine TclCleanDatafile										       ! 62
 	parameter p1, LABEL=FILE,Prompt="File",value(required)							       ! 67 

@@ -26,7 +26,7 @@ int   TclAddTag()		/* Return: status			*/
     static DYNAMIC_DESCRIPTOR(dsc_tagnam);
 
     cli_get_value("NODE",&dsc_nodnam);
-    cli_get_value("TAG",&dsc_tagnam);
+    cli_get_value("TAGNAME",&dsc_tagnam);
     sts = TreeFindNode(dsc_nodnam.dscA_pointer,&nid);
     if (sts & 1)
         sts = TreeAddTag(nid,dsc_tagnam.dscA_pointer);
