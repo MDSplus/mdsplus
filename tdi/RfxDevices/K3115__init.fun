@@ -42,9 +42,14 @@ public fun K3115__init(as_is _nid, optional _method)
 
 
 
+	_data_ok = 1;
 
-
-	_camac_name = data(DevNodeRef(_nid, __CAMAC_NAME));
+	_camac_name = if_error(data(DevNodeRef(_nid, __CAMAC_NAME)), _data_ok = 0);
+	if(!_data_ok)
+	{
+		DevLogErr(_nid, "Invalid CAMAC name");
+		abort();
+	}
 /*	write(*, "Camac Name: ", _camac_name); */
 
 	DevNodeCvt(_nid, __CONTROL_MODE, ['MASTER', 'SLAVE'], [_MASTER, _SLAVE], _control_mode = _MASTER);
@@ -60,6 +65,12 @@ public fun K3115__init(as_is _nid, optional _method)
 	{
 		_status = 1;
 		_clk = if_error(DevNodeRef(_nid, __CLOCK_SOURCE), _status = 0);
+		if(!_status)
+		{
+			DevLogErr(_nid, "Invalid Clock specification");
+			abort();
+		}
+
 		_clock_source = execute('`_clk');
 		_clock_delta = dscptr(_clock_source, 2);
 		_clock_freq = 1. / _clock_delta;
@@ -133,8 +144,14 @@ public fun K3115__init(as_is _nid, optional _method)
 */
 
 
+			_data_ok = 1;
+			_voltages = if_error(data(DevNodeRef(_nid, __CHANNEL_1 + __VOLTAGES + (_n_chan * __NODES_PER_CHANNEL))), _data_ok = 0);
+			if(!_data_ok)
+			{
+				DevLogErr(_nid, "Invalid voltages specification for channel "// _chan);
+				abort();
+			}
 
-			_voltages = data(DevNodeRef(_nid, __CHANNEL_1 + __VOLTAGES + (_n_chan * __NODES_PER_CHANNEL)));
 			_n_voltages = size(_voltages);
 	/*		write(*, "Channel ", _n_chan + 1, " voltages before: ", _voltages); */
 
@@ -212,8 +229,13 @@ public fun K3115__init(as_is _nid, optional _method)
 			{
 
 
-
-				_times = data(DevNodeRef(_nid, __CHANNEL_1 + __TIMES + (_n_chan * __NODES_PER_CHANNEL)));
+				_data_ok = 1;
+				_times = if_error(data(DevNodeRef(_nid, __CHANNEL_1 + __TIMES + (_n_chan * __NODES_PER_CHANNEL))), _data_ok = 0);
+				if(!_data_ok)
+				{
+					DevLogErr(_nid, "Invalid CAMAC name");
+					abort();
+				}
 				_n_times = size(_times);
 				if(_n_voltages <> _n_times)
 				{
