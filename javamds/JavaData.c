@@ -127,17 +127,22 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   char message[64];
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
-  char *buf;
-  EMPTYXD(float_xd);
-  EMPTYXD(ca_xd);
-  int is_ca = 0;
-
+  char *buf;
+  EMPTYXD(float_xd);
+
+  EMPTYXD(ca_xd);
+
+  int is_ca = 0;
+
+
+
 
   if(!desc)
     {
       return  NULL;
     }
- /*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);*/
+ /*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
+*/
      
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer);
@@ -235,17 +240,27 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	  exc = (*env)->FindClass(env, "UnsupportedDataException");
 	  (*env)->ThrowNew(env, exc, message);
       }
-	  case CLASS_CA: 
-		status = TdiData(desc, &ca_xd MDS_END_ARG);
-		if(!(status & 1)) 
-		{
-			printf("Cannot evaluate CA descriptor\n");
-			return NULL;
-		}
+	  case CLASS_CA: 
+
+		status = TdiData(desc, &ca_xd MDS_END_ARG);
+
+		if(!(status & 1)) 
+
+		{
+
+			printf("Cannot evaluate CA descriptor\n");
+
+			return NULL;
+
+		}
+
 		is_ca = 1;
-	  case CLASS_A:
-		if(is_ca)
-			array_d = (struct descriptor_a *)ca_xd.pointer;
+	  case CLASS_A:
+
+		if(is_ca)
+
+			array_d = (struct descriptor_a *)ca_xd.pointer;
+
 		else
 			array_d = (struct descriptor_a *)desc;
 		length =array_d->arsize/array_d->length; 
@@ -257,7 +272,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				jbytes = (*env)->NewByteArray(env, length);
 				(*env)->SetByteArrayRegion(env, jbytes, 0, length, (jbyte *)array_d->pointer);
 				args[0].l = jbytes;
-				args[1].z = is_unsigned;
+				args[1].z = is_unsigned;
+
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_WU: is_unsigned = 1;
@@ -268,7 +284,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetShortArrayRegion(env, jshorts, 0, length, (jshort *)array_d->pointer);
 				args[0].l = jshorts;
 				args[1].z = is_unsigned;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_LU: is_unsigned = 1;
 			case DTYPE_L: 
@@ -278,7 +295,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetIntArrayRegion(env, jints, 0, length, (jint *)array_d->pointer);
 				args[0].l = jints;
 				args[1].z = is_unsigned;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_QU: is_unsigned = 1;
 			case DTYPE_Q: 
@@ -288,7 +306,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetLongArrayRegion(env, jlongs, 0, length, (jlong *)array_d->pointer);
 				args[0].l = jlongs;
 				args[1].z = is_unsigned;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_OU: is_unsigned = 1;
 			case DTYPE_O: 
@@ -298,21 +317,20 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetLongArrayRegion(env, jlongs, 0, 2*length, (jlong *)array_d->pointer);
 				args[0].l = jlongs;
 				args[1].z = is_unsigned;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 			case DTYPE_D:
 			case DTYPE_G:
 			case DTYPE_H:
 			case DTYPE_F: 
 			case DTYPE_FLOAT: /* //Let Tdi handle all the floating point stuff */
-			{	
 				status = TdiFloat(array_d, &float_xd MDS_END_ARG);
 				if(!(status & 1))
 				{
 					printf(MdsGetMsg(status));
 					exit(0);
 				}
-			}
 				array_d = (struct descriptor_a *)float_xd.pointer;
 				cls = (*env)->FindClass(env, "FloatArray");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
@@ -320,23 +338,35 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
 				args[0].l = jfloats;
 				MdsFree1Dx(&float_xd, 0);
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
-	  /*case DTYPE_FLOAT:
-	  cls = (*env)->FindClass(env, "FloatArray");
-	  constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
-	  jfloats = (*env)->NewFloatArray(env, length);
-	  (*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *)array_d->pointer);
-	  args[0].l = jfloats;
-	  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);*/
 			case DTYPE_DOUBLE: 
 				cls = (*env)->FindClass(env, "DoubleArray");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
 				jdoubles = (*env)->NewDoubleArray(env, length);
 				(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *)array_d->pointer);
 				args[0].l = jdoubles;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
+
+				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+
+			case DTYPE_T:
+				cls = (*env)->FindClass(env, "StringArray");
+				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([Ljava/lang/String;)LData;");
+				data_cls = (*env)->FindClass(env, "java/lang/String");
+				jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
+				buf = malloc(array_d->length + 1);
+				buf[array_d->length] = 0;
+				for(i = 0; i < length; i++)
+				{
+					memcpy(buf, &array_d->pointer[i * array_d->length], array_d->length);
+					(*env)->SetObjectArrayElement(env, jobjects, i, (jobject)(*env)->NewStringUTF(env, buf));
+				}
+				free(buf);
+				args[0].l = jobjects;
+				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 		}
       case CLASS_R :
@@ -470,6 +500,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     jlongArray jlongs;
     jfloatArray jfloats;
     jdoubleArray jdoubles;
+	jobjectArray jobjects;
 
     jbyte *bytes;
     jshort *shorts;
@@ -477,8 +508,10 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     jlong *longs;
     jfloat *floats;
     jdouble *doubles;
+	jstring *jstrings;
+	char **strings;
 
-
+	int maxlen;
 
     jstring java_string;
     const char *string; 
@@ -497,7 +530,8 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     dtype = (*env)->GetIntField(env, obj, dtype_fid),
     dclass = (*env)->GetIntField(env, obj, dclass_fid);
 
-	
+	
+
 	switch(dclass) {
       case CLASS_S :
 	desc = (struct descriptor *)malloc(sizeof(struct descriptor));
@@ -671,6 +705,32 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    memcpy(array_d->pointer, doubles, array_d->arsize);
 	    (*env)->ReleaseDoubleArrayElements(env, jdoubles, doubles, 0);
 	    return (struct descriptor *)array_d;
+
+	  case DTYPE_T:
+		datum_fid = (*env)->GetFieldID(env, cls, "datum", "[Ljava/lang/String;");
+	    jobjects = (*env)->GetObjectField(env, obj, datum_fid);
+	    length = (*env)->GetArrayLength(env, jobjects);
+		strings = malloc(length * sizeof(char *));
+		jstrings = malloc(length * sizeof(jstring));
+		maxlen = 0;
+		for(i = 0; i < length; i++)
+		{
+			jstrings[i] = (*env)->GetObjectArrayElement(env, jobjects, i);
+			strings[i] = (*env)->GetStringUTFChars(env, jstrings[i], 0);
+			if(maxlen < strlen(strings[i])) maxlen = strlen(strings[i]);
+		}
+		array_d->pointer = (char *)malloc(length * maxlen);
+		memset(array_d->pointer, ' ',length * maxlen);
+		for(i = 0; i < length; i++)
+		{
+			memcpy(&array_d->pointer[i * maxlen], strings[i], maxlen);
+			(*env)->ReleaseStringUTFChars(env, jstrings[i], strings[i]);
+		}
+		array_d->length = maxlen;
+	    array_d->arsize = array_d->length * length;
+	    return (struct descriptor *)array_d;
+
+
 	  default:
 	    printf("\nUnsupported type for CLASS_A: %d\n", dtype);
 	    break;
@@ -688,7 +748,8 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	record_d->pointer = 0;
 	if(dtype == DTYPE_FUNCTION || dtype == DTYPE_DEPENDENCY || dtype == DTYPE_CONDITION
 	   || dtype == DTYPE_CALL || dtype == DTYPE_DISPATCH)
-	  {
+	  {
+
 	    record_d->length = sizeof(short);
 	    record_d->pointer = (unsigned char *)malloc(sizeof(short));
 	    *(short *)record_d->pointer = opcode;
@@ -732,9 +793,12 @@ void FreeDescrip(struct descriptor *desc)
   int i;
 
   if(!desc)
-    return;
-
-/*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
+    return;
+
+
+
+/*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
+
 
   switch(desc->class) {
     case CLASS_S : free(desc->pointer); break;
@@ -752,7 +816,8 @@ void FreeDescrip(struct descriptor *desc)
 	FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
       break;
   }
-  free((char *)desc);
+  free((char *)desc);
+
 }   
 
 

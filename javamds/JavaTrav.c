@@ -39,7 +39,6 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	char log_string[4096];
 
 
-	printf("Start getDeviceFields\n");
 	conglomerate_nids = 0;
 	sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
 	putenv(log_string);
@@ -383,11 +382,11 @@ JNIEXPORT void JNICALL Java_Database_putData
 
   EMPTYXD(xd);
 
+
   cls = (*env)->GetObjectClass(env, jnid);
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   dsc = ObjectToDescrip(env, jdata);
-
   /*status = TdiDecompile(dsc, &xd MDS_END_ARG);
 printf("\ndopo di ObjTODesc %x %x %x %d\n", obj, dsc->pointer, xd.pointer, status);
 xd.pointer->pointer[xd.pointer->length - 1] = 0;
@@ -532,7 +531,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, &ctx)) )
   {
 	 n_tags++;
-	 if(((char *)ctx - (char *)0) & 0xffffffff == 0xffffffff)
+	 if((int)ctx == -1)
 		break;
   }
   jtags = (*env)->NewObjectArray(env, n_tags, string_cls, 0); 
@@ -662,6 +661,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
+   
   if(num_nids > 0)
   {
 	nids = (int *)malloc(num_nids * sizeof(nid));
@@ -757,7 +757,6 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
       RaiseException(env, MdsGetMsg(status));
       return NULL;
     }
-
 
   if(num_nids > 0)
   {
