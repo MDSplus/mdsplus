@@ -30,7 +30,7 @@ XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
 all :	../shlib/libXmdsShr.so \
-	xmdsuil.wmd \
+	../shlib/xmdsuil.wmd \
         ../uid \
 	../uid/xmds_usage_icons.uid \
 	../uid/XmdsDigChans.uid \
@@ -58,25 +58,39 @@ all :	../shlib/libXmdsShr.so \
 	   -lMrm -lXm -lXt -lX11
 	- rm so_locations
 
-xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
-	mkdir wmltemp
-	cd wmltemp ; ln -s /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml ../xmdsuil.wml
-	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
-	wmltemp/wmdcreate -o xmdsuil.wmd
-#	- rm -R wmltemp
+../shlib/xmdsuil.wmd : ../bin/wmdcreate
+	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+
+../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h UilDBDef.h UilLexPars.h
+	cc -o $@ -DMDS_EXTENSION -I../include -I. wmldbcreate-xmdsshr.c -lXt -lXm
+
+UilConst.h : xmdsuil.wml tokens.dat
+	/usr/examples/motif/wml/wml xmdsuil.wml
+
+tokens.dat : /usr/examples/motif/wml/tokens.dat
+	ln -s /usr/examples/motif/wml/tokens.dat .
+
+UilDBDef.h : /usr/examples/motif/wml/UilDBDef.h
+	cp /usr/examples/motif/wml/UilDBDef.h .
+
+UilLexPars.h : /usr/examples/motif/wml/UilLexPars.h
+	cp /usr/examples/motif/wml/UilLexPars.h .
 
 clean :
 	- rm *.o
 	- rm ../shlib/libXmdsShr.so
 	- rm so_locations
 	- rm .depend
-	- rm xmdsuil.wmd
+	- rm ../shlib/xmdsuil.wmd
+	- rm UilDBDef.h
+	- rm UilLexPars.h
+	- rm tokens.dat
 
 depend : .depend
 
 .depend :
 	- rm .depend
-	find *.c -exec cc -DMDS_EXTENSION -I../include -I. -I/usr/examples/motif/wml -M {} > .depend \;
+	find *.c -exec cc $(CFLAGS) -M {} > .depend \;
 
 include .depend
 
