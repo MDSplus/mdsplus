@@ -96,6 +96,7 @@ else
 fi
 
 LIBPTHREAD=-lpthread
+IS_HP=0
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        FFLAGS="$FFLAGS +z +es -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(exec_prefix)/lib +DA1.1 +DS1.1";
@@ -111,6 +112,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:/usr/local/mdsplus/lib:\$(e
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
        LIBPTHREAD="";
+       IS_HP=1;
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -274,7 +276,9 @@ AC_LANG_RESTORE
 
 dnl Checks for libraries.
 
-AC_CHECK_LIB(c,printf)
+if test $IS_HP = 0; then
+  AC_CHECK_LIB(c,printf)
+fi
 AC_CHECK_LIB(m,pow,LIBM="-lm",LIBM="")
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
