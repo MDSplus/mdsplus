@@ -147,7 +147,7 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #if defined(__alpha) && defined(__vms)
 typedef __int64 _int64;
-#elif defined(__unix__) || defined(unix)
+#elif defined(__unix__) || defined(unix) || defined(__unix)
 typedef long long _int64;
 #endif
 
