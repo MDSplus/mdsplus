@@ -270,7 +270,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
       info->nci_file->get = fopen(filename,tmpfile ? "w+b" : "rb");
       status = (info->nci_file->get == NULL) ? TreeFAILURE : TreeNORMAL;
 #else
-      info->nci_file->get = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY);
+      info->nci_file->get = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0777);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
         info->nci_file->get = 0;
@@ -307,7 +307,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
     status = (info->nci_file->put == NULL) ? TreeFAILURE : TreeNORMAL;
 #else
       close(info->nci_file->put);
-    info->nci_file->put = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR);
+    info->nci_file->put = open(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR, 0777);
     status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
     if (info->nci_file->put == -1)
       info->nci_file->put = 0;
