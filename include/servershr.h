@@ -7,6 +7,12 @@ typedef void *pthread_cond_t;
 typedef void *pthread_t;
 typedef void *pthread_mutex_t;
 #else
+#define _GNU_SOURCE /* glibc2 needs this */
+#if defined(__sparc__)
+#include "/usr/include/sys/types.h"
+#else
+#include <sys/types.h>
+#endif
 #include <pthread.h>
 #endif
 
