@@ -41,6 +41,8 @@ int ServerSendMessage();
 #define random rand
 #define close closesocket
 #else
+#include <signal.h>
+#include <setjmp.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -87,6 +89,7 @@ typedef struct _client { SOCKET reply_sock;
 
 
 static Job *Jobs = 0;
+static int MonJob = -1;
 static int JobId = 0;
 static Client *ClientList = 0;
 
@@ -109,8 +112,6 @@ static void lock_client_list();
 static void unlock_client_list();
 static void lock_job_list();
 static void unlock_job_list();
-static void lock_socket();
-static void unlock_socket();
 
 int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, 
                          void (*ast)(), void *astparam, void (*before_ast)(),
@@ -124,7 +125,6 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
   int status = 0;
   int jobid;
 
-  lock_socket();
 
   if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
@@ -140,9 +140,9 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
     int *dptr;
     void *mem=0;
     unsigned char totargs = (unsigned char)(numargs+6);
-    unlock_socket();
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
-    lock_socket();
+    if (op == SrvMonitor && numargs == 8 && p6->dtype == DTYPE_LONG && *(int *)p6->ptr == MonitorCheckin)
+      MonJob = jobid;
     cmd[offset] = ')';
     cmd[offset+1] = '\0';
     if (addr == 0)
@@ -192,17 +192,13 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus,
       }
     }
     status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
-    unlock_socket();
     if (mem) free(mem);
   }
-  else
-    unlock_socket();
 
   return status;
 
  send_error:
   perror("Error sending message to server");
-  unlock_socket();
   CleanupJob(status,jobid);
   return status;
 }
@@ -241,6 +237,12 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
   lock_job_list();
   for (j=Jobs; j && (j->jobid != jobid); j=j->next);
   unlock_job_list();
+  if (!j)
+  {
+    lock_job_list();
+    for (j=Jobs; j && (j->jobid != MonJob); j=j->next);
+    unlock_job_list();
+  }
   if (j)
   {
     if (j->retstatus)
@@ -254,7 +256,7 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
     }
     if (j->ast)
       (*j->ast)(j->astparam,msg);
-    if (removeJob)
+    if (removeJob && j->jobid != MonJob)
       RemoveJob(j);
   }
 }
@@ -471,6 +473,13 @@ static void ThreadExit(void *arg)
   ThreadRunning = 0;
 }
   
+static jmp_buf Env;
+
+static void signal_handler(int dummy)
+{
+  longjmp(Env, 1);
+}
+
 static void *Worker(void *sockptr)
 {
   struct sockaddr_in sin;
@@ -479,6 +488,13 @@ static void *Worker(void *sockptr)
   int num = 0;
   fd_set readfds,fdactive;
   pthread_cleanup_push(ThreadExit, 0);
+  signal(SIGSEGV, signal_handler);
+  signal(SIGBUS, signal_handler);
+  if (setjmp(Env) != 0)
+    {
+      printf("Signal handler called in Worker\n");
+      return;
+    }
   pthread_mutex_lock(&worker_mutex);
   ThreadRunning = 1;
   pthread_cond_signal(&worker_condition);
@@ -503,8 +519,9 @@ static void *Worker(void *sockptr)
 	unlock_client_list();
         if (c && FD_ISSET(c->reply_sock,&readfds))
 	{
+          int reply_sock = c->reply_sock;
           DoMessage(c,&fdactive);
-          FD_CLR(c->reply_sock,&readfds);
+          FD_CLR(reply_sock,&readfds);
         }
         else
           done=1;
@@ -537,7 +554,7 @@ int ServerConnect(char *server_in)
   unsigned int addr;
   char hostpart[256] = {0};
   char portpart[256] = {0};
-  short port;
+  short port=0;
   int num = sscanf(server,"%[^:]:%s",hostpart,portpart);
   if (num != 2)
   {
@@ -548,8 +565,21 @@ int ServerConnect(char *server_in)
     addr = GetHostAddr(hostpart);
     if (addr != 0)
     {
-      port = (short)atoi(portpart);
-      if (port > 0)
+      if (atoi(portpart) == 0)
+      {
+        struct servent *sp = getservbyname(portpart,"tcp");
+        if (sp != NULL)
+          port = sp->s_port;
+        else
+        {
+          char *portnam = getenv(portpart);
+          portnam = (portnam == NULL) ? ((hostpart[0]=='_') ? "8200" : "8000") : portnam;
+          port = htons((short)atoi(portnam));
+        }
+      }
+      else
+        port = htons((short)atoi(portpart));
+      if (port)
       {
         Client *c;
         lock_client_list();
@@ -604,7 +634,8 @@ static void DoMessage(Client *c, fd_set *fdactive)
   }
   if (msglen != 0)
   {
-    msg = (char *)malloc(msglen);
+    msg = (char *)malloc(msglen+1);
+    msg[msglen]=0;
     nbytes = recv(c->reply_sock, msg, msglen, 0);
     if (nbytes != msglen)
     {
@@ -785,31 +816,4 @@ static void unlock_job_list()
   }
 
   pthread_mutex_unlock(&job_mutex);
-}
-
-static int socket_mutex_initialized = 0;
-static pthread_mutex_t socket_mutex;
-
-static void lock_socket()
-{
-
-  if(!socket_mutex_initialized)
-  {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-  }
-
-  pthread_mutex_lock(&socket_mutex);
-}
-
-static void unlock_socket()
-{
-
-  if(!socket_mutex_initialized)
-  {
-    socket_mutex_initialized = 1;
-    pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-  }
-
-  pthread_mutex_unlock(&socket_mutex);
 }
