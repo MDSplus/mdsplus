@@ -2,7 +2,7 @@ include $(MAKE_OPTIONS)
 
 OBJECTS = MdsLibIdl.o
 
-all :	../shlib/libMdsLibIdl$(SHARE_TYPE) \
+all :	../shlib/libMdsLibIdl.$(SHARE_TYPE) \
 	../idl \
 	../idl/mdsopen.pro \
 	../idl/mdsclose.pro \
@@ -11,7 +11,7 @@ all :	../shlib/libMdsLibIdl$(SHARE_TYPE) \
 	../idl/mdsput.pro \
 	../idl/mdsidlimage.pro
 
-../shlib/libMdsLibIdl$(SHARE_TYPE) : $(OBJECTS)
+../shlib/libMdsLibIdl.$(SHARE_TYPE) : $(OBJECTS)
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr -lc -lm
 
 ../idl :
@@ -37,7 +37,7 @@ all :	../shlib/libMdsLibIdl$(SHARE_TYPE) \
 
 clean :
 	- rm *.o
-	- rm ../shlib/libMdsLibIdl$(SHARE_TYPE)
+	- rm ../shlib/libMdsLibIdl.$(SHARE_TYPE)
 	- rm .depend
 
 depend : .depend

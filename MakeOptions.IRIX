@@ -3,3 +3,5 @@ MOTIF_CFLAGS = -I../include -g
 SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
 LD_SHARED_LIB_OPTIONS = -shared
+MOTIF_LIBS = -lMrm -lXm
+X11_LIBS = -lXt -lX11

@@ -12,7 +12,7 @@ OBJECTS = \
 	MdsPk.o
 
 ../shlib/libMdsShr.$(SHARE_TYPE) : $(OBJECTS) ../shlib
-	$(LD) -o $@ $(OBJECTS) -lc $(LD_SHARED_LIB_OPTIONS)
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc
 
 ../shlib :
 	mkdir ../shlib
