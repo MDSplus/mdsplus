@@ -83,6 +83,33 @@ typedef struct {
   char *s;      /*  Addr of string, invalid if slen == 0.  */
 } IDL_STRING;
 
+typedef struct {
+  unsigned int slen;   /* Length of string */
+  short stype;  /* type of string:  (0) static, (!0)   dynamic */
+  char *s;      /*  Addr of string, invalid if slen == 0.  */
+} IDL_STRING_L;
+
+typedef struct {
+  IDL_STRING arch;              /* Machine architecture */
+  IDL_STRING os;                /* Operating System */
+  IDL_STRING os_family;         /* Operating System family
+                                   (e.g. Unix vs SunOS) */
+  IDL_STRING release;           /* Software release */
+  IDL_STRING build_date;        /* Date on which this executable was built */
+  short memory_bits;            /* # of bits used to address memory */
+  short file_offset_bits;       /* # of bits used to represent file offsets */
+} IDL_SYS_VERSION;
+extern IDL_SYS_VERSION IDL_SysvVersion;
+
+static int ShortStrings()
+{
+  return IDL_SysvVersion.arch.stype == 0 &&
+         IDL_SysvVersion.os.stype == 0 &&
+         IDL_SysvVersion.os_family.stype == 0 &&
+         IDL_SysvVersion.release.stype == 0 &&
+    IDL_SysvVersion.build_date.stype == 0;
+}
+
 static void *MakeDescr(int idx, int *argsize, void *bytes)
 {
   if (argsize[0] == 0)
@@ -97,8 +124,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     case 4: scalarArgs[idx].length = 4; scalarArgs[idx].dtype = DTYPE_FS; break;
     case 5: scalarArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_FT; break;
     case 6: scalarArgs[idx].length = 8; scalarArgs[idx].dtype = DTYPE_FSC; break;
-    case 7: scalarArgs[idx].length = ((IDL_STRING *)bytes)->slen; scalarArgs[idx].dtype = DTYPE_T; 
-               scalarArgs[idx].pointer = ((IDL_STRING *)bytes)->s; break;
+    case 7: scalarArgs[idx].length = ((IDL_STRING *)bytes)->slen ; scalarArgs[idx].dtype = DTYPE_T; 
+               scalarArgs[idx].pointer = ShortStrings() ? ((IDL_STRING *)bytes)->s : ((IDL_STRING_L *)bytes)->s; break;
     case 9: scalarArgs[idx].length = 16; scalarArgs[idx].dtype = DTYPE_FTC; break;
     case 12: scalarArgs[idx].length = 2; scalarArgs[idx].dtype = DTYPE_WU; break;
     case 13: scalarArgs[idx].length = 4; scalarArgs[idx].dtype = DTYPE_LU; break;
@@ -129,7 +156,9 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     case 6: arrayArgs[idx].length = 8; arrayArgs[idx].dtype = DTYPE_FSC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
     case 7: 
       {
-	IDL_STRING *str;
+        if (ShortStrings())
+	{
+  	IDL_STRING *str;
         int num = 1;
         unsigned short maxlen;
 	arrayArgs[idx].dtype = DTYPE_T;
@@ -155,6 +184,36 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
 	}
         else
           arrayArgs[idx].pointer = 0;
+        }
+        else
+	{
+  	IDL_STRING_L *str;
+        int num = 1;
+        unsigned short maxlen;
+	arrayArgs[idx].dtype = DTYPE_T;
+        for (i=0;i<arrayArgs[idx].dimct;i++)
+          num = num * arrayArgs[idx].m[i];
+        for (i=0,str = (IDL_STRING_L *)bytes,maxlen=0;i<num;i++,str++)
+          if (str->slen > maxlen) maxlen = str->slen;
+        arrayArgs[idx].length = maxlen;
+        arrayArgs[idx].arsize = maxlen * num;
+        if (arrayArgs[idx].arsize > 0)
+	{
+          char *ptr;
+          char *blanks;
+          blanks = malloc(maxlen + 1);
+          ptr = arrayArgs[idx].pointer = arrayArgs[idx].a0 = malloc(arrayArgs[idx].arsize + 1);
+          memset(blanks,32,maxlen);
+          for (i=0,str = (IDL_STRING_L *)bytes;i<num;i++,str++,ptr += maxlen)
+	  {
+            if (str->s) strcpy(ptr,str->s);
+            if (str->slen < maxlen) strncat(ptr,blanks,maxlen - str->slen);
+          }
+          free(blanks);
+	}
+        else
+          arrayArgs[idx].pointer = 0;
+        }
       }
       break;
     case 9: arrayArgs[idx].length = 16; arrayArgs[idx].dtype = DTYPE_FTC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 16; break;
