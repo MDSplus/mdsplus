@@ -46,7 +46,10 @@ int IdlMdsClose(int argc, void **argv)
   if (argc > 1)
     status = TreeClose((char *)argv[0],(int)argv[1]);
   else
+  {
     status = TreeClose(0,0);
+    while(TreeClose(0,0)&1);
+  }
   UnBlockSig(SIGALRM);
   return status;
 }
