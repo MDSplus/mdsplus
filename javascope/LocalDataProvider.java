@@ -27,7 +27,11 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     public long[] GetShots(String in)  
     {
         try {
-            return GetLongArray(in);
+            int []shots =  GetIntArray(in);
+            long lshots[] = new long[shots.length];
+            for(int i = 0; i < shots.length; i++)
+                lshots[i] = shots[i];
+            return lshots;
         }catch(Exception exc) 
         {
             System.err.println("Errore in GetLongArray: " + exc);
