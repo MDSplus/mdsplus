@@ -247,6 +247,22 @@ JNIEXPORT jlong JNICALL Java_Database_saveContext
 JNIEXPORT void JNICALL Java_Database_restoreContext
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     Database
+ * Method:    getCurrentShot
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_Database_getCurrentShot
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     Database
+ * Method:    setCurrentShot
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_Database_setCurrentShot
+  (JNIEnv *, jobject, jstring, jint);
+
 #ifdef __cplusplus
 }
 #endif
