@@ -20,9 +20,15 @@ public class DeviceSetup extends JDialog
     protected int width = 200, height = 100;
 
     public int getWidth(){return width;}
-    public void setWidth(int width){this.width = width;}
+    public void setWidth(int width){
+      this.width = width;
+      setSize(width, height);
+    }
     public int getHeight(){return height;}
-    public void setHeight(int height){this.height = height;}
+    public void setHeight(int height){
+      this.height = height;
+      setSize(width, height);
+    }
 
     public void setDeviceType(String deviceType)
     {
@@ -351,6 +357,7 @@ public class DeviceSetup extends JDialog
             ds.setLocation(x,y);
             ds.show();
           }catch(Exception exc) {
+            exc.printStackTrace();
                JOptionPane.showMessageDialog(null,
                                              "Cannot activate Setup dir device " + deviceName + ": " + exc, "Error in Device Setup",JOptionPane.ERROR_MESSAGE);
            }
