@@ -1,5 +1,5 @@
-static long	three = 3;
-static long	nitem;		/*the row count*/
+static int 	three = 3;
+static int 	nitem;		/*the row count*/
 static int	nline;		/*character count on row*/
 static char	*pline;		/*temporary line*/
 #define MAXMSG 1024
@@ -11,7 +11,7 @@ static long	date;		/*flag for absolute day*/
 typedef struct {
 	unsigned long	l0;
 	long		l1;
-}	quad;
+}	quadword;
 
 #ifdef __VMS
 #include <descrip.h>
@@ -119,7 +119,7 @@ static long      quiet;
 static const short	HUGE_W = 0x7fff;
 /*********************************************************/
 static void IDLresize(k, dst)
-long	k;
+int	k;
 IDL_VPTR	dst;
 {
  IDL_VPTR	tptr;
@@ -331,7 +331,7 @@ int		rblob;
 			int yr, mo, da, hr, mi, se, th, leap;
 			int status = dbconvert(dbproc,type,buf,len,SYBCHAR,(unsigned char*)ddate,sizeof(ddate)-1);
 #ifdef VMS
-            quad big_time;
+            quadword big_time;
  			struct dsc$descriptor_s date_dsc = {22, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)ddate};
                         	ddate[20] = '.';
                                 ddate[3] = ddate[0];
