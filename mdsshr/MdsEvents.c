@@ -1984,7 +1984,7 @@ int MDSEventCan(int eventid)
 	shared_info[i].nameid = shared_info[i].next_id = -1;
       }
 
-     LockMdsShrMutex(&sharedMutex);
+     UnlockMdsShrMutex(&sharedMutex);
      releaseLock();
     }
     UnlockMdsShrMutex(&privateMutex);
