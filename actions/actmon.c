@@ -48,6 +48,7 @@ $ MCR ACTMON -monitor monitor-name
 #include <Xm/ToggleB.h>
 #include <Xm/List.h>
 #include <Xm/MessageB.h>
+#include <Xm/Text.h>
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
@@ -115,8 +116,9 @@ static void DoOpenTree(LinkedEvent *event);
 static void ActivateImage(struct descriptor *image);
 static void ActivateImages(String images);
 static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb);
+static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct *cb);
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb);
-static void AbortServer(Widget w, void *tag, void *cb);
+static void ConfirmServerAbort(Widget w, void *tag, void *cb);
 
 #define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
@@ -131,6 +133,7 @@ static DoingListItem *DoingList = 0;
 static Widget CurrentWidget;
 static Widget ErrorWidget;
 static Widget LogWidget;
+static Widget kill_target_w;
 static Boolean ErrorWidgetOff = FALSE;
 static Boolean CurrentWidgetOff = FALSE;
 static Boolean LogWidgetOff = TRUE;
@@ -164,6 +167,7 @@ int       main(int argc, String *argv)
   static MrmRegisterArg callbacks[] = {{"Exit", (char *)Exit},
                                        {"Disable", (char *)Disable},
                                        {"ConfirmAbort", (char *)ConfirmAbort},
+				       {"SetKillTarget", (char *)SetKillTarget},
 				      };
   MrmType   class;
   static XrmOptionDescRec options[] = {{"-monitor", "*monitor", XrmoptionSepArg, NULL}};
@@ -193,6 +197,9 @@ int       main(int argc, String *argv)
   doing_label = XmStringCreateSimple("Doing");
   done_label = XmStringCreateSimple("Done");
   error_label = XmStringCreateSimple("Error");
+  if (!kill_target_w) {
+    kill_target_w = XtNameToWidget(top, "*server_name");
+  }
   CheckIn(resource_list.monitor);
   XtAppAddTimeOut(app_ctx,1000,DoTimer,0);
   XtAppMainLoop(app_ctx);
@@ -217,47 +224,90 @@ static Widget FindTop(Widget w)
   return w;
 }
 
+static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct *cb)
+{
+  static ServerList *server;
+  int idx;
+
+  if (cb->selected_item_count == 1) {
+    idx = cb->item_position;
+    for(server=Servers; idx > 1; idx--, server=server->next);
+    XmTextSetString(kill_target_w, server->server);
+  }
+  else {
+    XmTextSetString(kill_target_w, "");
+  }
+}
+
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct *cb)
 {
+  static int   operation;
   static Widget dialog=NULL;
-  XmString text;
+  XmString text_cs;
   char *choice;
   char message[1024];
-  static ServerList *server;
+  char *server;
   int idx;
 
   if (!dialog) {
     dialog = XmCreateQuestionDialog(FindTop(w), "ConfirmServerAbort", NULL, 0);
     XtVaSetValues(dialog, XmNdialogStyle, XmDIALOG_FULL_APPLICATION_MODAL, 
- 			  XmNdefaultButtonType, XmDIALOG_CANCEL_BUTTON, 
- 			  XmNautoUnmanage, True, 
-			  NULL);
+		  XmNdefaultButtonType, XmDIALOG_CANCEL_BUTTON, 
+		  XmNautoUnmanage, True, 
+		  NULL);
     XtSetSensitive(XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON),0);
-    XtAddCallback(dialog, XmNokCallback, AbortServer, (void *)&server);
+    XtAddCallback(dialog, XmNokCallback, ConfirmServerAbort, (void *)&server);
   }
-  idx = cb->item_position;
-  for(server=Servers; idx > 1; idx--, server=server->next);
-  XmStringGetLtoR(cb->item, XmSTRING_DEFAULT_CHARSET, &choice);
-  if (strlen(choice) < 32) return;
-  sprintf(message, "Are you sure you want to abort the action:\n%s\nRunning on server %s ?", choice, server->server);
-  strcpy(server->path, choice);
-  text = XmStringCreateLtoR(message, XmSTRING_DEFAULT_CHARSET);
-  XtVaSetValues(dialog, XmNmessageString, text, NULL);
-  XmStringFree(text);
-  XtManageChild(dialog);  
+  operation = *(int *)tag;
+  server = XmTextGetString(kill_target_w);
+  if (strlen(server) > 0) {
+    switch (operation) {
+    case 0 : 
+      sprintf(message, "Are you sure you want to abort the action\nRunning on server %s ?", server);
+      break;
+    case 1 : 
+      sprintf(message, "Are you sure you want to kill the action server:\n %s ?", server);
+      break;
+    case 2 :
+      sprintf(message, "Are you sure you want to \nKILL THE DISPATCHER ?");
+      break;
+    default:
+      strcpy(message, "");
+    }
+    if (strlen(message) > 0) {
+      text_cs = XmStringCreateLtoR(message, XmSTRING_DEFAULT_CHARSET);
+      XtVaSetValues(dialog, XmNmessageString, text_cs, XmNuserData, (void *)&operation, NULL);
+      XmStringFree(text_cs);
+      XtManageChild(dialog);
+    }
+  }   
 }
 
-static void AbortServer(Widget w, void *tag, void *cb)
+static void ConfirmServerAbort(Widget w, void *tag, void *cb)
 {
-  ServerList **serverlistptr = (ServerList **)tag;
-  ServerList *server = *serverlistptr;
-  static char command[128];
-  static struct descriptor cmd = {0, DTYPE_T, CLASS_S, (char *)command};
-  sprintf(command, "mdstcl abort server %s", server->server);
-  printf("about to execute:\n\t%s\n", command);
-  cmd.length = strlen(command);
-  LibSpawn(&cmd, 0 , 0);
-}
+  int *op_ptr;
+  int operation;
+  char *server;
+  char cmd[132];
+  static struct descriptor cmd_dsc = {0, DTYPE_T, CLASS_S, 0};
+
+  cmd[0]='\0';
+  XtVaGetValues(w, XmNuserData, (void *)&op_ptr, NULL);
+  operation = *op_ptr;
+  server = XmTextGetString(kill_target_w);
+  if (strlen(server) > 0) {
+    switch (operation) {
+      case 0: strcpy(cmd, "mdsserver_abort "); strcat(cmd, server); break;
+      case 1: strcpy(cmd, "mdsserver_stop "); strcat(cmd, server); break;
+      case 2: strcpy(cmd, "mdsserver_stop_dispatcher"); break;
+    default:; 
+    }
+    printf("About to execute / %s /\n", cmd);
+    cmd_dsc.length = strlen(cmd);
+    cmd_dsc.pointer = cmd;
+    LibSpawn(&cmd_dsc, 0, 0);
+  }
+}  
 
 static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct *cb)
 {
@@ -396,6 +446,7 @@ static void EventUpdate(LinkedEvent *event)
       case doing: Doing(event); break;
       case done: Done(event); break;
     }
+    XmTextSetString(kill_target_w, "");
 }  
 
 static int FindServer(char *name, ServerList **srv)
