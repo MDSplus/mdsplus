@@ -370,7 +370,7 @@ OPC (	Text,	TEXT ,		Same,	Text,		undef,		BU,T,	T,T,	1,2,	OK	)/*;	(a,[length])		*
 OPC (	TimeoutOf,	TIME_OUT_OF ,	TimeoutOf, undef,	undef, PROGRAM,METHOD,	XX,YY,	1,1,	OK+I	)/*;mds	(prog rout proc meth)	*/
 OPC (	Tiny,	TINY ,		Scalar,Keep,		Tiny,		F,HC,	F,H,	1,1,	OK	)/*;f9	(model)			*/
 OPC (	Transfer,	TRANSFER ,	Transfer, undef,		undef,		XX,YY,	XX,YY,	2,3,	OK	)/*;f9	(a,mold,[size])		*/
-OPC (	Transpose_,	TRANSPOSE_ ,	Matrix, undef,		Transpose,	XX,YY,	XX,YY,	1,1,	OK	)/*;f9	(matrix) 2D		*/
+OPC (	Transpose,	TRANSPOSE_ ,	Matrix, undef,		Transpose,	XX,YY,	XX,YY,	1,1,	OK	)/*;f9	(matrix) 2D		*/
 OPC (	Trim,	TRIM ,		Trim,	undef,		Trim,		T,T,	T,T,	1,1,	OK	)/*;f9	(string)		*/
 OPC (	UnaryMinus,	UNARY_MINUS ,	Same,	Keep,		UnaryMinus,	BU,HC,	B,HC,	1,1,	UNARY+I+S )/*;%	-a			*/
 OPC (	UnaryPlus,	UNARY_PLUS ,	Same,	Keep,		undef,		BU,HC,	B,HC,	1,1,	UNARY+I+S )/*;%	+a			*/
