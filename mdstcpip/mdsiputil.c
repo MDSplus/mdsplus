@@ -450,7 +450,7 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   {
     int bytes_this_time = min(bytes_to_send,BUFSIZ);
     int bytes_sent;
-    bytes_sent = send(sock, bptr, bytes_this_time, oob);
+    bytes_sent = send(sock, bptr, bytes_to_send, oob);
     if (bytes_sent <= 0)
     {
       if (errno != EINTR)
@@ -611,7 +611,7 @@ Message *GetMdsMsg(SOCKET sock, int *status)
     else
     {
       int bytes_this_time = min(bytes_remaining,BUFSIZ);
-      nbytes = recv(sock, bptr, bytes_this_time, flags);
+      nbytes = recv(sock, bptr, bytes_remaining, flags);
 #ifdef DEBUG
       {int i;
       for (i=0;i<nbytes;i++)
@@ -738,7 +738,7 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
     else
     {
       int bytes_this_time = min(bytes_remaining,BUFSIZ);
-      nbytes = recv(sock, bptr, bytes_this_time, 0);
+      nbytes = recv(sock, bptr, bytes_remaining, 0);
 #ifdef DEBUG
       {int i;
       for (i=0;i<nbytes;i++)
