@@ -442,7 +442,15 @@ int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *di
   int i;
   *numbytes = 0;
   m = GetMdsMsg(sock, &status);
-  if (status != 1) return 0;
+  if (status != 1)
+  {
+    *dtype = 0;
+    *length = 0;
+    *ndims = 0;
+    *numbytes = 0;
+    *dptr = 0;
+    return 0;
+  }
   if (m->h.ndims)
   {
     *numbytes = m->h.length;

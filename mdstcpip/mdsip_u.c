@@ -809,10 +809,6 @@ static void ProcessMessage(Client *c, Message *message)
       }
       if (message->h.descriptor_idx == (message->h.nargs - 1))
       {
-#if defined(_THREADS)
-        pthread_t thread;
-        pthread_create(&thread,pthread_attr_default,(pthread_startroutine_t)ExecuteMessage,(pthread_addr_t)c);
-#endif
         ExecuteMessage(c);
       }
     }
@@ -976,7 +972,7 @@ static void ExecuteMessage(Client *c)
     }
     SendResponse(c,status,ans.pointer);
     MdsFree1Dx(xd,NULL);
-	MdsFree1Dx(&ans,NULL);
+    MdsFree1Dx(&ans,NULL);
     if (ContextSwitching)
     {
       TdiSaveContext(c->tdicontext);
