@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+#ifndef min
+#define min(a,b) ((a) < (b)) ? (a) : (b)
+#endif
+ 
 struct descriptor { unsigned short length;
                     char dtype;
                     char class;
@@ -14,10 +17,10 @@ struct descriptor { unsigned short length;
 extern short RemCamLastIosb[4];
 extern int RemoteServerId();
 
-static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb);
+static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, unsigned short *iosb);
 
 #define MakeMulti(locnam,remnam) \
-int locnam(struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb) \
+int locnam(struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, unsigned short *iosb) \
 { \
   return CamMulti(#remnam,name,a,f,count,data,mem,iosb); \
 }
@@ -30,7 +33,26 @@ MakeMulti(CamQscanw,cam$qscanw)
 MakeMulti(CamQstopw,cam$qstopw)
 MakeMulti(CamStopw,cam$stopw)
 
-static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb)
+static int DoCamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb);
+
+static int CamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, unsigned short *iosb)    
+{
+  int status = 1;
+  int to_do = *count;
+  char  *buf = (char *)data;
+  int bytes = (*mem == 16) ? 2 : 4;
+
+  while(status && (to_do > 0)) {
+    int this_count = min(*count*bytes, 65535) / bytes;
+    status = DoCamMulti(routine, name, a, f, &this_count, buf, mem, (short *)iosb);
+    if (status&1) {
+      buf += iosb[1];
+      to_do -= iosb[1]/bytes;
+    }
+  }
+}
+
+static int DoCamMulti(char *routine, struct descriptor *name, int *a, int *f, int *count, void *data, int *mem, short *iosb)
 {
   int serverid = RemoteServerId();
   int status = 0;
