@@ -646,7 +646,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
 @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
-	$(LD) -o $@ @LINKSHARED@ mitdevices_msg.o
+	$(LD) -o $@ @LINKSHARED@ mitdevices_msg.o $(LIBS)
 
 @MAKELIBDIR@libMitDevices.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
