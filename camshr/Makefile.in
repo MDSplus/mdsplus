@@ -1,0 +1,87 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=-L@MAKESHLIBDIR@ @LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+LIBRARYNAME=CamShr
+
+MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
+MINOR	=	$(shell awk '{split($$0,a,"_"); print a[3];}' CVS/Tag)
+
+SOURCES	= \
+		add_entry.c              \
+		bisearch.c               \
+		CamFunctions.c           \
+		check_for_file.c         \
+		check_sema4.c            \
+		commit_entry.c           \
+		compare_str.c            \
+		copy.c                   \
+		create_sema4.c           \
+		create_tmp_file.c        \
+		debug.c                  \
+		expand_db.c              \
+		get_crate_status.c       \
+		get_db_file_size.c       \
+		get_file_count.c         \
+		get_file_name.c          \
+		get_scsi_device_number.c \
+		global.c                 \
+		issort.c                 \
+		lock_file.c              \
+		lookup_entry.c           \
+		map_data_file.c          \
+		map_scsi_device.c        \
+		msg.c 				 	 \
+		parse_crate_db.c         \
+		parse_cts_db.c           \
+		QueryHighwayType.c 		 \
+		remove_entry.c           \
+		ScsiIo.c                 \
+		ScsiSystemStatus.c		 \
+		turn_crate_on_off_line.c \
+		unlock_file.c            \
+		xlate_logicalname.c
+
+OBJECTS =	$(SOURCES:.c=.o)
+
+all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+
+.PHONY: clean
+clean:
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
+	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR)
+	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@
+
+@MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
+	$(CC) -g -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \
+		-o @MAKESHRLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -lc
+	if [ ! -d @MAKESHLIBDIR@ ] ; then \
+		mkdir @MAKESHLIBDIR@; \
+		chmod 755 @MAKESHLIBDIR@; \
+	fi;
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
+	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+
+@MAKESHLIBDIR@ :
+	mkdir @MAKESHLIBDIR@
