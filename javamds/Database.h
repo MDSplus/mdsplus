@@ -33,11 +33,27 @@ JNIEXPORT void JNICALL Java_Database_close
 
 /*
  * Class:     Database
+ * Method:    create
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_Database_create
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     Database
  * Method:    doAction
  * Signature: (LNidData;)V
  */
 JNIEXPORT void JNICALL Java_Database_doAction
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     Database
+ * Method:    doDeviceMethod
+ * Signature: (LNidData;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_Database_doDeviceMethod
+  (JNIEnv *, jobject, jobject, jstring);
 
 /*
  * Class:     Database
@@ -62,14 +78,6 @@ JNIEXPORT jobject JNICALL Java_Database_getData
  */
 JNIEXPORT jobject JNICALL Java_Database_getDefault
   (JNIEnv *, jobject);
-
-/*
- * Class:     Database
- * Method:    getDeviceComponents
- * Signature: (Ljava/lang/String;)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_Database_getDeviceComponents
-  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     Database
@@ -102,6 +110,14 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
  */
 JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     Database
+ * Method:    getWild
+ * Signature: (I)[LNidData;
+ */
+JNIEXPORT jobjectArray JNICALL Java_Database_getWild
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     Database

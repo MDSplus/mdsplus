@@ -25,7 +25,7 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	struct nci_itm nci_list[] = 
 	{{4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
 	{NciEND_OF_LIST, 0, 0, 0}};
-	EMPTYXD(xd);
+	static EMPTYXD(xd);
 	struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
 	char log_string[4096];
 
@@ -71,9 +71,32 @@ static void RaiseException(JNIEnv *env, char *msg)
 {
    jclass exc = (*env)->FindClass(env, "DatabaseException");
    (*env)->ThrowNew(env, exc, msg);
-   /* //free(msg); */
+   /* //free(msg);*/
 }
-  
+ 
+
+JNIEXPORT void JNICALL Java_Database_create
+  (JNIEnv *env, jobject obj, jint shot)
+{
+  int status;
+  jfieldID name_fid;
+  jclass cls = (*env)->GetObjectClass(env, obj);
+  const char *name;
+  jobject jname;
+
+  name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
+  jname = (*env)->GetObjectField(env, obj, name_fid);
+  name = (*env)->GetStringUTFChars(env, jname, 0);
+  status = TreeCreatePulseFile(shot, 0, NULL);
+  if(!(status & 1))
+    RaiseException(env, MdsGetMsg(status));
+}
+
+
+
+
+
+ 
 
 JNIEXPORT void JNICALL Java_Database_open
   (JNIEnv *env, jobject obj)
@@ -188,10 +211,9 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
 
-
   status = TreeGetRecord(nid, &xd);
 
- /* // printf("\nletti %d bytes", xd.l_length);*/
+/* //  printf("\nletti %d bytes", xd.l_length);*/
 /*
   status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
 printf("\nEnd TdiDecompile");
@@ -235,8 +257,10 @@ xd.pointer->pointer[xd.pointer->length - 1] = 0;
 printf(xd.pointer->pointer);
   */  
   if(!dsc)
+  {
     status = TreePutRecord(nid, (struct descriptor *)&xd, 0);
-  else
+  }
+	else
     {
       status = TreePutRecord(nid, dsc, 0);
       FreeDescrip(dsc);
@@ -485,7 +509,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   {{0, NciCHILDREN_NIDS, 0, &nids_len},
    {NciEND_OF_LIST, 0, 0, 0}};
 
-/* //printf("\nStart getSons"); */
+/* //printf("\nStart getSons");*/
   
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -518,9 +542,48 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
   if(num_nids > 0)
 	free((char *)nids);
 
-/* //printf("\nEnd getSons"); */
+//printf("\nEnd getSons");
   return jnids;
 }
+
+#define MAX_NODES 50000
+
+JNIEXPORT jobjectArray JNICALL Java_Database_getWild
+  (JNIEnv *env, jobject obj, jint usage_mask)
+{
+  int i, num_nids = 0;
+  void *ctx = 0;
+  int nids[MAX_NODES];
+
+  jobject jnids, jnid;
+  jclass cls = (*env)->FindClass(env, "NidData");
+  jmethodID constr;
+  jvalue args[1];
+  int status;
+
+  printf("\nParte findNodeWild" );
+
+  while (((status = TreeFindNodeWild("***",&nids[num_nids],&ctx,1 << usage_mask)) & 1) && (num_nids < MAX_NODES))
+  {
+	  printf("Letto %d\n", nids[num_nids]);
+	  num_nids++;
+  }
+  printf("%s\n", MdsGetMsg(status));
+  if(num_nids == 0) return NULL;
+  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
+  jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
+  for(i = 0; i < num_nids; i++)
+    {
+      args[0].i = nids[i];
+      jnid = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+      (*env)->SetObjectArrayElement(env, jnids, i, jnid);
+    }
+
+printf("\nEnd getWild");
+  return jnids;
+
+}
+
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   (JNIEnv *env, jobject obj, jobject jnid)
@@ -723,10 +786,9 @@ static int doAction(int nid)
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, (unsigned char *)0, (unsigned char)253, 0, 0);
-        call_d.pointer = (unsigned char *)&type;
-        nid_d.pointer = (char *)&method_nid;
-
+	DESCRIPTOR_CALL(call_d, (unsigned int *)0, 256, 0, 0);
+ 	nid_d.pointer = (char *)&method_nid;
+ 	call_d.pointer = (unsigned char *)&type;
 	status = TreeGetRecord(nid, &xd);
 	if(!(status & 1)) return status;
 	if(!xd.pointer) return 0;
@@ -821,6 +883,7 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
 	stat_d = {4, DTYPE_L, CLASS_S, 0};
         nid_dsc.pointer=(char *)&nid;
         stat_d.pointer=(char *)&stat;
+
 	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
 	nid = (*env)->GetIntField(env, jnid, nid_fid);
 	nid_dsc.pointer = (char *)&nid;

@@ -77,3 +77,4 @@ JNIEXPORT void JNICALL Java_LocalProvider_Update
 }
 #endif
 #endif
+

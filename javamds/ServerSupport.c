@@ -120,7 +120,7 @@ int i;
 	    out_array[out_idx] = y[curr_idx];
 	out_points = out_idx;
     }
-    else /* //Resample*/	    
+    else /*Resample*/	    
     {
 	delta = (xmax - xmin)/(MAX_POINTS - 1);
 	curr = x[start_idx] + delta;    
@@ -139,7 +139,7 @@ int i;
 	    }
 	}
 	if(out_idx == MAX_POINTS - 2)
-	    out_array[++out_idx] = out_array[MAX_POINTS - 2]; /* //For approx error*/	    
+	    out_array[++out_idx] = out_array[MAX_POINTS - 2]; /*For approx error*/	    
 	out_points = out_idx+1;
     }
     a_d.pointer = (char *)out_array;
@@ -175,7 +175,7 @@ struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float 
     for(start_idx = 0; x[start_idx] < xmin; start_idx++);
     for(end_idx = 0; x[end_idx] < xmax; end_idx++);    	
     act_points = end_idx - start_idx + 1;
-    if(act_points < MAX_POINTS) /* //Code time axis */
+    if(act_points < MAX_POINTS) /*Code time axis*/
     {
 	curr_idx = start_idx + 1;
 	out_idx = 1;
@@ -190,7 +190,7 @@ struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float 
 	}
 	out_array[0] = 1;
     }
-    else /* //Resample	 */   
+    else /*Resample*/	    
     {
 	out_idx = 1;
 	out_array[out_idx++] = x[start_idx];
@@ -198,7 +198,7 @@ struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float 
 	out_array[out_idx++] = (x[end_idx] - x[start_idx])/(MAX_POINTS - 1);
 	out_array[0] = 1;
     }
-    if(out_idx >=  act_points) /* // Coding is not convenient */
+    if(out_idx >=  act_points) /* Coding is not convenient*/
     {
 	out_array[0] = -1;
 	out_idx = 1;

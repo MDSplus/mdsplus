@@ -6,8 +6,20 @@
 #include <string.h>
 #include <stdlib.h>
 #include "LocalProvider.h"
+#include "MdsHelper.h"
 extern int TdiCompile(), TdiData(), TdiFloat();
 static char error_message[512];
+
+
+/*Support routine for MdsHelper */
+JNIEXPORT jstring JNICALL Java_MdsHelper_getErrorString
+  (JNIEnv *env, jclass cld, jint jstatus)
+{
+	char *error_msg = MdsGetMsg(jstatus);
+	return (*env)->NewStringUTF(env, error_msg);
+}
+	
+
 
 
 /* Support routines for jScope */
@@ -161,7 +173,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
     }
     if(xd.pointer->class != CLASS_A)
     {
-		if(!is_float) /* //Legal only if used to retrieve the shot number */
+		if(!is_float) /*Legal only if used to retrieve the shot number*/
 		{
 			int_ris = malloc(sizeof(int));
 			switch(xd.pointer->dtype)
@@ -305,7 +317,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalProvider_GetFloatArray(JNIEnv *env, jobj
 
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
-    if(error_message[0]) /* //Return a dummy vector without elements */
+    if(error_message[0]) /*Return a dummy vector without elements*/
     {
 	return NULL;
     }
@@ -327,7 +339,7 @@ JNIEXPORT jintArray JNICALL Java_LocalProvider_GetIntArray(JNIEnv *env, jobject 
  
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
-    if(error_message[0]) /* //Return a dummy vector without elements */
+    if(error_message[0]) /*Return a dummy vector without elements*/
     {
 	return NULL;
     }
@@ -351,7 +363,7 @@ JNIEXPORT jbyteArray JNICALL Java_LocalProvider_GetByteArray(JNIEnv *env, jobjec
  
     (*env)->ReleaseStringUTFChars(env, in, in_char);
 
-    if(error_message[0]) /* //Return a dummy vector without elements */
+    if(error_message[0]) /*Return a dummy vector without elements*/
     {
 	return NULL;
     }
@@ -412,48 +424,30 @@ static jobject jobjects[1024];
 void createWindow(char *name, int idx)
 {
 	JavaVM *jvm;
-	/* //JDK1_1InitArgs vm_args; */
-	JavaVMInitArgs vm_args; 
-	JavaVMOption   options[2];
+	JDK1_1InitArgs vm_args;
 	jint res;
 	jclass cls;
 	jmethodID mid;
 	jstring jstr;
-        char classpath[2048], *curr_classpath;
+	char classpath[2048], *curr_classpath;
 
 	if(env == 0) /* Java virtual machine does not exist yet */
 	{
-	        vm_args.version = JNI_VERSION_1_2; /* //0x00010001; */
-		options[0].optionString = "-Djava.compiler=NONE";           /* disable JIT */
-		options[1].optionString = "-Djava.class.path=.";            /* user classes */
-		/* //	options[2].optionString = "-verbose:jni";                   */ /* print JNI-related messages */
-
-		vm_args.nOptions = 2;
-		vm_args.ignoreUnrecognized = JNI_FALSE;
-		vm_args.options = options;
-
-
-		/* //	JNI_GetDefaultJavaVMInitArgs(&vm_args); */
+		vm_args.version = 0x00010001;
+		JNI_GetDefaultJavaVMInitArgs(&vm_args);
 		curr_classpath = getenv("CLASSPATH");
-
 		if(curr_classpath)
 		{
-		        classpath[0] = '\0';
-			/* //	sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath); */
-			/* //	vm_args.classpath = classpath; */
-			sprintf(classpath, "%s%c%s",options[1].optionString , PATH_SEPARATOR, curr_classpath);
-			options[1].optionString = classpath;
+			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
+			vm_args.classpath = classpath;
 		}
-
-
 		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 		if(res < 0)
 		{
-			printf("\nCannot create Java VM (result = %d)!!\n", res);
+			printf("\nCannot create Java VM!!\n");
 			return ;
 		}
 	}
-	
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
