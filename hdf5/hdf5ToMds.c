@@ -205,6 +205,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
   int status;
   int nid;
   int oldnid;
+  printf("\tmds_find_attr - %s\n", name);
   TreeGetDefaultNid(&oldnid);
   if ((obj = H5Aopen_name(attr_id,name)) >= 0) {
     int size;
@@ -277,29 +278,32 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data)
 	printf("dataset is time ---- UNSUPPORTED\n"); break;
       case H5T_STRING:
 	nid = AddNode(name,TreeUSAGE_TEXT);
-	if (n_ds_dims != 0) {
-          printf("dataset is string array ---- UNSUPPORTED\n");
-        } else {
+	{
 	  int slen = H5Tget_size (type);
+          // int siz = slen;
 	  if (slen <0) {
 	    printf("Badly formed string attribute\n");
 	  } else {
-	    char *s = (char *) malloc((slen+1)*sizeof(char));
-	    hid_t st_id = H5Tcopy (H5T_C_S1);
-	    H5Tset_size (st_id, slen);
-	    if (H5Aread(obj, st_id, (void *)s)) {
-	      printf("error reading string\n");
+	    hid_t st_id;
+
+#if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
+	    if(H5Tis_variable_str(type)) {                    
+	      st_id = H5Tcopy (H5T_C_S1);
+	      H5Tset_size(st_id, H5T_VARIABLE);
 	    } else {
-	      int status;
-	      struct descriptor dsc={slen, DTYPE_T, CLASS_S, (void *) s};
-	      status = TreePutRecord(nid, &dsc, 0);
-	      if ((status&1)==0) {
-		printf("error writing %s values %s to tree\n", name, s);
-	      }
+#endif
+	      st_id = H5Tcopy (type);
+	      H5Tset_cset(st_id, H5T_CSET_ASCII);
+#if H5_VERS_MAJOR>=1&&H5_VERS_MINOR>=6&&H5_VERS_RELEASE>=1
+	    } 
+#endif	  
+            if (H5Tget_size(st_id) > slen) {
+	      slen = H5Tget_size(st_id);
 	    }
-	    free(s);
+	      H5Tset_size (st_id, slen);
+	      PutData(obj, nid, DTYPE_T, st_id, slen, n_ds_dims, ds_dims, 1); 
 	  }
-        }
+	} 
         break;
       case H5T_BITFIELD:
 	printf("dataset is bitfield ---- UNSUPPORTED\n"); break;
@@ -329,7 +333,8 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
   TreeGetDefaultNid(&defnid);
   if (*first_time)
   {
-    H5Aiterate(group,&idx,mds_find_attr,(void *)0);
+    //    H5Aiterate(group,&idx,mds_find_attr,(void *)0);
+    H5Aiterate(group,NULL,mds_find_attr,(void *)0);
     *first_time = 0;
   }
   H5Gget_objinfo(group, name, 1, &statbuf);
@@ -354,7 +359,9 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
         size_t precision;
         H5Sclose(space);
         nid = AddNode(name,TreeUSAGE_SIGNAL);
-        H5Aiterate(obj,&idx,mds_find_attr,(void *)0);
+	printf("About to iterate on %s\n",name);
+	//        H5Aiterate(obj,&idx,mds_find_attr,(void *)0);
+        H5Aiterate(obj,NULL,mds_find_attr,(void *)0);
         type = H5Dget_type(obj);
         switch (H5Tget_class(type))
 	{
