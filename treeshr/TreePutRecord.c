@@ -127,13 +127,15 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int zero[2] = {0,0};
         unsigned int addin[2] = {0x4beb4000,0x7c9567};
         unsigned int temp[2] = {0,0};
+        unsigned int time_inserted[2];
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
         tzset();
         m1[0] = (unsigned int)time(NULL) - timezone;
 	LibEmul(m1,m2,zero,temp);
-        AddQuadword(temp,addin,local_nci.time_inserted);
+        AddQuadword(temp,addin,time_inserted);
+        memcpy(local_nci.time_inserted,time_inserted,sizeof(time_inserted));
       }
       if (!(open_status & 1))
       {
@@ -728,6 +730,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
     int eof;
+    int rfa[2];
     fseek(info->data_file->put,0,SEEK_END);
     eof = ftell(info->data_file->put);
     bytes_to_put -= bytes_this_time;
@@ -739,7 +742,8 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
       if (status & 1)
       {
         nci_ptr->error_on_put = 0;
-        SeekToRfa(eof,nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+        SeekToRfa(eof,rfa);
+        memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa,rfa,sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
       }
       else
       {
@@ -751,7 +755,8 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     }
     else
     {
-      SeekToRfa(eof,&info->data_file->record_header->rfa);
+      SeekToRfa(eof,rfa);
+      memcpy(&info->data_file->record_header->rfa,rfa,sizeof(info->data_file->record_header->rfa));
     }
   }
   fflush(info->data_file->put);
