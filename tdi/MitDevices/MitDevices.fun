@@ -12,6 +12,7 @@ FUN  PUBLIC MITDEVICES() {
 	'DT196\0',	 'MitDevices\0',		
 	'DT200\0',	 'MitDevices\0',		
 	'DT200DA\0',	 'MitDevices\0',
+	'DT216\0',	 'MitDevices\0',		
         'DT_ACQ16\0',	 'MitDevices\0',		
 	'EC727\0',	 'MitDevices\0',		
 	'FERA\0',		 'MitDevices\0',		
