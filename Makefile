@@ -15,6 +15,7 @@ PARTS = mdsshr \
 	traverser \
 	actions \
 	mdslib \
+	math \
 	d3dshr
 
 all :
