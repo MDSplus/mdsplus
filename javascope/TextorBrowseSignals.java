@@ -49,7 +49,19 @@ public class TextorBrowseSignals extends jScopeBrowseSignals
                     tree  = st.nextToken();
                     group = st.nextToken();
                     shot  = st.nextToken();
-                    sig_path = server_url+"//"+group+st.nextToken("");
+
+                    // sig_path = server_url+"//"+group+st.nextToken("");
+
+                    // Hashed_URLs
+                    // If the URL refers to a TWU signal, we would like it to be hanlded as a URL.
+                    // I hope that this does not clash with other jScope codes.  If so, tell me!
+                    // J.G.Krom (Textor, Juelich, Germany) <J.Krom@fz-juelich.de>
+
+                    sig_path = "//"+server_url+"/"+tree+"/"+group+"/#####"+st.nextToken("");
+
+                    // The hashes field should map on the shotnumber field.  The rest of the
+                    // URL should be as normal.  This trick still prevents signal URLs that
+                    // are not shot related, but we'll look at that later.
                 }
                 
             }

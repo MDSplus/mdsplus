@@ -897,11 +897,20 @@ class TwuDataProvider
     private String GetSignalPath(String in)
     {
         if(IsFullURL(in))
-          return CompleteURL(in);
+          return in;
         else
         {
-            //check if signal path is in the format
-            // url_server_address//group/signal_path
+            // Hashed_URLs
+            // Check if signal path is in the format
+            //   //url_server_address/experiment/shotGroup/#####/signal_path
+
+            if(IsHashedURL(in))
+              return hashed2shot(in,shot);
+
+            // If not, then it is of the old jScope internal format 
+            //   url_server_address//group/signal_path
+            // (Continue handling them; they could come out of .jscp files)
+            
             String p_url = GetURLserver(in);
             if(p_url == null)
               p_url = provider_url;
@@ -920,14 +929,45 @@ class TwuDataProvider
     private boolean IsFullURL(String in)
     {
         in = in.toLowerCase();
-        return in.startsWith("http://") || in.startsWith("//");
+        return (in.startsWith("http://") || in.startsWith("//") ) && in.indexOf("#")==-1 ;
     }
 
-    private String CompleteURL(String in)
-    {
-        if(in.startsWith("//"))
-          return in + "http:";
-        return in;
+    public static boolean IsHashedURL(String in)
+    { 
+        in = in.toLowerCase();
+        return in.startsWith("//") && in.indexOf("#")!=-1 ;
+        
+    }
+
+    public static String hashed2shot(String hashedURL, int shot)
+    { 
+        if (hashedURL==null || shot==0 )
+          return hashedURL;
+
+        final int hashfield = hashedURL.indexOf("#");
+            
+        if (hashfield ==-1 )
+          return hashedURL;
+        
+        String full_url = 
+            hashedURL.substring(0,hashfield) 
+            + shot 
+            + hashedURL.substring(hashedURL.lastIndexOf("#")+1);
+
+        return full_url ;
+    }
+        
+
+    private String GetURLserver(String in)
+    { 
+        // Find the servername, if it follows the (early) jScope internal
+        // convention that it is encoded before the double slash.
+        int idx;
+        String out = null;
+        if((idx = in.indexOf("//")) != -1)
+          out = in.substring(0, idx);
+
+        return out;
     }
 
     //  ----------------------------------------------------
@@ -1264,16 +1304,6 @@ class TwuDataProvider
         }
         error_string = "Error parsing shot number(s)";
         return null;
-    }
-
-    private String GetURLserver(String in)
-    {
-        int idx;
-        String out = null;
-        if((idx = in.indexOf("//")) != -1)
-          out = in.substring(0, idx);
-
-        return out;
     }
 
     //  -------------------------------------------
