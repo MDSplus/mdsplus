@@ -210,9 +210,9 @@ int XmdsDigChansPut(Widget w)
       Widget *children;
       XtVaGetValues(chan_w[i],XmNnumChildren,&num_ctls,XmNchildren,&children,XmNuserData,&nid,NULL);
       if (XmToggleButtonGadgetGetState(children[1]))
-	TreeTurnOn(&nid);
+	TreeTurnOn(nid);
       else
-	TreeTurnOff(&nid);
+	TreeTurnOff(nid);
       if (num_ctls > 3) {
         XmdsExprPut(children[2]);
         XmdsExprPut(children[3]);

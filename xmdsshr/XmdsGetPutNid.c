@@ -292,7 +292,7 @@ Boolean XmdsXdsAreValid(Widget w)
     Widget *children;
     int num;
     int i;
-    XtVaGetValues(w,XtNchildren,*children,XtNnumChildren,&num,NULL);
+    XtVaGetValues(w,XtNchildren,&children,XtNnumChildren,&num,NULL);
     for (i = 0; i < num && status; i++)
       status = XmdsXdsAreValid(children[i]);
   }
