@@ -13,7 +13,8 @@ PARTS = mdsshr \
 	ccl	\
 	tcl \
 	traverser \
-	actions
+	actions \
+	mdslib
 
 all :
 	- cdir=`pwd`; \
