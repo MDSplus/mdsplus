@@ -98,8 +98,21 @@ C If "multiple domain timing" info not include, perform special
 C handling depending on the DFI
 	if (itype.eq.2) then
 	    MDSptread=DFI_DECODE(f,t,n,ier1)
-	    if (ier1.ne.0) ier=ier1
-	    return
+c	    if (ier1.ne.0) ier=ier1
+c	    return
+	    if (ier1 eq -1) then
+c	       call GETDAT(shot,pointname,1,ier,t,f,n,-10000,10000,0,0,0)
+c	       write (7,*) "GETDAT CALL: ",ier
+c	       return
+	       do i=1,MIN(n,iarray.nret)                              !added
+		  rarray.time(i) = RARRAY.STHED + (i-1)*RARRAY.DTHED  !added
+	       enddo                                                  !added
+	    else                                                      !added
+	       if (ier1.ne.0) then                                    !added 
+		  ier=ier1                                            !added    
+		  return                                              !added 
+	       endif                                                  !added 
+	    endif                                                     !added
 	 endif
 
 C Copy timebase data to t array
@@ -160,17 +173,19 @@ C ============================================================
 	elseif(IARRAY.DFI.eq.LOGFNR)then
 	 DFI_DECODE = min(n,IARRAY.NRET/2)
 	  do i=1,DFI_DECODE
-	  t(i) = DATA.REAL32(i)
-	  f(i) = DATA.REAL32(i+DFI_DECODE)
+	    t(i) = DATA.REAL32(i)
+	    f(i) = DATA.REAL32(i+DFI_DECODE)
 	  enddo
 	elseif((IARRAY.DFI.eq.BOLOCAL).or.(IARRAY.DFI.eq.PRAD))then
 	 DFI_DECODE = min(n,IARRAY.NRET/2)
 	  do i=1,DFI_DECODE
-	  t(i) = DATA.REAL32(i+DFI_DECODE)
-	  f(i) = DATA.REAL32(i)
+	    t(i) = DATA.REAL32(i+DFI_DECODE)
+	    f(i) = DATA.REAL32(i)
 	  enddo
 	else
-	 ier = -1
+	   DFI_DECODE=0
+	   ier = -1
+	   return
 	endif
 C Cut off extra times at end of data arrays
 	i=2
@@ -586,8 +601,7 @@ c	implicit none
 
 	if ((ier.ne.0).and.(real32.nret.gt.0)) ier=0
 	do i=1,real32.nret
-	  r32pass(i)=real32.hdr(i)
-	  print *,r32pass(i)
+	   r32pass(i)=real32.hdr(i)
 	enddo
 
 	return
@@ -754,8 +768,8 @@ c----------------------------------------------------------------------------
 
 c	shot=73010
 c	pointname='33LS_V_ACC'
-	shot=96021
-	pointname='IP        '
+	shot=100810
+	pointname='PR075JI   '
 
 
 	npt = mdsptnpts(shot,pointname,ier)
@@ -796,8 +810,8 @@ c----------------------------------------------------------------------------
 	integer size(7)
 	character *4 units
 
-	shot=94268
-	pointname='IP        '
+	shot=100810
+	pointname='RDP30JI   '
 	call mdsptheadsize(shot,pointname,ier,size)
 	print *,'SIZE: ',size
 
@@ -805,8 +819,10 @@ c----------------------------------------------------------------------------
         call mdsptheadi16(shot,pointname,ier,i16pass)
         call mdsptheadi32(shot,pointname,ier,i32pass)
         call mdsptheadr32(shot,pointname,ier,r32pass)
+	print *,'R32PASS: ',r32pass
  	call mdsptheadrfix(shot,pointname,ier,rfixpass)
  	call mdsptheadifix(shot,pointname,ier,ifixpass)
+	call mdsptheadr32(shot,pointname,ier,r32pass)
 	
 	print *,'SHOT: ',shot,'  POINTNAME: ',pointname
 	print *,'IER: ',ier
@@ -814,6 +830,7 @@ c----------------------------------------------------------------------------
         print *,'R32PASS: ',r32pass
 	print *,'IFIXPASS: ',ifixpass
 	print *,'RFIXPASS: ',rfixpass
+	print *,'I16PASS: ',i16pass
 
 	units='    '
 	call mdsptheadunits(shot,pointname,ier,units)
