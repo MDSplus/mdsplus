@@ -1,0 +1,50 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+top_srcdir=@top_srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+MdsRemote.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = MdsRemote.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsRemote@SHARETYPE@ @MAKELIBDIR@libMdsRemote.a
+
+clean:
+	- rm *.o
+	- rm @MAKESHLIBDIR@libMdsRemote@SHARETYPE@
+	- rm @MAKELIBDIR@libMdsRemote.a
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsRemote@SHARETYPE@ @libdir@
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsRemote.a @libdir@; \
+	fi;
+
+
+@MAKESHLIBDIR@libMdsRemote@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+
+@MAKELIBDIR@libMdsRemote.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+MdsRemote.exports: MdsRemote.def
+	sed -e /LIBRARY/\;/\;/d MdsRemote.def > $@
