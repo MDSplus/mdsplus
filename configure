@@ -1028,7 +1028,7 @@ esac
 
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
-JVM_LIBPATH=""
+JVM="-ljvm"
 
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
@@ -1105,7 +1105,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";
        jni_inc_dir="/usr/java/jdk1.3/include";
        jni_md_inc_dir="/usr/java/jdk1.3/include/linux";
-       JVM_LIBPATH="-L/usr/java/jdk1.3/jre/lib/i386/classic";;
+       JVM="-L/usr/java/jdk1.3/jre/lib/i386/classic -ljvm -L/usr/java/jdk1.3/jre/lib/i386/native_threads -lhpi";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        LDSHARE="";
@@ -4601,7 +4601,7 @@ s%@IDLMDSEVENT@%$IDLMDSEVENT%g
 s%@IDLSQL@%$IDLSQL%g
 s%@JAVA_APS@%$JAVA_APS%g
 s%@JDK_CFLAGS@%$JDK_CFLAGS%g
-s%@JVM_LIBPATH@%$JVM_LIBPATH%g
+s%@JVM@%$JVM%g
 s%@LIBPATH@%$LIBPATH%g
 s%@MAKEBINDIR@%$MAKEBINDIR%g
 s%@MAKELIBDIR@%$MAKELIBDIR%g
