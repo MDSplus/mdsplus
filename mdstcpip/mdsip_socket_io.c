@@ -42,7 +42,8 @@ extern void FlipHeader(MsgHdr *header);
 #include <time.h>
 #include <sys/stat.h>
 #include "globus_io.h"
-#include "globus_l_io.h"
+/* #include "globus_l_io.h" */
+
 struct handle_struct { globus_io_handle_t handle;
                        int in_use;
                        MsgHdr *header;
@@ -663,6 +664,10 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
   return -1;
 }
 #else
+extern globus_result_t   globus_i_io_initialize_handle(globus_io_handle_t *handle,int GLOBUS_IO_HANDLE_TYPE_TCP_CONNECTED);
+extern globus_result_t   globus_i_io_copy_tcpattr_to_handle(globus_io_attr_t *attr,globus_io_handle_t *handle);
+extern globus_result_t   globus_i_io_setup_nonblocking(globus_io_handle_t *handle);
+
 globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_handle_t *handle)
 {
   static FILE *   fdin;
@@ -689,12 +694,16 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
 		          0, 0, 0, 0, 0  /* p2, p3, p4, p5, p6 UNUSED */ );
   s = decc$socket_fd(s);
 #endif
+  /*
   globus_i_io_mutex_lock();
+  */
   result = globus_i_io_initialize_handle(handle,GLOBUS_IO_HANDLE_TYPE_TCP_CONNECTED);
   result = globus_i_io_copy_tcpattr_to_handle(attr,handle);
   handle->fd = s;
   handle->state=GLOBUS_IO_HANDLE_STATE_CONNECTED;
+  /*
   globus_i_io_mutex_unlock();
+  */
   major_status = globus_gss_assist_acquire_cred_ext(&minor_status,
                               0,
                               GSS_C_INDEFINITE,
