@@ -642,7 +642,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 	fill in the rab and read the record
 	******************************************/
 
-	if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
+	if ((info->edit == 0) || (node_num <= info->edit->first_in_mem))
 	{
 		if (info->nci_file == NULL)
 			status = OpenNciR(info);

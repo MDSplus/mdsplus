@@ -27,13 +27,10 @@ RemoteAccess.o
 treeshr : ../shlib ../shlib/libTreeShr.$(SHARE_TYPE)
 
 ../shlib/libTreeShr.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(MISALIGN_LD_FLAGS) $(OBJECTS) -lc -L../shlib -lMdsShr
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -L../shlib -lMdsShr
 
 ../shlib :
 	mkdir ../shlib
-
-TreeGetNci.o : TreeGetNci.c
-	cc $(CFLAGS) $(MISALIGN_CFLAGS) -c TreeGetNci.c
 
 clean :
 	- rm *.o
