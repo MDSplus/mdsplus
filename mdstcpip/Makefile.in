@@ -41,7 +41,7 @@ clean :
 	- rm @MAKELIBDIR@libMdsIpUtil.a
 	- rm @MAKEBINDIR@mdsiptest
 	- rm @MAKEBINDIR@mdsip
-        - rm @MAKEBINDIR@mdsipd
+	- rm @MAKEBINDIR@mdsipd
 	- rm @MAKEETCDIR@mdsip.hosts
 
 install:
