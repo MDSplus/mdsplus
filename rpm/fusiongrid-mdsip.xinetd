@@ -1,7 +1,7 @@
 # default: on
 # description: The mdsip server serves mdsip sessions; it the \
 #       standard mdsip.hosts and logs into /var/log/mdsplus.
-service mdsips
+service mdsip
 {
         socket_type     = stream
         instances       = UNLIMITED
