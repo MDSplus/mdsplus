@@ -763,6 +763,16 @@ static void ProcessMessage(Client *c, Message *message)
         case JAVA_CLIENT:
           memcpy(d->pointer,message->bytes,dbytes); break;
           break;
+        case CRAY_IEEE_CLIENT:
+          switch (d->dtype)
+          {
+            case DTYPE_USHORT:
+            case DTYPE_ULONG: ConvertBinary(num, 0, message->h.length, message->bytes, d->length, d->pointer); break;
+            case DTYPE_SHORT:
+            case DTYPE_LONG:  ConvertBinary(num, 1, message->h.length, message->bytes, d->length, d->pointer); break;
+            default: memcpy(d->pointer,message->bytes,dbytes); break;
+          }
+          break;
         case CRAY_CLIENT:
           switch (d->dtype)
           {
@@ -1013,6 +1023,18 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
     }
     nbytes = num * length;
   }
+  else if (CType(c->client_type) == CRAY_IEEE_CLIENT)
+  {
+    switch (d->dtype)
+    {
+        case DTYPE_USHORT: 
+        case DTYPE_SHORT: length = 4; break;
+        case DTYPE_ULONG:
+        case DTYPE_LONG: length = 8; break;
+        default: length = d->length; break;
+    }
+    nbytes = num * length;
+  }
   m = malloc(sizeof(MsgHdr) + nbytes);
   m->h.msglen = sizeof(MsgHdr) + nbytes;
   m->h.client_type = c->client_type;
@@ -1095,6 +1117,32 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
       default: 
         memcpy(m->bytes,d->pointer,nbytes); 
         break;
+      }
+      break;
+    case CRAY_IEEE_CLIENT:
+      switch (d->dtype) 
+      {
+        case DTYPE_USHORT:
+        case DTYPE_ULONG: ConvertBinary(num, 0, d->length, d->pointer, m->h.length, m->bytes); break;
+        case DTYPE_SHORT:
+        case DTYPE_LONG:  ConvertBinary(num, 1, (char)d->length, d->pointer, (char)m->h.length, m->bytes); break;
+        case DTYPE_F:  ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer, 
+                                               CvtIEEE_S, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_FLOAT; break;
+        case DTYPE_FC: ConvertFloat(num * 2, CvtVAX_F, (char)(d->length/2), d->pointer, 
+                                               CvtIEEE_S, (char)(m->h.length/2), m->bytes); m->h.dtype = DTYPE_COMPLEX; break;
+        case DTYPE_FS: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_FLOAT; break;
+        case DTYPE_FSC: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_COMPLEX; break;
+        case DTYPE_D: ConvertFloat(num, CvtVAX_D, (char)d->length, d->pointer, 
+                                              CvtIEEE_T, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_DOUBLE; break;
+        case DTYPE_DC: ConvertFloat(num * 2, CvtVAX_D, (char)(d->length/2), d->pointer, 
+                                              CvtIEEE_T, (char)(m->h.length/2), m->bytes); m->h.dtype = DTYPE_COMPLEX_DOUBLE; break;
+        case DTYPE_G: ConvertFloat(num, CvtVAX_G, (char)d->length, d->pointer, 
+                                              CvtIEEE_T, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_DOUBLE; break;
+        case DTYPE_GC: ConvertFloat(num * 2, CvtVAX_G, (char)(d->length/2), d->pointer, 
+                                              CvtIEEE_T, (char)(m->h.length/2), m->bytes); m->h.dtype = DTYPE_COMPLEX_DOUBLE; break;
+        case DTYPE_FT: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_DOUBLE; break;
+        case DTYPE_FTC: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_COMPLEX_DOUBLE; break;
+        default: memcpy(m->bytes,d->pointer,nbytes); break;
       }
       break;
     case VMSG_CLIENT:
