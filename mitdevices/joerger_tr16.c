@@ -31,7 +31,7 @@ typedef struct _f0a1 {
                unsigned fill       : 8;
               } F0A1;
 
-static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr);
+static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr, int use_enhanced);
 
 int joerger_tr16___init(struct descriptor *nid_d_ptr, InInitStruct *in_struct)
 {
@@ -171,7 +171,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
         status = 0;
         for (tries=0; (!(status&1) && (tries < 5)); tries++) {
           samples_to_read = raw.bounds[0].u - min_idx + 1;
-          status = ReadChannel(setup->name,chan,&samples_to_read,channel_data);
+          status = ReadChannel(setup->name,chan,&samples_to_read,channel_data, TreeIsOn(c_nids[1])&1);
           if (status & 1)
           {
 	    coefficient = .610E-3;
@@ -196,7 +196,7 @@ int joerger_tr16___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
 #define return_on_error(f) if (!((status = f) & 1)) return status;
 #undef pio
 #define pio(f,a,d,q)  return_on_error(DevCamChk(CamPiow(name, a, f, d, 16, 0), &one, &q))
-static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
+static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr, int use_enhanced)
 {
   int status;
   int samples_read = 0;
@@ -217,7 +217,14 @@ static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
   else
   {
   */
+  if (use_enhanced)
+    {
     return_on_error(DevCamChk(CamFStopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
+    }
+  else
+    {
+    return_on_error(DevCamChk(CamStopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
+    }
     /*
   }
     */
