@@ -96,7 +96,7 @@ all : makefile-header \
       $(modules) \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest @MAKEBINDIR@mdsip \
-      @MAKEBINDIR@mdsipd @MAKEETCDIR@mdsip.hosts \
+      @MAKEBINDIR@mdsipd @MAKEBINDIR@mdsipsd @MAKEETCDIR@mdsip.hosts \
       @MAKEBINDIR@mkdirhier \
       @MAKELIBDIR@libMdsIpShr.a @MAKELIBDIR@libMdsIpUtil.a 
 
@@ -114,6 +114,7 @@ clean:
 	@ $(RM) @MAKEBINDIR@mdsiptest
 	@ $(RM) @MAKEBINDIR@mdsip
 	@ $(RM) @MAKEBINDIR@mdsipd
+	@ $(RM) @MAKEBINDIR@mdsipsd
 	@ $(RM) @MAKEBINDIR@mkdirhier
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
 
@@ -133,6 +134,7 @@ install:
         endif
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsip	@bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsipd	@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdsipsd   @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mkdirhier @bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
@@ -162,6 +164,9 @@ makefile-header:
 
 @MAKEBINDIR@mdsipd : mdsipd
 	cp mdsipd @MAKEBINDIR@mdsipd
+
+@MAKEBINDIR@mdsipsd : mdsipsd
+	cp mdsipsd @MAKEBINDIR@mdsipsd
 
 @MAKELIBDIR@libMdsIpShr.a : $(CLIENT_OBJECTS)
 	$(AR) -cr $@ $(CLIENT_OBJECTS)

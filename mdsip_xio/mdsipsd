@@ -7,4 +7,5 @@ export GLOBUS_LOCATION
 . $GLOBUS_LOCATION/etc/globus-user-env.sh
 MDS_PATH=$MDSPLUS_DIR/local/tdi\;$MDS_PATH
 export MDS_PATH
-$MDSPLUS_DIR/bin/mdsip -s 0 -H /etc/mdsip.hosts >> /var/log/mdsip.log 2>> /var/log/mdsip.error
+set > /tmp/twftest
+$MDSPLUS_DIR/bin/mdsip -s 2 -H TDIcheck_access_mdsips >> /var/log/mdsips.log 2>> /var/log/mdsips.error
