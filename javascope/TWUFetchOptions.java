@@ -47,16 +47,6 @@ class TWUFetchOptions
         if (step  < 1)  step  = 1 ;
         if (total < 0)  total = length ; 
 
-        // note: How should we hanlde total==0 ? it *may* not be
-        // a good idea to have 'total==0' translated to 'get all'.
-        // MvdG
-        //
-        if (total ==0)  total = length ; 
-        //
-        // Indeed, I like to think about total==0 as a legal 
-        // request for no data.  JGK
-        // (But other codes break on that idea for the moment.)
-
         final int requestedEnd  = start + (total-1)*step ;
 
         int overshoot = requestedEnd - (length-1)  ;
