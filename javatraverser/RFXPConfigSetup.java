@@ -5,8 +5,8 @@
 import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.*;
-import javax.swing.border.*
-//3import com.symantec.itools.javax.swing.borders.EtchedBorder;
+import javax.swing.border.*;
+//import com.symantec.itools.javax.swing.borders.EtchedBorder;
 
 public class RFXPConfigSetup extends DeviceSetup
 {

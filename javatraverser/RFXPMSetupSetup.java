@@ -39,11 +39,22 @@ public class RFXPMSetupSetup extends DeviceSetup
 		deviceChoice1.setLabelString("Control:");
 		getContentPane().add(deviceChoice1);
 		deviceChoice1.setBounds(12,96,180,40);
+		deviceWave1.setIdentifier("pmwave");
 		deviceWave1.setUpdateExpression("AAMaxValue(_window, $, _config)");
 		deviceWave1.setUpdateIdentifier("WAVE");
 		deviceWave1.setOffsetNid(3);
 		getContentPane().add(deviceWave1);
 		deviceWave1.setBounds(12,156,564,240);
+		{
+			String[] tempString = new String[1];
+			tempString[0] = "Total magnetizing current above limit";
+			deviceButtons1.setCheckMessages(tempString);
+		}
+		{
+			String[] tempString = new String[1];
+			tempString[0] = "maxval(_pmwave)*\\pconfig:pm_enabled <= \\pconfig:max_i_mag";
+			deviceButtons1.setCheckExpressions(tempString);
+		}
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(168,396,281,36);
 		deviceField2.setNumCols(3);
@@ -88,7 +99,7 @@ public class RFXPMSetupSetup extends DeviceSetup
 		//}}
 	}
 
-	public RFXPMSetupSetup()
+    public RFXPMSetupSetup()
 	{
 		this((Frame)null);
 	}

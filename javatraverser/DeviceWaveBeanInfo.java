@@ -29,6 +29,7 @@ public class DeviceWaveBeanInfo extends SimpleBeanInfo
                property("maxXVisible", "Display max X"),
                property("minYVisible", "Display min Y"),
                property("maxYVisible", "Display max Y"),
+               property("identifier", "Optional field identifier"),
                property("updateIdentifier", "Update identifier"),
                property("updateExpression", "Update expression")
             };

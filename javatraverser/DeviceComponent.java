@@ -26,7 +26,10 @@ public abstract class DeviceComponent extends JPanel
     {
         this.identifier = identifier;
     }
-    public String getIdentifier() {return identifier; }
+    public String getIdentifier() 
+    {
+        return identifier;
+    }
     public void setUpdateIdentifier(String updateIdentifier)
     {
         this.updateIdentifier = updateIdentifier;
