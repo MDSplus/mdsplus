@@ -105,6 +105,10 @@ SOURCE=.\TreeAddTag.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\TreeCallHook.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\TreeCleanDatafile.c
 # End Source File
 # Begin Source File
