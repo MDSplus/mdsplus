@@ -32,6 +32,7 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
                property("columnNames", "Column names"),
                property("rowNames", "Row names"),
                property("editable", "Editable"),
+               property("binary", "Binary"),
                property("displayRowNumber", "displayRowNumber"),
                property("preferredColumnWidth", "preferredColumnWidth"),
                property("preferredHeight", "preferredHeight")

@@ -15,7 +15,6 @@ public class DeviceWaveBeanInfo extends SimpleBeanInfo
     {
         return loadImage("DeviceWave.gif");
     }
-    
     public BeanDescriptor getBeanDescriptor()
     {
         return new BeanDescriptor(DeviceWave.class, DeviceWaveCustomizer.class);
@@ -40,5 +39,5 @@ public class DeviceWaveBeanInfo extends SimpleBeanInfo
             return super.getPropertyDescriptors();
         }
     }
-    
+
 }

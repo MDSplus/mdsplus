@@ -19,6 +19,7 @@ public class DeviceTable extends DeviceComponent
     boolean initializing = false;
     boolean editable = true;
     boolean displayRowNumber = false;
+    boolean binary = false;
     JPopupMenu popM = null;
     JMenuItem copyRowI, copyColI, copyI, pasteRowI, pasteColI, pasteI;
 
@@ -30,6 +31,8 @@ public class DeviceTable extends DeviceComponent
     protected String items[] = new String[9];
     static String copiedColItems[], copiedRowItems[], copiedItems[];
 
+    JCheckBox buttons[];
+    //JLabel rowLabels[];
     public void setNumRows(int numRows)
     {
         this.numRows = numRows;
@@ -84,6 +87,10 @@ public class DeviceTable extends DeviceComponent
 
     public void setEditable(boolean state) {editable = state;}
     public boolean getEditable() {return editable;}
+
+    public void setBinary(boolean binary){this.binary = binary;}
+    public boolean getBinary(){return binary;}
+
 
     public void setDisplayRowNumber(boolean displayRowNumber)
     {
@@ -249,7 +256,7 @@ public class DeviceTable extends DeviceComponent
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
-                if(displayRowNumber)
+                if(displayRowNumber || rowNames.length > 0)
                 {
 
                   return numCols + 1;
@@ -274,6 +281,7 @@ public class DeviceTable extends DeviceComponent
 
             public Object getValueAt(int row, int col)
             {
+              System.out.println("GET VALUE");
                if(rowNames != null && rowNames.length > 0)
                 {
                   if (col == 0) {
@@ -286,10 +294,15 @@ public class DeviceTable extends DeviceComponent
                   }
                   else {
                     try {
-                      return items[row * numCols + col - 1];
+                      String retItem = items[row * numCols + col - 1];
+                      if(!binary)
+                        return retItem;
+                      else if (retItem.trim().equals("0"))
+                        return new Boolean(false);
+                      else return new Boolean(true);
                     }
                     catch (Exception exc) {
-                      return "";
+                      return null;
                     }
                   }
                 }
@@ -299,10 +312,15 @@ public class DeviceTable extends DeviceComponent
                     return "" + (row + 1);
                   else {
                     try {
-                      return items[row * numCols + col - 1];
+                      String retItem = items[row * numCols + col - 1];
+                      if(!binary)
+                        return retItem;
+                      else if (retItem.trim().equals("0"))
+                        return new Boolean(false);
+                      else return new Boolean(true);
                     }
                     catch (Exception exc) {
-                      return "";
+                      return null;
                     }
                   }
                 }
@@ -310,8 +328,13 @@ public class DeviceTable extends DeviceComponent
                 else
                 {
                     try {
-                        return items[row * numCols + col];
-                    }catch(Exception exc) {return null; }
+                      String retItem = items[row * numCols + col];
+                      if(!binary)
+                        return retItem;
+                      else if (retItem.trim().equals("0"))
+                        return new Boolean(false);
+                      else return new Boolean(true);
+                     }catch(Exception exc) {return null; }
                 }
             }
             public boolean isCellEditable(int row, int col)
@@ -324,6 +347,8 @@ public class DeviceTable extends DeviceComponent
 
             public void setValueAt(Object value, int row, int col)
             {
+              if(binary) return;
+
                 if(rowNames.length > 0)
                     items[row * numCols + col - 1] = (String)value;
                  else if(displayRowNumber)
@@ -332,12 +357,101 @@ public class DeviceTable extends DeviceComponent
                 else
                     items[row * numCols + col] = (String)value;
                 fireTableCellUpdated(row, col);
-            }});
+            }
+
+            public Class getColumnClass(int c) {
+              if (!binary)
+                return String.class;
+              if (rowNames.length > 0 && c == 0)
+                return String.class;
+              return Boolean.class;
+            }
+          });
+
+
+          if(binary)
+          {
+            table.setRowSelectionAllowed(false);
+            buttons = new JCheckBox[numRows * numCols];
+        /*    if(rowNames.length > 0)
+            {
+              rowLabels = new JLabel[numRows];
+              for(int i = 0; i < numRows; i++)
+              {
+                try{
+                  rowLabels[i] = new JLabel(rowNames[i]);
+                }catch(Exception exc){rowLabels[i] = new JLabel("");}
+              }
+            }*/
+            for(int i = 0; i < numRows * numCols; i++)
+            {
+              buttons[i] = new JCheckBox("", items[i].equals("1"));
+            }
+
+
+            for(int i = 0; i < numCols; i++)
+            {
+              int colIdx;
+              if(displayRowNumber || rowNames.length > 0)
+                colIdx = i+1;
+              else
+                colIdx = i;
+              table.getColumnModel().getColumn(colIdx).setCellEditor(
+                  new TableCellEditor() {
+                public Component getTableCellEditorComponent(JTable table,
+                    Object value, boolean isSelected, int row, int column) {
+                 if (rowNames.length > 0) {
+                    /*if (column == 0)
+                      return rowLabels[row];
+                    else*/
+                      return buttons[row * numCols + column - 1];
+                  }
+                  else
+                    return buttons[row * numCols + column];
+                }
+
+                public void addCellEditorListener(CellEditorListener l) {}
+
+                public void removeCellEditorListener(CellEditorListener l) {}
+
+                public void cancelCellEditing() {}
+
+                public boolean stopCellEditing() {
+                  return true;
+                }
+
+                public boolean shouldSelectCell(EventObject e) {
+                  return true;
+                }
+
+                public boolean isCellEditable(EventObject e) {
+                  return true;
+                }
+
+                public Object getCellEditorValue() {
+                  return null;
+                }
+              });
+            }
+          }
+
+
+
         table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
         initializing = false;
     }
 
-
+   void updateBinaryItems()
+   {
+     for(int i = 0; i < items.length; i++)
+       if(buttons[i].isSelected())
+       {
+         System.out.println("isSelected " + i);
+         items[i] = "1";
+       }
+       else
+         items[i] = "0";
+   }
 
     public void displayData(Data data, boolean is_on)
     {
@@ -363,6 +477,8 @@ public class DeviceTable extends DeviceComponent
     public Data getData()
     {
         int n_data = items.length;
+        if(binary)
+          updateBinaryItems();
         String dataString = "[";
         for(int i = 0; i < n_data; i++)
         {
@@ -428,7 +544,6 @@ public class DeviceTable extends DeviceComponent
         ce.stopCellEditing();
       super.apply();
     }
-
 
 }
 
