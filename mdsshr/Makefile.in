@@ -25,7 +25,8 @@ SOURCES = \
         MdsGetSetShotId.c \
         MdsPk.c \
         MdsSerialize.c \
-        MdsXdRoutines.c
+        MdsXdRoutines.c \
+	MdsMalloc.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsShr.exports
