@@ -367,31 +367,36 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
 	     ,status,dtype,len,ndims,numbytes,*(int *)dptr);
 #endif
    }
+   if (!status & 1)
+     MdsFree1Dx(&ans_xd,0);
+   else
+   {
 /* Remap the descriptor types */
-   dtype = IpToMds(dtype);
+     dtype = IpToMds(dtype);
 /* Copy the Josh way ( see his example in MdsRemote.c ) */
-   if (ndims==0) {
-      struct descriptor_s ans_dsc={0, 0, CLASS_S, 0};   /* Create scalar descriptor for arrived data */
-      ans_dsc.pointer = dptr;
-      ans_dsc.dtype   = dtype;
-      ans_dsc.length  = len;
-      MdsCopyDxXd((struct descriptor *)&ans_dsc, &ans_xd);/* Copy the arrival data to xd output */
-   }  
-   else {
-      DESCRIPTOR_A_COEFF(a_dsc, 0, 0,0,MAX_DIMS, 0);   /* Create array descriptor for arrived data */
-      int i;
-      a_dsc.pointer = dptr;
-      a_dsc.dimct   = ndims;
-      a_dsc.dtype   = dtype;
-      a_dsc.length  = len;
-      a_dsc.a0      = dptr;
-      a_dsc.arsize  = numbytes;	       /* Use byte count already available from MdsIp reply */
+     if (ndims==0) {
+        struct descriptor_s ans_dsc={0, 0, CLASS_S, 0};   /* Create scalar descriptor for arrived data */
+        ans_dsc.pointer = dptr;
+        ans_dsc.dtype   = dtype;
+        ans_dsc.length  = len;
+        MdsCopyDxXd((struct descriptor *)&ans_dsc, &ans_xd);/* Copy the arrival data to xd output */
+     }  
+     else {
+        DESCRIPTOR_A_COEFF(a_dsc, 0, 0,0,MAX_DIMS, 0);   /* Create array descriptor for arrived data */
+        int i;
+        a_dsc.pointer = dptr;
+        a_dsc.dimct   = ndims;
+        a_dsc.dtype   = dtype;
+        a_dsc.length  = len;
+        a_dsc.a0      = dptr;
+        a_dsc.arsize  = numbytes;	       /* Use byte count already available from MdsIp reply */
 /*      a_dsc.arsize= len;*/
-      for (i=0; i<ndims; i++) {
-	 a_dsc.m[i] = dims[i];
+        for (i=0; i<ndims; i++) {
+          a_dsc.m[i] = dims[i];
 /*	 a_dsc.arsize *= dims[i];*/
-      }
-      MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);   /* Copy the arrival data to xd output */
+        }
+        MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);   /* Copy the arrival data to xd output */
+     }
    }
    return(&ans_xd);
 }
