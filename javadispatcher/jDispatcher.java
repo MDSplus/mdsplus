@@ -213,7 +213,7 @@ class jDispatcher implements ServerListener
                     curr_vector.add(action);
                     curr_phase.seq_actions.put(seq_obj, curr_vector);
                     int size = curr_phase.seq_numbers.size();
-                    if(seq_number > size)
+                    if(seq_number >= size)
                     {
                         for(int i = size; i < seq_number; i++)
                             curr_phase.seq_numbers.addElement(new Integer(-1));
