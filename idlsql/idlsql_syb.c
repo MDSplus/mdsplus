@@ -89,7 +89,7 @@ extern void Logout_Sybase();
 extern char *GetDBMsgText();
 extern int GetDBStatus();
 
-#ifndef WIN32
+#ifndef HAVE_WINDOWS_H
 #include "sybfront.h"
 #include "sybdb.h"
 #else
@@ -104,7 +104,7 @@ extern int GetDBStatus();
 #define SYBINT2		SQLINT2 
 #define SYBINT1		SQLINT1
 #define SYBDATETIME	SQLDATETIME
-#define SYBDATETIME4	SQLDATETIME4
+#define SYBDATETIME4	SQLDATETIM4
 #define SYBMONEY	SQLMONEY
 #endif
 #include <string.h>
@@ -330,7 +330,7 @@ int		rblob;
 			type = IDL_TYP_INT;
 			break;
 		case SYBDATETIME4 :		/***convert date to double***/
-		case SYBDATETIME :		/***convert date to double***/
+    case SYBDATETIME :		/***convert date to double***/
 		    if (date) 
 		    {		/*Julian day 3 million?? is 17-Nov-1858*/
 			  int yr, mo, da, hr, mi, se, th, leap;
