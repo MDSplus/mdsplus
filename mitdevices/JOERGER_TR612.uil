@@ -483,11 +483,8 @@ object mode : user_defined procedure XmdsCreateNidOptionMenu widget {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("1 "),
-	compound_string("2 "),
-	compound_string("4 "),
-	compound_string("8 "),
-	compound_string("16 "));
+	compound_string("0 "),
+	compound_string("1 "));
         XmNlabelString = compound_string("Mode:        ");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DEVICE$N_MODE;
