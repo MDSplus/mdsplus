@@ -80,7 +80,7 @@ write(*, 'T2Control init');
 	    _status = MdsValue('Feedback->setFloatVariable($1, $2)', 'feedback'//_par_name, float(_par_value));
 	}
 
-	_status = MdsValue('Feedback->stopFeedback()');
+	_status = MdsValue('Feedback->stopLocal()');
 	_status = MdsValue('Feedback->startFeedback()');
 
     MdsDisconnect();

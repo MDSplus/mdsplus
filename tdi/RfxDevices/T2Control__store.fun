@@ -16,6 +16,7 @@ public fun T2Control__store(as_is _nid, optional _method)
 
 	private _N_INPUT_1 = 71;
 	private _N_OUTPUT_1 = 135;
+	private _N_MODES_1 = 167;
 
 write(*, 'T2Control store');
 
@@ -69,6 +70,29 @@ write(*, 'T2Control store');
 				DevLogErr(_nid, 'Error writing data in pulse file');
 
 			}
+	}
+
+
+	_n_samples =  MdsValue('size(Feedback->getMode:dsc(0, 1))');
+	_dim = make_dim(make_window(0, _n_samples, _trigger), _clock);
+
+
+	for(_c = 0; _c < 32; _c++)
+	{
+		_data = MdsValue( 'Feedback->getMode:dsc($1, 1)', _c);
+		_status = DevPut(_nid, _N_MODES_1  + 2 * _c, _data);
+		if(! _status)
+		{
+			DevLogErr(_nid, 'Error writing modes in pulse file');
+
+		}
+		_data = MdsValue( 'Feedback->getMode:dsc($1, 0)', _c);
+		_status = DevPut(_nid, _N_MODES_1  + 2 * _c + 1, _data);
+		if(! _status)
+		{
+			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
+
+		}
 	}
 
 

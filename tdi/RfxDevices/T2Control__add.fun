@@ -3,7 +3,7 @@ public fun T2Control__add(in _path, out _nidout)
 
 write(*,'T2Control__add'); 
 
-    DevAddStart(_path, 'T2Control', 167, _nidout);
+    DevAddStart(_path, 'T2Control', 231, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -94,6 +94,16 @@ write(*,'T2Control__add');
     for (_c = 10; _c <=32; _c++)
     {
         DevAddNode(_path // ':OUTPUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+	}
+    for (_c = 1; _c <=9; _c++)
+    {
+        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+    }
+    for (_c = 10; _c <=32; _c++)
+    {
+        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
 
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
