@@ -24,8 +24,8 @@ public fun MPBEncoder__add(in _path, out _nidout)
     DevAddNode(_path // '.CHANNEL_S', 'STRUCTURE', *, *, _nid);
     DevAddNode(_path // '.CHANNEL_S:EVENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // '.CHANNEL_S:EXT_TRIGGER', 'NUMERIC', 0., *, _nid);
-    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path// ':DISAB_ACTION', 'INIT', 'INIT', 20,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 10,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':DISAB_ACTION', 'INIT', 'INIT', 5,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
        

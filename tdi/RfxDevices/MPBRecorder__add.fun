@@ -7,7 +7,7 @@ public fun MPBRecorder__add(in _path, out _nidout)
     DevAddNode(_path // ':REC_EVENTS', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':REC_TIMES', 'NUMERIC', *, *, _nid);
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 20,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path// ':STORE_ACTION', 'STORE', 'PRIMARY_DATA_ACQUISITION', 5,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 55,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
        

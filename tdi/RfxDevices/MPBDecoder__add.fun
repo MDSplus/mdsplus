@@ -8,7 +8,7 @@ public fun MPBDecoder__add(in _path, out _nidout)
     DevAddNode(_path // ':CLOCK', 'AXIS', *, *, _nid);
     DevAddNode(_path // ':SYNCHRONIZE', 'TEXT', 'DISABLED', *, _nid);
     DevAddNode(_path // ':START_EVENT', 'NUMERIC', *, *, _nid);
-    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 50,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 30,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     for (_c = 1; _c <=5; _c++)
     {
         _cn = _path // '.CHANNEL_' // TEXT(_c, 1);

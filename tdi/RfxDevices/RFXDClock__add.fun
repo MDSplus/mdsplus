@@ -14,7 +14,7 @@ public fun RFXDClock__add(in _path, out _nidout)
     DevAddNode(_path // ':DURATION', 'NUMERIC', 1., *, _nid);
     DevAddNode(_path // ':OUTPUT_MODE', 'TEXT', 'DOUBLE SWITCH: TOGGLE', *, _nid);
     DevAddNode(_path // ':CLOCK', 'AXIS', *, *, _nid);
-    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 20,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
        

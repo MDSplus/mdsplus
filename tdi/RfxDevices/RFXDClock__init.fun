@@ -255,14 +255,14 @@ write(*, 'GATE_PERIOD: ', _gate_period);
 	}
 /*	_real_duration = _effective_delay + _effective_duration - _real_delay;
 */
-	_real_duration = _real_duration - _correction;
+	_real_duration = _real_duration - _correction - _effective_period1/2.;
 
 
     }
     if(_effective_period1 < 1./148E3)
 	_real_delay = _real_delay - _effective_period1/2.;
     if(_effective_period2 < 1./148E3)
-	_real_duration = _real_duration - _effective_period1/2.;
+	_real_duration = _real_duration - _effective_period2/2.;
 
     _real_duration_r = _real_duration - _effective_period2/2.;
     _real_delay_r = _real_delay - _effective_period1/2.;

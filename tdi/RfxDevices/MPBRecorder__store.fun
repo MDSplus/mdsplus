@@ -20,7 +20,6 @@ public fun MPBRecorder__store(as_is _nid, optional _method)
 	    DevLogErr(_nid, '%CAMERR, module '//_name//', bad status = '//TEXT(_status));
 	    abort();
 	}
-
 	if(!CamQ()) break;
 	_code = (_w >> 16) & 0xff;
 	_count = (_w & 0xffff) << 16;
