@@ -1,4 +1,6 @@
-CFLAGS = -c +z -Ae +u1 -Wl,+b,. -Wl,+s -D__hpux__ -I/usr/include/X11R6 -I../include -I. -g 
+include $(MAKE_OPTIONS)
+
+CFLAGS = $(MOTIF_CFLAGS)
 
 OBJECTS = \
 ListTree.o \
@@ -29,13 +31,10 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
-
-all :	.depend
-	make -f Makefile.HPUX -f .depend the_rest
-
-the_rest : ../shlib/libXmdsShr.sl \
+xmdsshr : ../shlib \
+	../shlib/libXmdsShr.a \
 	../shlib/xmdsuil.wmd \
-	../uid \
+        ../uid \
 	../uid/xmds_usage_icons.uid \
 	../uid/XmdsDigChans.uid \
 	../uid/XmdsInput.uid \
@@ -44,6 +43,9 @@ the_rest : ../shlib/libXmdsShr.sl \
 ../uid :
 	mkdir ../uid
 
+../shlib :
+	mkdir ../shlib
+
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
 	uil -o $@ xmds_usage_icons.uil
 
@@ -51,32 +53,31 @@ the_rest : ../shlib/libXmdsShr.sl \
 	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsDigChans.uil
 
 ../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd xmdsuil.wmd -o $@ XmdsInput.uil
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd xmdsuil.wmd -o $@ XmdsXdBox.uil
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsXdBox.uil
 
-../shlib/libXmdsShr.sl : $(OBJECTS)
-	ld -o $@ +s -b $(OBJECTS) -lc -lm \
-          -L/usr/lib/X11R6 -L/usr/lib/Motif1.2 -L../shlib -lMdsShr -lTdiShr -lTreeShr \
-	  -lXm -lXt -lX11
+../shlib/libXmdsShr.a : $(OBJECTS)
+        $(AR) -r $@ $(OBJECTS)
 
-../shlib/xmdsuil.wmd : ../bin/wmdcreate
-	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+../shlib/xmdsuil.wmd : $(WMD_RULE)
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
-	cc -o $@ -DMDS_EXTENSION -I../include -I. wmldbcreate-xmdsshr.c -lXt -lXm
+	cc -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
+
+UilConst.h : xmdsuil.wml 
+	$(WML) 
 
 clean :
 	- rm *.o
-	- rm ../shlib/libXmdsShr.sl
-	- rm so_locations
+	- rm ../shlib/libXmdsShr.$(SHARE_TYPE)
 	- rm .depend
 	- rm ../shlib/xmdsuil.wmd
 
-depend : .depend
-
 .depend :
 	- rm .depend
-	- find *.c -exec cc $(CFLAGS) -P -Wp,-M {} 2> .depend \;
-	- rm *.i	
+	find *.c -exec $(MAKE_DEPEND)
+
+include $(DEPEND)
+
