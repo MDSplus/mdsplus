@@ -61,13 +61,6 @@ static void strcatn(char *dst, const char *src, int max)
 static int Err_Handler(DBPROCESS *dbproc, int severity, int dberr, int oserr, 
                                            cnst char *dberrstr, cnst char *oserrstr)
 {
-        /* if we have run out of licences then return cancel
-           so we can wait and try again */
-        if (DBSTATUS == 18460)  {
-          return INT_CANCEL;
-        }
-        if (!dbproc) return INT_CANCEL;
-        if (DBDEAD(dbproc)) return INT_CANCEL;
 #ifdef WIN32
         if (dberr != SQLEPWD  ) {
 #else
@@ -80,6 +73,13 @@ static int Err_Handler(DBPROCESS *dbproc, int severity, int dberr, int oserr,
             strcat(DBMSGTEXT, "\n");
           }
         }
+        /* if we have run out of licences then return cancel
+           so we can wait and try again */
+        if (DBSTATUS == 18460)  {
+          return INT_CANCEL;
+        }
+        if (!dbproc) return INT_CANCEL;
+        if (DBDEAD(dbproc)) return INT_CANCEL;
         return INT_CANCEL;
 }
 
