@@ -62,7 +62,7 @@ public abstract class DeviceComponent extends JPanel
         displayData(curr_data, curr_on);
     }
     
-    public void apply()
+    public void apply() throws Exception
     {
         if(mode == DATA)
         {
@@ -72,6 +72,8 @@ public abstract class DeviceComponent extends JPanel
             } catch(Exception e) 
             {
                 System.out.println("Error writing device data: " + e);
+                System.out.println(curr_data);
+                throw e;
             }
         }
         if(mode != DISPATCH)

@@ -182,7 +182,7 @@ public class TRCHSetup extends DeviceSetup
 		deviceChannel4.add(deviceField11);
 		deviceField11.setBounds(5,5,219,29);
 		deviceField12.setNumCols(15);
-		deviceField12.setOffsetNid(37);
+		deviceField12.setOffsetNid(31);
 		deviceField12.setLabelString("End :");
 		deviceChannel4.add(deviceField12);
 		deviceField12.setBounds(229,5,212,29);

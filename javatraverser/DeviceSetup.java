@@ -154,7 +154,17 @@ public class DeviceSetup extends JDialog
     public void apply()
     {
         for(int i = 0; i < num_components; i++)
+        {
+            try {
             ((DeviceComponent)device_components.elementAt(i)).apply();
+            } catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(this, exc.toString(), 
+                    "Error writing data at offset nid " + 
+                    ((DeviceComponent)device_components.elementAt(i)).getOffsetNid(),
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        }
         fireDataChangeEvent();
     }
     public void reset()
@@ -197,7 +207,7 @@ public class DeviceSetup extends JDialog
         {
             if(Data.evaluate(varExpr + expressions[idx]) == 0)
             {
-			    JOptionPane.showMessageDialog(null, messages[idx], 
+			    JOptionPane.showMessageDialog(this, messages[idx], 
 			        "Error in device configuration" ,JOptionPane.WARNING_MESSAGE);
 			    return 0;
 			}

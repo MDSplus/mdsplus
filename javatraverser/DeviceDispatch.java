@@ -120,7 +120,7 @@ public class DeviceDispatch extends DeviceComponent
     protected void displayData(Data data, boolean is_on){}
     protected Data getData(){return null; }
     protected boolean getState(){return true;}
-    public void apply()
+    public void apply()throws Exception
     {
         if(dispatch_fields == null) return;
         for(int i = 0; i < dispatch_fields.length; i++)
