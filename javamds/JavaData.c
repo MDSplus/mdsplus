@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
+#include <mdstypes.h>
 #include  <mdsshr.h>
 #include <string.h>
 #include <stdlib.h>
