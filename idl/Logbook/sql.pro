@@ -19,7 +19,7 @@ PRO	SQL
           end
         endif
         if strlen(file) eq 0 then $
-          file = findfile('/urs/local/lib/libIdlSql.sl')
+          file = (findfile('/usr/local/lib/libIdlSql.sl'))[0]
         if strlen(file) eq 0 then $
            message, 'Could not find libIdlSql.sl in SHLIB_PATH'
   endif else begin
