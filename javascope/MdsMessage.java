@@ -54,7 +54,7 @@ class MdsMessage extends Object
     public MdsMessage(String s, Vector v)
     {
         connection_listener = v;
-        BuildMdsMessage((byte)0, Descriptor.DTYPE_CSTRING, (byte)1, null, s.getBytes());    
+        BuildMdsMessage((byte)0, Descriptor.DTYPE_CSTRING, (byte)1, null, s.getBytes());
     }
 
     public MdsMessage(byte c, Vector v)
@@ -93,13 +93,13 @@ class MdsMessage extends Object
         client_type = JAVA_CLIENT;
         this.body = body;
     }
-
-    public void setCompression(boolean state)
+    
+    public void useCompression(boolean use_cmp)
     {
-        status = (state ? SUPPORTS_COMPRESSION : 0);
+         status = (use_cmp ? SUPPORTS_COMPRESSION | 5 : 0);
     }
 
-    protected synchronized byte[] ReadCompressedBuf(int size, DataInputStream dis) throws IOException
+    protected synchronized byte[] ReadCompressedBuf(DataInputStream dis) throws IOException
     {
         int bytes_to_read , read_bytes = 0, curr_offset = 0;
         byte out[], b4[] = new byte[4];
@@ -115,6 +115,12 @@ class MdsMessage extends Object
 	        read_bytes = zis.read(out, curr_offset, bytes_to_read);
 	        curr_offset += read_bytes;
 	        bytes_to_read -= read_bytes;
+        }
+        //remove EOF
+        byte pp[] = new byte[1];
+        while(zis.available() == 1)
+        {
+            zis.read(pp);
         }
 
         return out;
@@ -206,16 +212,17 @@ class MdsMessage extends Object
         byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
         byte b4[] = new byte[4];
         byte b2[] = new byte[2];
+        int c_type = 0;
         int idx = 0;
         
         //ReadBuf(header_b, dis);
         if(dis.read(header_b)== -1)
             throw(new IOException("Broken connection with mdsip server"));
 
-        client_type = header_b[14];
-        swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
-        compressed = ((client_type & COMPRESSED) == COMPRESSED);
-        
+        c_type = header_b[14];
+        swap = ((c_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
+        compressed = ((c_type & COMPRESSED) == COMPRESSED);
+            
         if(swap)
         {        
             msglen = ByteToIntSwap(header_b, 0);
@@ -237,9 +244,21 @@ class MdsMessage extends Object
         descr_idx = header_b[idx++];
         message_id = header_b[idx++];
         dtype = header_b[idx++];
-        client_type = header_b[idx++];
+        c_type = header_b[idx++];
         ndims = header_b[idx++];
-        
+
+/*
+        System.out.println("msglen " + msglen);
+        System.out.println("status " + status);
+        System.out.println("length " + length);
+        System.out.println("nargs " + nargs);
+        System.out.println("descr_idx " + descr_idx);
+        System.out.println("message_id " + message_id);
+        System.out.println("dtype " + dtype);
+        System.out.println("c_type " + c_type);
+        System.out.println("ndims " + ndims);
+*/
+            
         if(swap)
         {
             for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
@@ -252,19 +271,19 @@ class MdsMessage extends Object
                 dims[i]  = ByteToInt(header_b, j);
             }
         }
-                
+                    
         if(msglen > HEADER_SIZE)
         {
             if(compressed)
             {   
-                body = ReadCompressedBuf(msglen - HEADER_SIZE - 4, dis);
+                body = ReadCompressedBuf(dis);
             } else {        
                 body = new byte[msglen - HEADER_SIZE];
                 ReadBuf(body, dis);
             }
         }
         else 
-	        body = new byte[0];
+	        body = new byte[0];    	        
     }	
     	 
     protected void Flip(byte bytes[], int size)
@@ -402,7 +421,7 @@ class MdsMessage extends Object
 	    && arr[idx + 3] == 0);
     }  
 
-    protected void dispatchConnectionEvent(ConnectionEvent e) 
+    synchronized protected void dispatchConnectionEvent(ConnectionEvent e) 
     {
         if (connection_listener != null) 
         {

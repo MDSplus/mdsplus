@@ -354,10 +354,10 @@ public class MdsConnection
 	            dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
 	            dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
 	            MdsMessage message = new MdsMessage(user);
-	            message.setCompression(use_compression); 
+	            message.useCompression(use_compression);
 	            message.Send(dos);
 	            message.Receive(dis);
-        	        
+	                    	        
 	            if((message.status & 1) != 0)
 	            {
 	                receiveThread = new MRT();

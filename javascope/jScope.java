@@ -1,6 +1,8 @@
+import java.util.Properties;
 
 public class jScope
 {
+    static public boolean is_debug = false;
     
     static boolean IsNewJVMVersion()
     {
@@ -13,6 +15,11 @@ public class jScope
         String file = null;    
                 
         jScope_1 win = null;
+ 
+        Properties props = System.getProperties();
+        String debug = props.getProperty("debug");
+        if(debug != null && debug.equals("true"))
+            is_debug = true;
  
         if(System.getProperty("os.name").equals("Mac OS"))
         {

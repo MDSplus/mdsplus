@@ -56,7 +56,7 @@ public class NetworkProvider implements DataProvider
 	        status = mds.DisconnectFromMds();//err);
     }
 
-    public boolean supportsCompression(){return false;}
+    public boolean supportsCompression(){return true;}
     public void    setCompression(boolean state){use_compression = state;}
     public boolean useCompression(){return use_compression;}
 
@@ -468,7 +468,7 @@ public class NetworkProvider implements DataProvider
 		        && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
 	        {
 	            open = true;
-	            return true;
+//	            return true;
 	        }
 	        else
 	        {
@@ -479,9 +479,19 @@ public class NetworkProvider implements DataProvider
 		            error = "Cannot open experiment " + experiment + " shot "+ shot;	    
 	            return false;
 	        }
-        }	    
+        }
+        if(open)
+        {
+	        Descriptor descr = mds.MdsValue("TreeSetDefault(_jscope_def_node)");
+	        if(descr.dtype == Descriptor.DTYPE_CSTRING)
+	        {
+	            error = mds.error;
+	            return false;
+	        }
+        }
         return true;  
-    }	
+    }
+    
     protected boolean NotYetString(String in)
     {
         int i;

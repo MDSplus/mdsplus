@@ -16,7 +16,7 @@ public class AboutWindow extends JLabel  {
         String icon_file = jScope_1.findFileInClassPath("about_jscope.jpg");
         if(icon_file != null)
             io = new ImageIcon(icon_file);
-        if(jScope_1.is_debug)
+        if(jScope.is_debug)
             System.out.println("about_jscope image path "+icon_file);
         //if(jScope.IsNewJVMVersion())
         //    io = new ImageIcon(getClass().getClassLoader().getResource("about_jscope.jpg"));
