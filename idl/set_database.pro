@@ -396,7 +396,7 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset
   if (status eq 0) then $
     return
   MDSDbconnect, mdshost
-  status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
+  status = mdsvalue("dblogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
   if (not status) then begin
       if not (keyword_set(quiet)) then begin
           Message, "Error logging on to DbHost "+host, /continue
