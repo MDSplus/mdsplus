@@ -40,9 +40,9 @@ CFG=jScope - Java Virtual Machine Debug
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir ""
 # PROP Intermediate_Dir ""
-# PROP Cmd_Line "%JDK_DIR%\bin\javac.exe -d ..\java\classes *.java"
-# PROP Rebuild_Opt ""
-# PROP Target_File "..\java\classes\jScope.class"
+# PROP Cmd_Line "NMAKE /f javascope.mak"
+# PROP Rebuild_Opt "/a"
+# PROP Target_File "..\java\classes\MDSplus.jar"
 # PROP Bsc_Name "jScope.bsc"
 # PROP Target_Dir ""
 
@@ -59,9 +59,9 @@ CFG=jScope - Java Virtual Machine Debug
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ""
 # PROP Intermediate_Dir ""
-# PROP Cmd_Line "%JDK_DIR%\bin\javac.exe -d ..\java\classes *.java"
-# PROP Rebuild_Opt ""
-# PROP Target_File "..\java\classes\jScope.class"
+# PROP Cmd_Line "NMAKE /f javascope.mak"
+# PROP Rebuild_Opt "/a"
+# PROP Target_File "..\java\classes\MDSplus.jar"
 # PROP Bsc_Name "jScope.bsc"
 # PROP Target_Dir ""
 
