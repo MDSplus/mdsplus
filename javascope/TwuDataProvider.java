@@ -530,6 +530,12 @@ class TwuDataProvider
             throws Exception 
         {
             TWUSignal bulk ;
+
+            ConnectionEvent ce;
+            ce = new ConnectionEvent(this, "Start Loading "+ (isAbscissa ? "X" : "Y"));
+
+            DispatchConnectionEvent(ce);
+
             bulk = new TWUSignal (properties, opt.start, opt.step, opt.total);
             return SimplifiedGetFloats(bulk, isAbscissa, opt.total);
         }
@@ -1349,6 +1355,12 @@ class TwuDataProvider
     public TwuDataProvider()
     {
         super();
+    }
+
+    public static String 
+    revision()
+    {
+        return "$Id$";
     }
 
     public TwuDataProvider(String user_agent)
