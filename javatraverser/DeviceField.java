@@ -96,7 +96,7 @@ public class DeviceField extends DeviceComponent
           }
         });
 
-
+        textF.setEditable(editable);
         initializing = false;
     }
 
