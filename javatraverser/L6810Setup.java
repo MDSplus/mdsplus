@@ -131,12 +131,12 @@ public class L6810Setup extends DeviceSetup
         deviceField1.setIdentifier("");
         gridLayout2.setColumns(1);
         gridLayout2.setRows(5);
-        deviceChoice3.setChoiceIntValues(new int[] {(int)1024,(int)2048,(int)4096,(int)8192,(int)16384,(int)32768,(int)65536,(int)313072,(int)262144,(int)524288,(int)1048576,(int)2097152,(int)4194304,(int)8288608});
+        deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)2,(int)4,(int)8,(int)16,(int)32,(int)64,(int)128,(int)256,(int)512});
         deviceChoice3.setChoiceFloatValues(null);
         deviceChoice3.setConvert(true);
         deviceChoice3.setOffsetNid(8);
         deviceChoice3.setLabelString("Samples per segment: ");
-        deviceChoice3.setChoiceItems(new String[] {"1K", "2K", "4K", "8K", "16K", "32L", "64K", "128K", "256K", "512K", "1M", "2M", "4M", "8M"});
+        deviceChoice3.setChoiceItems(new String[] {"1K", "2K", "4K", "8K", "16K", "32L", "64K", "128K", "256K", "512K"});
         deviceChoice3.setUpdateIdentifier("");
         deviceChoice3.setIdentifier("");
         deviceField2.setOffsetNid(7);
