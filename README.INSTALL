@@ -48,5 +48,14 @@ setenv UILPATH [motif-bin-directory-where-uil-image-is]
 replacing the text inside the brackets (and the brackets) with the location of the real
 Motif files.
 
-
+SYBASE Open/CLient - IDL database connection
+Sites with IDL, SYBASE Open/CLient libraries and Microsoft SQLSERVER databases can use idlsql
+library for database connectivity.  The idl procedure in idl/Logbook/dbinfo.pro should be edited 
+to reflect the site specific database connectivity and security policies.  The default version
+assumes that the environment variable SYBASE_HOST contains the name of the host from the sybase 
+interfaces file.  It looks for a file $HOME/xxx.sybase_login, where xxx is the name of the sybase
+host, if it finds it and can read it, it sends the first line as the username and the second for 
+the password, if not it sends $USER and a default password.
+NOTE - the environment variable SYBASE must point at the sybase distribution in order for their 
+libraries to function.
 
