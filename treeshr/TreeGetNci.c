@@ -43,7 +43,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID nid = *(NID *)&nid_in;
-  int       status = 1;
+  int       status = TreeNORMAL;
   int       node_number;
   TREE_INFO *info;
   NCI_ITM  *itm;
@@ -658,7 +658,7 @@ static void FixupNciIn(NCI *nci)
 
 int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 {
-	int       status = 1;
+	int       status = TreeNORMAL;
 
 	/******************************************
 	If the tree is not open for edit then

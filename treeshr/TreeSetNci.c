@@ -128,7 +128,7 @@ int _TreeFlushOff(void *dbid, int nid)
   if (!tree_info)
     return TreeNNF;
   tree_info->flush=0;
-  return 1;
+  return TreeNORMAL;
 }
 
 int _TreeFlushReset(void *dbid,  int nid)
@@ -146,7 +146,7 @@ int _TreeFlushReset(void *dbid,  int nid)
     tree_info->flush = 1;
     TreeWait(tree_info);
   }
-  return 1;
+  return TreeNORMAL;
 }   
 
 /*------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 {
   int       status;
   int       nci_num;
-  status = 1;
+  status = TreeNORMAL;
   TreeWait(info);
 
 /******************************************
@@ -216,7 +216,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
         status = info->nci_file->putrab->rab$l_stv;
 #else /* __VMS */
       fseek(info->nci_file->put,node_num * sizeof(struct nci),SEEK_SET);
-      status = fread(nci,sizeof(struct nci),1,info->nci_file->put) == 1;
+      status = (fread(nci,sizeof(struct nci),1,info->nci_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
 #endif /* __VMS */
     }
   }
@@ -282,7 +282,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
 
   if (info->nci_file == 0)
   {
-    status = (info->nci_file = (struct nci_file *)malloc(NCI_FILE_VM_SIZE)) != NULL;
+    status = ((info->nci_file = (struct nci_file *)malloc(NCI_FILE_VM_SIZE)) != NULL) ? TreeNORMAL : TreeFAILURE;
     if (status & 1)
     {
 #ifdef __VMS
@@ -482,7 +482,7 @@ static void flush_it(struct RAB *rab)
 int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
 {
   int       status;
-  status = 1;
+  status = TreeNORMAL;
 /***************************************
   If the tree is not open for edit
 ****************************************/
@@ -507,7 +507,7 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
       status = info->nci_file->$a_putrab->rab$l_stv;
 #else /* __VMS */
     fseek(info->nci_file->put,sizeof(struct nci) * node_num, SEEK_SET);
-    status = fwrite(nci, sizeof(struct nci), 1, info->nci_file->put) == 1;
+    status = (fwrite(nci, sizeof(struct nci), 1, info->nci_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
     fflush(info->nci_file->put);
 #endif /* __VMS */
   }
@@ -727,12 +727,12 @@ int _TreeTurnOff(void *dbid, int nid_in)
 static int UnlockNci(TREE_INFO *info, int node_num)
 {
   int       status;
-  status = 1;
+  status = TreeNORMAL;
 #ifdef __VMS
   if (info->nci_file != 0 && info->nci_file->putrab != 0)
     status = sys$release(info->nci_file->putrab, 0, 0);
   if (status == RMS$_RNL)
-    status = 1;
+    status = TreeNORMAL;
 #endif /* __VMS */
   return status;
 }
@@ -773,7 +773,7 @@ int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state)
   int       status;
   NCI       nci;
   NODE     *lnode;
-  status = 1;
+  status = TreeNORMAL;
   for (lnode = node; lnode && (status & 1); lnode = brother_of(lnode))
   {
     status = SetNodeParentState(db, lnode, &nci, state);

@@ -400,7 +400,7 @@ static int FixupPath()
 
 static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A))
     status = PointerToOffset((struct descriptor *) dsc_ptr->pointer, length);
   if (status & 1)
@@ -466,7 +466,7 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 	    *dsc_ptr = (struct descriptor *) ((char *) *dsc_ptr - (int) a_ptr);
 	  }
 	  else
-	    status = 1;
+	    status = TreeNORMAL;
 	}
 	if (status & 1)
 	{
@@ -502,7 +502,7 @@ static int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 
 int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   DATA_FILE *df_ptr = info->data_file;
   *stv_ptr = 0;
   if (df_ptr == 0)
@@ -540,7 +540,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   info->data_file->record_header->node_number = nodenum;
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
@@ -553,8 +553,8 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     eof = ftell(info->data_file->put);
     bytes_to_put -= bytes_this_time;
     info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-    status = fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1;
-    status = fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1;
+    status = (fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
+    status = (fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
     if (!bytes_to_put)
     {
       if (status & 1)
@@ -583,7 +583,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
 
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   info->data_file->record_header->node_number = nodenum;
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
@@ -594,8 +594,8 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
     fseek(info->data_file->put,rfa_l,SEEK_SET);
     bytes_to_put -= bytes_this_time;
     info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-    status = fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1;
-    status = fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1;
+    status = (fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
+    status = (fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1) ? TreeNORMAL : TreeFAILURE;
     if (!bytes_to_put)
     {
       if (status & 1)
@@ -660,7 +660,7 @@ static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 
 static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_out, unsigned int *b_in)
 {
-  unsigned int status = 1,
+  unsigned int status = TreeNORMAL,
               bytes_out = 0,
               bytes_in = 0,
               i,j,

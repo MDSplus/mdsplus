@@ -110,7 +110,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
       it has not grown to big and increment the
       conglomerate node number.
     ************************************************/
-      status = 1;
+      status = TreeNORMAL;
       conglom_size = &dblist->tree_info->edit->conglomerate_size;
       conglom_index = &dblist->tree_info->edit->conglomerate_index;
       if (*conglom_size)
@@ -184,7 +184,7 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
   int done = 0;
   NODE *pre_ptr;
   NODE *tmp_ptr;
-  status = 1;                                                                        /* Assume success */
+  status = TreeNORMAL;                                                                        /* Assume success */
   link_it(child_ptr->parent,parent_ptr,child_ptr);                          /* fill in the parent pointer */
   child_ptr->brother = 0;                                                     /* Assume it will be only child */
   if (parent_ptr->child == 0)                                                 /* If first child */
@@ -234,7 +234,7 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
 
  Executable:
 */
-      status = 1;                                                                        /* Assume success */
+      status = TreeNORMAL;                                                     /* Assume success */
       link_it(member_ptr->parent,parent_ptr,member_ptr);                        /* fill in the parent pointer */
       member_ptr->brother = 0;                                                    /* Assume it will be only member*/
       if (parent_ptr->member == 0)                                                /* If first member*/
@@ -277,7 +277,7 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
 
 int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   NODE     *node_ptr;
   TREE_INFO *info_ptr = db_ptr->tree_info;
   TREE_HEADER *header_ptr = info_ptr->header;
@@ -324,7 +324,7 @@ int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node
 int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes)
 {
   int      *saved_node_numbers;
-  int       status = 1;
+  int       status = TreeNORMAL;
   NODE    **node_ptrptr;
   NODE     *node_ptr;
   NODE     *ptr;
@@ -538,7 +538,7 @@ int _TreeStartConglomerate(void *dbid, int size)
   is found looking for it.  If nessesary expand the
   node pool and continue looking.
 ******************************************************/
-  for (status = 1, i = 0; (status & 1) && i < size - 1;)
+  for (status = TreeNORMAL, i = 0; (status & 1) && i < size - 1;)
   {
     if (i == 0)
       starting_node_ptr = this_node_ptr;
@@ -612,7 +612,7 @@ int _TreeEndConglomerate(void *dbid)
   else if (conglom_size > conglom_index)
     status = TreeCONGLOM_NOT_FULL;
   else
-    status = 1;
+    status = TreeNORMAL;
   return status;
 }
 
@@ -649,7 +649,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       status = TreeNOT_OPEN;
       for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next)
       {
-	if ((shot == db->shotid) && (strcmp(exp_ptr, db->main_treenam) == 0))
+	if ((shot == db->shotid) && (strcmp(uptree, db->main_treenam) == 0))
 	{
 	  if (prev_db)
 	  {
@@ -769,7 +769,7 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
 
 int TreeWriteNci(TREE_INFO *info)
 {
-  int       status = 1;
+  int       status = TreeNORMAL;
   if (info->header->nodes > info->edit->first_in_mem)
   {
     status = TreeFAILURE;

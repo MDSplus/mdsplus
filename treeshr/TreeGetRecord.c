@@ -5,7 +5,7 @@
 #include "treeshrp.h"
 #include <treeshr.h>
 #include <librtl_messages.h>
-
+#include <sys/errno.h>
 #include <string.h>
 
 #include <stdlib.h>
@@ -107,7 +107,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
                 int length = nci.DATA_INFO.DATA_LOCATION.record_length;
                 char *data = malloc(length);
 		status = GetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum);
-		if ((status & 1) && ((retsize != length) || (nodenum != nidx)))
+                if (!(status & 1))
+                  status = TreeBADRECORD;
+		else if ((retsize != length) || (nodenum != nidx))
 		  status = TreeBADRECORD;
                 else
 	          status = (Rec2Dsc(data,dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
@@ -425,7 +427,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
     fseek(info->data_file->get,rfa_l,SEEK_SET);
     if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
     {
-      unsigned int partlen = min(32755, buffer_space);
+      unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
       int nidx = swapint((char *)&hdr.node_number);
       if (first)
         *nodenum = nidx;
@@ -443,7 +445,10 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
         memcpy(rfa,&hdr.rfa,sizeof(rfa));
       }
       else
+      {
+        printf("errno = %d\n",errno);
         status = 0;
+      }
     }
     else
       status = 0;

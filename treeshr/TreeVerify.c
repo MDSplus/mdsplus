@@ -31,6 +31,7 @@ int TreeVerify( )
 
 #include <mdsdescrip.h>
 #include <ncidef.h>
+#include <treeshr.h>
 #include "treeshrp.h"
 #include <stdio.h>
 
@@ -68,7 +69,7 @@ int _TreeVerify(void *dbid)
       printf("  Other     = %d/%d\n", other, maxnodes);
     }
   }
-  return 1;
+  return TreeNORMAL;
 }
 
 static int countnodes(NODE *node)

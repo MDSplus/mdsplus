@@ -323,7 +323,9 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 			dblist->modified = 0;
 			dblist->remote = 0;
 			free(dblist->experiment);
+                        dblist->experiment = 0;
 			free(dblist->main_treenam);
+                        dblist->main_treenam = 0;
 		}
 	}
 	return status;

@@ -19,6 +19,6 @@ ret name args \
   return status;\
 }
 
-Dummy(TreeCallHook,1)
-Dummy(TreeEstablishRundownEvent,1)
-Dummy(TreeWait,1)
+Dummy(TreeCallHook,TreeNORMAL)
+Dummy(TreeEstablishRundownEvent,TreeNORMAL)
+Dummy(TreeWait,TreeNORMAL)

@@ -21,7 +21,6 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
 static char *AbsPath(void *dbid, char *inpath, int nid_in);
 static char *Treename(PINO_DATABASE *dblist, int nidin);
 static int BsearchCompare(const void *this_one, const void *compare_one);
-static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx);
 
 
 int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(DBID,path,outnid); }
@@ -62,7 +61,7 @@ int _TreeFindNode(void *dbid, char *path, int *outnid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID	    *nid = (NID *)outnid;
-  int       status = 1;
+  int       status = TreeNORMAL;
   NODE *node;
   SEARCH_CONTEXT *ctx;
   int current_level;
@@ -1053,14 +1052,17 @@ struct tag_search { TAG_NAME   tag;
                     TREE_INFO *info;
                   };
 
-static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
+int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
 
 {
   int       status;
-  int slen = strlen(tagnam);
+  int len = min(taglen,sizeof(TAG_NAME));
+  int i;
+  int *idx;
   struct tag_search tsearch;
   memset(tsearch.tag,32,sizeof(TAG_NAME));
-  memcpy(tsearch.tag,tagnam,min(taglen,sizeof(TAG_NAME)));
+  for (i=0;i<len;i++)
+    tsearch.tag[i] = __toupper(tagnam[i]);
   *nodeptr = NULL;
 /********************************************
  To locate a tag we must first find which tree
@@ -1094,6 +1096,7 @@ static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, ch
   if (taglen == 3 && strncmp(tagnam,"TOP",3) == 0)
   {
       *nodeptr = tsearch.info->root;
+      *tagidx = 0;
       return TreeNORMAL;
   }
   else
@@ -1113,15 +1116,17 @@ static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, ch
 	  case 1: if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
 			  {
 				  *nodeptr = tsearch.info->node + tsearch.info->tag_info->node_idx;
+                                  *tagidx = 1;
 				  return TreeNORMAL;
 			  }
 		      else
 			    return TreeTNF;
        default:
-		   if ((tagidx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
+		   if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
 			   tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0)
 		   {
-			   *nodeptr = tsearch.info->node + (tsearch.info->tag_info + *tagidx)->node_idx;
+			   *nodeptr = tsearch.info->node + (tsearch.info->tag_info + *idx)->node_idx;
+                           *tagidx = *idx + 1;
 			   return TreeNORMAL;
 		   }
 		   else
@@ -1156,7 +1161,7 @@ int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, ch
   int       i;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  status = 1;
+  status = TreeNORMAL;
   memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len+1),path_ptr);
