@@ -31,10 +31,14 @@ XmdsXdBoxOnOffButton.o
 
 all :	libXmdsShr.so \
 	xmdsuil.wmd \
+        ../uid \
 	../uid/xmds_usage_icons.uid \
 	../uid/xmdsdigchans.uid \
 	../uid/xmdsinput.uid \
 	../uid/XmdsXdBox.uid
+
+../uid :
+	mkdir ../uid
 
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
 	uil -o $@ $<
