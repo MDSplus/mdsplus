@@ -7,9 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.*;
 
-public class ACQD265Setup extends DeviceSetup
+public class ACQD270Setup extends DeviceSetup
 {
-	public ACQD265Setup(Frame parent)
+	public ACQD270Setup(Frame parent)
 	{
  	  super(parent);
           initComponents();
@@ -23,8 +23,8 @@ public class ACQD265Setup extends DeviceSetup
 		// what Visual Cafe can generate, or Visual Cafe may be unable to back
 		// parse your Java file into its visual environment.
 		//{{INIT_CONTROLS
-		setDeviceTitle("Acqiris Digitizer Model DC265");
-		setDeviceType("ACQD265");
+		setDeviceTitle("Acqiris Digitizer Model DC270");
+		setDeviceType("ACQD270");
 		getContentPane().setLayout(null);
 		setSize(600,592);
 		name_label.setText("Name:");
@@ -179,10 +179,18 @@ public class ACQD265Setup extends DeviceSetup
 		deviceChoice4.setLabelString("Ck. Mode:");
 		getContentPane().add(deviceChoice4);
 		deviceChoice4.setBounds(7,70,205,30);
-		deviceChoice5.setChoiceFloatValues(new float[] {(float)100.0,(float)200.0,(float)250.0,(float)400.0,(float)500.0,(float)1000.0,(float)2000.0,(float)2500.0,(float)4000.0,(float)5000.0,(float)10000.0,(float)20000.0,(float)25000.0,(float)40000.0,(float)50000.0,(float)100000.0,(float)200000.0,(float)250000.0,(float)400000.0,(float)500000.0,(float)1000000.0,(float)2000000.0,(float)2500000.0,(float)4000000.0,(float)5000000.0,(float)1.0E7,(float)2.0E7,(float)2500000.0,(float)4.0E7,(float)5.0E7,(float)1.0E8,(float)2.0E8,(float)2.5E8,(float)4.0E8,(float)5.0E8});
+		deviceChoice5.setChoiceFloatValues(new float[] {
+                    (float)1.0E2,(float)2.0E2,(float)2.5E2,(float)4.0E2,(float)5.0E2,
+                    (float)1.0E3,(float)2.0E3,(float)2.5E3,(float)4.0E3,(float)5.0E3,
+                    (float)1.0E4,(float)2.0E4,(float)2.5E4,(float)4.0E4,(float)5.0E4,
+                    (float)1.0E5,(float)2.0E5,(float)2.5E5,(float)4.0E5,(float)5.0E5,
+                    (float)1.0E6,(float)2.0E6,(float)2.5E6,(float)4.0E6,(float)5.0E6,
+                    (float)1.0E7,(float)2.0E7,(float)2.5E7,(float)4.0E7,(float)5.0E7,
+                    (float)1.0E8,(float)2.0E8,(float)2.5E8,(float)4.0E8,(float)5.0E8,
+                    (float)1.0E9});
 		deviceChoice5.setOffsetNid(8);
 		{
-			String[] tempString = new String[35];
+			String[] tempString = new String[36];
 			tempString[0] = "100";
 			tempString[1] = "200";
 			tempString[2] = "250";
@@ -218,6 +226,7 @@ public class ACQD265Setup extends DeviceSetup
 			tempString[32] = "250E6";
 			tempString[33] = "400E6";
 			tempString[34] = "500E6";
+                        tempString[35] = "1E9";
 			deviceChoice5.setChoiceItems(tempString);
 		}
 		deviceChoice5.setLabelString("Freq. :");
@@ -1601,12 +1610,12 @@ public class ACQD265Setup extends DeviceSetup
 		//}}
 	}
 
-	public ACQD265Setup()
+	public ACQD270Setup()
 	{
 		this((Frame)null);
 	}
 
-	public ACQD265Setup(String sTitle)
+	public ACQD270Setup(String sTitle)
 	{
 		this();
 		setTitle(sTitle);
@@ -1621,7 +1630,7 @@ public class ACQD265Setup extends DeviceSetup
 
 	static public void main(String args[])
 	{
-		(new ACQD265Setup()).setVisible(true);
+		(new ACQD270Setup()).setVisible(true);
 	}
 
 	public void addNotify()
