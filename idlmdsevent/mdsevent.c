@@ -39,6 +39,7 @@ typedef struct _event_struct { int stub_id;
                                char value[12];
                              } EventStruct;
 
+#include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
 extern void IDL_WidgetStubLock(int lock);
@@ -47,7 +48,6 @@ extern void IDL_WidgetIssueStubEvent(char *stub_rec, EventStruct *e);
 extern void IDL_WidgetGetStubIds(char *stub_rec, HWND *wid1, HWND *wid2);
 #else
 #include <X11/Intrinsic.h>
-#include <stdio.h>
 extern XtInputCallbackProc MdsDispatchEvent();
 static XtInputId XTINPUTID=0;
 #endif
@@ -78,11 +78,13 @@ EventStruct *IDLMdsEvent(int argc, void * *argv)
         && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
     {
       /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
+#ifndef WIN32
       if (!XTINPUTID) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
         XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, sock);
       }
+#endif
       e->stub_id = *stub_id;
       e->base_id = *base_id;
       strncpy(e->name, name, sizeof(e->name));
@@ -104,7 +106,7 @@ static void EventAst(EventStruct *e)
   {
 #ifdef WIN32
 	HWND wid1, wid2;
-	IDL_WidgetGetStubIds(stub_rec, &wid1, &wid2);
+	IDL_WidgetGetStubIds(stub_rec, (unsigned long *)&wid1, (unsigned long *)&wid2);
 #endif
         IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
 #ifdef WIN32
