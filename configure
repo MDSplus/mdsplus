@@ -1002,7 +1002,7 @@ fi
 LD=ld
 case "$target" in
 hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
-       FFLAGS="$FFLAGS -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +"; 
+       FFLAGS="$FFLAGS -I\$(top_srcdir)/include"; 
        LDSHARE="-Wl,-a shared_archive";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
@@ -1028,8 +1028,8 @@ sparc-sun-solaris2*)  LINKSHARED="-G -B symbolic -R $(exec_prefix)/lib";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
        FFLAGS="$FFLAGS -I\$(top_srcdir)/include";
-       LDSHARE="-so_archive ";
-       LDARC="-no_so ";
+       LDSHARE="-Wl,-so_archive ";
+       LDARC="-Wl,-no_so ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
        FOR_LDFLAGS="-lfor";
        SHARETYPE=".so";;
