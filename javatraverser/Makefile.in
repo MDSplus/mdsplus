@@ -60,6 +60,7 @@ CADHSetup.java \
 J221Setup.java \
 RFXVISetupSetup.java \
 RFXVIConfigSetup.java \
+LASER_NDSetup.java
 
 
 SOURCES = ActionData.java\
