@@ -389,7 +389,7 @@ JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironmentSpecific(JNIEnv *env
 	if(jdefNode)
 	{
 		defNode = (*env)->GetStringUTFChars(env, jdefNode, 0);
-		status = TreeFindNode(defNode, &nid);
+		status = TreeFindNode((char *)defNode, &nid);
 		if(status & 1)
 			TreeSetDefaultNid(nid);
 		(*env)->ReleaseStringUTFChars(env, jdefNode, defNode);
@@ -455,7 +455,7 @@ JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
 	}
 	localDataProviderInstance = (*env)->NewGlobalRef(env, obj);
  	event = (*env)->GetStringUTFChars(env, jevent, 0);
-	status = MDSEventAst(event, handleEvent, (void *)idx, &evId);
+	status = MDSEventAst((char *)event, handleEvent, (void *)idx, &evId);
 	if(!(status & 1))
 	{
 		printf("Error calling MDSEventAst");
