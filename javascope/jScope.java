@@ -868,8 +868,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         int wave_mode;
     
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        wave_mode = w.GetMode();
-	    w.SetMode(Waveform.MODE_WAIT);
+        //wave_mode = w.GetMode();
+	    //w.SetMode(Waveform.MODE_WAIT);
 	    SetStatusLabel("Update signals for shots " + shot);
         try
         {
@@ -884,7 +884,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    } catch (Throwable e) {	        
 	        SetStatusLabel("Error during apply: "+e);	    
 	    }
-	    w.SetMode(wave_mode);
+	    //w.SetMode(wave_mode);
         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
     
@@ -1329,7 +1329,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		                else
 	                        s = SetStrSize("[" + ((int)we.point_x) + ", " 
 				                       + ((int)we.point_y) + " : " 
-				                       + we.delta_x + "]", 30);
+				                       + "(" + ((we.pixel_value >> 16) & 0xff) + "," + ((we.pixel_value >> 8) & 0xff) + "," +  (we.pixel_value & 0xff) + ")" +
+				                       " : " + we.delta_x + "]", 50);
 		            }
 
 	                if(wi.shots != null)

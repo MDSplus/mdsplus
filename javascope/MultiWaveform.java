@@ -257,33 +257,11 @@ public class MultiWaveform extends Waveform
 	    super.UpdateSignal(waveform_signal);
     }
     
-    //public Signal[] GetSignals()
     public Vector GetSignals()
     {
         return signals;
     }
 
-/*
-    public int[] GetMarkers()
-    {
-        return markers;
-    }
-
-    public int[] GetMarkersStep()
-    {
-        return markers_step;
-    }
-
-    public boolean[] GetInterpolates()
-    {
-        return interpolates;
-    }
-
-    public int[] GetColorsIdx()
-    {
-        return colors_idx;
-    }
-*/
     public String[] GetSignalsName()
     {
         String names[] = new String[signals.size()];
@@ -296,6 +274,9 @@ public class MultiWaveform extends Waveform
     {
         if(idx < signals.size() && signals.elementAt(idx) != null )
             return ((Signal)signals.elementAt(idx)).getName();
+        else
+            if(is_image && frames != null)
+                return frames.getName();
         return null;
     }
 
@@ -694,6 +675,50 @@ public class MultiWaveform extends Waveform
         
     protected int GetSelectedSignal() {return curr_point_sig_idx; }
 
+    public int getSignalMode(int idx)
+    {
+       int type = -1; 
+       if(idx >= 0 && idx < signals.size())
+       {
+           type = ((Signal)signals.elementAt(idx)).getMode();
+       }
+       return type;
+    }
+
+    public int getSignalMode()
+    {
+       return getSignalMode(curr_point_sig_idx);
+    }
+
+    public int getSignalType(int idx)
+    {
+       int type = -1; 
+       if(idx >= 0 && idx < signals.size())
+       {
+           type = ((Signal)signals.elementAt(idx)).getType();
+       }
+       return type;
+    }
+
+    public int getSignalType()
+    {
+       return getSignalType(curr_point_sig_idx);
+    }
+    
+    public void setSignalMode(int idx, int mode)
+    {
+       if(idx >= 0 && idx < signals.size())
+       {
+          Signal s = ((Signal)signals.elementAt(idx)); 
+          if(s != null && s.getType() == Signal.TYPE_2D)
+            s.setMode(mode);
+       }
+    }
+    
+    public void setSignalMode(int mode)
+    {
+        setSignalMode(curr_point_sig_idx, mode);
+    }
 
     public void Autoscale()
     {

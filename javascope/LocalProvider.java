@@ -1,4 +1,4 @@
-public class LocalProvider implements DataProvider {
+public class LocalProvider extends NetworkProvider implements DataProvider {
     static {
 	System.loadLibrary("JavaMds");
     }
@@ -9,6 +9,7 @@ public class LocalProvider implements DataProvider {
     native public float GetFloat(String in);
     native public float[] GetFloatArray(String in);
     native public int[] GetIntArray(String in);
+    native public byte [] GetByteArray(String in);
     native public String ErrorString();
     public boolean SupportsAsynch() { return false; }
     public void addNetworkEventListener(NetworkEventListener l, String event){}
@@ -16,7 +17,8 @@ public class LocalProvider implements DataProvider {
     public String GetDefaultTitle(String in_y[]){return null;}
     public String GetDefaultXLabel(String in_y[]){return null;}
     public String GetDefaultYLabel(String in_y[]){return null;}
-    public byte[]  GetAllFrames(String in_frame){return null;} 
-    public float[]  GetFrameTimes(String in_frame){return null;} 
-    public byte[] GetFrameAt(String in_frame, int frame_idx){return null;} 
-    }	    
+    public float[]  GetFrameTimes(String in_frame) {return null; }
+    public byte[] GetFrameAt(String in_frame, int frame_idx) {return null; }
+    protected synchronized boolean  CheckOpen() {return true; } 
+    
+}	    

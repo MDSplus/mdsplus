@@ -37,6 +37,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     private   UpdateWaves	updateThread;
     private   boolean      abort;
     private   boolean   add_sig = false;
+    private   ProfileDialog profile_dialog;
 
      
     class UpdateWaves extends Thread {
@@ -61,47 +62,31 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         date = new Date();
         start = date.getTime();
         
-//	    isUpdateAllWaves = true;
-//	    setup.SetStatusLabel("");
         wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, "Start Update");
         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
 	    
-//	    curr_mode = GetMode();
-//	    SetMode(Waveform.MODE_WAIT);
-//    	setCursor(new Cursor(Cursor.WAIT_CURSOR));
-
         try
         {
- 
-	    //Update WaveInterface with new shot and default values
-	    
+ 	    
 	        UpdateAllWave();
  	    
 	        if(!abort)
                 wce = new WaveContainerEvent(this, WaveContainerEvent.END_UPDATE, "All waveforms are up to date");
-//		        setup.SetStatusLabel("All waveforms are up to date");
 	        else
                 wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Aborted up to date");
-//		        setup.SetStatusLabel("Aborted up to date");
             jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
 
-	    
-//	        isUpdateAllWaves = false;
-	    
+	    	    
             date = new Date();
             end = date.getTime();
             if(jScope.is_debug)
                 System.out.println("Durata "+(end-start)+" ms ");
 	    	    
 	    } catch(Throwable e ) {
-//	        isUpdateAllWaves = false;      
             wce = new WaveContainerEvent(this, WaveContainerEvent.KILL_UPDATE, "Error during apply " + e);
             jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
-//		    setup.SetStatusLabel("Error during apply " + e);	        
 	    }    
         System.gc();
-//	    SetMode(curr_mode);
-//    	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       }
     }     
      
@@ -109,12 +94,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     {
           notify();
     }
-    
- //   synchronized public void AbortUpdate()
- //   {
- //         abort = true;
- //   }
-    
+        
   }
        
 
@@ -209,6 +189,43 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
   }
 
 
+    public void processWaveformEvent(WaveformEvent e) 
+    {
+        super.processWaveformEvent(e);
+        Waveform w = (Waveform)e.getSource();
+        switch(e.getID())
+        {
+            case WaveformEvent.PROFILE_UPDATE:
+                if(profile_dialog != null && profile_dialog.isShowing())
+                {
+                    profile_dialog.updateProfiles(e.pixels_x, e.start_pixel_x, 
+                                                  e.pixels_y, e.start_pixel_y,
+                                                  e.pixels_signal, e.frames_time);                    
+                }
+            return;
+        }
+    }
+
+    public void ShowProfileDialog()
+    {
+        if(profile_dialog != null && profile_dialog.isVisible())
+            profile_dialog.dispose();
+        //if(profile_dialog == null)
+        {
+            profile_dialog = new ProfileDialog((Frame)this.getParent(), "Profile Dialog");
+            profile_dialog.pack();
+            profile_dialog.setSize(200, 300);
+            Waveform.setSendProfile(true);
+        }
+        /*if(profile_dialog.isShowing())
+        {
+            Waveform.setSendProfile(false);
+            profile_dialog.setVisible(false);
+        }
+        else*/
+            profile_dialog.show();
+    }
+
     public int print(Graphics g, PageFormat pf, int pageIndex)
         throws PrinterException {
         
@@ -292,7 +309,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
   public void AbortUpdate()
   {
-     // updateThread.AbortUpdate();
         abort = true;
   }
 
@@ -1012,7 +1028,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         
     }
 
-   
+/*   
     public void SaveAsText(jScopeMultiWave w)
     {
         if(w == null || w.wi == null || w.wi.signals.length == 0) return;
@@ -1093,7 +1109,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    file_diag = null;
     }
 
- /*
+ */
     public void SaveAsText(jScopeMultiWave w)
     {
         
@@ -1120,9 +1136,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                     {
                         switch(l)
                         {
-                           case 0 : s = "Shot : " + w.wi.shots[i]; break;
-                           case 1 : s = "x : " + w.wi.in_x[i]; break;
-                           case 2 : s = "y : " + w.wi.in_y[i]; break;
+                           case 0 : s = "x : "    + ((w.wi.in_x != null && w.wi.in_x.length > 0) ? w.wi.in_x[i]: "None"); break;
+                           case 1 : s = "y : "    + ((w.wi.in_y != null && w.wi.in_y.length > 0) ? w.wi.in_y[i]: "None"); break;
+                           case 2 : s = "Shot : " + ((w.wi.shots != null && w.wi.shots.length > 0) ? ""+w.wi.shots[i] : "None"); break;
                         }
                         out.write(s, 0, (s.length() < 34) ? s.length() : 34);
                         space.setLength(0);
@@ -1140,31 +1156,29 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                 int start_idx[] = new int[w.wi.signals.length];
                 
 	            for(int i = 0; i < w.wi.signals.length; i++)
-	                start_idx[i] = -1;
+	                start_idx[i] = 0;
 	                
                 while(more_point)
                 {
-                    new_line = true;
                     more_point = false;
 	                for(int i = 0; i < w.wi.signals.length; i++)
                     {
                         s1 = "";
                         s2 = "";
-                        if(w.wi.signals[i] != null &&
-                           w.wi.signals[i].x != null &&
-                           j < w.wi.signals[i].x.length)
+                        if(w.wi.signals[i] != null && w.wi.signals[i].x != null)
                         {
-                            more_point = true;
-                            if(w.wi.signals[i].x[j] > xmin &&
+                            for(j = start_idx[i]; j < w.wi.signals[i].x.length; j++) 
+                            {
+                                if(w.wi.signals[i].x[j] > xmin &&
                                    w.wi.signals[i].x[j] < xmax)
-                            {   
-                                s1 = ""+w.wi.signals[i].x[j];
-                                s2 = ""+w.wi.signals[i].y[j];
-                            } else {
-                                new_line = false;
-                                break;
+                                {   
+                                    more_point = true;
+                                    s1 = ""+w.wi.signals[i].x[j];
+                                    s2 = ""+w.wi.signals[i].y[j];
+                                    start_idx[i] = j+1;
+                                    break;
+                                } 
                             }
-                            
                         }
                         out.write(s1);
                         space.setLength(0);
@@ -1179,9 +1193,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                             space.append(' ');
                         out.write(space.toString());                            
                     }
-                    if(new_line)
-	                    out.newLine();
-                    j++;
+	                out.newLine();
                 }                
 	            out.close();
 
@@ -1191,5 +1203,5 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    }
 	    file_diag = null;
     }
- */
+ 
 }

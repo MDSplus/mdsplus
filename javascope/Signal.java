@@ -12,7 +12,12 @@ import java.awt.Color;
  */
 public class Signal
 {
-
+    static final int TYPE_1D = 0;
+    static final int TYPE_2D = 1;
+    static final int TYPE_CONTOUR = 2;
+    static final int MODE_YTIME = 0;
+    static final int MODE_YX = 1;
+    
     /**
      * String vector of markers name.
      */
@@ -79,6 +84,22 @@ public class Signal
      * x array of signal
      */
     protected float x[];
+
+    /**
+    * Two dimensional data vector
+    */
+    protected float data[];
+
+    /**
+    * Two dimensional time vector
+    */
+    protected float time[];
+
+    /**
+    * Two dimensional x vector
+    */
+    protected float x_data[];
+
 
     /**
      * x min signal region
@@ -215,6 +236,10 @@ public class Signal
      */
     protected float   offset = 0.0F; 
     
+
+    protected int type = TYPE_1D;
+    
+    protected int mode;
 
     //Float flo;
     //Integer inte;
@@ -392,7 +417,13 @@ public class Signal
 	    color_idx = s.color_idx;
 	    color = s.color;
 	    interpolate = s.interpolate;
+	    
 	    name = s.name;
+	    type = s.type;
+	    mode = s.mode;
+	    data = s.data;
+	    time = s.time;
+	    x_data = s.x_data;
     }
 
     /**
@@ -497,6 +528,93 @@ public class Signal
 	    color = s.color;
 	    interpolate = s.interpolate;
 	    name = s.name;
+    }
+    
+    public Signal(float data[], float x_data[], float time[], int mode, float value)
+    {
+        this.data   = data;
+        this.x_data = x_data;
+        this.time   = time;
+        this.mode   = mode;
+        this.type   = TYPE_2D;
+        if(mode == MODE_YTIME)
+            showYTime(value);
+        else
+            showYX(value);
+    }
+
+    private int getArrayIndex(float data[], float d)
+    {
+        int i = -1;
+        
+        if(d <= data[0])
+            i = 0;
+            
+        if(d >= data[data.length-1])
+            i = data.length-1;
+
+        if(i == -1)
+        {
+            for(i = 0; i <= data.length - 1; i++)
+            {
+                if(d > data[i] && d < data[i+1])
+                    break;
+            }
+        }
+        return i;
+    }
+
+    public void showYX(float t)
+    {
+        int i = getArrayIndex(time, t);
+        x = x_data;
+        y = new float[x_data.length];
+        for(int j = 0; j < x_data.length; j++)
+            y[j] = data[time.length * j + i];
+        
+	    error = asym_error = false;
+	    setAxis(x, y, x.length);
+    }
+    
+    public void showYTime(float xd)
+    {
+        int i = getArrayIndex(x_data, xd);
+        x = time;
+        y = new float[time.length];
+        for(int j = 0; j < time.length; j++)
+            y[j] = data[time.length * i + j];
+        
+	    error = asym_error = false;
+	    setAxis(x, y, x.length);
+    }
+    
+    public void setMode(int mode)
+    {
+        switch(mode)
+        {
+            case MODE_YTIME:
+                setMode(mode, x_data[0]);
+            break;
+            case MODE_YX:
+                setMode(mode, time[0]);
+            break;
+        }
+    }
+    
+    public void setMode(int mode, float value)
+    {
+        if(type == TYPE_1D)
+            return;
+        this.mode = mode;
+        switch(mode)
+        {
+            case MODE_YTIME:
+                showYTime(value);
+            break;
+            case MODE_YX:
+                showYX(value);
+            break;
+        }
     }
 
     /**
@@ -643,6 +761,11 @@ public class Signal
             setAxis();
     }
 
+
+    public int getType(){return type;}
+    
+    public int getMode(){return mode;}
+
     /**
      * Get gain parameter.
      */
@@ -707,7 +830,7 @@ public class Signal
      * @param _y an array of x coordinates
      * @param _n_points the total number of points in the Signal
      */ 
-    void setAxis(float _x[], float _y[], int _n_points)
+    public void setAxis(float _x[], float _y[], int _n_points)
     {	
     /*
 	x = new float[_x.length];

@@ -5,6 +5,7 @@ import java.util.*;
 
 class Frames extends Canvas {
     
+    static final int ROI = 20;
     Vector frame = new Vector();
     Vector frame_time = new Vector();
     Rectangle zoom_rect = null;
@@ -13,6 +14,13 @@ class Frames extends Canvas {
     MediaTracker tracker;
     Dimension d;
     ColorModel c_model = null;
+    protected boolean aspect_ratio = true;
+    private int curr_grab_frame = -1;
+    private int[] pixel_array;
+    private int img_width;
+    private int img_height;
+    private int[] frames_pixel_array;
+    private Rectangle frames_pixel_roi;
     
     Frames()
     {
@@ -62,6 +70,15 @@ class Frames extends Canvas {
         return frame.size();
     }
 
+    public boolean getAspectRatio()
+    {
+        return aspect_ratio;
+    }
+    
+    public void setAspectRatio(boolean aspect_ratio)
+    {
+        this.aspect_ratio = aspect_ratio;
+    }
     
     public boolean AddMultiFrame(byte[] buf, /* WaveSetup controller,*/ float timemin, float timemax)
     {
@@ -140,7 +157,142 @@ class Frames extends Canvas {
         tracker.waitForID(0);
     }    
 
+    private int[] getPixelArray(Image img, int x, int y, int img_width, int img_height)
+    {
+       int pixel_array[] = new int[img_width * img_height]; 
+       PixelGrabber grabber = new PixelGrabber(img, x, y, img_width, img_height, pixel_array,0,img_width);    
+       try 
+       { 
+          grabber.grabPixels(); 
+       } catch(InterruptedException ie) { 
+            System.out.println("Pixel array not completed"); 
+            return null; 
+       }
+       return pixel_array;
+    }
+
+    public int getPixel(int idx, int x, int y)
+    {
+        Image img = (Image)frame.elementAt(idx);
+        img_width = img.getWidth(this); 
+        img_height = img.getHeight(this);
+        
+        if(x >= img_width || y >= img_height)
+            return -1;
+        
+        if(idx != curr_grab_frame)
+        {
+            if( (pixel_array = getPixelArray(img, 0, 0, img_width, img_height)) != null)
+                curr_grab_frame = idx;
+        }
+        return pixel_array[(y * img_width) + x];
+    }
     
+    public int getStartPixelX()
+    {
+       if(zoom_rect != null)
+          return zoom_rect.x;
+       else 
+          return 0;
+    }
+
+    public int getStartPixelY()
+    {
+       if(zoom_rect != null)
+          return zoom_rect.y;
+       else 
+          return 0;
+    }
+
+    
+    public int[] getPixelsX(int y)
+    {
+        int pixels_x[] = null;
+        int st, end;
+        
+        if(pixel_array != null && y < img_height)
+        {
+           if(zoom_rect != null)
+           {
+             st = zoom_rect.x;
+             end = zoom_rect.x + zoom_rect.width;
+           } else {
+             st = 0;
+             end = img_width;
+           }
+           pixels_x = new int[end - st];
+           for(int i = st, j = 0; i < end; i++, j++)
+           {
+              pixels_x[j] = pixel_array[(y * img_width) + i]; 
+           }
+        }
+        return pixels_x;
+    }
+
+    public int[] getPixelsY(int x)
+    {
+        int pixels_y[] = null;
+        int st, end;
+        
+        if(pixel_array != null && x < img_width)
+        {
+           if(zoom_rect != null)
+           {
+             st = zoom_rect.y;
+             end = zoom_rect.y + zoom_rect.height;
+           } else {
+             st = 0;
+             end = img_height;
+           }
+           pixels_y = new int[end - st];
+           for(int i = st, j = 0; i < end; i++, j++)
+           {
+              pixels_y[j] = pixel_array[(i * img_width) + x]; 
+           }
+        }
+        return pixels_y;
+    }
+
+    public int[] getPixelsSignal(int x, int y)
+    {
+        int pixels_signal[] = null;
+        
+        if(frames_pixel_array == null || !frames_pixel_roi.contains(x, y))
+        {
+            frames_pixel_roi = new Rectangle();
+            if(zoom_rect == null)
+            {
+                zoom_rect = new Rectangle(0, 0, img_width, img_height);
+            }
+            frames_pixel_roi.x = (x - ROI >= zoom_rect.x ? x - ROI : zoom_rect.x);
+            frames_pixel_roi.y = (y - ROI >= zoom_rect.y ? y - ROI : zoom_rect.y);
+            frames_pixel_roi.width = ( frames_pixel_roi.x + 2 * ROI <= zoom_rect.x + zoom_rect.width ? 2 * ROI : zoom_rect.width - (frames_pixel_roi.x - zoom_rect.x));
+            frames_pixel_roi.height = ( frames_pixel_roi.y + 2 * ROI <= zoom_rect.y + zoom_rect.height ? 2 * ROI : zoom_rect.height - (frames_pixel_roi.y - zoom_rect.y));
+
+            frames_pixel_array = new int[frames_pixel_roi.width * frames_pixel_roi.height * getNumFrame()];
+            int f_array[];
+            for(int i = 0; i < getNumFrame(); i++)
+            {
+                Image img = (Image)frame.elementAt(i);
+                f_array = getPixelArray(img, frames_pixel_roi.x, frames_pixel_roi.y, frames_pixel_roi.width, frames_pixel_roi.height);
+                System.arraycopy(f_array, 0, frames_pixel_array, f_array.length * i, f_array.length);
+            }             
+        }
+        
+        if(frames_pixel_array != null)
+        {
+            x -= frames_pixel_roi.x;
+            y -= frames_pixel_roi.y;
+            int size = frames_pixel_roi.width * frames_pixel_roi.height;
+            pixels_signal = new int[getNumFrame()];
+            for (int i = 0; i < getNumFrame(); i++)
+            {
+                pixels_signal[i] = frames_pixel_array[size * i + (y * frames_pixel_roi.width) + x];
+            }
+        }
+        
+        return pixels_signal;
+    }
 
     public Object GetFrameAtTime(float t)
     {
@@ -153,43 +305,79 @@ class Frames extends Canvas {
         
     }
     
+    public float[] getFramesTime()
+    {
+        if(frame_time == null || frame_time.size() == 0)
+            return null;
+            
+        float frames_time[] = new float[frame_time.size()];
+        for(int i = 0; i < frame_time.size(); i++)
+        {
+            frames_time[i] = ((Float)frame_time.elementAt(i)).floatValue();
+        }
+        return frames_time;
+    }
+    
+    
     public float GetFrameTime()
     {
         float t_out = 0;
         if(curr_frame_idx != -1 && frame_time.size() != 0)
         {
             t_out = ((Float)frame_time.elementAt(curr_frame_idx)).floatValue();
-        }
-        
+        }        
         return t_out;
     }
     
     public Point GetFramePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
+        Dimension fr_dim = getFrameSize(curr_frame_idx, d);
         
         if(curr_frame_idx != -1 && frame.size() != 0)
         {
-            Dimension dim ;
+            Dimension view_dim;
+            Dimension dim;
             
             if(zoom_rect == null)
             {
-                dim = GetFrameDim(curr_frame_idx);
+                view_dim = GetFrameDim(curr_frame_idx);
+                dim = view_dim;
             } else {
                 dim = new Dimension(zoom_rect.width, zoom_rect.height);
+                view_dim = new Dimension(zoom_rect.x+zoom_rect.width, zoom_rect.y+zoom_rect.height);
                 p_out.x = zoom_rect.x;
                 p_out.y = zoom_rect.y;
             }
 
-            double ratio_x = (double)dim.width/ d.width;
-            double ratio_y = (double)dim.height/ d.height;
+            double ratio_x = (double)dim.width/ fr_dim.width;
+            double ratio_y = (double)dim.height/ fr_dim.height;
             
             p_out.x += ratio_x * p.x;
+            if(p_out.x > view_dim.width-1)
+            {
+                p_out.x = view_dim.width-1;
+                p.x = fr_dim.width;
+            }
             p_out.y += ratio_y * p.y;
+            if(p_out.y > view_dim.height-1)
+            {
+                p_out.y = view_dim.height-1;
+                p.y = fr_dim.height;
+            }
         }
         
         return p_out;
     }
+
+    public boolean contain(Point p, Dimension d)
+    {
+        Dimension fr_dim = getFrameSize(curr_frame_idx, d);
+        if(p.x > fr_dim.width || p.y > fr_dim.height)
+            return false;
+        return true;
+    }
+
     
     public float GetTime(int frame_idx)
     {
@@ -232,12 +420,42 @@ class Frames extends Canvas {
                               ((Image)frame.elementAt(idx)).getHeight(this));
     }
     
+    public Dimension getFrameSize(int idx, Dimension d)
+    {
+        int width, height;
+        //Border image pixel
+        Dimension dim_b = new Dimension(d.width-1,d.height-1);
+
+        width = dim_b.width;
+        height = dim_b.height;
+        if(getAspectRatio())
+        {
+            Dimension dim = GetFrameDim(idx);
+            int w = dim.width;
+            int h = dim.height;
+            if(zoom_rect != null)
+            {
+                w = zoom_rect.width;
+                h = zoom_rect.height;
+            }
+            double ratio = (double)w/h;
+            width = (int)(ratio * d.height);
+            if(width > d.width)
+            {
+                width = d.width;
+                height = (int)(d.width/ratio);
+            }
+         }
+         return new Dimension(width, height);
+     }
+    
     public void SetZoomRegion(int idx, Dimension d, Rectangle r)
     {
         if(idx > frame.size() - 1 || frame.elementAt(idx) == null ) 
             return;
 
         Dimension dim;
+        Dimension fr_dim = getFrameSize(idx, d);
         
         if(zoom_rect == null)
         {
@@ -247,8 +465,8 @@ class Frames extends Canvas {
             dim = new Dimension (zoom_rect.width, zoom_rect.height);
         }
 
-        double ratio_x = (double)dim.width/ d.width;
-        double ratio_y = (double)dim.height/ d.height;
+        double ratio_x = (double)dim.width/ fr_dim.width;
+        double ratio_y = (double)dim.height/ fr_dim.height;
         
             
         zoom_rect.width = (int)(ratio_x * r.width + 0.5);

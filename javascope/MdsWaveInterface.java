@@ -362,7 +362,7 @@ class MdsWaveInterface extends WaveInterface {
     {
 	    int int_data[] = null;
 	
-	    if(in_shots == null || in_shots.length() == 0)
+	    if(in_shots == null || in_shots.trim().length() == 0)
 	    {
 	        //int_data = new int[1];
 	        //int_data[0] = jScope.UNDEF_SHOT;
@@ -403,6 +403,7 @@ class MdsWaveInterface extends WaveInterface {
 	y_log = wi.y_log;
 	is_image = wi.is_image;
 	use_jai = wi.use_jai;
+	keep_ratio = wi.keep_ratio;
 	make_legend = wi.make_legend;
 	reversed = wi.reversed;
 	legend_x = wi.legend_x;
@@ -754,15 +755,18 @@ class MdsWaveInterface extends WaveInterface {
 
     public void ToFile(PrintWriter out, String prompt)
     { 
-	    int exp, exp_n, sht, sht_n, cnum_shot; 
+	    int exp, exp_n, sht, sht_n, cnum_shot, eval_shot = 1; 
 
  	    cnum_shot = num_shot;
+ 	    
 	    if(UseDefaultShot())
 	    {
 	        if(cin_shot != null && cin_shot.length()> 0)
+	        {
 		        cnum_shot = (GetShotArray(cin_shot)).length;
-	        else
+	        } else {
 		        cnum_shot = 1;
+		    }
 	    }
 
 	    WaveInterface.WriteLine(out,prompt + "x_label: "         , cin_xlabel);
@@ -777,6 +781,7 @@ class MdsWaveInterface extends WaveInterface {
 	    } else {
 	       WaveInterface.WriteLine(out,prompt + "is_image: "           , ""+is_image);
 	       WaveInterface.WriteLine(out,prompt + "use_jai: "           , ""+use_jai);
+	       WaveInterface.WriteLine(out,prompt + "keep_ratio: "           , ""+keep_ratio);
 	    }    
 	    
 	   WaveInterface.WriteLine(out,prompt + "experiment: "      , cexperiment);
@@ -784,12 +789,11 @@ class MdsWaveInterface extends WaveInterface {
 	   WaveInterface.WriteLine(out,prompt + "default_node: "    , cin_def_node);
 
 	    if(cnum_shot != 0) {
-	        int nshot;
 	        if(UseDefaultShot())
-	            nshot = num_shot;
+	            eval_shot = num_shot > 0 ? num_shot : 1;
 	        else
-	            nshot = cnum_shot;
-	       WaveInterface.WriteLine(out,prompt + "num_expr: "        , ""+num_waves/cnum_shot);
+	            eval_shot = cnum_shot;
+	       WaveInterface.WriteLine(out,prompt + "num_expr: "        , ""+num_waves/eval_shot);
 	    } else
 	       WaveInterface.WriteLine(out,prompt + "num_expr: "        , ""+num_waves);
 	
@@ -808,7 +812,7 @@ class MdsWaveInterface extends WaveInterface {
 	   WaveInterface.WriteLine(out,prompt + "global_defaults: " , ""+defaults);
 	
 		    
-	    for(exp = 0, exp_n = 1; exp < num_waves; exp += num_shot, exp_n++)
+	    for(exp = 0, exp_n = 1; exp < num_waves; exp += eval_shot, exp_n++)
 	    {
 	       WaveInterface.WriteLine(out,prompt + "label"     + "_" + exp_n + ": " , in_label[exp]);
 	       WaveInterface.WriteLine(out,prompt + "x_expr"     + "_" + exp_n + ": " , AddNewLineCode(in_x[exp]));
@@ -901,6 +905,11 @@ class MdsWaveInterface extends WaveInterface {
 		                continue;		
 		            }		            
 		        
+		            if(str.indexOf(".keep_ratio:") != -1)
+		            {
+		                keep_ratio = new Boolean(str.substring(len, str.length())).booleanValue();
+		                continue;		
+		            }		            
 		        
 		        
 		        if(str.indexOf(".experiment:") != -1)

@@ -15,7 +15,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * RowColumnContainer object is a component that can contain other AWT 
- * components in a grid diposition. This componet create on the
+ * components in a grid disposition. This component create on the
  * container a RowColumnLayout manager, so no layout manager
  * can be added to this component.
  * 
@@ -110,23 +110,22 @@ public class RowColumnContainer extends Container
       row_col_layout = new RowColumnLayout(rows);
       setLayout(row_col_layout);	
            	 
-  
+      num_component = getComponentNumber();
+      
+      ResizeButton b; 	 
+      for(i = 0; i < num_component - 1; i++)
+      {
+	     add(b = new ResizeButton());
+	     setListener(b);
+      }
+
       if(c != null)
       {
-        num_component = getComponentNumber();
-
         if(num_component != c.length)
             throw new IllegalArgumentException("Invalid componet number");
-      
-        ResizeButton b; 	 
-        for(i = 0; i < num_component - 1; i++)
-        {
-	      add(b = new ResizeButton());
-	      setListener(b);
-        }
         add(c);
+        validate();
       }
-      validate();
     }
 
    /**
@@ -182,7 +181,7 @@ public class RowColumnContainer extends Container
       int i, j, k;
       
       if(c.length != getComponentNumber())
-        throw new IllegalArgumentException("Invalid componet number");
+        throw new IllegalArgumentException("Invalid component number");
         
       for(i = 0, k = 0; i < rows.length; i++)
       {

@@ -190,6 +190,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	                else
 	                    NotifyChange(w, copy_waveform);
             return;
+            case WaveformEvent.PROFILE_UPDATE:
+            return;
         }
         
         if(w.GetMode() == Waveform.MODE_POINT)
@@ -198,7 +200,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         if(!w.IsImage() && show_measure && e.getID() == WaveformEvent.POINT_UPDATE)
             e = new WaveformEvent(e.getSource(), WaveformEvent.MEASURE_UPDATE,
                                   e.point_x, e.point_y, e.delta_x, e.delta_y,
-                                  e.signal_idx);            
+                                  0, e.signal_idx);            
             
         WaveContainerEvent we = new WaveContainerEvent(this, e);
         dispatchWaveContainerEvent(we);

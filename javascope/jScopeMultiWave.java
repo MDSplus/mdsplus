@@ -150,6 +150,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	    
 	    if(wi.is_image && wi.frames != null)
 	    {
+            super.frames.setAspectRatio(wi.keep_ratio);
 	        not_drawn = true;
 	        frame = 0;
 	        return;

@@ -407,9 +407,9 @@ public class RowColumnLayout implements LayoutManager {
         minWidth = 0;
         minHeight = 0;
 	
-    	if(2 * b_comp + 1 != nComps)
-	    return; //errore nella widget exception
-	    
+    	if(2 * b_comp + 1 != nComps) {
+            throw new IllegalArgumentException("Invalid number of component in RowColumnLayout");
+	    }
 	    percent_height = new float[b_comp + 1];
 	    percent_width  = new float[row.length];//column];
 	    Dimension min_d = parent.getComponent(b_comp + 0).getMinimumSize();

@@ -56,6 +56,7 @@ public class WaveInterface
    
     protected boolean is_image = false;
     boolean use_jai = false;
+    boolean keep_ratio = true;
     int     signal_select = -1;
     Frames  frames;
 
@@ -310,6 +311,7 @@ public class WaveInterface
         ylabel = null;
         is_image = false;
         use_jai = false;
+        keep_ratio = true;
         frames = null;
     }
     
@@ -986,6 +988,8 @@ public class WaveInterface
                     frames = null;
                 }
             }
+            if(frames != null)
+                frames.setName(in_y[0]);
             System.gc();
         } catch (Exception e) {
             curr_error = " Load Frames error "+e; 

@@ -543,6 +543,8 @@ import java.util.Vector;
        
        public boolean evaluateShotList(String in_shot)
        {
+        
+        if(in_shot != null) in_shot = in_shot.trim();
 	    if((shot_str == null && in_shot != null && in_shot.length()!= 0) || 
 	       (shot_str != null && !shot_str.equals(in_shot)))
 	    {
@@ -949,13 +951,11 @@ import java.util.Vector;
 		add(use_jai_b);
 		use_jai_b.setBounds(636,120,84,20);
 		
-		
 		x_lab.setText("X");
 		add(x_lab);
 		x_lab.setBounds(9,121,12,20);
 		add(x_expr);
 
-		
 		time_min_b.setLabel("t min");
 		add(time_min_b);
 		time_min_b.setBounds(321,120,52,20);
@@ -999,7 +999,11 @@ import java.util.Vector;
 		add(pix_x_max);
 		pix_x_max.setBounds(478,144,54,20);
 		pix_x_max.setVisible(false);
-		
+
+		keep_ratio_b.setLabel("Keep ratio");
+		add(keep_ratio_b);
+		keep_ratio_b.setBounds(636,145,84,20);
+				
 		x_min_b.setLabel("X min");
 		add(x_min_b);
 		x_min_b.setBounds(322,145,52,20);
@@ -1131,6 +1135,7 @@ import java.util.Vector;
 	java.awt.Label pix_x_min = new java.awt.Label();
 	java.awt.TextField x_max = new java.awt.TextField();
 	java.awt.TextField time_max = new java.awt.TextField();
+	java.awt.Checkbox keep_ratio_b = new java.awt.Checkbox();
 	java.awt.Checkbox experiment_b = new java.awt.Checkbox();
 	java.awt.TextField experiment = new java.awt.TextField();
 	java.awt.Checkbox shot_b = new java.awt.Checkbox();
@@ -1409,6 +1414,7 @@ import java.util.Vector;
     this.wi.reversed        = wi.reversed;
     image_b.setState(wi.is_image);
     use_jai_b.setState(wi.use_jai);
+    keep_ratio_b.setState(wi.keep_ratio);
 
 	setDefaultFlags(wi.defaults);
 	PutDefaultValues();
@@ -1464,7 +1470,8 @@ import java.util.Vector;
         signalList.setVisible(false);
         error.setVisible(false);
         use_jai_b.setVisible(true);
-		panel1.setBounds(12,215,660,40);
+        keep_ratio_b.setVisible(true);
+        panel1.setBounds(12,215,660,40);
 		y_lab.setText("Frames");
 		y_lab.setBounds(10,73,35,20);
 		y_expr.setBounds(47,72,577,20);
@@ -1498,6 +1505,7 @@ import java.util.Vector;
         error.setVisible(true);
         x_lab.setVisible(true);
         use_jai_b.setVisible(false);
+        keep_ratio_b.setVisible(false);
 		panel1.setBounds(12,365,660,40);
 		y_lab.setText("Y");
 		add(y_lab);
@@ -1584,6 +1592,7 @@ import java.util.Vector;
 	if(getDefaultFlags() != wave_wi.defaults)				                return true;	
 	if(image_b.getState() != wave_wi.is_image)				                  return true;		
 	if(use_jai_b.getState() != wave_wi.use_jai)				                  return true;		
+	if(keep_ratio_b.getState() != wave_wi.keep_ratio)				          return true;		
 
     for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
@@ -1597,20 +1606,16 @@ import java.util.Vector;
     }
 
     private void update()
-    {
-        
-        Cursor c_cursor = getCursor();
+    {        
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try
         {
 	        signalList.updateList();
-            setCursor(c_cursor);
 	    } catch (Throwable e) {
 	        main_scope.SetStatusLabel("Error during update list "+e);	    
-            setCursor(c_cursor);
 	    }
-	   
-    }
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+   }
 
    private void updateGlobalWI()
    {
@@ -1666,6 +1671,7 @@ import java.util.Vector;
 	  wi.modified = isChanged(s);
 	  wi.is_image = image_b.getState();
 	  wi.use_jai = use_jai_b.getState();
+	  wi.keep_ratio = keep_ratio_b.getState();
 	  
 	  if(!wi.modified)
 	  {
@@ -1805,7 +1811,9 @@ import java.util.Vector;
    {
       if(checkSetup() == 0)
       {
+         setCursor(new Cursor(Cursor.WAIT_CURSOR));
          main_scope.EvaluateWave(wave, shot.getText(), false);
+         setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       } else {
 	     error_msg.showMessage();
 	     wave.Erase();

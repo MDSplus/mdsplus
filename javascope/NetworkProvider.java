@@ -83,7 +83,7 @@ public String GetDefaultXLabel(String in_y[]){return null;}
 public String GetDefaultYLabel(String in_y[]){return null;}
 
 
-private String GetExperimentName(String in_frame)
+protected String GetExperimentName(String in_frame)
 {
     String exp;
     
@@ -180,7 +180,7 @@ public byte[] GetFrameAt(String in_frame, int frame_idx)
     return GetByteArray(in);
 }
 
-private byte[] GetByteArray(String in)
+protected byte[] GetByteArray(String in)
 {
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
@@ -347,7 +347,7 @@ public synchronized int[] GetIntArray(String in)
     return null;
 }        
 	    
- private synchronized boolean  CheckOpen() 
+ protected synchronized boolean  CheckOpen() 
  {
     int status;
     if(!connected)
@@ -386,7 +386,7 @@ public synchronized int[] GetIntArray(String in)
     }	    
     return true;  
 }	
-private boolean NotYetString(String in)
+protected boolean NotYetString(String in)
 {
     int i;
     if(in.charAt(0) == '\"')  
@@ -399,7 +399,7 @@ private boolean NotYetString(String in)
     return true;
 }    				  
 						  
-private boolean NotYetNumber(String in)
+protected boolean NotYetNumber(String in)
 {
     boolean ris;
     ris = false;
@@ -700,7 +700,7 @@ public    byte client_type;
 public    byte ndims;
 public    int dims[];
 public    byte body[];
-private   boolean swap = false;
+protected   boolean swap = false;
 
     
 public MdsMessage(String s)
@@ -736,7 +736,7 @@ public MdsMessage(byte c)
     body[0] = c;
 }
 
-private void ReadBuf(byte buf[], DataInputStream dis) throws IOException
+protected void ReadBuf(byte buf[], DataInputStream dis) throws IOException
 {
     int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
     while(bytes_to_read > 0)
@@ -769,7 +769,7 @@ public synchronized void Send(DataOutputStream dos) throws IOException
     message_id++;
 }
 
-private int ByteToIntSwap(byte b[], int idx)
+protected int ByteToIntSwap(byte b[], int idx)
 {
     int ch1, ch2, ch3, ch4;
     ch1 = (b[idx+3] & 0xff) << 24;
@@ -779,7 +779,7 @@ private int ByteToIntSwap(byte b[], int idx)
     return ((ch1) + (ch2) + (ch3) + (ch4));
 }
 
-private int ByteToInt(byte b[], int idx)
+protected int ByteToInt(byte b[], int idx)
 {
     int ch1, ch2, ch3, ch4;
     ch1 = (b[idx+0] & 0xff) << 24;
@@ -789,7 +789,7 @@ private int ByteToInt(byte b[], int idx)
     return ((ch1) + (ch2) + (ch3) + (ch4));
 }
 
-private short ByteToShortSwap(byte b[], int idx)
+protected short ByteToShortSwap(byte b[], int idx)
 {
     short ch1, ch2;
     ch1 = (short)((b[idx+1] & 0xff) << 8);
@@ -797,7 +797,7 @@ private short ByteToShortSwap(byte b[], int idx)
     return (short)((ch1) + (ch2));
 }
 
-private short ByteToShort(byte b[], int idx)
+protected short ByteToShort(byte b[], int idx)
 {
     short ch1, ch2;
     ch1 = (short)((b[idx+0] & 0xff) << 8);
@@ -908,7 +908,7 @@ public synchronized void Receive_old(DataInputStream dis)throws IOException
  
  
  
- private void Flip(byte bytes[], int size)
+ protected void Flip(byte bytes[], int size)
  {
     int i;
     byte b;
@@ -934,7 +934,7 @@ public synchronized void Receive_old(DataInputStream dis)throws IOException
 }
 
 
-private int ToInt(byte bytes[]) throws IOException
+protected int ToInt(byte bytes[]) throws IOException
 {
     if (swap)
       Flip(bytes, 4);
@@ -943,7 +943,7 @@ private int ToInt(byte bytes[]) throws IOException
     return dis.readInt();
 }
 
-private short ToShort(byte bytes[]) throws IOException
+protected short ToShort(byte bytes[]) throws IOException
 {
     if (swap)
       Flip(bytes, 2);
@@ -951,7 +951,7 @@ private short ToShort(byte bytes[]) throws IOException
     DataInputStream dis = new DataInputStream(bis);
     return dis.readShort();
 }
-private float ToFloat(byte bytes[]) throws IOException
+protected float ToFloat(byte bytes[]) throws IOException
 {
     if (swap)
       Flip(bytes, 4);
@@ -1076,7 +1076,7 @@ public float[] ToFloatArray_old() throws IOException
 
 }
  
-private final boolean IsRoprand(byte arr[], int idx)
+protected final boolean IsRoprand(byte arr[], int idx)
 {
     return  (arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128
 	&& arr[idx + 3] == 0);

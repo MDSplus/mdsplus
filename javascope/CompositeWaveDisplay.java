@@ -13,7 +13,6 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
     private boolean isApplet = false;
     private Label point_pos;
 
-
     public static void main(String args[])
     {
         Component cd = createWindow("prova");
@@ -25,6 +24,22 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
             y1[i] = (float)Math.cos(i/300.);
             y2[i] = (float)Math.sin(i/300.)*(float)Math.sin(i/300.);
         }
+        
+        float data[] = new float[10*1000], time[] = new float[1000], x_data[] = new float[10]; 
+        for(int i = 0; i < 1000; i++)
+        {
+            time[i] = i;
+            data[i] = (float)Math.cos(i/300.);
+            for(int j = 0; j < 10; j++)
+            {
+                data[j * 1000+i] = (j+1) * (float)Math.cos(i/300.);
+            }
+        }
+        for(int i = 0; i < 10; i++)
+            x_data[i] = (float)Math.cos(i/2.);
+            
+        Signal  sig_2d = new Signal(data, x_data, time, Signal.MODE_YTIME , 0); 
+        ((CompositeWaveDisplay)cd).addSignal(sig_2d, 1, 2);
         
         ((CompositeWaveDisplay)cd).addSignal(x, y, 1,1,"green", "seno");
         ((CompositeWaveDisplay)cd).addSignal(x, y1, 1,1,"red", "coseno");

@@ -12,16 +12,19 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, sep2, playFrame,
 		      set_point, undo_zoom; 
-	protected Menu signalList, markerList, colorList, markerStep;
+	protected Menu markerList, colorList, markerStep;
 	protected CheckboxMenuItem interpolate_f;
+
+	protected Menu signal_2d;
+	protected CheckboxMenuItem plot_y_time, plot_y_x;
+	
 	protected Panel setup_dialog = null;
 	protected int curr_x, curr_y;
 	protected Container parent;
 
     public WavePopup()
     {	    
-	    add(set_point = new MenuItem("Set Point"));
-	    set_point.setEnabled(false);	
+	    set_point = new MenuItem("Set Point");
 	    set_point.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -30,9 +33,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	            }
 	        }
 	    );
-	    
-	    add(signalList = new Menu("Signals"));
-	    signalList.setEnabled(false);
+
 	    
 	    add(markerList = new Menu("Markers"));	
 	    CheckboxMenuItem ob;
@@ -44,7 +45,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
         }
         
 	    markerList.setEnabled(false);	    
-	    add(markerStep = new Menu("Markers step"));
+	    add(markerStep = new Menu("Marker step"));
         for(int i = 0; i < Signal.markerStepList.length; i++)
         {
             markerStep.add(ob = new CheckboxMenuItem(""+Signal.markerStepList[i]));
@@ -57,6 +58,28 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	    interpolate_f.setEnabled(false);
         interpolate_f.addItemListener(this);
         
+        signal_2d = new Menu("signal 2D");
+        signal_2d.add(plot_y_time = new CheckboxMenuItem("Plot y & time"));
+        plot_y_time.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            Object target = e.getSource();
+	            wave.setSignalMode(Signal.MODE_YTIME);
+                wave.Update();
+	        }
+	    });
+        
+        signal_2d.add(plot_y_x = new CheckboxMenuItem("Plot y & x"));
+        plot_y_x.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            Object target = e.getSource();
+	            wave.setSignalMode(Signal.MODE_YX);
+                wave.Update();
+	        }
+	    });
     
 	    add(sep2 = new MenuItem("-"));
 	    add(autoscale = new MenuItem("Autoscale"));
@@ -246,8 +269,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	            add(autoscaleAll);
 	       }
        } else {
-           add(set_point);
-           add(signalList);
+        
            add(markerList);
            colorList.setLabel("Colors");
            add(colorList);	
@@ -269,6 +291,24 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	       }
 	       add(resetScales);
 	       add(undo_zoom);
+	       
+           if(wave.mode == Waveform.MODE_POINT || wave.GetSignalCount() == 1)
+           {
+                if(wave.getSignalType() == Signal.TYPE_2D) {
+                    insert(signal_2d, 4);
+                    plot_y_time.setState(false);
+                    plot_y_x.setState(false);
+                    switch (wave.getSignalMode())
+                    {
+                        case Signal.MODE_YTIME : plot_y_time.setState(true); break;
+                        case Signal.MODE_YX : plot_y_x.setState(true); break;
+                    }
+                }
+           }     
+           if(wave.mode == Waveform.MODE_POINT)
+           {
+                insert(set_point, 0);
+           }     
        }
 	}
 
@@ -293,7 +333,6 @@ public class WavePopup extends PopupMenu implements  ItemListener {
         {
            InitOptionMenu(); 	
         } else {
-            signalList.setEnabled(false);
             markerList.setEnabled(false);
             colorList.setEnabled(false);	
             interpolate_f.setEnabled(false);
@@ -311,7 +350,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
             interpolate_f.setEnabled(state);
-            set_point.setEnabled(wave.mode == Waveform.MODE_POINT);
+            set_point.setEnabled(true);
             
             if(state) {
                 interpolate_f.setState(wave.GetInterpolate());
@@ -380,11 +419,6 @@ public class WavePopup extends PopupMenu implements  ItemListener {
         wave.SetInterpolate(state);
     }
 
-    protected void SetSignalState(String label, boolean state)
-    {        
-        wave.SetSignalState(state);
-    }
-
     protected boolean SetMarker(int idx)
     {
         if(wave.GetMarker() != idx)
@@ -444,13 +478,6 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        if(target == interpolate_f)
 	        {
                 SetInterpolate(((CheckboxMenuItem)target).getState()); 	            
-                wave.Repaint(true);
-	        }
-	        
-	        if(parent == signalList)
-	        {
-	            SetSignalState(((CheckboxMenuItem)target).getLabel(), 
-	                         ((CheckboxMenuItem)target).getState());
                 wave.Repaint(true);
 	        }
 	        

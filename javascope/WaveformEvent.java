@@ -9,14 +9,22 @@ public class WaveformEvent extends AWTEvent {
     static final int BROADCAST_SCALE  = AWTEvent.RESERVED_ID_MAX + 4;
     static final int COPY_PASTE       = AWTEvent.RESERVED_ID_MAX + 5;
     static final int EVENT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 8;
+    static final int PROFILE_UPDATE   = AWTEvent.RESERVED_ID_MAX + 9;
     
     int    signal_idx;
+    int    pixel_value;
     double point_x;
     double point_y;
     double delta_x;
     double delta_y;
     String signal_name;
     String status_info;
+    int    pixels_x[];
+    int    start_pixel_x;
+    int    pixels_y[];
+    int    start_pixel_y;
+    int    pixels_signal[];
+    float  frames_time[];
 
     public WaveformEvent (Object source, int event_id, String status_info) 
     {
@@ -38,7 +46,8 @@ public class WaveformEvent extends AWTEvent {
     
     public WaveformEvent (Object source, int event_id, 
                           double point_x, double point_y,
-                          double delta_x, double delta_y, 
+                          double delta_x, double delta_y,
+                          int pixel_value,
                           int signal_idx) 
     {
         super(source, event_id);
@@ -47,6 +56,20 @@ public class WaveformEvent extends AWTEvent {
         this.point_y = point_y;
         this.delta_x = delta_x;
         this.delta_y = delta_y;
+        this.pixel_value = pixel_value;
     }
- 
+
+    public WaveformEvent (Object source, int pixels_x[], int start_pixel_x, 
+                                         int pixels_y[], int start_pixel_y,
+                                         int pixels_signal[], float frames_time[]) 
+    {
+        super(source, PROFILE_UPDATE);
+        this.pixels_x = pixels_x;
+        this.pixels_y = pixels_y;
+        this.pixels_signal = pixels_signal;
+        this.frames_time = frames_time;
+        this.start_pixel_x = start_pixel_x;
+        this.start_pixel_y = start_pixel_y;
+    }
+
 }

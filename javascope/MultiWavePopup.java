@@ -4,16 +4,21 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import java.awt.MenuItem;
 import java.awt.Panel;
 import java.awt.TextField;
 import java.awt.Label;
+import java.awt.Menu;
+import java.awt.CheckboxMenuItem;
+
 
 
 public class MultiWavePopup extends WavePopup {
 	protected MultiWaveform   wave = null;
 	protected MenuItem legend, remove_legend;
-
+    protected Menu signalList;
 	
     public MultiWavePopup()
     {
@@ -28,7 +33,7 @@ public class MultiWavePopup extends WavePopup {
 	            }
 	        });
 	    legend.setEnabled(false);
-        this.insert(remove_legend = new MenuItem("Remove legend"), 1);
+        insert(remove_legend = new MenuItem("Remove legend"), 1);
 	    remove_legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
@@ -37,6 +42,10 @@ public class MultiWavePopup extends WavePopup {
 	            }
 	        });
 	    remove_legend.setEnabled(false);
+
+	    insert(signalList = new Menu("Signals"), 2);
+	    signalList.setEnabled(false);
+
         
     }
     
@@ -58,6 +67,7 @@ public class MultiWavePopup extends WavePopup {
         {
 	       insert(legend, 0);	
            insert(remove_legend, 1);
+           insert(signalList, 2);
         }
 	}
 	
@@ -68,6 +78,7 @@ public class MultiWavePopup extends WavePopup {
         {
 	       legend.setEnabled(false);
            remove_legend.setEnabled(false); 
+           signalList.setEnabled(false); 
         }
 	    
 	}
@@ -124,7 +135,17 @@ public class MultiWavePopup extends WavePopup {
                 {
                     signalList.add(ob = new CheckboxMenuItem(s_name[i]));
                     ob.setState(s_state[i]);
-                    ob.addItemListener(this);
+	                ob.addItemListener(new ItemListener()
+	                {
+                        public void itemStateChanged(ItemEvent e)
+	                    {
+	                        Object target = e.getSource();
+
+	                        SetSignalState(((CheckboxMenuItem)target).getLabel(), 
+	                                        ((CheckboxMenuItem)target).getState());
+                            wave.Repaint(true);
+	                    }
+	                });
                 }
             }
            
@@ -179,4 +200,5 @@ public class MultiWavePopup extends WavePopup {
         }
 	    return true;
     }
+
 }

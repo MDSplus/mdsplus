@@ -8,7 +8,7 @@ class jScopeWavePopup extends MultiWavePopup {
 //	jScopeMultiWave wave;
 	SetupDataDialog setup_dialog;
 	protected MenuItem setup, refresh, saveAsText, sep1, sep3;
-	protected MenuItem  selectWave, remove_panel;
+	protected MenuItem  selectWave, remove_panel, profile_dialog;
     
 
     public jScopeWavePopup(SetupDataDialog setup_dialog)
@@ -73,6 +73,16 @@ class jScopeWavePopup extends MultiWavePopup {
 	        }
 	    );
 
+	    profile_dialog = new MenuItem("Show profile dialog");
+	    profile_dialog.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                ((jScopeWaveContainer)jScopeWavePopup.this.parent).ShowProfileDialog();
+	            }
+	        }
+	    );
+
     }
     
     
@@ -84,7 +94,8 @@ class jScopeWavePopup extends MultiWavePopup {
        add(refresh);
        if(is_image)
 	   {
-           insert(remove_panel, 1);
+           insert(profile_dialog, 1);
+           insert(remove_panel, 2);
        } else {
            insert(selectWave, 1);
            insert(remove_panel, 2);
@@ -107,7 +118,12 @@ class jScopeWavePopup extends MultiWavePopup {
                 selectWave.setLabel("Deselect wave panel");
             else
                 selectWave.setLabel("Select wave panel");
-        }
+        } /*else {
+           if(wave.sendProfile())
+                profile_dialog.setLabel("Remove profile dialog");
+            else
+                profile_dialog.setLabel("Show profile dialog");
+        }*/
     }
 
     protected void SetMenu()
