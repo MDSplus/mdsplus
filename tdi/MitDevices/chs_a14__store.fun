@@ -73,7 +73,6 @@ public fun chs_a14__store(as_is _nid, optional _method)
       endif
    Endfor
   ************************************************************/       
-  _mode = _VME_UDATA | _VME_D16 | _VME_BS_BYTE | _VME_DENSE;
   for (_chan=0; _chan < 6; _chan++)
   {
     _chan_offset = _chan * 3 + 13;
@@ -95,8 +94,7 @@ public fun chs_a14__store(as_is _nid, optional _method)
       {
         _addr =  0x10700000 + (_dignum-1) * (6 * 0x40000) + _chan * 0x40000 + _start_addr + _lbound;
         _samples_read = 0;
-        _data = zero(_samples,0w);
-        _status = MdsVme->PioRead("/dev/vmp0",val(_addr),val(_mode),val(_samples * 2),ref(_data));
+        _data = chs_vme_readwords(_addr,_samples);
         _data = set_range(_lbound : _ubound,_data & 4095uw);
         if (_is_special_dimension)
           _dim_str = _special_dim_name;
