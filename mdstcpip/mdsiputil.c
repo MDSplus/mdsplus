@@ -249,7 +249,6 @@ static SOCKET ConnectToPort(char *host, char *service)
         int bsize=128;
         char *user_p = "Macintosh User";
 #else
-    static char user[L_cuserid];
     char *user_p;
 #ifdef HAVE_VXWORKS_H
     user_p = "vxWorks";

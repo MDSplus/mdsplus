@@ -359,11 +359,12 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   int ok = 1;
   CompressString(local_user,0);
-  if (local_user->length)
+  if (local_user->length == 4 && strncmp(local_user->pointer,"SELF",4) == 0)
+    ok = 1;
+  else if (local_user->length)
   {
     char *luser = MdsDescrToCstring(local_user);
-    char *user = (strcmp(luser,"MAP_TO_LOCAL") == 0) ? remuser : 
-      ((strcmp(luser,"SELF") == 0) ? (char *)cuserid((char *)0) : luser);
+    char *user = (strcmp(luser,"MAP_TO_LOCAL") == 0) ? remuser : luser; 
     int status = -1;
     struct passwd *pwd = getpwnam(user);
     if (!pwd && remuser == user)
