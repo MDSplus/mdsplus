@@ -310,7 +310,7 @@ class jDispatcher implements ServerListener
    {
         String server;
 
-        MonitorEvent event = new MonitorEvent(this, tree, shot, (curr_phase == null)?"none":curr_phase.phase_name, action);
+        MonitorEvent event = new MonitorEvent(this, tree, shot, (curr_phase == null)?"NONE":curr_phase.phase_name, action);
         Enumeration monitor_list = monitors.elements();
         while(monitor_list.hasMoreElements())
         {   
