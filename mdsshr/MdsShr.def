@@ -25,11 +25,13 @@ MdsCompress
 MdsCopyDxXd
 MdsCopyDxXdZ
 MdsDescrToCstring
+MdsFree1Dx
+MdsFree
+MdsEventCan
 MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
-MdsFree1Dx
-MdsFree
+MdsGetCurrentShotid
 MdsXpand
 StrAppend
 StrCaseBlindCompare

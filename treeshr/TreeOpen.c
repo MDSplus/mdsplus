@@ -19,6 +19,7 @@
 int treeshr_errno = 0;
 
 extern int MdsEventCan();
+extern int TreeOpenNciW();
 static void RemoveBlanksAndUpcase(char *out, char *in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);

@@ -1,10 +1,13 @@
 #include <mdsdescrip.h>
+
 #include <mdsshr.h>
 #include <ncidef.h>
 #include "treeshrp.h"
 #include <treeshr.h>
 #include <librtl_messages.h>
+
 #include <string.h>
+
 #include <stdlib.h>
 
 
@@ -13,13 +16,21 @@
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 static int GetDatafile(TREE_INFO *info_ptr, unsigned short *rfa, int *buffer_size, char *record, int *retsize,int *nodenum);
+
 static int Rec2Dsc(char *in, struct descriptor_xd *out_dsc_ptr);
+
 
 extern void *DBID;
 
+
+
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
+
+
 int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {return _TreeGetRecord(DBID,nid_in,dsc);}
+
+
 
 int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 {
@@ -34,7 +45,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   int       nodenum;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
+
   if (dblist->remote)
+
 	  return GetRecordRemote(dblist, nid_in, dsc);
   nid_to_tree_nidx(dblist, nid, info, nidx);
   if (info)
@@ -189,12 +202,16 @@ static int OpenDatafileR(TREE_INFO *info)
 #ifdef __VMS
 #pragma member_alignment save
 #pragma nomember_alignment
+
 #endif
+
 
 typedef RECORD(1) record_one;
 typedef ARRAY(struct descriptor *) array_dsc;
 
+
 #ifdef __VMS
+
 #pragma member_alignment restore
 #endif
 
@@ -396,12 +413,14 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size
     return status;
 #else
   char *bptr = (char *)record;
+
   *retsize = 0;
   memcpy(rfa,rfa_in,sizeof(rfa));
   while ((rfa[0] || rfa[1] || rfa[2]) && buffer_space && (status & 1))
   {
     RECORD_HEADER hdr;
     int rfa_l = RfaToSeek(rfa);
+
 	fseek(info->data_file->get,rfa_l,SEEK_SET);
     if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
     {
@@ -426,6 +445,7 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size
       {
         bptr += partlen;
         buffer_space -= partlen;
+
 		*retsize = *retsize + partlen;
         memcpy(rfa,&hdr.rfa,sizeof(rfa));
       }
@@ -449,10 +469,15 @@ static int GetDatafile(TREE_INFO *info, unsigned short *rfa_in, int *buffer_size
 #define scale_of(ptr)     (*(unsigned char  *)&ptr[8])
 #define digits_of(ptr)	  (*(unsigned char  *)&ptr[9])
 #define binscale_of(ptr)  ((*((unsigned char  *)&ptr[10]) & 0x08) != 0)
+
 #define redim_of(ptr)     ((*((unsigned char  *)&ptr[10]) & 0x10) != 0)
+
 #define column_of(ptr)    ((*((unsigned char  *)&ptr[10]) & 0x20) != 0)
+
 #define coeff_of(ptr)     ((*((unsigned char  *)&ptr[10]) & 0x40) != 0)
+
 #define bounds_of(ptr)    ((*((unsigned char  *)&ptr[10]) & 0x80) != 0)
+
 
 #define dimct_of(ptr)     (*(unsigned char  *)&ptr[11])
 #define arsize_of(ptr)    ((unsigned int)swapint(&ptr[12]))
@@ -534,11 +559,13 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         pi_tmp.dtype = dtype_of(in_ptr);
         pi_tmp.class = CLASS_R;
         pi_tmp.ndesc = ndesc_of(in_ptr);
+
 		pi_tmp.dscptrs[0] = NULL;
 	bytes_out = sizeof(struct descriptor_r) + (int)(pi->ndesc - 1) * sizeof(struct descriptor *);
         bytes_in = 12 + (int)(pi->ndesc) * 4;
 	if (po)
 	{
+
 	  memset(po,0,bytes_out);
           *po = *pi;
 	  if (pi->length > 0)
@@ -566,6 +593,7 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	    bytes_out = align(bytes_out + size_out, sizeof(void *));
             bytes_in += size_in;
 	  }
+
       }
       break;
      case CLASS_A:
@@ -580,10 +608,15 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         a_tmp.class = class_of(in_ptr);
         a_tmp.scale = scale_of(in_ptr);
         a_tmp.digits = digits_of(in_ptr);
+
 		a_tmp.aflags.binscale = binscale_of(in_ptr);
+
 		a_tmp.aflags.redim = redim_of(in_ptr);
+
 		a_tmp.aflags.column = column_of(in_ptr);
+
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
+
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
         a_tmp.dimct = dimct_of(in_ptr);
         a_tmp.arsize = arsize_of(in_ptr);
@@ -621,13 +654,13 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
 	    {
 	    case 2: 
 	      { short *ptr;
-		for (i=0,ptr=(short *)po->pointer;i<po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapshort((char *)ptr);
+		for (i=0,ptr=(short *)po->pointer;i< (int)po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapshort((char *)ptr);
 	      }
 	      break;
 	    case 4:
 	    case 8:
 	      { int *ptr;
-		for (i=0,ptr=(int *)po->pointer;i<po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapint((char *)ptr);
+		for (i=0,ptr=(int *)po->pointer;i<(int)po->arsize;i += sizeof(*ptr),ptr++) *ptr = swapint((char *)ptr);
 	      }
 	      break;
 	    }
@@ -655,10 +688,15 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         a_tmp.scale = scale_of(in_ptr);
         a_tmp.digits = digits_of(in_ptr);
  		a_tmp.aflags.binscale = binscale_of(in_ptr);
+
 		a_tmp.aflags.redim = redim_of(in_ptr);
+
 		a_tmp.aflags.column = column_of(in_ptr);
+
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
+
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
+
         a_tmp.dimct = dimct_of(in_ptr);
         a_tmp.arsize = arsize_of(in_ptr);
 	bytes_in = 16
@@ -721,10 +759,15 @@ static int copy_rec_dx( char *in_ptr,struct descriptor_xd *out_dsc_ptr,unsigned 
         a_tmp.scale = scale_of(in_ptr);
         a_tmp.digits = digits_of(in_ptr);
  		a_tmp.aflags.binscale = binscale_of(in_ptr);
+
 		a_tmp.aflags.redim = redim_of(in_ptr);
+
 		a_tmp.aflags.column = column_of(in_ptr);
+
 		a_tmp.aflags.coeff = coeff_of(in_ptr);
+
 		a_tmp.aflags.bounds = bounds_of(in_ptr);
+
         a_tmp.dimct = dimct_of(in_ptr);
         a_tmp.arsize = arsize_of(in_ptr);
 	bytes_in = 16
