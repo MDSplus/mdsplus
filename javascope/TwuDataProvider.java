@@ -294,6 +294,7 @@ class TwuDataProvider
         String    source                = null  ;
         float[]   data                  = null  ;
         boolean   propertiesAvailable   = false ;
+        int       shotOfTheProperties   = 0;
         boolean   dataAvailable         = false ;
         boolean   fetchOptionsAvailable = false ;
         boolean   error                 = false ;
@@ -315,13 +316,14 @@ class TwuDataProvider
         public TWUProperties  getTWUProperties() 
             throws IOException 
         {
-            if (! propertiesAvailable) 
+            if (! propertiesAvailable || shotOfTheProperties!=shot)
             { 
                 try
                 {
-                    fetchProperties() ; 
-                    // NB, this throws an exception if an error 
-                    // occurs OR HAS occurred before.
+                    shotOfTheProperties=shot;
+                    fetchProperties() ;
+                    // NB, this throws an exception if an error occurs 
+                    // OR HAS occurred before. And what good did that do?
                 }
                 catch (IOException e) 
                 {
@@ -343,8 +345,11 @@ class TwuDataProvider
         public String getProperty (String keyword) 
             throws Exception  
         {
-            if (! propertiesAvailable) 
-              fetchProperties() ;
+            if (! propertiesAvailable || shotOfTheProperties!=shot)
+            {
+                shotOfTheProperties=shot;
+                fetchProperties() ;
+            }
 
             return properties.getProperty (keyword);
         }
@@ -355,9 +360,13 @@ class TwuDataProvider
 
         private void fetchProperties() throws Exception 
         {
-            checkForError() ;
+            // checkForError() ; And fail on old errors? Why?
             try 
             {
+                // Don't remember errors from previous attempts
+                errorSource = null ; 
+                error = false ; 
+
                 if (isAbscissa) 
                   fetch_X_Properties() ;
                 else
@@ -410,7 +419,7 @@ class TwuDataProvider
             {
                 if (error_string==null)
                   error_string = "No Such Y Signal : " + propsurl ;
-                throwError ("Error loading properties of Y data !");
+                throwError ("Error loading properties of Y data !" + propsurl );
             }
             
         }
@@ -969,7 +978,7 @@ class TwuDataProvider
 
     public static String hashed2shot(String hashedURL, int shot)
     { 
-        if (hashedURL==null || shot==0 )
+        if (hashedURL==null )
           return hashedURL;
 
         final int hashfield = hashedURL.indexOf("#");
