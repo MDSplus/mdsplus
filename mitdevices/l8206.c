@@ -34,8 +34,8 @@ int l8206___init(struct descriptor *niddsc_ptr, InInitStruct *setup)
     stop(16,16384,&buffer[49152]);
   }
   pio(18,&zero);
-  pio(11,0);
-  pio(26,0);
+  pio(11,&zero);
+  pio(26,&zero);
   return status;
 }
 
@@ -44,7 +44,7 @@ int l8206___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
   int status;
   int savstatus;
   int upload_nid = setup->head_nid + L8206_N_UPLOAD;
-  pio(19,0);
+  pio(19,&zero);
   if (TreeIsOn(upload_nid)&1)
   { 
     int numpoints = 0;
@@ -80,8 +80,8 @@ int l8206___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
   }
   savstatus = status;
   pio(18,&zero);
-  pio(11,0);
-  pio(26,0);
+  pio(11,&zero);
+  pio(26,&zero);
   if (status & 1) status = savstatus;
   return status;
 }
