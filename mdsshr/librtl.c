@@ -626,14 +626,17 @@ int LibSFree1Dd(struct descriptor *out)
   
 int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short *lenout)
 {
+  struct descriptor tmp = {0,DTYPE_T,CLASS_D,0};
   struct descriptor s = {0,DTYPE_T,CLASS_S,0};
   unsigned short i;
   for (i=in->length;i>0;i--) if (in->pointer[i-1] != 32) break;
+  StrCopyDx(&tmp,in);
   s.length = i;
-  s.pointer = in->pointer;
+  s.pointer = tmp.pointer;
   if (lenout != NULL)
     *lenout = s.length;
-  return StrCopyDx(out,&s);
+  StrCopyDx(out,&s);
+  return StrFree1Dx(&tmp);
 }
 
 int StrCopyDx(struct descriptor *out, struct descriptor *in)
