@@ -60,8 +60,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
 static int FixupPath();
-static int StartEvent(NID *nid_ptr, int utility_update);
-static void EndEvent(int id, int length, int status, int stv);
 static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans);
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
@@ -126,7 +124,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         unsigned int temp[2] = {0,0};
         unsigned int time_inserted[2];
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
-	local_nci.owner_identifier = saved_uic;
+	local_nci.owner_identifier = swapint((char *)&saved_uic);
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
         tzset();
         m1[0] = (unsigned int)time(NULL) - timezone;
@@ -147,10 +145,13 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       else
       {
 	NCI      *nci = info_ptr->data_file->asy_nci->nci;
+        unsigned int length = 0;
+        unsigned int reclen = 0;
 	*nci = local_nci;
 	if (!utility_update)
 	{
-	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK) ? 0 : nci->DATA_INFO.DATA_LOCATION.record_length;
+	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK) ? 0 : 
+                        swapint((char *)&nci->DATA_INFO.DATA_LOCATION.record_length);
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -163,16 +164,14 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           unsigned char tree = (unsigned char)nid_ptr->tree;
           int compressible;
           int data_in_altbuf;
-          unsigned int length;
-          unsigned int reclen;
           nid_reference = 0;
           path_reference = 0;
 	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data,FixupNid,&tree,FixupPath,0,
             (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) && !(nci->flags & NciM_DO_NOT_COMPRESS),
             &compressible,&length,&reclen,&nci->dtype,&nci->class,
             sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
-          nci->length = length;
-          nci->DATA_INFO.DATA_LOCATION.record_length = reclen;
+          nci->length = swapint((char *)&length);
+          nci->DATA_INFO.DATA_LOCATION.record_length = swapint((char *)&reclen);
           bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
           bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
           bitassign(compressible,nci->flags,NciM_COMPRESSIBLE);
@@ -189,8 +188,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	  }
 	  else
 	  {
-	    if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
-		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
+	    if ((reclen != old_record_length) ||
+		(reclen >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
 		(nci->flags2 & NciM_ERROR_ON_PUT))
 	      status = PutDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
@@ -360,7 +359,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
   int       status = TreeNORMAL;
-  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  int       bytes_to_put = swapint((char *)&nci_ptr->DATA_INFO.DATA_LOCATION.record_length);
   info->data_file->record_header->node_number = nodenum;
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))
@@ -410,7 +409,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
   int       status = TreeNORMAL;
-  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  int       bytes_to_put = swapint((char *)&nci_ptr->DATA_INFO.DATA_LOCATION.record_length);
   info->data_file->record_header->node_number = nodenum;
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))

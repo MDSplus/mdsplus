@@ -103,7 +103,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.owner_identifier));
-		  *(unsigned int *) itm->pointer = nci.owner_identifier;
+		  *(unsigned int *) itm->pointer = swapint((char *)&nci.owner_identifier);
 		  break;
 	  case NciCLASS:
 		  break_on_no_node;
@@ -121,15 +121,15 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.length));
-		  *(unsigned int *) itm->pointer = nci.length;
+		  *(unsigned int *) itm->pointer = swapint((char *)&nci.length);
 		  break;
 	  case NciRLENGTH:
 		  break_on_no_node;
 		  read_nci;
 		  set_retlen(sizeof(nci.length));
 		  *(unsigned int *) itm->pointer =
-			  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? nci.length :
-		  nci.DATA_INFO.DATA_LOCATION.record_length;
+			  (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) ? swapint((char *)&nci.length) :
+		  swapint((char *)&nci.DATA_INFO.DATA_LOCATION.record_length);
 		  break;
 	  case NciSTATUS:
 		  break_on_no_node;
@@ -631,8 +631,6 @@ int _TreeIsOn(void *dbid, int nid)
 #ifdef _big_endian
 static void FixupNciIn(NCI *nci)
 {
-  nci->owner_identifier = swapint((char *)&nci->owner_identifier);
-  nci->length = swapint((char *)&nci->length);
   nci->status = swapint((char *)&nci->status);
   if (nci->flags & NciM_DATA_IN_ATT_BLOCK)
   {
@@ -642,10 +640,6 @@ static void FixupNciIn(NCI *nci)
     nci->DATA_INFO.ERROR_INFO.error_status = swapint((char *)&nci->DATA_INFO.ERROR_INFO.error_status);
     nci->DATA_INFO.ERROR_INFO.stv = swapint((char *)&nci->DATA_INFO.ERROR_INFO.stv);
   }
-  else
-  {
-    nci->DATA_INFO.DATA_LOCATION.record_length = swapint((char *)&nci->DATA_INFO.DATA_LOCATION.record_length);
-  }    
 }
 #endif
 

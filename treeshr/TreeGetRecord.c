@@ -91,11 +91,11 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 	      if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
 	      {
                 unsigned char dsc_dtype = DTYPE_DSC;
-                int dlen = nci.length - 8;
-                unsigned int ddlen = nci.length - 8 + sizeof(struct descriptor);
+                int dlen = swapint((char *)&nci.length) - 8;
+                unsigned int ddlen = dlen + sizeof(struct descriptor);
                 status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc,0);
 		dptr = dsc->pointer;
-		dptr->length = nci.length - 8;
+		dptr->length = dlen;
 		dptr->dtype = nci.dtype;
 		dptr->class = CLASS_S;
 		dptr->pointer = (char *) dptr + sizeof(struct descriptor);
@@ -113,7 +113,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 	      }
 	      else
 	      {
-                int length = nci.DATA_INFO.DATA_LOCATION.record_length;
+                int length = swapint((char *)&nci.DATA_INFO.DATA_LOCATION.record_length);
                 char *data = malloc(length);
 		status = GetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum);
                 if (!(status & 1))
