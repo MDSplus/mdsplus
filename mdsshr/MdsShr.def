@@ -94,3 +94,5 @@ pthread_mutex_unlock
 pthread_unlock_global_np
 MDSprintf
 MDSfprintf
+libgetvm_
+libfreevm_
