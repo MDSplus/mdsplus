@@ -411,7 +411,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
 {
   int       status = TreeNORMAL;
   int       bytes_to_put = swapint((char *)&nci_ptr->DATA_INFO.DATA_LOCATION.record_length);
-  info->data_file->record_header->node_number = nodenum;
+  info->data_file->record_header->node_number = swapint((char *)&nodenum);
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))
   {
@@ -422,6 +422,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
     {
       bytes_to_put -= bytes_this_time;
       info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
+      info->data_file->record_header->rlength = swapshort((char *)&info->data_file->record_header->rlength);
       lseek(info->data_file->put,rfa_l,SEEK_SET);
       status = (write(info->data_file->put,(void *) info->data_file->record_header,sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
                    ? TreeNORMAL : TreeFAILURE;
