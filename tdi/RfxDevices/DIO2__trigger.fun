@@ -57,12 +57,19 @@ public fun DIO2__trigger(as_is _nid, optional _method)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('DIO2HWTrigger($1, $2)', _board_id, _channel_mask);
+	       _status = MdsValue('DIO2HWTrigger(0, $1, $2)', _board_id, _channel_mask);
 		MdsDisconnect();
+		if(_status == 0)
+		{
+			DevLogErr(_nid, "Error software trigger generation in DIO2 device: see CPCI console for details");
+			abort();
+		}
 	}
 	else
 	{
-		_status = DIO2HWTrigger(_board_id, _channel_mask);
+		_status = DIO2HWTrigger(_nid, _board_id, _channel_mask);
+		if(_status == 0)
+			abort();
 	}
 	return(_status);
  }

@@ -42,6 +42,9 @@ public fun DIO2HWGetPhaseCount(in _nid, in _board_id, in _channel)
 	DIO2->DIO2_TC_GetPhase1Count(val(_handle), val(byte(_channel + 1)), ref(_phase1));
 	DIO2->DIO2_TC_GetPhase2Count(val(_handle), val(byte(_channel + 1)), ref(_phase2));
 
+	_phase1 = _phase1 * 1e-7;
+	_phase2 = _phase1 + _phase2 * 1e-7;
+
 	_phases = [_phase1, _phase2];
 
 

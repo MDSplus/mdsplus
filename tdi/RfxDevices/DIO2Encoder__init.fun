@@ -47,7 +47,7 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 
 
 	_events = [];
-    for(_c = 0; _c < 16; _c++)
+    for(_c = 0; _c < 17; _c++)
     {
 write(*, '***', _c);
 
@@ -65,7 +65,7 @@ write(*, '***', _c);
 			else
 				_event =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_EVENT)),0);
 			if(_event == 0) 
-    			DevLogErr(_nid, "Invalid Event specification for channel" // (_c+1));
+    				DevLogErr(_nid, "Invalid Event specification for channel" // (_c+1));
 			else
 			{
 				_ev_time =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_EVENT)),_INVALID);
@@ -74,13 +74,25 @@ write(*, '***', _c);
     				DevLogErr(_nid, "Invalid Event time specification for channel" // (_c+1));
 					_event = 0;
 				}
+				else
+				{
+					_status = TimingRegisterEventTime(_ev_name, getnci(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_EVENT_TIME), 'fullpath'));
+				}
+			if(_status == -1)
+			{
+			    DevLogErr(_nid, "Internal error in TimingRegisterEventTimes: different array sizes");
+			    abort();
+			}		
+
 			}
 		}
 		else
 			_event = 0;
-	 	 
-		_events = [_events, _event];
+	 	if(_c < 16) 
+		    _events = [_events, _event];
 	}
+
+
 
 /* Setup HW configuration */
 	if(_remote != 0)

@@ -60,7 +60,19 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 /* Set clock functions */
 	if(_ext_clock)
+	{
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_TIMING_HIGHWAY);
+		_status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(0)));
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting highway configuration in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting highway configuration in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+
+	}
 	else
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
 		
@@ -117,7 +129,7 @@ write(*,'status',_status);
 	if(_synch_event != 0)
 	{
 		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(10)), val(byte(_synch_event)),
-			val(byte(255)), val(byte(_DIO2_EC_GENERAL_TRIGGER)));
+			val(byte(255)), val(byte(_DIO2_EC_START_TRIGGER)));
 
 		if(_status != 0)
 		{

@@ -21,8 +21,8 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	private _TR10_CLK_SOURCE_PXI	=		byte(0x1);
 	private _TR10_CLK_SOURCE_EXTERNAL =		byte(0x2);
 	private _TR10_CLK_NO_EXT_CLOCK	=		byte(0x0);
-	private _TR10_CLK_PXI_TRIG7		=		byte(0x1);
-	private _TR10_CLK_DIVIDE	=			byte(0x0);
+	private _TR10_CLK_PXI_TRIG7		=	byte(0x1);
+	private _TR10_CLK_DIVIDE	=		byte(0x0);
 	private _TR10_CLK_SUB_SAMPLE	=		byte(0x1);
 	private _TR10_CLK_RISING_EDGE	=		byte(0x0);
 	private _TR10_CLK_FALLING_EDGE	=		byte(0x1);

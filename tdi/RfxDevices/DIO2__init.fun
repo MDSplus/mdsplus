@@ -29,7 +29,7 @@ public fun DIO2__init(as_is _nid, optional _method)
     private _N_REC_EVENT = 135;
     private _N_REC_TIMES = 136;
     private _N_SYNCH = 137;
-    private _N_SYNCH_EVENTS = 138;
+    private _N_SYNCH_EVENT = 138;
 
 	private _LARGE_TIME = 1E6;
     private _INVALID = 10E20;
@@ -72,13 +72,13 @@ public fun DIO2__init(as_is _nid, optional _method)
 		_synch_ev_name =if_error(data(DevNodeRef(_nid, _N_SYNCH_EVENT)),'');
 		if(_synch_ev_name == '')
 		{
-    		DevLogErr(_nid, "Invalid Synch Event specification");
+    			DevLogErr(_nid, "Invalid Synch Event specification");
  			abort();
 		}
 		_synch_event = TimingDecodeEvent(_synch_ev_name);
 		if(_synch_event == 0)
 		{
-    		DevLogErr(_nid, "Invalid Synch Event specification");
+    			DevLogErr(_nid, "Invalid Synch Event specification");
  			abort();
 		}
 	}
@@ -177,7 +177,7 @@ write(*, "------> Event code ", _event);
  						abort();
 					}
 
-					_event_time = TimingGetEventTime(_event);
+					_event_time = TimingGetEventTime(_ev_name);
 
 write(*, "------> Event time ", _event_time);
 
@@ -192,7 +192,10 @@ write(*, "------> Event time ", _event_time);
 						}
 					}
 					else
- 	    				DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
+					{
+						write(*, 'Event time: ', _event_time);
+ 	    					DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
+					}
 
 				}
 				else
@@ -265,7 +268,7 @@ write(*, "------> Event time ", _event_time);
     					DevLogErr(_nid, "Invalid event for gclock channel " // (_c + 1));
  						abort();
 					}
-					_event_time = TimingGetEventTime(_event);
+					_event_time = TimingGetEventTime(_ev_name);
 					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
 					{
 /* If event time cannot be reconstructed (i.e. RFXTiming device is missing) rely on trigger time */
@@ -353,7 +356,7 @@ write(*, "------> Event time ", _event_time);
     					DevLogErr(_nid, "Invalid event for gclock channel " // (_c + 1));
  						abort();
 					}
-					_event_time = TimingGetEventTime(_event);
+					_event_time = TimingGetEventTime(_ev_name);
 					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
 					{
 						_event_time = if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER)), _INVALID);
@@ -424,11 +427,19 @@ write(*, "------> Event time ", _event_time);
 				_period_1 = long((1. / _frequency_1) / 1E-7) * 1E-7;
 				_period_2 = long((1. / _frequency_2) / 1E-7) * 1E-7;
 
+  	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1, compile(_trig1_expr));
+  	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2, compile(_trig2_expr));
+				_trig1_path = getnci(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1), 'FULLPATH');
+				_trig2_path = getnci(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2), 'FULLPATH');
 
 
-				_clock_expr = 'BUILD_RANGE([-1E6,' // _trig1_expr // ', ' // _trig2_expr // '], [' // _trig1_expr //
+				_clock_expr = 'BUILD_RANGE([-1E6,' // _trig1_path // ', ' // _trig2_path // '], [' // _trig1_path //
+					', ' //_trig2_path // ', 1E6],['//_period_1 // ', ' // _period_2 //', ' // _period_1 // '])';
+
+
+/*				_clock_expr = 'BUILD_RANGE([-1E6,' // _trig1_expr // ', ' // _trig2_expr // '], [' // _trig1_expr //
 					', ' //_trig2_expr // ', 1E6],['//_period_1 // ', ' // _period_2 //', ' // _period_1 // '])';
-
+*/
 				write(*, _clock_expr);
  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_CLOCK, compile(_clock_expr));
 			}

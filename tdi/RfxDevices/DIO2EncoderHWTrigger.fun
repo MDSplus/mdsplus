@@ -1,7 +1,7 @@
-public fun DIO2HWTrigger(in _nid, in _board_id, in _channel_mask)
+public fun DIO2EncoderHWTrigger(in _nid, in _board_id, in _event)
 {
 
-write(*, "DIO HW TRIGGER");
+write(*, "DIO ENCODER  HW TRIGGER");
 
 /* Initialize Library if the first time */
     	if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
@@ -15,13 +15,14 @@ write(*, "DIO HW TRIGGER");
 		return(0);
 	}
 
-	_status = DIO2->DIO2_Cmd_TimingChannelTrigger(val(_handle), val(byte(_channel_mask)));
+	_status = DIO2->DIO2_Cmd_GenerateEvent(val(_handle), val(byte(_event)));
+
 	if(_status != 0)
 	{
 		if(_nid != 0)
-			DevLogErr(_nid, "Error software trigger generation in DIO2 device, board ID = "// _board_id);
+			DevLogErr(_nid, "Error software event generation in DIO2Encoder device, board ID = "// _board_id);
 		else
-			write(*, "Error software trigger generation in DIO2 device, board ID = "// _board_id);
+			write(*, "Error software event generation in DIO2Encoder device, board ID = "// _board_id);
 		return(0);
 	}
 
