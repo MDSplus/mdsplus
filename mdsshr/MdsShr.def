@@ -31,7 +31,9 @@ MdsEventCan
 MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
-MdsGetCurrentShotid
+MdsGetCurrentShotId
+MdsSetCurrentShotId
+MdsGetMsg
 MdsXpand
 StrAppend
 StrCaseBlindCompare

@@ -1,8 +1,9 @@
 #include        <stdarg.h>
 #include        <stdio.h>
-#ifdef vms
+#if defined(vms)
 #include        <lib$routines.h>
 #include        <time.h>
+#elif defined(_WINDOWS)
 #else
 #include        <sys/time.h>
 #endif
@@ -42,7 +43,6 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
    ,struct stsText  **stsText	/* <w> addr of facility's "stsText[]"	*/
    )
    {
-    int   i,k;
     int   facility;
     int   max;
 
@@ -114,8 +114,8 @@ char  *MdsGetMsg(	/* Return: addr of "status" string	*/
     int   sts			/* <r> sts value			*/
    )
    {
-    int   i,k;
     int   max;
+	int i;
     char  *facilityText;
     struct stsText  *stsText;
     static char  text[72];
@@ -168,7 +168,7 @@ int   MdsMsg(			/* Return: sts provided by user		*/
    , ...			/* <r:opt> arguments to fmt[]		*/
    )
    {
-    int   i,k;
+    int   k;
     char  text[256];
     va_list  ap;		/* arg ptr				*/
 

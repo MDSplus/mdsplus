@@ -105,7 +105,7 @@ char  *pgmname()
 void set_pgmname(ptr)
 char  *ptr;
    {
-    int   i,k;
+    int   k;
     char  *p,*p2;
 
 #ifdef vms
@@ -157,7 +157,6 @@ int   str_free1_dx(			/* Return: status		*/
     struct descriptor  *dsc		/* <m> descriptor to free	*/
    )
    {
-    int   sts;
     char  *p;
 
     if (!is_ddescr(dsc))
@@ -189,7 +188,7 @@ int   str_trim(				/* Return: status		*/
    ,void  *optsrc			/* <r:opt> source: cstring or dsc */
    )
    {
-    int   i,k;
+    int   k;
     char  *p;
     void  *src;
     struct descriptor  *dsc;
@@ -262,8 +261,7 @@ int   str_copy_dx(			/* Return: status		*/
    ,void  *source			/* <r> source: c-string or dsc	*/
    )
    {
-    int   i,k;
-    int   maxbytes;
+    int   k;
     char  *p;
     struct descriptor  *dsc;
 
@@ -333,13 +331,11 @@ int   str_replace(			/* Return: status		*/
    ,void  *replaceString		/* <r> replacement: c-str or dsc*/
    )
    {
-    int   i,k;
     int   len,vlen;
     int   sts;
     char  *p;
     char  *v;
     char  *tmp;
-    struct descriptor  *dsc;
 
     if (offsetStart > offsetEnd)
         return(0);		/* invalid parameters			*/
@@ -402,8 +398,7 @@ int   str_append(			/* Return: status		*/
    ,void  *source			/* <r> source: c-string or dsc	*/
    )
    {
-    int   i,k;
-    int   maxbytes;
+    int   k;
     int   len;
     int   nchar;
     char  *p;
@@ -644,7 +639,6 @@ char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
    ,char  c				/* <r> character to duplicate	*/
    )
    {
-    int   i,k;
     char  *p;
 
     if (!(is_ddescr(dsc_ret) || is_cdescr(dsc_ret)))
