@@ -88,7 +88,7 @@ install:
 	mkdir docs
 	cp @MAKEJAVADIR@classes/docs/* docs
 	$(JAR) c0f $@ *.class *.html docs
-	rm -R docs
+	rm -R -f docs
 
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
 	cp jScope.properties ../java/classes
