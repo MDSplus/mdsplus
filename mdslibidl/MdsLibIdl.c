@@ -175,7 +175,9 @@ int IdlMdsValue(int argc, void **argv)
         float float_v = (float)0.0;
         DESCRIPTOR_FLOAT(float_d,0);
         float_d.pointer = (char *)&float_v;
-        TdiCvt(&mdsValueAnswer,&float_d,&mdsValueAnswer MDS_END_ARG);
+		float_d.dtype = DTYPE_FLOAT;
+		if (float_d.dtype != mdsValueAnswer.pointer->dtype)
+          TdiCvt(&mdsValueAnswer,&float_d,&mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_D ||
                mdsValueAnswer.pointer->dtype == DTYPE_G ||
@@ -188,7 +190,9 @@ int IdlMdsValue(int argc, void **argv)
         double double_v = 0.0;
         struct descriptor double_d = {sizeof(double), DTYPE_DOUBLE, CLASS_S, 0};
         double_d.pointer = (char *)&double_v;
-        TdiCvt(&mdsValueAnswer,&double_d,&mdsValueAnswer MDS_END_ARG);
+		double_d.dtype = DTYPE_DOUBLE;
+		if (double_d.dtype != mdsValueAnswer.pointer->dtype)
+          TdiCvt(&mdsValueAnswer,&double_d,&mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_FC ||
                mdsValueAnswer.pointer->dtype == DTYPE_FSC)
@@ -196,7 +200,8 @@ int IdlMdsValue(int argc, void **argv)
         float float_v[2] = {(float)0.0,(float)0.0};
         struct descriptor complex_d = {sizeof(float_v), DTYPE_FLOAT_COMPLEX, CLASS_S, 0};
         complex_d.pointer = (char *)float_v;
-        TdiCvt(&mdsValueAnswer,&complex_d,&mdsValueAnswer MDS_END_ARG);
+		if (complex_d.dtype != mdsValueAnswer.pointer->dtype)
+          TdiCvt(&mdsValueAnswer,&complex_d,&mdsValueAnswer MDS_END_ARG);
       }
       else if (mdsValueAnswer.pointer->dtype == DTYPE_DC ||
                mdsValueAnswer.pointer->dtype == DTYPE_GC ||
@@ -205,14 +210,15 @@ int IdlMdsValue(int argc, void **argv)
         double double_v[2] = {0.0,0.0};
         struct descriptor dcomplex_d = {sizeof(double_v), DTYPE_DOUBLE_COMPLEX, CLASS_S, 0};
         dcomplex_d.pointer = (char *)double_v;
-        TdiCvt(&mdsValueAnswer,&dcomplex_d,&mdsValueAnswer MDS_END_ARG);
+		if (dcomplex_d.dtype != mdsValueAnswer.pointer->dtype)
+          TdiCvt(&mdsValueAnswer,&dcomplex_d,&mdsValueAnswer MDS_END_ARG);
       }
       ((char *)argv[2])[0] = 0;
       if (mdsValueAnswer.pointer->class == CLASS_S)
       {
         switch (mdsValueAnswer.pointer->dtype)
-	{
-	case DTYPE_B:
+		{
+	    case DTYPE_B:
         case DTYPE_BU: strcpy((char *)argv[1],"answer = 0b"); break; 
         case DTYPE_W:
         case DTYPE_WU: strcpy((char *)argv[1],"answer = 0"); break;
@@ -224,13 +230,13 @@ int IdlMdsValue(int argc, void **argv)
         case DTYPE_DOUBLE_COMPLEX: strcpy((char *)argv[1],"answer = dcomplex(0.0)"); break;
         case DTYPE_T: 
               if (mdsValueAnswer.pointer->length > 0)
-	      {
+			  {
                  sprintf((char *)argv[1],"answer = bytarr(%d)",mdsValueAnswer.pointer->length);
-	         strcpy((char *)argv[2],"answer = string(answer)");
-	      }
+	             strcpy((char *)argv[2],"answer = string(answer)");
+			  }
               else
-	      {
-		strcpy((char *)argv[1],"answer = ''");
+			  {
+		         strcpy((char *)argv[1],"answer = ''");
               }
 	      break;
         }
@@ -258,14 +264,14 @@ int IdlMdsValue(int argc, void **argv)
         case DTYPE_FLOAT_COMPLEX: strcpy((char *)argv[1],"answer = complexarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_DOUBLE_COMPLEX: strcpy((char *)argv[1],"answer = dcomplexarr"); strcat((char *)argv[1],dims); break;
         case DTYPE_T: 
-	  if (mdsValueAnswer.pointer->length > 0)
-          {
+	      if (mdsValueAnswer.pointer->length > 0)
+		  {
             sprintf((char *)argv[1],"answer = bytarr(%d,",mdsValueAnswer.pointer->length); strcat((char *)argv[1],&dims[1]);
-	    strcpy((char *)argv[2],"answer = strtrim(string(answer))");
+	        strcpy((char *)argv[2],"answer = strtrim(string(answer))");
           }
           else
-	  {
-	    strcpy((char *)argv[1],"answer = strarr"); strcat((char *)argv[1],dims);
+		  {
+	        strcpy((char *)argv[1],"answer = strarr"); strcat((char *)argv[1],dims);
           }
           break;
         }

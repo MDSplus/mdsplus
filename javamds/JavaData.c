@@ -9,6 +9,7 @@
 #include <libroutines.h>
 
 extern int TdiDecompile(), TdiCompile();
+extern int CvtConvertFloat();
 
 struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 void FreeDescrip(struct descriptor *desc);
@@ -54,10 +55,7 @@ JNIEXPORT jobject JNICALL Java_jTraverser_Data_fromExpr
    const char *source = (*env)->GetStringUTFChars(env, jsource, 0);
    char *error_msg;
    struct descriptor source_d = {0, DTYPE_T, CLASS_S, 0};
-   jstring jerror_msg;
    jobject ris, exc;
-
-struct descriptor_r *d;
 
 
    source_d.length = strlen(source);
@@ -93,7 +91,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 {
   jclass cls, data_cls;
   jmethodID constr;
-  int i, length, count, ndescs;
+  int i, length, count;
   unsigned int opcode;
   jboolean is_unsigned = 0;
   jobject obj, exc, curr_obj;
@@ -109,7 +107,6 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   char message[64];
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
-  struct descriptor_apd *apd_d;
   char *buf;
 
   if(!desc)
@@ -472,7 +469,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "J");
 	    desc->length = sizeof(long);
 	    desc->pointer = (char *)malloc(desc->length);
-	    *(long *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
+	    *(long *)desc->pointer = (*env)->GetLongField(env, obj, datum_fid);
 	    return desc;
 
   	  case DTYPE_O:

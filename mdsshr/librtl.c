@@ -8,6 +8,8 @@
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
 
+extern int MdsCopyDxXd();
+
 char *MdsDescrToCstring(struct descriptor *in);
 int StrFree1Dx(struct descriptor *out);
 int StrGet1Dx(unsigned short *len, struct descriptor *out);
