@@ -81,8 +81,10 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 					abort();
 				}		
 		    }
+		if(_c < 16)	
 			DevNodeCvt(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TERMINATION, ['OFF', 'ON'], [0,1], _termination = 0);
-
+		else
+		    _termination = 0;
 		}
 		else
 		{

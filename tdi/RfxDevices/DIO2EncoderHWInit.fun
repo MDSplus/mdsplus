@@ -38,7 +38,7 @@ public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events, i
 
 
 
-	write(*, 'DIO2EncoderHWInit', _board_id, _ext_clock, _events);
+	write(*, 'DIO2EncoderHWInit', _board_id, _ext_clock, _events, _terminations);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
