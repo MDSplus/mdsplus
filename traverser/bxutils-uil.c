@@ -1,3 +1,4 @@
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$"; 
 /*
  * WARNING: This file is overwritten at code generation time.
  * Any changes to this file will be lost.

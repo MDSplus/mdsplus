@@ -1,3 +1,4 @@
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$"; 
 /*
  * README: Portions of this file are merged at file generation
  * time. Edits can be made *only* in between specified code blocks, look
