@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#ifdef THREADS
+#ifdef _THREADS
 #include <pthread.h>
 #endif
 #include "mdsip.h"
@@ -20,7 +20,9 @@ extern char *ctime();
 #define MAX_ARGS 256
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#if !defined(_WIN32)
+#if defined(_WIN32)
+#include <process.h>
+#else
 #include <pwd.h>
 #include <unistd.h>  /* for getpid() */
 #define closesocket close
@@ -41,18 +43,21 @@ typedef struct _client { SOCKET sock;
                          int nargs;
                          struct descriptor *descrip[MAX_ARGS];
                          MdsEventList *event;
-			 void         *tdicontext[6];
+						 void         *tdicontext[6];
                          struct _client *next;
                        } Client;
 
 static Client *ClientList = 0;
 static fd_set fdactive;
-static int multi;
+static int multi = 0;
+static int IsService = 0;
+static int IsWorker = 0;
 #if defined(_WIN32)
 static char *hostfile = "C:\\mdsip.hosts";
 #else
 static char *hostfile = "/etc/mdsip.hosts";
 #endif
+static char *portname = "8000";
 
 extern int TdiSaveContext();
 extern int TdiRestoreContext();
@@ -61,6 +66,7 @@ extern int TdiData();
 extern int TdiDebug();
 extern int TdiResetPublic();
 extern int TdiResetPrivate();
+extern char *TranslateLogical();
 
 static int ConnectToInet();
 static int CreateMdsPort(char *service, int multi);
@@ -75,82 +81,321 @@ extern Message *GetMdsMsg(int sock, int *status);
 extern int SendMdsMsg(int sock, Message *m, int oob);
 void GetErrorText(int status, struct descriptor_xd *xd);
 void ResetErrors();
+static void CompressString(struct descriptor *in, int upcase);
 
 static int zero = 0;
 static int one = 1;
 static unsigned short two = 2;
-
+static SOCKET serverSock = INVALID_SOCKET;
+static int shut = 0;
+static int *workerShutdown;
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-int main(int argc, char **argv)
-{
-  static struct sockaddr_in sin;
-  int sock;
-  int shut = 0;
-  int tablesize = FD_SETSIZE;
-  fd_set readfds;
 #ifdef _WIN32
+
+static char *ServiceName()
+{
+	static char name[512] = {0};
+	if (name[0] == 0)
+	{
+	  strcpy(name,"MDSIP_");
+	  strcat(name,portname);
+	}
+	return name;
+}
+
+static void StartWorker(char **argv)
+{
+  HANDLE sharedMemHandle;
+  SOCKET sock;
+  BOOL dup = DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,atoi(argv[3])), 
+			                           (HANDLE)atoi(argv[4]),GetCurrentProcess(),(HANDLE *)&sock,
+									   PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
+  ClientList = malloc(sizeof(Client));
+  FD_SET(sock,&fdactive);
+  memset(ClientList,0,sizeof(*ClientList));
+  ClientList->sock = sock;
+  IsWorker = 1;
+  sharedMemHandle = OpenFileMapping(FILE_MAP_READ, FALSE, ServiceName());
+  workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_READ, 0, 0, sizeof(int));
+}
+
+static void InitWorkerCommunications()
+{
+	HANDLE sharedMemHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(int), ServiceName());
+	workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_WRITE, 0, 0, sizeof(int));
+	*workerShutdown = 0;
+}
+
+static void InitializeSockets()
+{
   WSADATA wsaData;
   WORD wVersionRequested;
   wVersionRequested = MAKEWORD(1,1);
   WSAStartup(wVersionRequested,&wsaData);
-#endif
-  if (argc <= 1)
+}
+
+static int SpawnWorker(SOCKET sock)
+{
+	BOOL status;
+	static STARTUPINFO startupinfo;
+	PROCESS_INFORMATION pinfo;
+	char cmd[512];
+	char *name = _pgmptr;
+	sprintf(cmd,"%s %s worker %d %d",_pgmptr,portname,GetCurrentProcessId(),sock);
+	startupinfo.cb = sizeof(startupinfo);
+    status = CreateProcess(_pgmptr,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
+	CloseHandle(pinfo.hProcess);
+	CloseHandle(pinfo.hThread);
+	return pinfo.dwProcessId;
+}
+#define NO_SPAWN 0
+
+static int BecomeUser(struct descriptor *user)
+{
+	return 1;
+}
+
+#ifdef _NT_SERVICE
+
+static unsigned long hService;
+int ServiceMain(int,char**);
+static SERVICE_STATUS serviceStatus;
+
+static BOOL SetThisServiceStatus(int state,int hint)
+{
+  serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+  serviceStatus.dwCurrentState = state;
+  serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+  serviceStatus.dwWin32ExitCode = NO_ERROR;
+  serviceStatus.dwServiceSpecificExitCode = 0;
+  serviceStatus.dwCheckPoint = 0;
+  serviceStatus.dwWaitHint = hint;
+  return SetServiceStatus(hService,&serviceStatus);
+}
+
+VOID WINAPI serviceHandler(DWORD fdwControl)
+{
+	switch (fdwControl)
+	{
+	case SERVICE_CONTROL_STOP:
+		{
+		BOOL status = SetThisServiceStatus(SERVICE_STOP_PENDING,1000);
+		*workerShutdown = 1;
+		status = SetThisServiceStatus(SERVICE_STOPPED,0);
+		shut = 1;
+        break;
+		}
+	}
+
+}
+
+static void InitializeService()
+{
+	char file[120];
+    hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
+    SetThisServiceStatus(SERVICE_START_PENDING,1000);
+	strcpy(file,"C:\\");
+	strcat(file,ServiceName());
+	strcat(file,".log");
+	freopen(file, "a", stdout );
+}
+
+int main( int argc, char **argv) 
+{
+  if (argc >= 3 && (strcmp(argv[2],"service") == 0))
   {
-    printf("Usage: mdsip portname|portnumber [multi] [hostfile]\n");
+	portname = argv[1];
+	if (argc > 3)
+		hostfile = argv[3];
+	IsService = 1;
+	{
+      SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
+      StartServiceCtrlDispatcher(srvcTable);
+	}
+  }
+  else
+	  ServiceMain(argc,argv);
+  return 1;
+}
+#define main ServiceMain
+
+static void RemoveService()
+{
+  SC_HANDLE hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE); 
+  if (hSCManager)
+  {
+	  SC_HANDLE hService = OpenService(hSCManager, ServiceName(), DELETE);
+      if (hService)
+	  {
+	    BOOL status;
+	    status = DeleteService(hService);
+	    status = CloseServiceHandle(hService);
+	  }
+	  CloseServiceHandle(hSCManager);
+  }
+}
+
+static void InstallService()
+{
+  SC_HANDLE hSCManager;
+  int status;
+  RemoveService();
+  hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
+  if (hSCManager)
+  {
+	  SC_HANDLE hService;
+	  char *file = (char *)malloc(strlen(_pgmptr)+strlen(portname)+strlen(hostfile)+20);
+	  strcpy(file,_pgmptr);
+	  strcat(file," ");
+	  strcat(file,portname);
+	  strcat(file," service ");
+	  strcat(file,hostfile);
+	  hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
+	  SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
+	  if (hService == NULL)
+		  status = GetLastError();
+	  free(file);
+	  if (hService)
+		  CloseServiceHandle(hService);
+	  CloseServiceHandle(hSCManager);
+  }
+}
+
+#else
+static void InitializeService(char **hostfile, char **portname){}
+static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+#endif
+
+#else
+static void StartWorker(char **argv){}
+static void InitWorkerCommunications(){}
+static void InitializeSockets(){}
+static void InitializeService(char **hostfile, char **portname){}
+static BOOL SetThisServiceStatus(int state, int hint) {return 1;}
+static int SpawnWorker(){return getpid();}
+#define NO_SPAWN 1
+#define SERVICE_START_PENDING 0
+#define SERVICE_RUNNING 1
+
+static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+static int BecomeUser(struct descriptor *local_user)
+{
+  int ok;
+  CompressString(local_user,0);
+  if (local_user->length)
+  {
+    char *user = MdsDescrToCstring(local_user);
+    int status;
+    struct passwd *pwd = getpwnam(user);
+    if (pwd)
+       status = setuid(pwd->pw_uid);
+    MdsFree(user);
+    ok = (status == 0) ? 1 : 2;
+  }
+  else
+    ok = 1;
+  return ok;
+}
+
+#endif
+
+int main(int argc, char **argv)
+{
+  static struct sockaddr_in sin;
+  int tablesize = FD_SETSIZE;
+  fd_set readfds;
+  TIMEVAL timeout = {1,0};
+  InitializeSockets();
+  FD_ZERO(&fdactive);
+  //DebugBreak();
+  if (argc <= 1 && !IsService)
+  {
+    printf("Usage: mdsip portname|portnumber [multi|install|remove] [hostfile]\n");
     exit(0);
   }
-  if (argc > 2)
+  multi = 0;
+  if (IsService)
+	  InitializeService();
+  else
   {
-    if (strcmp("multi",argv[2]) == 0)
-    {
-      multi = 1;
+	portname = argv[1];
+    if (argc > 2)
+	{
       if (argc > 3)
         hostfile = argv[3];
-    }
-    else
-    {
-      multi = 0;
-      hostfile = argv[2];
-    }
+      if (strcmp("multi",argv[2]) == 0)
+	  {
+        multi = 1;
+	  }
+	  else if (strcmp("install",argv[2]) == 0)
+	  {
+		InstallService();
+		exit(0);
+	  }
+	  else if (strcmp("remove",argv[2]) == 0)
+	  {
+		RemoveService();
+		exit(0);
+	  }
+	  else if (strcmp("worker",argv[2]) == 0)
+		StartWorker(argv);
+      else
+        hostfile = argv[2];
+	}
   }
-  else
-    multi = 0;
-  FD_ZERO(&fdactive);
-  if (multi)
-    sock = CreateMdsPort(argv[1],1);
-  else
+  if (multi || IsService)
   {
-    sock = ConnectToInet(argv[1]);
+    InitWorkerCommunications();
+    serverSock = CreateMdsPort(portname,1);
+    shut = 0;
+	if (IsService)
+      SetThisServiceStatus(SERVICE_RUNNING,0);
+  }
+  else if (!IsWorker)
+  {
+    serverSock = ConnectToInet(portname);
     shut = (ClientList == NULL);
-  }    
+  }
   readfds = fdactive;
-  while (!shut && (select(tablesize, &readfds, 0, 0, 0) > 0))
+  while (!shut && (select(tablesize, &readfds, 0, 0, (IsWorker || IsService) ? &timeout : 0) != SOCKET_ERROR))
   {
-    if (FD_ISSET(sock, &readfds))
+    if (FD_ISSET(serverSock, &readfds))
     {
       int len = sizeof(struct sockaddr_in);
-      AddClient(accept(sock, (struct sockaddr *)&sin, &len),&sin);
+      AddClient(accept(serverSock, (struct sockaddr *)&sin, &len),&sin);
     }
     else
     {
       Client *c,*next;
       for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
+	  {
+		if (IsWorker)
+		{
+			if (*workerShutdown)
+			{
+				shutdown(c->sock,2);
+				closesocket(c->sock);
+				_exit(0);
+			}
+		}
         if (FD_ISSET(c->sock, &readfds))
           DoMessage(c);
+	  }
     }
-    shut = (ClientList == NULL) && !multi;
+    shut = (ClientList == NULL) && !multi && !IsService;
     readfds = fdactive;
   }
-  shutdown(sock,2);
-  closesocket(sock);
+  shutdown(serverSock,2);
+  closesocket(serverSock);
   return 1;
 }
 
 static int DoMessage(Client *c)
 {
   int status;
-  Message *msgptr = GetMdsMsg(c->sock,&status);
+  Message *msgptr;
+  msgptr = GetMdsMsg(c->sock,&status);
   if (status & 1)
   {
     send(c->sock, 0, 0, 0);
@@ -170,7 +415,7 @@ static void CompressString(struct descriptor *in, int upcase)
   while(in->length && (in->pointer[0] == ' ' || in->pointer[0] == '	'))
     StrRight(in,in,&two);
 }
-  
+
 static int CheckClient(char *host_c, char *user_c)
 {
   FILE *f = fopen(hostfile,"r");
@@ -202,7 +447,7 @@ static int CheckClient(char *host_c, char *user_c)
       if (line_c[0] != '#')
       {
         line_d.length = strlen(line_c) - 2;
-	StrElement(&access_id,&zero,&delimiter,&line_d);
+	    StrElement(&access_id,&zero,&delimiter,&line_d);
         StrElement(&local_user,&one,&delimiter,&line_d);
         CompressString(&access_id,1);
         if (access_id.length)
@@ -210,25 +455,7 @@ static int CheckClient(char *host_c, char *user_c)
           if (access_id.pointer[0] != '!')
           {
             if (StrMatchWild(&match,&access_id) & 1)
-            {
-#ifndef _WIN32
-              CompressString(&local_user,0);
-              if (local_user.length)
-              {
-                char *user = MdsDescrToCstring(&local_user);
-                int status;
-                struct passwd *pwd = getpwnam(user);
-                if (pwd)
-		{
-                  status = setuid(pwd->pw_uid);
-                }
-                MdsFree(user);
-                ok = (status == 0) ? 1 : 2;
-              }
-              else
-#endif
-                ok = 1;
-            }
+				ok = BecomeUser(&local_user);
           }
           else
           {
@@ -252,7 +479,6 @@ static int CheckClient(char *host_c, char *user_c)
 static void AddClient(int sock,struct sockaddr_in *sin)
 {
 
-
   if (sock >= 0)
   {
     static Message m;
@@ -263,9 +489,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     struct hostent *hp;
     int i;
     int status;
-#ifndef _WIN32
-    pid_t pid;
-#endif
+    int pid;
     int ok = 0;
     Client *c;
     time_t tim;
@@ -282,18 +506,6 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     tim = time(0);
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
-#ifndef _WIN32
-    pid = getpid();
-    if (hp)
-      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
-    else
-      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
-#else
-    if (hp)
-      printf("%s (%d) Connection received from %s@%s [%s]\r\n", timestr,sock, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
-    else
-      printf("%s (%d) Connection received from %s@%s\r\n", timestr, sock, user_p, inet_ntoa(sin->sin_addr));
-#endif
     if (!multi)
     {
       if (hp) ok = CheckClient(hp->h_name,user_p);
@@ -301,11 +513,10 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     }
     else
       ok = 1;
-    if (user) free(user);
     m.h.status = ok & 1;
     m.h.client_type = m_user->h.client_type;
     SendMdsMsg(sock,&m,0);
-    if (m.h.status)
+    if (m.h.status && NO_SPAWN)
     {
       Client *new = malloc(sizeof(Client));
       FD_SET(sock,&fdactive);
@@ -314,7 +525,7 @@ static void AddClient(int sock,struct sockaddr_in *sin)
       new->message_id = 0;
       new->event = 0;
       for (i=0;i<6;i++)
-	new->tdicontext[i] = NULL;
+	    new->tdicontext[i] = NULL;
       for (i=0;i<MAX_ARGS;i++)
         new->descrip[i] = NULL;
       new->next = NULL;
@@ -323,13 +534,21 @@ static void AddClient(int sock,struct sockaddr_in *sin)
         c->next = new;
       else
         ClientList = new;
-    }
+	}
+	//DebugBreak();
+    pid = SpawnWorker(sock);
+    if (hp)
+      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
+      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
+    if (!m.h.status)
     {
       printf("Access denied\n");
       shutdown(sock,2);
       closesocket(sock);
     }
+    if (user) free(user);
+	fflush(stdout);
   }
 }
 
@@ -553,12 +772,11 @@ static void ProcessMessage(Client *c, Message *message)
       }
       if (message->h.descriptor_idx == (message->h.nargs - 1))
       {
-#ifdef THREADS
+#if defined(_THREADS)
         pthread_t thread;
         pthread_create(&thread,pthread_attr_default,(pthread_startroutine_t)ExecuteMessage,(pthread_addr_t)c);
-#else
-        ExecuteMessage(c);
 #endif
+        ExecuteMessage(c);
       }
     }
   }
