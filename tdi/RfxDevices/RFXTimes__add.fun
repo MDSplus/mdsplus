@@ -1,24 +1,16 @@
 public fun RFXTimes__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXTimes', 49, _nidout);
+    DevAddStart(_path, 'RFXTimes', 50, _nidout);
     DevAddNode(_path // ':CLOSE_PNSS', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CLOSE_PNSS T_CLOSE_PNSS');
     DevAddNode(_path // ':CLOSE_PP1', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PP1 T_CLOSE_PP1');
     DevAddNode(_path // ':CLOSE_PP2', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PP2 T_CLOSE_PP2');
-   DevAddNode(_path // ':CLOSE_PP3', 'NUMERIC', *, *, _nid);
+	DevAddNode(_path // ':CLOSE_PP3', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PP3 T_CLOSE_PP3');
-   DevAddNode(_path // ':CLOSE_PP4', 'NUMERIC', *, *, _nid);
+	DevAddNode(_path // ':CLOSE_PP4', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PP4 T_CLOSE_PP4');
-    DevAddNode(_path // ':CLOSE_PPSC1', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_PPSC1 T_CLOSE_PPSC1');
-    DevAddNode(_path // ':CLOSE_PPSC2', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_PPSC2 T_CLOSE_PPSC2');
-    DevAddNode(_path // ':CLOSE_PPSC3', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_PPSC3 T_CLOSE_PPSC3');
-    DevAddNode(_path // ':CLOSE_PPSC4', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_PPSC4 T_CLOSE_PPSC4');
     DevAddNode(_path // ':CLOSE_PTCT_1', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PTCT_1 T_CLOSE_PTCT_1');
     DevAddNode(_path // ':CLOSE_PTCT_2', 'NUMERIC', *, *, _nid);
@@ -35,20 +27,24 @@ public fun RFXTimes__add(in _path, out _nidout)
 	tcl('add tag ' // _path // ':CLOSE_PTCT_7 T_CLOSE_PTCT_7');
     DevAddNode(_path // ':CLOSE_PTCT_8', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':CLOSE_PTCT_8 T_CLOSE_PTCT_8');
-    DevAddNode(_path // ':CLOSE_TNSI', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_TNSI T_CLOSE_TNSI');
-    DevAddNode(_path // ':CLOSE_TNSR', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_TNSR T_CLOSE_TNSR');
-    DevAddNode(_path // ':CLOSE_TNST', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':CLOSE_TNST T_CLOSE_TNST');
     DevAddNode(_path // ':INSRT_PC', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':INSRT_PC T_INSRT_PC');
-    DevAddNode(_path // ':INSRT_PTCB', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':INSRT_PTCB T_INSRT_PTCB');
-    DevAddNode(_path // ':OPEN_PTSO', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':OPEN_PTSO T_OPEN_PTSO');
-	DevAddNode(_path // ':PPSC_C', 'NUMERIC', *, *, _nid);
-	tcl('add tag ' // _path // ':PPSC_C T_PPSC_C');
+    DevAddNode(_path // ':INSRT_PTCB_1', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':INSRT_PTCB_1 T_INSRT_PTCB_1');
+    DevAddNode(_path // ':INSRT_PTCB_2', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':INSRT_PTCB_2 T_INSRT_PTCB_2');
+    DevAddNode(_path // ':INSRT_PTCB_3', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':INSRT_PTCB_3 T_INSRT_PTCB_3');
+    DevAddNode(_path // ':INSRT_PTCB_4', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':INSRT_PTCB_4 T_INSRT_PTCB_4');
+    DevAddNode(_path // ':OPEN_PTSO_1', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':OPEN_PTSO_1 T_OPEN_PTSO_1');
+    DevAddNode(_path // ':OPEN_PTSO_2', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':OPEN_PTSO_2 T_OPEN_PTSO_2');
+    DevAddNode(_path // ':OPEN_PTSO_3', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':OPEN_PTSO_3 T_OPEN_PTSO_3');
+    DevAddNode(_path // ':OPEN_PTSO_4', 'NUMERIC', *, *, _nid);
+	tcl('add tag ' // _path // ':OPEN_PTSO_4 T_OPEN_PTSO_4');
     DevAddNode(_path // ':START_TF', 'NUMERIC', *, *, _nid);
 	tcl('add tag ' // _path // ':START_TF T_START_TF');
     DevAddNode(_path // ':STOP_TF', 'NUMERIC', *, *, _nid);
@@ -100,6 +96,15 @@ public fun RFXTimes__add(in _path, out _nidout)
 	tcl('add tag '//_path //':START_PR T_START_PR');
     DevAddNode(_path // ':STOP_PR', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':STOP_PR T_STOP_PR');
+
+    DevAddNode(_path // ':START_GP', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_GP T_START_GP');
+    DevAddNode(_path // ':STOP_GP', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_GP T_STOP_GP');
+
+
+    DevAddNode(_path // ':END_RFX', 'NUMERIC', 2.5, *, _nid);
+	tcl('add tag '//_path //':END_RFX T_END_RFX');
 
 
     DevAddEnd();
