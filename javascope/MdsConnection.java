@@ -214,7 +214,8 @@ public class MdsConnection
 
 	        if(message == null || message.length == 0)
 	        {
-	            out.error = "Null response from server";
+
+	            out.error = "Null response from server" ;
 	            return out;
 	        }
 	        out.status = message.status;

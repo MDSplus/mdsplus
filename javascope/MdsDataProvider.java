@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 
+
 public class MdsDataProvider implements DataProvider
 {
     String provider;
@@ -98,6 +99,7 @@ public class MdsDataProvider implements DataProvider
                 }
             }
             else
+
             {
                 String mframe_error = ErrorString();
 

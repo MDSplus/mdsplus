@@ -1340,7 +1340,7 @@ public class WaveInterface
                         curr_x_double = wd.GetXDoubleData();
                         if(curr_x_double == null || curr_x_double.length <= 1)
                           curr_x = wd.GetXData();
-		        if(curr_x == null || curr_x.length <= 1)
+		        if((curr_x == null || curr_x.length <= 1)&&(curr_x_double == null || curr_x_double.length <= 1))
 			        curr_data = null;
 	        }
 	    }
