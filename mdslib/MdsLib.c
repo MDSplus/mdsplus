@@ -146,8 +146,16 @@ int *cdescr (int dtype, void *data, ...)
 static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 {
 
-  int dtype;
+  char dtype;
   dtype = dsc->dtype;
+
+  switch (dtype)
+  {
+  case DTYPE_NATIVE_FLOAT: dtype = DTYPE_FLOAT; break;
+  case DTYPE_NATIVE_DOUBLE: dtype = DTYPE_DOUBLE; break;
+  case DTYPE_FLOAT_COMPLEX: dtype = DTYPE_COMPLEX; break;
+  case DTYPE_DOUBLE_COMPLEX: dtype = DTYPE_COMPLEX_DOUBLE; break;
+  }
 
   if (dsc->class == CLASS_S) 
   {
@@ -1685,7 +1693,7 @@ static int ___MdsOpen();
 SOCKET WINAPI MdsConnectVB(char *host) { return ___MdsConnect(host);}
 void WINAPI MdsDisconnectVB() { ___MdsDisconnect();}
 int  WINAPI MdsCloseVB(char *tree, int *shot) { return ___MdsClose(tree,shot);}
-int  WINAPI MdsSetSocketVB(int *newsocket) { return ___MdsSetSocketVB(newsocket);}
+int  WINAPI MdsSetSocketVB(int *newsocket) { return ___MdsSetSocket(newsocket);}
 int  WINAPI MdsSetDefaultVB(char *node) { return ___MdsSetDefault(node);}
 int  WINAPI MdsOpenVB(char *tree, int *shot) { return ___MdsOpen(tree,shot);}
 int WINAPI descr1VB(int *dtype, void *value)

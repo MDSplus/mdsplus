@@ -52,7 +52,7 @@
 union __bswap { char   b[8];
              int    int_;
              short  short_;
-             long long  _int64_;
+             _int64  _int64_;
              };
 
 #if defined(WORDS_BIGENDIAN)

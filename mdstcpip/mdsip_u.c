@@ -560,7 +560,7 @@ static int CheckClient(char *host_c, char *user_c)
 
 #endif
 
-static void AddClient(int sock,struct sockaddr_in *sin)
+static void AddClient(SOCKET sock,struct sockaddr_in *sin)
 {
 
   if (sock >= 0)
@@ -1289,7 +1289,7 @@ static int CreateMdsPort(short port, int multi_in)
   long sendbuf=32768,recvbuf=32768;
 */
   long sendbuf=5000,recvbuf=5000;
-  int s;
+  SOCKET s;
   int status;
   if (multi)
     CheckClient(0,"MULTI");
@@ -1331,7 +1331,7 @@ static int CreateMdsPort(short port, int multi_in)
 static int ConnectToInet(short port)
 {
   static struct sockaddr_in sin;
-  int s=-1;
+  SOCKET s=-1;
   int n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
