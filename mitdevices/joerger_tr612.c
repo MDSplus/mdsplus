@@ -247,9 +247,9 @@ static int ReadChannel(InStoreStruct *setup, int max_samps, int chan, short *dat
   int status;
   int samples_to_read = max_samps;
   int this_chunk;
-  int bufsize = CamGetMAXBUF(setup->name);
   static int zero=0;
   pio(17,0,&zero,&one);
+  /*
   if (bufsize < (max_samps * 2))
   {
     for (this_chunk = min(32767,samples_to_read);samples_to_read > 0; 
@@ -258,7 +258,10 @@ static int ReadChannel(InStoreStruct *setup, int max_samps, int chan, short *dat
   }
   else
   {
+  */
     return_on_error(DevCamChk(CamFStopw(setup->name,chan,2,max_samps,data_ptr,16,0),&one,0),status);
+    /*
   }
+    */
   return status;
 }

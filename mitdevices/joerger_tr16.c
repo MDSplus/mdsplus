@@ -202,9 +202,9 @@ static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
   int samples_read = 0;
   int samples_to_read = *samples_ptr;
   int read_size;
-  int bufsize = CamGetMAXBUF(name);
   pio(17,0,&chan, one);
   pio(17,0,&chan, one);
+  /*
   if (bufsize < (samples_to_read * 2))
   {
     for(samples_to_read = *samples_ptr; samples_to_read; samples_to_read -= read_size)
@@ -216,7 +216,10 @@ static int ReadChannel(char *name, int chan, int *samples_ptr, short *data_ptr)
   }
   else
   {
+  */
     return_on_error(DevCamChk(CamFStopw(name,0,2,samples_to_read,data_ptr,16,0),&one,0));
+    /*
   }
+    */
   return 1;
 }
