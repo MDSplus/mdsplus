@@ -676,11 +676,13 @@ public class RFXTimesSetup extends DeviceSetup {
         "if(_CLOSE_IS_TC_state == 1) tcl(\'set node \\\\CLOSE_IS_TC/on\'); else " +
     "tcl(\'set node \\\\CLOSE_IS_TC /off\'); 1;",
         "if(_START_CHOP_TC_state == 1) tcl(\'set node \\\\EN_CHOP_TC/on\'); else " +
-    "tcl(\'set node \\\\EN_CHOP_TC /off\'); 1;"
+    "tcl(\'set node \\\\EN_CHOP_TC /off\'); 1;",
+        "(_STOP_PM - _START_PM)<= \\P_CONFIG:PM_WINDOW", "(_STOP_PV  - _START_PV)<= \\P_CONFIG:PV_WINDOW", "(_STOP_PC  - _START_PC)<= \\P_CONFIG:PC_WINDOW"
         });
  deviceButtons1.setCheckMessages(new String[] {"Item1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10", "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",
         "Item 16", "Item 17", "Item 18", "Item 19", "Item 20", "Item 21", "Item 22", "Item 23", "Item 24", "Item 25", "Item 26", "Item 27", "Item 28", "Item 29",
-        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36"});
+        "Item 30", "Item 31", "Item 32", "Item 33", "Item 34", "Item 35", "Item 36", "PM window greater than plant configuration", "PV window greater than plant configuration",
+        "PC window greater than plant configuration"});
     jPanel5.add(deviceButtons1,  BorderLayout.SOUTH);
   }
 
