@@ -89,6 +89,33 @@ LINK32=link.exe
 # Name "mdsshr - Win32 Debug"
 # Begin Source File
 
+SOURCE=..\include\config.h_win32
+
+!IF  "$(CFG)" == "mdsshr - Win32 Release"
+
+# Begin Custom Build
+InputPath=..\include\config.h_win32
+
+"..\include\config.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy ..\include\config.h_win32 ..\include\config.h
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "mdsshr - Win32 Debug"
+
+# Begin Custom Build - Creating config.h
+InputPath=..\include\config.h_win32
+
+"..\include\config.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	copy ..\include\config.h_win32 ..\include\config.h
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\dasutil_routines4.c
 # End Source File
 # Begin Source File
