@@ -15,6 +15,7 @@ OBJFILES = 			\
 	libTcl.a(tcl_delete_pulse.o)	\
 	libTcl.a(tcl_directory.o)	\
 	libTcl.a(tcl_directory_tag.o)	\
+	libTcl.a(tcl_dispatch.o)		\
 	libTcl.a(tcl_do_method.o)	\
 	libTcl.a(tcl_do_node.o)	\
 	libTcl.a(tcl_edit.o)		\

@@ -20,11 +20,13 @@
 ************************************************************************/
 
 #define TCL_STS(N)     (TCL_FACILITY<<16)+N
-#define TCL_STS_SUCCESS      TCL_STS(1)
+#define TCL_STS_NORMAL            TCL_STS(1)
+#define TCL_STS_FAILED_ESSENTIAL  TCL_STS(2)
 
 #ifdef CREATE_STS_TEXT
 struct stsText  tcl_stsText[] = {
-        STS_TEXT(TCL_STS_SUCCESS,"Normal successful completion")
+        STS_TEXT(TCL_STS_NORMAL,"Normal successful completion")
+       ,STS_TEXT(TCL_STS_FAILED_ESSENTIAL,"Essential action failed")
        };
 #endif
 

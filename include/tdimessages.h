@@ -117,3 +117,42 @@ extern TdiUNKNOWN_VAR;
 #define TdiUNKNOWN_VAR 0xfd380f2
 #endif
 #endif
+
+#ifdef CREATE_STS_TEXT
+#include        "facility_list.h"
+
+static struct stsText  tdi_stsText[] = {
+    STS_TEXT(TdiBREAK,"BREAK was not in DO FOR SWITCH or WHILE")
+   ,STS_TEXT(TdiCASE,"CASE was not in SWITCH statement")
+   ,STS_TEXT(TdiCONTINUE,"CONTINUE was not in DO FOR or WHILE")
+   ,STS_TEXT(TdiEXTRANEOUS,"Some characters were unused, bad number maybe")
+   ,STS_TEXT(TdiRETURN,"Extraneous RETURN statement, not from a FUN")
+   ,STS_TEXT(TdiABORT,"Program requested abort")
+   ,STS_TEXT(TdiBAD_INDEX,"Index or subscript is too small or too big")
+   ,STS_TEXT(TdiBOMB,"Bad punctuation, could not compile the text")
+   ,STS_TEXT(TdiEXTRA_ARG,"Too many arguments for function, watch commas")
+   ,STS_TEXT(TdiGOTO,"GOTO target label not found")
+   ,STS_TEXT(TdiINVCLADSC,"Storage class not valid, must be scalar or array")
+   ,STS_TEXT(TdiINVCLADTY,"Invalid mixture of storage class and data type")
+   ,STS_TEXT(TdiINVDTYDSC,"Storage data type is not valid")
+   ,STS_TEXT(TdiINV_OPC,"Invalid operator code in a function")
+   ,STS_TEXT(TdiINV_SIZE,"Number of elements does not match declaration")
+   ,STS_TEXT(TdiMISMATCH,"Shape of arguments does not match")
+   ,STS_TEXT(TdiMISS_ARG,"Missing argument is required for function")
+   ,STS_TEXT(TdiNDIM_OVER,"Number of dimensions is over the allowed 8")
+   ,STS_TEXT(TdiNO_CMPLX,"There are no complex forms of this function")
+   ,STS_TEXT(TdiNO_OPC,"No support for this function, today")
+   ,STS_TEXT(TdiNO_OUTPTR,"An output pointer is required")
+   ,STS_TEXT(TdiNO_SELF_PTR,"No $VALUE is defined for signal or validation")
+   ,STS_TEXT(TdiNOT_NUMBER,"Value is not a scalar number and must be")
+   ,STS_TEXT(TdiNULL_PTR,"Null pointer where value needed")
+   ,STS_TEXT(TdiRECURSIVE,"Overly recursive function, calls itself maybe")
+   ,STS_TEXT(TdiSIG_DIM,"Signal dimension does not match data shape")
+   ,STS_TEXT(TdiSYNTAX,"Bad punctuation or misspelled word or number")
+   ,STS_TEXT(TdiTOO_BIG,"Conversion of number lost significant digits")
+   ,STS_TEXT(TdiUNBALANCE,"Unbalanced () [] {} '' "" or /**/")
+   ,STS_TEXT(TdiUNKNOWN_VAR,"Unknown/undefined variable name")
+   ,STS_TEXT(TdiSTRTOOLON,"string is too long (greater than 65535)")
+   ,STS_TEXT(TdiTIMEOUT,"task did not complete in alotted time")
+   };
+#endif

@@ -14,6 +14,7 @@
 #include        "tcldef.h"
 #include        "ccldef.h"
 #include        "librtl_messages.h"
+#include        "tdimessages.h"
 #include        "treeshr.h"
 
 /**********************************************************************
@@ -64,6 +65,12 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
         *stsText = ccl_stsText;		/* point to array		*/
         *facilityText = "CCL_FACILITY";
         max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
+       }
+    else if (facility == TDI_FACILITY)
+       {
+        *stsText = tdi_stsText;		/* point to array		*/
+        *facilityText = "TDI_FACILITY";
+        max = sizeof(tdi_stsText)/sizeof(tdi_stsText[0]);
        }
     else if (facility == TCL_FACILITY)
        {

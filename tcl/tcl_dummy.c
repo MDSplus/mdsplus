@@ -3,29 +3,32 @@
 #define dummy(a) \
     int a(){printf("Routine %s not implemented yet\n",#a);return 0;}
 
-dummy(TclDispatch_abort_server)
-dummy(TclDispatch)
-dummy(TclDispatch_build)
-dummy(TclDispatch_check)
-dummy(TclDispatch_phase)
-dummy(TclDispatch_close)
-dummy(TclDispatch_command)
 dummy(TclLink)
 dummy(TreeMarkIncludes)
 dummy(TclPutExpression)
 dummy(TclCommand)
 dummy(TclRundownTree)
-dummy(TclDispatch_set_server)
 dummy(TclSetEvent)
 dummy(TclShowDB)
-dummy(TclDispatch_show_server)
-dummy(TclDispatch_start_server)
-dummy(TclDispatch_stop_server)
 dummy(TclWfevent)
 
 
 	/* Some MDS and TREESHR routines not implemented on unix ...	*/
 #ifndef __vms
+dummy(ServerAbortServer)
+dummy(ServerBuildDispatchTable)
+dummy(ServerCloseTrees)
 dummy(ServerCreatePulse)
-dummy(TreeSetNoSubtree)
+dummy(ServerDispatchAction)
+dummy(ServerDispatchClose)
+dummy(ServerDispatchCommand)
+dummy(ServerDispatchPhase)
+dummy(ServerFailedEssential)
+dummy(ServerFindServers)
+dummy(ServerFreeDispatchTable)
+dummy(ServerGetInfo)
+dummy(ServerSetLogging)
+dummy(ServerStartServer)
+dummy(ServerStopServer)
+/*dummy(TreeSetNoSubtree)		/*  */
 #endif

@@ -21,6 +21,7 @@
 #define CLI_FACILITY           0x4002
 #define CCL_FACILITY           0x4003
 #define TCL_FACILITY           0x4004
+#define TDI_FACILITY           0x0FD3
 #define TREESHR_FACILITY       0x0FD1
 #define LIB_FACILITY           0x0015
 #define STRMDS_FACILITY        0x0024
