@@ -12,5 +12,5 @@ call:	_host  = Host name eg elpp1.epfl.ch or elpp1.epfl.ch:9000
       _host=TranslateLogical("MDS_HOST")//"::";
       write(*,"Host taken from MDS_HOST ["//_host//"]");
    }
-   return(TdiShrExt->rMdsConnect(_host));
+   return(TdiShrExt->rMdsConnect(ref(_host//char(0))));
 }
