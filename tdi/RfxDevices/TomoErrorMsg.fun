@@ -12,6 +12,7 @@ public fun TomoErrorMsg(in _code)
     _ERR_ZERO_TIMEOUT = 11 ;
     _ERR_ZERO_NOSUCCESS = 12 ;   
 
+	_ERR_TAXI_PROTOCOL	= 50;
 
     switch( _code )
 	{
@@ -25,6 +26,7 @@ public fun TomoErrorMsg(in _code)
                case(_ERR_FLAGS_REPLY) return ("flags reply error");
                case(_ERR_ZERO_TIMEOUT) return ("Zero timeout error");
                case(_ERR_ZERO_NOSUCCESS) return ("Zero no success");
+               case(_ERR_TAXI_PROTOCOL) return ("Taxi protocol error");
  	}	
 
 

@@ -51,12 +51,18 @@ write(*, "TEST 1");
 	}
 
 
+	DevNodeCvt(_nid, _N_FREQUENCY, [1000000,500000,250000,200000,100000,40000,20000,10000,5000],
+	                               [1,      2,     4,     5 ,    10,    25,   50,   100,  250], _reduction = 1);
+
+
 	_acq_duration = if_error( data(DevNodeRef(_nid, _N_DURATION)), (_status = 1) );
 	if(_status == 1)
 	{
     	DevLogErr(_nid, "Invalid acquisition duration time");
 	    abort();
 	}
+
+
 
 
 	_trig = if_error( data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (_status = 1) );
@@ -66,7 +72,7 @@ write(*, "TEST 1");
 	    abort();
 	}
     
-
+/*
 	_reduction = int(1000000./_freq + 0.5) - 1;
 
     if(_reduction < 0)
@@ -80,7 +86,7 @@ write(*, "TEST 1");
 	}
 
 	DevPut(_nid, _N_FREQUENCY, _freq);            
-
+*/
 
 
 	DevNodeCvt(_nid, _N_HOR_HEAD, ["USED", "NOT USED"],[1, 0], _hor_head = 0);
@@ -230,7 +236,10 @@ write(*, "TEST 1");
 	   if( TomoChanIsActive(_chan_id[_i]) )
 	   {
 			if( _errors[ _i ] != 0 )
-				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors[ _i ]);      
+			{
+				DevPut(_nid, _chan_nid + _N_CHAN_STATUS, _errors[ _i ]);
+				write(*, "WARNING : On channel ",(_i+1)," : ",TomoErrorMsg(_errors[ _i ]) );
+			}      
 	   }
 	 }
 
