@@ -26,6 +26,8 @@ extern int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int
 
 static void SigCatcher(int signo) {}
 
+static int fd1,fd2;
+
 int VmeWaitForInterrupt(char *device, int irq, int vector)
 {
   struct dmaex_ioctl_data data;
@@ -140,47 +142,6 @@ int VmePioWrite(char *device, unsigned long addr, unsigned long mode, int bufsiz
   return status;
 }
 
-int A14ReadChannel(int crate, int slot, int chan, int bufsize, short *buffer, int *bytes_read)
-{
-  /*
-  int status = VmePioRead("/dev/dmaex0", 0x10700000 + chan * 0x40000, VME_A32_UDATA | VME_D16 | VME_BS_LWORD | VME_DENSE,
-                      bufsize, buffer, bytes_read);
-  if (status & 1)
-  {           
-    int i;
-    short tmp;
-    for (i=0;i<bufsize/sizeof(short);i+=2)
-    {
-      tmp = buffer[i];
-      buffer[i] = buffer[i+1];
-      buffer[i+1] = tmp;
-    }
-  }
-  return (status);
-  */
-  return(VmePioRead("/dev/dmaex0", 0x10700000 + chan * 0x40000, VME_A32_UDATA | VME_D16 | VME_BS_BYTE | VME_DENSE,
-                      bufsize, buffer, bytes_read));
-}
-
-int A14ReadSetup(int crate, int slot, int *setup)
-{
-  int bytes_read;
-  return (VmePioRead("/dev/dmaex0", 0x10500000, VME_A32_UDATA | VME_D16 | VME_BS_LWORD | VME_DENSE,
-                      sizeof(int), setup, &bytes_read));
-}
-
-int A14SetSetup(int crate, int slot, int *setup)
-{
-  int bytes_written;
-  return (VmePioWrite("/dev/dmaex0", 0x10500000, VME_A32_UDATA | VME_D16 | VME_BS_LWORD | VME_DENSE,
-                      sizeof(int), setup, &bytes_written));
-}
-
-int A14Wait(int crate, int slot)
-{
-  return VmeWaitForInterrupt("/dev/dmaex0",3,0xce);
-}
-
 int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, void *buffer, int *bytes_read)
 {
   struct pio_info		setVme, getVme;
@@ -205,15 +166,105 @@ int PioRead(char *device, unsigned int addr, unsigned int mode, int bufsize, voi
       }
       else
       {
-        bcopy((char *)pMapAdr, buffer, bufsize);
+        memcpy(buffer, pMapAdr, bufsize);
         *bytes_read = bufsize;
-    	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 ){
+	if ( ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0 )
+		printf ( "### error in ioctl-UNMAP\n" );
+    	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 )
         	printf ( "### error in munmap\n" );
-    	}
         status = 1;
       }
     }
     close(fd);
+  }
+  else
+    perror("Error opening VME device");
+  return status;
+}
+
+int PioWrite(char *device, unsigned long addr, unsigned long mode, int bufsize, void *buffer, int *bytes_written)
+{
+  struct pio_info		setVme, getVme;
+  int fd = open(device,O_RDWR);
+  int status = 0;
+  void *pMapAdr;
+  *bytes_written = 0;
+  if (fd != -1)
+  {
+    setVme.pio_addr = addr;
+    setVme.pio_size = bufsize;
+    setVme.pio_am = mode;
+    setVme.pio_access = HANDLE_LONGWORD;
+    if (ioctl(fd,VMP_MAP_PIO_ADDR,&setVme) < 0)
+      perror("error in ioctl VMP_MAP_PIO_ADDR");
+    else
+    {
+      pMapAdr = (int *)mmap((caddr_t)0, setVme.pio_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      if (pMapAdr == (int *)-1){
+    	printf ( "### error in mmap\n" );
+      }
+      else
+      {
+        memcpy(pMapAdr, buffer, bufsize);
+        *bytes_written = bufsize;
+	if ( ioctl(fd, VMP_UNMAP_PIO_ADDR, &setVme) < 0 )
+		printf ( "### error in ioctl-UNMAP\n" );
+    	if ( munmap((caddr_t)pMapAdr,setVme.pio_size) < 0 )
+        	printf ( "### error in munmap\n" );
+        status = 1;
+      }
+    }
+    close(fd);
+  }
+  else
+    perror("Error opening VME device");
+  return status;
+}
+
+void    termfunc(int dummy)
+{
+  ioctl(fd1, VMP_DEL_INTR);
+  ioctl(fd2, VMP_DEL_INTR);
+  close(fd1);  
+  close(fd2);  
+  exit(1);
+}
+
+int WaitForInterrupt(char *device1, int priority1, int vector1, char *device2, int priority2, int vector2)
+{
+  struct vmpintr_info	setIntr;
+  fd_set mask;
+  int status = 0;
+  fd1 = open(device1,O_RDWR);
+  fd2 = open(device2,O_RDWR);
+  if (fd1 != -1)
+  {
+    signal(SIGUSR1, SIG_IGN);
+    signal(SIGUSR2, SIG_IGN);
+    signal(SIGHUP, SIG_IGN);
+    signal(SIGCLD, SIG_IGN);
+    signal(SIGSYS, SIG_IGN);
+    signal(SIGIOT, SIG_IGN);
+    signal(SIGINT, termfunc);
+    signal(SIGSEGV, termfunc);
+    signal(SIGBUS, termfunc);
+    signal(SIGTERM, termfunc);
+    setIntr.priority = priority1;
+    setIntr.vector = vector1;
+    ioctl ( fd1, VMP_ADD_INTR, &setIntr );
+    setIntr.priority = priority2;
+    setIntr.vector = vector2;
+    ioctl ( fd2, VMP_ADD_INTR, &setIntr );
+    FD_ZERO ( &mask );
+    FD_SET ( fd1, &mask );
+    FD_SET ( fd2, &mask );
+    select (FD_SETSIZE, &mask, NULL, NULL, NULL );
+    if(FD_ISSET(fd1, &mask)) status = 1;
+    if(FD_ISSET(fd2, &mask)) status = 2;
+    ioctl (fd1, VMP_DEL_INTR );
+    ioctl (fd2, VMP_DEL_INTR );
+    close(fd1);
+    close(fd2);
   }
   else
     perror("Error opening VME device");
