@@ -94,6 +94,9 @@ class MdsIp implements Runnable
                 try {
                     MdsMessage curr_msg = new MdsMessage((byte)0, (byte)0, (byte)0, null, new byte[0]);
                     curr_msg.Receive(dis);
+
+		    System.out.println("Devo ricevere n messaggi "  + curr_msg.nargs);
+
                     MdsMessage messages[] = new MdsMessage[curr_msg.nargs];
                     messages[0] = curr_msg;
                     int nargs = curr_msg.nargs;
@@ -101,6 +104,8 @@ class MdsIp implements Runnable
                     {
                         messages[i+1] = new MdsMessage((byte)0, (byte)0, (byte)0, null, new byte[0]);
                         messages[i+1].Receive(dis);
+
+			System.out.println("Ricevuto messaggio  "+ i + " " + new String(messages[i+1].body));
                     }
                     MdsMessage answ = handleMessage(messages);
                     answ.Send(dos);

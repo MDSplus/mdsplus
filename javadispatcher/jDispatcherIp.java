@@ -17,31 +17,46 @@ class jDispatcherIp extends MdsIp
         super(port);
         this.dispatcher = dispatcher;
         this.treeName = treeName;
+	System.out.println("Tree name per jDispatcherIp : "+treeName);
         tree = new Database(treeName, -1);
     }
 
     public MdsMessage handleMessage(MdsMessage [] messages)
     {
         int ris = -1;
-        String command  ="", compositeCommand;
-        try {
-            compositeCommand = new String(messages[0].body);
+        String command  ="", compositeCommand = "";
+        try 
+	{
+             
+	    compositeCommand = new String(messages[0].body);
+
+	    System.err.println("Comando a jDispatcherIp " + compositeCommand);
+
             StringTokenizer st = new StringTokenizer(compositeCommand, "\"");
             while(!(st.nextToken().equals("TCL")));
-            st.nextToken();
+           // st.nextToken();
+	    System.err.println("Token scartato " + st.nextToken());
+
             command = st.nextToken();
-        }catch (Exception exc)
-       /* if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
+	    
+	    System.err.println("Comando pulito " + command);
+
+        }
+	catch (Exception exc)
+         /* if(messages.length < 8 || messages[2].dtype != Descriptor.DTYPE_SHORT 
             || messages[1].dtype != Descriptor.DTYPE_LONG || 
             messages[6].dtype != Descriptor.DTYPE_CSTRING ||
             messages[7].dtype != Descriptor.DTYPE_CSTRING
             )*/
         {
-            System.err.println("Unexpected message has been received by jDispatcherIp: + compositeCommand");
+            System.err.println("Unexpected message has been received by jDispatcherIp:" + compositeCommand + " " + exc);
+
         }
-        try {
+        try 
+	{
             ris = doCommand(command.toUpperCase());
-        }catch (Exception exc) 
+        }
+	catch (Exception exc) 
         {
             return new MdsMessage(exc.getMessage(), null);
         } 
@@ -145,6 +160,7 @@ class jDispatcherIp extends MdsIp
                 String second_part = st.nextToken();
                 if(second_part.equals("CURRENT"))
                 {
+		    System.out.println("Shot corrente :" +  getCurrentShot()); 
                     return getCurrentShot();
                 }
                 else throw new Exception("Invalid Command");
