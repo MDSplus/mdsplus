@@ -100,6 +100,7 @@ void XmdsUsageIconsInitialize(Widget w)
       name[1] = '0' + (usage / 10);
       name[2] = '0' + usage - (usage / 10) * 10;
       MrmFetchIconLiteral(mrm_hierarchy,name,XtScreen(w),XtDisplay(w),0,1,&icons[usage]);
+      name[0] = 'X';
       MrmFetchIconLiteral(mrm_hierarchy,name,XtScreen(w),XtDisplay(w),0,1,&gray_icons[usage]);
     }
     MrmCloseHierarchy(mrm_hierarchy);

@@ -33,8 +33,8 @@ all :	../shlib/libXmdsShr.so \
 	xmdsuil.wmd \
         ../uid \
 	../uid/xmds_usage_icons.uid \
-	../uid/xmdsdigchans.uid \
-	../uid/xmdsinput.uid \
+	../uid/XmdsDigChans.uid \
+	../uid/XmdsInput.uid \
 	../uid/XmdsXdBox.uid
 
 ../uid :
@@ -43,10 +43,10 @@ all :	../shlib/libXmdsShr.so \
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
 	uil -o $@ $<
 
-../uid/xmdsdigchans.uid : xmdsdigchans.uil
+../uid/XmdsDigChans.uid : XmdsDigChans.uil
 	uil -wmd xmdsuil.wmd -o $@ $<
 
-../uid/xmdsinput.uid : xmdsinput.uil
+../uid/XmdsInput.uid : XmdsInput.uil
 	uil -wmd xmdsuil.wmd -o $@ $<
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil

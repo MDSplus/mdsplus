@@ -600,8 +600,8 @@ TurnOnOff( Widget w, XtPointer client_data, XtPointer call_data)
       int nid = get_nid(selections[i]);
       switch (on) {
         case 0 : 
-	  TreeTurnOff(&nid);  break;
-	case 1 : TreeTurnOn(&nid); break;
+	  TreeTurnOff(nid);  break;
+	case 1 : TreeTurnOn(nid); break;
       }
       FixPixMaps(tree, selections[i]); 
     }
@@ -671,15 +671,15 @@ static int setup_device(Widget parent, int nid)
     conglomerate_elt = ReadInt(getnci, &nid_dsc MDS_END_ARG);
     head_nid = nid + 1 - conglomerate_elt;
     c_nid = head_nid;
-    if (TdiModelOf(&niddsc,&model) & 1)
+    if (TdiModelOf(&niddsc,&model MDS_END_ARG) & 1)
     {
       static struct descriptor filename = {0, DTYPE_T, CLASS_D, 0};
       //      static DESCRIPTOR(const prefix, "DECW$SYSTEM_DEFAULTS:");
       static DESCRIPTOR(const postfix, ".uid\0");
       static DESCRIPTOR(const zero,"\0");
       StrTrim(&model,&model);
-      StrConcat(&filename,&model,&postfix);
-      StrAppend(&model,&zero);
+      StrConcat(&filename,&model,&postfix MDS_END_ARG);
+      StrAppend(&model,&zero MDS_END_ARG);
       status = XmdsDeviceSetup(parent, &nid, &filename.pointer, 1, model.pointer, NULL, 0, 0);
       switch (status)
       {
@@ -727,9 +727,9 @@ MTurnOnOff( Widget w, XtPointer client_data, XtPointer call_data)
     if (menu_item != NULL) {
       int nid = get_nid(menu_item);
       if (on)
-	TreeTurnOn(&nid);
+	TreeTurnOn(nid);
       else
-        TreeTurnOff(&nid);
+        TreeTurnOff(nid);
       FixPixMaps(tree, menu_item); 
       menu_item = NULL;
     }
@@ -813,15 +813,13 @@ MDisplayNci( Widget w, XtPointer client_data, XtPointer call_data)
 void
 CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
 {
-  /*
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
-    int status = TreeCloseTree();
+    int status = TreeClose(NULL, NULL);
     ListTreeRefreshOff(tree);
     if ((status&1) && (top != NULL)) ListTreeDelete(tree, top);
     Init(tree);
     ListTreeRefreshOn(tree);
-  */
 }
 
 void open_tree(Widget w, char *tree, int shot)

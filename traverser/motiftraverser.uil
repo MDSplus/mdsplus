@@ -479,6 +479,7 @@ object openDialog : XmBulletinBoardDialog widget {
         XmNy = 0;
         XmNwidth = 327;
         XmNheight = 215;
+	XmNdefaultButton = XmPushButton openOkButton;
     };
     controls {
          managed XmRadioBox radioBox;
@@ -487,15 +488,15 @@ object openDialog : XmBulletinBoardDialog widget {
          managed XmLabel label2;
          managed XmLabel label3;
          managed XmSeparator separator1;
-         managed XmPushButton pushButton18;
+         managed XmPushButton openOkButton;
          managed XmPushButton pushButton19;
-         managed XmPushButton pushButton20;
+         managed XmPushButton pushButton18;
     };
     callbacks {
     };
 };
 
-object pushButton20 : XmPushButton widget {
+object openOkButton : XmPushButton widget {
     arguments {
         XmNlabelString = compound_string("Ok");
         XmNx = 29;

@@ -12,7 +12,7 @@ all : traverser \
 	../uid/motiftraverser.uid
 
 traverser : $(OBJECTS)
-	cc -o traverser $(OBJECTS)  -L../mdsshr -lMdsShr -lTreeShr -L../tdishr -lTdiShr -lMrm -lXm -lXt -lX11 -L../xmdsshr -lXmdsShr
+	cc -o traverser $(OBJECTS)  -L../mdsshr -lMdsShr -L../treeshr -lTreeShr -L../tdishr -lTdiShr -lMrm -lXm -lXt -lX11 -L../xmdsshr -lXmdsShr
 
 ../uid/motiftraverser.uid : motiftraverser.uil
 	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
