@@ -175,6 +175,10 @@ SOURCE=.\tcl_directory_tag.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcl_dispatch.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\tcl_do_method.c
 # End Source File
 # Begin Source File
@@ -224,6 +228,10 @@ SOURCE=.\tcl_show_current.c
 # Begin Source File
 
 SOURCE=.\tcl_show_data.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\tcl_show_db.c
 # End Source File
 # Begin Source File
 
