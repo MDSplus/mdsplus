@@ -1238,7 +1238,7 @@ struct tree_id {
 static void AskCreate(Widget w, char *tree, int shot)
 {
   Widget ask_dlog = XtNameToWidget(BxFindTopShell(w), "*.createDialog");
-  struct tree_id *treeid = (struct tree_id *)malloc(sizeof(treeid));
+  struct tree_id *treeid = (struct tree_id *)malloc(sizeof(*treeid));
   treeid->shot = shot;
   treeid->tree = (char *)malloc(strlen(tree)+1);
   strcpy(treeid->tree, tree);
