@@ -23,6 +23,7 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status);
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
 int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m);
 
+extern void SetSocketOptions(SOCKET s, int reuse);
 static int initialized = 0;
 static void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
@@ -35,6 +36,65 @@ extern int inet_addr();
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif
+static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
+{
+  int tries = 0;
+  while ((bytes_to_send > 0) && (tries < 10))
+  {
+	int bytes_sent;
+    int bytes_this_time = min(bytes_to_send,BUFSIZ);
+    bytes_sent = SocketSend(sock, bptr, bytes_to_send, oob ? MSG_OOB : 0);
+    if (bytes_sent <= 0)
+    {
+      if (errno != EINTR)
+        return 0;
+	  tries++;
+    }
+    else
+    {
+      bytes_to_send -= bytes_sent;
+      bptr += bytes_sent;
+	  tries = 0;
+    }
+  }
+  if (tries >= 10)
+  {
+    CloseSocket(sock);
+    fprintf(stderr,"\rSendBytes shutdown socket %d",sock);
+    return 0;
+  }
+  return 1;
+}
+
+static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+{
+  int tries = 0;
+  while (bytes_to_recv > 0 && (tries < 10))
+  {
+    int bytes_recv;
+    int bytes_this_time = min(bytes_to_recv,BUFSIZ);
+    bytes_recv = SocketRecv(sock, bptr, bytes_to_recv, oob ? MSG_OOB : 0);
+    if (bytes_recv <= 0)
+    {
+      if (errno != EINTR)
+        return 0;
+      tries++;
+    }
+    else
+    {
+      tries = 0;
+      bytes_to_recv -= bytes_recv;
+      bptr += bytes_recv;
+    }
+  }
+  if (tries >= 10)
+  {
+    CloseSocket(sock);
+    fprintf(stderr,"\rGetBytes shutdown socket %d: too many EINTR's",sock);
+    return 0;
+  }
+  return 1;
+}
 
 int SetCompressionLevel(int level)
 {
@@ -46,14 +106,6 @@ int SetCompressionLevel(int level)
 int GetCompressionLevel()
 {
   return CompressionLevel;
-}
-void SetSocketOptions(SOCKET s)
-{
-  int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
-  int one = 1;
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(int));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(int));
-  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 }
 
 static char ClientType(void)
@@ -140,134 +192,41 @@ void MdsIpFree(void *ptr)
 	free(ptr);
 }
 
-#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
-static struct timeval connectTimer = {0,0};
-
-int SetMdsConnectTimeout(int sec)
-{
-  int old = connectTimer.tv_sec;
-  connectTimer.tv_sec = sec;
-  return old;
-}
-#endif
-
 static SOCKET ConnectToPort(char *host, char *service)
 {
   int status;
   SOCKET s;
+  unsigned short portnum = 0;
   static struct sockaddr_in sin;
-  struct hostent *hp = NULL;
   struct servent *sp;
   static int one=1;
   int addr;
 
-#ifndef HAVE_VXWORKS_H
-  hp = gethostbyname(host);
-#endif
-#ifdef _WIN32
-  if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
-  {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1,1);
-    WSAStartup(wVersionRequested,&wsaData);
-    hp = gethostbyname(host);
-  }
-#endif
-  if (hp == NULL)
-  {
-    addr = inet_addr(host);
-#ifndef HAVE_VXWORKS_H
-    if (addr != 0xffffffff)
-    	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-#endif
-  }
 #ifdef HAVE_VXWORKS_H
-  if (addr == 0xffffffff)
-#else
-  if (hp == NULL)
-#endif
-  {
-    printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
-    return INVALID_SOCKET;
-  }
-  s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s == INVALID_SOCKET) return INVALID_SOCKET;
-#ifdef HAVE_VXWORKS_H
-  if (atoi(service) == 0)
-  {
-      char *port;
-      port =  "8000";
-      sin.sin_port = htons((short)atoi(port));
-  }
-  else
-    sin.sin_port = htons((short)atoi(service));
+  portnum = htons((atoi(service) == 0) ? 8000 : (unsigned short)atoi(service));
 #else
   if (atoi(service) == 0)
   {
     sp = getservbyname(service,"tcp");
     if (sp != NULL)
-      sin.sin_port = sp->s_port;
+      portnum = sp->s_port;
     else
     {
       char *port = getenv(service);
       port = (port == NULL) ? "8000" : port;
-      sin.sin_port = htons((short)atoi(port));
+      portnum = htons((short)atoi(port));
     }
   }
   else
-    sin.sin_port = htons((short)atoi(service));
+    portnum = htons((short)atoi(service));
 #endif
-  if (sin.sin_port == 0)
+  if (portnum == 0)
   {
-
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
-  sin.sin_family = AF_INET;
-#if defined( HAVE_VXWORKS_H )
-  memcpy(&sin.sin_addr, &addr, sizeof(addr));
-#elif defined(ANET)
-  memcpy(&sin.sin_addr, hp->h_addr, sizeof(sin.sin_addr));
-#else
-  memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
-#endif
-#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
-  if (connectTimer.tv_sec)
-  {
-    status = fcntl(s,F_SETFL,O_NONBLOCK);
-    status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
-    if ((status == INVALID_SOCKET) && (errno == EINPROGRESS))
-    {
-      fd_set readfds;
-      fd_set exceptfds;
-      fd_set writefds;
-      FD_ZERO(&readfds);
-      FD_SET(s,&readfds);
-      FD_ZERO(&exceptfds);
-      FD_SET(s,&exceptfds);
-      FD_ZERO(&writefds);
-      FD_SET(s,&writefds);
-      status = select(FD_SETSIZE, &readfds, &writefds, &exceptfds, &connectTimer);
-      if (status == 0)
-      {
-        printf("Error in connect to service\n: Timeout on connection\n");
-        shutdown(s,2);
-        close(s);
-        return INVALID_SOCKET;
-      }
-    }
-    if (status == INVALID_SOCKET)
-    {
-      shutdown(s,2);
-      close(s);
-    }
-    else
-      fcntl(s,F_SETFL,0);
-  } else
-#endif
-  status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
-  if (status == INVALID_SOCKET)
+  s = Connect(host, portnum);
+  if (s == INVALID_SOCKET)
   {
     perror("Error in connect to service\n");
     return INVALID_SOCKET;
@@ -329,7 +288,7 @@ static SOCKET ConnectToPort(char *host, char *service)
       return INVALID_SOCKET;
     }
   }
-  SetSocketOptions(s);
+  SetSocketOptions(s,0);
 #ifndef _WIN32
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
 #endif
@@ -513,9 +472,7 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
 
 int  DisconnectFromMds(SOCKET sock)
 {
-  int status;
-  shutdown(sock,2);
-  status = close(sock) == 0;
+  int status = CloseSocket(sock);
 #ifdef __MSDOS__
   WSACleanup();
 #endif
@@ -556,117 +513,6 @@ int *dims, char *bytes)
   return status;
 }
 
-#if (defined(_UCX) || defined(ANET)) && (__CRTL_VER < 70000000)
-static void FlushSocket(SOCKET sock)
-{
-}
-#else
-static void FlushSocket(SOCKET sock)
-{
-  struct timeval timout = {0,1};
-  int status;
-  int nbytes;
-  int tries = 0;
-  char buffer[1000];
-  fd_set readfds, writefds;
-  FD_ZERO(&readfds);
-  FD_SET(sock,&readfds);
-  FD_ZERO(&writefds);
-  FD_SET(sock,&writefds);
-  while(((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
-	       (status == -1 && errno == EINTR)) && tries < 10)
-  {
-    tries++;
-    if (FD_ISSET(sock,&readfds))
-    {
-        status = ioctl(sock,I_NREAD,&nbytes);
-        if (nbytes > 0 && status != -1)
-        {
-          nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), 0);
-	  if (nbytes > 0) tries = 0;
-	}
-    }
-    else
-      FD_SET(sock,&readfds);
-    timout.tv_usec = 100000;
-    FD_CLR(sock,&writefds);
-  }
-}
-#endif
-
-static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
-{
-  int tries = 0;
-  while ((bytes_to_send > 0) && (tries < 10))
-  {
-	int bytes_sent;
-    int bytes_this_time = min(bytes_to_send,BUFSIZ);
-    bytes_sent = send(sock, bptr, bytes_to_send, oob ? MSG_OOB : 0);
-    if (bytes_sent <= 0)
-    {
-      if (errno != EINTR)
-        return 0;
-	  tries++;
-    }
-    else
-    {
-      bytes_to_send -= bytes_sent;
-      bptr += bytes_sent;
-	  tries = 0;
-    }
-  }
-  if (tries >= 10)
-  {
-    shutdown(sock,2);
-    close(sock);
-    fprintf(stderr,"\rSendBytes shutdown socket %d: too many EINTR's",sock);
-    return 0;
-  }
-  return 1;
-}
-
-static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
-{
-  int tries = 0;
-  while (bytes_to_recv > 0 && (tries < 10))
-  {
-    int bytes_recv;
-    int bytes_this_time = min(bytes_to_recv,BUFSIZ);
-    bytes_recv = recv(sock, bptr, bytes_to_recv, oob ? MSG_OOB : 0);
-    if (bytes_recv <= 0)
-    {
-      if (errno != EINTR)
-        return 0;
-      tries++;
-    }
-    else
-    {
-      tries = 0;
-      bytes_to_recv -= bytes_recv;
-      bptr += bytes_recv;
-    }
-  }
-  if (tries >= 10)
-  {
-    shutdown(sock,2);
-    close(sock);
-    fprintf(stderr,"\rGetBytes shutdown socket %d: too many EINTR's",sock);
-    return 0;
-  }
-  return 1;
-}
-
-/* static void FlipBytes(int n, char *ptr)
-{
-  int i;
-  for (i=0;i<n/2;i++)
-  {
-    char tmp = ptr[i];
-    ptr[i] = ptr[n - i - 1];
-    ptr[n - i - 1] = tmp;
-  }
-}
-*/
 #define FlipBytes(num,ptr) \
 {\
   int __i;\
@@ -720,10 +566,9 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
  /* status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);*/
 /* now msglen is swapped, and cannot be used as byte counter */
     status = SendBytes(sock, (char *)cm, clength + 4 + sizeof(MsgHdr), oob);
-
   }
   else
-	  status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);
+    status = SendBytes(sock, (char *)m, len + sizeof(MsgHdr), oob);
   if (clength) free(cm);
   return status;
 }
@@ -799,9 +644,8 @@ Message *GetMdsMsg(SOCKET sock, int *status)
 #endif
     if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
-      shutdown(sock,2);
-      close(sock);
-    fprintf(stderr,"\rGetMdsMsg shutdown socket %d: too many EINTR's",sock);
+      CloseSocket(sock);
+      fprintf(stderr,"\rGetMdsMsg shutdown socket %d: too many EINTR's",sock);
       *status = 0;
       return 0;
     }  
@@ -835,68 +679,3 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   return msg;
 }
 
-#ifdef _WIN32
-Message *GetMdsMsgOOB(SOCKET sock, int *status)
-{
-  MsgHdr header;
-  Message *msg = 0;
-  int msglen = 0;
-  static struct timeval timer = {10,0};
-
-  int tablesize = FD_SETSIZE;
-
-  int selectstat=0;
-  char last;
-  fd_set readfds;
-  fd_set exceptfds;
-  DWORD oob_data;
-  int stat;
-  FD_ZERO(&readfds);
-  FD_SET(sock,&readfds);
-  FD_ZERO(&exceptfds);
-  FD_SET(sock,&exceptfds);
-  *status = 0;
-  selectstat = select(tablesize, 0, 0, &exceptfds, NULL);
-  if (selectstat == SOCKET_ERROR) {
-      perror("GETMSGOOB select error");
-      printf(" errno = %d\n",errno);
-	  *status = 0;
-	  return 0;
-  }
-  *status = GetBytes(sock, (char *)&last, 1, 1);
-  if (!(*status & 1)) {
-      perror("GETMSGOOB first recv error");
-      printf("errno = %d\n",errno);
-	  return 0;
-  }
-  stat = 	ioctlsocket(sock,SIOCATMARK,&oob_data);
-  if (stat == SOCKET_ERROR) {
-      perror("GETMSGOOB IOCTL error");
-      printf("errno = %d\n",errno);
-	  *status = 0;
-	  return 0;
-  }
-  *status = GetBytes(sock, (char *)&header, sizeof(MsgHdr), 0);
-  if (*status & 1) 
-  {
-	if (Endian(header.client_type) != Endian(ClientType()) )
-	  FlipHeader(&header);
-#ifdef DEBUG
-    printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
-               header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
-    printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
-#endif
-    if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
-    {
-      *status = 0;
-      return 0;
-    }  
-    msg = malloc(header.msglen);
-    msg->h = header;
-    *status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr), 0);
-  }
-  if (!(*status & 1) && msg)
-    free(msg);
-  return (*status & 1) ? msg : 0;
-}
-#endif

@@ -187,46 +187,15 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
 
 #endif
 
-void Poll()
+#ifdef GLOBUS
+void Poll(int shut,int IsWorker,int IsService, SOCKET serverSock)
 {
-#ifndef GLOBUS
-  static struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
-  struct timeval timeout = {1,0};
-  readfds = fdactive;
-  while (!shut && (select(tablesize, &readfds, 0, 0, (IsWorker || IsService) ? &timeout : 0) != SOCKET_ERROR))
-  {
-    if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
-    {
-      int len = sizeof(struct sockaddr_in);
-      (*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len),&sin,0);
-    }
-    else
-    {
-      Client *c,*next;
-      for (c=ClientList,next=c ? c->next : 0; c; c=next,next=c ? c->next : 0)
-      {
-        if (IsWorker)
-        {
-          if (*workerShutdown)
-          {
-            CloseSocket(c->sock);
-            exit(0);
-          }
-        }
-        if (FD_ISSET(c->sock, &readfds))
-          (*DoMessage)(c->sock);
-      }
-    }
-    shut = (ClientList == NULL) && !multi && !IsService;
-    readfds = fdactive;
-  }
-  CloseSocket(serverSock);
-  return 1;
-#else
    while (1) globus_poll_blocking();
-#endif
 }
+#else
+fd_set FdActive() { return fdactive; }
+#endif
+
 SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *), void (*DoMessage_in)(SOCKET s),int dofork)
 {
   SOCKET s;
