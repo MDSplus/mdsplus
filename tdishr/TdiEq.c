@@ -299,6 +299,7 @@ int       Tdi3Ne(struct descriptor *in1_ptr,
 		                struct descriptor *out_ptr)
 {
 	  int status = Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_EQ);
-          if (status & 1)
-            return Tdi3Not(out_ptr, out_ptr);
+    if (status & 1)
+      status = Tdi3Not(out_ptr, out_ptr);
+    return status;
 }
