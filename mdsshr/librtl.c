@@ -13,6 +13,7 @@ void __MB(){return;}
 #if defined(__hpux)
 #include <dl.h>
 #define SHARELIB_TYPE ".sl"
+#define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
 #else
 #include <dlfcn.h>
 #define SHARELIB_TYPE ".so"
@@ -928,7 +929,7 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 #if defined(__hpux)
 static void *dlopen(char *filename, int flags)
 {
-  return (void *)shl_load(filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
+  return (void *)shl_load(filename,flags,0);
 }
 
 void *dlsym(void *handle, char *name)
