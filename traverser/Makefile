@@ -13,7 +13,7 @@ all : ../bin/traverser \
 	../uid/traverser.uid
 
 ../bin/traverser : $(OBJECTS) ../bin
-	 cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
+	 cc -o $@ $(OBJECTS)  $(CC_IMAGE_OPTIONS) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS)
 
 ../bin :
 	mkdir ../bin
