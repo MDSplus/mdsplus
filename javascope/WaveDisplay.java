@@ -23,21 +23,7 @@ public class WaveDisplay extends JApplet implements WaveformListener
         w = new MultiWaveform();
         w.setWaveInterface(new WaveInterface());
         w.addWaveformListener(this);
-        
-        /*
-        float x[] = new float[1000];
-        float y[] = new float[1000];
-        for(int j = 0 ; j < 1000; j++)
-        {
-            x[j] = (float)(6.28/1000*j);
-            y[j] = (float)(Math.sin(x[j]));
-            continue;               
-        }
-        Signal s = new Signal(x, y);
-        w.Update(s);
-        */
-        
-        
+                        
         setBackground(Color.lightGray);
         wave_popup = new MultiWavePopup(new SetupWaveformParams(null, "Waveform Params"));
         getContentPane().add(wave_popup);
@@ -89,28 +75,6 @@ public class WaveDisplay extends JApplet implements WaveformListener
         panel1.add(point);
         panel1.add(zoom);
         panel1.add(pan);
-        /*
-        panel1.add(new JLabel("Shot"));
-        shot_txt = new JTextField(20);
-        shot_txt.addActionListener(
-            new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    try 
-                    {
-                        WaveInterface wi = w.getWaveInterface();                   
-                        wi.setShotArray(shot_txt.getText());
-	                    wi.StartEvaluate();
-		                wi.EvaluateOthers();
-		                w.Update(wi.signals);
-		            } catch (Exception exc){}
-                }
-            }
-        );
-        
-        panel1.add(shot_txt);
-    */        
         
         
         w.SetGridMode(Grid.IS_DOTTED, true, true);
@@ -167,8 +131,6 @@ public class WaveDisplay extends JApplet implements WaveformListener
 	            s = we.status_info;
 	        break;
 	    }
-
-//	    s = we.toString()+" "+w.getSignalName();
         showStatus(s);
     }
 
@@ -221,15 +183,9 @@ public class WaveDisplay extends JApplet implements WaveformListener
                     wi.SetDataProvider(da.getDataProvider());
                     wi.experiment = da.getExperiment();
                     wi.AddSignal(da.getSignal());
-                    
-                    color = getParameterValue(sig_param, "color");
-                    
-                    
+                                       
                     wi.full_flag = !async_update;
-                    
-                    
                     wi.setShotArray(da.getShot());
-
 	                wi.StartEvaluate();
 		            wi.EvaluateOthers();
                    

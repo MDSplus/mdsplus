@@ -17,7 +17,7 @@ public class SetupDefaults extends JDialog implements ActionListener
    JButton           ok, cancel, reset, erase, apply;
    JLabel            lab;
    
-   jScope_1 main_scope;
+   jScope main_scope;
    
    jScopeDefaultValues def_vals;
       
@@ -39,10 +39,9 @@ public class SetupDefaults extends JDialog implements ActionListener
    {
 
       super(fw, frame_title, true);
-//      super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       
-      main_scope = (jScope_1)fw;
+      main_scope = (jScope)fw;
       
 	  GetPropertiesValue();
   

@@ -14,28 +14,16 @@ class jScopeWavePopup extends MultiWavePopup
 {
     private   SetupDataDialog setup_dialog;
     protected JMenuItem refresh, saveAsText;
-    protected JMenuItem  selectWave, remove_panel, profile_dialog;
+    protected JMenuItem  selectWave, profile_dialog;
     protected JSeparator sep1, sep3;
 
     public jScopeWavePopup(SetupDataDialog setup_dialog)
     {
         super();
-        /*
-	    insert(setup = new JMenuItem("Setup data source..."), 0);
-	    setup.addActionListener(new ActionListener()
-	        {
-	            public void actionPerformed(ActionEvent e)
-	            {
-	                jScopeWavePopup.this.ShowSetupDialog();  
-	            }
-	        }
-	    );
-	    this.setup_dialog = setup_dialog;
-        */
         setup.setText("Setup data source...");
 	    this.setup_dialog = setup_dialog;
         
-	    insert(selectWave = new JMenuItem("Select wave panel"), 2);
+	    selectWave = new JMenuItem("Select wave panel");
 	    selectWave.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -47,37 +35,9 @@ class jScopeWavePopup extends MultiWavePopup
 	            }
 	        }
 	    );
-	  	    
-	    insert(remove_panel = new JMenuItem("Remove panel"), 3);
-	    remove_panel.setEnabled(false);
-	    remove_panel.addActionListener(new ActionListener()
-	        {
-	            public void actionPerformed(ActionEvent e)
-	            {
-	                Object[] options = {"Yes",
-                                        "No"};
-                    int opt = JOptionPane.showOptionDialog(null,
-                            "Are you sure you want to remove this wave panel?",
-                            "Warning",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE,
-                            null,
-                            options,
-                            options[1]);
-	                switch(opt)
-	                {
-		                case JOptionPane.YES_OPTION :
-		                    ((WaveformManager)jScopeWavePopup.this.parent).removePanel(wave);;
-		                break;
-	                }
-	                
-	            }
-	        }
-	    );
-	
-	    insert(sep1 = new JSeparator(), 6);
 
-	    add(refresh = new JMenuItem("Refresh"));
+        sep1 = new JSeparator();
+	    refresh = new JMenuItem("Refresh");
 	    refresh.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -87,8 +47,8 @@ class jScopeWavePopup extends MultiWavePopup
 	        }
 	    );
 	    
-	    add(sep3 = new JSeparator());
-	    add(saveAsText = new JMenuItem("Save as text ..."));
+	    sep3 = new JSeparator();
+	    saveAsText = new JMenuItem("Save as text ...");
 	    saveAsText.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -119,17 +79,13 @@ class jScopeWavePopup extends MultiWavePopup
 	protected void SetMenuItem(boolean is_image)
 	{	   
 	   super.SetMenuItem(is_image);
-	   if(setup_dialog != null)
-           insert(setup, 0);
-       add(refresh);
+       insert(refresh, this.getComponentCount() - 2);
+       setup.setEnabled((setup_dialog != null));
        if(is_image)
 	   {
-           insert(profile_dialog, 2);
-           insert(remove_panel, 3);
+           insert(profile_dialog, 3);
        } else {
            insert(selectWave, 2);
-           insert(remove_panel, 3);
-	       insert(sep1, (wave.isFixedLegend() ? 5: 6));
 	       add(sep3);
 	       add(saveAsText);
        }
@@ -150,10 +106,6 @@ class jScopeWavePopup extends MultiWavePopup
                 selectWave.setText("Select wave panel");
         } else {
             profile_dialog.setEnabled(!wave.isSendProfile());
-            //if(wave.sendProfile())
-                //profile_dialog.setLabel("Remove profile dialog");
-            //else
-                //profile_dialog.setLabel("Show profile dialog");
         }
     }
 
@@ -161,8 +113,8 @@ class jScopeWavePopup extends MultiWavePopup
     {
  	   super.SetMenu();
  	   this.wave = (jScopeMultiWave)super.wave;
-       remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
-       jScope_1.jScopeSetUI(this);
+ //      remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
+       jScope.jScopeSetUI(this);
     }
 
      

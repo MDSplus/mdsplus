@@ -3,6 +3,9 @@ import java.awt.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.SwingUtilities;
+import java.awt.image.*;
+import java.awt.geom.*;
+
 
 /**
 Class MultiWaveform extends the capability of class Waveform to deal with multiple
@@ -268,4 +271,17 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         g.dispose();
         super.removeNotify();
     }
+    
+    protected void DrawImage(Graphics g, Object img, Dimension dim)
+    {
+       if(!(img instanceof RenderedImage))
+       {
+           super.DrawImage(g, img, dim);
+       }
+       else
+       {
+           ((Graphics2D)g).clearRect(0, 0, dim.width, dim.height);
+           ((Graphics2D)g).drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
+       }
+    }    
 }

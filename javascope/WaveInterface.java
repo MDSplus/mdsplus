@@ -61,7 +61,6 @@ public class WaveInterface
     protected boolean evaluated[];
         
     static final float HUGE = (float)1E8;
-//    static int MAX_POINTS = 1000;
    
     protected boolean is_image = false;
     boolean keep_ratio = true;
@@ -133,6 +132,27 @@ public class WaveInterface
         vertical_flip = false;
         frames = null;
         show_legend = false;
+        
+        if(cu != null && cu.isAlive())
+        {
+            cu.terminate();
+            try {
+                cu.join(); //force termination and wait
+            }catch(Exception exc){}
+            cu = null;
+        }
+        
+        if(du != null && du.isAlive())
+        {   
+            du.Destroy();
+            try
+            {
+                du.join();
+            } catch (InterruptedException exc){}
+            du = null;
+        }    
+        wave_signals = null;
+        evaluated = null;
     }
     
     public void SetAsImage(boolean is_image)
@@ -541,7 +561,7 @@ public class WaveInterface
     
     public boolean isAddSignal() {return add_signal;}
     public void    setAddSignal(boolean add_signal) {this.add_signal = add_signal;}
-    
+        
     public boolean UpdateShot(long curr_shots[]) throws IOException
     {
 	    int l = 0, curr_num_shot;
@@ -818,6 +838,10 @@ public class WaveInterface
 	            ylabel = dp.GetWaveData(in_y[0]).GetYLabel();
             }catch(Exception exc) {ylabel = null; }
         }
+
+        if(xmin > xmax) xmin = xmax;
+        if(ymin > ymax) ymin = ymax;
+
       
 	    return 1;
     } 
@@ -826,8 +850,6 @@ public class WaveInterface
     public synchronized void EvaluateShot(long shot) throws IOException
     {
 	    int curr_wave;
-        if(xmin > xmax) xmin = xmax;
-        if(ymin > ymax) ymin = ymax;
         
         if(is_image)
             return;
@@ -849,14 +871,28 @@ public class WaveInterface
 		        else
 		        {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
-
-		            if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
-		            if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
-		            if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
-		            if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
+                    setLimits(signals[curr_wave]);
 		        }
 	        }    	    
 	    }
+    }
+    
+    public void setLimits()
+    {
+        try
+        {
+            for(int i = 0; i < signals.length; i++)
+                if(signals[i] != null)
+                    setLimits(signals[i]);
+        } catch(Exception e){}
+    }
+    
+    public void setLimits(Signal s)
+    {
+		if(xmin != -HUGE) s.xmin = xmin;
+		if(xmax !=  HUGE) s.xmax = xmax;
+		if(ymin != -HUGE) s.ymin = ymin;
+		if(ymax !=  HUGE) s.ymax = ymax;
     }
     
     public synchronized void EvaluateOthers() throws IOException
@@ -896,11 +932,7 @@ public class WaveInterface
 		        else
 		        {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
-                    
-		            if(xmin != -HUGE) signals[curr_wave].xmin = xmin;
-		            if(xmax !=  HUGE) signals[curr_wave].xmax = xmax;
-		            if(ymin != -HUGE) signals[curr_wave].ymin = ymin;
-		            if(ymax !=  HUGE) signals[curr_wave].ymax = ymax;	
+                    setLimits(signals[curr_wave]);                    
 		        }
 	        }    	    
 	    }
@@ -1110,11 +1142,8 @@ public class WaveInterface
     	        out_signal.AddAsymError(up_err, low_err);
     	    else
                 if(up_err != null)
-                    out_signal.AddError(up_err);
-   	        
-        }
-        
-        
+                    out_signal.AddError(up_err);   
+        }       
         return out_signal;
     }
     
@@ -1380,9 +1409,13 @@ public class WaveInterface
     {
 	    boolean needs_update = false;
 	    int curr_wave, saved_timestamp = wave_timestamp;
-	    	   
-        WaveformEvent we = new WaveformEvent(w, "Asyncronous signal loading");
-        w.dispatchWaveformEvent(we);
+	    WaveformEvent we;
+	    
+	    if(!is_continuous)
+	    {
+            we = new WaveformEvent(w, "Asyncronous signal loading");
+            w.dispatchWaveformEvent(we);
+        }
         
         is_async_update = true;
         
@@ -1394,7 +1427,7 @@ public class WaveInterface
         		    
 		    needs_update = true;
 		    if(is_continuous)  //continuous signal update
-		        wave_signals[curr_wave] = GetSignal(curr_wave, -HUGE, HUGE);
+		        wave_signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);//-HUGE, HUGE);
 		    else  //asyncronous update during zoom
 		        wave_signals[curr_wave] = GetSignal(curr_wave, wave_xmin, wave_xmax);
         }
@@ -1408,8 +1441,11 @@ public class WaveInterface
 	    
         is_async_update = false;
         
-        we = new WaveformEvent(w, "Asyncronous operation completed");
-        w.dispatchWaveformEvent(we);
+	    if(!is_continuous)
+	    {
+            we = new WaveformEvent(w, "Asyncronous operation completed");
+            w.dispatchWaveformEvent(we);
+        }
      }
 
 }		
@@ -1451,16 +1487,17 @@ class AsynchUpdater  extends Thread
 {
     WaveInterface wi;
     MultiWaveform w;
+    boolean done = false;
     
-    public AsynchUpdater(WaveInterface _wi, MultiWaveform _w)
+    public AsynchUpdater(WaveInterface wi, MultiWaveform w)
     {
-        wi = _wi;
-        w = _w;
+        this.wi = wi;
+        this.w = w;
     }
     public void run()
     {
         setName("Asynch Update Thread");
-        while(true)
+        while(!done)
         {
 	        while(wi.request_pending)
 	        {
@@ -1483,7 +1520,13 @@ class AsynchUpdater  extends Thread
     {
         notify();
     }
-    
+  
+    public synchronized void Destroy()
+    {
+        done = true;
+        notify();
+    }
+  
 }
     	
 

@@ -5,11 +5,11 @@ import java.io.IOException;
 class DataAccessURL  
 {
     
-    static Vector data_access_vector = new Vector();
+    static Vector dataAccessVector = new Vector();
         
-    static public void addProtocol(DataAccess data_access)
+    static public void addProtocol(DataAccess dataAccess)
     {
-        data_access_vector.addElement(data_access);
+        dataAccessVector.addElement(dataAccess);
     }
 
     static public Signal getSignal(String url) throws IOException
@@ -26,9 +26,9 @@ class DataAccessURL
     {
         DataAccess da = null;
         
-        for(int i = 0 ; i < data_access_vector.size(); da = null, i++)
+        for(int i = 0 ; i < dataAccessVector.size(); da = null, i++)
         {
-            da = (DataAccess)data_access_vector.elementAt(i);
+            da = (DataAccess)dataAccessVector.elementAt(i);
             if(da.supports(url))
                 break;
         }
@@ -68,7 +68,6 @@ class DataAccessURL
         return null;
     }    
 
-
     static public Frames getImages(String url, Frames f) throws IOException
     {
         return getImages(url, null, null, f);
@@ -106,13 +105,17 @@ class DataAccessURL
     static public void close()
     {
         DataAccess da = null;
-        for(int i = 0 ; i < data_access_vector.size(); i++)
+        for(int i = 0 ; i < dataAccessVector.size(); i++)
         {
-            da = (DataAccess)data_access_vector.elementAt(i);
+            da = (DataAccess)dataAccessVector.elementAt(i);
             if(da != null)
                 da.close();
         }
     }
 
+    static public int getNumProtocols()
+    {
+        return dataAccessVector.size();
+    }
 
 }

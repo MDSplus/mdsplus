@@ -267,11 +267,23 @@ public class SetupWaveformParams extends JDialog implements ActionListener
    private void initialize()      
    { 
 	    eraseForm();
-        if(wave.lx_max != Float.MAX_VALUE) x_max.setText(""+wave.lx_max);
-        if(wave.lx_min != Float.MIN_VALUE) x_min.setText(""+wave.lx_min);
-        if(wave.ly_max != Float.MAX_VALUE) y_max.setText(""+wave.ly_max);
-        if(wave.ly_min != Float.MIN_VALUE) y_min.setText(""+wave.ly_min);  
 	    
+	    if(wave instanceof MultiWaveform && ((MultiWaveform)wave).getWaveInterface() != null)
+	    {
+	        WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
+	        
+            if(wi.in_xmax != null) x_max.setText(wi.in_xmax);
+            if(wi.in_xmin != null) x_min.setText(wi.in_xmin);
+            if(wi.in_ymax != null) y_max.setText(wi.in_ymax);
+            if(wi.in_ymin != null) y_min.setText(wi.in_ymin);  
+        } 
+        else
+        {
+            if(wave.lx_max != Float.MAX_VALUE) x_max.setText(""+wave.lx_max);
+            if(wave.lx_min != Float.MIN_VALUE) x_min.setText(""+wave.lx_min);
+            if(wave.ly_max != Float.MAX_VALUE) y_max.setText(""+wave.ly_max);
+            if(wave.ly_min != Float.MIN_VALUE) y_min.setText(""+wave.ly_min);  
+        }	    
 	    
 	    setTextValue(title, wave.GetTitle());
 	    setTextValue(x_label, wave.GetXLabel());
@@ -304,10 +316,30 @@ public class SetupWaveformParams extends JDialog implements ActionListener
         wave.SetXLabel(x_label.getText());
         wave.SetYLabel(y_label.getText());
         
-        wave.lx_max = convertToFloat(x_max.getText(), false);
-        wave.lx_min = convertToFloat(x_min.getText(), true);
-        wave.ly_max = convertToFloat(y_max.getText(), false);
-        wave.ly_min = convertToFloat(y_min.getText(), true);
+        
+        if(wave instanceof MultiWaveform && ((MultiWaveform)wave).getWaveInterface() != null)
+	    {
+	        WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
+	        
+            wi.in_xmax = x_max.getText();
+            wi.in_xmin = x_min.getText();
+            wi.in_ymax = y_max.getText();
+            wi.in_ymin = y_min.getText();
+            try
+            {
+                wi.StartEvaluate();
+                wi.setLimits();
+            } catch (Exception e){}
+        } 
+        else 
+        {
+            wave.lx_max = convertToFloat(x_max.getText(), false);
+            wave.lx_min = convertToFloat(x_min.getText(), true);
+            wave.ly_max = convertToFloat(y_max.getText(), false);
+            wave.ly_min = convertToFloat(y_min.getText(), true);
+	        wave.setFixedLimits();
+        }
+        
  
 	    wave.SetGridMode(grid_mode.getSelectedIndex(), true, true);
 	    
@@ -317,9 +349,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 	    }    
 	    wave.SetReversed(reversed_b.getModel().isSelected());
  
-        
-
-
       int h_ofs = 0, v_ofs = 0;  
 	  try
 	  {
@@ -368,7 +397,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
         wave.SetGridSteps(x_curr_lines_grid, y_curr_lines_grid);
 
-	    wave.setLimits();
         wave.Update();
 
     } 
@@ -388,6 +416,11 @@ public class SetupWaveformParams extends JDialog implements ActionListener
    public void  Show(Waveform w)
    {
         if(w == null) return;
+        if(w.IsImage())
+        {
+		   JOptionPane.showMessageDialog(getParent(), "Not yet implemented", "alert", JOptionPane.WARNING_MESSAGE);     
+           return;
+        }
         wave = w;
         initialize();
         setLocationRelativeTo(wave.getParent());

@@ -189,11 +189,108 @@ class TwuDataProvider
     }
 
     // ---------------------------------------------------------------------------------------------
+    class TwuFetchOptions 
+    {
+        public int start =  0 ;
+        public int step  =  1 ;
+        public int total = -1 ;
+
+        public TwuFetchOptions () {} 
+        // defaults to the options for retrieving
+        // the full signal. (i.e. no subsampling.)
+
+        public TwuFetchOptions (int sta, int ste, int tot) 
+        {
+            start = sta ; 
+            step  = ste ;
+            total = tot ; 
+        }
+
+        public void clip (int length) 
+        {
+            if (length <= 0) // handle flawed input ...
+            { 
+                start = 0 ; step = 1 ; total = 0 ; 
+                return ; 
+            }
+
+            if (total <= 0)
+              total  = length ; 
+            
+            // note: should we allow total = 0 ? it *may* not be
+            // a good idea to have 'total = 0' translated to 'get all'.
+
+            if (step == 0)
+              step = 1 ;
+
+            int begin = start, end = start + (total-1)*step ;
+            if (end < begin) 
+            {
+                int tmp = end ; end = begin ; begin = tmp;
+                step = -step;
+            }
+
+            if (begin < 0) 
+            { 
+                begin %= step ; 
+                if(begin < 0)
+                  begin += step ; 
+            }
+
+            end = (length-1) - end ;
+            if (end < 0)   
+            {
+                end %= step ; 
+                if(end < 0)
+                  end += step ; 
+            }
+            end = (length-1) - end ;
+
+            if (begin >= length)
+            {
+                start = 0 ; step = 1 ; total = 0 ; 
+                return ; 
+            }
+
+            // got a valid range now :
+            start = begin ;
+            total = (end - begin)/step + 1 ;
+            // step has already been set, above.
+        }
+
+        public boolean equalsForBulkData (TwuFetchOptions opt) 
+        {
+            // simple approach, assumes it's already been clipped 
+            // or at least it's incrementing (eg. step > 0, total >= 0).
+
+            return ( start == opt.start && 
+                     step  == opt.step  && 
+                     total == opt.total );
+        }
+
+        public TwuFetchOptions NewCopy (TwuFetchOptions opt) 
+        {
+            return opt.NewCopy() ;
+        } 
+
+        public TwuFetchOptions NewCopy () 
+        {
+            return new TwuFetchOptions (start, step, total) ;
+        }
+
+        public String toString() 
+        {
+            return "TwuFetchOptions("+start+", "+step+", "+total+")" ;
+        }
+    } // end (nested) class TwuFetchOptions.
+
+
+    // ---------------------------------------------------------------------------------------------
     class SingleTwuSignal 
     {
         TWUProperties   properties      = null  ;
         SingleTwuSignal mainSignal      = null  ;
-        TWUFetchOptions fetchOptions    = null  ;
+        TwuFetchOptions fetchOptions    = null  ;
         String    source                = null  ;
         float[]   data                  = null  ;
         boolean   propertiesAvailable   = false ;
@@ -367,7 +464,7 @@ class TwuDataProvider
             return errorSource ; 
         }
 
-        public float [] getData (TWUFetchOptions opt) 
+        public float [] getData (TwuFetchOptions opt) 
             throws IOException 
         {
             setFetchOptions (opt) ;
@@ -395,7 +492,7 @@ class TwuDataProvider
             return data ;
         }
 
-        public void setFetchOptions (TWUFetchOptions opt)
+        public void setFetchOptions (TwuFetchOptions opt)
             throws IOException 
         {
             doClip (opt);
@@ -412,7 +509,7 @@ class TwuDataProvider
             data = null ;
         }
 
-        private void doClip (TWUFetchOptions opt)
+        private void doClip (TwuFetchOptions opt)
             throws IOException 
         {
             if (fakeAbscissa) 
@@ -446,7 +543,7 @@ class TwuDataProvider
             dataAvailable = true ;
         }
 
-        private float[] doFetch(TWUFetchOptions opt)
+        private float[] doFetch(TwuFetchOptions opt)
             throws Exception 
         {
             TWUSignal bulk ;
@@ -497,14 +594,14 @@ class TwuDataProvider
               min = (float) props.Minimum() ;
             else 
             { 
-                float[] scalar = doFetch (new TWUFetchOptions()); 
+                float[] scalar = doFetch (new TwuFetchOptions()); 
                 min = scalar[0] ; 
             }
             return name + " = " + min + " " + units ;
         }
 
         private void 
-        createEquidistantData(TWUFetchOptions opt) 
+        createEquidistantData(TwuFetchOptions opt) 
             throws Exception 
         {
             float fullstep, start ;
@@ -643,7 +740,7 @@ class TwuDataProvider
             fullfetch = true ;
             try   
             { 
-                setFetchOptions(new TWUFetchOptions ()); 
+                setFetchOptions(new TwuFetchOptions ()); 
             }
             catch ( IOException e ) {} 
             // same story as above, in setZoom.
@@ -752,7 +849,7 @@ class TwuDataProvider
         //  (most fetch options, particularly settings involved with zoom range,
         //  should be the same for both x and y data.)
         //
-        protected void setFetchOptions (TWUFetchOptions opt) 
+        protected void setFetchOptions (TwuFetchOptions opt) 
             throws IOException 
         {
             ysig.setFetchOptions (opt);
@@ -914,7 +1011,7 @@ class TwuDataProvider
     //       data fetching (or creation) methods below.
     //  ----------------------------------------------------
 
-    protected TWUFetchOptions
+    protected TwuFetchOptions
     FindIndicesForXRange( SingleTwuSignal xsig, float x_start, float x_end, int n_points ) 
         throws  Exception
     {
@@ -922,7 +1019,7 @@ class TwuDataProvider
         final int           len  = prop.LengthTotal() ;
 
         if (prop.Dimensions() == 0 || len <= 1)
-          return new TWUFetchOptions(0,1,1);  // mainly used to pick scalars out.
+          return new TwuFetchOptions(0,1,1);  // mainly used to pick scalars out.
 
         int           ix_start = -1;
         int           ix_end   = -1 ;
@@ -960,7 +1057,7 @@ class TwuDataProvider
             int       k    = POINTS_PER_REQUEST;
             final int step = (int) Math.ceil ( len / (float)k ) ;
 
-            TWUFetchOptions opt = new TWUFetchOptions ( 0, step, k );
+            TwuFetchOptions opt = new TwuFetchOptions ( 0, step, k );
             float[] data = xsig.doFetch (opt);
 
             boolean up = data [1] > data [0] ; 
@@ -1023,7 +1120,7 @@ class TwuDataProvider
         // you should end up getting *at least* n_point points.
         // NB: due to clipping, it *is* still possible that you do not get the very last point ....
 
-        return new TWUFetchOptions (ix_start, step, real_n_points) ;
+        return new TwuFetchOptions (ix_start, step, real_n_points) ;
     }
 
     protected int
@@ -1043,7 +1140,7 @@ class TwuDataProvider
         int end = start + laststep ;
         int num = (int) Math.ceil ( laststep / ((float)newstep) );
 
-        float [] data = xsig.doFetch (new TWUFetchOptions (start, newstep, num+1)); 
+        float [] data = xsig.doFetch (new TwuFetchOptions (start, newstep, num+1)); 
 
         // the "num+1" is for reading the sample at the edge, for comparison 
         // (we want to get the index for which the data is closest to the target value.)
@@ -1089,7 +1186,7 @@ class TwuDataProvider
 
     protected static void handleException (Exception e) 
     {
-        if (jScope.is_debug) 
+        if (Waveform.is_debug) 
           e.printStackTrace (System.out) ;
 
         // this method exists only to improve consistency.

@@ -7,6 +7,8 @@ class DemoDataProvider implements DataProvider
 {
     String error = null;
     int loop_count = 0;
+    int POINTS = 10000;
+    int C_POINTS = 1000;
 
     class SimpleWaveData implements WaveData
     {
@@ -114,7 +116,7 @@ class DemoDataProvider implements DataProvider
     
     public float[] GetFloatArray(String in)
     {
-        float d[] = new float[1000];
+        float d[] = new float[POINTS];
         
         try {
             Thread.sleep(100, 0);
@@ -130,14 +132,14 @@ class DemoDataProvider implements DataProvider
             error = new String("Not a demo signal \n Demo signals name are \n sin \n cos \n sin*cos \n");
             return null;
         }
-        for(int i = 0 ; i < 1000; i++)
+        for(int i = 0 ; i < POINTS; i++)
         {
             if(in.equals("sin")) {
-                d[i] = (float)Math.sin(6.28/1000*i);
+                d[i] = (float)Math.sin(loop_count/(float)C_POINTS * 6.28/1000*i);
                 continue;               
             }
             if(in.equals("cos")) {
-                d[i] = (float)Math.cos(loop_count/(float)100. * 6.28/1000*i);
+                d[i] = (float)Math.cos(loop_count/(float)C_POINTS * 6.28/1000*i);
                 continue;               
             }
             if(in.equals("sin*cos")) {
@@ -145,7 +147,7 @@ class DemoDataProvider implements DataProvider
                 continue;               
             }
             if(in.indexOf("_x") != -1)
-                d[i] = loop_count/(float)100. * (float)6.28/1000*i;
+                d[i] = loop_count/(float)C_POINTS * (float)6.28/1000*i;
         }
         return d;
     }
@@ -265,7 +267,7 @@ class DemoDataProvider implements DataProvider
     
     public boolean DataPending()
     {
-        if(loop_count++ < 100)
+        if(loop_count++ < C_POINTS)
             return true;
         loop_count = 0;
         return false;

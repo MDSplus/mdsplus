@@ -185,6 +185,6 @@ public class WaveformEvent extends AWTEvent
 		        }
 	        break;
 	    }
-	    return s;
+	    return (s == null ? "" : s);
     }
 }

@@ -11,6 +11,7 @@ public class MdsAccess implements DataAccess
     String experiment = null;
     MdsDataProvider np = null;
     String error = null;
+    String encoded_credentials = null;
 
     
     public static void main(String args[])
@@ -49,6 +50,11 @@ public class MdsAccess implements DataAccess
         if(ip_addr == null || !ip_addr.equals(addr))
         {
             np = new MdsDataProvider(addr);
+            if(encoded_credentials == null ||( ip_addr != null && !ip_addr.equals(addr)))
+            {
+                encoded_credentials = new String();
+                np.InquireCredentials(null, encoded_credentials);
+            }
             ip_addr = addr;
         }
         experiment = st2.nextToken();
@@ -155,7 +161,9 @@ public class MdsAccess implements DataAccess
     }
     
     public void setPassword(String encoded_credentials)
-    {}
+    {
+        this.encoded_credentials = encoded_credentials;
+    }
     
     
     public String getError()

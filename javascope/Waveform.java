@@ -7,6 +7,9 @@ import java.util.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
+import java.awt.image.*;
+import java.awt.geom.*;
+
 
 //import java.awt.geom.*;
 
@@ -14,6 +17,8 @@ public class Waveform extends JComponent
 {
 
     public static int     MAX_POINTS = 1000;
+    static public boolean is_debug = false;
+    
 
     public static final Color[]  COLOR_SET = {Color.black, Color.blue, Color.cyan, Color.darkGray,
 					     Color.gray, Color.green, Color.lightGray, 
@@ -107,7 +112,6 @@ public class Waveform extends JComponent
     private static boolean bug_image = true;
     
     private Vector waveform_listener = new Vector();
-    //protected WaveformEvent we = null;
     
     private Vector undo_zoom = new Vector();
     private boolean send_profile = false;
@@ -123,6 +127,7 @@ public class Waveform extends JComponent
 
     private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
     boolean is_min_size;
+    private boolean event_enabled = true;
 
     public float lx_max = Float.MAX_VALUE;
     public float lx_min = Float.MIN_VALUE;
@@ -898,12 +903,8 @@ public class Waveform extends JComponent
   	
 	synchronized public void Update(Signal s)
     {
-//       wave_error = null;
-//	    if(mode == MODE_PAN)
-//	        mode = MODE_ZOOM;
 	    update_timestamp++;
 	    waveform_signal = s;
-    	//double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
 	    wm = null;
     	curr_rect = null;
 	    prev_point_x = prev_point_y = -1;
@@ -977,6 +978,12 @@ public class Waveform extends JComponent
     {
         this.pan_enabled = pan_enabled;
     }
+
+    public void SetEnabledDispatchEvents(boolean event_enabled)
+    {
+        this.event_enabled = event_enabled;
+    }
+
 
    protected void SetMode(int mode)
    {
@@ -1129,17 +1136,16 @@ public class Waveform extends JComponent
         
 	        xmax = 1; ymax = 1; xmin = 0; ymin = 0;
             
-            //g.clipRect(0, 0, d.width, d.height);
-
 	        if(mode != MODE_PAN || dragging == false)
 	        {
 		        if(waveform_signal != null)
 		        {
-		            xmax = MaxXSignal();
+
+ 		            xmax = MaxXSignal();
 		            xmin = MinXSignal();
 		            ymax = MaxYSignal();
 		            ymin = MinYSignal();
-		            
+                    
 		            double xrange = xmax - xmin;
 		            xmax += xrange * horizontal_offset/200.;
 		            xmin -= xrange * horizontal_offset/200.;
@@ -1149,28 +1155,17 @@ public class Waveform extends JComponent
 		            
 		        }
 	        }
-
 	    
-	        //if(resizing || wm == null) // If new Grid and WaveformMetrics have been computed before
-	        //if(resizing || grid == null || wm == null)//!resizing) // If new Grid and WaveformMetrics have not been computed before
-	        //if(resizing || grid == null)
 	        if(resizing || grid == null || wm == null || change_limits)
 	        {
 	            change_limits = false;
 		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
 		                    title, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
-		        //grid.font = font;
-		    //}
-		    //if(resizing ||  wm == null)
-		    //{
 		        curr_display_limits = new Rectangle();
 		        grid.GetLimits(g, curr_display_limits, y_log);
 		        wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, 
 		                                 d, x_log, y_log, 0, 0);
-//		        resizing = false;
 	        }
-//	        else
-//		        resizing = false;
 		    
 	    
 	        if(!copy_selected || print_mode != NO_PRINT)
@@ -1346,40 +1341,31 @@ public class Waveform extends JComponent
 	    int plot_y, plot_x;
 
 	    if(waveform_signal != null && mode == MODE_POINT 
-	            && !not_drawn && !is_min_size)
+	            && !not_drawn && !is_min_size && wm != null)
 	    {
 
-		/*
-	        if(curr_point < waveform_signal.x[0])
-		    curr_point = waveform_signal.x[0];
-		//xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
-          	end_x = wm.XPixel(curr_point, d);
-	        */
-
-		curr_x = curr_point;// wm.XValue(end_x, d);
+		    curr_x = curr_point;
 	        curr_y = wm.YValue(end_y, d);	
 		
-		//System.out.println("Draw point "+curr_point+" on "+getName());
-
 	        Point p = FindPoint(curr_x, curr_y, first_set_point);
 	        first_set_point = false;
 
-		if(p != null)
-		{    
-		    curr_x = wave_point_x;
-		    curr_y = wave_point_y;	
-            
-		    Color prev_color = g.getColor();
-		    if(crosshair_color != null)
-		        g.setColor(crosshair_color);
+		    if(p != null)
+		    {    
+		        curr_x = wave_point_x;
+		        curr_y = wave_point_y;	
+                
+		        Color prev_color = g.getColor();
+		        if(crosshair_color != null)
+		            g.setColor(crosshair_color);
 
-		    g.drawLine(0, p.y, d.width, p.y);
-		    g.drawLine(p.x, 0, p.x, d.height);
-            
-		    g.setColor(prev_color);
-		    prev_point_x = p.x;
-		    prev_point_y = p.y;
-		}
+		        g.drawLine(0, p.y, d.width, p.y);
+		        g.drawLine(p.x, 0, p.x, d.height);
+                
+		        g.setColor(prev_color);
+		        prev_point_x = p.x;
+		        prev_point_y = p.y;
+		    }
         }
 	
 	    if(mode == MODE_PAN && dragging && waveform_signal != null)
@@ -1412,9 +1398,7 @@ public class Waveform extends JComponent
     }
 
     public void paintComponent(Graphics g)
-    //public void paint(Graphics g)
     {
-	//System.out.println("PAINT on "+getName());
         if(execute_print) return;
         Insets i = this.getInsets();
         Dimension d = getSize();
@@ -1701,22 +1685,32 @@ public class Waveform extends JComponent
 
     protected void DrawImage(Graphics g, Object img, Dimension dim)
     {
-        Rectangle r = frames.GetZoomRect();
-            
-        if(r == null)
-            g.drawImage((Image)img, 1, 1, dim.width, dim.height, this);
-        else
-            g.drawImage((Image)img, 
-                            1,
-                            1,
-                            dim.width,
-                            dim.height,
-                            r.x,
-                            r.y,
-                            r.x+r.width,
-                            r.y+r.height,
-                            this);
+        
+       Rectangle r = frames.GetZoomRect();
+                   
+       if(!(img instanceof RenderedImage))
+       {
+            if(r == null)
+                g.drawImage((Image)img, 1, 1, dim.width, dim.height, this);
+            else
+                g.drawImage((Image)img, 
+                                1,
+                                1,
+                                dim.width,
+                                dim.height,
+                                r.x,
+                                r.y,
+                                r.x+r.width,
+                                r.y+r.height,
+                                this);
+       }
+       else
+       {
+           ((Graphics2D)g).clearRect(0, 0, dim.width, dim.height);
+           ((Graphics2D)g).drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
+       }
     }
+
 
     protected void DrawSignal(Graphics g)
     {
@@ -1747,7 +1741,7 @@ public class Waveform extends JComponent
 	        
     }
     
-    protected void setLimits()
+    protected void setFixedLimits()
     {
       setXlimits(lx_min, lx_max);
       setYlimits(ly_min, ly_max);
@@ -2198,7 +2192,7 @@ public class Waveform extends JComponent
         
     protected synchronized void dispatchWaveformEvent(WaveformEvent e) 
     {
-        if(e == null) return;
+        if(e == null || !event_enabled) return;
         if (waveform_listener != null) 
         {
             for(int i = 0; i < waveform_listener.size(); i++)

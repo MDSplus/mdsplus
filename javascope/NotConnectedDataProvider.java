@@ -28,7 +28,7 @@ class NotConnectedDataProvider implements DataProvider
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
-    public boolean SupportsContinuous() { return true; }
+    public boolean SupportsContinuous() { return false; }
     public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){}

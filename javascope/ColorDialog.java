@@ -15,7 +15,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
     JComboBox color;
     JSlider red, green, blue;
     JButton ok, reset, cancel, add, erase;
-    jScope_1 main_scope;
+    jScope main_scope;
     JLabel label;
     Canvas color_test;
     int red_i, green_i, blue_i;
@@ -45,7 +45,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	    //setResizable(false);
 	    //super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
 
-	    main_scope = (jScope_1)dw;
+	    main_scope = (jScope)dw;
 	    
 	    GetPropertiesValue();
 	    

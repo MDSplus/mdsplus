@@ -70,7 +70,7 @@ class Frames extends Canvas
             return FrameData.AWT_IMAGE;
         if(s.indexOf("JFIF") == 6)
             return FrameData.AWT_IMAGE;
-
+           
         return FrameData.JAI_IMAGE;
     }
     
@@ -204,7 +204,7 @@ class Frames extends Canvas
         ByteArrayInputStream b = new ByteArrayInputStream(buf);
         DataInputStream d = new DataInputStream(b);
 
-            
+        int pixel_size = d.readInt();    
         int width = d.readInt();
         int height = d.readInt();
         int img_size = height*width;
@@ -243,6 +243,7 @@ class Frames extends Canvas
             ByteArrayInputStream b = new ByteArrayInputStream(buf);
             DataInputStream d = new DataInputStream(b);
             
+            int pixel_size = d.readInt();
             int width = d.readInt();
             int height = d.readInt();
             int img_size = height*width;
@@ -310,8 +311,10 @@ class Frames extends Canvas
     public void WaitLoadFrame() throws InterruptedException
     {
         tracker.waitForID(0);
+        /*
         for(int i = 0; i < frame.size(); i++)
             tracker.removeImage((Image)frame.elementAt(i));
+        */
     }    
 
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)

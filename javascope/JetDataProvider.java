@@ -218,9 +218,18 @@ class JetDataProvider implements DataProvider
         p.add(cancel_b);
         inquiry_dialog.getContentPane().add(p, "South");
         inquiry_dialog.pack();
-        Rectangle r = f.getBounds();
-        inquiry_dialog.setLocation(r.x + r.width/2 - inquiry_dialog.getBounds().width/2,
-			r.y + r.height/2 - inquiry_dialog.getBounds().height/2);
+        if(f != null)
+        {
+            Rectangle r = f.getBounds();
+            inquiry_dialog.setLocation(r.x + r.width/2 - inquiry_dialog.getBounds().width/2,
+			    r.y + r.height/2 - inquiry_dialog.getBounds().height/2);
+		}
+		else
+		{
+		   Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	       inquiry_dialog.setLocation(screenSize.width/2 - inquiry_dialog.getSize().width/2,
+				                      screenSize.height/2 - inquiry_dialog.getSize().height/2);
+		}
         inquiry_dialog.show();
         return login_status;
     }
@@ -330,7 +339,7 @@ class JetDataProvider implements DataProvider
                 url = new URL(url_source + url_name);
                 urlcon = url.openConnection();
                 //urlcon.setRequestProperty("Connection", "Keep-Alive");
-                urlcon.setRequestProperty("Authorization", "Basic "+encoded_credentials);
+                urlcon.setRequestProperty("Authorization", "Basic " + encoded_credentials);
                 InputStream is = urlcon.getInputStream();
                 br = new BufferedInputStream(is);
                 content_len = urlcon.getContentLength();

@@ -212,7 +212,7 @@ class MdsWaveInterface extends WaveInterface
     
     if(c_shot_str != null)
     {
-        if(previous_shot.equals(c_shot_str))
+        if(previous_shot.equals(c_shot_str) && !previous_shot.equals("0"))
             return;
         previous_shot = new String(c_shot_str);
     }

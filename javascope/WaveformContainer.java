@@ -4,9 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.util.Vector;
-
-//import java.awt.print.*;
-//import java.awt.geom.*;
+import java.awt.print.*;
+import java.awt.geom.*;
  
 /**
  * A MultiWaveform container
@@ -16,8 +15,9 @@ import java.util.Vector;
  * @see WaveformManager
  * @see MultiWaveform
  */
-public class WaveformContainer extends RowColumnContainer implements WaveformManager, WaveformListener
-//, Printable 
+public class WaveformContainer extends RowColumnContainer implements WaveformManager, 
+                                                                     WaveformListener, 
+                                                                     Printable 
 {
    private   Waveform     sel_wave;
              int          mode = Waveform.MODE_ZOOM, grid_mode = Grid.IS_DOTTED , 
@@ -812,7 +812,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     }
 
 
-/*
+
     public int print(Graphics g, PageFormat pf, int pageIndex)
         throws PrinterException 
     {
@@ -825,8 +825,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
         if(pageIndex == 0)
         {
-
-    //fix page margin error on jdk 1.2.X
+            //fix page margin error on jdk 1.2.X
             if(ver.indexOf("1.2") != -1)
             {
                 if(pf.getOrientation() == PageFormat.LANDSCAPE)
@@ -844,17 +843,13 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                 }
             }
             g2.translate(pf.getImageableX(), pf.getImageableY());
-            PrintAll(g2, st_x, 
-                         st_y,
-                         (int)height, 
-                         (int)width
-                     ); 
+            PrintAll(g2, st_x, st_y,(int)height,(int)width); 
             
             return Printable.PAGE_EXISTS;
         } else
             return Printable.NO_SUCH_PAGE;
     }
-*/
+
 
     /**
      * Set copy source waveform

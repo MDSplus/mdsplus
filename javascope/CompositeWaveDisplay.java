@@ -11,7 +11,7 @@ import java.awt.print.*;
 
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {
-    private WaveformContainer_2 wave_container;
+    private WaveformContainer wave_container;
     private boolean           automatic_color = false;
     private boolean           isApplet = true;
     private JLabel            point_pos;
@@ -21,48 +21,69 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
     PrinterJob                prnJob;
     PageFormat                pf;
 
+
+//A SAMPLE SESSION ILLUSTRATING THE USAGE OF COMPOSITE WAVE DISPLAY
     public static void main(String args[])
     {
-        Component cd = createWindow("prova");
-        ((CompositeWaveDisplay)cd).testSignal((CompositeWaveDisplay)cd);
-        ((CompositeWaveDisplay)cd).showWindow(50, 50, 500, 400);
+        //Create a new instance of CompositeWaveDisplay
+        CompositeWaveDisplay cd = createWindow("test");
+        //Add signals (see below)
+        testSignal((CompositeWaveDisplay)cd);
+        //Display Window
+        cd.showWindow(50, 50, 500, 400);
     }
     
     
-    private void testSignal(CompositeWaveDisplay cd)
+    private static void testSignal(CompositeWaveDisplay cd)
     {
+        //Create a couple of signals
         float y[] = new float[1000], y1[] = new float[1000], y2[] = new float[1000], x [] = new float[1000];
         for(int i = 0; i < 1000; i++)
         {
             x[i] = (float)(i/1000.);
             y[i] = (float)Math.sin(i/300.);
             y1[i] = (float)Math.cos(i/300.);
-            y2[i] = (float)Math.sin(i/300.)*(float)Math.sin(i/300.);
         }
-        
-        float data[] = new float[100*100], time[] = new float[100], x_data[] = new float[100]; 
-        for(int i = 0; i < 100; i++)
-        {
-            time[i] = (float)(i/100.);
-            //data[i] = (float)Math.cos(i/300.);
-            for(int j = 0; j < 100; j++)
-            {
-                data[j * 100+i] = (float)((i + 1)/100.) * (float)Math.cos(j * 6.28/100.) * (float)Math.cos(i * 6.28/100.);
-            }
-        }
-        for(int i = 0; i < 100; i++)
-            x_data[i] = i;// (float)Math.sin(i * 6.28/100.);
+        //A sample ceation of two static signals in one panel
+        cd.addSignal(
+            x,          //X Axis
+            y,          //Y Axis
+            1,          //row in panel
+            2,          //Column in panel
+            "blue",     //Colour
+            "my signal1", //Legend
+            true,       //Display lines connecting points
+            0);         //Marker step: 0 means that all points are displayed
+       //Another signal in the same panel 
+        cd.addSignal(x,y1,1,2,"green", "my signal 2", true, 0);
             
-        Signal  sig_2d = new Signal(data, x_data, time, Signal.MODE_YTIME); 
-        ((CompositeWaveDisplay)cd).addSignal(sig_2d, 1, 2);
-        ((CompositeWaveDisplay)cd).addSignal(x, y, 1,2,"green", "seno");
-       
-        Signal  sig_2d1 = new Signal(sig_2d);
-        ((CompositeWaveDisplay)cd).addSignal(sig_2d1, 1, 1);
-        ((CompositeWaveDisplay)cd).addSignal(x, y, 1,1,"green", "seno");
-        ((CompositeWaveDisplay)cd).addSignal(x, y1, 1,1,"red", "coseno");
-        ((CompositeWaveDisplay)cd).addSignal(x, y2, 2,1,"blue", "seno**2");
+        //Another definition for signal. In this case a URL like specification is provided. 
+        //The first part defines the DataProvider to be used. In this case the demo data provider is used
+        //Demo is a sample data provider already defined in jScope, which has the ability 
+        //of showing signals evolving in time. The second part of the URL is a name which is
+        //interpreted by the associated Data Provider 
+        cd.addSignal(
+            "demo://sin",           //Signal Specification: <DataProvider>://<name>
+            1,                      //row in panel
+            1,                      //Column in panel
+            "red",                  //Colour
+            "evolving signal",      //Legend
+            true,                   //Display lines connecting points
+            0);                     //Marker step: 0 means that all points are displayed
+            
+            
+        //Set the limits of the corresponding panel    
+        cd.setLimits(
+            1,      //row idx
+            1,      //column idx
+            0,   //min X
+            100,    //max X
+            -2,     //min Y
+            2);     //Max Y
+          
     }
+    
+ //-------------------------------------------End Sample code   
     
     public static CompositeWaveDisplay createWindow(String title)
     {
@@ -91,19 +112,31 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         super();
         this.isApplet = isApplet;
     }
+    
+    public void addProtocol(DataAccess da)
+    {
+       DataAccessURL.addProtocol(da); 
+    }
+    
+    private void setDataAccess()
+    {
+        DataAccessURL.addProtocol(new RdaAccess());
+        DataAccessURL.addProtocol(new MdsAccess());
+        DataAccessURL.addProtocol(new TwuAccess());
+        DataAccessURL.addProtocol(new DemoAccess());            
+    }
 
     public void init()
     {
         
-        if(this.isApplet)
+        if(isApplet)
         {
             Waveform.zoom_on_mb1 = false;
-            DataAccessURL.addProtocol(new RdaAccess());
-            DataAccessURL.addProtocol(new MdsAccess());
-            DataAccessURL.addProtocol(new TwuAccess());
+            setDataAccess();
         }
+        
         setBackground(Color.lightGray);
-        wave_container = new WaveformContainer_2();
+        wave_container = new WaveformContainer();
         wave_container.addWaveContainerListener(this);
         WavePopup wave_popup = new MultiWavePopup(new SetupWaveformParams(f, "Waveform Params"));
         wave_container.setPopupMenu(wave_popup);
@@ -163,61 +196,41 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
             panel.add("Center", point_pos);
 
-
             prnJob = PrinterJob.getPrinterJob();
             pf = prnJob.defaultPage();
-            /*
-	        pf.setOrientation(PageFormat.LANDSCAPE);
-	        Paper p = pf.getPaper();
-	        p.setSize(595.2239, 841.824);
-	        p.setImageableArea(13.536, 12.959, 567.288, 816.6239);
-	        pf.setPaper(p);
-    	    */
-    	    
+   	    
 	        JButton print = new JButton("Print");
 	        print.addActionListener(new ActionListener()
 		    {
 		        public void actionPerformed(ActionEvent e)
 		        {
 		            
-				        try 
-					    {
-					    pf = prnJob.pageDialog(pf);
-					    if(prnJob.printDialog())
+		            Thread t = new Thread() {
+		                
+		                public void run() 
+		                {
+    		            
+				            try 
 					        {
-                            prnJob.setPrintable(wave_container, pf);
-						    prnJob.print();
-					        }
-					    } 
-				        catch (Exception ex){}
-		            /*
-			    javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
-				    public void actionPerformed(ActionEvent ae) 
-				    {
-				        try 
-					    {
-					    pf = prnJob.pageDialog(pf);
-					    if(prnJob.printDialog())
-					        {
-						    System.out.println("Stampo");
-						    prnJob.setPrintable(wave_container, pf);
-						    prnJob.print();
-					        }
-					    } 
-				        catch (Exception ex){}
-				    }
-			    });
-			    t.setRepeats(false);
-			    t.start();
-    			*/
+					        pf = prnJob.pageDialog(pf);
+					        if(prnJob.printDialog())
+					            {
+                                prnJob.setPrintable(wave_container, pf);
+						        prnJob.print();
+					            }
+					        } 
+				            catch (Exception ex){}
+                        }
+                    };
+			        t.start();  			
 		        }
 		    });
 	        panel.add("East", print);
 
 	    }
 
-        getContentPane().add("Center", wave_container);//, BorderLayout.CENTER);
-        getContentPane().add("South", panel);//, BorderLayout.SOUTH);
+        getContentPane().add("Center", wave_container);
+        getContentPane().add("South", panel);
             
         if(isApplet) getSignalsParameter();
         wave_container.update();
@@ -277,7 +290,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         {                
             while((sig_param = getParameter(sig_attr + i)) != null)
             {
-               // System.out.println("inizia " + sig_param.toLowerCase());
                 signal_autentication = getParameterValue(sig_param, "autentication");
                 if(signal_autentication != null)
                    autentication = signal_autentication;
@@ -385,7 +397,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	    
 	            WaveformEvent we = (WaveformEvent)e.we;
 	            Waveform w = (Waveform)we.getSource();
-	            int we_id = we.getID();
 
 	            s = we.toString();
                 if(w instanceof MultiWaveform)
@@ -393,7 +404,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                     MultiWaveform mw = (MultiWaveform)w;
                     String n = mw.getSignalName(we.signal_idx);
                     if(n != null)
-		                s = s + n;  
+		                s = s + " " + n;  
 	            }
                 if(isApplet) 
                     showStatus(s);
@@ -446,6 +457,155 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             wave_container.update();
     	
 	}
+	
+	
+	public void setLimits(int row, int column, float xmin, float xmax, float ymin, float ymax)
+	{
+        Component c = null;
+        MultiWaveform w = null;
+        WaveInterface wi = null;
+        
+        c = wave_container.getGridComponent(row, column);
+
+        if(c != null)
+        {
+            w = (MultiWaveform)c;
+            wi = w.getWaveInterface();
+            if( wi == null)
+            {            
+                w.lx_max = xmax;
+                w.lx_min = xmin;
+                w.ly_max = ymax;
+                w.ly_min = ymin;    
+                w.setLimits();
+            }
+            else
+            {
+                wi.in_xmax = ""+xmax;
+                wi.in_xmin = ""+xmin;
+                wi.in_ymax = ""+ymax;
+                wi.in_ymin = ""+ymin;
+                try
+                {
+	                wi.StartEvaluate();
+	                wi.setLimits();
+	            } catch(Exception e){}
+            }
+            w.Update();
+        }
+	}
+
+    public void addSignal(String url,int row, int column,  
+        String color, String label, boolean inter, int marker)
+    {
+        
+        Component c = null;
+        MultiWaveform w = null;
+        WaveInterface wi = null;
+        DataAccess da = null;
+        Signal s;
+
+        if(DataAccessURL.getNumProtocols() == 0)
+            setDataAccess();
+        
+        c = wave_container.getGridComponent(row, column);
+        
+        try
+        {
+            da = DataAccessURL.getDataAccess(url);
+            da.setProvider(url);
+            
+            if(c != null)
+            {
+                w = (MultiWaveform)c;
+                                
+                wi  = w.getWaveInterface();
+                if(wi == null) 
+                {
+                    if( w.GetSignals() != null && w.GetSignals().size() != 0)
+                    {                       
+		                JOptionPane.showMessageDialog(this, 
+		                                            "In the selected waveform panel there are raw signals.\n" + 
+		                                            "\nDefine a new waveform panel to show signals from "+
+		                                            da.getDataProvider().getClass().getName() + 
+		                                            " data provider.",
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                                        
+                    w.setWaveInterface((wi = new WaveInterface()));
+                    wi.SetDataProvider(da.getDataProvider());
+                }
+                else
+                {
+                    if(!wi.getDataProvider().getClass().getName().equals(da.getDataProvider().getClass().getName()))
+                    {
+		                JOptionPane.showMessageDialog(this, 
+		                                            "The selected waveform panel is already connected to " + 
+		                                            wi.getDataProvider().getClass().getName() +
+		                                            " data provider.\nDefine a new waveform panel to show signals from "+
+		                                            da.getDataProvider().getClass().getName() + 
+		                                            " data provider.",
+		                                            "alert", 
+		                                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            } else {
+                w = (MultiWaveform)wave_container.CreateWaveComponent();
+                w.setWaveInterface((wi = new WaveInterface()));            
+                wave_container.add(w, row, column);                
+                wi.SetDataProvider(da.getDataProvider());
+            }
+                      
+            
+            if(da != null && wi != null)
+            {
+                                       
+                wi.experiment = da.getExperiment();
+                wi.AddSignal(da.getSignal());
+                wi.setShotArray(da.getShot());
+                                            
+	            wi.StartEvaluate();
+		        wi.EvaluateOthers();
+    		    
+		        //If added signal has been evaluated without
+		        //error it is stored in wi.signals vector
+                       
+                if(wi.signals != null && (s = wi.signals[wi.signals.length-1]) != null)
+                {
+                    s.setColorIdx(Waveform.ColorNameToIndex(color));                                            
+                    s.setMarker(marker);
+                            
+                    if(label != null && label.length() != 0)
+                        s.setName(label);
+                    else
+                        s.setName(wi.in_y[0]);
+                }
+                
+		        w.Update(wi.signals);
+		        
+            }
+        }
+        catch(Exception e)
+        {
+            if(e instanceof  AccessControlException)
+            {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString()+"\n url "+url +
+		                                        "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n", 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+            } else {
+		        JOptionPane.showMessageDialog(this, 
+		                                        e.toString(), 
+		                                        "alert", 
+		                                        JOptionPane.ERROR_MESSAGE);
+            }
+        }            
+    }
+	
 	
 	/**
 	 * Set Window dialog title.
@@ -527,6 +687,18 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         if(c != null)
         {
             w = (MultiWaveform)c;
+            
+            if(w.getWaveInterface() != null)
+            {
+		        JOptionPane.showMessageDialog(this, 
+		                                    "The selected waveform panel is  connected to " + 
+		                                    w.getWaveInterface().getDataProvider().getClass().getName() +
+		                                    " data provider.\nDefine a new waveform panel to show raw signals",
+		                                    "alert", 
+		                                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             if(automatic_color)
                 s.setColorIdx(w.GetShowSignalCount());
             w.addSignal(s);
@@ -538,63 +710,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         }
         if(isApplet) showStatus("Add "+s.getName()+" col "+col+" row "+row);
         w.Update();
-    }
-
-    /*
-    public void print()
-    {
-	 PrintJob pg = getToolkit().getPrintJob(f, "Print Scope", System.getProperties());
-	 if(pg != null)
-	    {
-	        Graphics g = pg.getGraphics();
-	        Dimension dim = pg.getPageDimension();
-	        int st_x = 0, st_y = 0;
-	        
-	        //Fix page dimension and margin error on Window System
-	        if(!System.getProperty("os.name").equals("Mac OS"))
-	        {
-		    st_x = 10;
-		    dim.width -= 2*st_x;
-		    st_x = 15;
-                
-		    st_y = 10;
-		    dim.height -= 2*st_y;
-	        }
-		System.out.println(" "+dim);
-//	        wave_container.PrintAll(g, st_x, st_y, dim.height, dim.width); 
-	        g.dispose();
-	        pg.end();
-	    }	    
-     }
-  */
-  
-    public void print(Graphics g)
-    {
-        
-        Dimension dim = getSize();
-        
-        System.out.println(g);
-        PrintGraphics pg = (PrintGraphics)g;
-        PrintJob pj = pg.getPrintJob();
-        System.out.println(pj); 
-        System.out.println("Size "+pj.getPageDimension()+ " resolution " + pj.getPageResolution());
-        
-        /*
-        Dimension dim = new Dimension();       
-        Dimension applet_size = getSize();
-        if(print_scaling != 100)
-        {
-	        System.out.println("Proporzionale " + this.getBounds());
-	        float ratio = (float)applet_size.width/applet_size.height;
-	        dim.width = (int)(applet_size.width/100.* print_scaling);
-	        dim.height = (int)(ratio * dim.width);
-        } else {
-	        dim.width = 530;
-	        dim.height = 816;
-        }
-        */
-	    wave_container.PrintAll(g, 0, 0, dim.height-1, dim.width-1); 
-    }
-    
+    }    
 }
 

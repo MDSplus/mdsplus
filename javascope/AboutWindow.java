@@ -13,7 +13,7 @@ public class AboutWindow extends JLabel  {
   {
     try
     {
-        String icon_file = jScope_1.findFileInClassPath("about_jscope.jpg");
+        String icon_file = jScope.findFileInClassPath("about_jscope.jpg");
         if(icon_file != null)
             io = new ImageIcon(icon_file);
         else

@@ -11,10 +11,10 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 {
 	protected Waveform   wave = null;
 	protected SetupWaveformParams setup_params;
-	protected JSeparator sep2;
+	protected JSeparator sep1, sep2;
 	protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
-		      resetScales, resetAllScales, playFrame,
+		      resetScales, resetAllScales, playFrame, remove_panel,
 		      set_point, undo_zoom, maximize; 
 	protected JMenu markerList, colorList, markerStep, signal_2d;
 	protected JCheckBoxMenuItem interpolate_f;
@@ -43,6 +43,35 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
         this.setup_params = setup_params;
+
+	    remove_panel = new JMenuItem("Remove panel");
+	    remove_panel.setEnabled(false);
+	    remove_panel.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                Object[] options = {"Yes",
+                                        "No"};
+                    int opt = JOptionPane.showOptionDialog(null,
+                            "Are you sure you want to remove this wave panel?",
+                            "Warning",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[1]);
+	                switch(opt)
+	                {
+		                case JOptionPane.YES_OPTION :
+		                    ((WaveformManager)parent).removePanel(wave);;
+		                break;
+	                }
+	                
+	            }
+	        }
+	    );
+        
+        
         
  	    maximize = new JMenuItem("Maximize Panel");
  	    maximize.setEnabled(false);
@@ -74,7 +103,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    );
 
 	    
-	    add(markerList = new JMenu("Markers"));	
+	    markerList = new JMenu("Markers");	
 	    JRadioButtonMenuItem ob;
         markerList_bg = new ButtonGroup();	 
 	 
@@ -88,7 +117,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    markerList.setEnabled(false);
 	    
         markerStep_bg = new ButtonGroup();	 
-	    add(markerStep = new JMenu("Marker step"));
+	    markerStep = new JMenu("Marker step");
         for(int i = 0; i < Signal.markerStepList.length; i++)
         {
             markerStep_bg.add(ob = new JRadioButtonMenuItem(""+Signal.markerStepList[i]));
@@ -98,10 +127,10 @@ public class WavePopup extends JPopupMenu implements  ItemListener
         }
 	    markerStep.setEnabled(false);
 	    
-	    add(colorList = new JMenu("Colors"));
+	    colorList = new JMenu("Colors");
 	    colorList.setEnabled(false);
 	    
-        add(interpolate_f = new JCheckBoxMenuItem("Interpolate", false));
+        interpolate_f = new JCheckBoxMenuItem("Interpolate", false);
 	    interpolate_f.setEnabled(false);
         interpolate_f.addItemListener(this);
         
@@ -139,9 +168,10 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    });
 
-    
-	    add(sep2 = new JSeparator());
-	    add(autoscale = new JMenuItem("Autoscale"));
+        sep1 = new JSeparator();    
+	    sep2 = new JSeparator();
+	    
+	    autoscale = new JMenuItem("Autoscale");
 	    autoscale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -151,7 +181,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(autoscaleY = new JMenuItem("Autoscale Y"));
+	    autoscaleY = new JMenuItem("Autoscale Y");
 	    autoscaleY.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -161,7 +191,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(autoscaleAll = new JMenuItem("Autoscale all"));
+	    autoscaleAll = new JMenuItem("Autoscale all");
         autoscaleAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, ActionEvent.CTRL_MASK));
 	    autoscaleAll.addActionListener(new ActionListener()
 	        {
@@ -176,7 +206,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    );
 	    
 	    
-	    add(autoscaleAllY = new JMenuItem("Autoscale all Y"));
+	    autoscaleAllY = new JMenuItem("Autoscale all Y");
         autoscaleAllY.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
 	    autoscaleAllY.addActionListener(new ActionListener()
 	        {
@@ -187,7 +217,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(allSameScale = new JMenuItem("All same scale"));
+	    allSameScale = new JMenuItem("All same scale");
 	    allSameScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -197,7 +227,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(allSameXScale = new JMenuItem("All same X scale"));
+	    allSameXScale = new JMenuItem("All same X scale");
 	    allSameXScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -207,7 +237,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(allSameXScaleAutoY = new JMenuItem("All same X scale (auto Y)"));
+	    allSameXScaleAutoY = new JMenuItem("All same X scale (auto Y)");
 	    allSameXScaleAutoY.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -217,7 +247,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(allSameYScale = new JMenuItem("All same Y scale"));
+	    allSameYScale = new JMenuItem("All same Y scale");
 	    allSameYScale.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -227,7 +257,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(resetScales = new JMenuItem("Reset scales"));
+	    resetScales = new JMenuItem("Reset scales");
 	    resetScales.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -237,7 +267,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 	    
-	    add(resetAllScales = new JMenuItem("Reset all scales"));
+	    resetAllScales = new JMenuItem("Reset all scales");
 	    resetAllScales.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -247,7 +277,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    );
 
-	    add(undo_zoom = new JMenuItem("Undo Zoom"));
+	    undo_zoom = new JMenuItem("Undo Zoom");
 	    undo_zoom.addActionListener(new ActionListener()
 	        {
 	            public void actionPerformed(ActionEvent e)
@@ -322,8 +352,13 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	   
 	   if(is_image)
 	   {
+           add(setup);
            colorList.setText("Colors");
-           add(maximize);
+	       if(parent instanceof WaveformManager)
+	       {
+              add(maximize);
+	          add(remove_panel);
+           }
            add(colorList);	
 	       add(playFrame);
 	       add(sep2);
@@ -332,17 +367,19 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	       {
 	            autoscaleAll.setText("Autoscale all images");
 	            add(autoscaleAll);
+	            maximize.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
 	       }
-           if(wave.mode == Waveform.MODE_POINT)// && wave.sendProfile())
-           {
-              insert(set_point, 0);
-           }     
+           set_point.setEnabled((wave.mode == Waveform.MODE_POINT));
        } else {
            add(setup);
+           setup.setEnabled((setup_params != null));
+           add(set_point);
+           set_point.setEnabled((wave.mode == Waveform.MODE_POINT));
+	       add(sep1);
            add(markerList);
+           add(markerStep);
            colorList.setText("Colors");
            add(colorList);	
-           add(markerStep);
            add(interpolate_f);
 	       add(sep2);           
 	       add(autoscale);
@@ -350,6 +387,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	       if(parent instanceof WaveformManager)           
 	       {
                 insert(maximize, 1);
+                insert(remove_panel, 2);
 	            autoscaleAll.setText("Autoscale all");
 	            add(autoscaleAll);
 	            add(autoscaleAllY);
@@ -379,11 +417,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
                     }
                 }
            }     
-           if(wave.mode == Waveform.MODE_POINT)
-           {
-              insert(set_point, 1);
-           }     
-       }
+        }
 	}
 
 	
@@ -492,6 +526,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
             SetImageMenu();
         else
             SetSignalMenu();
+        if(parent instanceof WaveformManager)
+            remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
     }
 
     protected void SetInterpolate(boolean state)

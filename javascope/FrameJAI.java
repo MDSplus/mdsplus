@@ -6,8 +6,11 @@ import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import javax.media.jai.*;
 import javax.media.jai.operator.TransposeDescriptor;
-
 import com.sun.media.jai.codec.ByteArraySeekableStream;
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.ImageDecoder;
+import com.sun.media.jai.codec.FileSeekableStream;
+
 
 
 class FrameJAI extends Frames
@@ -20,28 +23,69 @@ class FrameJAI extends Frames
     FrameJAI()
     {
        super();
-       renderHints =  new RenderingHints(RenderingHints.KEY_RENDERING, 
-                                         RenderingHints.VALUE_RENDER_SPEED);
-
     }
     
     public void AddJAIImage(byte[] buf, float t) throws IOException
     {
+        
+        PlanarImage image1 = null;
         ByteArraySeekableStream stream = new ByteArraySeekableStream(buf);
         
-    /* Create an operator to decode the image file. */
-        RenderedOp image1 = JAI.create("stream", stream);
+        // Create an operator to decode the image file.
+        // Use the JAI API unless JAI_IMAGE_READER_USE_CODECS is set
+        if (System.getProperty("JAI_IMAGE_READER_USE_CODECS") == null) {
+            image1 = JAI.create("stream", stream);
+        } else {
+            try {
+                // Use the ImageCodec APIs
+                //SeekableStream stream = new FileSeekableStream(filename);
+                String[] names = ImageCodec.getDecoderNames(stream);
+                ImageDecoder dec =
+                    ImageCodec.createImageDecoder(names[0], stream, null);
+                RenderedImage im = dec.decodeAsRenderedImage();
+                image1 = PlanarImage.wrapRenderedImage(im);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        // If the source image is colormapped, convert it to 3-band RGB.
+        if(image1.getColorModel() instanceof IndexColorModel) {
+            // Retrieve the IndexColorModel
+            IndexColorModel icm = (IndexColorModel)image1.getColorModel();
+
+            // Cache the number of elements in each band of the colormap.
+            int mapSize = icm.getMapSize();
+
+            // Allocate an array for the lookup table data.
+            byte[][] lutData = new byte[3][mapSize];
+
+            // Load the lookup table data from the IndexColorModel.
+            icm.getReds(lutData[0]);
+            icm.getGreens(lutData[1]);
+            icm.getBlues(lutData[2]);
+
+            // Create the lookup table object.
+            LookupTableJAI lut = new LookupTableJAI(lutData);
+
+            // Replace the original image with the 3-band RGB image.
+            image1 = JAI.create("lookup", image1, lut);
+        }
+
         if(getHorizontalFlip())
         {
-            RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_HORIZONTAL);
+            PlanarImage image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_HORIZONTAL);
             image1 = image2;
         }
         if(this.getVerticalFlip())
         {
-            RenderedOp image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_VERTICAL);
+            PlanarImage image2 = JAI.create("transpose", image1, TransposeDescriptor.FLIP_VERTICAL);
             image1 = image2;
-        }
+        }    
+    
         AddFrame(image1, t);
+     
     }
     
     protected Dimension GetFrameDim(int idx)
@@ -111,7 +155,7 @@ class FrameJAI extends Frames
     
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
-       int pixel_array[];// = new int[img_width * img_height]; 
+       int pixel_array[];
        RenderedImage r_img = (RenderedImage)frame.elementAt(idx);
        if(img_w == -1 && img_h == -1)
        {

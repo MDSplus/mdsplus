@@ -20,7 +20,7 @@ import javax.swing.event.*;
  
    private JLabel	    lab;
    private SError	    error_w;
-   private jScope_1	    main_scope;
+   private jScope	    main_scope;
    private ExpandExp    expand_expr;
    private SList	    signalList;
    private jScopeMultiWave    wave;	    
@@ -925,7 +925,7 @@ import javax.swing.event.*;
       super(fw, frame_title, false);
       setModal(true);
 
-      main_scope  = (jScope_1)fw;
+      main_scope  = (jScope)fw;
       error_w     = new SError(fw);
       expand_expr = new ExpandExp(fw, this);	    
 
@@ -1107,10 +1107,10 @@ import javax.swing.event.*;
       setLocationRelativeTo(w.getParent());
       this.signalList.signalSelect(wave.GetSelectedSignal());
       setTitle("Wave Setup for column " + col + " row " + row);
-      jScope_1.jScopeSetUI(this);
-      jScope_1.jScopeSetUI(error_w);
+      jScope.jScopeSetUI(this);
+      jScope.jScopeSetUI(error_w);
 	  error_w.pack();
-      jScope_1.jScopeSetUI(expand_expr);
+      jScope.jScopeSetUI(expand_expr);
 	  expand_expr.pack();
       pack();
       show(); 
@@ -1733,7 +1733,6 @@ import javax.swing.event.*;
 
    private  void applyWaveform()
    {
-        //if(checkSetup() == 0)
         checkSetup();
         {       
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -1745,8 +1744,6 @@ import javax.swing.event.*;
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	        }
         } 
-        //else
-	    //  wave.Erase();
    }
 	    	
     public void processWaveformEvent(WaveformEvent e) 

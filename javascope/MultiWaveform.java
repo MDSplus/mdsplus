@@ -37,7 +37,8 @@ public class MultiWaveform extends Waveform
     private   int     legend_mode = 0;
  
 	protected WaveInterface wi;
-    
+        
+    boolean continuosAutoscale = false;
     
     public MultiWaveform()
     {
@@ -230,89 +231,6 @@ public class MultiWaveform extends Waveform
 	     }
 	}
     
-    /*
-    public void Update(Signal signals[], 
-                       String signals_name[], 
-                       int markers[], 
-                       int markers_step[],
-                       boolean interpolates[],
-                       int colors_idx[])
-    {
-        int i;
-        int n_sig = signals.length;
-        
-        if(signals_name.length != n_sig || 
-           markers.length != n_sig || 
-           markers_step.length != n_sig ||
-           interpolates.length != n_sig ||
-           colors_idx.length != n_sig)
-           return; //must be define exception
-           
-      
-         this.signals      = signals; 
-         this.signals_name = signals_name; 
-         this.markers      = markers;
-         this.markers_step = markers_step;
-         this.interpolates = interpolates;
-         this.colors_idx   = colors_idx;
-         
-
-	     UpdateLimits();
-	     
-	     //for(i = 0; i < signals.length; i++)
-	     //   if(this.signals[i] != null) break;
-	     //if(i < signals.length)    
-	     
-	     if(waveform_signal != null)
-	        super.Update(waveform_signal);
-	     
-    }
-
-	
-    public void Update(Signal signals[], 
-                       int markers[], 
-                       int markers_step[], 
-                       boolean interpolates[])
-    {
-	    int i, n_sig;
-	    if(signals == null || signals.length == 0) return;
-
-        n_sig = signals.length;
-
-        if(markers.length != n_sig || 
-           markers_step.length != n_sig ||
-           interpolates.length != n_sig)
-           return; //must be define exception
-
-	    
-//	    this.signals = new Signal[signals.length];
-	    signals_name = new String[n_sig];
-	    colors_idx = new int[n_sig];
-
-	    for(i = 0; i < n_sig; i++)
-	        if(signals[i] != null) {
-//		        this.signals[i] = new Signal(signals[i]);
-		        signals_name[i] = new String("Signal "+(i+1));
-		        //colors_idx[i] = i%4;
-		    }  else 
-		        signals_name[i] = new String("Null signal "+(i+1));
-		    
-	    orig_signals = null;
-	    this.signals = signals; 
-	    this.markers = markers;
-	    this.markers_step = markers_step;
-	    this.interpolates = interpolates;
-	    curr_point_sig_idx = 0;
-	    UpdateLimits();
-	    
-	    //for(i = 0; i < signals.length; i++)
-	   //     if(this.signals[i] != null) break;
-	    //if(i < signals.length)    
-	    
-	    if(waveform_signal != null)
-	        super.Update(waveform_signal);
-    }
-*/    	
     public synchronized void UpdateSignals(Signal signals[], int timestamp, boolean force_update)
     {
         
@@ -338,15 +256,25 @@ public class MultiWaveform extends Waveform
 	    }
 	    
 	    if(force_update)
-	        UpdateLimits();
-	        
+	    {
+            SetEnabledDispatchEvents(false);	        
+            UpdateLimits();
+	    }
+	    
 	    if(waveform_signal != null)
 	    {
 	        if(curr_point_sig_idx > signals.length || curr_point_sig_idx == -1)
 	            curr_point_sig_idx = 0;
 	        
-	        super.UpdateSignal(waveform_signal);
-	    }
+	        if(force_update && continuosAutoscale)
+ 	            super.Update(waveform_signal); 
+	        else
+ 	            super.UpdateSignal(waveform_signal); 
+       }
+       
+       if(force_update)
+           SetEnabledDispatchEvents(true);	        
+
     }
     
     public Vector GetSignals()
@@ -356,23 +284,26 @@ public class MultiWaveform extends Waveform
 
     public String[] GetSignalsName()
     {
-        String names[] = new String[signals.size()];
-	    String n;
-	    Signal s;
-        for(int i = 0; i < signals.size(); i++)
-	    {
-	        s = (Signal)signals.elementAt(i);
-	        n = s.getName();
-	        if(n != null)
-		        names[i] = n;
-	        else 
+        try
+        {
+            String names[] = new String[signals.size()];
+	        String n;
+	        Signal s;
+            for(int i = 0; i < signals.size(); i++)
 	        {
-		        names[i] = new String("Signal_"+i);
-		        s.setName(names[i]);
-	        }
+	            s = (Signal)signals.elementAt(i);
+	            n = s.getName();
+	            if(n != null)
+		            names[i] = n;
+	            else 
+	            {
+		            names[i] = new String("Signal_"+i);
+		            s.setName(names[i]);
+	            }
 
-        }
-	    return names;
+            }
+	        return names;       
+        } catch (Exception e) { return null;}
     }
     
     public String getSignalName(int idx)
@@ -1086,6 +1017,7 @@ public class MultiWaveform extends Waveform
 
     protected void ReportLimits(ZoomRegion r, boolean add_undo)    
     {
+        continuosAutoscale = false;
         if(!add_undo)
         {
 	        if(waveform_signal == null) return;
@@ -1116,6 +1048,7 @@ public class MultiWaveform extends Waveform
 	    if(waveform_signal == null) return;
 	    
 	    update_timestamp++;
+	    continuosAutoscale = true;
 
 	    if(signals == null)
 	        return;

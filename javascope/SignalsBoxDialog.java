@@ -9,14 +9,14 @@ import javax.swing.table.*;
 
 public class SignalsBoxDialog extends JDialog
 {  
-    jScope_1 scope;
+    jScope scope;
     JTable table;
     TableModel dataModel;
             
     SignalsBoxDialog(JFrame f, String title, boolean modal)
     {
         super(f, title, false);
-        scope = (jScope_1)f; 
+        scope = (jScope)f; 
         dataModel = new AbstractTableModel() 
         {
             public int getColumnCount() { return 2; }

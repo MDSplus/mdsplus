@@ -31,7 +31,7 @@ public class MultiWavePopup extends WavePopup
     {
         super(setup_params);
         
-	    insert(legend = new JMenuItem("Position legend"), 2);
+	    legend = new JMenuItem("Position legend");
 	    legend.addActionListener(new ActionListener()
 	        {
                 public void actionPerformed(ActionEvent e)
@@ -73,17 +73,21 @@ public class MultiWavePopup extends WavePopup
 	
 	protected void SetMenuItem(boolean is_image)
 	{
+	    int start = 0;
 	    super.SetMenuItem(is_image);
         if(!is_image)
         {
-	       insert(legend, 3);
+           if(parent instanceof WaveformManager)
+              start += 2;
+           
+	       insert(legend, start + 1);
 	       if(wave.isFixedLegend())
 	       {
-             insert(signalList, 4);
+             insert(signalList, start + 4);
              legend.setText("Show Legend");
            } else {
-             insert(remove_legend, 5);
-             insert(signalList, 6);
+             insert(remove_legend, start + 2);
+             insert(signalList, start + 5);
            }
         }
 	}
@@ -152,7 +156,8 @@ public class MultiWavePopup extends WavePopup
                 
                 int ccc = signalList.getItemCount();
                 if(signalList.getItemCount() != 0)
-                    signalList.removeAll();        
+                    signalList.removeAll(); 
+                ccc = signalList.getItemCount();  
                 signalList.setEnabled(s_name.length != 0);
 	            legend.setEnabled(s_name.length != 0);
                 
@@ -174,6 +179,7 @@ public class MultiWavePopup extends WavePopup
 	                    }
 	                });
                 }
+                ccc = signalList.getItemCount();
             }
            
            if(wave.isFixedLegend())
