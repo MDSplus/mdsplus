@@ -98,7 +98,7 @@ void _init()
 	CRATEdbFileIsMapped = FALSE;	// initial state [2002.01.03]
 
 	if( MSGLVL(0) ) {
-		pDIR = getenv("MDSPLUS");
+		pDIR = getenv("MDSPLUS_DIR");
 
 		while( !major_done ) {
 			sprintf(file, "%s/lib/%s.%d", pDIR, base, major);
