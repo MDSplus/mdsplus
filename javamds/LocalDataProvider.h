@@ -9,11 +9,11 @@ extern "C" {
 #endif
 /*
  * Class:     LocalDataProvider
- * Method:    SetEnvironment
- * Signature: (Ljava/lang/String;)V
+ * Method:    SetEnvironmentSpecific
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironment
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironmentSpecific
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     LocalDataProvider
@@ -78,6 +78,22 @@ JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray
  */
 JNIEXPORT jstring JNICALL Java_LocalDataProvider_ErrorString
   (JNIEnv *, jobject);
+
+/*
+ * Class:     LocalDataProvider
+ * Method:    registerEvent
+ * Signature: (Ljava/lang/String;I)I
+ */
+JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
+  (JNIEnv *, jobject, jstring, jint);
+
+/*
+ * Class:     LocalDataProvider
+ * Method:    unregisterEvent
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_LocalDataProvider_unregisterEvent
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

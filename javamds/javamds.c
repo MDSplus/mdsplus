@@ -365,10 +365,12 @@ JNIEXPORT jfloat JNICALL Java_LocalDataProvider_GetFloat(JNIEnv *env, jobject ob
     return ris;
 }
 
-JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironment(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironmentSpecific(JNIEnv *env, jobject obj, 
+																	 jstring in, jstring jdefNode)
 {
-	int status;
+	int status, nid;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
+	const char *defNode;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
 	error_message[0] = 0;
@@ -384,7 +386,95 @@ JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironment(JNIEnv *env, jobjec
 		MdsFree1Dx(&xd, NULL);
 		(*env)->ReleaseStringUTFChars(env, in, in_char);
     }
+	if(jdefNode)
+	{
+		defNode = (*env)->GetStringUTFChars(env, jdefNode, 0);
+		status = TreeFindNode(defNode, &nid);
+		if(status & 1)
+			TreeSetDefaultNid(nid);
+		(*env)->ReleaseStringUTFChars(env, jdefNode, defNode);
+	}
+
 }
+
+
+
+
+
+static JavaVM *jvm;
+static jobject localDataProviderInstance;
+
+static JNIEnv *getJNIEnv()
+{
+	JNIEnv *jEnv;
+	int retVal;
+
+   	retVal = (*jvm)->AttachCurrentThread(jvm, &jEnv, NULL);
+    if (retVal) 
+        printf("AttachCurrentThread error %d\n", retVal);
+    return jEnv;
+}
+
+static void releaseJNIEnv()
+{
+    (*jvm)->DetachCurrentThread(jvm);
+}
+
+
+static void handleEvent(void *nameIdx, int dim ,char *buf)
+{
+	jmethodID mid;
+	jvalue args[1];
+	JNIEnv *env;
+	jclass cls;
+
+	env = getJNIEnv();
+	cls = (*env)->GetObjectClass(env, localDataProviderInstance);
+	if(!cls) printf("Error getting class for LocalDataProvider\n");
+	mid = (*env)->GetMethodID(env, cls,  "fireEvent", "(I)V");
+	if(!mid) printf("Error getting method fireEvent for LoalDataProvider\n");
+	args[0].i = (int)nameIdx;
+	(*env)->CallVoidMethodA(env, localDataProviderInstance, mid, args);
+	releaseJNIEnv();
+}
+
+
+
+JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
+  (JNIEnv *env, jobject obj, jstring jevent , jint idx)
+
+{
+	int evId, status;
+	const char *event;
+
+	if(jvm == 0)
+	{
+		status = (*env)->GetJavaVM(env, &jvm);
+		if (status) 
+			printf("GetJavaVM error %d\n", status);
+	}
+	localDataProviderInstance = (*env)->NewGlobalRef(env, obj);
+ 	event = (*env)->GetStringUTFChars(env, jevent, 0);
+	status = MDSEventAst(event, handleEvent, (void *)idx, &evId);
+	if(!(status & 1))
+	{
+		printf("Error calling MDSEventAst");
+		evId = 0;
+	}
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
+	return evId;
+}
+	
+
+JNIEXPORT void JNICALL Java_LocalDataProvider_unregisterEvent
+  (JNIEnv *env, jobject obj, jint evId)
+{
+
+	MDSEventCan(evId);
+}
+
+
+
 /* CompositeWaveDisplay management routines for using 
 jScope panels outside java application */
 #ifdef HAVE_WINDOWS_H

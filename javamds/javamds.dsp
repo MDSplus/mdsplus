@@ -121,10 +121,6 @@ SOURCE=.\Database.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\LocalProvider.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\MdsHelper.h
 # End Source File
 # End Group
