@@ -322,6 +322,8 @@ static int CopyFile(char *src, char *dst, int dont_replace)
         if (buff)
           free(buff);
       }
+      else if (src_len == 0)
+          status = TreeSUCCESS;
       MDS_IO_LOCK(src_fd,0,src_len,0);
       MDS_IO_CLOSE(dst_fd);
     }
