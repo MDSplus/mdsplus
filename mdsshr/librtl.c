@@ -233,7 +233,8 @@ char *TranslateLogical(char *pathname)
 	{
 	  path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
           if (!path)
-            path = GetTdiLogical(char *pathname);
+           // path = GetTdiLogical(char *pathname);
+           path = GetTdiLogical(pathname);
 	}
 
 	return path;
