@@ -123,5 +123,6 @@ class InfoServer implements Server
         return data;
     }
     public boolean isActive() {return true; }
+    public boolean isReady() {return true; }
 }
 

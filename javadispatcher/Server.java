@@ -5,13 +5,13 @@ Abstracts Server functionality
 {
 
     public void pushAction(Action action);
-    /** Inserts a new action in the waiting queue 
+    /** Inserts a new action in the waiting queue
     */
     public Action popAction();
-    /** Removes the lastly inserted action form the waiting queue. 
+    /** Removes the lastly inserted action form the waiting queue.
     If no such action is found return null
     */
-    
+
     public Action[] collectActions();
     /** Collects action information to be used by the dispatcher
     */
@@ -40,11 +40,19 @@ Abstracts Server functionality
     /**
     aborts selected action
     */
-    
-    public boolean isActive();
+
+   public boolean isActive();
+   /**
+    * true if server actively participating to dispatching
+    */
+
+   public boolean isReady();
+   /**
+    * true if server can participate to the next shot
+    */
+
     public void setTree(String tree);
-  
-    
-}  
-    
-    
+
+
+}
+

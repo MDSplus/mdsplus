@@ -14,6 +14,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     String ip_address;
     String subtree;
     int shot;
+    boolean ready = false, //True if the server is ready to participate to the NEXT shot
+        active = false; //True if the server is ready to participate to the CURRENT shot
     javax.swing.Timer timer;
     static final int RECONNECT_TIME = 5;
 
@@ -32,11 +34,14 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             mds_server = new MdsServer(ip_address);
             mds_server.addMdsServerListener(this);
             mds_server.addConnectionListener(this);
+            ready = active = true;
         }
         catch(Exception exc)
         {
           System.out.println("Cannot connect to server " + ip_address + " server class " + server_class);
           mds_server = null;
+          ready = active = false;
+          startServerPoll();
         }
         timer = new javax.swing.Timer(0, new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -75,7 +80,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             timer.setRepeats(false);
     }
     public void setTree(String tree) {this.tree = tree; }
-    public boolean isActive() {return mds_server != null; }
+   // public boolean isActive() {return mds_server != null; }
+    public boolean isActive() {return ready && active; }
+    public boolean isReady() {if(ready) active = true; return ready;}
     public void processConnectionEvent(ConnectionEvent e)
     {
         if(e.getID() == ConnectionEvent.LOST_CONNECTION)
@@ -101,7 +108,12 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                 mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
                                 System.out.println("Restarting server");
                                 Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
-                            }catch(Exception exc) {mds_server = null; }
+                            }catch(Exception exc)
+                            {
+                              mds_server = null;
+                              ready = active = false;
+                              startServerPoll();
+                            }
                             if(doing_actions.size() > 0)
                             {
                                 Enumeration doing_list = doing_actions.elements();
@@ -126,6 +138,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             }
                             else
                             {
+                              ready = active = true;
                                 synchronized(enqueued_actions)
                                 {
                                     for(int i = 0; i < enqueued_actions.size(); i++)
@@ -349,6 +362,26 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             }
         }
         return true;
+    }
+
+    void startServerPoll()
+    {
+      (new Thread() {
+        public void run()
+        {
+          while(!ready)
+          {
+            try {
+              sleep(2000);
+              mds_server = new MdsServer(ip_address);
+              mds_server.addMdsServerListener(ActionServer.this);
+              mds_server.addConnectionListener(ActionServer.this);
+              System.out.println("Reconnected to to server " + ip_address + " server class " + server_class);
+              ready = true;
+            }
+            catch (Exception exc){}
+          }
+        }}).start();
     }
 }
 

@@ -10,13 +10,13 @@ Ensures action dispatching to servers, keeping load balancing.
     indexed by server class. Stores the vector of servers associated with the server class.
     */
     Server default_server = null;
-    
-    
+
+
     public synchronized void setDefaultServer(Server server)
     {
         default_server = server;
     }
-    
+
     public synchronized void addServer(Server server)
     {
         Vector server_vect = (Vector)servers.get(server.getServerClass());
@@ -28,7 +28,7 @@ Ensures action dispatching to servers, keeping load balancing.
         server_vect.addElement(server);
         server.addServerListener(this);
     }
-    public void enqueueAction(Action action) 
+    public void enqueueAction(Action action)
     {
         String server_class;
         try{
@@ -36,14 +36,26 @@ Ensures action dispatching to servers, keeping load balancing.
         }
         catch(Exception exc)
         {
-            if(default_server != null) 
+            if(default_server != null)
                 default_server.pushAction(action);
             return;
         }
-        Vector server_vect = (Vector)servers.get(server_class);
-        if(server_vect == null)
+
+        //GAB2004 Consider only Active servers
+        Vector all_server_vect = (Vector)servers.get(server_class);
+        Vector server_vect = new Vector();
+        if(all_server_vect != null)
         {
-            if(default_server != null) 
+          for (int i = 0; i < all_server_vect.size(); i++) {
+            Server currServer = (Server) all_server_vect.elementAt(i);
+            if (currServer.isReady())
+              server_vect.addElement(currServer);
+          }
+        }
+
+        if(server_vect.size() > 0)
+        {
+            if(default_server != null)
                 default_server.pushAction(action);
             return;
         }
@@ -73,7 +85,7 @@ Ensures action dispatching to servers, keeping load balancing.
         //all servers inactive (no mdsip connection): send action to either server, it will be aborted
             ((ActionServer)server_vect.elementAt(0)).pushAction(action);
     }
-            
+
     public void actionStarting(ServerEvent event){}
     public void actionAborted(ServerEvent event){}
     public synchronized void actionFinished(ServerEvent event)
@@ -103,11 +115,11 @@ Ensures action dispatching to servers, keeping load balancing.
                 }
             }
             Action action = max_loaded.popAction();
-            if(action != null) 
+            if(action != null)
                 min_loaded.pushAction(action);
         }
     }
-    
+
     protected boolean isBalanced(Vector server_vect)
     {
         if(server_vect.size() <= 1) return true; //No load balancing if one server in the server class
@@ -123,7 +135,7 @@ Ensures action dispatching to servers, keeping load balancing.
         }
         return !(min_load == 0 && max_load > 1);
     }
-     
+
     public void abort()
     {
         Enumeration server_vects = servers.elements();
@@ -138,7 +150,7 @@ Ensures action dispatching to servers, keeping load balancing.
             }
         }
     }
-   
+
    public void abortAction(Action action)
    {
         Enumeration server_vects = servers.elements();
@@ -154,5 +166,5 @@ Ensures action dispatching to servers, keeping load balancing.
             }
         }
     }
-    
+
 }
