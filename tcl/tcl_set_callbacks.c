@@ -11,6 +11,7 @@ extern int pthread_cond_timedwait();
 #define ETIMEDOUT 42
 #else
 #include <sys/time.h>
+#include <pthread.h>
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
