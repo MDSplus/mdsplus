@@ -82,7 +82,7 @@ static int NOCToCode(int chans, int noc, int *noc_code);
 
 static int one = 1;
 static int zero = 0;
-static int three = 3;
+static int four = 4;
 
 #define pio(f,a) {\
   return_on_error(DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,0),status);}
@@ -226,7 +226,9 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 	  static int channels[4][4] = {{1,2,4,8},{1,2,4,8},{2,4,8,16},{4,8,16,32}};\
           int chan_index;\
 	  int base = chans>>2;\
-          libffs(&zero,&three,&base,&chan_index);\
+          printf("chans = %d, base = %d\n",chans,base); \
+          libffs(&zero,&four,&base,&chan_index);\
+          printf("chan_indx = %d, noc = %d\n",chan_index,noc); \
 	  *chans_ptr = channels[chan_index][noc];\
 	}
 #define ClockToDt(chans,period,freq_ptr)\
