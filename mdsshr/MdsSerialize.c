@@ -720,7 +720,7 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
           out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
-            int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
+            int a0 = offset(inp->a0);
             LoadInt(a0,out_ptr);
             out_ptr += 4;
             for (j=0;j<inp->dimct;j++)
