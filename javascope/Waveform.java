@@ -98,6 +98,7 @@ public class Waveform
 
   protected double wave_point_x = 0, wave_point_y = 0;
   protected double curr_point;
+  protected double curr_point_y;
 
 // Variables for image capability
   protected int frame = 0;
@@ -1322,7 +1323,7 @@ public class Waveform
         first_set_point = false;
 
         curr_x = curr_point = wave_point_x;
-        curr_y = wave_point_y;
+        curr_y = curr_point_y = wave_point_y;
 
         //System.out.println("Curr point "+curr_point+" on "+getName());
 
@@ -1426,6 +1427,7 @@ public class Waveform
     }
   }
 
+
   private void SignalActions(Graphics g, Dimension d) {
     double curr_x, curr_y;
     int plot_y, plot_x;
@@ -1436,8 +1438,13 @@ public class Waveform
       curr_x = curr_point;
       curr_y = wm.YValue(end_y, d);
 
+
       Point p = FindPoint(curr_x, curr_y, first_set_point);
       first_set_point = false;
+
+      if(curr_point_y != Double.NaN)
+          p.y = wm.YPixel(curr_point_y, d);
+
 
       if (p != null) {
         curr_x = wave_point_x;
@@ -1976,7 +1983,12 @@ public class Waveform
     }
   }
 
-  public void UpdatePoint(double curr_x) {
+  public void UpdatePoint(double curr_x)
+  {
+      UpdatePoint(curr_x, Double.NaN);
+  }
+
+  public void UpdatePoint(double curr_x, double curr_y) {
     double xrange;
     Dimension d = getWaveSize();
     Insets i = getInsets();
@@ -1985,6 +1997,7 @@ public class Waveform
       return;
     }
     curr_point = curr_x;
+    curr_point_y = curr_y;
 
     //System.out.println("Update Curr point "+curr_point+" on "+getName());
 
