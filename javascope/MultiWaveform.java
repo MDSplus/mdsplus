@@ -33,6 +33,8 @@ public class MultiWaveform extends Waveform
     {
 	    signals.removeAllElements(); 
 	    orig_signals = null;
+	    make_legend = false;
+	    legend_point = null;
 	    super.Erase();
     }
     
@@ -114,11 +116,12 @@ public class MultiWaveform extends Waveform
         return make_legend;
     }
 
+
     public void RemoveLegend()
     {
-        not_drawn = true;
         make_legend = false;
-        repaint();
+        //not_drawn = true;
+        Repaint(true);
     }
 
     public double GetLegendXPosition(){return legend_x;}
@@ -131,8 +134,8 @@ public class MultiWaveform extends Waveform
         legend_y = wm.YValue(p.y, d);
         legend_point = new Point(p);
         make_legend = true;
-        not_drawn = true;
-        repaint();
+        //not_drawn = true;
+        Repaint(true);
     }
 
     protected void PaintSignal(Graphics g, Dimension d, boolean print_flag)
@@ -433,19 +436,19 @@ public class MultiWaveform extends Waveform
                 {
                     sig.setInterpolate(state);
                     sig.setMarker(Signal.NONE);
-                    if(mode == Waveform.MODE_POINT && curr_point_sig_idx == i)
-                    {
-                        Dimension d = getSize();
-                        double  curr_x = wm.XValue(end_x, d),
-	                            curr_y = wm.YValue(end_y, d); 
-                        FindPointY(curr_x, curr_y, true);
-                    }
-                    return;
                 }
+            }
+            if(mode == Waveform.MODE_POINT )
+            {
+               Dimension d = getSize();
+               double curr_x = wm.XValue(end_x, d),
+	                  curr_y = wm.YValue(end_y, d); 
+               FindPointY(curr_x, curr_y, true);
             }
         }
     }
-
+    
+  
     public boolean[] GetSignalsState()
     {
         boolean s_state[] = null;
@@ -660,7 +663,6 @@ public class MultiWaveform extends Waveform
 	    }
 	    for(curr_point_sig_idx = i = 0; i < signals.size(); i++)
 	    {
-	        //if(signals[i] == null) continue;
 	        curr_signal = (Signal)signals.elementAt(i);
 	        if(curr_signal  == null || !GetSignalState(i)) continue;
 	        curr_idx =  curr_signal.FindClosestIdx(curr_x, curr_y);	

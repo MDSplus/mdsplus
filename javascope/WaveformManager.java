@@ -10,13 +10,21 @@ import java.awt.Point;
 public interface  WaveformManager   {    
 
     /**
-     * Autoscale operation on all waveform
+     * Autoscale operation on all waveforms
      * 
      * @see Waveform
      * @see MultiWaveform
      */
     public void     AutoscaleAll();
 
+    /**
+     * Autoscale operation on all images
+     * 
+     * @see Waveform
+     * @see MultiWaveform
+     */
+    public void     AutoscaleAllImages();
+ 
     /**
      * Autoscale y axis on all waveform
      * 

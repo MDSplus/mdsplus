@@ -103,7 +103,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
      }
   }
 
-   
+/*   
 	    
   class PubVarDialog extends ScopePositionDialog {
 
@@ -237,12 +237,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        Object ob = e.getSource();	
     
 	        if(ob == apply) { 
-	            getPublicVar();
-	            dw.db.SetEnvironment(getPublicVar());
-	            if(dw.db.ErrorString() != null) {
-	                dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
-	                dw.error_msg.showMessage();
-	            } else
+	            //getPublicVar();
+	            //dw.db.SetEnvironment(getPublicVar());
+	            //if(dw.db.ErrorString() != null) {
+	            //    dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
+	           //     dw.error_msg.showMessage();
+	          //  } else
+	                dw.setPublicVariables(getPublicVar());
 	                dw.UpdateAllWaves();	    
 	        }
 	        
@@ -291,6 +292,226 @@ public class jScope extends Frame implements ActionListener, ItemListener,
      }
   }
   
+*/
+
+  class PubVarDialog extends ScopePositionDialog {
+
+       private Vector name_list = new Vector();
+       private Vector expr_list = new Vector();
+       private Button apply, cancel, save, reset;
+       jScope dw;
+       boolean is_pv_apply = false;
+    
+       PubVarDialog(Frame fw) {
+       
+	  super(fw, "Public Variables", false); 	
+	  //super.setFont(new Font("Helvetica", Font.PLAIN, 12));
+	  dw = (jScope)fw; 
+	  setResizable(false);   	    
+		    
+	  GridBagConstraints c = new GridBagConstraints();
+	  GridBagLayout gridbag = new GridBagLayout();
+	  setLayout(gridbag);        
+    
+	  c.insets = new Insets(2, 2, 2, 2);
+	  c.fill = GridBagConstraints.NONE;
+    
+	  c.anchor = GridBagConstraints.CENTER;
+	  c.gridwidth = 1;
+	  Label lab = new Label("Name");
+	  gridbag.setConstraints(lab, c);
+	  add(lab);
+	  
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  lab = new Label("Expression");
+   	  gridbag.setConstraints(lab, c);
+	  add(lab);
+
+	  TextField txt;
+	  c.anchor = GridBagConstraints.WEST;
+	  c.fill = GridBagConstraints.BOTH;
+	  for(int i = 0; i < MAX_VARIABLE; i++)
+	  {
+	      c.gridwidth = 1;
+	      txt = new TextField(10);
+	      gridbag.setConstraints(txt, c);
+	      add(txt);
+	      
+	      c.gridwidth = GridBagConstraints.REMAINDER;
+	      txt = new TextField(30);
+	      gridbag.setConstraints(txt, c);
+	      add(txt);
+	  }
+
+      Panel p = new Panel();
+	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
+	    
+	  apply = new Button("Apply");
+	  apply.addActionListener(this);	
+	  p.add(apply);
+
+	  save = new Button("Save");
+	  save.addActionListener(this);	
+	  p.add(save);
+    
+	  reset = new Button("Reset");
+	  reset.addActionListener(this);	
+	  p.add(reset);
+    
+	  cancel = new Button("Cancel");
+	  cancel.addActionListener(this);	
+	  p.add(cancel);
+
+			    
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  gridbag.setConstraints(p, c);
+	  add(p);
+	     
+      } 
+       
+      public String getCurrentPublicVar()
+      {
+	    String txt1, txt2, str;
+	    StringBuffer buf = new StringBuffer();
+      
+	    for (int i = 2; i < MAX_VARIABLE * 2; i+=2)
+	    {
+		    txt1 = ((TextField) getComponent(i)).getText();
+		    txt2 = ((TextField) getComponent(i+1)).getText();
+		    if(txt1.length() != 0 && txt2.length() != 0) {
+		        if(txt1.indexOf("_") != 0)
+			        str = "public _"+txt1+" = "+txt2+";";
+		        else
+			        str = "public "+txt1+" = "+txt2+";";
+		        buf.append(str);
+		    }		
+	    }
+	    return (new String(buf));
+       }
+       
+
+      public String getPublicVar()
+      {
+        
+        if(is_pv_apply) return getCurrentPublicVar();
+        
+	    String txt1, txt2, str;
+	    StringBuffer buf = new StringBuffer();
+      
+	    for (int i = 0; i < name_list.size(); i++)
+	    {
+            txt1 = (String)name_list.elementAt(i);
+		    txt2 = (String)expr_list.elementAt(i);
+		    if(txt1.length() != 0 && txt2.length() != 0) {
+		        if(txt1.indexOf("_") != 0)
+			        str = "public _"+txt1+" = "+txt2+";";
+		        else
+			        str = "public "+txt1+" = "+txt2+";";
+		        buf.append(str);
+		    }		
+	    }
+	    return (new String(buf));
+       }
+
+       
+       
+       
+       private void SavePubVar()
+       {
+	        String txt1, txt2, str;
+            name_list.removeAllElements();
+            expr_list.removeAllElements();
+	        for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i+=2, j++)
+	        {
+		        txt1 = ((TextField) getComponent(i)).getText();
+		        txt2 = ((TextField) getComponent(i+1)).getText();
+		        if(txt1.length() != 0 && txt2.length() != 0) {
+		            name_list.insertElementAt(new String(txt1), j);
+		            expr_list.insertElementAt(new String(txt2), j);
+		        }		
+	        }
+        }
+       
+       private void SetPubVar()
+       {      
+	        for (int i = 2, j = 0; j < name_list.size(); i+=2, j++)
+	        {
+		        ((TextField)getComponent(i)).setText((String)name_list.elementAt(j));
+		        ((TextField)getComponent(i+1)).setText((String)expr_list.elementAt(j));
+	        }
+       }
+       	         
+       public void Show()
+       {
+           is_pv_apply = true;
+	       pack();
+	       setPosition(dw);
+	       SetPubVar();   
+	       show();
+       }
+       
+       public void actionPerformed(ActionEvent e)
+       {
+	        Object ob = e.getSource();	
+    
+	        if(ob == apply) {
+	            //getPublicVar();
+	            //dw.db.SetEnvironment(getCurrentPublicVar());
+	            //if(dw.db.ErrorString() != null) {
+	            //    dw.error_msg.setMessage(dw.db.ErrorString()+"\n");
+	            //    dw.error_msg.showMessage();
+	           // } else
+	             dw.setPublicVariables(getPublicVar());
+	             dw.UpdateAllWaves();	    
+	        }
+	        
+	        if(ob == save) {
+	            SavePubVar();
+	        }
+	        
+	        if(ob == reset) {
+	            SetPubVar();
+            }
+            
+	        if(ob == cancel) {
+	            is_pv_apply = false;
+	            setVisible(false);	   
+            }
+       }
+       
+       public void toFile(PrintWriter out, String prompt)
+       {
+	        for(int i = 0; i < name_list.size() ; i++)
+            {
+	            out.println(prompt + i + ": " + name_list.elementAt(i) 
+	                                            + " = " + expr_list.elementAt(i));		
+            }
+	        out.println("");
+        }
+       
+              
+    public String fromFile(ReaderConfig in, String prompt) throws IOException
+    {
+    	String str;
+	    String error = null;
+
+        in.reset();
+	    while((str = in.readLine()) != null) {
+	        if(str.indexOf(prompt) != -1)
+	        {
+		        int len;
+		        int i = new Integer(str.substring("Scope.public_variable_".length(), len = str.indexOf(":"))).intValue();
+		        String name = new String(str.substring(len  + 2, len = str.indexOf("=")));
+		        String expr = new String(str.substring(len + 2, str.length()));
+		        name_list.insertElementAt(name.trim(), i);
+		        expr_list.insertElementAt(expr.trim(), i);
+		        
+		        continue;
+	        }
+	    }
+	    return error;
+     }
+  }
 
   static boolean IsNewJVMVersion()
   {
@@ -828,11 +1049,16 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	}
 	return res;	        
   }
-   
+  
+  public void setPublicVariables(String public_variables)
+  {
+     def_values.public_variables = public_variables;
+  }
     
   public void UpdateAllWaves()
   {
       apply_b.setLabel("Abort");
+      setPublicVariables(pub_var_diag.getPublicVar());
       wave_panel.StartUpdate(shot_t.getText());
   }
   
@@ -848,7 +1074,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         
         font_dialog.toFile(out, "Scope.font");
         
-        pub_var_diag.ToFile(out, "Scope.public_variable_");
+        pub_var_diag.toFile(out, "Scope.public_variable_");
         
         color_dialog.toFile(out, "Scope.color_");
         
@@ -1076,6 +1302,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        
 	        switch(we_id)
 	        {
+	            case WaveformEvent.EVENT_UPDATE:
+	                wave_panel.Refresh(w, we.status_info);
+	            break;
     	        case WaveformEvent.MEASURE_UPDATE:
 	                double dx_f;
 	         
@@ -1122,9 +1351,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   }
 
   public void processNetworkEvent(NetworkEvent e)
-  {
-     System.out.println("Evento su jScope "+e.name);
-     
+  {     
      String print_event = wave_panel.GetPrintEvent();
      String event = wave_panel.GetEvent();
      
@@ -1157,7 +1384,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     if(ob == signal_expr)
     {
-        String error = wave_panel.AddSignal(signal_expr.getText());
+        String error = null, sig = signal_expr.getText(); 
+        
+        if(sig != null && sig.trim().length() != 0)
+            error = wave_panel.AddSignal(sig);
         if(error != null)
         {
             error_msg.ShowErrorMessage(this, error);
@@ -1219,6 +1449,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    if(win_diag.changed)
 	    {
 	        wave_panel.ResetDrawPanel(win_diag.out_row);
+	        wave_panel.update();
 	        UpdateColors();
 	        UpdateFont();
 	    }
@@ -1513,6 +1744,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
 	    while((str = in.readLine()) != null) 
 	    {
+	        if(str.indexOf("Scope.") == -1)
+	        {
+	            error = "Invalid jScope configuration file\n";
+	        }
 	    
 	        if(str.indexOf("Scope.geometry:") == 0) 
 	        {
@@ -1544,7 +1779,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         if(error == null)        
             error = color_dialog.fromFile(in, "Scope.color_");
 	    if(error == null)        
-            error = pub_var_diag.FromFile(in, "Scope.public_variable_");
+            error = pub_var_diag.fromFile(in, "Scope.public_variable_");
 	    if(error == null)
 	        error = wave_panel.FromFile(in , "Scope.");
     } catch(Exception e) {
@@ -1566,9 +1801,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     Reset();
     if(line != null)
-	   error_msg.setMessage("File configuration sintax error\n Line : "+line+"\n");
+	   error_msg.setMessage("File configuration syntax error\n Line : "+line+"\n");
     else
-	   error_msg.setMessage("File configuration sintax error\n");        
+	   error_msg.setMessage("File configuration syntax error\n");        
     error_msg.showMessage();
   }
   
@@ -1591,7 +1826,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     String curr_dsa = wave_panel.GetServerName();
     String error = null;
     
-    wave_panel.RemoveAllEvents(this);    
+    wave_panel.RemoveAllEvents(this);
+    wave_panel.EraseAllWave();
     if((error = LoadFromFile(in)) == null)
     { 
 //	    if(applet_type != PURE_APPLET)

@@ -8,6 +8,7 @@ public class WaveformEvent extends AWTEvent {
     static final int STATUS_INFO      = AWTEvent.RESERVED_ID_MAX + 3;
     static final int BROADCAST_SCALE  = AWTEvent.RESERVED_ID_MAX + 4;
     static final int COPY_PASTE       = AWTEvent.RESERVED_ID_MAX + 5;
+    static final int EVENT_UPDATE     = AWTEvent.RESERVED_ID_MAX + 8;
     
     int    signal_idx;
     double point_x;
@@ -16,6 +17,12 @@ public class WaveformEvent extends AWTEvent {
     double delta_y;
     String signal_name;
     String status_info;
+
+    public WaveformEvent (Object source, int event_id, String status_info) 
+    {
+        super(source, event_id);
+        this.status_info = status_info;
+    }
 
     public WaveformEvent (Object source, int event_id) 
     {

@@ -20,10 +20,10 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     
     public void processNetworkEvent(NetworkEvent e)
     {
-         //System.out.println("Evento su waveform "+e.name);
-         WaveformEvent we = new WaveformEvent(this, "Update on event " + e.name);
+         System.out.println("Evento su waveform "+e.name);
+         WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
          dispatchWaveformEvent(we);
-         Update(wi);
+//         Refresh();
     }
 
     public String Refresh()
@@ -79,7 +79,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	    if(wi.modified)
 	    {
 	        wi.StartEvaluate();
-	        if(wi.error == null)
+//	        if(wi.error == null)
 		        wi.EvaluateOthers();
 	    }
 
@@ -138,12 +138,15 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 		            wi.signals[i].setInterpolate(wi.interpolates[i]);
 		            wi.signals[i].setColorIdx(wi.colors_idx[i]);
 		            //Update(wi.signals, wi.num_waves, wi.markers, wi.markers_step, wi.interpolates);
-                    Update(wi.signals);//, wi.in_label,  wi.markers, wi.markers_step, 
+                    //Update(wi.signals);//, wi.in_label,  wi.markers, wi.markers_step, 
                                        //wi.interpolates, wi.colors_idx);
 		        }
             if(!all_null)
+            {
+                Update(wi.signals);	    
                 return;
-	    }
+            }
+        }
 	    
 	    if(wi.is_image && wi.frames != null)
 	    {
@@ -161,6 +164,40 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
         return wi.GetSignalsName();
     }
 
+    public boolean[] GetSignalsState()
+    {
+        return wi.GetSignalsState();
+    }
+
+    public void SetSignalState(String label, boolean state)
+    {
+        Signal sig;
+        wi.setSignalState(label, state);
+        super.SetSignalState(label, state);
+        /*
+        if(signals != null)
+        {
+            for(int i = 0; i < signals.size(); i++)
+            {
+                sig = (Signal)signals.elementAt(i);
+                if(sig == null) continue;
+                if(sig.getName().equals(label))
+                {
+                    sig.setInterpolate(state);
+                    sig.setMarker(Signal.NONE);
+                    if(mode == Waveform.MODE_POINT && curr_point_sig_idx == i)
+                    {
+                        Dimension d = getSize();
+                        double  curr_x = wm.XValue(end_x, d),
+	                            curr_y = wm.YValue(end_y, d); 
+                        FindPointY(curr_x, curr_y, true);
+                        return;
+                    }
+                }
+            }
+        }
+        */
+    }
 
     
     protected void DrawLegend(Graphics g, Point p)

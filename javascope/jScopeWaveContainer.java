@@ -164,14 +164,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     
     public void Reset()
     {
-        for(int i = 0; i < rows.length; i++)
-            rows[i] = (i > 0 ? 0 : 1);
+        int reset_rows[] = {1, 0, 0, 0};
         ph = null;
         pw = null;
         SetTitle(null);
         event = null;
         print_event = null;
-        ResetDrawPanel(rows);
+        ResetDrawPanel(reset_rows);
+        update();
         jScopeMultiWave w = (jScopeMultiWave)GetWavePanel(0);
         w.jScopeErase();
         def_vals.Reset();
@@ -377,7 +377,16 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		}
     }    
 
-    
+    public void EraseAllWave()
+    {
+        jScopeMultiWave w;
+	    for(int i = 0; i < getComponentNumber(); i++)
+        {
+	        w = (jScopeMultiWave)getGridComponent(i);
+	        if(w != null)
+		       w.Erase();
+		}
+    }
     
     public synchronized void UpdateAllWave() throws Exception
     {
@@ -391,6 +400,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         try
         {
 	        abort = false;
+	    	
+	    	if(def_vals.public_variables != null)
+	    	    dp.SetEnvironment(def_vals.public_variables);
 	    	    
 	        for(int i = 0, k = 0; i < 4 && !abort; i++)
 	        {
@@ -531,9 +543,10 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     {        
 	    String str;
 	    String error = null;
+	    int read_rows[] = {0,0,0,0};
 
-	    for(int i=0; i < 4; i++)
-	        rows[i] = 0;
+//	    for(int i=0; i < 4; i++)
+//	        rows[i] = 0;
      
         in.reset();
 	    while((str = in.readLine()) != null) 
@@ -591,7 +604,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		            error = "Column number exceed max number of column "+ MAX_COLUMN;
 		            break;
 		        }
-		        rows[c] = r;
+		        read_rows[c] = r;
 		        continue;		
 	        }
 	    
@@ -697,12 +710,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             }	    	           
 	    }
 	    
-	    ResetDrawPanel(rows);
+	    ResetDrawPanel(read_rows);
 	    jScopeMultiWave w;
 	    
         for(int c = 0, k = 0; c < 4 ; c++)
 		{
-		    for(int r = 0; r < rows[c]; r++)
+		    for(int r = 0; r < read_rows[c]; r++)
 		    {
 		        w = (jScopeMultiWave)getGridComponent(k);
 			    w.wi.FromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1));
@@ -716,7 +729,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    //Evaluate real number of columns
 	    int r_columns =  0;
 	    for(int i = 0; i < 4; i++)
-	        if(rows[i] != 0)
+	        if(read_rows[i] != 0)
 		        r_columns = i + 1;
 
 	    if(pw == null)
@@ -999,7 +1012,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         
     }
 
-    
+   
     public void SaveAsText(jScopeMultiWave w)
     {
         if(w == null || w.wi == null || w.wi.signals.length == 0) return;
@@ -1079,5 +1092,104 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    }
 	    file_diag = null;
     }
-    
+
+ /*
+    public void SaveAsText(jScopeMultiWave w)
+    {
+        
+        
+        if(w == null || w.wi == null || w.wi.signals.length == 0) return;
+        
+        Frame f = GetParentFrame(this);
+        
+	    FileDialog file_diag = new FileDialog(f, "Save signals as", FileDialog.SAVE);
+        file_diag.pack();
+        file_diag.show();
+	    String txtsig_file = file_diag.getDirectory() + file_diag.getFile();
+	    if(txtsig_file != null)
+	    {
+            String s = "", s1="", s2="";
+            boolean more_point, new_line;
+            StringBuffer space = new StringBuffer();
+            
+            try {
+	            BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
+	            for(int l = 0 ; l < 3; l++)
+	            {
+	                for(int i = 0; i < w.wi.signals.length; i++)
+                    {
+                        switch(l)
+                        {
+                           case 0 : s = "Shot : " + w.wi.shots[i]; break;
+                           case 1 : s = "x : " + w.wi.in_x[i]; break;
+                           case 2 : s = "y : " + w.wi.in_y[i]; break;
+                        }
+                        out.write(s, 0, (s.length() < 34) ? s.length() : 34);
+                        space.setLength(0);
+                        for(int u = 0; u < 35 - s.length(); u++)
+                            space.append(' ');
+                        out.write(space.toString());
+                    }
+	                out.newLine();
+                }
+	            
+                more_point = true;
+                int j = 0;
+                double xmax = w.GetWaveformMetrics().XMax();
+                double xmin = w.GetWaveformMetrics().XMin();
+                int start_idx[] = new int[w.wi.signals.length];
+                
+	            for(int i = 0; i < w.wi.signals.length; i++)
+	                start_idx[i] = -1;
+	                
+                while(more_point)
+                {
+                    new_line = true;
+                    more_point = false;
+	                for(int i = 0; i < w.wi.signals.length; i++)
+                    {
+                        s1 = "";
+                        s2 = "";
+                        if(w.wi.signals[i] != null &&
+                           w.wi.signals[i].x != null &&
+                           j < w.wi.signals[i].x.length)
+                        {
+                            more_point = true;
+                            if(w.wi.signals[i].x[j] > xmin &&
+                                   w.wi.signals[i].x[j] < xmax)
+                            {   
+                                s1 = ""+w.wi.signals[i].x[j];
+                                s2 = ""+w.wi.signals[i].y[j];
+                            } else {
+                                new_line = false;
+                                break;
+                            }
+                            
+                        }
+                        out.write(s1);
+                        space.setLength(0);
+                        for(int u = 0; u < 15 - s1.length(); u++)
+                            space.append(' ');
+                        space.append(' ');
+                        out.write(space.toString());
+                        out.write(" ");
+                        out.write(s2);
+                        space.setLength(0);
+                        for(int u = 0; u < 18 - s2.length(); u++)
+                            space.append(' ');
+                        out.write(space.toString());                            
+                    }
+                    if(new_line)
+	                    out.newLine();
+                    j++;
+                }                
+	            out.close();
+
+	        } catch (IOException e) {
+	            System.out.println(e);
+	        }
+	    }
+	    file_diag = null;
+    }
+ */
 }

@@ -340,7 +340,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         
     
     /**
-     * Autoscale operation on all waveform
+     * Autoscale operation on all waveforms
      * 
      * @see Waveform
      * @see MultiWaveform
@@ -355,6 +355,25 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	            w.Autoscale();
 	    }
     }
+
+
+    /**
+     * Autoscale operation on all images
+     * 
+     * @see Waveform
+     * @see MultiWaveform
+     */
+    public void AutoscaleAllImages()
+    {     
+        Waveform w;
+	    for(int i = 0; i < getGridComponentCount(); i++) 
+	    {
+	        w = GetWavePanel(i);
+	        if(w != null && w.IsImage())
+	            w.Autoscale();
+	    }
+    }
+
 
     /**
      * Autoscale y axis on all waveform
@@ -621,7 +640,8 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         {
             int i;
             for(i = 0; i < getGridComponentCount() && GetWavePanel(i) != null &&
-                           GetWavePanel(i).GetSignalCount() != 0; i++);
+                           (GetWavePanel(i).GetSignalCount() != 0 ||
+                           GetWavePanel(i).IsImage()); i++);
             if(i == getGridComponentCount()) 
             {
                Component c[] = this.CreateWaveComponents(1);
@@ -642,7 +662,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    
 	    for(int i=0; i < _row.length; i++)
 	        n_wave += _row[i];
-         
+        
         
         int num = n_wave - getGridComponentCount();
         Component c[] = null;

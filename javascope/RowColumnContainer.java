@@ -511,7 +511,7 @@ public class RowColumnContainer extends Container
         if(rows == null || rows.length == 0)
             throw new IllegalArgumentException("Defined null or empty row column container");
 
-        int curr_rows[] = row_col_layout.GetRows();
+        int curr_rows[] = this.rows;//row_col_layout.GetRows();
         int col;
         int idx_w = getGridComponentCount() - 1;
         ResizeButton b;
@@ -547,7 +547,8 @@ public class RowColumnContainer extends Container
                         idx_w += rows[i];
                         for(int k = rows[i]; k < curr_rows[i]; k++)
                         {
-                            remove(idx_w);
+                            if(idx_w > 0)
+                                remove(idx_w);
                             remove(0);
                             idx_w--;
                         }
@@ -571,7 +572,7 @@ public class RowColumnContainer extends Container
             for(int i = 0; i < rows.length; i++)
                 this.rows[i] = rows[i];
         }
-       // update();          
+        // update();          
     }
 
    /**
@@ -716,7 +717,7 @@ public class RowColumnContainer extends Container
         add(c, row, col);
 
         split_pos = new Point(row, col);
-
+        update();
         return idx-1;
     }
 

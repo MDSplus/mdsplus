@@ -84,7 +84,10 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
-	                ((WaveformManager)WavePopup.this.parent).AutoscaleAll();
+	                if(wave.IsImage())
+	                    ((WaveformManager)WavePopup.this.parent).AutoscaleAllImages();
+	                else
+	                    ((WaveformManager)WavePopup.this.parent).AutoscaleAll();
 	            }
 	        }
 	    );
@@ -441,14 +444,14 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        if(target == interpolate_f)
 	        {
                 SetInterpolate(((CheckboxMenuItem)target).getState()); 	            
-                wave.Repaint();
+                wave.Repaint(true);
 	        }
 	        
 	        if(parent == signalList)
 	        {
 	            SetSignalState(((CheckboxMenuItem)target).getLabel(), 
 	                         ((CheckboxMenuItem)target).getState());
-                wave.Repaint();
+                wave.Repaint(true);
 	        }
 	        
 	        if(parent == markerList)
@@ -463,7 +466,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	                markerStep.setEnabled(!(wave.GetMarker() == Signal.NONE || 
 	                                        wave.GetMarker() == Signal.POINT));
 	            }
-	            wave.Repaint();	                
+	            wave.Repaint(true);	                
 	        }
 
 	        if(parent == markerStep)
@@ -475,7 +478,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	                if(SetMarkerStep(Signal.markerStepList[idx]))
 	                    cb.setState(true);	                
 	            }
-	            wave.Repaint();	                
+	            wave.Repaint(true);	                
 	        }
 
 	        
@@ -488,7 +491,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	               if(SetColor(idx))
 	                  cb.setState(true);	               
 	            }
-	            wave.Repaint();	                
+	            wave.Repaint(true);	                
 	        }
 	    }
 	}   

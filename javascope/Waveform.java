@@ -223,6 +223,7 @@ public class Waveform extends Canvas
         } 
         not_drawn = true;
         repaint();
+        //Repaint(true);
     }
     
     static public void SetFont(Font f)
@@ -236,7 +237,10 @@ public class Waveform extends Canvas
 	    colors_name = _colors_name;
     }
 
-    
+    public WaveformMetrics GetWaveformMetrics()
+    {
+        return wm;
+    }
     
     public String[] GetColorsName()
     {
@@ -397,7 +401,7 @@ public class Waveform extends Canvas
 		            {
 		                we = new WaveformEvent(w, WaveformEvent.BROADCAST_SCALE);
 		                dispatchWaveformEvent(we);
-		                we = null;
+		                //we = null;
 		            }
 	            }
 	            else
@@ -419,6 +423,7 @@ public class Waveform extends Canvas
 	                if(mode == MODE_PAN && waveform_signal != null)
 		                waveform_signal.StartTraslate();
 	                if(mode == MODE_POINT && waveform_signal != null)
+                        //Repaint(false);
 		                repaint();
 		                
 	            }
@@ -501,7 +506,8 @@ public class Waveform extends Canvas
 		                    
 	                curr_y = FindPointY(curr_x, curr_y, first_set_point);
                     we = new WaveformEvent(w, WaveformEvent.POINT_UPDATE, curr_x, curr_y, 0, 0, GetSelectedSignal()); 
-	                
+		            dispatchWaveformEvent(we);
+		            we = null;
 	            }
 	            prev_point_x = prev_point_y = -1;
 	            if(!is_image)
@@ -556,11 +562,14 @@ public class Waveform extends Canvas
 	                else
 //		                curr_rect.setSize(end_x - start_x, end_y - start_y);
 		                curr_rect.setBounds(start_x, start_y, end_x - start_x, end_y - start_y);
+                    //Repaint(false);
 	                repaint();
 	            }
 	            else
 	                curr_rect = null;
 	            if(mode == MODE_POINT) {
+		            dispatchWaveformEvent(we);
+                    //Repaint(false);
 	                repaint();
 	            }
 	            if(mode == MODE_PAN && !is_image)
@@ -575,6 +584,7 @@ public class Waveform extends Canvas
 		                pan_delta_y = wm.YValue(start_y, d) - wm.YValue(end_y, d);
 	                not_drawn = false;
 	                repaint();
+                    //Repaint(true);
 	            }
             }
         });
@@ -597,9 +607,10 @@ public class Waveform extends Canvas
 	    not_drawn = true;
 	    frames = null;
 	    prev_frame = -1;
-	    not_drawn = true;
 	    grid = null;
+	    not_drawn = true;
 	    repaint();
+//	    Repaint(true);
     }
 	
 	public boolean undoZoomPendig(){return undo_zoom.size() > 0;}
@@ -650,10 +661,15 @@ public class Waveform extends Canvas
         is_select = false;       
     }
     
-    public void Repaint()
+    
+    public void Repaint(boolean not_drawn)
     {
-	    not_drawn = true;
-	    repaint();
+	    //not_drawn = true;
+	    this.not_drawn = not_drawn;
+        Graphics g = getGraphics();
+        this.paint(g);
+        g.dispose();
+	    //repaint();
     }
   	
 	synchronized public void Update(Signal s)
@@ -663,31 +679,34 @@ public class Waveform extends Canvas
 	        mode = MODE_ZOOM;
 	    update_timestamp++;
 	    waveform_signal = s;
-	    not_drawn = true;
     	//double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
 	    wm = null;
     	curr_rect = null;
 	    prev_point_x = prev_point_y = -1;
+	    not_drawn = true;
 	    repaint();
+	    //Repaint(true);
     }
 
     public void UpdateSignal(Signal s) //Same as Update, except for grid and metrics
     {
 	    waveform_signal = s;
-	    not_drawn = true;
 	    curr_rect = null;
 	    prev_point_x = prev_point_y = -1;
+	    not_drawn = true;
 	    repaint();
+	    //Repaint(true);
     }
     
     public void UpdateImage(Frames frames)
     {
         this.frames = frames;
         this.is_image = true;
-	    not_drawn = true;
 	    curr_rect = null;
  	    prev_point_x = prev_point_y = -1;
+	    not_drawn = true;
 	    repaint();
+	    //Repaint(true);
     }
     
     public void SetGridMode(int grid_mode, boolean int_xlabel, boolean int_ylabel)
@@ -723,8 +742,10 @@ public class Waveform extends Canvas
 		        setCursor(def_cursor);
 		    break;
 	    }	
-	    if(waveform_signal != null || is_image)
+	    if(waveform_signal != null || is_image) {
 	        repaint();
+            //Repaint(false);
+        }
     }
 
     void DrawWave(Dimension d)
@@ -751,9 +772,6 @@ public class Waveform extends Canvas
     {
         if(execute_print) return;
         paint(g, getSize(), false);
-        if(we != null)
-            this.dispatchWaveformEvent(we);
-        we = null;
     }
         
     synchronized public void PaintImage(Graphics g, Dimension d, boolean print_flag)
@@ -1515,6 +1533,7 @@ public class Waveform extends Canvas
 	    wm = null;
 	    not_drawn = true;
 	    repaint();
+	    //Repaint(true);
     }
     
     public void SetCopySelected(boolean selec)
@@ -1522,6 +1541,7 @@ public class Waveform extends Canvas
 	    copy_selected = selec;
 	    not_drawn = true;
 	    repaint();
+	    //Repaint(true);
     }
     
     public boolean IsCopySelected() {return copy_selected; }

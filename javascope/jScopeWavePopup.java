@@ -56,6 +56,7 @@ class jScopeWavePopup extends MultiWavePopup {
 	        {
 	            public void actionPerformed(ActionEvent e)
 	            {
+	                ((jScopeMultiWave)wave).wi.setModified(true);
 	                ((jScopeWaveContainer)jScopeWavePopup.this.parent).Refresh(((jScopeMultiWave)wave), "Refresh ");
 	            }
 	        }
@@ -120,9 +121,9 @@ class jScopeWavePopup extends MultiWavePopup {
     protected void ShowSetupDialog()
     {
  	   jScopeMultiWave w = (jScopeMultiWave)wave;
-       if(w.mode == Waveform.MODE_POINT && w.wi.signal_select != -1)
+       if(w.mode == Waveform.MODE_POINT)// && w.wi.signal_select != -1)
        {
-	        setup_dialog.selectSignal(w.wi.signal_select);
+	        setup_dialog.selectSignal(w.GetSelectedSignal());
 	   } else
 	        if(w.GetSignalCount() > 0 || w.is_image && w.wi.num_waves != 0)
 	            setup_dialog.selectSignal(0);
@@ -148,23 +149,23 @@ class jScopeWavePopup extends MultiWavePopup {
     {
         super.SetInterpolate(state);
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
-        w.wi.interpolates[w.wi.signal_select] = state;
+        w.wi.interpolates[w.GetSelectedSignal()] = state;
     }
 
-/*
-    protected void SetWaveState(String label, boolean state)
+
+    public void SetSignalState(String label, boolean state)
     {
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
-        w.wi.setWaveState(label, state);
+        w.SetSignalState(label, state);
     }
-*/
+
     public boolean SetMarker(int idx)
     {
         super.SetMarker(idx);
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
-        if(w.wi.markers[w.wi.signal_select] != idx)
+        if(w.wi.markers[w.GetSelectedSignal()] != idx)
 	    {
-		    w.wi.markers[w.wi.signal_select] = idx;
+		    w.wi.markers[w.GetSelectedSignal()] = idx;
             return false;
 	    }
 	    return true;
@@ -174,9 +175,9 @@ class jScopeWavePopup extends MultiWavePopup {
     {
         super.SetMarkerStep(step);
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
-        if(w.wi.markers_step[w.wi.signal_select] != step)
+        if(w.wi.markers_step[w.GetSelectedSignal()] != step)
 	    {
-            w.wi.markers_step[w.wi.signal_select] = step;
+            w.wi.markers_step[w.GetSelectedSignal()] = step;
             return false;
 	    }
 	    return true;
@@ -186,9 +187,9 @@ class jScopeWavePopup extends MultiWavePopup {
     {
         super.SetColor(idx);
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
-	    if(w.wi.colors_idx[w.wi.signal_select] != idx)
+	    if(w.wi.colors_idx[w.GetSelectedSignal()] != idx)
         {
-	        w.wi.colors_idx[w.wi.signal_select] = idx;
+	        w.wi.colors_idx[w.GetSelectedSignal()] = idx;
 //	        wave.wi.colors[wave.wi.signal_select] = controller.main_scope.color_dialog.GetColorAt(idx);
 //            w.SetCrosshairColor(w.wi.colors[w.wi.signal_select]);
             w.SetCrosshairColor(idx);

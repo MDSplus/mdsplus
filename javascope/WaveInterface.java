@@ -341,7 +341,7 @@ public class WaveInterface
 	    String  y_new = new String();
 	    int     new_pos = 0, old_pos = 0;
 	
-	    s = TrimString(s);
+	   // s = TrimString(s);
 	    while((new_pos = s.indexOf("|||", old_pos)) != -1)
 	    {
 	        y_new = y_new.concat(s.substring(old_pos, new_pos));
@@ -398,7 +398,7 @@ public class WaveInterface
 		w_error = null;
     }
 
-    public void setWaveState(String name, boolean state)
+    public void setSignalState(String name, boolean state)
     {
         
         if(num_waves != 0)
@@ -417,6 +417,7 @@ public class WaveInterface
     }
 
     public void ShowLegend(boolean state){make_legend = state;}
+    public void setModified(boolean state){modified = state;};
 
     public void SetLegendPosition(double x, double y)
     {
@@ -476,14 +477,15 @@ public class WaveInterface
         return error_title;
     }
     
-    public boolean[] getSignalsState()
+    public boolean[] GetSignalsState()
     {
         boolean state[] = null;
         
         if(num_waves != 0)
         {
-            state = new boolean[num_waves/num_shot];
-            for(int i = 0, j = 0; i < num_waves; i+= num_shot)
+            int ns = (num_shot > 0 ? num_shot : 1);
+            state = new boolean[num_waves/ns];
+            for(int i = 0, j = 0; i < num_waves; i+= ns)
                 state[j++] = (interpolates[i] || (markers[i] != Signal.NONE));
         }
         return state;
@@ -505,6 +507,32 @@ public class WaveInterface
         }
         return name;
     }
+
+/*
+    public boolean[] GetSignalsState()
+    {
+        boolean state[] = null, s;
+        
+        if(num_waves != 0)
+        {
+            int ns = (num_shot > 0 ? num_shot : 1);
+            state = new boolean[num_waves/ns];
+            for(int i = 0; i < num_waves; i+= ns)
+            {
+                state[i] = false;
+                for(int j = 0; j < ns; j++)
+                {
+                    if(!(!interpolates[i+j] && markers[i+j]  == Signal.NONE))
+                    {
+                        state[i] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return state;
+    }
+*/
     
     public boolean AddSignal(String s)
     {
@@ -811,8 +839,11 @@ public class WaveInterface
         
         
         if(evaluated == null)
+        {
+            signals = null;
             return;
-
+        }
+        
     	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
 	        if(!evaluated[curr_wave] &&  
@@ -880,11 +911,12 @@ public class WaveInterface
 	        return;
 	    }
 	    
-	    if(experiment != null && experiment.trim().length() > 0)    			    		    
-	        dp.Update(experiment, shots[0]);
-	    else
+	    //if(experiment != null && experiment.trim().length() > 0)    			    		    
+	    //    dp.Update(experiment, shots[0]);
+	    //else
 	        if(shots != null && shots.length != 0)
-	            dp.Update(null, shots[0]);
+	            dp.Update(experiment, shots[0]);
+	            //dp.Update(null, shots[0]);
 	        else
 	            dp.Update(null, 0);
 
@@ -930,7 +962,7 @@ public class WaveInterface
 	                return;
                 }
                 CreateNewFramesClass();
-                for(i = 0, j = 0; j < f_time.length && j < 100; j++)
+                for(i = 0, j = 0; j < f_time.length; j++)
                 {
                     if(f_time[j] < timemin || f_time[j] > timemax)
                         continue;
@@ -948,7 +980,7 @@ public class WaveInterface
                 }
                 frames.WaitLoadFrame();
         
-                if(i == 0 && j == 100)
+                if(i == 0)
                 {
 	                curr_error = " Frames not found "; 
                     frames = null;
@@ -965,11 +997,13 @@ public class WaveInterface
 		
 	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
 	                        "FLOAT("+new Float(xmax).toString()+")";
-	    if(experiment != null && experiment.trim().length() > 0)    			    		    
-	        dp.Update(experiment, shots[curr_wave]);
-	    else
+	                        
+	    //if(experiment != null && experiment.trim().length() > 0)    			    		    
+	    //    dp.Update(experiment, shots[curr_wave]);
+	    //else
 	        if(shots != null && shots.length != 0)
-	            dp.Update(null, shots[curr_wave]);
+	            dp.Update(experiment, shots[curr_wave]);
+	            //dp.Update(null, shots[curr_wave]);
 	        else
 	            dp.Update(null, 0);
 	    

@@ -34,7 +34,7 @@ class MdsWaveInterface extends WaveInterface {
     public MdsWaveInterface(DataProvider dp, jScopeDefaultValues def_vals)
     {
         super(dp);//, null);
-        this.def_vals = def_vals;
+        setDefaultsValues(def_vals);
     }
     
     public void setDefaultsValues(jScopeDefaultValues def_vals)
@@ -282,8 +282,11 @@ class MdsWaveInterface extends WaveInterface {
 		if(curr_shots[l] != shots[l])
 		    break;
 		    
-	if(l == curr_shots.length) return;
-  
+	if(l == curr_shots.length)
+    {
+        shots = curr_shots;
+	    return;
+    }
 	modified     = true;
 	
 	int num_signal; 
@@ -909,6 +912,7 @@ class MdsWaveInterface extends WaveInterface {
 		        if(str.indexOf(".shot:") != -1)
 		        {
 		            cin_shot = str.substring(len, str.length());
+	/*
 		            sh = GetShotArray(cin_shot);
 		    
 		            if(sh.length == num_shot)
@@ -921,6 +925,7 @@ class MdsWaveInterface extends WaveInterface {
 			                }
 		            } else
 			            shot_evaluated = true;
+	*/
 		            continue;		
 		        }
 		        if(str.indexOf(".x:") != -1)

@@ -36,46 +36,47 @@ public class NetworkProvider implements DataProvider {
     Mds mds;
     NetworkEventManager event_manager = new NetworkEventManager();
     public String error;
+    public static final long TIME_OUT = 10000; //ms
     
 
-public NetworkProvider()
-{
-    experiment = null;
-    shot = 0;
-    open = connected = false;
-    mds = new Mds();
-    error = null;
-}
+    public NetworkProvider()
+    {
+        experiment = null;
+        shot = 0;
+        open = connected = false;
+        mds = new Mds();
+        error = null;
+    }
 
-public NetworkProvider(String _provider)
-{
-    provider = _provider;
-    experiment = null;
-    shot = 0;
-    open = connected = false;
-    mds = new Mds(provider);
-    error = null;
-}
+    public NetworkProvider(String _provider)
+    {
+        provider = _provider;
+        experiment = null;
+        shot = 0;
+        open = connected = false;
+        mds = new Mds(provider);
+        error = null;
+    }
 
-public NetworkProvider(String exp, int s)
-{
-    experiment = exp;
-    shot = 0;
-    open = connected = false;
-    mds = new Mds();
-    error = null;
-}
+    public NetworkProvider(String exp, int s)
+    {
+        experiment = exp;
+        shot = 0;
+        open = connected = false;
+        mds = new Mds();
+        error = null;
+    }
 
-protected void finalize()
-{
-    int status;
-    String err = new String("");
-    if(open)
-    	mds.MdsValue("JavaClose(\""+experiment+"\","+shot+")");
+    protected void finalize()
+    {
+        int status;
+        String err = new String("");
+        if(open)
+    	    mds.MdsValue("JavaClose(\""+experiment+"\","+shot+")");
     	//mds.MdsValue("MDSLIB->MDS$CLOSE()");
-    if(connected)
-	status = mds.DisconnectFromMds(err);
-}
+        if(connected)
+	        status = mds.DisconnectFromMds(err);
+    }
 
 public String GetDefaultTitle(String in_y[]){return null;}
 public String GetDefaultXLabel(String in_y[]){return null;}
@@ -205,16 +206,23 @@ public boolean SupportsAsynch() { return true; }
 public synchronized void Update(String exp, int s)
 {
     error = null;
-    if(exp == null || exp.length() == 0)  { experiment = null; open = true; shot = s; return;}
-    if(s != shot || experiment == null || !experiment.equals(exp) )
-    {
-    
+    /*
+    if(exp == null || exp.length() == 0)  
+    { 
+        experiment = null; 
+        open = true; 
+        shot = s; 
+        return;
+    }
+    */
+    if(s != shot || experiment == null || experiment.length() == 0 || !experiment.equals(exp) )
+    {    
 //System.out.println("OPEN!");    
 //	if(open)
 //	    mds.MdsValue("MDSLIB->MDS$CLOSE()");
-	experiment = exp;
-	shot = s;    	
-	open = false;
+	    experiment = ((exp != null && exp.trim().length() >  0) ? exp : null);
+	    shot = s;    	
+	    open = false;
     }
 }
 
@@ -348,40 +356,35 @@ public synchronized int[] GetIntArray(String in)
 	if(status == 0)
 	{
 	    if(mds.error != null)
-		error = "Cannot open experiment " + experiment + " shot "+ 
-		    new Integer(shot).toString() + " : "+ mds.error;
+		    error = "Cannot open experiment " + experiment + " shot "+ 
+		                shot + " : "+ mds.error;
 	    else
-		error = "Cannot open experiment " + experiment + " shot "+ 
-		    new Integer(shot).toString();	    
+		    error = "Cannot open experiment " + experiment + " shot "+ shot;	    
 	    return false;
 	}
 	connected = true;
     }	
     if(!open && experiment != null)
     {
-	Descriptor descr = mds.MdsValue("JavaOpen(\""+experiment+"\"," +
-		(new Integer(shot)).toString()+")");
-	//Descriptor descr = mds.MdsValue("MDSLIB->MDS$OPEN(\""+experiment+"\","+
-	//	(new Integer(shot)).toString()+")");
-	if(descr.dtype != Descriptor.DTYPE_CSTRING
-		 && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
-		 && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
-	{
-	    open = true;
-	    return true;
-	}
-	else
-	{
-	    if(mds.error != null)
-		error = "Cannot open experiment " + experiment + " shot "+ 
-		    new Integer(shot).toString() + " : "+ mds.error;
+	    Descriptor descr = mds.MdsValue("JavaOpen(\""+experiment+"\"," + shot +")");
+	    if(descr.dtype != Descriptor.DTYPE_CSTRING
+		    && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
+		    && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
+	    {
+	        open = true;
+	        return true;
+	    }
 	    else
-		error = "Cannot open experiment " + experiment + " shot "+ 
-		    new Integer(shot).toString();	    
-	    return false;
-	}
+	    {
+	        if(mds.error != null)
+		        error = "Cannot open experiment " + experiment + " shot "+ 
+		                            shot + " : "+ mds.error;
+	        else
+		        error = "Cannot open experiment " + experiment + " shot "+ shot;	    
+	        return false;
+	    }
     }	    
-  return true;  
+    return true;  
 }	
 private boolean NotYetString(String in)
 {

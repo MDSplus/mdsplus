@@ -5,6 +5,7 @@ class jScopeDefaultValues {
    String experiment_str, shot_str;
    String upd_event_str, def_node_str;
    boolean is_evaluated = false;
+   String public_variables = null;
    
    
    public void Reset()

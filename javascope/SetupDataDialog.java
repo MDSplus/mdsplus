@@ -576,11 +576,14 @@ import java.util.Vector;
 
        public void signalsRefresh()
        { 
-	    int color_idx = 0, k = 0, l, num_sig = signals.size()/list_num_shot * shots.length;
+	    int color_idx = 0, k = 0, l, num_sig, n_shot; 
+	    
+	    n_shot = (shots != null ? shots.length : 1);
+	    num_sig = signals.size()/list_num_shot * n_shot;
     	    
-	    for(int j = 0; j < num_sig; j += shots.length)
+	    for(int j = 0; j < num_sig; j += n_shot)
 	    {	    		    
-		    for(int i = 0; i < shots.length; i++)
+		    for(int i = 0; i < n_shot; i++)
 		    {
 		        if(i < list_num_shot) {
 			        signals.setElementAt(signals.elementAt(j+i),k);
@@ -591,11 +594,15 @@ import java.util.Vector;
 			        ws.color_idx = color_idx;
 			        signals.insertElementAt(ws, k);
 		        }
-		        ((Data)signals.elementAt(k)).shot = shots[i];
+		        if(shots != null)
+		            ((Data)signals.elementAt(k)).shot = shots[i];
+		        else
+		            ((Data)signals.elementAt(k)).shot = UNDEF_SHOT;
+		        
 		        k++;
 		    }
-		    for(l = shots.length; l < list_num_shot; l++)
-		        signals.removeElementAt(j + shots.length);
+		    for(l = n_shot; l < list_num_shot; l++)
+		        signals.removeElementAt(j + n_shot);
 	     }
        } 
 
@@ -1599,7 +1606,7 @@ import java.util.Vector;
 	        signalList.updateList();
             setCursor(c_cursor);
 	    } catch (Throwable e) {
-	        main_scope.SetStatusLabel("Error during update list"+e);	    
+	        main_scope.SetStatusLabel("Error during update list "+e);	    
             setCursor(c_cursor);
 	    }
 	   
@@ -1801,7 +1808,7 @@ import java.util.Vector;
          main_scope.EvaluateWave(wave, shot.getText(), false);
       } else {
 	     error_msg.showMessage();
-	     //wave.super().Erase();
+	     wave.Erase();
 	  }
    }
 	    	
