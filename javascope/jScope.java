@@ -418,6 +418,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    return error;
      }
   }
+  
+  
 	    
   public jScope(int spos_x, int spos_y, boolean _is_applet, String config)
   {
@@ -828,15 +830,14 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    if(ip_addr == null)
 	    {
 	        setup.data_server_address = DEFAULT_SERVER;
-            if(IsIpAddress(DEFAULT_SERVER))
-	            db = new NetworkProvider(DEFAULT_SERVER);
-	        else
-	            setDataServer();
 	    } else {
 	        setup.data_server_address = ip_addr;
-	        db = new NetworkProvider(ip_addr);
 	        server_diag.addServerIp(ip_addr);
 	    }
+        if(IsIpAddress(setup.data_server_address))
+	        db = new NetworkProvider(setup.data_server_address);
+	    else
+	        setDataServer(setup.data_server_address);
     }
     else {
 	    if(!not_sup_local && !is_applet)
@@ -854,7 +855,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
                 if(IsIpAddress(DEFAULT_SERVER))
 	                db = new NetworkProvider(DEFAULT_SERVER);
 	            else
-	                setDataServer();
+	                setDataServer(setup.data_server_address);
 	        }
 	    } else {
 	        if(!is_applet)
@@ -863,12 +864,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             if(IsIpAddress(DEFAULT_SERVER))
 	            db = new NetworkProvider(DEFAULT_SERVER);
 	        else
-	            setDataServer();
+	            setDataServer(setup.data_server_address);
 	    } 
      }
 
-     if(IsIpAddress(DEFAULT_SERVER))
-        setup.ChangeDataProvider();
+ //    if(IsIpAddress(DEFAULT_SERVER))
+     setup.ChangeDataProvider();
 
      setDataServerLabel();
   }
@@ -1292,14 +1293,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	file_diag =  null;      
   }
   
-  public boolean setDataServer()
+  public boolean setDataServer(String new_data_server)
   {
 	boolean change = false;  
-	String old_ip = setup.data_server_address;
 	DataProvider old_db = db;
 	
     RemoveAllEvents();
-    if(setup.data_server_address.equals("Local"))
+    if(new_data_server.equals("Local"))
 	    try {
 		    db = new LocalProvider();
 		    setup.fast_network_access = false;
@@ -1312,22 +1312,28 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    } catch (Throwable ex) {
 		    db = old_db;
 	        SetAllEvents();
-		    setup.data_server_address = old_ip;
+		    //setup.data_server_address = old_ip;
 		    error_msg.addMessage("Local data access is not supported on this platform");
 		    change = false;
 	    }
 //Gabriele 26/10/99
      else 
-        if(setup.data_server_address.equals("Jet data"))
+        if(new_data_server.equals("Jet data"))
         {
 		    fast_network_i.setEnabled(false);
 		    setup.fast_network_access = false;
             db = new JetDataProvider();
             ((JetDataProvider)db).InquireCredentials(this);
-            change = true;
+            if(((JetDataProvider)db).GetLoginStatus() != JetDataProvider.LOGIN_OK)
+            {
+                if(old_db == null)
+                    setup.data_server_address = "Not connected";
+                change = false;
+            } else
+                change = true;
         } 
         else 
-            if(setup.data_server_address.equals("Ftu data"))
+            if(new_data_server.equals("Ftu data"))
             {
  		        fast_network_i.setEnabled(true);
 	            fast_network_i.setState(setup.fast_network_access);
@@ -1342,20 +1348,21 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	                fast_network_i.setEnabled(true);
 	                fast_network_i.setState(setup.fast_network_access);
                 }
-                if(IsIpAddress(setup.data_server_address))
+                if(IsIpAddress(new_data_server))
                 {
-	                db = new NetworkProvider(setup.data_server_address);
+	                db = new NetworkProvider(new_data_server);
 	                change = true;
 	            } else {
-	                error_msg.setMessage("Data server "+ setup.data_server_address +" not defined\n");        
+	                error_msg.setMessage("Data server "+ new_data_server +" not defined\n");        
                     error_msg.showMessage();
 	            }
 	        }
 	    
-	setDataServerLabel();
 	    
 	if(change) {
-	    setup.ChangeDataProvider();
+        setup.data_server_address = new_data_server;
+        setup.ChangeDataProvider();
+	    setDataServerLabel();
 	    UpdateAllWaves(false);		
 	}
 	SetAllEvents();
@@ -1390,8 +1397,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	        String server = ((MenuItem)ob).getLabel();
 	        if(!setup.data_server_address.equals(server) )
 	        {
-	            setup.data_server_address = new String(server);
-	            ((MenuItem)ob).setEnabled(setDataServer());
+	            ((MenuItem)ob).setEnabled(setDataServer(new String(server)));
     	    }
         }
     }
@@ -1903,7 +1909,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
                                setup_default.getYLines());
 
 	    if(setup.data_server_address != null && !curr_dsa.equals(setup.data_server_address))
-	        setDataServer();
+	        setDataServer(setup.data_server_address);
 	    else {
 	        setup.data_server_address = curr_dsa;
     	    UpdateAllWaves(false);
@@ -1951,14 +1957,14 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     if(args.length == 1) {
         win.show();  
-	file = new String(args[0]); 
-	win.LoadConf(args[0]);
+	    file = new String(args[0]); 
+	    win.LoadConf(args[0]);
     }
     
     if(MACfile != null) {
         win.show();  
-	file = new String(MACfile); 
-	win.LoadConf(MACfile);
+	    file = new String(MACfile); 
+	    win.LoadConf(MACfile);
     }
     
     num_scope++;

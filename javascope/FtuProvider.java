@@ -38,6 +38,9 @@ class FtuProvider extends NetworkProvider
 			  }
 			  else
 			  {
+			     if(curr_str.startsWith("$"))
+	        	  	parsed.append("ftu("+shot+",\"_"+curr_str.substring(1));
+	        	 else
 	        	  	parsed.append("ftu("+shot+",\""+curr_str);
 			  	state = 2;
 			  }
@@ -76,7 +79,7 @@ class FtuProvider extends NetworkProvider
 		    }   
 		} 	  
 	}catch(Exception e){System.out.println(e);}
-//	System.out.println("parsed: "+ parsed);
+	//System.out.println("parsed: "+ parsed);
 	float [] out_array = super.GetFloatArray(parsed.toString());
 	if(out_array == null&& error == null)
 	    error = "Cannot evaluate " + in + " for shot " + shot;
@@ -111,6 +114,8 @@ public String GetDefaultTitle(String in_y[])
 {
 	error= null;
 	String first_sig = GetFirstSignal(in_y);
+	if(first_sig != null && first_sig.startsWith("$"))
+	    first_sig = "_"+first_sig.substring(1);
 	if(first_sig == null) return null;
 	String parsed ="ftuyl("+shot+",\""+first_sig+"\")"; 
 //	System.out.println(parsed);	
@@ -121,6 +126,8 @@ public String GetDefaultXLabel(String in_y[])
 	error= null;
 	String first_sig = GetFirstSignal(in_y);
 	if(first_sig == null) return null;
+	if(first_sig != null && first_sig.startsWith("$"))
+	    first_sig = "_"+first_sig.substring(1);
 	return GetString("ftuxl("+shot+",\""+first_sig+"\")");
 }
 

@@ -21,6 +21,8 @@ class JetDataProvider implements DataProvider
     private float [] last_y, last_x;
     Dialog inquiry_dialog;
     Frame owner_f;
+    static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
+    private int login_status;
     
     TextField user_text, passwd_text;
     
@@ -33,9 +35,15 @@ class JetDataProvider implements DataProvider
             encoded_credentials = translator.encode(credentials);
         }catch(Exception e){}
     }
-        
+     
+    public int GetLoginStatus()
+    {
+        return login_status;
+    }
+    
     void InquireCredentials(Frame f)
     {
+        login_status = LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new Dialog(f, "JET data server login", true);
         inquiry_dialog.setLayout(new BorderLayout());
@@ -60,14 +68,21 @@ class JetDataProvider implements DataProvider
                     if(!checkPasswd(username, passwd))
                     {
                         ErrorMessage.ShowErrorMessage(owner_f, "Incorrect password");
+                        login_status = LOGIN_ERROR;
                         return;
                     }
                         
                     String credentials = username+":"+passwd;
                     try{
                         encoded_credentials = translator.encode(credentials);
-                    }catch(Exception exc){}
-                    inquiry_dialog.setVisible(false);
+                    } catch(Exception exc)
+                    {
+                        login_status = LOGIN_ERROR;
+                    }
+                    if(login_status == LOGIN_OK)
+                        inquiry_dialog.setVisible(false);
+                    else
+                        login_status = LOGIN_OK;
                 }});
         p.add(ok_b);
         Button clear_b = new Button("Clear");
@@ -82,6 +97,7 @@ class JetDataProvider implements DataProvider
         cancel_b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
                 {
+                    login_status = LOGIN_CANCEL;
                     inquiry_dialog.setVisible(false);
                 }});
         p.add(cancel_b);
@@ -146,7 +162,7 @@ class JetDataProvider implements DataProvider
            while(st.hasMoreTokens())
             url_name = url_name + st.nextToken();
         }    
-            //url_name = in;
+//            url_name = in;
         else
             url_name = experiment + "/" + shot + "/" + in;
         if(last_url_name != null && url_name.equals(last_url_name))
