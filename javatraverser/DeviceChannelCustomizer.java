@@ -73,9 +73,9 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
                 String oldLabelString = bean.getLabelString();
                 bean.setLabelString(labelString.getText());
                 listeners.firePropertyChange("labelString", oldLabelString, bean.getLabelString());
-                boolean oldState = bean.getState();
+                boolean oldBorderVisible = bean.getBorderVisible();
                 bean.setBorderVisible(showBorder.getState());
-                listeners.firePropertyChange("state", oldState, bean.getState());
+                listeners.firePropertyChange("borderVisible", oldBorderVisible, bean.getBorderVisible());
                 boolean oldShowState = bean.getShowState();
                 bean.setShowState(showState.getState());
                 listeners.firePropertyChange("showState", oldShowState, bean.getShowState());

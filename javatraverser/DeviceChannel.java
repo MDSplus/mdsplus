@@ -122,6 +122,7 @@ public class DeviceChannel extends DeviceComponent
                 }
             });
         }
+        propagateState(is_on);
     }
 
 
@@ -129,6 +130,7 @@ public class DeviceChannel extends DeviceComponent
     {
         initial_state = is_on;
         if(checkB != null) checkB.setSelected(is_on);
+        propagateState(is_on);
     }
     protected Data getData(){return null;}
     protected boolean getState()
@@ -176,6 +178,7 @@ public class DeviceChannel extends DeviceComponent
     {
         if(checkB != null)
             checkB.setEnabled(state);
+        buildComponentList();
         if(device_components != null)
         {
             int size = device_components.size();
@@ -243,6 +246,10 @@ public class DeviceChannel extends DeviceComponent
                     ((DeviceComponent)device_components.elementAt(i)).setDisable();
             }
         }
+    }
+    public void postConfigure()
+    {
+      propagateState(curr_on);
     }
 
 

@@ -1,6 +1,6 @@
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.*;  
+import java.awt.*;
 
 public class DeviceField extends DeviceComponent
 {
@@ -12,7 +12,7 @@ public class DeviceField extends DeviceComponent
     public int numCols = 10;
     private boolean initial_state;
     protected boolean initializing = false;
-    public void setNumCols(int numCols) 
+    public void setNumCols(int numCols)
     {
         this.numCols = numCols;
         textF.setColumns(numCols);
@@ -23,31 +23,31 @@ public class DeviceField extends DeviceComponent
     public boolean getEditable() { return editable; }
     public boolean getDisplayEvaluated() {return displayEvaluated;}
     public void setDisplayEvaluated(boolean displayEvaluated){this.displayEvaluated = displayEvaluated;}
-    public void setLabelString(String labelString) 
+    public void setLabelString(String labelString)
     {
-        this.labelString = labelString; 
+        this.labelString = labelString;
         label.setText(labelString);
         redisplay();
     }
     public String getLabelString() {return labelString; }
-    public void setShowState(boolean showState) 
+    public void setShowState(boolean showState)
     {
-        this.showState = showState; 
+        this.showState = showState;
         if(showState)
             checkB.setVisible(true);
         else
-            checkB.setVisible(false); 
+            checkB.setVisible(false);
         redisplay();
     }
     public boolean getShowState() {return showState; }
     public void setTextOnly(boolean textOnly) {this.textOnly = textOnly; }
     public boolean getTextOnly() {return textOnly; }
-        
-        
+
+
     protected JCheckBox  checkB;
     protected JLabel label;
     protected JTextField textF;
-     
+
     public DeviceField()
     {
         initializing = true;
@@ -59,7 +59,7 @@ public class DeviceField extends DeviceComponent
         setSize(30, 10);
         initializing = false;
     }
-        
+
     protected void initializeData(Data data, boolean is_on)
     {
         initializing = true;
@@ -82,14 +82,15 @@ public class DeviceField extends DeviceComponent
             });
         }
         displayData(data, is_on);
+        setEnabled(is_on);
         initializing = false;
-    }       
-    
-    
-    
+    }
+
+
+
     void postApply()
     {
-        if(editable || !displayEvaluated || data == null) return; 
+        if(editable || !displayEvaluated || data == null) return;
         //Nothing to do if the field is not editable and displays evaulated data
         String textString;
         try {
@@ -103,8 +104,8 @@ public class DeviceField extends DeviceComponent
                 textF.setText(textString);
         }
     }
-    
-    
+
+
     protected void displayData(Data data, boolean is_on)
     {
         this.data = data;
@@ -135,8 +136,8 @@ public class DeviceField extends DeviceComponent
         label.setEnabled(is_on);
         textF.setEditable(is_on & editable);
     }
-    
-    
+
+
     protected Data getData()
     {
         String dataString = textF.getText();
@@ -146,7 +147,7 @@ public class DeviceField extends DeviceComponent
         else
             return Tree.dataFromExpr(dataString);
     }
-    
+
     protected boolean getState()
     {
         if(!showState)
@@ -171,29 +172,29 @@ public class DeviceField extends DeviceComponent
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(String name, Component c)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
         return super.add(c);
     }
-        
+
     public Component add(Component c, int intex)
     {
         if(!initializing)
         {
-		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.", 
+		    JOptionPane.showMessageDialog(null, "You cannot add a component to a Device Field. Please remove the component.",
 		        "Error adding Device field", JOptionPane.WARNING_MESSAGE);
             return null;
         }
@@ -204,4 +205,4 @@ public class DeviceField extends DeviceComponent
 
 
 }
-    
+

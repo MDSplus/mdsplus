@@ -148,6 +148,7 @@ public class DeviceChoice extends DeviceComponent
                 catch(Exception e){}
             }
         }
+        setEnabled(is_on);
     }
 
 
@@ -181,7 +182,7 @@ public class DeviceChoice extends DeviceComponent
     public void setEnabled(boolean state)
     {
         //if(checkB != null) checkB.setEnabled(state);
-        //if(comboB != null) comboB.setEnabled(state);
+        if(comboB != null) comboB.setEnabled(state);
         if(label != null) label.setEnabled(state);
     }
     public Component add(Component c)

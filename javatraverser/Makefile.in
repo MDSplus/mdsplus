@@ -38,7 +38,8 @@ WE7000Setup.java \
 WE7116Setup.java \
 WE7275Setup.java \
 WEGroupSetup.java \
-RFXControlSetup.java
+RFXControlSetup.java \
+TR32Setup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
