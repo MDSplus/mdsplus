@@ -1284,7 +1284,6 @@ int   getLine(
    ,struct descriptor  *dsc_val		/* <m> string returned		*/
    )
    {
-    int   k;
     char  *linePtr;
     static int   incr = 16;	/* mem increment for dynamic strings	*/
 

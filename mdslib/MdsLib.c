@@ -395,6 +395,7 @@ static int  ___MdsOpen(char *tree, int *shot)
 
   }
 #endif
+  return 1;
 }
 
 
@@ -460,7 +461,7 @@ static int  ___MdsClose(char *tree, int *shot)
 #endif
   }
 #endif
-
+  return 1;
 }
 
 #ifdef __VMS
@@ -524,9 +525,10 @@ static int  ___MdsSetDefault(char *node)
 #endif
   }
 #endif
+  return 1;
 }
 
- void MdsDisconnect(){___MdsDisconnect();}
+void MdsDisconnect(){___MdsDisconnect();}
 static void ___MdsDisconnect()
 {
   DisconnectFromMds(mdsSocket);
@@ -1102,10 +1104,15 @@ int  MdsPut(char *pathname, char *expression, ...)
 
 #ifdef HAVE_WINDOWS_H
 static int zero = 0;
-SOCKET WINAPI MdsConnectVB(char *host) { return MdsConnect(host);}
-void WINAPI MdsDisconnectVB() { MdsDisconnect();}
-int WINAPI MdsCloseVB(char *tree, int *shot) { return MdsClose(tree,shot);}
-int  WINAPI MdsSetDefaultVB(char *node) { return MdsSetDefault(node);}
+static SOCKET ___MdsConnect();
+static void ___MdsDisconnect();
+static int ___MdsClose();
+static int ___MdsSetDefault();
+static int ___MdsOpen();
+SOCKET WINAPI MdsConnectVB(char *host) { return ___MdsConnect(host);}
+void WINAPI MdsDisconnectVB() { ___MdsDisconnect();}
+int WINAPI MdsCloseVB(char *tree, int *shot) { return ___MdsClose(tree,shot);}
+int  WINAPI MdsSetDefaultVB(char *node) { return ___MdsSetDefault(node);}
 int  WINAPI MdsOpenVB(char *tree, int *shot) { return ___MdsOpen(tree,shot);}
 int WINAPI descr1VB(int *dtype, void *value)
 { if (*dtype == DTYPE_CSTRING)

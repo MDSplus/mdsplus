@@ -163,7 +163,6 @@ static void  PutOnRemainingList(Server *s)
 static void  CreatePulse(Server *s)
    {
     int   status = 1;
-    int   i;
     if (s != ServerList)
        {
         if (!(s->status & 1))
@@ -330,9 +329,6 @@ int   TclCreatePulse_server()
          ****************************************************************/
 static int   DistributedCreate(int   shot,int   *nids,int   num)
    {
-    int   i;
-    int   status;
-    Server *s;
 
 #ifdef vms
     if (shot)

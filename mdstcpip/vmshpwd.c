@@ -41,6 +41,7 @@ Comments:	The overall speed of this routine is not great.  This is
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #ifndef BIG_ENDIAN
 #	include "b_order.h"
 #endif
@@ -723,7 +724,7 @@ z is the high longword of Y;	z = Y.l_high
 */
 
 {
-QUAD stack, part1, part2, part3, part4;
+QUAD stack, part1, part2, part3;
 
 
 EMULQ(U->l_high, Y->l_high, &stack);		/* Multiply   v*z      */

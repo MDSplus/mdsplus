@@ -512,7 +512,6 @@ void FindTagEndRemote(void **ctx_inout)
 
 int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
 {
-  NID nid = *(NID *)&nid_in;
   int       status = TreeNORMAL;
   NCI_ITM  *itm;
   struct descrip ans;

@@ -27,7 +27,7 @@ extern sys$setast();
 extern smg$set_out_of_band_asts();
 #endif
 
-
+extern int makeCmdlineMacro();
 
 	/****************************************************************
 	 * mdsdcl_do_command:

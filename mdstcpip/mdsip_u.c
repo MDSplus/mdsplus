@@ -252,7 +252,7 @@ static void InstallService(int typesrv)
   {
     SC_HANDLE hService;
     char *file = (char *)malloc(strlen(_pgmptr)+strlen(portname)+strlen(hostfile)+100);
-    sprintf(file,%s -p %s %s -h \"%s\" -F %d",_pgmptr,portname,
+    sprintf(file,"%s -p %s %s -h \"%s\" -F %d",_pgmptr,portname,
           (typesrv == 0) ? "" : ((typesrv == 1) ? "-m" : "-s"),hostfile, flags | IS_SERVICE);
     hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
             SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, file, NULL, NULL, NULL, NULL, NULL);
@@ -776,10 +776,10 @@ static void ProcessMessage(Client *c, Message *message)
                                 break;
 
             case DTYPE_COMPLEX_DOUBLE: if (CType(c->client_type) == VMSG_CLIENT)
-                                          ConvertFloat(num * 2, CvtVAX_G, (char)(message->h.length)/2, message->bytes,
+                                          ConvertFloat(num * 2, CvtVAX_G, (char)(message->h.length/2), message->bytes,
                                                   CvtIEEE_T, sizeof(double), d->pointer); 
                                        else
-                                          ConvertFloat(num * 2, CvtVAX_D, (char)(message->h.length)/2, message->bytes,
+                                          ConvertFloat(num * 2, CvtVAX_D, (char)(message->h.length/2), message->bytes,
                                                   CvtIEEE_T, sizeof(double), d->pointer);
                           break;
             default: memcpy(d->pointer,message->bytes,dbytes); break;
@@ -1127,7 +1127,6 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
 static int CreateMdsPort(short port, int multi_in)
 {
   static struct sockaddr_in sin;
-  struct servent *sp;
   int one=1;
 /*
   long sendbuf=32768,recvbuf=32768;

@@ -290,7 +290,7 @@ Do this in runs.
   Build exception table.
   Assume 2's complement.
   *********************/
-    mark = -1 << yn - 1;
+    mark = -1 << (yn - 1);
     maxim = ~mark;
     for (pn = diff, pe = exce, j = xe; --j >= 0;)
     {
@@ -382,7 +382,7 @@ Note the sign-extended unpacking.
       pe = exce;
       nbits = (char)ye;
       MdsUnpk(&nbits, &xe, (int *) ppack, (int *) pe, (int *) bit_ptr);
-      mark = -1 << -yn - 1;
+      mark = -1 << (-yn - 1);
     }
 
   /***********************************

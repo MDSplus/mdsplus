@@ -22,7 +22,7 @@ int   sys$clref();
 int   sys$waitfr();
 #endif
 
-
+extern int LibSpawn();
 
 #if !(defined(_WIN32) || defined(vms))
 static void  child_done(	/* Return: meaningless sts		*/

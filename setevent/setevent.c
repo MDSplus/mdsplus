@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 extern int MDSEvent(char *eventname,int len, char *data);
 
 int main(int argc, char **argv)

@@ -162,6 +162,15 @@ struct timezone { short timezone; };
 #undef HAVE_WINDOWS_H
 #define HAVE_WINDOWS_H 1
 
+/* Define if you compiler likes 0xnnnnll long long constants  */
+#undef HAVE_LL_CONSTANTS
+
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+
 #undef HAS_SIGVEC
 #ifdef HAVE_SIGVEC
 #define SIGVEC sigvec
@@ -176,8 +185,14 @@ struct timezone { short timezone; };
 #endif
 #define sigset signal
 
-#define _CONFIG_INCLUDED
+#if SIZEOF_INT_P == 8
+#define _pointer_int _int64
+#else
+#define _pointer_int int
 #endif
+
 
 #define BLOCK_ALL 0xfffff
 
+#define _CONFIG_INCLUDED
+#endif

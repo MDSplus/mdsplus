@@ -100,7 +100,7 @@ quadw	dt = {0,0};
 float	timeout = (float)0.;
 DESCRIPTOR_FLOAT(timeout_dsc, 0);
 struct descriptor	dt_dsc = {sizeof(dt),DTYPE_Q,CLASS_S,0};
-struct descriptor_xd	task_xd = EMPTY_XD, image_xd = EMPTY_XD;
+struct descriptor_xd	task_xd = EMPTY_XD;
 struct descriptor_routine	*ptask;
         timeout_dsc.pointer = (char *)&timeout;
         dt_dsc.pointer = (char *)&dt;

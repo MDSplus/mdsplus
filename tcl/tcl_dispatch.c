@@ -12,6 +12,8 @@
 #endif
 
 extern char *ServerGetInfo(int full, char *server);
+extern int ServerFreeDispatchTable();
+extern int StrAppend();
 
 /**********************************************************************
 * TCL_DISPATCH.C --
@@ -311,7 +313,7 @@ int TclDispatch_phase()
     synch = synch >= 1 ? synch : 1;
     if (dispatch_table)
         sts = ServerDispatchPhase(SyncEfn,dispatch_table,
-                dsc_phase.dscA_pointer,noaction,synch,output_rtn,monitor);
+                dsc_phase.dscA_pointer,(char)noaction,synch,output_rtn,monitor);
     if (~sts & 1)
         MdsMsg(sts,"Error from ServerDispatchPhase");
     return sts;
@@ -347,7 +349,6 @@ int TclDispatch_command()
     DispatchedCommand *command = malloc(sizeof(DispatchedCommand));
     static DYNAMIC_DESCRIPTOR(ident);
     int sts = 1;
-    int length;
 
     if (!SyncEfnInit) InitSyncEfn();
     cli_get_value("SERVER",&ident);

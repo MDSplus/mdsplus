@@ -126,7 +126,6 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
     case 6: arrayArgs[idx].length = 8; arrayArgs[idx].dtype = DTYPE_FSC; arrayArgs[idx].arsize = argsize[argsize[0]+2] * 8; break;
     case 7: 
       {
-	int j;
 	IDL_STRING *str;
         int num = 1;
         unsigned short maxlen;

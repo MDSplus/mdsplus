@@ -36,7 +36,7 @@ int mdsjet_idl(int argc, void **argv)
 
 int mdsjet(char *url, int *nData, int *nt, int *nx)
 {
-        int iRet,iUnits;
+        int iRet;
         printf("URL IN C: -->%s<--\n",url);
 	iRet=_JETReadData(url,&pData,&pTime,&pX,&uData,&uT,&uX,&RequestHandle);
 	

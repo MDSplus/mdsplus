@@ -598,7 +598,7 @@ static IDL_KW_PAR kw_list[] = {
 	IDL_ENSURE_SCALAR(argv[0]);
         if (strchr(argv[0]->value.str.s, ';')) {
           strcpy(hold, "Only one SQL statement allowed per call (no ';'s");
-   	  result.value.l = rows;
+   	  result.value.l = 0;
           set_them(-1, 0); 
           return &result;
         }

@@ -18,12 +18,14 @@ extern int TdiDecompile();
 extern int  tdi$decompile();
 #endif
 
+extern int StrFree1Dx();
+
 	/****************************************************************
 	 * TclDecompile:
 	 ****************************************************************/
 int TclDecompile()
    {
-    int   i,k;
+    int   k;
     int   nid;
     int   sts;
     char  *p;

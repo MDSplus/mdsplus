@@ -5,6 +5,7 @@
 #include <mds_stdarg.h>
 #include <mdsshr.h>
 #include <stdlib.h>
+#include <string.h>
 #include <treeshr.h>
 #include <ncidef.h>
 #include <libroutines.h>
@@ -13,6 +14,7 @@ extern struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 extern jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 extern void FreeDescrip(struct descriptor *desc);
 
+extern int TdiCompile();
 
 static char **getDeviceFields(char *deviceName, int *num_fields)
 {
@@ -343,7 +345,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid),
     string_cls = (*env)->FindClass(env, "java/lang/String");
-  int ctx = 0;
+  void *ctx = 0;
 
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
@@ -351,7 +353,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   while(n_tags < 256 && (tags[n_tags] = TreeFindNodeTags(nid, &ctx)) )
   {
 	 n_tags++;
-	 if(ctx == -1)
+	 if((int)ctx == -1)
 		break;
   }
   jtags = (*env)->NewObjectArray(env, n_tags, string_cls, 0); 
@@ -409,7 +411,7 @@ JNIEXPORT jobject JNICALL Java_Database_addNode
 JNIEXPORT jobjectArray JNICALL Java_Database_startDelete
   (JNIEnv *env, jobject obj, jobjectArray jnids)
 {
-  int nid, status, len, i, num_to_delete;
+  int nid, len, i, num_to_delete;
   jfieldID nid_fid;
   jmethodID constr;
   jvalue args[1];
@@ -704,20 +706,19 @@ static int doAction(int nid)
 	struct descriptor_method *method_d_ptr;
 	struct descriptor_routine *routine_d_ptr;
 	struct descriptor_r *curr_rec_ptr;
-	struct descriptor *curr_d_ptr;
 	char *command, *expression, *path;
 	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&method_nid};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, &type, 256, 0, 0);
+	DESCRIPTOR_CALL(call_d, &type, (unsigned char)256, 0, 0);
 
 	status = TreeGetRecord(nid, &xd);
 	if(!(status & 1)) return status;
 	if(!xd.pointer) return 0;
 	curr_rec_ptr = (struct descriptor_r *)xd.pointer;
 	if(curr_rec_ptr->dtype == DTYPE_ACTION)
-		curr_rec_ptr = ((struct descriptor_action *)curr_rec_ptr)->task;
+		curr_rec_ptr = (struct descriptor_r *)((struct descriptor_action *)curr_rec_ptr)->task;
 	if(!curr_rec_ptr) return 0;
 	switch(curr_rec_ptr->dtype) {
 	case DTYPE_PROGRAM:
@@ -802,7 +803,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getDeviceComponents
 	jclass string_cls = (*env)->FindClass(env, "java/lang/String");
 	jstring jfield; 
 
-	char **fields = getDeviceFields(name, &num_fields);
+	char **fields = getDeviceFields((char *)name, &num_fields);
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 	if(fields == NULL) return NULL;
 

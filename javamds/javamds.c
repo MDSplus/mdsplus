@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "LocalProvider.h"
-extern int TdiCompile(), TdiData();
+extern int TdiCompile(), TdiData(), TdiFloat();
 static char error_message[512];
 
 static void MdsUpdate(char *exp, int shot)
@@ -99,11 +99,11 @@ static float MdsGetFloat(char *in)
  
     switch(xd.pointer->dtype) {
 	case DTYPE_BU:
-	case DTYPE_B : ris = *(char *)xd.pointer->pointer; break;
+	case DTYPE_B : ris = (float)(*(char *)xd.pointer->pointer); break;
 	case DTYPE_WU:
-	case DTYPE_W : ris = *(short *)xd.pointer->pointer; break;
+	case DTYPE_W : ris = (float)(*(short *)xd.pointer->pointer); break;
 	case DTYPE_LU:
-	case DTYPE_L : ris = *(int *)xd.pointer->pointer; break;
+	case DTYPE_L : ris = (float)(*(int *)xd.pointer->pointer); break;
 	case DTYPE_F : ris = *(float *)xd.pointer->pointer; break;
 	case DTYPE_FS: ris = *(float *)xd.pointer->pointer; break;
 	case DTYPE_D :
@@ -213,7 +213,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		    if(is_float)
 		    	float_ris[i] = ((short *)arr_ptr->pointer)[i];
 		    else if(is_byte)
-		    	byte_ris[i] = ((short *)arr_ptr->pointer)[i];
+		    	byte_ris[i] = (char)(((short *)arr_ptr->pointer)[i]);
 			else
 				int_ris[i] = ((short *)arr_ptr->pointer)[i];
 		break;
@@ -221,7 +221,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 	case DTYPE_L : 
 		for(i = 0; i < dim; i++)
 		    if(is_float)
-		    	float_ris[i] = ((int *)arr_ptr->pointer)[i];
+		    	float_ris[i] = (float)(((int *)arr_ptr->pointer)[i]);
 		    else if(is_byte)
 		    	byte_ris[i] = ((int *)arr_ptr->pointer)[i];
 			else
@@ -233,9 +233,9 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte)
 		    if(is_float)
 		    	float_ris[i] = ((float *)arr_ptr->pointer)[i];
 		    else if(is_byte)
-		    	byte_ris[i] = ((float *)arr_ptr->pointer)[i];
+		    	byte_ris[i] = (char)(((float *)arr_ptr->pointer)[i]);
 			else
-		    	int_ris[i] = ((float *)arr_ptr->pointer)[i];
+		    	int_ris[i] = (int)(((float *)arr_ptr->pointer)[i]);
 		break;
 	case DTYPE_D :
 	case DTYPE_G :
@@ -376,7 +376,7 @@ JNIEXPORT void JNICALL Java_LocalProvider_SetEnvironment(JNIEnv *env, jobject ob
 	if(in_char && *in_char)
 	{
 		in_d.length = strlen(in_char);
-		in_d.pointer = in_char;
+		in_d.pointer = (char *)in_char;
 		status = TdiCompile(&in_d, &xd MDS_END_ARG);
 		if(status & 1)
     		status = TdiData(&xd, &xd MDS_END_ARG);
@@ -412,7 +412,6 @@ void createWindow(char *name, int idx)
 	jmethodID mid;
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
-	jobject jobj;
 
 	if(env == 0) /* Java virtual machine does not exist yet */
 	{
@@ -424,7 +423,7 @@ void createWindow(char *name, int idx)
 			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
 			vm_args.classpath = classpath;
 		}
-		res = JNI_CreateJavaVM(&jvm, &env, &vm_args);
+		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 		if(res < 0)
 		{
 			printf("\nCannot create Java VM!!\n");

@@ -38,8 +38,7 @@ static int   lib_cvt_dx_dx(	/* Returns:  status			*/
    ,unsigned short *len		/* <w> length of output string		*/
    )
    {
-    int   i,k;
-    int   dtype;
+    char   dtype;
     char  string[48];
     void  *p;
 
@@ -396,7 +395,6 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr,int depth)
     int *bptr;
     int *lbptr;
     int *ubptr;
-    int sts;
     int dim;
 #define BOUNDS_LENGTH 32		/* formerly 16	*/
     char bchars[BOUNDS_LENGTH];

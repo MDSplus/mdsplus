@@ -66,7 +66,7 @@ int boxsmooth(int *num, float *in, int *width, float *out)
       }
     }
     if (div > 0)
-      out[i] = total/div;
+      out[i] = (float)total/div;
     else
       out_int[i] = 32768;
   }

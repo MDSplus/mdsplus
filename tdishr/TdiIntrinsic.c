@@ -177,6 +177,7 @@ unsigned short		now = message.length;
 		}
 	}
 	add(")\n");
+  return 1;
 }
 /**********************************
 Useful for access violation errors.

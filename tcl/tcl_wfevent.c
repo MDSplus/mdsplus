@@ -18,6 +18,8 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
+extern int LibWait();
+
 static void EventOccurred(void *astprm, int len, char *data)
 {
   longjmp(astprm,1);

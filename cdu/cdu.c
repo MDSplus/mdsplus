@@ -859,6 +859,7 @@ static int   cmd_defineVerb(
        }
     if (debugCdu)
         show_verb(v,callerOpt);		/* you're here upon eof	*/
+    return 1;
    }
 
 
@@ -928,6 +929,7 @@ static int   cmd_parseKeywordClauses(
                 break;
            }
        }
+    return 1;
    }
 
 
@@ -977,6 +979,7 @@ static int   cmd_defineType()	/* Return: status			*/
 
         cmd_parseKeywordClauses(key);	/* fill in "key" struct		*/
        }
+    return 1;
    }
 
 

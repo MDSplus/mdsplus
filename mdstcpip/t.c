@@ -21,7 +21,7 @@ int main( int argc, void **argv)
     {
       printf("%g\n",*(float *)ans.ptr);
       val = *(float *)ans.ptr;
-      val = val + 1.;
+      val = val + (float)1.;
     }
     else
       printf("%s\n",ans.ptr);

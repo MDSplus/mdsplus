@@ -46,7 +46,7 @@ static char  *MdsDatime(	/* Return: ptr to date+time string	*/
     int   time[]	/* <r> date/time to display: quadword	*/
    )
    {
-    int   flags;
+    int   flags = 0;
     int   sts;
     short len;
     static char  datime[21];
@@ -69,7 +69,7 @@ static char  *MdsDatime(	/* Return: ptr to date+time string	*/
 	 ****************************************************************/
 int   TclDirectory()
    {
-    int   i,k;
+    int   k;
     unsigned int   usage;
     char  *p;
     char  *pathnam;

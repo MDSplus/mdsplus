@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <libroutines.h>
 
-extern int TdiDecompile(), TdiCompile(), TdiFloat();
+extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), CvtConvertFloat();
 
 struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 void FreeDescrip(struct descriptor *desc);
@@ -75,11 +75,7 @@ JNIEXPORT jobject JNICALL Java_Data_fromExpr
    const char *source = (*env)->GetStringUTFChars(env, jsource, 0);
    char *error_msg;
    struct descriptor source_d = {0, DTYPE_T, CLASS_S, 0};
-   jstring jerror_msg;
    jobject ris, exc;
-
-struct descriptor_r *d;
-
 
    source_d.length = strlen(source);
    source_d.pointer = (char *)source;
@@ -114,10 +110,10 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 {
   jclass cls, data_cls;
   jmethodID constr;
-  int i, length, count, ndescs, status;
+  int i, length, count, status;
   unsigned int opcode;
   jboolean is_unsigned = 0;
-  jobject obj, exc, curr_obj, ris;
+  jobject obj, exc, curr_obj;
   jvalue args[4];
   jbyteArray jbytes;
   jshortArray jshorts;
@@ -130,7 +126,6 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
   char message[64];
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
-  struct descriptor_apd *apd_d;
   char *buf;
   EMPTYXD(float_xd);
   if(!desc)
@@ -297,7 +292,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 					exit(0);
 				}
 			}
-			array_d = (struct descriptor_array *)float_xd.pointer;
+	  array_d = (struct descriptor_a *)float_xd.pointer;
 		cls = (*env)->FindClass(env, "FloatArray");
 		constr = (*env)->GetStaticMethodID(env, cls, "getData", "([F)LData;");
 		jfloats = (*env)->NewFloatArray(env, length);
@@ -466,7 +461,6 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     const char *string; 
 
     struct descriptor *desc;
-    long long_datum[2];
 
     if(!obj)
       {
@@ -514,9 +508,9 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
   	  case DTYPE_Q:
 	  case DTYPE_QU:
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "J");
-	    desc->length = sizeof(long);
+	    desc->length = sizeof(_int64);
 	    desc->pointer = (char *)malloc(desc->length);
-	    *(long *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
+	    *(_int64 *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
 	    return desc;
 
   	  case DTYPE_O:
@@ -524,10 +518,10 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	    datum_fid = (*env)->GetFieldID(env, cls, "datum", "[J");
 	    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 	    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
-	    desc->length = 2 * sizeof(long);
+	    desc->length = 2 * sizeof(_int64);
 	    desc->pointer = (char *)malloc(desc->length);
-	    *(long *)desc->pointer = longs[0];
-	    *((long *)desc->pointer + 1) = longs[1];
+	    *(_int64 *)desc->pointer = longs[0];
+	    *((_int64 *)desc->pointer + 1) = longs[1];
 	    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 	    return desc;
 
@@ -727,7 +721,7 @@ void FreeDescrip(struct descriptor *desc)
       break;
     case CLASS_APD :
       array_d = (struct descriptor_a *)desc;
-      for(i = 0; i < array_d->arsize/array_d->length; i++)
+      for(i = 0; i < (int)array_d->arsize/array_d->length; i++)
 	FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
       break;
   }

@@ -2093,7 +2093,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	else 
 	{
 	  intermediate_value[2] >>= i;
-	  intermediate_value[2] |= (intermediate_value[1] << 32 - i);
+	  intermediate_value[2] |= (intermediate_value[1] << (32 - i));
 	  intermediate_value[1] >>= i;
 	}
 
@@ -2397,7 +2397,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
 	{
 	  i -= 64;
 	  intermediate_value[4]  = (intermediate_value[2] >> i);
-	  intermediate_value[4] |= (intermediate_value[1] << 32 - i);
+	  intermediate_value[4] |= (intermediate_value[1] << (32 - i));
 	  intermediate_value[3]  = (intermediate_value[1] >> i);
 	  intermediate_value[2] = 0;
 	  intermediate_value[1] = 0;
@@ -2406,20 +2406,20 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
 	{
 	  i -= 32;
 	  intermediate_value[4]  = (intermediate_value[3] >> i);
-	  intermediate_value[4] |= (intermediate_value[2] << 32 - i);
+	  intermediate_value[4] |= (intermediate_value[2] << (32 - i));
 	  intermediate_value[3]  = (intermediate_value[2] >> i);
-	  intermediate_value[3] |= (intermediate_value[1] << 32 - i);
+	  intermediate_value[3] |= (intermediate_value[1] << (32 - i));
 	  intermediate_value[2]  = (intermediate_value[1] >> i);
 	  intermediate_value[1] = 0;
 	} 
 	else 
 	{
 	  intermediate_value[4] >>= i;
-	  intermediate_value[4] |= (intermediate_value[3] << 32 - i);
+	  intermediate_value[4] |= (intermediate_value[3] << (32 - i));
 	  intermediate_value[3] >>= i;
-	  intermediate_value[3] |= (intermediate_value[2] << 32 - i);
+	  intermediate_value[3] |= (intermediate_value[2] << (32 - i));
 	  intermediate_value[2] >>= i;
-	  intermediate_value[2] |= (intermediate_value[1] << 32 - i);
+	  intermediate_value[2] |= (intermediate_value[1] << (32 - i));
 	  intermediate_value[1] >>= i;
 	}
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*
@@ -7,12 +8,13 @@ Program to wait for MDSPlus event from the command line.
 
 static int printdata = 0;
 
+extern int MDSEventAst();
+extern int LibWait();
+
 void EventOccurred(void *astprm, int len, char *data)
 {
   if (printdata)
   {
-	char stime[20];
-	char sdate[20];
     char *s = strncpy((char *)malloc(len+1),data,len);
     s[len] = 0;
     printf("Event %s occurred with data = \\%s\\\n",(char *)astprm,s);
