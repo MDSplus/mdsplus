@@ -104,10 +104,10 @@ public fun XRAY__init(as_is _nid, optional _method)
 	for(_i = 0; _i < _K_CHANNELS; _i++)
 	{
 
-          _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
+                   _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 
 		   if( ( _is_on = DevIsOn(DevNodeRef(_nid, _chan_nid)) && _i < 58) || 
-			   ( _is_on && _i >= 58 && _hor_head == 1) ) /* Disabilito i canali della testa orizzontale se non utilizzati */
+			   ( _is_on && _i > 58 && _hor_head == 1) ) /* Disabilito i canali della testa orizzontale se non utilizzati */
 		   {
 				_enabled = 1;
 				_detector_id = [_detector_id, byte(1)];

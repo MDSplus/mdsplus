@@ -66,7 +66,7 @@ public fun BOLO__store(as_is _nid, optional _method)
 	write(*, "test");
 
 	DevNodeCvt(_nid, _N_FREQUENCY, [1000000,500000,250000,200000,100000,40000,20000,10000,5000],
-	                               [1,      2,     4,     5 ,    10,    25,   50,   100,  250], _reduction = 1);
+	                               [0,      1,     3,     4 ,    9,     24,   49,   99,   249], _reduction = 0);
 
 
 /****************************************************************************************************   
@@ -131,7 +131,7 @@ write(*, "test ", TomoVMESlot(_chan_id), TomoVMEChan(_chan_id), _error);
 
 						}
 					} else {
-							DevLogErr(_nid, 'Module '//_m//' does not Triggered');
+							DevLogErr(_nid, 'Module '//_m//' was not Triggered');
 					}
 				}
 		}
