@@ -42,8 +42,12 @@ public fun INCAA_TR10__INIT(as_is _nid, optional _method)
   _clk_divide = if_error(data(DevNodeRef(_nid, _TR10_CLK_DIV)), 1);
   MdsValue('TR10SetClockMode($,$,$,$,$,$,$)',_handle, _clk_src, _clk_output, 'div', _clk_sense, _clk_term, _clk_divide);
 
+  _trig_chan = 0;
   _trig_src = if_error(data(DevNodeRef(_nid, _TR10_TRIG_SRC)), 'ext');
-  _trig_chan = if_error(data(DevNodeRef(_nid,_TR10_TRIG_CHAN)), 1); 
+  if (len(_trig_src) == 1) {
+    _trig_chan = execute(_trig_src);
+    _trig_src = 'pxi';
+  }
   _trig_output = if_error(data(DevNodeRef(_nid,_TR10_TRIG_OUTPUT)), 0);
   _trig_sense = if_error(data(DevNodeRef(_nid, _TR10_TRIG_SENSE)),'+');
   _trig_term = if_error(data(DevNodeRef(_nid, _TR10_TRIG_TERM)), 0);
