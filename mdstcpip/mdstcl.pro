@@ -128,13 +128,16 @@ function mdstcl_shot_list
   ;D3D tree shot files.  It assumes that mdsinit has already been run.
 
   filespec='D3D$SHOTS:[000000]D3D_*.TREE'
-  p=strpos(filespec,'*')
 
   files=mds$value('FINDFILE($)',filespec)
 
-  l=strlen(files(0))-p   
-  shots=long(strmid(files,p,l))
+  br = reverse(byte(temporary(files)))
+  i = where(br eq (byte('_'))[0],n)
+  if (n gt 0) then br[i]=0b
+  
+  files = string(reverse(byte(string(temporary(br)))))
 
+  shots = long(temporary(files))
   return,shots
 
 end
