@@ -398,7 +398,7 @@ int SetMdsConnectTimeout(int sec)
 #endif
 
 
-SOCKET Connect(char *host, unsigned short port)
+SOCKET MConnect(char *host, unsigned short port)
 {
   SOCKET s;
   int status;

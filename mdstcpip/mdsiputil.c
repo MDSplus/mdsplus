@@ -30,7 +30,7 @@ static void FlipData(Message *m);
 extern int SocketSend(SOCKET s, char *bptr, int num, int oob);
 extern int SocketRecv(SOCKET s, char *bptr, int num,int oob);
 extern int CloseSocket(SOCKET s);
-extern SOCKET Connect(char *host, unsigned short port);
+extern SOCKET MConnect(char *host, unsigned short port);
 extern void FlushSocket(SOCKET sock);
 
 #if defined( _UCX) || defined(_WIN32)
@@ -228,7 +228,7 @@ static SOCKET ConnectToPort(char *host, char *service)
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
     return INVALID_SOCKET;
   }
-  s = Connect(host, portnum);
+  s = MConnect(host, portnum);
   if (s == INVALID_SOCKET)
   {
     perror("Error in connect to service\n");
