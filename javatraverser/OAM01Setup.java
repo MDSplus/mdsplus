@@ -207,7 +207,7 @@ public class OAM01Setup
     jLabel4.setHorizontalAlignment(SwingConstants.CENTER);
     jLabel4.setText("COUPLING");
     deviceField1.setOffsetNid(9);
-    deviceField1.setTextOnly(true);
+    deviceField1.setTextOnly(false);
     deviceField1.setNumCols(25);
     deviceField1.setIdentifier("");
     jLabel5.setPreferredSize(new Dimension(60, 16));
@@ -241,7 +241,7 @@ public class OAM01Setup
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceField2.setOffsetNid(51);
-    deviceField2.setTextOnly(true);
+    deviceField2.setTextOnly(false);
     deviceField2.setNumCols(25);
     deviceField2.setIdentifier("");
     jPanel7.setLayout(flowLayout7);
@@ -275,7 +275,7 @@ public class OAM01Setup
     deviceChoice8.setUpdateIdentifier("");
     deviceChoice8.setIdentifier("");
     deviceField3.setOffsetNid(45);
-    deviceField3.setTextOnly(true);
+    deviceField3.setTextOnly(false);
     deviceField3.setNumCols(25);
     deviceField3.setIdentifier("");
     jPanel9.setLayout(flowLayout10);
@@ -309,7 +309,7 @@ public class OAM01Setup
     deviceChoice11.setUpdateIdentifier("");
     deviceChoice11.setIdentifier("");
     deviceField4.setOffsetNid(39);
-    deviceField4.setTextOnly(true);
+    deviceField4.setTextOnly(false);
     deviceField4.setNumCols(25);
     deviceField4.setIdentifier("");
     jPanel11.setLayout(flowLayout13);
@@ -343,7 +343,7 @@ public class OAM01Setup
     deviceChoice14.setUpdateIdentifier("");
     deviceChoice14.setIdentifier("");
     deviceField5.setOffsetNid(33);
-    deviceField5.setTextOnly(true);
+    deviceField5.setTextOnly(false);
     deviceField5.setNumCols(25);
     deviceField5.setIdentifier("");
     jPanel13.setLayout(flowLayout16);
@@ -377,7 +377,7 @@ public class OAM01Setup
     deviceChoice17.setUpdateIdentifier("");
     deviceChoice17.setIdentifier("");
     deviceField6.setOffsetNid(27);
-    deviceField6.setTextOnly(true);
+    deviceField6.setTextOnly(false);
     deviceField6.setNumCols(25);
     deviceField6.setIdentifier("");
     jPanel15.setLayout(flowLayout19);
@@ -411,7 +411,7 @@ public class OAM01Setup
     deviceChoice110.setUpdateIdentifier("");
     deviceChoice110.setIdentifier("");
     deviceField7.setOffsetNid(21);
-    deviceField7.setTextOnly(true);
+    deviceField7.setTextOnly(false);
     deviceField7.setNumCols(25);
     deviceField7.setIdentifier("");
     jPanel17.setLayout(flowLayout112);
@@ -445,7 +445,7 @@ public class OAM01Setup
     deviceChoice113.setUpdateIdentifier("");
     deviceChoice113.setIdentifier("");
     deviceField8.setOffsetNid(15);
-    deviceField8.setTextOnly(true);
+    deviceField8.setTextOnly(false);
     deviceField8.setNumCols(25);
     deviceField8.setIdentifier("");
     jPanel19.setLayout(flowLayout115);
