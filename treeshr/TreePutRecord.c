@@ -42,18 +42,6 @@
 #include <librtl_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#ifdef __VMS
-#include <fab.h>
-#include <rab.h>
-#include <nam.h>
-#include <starlet.h>
-
-#pragma extern_model save
-#pragma extern_model globalvalue
-extern RMS$_FLK;
-extern RMS$_WER;
-#pragma extern_model restore
-#endif /* __VMS */
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -174,17 +162,13 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	  }
 	  else
 	  {
-#ifdef __VMS
 	    if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
 		nci->error_on_put)
-#endif
 	      status = PutDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
-#ifdef __VMS
 	    else
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
-#endif
 	  }
 	}
       }
@@ -334,7 +318,7 @@ static int CopyToRecord(NCI *nci,
             nci->DATA_INFO.DATA_LOCATION.record_length = nci->length;
 	    nci->length = 0;
 	    status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
-#if  !(defined(__VMS) || defined(_WINDOWS))
+#if  !(defined(_WINDOWS))
             if (status & 1)
 	    { struct descriptor_xd tempxd = *io_dscr_ptr;
               io_dscr_ptr->l_length = 0;
@@ -359,7 +343,7 @@ static int CopyToRecord(NCI *nci,
 	  nci->data_in_att_block = 0;
 	  nci->length = 0;
 	  status = PointerToOffset(io_dscr_ptr->pointer, (unsigned int *)&nci->length);
-#if  !(defined(__VMS) || defined(_WINDOWS))
+#if  !(defined(_WINDOWS))
             if (status & 1)
 	    { struct descriptor_xd tempxd = *io_dscr_ptr;
               io_dscr_ptr->l_length = 0;
@@ -538,122 +522,13 @@ static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
  Executable:
 */
   *stv_ptr = 0;
-  if (df_ptr)
-  {
-    if (!df_ptr->open_for_write)
-    {
-#ifdef __VMS
-      sys$close(df_ptr->fab, 0, 0);
-      df_ptr->fab->fab$b_fac = FAB$M_GET | FAB$M_PUT | FAB$M_UPD;
-      df_ptr->fab->fab$l_fop = FAB$M_DFW | FAB$M_NAM;
-      if (df_ptr->fab->fab$b_shr != (FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_SHRUPD | FAB$M_MSE))
-      {
-        printf("FAB of datafile has been trashed, resetting share bits\n");
-        df_ptr->fab->fab$b_shr = FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_SHRUPD | FAB$M_MSE;
-      }
-      status = sys$open(df_ptr->fab, 0, 0);
-      for (tries = 0; (status == RMS$_FLK && tries < 100); tries++)
-      {
-        char *treename = malloc(info->treenam_ptr->dsc$w_length+1);
-        memcpy(treename, info->treenam_ptr->dscpointer, info->treenam_ptr->dsc$w_length);
-        treename[info->treenam_ptr->dsc$w_length] = 0;
-        printf("Reopen: File locked (%s), waiting...\n", treename);
-        free(treename);
-        status = sys$open(df_ptr->fab, 0, 0);
-        lib$wait(&(float)1.);
-      }
-#else /* __VMS */
-
-#endif
-    }
-  }
-  else
+  if (df_ptr != 0)
   {
     df_ptr = TreeGetVmDatafile();
     status = (df_ptr == NULL) ? TreeFAILURE : TreeNORMAL;
-    if (status & 1)
-    {
-#ifdef __VMS
-      *df_ptr->fab = cc$rms_fab;
-      df_ptr->fab->fab$l_nam = df_ptr->nam;
-      df_ptr->fab->fab$l_dna = info->filespec_ptr->dscpointer;
-      df_ptr->fab->fab$b_dns = info->filespec_ptr->dsc$w_length;
-      df_ptr->fab->fab$l_fna = datafile_name;
-      df_ptr->fab->fab$b_fns = strlen(datafile_name);
-      df_ptr->fab->fab$b_shr = FAB$M_SHRGET | FAB$M_SHRPUT | FAB$M_SHRUPD | FAB$M_MSE;
-      df_ptr->fab->fab$b_fac = FAB$M_GET | FAB$M_PUT | FAB$M_UPD;
-      df_ptr->fab->fab$l_fop = FAB$M_DFW;
-      *df_ptr->nam = cc$rms_nam;
-      status = sys$open(df_ptr->fab, 0, 0);
-      for (tries = 0; (status == RMS$_FLK && tries < 100); tries++)
-      {
-        static char time_chars[24];
-        static struct dsc$descriptor_s time_str = {23, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)&time_chars};
-        char *treename = malloc(info->treenam_ptr->dsc$w_length+1);
-        time_chars[23]=0;
-        memcpy(treename, info->treenam_ptr->dscpointer, info->treenam_ptr->dsc$w_length);
-        treename[info->treenam_ptr->dsc$w_length] = 0;
-        printf("Open: File locked (%s), waiting...\n", treename);
-        free(treename);
-        lib$date_time(&time_str);
-        lib$put_output(&time_str);
-        status = sys$open(df_ptr->fab, 0, 0);
-        lib$wait(&(float)1.);
-      }
-#else /* __VMS */
-#endif /* __VMS */
-    }
   }
   if (status & 1)
   {
-#ifdef __VMS
-    *df_ptr->getrab = cc$rms_rab;
-    df_ptr->getrab->rab$l_fab = df_ptr->fab;
-    df_ptr->getrab->rab$l_ctx = (unsigned int) df_ptr->asy_nci;
-    df_ptr->getrab->rab$l_rhb = (char *) &header;
-    TREE$GET_BUFFERING((struct dsc$descriptor *)&dataf_buffering, df_ptr->getrab);
-    status = sys$connect(df_ptr->getrab, 0, 0);
-    if (status & 1)
-    {
-      *df_ptr->putrab = *df_ptr->getrab;
-      df_ptr->putrab->rab$b_rac = RAB$C_SEQ;
-      df_ptr->putrab->rab$l_rop = RAB$M_EOF;
-      df_ptr->putrab->rab$l_rhb = (char *) df_ptr->record_header;
-      TREE$GET_BUFFERING((struct dsc$descriptor *)&dataf_buffering, df_ptr->putrab);
-      status = sys$connect(df_ptr->putrab, 0, 0);
-      if (status & 1)
-      {
-	*df_ptr->updaterab = *df_ptr->getrab;
-	df_ptr->updaterab->rab$b_rac = RAB$C_SEQ;
-	df_ptr->updaterab->rab$l_rhb = (char *) df_ptr->record_header;
-	TREE$GET_BUFFERING((struct dsc$descriptor *)&dataf_buffering, df_ptr->updaterab);
-	status = sys$connect(df_ptr->updaterab, 0, 0);
-	if (status & 1)
-	  df_ptr->$v_open_for_write = 1;
-	else
-	{
-	  *stv_ptr = df_ptr->updaterab->rab$l_stv;
-	  sys$close(df_ptr->fab, 0, 0);
-	  free(df_ptr);
-          df_ptr = NULL;
-	}
-      }
-      else
-      {
-	*stv_ptr = df_ptr->putrab->rab$l_stv;
-	sys$close(df_ptr->fab, 0, 0);
-	free(df_ptr);
-        df_ptr = NULL;
-      }
-    }
-    else
-    {
-      *stv_ptr = df_ptr->getrab->rab$l_stv;
-      sys$close(df_ptr->fab, 0, 0);
-      free(df_ptr);
-      df_ptr = NULL;
-    }
-#else /* __VMS */
     size_t len = strlen(info->filespec)-4;
     char *filename = strncpy(malloc(len+9),info->filespec,len);
     filename[len]='\0';
@@ -667,14 +542,9 @@ static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
       if (status & 1)
  	  df_ptr->open_for_write = 1;
     }
-#endif /* __VMS */
   }
   else
   {
-#ifdef __VMS
-    *stv_ptr = df_ptr->fab->fab$l_stv;
-#else
-#endif
     free(df_ptr);
     df_ptr = NULL;
   }
@@ -688,43 +558,6 @@ static int       OpenDatafileW(TREE_INFO *info, int *stv_ptr)
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
   int       status = 1;
-#ifdef __VMS
-  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-  static RFA clear_rfa;
-  void       (*error_ptr) () = 0;
-  void       (*succ_ptr) () = 0;
-  RFA      *rab_rfa = (RFA *) info->data_file->putrab->rab$w_rfa;
-  info->data_file->asy_nci->info = info;
-  info->data_file->record_header->node_number = nodenum;
-  *rab_rfa = clear_rfa;
-  info->data_file->putrab->rab$l_rop &= ~RAB$M_ASY;
-  while (bytes_to_put && (status & 1))
-  {
-    info->data_file->putrab->rab$w_rsz = min(DATAF_C_MAX_RECORD_SIZE, bytes_to_put);
-    bytes_to_put -= info->data_file->putrab->rsz;
-    info->data_file->putrab->rbf = (char *) data_dsc_ptr->pointer + bytes_to_put;
-    info->data_file->record_header->rfa = *rab_rfa;
-    if (!bytes_to_put)
-    {
-      if (!info->edit_ptr)
-	info->data_file->putrab->rab$l_rop |= RAB$M_ASY;
-      error_ptr = TreePutDatafileAst;
-      succ_ptr = TreePutDatafileAst;
-    }
-    status = sys$put(info->data_file->putrab, error_ptr, succ_ptr);
-  }
-  if ((status == RMS$_BLN) || (status == RMS$_BUSY) || (status == RMS$_RAB) || (status == RMS$_STR))
-  {
-    nci_ptr->error_on_put = 1;
-    nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
-    nci_ptr->DATA_INFO.ERROR_INFO.stv = 0;
-    nci_ptr->length = 0;
-    TreePutNci(info, nodenum, nci_ptr, 0);
-    info->data_file->record_header->node_number = 0;
-  }
-  if (status == RMS$_WER)
-    status = info->data_file->putrab->rab$l_stv;
-#else /* __VMS */
   int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   info->data_file->record_header->node_number = nodenum;
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
@@ -762,7 +595,40 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     }
   }
   fflush(info->data_file->put);
-#endif /* __VMS */
+  return status;
+}
+
+static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
+{
+  int       status = 1;
+  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  info->data_file->record_header->node_number = nodenum;
+  memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
+  while (bytes_to_put && (status & 1))
+  {
+    int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
+    int rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    fseek(info->data_file->put,rfa_l,SEEK_SET);
+    bytes_to_put -= bytes_this_time;
+    info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
+    status = fwrite((char *) info->data_file->record_header,sizeof(RECORD_HEADER), 1, info->data_file->put) == 1;
+    status = fwrite((char *) data_dsc_ptr->pointer + bytes_to_put, bytes_this_time, 1, info->data_file->put) == 1;
+    if (!bytes_to_put)
+    {
+      if (status & 1)
+      {
+        nci_ptr->error_on_put = 0;
+      }
+      else
+      {
+        nci_ptr->error_on_put = 1;
+        nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
+        nci_ptr->length = 0;
+      }
+      TreePutNci(info, nodenum, nci_ptr, 1);
+    }
+  }
+  fflush(info->data_file->put);
   return status;
 }
 

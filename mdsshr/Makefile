@@ -8,6 +8,7 @@ OBJECTS = \
 	MdsCompress.o \
 	MdsGet1DxA.o \
 	MdsGet1DxS.o \
+        MdsGetSetShotId.o \
 	MdsXdRoutines.o \
 	MdsPk.o
 

@@ -1169,6 +1169,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
   char *fspec;
   char *colon;
   *ctx = (FindFileCtx *)malloc(sizeof(FindFileCtx));
+  memset(*ctx,0,sizeof(FindFileCtx));
   lctx = *ctx;
 
   CSTRING_FROM_DESCRIPTOR(fspec, filespec)
