@@ -1,0 +1,219 @@
+module CW_WVEDIT
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+identifier
+    CustomizePrintWidget ;
+    WidgetRec ;
+
+include file "XmdsWidgets.uil";
+
+
+object
+    cw_wvedit: XmForm 
+        {
+        arguments
+            {
+            XmNborderWidth = 0;
+            XmNfractionBase = 1000;
+            XmNresizePolicy = XmRESIZE_NONE;
+            };
+        };
+   pane_separator: XmSeparator widget
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNbottomAttachment = XmATTACH_FORM;
+            XmNseparatorType = XmSINGLE_LINE;
+!            XmNleftAttachment = XmATTACH_FORM;
+            XmNorientation = XmVERTICAL;
+            XmNwidth = 1;
+            };
+        };
+    pane: XmPanedWindow
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNbottomAttachment = XmATTACH_FORM;
+            XmNmarginHeight = 0;
+            XmNmarginWidth = 0;
+            XmNspacing = 0;
+            XmNsashHeight = 5;
+            XmNsashWidth = 10;
+            XmNseparatorOn = false;
+            };
+        };
+    sash: XmFrame
+        {
+        arguments
+            {
+            XmNheight = 15;
+            XmNwidth = 5;
+            XmNtopAttachment = XmATTACH_POSITION;
+            XmNtopPosition = 900;
+            XmNleftAttachment = XmATTACH_POSITION;
+            XmNshadowThickness = 2;
+            XmNshadowType = XmSHADOW_OUT;
+            XmNtranslations = translation_table("~Shift<Btn1Down>:MoveVerticalPane()",
+                                                "~Shift<Btn1Motion>:MoveVerticalPane()",
+                                                "~Shift<Btn1Up>:MoveVerticalPane()",
+                                                "Shift<Btn1Up>:EqualPanes(V)");
+            };
+        };
+    waveform_popup: XmPopupMenu 
+        {
+        controls
+            {
+            XmPushButton
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Autoscale");
+                    };
+                callbacks
+                    {
+                    XmNactivateCallback = procedures
+                        {
+                        Autoscale(WidgetRec);
+                        };
+                    };
+                };
+                XmPushButton
+                    {
+                    arguments
+                        {
+                        XmNlabelString = 
+                        compound_string("Set At Limits");
+                        };
+                    callbacks
+                        {
+                        XmNactivateCallback = procedures
+                            {
+                            SetAtLimits(WidgetRec);
+                            };
+                        };
+                    };
+                XmPushButton
+                    {
+                    arguments
+                        {
+                        XmNlabelString = 
+                        compound_string("Print");
+                        };
+                    callbacks
+                        {
+                        XmNactivateCallback = procedures
+                            {
+                            Print(WidgetRec);
+                            };
+                        };
+                    };
+                XmPushButton
+                    {
+                    arguments
+                        {
+                        XmNlabelString = 
+                        compound_string("Print All");
+                        };
+                    callbacks
+                        {
+                        XmNactivateCallback = procedures
+                            {
+                            PrintAll(WidgetRec);
+                            };
+                        };
+                    };
+                XmPushButton
+                    {
+                    arguments
+                        {
+                        XmNlabelString = 
+                        compound_string("Configure Print");
+                        };
+                    callbacks
+                        {
+                        XmNactivateCallback = procedures
+                            {
+	                    ResetCustomizePrint(WidgetRec);
+        	            XmdsManageChildCallback(CustomizePrintWidget);
+                            };
+                        };
+                    };
+                };
+            };
+    wave: user_defined procedure XmdsCreateWavedraw
+        {
+        arguments
+            {
+            XmNpaneMinimum = 5;
+            XmNallowResize = true;
+            XmNborderWidth = 1;
+	    XmdsNpointerMode = XmdsPOINTER_MODE_ZOOM;
+	    XmdsNshowSelections = true;
+            XmdsNattachCrosshairs = true;
+            XmdsNshowMode = XmdsSHOW_MODE_BOTH;
+            };
+        callbacks
+            {
+            XmdsNcrosshairsCallback = procedures
+                {
+                Crosshairs(WidgetRec);
+                };
+            XmdsNalignCallback = procedures
+                {
+                 Align(WidgetRec);
+                };
+	    XmdsNmoveCallback = procedures
+		{
+		MovePoint(WidgetRec);
+		};
+	    XmdsNaddPointCallback = procedures
+		{
+		AddPoint(WidgetRec);
+		};
+	    XmdsNdeletePointCallback = procedures
+		{
+		DeletePoint(WidgetRec);
+		};
+	    XmdsNlimitsCallback = procedures
+		{
+		Limits(WidgetRec);
+		};
+	    XmdsNfitCallback = procedures
+		{
+		Fit(WidgetRec);
+		};
+	    XmdsNpasteCallback = procedures
+                {
+                Paste(WidgetRec);
+                };
+	    XmdsNcutCallback = procedures
+                {
+                Cut(WidgetRec);
+                };
+            };
+        };
+
+procedure
+    Autoscale(any);
+    SetAtLimits(any);
+    Crosshairs(any);
+    Align(any);
+    MovePoint(any);
+    AddPoint(any);
+    DeletePoint(any);
+    Limits(any);
+    Fit(any);
+    Paste(any);
+    Cut(any);
+    Print(any);
+    PrintAll(any);
+    ApplyCustomizePrint(any);
+    ResetCustomizePrint(any);
+
+end module;
+
