@@ -87,6 +87,11 @@ void pthread_lock_global_np()
   pthread_mutex_lock(&global_mutex);
 }
 
+int pthread_exit(int status)
+{
+	return status;
+}
+
 int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param)
 {
   *thread = _beginthread( rtn, 0, rtn_param);
