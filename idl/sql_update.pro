@@ -213,7 +213,6 @@ pro sql_update, table, p_key, master_table=master_table, key=key, values=values,
     print, idl_expr
     print, cmd
   endif
-  readwrite, table
   dummy = execute(idl_expr)
   return
 end
