@@ -3,11 +3,11 @@ import javax.swing.JFrame;
 import java.io.IOException;
 import java.util.*;
 
-public class LocalDataProvider extends MdsDataProvider implements DataProvider 
+public class LocalDataProvider extends MdsDataProvider implements DataProvider
 {
     Vector listeners = new Vector();
     Vector eventNames = new Vector();
-    
+
     static class EventDescriptor
     {
         UpdateEventListener listener;
@@ -18,7 +18,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             this.listener = listener;
             this.event = event;
             this.evId = evId;
-            
+
         }
         public boolean equals(Object obj)
         {
@@ -34,13 +34,13 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         try
         {
 	        System.loadLibrary("JavaMds");
-	    } 
+	    }
 	    catch(Throwable e)
-	    {	        
+	    {
 	    }
     }
-    
-    native public void SetEnvironmentSpecific(String in, String defaultNode);	
+
+    native public void SetEnvironmentSpecific(String in, String defaultNode);
     native public void Update(String exp, long s);
     native public String GetString(String in);
     native public float GetFloat(String in);
@@ -51,12 +51,19 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         var_idx++;
         return GetFloatArrayNative(in);
     }
+    public synchronized double[] GetDoubleArray(String in)  throws IOException
+    {
+        in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";// "fs_float(("+in+"))";
+        var_idx++;
+        return GetDoubleArrayNative(in);
+    }
 
     native public float[] GetFloatArrayNative(String in);
+    native public double[] GetDoubleArrayNative(String in);
     native public int[]   GetIntArray(String in);
     native public long[]  GetLongArray(String in);
 
-    public long[] GetShots(String in)  
+    public long[] GetShots(String in)
     {
         try {
             int shots[] =  GetIntArray(in.trim());
@@ -64,10 +71,10 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             for(int i = 0; i < shots.length; i++)
                 lshots[i] = shots[i];
             return lshots;
-        }catch(Exception exc) 
+        }catch(Exception exc)
         {
             System.err.println("Error in GetLongArray: " + exc);
-            
+
             return null;
         }
     }
@@ -87,7 +94,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             eventNames.addElement(event);
             evId = registerEvent(event, idx);
         }
-        listeners.addElement(new EventDescriptor(l, event, evId));    
+        listeners.addElement(new EventDescriptor(l, event, evId));
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)
     {
@@ -103,7 +110,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
                 unregisterEvent(evId);
             }
         }
-        
+
     }
     public void AddConnectionListener(ConnectionListener l){}
 
@@ -116,7 +123,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         throw(new IOException("Frames visualization on LocalDataProvider not implemented"));
     }
 
-    protected synchronized boolean  CheckOpen() {return true; } 
+    protected synchronized boolean  CheckOpen() {return true; }
     public boolean SupportsCompression(){return false;}
     public void SetCompression(boolean state){}
     public boolean SupportsContinuous() {return false; }
@@ -124,9 +131,9 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     public int     InquireCredentials(JFrame f, DataServerItem server_item){return DataProvider.LOGIN_OK;}
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
-    public boolean SupportsTunneling(){return false;}  
-    
-    
+    public boolean SupportsTunneling(){return false;}
+
+
     int getEventId(String event) throws Exception
     {
         for(int idx = 0; idx < listeners.size(); idx++)
@@ -137,7 +144,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         }
         throw(new Exception());
     }
-    
+
     public void fireEvent(int nameIdx)
     {
         String event = (String)eventNames.elementAt(nameIdx);
@@ -148,7 +155,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
                 evDescr.getListener().processUpdateEvent(new UpdateEvent(this, event));
         }
     }
-    
+
     native public int registerEvent(String event, int idx);
     native public void unregisterEvent(int evId);
 }
