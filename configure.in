@@ -227,6 +227,41 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+*apple-darwin*) LD="$CC";
+       CFLAGS="$CFLAGS -fno-common -no-cpp-precomp -dynamic -fPIC";
+       if (test "$F77" = "f77"); then 
+          FFLAGS="$FFLAGS -w -f -V -W"
+       elif (test "$F77" = "g77"); then
+          FFLAGS="$FFLAGS -fno-common -fno-backslash -Wno-globals";
+          FOR_LDFLAGS="-lg2c"; 
+       else 
+          FFLAGS="$FFLAGS -!bs -p -fno-common -no-cpp-precomp";
+          FOR_LDFLAGS="-lf2c";
+       fi;
+       FEXECLIBDIR="-L";
+       LDSHARE="";
+       LD_SHARE="";
+       LDARC="";
+       LD_ARC="";
+       FOR_LDFLAGS="-lg2c";
+dnl       LINKSHARED="-dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
+dnl          -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable";
+       LINKSHARED="-dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
+          -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -flat-namespace";
+       LINKMODULE="-bundle -flat_namespace -undefined suppress";
+       LINKJNI="-dynamiclib";
+       SHARETYPE=".dylib";
+       SHARETYPEJNI=".jnilib";
+       SHARETYPEMOD=".so";
+       LIBPTHREAD="";
+       TAR_EXCLUDE="--exclude";
+       jdk_dir="/System/Library/Frameworks/JavaVM.framework";
+       jni_inc_dir="$jdk_dir/Headers";
+       jni_md_inc_dir="$jni_inc_dir";
+       JVM="-framework JavaVM";
+       LIBPATH="DYLD_LIBRARY_PATH"
+       HUP_TO_XINETD="killall -HUP xinetd";
+       HUP_TO_INETD="killall -HUP inetd";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
        LDSHARE="";
@@ -288,6 +323,14 @@ AC_LANG_C
 AC_TRY_COMPILE(,int gub(){return((int)0x1ll);},AC_DEFINE(HAVE_LL_CONSTANTS))
 AC_LANG_RESTORE
 
+AC_MSG_CHECKING(if JNI libraries are different)
+if test "$LINKJNI" 
+then
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+	JNITYPE="$SHARETYPE"
+fi
 
 dnl Checks for libraries.
 
@@ -361,9 +404,44 @@ AC_STRUCT_TM
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
+dnl Check if we are missing <sys/sem.h> but can use <semaphore.h> API instead
+AC_MSG_CHECKING([if we should use named semaphores])
+AC_TRY_CPP([ #include <sys/sem.h> ] , namedsem=no, namedsem=yes )
+if test $namedsem = yes; then
+AC_TRY_CPP([ #include <semaphore.h> ], 
+  [AC_DEFINE(USE_SEMAPHORE_H) namedsem=yes], 
+   namedsem=no)
+fi
+AC_MSG_RESULT([ $namedsem])
+
+dnl Check if we want to try Named Pipes instead of <sys/msg.h> API
+AC_CHECK_HEADERS(sys/msg.h,mdsplus_ok=no,mdsplus_ok=yes)
+if test "$mdsplus_ok" = yes; then
+   AC_CHECK_HEADERS(sys/stat.h, mdsplus_ok=yes, mdsplus_ok=no)
+   AC_MSG_CHECKING(if we should use pipes for messaging)
+   if test "$mdsplus_ok" = yes; then
+        AC_DEFINE(USE_PIPED_MESSAGING)
+        AC_MSG_RESULT($mdsplus_ok)
+    fi
+fi
+
+AC_CACHE_CHECK([for timezone and daylight externals], mdsplus_cv_have_timezone, 
+    AC_TRY_LINK([#include <time.h>], [long z2 = timezone - daylight*3600;], 
+        mdsplus_cv_have_timezone=yes, mdsplus_cv_have_timezone=no))
+    if test $mdsplus_cv_have_timezone = yes; then
+        AC_DEFINE(HAVE_TIMEZONE)
+    else
+        AC_CACHE_CHECK([for tm_gmtoff in struct tm], mdsplus_cv_tm_gmtoff_in_tm,
+            AC_TRY_LINK([#include <time.h>], [struct tm tim; tim.tm_gmtoff = 0;],
+            mdsplus_cv_tm_gmtoff_in_tm=yes,mdsplus_cv_tm_gmtoff_in_tm=no))
+    fi
+    if test $mdsplus_cv_tm_gmtoff_in_tm = yes; then
+        AC_DEFINE(USE_TM_GMTOFF)
+    fi
 
 AC_MSG_CHECKING(for semun union declaration)
-AC_TRY_COMPILE([#include <sys/sem.h>],[union semun arg;],
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <sys/sem.h>],[union semun arg;],
 							 mdsplus_ok=yes,mdsplus_ok=no)
 if test $mdsplus_ok = no; then
 		 AC_DEFINE(NEED_SEMUN)
@@ -398,6 +476,7 @@ AC_PROG_GCC_TRADITIONAL
 AC_HEADER_STDC
 AC_CHECK_FUNCS(gethostname gettimeofday select socket)
 AC_CHECK_FUNCS(sigvec sigvector)
+AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(nis_local_host,mdsplus_ok=yes,mdsplus_ok=no)
 AC_CHECK_FUNC(malloc)
 if test $mdsplus_ok = yes; then
@@ -526,6 +605,8 @@ AC_SUBST(LIBSOCKET)
 AC_SUBST(LIBXP)
 AC_SUBST(LIBXEXT)
 AC_SUBST(LINKSHARED)
+AC_SUBST(LINKJNI)
+AC_SUBST(LINKMODULE)
 AC_SUBST(LOC)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
@@ -544,6 +625,8 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(NEED_SEMUN)
 AC_SUBST(RANLIB)
 AC_SUBST(SHARETYPE)
+AC_SUBST(SHARETYPEJNI)
+AC_SUBST(SHARETYPEMOD)
 AC_SUBST(SIZEOF_INT_P)
 AC_SUBST(SYBASE_INC)
 AC_SUBST(SYBASE_LIB)
@@ -557,6 +640,9 @@ AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(XM_LIBS)
 AC_SUBST(uiddir)
+AC_SUBST(USE_SEMAPHORE_H)
+AC_SUBST(USE_PIPED_MESSAGING)
+AC_SUBST(USE_TM_GMTOFF)
 
 AC_OUTPUT(Makefile
 envsyms
