@@ -78,7 +78,7 @@ void ResetErrors();
 
 static int zero = 0;
 static int one = 1;
-static int two = 2;
+static unsigned short two = 2;
 
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
@@ -251,6 +251,8 @@ static int CheckClient(char *host_c, char *user_c)
 
 static void AddClient(int sock,struct sockaddr_in *sin)
 {
+
+
   if (sock >= 0)
   {
     static Message m;
