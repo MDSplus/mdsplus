@@ -1,4 +1,5 @@
 <?php
+if (!extension_loaded('mdsplus')){dl('mdsplus_php.so');}
 $handle=mdsplus_connect("unknown_host_specified");
 if ($msg = mdsplus_error())
 {
