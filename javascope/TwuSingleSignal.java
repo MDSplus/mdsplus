@@ -93,9 +93,10 @@ class TwuSingleSignal
         // checkForError() ; And fail on old errors? Why?
         try
         {
-            // Don't remember errors from previous attempts
+            // Don't remember errors and data from previous attempts
             errorSource = null ;
             error = false ;
+            dataAvailable = false ;
 
             if (isAbscissa)
               fetch_X_Properties(dp) ;
@@ -127,14 +128,7 @@ class TwuSingleSignal
         }
 
         String mypropsurl = yprops.FQAbscissa0Name() ;
-        fetch_my_Properties (dp, mypropsurl);
-
-        if (! properties.valid() )
-          throwError ("Error loading properties of X data !");
-
-        // it's a shame, but the TWUProperties does not directly register
-        // the exception that occurred here, so the _nature_ of
-        // the error remains uncertain.
+        fetch_my_Properties (dp, mypropsurl, "X");
     }
 
     private void fetch_Y_Properties(TwuDataProvider dp) throws Exception
@@ -143,23 +137,22 @@ class TwuSingleSignal
           throwError ("No input signal set !");
 
         String propsurl = TwuDataProvider.GetSignalPath (source, dp.shot, dp.provider_url, dp.experiment) ;
-        fetch_my_Properties (dp, propsurl);
+        fetch_my_Properties (dp, propsurl, "Y");
+    }
+
+    private void fetch_my_Properties(TwuDataProvider dp, String propsurl, String XorY ) 
+        throws Exception
+    {
+        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, "Load Properties", 0, 0));
+        properties = new TWUProperties (propsurl);
+        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, null, 0, 0));
 
         if (! properties.valid())
         {
             if (dp.error_string==null)
-              dp.error_string = "No Such Y Signal : " + propsurl ;
-            throwError ("Error loading properties of Y data !" + propsurl );
+              dp.error_string = "No Such "+XorY+" Signal : " + propsurl ;
+            throwError ("Error loading properties of "+XorY+" data !" + propsurl );
         }
-
-    }
-
-    private void fetch_my_Properties(TwuDataProvider dp, String propsurl) throws Exception
-    {
-        // TwuDataProvider dp = TwuDataProvider.this ;
-        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, "Load Properties", 0, 0));
-        properties = new TWUProperties (propsurl);
-        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, null, 0, 0));
     }
 
     private void fake_my_Properties(TwuDataProvider dp) throws Exception
