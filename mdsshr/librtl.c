@@ -869,7 +869,7 @@ int LibFindFile(struct descriptor *filespec, struct descriptor *result, void **c
 
 int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result, void **ctx)
 {
-  LibFindFile(filespec, result, ctx);
+  return LibFindFile(filespec, result, ctx);
 }
 
 int LibFindFileEnd(void **ctx)
@@ -908,16 +908,20 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, F
 unsigned int LibCallg(void **arglist, FARPROC *routine)
 {
   int a_idx;
+
   unsigned int retval;
   for (a_idx=*(int *)arglist; a_idx > 0; a_idx--)
   {
+
 	  void *arg = arglist[a_idx];
     __asm mov eax, arg
+
 	__asm push eax
   }
   __asm call routine
   __asm mov retval, eax
   for (a_idx=*(int *)arglist; a_idx > 0; a_idx--) __asm pop eax
+
   return retval;
 }
 #elif defined(__osf__)
