@@ -828,8 +828,7 @@ int   cli_dcl_parse(		/* Returns: status			*/
 		 * "paramId" indicates number of parameters on line.
 		 * Check that all required parameters are present ...
 		 *=====================================================*/
-    prm = currentParameters + paramId;
-    for ( ; prm && prm->prmA_value ; prm++)
+    for ( ; (prm=currentParameters+paramId) && prm->prmA_value ; )
        {
         val = prm->prmA_value;
         if (!(val->valL_flags & VAL_M_REQUIRED))
