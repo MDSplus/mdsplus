@@ -209,21 +209,10 @@ static void RemoveJob(Job *job)
       prev->next = j->next;
     else
       Jobs = j->next;
+    if (j->has_condition != HAS_CONDITION)
+      free(j);
   }
   unlock_job_list();
-  if (j)
-  {
-    if (j->has_condition == HAS_CONDITION)
-    {
-      pthread_mutex_lock(&j->mutex);
-      j->has_condition = 0;
-      j->done = 1;
-      pthread_cond_destroy(&j->condition);
-      pthread_mutex_unlock(&j->mutex);
-      pthread_mutex_destroy(&j->mutex);
-    }
-    free(j);
-  }
 }
 
 static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
@@ -242,6 +231,10 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
   {
     if (j->retstatus)
       *j->retstatus = status;
+    if (j->ast)
+      (*j->ast)(j->astparam,msg);
+    if (removeJob && j->jobid != MonJob)
+      RemoveJob(j);
     if (j->has_condition == HAS_CONDITION)
     {
       pthread_mutex_lock(&j->mutex);
@@ -249,10 +242,6 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
       pthread_cond_signal(&j->condition);
       pthread_mutex_unlock(&j->mutex);
     }
-    if (j->ast)
-      (*j->ast)(j->astparam,msg);
-    if (removeJob && j->jobid != MonJob)
-      RemoveJob(j);
   }
 }
       
@@ -274,6 +263,11 @@ void ServerWait(int jobid)
         if (j->done != NOT_DONE)
           break;
       }
+      pthread_mutex_lock(&j->mutex);
+      pthread_cond_destroy(&j->condition);
+      pthread_mutex_unlock(&j->mutex);
+      pthread_mutex_destroy(&j->mutex);
+      free(j);
     }
   }
 }
