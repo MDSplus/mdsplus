@@ -5,6 +5,9 @@
 #include <tdimessages.h>
 #include <stdio.h>
 #define MAXTYPE (DTYPE_FTC + 1)
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern void CvtConvertFloat();
 extern int IsRoprand();
 

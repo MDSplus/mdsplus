@@ -4,6 +4,9 @@
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
 #include <mdsdescrip.h>
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int Tdi3Multiply();
 extern int Tdi3Complex();
 extern int Tdi3UnaryMinus();

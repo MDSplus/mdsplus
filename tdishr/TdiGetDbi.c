@@ -16,6 +16,8 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 static DESCRIPTOR(pathtext, "PATH");
 static DESCRIPTOR(coloncolon, "::");
 #define EOL {0,DbiEND_OF_LIST,0,0}

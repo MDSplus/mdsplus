@@ -42,6 +42,8 @@
 #define  DTYPE_D DTYPE_G
 #endif
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
 extern int TdiGetIdent();

@@ -26,6 +26,8 @@
 #include <mdsshr.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiGetArgs();
 extern int TdiGetData();
 extern int TdiGetLong();

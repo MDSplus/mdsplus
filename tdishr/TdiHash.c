@@ -15,6 +15,8 @@ static short TdiREF_HASH[1024];/*TdiHASH_MAX];*/
 #include <string.h>
 #include <stdio.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 #define upcase(ptr) ((*(char *)(ptr) >= 'a' && *(char *)(ptr) <= 'z') ? *(char *)(ptr) & 0xdf : *(char *)(ptr))
 
 static int	TdiHashOne(int len, char *pstring) {

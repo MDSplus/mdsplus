@@ -19,6 +19,8 @@
 #define	P_ARG		88
 #define P_SUBS		0
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern unsigned int LEX_CONST;
 unsigned int TdiIndent = 1;
 extern int Tdi0Decompile(  );

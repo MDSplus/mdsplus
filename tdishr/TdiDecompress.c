@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiGetArgs();
 extern int Tdi2Vector();
 extern int TdiFindImageSymbol();

@@ -4,6 +4,8 @@
 /*  CMS REPLACEMENT HISTORY, Element ISROPRAND.C */
 #include <mdsdescrip.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 #define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
 #define f_float_sign(val) ((*(int *)val >> 15) &0x1)
 #define IsRoprandF(val) ((f_float_exp(val) == 0) && (f_float_sign(val) == 1))

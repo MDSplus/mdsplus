@@ -25,6 +25,8 @@
 #include "tdirefstandard.h"
 
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern struct descriptor *TdiItoXSpecial;
 
 extern unsigned short

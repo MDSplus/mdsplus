@@ -17,6 +17,8 @@
 #include "tdirefcat.h"
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 int				TdiGetShape(
 int				narg,
 struct descriptor_xd	dat[1],

@@ -49,6 +49,8 @@
 #include <string.h>
 #include <librtl_messages.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern unsigned short OpcEquals, OpcEqualsFirst;
 extern unsigned short OpcFun;
 extern unsigned short OpcIn, OpcInOut, OpcOptional, OpcOut, OpcAsIs;

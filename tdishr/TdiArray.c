@@ -24,6 +24,8 @@
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 int Tdi_RandomSeed = 1234567;
 
 extern int TdiData();

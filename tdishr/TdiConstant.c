@@ -9,6 +9,9 @@
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <mdsshr.h>
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 TdiRefStandard(Tdi1Constant)
 
 	status = MdsCopyDxXd((struct descriptor *)(*TdiRefFunction[opcode].f3)(), out_ptr);

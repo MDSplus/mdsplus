@@ -12,6 +12,8 @@
 #include <tdimessages.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 static int one = 1;
 static struct descriptor one_dsc = {sizeof(one),DTYPE_L,CLASS_S,(char *)&one};
 

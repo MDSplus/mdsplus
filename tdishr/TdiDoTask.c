@@ -26,6 +26,8 @@ typedef struct {int lo; unsigned int hi;} quadw;
 #include <mdsshr.h>
 #include <treeshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiTaskOf();
 extern int TdiGetFloat();
 extern int TdiConvert();

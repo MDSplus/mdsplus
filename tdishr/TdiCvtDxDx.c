@@ -11,6 +11,8 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiConvert();
 extern int TdiGetShape();
 

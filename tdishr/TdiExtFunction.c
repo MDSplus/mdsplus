@@ -34,6 +34,8 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern unsigned short OpcDescr;
 extern unsigned short OpcFun;
 extern unsigned short OpcPrivate;

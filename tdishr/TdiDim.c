@@ -59,6 +59,8 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <string.h>
 #include <tdimessages.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiConvert(  ); 
 extern int Tdi3Subtract(  );
 extern int CvtConvertFloat();

@@ -11,6 +11,8 @@
 #include <string.h>
 #include <tdimessages.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiHash();
 
 static char		false = 0;

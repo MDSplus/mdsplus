@@ -24,6 +24,8 @@
 #include <mds_stdarg.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 static DESCRIPTOR(AND,		" & ");
 static DESCRIPTOR(OR,		" | ");
 static DESCRIPTOR(NEGATE,	"!");

@@ -17,6 +17,8 @@ extern int TdiON_ERROR;
 #include <stdlib.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiIntrinsic();
 extern int TdiEvaluate();
 extern int TdiGetLong();

@@ -10,6 +10,10 @@
 #include <string.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 /*--------------------------------------------------------------
 	Default path name.
 */

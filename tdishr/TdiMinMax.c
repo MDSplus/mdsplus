@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiEvaluate();
 extern int Tdi1Same();
 extern int TdiData();

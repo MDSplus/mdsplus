@@ -15,6 +15,8 @@
 */
 #include "tdirefcat.h"
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 #ifdef __VMS
 
 #define F_SYM   "E"

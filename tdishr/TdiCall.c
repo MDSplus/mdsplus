@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern unsigned short OpcDescr;
 extern unsigned short OpcRef;
 extern unsigned short OpcVal;

@@ -13,6 +13,7 @@
 #include <mdsdescrip.h>
 #define COM 
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiIntrinsic();
 

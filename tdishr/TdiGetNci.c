@@ -39,6 +39,8 @@
 #include <mdsshr.h>
 #include <stdio.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern unsigned short OpcVector;
 
 extern int TdiGetData();

@@ -16,6 +16,8 @@
 #include "opcbuiltins.h"
 #undef OPC
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 	/******************************
 	Shorthand for conversions:
 	Destinctive forms.

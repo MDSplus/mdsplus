@@ -14,6 +14,8 @@ extern unsigned short OpcCompile;
 #include <stdlib.h>
 #include <string.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern int TdiEvaluate();
 extern int TdiYacc();
 extern int TdiIntrinsic();
