@@ -1,4 +1,5 @@
-PARTS = mdsshr \
+PARTS = ipcs \
+        mdsshr \
 	treeshr \
 	tdishr \
 	tditest \
