@@ -25,6 +25,7 @@ FUN  PUBLIC MITDEVICES() {
 	'INCAA16\0',	 'MitDevices\0',		
 	'INCAA4\0',	 'MitDevices\0',		
 	'INCAA6\0',	 'MitDevices\0',		
+        'INCAA_TR10\0',  'MitDevices\0',
 	'J1819\0',	 'MitDevices\0',		
 	'J221\0',		 'MitDevices\0',		
 	'J412\0',		 'MitDevices\0',		

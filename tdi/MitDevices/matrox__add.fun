@@ -16,4 +16,5 @@ public fun matrox__add(in _path, out _nidout)
   DevAddAction(_path//':INIT_ACTION','INIT','INIT',50,'CAMAC_SERVER',_path,_nid);
   DevAddAction(_path//':STORE_ACTION','STORE','STORE',50,'CAMAC_SERVER',_path,_nid);
   DevAddEnd();
+  return(1);
 }
