@@ -12,7 +12,7 @@ FUN PUBLIC PTHEAD_SIZE(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
 	  } 
 	else 
 	  {
-	    	return(PTDATA_ERROR(_error));
+	    	return(ZERO(7,0));
 	  }
 
 }

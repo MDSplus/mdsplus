@@ -22,7 +22,7 @@ FUN PUBLIC PTHEAD_REAL32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
 	_error=0;
 	_size=PTHEAD_SIZE(_pointname//"          ",_shot,_error)[3];
         if (_size == 0) {
-		_error=-1;
+	  if (_error == 0)  _error=-1; 
 	}
 	if (_error == 0) {
 		_real32=ARRAY(_size,0.0);
@@ -36,7 +36,7 @@ FUN PUBLIC PTHEAD_REAL32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
 /*		write (*,"CACHED: ",_pointname,"\n\r"); */
 		return(_real32);
 	} else {
-	    	return(PTDATA_ERROR(_error));
+	    abort();
 	}
 
 }
