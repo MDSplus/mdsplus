@@ -83,7 +83,11 @@ int SGSetMAXBUF(int scsiDevice, int new)
 int SGGetMAXBUF(int scsiDevice)
 {
   if (scsiDevice >= 0 || scsiDevice <= 9)
-    return BUFFSIZE[scsiDevice] ? BUFFSIZE[scsiDevice] : MAXBUF[scsiDevice];
+  {
+    char *bufptr;
+    int fd = OpenScsi(scsiDevice,&bufptr);
+    return BUFFSIZE[scsiDevice];
+  }
   else
     return -1;
 }
