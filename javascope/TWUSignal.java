@@ -59,7 +59,7 @@ public class TWUSignal
         boolean success = false;
         twup            = SigURL;
 
-        if(maxSamples==0)
+        if(maxSamples<=0)
           maxSamples=twup.LengthTotal();
 
         samples2Read    = maxSamples;
@@ -85,44 +85,75 @@ public class TWUSignal
     private boolean 
     tryToConstruct(int firstSample, int step, int maxSamples)
     {
-        boolean success=false;
-        double  last;
-        double  first;
+        final double min = twup.Minimum();
+        final double max = twup.Maximum();
+        final double last;
+        final double first;
 
-        if (step==0)
-          step=1;
+        /* See sanitizeAQ() in the WUServer family */
+
+        if (firstSample <0 )
+          firstSample = 0;
+    
+        if (step  <1 )
+          step = 1;
+    
+        if (maxSamples <0 )
+          maxSamples = 0;
+
 
         if (twup.Incrementing()) 
         {
-            first = twup.Minimum();
-            last  = twup.Maximum();
+            first = min;
+            last  = max;
         }
         else if (twup.Decrementing()) 
         {
-            first = twup.Maximum();
-            last  = twup.Minimum();
+            first = max;
+            last  = min;
         }
         else
-          return success=false;
-    
-        double segments = twup.LengthTotal() -1;    /* Note the minus 1 */
-        double span     = last-first;
-        double delta    = span / segments;
+          return false;
 
-        while ( sampleCount < maxSamples )
+
+        final long lentotal  = twup.LengthTotal() ;
+        final long stillToGo = lentotal - firstSample ;
+        final long stepsToGo = stillToGo < 1 ? 0 : 1 + (stillToGo-1)/step;
+        final long toReturn  = stepsToGo < maxSamples ? stepsToGo : maxSamples ;
+        
+        final double span       = last-first;
+        final long   segments   = lentotal -1;
+
+        final double delta      = segments==0 ? 0 : span / segments;
+        final double stepXdelta = step * delta ;
+        final double firstValue = firstSample * delta + first;
+        
+
+        int ix=0; 
+        while ( ix < toReturn ) // or: (ix < maxSamples ) ???
         {
-            ydata[sampleCount] = (float)((sampleCount + firstSample) *step * delta + first);
+            ydata[ix] = (float)(ix * stepXdelta + firstValue);
 
-            if (ydata[sampleCount] > twup.Maximum())
-              ydata[sampleCount] = (float)twup.Maximum();
+
+            /* 
+             * The following limiting tests, and looping until (ix<maxSamples)
+             * were required, in some early versions of jScope; probably as an
+             * artefact of the problem discussed below, at getBulkData().
+             */
+
+            if (ydata[ix] > max)
+              ydata[ix] = (float)max;
             
-            else if (ydata[sampleCount] < twup.Minimum())
-              ydata[sampleCount] = (float)twup.Minimum();
-            
-            sampleCount++;
+            else if (ydata[ix] < min)
+              ydata[ix] = (float)min;
+
+            ++ix;
         }
-        finished =true;
-        return success=true ;
+
+
+        sampleCount = ix ;
+        finished    = true;
+        return true ;
     }
 
 
@@ -244,6 +275,31 @@ public class TWUSignal
     public float[]
     getBulkData()
     {
+        /*
+         * Several users of this class do not use the getActualSampleCount()
+         * method, but rely on getBulkData().length to see how many samples
+         * are available.  Although this seems reasonable, from the caller's
+         * point of view, it is wrong in a number of borderline situations.
+         *
+         * This could be resolved by using a vector, but that would be slower
+         * and the clientcodes depent on arrays.  Since the error conditions
+         * do not occur, very often, it seems better to resolve it by creating
+         * a new array in those few cases when the getActualSampleCount() is
+         * less then the array size.
+         */
+
+        if(sampleCount<ydata.length)
+        {
+            float[] newydata = new float[sampleCount];
+
+            if (sampleCount>0)
+              System.arraycopy (ydata,0,newydata,0,sampleCount);
+
+            ydata=null; // Attempt to trigger garbage collection.
+
+            ydata=newydata;
+        }
+
         return ydata;
     }
 
