@@ -1676,6 +1676,14 @@ int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
   } else
     return descr(dtype,value,n1,n2,&zero);
 }
+int WINAPI descr4VB(int *dtype, int *n1, int *n2, int *n3, void *value)
+{ if (*dtype == DTYPE_CSTRING)
+  {
+    int len = strlen(value);
+    return descr(dtype,value,n1,n2,n3,&zero,&len);
+  } else
+    return descr(dtype,value,n1,n2,n3,&zero);
+}
 int WINAPI MdsValue1VB(char *expression, int *ansd, int *retlen)
  { return MdsValue(expression,ansd,&zero,retlen);}
 int WINAPI MdsValue2VB(char *expression, int *arg1d, int *ansd, int *retlen)
