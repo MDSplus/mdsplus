@@ -2,10 +2,16 @@
 #
 # MDSplus server daemon procedure
 #
-cd $1
-. $1/setup.sh
-if [ ! -d "logs" ]
-then
-  mkdir logs
-fi
-bin/mdsip mdsip >> $1/logs/access 2>> $1/logs/errors
+# This script is just a sample script. You should copy this to a site specific
+# directory and modify it to include additional environment variables such as
+# tree paths.
+#
+# Parameters:
+#
+#       $1 = service or portnumber
+#       $2 = mdsplus system root directory
+#       $3 = log directory (directory must exist)
+#       $4 = optional alternate mdsip.hosts file
+cd $2
+. $2/setup.sh
+bin/mdsip $1 $4 >> $3/access 2>> $3/errors
