@@ -1,0 +1,4 @@
+CFLAGS = -I../include -g
+SHARE_TYPE = so
+MAKE_DEPEND = cc $(CFLAGS) -xM {} > .depend \;
+LD_SHARED_LIB_OPTIONS = -G ldl
