@@ -538,7 +538,6 @@ static SOCKET AttachPort(int addr, short port)
   int sock;
   struct sockaddr_in sin;
   ClientList *l,*new;
-  DebugBreak();
   for (l=Clients;l;l=l->next)
     if (l->addr == addr && l->port == port)
     {
@@ -548,6 +547,7 @@ static SOCKET AttachPort(int addr, short port)
         job.h.addr = l->addr;
         job.h.port = l->port;
         RemoveClient(&job);
+		break;
       }
       else
         return l->sock;

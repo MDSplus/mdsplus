@@ -13,7 +13,7 @@ int pthread_cond_init(HANDLE *cond)
   return (*cond == NULL);
 }
 
-void pthread_cond_signal(HANDLE *cond)
+int pthread_cond_signal(HANDLE *cond)
 {
   BOOL status;
 #ifdef ___DEBUG_IT
@@ -23,21 +23,25 @@ void pthread_cond_signal(HANDLE *cond)
 #ifdef ___DEBUG_IT
   printf("SetEvent on %p completed with status = %d\n",*cond,status);
 #endif
-  status = ResetEvent(*cond);
+  if (status)
+	  status = ResetEvent(*cond);
 #ifdef ___DEBUG_IT
   printf("ResetEvent on %p completed with status = %d\n",*cond,status);
 #endif
+  return status == 0;
 }
 
-void pthread_cond_wait(HANDLE *cond)
+int pthread_cond_wait(HANDLE *cond)
 {
+	int status;
 #ifdef ___DEBUG_IT
    printf("waiting for condition %p\n",*cond);
 #endif
-   WaitForSingleObject(*cond,INFINITE);
+   status = WaitForSingleObject(*cond,INFINITE);
 #ifdef ___DEBUG_IT
    printf("got condition %p\n",*cond);
 #endif
+   return(status == WAIT_FAILED);
 }
 
 void pthread_cond_timedwait(HANDLE *cond, int msec)
