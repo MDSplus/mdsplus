@@ -120,17 +120,17 @@ public float[]  GetFrameTimes(String in_frame)
 //	    return null;
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
-	    case desc.DTYPE_FLOAT:
+	    case Descriptor.DTYPE_FLOAT:
 	        return desc.float_data;
-	    case desc.DTYPE_LONG: 
+	    case Descriptor.DTYPE_LONG: 
 	        float[] out_data = new float[desc.int_data.length];
 	        for(int i = 0; i < desc.int_data.length; i++)
 		        out_data[i] = (float)desc.int_data[i];
 	    return out_data;
-	    case desc.DTYPE_BYTE:
+	    case Descriptor.DTYPE_BYTE:
 	        error = "Cannot convert byte array to float array";
 	    return null;	        
-	    case desc.DTYPE_CSTRING:
+	    case Descriptor.DTYPE_CSTRING:
 	        error = desc.error;
 	    return null;
     }	        
@@ -153,13 +153,13 @@ public byte[] GetFrameAt(String in_frame, int frame_idx)
 private byte[] GetByteArray(Descriptor desc)
 {
     switch(desc.dtype)  {
-	    case desc.DTYPE_FLOAT:
-	    case desc.DTYPE_LONG: 
+	    case Descriptor.DTYPE_FLOAT:
+	    case Descriptor.DTYPE_LONG: 
 	        error = "Cannot convert float or long array to byte array";
 	    return null;
-	    case desc.DTYPE_BYTE:
+	    case Descriptor.DTYPE_BYTE:
 	        return desc.byte_data;
-	    case desc.DTYPE_CSTRING:
+	    case Descriptor.DTYPE_CSTRING:
 	        error = desc.error;
 	    return null;
     }	
@@ -265,18 +265,18 @@ public synchronized float[] GetFloatArray(String in)
 	return null;
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
-	case desc.DTYPE_FLOAT:
+	case Descriptor.DTYPE_FLOAT:
 	    return desc.float_data;
-	case desc.DTYPE_LONG: 
+	case Descriptor.DTYPE_LONG: 
 	    float[] out_data = new float[desc.int_data.length];
 	    for(int i = 0; i < desc.int_data.length; i++)
 		out_data[i] = (float)desc.int_data[i];
 	    return out_data;
 	    
-	case desc.DTYPE_CHAR:
+	case Descriptor.DTYPE_CHAR:
 	    error = "Cannot convert a string to float array";
 	    return null;
-	case desc.DTYPE_CSTRING:
+	case Descriptor.DTYPE_CSTRING:
 	    error = desc.error;
 	    return null;
     }	
@@ -290,19 +290,19 @@ public synchronized int[] GetIntArray(String in)
 	return null;
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
-	case desc.DTYPE_LONG:
+	case Descriptor.DTYPE_LONG:
 	    return desc.int_data;
-	case desc.DTYPE_FLOAT:
+	case Descriptor.DTYPE_FLOAT:
 	    {
 		int out_data[] = new int[desc.float_data.length];
 		for(int i = 0; i < desc.float_data.length; i++)
 		    out_data[i] = (int)(desc.float_data[i] + 0.5);
 		return out_data;
 	    }
-	case desc.DTYPE_CHAR:
+	case Descriptor.DTYPE_CHAR:
 	    error = "Cannot convert a string to int array";
 	    return null;
-	case desc.DTYPE_CSTRING:
+	case Descriptor.DTYPE_CSTRING:
 	    error = desc.error;
 	    return null;
     }	
