@@ -16,7 +16,7 @@ function EventImage
           end
         endif
         if strlen(file) eq 0 then $
-          file = findfile('/urs/local/lib/libIdlMdsEvent.sl')
+          file = findfile('/usr/local/lib/libIdlMdsEvent.sl')
         if strlen(file) eq 0 then $
            message, 'Could not find libIdlMdsEvent.sl in SHLIB_PATH'
         ans = file
@@ -63,7 +63,7 @@ function mdsevent_getevi,id
 end
 
 function mdsevent_func,ev
-  e = mdsevent_getevi(ev.id)
+  e = mdsevent_getevi(widget_info(ev.id,/child))
   return,{mds_event,id:ev.id,top:ev.top,handler:ev.handler,event_info:e}
 end
 
@@ -75,10 +75,13 @@ pro mdsevent_can,id
   return
 end
 
-function mdsevent,parent,name
+function mdsevent,parent,name,uvalue=uvalue
   forward_function mds$socket
   stub = widget_base(parent)
+  ss = widget_base(stub)  ;; this child widget will hold the event_struct as the user value
   event_struct=call_external(EventImage(),'IDLMdsEvent',mds$socket(), parent, stub, name, value=[1,0,0,1])
-  widget_control,stub,kill_notify='mdsevent_can',set_uvalue=event_struct,event_func='mdsevent_func'
+  widget_control,stub,event_func='mdsevent_func'
+  widget_control,ss,set_uvalue=event_struct,kill_notify='mdsevent_can'  ;; kill_notify on this widget so still have access to uvalue
+  if (keyword_set(uvalue)) then widget_control,stub,set_uvalue=uvalue
   return, stub
 end
