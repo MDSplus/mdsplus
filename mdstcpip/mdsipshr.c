@@ -481,11 +481,11 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
-  unsigned char idx    = (unsigned char)lpvArgv[1];
-  unsigned char dtype  = (unsigned char)lpvArgv[2];
-  unsigned char nargs  = (unsigned char)lpvArgv[3];
-  short         length = (short)lpvArgv[4];
-  char          ndims  = (char)lpvArgv[5];
+  unsigned char idx    = (unsigned char)(int)lpvArgv[1];
+  unsigned char dtype  = (unsigned char)(int)lpvArgv[2];
+  unsigned char nargs  = (unsigned char)(int)lpvArgv[3];
+  short         length = (short)(int)lpvArgv[4];
+  char          ndims  = (char)(int)lpvArgv[5];
   int status;
   sighold(SIGALRM);
   status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
