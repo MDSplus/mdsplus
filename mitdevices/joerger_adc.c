@@ -3,7 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
-#include "joerger_adc.h"
+#include "joerger_adc_gen.h"
 
 extern int TdiCompile();
 extern int CamBytcnt();

@@ -3,7 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 
-#include "incaa4.h"
+#include "incaa4_gen.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <treeshr.h>

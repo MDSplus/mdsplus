@@ -12,8 +12,8 @@
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <xmdsshr.h>
-#include "l8590_mem.h"
-#include "l8590_sclr.h"
+#include "l8590_mem_gen.h"
+#include "l8590_sclr_gen.h"
 
 extern unsigned short OpcValue;
 

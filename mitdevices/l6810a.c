@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
-#include "l6810a.h"
+#include "l6810a_gen.h"
 extern int CamXandQ();
 
 #define min(a,b) ((a) < (b)) ? (a) : (b)

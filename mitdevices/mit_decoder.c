@@ -7,7 +7,7 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <libroutines.h>
-#include "mit_decoder.h"
+#include "mit_decoder_gen.h"
 #include "decoder.h"
 
 extern int TdiExecute();

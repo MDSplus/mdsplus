@@ -5,7 +5,7 @@
 
 #include <treeshr.h>
 #include <string.h>
-#include "mit__gate.h"
+#include "mit__gate_gen.h"
 #include "decoder.h"
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))

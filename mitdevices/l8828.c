@@ -6,7 +6,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdlib.h>
-#include "l8828.h"
+#include "l8828_gen.h"
 
 extern unsigned short OpcDble;
 extern unsigned short OpcAdd;

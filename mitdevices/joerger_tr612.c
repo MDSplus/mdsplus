@@ -7,7 +7,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include <libroutines.h>
-#include "joerger_tr612.h"
+#include "joerger_tr612_gen.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;

@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 
 #include <treeshr.h>
-#include "ec727.h"
+#include "ec727_gen.h"
 
 extern int TdiCompile();
 static int one=1;

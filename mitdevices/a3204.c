@@ -1,7 +1,7 @@
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
 #include <mds_stdarg.h>
-#include "a3204.h"
+#include "a3204_gen.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <treeshr.h>

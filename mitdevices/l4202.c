@@ -5,7 +5,7 @@
 #include <treeshr.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#include "l4202.h"
+#include "l4202_gen.h"
 
 extern unsigned short OpcValue;
 

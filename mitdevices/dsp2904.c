@@ -10,7 +10,7 @@
 #include <xmdsshr.h>
 #include <libroutines.h>
 #include <stdlib.h>
-#include "dsp2904.h"
+#include "dsp2904_gen.h"
 
 static int one=1;
 #ifdef pio 

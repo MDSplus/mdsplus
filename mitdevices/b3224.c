@@ -1,6 +1,6 @@
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
-#include "b3224.h"
+#include "b3224_gen.h"
 extern int CamPiow();
 static int one=1;
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 24, 0), &one, 0),status)

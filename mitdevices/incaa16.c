@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
-#include "incaa16.h"
+#include "incaa16_gen.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <treeshr.h>

@@ -37,7 +37,7 @@ int PREAMP_ADD(struct descriptor *name,
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <ncidef.h>
-#include "preamp.h"
+#include "preamp_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <xmdsshr.h>
@@ -108,7 +108,7 @@ static void ask_incaa_proc(Widget w)
 }
 
 #define InInitStruct IncaaInInitStruct
-#include "incaa16.h"
+#include "incaa16_gen.h"
 #undef InInitStruct
 
 static Boolean ask_incaa_button(Widget w)

@@ -10,7 +10,7 @@
 #include <Xm/Xm.h>
 #include <Xm/List.h>
 #include <xmdsshr.h>
-#include "mdsdcl.h"
+#include "mdsdcl_gen.h"
 
 
 extern int mdsdcl_do_command();

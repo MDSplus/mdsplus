@@ -5,7 +5,7 @@
 #include <strroutines.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "joerger_adcp.h"
+#include "joerger_adcp_gen.h"
 
 extern int TdiCompile();
 static int one=1;

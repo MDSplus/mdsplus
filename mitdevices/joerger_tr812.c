@@ -8,7 +8,7 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include <string.h>
-#include "joerger_tr812.h"
+#include "joerger_tr812_gen.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;

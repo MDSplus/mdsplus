@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "l2415.h"
+#include "l2415_gen.h"
 
 extern int TdiCompile();
 static int one=1;

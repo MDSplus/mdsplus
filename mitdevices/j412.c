@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 
 #include <mdsshr.h>
-#include "j412.h"
+#include "j412_gen.h"
 
 extern int TdiData();
 extern int TdiLong();

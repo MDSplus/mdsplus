@@ -6,7 +6,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdlib.h>
-#include "h912.h"
+#include "h912_gen.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;

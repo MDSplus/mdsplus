@@ -10,7 +10,7 @@
 #include <Xmds/XmdsExpr.h>
 #include <xmdsshr.h>
 #include <stdlib.h>
-#include "reticon120.h"
+#include "reticon120_gen.h"
 
 extern int TdiNe();
 extern int TdiGetLong();

@@ -89,7 +89,7 @@ The data is dumped into the 4302 memory modules without using the hardware
 
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "fera.h"
+#include "fera_gen.h"
 extern int CamPiow();
 extern int CamStopw();
 extern int TdiExecute();

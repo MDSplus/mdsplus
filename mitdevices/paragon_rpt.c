@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#include "paragon_rpt.h"
+#include "paragon_rpt_gen.h"
 
 extern int TdiVector();
 extern int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp);

@@ -102,7 +102,7 @@ Assumptions:
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "hv4032.h"
+#include "hv4032_gen.h"
 
 extern CamLamwait();
 extern TdiCompile();

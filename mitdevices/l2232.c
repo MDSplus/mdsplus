@@ -39,7 +39,7 @@ extern int CamPiow();
 extern int CamStopw();
 extern int CamXandQ();
 extern int TdiCompile();
-#include "l2232.h"
+#include "l2232_gen.h"
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */

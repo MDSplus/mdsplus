@@ -9,7 +9,7 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <libroutines.h>
-#include "u_of_m_spect.h"
+#include "u_of_m_spect_gen.h"
 
 
 extern int TdiCompile();

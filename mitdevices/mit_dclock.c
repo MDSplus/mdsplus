@@ -5,7 +5,7 @@
 
 #include <treeshr.h>
 #include <string.h>
-#include "mit_dclock.h"
+#include "mit_dclock_gen.h"
 #include "decoder.h"
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))

@@ -3,7 +3,7 @@
 #include <strroutines.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "a12.h"
+#include "a12_gen.h"
 
 extern int CamXandQ();
 

@@ -40,7 +40,7 @@ int J1819_TRIGGER(struct descriptor *niddsc);
 #include <strroutines.h>
 #include <string.h>
 #include <stdlib.h>
-#include "j1819.h"
+#include "j1819_gen.h"
 extern int CamPiow();
 extern int CamXandQ();
 extern int CamStopw();

@@ -3,7 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
-#include "l8206.h"
+#include "l8206_gen.h"
 
 static int one=1;
 static int zero=0;

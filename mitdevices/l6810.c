@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
-#include "l6810.h"
+#include "l6810_gen.h"
 
 extern int CamXandQ();
 

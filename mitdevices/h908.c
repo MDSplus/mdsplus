@@ -7,7 +7,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdlib.h>
-#include "h908.h"
+#include "h908_gen.h"
 
 extern short OpcAdd;
 extern short OpcMultiply;

@@ -5,7 +5,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdlib.h>
-#include "incaa6.h"
+#include "incaa6_gen.h"
 
 extern unsigned short OpcMultiply;
 extern unsigned short OpcValue;

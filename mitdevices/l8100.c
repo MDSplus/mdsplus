@@ -2,7 +2,7 @@
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
-#include "l8100.h"
+#include "l8100_gen.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <treeshr.h>

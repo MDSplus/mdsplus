@@ -9,7 +9,7 @@
 #include <usagedef.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include "t4012.h"
+#include "t4012_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <xmdsshr.h>

@@ -1,7 +1,7 @@
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
 #include <mds_stdarg.h>
-#include "b2408.h"
+#include "b2408_gen.h"
 #include <treeshr.h>
 #include <libroutines.h>
 #include <mitdevices_msg.h>

@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <libroutines.h>
-#include "l3512a.h"
+#include "l3512a_gen.h"
 
 extern unsigned short OpcValue;
 

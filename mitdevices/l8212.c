@@ -3,7 +3,7 @@
 #include <mds_gendevice.h>
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
-#include "l8212_04.h"
+#include "l8212_04_gen.h"
 #include <ncidef.h>
 
 #include <Mrm/MrmPublic.h>

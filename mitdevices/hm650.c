@@ -27,7 +27,7 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
-#include "hm650.h"
+#include "hm650_gen.h"
 
 extern int TdiCompile();
 static int one=1;

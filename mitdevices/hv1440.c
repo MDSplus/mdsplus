@@ -111,7 +111,7 @@ Assumptions:
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <libroutines.h>
-#include "hv1440.h"
+#include "hv1440_gen.h"
 
 extern int CamQ();
 extern int TdiCompile();

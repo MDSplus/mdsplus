@@ -6,7 +6,7 @@
 #include <Xm/XmP.h>
 #include <stdio.h>
 #include <Xmds/XmdsWavedraw.h>
-#include "b5910a.h"
+#include "b5910a_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>

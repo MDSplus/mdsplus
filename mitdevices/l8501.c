@@ -3,7 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
-#include "l8501.h"
+#include "l8501_gen.h"
 #include <ncidef.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>

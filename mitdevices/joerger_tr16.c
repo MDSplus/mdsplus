@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <stdlib.h>
-#include "joerger_tr16.h"
+#include "joerger_tr16_gen.h"
 
 extern int CamXandQ();
 

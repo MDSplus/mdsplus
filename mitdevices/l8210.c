@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "l8210.h"
+#include "l8210_gen.h"
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <Xm/Scale.h>

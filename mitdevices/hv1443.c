@@ -3,7 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
-#include "hv1443.h"
+#include "hv1443_gen.h"
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 

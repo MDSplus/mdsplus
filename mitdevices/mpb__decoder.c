@@ -15,7 +15,7 @@
 #include <xmdsshr.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
-#include "mpb__decoder.h"
+#include "mpb__decoder_gen.h"
 
 extern int TdiGetFloat();
 extern int TdiExecute();

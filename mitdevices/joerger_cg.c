@@ -5,7 +5,7 @@
 #include <strroutines.h>
 #include <treeshr.h>
 #include <mdsshr.h>
-#include "joerger_cg.h"
+#include "joerger_cg_gen.h"
 extern int TdiSlopeOf();
 extern int TdiCompile();
 static int one=1;
