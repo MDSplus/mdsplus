@@ -428,7 +428,7 @@ class jDispatcher implements ServerListener
         //update status in report
         Action action = event.getAction();
         try {
-            String mdsevent = ((DispatchData)(action.getAction().getDispatch())).getCompletion().toString();
+            String mdsevent = ((StringData)(((DispatchData)(action.getAction().getDispatch())).getCompletion())).getString();
             if(mdsevent != null && !mdsevent.equals("\"\""))
             {
                 MdsHelper.generateEvent(mdsevent, 0);
