@@ -56,7 +56,9 @@ extern int SetCompressionLevel();
 extern int GetCompressionLevel();
 extern int MdsSetServerPortname(char *);
 extern int MdsSetClientAddr(int addr);
+extern SOCKET CreateListener();
 
+static int CheckClient(char *host_c, char *user_c);
 typedef ARRAY_COEFF(char,7) ARRAY_7;
 
 typedef struct _context { void *tree;
@@ -76,7 +78,6 @@ typedef struct _client { SOCKET sock;
                        } Client;
 
 static Client *ClientList = 0;
-static fd_set fdactive;
 static int multi = 0;
 static int IsService = 0;
 static int IsWorker = 0;
@@ -101,18 +102,18 @@ extern int TdiResetPublic();
 extern int TdiResetPrivate();
 extern char *TranslateLogical();
 
-static int ConnectToInet(short port);
-static int CreateMdsPort(short port, int multi);
-static void AddClient(int socket, struct sockaddr_in *sin);
+static int CreateMdsPort(short port, int multi, int dofork);
+static void AddClient(int socket, struct sockaddr_in *sin,char *dn);
 static void RemoveClient(Client *c);
 static void ProcessMessage(Client *c, Message *message);
 static void ExecuteMessage(Client *c);
 static void SendResponse(Client *c,int status, struct descriptor *xd);
-static int DoMessage(Client *c);
+static int DoMessage(SOCKET s);
 static void ConvertFloat(int nbytes, int in_type, char in_length, char *in_ptr, int out_type, char out_length, char *out_ptr);
 static void PrintHelp(char *option);
 static void SetMode(char modein, char *mode);
 
+extern int ConnectToInet(unsigned short port,void (*AddClient_in)(int,struct sockaddr_in *,char *), int (*DoMessage_in)(SOCKET s));
 extern Message *GetMdsMsg(int sock, int *status);
 extern int SendMdsMsg(int sock, Message *m, int oob);
 void GetErrorText(int status, struct descriptor_xd *xd);
@@ -159,7 +160,7 @@ static void StartWorker(char **argv)
 	     (HANDLE)atoi(argv[7]),GetCurrentProcess(),(HANDLE *)&sock,
 	     PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
   ClientList = malloc(sizeof(Client));
-  FD_SET(sock,&fdactive);
+  SetFD(sock);
   memset(ClientList,0,sizeof(*ClientList));
   ClientList->sock = sock;
   IsWorker = 1;
@@ -366,13 +367,8 @@ static int BecomeUser(char *remuser, struct descriptor *user)
 int mdsip(int portIn, char modeIn,  int compressionIn)
 {
   char port_name[64];
-  static struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
-  fd_set readfds;
-  struct timeval timeout = {1,0};
   InitializeSockets();
   /* DebugBreak(); */
-  FD_ZERO(&fdactive);
   
   sprintf(port_name, "%d", portIn);
   Portname = malloc(strlen(port_name) + 1);
@@ -387,13 +383,8 @@ int mdsip(int portIn, char modeIn,  int compressionIn)
 
 int main(int argc, char **argv)
 {
-  static struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
-  fd_set readfds;
-  struct timeval timeout = {1,0};
   InitializeSockets();
   /* DebugBreak(); */
-  FD_ZERO(&fdactive);
   if (!CommandParsed) 
     ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
 
@@ -407,6 +398,7 @@ int main(int argc, char **argv)
     switch (mode)
     {
     case 0:     ContextSwitching = 0; multi = 0; break;
+    case 'I':   ContextSwitching = 0; multi = 0; break;
     case 'm':   ContextSwitching = 1; multi = 1; break;
     case 's':   ContextSwitching = 0; multi = 1; break;
     case 'i':   InstallService(0); exit(0); break;
@@ -418,10 +410,15 @@ int main(int argc, char **argv)
 #endif
     }
   }
-  if (multi || IsService)
+  if (multi || IsService || mode == 'I')
   {
     InitWorkerCommunications();
-    serverSock = CreateMdsPort(port,1);
+    if (multi)
+    {
+     char multistr[] = "MULTI";
+       CheckClient(0,multistr);
+    }
+    serverSock = CreateMdsPort(port,1,mode == 'I');
     shut = 0;
     if (IsService)
     {
@@ -431,16 +428,28 @@ int main(int argc, char **argv)
   }
   else if (!IsWorker)
   {
-    serverSock = ConnectToInet(port);
+    serverSock = ConnectToInet(port,AddClient,DoMessage);
     shut = (ClientList == NULL);
+#ifdef GLOBUS
+    if (shut) exit(0);
+#endif
   }
-  readfds = fdactive;
+#ifdef GLOBUS
+  Poll();
+#else
+  {
+  static struct sockaddr_in sin;
+  int tablesize = FD_SETSIZE;
+  extern fd_set FdActive();
+  struct timeval timeout = {1,0};
+  fd_set readfds;
+  readfds = FdActive();
   while (!shut && (select(tablesize, &readfds, 0, 0, (IsWorker || IsService) ? &timeout : 0) != SOCKET_ERROR))
   {
-    if (FD_ISSET(serverSock, &readfds))
+    if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
     {
       int len = sizeof(struct sockaddr_in);
-      AddClient(accept(serverSock, (struct sockaddr *)&sin, &len),&sin);
+      (*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len),&sin,0);
     }
     else
     {
@@ -451,36 +460,39 @@ int main(int argc, char **argv)
         {
           if (*workerShutdown)
           {
-            shutdown(c->sock,2);
-            closesocket(c->sock);
+            CloseSocket(c->sock);
             exit(0);
           }
         }
         if (FD_ISSET(c->sock, &readfds))
-          DoMessage(c);
+          (*DoMessage)(c->sock);
       }
     }
     shut = (ClientList == NULL) && !multi && !IsService;
-    readfds = fdactive;
+    readfds = FdActive();
   }
-  shutdown(serverSock,2);
-  closesocket(serverSock);
+  CloseSocket(serverSock);
   return 1;
+  }
+#endif
 }
 
-static int DoMessage(Client *c)
+static int DoMessage(SOCKET sock)
 {
   int status;
-  Message *msgptr = GetMdsMsg(c->sock,&status);
-  if (status & 1)
+  Message *msgptr = GetMdsMsg(sock,&status);
+  Client *c;
+  for (c=ClientList;c && c->sock != sock;c = c->next);
+  if (c)
   {
-    send(c->sock, 0, 0, 0);
-    ProcessMessage(c, msgptr);
+    if (status & 1)
+      ProcessMessage(c, msgptr);
+    else
+      RemoveClient(c);
   }
-  else
-    RemoveClient(c);
   if (msgptr)
     free(msgptr);
+  RegisterRead(sock);
   return status;
 }
 
@@ -508,8 +520,8 @@ static int CheckClient(char *host_c, char *user_c)
   int ok = 0;
   if (f)
   {
-    static char line_c[256];
-    static char match_c[256];
+    static char line_c[1024];
+    static char match_c[1024];
     static struct descriptor line_d = {0, DTYPE_T, CLASS_S, line_c};
     static struct descriptor match_d = {0, DTYPE_T, CLASS_S, match_c};
     static struct descriptor match = {0, DTYPE_T, CLASS_D, 0};
@@ -524,7 +536,7 @@ static int CheckClient(char *host_c, char *user_c)
     }
     match_d.length = strlen(match_c);
     StrUpcase(&match,&match_d);
-    while (ok==0 && fgets(line_c,255,f))
+    while (ok==0 && fgets(line_c,1023,f))
     {
       if (line_c[0] != '#')
       {
@@ -560,7 +572,7 @@ static int CheckClient(char *host_c, char *user_c)
 
 #endif
 
-static void AddClient(SOCKET sock,struct sockaddr_in *sin)
+static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
 {
 
   if (sock >= 0)
@@ -570,7 +582,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
     char *timestr;
     char *user = 0;
     char *user_p = 0;
-    struct hostent *hp;
+    struct hostent *hp=0;
 #ifdef HAVE_VXWORKS_H
     char hostent_buf[512];
 #endif
@@ -583,11 +595,6 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
     int m_status;
     int user_compression_level;
     m.h.msglen = sizeof(MsgHdr);
-#ifdef HAVE_VXWORKS_H
-    hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);
-#else
-    hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
-#endif
     m_user = GetMdsMsg(sock,&status);
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
     {
@@ -595,12 +602,21 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
       memcpy(user,m_user->bytes,m_user->h.length);
       user[m_user->h.length] = 0;
     }
-    user_p = user ? user : "?";
+    user_p = dn ? dn : (user ? user : "?");
     tim = time(0);
     timestr = ctime(&tim);
     timestr[strlen(timestr)-1] = 0;
+#ifndef GLOBUS
+#ifdef HAVE_VXWORKS_H
+    hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);
+#else
+    hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
+#endif
     if (hp) ok = CheckClient(hp->h_name,user_p);
     if (ok == 0) ok = CheckClient((char *)inet_ntoa(sin->sin_addr),user_p);
+#else
+    ok = CheckClient(0,dn);
+#endif
     if (ok & 1)
     {
       user_compression_level = m_user->h.status & 0xf;
@@ -608,8 +624,9 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
         user_compression_level = MaxCompressionLevel;
     }
     m_status = m.h.status = (ok & 1) ? (1 | (user_compression_level << 1)) : 0;
-    m.h.client_type = m_user->h.client_type;
-    free(m_user);
+    m.h.client_type = m_user ? m_user->h.client_type : 0; 
+    if (m_user)
+      free(m_user);
     SetSocketOptions(sock);
     SendMdsMsg(sock,&m,0);
     if (NO_SPAWN)
@@ -617,7 +634,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
       if (m_status && NO_SPAWN)
       {
         Client *new = malloc(sizeof(Client));
-        FD_SET(sock,&fdactive);
+        SetFD(sock);
         new->sock = sock;
         new->context.tree = 0;
         new->message_id = 0;
@@ -627,7 +644,9 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
 	      new->tdicontext[i] = NULL;
         for (i=0;i<MAX_ARGS;i++)
           new->descrip[i] = NULL;
+/*
         new->addr = *(int *)&sin->sin_addr;
+	*/
         new->next = NULL;
         for (c=ClientList; c && c->next; c = c->next);
         if (c) 
@@ -636,6 +655,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
           ClientList = new;
        }
 
+       RegisterRead(sock);
 #ifndef HAVE_VXWORKS_H
       pid = getpid();
 #else
@@ -647,16 +667,21 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin)
     {
       pid = SpawnWorker(sock);
     }
+#ifndef GLOBUS
     if (hp)
       printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,sock, pid, user_p, hp->h_name, inet_ntoa(sin->sin_addr));
     else
       printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, sock, pid, user_p, inet_ntoa(sin->sin_addr));
+#else
+    printf("%s (pid %d) Connection received from:\n%s\r\n",timestr,pid,dn);
+#endif
     if (!(m_status & 1))
     {
       printf("Access denied\n");
-      shutdown(sock,2);
-      closesocket(sock);
+      CloseSocket(sock);
     }
+    else
+       printf("Connected\n");
     if (user) free(user);
 	fflush(stdout);
   }
@@ -684,9 +709,8 @@ static void RemoveClient(Client *c)
 {
   Client *p,*nc;
   MdsEventList *e,*nexte;
-  FD_CLR(c->sock,&fdactive);
-  shutdown(c->sock,2);
-  closesocket(c->sock);
+  ClearFD(c->sock);
+  CloseSocket(c->sock);
   FreeDescriptors(c);
   for (e=c->event; e; e=nexte)
   {
@@ -1086,7 +1110,7 @@ static void ExecuteMessage(Client *c)
 
 static void SendResponse(Client *c, int status, struct descriptor *d)
 {
-  static Message *m = 0;
+  Message *m = 0;
   int flag = 0;
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *)d)->arsize;
   int num = nbytes/max(1,d->length);
@@ -1281,74 +1305,9 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
   free(m);
 }
 
-static int CreateMdsPort(short port, int multi_in)
+static int CreateMdsPort(short port, int multi_in, int dofork)
 {
-  static struct sockaddr_in sin;
-  int one=1;
-/*
-  long sendbuf=32768,recvbuf=32768;
-*/
-  long sendbuf=5000,recvbuf=5000;
-  SOCKET s;
-  int status;
-  char multistr[] = "MULTI";
-  if (multi)
-    CheckClient(0,multistr);
-  s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s == -1)
-  {
-    printf("Error getting Connection Socket\n");
-    return 0;
-  }
-  FD_SET(s,&fdactive);
-  SetSocketOptions(s);
-  status = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&multi_in,sizeof(1));
-  if (status < 0)
-  {
-    printf("Error setting socket options\n");
-    exit(1);
-  }
-  if (multi_in)
-  {
-    sin.sin_port = port;
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = INADDR_ANY;
-    status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
-    if (status < 0)
-    {
-      perror("Error binding to service\n");
-      exit(1);
-    }
-  }
-  status = listen(s,5);
-  if (status < 0)
-  {
-    printf("Error from listen\n");
-    exit(1);
-  }
-  return s;
-}
-
-static int ConnectToInet(short port)
-{
-  static struct sockaddr_in sin;
-  SOCKET s=-1;
-  int n = sizeof(sin);
-  int status = 1;
-#ifdef _VMS
-  status = sys$assign(&INET, &s, 0, 0);
-#else
-  s=0;
-#endif
-  if (!(status & 1)) { exit(status);}
-  FD_SET(s,&fdactive);
-  if ((status=getpeername(s, (struct sockaddr *)&sin, &n)) < 0)
-  {
-    perror("Error getting peer name");
-    exit(0);
-  }
-  AddClient(s,&sin);
-  return CreateMdsPort(port, 0);
+  return CreateListener(port,AddClient,DoMessage,dofork);
 }
 
 void ResetErrors()
@@ -1410,6 +1369,7 @@ static void PrintHelp(char *option)
   printf("      -p port|service    Specifies port number or tcp service name\n");
   printf("      -m                 Use multi mode (accepts multiple connections each with own context)\n");
   printf("      -s                 Use server mode (accepts multiple connections with shared context)\n");
+  printf("      -I                 Use inetd mode (accepts multiple connections spawning a process to handle each connection)\n");
   printf("      -i                 Install service (WINNT only)\n");
   printf("      -r                 Remove service (WINNT only)\n");
   printf("      -h hostfile        Specify alternate mdsip.hosts file\n");
@@ -1497,6 +1457,11 @@ static void SetMode(char modein,char *mode)
   int multiple = 0;
   switch (modein)
   {
+  case 'I': if (*mode == 0)
+              *mode = 'I';
+            else
+              multiple = 1;
+            break;
   case 'm': if (*mode == 0)
               *mode = 'm';
             else if (*mode == 'i')
@@ -1556,6 +1521,7 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
         switch ( option[1] )
 	{
 	  case 'p': if (argc > (i+1)) *port = ParsePort(argv[++i],portname); else PrintHelp(0); break;
+          case 'I': SetMode('I',mode); break;
 	  case 'm': SetMode('m',mode); break;
 	  case 's': SetMode('s',mode); break;
 	  case 'i': SetMode('i',mode); break;

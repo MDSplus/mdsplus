@@ -218,7 +218,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   }
   FD_SET(s,&fdactive);
   SetSocketOptions(s,1);
-  sin.sin_port = htons(port);
+  sin.sin_port = port;
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
   status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
