@@ -338,7 +338,7 @@ int main(int argc, char **argv)
   {
     switch (mode)
     {
-    case 0:     ContextSwitching = 0; multi = 0; NO_SPAWN = 0; break;
+    case 0:     ContextSwitching = 0; multi = 0; break;
     case 'm':   ContextSwitching = 1; multi = 1; break;
     case 's':   ContextSwitching = 0; multi = 1; break;
     case 'i':   InstallService(0); exit(0); break;
@@ -354,7 +354,10 @@ int main(int argc, char **argv)
     serverSock = CreateMdsPort(port,1);
     shut = 0;
     if (IsService)
+    {
+      NO_SPAWN = multi;
       SetThisServiceStatus(SERVICE_RUNNING,0);
+    }
   }
   else if (!IsWorker)
   {
