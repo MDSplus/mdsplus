@@ -649,6 +649,8 @@ unsigned int	ncopies, status;
 */
 TdiRefStandard2(Tdi2Shft)
 
+	cats[1].out_dtype = cats[0].out_dtype;
+	cats[1].out_cat = cats[0].out_cat;
 	cats[narg].out_dtype = cats[0].out_dtype;
 	cats[narg].out_cat = cats[0].out_cat;
 	return 1;

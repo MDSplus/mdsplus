@@ -57,7 +57,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <string.h>
 
 #include <mdsdescrip.h>
-/*#include <mdsdescrip.h>*/
+#include <mdstypes.h>
 #include <tdimessages.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -461,6 +461,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #define char_min -128
 #define short_min -32768
 #define int_min 0x80000000
+#define _int64_min 0x8000000000000000ll
 #define min_struct(type) type##_min
 
 #undef Operate
@@ -471,46 +472,46 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   switch (scalars)\
   {\
     case 0: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p++ << *in2p++); \
-	    else  {*outp = (type)(*in1p++ >> *in2p); \
+	    else  {*outp = (type)(*in1p++ >> (-1 * (*in2p))); \
             if (*outp < 0) *outp = (type)(*outp & ~(min_struct(type) >> \
-	    (*in2p - 1))); in2p++; outp++;} \
+	    (-1 * (*in2p - 1)))); in2p++; outp++;} \
 	    } break;\
     case 1: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p << *in2p++); \
-	    else  {*outp = (type)(*in1p >> *in2p); \
+	    else  {*outp = (type)(*in1p >> (-1 * (*in2p))); \
             if (*outp < 0) *outp = (type)(*outp & ~(min_struct(type) >> \
-	    (*in2p - 1))); in2p++; outp++;} \
+	    (-1 * (*in2p - 1)))); in2p++; outp++;} \
 	    } break;\
     case 2: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p++ << *in2p); \
-	    else  {*outp = (type)(*in1p++ >> *in2p); \
+	    else  {*outp = (type)(*in1p++ >> (-1 * (*in2p))); \
             if (*outp < 0) *outp = (type)(*outp & ~(min_struct(type) >> \
-	    (*in2p - 1))); outp++;} \
+	    (-1 * (*in2p - 1)))); outp++;} \
 	    } break;\
     case 3: if (*in2p > 0) *outp++ = (type)(*in1p << *in2p); \
-	    else  {*outp = (type)(*in1p >> *in2p); \
+	    else  {*outp = (type)(*in1p >> (-1 * (*in2p))); \
             if (*outp < 0) *outp = (type)(*outp & ~(min_struct(type) >> \
-	    (*in2p - 1)));} \
+	    (-1 * (*in2p - 1))));} \
 	    break;\
   }\
   break;\
 }
 
-#define OperateU(type) \
-{ type *in1p = (type *)in1->pointer;\
-  type *in2p = (type *)in2->pointer;\
-  type *outp = (type *)out->pointer;\
+#define OperateU(type1,type2) \
+{ type1 *in1p = (type1 *)in1->pointer;\
+  type2 *in2p = (type2 *)in2->pointer;\
+  type1 *outp = (type1 *)out->pointer;\
   switch (scalars)\
   {\
-    case 0: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p++ << *in2p++); \
-	    else *outp++ = (type)(*in1p++ >> *in2p++); \
+    case 0: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p++ << *in2p++); \
+	    else *outp++ = (type1)(*in1p++ >> (-1 * (*in2p++))); \
 	    } break;\
-    case 1: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p << *in2p++); \
-	    else *outp++ = (type)(*in1p >> *in2p++); \
+    case 1: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p << *in2p++); \
+	    else *outp++ = (type1)(*in1p >> (-1 * (*in2p++))); \
 	    } break;\
-    case 2: while (nout--) {if (*in2p > 0) *outp++ = (type)(*in1p++ << *in2p); \
-	    else *outp++ = (type)(*in1p++ >> *in2p); \
+    case 2: while (nout--) {if (*in2p > 0) *outp++ = (type1)(*in1p++ << *in2p); \
+	    else *outp++ = (type1)(*in1p++ >> (-1 * (*in2p))); \
 	    } break;\
-    case 3: if (*in2p > 0) *outp = (type)(*in1p << *in2p); \
-	    else *outp = (type)(*in1p >> *in2p); \
+    case 3: if (*in2p > 0) *outp = (type1)(*in1p << *in2p); \
+	    else *outp = (type1)(*in1p >> (-1 * (*in2p))); \
 	    break;\
   }\
   break;\
@@ -522,11 +523,13 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   switch (in1->dtype)
     {
     case DTYPE_B:  Operate(char)
-    case DTYPE_BU: OperateU(unsigned char)
+    case DTYPE_BU: OperateU(unsigned char,char)
     case DTYPE_W:  Operate(short)
-    case DTYPE_WU: OperateU(unsigned short)
+    case DTYPE_WU: OperateU(unsigned short,short)
     case DTYPE_L:  Operate(int)
-    case DTYPE_LU: OperateU(unsigned int)
+    case DTYPE_LU: OperateU(unsigned int,int)
+    case DTYPE_Q:  Operate(_int64)
+    case DTYPE_QU: OperateU(_int64u,_int64)
     default: return TdiINVDTYDSC;
   }
   return 1;
@@ -562,6 +565,8 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2, struct descri
     case DTYPE_WU: Operate(unsigned short, >> )
     case DTYPE_L:  Operate(int, >> )
     case DTYPE_LU: Operate(unsigned int, >> )
+    case DTYPE_Q:  Operate(_int64, >> )
+    case DTYPE_QU: Operate(_int64u, >> )
     default: return TdiINVDTYDSC;
   }
   return 1;
@@ -578,6 +583,8 @@ int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2, struct descrip
     case DTYPE_WU: Operate(unsigned short, << )
     case DTYPE_L:  Operate(int, << )
     case DTYPE_LU: Operate(unsigned int, << )
+    case DTYPE_Q:  Operate(_int64, << )
+    case DTYPE_QU: Operate(_int64u, << )
     default: return TdiINVDTYDSC;
   }
   return 1;
