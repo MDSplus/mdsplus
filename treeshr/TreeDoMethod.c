@@ -36,6 +36,9 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
+#include <signal.h>
+#include <setjmp.h>
+#include <pthread.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -45,6 +48,15 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern void *DBID;
+
+static jmp_buf Env;
+static pthread_t this_thread = 0;
+
+static void signal_handler(int dummy)
+{
+  if (pthread_self() == this_thread)
+    longjmp(Env, 1);
+}
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
@@ -85,6 +97,15 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   void *arglist[256];
   count(nargs);
   arglist[0] = (void *)nargs;
+
+  this_thread = pthread_self();
+  signal(SIGSEGV, signal_handler);
+  signal(SIGBUS, signal_handler);
+  if (setjmp(Env) != 0)
+  {
+    printf("Do Method signal caught\n");
+    return TreeFAILURE;
+  }
 
   if (nid_dsc->dtype != DTYPE_NID || (!nid_dsc->pointer))
     return TreeNOMETHOD;
