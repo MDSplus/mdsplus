@@ -7,8 +7,8 @@ public fun L5613__init(as_is _nid, optional _method)
     private _N_CHAN_A_INPUT = 5;
     private _N_CHAN_A_OUTPUT = 6;
     private _N_CHAN_A_RANGE = 7;
-    private _N_CHAN_B_INPUT = 9;
-    private _N_CHAN_B_OUTPUT = 10;
+    private _N_CHAN_B_OUTPUT = 9;
+    private _N_CHAN_B_INPUT = 10;
     private _N_CHAN_B_RANGE = 11;
 
     _name = DevNodeRef(_nid, _N_NAME);
@@ -47,8 +47,8 @@ public fun L5613__init(as_is _nid, optional _method)
     DevCamChk(_name, CamPiow(_name, 0, 16, _range_a, 16),1,*); 
     DevCamChk(_name, CamPiow(_name, 1, 16, _range_b, 16),1,*); 
 
-	DevPut(_nid, _N_CHAN_A_OUTPUT, _output_a); 
-    DevPut(_nid, _N_CHAN_B_OUTPUT, _output_b); 
+	DevPut(_nid, _N_CHAN_A_INPUT, _output_a); 
+    DevPut(_nid, _N_CHAN_B_INPUT, _output_b); 
 
     return (1);
 }
