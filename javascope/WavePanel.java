@@ -14,69 +14,114 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
    Label              coords;
    RowColumnLayout    row_col_layout;
    Setup              setup;
-   ScopeConfiguration sc;
 
-   WavePanel(Setup _setup, ScopeConfiguration _sc)
+
+   class WaveButton extends Canvas {
+	private Image image;
+    
+	WaveButton()
+	{
+	    setBackground(Color.lightGray);
+	    setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+	}
+    
+	public void paint(Graphics g)
+	{
+	    Rectangle d = getBounds();
+	    g.draw3DRect(0, 0, d.width-1, d.height-1, true);
+	}
+	public void print(Graphics g)
+	{
+	}
+	public void printAll(Graphics g)
+	{
+	}
+    }
+
+
+   WavePanel(Setup _setup)
    {
       setup = _setup;
-      sc    = _sc;
       createWavePanel();   
    }
- 
-   private void createWavePanel() {
-        
-      int i, j, k, kk, new_num_waves = 0;
-      MultiWaveform[] new_waves;
-      WaveformConf[] new_waveform_conf;
-            
-      if(sc.columns == 0)
-	return;  
-     
-      for(i=0; i < sc.columns; i++)
-        new_num_waves += sc.rows[i];
+   
+   
+   public void updateWavePanel()
+   {
+      int num_waves = setup.waves.length;
+   
+      removeAll();
 
-      new_waves		= new MultiWaveform[new_num_waves];
-      new_waveform_conf = new WaveformConf[new_num_waves];
- 
       addMouseListener(this);
       
-      row_col_layout = new RowColumnLayout(sc.columns, sc.rows, sc.height_percent, sc.width_percent);
-      sc.height_percent = null;
-      sc.width_percent = null;	
+      row_col_layout = new RowColumnLayout(setup.columns, setup.rows, setup.height_percent, setup.width_percent);
+      setup.height_percent = null;
+      setup.width_percent = null;	
       setLayout(row_col_layout);	
 
-      
-      for(i = 0, k = 0; i < sc.columns; i++)
-	 k += sc.rows[i];
-    	 
       WaveButton b; 	 
-      for(i = 0; i < k - 1; i++) {
+      for(int i = 0; i < num_waves - 1; i++) {
 	add(b = new WaveButton());
 	b.addMouseListener(this);
 	b.addMouseMotionListener(this);
       }
+      
+      for(int i = 0; i < num_waves; i++) 
+	   add(setup.waves[i]);
+
+      validate();   
+   }
+   
      
-      for(i = 0, k = 0, kk = 0; i < sc.columns; i++) {
-	for(j = 0; j < sc.rows[i]; j++) 
+   public void createWavePanel() {
+        
+      int i, j, k, kk, new_num_waves = 0;
+      MultiWaveform[] new_waves;
+            
+	    
+      removeAll();	    
+	    
+      if(setup.columns == 0)
+	return;  
+     
+      for(i=0; i < setup.columns; i++)
+        new_num_waves += setup.rows[i];
+
+      new_waves		= new MultiWaveform[new_num_waves];
+ 
+      addMouseListener(this);
+      
+      row_col_layout = new RowColumnLayout(setup.columns, setup.rows, setup.height_percent, setup.width_percent);
+      setup.height_percent = null;
+      setup.width_percent = null;	
+      setLayout(row_col_layout);	
+          	 
+      WaveButton b; 	 
+      for(i = 0; i < new_num_waves - 1; i++) {
+	add(b = new WaveButton());
+	b.addMouseListener(this);
+	b.addMouseMotionListener(this);
+      }
+  
+      for(i = 0, k = 0, kk = 0; i < setup.columns; i++) {
+	for(j = 0; j < setup.rows[i]; j++) 
 	{
-           if(setup.waves == null || j >= sc.prec_rows[i] || setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
+           if(setup.waves == null || j >= setup.prec_rows[i] ||
+				 setup.waves.length <= kk + j || setup.waves[kk + j] == null) {
 	      wave = new MultiWaveform(setup);
-	      if((new_waveform_conf[k + j] = sc.GetWaveformConf(kk + j)) == null || j >= sc.prec_rows[i])
-		 new_waveform_conf[k + j] = new WaveformConf();	       
            } else {
 	      wave = setup.waves[kk + j];
-	      new_waveform_conf[k + j] = sc.GetWaveformConf(kk + j);
            } 
 	   new_waves[k + j] = wave;	
 	   add(wave);
 	}
-        k += sc.rows[i];
-	kk += sc.prec_rows[i];
+        k += setup.rows[i];
+	kk += setup.prec_rows[i];
      }
 
      setup.num_waves     = new_num_waves;
-     setup.waves         = new_waves; 	
-     sc.SetWaveformsConf(new_waveform_conf);
+     setup.waves         = new_waves;
+     validate();
   }
   
   public void printAll(Graphics g, int height, int width)
@@ -104,10 +149,10 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
 	width  -= 2 * wpan;
       }
        
-      for(i = 0 ; i < sc.columns; i++)
+      for(i = 0 ; i < setup.columns; i++)
       {	  
 	  dy2 += (int)(height * ((RowColumnLayout)getLayout()).getPercentWidth(i));
-	  for(j =0, dx2 = width + wpan; j < sc.rows[i]; j++)
+	  for(j =0, dx2 = width + wpan; j < setup.rows[i]; j++)
 	  {
 	      curr_image = setup.waves[k].GetImage();
 	      new_image = createImage(new FilteredImageSource(curr_image.getSource(), filter));
@@ -122,8 +167,6 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
       }
 
   }
-  
-   
      
   public  void mouseReleased(MouseEvent e)
   {
@@ -160,29 +203,5 @@ class WavePanel extends Panel implements  MouseMotionListener, MouseListener {
   public  void mousePressed(MouseEvent e)    
     {}
   
-
 }
 
-class WaveButton extends Canvas {
-    private Image image;
-
-    WaveButton()
-    {
-//	image = Toolkit.getDefaultToolkit().getImage("/home/Web/work/Cesare/pr_sqdi.gif");
-    	setBackground(Color.lightGray);
-	setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-    }
-
-    public void paint(Graphics g)
-    {
-	Rectangle d = getBounds();
-//	g.drawImage(image, 0, 0, this);
-	g.draw3DRect(0, 0, d.width-1, d.height-1, true);
-    }
-    public void print(Graphics g)
-    {
-    }
-    public void printAll(Graphics g)
-    {
-    }
-}

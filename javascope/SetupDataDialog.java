@@ -3,55 +3,771 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
 import java.lang.Integer;
+import java.util.Vector;
 
 //*****
 //Form di visualizzazione della configurazione della
 //wave selezionata
 //*****
- class SetupDataDialog extends ScopePositionDialog { 
-   TextField        title, shot, experiment;
-   TextField        x_max, x_min, x_label, y_expr;
-   TextField        y_max, y_min, y_label, x_expr;
-   Button           browser, error, y_browser, expand;
-   Button           ok, cancel, reset, erase, apply, x_browser, add_shot;
-   Checkbox	    x_log, y_log, opt_network;
-   Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
-		    x_label_b, y_max_b, y_min_b, y_label_b;  
-   List             sig_list;
-   Choice           show_type, color, marker;
-   Label            lab;
-   SignalError      error_w;
-   ErrorMessage	    error_msg;
-   javaScope	    main_scope;
-   Setup            setup;       
-   EvaluateWaveform ew;
-   WaveformConf	    wc_default, curr_wc;
-   int              sel_signal = -1;
-   ExpandExpressionDialog expand_expr;	    
+ class SetupDataDialog extends ScopePositionDialog {
+ 
+ 
+   TextField		    title, shot, experiment;
+   TextField		    x_max, x_min, x_label, y_expr;
+   TextField		    y_max, y_min, y_label, x_expr;
+   private Button           browser, error, y_browser, expand;
+   private Button           ok, cancel, reset, erase, apply, x_browser, add_shot;
+   private Checkbox	    x_log, y_log, opt_network;
+   private Checkbox	    title_b, shot_b, experiment_b, x_max_b, x_min_b, 
+			    x_label_b, y_max_b, y_min_b, y_label_b;  
+   private Choice           show_type;
+   private Label            lab;
+   private SError	    error_w;
+   private ErrorMessage	    error_msg;
+   private jScope	    main_scope;
+   private Setup            setup;       
+   private ExpandExp expand_expr;
+   private SList	    signalList;
+   private MultiWaveform    wave;	    
+   public  WaveInterface    wi;
      
    static final int  LINE = 0, POINT = 1, BOTH = 2, NONE = 3;
 
 
-    public SetupDataDialog(Frame fw, String frame_title) {
+  class Data {
+  
+	String  x_expr;
+	String  y_expr;
+	int     shot;
+	int     color_idx;
+	boolean interpolate;
+	int     marker;
+	int     marker_step;
+	String  up_err;
+	String  low_err;
+	
+
+	public boolean equals(Data ws)
+	{
+	    if(x_expr != null && y_expr != null){
+		if(!y_expr.equals(ws.y_expr) || !x_expr.equals(ws.x_expr)) 
+		    return false;
+		else
+		    return true;
+	     } else {
+		if(x_expr != null)
+		    if(!x_expr.equals(ws.x_expr) || ws.y_expr != null) 
+			return false;
+		    else
+			return true;
+		 else
+		    if(!y_expr.equals(ws.y_expr) || ws.x_expr != null) 
+			return false;
+		    else
+			return true;
+	     }	      
+	}
+    
+       public void copy(Data ws)
+       {
+	    if(ws.x_expr != null)
+	       x_expr = new String(ws.x_expr);
+	    if(ws.y_expr != null)
+	       y_expr = new String(ws.y_expr);
+	    if(ws.up_err != null)
+	       up_err = new String(ws.up_err);
+	    if(ws.low_err != null)
+	       low_err = new String(ws.low_err);
+	    shot          = ws.shot;
+	    color_idx     = ws.color_idx;
+	    interpolate   = ws.interpolate;
+	    marker        = ws.marker;
+	    marker_step   = ws.marker_step;
+	} 
+   }
+   
+   
+   class SError extends ScopePositionDialog {
+
+       private TextField e_up, e_low;
+       private Button ok, cancel;
+       private Data ws;
+    
+       SError(Frame fw) {
+       
+	  super(fw, "Error Setup", true); 	
+	  super.setFont(new Font("Helvetica", Font.PLAIN, 10)); 
+	  setResizable(false);   
+	    
+	  Label label;
+		    
+	  GridBagConstraints c = new GridBagConstraints();
+	  GridBagLayout gridbag = new GridBagLayout();
+	  setLayout(gridbag);        
+    
+	  c.insets = new Insets(4, 4, 4, 4);
+	  c.fill = GridBagConstraints.BOTH;
+    
+	  c.gridwidth = GridBagConstraints.BOTH;
+	  label = new Label("Error up");
+	  gridbag.setConstraints(label, c);
+	  add(label);
+		    
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  e_up = new TextField(40);
+	  gridbag.setConstraints(e_up, c);
+	  add(e_up);
+    
+	  c.gridwidth = GridBagConstraints.BOTH;
+	  label = new Label("Error low");
+	  gridbag.setConstraints(label, c);
+	  add(label);
+		    
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  e_low = new TextField(40);
+	  gridbag.setConstraints(e_low, c);
+	  add(e_low);
+    
+	  Panel p = new Panel();
+	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
+	    
+	  ok = new Button("Ok");
+	  ok.addActionListener(this);	
+	  p.add(ok);
+    
+	  cancel = new Button("Cancel");
+	  cancel.addActionListener(this);	
+	  p.add(cancel);
+			    
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  gridbag.setConstraints(p, c);
+	  add(p);
+	     
+       } 
+	  
+       public void resetError()
+       {
+	 e_up.setText("");
+	 e_low.setText("");
+       }
+       
+       
+       public void setError(Data ws_in)
+       {
+	 ws = ws_in;
+	 resetError();
+	 if(ws.up_err != null)
+	    e_up.setText(ws.up_err);
+	 if(ws.up_err != null)
+	    e_low.setText(ws.low_err);
+       }
+      
+    
+       public void actionPerformed(ActionEvent e)
+       {
+	 Object ob = e.getSource();	
+    
+	 if(ob == ok) { 
+	   ws.up_err   = new String(e_up.getText());
+	   ws.low_err  = new String(e_low.getText());
+	   setVisible(false);	    
+	 }
+	 if(ob == cancel)
+	   setVisible(false);	   
+    
+       }
+   }
+
+   class SList extends Container implements ActionListener, KeyListener, ItemListener, TextListener {
+    private List             sig_list;
+    private Choice           show_type, color, marker;
+    private TextField	     marker_step_t;
+    private Vector	     signals = new Vector();
+    private String	     shot_str;
+    private int		     shots[]={jScope.UNDEF_SHOT}, list_num_shot = 1;
+    private int              sel_signal = -1;
+
+    
+      public SList() {
+
+	BorderLayout bl= new BorderLayout(25,1);
+	setLayout(bl );
+
+	lab = new Label("Signals list");
+	add("North", lab);
+
+	sig_list = new List(8, false);
+	sig_list.addItemListener(this);
+	sig_list.addKeyListener(this);
+	add("Center",sig_list);	
+
+	Panel p = new Panel(new GridLayout(4,1));
+
+	GridBagLayout gridbag = new GridBagLayout();
+	GridBagConstraints c = new GridBagConstraints();
+	
+	c.gridwidth = 1;			
+	c.gridheight = 1;			
+	c.fill =  GridBagConstraints.HORIZONTAL;
+	c.gridwidth = GridBagConstraints.REMAINDER;
+	c.insets = new Insets(5,5,5,5);
+
+        p.setLayout(gridbag);		
+
+    	show_type = new Choice();
+	show_type.addItem("Line"); 
+	show_type.addItem("No Line"); 
+	show_type.addItemListener(this);
+	gridbag.setConstraints(show_type, c);
+	p.add(show_type);	
+
+	color = new Choice();
+	SetColorList();	
+	color.addItemListener(this);
+	gridbag.setConstraints(color, c);
+	p.add(color);	
+
+	marker = new Choice();
+	marker.addItem("No Marker"); 
+	marker.addItem("Square"); 
+	marker.addItem("Circle"); 
+	marker.addItem("Cross");
+	marker.addItem("Triangle");      
+	marker.addItem("Point"); 
+	marker.addItemListener(this);
+	gridbag.setConstraints(marker, c);
+	p.add(marker);
+	
+	c.gridwidth = 1;
+	lab = new Label("M.Step");
+	gridbag.setConstraints(lab, c);
+	p.add(lab);
+	
+	c.fill =  GridBagConstraints.NONE;
+	c.gridwidth = GridBagConstraints.REMAINDER;	
+	marker_step_t = new TextField(3);
+	marker_step_t.addTextListener(this);
+	gridbag.setConstraints(marker_step_t, c);
+	p.add(marker_step_t);
+	
+	add("East", p);
+	
+    	lab = new Label("");
+	add("South", lab);
+      }
+      
+      public int getNumShot()
+      {
+	return shots.length;
+      }
+      
+      public void SetColorList()
+      {
+	String[] colors_name = main_scope.color_dialog.GetColorsName();
+	color.removeAll();
+	if(colors_name != null)
+	{
+	    for(int i = 0; i < colors_name.length; i++)
+		color.addItem(colors_name[i]);
+	}
+     }   
+
+     public int findSignalSetup(Data ws)
+     {
+	for(int i=0; i < signals.size(); i++)
+	    if(((Data)signals.elementAt(i)).equals(ws))
+		return i;	 		
+	return -1;
+     }
+   
+     public void updateSignalSetup(int idx, Data ws)
+     {
+	signals.setElementAt(ws, idx);
+     }
+
+     public void removeSignalSetup()
+     {
+	int i, sig_idx, start_idx, end_idx;
+	int num_shot = shots.length;
+	int num_signal = signals.size();  		
+          	
+	if(sel_signal != -1) 
+	{
+    	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
+	    end_idx   = start_idx + num_shot; 
+	    for (i = 0; i < num_signal; i++)
+		if(i >= start_idx && i < end_idx) { 
+		    sig_list.remove(start_idx + 1);
+		    signals.removeElementAt(start_idx);
+		}	     	     
+	}
+	sel_signal = -1;
+	sig_list.select(sel_signal + 1);
+	x_expr.setText("");
+	y_expr.setText("");      
+     }
+     
+     private void setMarkerTextState(int marker_idx)
+     {
+	if(marker_idx > 0 && marker_idx < 5)
+	    marker_step_t.setEditable(true);
+	else {
+	    marker_step_t.setText("1");
+	    marker_step_t.setEditable(false);
+	}
+     }
+
+     public void putSignalSetup(Data ws)
+     {
+	if(ws.x_expr != null)
+	    x_expr.setText(ws.x_expr);
+	else
+	    x_expr.setText("");      
+	if(ws.y_expr != null)
+	    y_expr.setText(ws.y_expr);
+	else
+	    y_expr.setText("");      
+	show_type.select((ws.interpolate ? 0 : 1));
+	marker.select(ws.marker);
+	marker_step_t.setText(""+ws.marker_step);
+	setMarkerTextState(ws.marker);			 
+	color.select(ws.color_idx);
+	if(error_w.isVisible())
+	    error_w.setError(ws);	
+      }	
+
+      public Data getSignalSetup()
+      {
+	Data ws = new Data(); 
+
+	ws.x_expr        = new String(x_expr.getText());
+	ws.y_expr        = new String(y_expr.getText());
+	ws.interpolate   = (show_type.getSelectedIndex() == 0 ? true : false);
+	ws.marker        = marker.getSelectedIndex();
+	
+	//if(marker_step_t.getText() != null && marker_step_t.getText().length() != 0)
+	try{	
+	    ws.marker_step   = new Integer(marker_step_t.getText()).intValue();
+	//else
+	} catch(NumberFormatException e) {
+	    ws.marker_step   = 1;	
+	}
+	ws.color_idx     = color.getSelectedIndex();       
+
+	return ws; 	 
+      }
+      
+      public void reset()
+      {
+	sel_signal = -1;
+	signals.removeAllElements();
+      }
+      
+      public void init(WaveInterface wi)
+      {
+	  Data ws;
+      
+	  if(wi != null)
+	  {
+	    shots = new int[wi.num_shot];
+	    
+	    if(wi.shots == null)
+	      for(int i = 0; i < wi.num_shot; i++)
+		shots[i] = jScope.UNDEF_SHOT;	    
+	    else
+	      for(int i = 0; i < wi.num_shot; i++)
+		shots[i] = wi.shots[i];
+		
+	    list_num_shot = wi.num_shot;
+	    shot_str = wi.in_shot;
+	    
+	    for(int i = 0; i < wi.num_waves; i++)
+	    {
+		ws = new Data();
+		
+		ws.x_expr        = wi.in_x[i];
+		ws.y_expr        = wi.in_y[i];
+		ws.up_err	 = wi.in_up_err[i];
+		ws.low_err	 = wi.in_low_err[i];
+		ws.interpolate   = wi.interpolates[i];
+		ws.marker        = wi.markers[i];	
+		ws.marker_step	 = wi.markers_step[i];
+		ws.color_idx     = wi.colors_idx[i];
+		if(wi.shots != null)
+		    ws.shot = wi.shots[i];
+		else
+		    ws.shot = jScope.UNDEF_SHOT;
+		addSignalSetup(ws);       
+	    }
+	    signalListRefresh();	    
+	  }      
+	  sig_list.select(sel_signal + 1);
+      }
+      
+      public Data[] getSignals()
+      {
+	  Data s[] = new Data[signals.size()];
+	  signals.copyInto(s);
+	  return s;
+      }
+    
+      private void addSignalSetup(Data ws)
+      { 
+	signals.addElement((Object)ws);
+      }
+      
+      public void addSignals()
+      {
+	int idx, color_idx = 0;
+	Data ws;
+      
+	if(y_expr.getText().length() == 0)
+	    return;
+	
+	ws = getSignalSetup();
+	idx = findSignalSetup(ws);
+	if( idx == -1) {
+      
+	    String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ; 
+	    String y_e =  new String(y_expr.getText());
+
+	    if(shots.length != 0)
+	    {
+		for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
+		{
+		    ws.shot = shots[i];
+		    ws.color_idx = color_idx;
+		    color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
+		    addSignalSetup(ws);
+		    signalListAdd(ws);
+		}	
+	    } else {
+		ws.shot = jScope.UNDEF_SHOT;
+		addSignalSetup(ws);
+		signalListAdd(ws);
+	    } 
+	    sel_signal = findSignalSetup(ws);
+	    sig_list.select(sel_signal + 1);
+	    putSignalSetup(ws);
+	 }	 
+       }
+       
+       public boolean evaluateShotList(String in_shot)
+       {
+	    if((shot_str == null && in_shot != null && in_shot.length()!= 0) || 
+	       (shot_str != null && !shot_str.equals(in_shot)))
+	    {
+		if(shots != null)
+		    list_num_shot = shots.length;
+		shot_str = in_shot;
+		shots  = main_scope.evaluateShot(in_shot);
+		return true;
+	    } else
+		return false;	    
+       }
+
+
+       public void signalsRefresh()
+       { 
+	    int color_idx = 0, k = 0, l, num_sig = signals.size()/list_num_shot * shots.length;
+    	    
+	    for(int j = 0; j < num_sig; j += shots.length)
+	    {	    		    
+		for(int i = 0; i < shots.length; i++)
+		{
+		    if(i < list_num_shot) {
+			signals.setElementAt(signals.elementAt(j+i),k);
+		    } else {
+			Data ws = new Data();
+			ws.copy(((Data)signals.elementAt(j)));
+			color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
+			ws.color_idx = color_idx;
+			signals.insertElementAt(ws, k);
+		    }
+		    ((Data)signals.elementAt(k)).shot = shots[i];
+		    k++;
+		}
+		for(l = shots.length; l < list_num_shot; l++)
+		    signals.removeElementAt(j + shots.length);
+	    }
+       } 
+
+       public void updateSignals()
+       {
+	  int i, j, sig_idx, start_idx, end_idx;
+	  int num_shot = shots.length;
+	  int num_signal = signals.size(); 
+      
+	  if(findSignalSetup(getSignalSetup()) != -1)
+	    return;	
+          	
+	  if(sel_signal != -1) 
+	  {
+	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
+	    end_idx   = start_idx + num_shot; 
+
+	
+	    for (i = 0,  j = 0 ; i < num_signal; i++)
+		if(i >= start_idx && i < end_idx)  {
+		    ((Data)signals.elementAt(i)).x_expr = x_expr.getText();
+		    ((Data)signals.elementAt(i)).y_expr = y_expr.getText();
+		    signalListReplace(i + 1, (Data)signals.elementAt(i));
+	    }		
+	    sig_list.select(start_idx + 1);
+	    sel_signal = start_idx;
+	   }
+	 }
+	 
+	 public void updateError()
+	 {
+	    if(sel_signal == -1)
+		return; 
+	    error_w.setError((Data)signals.elementAt(sel_signal));	
+	 }
+         
+	 public void signalListRefresh()
+	 {
+	    if(sig_list.getItemCount() != 0)
+		sig_list.removeAll();
+	    sig_list.add("Select this item to add new expression");
+	    for(int i = 0; i < signals.size(); i++)
+		signalListAdd((Data)signals.elementAt(i));
+	    sig_list.select(sel_signal + 1);
+	  } 
+
+	  private void signalListAdd(Data ws)
+	  {
+	  
+	    if(ws.shot != jScope.UNDEF_SHOT)
+	    {
+    		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		    sig_list.add("Y : " + ws.y_expr + " Shot : " + ws.shot);
+		else
+		    sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot);	
+	    } else {
+		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		    sig_list.add("Y : " + ws.y_expr + " Shot : Undef");
+		else
+		    sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef");	
+	    }
+	  }
+	  
+	  private void signalListReplace(int idx, Data ws)
+	  {
+	    if(ws.shot != jScope.UNDEF_SHOT)
+	    {
+		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		    sig_list.replaceItem("Y : " + ws.y_expr + " Shot : " + ws.shot, idx);
+		else
+		    sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot, idx);	
+	    } else {
+		if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
+		    sig_list.replaceItem("Y : " + ws.y_expr + " Shot : Undef", idx);
+		else
+		    sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef", idx);	
+	    }
+	}
+
+      public void updateList()
+      {
+    	    if(evaluateShotList(shot.getText())) {
+		signalsRefresh();
+		signalListRefresh();
+	    }
+    	    if(sel_signal == -1)	    
+		signalList.addSignals();
+	    else
+		signalList.updateSignals();			    	
+      }
+ 
+     
+      public void textValueChanged(TextEvent e)
+      {
+	    Object ob = e.getSource();
+	    
+	    if(ob == marker_step_t && sel_signal != -1)
+	    {
+		try {
+		    ((Data)signals.elementAt(sel_signal)).marker_step = new Integer(marker_step_t.getText()).intValue();
+		} catch (NumberFormatException ex) {
+		    marker_step_t.setText("1");
+		}
+
+    	    }		  	      
+      }
+     
+      public void actionPerformed(ActionEvent e) 
+      {}
+      public void keyReleased(KeyEvent e)
+      {}
+      public void keyTyped(KeyEvent e)
+      {}
+      
+      public void keyPressed(KeyEvent e)
+      {
+	Object ob = e.getSource();
+	char key  = e.getKeyChar();
+        
+	if(key == KeyEvent.CHAR_UNDEFINED)
+	     return;
+	     
+
+	if(key == KeyEvent.VK_DELETE)
+	{
+	    if(ob == sig_list)
+		removeSignalSetup();	
+	}
+      }
+      
+      public void itemStateChanged(ItemEvent e)
+      {
+	Object ob = e.getSource();
+
+    	if(ob == sig_list)
+	{
+           sel_signal = sig_list.getSelectedIndex() - 1;
+	   if(sel_signal >= 0)
+	       signalList.putSignalSetup((Data)signals.elementAt(sel_signal));
+	   else {
+		x_expr.setText("");
+		y_expr.setText("");
+	    }
+	} 
+
+	if(ob instanceof Checkbox)
+	    defaultButtonChange(ob);
+
+    	if(sel_signal == -1)
+	    return;
+	    
+	if(ob == marker) {
+	    int m_idx =  marker.getSelectedIndex();
+	    ((Data)signals.elementAt(sel_signal)).marker = m_idx;
+	    setMarkerTextState(m_idx);
+    	}	
+
+	if(ob == show_type) {
+	    ((Data)signals.elementAt(sel_signal)).interpolate = show_type.getSelectedIndex() == 0 ? true : false;
+	}	
+
+	if(ob == color) {
+	    ((Data)signals.elementAt(sel_signal)).color_idx = color.getSelectedIndex();       
+	}
+      
+      }
+   }
+
+
+  class ExpandExp extends ScopePositionDialog { 
+
+  private Label lab;
+  private TextArea x_expr, y_expr;
+  private Button ok, cancel;
+  private SetupDataDialog  conf_dialog;
+ 
+     ExpandExp(Frame _fw, SetupDataDialog conf_diag)
+     {
+	super(_fw, "Expand Expression Dialog", false);
+	super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
+	setModal(true);
+	conf_dialog = conf_diag;
+	GridBagLayout gridbag = new GridBagLayout();
+	GridBagConstraints c = new GridBagConstraints();
+	Insets insets = new Insets(4, 4, 4, 4);
+    
+	setLayout(gridbag);		
+    
+	  c.anchor = GridBagConstraints.NORTH;
+	  c.fill =  GridBagConstraints.BOTH;
+	  c.gridwidth = 1;
+	  c.gridheight = 1;
+	  lab = new Label("Y");
+	  gridbag.setConstraints(lab, c);
+	  add(lab);		 	
+    
+	  c.gridheight = 11;
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  y_expr = new TextArea(10,80);
+	  gridbag.setConstraints(y_expr, c);
+	  add(y_expr);
+	  
+	  c.anchor = GridBagConstraints.NORTH;
+	  c.fill =  GridBagConstraints.BOTH;
+	  c.gridwidth = 1;
+	  c.gridheight = 1;    
+	  lab = new Label("X");
+	  gridbag.setConstraints(lab, c);
+	  add(lab);		 	
+    
+	  c.gridheight = 11;
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  x_expr = new TextArea(10,80);
+	  gridbag.setConstraints(x_expr, c);
+	  add(x_expr);
+    
+	  Panel p = new Panel();
+	  p.setLayout(new FlowLayout(FlowLayout.CENTER));
+	    
+	  ok = new Button("Ok");
+	  ok.addActionListener(this);	
+	  p.add(ok);
+    
+	  cancel = new Button("Cancel");
+	  cancel.addActionListener(this);	
+	  p.add(cancel);
+			    
+	  c.gridwidth = GridBagConstraints.REMAINDER;
+	  gridbag.setConstraints(p, c);
+	  add(p);
+    
+     }
+     
+     /**
+      ** Set values of x and/or y expression field
+     */
+     public void setExpressionString(String x, String y)
+     {
+	if(x != null)
+	    x_expr.setText(x);
+	if(y != null)
+	    y_expr.setText(y);
+     }
+     
+     public void actionPerformed(ActionEvent e)
+     {
+	 Object ob = e.getSource();	
+    
+	 if(ob == ok) {
+	    conf_dialog.x_expr.setText(x_expr.getText());
+	    conf_dialog.y_expr.setText(y_expr.getText());
+	 }
+	 setVisible(false);	   
+     }      
+
+  }
+
+
+
+   public SetupDataDialog(Frame fw, String frame_title) {
 
       super(fw, frame_title, false);
       super.setFont(new Font("Helvetica", Font.PLAIN, 10));    
       setModal(true);
       setResizable(false);    
 
-      main_scope = (javaScope)fw;
-      error_w = new SignalError(fw);
+      main_scope = (jScope)fw;
+      error_w = new SError(fw);
       error_msg = new ErrorMessage(fw);
-      expand_expr = new ExpandExpressionDialog(fw, this);	    
+      expand_expr = new ExpandExp(fw, this);	    
      
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
-      Insets insets = new Insets(4, 4, 4, 4);
+      Insets insets = new Insets(2,2,2,2);
 
       setLayout(gridbag);		
       c.insets = insets;
       c.anchor = GridBagConstraints.WEST;	
-      c.fill =  GridBagConstraints.NONE;
+      c.fill =  GridBagConstraints.HORIZONTAL;
       c.weightx = 1.0; 	
       c.gridwidth = 1;	
       title_b = new Checkbox("Title");
@@ -59,13 +775,12 @@ import java.lang.Integer;
       gridbag.setConstraints(title_b, c);
       add(title_b);
  
-      c.fill =  GridBagConstraints.BOTH;
       c.gridwidth = 5;	
       title = new TextField(40);
       gridbag.setConstraints(title, c);
       add(title);
       		 	
-//      c.anchor = GridBagConstraints.WEST;
+      c.fill =  GridBagConstraints.NONE;
       c.gridwidth = GridBagConstraints.REMAINDER;
       c.gridheight = 1;
       expand = new Button("Expand Expr.");	
@@ -73,25 +788,18 @@ import java.lang.Integer;
       gridbag.setConstraints(expand, c);
       add(expand);	      	
 
-/*
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      opt_network = new Checkbox("Opt. Network");
-      opt_network.setState(false);
-      opt_network.addItemListener(this);
-      gridbag.setConstraints(opt_network, c);
-      add(opt_network);	
-*/
-      c.fill =  GridBagConstraints.BOTH;
+      c.fill =  GridBagConstraints.HORIZONTAL;
       c.gridwidth = 1;
       lab = new Label("Y");
       gridbag.setConstraints(lab, c);
       add(lab);		 	
 
       c.gridwidth = 4;
-      y_expr = new TextField(30);
+      y_expr = new TextField();
       y_expr.addKeyListener(this);
       gridbag.setConstraints(y_expr, c);
       add(y_expr);
+
 
       c.gridwidth = 1;
       error = new Button("Error...");
@@ -104,7 +812,6 @@ import java.lang.Integer;
       gridbag.setConstraints(y_log, c);
       add(y_log);
        
-      c.fill =  GridBagConstraints.NONE;		 	
       c.gridwidth = 1;
       y_label_b = new Checkbox("Y Label");
       y_label_b.addItemListener(this);
@@ -135,13 +842,14 @@ import java.lang.Integer;
       gridbag.setConstraints(y_max, c);
       add(y_max);	
 
+      c.fill =  GridBagConstraints.NONE;
       c.gridwidth = GridBagConstraints.REMAINDER;
       y_browser = new Button("Browse...");
       y_browser.addActionListener(this);
       gridbag.setConstraints(y_browser, c);
       add(y_browser);	
 
-      c.fill =  GridBagConstraints.BOTH;
+      c.fill =  GridBagConstraints.HORIZONTAL;
       c.gridwidth = 1;
       lab = new Label("X");
       gridbag.setConstraints(lab, c);
@@ -153,12 +861,13 @@ import java.lang.Integer;
       gridbag.setConstraints(x_expr, c);
       add(x_expr);		 	
 
+      c.fill =  GridBagConstraints.NONE;
       c.gridwidth = GridBagConstraints.REMAINDER;
       x_log = new Checkbox("Log Scale", null, false); 		 	
       gridbag.setConstraints(x_log, c);
       add(x_log);
 
-      c.fill =  GridBagConstraints.NONE;		 	
+      c.fill =  GridBagConstraints.HORIZONTAL;
       c.gridwidth = 1;
       x_label_b = new Checkbox("X Label");
       x_label_b.addItemListener(this);
@@ -189,12 +898,14 @@ import java.lang.Integer;
       gridbag.setConstraints(x_max, c);
       add(x_max);	
 
+      c.fill =  GridBagConstraints.NONE;
       c.gridwidth = GridBagConstraints.REMAINDER;
       x_browser = new Button("Browse...");
       x_browser.addActionListener(this);
       gridbag.setConstraints(x_browser, c);
       add(x_browser);
-           		
+ 
+      c.fill =  GridBagConstraints.HORIZONTAL;			          		
       c.gridwidth = 1;
       experiment_b = new Checkbox("Experiment");
       experiment_b.addItemListener(this);
@@ -206,6 +917,7 @@ import java.lang.Integer;
       gridbag.setConstraints(experiment, c);
       add(experiment);	
 
+      c.fill =  GridBagConstraints.NONE;
       shot_b = new Checkbox("Shot");
       shot_b.addItemListener(this);      
       gridbag.setConstraints(shot_b, c);
@@ -218,63 +930,12 @@ import java.lang.Integer;
       gridbag.setConstraints(shot, c);
       add(shot);
 
-      lab = new Label("Signals list");       	
-      gridbag.setConstraints(lab, c);
-      add(lab);	
-
       c.fill =  GridBagConstraints.BOTH;
-      c.gridwidth = 6;
-      c.gridheight = 3;
-      sig_list = new List(6, false);
-      sig_list.addItemListener(this);
-      sig_list.addKeyListener(this);
-      gridbag.setConstraints(sig_list, c);
-      add(sig_list);	
-
-      c.fill =  GridBagConstraints.BOTH;
-      c.gridwidth = 1;
-      c.gridheight = 1;	
-
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      show_type = new Choice();
-      show_type.addItem("Line"); 
-      show_type.addItem("No Line"); 
-      show_type.addItemListener(this);
-      gridbag.setConstraints(show_type, c);
-      add(show_type);	
-
-      color = new Choice();
-      SetColorList();
-      /*
-      color.addItem("Black");	
-      color.addItem("Blue");	
-      color.addItem("Cyan");	
-      color.addItem("DarkGray");	
-      color.addItem("Gray");	
-      color.addItem("Green");	
-      color.addItem("LightGray");	
-      color.addItem("Magenta");	
-      color.addItem("Orange");
-      color.addItem("Pink");	
-      color.addItem("Red");	
-      color.addItem("Yellow");
-      */	
-      color.addItemListener(this);
-      gridbag.setConstraints(color, c);
-      add(color);	
-
-      marker = new Choice();
-      marker.addItem("No Marker"); 
-      marker.addItem("Square"); 
-      marker.addItem("Circle"); 
-      marker.addItem("Cross");
-      marker.addItem("Triangle");      
-      marker.addItem("Point"); 
-      marker.addItemListener(this);
-      gridbag.setConstraints(marker, c);
-      add(marker);
+      signalList = new SList(); 
+      gridbag.setConstraints(signalList, c);
+      add(signalList);	
       	
-      c.fill =  GridBagConstraints.NONE;     
+      c.fill   = GridBagConstraints.NONE;     
       c.anchor = GridBagConstraints.CENTER;
       c.gridwidth = 1;
       ok = new Button("Ok");
@@ -303,38 +964,22 @@ import java.lang.Integer;
       cancel.addActionListener(this);
       gridbag.setConstraints(cancel, c);
       add(cancel);
-
    }
    
-   public void SetColorList()
-   {
-	String[] colors_name = main_scope.color_dialog.GetColorsName();
-	color.removeAll();
-	if(colors_name != null)
-	{
-	    for(int i = 0; i < colors_name.length; i++)
-		color.addItem(colors_name[i]);
-	}
-   }   
-
    public void Show(MultiWaveform w, Setup _setup)
    {
       setup = _setup;      
       pack();
-      WaveformConf wc = setup.GetWaveformConf();
-
-      sel_signal = -1;
-      curr_wc = wc;
-//      if(wc.num_expr != 0) sel_signal = 0;	
-//      sd_block = new EvaluateWaveform(setup.main_scope);
-//      sd_block.wave = w;
-      ew = setup.main_scope.ew;
-      ew.wave = w;
-      wc_default = setup.main_scope.sc.gwc;
-      putWindowSetup(wc);       		
+      wi = new WaveInterface(setup.main_scope.db);
+      wave = w;
+      putWindowSetup(w.wi);
       setPosition(w.getParent());	
       show();
-
+   }
+   
+   public void SetColorList()
+   {
+	signalList.SetColorList();
    }
 
    private void resetDefaultFlags()
@@ -360,29 +1005,28 @@ import java.lang.Integer;
    } 
      
    private void setDefaultFlags(int flags)
-   {
-   
+   {   
 	for(int i=0; i < 32; i++)
 	{
 	    switch(i)
 	    {
-		case WaveformConf.B_title:
+		case WaveInterface.B_title:
 		    title_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_shot:
+		case WaveInterface.B_shot:
 		    shot_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_exp:
+		case WaveInterface.B_exp:
 		    experiment_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_x_max:
+		case WaveInterface.B_x_max:
 		    x_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_x_min:
+		case WaveInterface.B_x_min:
 		    x_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_x_label:
+		case WaveInterface.B_x_label:
 		    x_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_y_max:
+		case WaveInterface.B_y_max:
 		    y_max_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_y_min:
+		case WaveInterface.B_y_min:
 		    y_min_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break; 
-		case WaveformConf.B_y_label:
+		case WaveInterface.B_y_label:
 		    y_label_b.setState(((flags & (1<<i)) == 1<<i)?true:false);break;  
 	    }
 	}       
@@ -390,364 +1034,251 @@ import java.lang.Integer;
    
    private int getDefaultFlags()
    {
-       int value = 0, cc = 0;
+       int value = 0;
        
-	if  (title_b.getState())  value |= 1<<WaveformConf.B_title; 
-			     else value &= ~(1<<WaveformConf.B_title); 
-	if  (shot_b.getState()  )    value |= 1<<WaveformConf.B_shot  ; 
-				else value &= ~(1<<WaveformConf.B_shot); 
-	if  (experiment_b.getState() ) value |= 1<<WaveformConf.B_exp ; 
-				       else value &= ~(1<<WaveformConf.B_exp); 
-	if  (x_max_b.getState() )  value |= 1<<WaveformConf.B_x_max ; 
-				   else value &= ~(1<<WaveformConf.B_x_max); 
-	if  (x_min_b.getState() )   value |= 1<<WaveformConf.B_x_min ;
-				    else value &= ~(1<<WaveformConf.B_x_min); 
-	if  (x_label_b.getState() )   value |= 1<<WaveformConf.B_x_label ; 
-				      else value &= ~(1<<WaveformConf.B_x_label); 
-	if  (y_max_b.getState() )  value |= 1<<WaveformConf.B_y_max ; 
-				   else value &= ~(1<<WaveformConf.B_y_max); 
-	if  (y_min_b.getState() )   value |= 1<<WaveformConf.B_y_min ; 
-				    else value &= ~(1<<WaveformConf.B_y_min); 
-	if  (y_label_b.getState() )   value |= 1<<WaveformConf.B_y_label ; 
-				      else value &= ~(1<<WaveformConf.B_y_label);
+	if  (title_b.getState())	 value |= 1<<WaveInterface.B_title; 
+				    else value &= ~(1<<WaveInterface.B_title); 
+	if  (shot_b.getState()  )	 value |= 1<<WaveInterface.B_shot  ; 
+				    else value &= ~(1<<WaveInterface.B_shot); 
+	if  (experiment_b.getState() )	 value |= 1<<WaveInterface.B_exp ; 
+				    else value &= ~(1<<WaveInterface.B_exp); 
+	if  (x_max_b.getState() )	 value |= 1<<WaveInterface.B_x_max ; 
+				    else value &= ~(1<<WaveInterface.B_x_max); 
+	if  (x_min_b.getState() )	 value |= 1<<WaveInterface.B_x_min ;
+				    else value &= ~(1<<WaveInterface.B_x_min); 
+	if  (x_label_b.getState() )	 value |= 1<<WaveInterface.B_x_label ; 
+				    else value &= ~(1<<WaveInterface.B_x_label); 
+	if  (y_max_b.getState() )        value |= 1<<WaveInterface.B_y_max ; 
+				    else value &= ~(1<<WaveInterface.B_y_max); 
+	if  (y_min_b.getState() )	 value |= 1<<WaveInterface.B_y_min ; 
+				    else value &= ~(1<<WaveInterface.B_y_min); 
+	if  (y_label_b.getState() )	 value |= 1<<WaveInterface.B_y_label ; 
+				    else value &= ~(1<<WaveInterface.B_y_label);
 	return (value);  
    }
-      
-   private void removeSignalSetup()
-   {
-      int idx = sel_signal;
-      int i, j, sig_idx, start_idx, end_idx;
-      int num_shot = ew.num_shot;
-      int num_signal = ew.num_signal;  		
-      WaveSetupData[] ws_new;
-          	
 
-      if(idx != -1) 
-      {
-	if(num_shot == 0) {
-	    sig_idx = 1;
-	    start_idx = idx;
-	} else  {
-	    sig_idx = num_shot;				
-	    start_idx = (idx/num_shot) * num_shot; // Divisione intera
-	}
-	ws_new = new WaveSetupData[ew.num_signal - sig_idx];	
 
-	if(num_shot != 0)
-	    start_idx = (idx/num_shot) * num_shot; // Divisione intera
-	end_idx   = start_idx + num_shot; 
-
-	for (i = 0,  j = 0 ; i < num_signal; i++)
-	  if(i < start_idx || i >= end_idx)  
-             ws_new[j++] = ew.signals[i];
-	  else   
-	     sig_list.remove(start_idx + 1);
-	     
-	ew.signals     = ws_new;
-	ew.num_signal -= sig_idx; 
-      }
-      sel_signal = -1;
-      sig_list.select(sel_signal + 1);
-      x_expr.setText("");
-      y_expr.setText("");
-      
-  }
-
-   public void putWindowSetup(WaveformConf wc)      
-   { 
-      int shots[] = new int[wc.num_shot];
-
-	if(wc == null) {
+   public void putWindowSetup(WaveInterface wi)      
+   {	
+	boolean def_flag;
+	
+	if(wi == null) {
 	    eraseForm();	    
 	    return;
 	}
 
-	setDefaultFlags(wc.defaults);
-	defaultButtonOperation(title,      title_b.getState(),      wc_default.title,      curr_wc.title);
-	defaultButtonOperation(shot,       shot_b.getState(),       wc_default.shot_str,   curr_wc.shot_str);
-	defaultButtonOperation(experiment, experiment_b.getState(), wc_default.experiment, curr_wc.experiment);
-	defaultButtonOperation(x_max,      x_max_b.getState(),      wc_default.x_max,      curr_wc.x_max);
-	defaultButtonOperation(x_min,      x_min_b.getState(),      wc_default.x_min,      curr_wc.x_min);
-	defaultButtonOperation(x_label,    x_label_b.getState(),    wc_default.x_label,    curr_wc.x_label);
-	defaultButtonOperation(y_max,      y_max_b.getState(),      wc_default.y_max,      curr_wc.y_max);
-	defaultButtonOperation(y_min,      y_min_b.getState(),      wc_default.y_min,      curr_wc.y_min);
-	defaultButtonOperation(y_label,    y_label_b.getState(),    wc_default.y_label,    curr_wc.y_label);
-	
-	
-	if(setup.main_scope.IsShotDefined() && wc.useDefaultShot())
-	{
-	    shot.setForeground(Color.red);
-	    shot.setText(setup.main_scope.GetMainShot());
-	}		    
-	    
-	x_log.setState(wc.x_log);
-	y_log.setState(wc.y_log);
-	
-	//if(shot.getText() != null && shot.getText().length() != 0)
-	    ew.initSignals(wc, shot.getText());
-	     	
+	this.wi.cexperiment     = wi.cexperiment;	
+	this.wi.cin_shot        = wi.cin_shot;	
+        this.wi.cin_xmax        = wi.cin_xmax;
+	this.wi.cin_xmin        = wi.cin_xmin;
+	this.wi.cin_ymax        = wi.cin_ymax;
+	this.wi.cin_ymin        = wi.cin_ymin;
+	this.wi.cin_title       = wi.cin_title;
+	this.wi.cin_xlabel      = wi.cin_xlabel;
+	this.wi.cin_ylabel      = wi.cin_ylabel;
+
+	setDefaultFlags(wi.defaults);
+	defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
+	putShotValue(shot_b.getState());
+	defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
+	defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
+	defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
+	defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
+	defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
+	defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
+	defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
+
+	x_log.setState(wi.x_log);
+	y_log.setState(wi.y_log);
+		     	
         x_expr.setText("");
         y_expr.setText("");
-	sel_signal = -1;
-    	signalListRefresh();  
+
+	signalList.init(wi);       		
    }
-
-   public void putSignalSetup(WaveSetupData ws)
-   {
-      if(ws.x_expr != null)
-	x_expr.setText(ws.x_expr);
-      else
-	x_expr.setText("");      
-      if(ws.y_expr != null)
-	y_expr.setText(ws.y_expr);
-      else
-	y_expr.setText("");      
-      show_type.select((ws.interpolate ? 0 : 1));
-      marker.select(ws.marker);		 
-      color.select(ws.color_idx);
-      if(error_w.isVisible())
-	error_w.setError(ws);	
-   }	
-
-   public WaveSetupData getSignalSetup()
-   {
-      WaveSetupData ws = new WaveSetupData(); 
-
-      ws.x_expr        = new String(x_expr.getText());
-      ws.y_expr        = new String(y_expr.getText());
-      ws.interpolate   = (show_type.getSelectedIndex() == 0 ? true : false);
-      ws.marker        = marker.getSelectedIndex();	
-      ws.color_idx     = color.getSelectedIndex();       
-
-      return ws; 	 
-   }
-  
-   private WaveSetupData[] addSignalSetup(WaveSetupData ws)
-   { 
-      WaveSetupData[] ws_new = new WaveSetupData[ew.num_signal + 1];
-     
-      for(int i = 0; i < ew.num_signal; i++)
-	ws_new[i] = ew.signals[i];
-      ws_new[ew.num_signal++] = ws;
-      
-      ew.signals = ws_new;
-
-      return ew.signals;
-   }
-
-   private void addSignals()
-   {
-      int idx, color_idx = 0;
-      WaveSetupData ws;
-      
-      if(y_expr.getText().length() == 0)
-	return;
-	
-      ws = getSignalSetup();
-      idx = ew.findSignalSetup(ws);
-      if( idx == -1) {
-      
-	String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ; 
-	String y_e =  new String(y_expr.getText());
-
-	if(ew.num_shot != 0)
-	{
-	    for (int i = 0; i < ew.num_shot; i++, ws = getSignalSetup())
-    	    {
-		ws.shot = ew.shots[i];
-		ws.color_idx = color_idx;
-		color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
-		addSignalSetup(ws);
-		signalListAdd(ws);
-	      }	
-	 } else {
-    	    ws.shot = WaveSetupData.UNDEF_SHOT;
-	    addSignalSetup(ws);
-	    signalListAdd(ws);
-	 } 
-	 sel_signal = ew.findSignalSetup(ws);
-	 sig_list.select(sel_signal + 1);
-	 putSignalSetup(ws);
-      }	 
-   }
-
-   private void updateSignals()
-   {
-      int idx = sel_signal;
-      int i, j, sig_idx, start_idx, end_idx;
-      int num_shot = ew.num_shot;
-      int num_signal = ew.num_signal; 
-      
-      if(ew.findSignalSetup(getSignalSetup()) != -1)
-	    return;	
-          	
-      if(idx != -1) 
-      {
-	if(num_shot == 0) {
-	    sig_idx = 1;
-	    start_idx = idx;
-	} else  {
-	    sig_idx = num_shot;				
-	    start_idx = (idx/num_shot) * num_shot; // Divisione intera
-	}
-
-	if(num_shot != 0)
-	    start_idx = (idx/num_shot) * num_shot; // Divisione intera
-	end_idx   = start_idx + num_shot; 
-
-	
-	for (i = 0,  j = 0 ; i < num_signal; i++)
-	  if(i >= start_idx && i < end_idx)  {
-             ew.signals[i].x_expr = x_expr.getText();	        
-             ew.signals[i].y_expr = y_expr.getText();
-	     signalListReplace(i, ew.signals[i]);
-	  }		
-	 sig_list.select(start_idx);
-	 sel_signal = start_idx;
-      }
-   }
-         
-   private void signalListRefresh()
-   {
-	if(sig_list.getItemCount() != 0)
-	    sig_list.removeAll();
-	sig_list.add("Select this item to add new expression");
-	for(int i = 0; i < ew.num_signal; i++)
-	    signalListAdd(ew.signals[i]);
-	sig_list.select(sel_signal + 1);
-   } 
-
-   private void signalListAdd(WaveSetupData ws)
-   {
-	if(ws.shot != WaveSetupData.UNDEF_SHOT)
-	{
-	    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		sig_list.add("Y : " + ws.y_expr + " Shot : " + ws.shot);
-	    else
-		sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot);	
-    	} else {
-    	    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		sig_list.add("Y : " + ws.y_expr + " Shot : Undef");
-	    else
-	    	sig_list.add("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef");	
-	}
-  }
-   private void signalListReplace(int idx, WaveSetupData ws)
-   {
-	if(ws.shot != WaveSetupData.UNDEF_SHOT)
-	{
-	    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		sig_list.replaceItem("Y : " + ws.y_expr + " Shot : " + ws.shot, idx);
-	    else
-		sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : " + ws.shot, idx);	
-    	} else {
-    	    if(ws.x_expr == null || ws.x_expr.length() == 0) 	    
-		sig_list.replaceItem("Y : " + ws.y_expr + " Shot : Undef", idx);
-	    else
-	    	sig_list.replaceItem("Y : " + ws.y_expr + " X : " + ws.x_expr + " Shot : Undef", idx);	
-	}
-  }
 
   public void eraseForm()
   {
 	title.setText("");
 	x_expr.setText("");
 	x_label.setText("");
+	x_label.setForeground(Color.black);		
 	x_max.setText("");
+	x_max.setForeground(Color.black);		
 	x_min.setText("");
+	x_min.setForeground(Color.black);		
 	y_expr.setText("");
 	y_max.setText("");
+	y_max.setForeground(Color.black);		
 	y_min.setText("");
+	y_min.setForeground(Color.black);		
 	y_label.setText("");
+	y_label.setForeground(Color.black);		
 	experiment.setText("");
 	shot.setText("");
+	shot.setForeground(Color.black);		
 	resetDefaultFlags();
-	ew.num_signal = 0;
-	signalListRefresh();
-   } 
-   
-   
-   public WaveformConf saveConfiguration()
-   {
-      WaveformConf wc = new WaveformConf();
+	signalList.reset();
+	signalList.signalListRefresh();
+  } 
+ 
 
-      wc.Copy(curr_wc);
-            
-      wc.num_shot = ew.num_shot;
-      
-      if(ew.num_shot != 0)
-	wc.num_expr = ew.num_signal/ew.num_shot;
-      else
-	wc.num_expr = ew.num_signal;
-      
-      if(!experiment_b.getState())
-	wc.experiment   = new String(experiment.getText());
-      if(!shot_b.getState() && shot.getForeground() == Color.black)
-	wc.shot_str     = new String(shot.getText());
-      if(!x_max_b.getState())
-	wc.x_max        = new String(x_max.getText());
-      if(!x_min_b.getState())
-	wc.x_min        = new String(x_min.getText());
-      if(!y_max_b.getState())
-	wc.y_max        = new String(y_max.getText());
-      if(!y_min_b.getState())
-	wc.y_min        = new String(y_min.getText());
-      if(!title_b.getState())
-	wc.title        = new String(title.getText());
-      if(!x_label_b.getState())
-	wc.x_label      = new String(x_label.getText());
-      if(!y_label_b.getState())
-	wc.y_label      = new String(y_label.getText());
+    public boolean isChanged(Data s[])
+    {
+	WaveInterface wave_wi = wave.wi;
+
+    	if(wave_wi == null) return true;
 	
-      wc.x_log        = x_log.getState();
-      wc.y_log        = y_log.getState();
-//    wc.opt_network  = opt_network.getState();
-      wc.x_expr	      = new String[ew.num_signal];
-      wc.y_expr	      = new String[ew.num_signal];
-      wc.up_err	      = new String[ew.num_signal];
-      wc.low_err      = new String[ew.num_signal];
-            
-      wc.markers      = new int[ew.num_signal];
+	if(wave_wi.modified) return true;
+    
+	if(s.length     != wave_wi.num_waves) return true;
+	if(signalList.getNumShot() != wave_wi.num_shot) return true;
+	
+	if(!main_scope.equalsString(title.getText(),   wave_wi.cin_title))    return true;	
+	if(!main_scope.equalsString(x_max.getText(),   wave_wi.cin_xmax))     return true;
+	if(!main_scope.equalsString(x_min.getText(),   wave_wi.cin_xmin))     return true;
+	if(!main_scope.equalsString(x_label.getText(), wave_wi.cin_xlabel))   return true;
+	if(x_log.getState() != wave_wi.x_log)				      return true;
+	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
+	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
+	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;	
+	if(y_log.getState() != wave_wi.y_log)				      return true;		
 
-      wc.colors_idx   = new int[ew.num_signal];
-      wc.interpolates = new boolean[ew.num_signal];
-      for(int j = 0, k = 0;  j < wc.num_expr; j++)
-      { 
-	 if(ew.signals[k].x_expr != null)
-	    wc.x_expr[j] = new String(ew.signals[k].x_expr);
-	 if(ew.signals[k].y_expr != null)
-	    wc.y_expr[j] = new String(ew.signals[k].y_expr);
-	 if(ew.signals[k].up_err != null)
-	    wc.up_err[j] = new String(ew.signals[k].up_err);
-	 if(ew.signals[k].low_err != null)
-	    wc.low_err[j] = new String(ew.signals[k].low_err);
+    	if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))        return true;	
+	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment)) return true;
+	if(getDefaultFlags() != wave_wi.defaults)				return true;	
 
-	 for(int i=0; i < ew.num_shot; i++)
-	 {
-	    wc.interpolates[k] = ew.signals[k].interpolate;
-	    wc.markers[k]      = ew.signals[k].marker;
-	    wc.colors_idx[k]   = ew.signals[k].color_idx;
-    	    k++;
-	 }
-      }
-      wc.defaults = getDefaultFlags();
-      wc.modified = !wc.equals(curr_wc);
-      if(wc.modified) {
-	main_scope.sc.modified = true;
-	main_scope.setWindowTitle();
-      }
-      curr_wc = wc;        
-      return (setup.SaveWaveformConf(wc));
-   } 		  	
+    	for(int i = 0 ; i < wave_wi.num_waves; i++)
+	{
+	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
+	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))	       return true;
+	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
+	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
+	}
+	return false;
+    }
+
+    private void update()
+    {
+	signalList.updateList();
+    }
+
+   private void updateGlobalWI()
+   {
+      if(!experiment_b.getState() && !main_scope.equalsString(experiment.getText(), wi.cexperiment))
+	wi.cexperiment   = experiment.getText();	
+      if(!shot_b.getState() && !main_scope.equalsString(shot.getText(),   wi.cin_shot))
+	wi.cin_shot      = shot.getText();	
+      if(!x_max_b.getState() && !main_scope.equalsString(x_max.getText(),   wi.cin_xmax))
+	wi.cin_xmax      = x_max.getText();
+      if(!x_min_b.getState() && !main_scope.equalsString(x_min.getText(),   wi.cin_xmin))
+	wi.cin_xmin      = x_min.getText();
+      if(!y_max_b.getState() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
+	wi.cin_ymax      = y_max.getText();
+      if(!y_min_b.getState() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
+	wi.cin_ymin      = y_min.getText();
+      if(!title_b.getState() && !main_scope.equalsString(title.getText(),   wi.cin_title))
+	wi.cin_title     = title.getText();
+      if(!x_label_b.getState() && !main_scope.equalsString(x_label.getText(), wi.cin_xlabel))
+	wi.cin_xlabel    = x_label.getText();
+      if(!y_label_b.getState() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
+	wi.cin_ylabel    = y_label.getText();
+   }
+
+   private void updateWI()
+   {
+   
+	  Data[] s;
+	  int num_signal;
+    
+	  s = signalList.getSignals();
+	  num_signal = s.length;
+
+ 	  if(num_signal == 0)
+	      return;
+  
+	  wi.modified = isChanged(s);
+	  
+	  if(!wi.modified)
+	  {
+		wave.wi.full_flag = !main_scope.GetFastNetworkState();
+		for(int i = 0; i < wave.wi.num_waves; i++)      
+		{
+		    wave.wi.markers[i]      = s[i].marker;
+		    wave.wi.markers_step[i] = s[i].marker_step;
+		    wave.wi.interpolates[i] = s[i].interpolate;
+		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+		    wave.wi.colors_idx[i]   = s[i].color_idx;
+		}
+		return;	 
+	  }
+
+	  updateGlobalWI();
+	     	     
+	  wi.num_waves = num_signal;
+    
+	  wi.experiment     = new String(experiment.getText());	
+	  wi.in_shot        = new String(shot.getText());	
+	  wi.in_xmax        = new String(x_max.getText());
+	  wi.in_xmin        = new String(x_min.getText());
+	  wi.in_ymax        = new String(y_max.getText());
+	  wi.in_ymin        = new String(y_min.getText());
+	  wi.in_title       = new String(title.getText());
+	  wi.in_xlabel      = new String(x_label.getText());
+	  wi.in_ylabel      = new String(y_label.getText());
+	    
+	  wi.x_log        = x_log.getState();
+	  wi.y_log        = y_log.getState();
+	  wi.full_flag    = !main_scope.GetFastNetworkState();
+	  wi.num_shot     = signalList.getNumShot();
+	  wi.defaults     = getDefaultFlags();
+     
+	  wi.in_x         = new String[num_signal];
+	  wi.in_y         = new String[num_signal];
+	  wi.in_up_err    = new String[num_signal];
+          wi.in_low_err   = new String[num_signal];
+          wi.markers      = new int[num_signal];
+          wi.markers_step = new int[num_signal];	  
+          wi.colors       = new Color[num_signal];
+          wi.colors_idx   = new int[num_signal];
+          wi.interpolates = new boolean[num_signal];
+    
+          wi.shots        = new int[num_signal];				
+    
+          for(int i = 0; i < num_signal; i++)      
+          {
+	      if(s[i].x_expr != null)
+		 wi.in_x[i]         = new String(s[i].x_expr);
+	      if(s[i].y_expr != null)	     
+		wi.in_y[i]         = new String(s[i].y_expr);
+	      wi.markers[i]      = s[i].marker;
+	      wi.markers_step[i] = s[i].marker_step;
+	      wi.interpolates[i] = s[i].interpolate;
+	      if(wi.shots != null)
+		wi.shots[i]        = s[i].shot;
+	      if(s[i].up_err != null)
+		wi.in_up_err[i] = new String(s[i].up_err);
+	      if(s[i].low_err != null)      
+		wi.in_low_err[i] = new String(s[i].low_err);	    
+	      wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+	      wi.colors_idx[i]   = s[i].color_idx;
+	   }
+	  
+	  
+	   if(wi.shots[0] == jScope.UNDEF_SHOT)
+	   	wi.shots = null;
+	  	    
+	   wave.wi = wi;
+   }
+
 
    private int applyWaveform(boolean ok_flag)
    {
 	int error = 0;
 	boolean def_exp = true, def_shot = true;
 
-
     	main_scope.SetStatusLabel("");
-	ew.wave.SetMode(Waveform.MODE_WAIT);
+	wave.SetMode(Waveform.MODE_WAIT);
 				
 	if(experiment.getText() == null || experiment.getText().trim().length() == 0)
 	    def_exp = false;
@@ -763,50 +1294,27 @@ import java.lang.Integer;
 		error_msg.addMessage("Shot defined but undefined experiment\n");
 	    error = 1;
 	}
+		    
+	update();
 	
-	ew.signalsRefresh(shot.getText());
-	
-	if(sel_signal == -1)
-	    addSignals();
-	else
-	    updateSignals();
-
-	WaveformConf wc = saveConfiguration();
+	updateWI();
 	
 	if(error == 0) {
 	
 	    main_scope.SetStatusLabel("Update signals for shots " + shot.getText());
-    
-    	    if(ew.num_signal != 0) {
-//		ew.signalsRefresh(shot.getText());
-		signalListRefresh();
-	    }
-		if(wc.modified)	    		    
-		    ew.UpdateWave(wc);
+	    String e = setup.UpdateWave(wave);
+	    if(e != null) {
+		error = 1;
+		if(main_scope.briefError())
+		    error_msg.addMessage(e);
 		else
-		    ew.RefreshWave(wc);
-		
-		wc.modified = true;	    
-		if(ew.wave.wi.error != null)
-		{
-		    error = 1;
-		    error_msg.addMessage(ew.wave.wi.error);
-		    ew.RefreshWave(wc);
-		}
-	    	 
+		    error_msg.setMessage(e);
+	    }  
 	}
-	
-	if(error == 0 && ok_flag)
-	    wc.modified = wc.useDefaultShot();
-
-	if(error != 0)
-	    wc.modified = true;	    		
-
-	
-	ew.wave.SetMode(main_scope.wave_mode);
+	wave.SetMode(main_scope.wave_mode);
 	main_scope.SetStatusLabel("Wave is up to date");
 	
-	return error;
+	return error;	
    }
 	    	
    public void actionPerformed(ActionEvent e)
@@ -817,26 +1325,30 @@ import java.lang.Integer;
 	eraseForm();
       }
 		
-      if(ob == cancel)
+      if(ob == cancel) {
 	setVisible(false);
+	signalList.reset();
+      }
 	
       if(ob == apply || ob == ok)
       {
 	
 	if(applyWaveform(ob == ok) == 1)
 	    error_msg.showMessage();
-	if(ob == ok)
-	    setVisible(false);		
+	if(ob == ok) {
+	    signalList.reset();
+	    setVisible(false);
+	}		
+      }
+ 
+      if(ob == reset) {
+	signalList.reset();
+	putWindowSetup(wave.wi); 	
       }
       
-      if(ob == reset)
-	putWindowSetup(setup.GetWaveformConf()); 	
-
       if(ob == error) {
-	 if(sel_signal == -1)
-	    return; 
-	 error_w.setError(ew.signals[sel_signal]);	
-	 error_w.pack();
+	 signalList.updateError();
+    	 error_w.pack();
 	 error_w.setPosition(this);
 	 error_w.show();
       }
@@ -859,24 +1371,10 @@ import java.lang.Integer;
      if(key == KeyEvent.CHAR_UNDEFINED)
 	 return;		  	      	
 
-      if(key == KeyEvent.VK_DELETE)
-      {
-	 if(ob == sig_list)
-           removeSignalSetup();	
-      }
-
       if(key == KeyEvent.VK_ENTER)
       { 
 	 if(ob == y_expr || ob == x_expr || ob == shot || ob == experiment) {
-	    ew.evaluateMainShot(setup.main_scope.GetMainShot());
-    	    if(sel_signal == -1)	    
-		addSignals();
-	    else
-		updateSignals();	    	
-	    if(ew.num_signal != 0) {
-		ew.signalsRefresh(shot.getText());
-	        signalListRefresh();
-	    }	    
+	     update();
          } 
       }
       
@@ -893,46 +1391,64 @@ import java.lang.Integer;
       } 
    }
    
-   private void  defaultButtonOperation(TextField text, boolean state, String def, String cur)
+   private void  defaultButtonOperation(TextField text, boolean state, String val)
    {
 	if(state) {
 	    text.setForeground(Color.blue);
 	    text.setEditable(false);
-	    if(def != null && def.trim().length() != 0)	    
-		text.setText(def);
-	    else 
-		text.setText("");	    
 	} else {
 	    text.setForeground(Color.black);		
 	    text.setEditable(true);
-	    if(cur != null && cur.trim().length() != 0)
-		text.setText(cur);
-	    else {
-		text.setText("");
-	    }
 	}   
+	if(val != null && val.trim().length() != 0)	    
+	    text.setText(val);
+	else 
+	    text.setText("");
+   }
+   
+   private void putShotValue(boolean def_flag)
+   {
+	switch(main_scope.getUsedShotIdx(def_flag))
+        {
+		case 0:  
+		    shot.setForeground(Color.black);
+		    shot.setEditable(true);
+		break;
+		case 1: 
+		    shot.setForeground(Color.blue);
+		    shot.setEditable(false);
+		break;
+		case 2:
+		    shot.setForeground(Color.red);
+		    shot.setEditable(false);
+		break;
+	    }
+	    shot.setText(main_scope.getUsedShot(def_flag, wi));
    }
 
    private void  defaultButtonChange(Object ob)
    {
+	boolean def_flag;
+   
 	if(ob == title_b)
-	    defaultButtonOperation(title, title_b.getState(),  wc_default.title, curr_wc.title);
-	if(ob == shot_b)
-	    defaultButtonOperation(shot, shot_b.getState(),  wc_default.shot_str, curr_wc.shot_str);
+	    defaultButtonOperation(title, def_flag = title_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_title, def_flag, wi));
+
+    	if(ob == shot_b) 
+	    putShotValue(shot_b.getState());
 	if(ob == experiment_b)
-	    defaultButtonOperation(experiment, experiment_b.getState(), wc_default.experiment, curr_wc.experiment);
+	    defaultButtonOperation(experiment, def_flag = experiment_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_exp, def_flag, wi));
 	if(ob == x_max_b)
-	    defaultButtonOperation(x_max, x_max_b.getState(), wc_default.x_max, curr_wc.x_max);
+	    defaultButtonOperation(x_max, def_flag = x_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_max, def_flag, wi));
 	if(ob == x_min_b)
-	    defaultButtonOperation(x_min, x_min_b.getState(),wc_default.x_min, curr_wc.x_min);
+	    defaultButtonOperation(x_min, def_flag = x_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_min, def_flag, wi));
 	if(ob == x_label_b)
-	    defaultButtonOperation(x_label, x_label_b.getState(), wc_default.x_label, curr_wc.x_label);
+	    defaultButtonOperation(x_label, def_flag = x_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_x_label, def_flag, wi));
 	if(ob == y_max_b)
-	    defaultButtonOperation(y_max, y_max_b.getState(), wc_default.y_max, curr_wc.y_max);
+	    defaultButtonOperation(y_max, def_flag = y_max_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_max, def_flag, wi));
 	if(ob == y_min_b)
-	    defaultButtonOperation(y_min, y_min_b.getState(), wc_default.y_min, curr_wc.y_min);
+	    defaultButtonOperation(y_min, def_flag = y_min_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_min, def_flag, wi));
 	if(ob == y_label_b)
-	    defaultButtonOperation(y_label, y_label_b.getState(), wc_default.y_label, curr_wc.y_label);
+	    defaultButtonOperation(y_label, def_flag = y_label_b.getState(), main_scope.setup_default.getDefaultValue(WaveInterface.B_y_label, def_flag, wi));
 
    }
 
@@ -940,53 +1456,11 @@ import java.lang.Integer;
    {
 	Object ob = e.getSource();
 	
-	if(ob == sig_list)
-	{
-           sel_signal = sig_list.getSelectedIndex() - 1;
-	   if(sel_signal >= 0)
-	       putSignalSetup(ew.signals[sel_signal]);
-	   else {
-		x_expr.setText("");
-		y_expr.setText("");
-	    }
-	} 
 
 	if(ob instanceof Checkbox)
 	    defaultButtonChange(ob);
 
-    	if(sel_signal == -1)
-	    return;
 	    
-	if(ob == marker) {
-	    ew.signals[sel_signal].marker = marker.getSelectedIndex();
-	}	
-
-	if(ob == show_type) {
-	    ew.signals[sel_signal].interpolate = show_type.getSelectedIndex() == 0 ? true : false;
-	}	
-
-	if(ob == color) {
-	    ew.signals[sel_signal].color_idx = color.getSelectedIndex();       
-	}
-	
-    }
-    
-    public void focusGained(FocusEvent e)
-    {
-	Object ob = e.getSource();
-/*		
-	if(ob == shot) {
-	    if(shot_b.getState()) {
-	      ((TextField)ob).setForeground(Color.blue);
-	      ((TextField)ob).setText(wc_default.shot_str);
-	    }	    
-	    else
-	    {
-	      ((TextField)ob).setForeground(Color.black);
-	      ((TextField)ob).setText(curr_wc.shot_str);
-	    }
-	}
-*/  
-    }    
+    }   
 }
 

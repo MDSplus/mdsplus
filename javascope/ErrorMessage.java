@@ -27,7 +27,7 @@ class ErrorMessage extends ScopePositionDialog {
 	msg_type = ERROR_TYPE;
 	f = fw; 	
 	setTitle("Error Message");
-	setLayout(new GridLayout(20, 0, 0, 0));    
+	setLayout(new GridLayout(10, 5, 0, 0));    
     }
     
     ErrorMessage(Frame fw, int _msg_type)
@@ -79,7 +79,7 @@ class ErrorMessage extends ScopePositionDialog {
 	if(n_row < MAX_ERROR_ROW)
 	{	
 	    if((end = error.indexOf(10)) != -1)
-		add(new Label(error.substring(0, end)));
+		add(new Label(error.substring(0, end - 1)));
 	    else
 		add(new Label(error.substring(0, error.length())));	
 	    n_row++;
@@ -103,8 +103,7 @@ class ErrorMessage extends ScopePositionDialog {
 		return 0;
 		is_message_show = true;
 		setLayout(new GridLayout(n_row + 1, 0));
-		Panel p = new Panel();
-		((FlowLayout)p.getLayout()).setAlignment(FlowLayout.CENTER);
+		Panel p = new Panel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		p.add(acknowledge = new Button("Acknowledge"));
 		acknowledge.addActionListener(this);
 		add(p);
@@ -113,7 +112,7 @@ class ErrorMessage extends ScopePositionDialog {
 	    break;	    
 	}
 	pack();
-	setResizable(false);	    
+	setResizable(true);	    
 	setPosition(f);
 	show();
 	return 1;
@@ -129,13 +128,15 @@ class ErrorMessage extends ScopePositionDialog {
 	    return;
 
     	removeAll();
-	
+		
 	while((end = error.indexOf('\n', start)) != -1)
 	{
 	    add(new Label(error.substring(start, end)));
 	    start = end + 1;
 	    n_row++;
-	} 
+	}
+	
+ 
     }
     
     public void resetMsg()

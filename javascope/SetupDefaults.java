@@ -11,8 +11,11 @@ public class SetupDefaults extends ScopePositionDialog {
    TextField        y_max, y_min, y_label;
    Button           ok, cancel, reset, erase, apply;
    Label            lab;
-   javaScope	    main_scope;
-   EvaluateWaveform ew;
+   int		    shots[];
+   jScope	    main_scope;
+   String xmin, xmax, ymax, ymin;
+   String title_str, xlabel, ylabel;
+   String experiment_str, shot_str;
 
 
    public SetupDefaults(Frame fw, String frame_title) 
@@ -24,8 +27,7 @@ public class SetupDefaults extends ScopePositionDialog {
       setResizable(false);
 
             
-      main_scope = (javaScope)fw; 	
-      ew = main_scope.ew;
+      main_scope = (jScope)fw; 	
   
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints c = new GridBagConstraints();
@@ -59,7 +61,6 @@ public class SetupDefaults extends ScopePositionDialog {
       add(lab);	
 
       y_min = new TextField(10);		 	
-   //   y_min.addKeyListener(this);
       gridbag.setConstraints(y_min, c);
       add(y_min);	
 
@@ -160,7 +161,7 @@ public class SetupDefaults extends ScopePositionDialog {
 	shot.setText("");
    }
    
-   public void setTextValue(TextField t, String val)
+   private void setTextValue(TextField t, String val)
    {
 	if(val != null)
 	{
@@ -168,39 +169,193 @@ public class SetupDefaults extends ScopePositionDialog {
 	}
    }
 
-   public void putSetupDefault(WaveformConf wc)      
+   private void initialize()      
    { 
    
 	eraseForm();	    
-	if(wc == null) return;
-	setTextValue(title, wc.title);
-	setTextValue(y_label, wc.y_label);
-	setTextValue(x_label, wc.x_label);
-        setTextValue(y_max, wc.y_max);
-        setTextValue(y_min, wc.y_min);
-        setTextValue(x_max, wc.x_max);
-        setTextValue(x_min, wc.x_min);
-	setTextValue(experiment, wc.experiment);
-	setTextValue(shot, wc.shot_str);		
+	setTextValue(title, title_str);
+	setTextValue(y_label, ylabel);
+	setTextValue(x_label, xlabel);
+        setTextValue(y_max, ymax);
+        setTextValue(y_min, ymin);
+        setTextValue(x_max, xmax);
+        setTextValue(x_min, xmin);
+	setTextValue(experiment, experiment_str);
+	setTextValue(shot, shot_str);		
    }
    
-   public WaveformConf saveDefaultConfiguration()
+   private void saveDefaultConfiguration()
    {
-      WaveformConf wc = new WaveformConf();
 
-      wc.experiment   = new String(experiment.getText());
-      wc.shot_str     = new String(shot.getText());
-      wc.x_max        = new String(x_max.getText());
-      wc.x_min        = new String(x_min.getText());
-      wc.y_max        = new String(y_max.getText());
-      wc.y_min        = new String(y_min.getText());
-      wc.title        = new String(title.getText());
-      wc.x_label      = new String(x_label.getText());
-      wc.y_label      = new String(y_label.getText());
-      wc.modified     = !wc.equals(main_scope.sc.gwc);
-      main_scope.sc.gwc = wc;
-      return(wc);		     	     
+      experiment_str	= new String(experiment.getText());
+      shot_str		= new String(shot.getText());
+      xmax		= new String(x_max.getText());
+      xmin		= new String(x_min.getText());
+      ymax		= new String(y_max.getText());
+      ymin		= new String(y_min.getText());
+      title_str		= new String(title.getText());
+      xlabel		= new String(x_label.getText());
+      ylabel		= new String(y_label.getText());
     } 
+    
+   public String getDefaultValue(int i, boolean def_flag, WaveInterface wi)
+   {
+	String out = null;
+   
+	switch(i)
+        {
+	    case WaveInterface.B_title:
+	      out = def_flag  ? title_str : wi.cin_title; break; 
+	    case WaveInterface.B_shot:
+	      out  = def_flag ? shot_str : wi.cin_shot;break; 
+	    case WaveInterface.B_exp:
+	      out =  def_flag ? experiment_str : wi.cexperiment;break; 
+	    case WaveInterface.B_x_max:
+	      out  = def_flag ? xmax : wi.cin_xmax; break; 
+	    case WaveInterface.B_x_min:
+	      out  = def_flag ? xmin : wi.cin_xmin; break; 
+	    case WaveInterface.B_x_label:
+	      out =  def_flag ? xlabel : wi.cin_xlabel;break; 
+	    case WaveInterface.B_y_max:
+	      out =  def_flag ? ymax : wi.cin_ymax; break; 
+	    case WaveInterface.B_y_min:
+	      out =  def_flag ? ymin : wi.cin_ymin; break; 
+	    case WaveInterface.B_y_label:
+	      out =  def_flag ? ylabel : wi.cin_ylabel;break; 
+	}
+	return out;
+   } 
+   
+   
+  
+   public void  updateDefaultWI(WaveInterface wi)
+   {
+      boolean def_flag;
+      int bit;
+      
+      if(wi == null) return;
+      
+      bit = WaveInterface.B_title;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_title      = getDefaultValue(bit, def_flag, wi);
+      bit = WaveInterface.B_shot;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_shot       = getDefaultValue(bit ,  def_flag, wi); 
+      bit =WaveInterface.B_exp;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.experiment = getDefaultValue(bit , def_flag , wi);
+      bit = WaveInterface.B_x_max;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_xmax       = getDefaultValue(bit , def_flag , wi); 
+      bit = WaveInterface.B_x_min;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_xmin       = getDefaultValue(bit , def_flag , wi);
+      bit = WaveInterface.B_x_label;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_xlabel     = getDefaultValue(bit , def_flag , wi); 
+      bit = WaveInterface.B_y_max;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_ymax       = getDefaultValue(bit , def_flag , wi); 
+      bit = WaveInterface.B_y_min;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_ymin       = getDefaultValue(bit , def_flag, wi); 
+      bit = WaveInterface.B_y_label;
+      def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
+      wi.in_ylabel     = getDefaultValue(bit , def_flag , wi);
+   }   
+
+   public void  Show()
+   {
+	initialize();
+	show();
+   }
+   
+   
+   public void toFile(BufferedWriter out, String prompt)
+   {
+	jScope.writeLine(out, prompt + "experiment: " , experiment_str);
+	jScope.writeLine(out, prompt + "shot: "       , shot_str);
+	jScope.writeLine(out, prompt + "title: "      , title_str);
+	jScope.writeLine(out, prompt + "xmax: "       , xmax);
+	jScope.writeLine(out, prompt + "xmin: "       , xmin);
+	jScope.writeLine(out, prompt + "x_label: "    , xlabel);
+	jScope.writeLine(out, prompt + "ymax: "       , ymax);
+	jScope.writeLine(out, prompt + "ymin: "       , ymin);
+	jScope.writeLine(out, prompt + "y_label: "    , ylabel);
+   }
+
+   public int fromFile(String conf_file, String prompt)
+   {
+	String str;
+	int error = 0;
+   
+        try {
+	    BufferedReader in = new BufferedReader(new FileReader(conf_file));
+     
+	    while((str = in.readLine()) != null) {
+	      
+   		if(str.indexOf("Scope.global_1_1") == 0)
+		{
+		    int len = str.indexOf(":") + 2;
+
+		    if(str.indexOf(".xmax:") != -1)
+		    {
+			xmax = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".xmin:") != -1)
+		    {
+			xmin = str.substring(len, str.length());
+			continue;		
+		    }
+		    		    
+		    if(str.indexOf(".x_label:") != -1)
+		    {
+			xlabel = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".ymax:") != -1)
+		    {
+			ymax = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".ymin:") != -1)
+		    {
+			ymin = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".y_label:") != -1)
+		    {
+			ylabel = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".experiment:") != -1)
+		    {
+			experiment_str = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".title:") != -1)
+		    {
+			title_str = str.substring(len, str.length());
+			continue;		
+		    }
+		    if(str.indexOf(".shot:") != -1)
+		    {
+			shot_str = str.substring(len, str.length());
+			if(shot_str.indexOf("_shots") != -1) 
+			    shot_str  =  shot_str.substring(shot_str.indexOf("[")+1, shot_str.indexOf("]")); 
+    			shots = main_scope.evaluateShot(shot_str);
+    			continue;		
+		    }		
+		}
+	    }
+	}   catch(Exception e) {
+	    error = 1;
+	}
+	return error;
+   }
+    
+
     
    public void actionPerformed(ActionEvent e)
    {
@@ -214,18 +369,16 @@ public class SetupDefaults extends ScopePositionDialog {
 
       if(ob == apply || ob == ok)
       {
-	//if(shot.getText() != null && shot.getText().length()!= 0)
-	//sd_block.evaluateShot(shot.getText());
 	saveDefaultConfiguration();
-	main_scope.UpdateAllWaves();
-	main_scope.sc.gwc.modified = false;
 	if(ob == ok)
 	    setVisible(false);
+	shots = main_scope.evaluateShot(shot_str);    
+	main_scope.UpdateAllWaves();
       }
       
       if(ob == reset)
       {
-	putSetupDefault(main_scope.sc.gwc);
+	initialize();
       }      	
    } 
 }

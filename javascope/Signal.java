@@ -216,9 +216,11 @@ Integer inte;
 	*/
 	x = _x;
 	y = _y;
-	    
+		        
 	nans = new int[100];    
 	n_points = _n_points;
+	if(y.length < n_points) n_points = y.length;
+	if(x.length < n_points) n_points = x.length;	
 	ymax = ymin = y[0];
 	xmax = xmin = x[0];
 	for(i = 0; i < n_points; i++)

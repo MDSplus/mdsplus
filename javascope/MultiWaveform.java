@@ -14,7 +14,7 @@ waveforms.
     int curr_point_sig_idx;	
     public    Color colors[];
     public int num_colors;
-    int markers[];
+    int markers[], markers_step[];
     boolean interpolates[];
     WaveInterface wi;
     static WaveInterface copy_wi;
@@ -65,14 +65,14 @@ waveforms.
 	    for(int i = 0; i < wi.signals.length; i++)
 		if(wi.signals[i] != null)
 		{
-		    this.Update(wi.signals, wi.num_waves, wi.markers, wi.interpolates);
+		    this.Update(wi.signals, wi.num_waves, wi.markers, wi.markers_step, wi.interpolates);
 		    return;
 		}
 	}
 	this.Erase();	
     }
 	
-    public void Update(Signal _signals[], int _num_signals, int _markers[], boolean _interp[])
+    public void Update(Signal _signals[], int _num_signals, int _markers[], int _markers_step[], boolean _interp[])
     {
 	int i;
 	signals = new Signal[_num_signals];
@@ -85,6 +85,7 @@ waveforms.
  
 	orig_signals = null;
 	markers = _markers;
+	markers_step = _markers_step;
 	interpolates = _interp;
 	curr_point_sig_idx = 0;
 	UpdateLimits();
@@ -116,10 +117,12 @@ waveforms.
 	signals = _signals;
 	num_signals = _num_signals;
 	markers = new int[num_signals];
+	markers_step = new int[num_signals];
 	interpolates = new boolean[num_signals];
 	for(i = 0; i < num_signals; i++)
 	{
 	    markers[i] = NONE;
+	    markers_step[i] = 1;
 	    interpolates[i] = true;
 	}
 	curr_point_sig_idx = 0;
@@ -200,13 +203,16 @@ waveforms.
 	    if(dragging && mode == MODE_PAN)
 		return;    
 	    if(markers != null && markers[i] != NONE)
-	    	DrawMarkers(g, segments, markers[i]);
+		if(markers_step != null && markers_step[i] != 0)
+		    DrawMarkers(g, segments, markers[i], markers_step[i]);
+		else
+		    DrawMarkers(g, segments, markers[i], 1);
 	    if(signals[i].error)
 		DrawError(g, size(), signals[i]);
 	}
     }
 
-    protected void DrawMarkers(Graphics g, Vector segments, int mark_type)
+    protected void DrawMarkers(Graphics g, Vector segments, int mark_type, int step)
     {
 	int num_points, num_segments = segments.size();
 	int i;
@@ -222,7 +228,7 @@ waveforms.
 	for(i = num_points = 0; i < num_segments; i++)
 	{
 	    curr_polygon = (Polygon)segments.elementAt(i);
-	    for(int j = 0; j < curr_polygon.npoints; j++)
+	    for(int j = 0; j < curr_polygon.npoints; j+= step)
 	    {
 		points[num_points].x = curr_polygon.xpoints[j];
 		points[num_points].y = curr_polygon.ypoints[j];

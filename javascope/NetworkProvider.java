@@ -11,6 +11,7 @@ public    static final byte DTYPE_CHAR = 6;
 public    static final byte DTYPE_SHORT = 7;
 public    static final byte DTYPE_LONG = 8;
 public    static final byte DTYPE_FLOAT = 10;
+public    static final byte DTYPE_WORDU = 3;
 
 public    byte dtype;
 public    float float_data[];
@@ -61,7 +62,8 @@ protected void finalize()
     int status;
     String err = new String("");
     if(open)
-    	mds.MdsValue("MDSLIB->MDS$CLOSE()");
+    	mds.MdsValue("JavaClose(\""+experiment+"\","+shot+")");
+    	//mds.MdsValue("MDSLIB->MDS$CLOSE()");
     if(connected)
 	status = mds.DisconnectFromMds(err);
 }
@@ -73,7 +75,7 @@ public boolean SupportsAsynch() { return true; }
 public synchronized void Update(String exp, int s)
 {
     error = null;
-    if(exp == null)  { experiment = null; open = true; return;}
+    if(exp == null || exp.length() == 0)  { experiment = null; open = true; return;}
     if(experiment == null || !experiment.equals(exp) || s != shot)
     {
     
@@ -108,6 +110,21 @@ public synchronized String GetString(String in)
     return new String(in.getBytes(), 1, in.length() - 2);    
 }
 
+public synchronized void SetEnvironment(String in)
+{
+
+    error = null;
+    Update(null , 0);
+    if(!CheckOpen()) {
+	error = "Cannot open data server";
+	return;
+    }
+    Descriptor desc = mds.MdsValue(in);
+    switch(desc.dtype)  {
+	case Descriptor.DTYPE_CSTRING:
+	    error = desc.error;
+    }
+}
 	
 public synchronized float GetFloat(String in)
 {
@@ -209,8 +226,10 @@ public synchronized int[] GetIntArray(String in)
     }	
     if(!open && experiment != null)
     {
-	Descriptor descr = mds.MdsValue("MDSLIB->MDS$OPEN(\""+experiment+"\","+
+	Descriptor descr = mds.MdsValue("JavaOpen(\""+experiment+"\"," +
 		(new Integer(shot)).toString()+")");
+	//Descriptor descr = mds.MdsValue("MDSLIB->MDS$OPEN(\""+experiment+"\","+
+	//	(new Integer(shot)).toString()+")");
 	if(descr.dtype != Descriptor.DTYPE_CSTRING
 		 && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
 		 && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
@@ -291,6 +310,7 @@ class Mds {
 	    case Descriptor.DTYPE_CHAR:
 		out.strdata = new String(message.body);
 		break;
+	    case Descriptor.DTYPE_WORDU:
 	    case Descriptor.DTYPE_SHORT:
 		short data[] = message.ToShortArray();
 		out.int_data = new int[data.length];
@@ -366,6 +386,7 @@ public    byte nargs;
 public    byte descr_idx;
 public    byte message_id;
 public    byte dtype;
+
 public    byte client_type;
 public    byte ndims;
 public    int dims[];
@@ -437,12 +458,12 @@ public void Receive(DataInputStream dis)throws IOException
     message_id = dis.readByte();
     dtype = dis.readByte();
     client_type = dis.readByte();
-//    System.out.println("Client type = "+(new Integer(client_type)).toString());
+    //System.out.println("Client type = "+(new Integer(client_type)).toString());
     ndims = dis.readByte();
     swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
-//    System.out.println(swap);
+    //System.out.println(swap);
     msglen = ToInt(msglen_b);
-//    System.out.println("msglen = "+(new Integer(msglen)).toString());
+    //System.out.println("msglen = "+(new Integer(msglen)).toString());
     status = ToInt(status_b);
     length = ToShort(length_b);
     bytes = new byte[4];
