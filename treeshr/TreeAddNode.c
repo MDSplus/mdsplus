@@ -804,7 +804,7 @@ static int TreeWriteNci(TREE_INFO *info)
     char nci_bytes[42];
     for (i = 0; i < numnodes && (status & 1); i++)
     {
-      lseek((info->nci_file->put,info->edit->first_in_mem + i) * sizeof(nci_bytes),SEEK_SET);
+      lseek(info->nci_file->put,(info->edit->first_in_mem + i) * sizeof(nci_bytes),SEEK_SET);
       TreeSerializeNciOut(&info->edit->nci[i],nci_bytes);
       status = (write(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
       if (status & 1)
