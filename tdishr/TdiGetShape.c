@@ -25,6 +25,7 @@ unsigned char			dtype,
 int				*cmode_ptr,
 struct descriptor_xd	*out_ptr)
 {
+unsigned short ulen;
 int	cmode = -1, status = 1, count = 0x7fffffff, j, len, nelem;
 struct descriptor_a		*aptr;
 
@@ -55,8 +56,10 @@ struct descriptor_a		*aptr;
 	*****************************/
 	if (status & 1) {
 		if ((len = length) == 0 && dtype < TdiCAT_MAX) len = TdiREF_CAT[dtype].length;
-		if (cmode < 0) status = MdsGet1DxS((unsigned short *)&len, &dtype, out_ptr);
-		else status = MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, (unsigned short *)&len, &dtype, 
+                ulen = (unsigned short)len;
+		if (cmode < 0) 
+	          status = MdsGet1DxS(&ulen, &dtype, out_ptr);
+		else status = MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, &ulen, &dtype, 
                                              out_ptr);
 	}
 	*cmode_ptr = cmode;
