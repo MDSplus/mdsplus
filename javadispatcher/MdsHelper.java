@@ -1,11 +1,11 @@
 import java.util.*;
 import java.io.*;
-class MdsHelper 
+class MdsHelper
 {
     static Hashtable name_to_id = new Hashtable(), id_to_name = new Hashtable();
     static String dispatcher_ip = null;
     static {
-        Properties properties = new Properties(); 
+        Properties properties = new Properties();
         try {
             properties.load(new FileInputStream("jDispatcher.properties"));
             int i = 1;
@@ -25,10 +25,10 @@ class MdsHelper
             System.err.println("Cannot open phases.properties");
         }
     }
-            
-            
-            
-    public static native String getErrorString(int status); 
+
+
+
+    public static synchronized native String getErrorString(int status);
     public static native void generateEvent(String event, int shot);
  //   public static String getErrorString(int status){return "Error message not yet implemented"; }
     public static int toPhaseId(String phase_name)
@@ -37,12 +37,12 @@ class MdsHelper
             return ((Integer)name_to_id.get(phase_name)).intValue();
         }catch(Exception exc) {return -1; }
     }
-    
+
     public static String toPhaseName(int phase_id)
     {
         return (String)id_to_name.get(new Integer(phase_id));
     }
-    
+
     public static String getDispatcher()
     {
         return dispatcher_ip;
