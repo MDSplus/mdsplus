@@ -29,29 +29,19 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	private _N_RAMP_SLOPE = 20;
 	private _N_RAMP_TRIGGER = 21;
 	private _N_FEEDFORWARD = 22;
-    	private _N_ROUTINE_NAME = 23;
+    private _N_ROUTINE_NAME = 23;
 	private _N_N_ADC_IN = 24;
 	private _N_N_DAC_OUT = 25;
 	private _N_N_NET_IN = 26;
 	private _N_N_NET_OUT = 27;
 	private _N_N_MODES = 28;
 	
-	private _N_ADC_IN_1 = 29;
-	private _N_DAC_OUT_1 = 221;
-	private _N_USER_1 = 317;
-	private _N_NET_IN_1 = 317;
-	private _N_NET_OUT_1 = 381;
-	private _N_MODES_1 = 445;
-
-    private _N_PAR1_NAME = 831;
-    private _N_PAR1_VALUE = 832; 
-
- 
-	private _MAX_CONTROLS = 6;
-	private _NUM_PARAMETERS = 117;
+	private _N_ADC_IN_1 = 30;
+	private _N_DAC_OUT_1 = 222;
+	private _N_USER_1 = 318;
+	private _N_MODES_1 = 446;
 
 
-write(*, 'RFXControl store');
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
     _cmd = 'MdsConnect("'//_vme_ip//'")';
     execute(_cmd);

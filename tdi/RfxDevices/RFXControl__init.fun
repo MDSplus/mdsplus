@@ -34,19 +34,12 @@ public fun RFXControl__init(as_is _nid, optional _method)
 	private _N_N_NET_OUT = 27;
 	private _N_N_MODES = 28;
 	
-	private _N_ADC_IN_1 = 29;
-	private _N_DAC_OUT_1 = 221;
-	private _N_USER_1 = 317;
-	private _N_NET_IN_1 = 317;
-	private _N_NET_OUT_1 = 381;
-	private _N_MODES_1 = 445;
-
-    private _N_PAR1_NAME = 831;
-    private _N_PAR1_VALUE = 832; 
+    private _N_PAR1_NAME = 832;
+    private _N_PAR1_VALUE = 833; 
 
  
 	private _MAX_CONTROLS = 7;
-	private _NUM_PARAMETERS = 137;
+	private _NUM_PARAMETERS = 170;
 
     private _INVALID = 10E20;
 

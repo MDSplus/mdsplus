@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 831 + 274, _nidout);
+    DevAddStart(_path, 'RFXControl', 831 + 341, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -49,59 +49,60 @@ write(*,'RFXControl__add');
     DevAddNode(_path // ':N_NET_IN', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':N_NET_OUT', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':N_MODES', 'NUMERIC', 0, *, _nid);
+/* Signals */
+    DevAddNode(_path// '.SIGNALS', 'STRUCTURE', *, *, _nid);
     for (_c = 1; _c <= 9; _c++)
     {
-       DevAddNode(_path // ':ADC_IN_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+       DevAddNode(_path // '.SIGNALS:ADC_IN_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 10; _c <= 99; _c++)
     {
-        DevAddNode(_path // ':ADC_IN_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:ADC_IN_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 100; _c <= 192; _c++)
     {
-        DevAddNode(_path // ':ADC_IN_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:ADC_IN_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 1; _c <= 9; _c++)
     {
-        DevAddNode(_path // ':DAC_OUT_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:DAC_OUT_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 10; _c <= 96; _c++)
     {
-        DevAddNode(_path // ':DAC_OUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:DAC_OUT_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 1; _c <= 9; _c++)
     {
-        DevAddNode(_path // ':USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 10; _c <= 99; _c++)
     {
-        DevAddNode(_path // ':USER_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 100; _c <= 128; _c++)
     {
-        DevAddNode(_path // ':USER_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:USER_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 1; _c <= 9; _c++)
     {
-       DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
-       DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+       DevAddNode(_path // '.SIGNALS:MODE_MOD_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+       DevAddNode(_path // '.SIGNALS:MODE_PHS_' // TEXT(_c, 1) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
     for (_c = 10; _c <= 99; _c++)
     {
-        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
-        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:MODE_MOD_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:MODE_PHS_' // TEXT(_c, 2) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     for (_c = 100; _c <= 192; _c++)
     {
-        DevAddNode(_path // ':MODE_MOD_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
-        DevAddNode(_path // ':MODE_PHS_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:MODE_MOD_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
+        DevAddNode(_path // '.SIGNALS:MODE_PHS_' // TEXT(_c, 3) , 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
 
  
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
 
-/* Parameters */
 
 /* Individual perturbations */
     DevAddNode(_path // ':PAR1_NAME', 'TEXT', "PertIdx1", *, _nid);
@@ -378,23 +379,92 @@ write(*,'RFXControl__add');
     DevAddNode(_path // ':PAR129_VAL', 'NUMERIC', 0., *, _nid);
 
 /* Simulink Parameters */
-    DevAddNode(_path // ':PAR130_NAME', 'TEXT', "SimulinkK1", *, _nid);
+    DevAddNode(_path // ':PAR130_NAME', 'TEXT', "SimulinkAxiFeedforw", *, _nid);
     DevAddNode(_path // ':PAR130_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR131_NAME', 'TEXT', "SimulinkK2", *, _nid);
+    DevAddNode(_path // ':PAR131_NAME', 'TEXT', "SimulinkAxiFeedback", *, _nid);
     DevAddNode(_path // ':PAR131_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR132_NAME', 'TEXT', "SimulinkK3", *, _nid);
+    DevAddNode(_path // ':PAR132_NAME', 'TEXT', "SimulinkPar3", *, _nid);
     DevAddNode(_path // ':PAR132_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR133_NAME', 'TEXT', "SimulinkK4", *, _nid);
+    DevAddNode(_path // ':PAR133_NAME', 'TEXT', "SimulinkPar4", *, _nid);
     DevAddNode(_path // ':PAR133_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR134_NAME', 'TEXT', "SimulinkK5", *, _nid);
+    DevAddNode(_path // ':PAR134_NAME', 'TEXT', "SimulinkPar5", *, _nid);
     DevAddNode(_path // ':PAR134_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR135_NAME', 'TEXT', "SimulinkK6", *, _nid);
+    DevAddNode(_path // ':PAR135_NAME', 'TEXT', "SimulinkPar6", *, _nid);
     DevAddNode(_path // ':PAR135_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR136_NAME', 'TEXT', "SimulinkK7", *, _nid);
+    DevAddNode(_path // ':PAR136_NAME', 'TEXT', "SimulinkPar7", *, _nid);
     DevAddNode(_path // ':PAR136_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // ':PAR137_NAME', 'TEXT', "SimulinkK8", *, _nid);
+    DevAddNode(_path // ':PAR137_NAME', 'TEXT', "SimulinkPar8", *, _nid);
     DevAddNode(_path // ':PAR137_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
 
+/*Simuling Waveforms */
+	DevAddNode(_path // ':PAR138_NAME', 'TEXT', "SimulinkWaveX1", *, _nid);
+    DevAddNode(_path // ':PAR138_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR139_NAME', 'TEXT', "SimulinkWaveY1", *, _nid);
+    DevAddNode(_path // ':PAR139_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR140_NAME', 'TEXT', "SimulinkWaveX2", *, _nid);
+    DevAddNode(_path // ':PAR140_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR141_NAME', 'TEXT', "SimulinkWaveY2", *, _nid);
+    DevAddNode(_path // ':PAR141_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR142_NAME', 'TEXT', "SimulinkWaveX3", *, _nid);
+    DevAddNode(_path // ':PAR142_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR143_NAME', 'TEXT', "SimulinkWaveY3", *, _nid);
+    DevAddNode(_path // ':PAR143_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR144_NAME', 'TEXT', "SimulinkWaveX4", *, _nid);
+    DevAddNode(_path // ':PAR144_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR145_NAME', 'TEXT', "SimulinkWaveY4", *, _nid);
+    DevAddNode(_path // ':PAR145_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR146_NAME', 'TEXT', "SimulinkWaveX5", *, _nid);
+    DevAddNode(_path // ':PAR146_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR147_NAME', 'TEXT', "SimulinkWaveY5", *, _nid);
+    DevAddNode(_path // ':PAR147_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR148_NAME', 'TEXT', "SimulinkWaveX6", *, _nid);
+    DevAddNode(_path // ':PAR148_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR149_NAME', 'TEXT', "SimulinkWaveY6", *, _nid);
+    DevAddNode(_path // ':PAR149_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR150_NAME', 'TEXT', "SimulinkWaveX7", *, _nid);
+    DevAddNode(_path // ':PAR150_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR151_NAME', 'TEXT', "SimulinkWaveY7", *, _nid);
+    DevAddNode(_path // ':PAR151_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR152_NAME', 'TEXT', "SimulinkWaveX8", *, _nid);
+    DevAddNode(_path // ':PAR152_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR153_NAME', 'TEXT', "SimulinkWaveY8", *, _nid);
+    DevAddNode(_path // ':PAR153_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR154_NAME', 'TEXT', "SimulinkWaveX9", *, _nid);
+    DevAddNode(_path // ':PAR154_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR155_NAME', 'TEXT', "SimulinkWaveY9", *, _nid);
+    DevAddNode(_path // ':PAR155_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR156_NAME', 'TEXT', "SimulinkWaveX10", *, _nid);
+    DevAddNode(_path // ':PAR156_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR157_NAME', 'TEXT', "SimulinkWaveY10", *, _nid);
+    DevAddNode(_path // ':PAR157_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR158_NAME', 'TEXT', "SimulinkWaveX11", *, _nid);
+    DevAddNode(_path // ':PAR158_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR159_NAME', 'TEXT', "SimulinkWaveY11", *, _nid);
+    DevAddNode(_path // ':PAR159_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR160_NAME', 'TEXT', "SimulinkWaveX12", *, _nid);
+    DevAddNode(_path // ':PAR160_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR161_NAME', 'TEXT', "SimulinkWaveY12", *, _nid);
+    DevAddNode(_path // ':PAR161_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR162_NAME', 'TEXT', "SimulinkWaveX13", *, _nid);
+    DevAddNode(_path // ':PAR162_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR163_NAME', 'TEXT', "SimulinkWaveY13", *, _nid);
+    DevAddNode(_path // ':PAR163_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR164_NAME', 'TEXT', "SimulinkWaveX14", *, _nid);
+    DevAddNode(_path // ':PAR164_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR165_NAME', 'TEXT', "SimulinkWaveY14", *, _nid);
+    DevAddNode(_path // ':PAR165_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR166_NAME', 'TEXT', "SimulinkWaveX15", *, _nid);
+    DevAddNode(_path // ':PAR166_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR167_NAME', 'TEXT', "SimulinkWaveY15", *, _nid);
+    DevAddNode(_path // ':PAR167_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	DevAddNode(_path // ':PAR168_NAME', 'TEXT', "SimulinkWaveX16", *, _nid);
+    DevAddNode(_path // ':PAR168_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+    DevAddNode(_path // ':PAR169_NAME', 'TEXT', "SimulinkWaveY16", *, _nid);
+    DevAddNode(_path // ':PAR169_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+
+/* Simulink Algorithm Selector */
+    DevAddNode(_path // ':PAR170_NAME', 'TEXT', "SimulinkSelector", *, _nid);
+    DevAddNode(_path // ':PAR170_VAL', 'NUMERIC', [0,0,0,0,0,0,0,0], *, _nid);
 
 
     DevAddEnd();
