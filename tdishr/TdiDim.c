@@ -418,8 +418,8 @@ int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   int status;
-  typedef struct { int longword[4]; } octaword;
-  static octaword zero = {0,0,0,0};
+  typedef struct { double l[2]; } octaword_aligned;
+  octaword_aligned zero;
   static struct descriptor dzero = {0, 0, CLASS_D, 0};
 
   switch (in1->dtype)
@@ -432,10 +432,10 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
     case DTYPE_H:  
     case DTYPE_HC: return TdiINVDTYDSC;
   }
-  
   status = Tdi3Subtract(in1,in2,out);
    if (!(status & 1)) return status;
 
+  memset(&zero,0,sizeof(zero));  
   dzero.length = in1->length;
   dzero.dtype = in1->dtype;
   dzero.pointer = (char *)(&zero);
