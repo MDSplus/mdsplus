@@ -1233,7 +1233,7 @@ public class DIO2Setup extends DeviceSetup
 		JPanel39.add("CLOCK", deviceChannel33);
 		JPanel41.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		deviceChannel33.add(JPanel41);
-		deviceField91.setOffsetNid(103);
+		deviceField91.setOffsetNid(110);
 		deviceField91.setLabelString("Frequency:");
 		JPanel41.add(deviceField91);
 		deviceField92.setNumCols(4);
