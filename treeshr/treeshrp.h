@@ -619,7 +619,7 @@ to databases
 #endif
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list);
+extern int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list, int status);
 extern int SetStackSizeRemote(PINO_DATABASE *dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook);

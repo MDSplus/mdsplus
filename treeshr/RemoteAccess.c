@@ -1,9 +1,9 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
-int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list)
+int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int status)
 {
-	return TreeFAILURE;
+	return status;
 }
 
 int SetStackSizeRemote(PINO_DATABASE *dblist, int stack_size)

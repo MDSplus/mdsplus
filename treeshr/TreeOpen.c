@@ -76,7 +76,7 @@ int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 		{
 			if (((status = ConnectTree(*dblist, tree, 0, subtree_list)) == TreeNORMAL) ||
 			    (status == TreeNOTALLSUBS) ||
-			    ((status = ConnectTreeRemote(*dblist, tree, subtree_list)) == TreeNORMAL) ||
+			    ((status = ConnectTreeRemote(*dblist, tree, subtree_list, status)) == TreeNORMAL) ||
 			    (status == TreeNOTALLSUBS))
 			{
                                 if (db_slot_status == TreeNORMAL)
@@ -780,10 +780,8 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 		info->filespec=resnam;
 		*remote_file = info->channel == 0;
 	}
-	else if (errno == ENOENT)
+	else 
 		status = TreeFILE_NOT_FOUND;
-	else
-		status = TreeFAILURE;
 
 #else
 
