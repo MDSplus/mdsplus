@@ -114,7 +114,6 @@
      {
         url_con = url.openConnection();
         mime_type = url_con.getContentType();
-//        System.out.println("Content Type " + mime_type);            
  		    
  		if(mime_type.indexOf("text") != -1)
             html.setPage(url);

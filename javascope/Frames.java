@@ -117,10 +117,12 @@ class Frames extends Canvas {
                     AddBITMAPImage(buf, fd.GetFrameDimension(), t[i]);
                 break;
                 case FrameData.AWT_IMAGE :
-                    AddAWTImage(fd.GetFrameAt(i), t[i]);
+//                    AddAWTImage(fd.GetFrameAt(i), t[i]);
+                    AddAWTImage(buf, t[i]);
                 break;
                 case FrameData.JAI_IMAGE :
-                    AddJAIImage(fd.GetFrameAt(i), t[i]);
+//                    AddJAIImage(fd.GetFrameAt(i), t[i]);
+                    AddJAIImage(buf, t[i]);
                 break;
             }
         }

@@ -63,7 +63,7 @@ public class jScope_1 extends JFrame implements ActionListener, ItemListener,
   static int		num_scope = 0;
   private String	config_file;
   static DataServerItem[] server_ip_list;
-  ServerDialog      server_diag;
+  static ServerDialog     server_diag = null;
   static  boolean	not_sup_local = false;
   private Thread	printThread;
   private boolean	executing_update = false;
@@ -995,7 +995,11 @@ static int T_messageType;
         else
         {
             js_prop = new Properties();
-            js_prop.load(getClass().getClassLoader().getResourceAsStream("jScope.properties"));
+            InputStream pis = getClass().getClassLoader().getResourceAsStream("jScope.properties");
+            if(pis != null)            
+                js_prop.load(pis);
+            else
+                System.out.println("Not found jScope.properties file");
         }
     } 
     
@@ -1093,51 +1097,34 @@ static int T_messageType;
 
   private void InitDataServer()
   {
-    //String is_local = null;
     String ip_addr = null;
     String dp_class = null;
     DataServerItem srv_item = null;
 
     Properties props = System.getProperties();
-    //is_local = props.getProperty("data.is_local");
     ip_addr = props.getProperty("data.address");
     dp_class = props.getProperty("data.class");
-    server_diag = new ServerDialog(this, "Server list");  
+    if(server_diag == null)
+        server_diag = new ServerDialog(this, "Server list");  
     
     
     if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
-	   // if(ip_addr == null) //Set to default server if no server is defined
-	   //     srv_item = new DataServerItem(default_server, null, null, null);
-	   //  else {
-	        //Set to the command line defined server 
-	        srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null); 
-	 //       server_diag.addServerIp(srv_item);
-          //Add server to the server list and if presente browse class and
-           //url browse signal set it into srv_item
-           server_diag.addServerIp(srv_item); 
-
-	    
-    }
-    //else
-        //Only if local provider is supported
-        //srv_item = new DataServerItem("Local", "LocalDataProvider", null, null); 
+	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null); 
+        //Add server to the server list and if presente browse class and
+        //url browse signal set it into srv_item
+        server_diag.addServerIp(srv_item); 	    
+    }     
      
-     //Add server to the server list and if presente browse class and
-     //url browse signal set it into srv_item
-    // server_diag.addServerIp(srv_item); 
-     //if some error occurs reset server to default server
-     
-     
-     if(srv_item == null || !SetDataServer(srv_item))
-     {
+    if(srv_item == null || !SetDataServer(srv_item))
+    {
         if(server_ip_list != null && default_server_idx >= 0 && default_server_idx < server_ip_list.length)
         {
             srv_item = server_ip_list[default_server_idx];
             SetDataServer(srv_item);
         } else
             setDataServerLabel();
-     } 
+    } 
   }
 
 
@@ -2529,6 +2516,11 @@ class ServerDialog extends JDialog implements ActionListener
             JCheckBox automatic;
             JComboBox data_provider_list;
     jScope_1 dw;
+    private static String know_provider[] = {"MdsDataProvider",
+                                             "JetMdsDataProvider",
+                                             "TwuDataProvider",
+                                             "JetDataProvider",
+                                             "FtuDataProvider"};
     
 
     ServerDialog(JFrame _dw, String title)
@@ -2653,20 +2645,14 @@ class ServerDialog extends JDialog implements ActionListener
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(p, c);
 	    getContentPane().add(p);
+	    
+	    addKnowProvider();
 	
-	    if(dw.server_ip_list == null) {
-//	        addServerIp(new DataServerItem("Local", "LocalDataProvider", null, null));	
-	        GetPropertiesValue();
-//	        addServerIp(new DataServerItem(dw.default_server, null, null, null));
-	        
-	        Object[] ls = data_server_class.values().toArray();
-	        for(int i = 0; i < ls.length; i++)
-	            this.data_provider_list.addItem((String)ls[i]);
-	    }
-	    else
+	    if(dw.server_ip_list == null)
 	    {
-	        addServerIpList(dw.server_ip_list);
+	        GetPropertiesValue();
 	    }
+	    addServerIpList(dw.server_ip_list);
 	    
     }
 
@@ -2719,8 +2705,10 @@ class ServerDialog extends JDialog implements ActionListener
 	    
 	    if(dsi.class_name != null &&
            !data_server_class.containsValue(dsi.class_name))
+        {
                 data_server_class.put(dsi.class_name, dsi.class_name);
-	    
+                data_provider_list.addItem(dsi.class_name);
+        }
 	    
 	    if(!found && dsi.class_name == null)
 	    {
@@ -2746,8 +2734,18 @@ class ServerDialog extends JDialog implements ActionListener
 	    }
     }
     
+    private void addKnowProvider()
+    {
+        for(int i = 0; i < know_provider.length; i++)
+        {
+            data_server_class.put(know_provider[i], know_provider[i]);
+            data_provider_list.addItem(know_provider[i]);
+        }
+    }
+    
     public void addServerIpList(DataServerItem[] dsi_list)
     {
+        if(dsi_list == null) return;
 	    for(int i = 0; i < dsi_list.length; i++) 
 	        addServerIp(dsi_list[i]);
     }
@@ -2782,14 +2780,14 @@ class ServerDialog extends JDialog implements ActionListener
             addServerIp(new DataServerItem(srv, server_a.getText().trim(), 
                                            server_u.getText().trim(), 
                                            (String)data_provider_list.getSelectedItem(),
-                                           null, null));	  
+                                           null, null));
 	       }
 	    }
 	
 	    if(ob == remove_b)
 	    {
 	        int idx = server_list.getSelectedIndex();
-	        if(idx > 0) {
+	        if(idx >= 0) {
 		        list_model.removeElementAt(idx);
 		        dw.servers_m.remove(idx);
 	        }

@@ -156,7 +156,7 @@ public class MdsConnection
     
     public void setUser(String user)
     {
-        if(user == null)
+        if(user == null || user.length() == 0)
             this.user = DEFAULT_USER;
         else
             this.user = user; 
