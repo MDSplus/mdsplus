@@ -97,7 +97,7 @@ public class TR32Setup extends DeviceSetup {
   }
   private void jbInit() throws Exception {
     this.setWidth(785);
-    this.setHeight(785);
+    this.setHeight(500);
     this.setDeviceType("TR32");
     this.setDeviceProvider("150.178.3.101");
     this.setDeviceTitle("INCAA TR32 CPCI Transient Recorder");
@@ -163,10 +163,10 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice4.setIdentifier("");
     deviceChoice4.setBounds(new Rectangle(463, 107, 190, 35));
     deviceChoice5.setChoiceIntValues(null);
-    deviceChoice5.setChoiceFloatValues(new float[] {(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
+    deviceChoice5.setChoiceFloatValues(new float[] {(float)3000000.0,(float)1500000.0,(float)1000000.0,(float)500000.0,(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
     deviceChoice5.setOffsetNid(9);
     deviceChoice5.setLabelString("Frequency (Hz): ");
-    deviceChoice5.setChoiceItems(new String[] {"200E3", "100E3", "50E3", "20E3", "10E3", "5E3", "2E3", "1E3", "500", "200", "100"});
+    deviceChoice5.setChoiceItems(new String[] {"3E6", "1.5E6", "1E6", "500E3", "200E3", "100E3", "50E3", "20E3", "10E3", "5E3", "2E3", "1E3", "500", "200", "100"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceChoice5.setBounds(new Rectangle(205, 144, 208, 35));
@@ -282,7 +282,6 @@ public class TR32Setup extends DeviceSetup {
     gridLayout2.setRows(4);
     jPanel2.setLayout(gridLayout2);
     jPanel2.setDebugGraphicsOptions(0);
-    jPanel2.setInputVerifier(null);
     deviceChannel5.setLayout(flowLayout9);
     deviceChannel5.setLabelString("Ch 1:");
     deviceChannel5.setOffsetNid(13);
