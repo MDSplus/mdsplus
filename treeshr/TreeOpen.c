@@ -710,7 +710,7 @@ static char *GetFname(char *tree, int shot)
     status = LibCallg(arglist,TdiExecute);
   if (status & 1)
   {
-    ans = strcpy(malloc(fname.length+2),fname.pointer);
+    ans = strncpy(malloc(fname.length+2),fname.pointer,fname.length);
     ans[fname.length] = '+';
     ans[fname.length+1] = 0;
   }
