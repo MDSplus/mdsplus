@@ -1234,19 +1234,36 @@ int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, stru
 
 int StrTranslate(struct descriptor *dest, struct descriptor *src, struct descriptor *tran, struct descriptor *match)
 {
-  char *dst = (char *)malloc(src->length);
-  int i;
-  int status;
-  for (i=0;i<src->length;i++)
+  int status = 0;
+  if (src->class == CLASS_S || src->class == CLASS_D)
   {
-    int j;
-    int next = 1;
-    for (j=0;next && j<match->length;j += next)
-      next = (match->pointer[j] != src->pointer[i]) ? 1 : 0;
-    dst[i] = (char)(next ? src->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
-  }   
-  status = StrCopyR(dest, &src->length, dst);
-  free(dst);
+    char *dst = (char *)malloc(src->length);
+    int i;
+    for (i=0;i<src->length;i++)
+    {
+      int j;
+      int next = 1;
+      for (j=0;next && j<match->length;j += next)
+        next = (match->pointer[j] != src->pointer[i]) ? 1 : 0;
+      dst[i] = (char)(next ? src->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
+    }   
+    status = StrCopyR(dest, &src->length, dst);
+    free(dst);
+  }
+  else if ((src->class == CLASS_A) && (dest->class == CLASS_A) && (src->length > 0) && (dest->length > 0) &&
+     (((struct descriptor_a *)src)->arsize/src->length == ((struct descriptor_a *)dest)->arsize/dest->length))
+  {
+    struct descriptor outdsc = {0, DTYPE_T, CLASS_S, 0};
+    struct descriptor indsc = {0, DTYPE_T, CLASS_S, 0};
+    int num = ((struct descriptor_a *)src)->arsize / src->length;
+    int i;
+    outdsc.length = dest->length;
+    outdsc.pointer = dest->pointer;
+    indsc.length = src->length;
+    indsc.pointer = src->pointer;
+    for (i=0;i<num;i++,outdsc.pointer += outdsc.length,indsc.pointer += indsc.length)
+      status = StrTranslate(&outdsc, &indsc, tran, match);
+  }
   return status;
 }
 
