@@ -1,0 +1,3984 @@
+! (c) Copyright 1989, 1990, 1991, 1992 OPEN SOFTWARE FOUNDATION, INC. 
+! ALL RIGHTS RESERVED 
+! 
+! Motif Release 1.2
+
+!
+! This file defines the Motif UIL language
+!
+
+!
+! UIL data types
+!
+DataType
+	integer;
+	string		{ InternalLiteral = char_8; };
+	boolean		{ InternalLiteral = bool; };
+	pixmap;
+	float;
+	font;
+	translation_table
+			{ InternalLiteral = trans_table;
+			  DocName = "translation table";};
+	widget_ref	{ DocName = "widget reference"; };
+	any;
+	color;
+	compound_string { DocName = "compound string"; };
+	string_table	{ DocName = "string table"; };
+	font_table	{ DocName = "font table"; };
+	icon;
+	color_table	{ DocName = "color table"; };
+	class_rec_name	{ DocName = "class record name"; };
+	argument;
+	reason;
+	identifier;
+	asciz_table	{ DocName = "asciz table"; };
+	integer_table	{ DocName = "integer table"; };
+	xbitmapfile	{ DocName = "X bitmap file"; };
+	single_float	{ DocName = "Single float"; };
+	keysym;
+	rgb;    
+	localized_string 
+			{ DocName = "localized string"; };
+	wide_character 	{ InternalLiteral = wchar_string;
+		          DocName = "wide character string"; };
+	fontset;
+
+!
+! UIL character sets
+!
+CharacterSet
+	iso_latin1
+		{ XmStringCharsetName = "ISO8859-1";
+		  Alias = "ISOLatin1";
+		  Alias = "88591";
+		  Alias = "ASCII"; };
+	iso_latin2
+		{ XmStringCharsetName = "ISO8859-2";
+		  Alias = "ISOLatin2";
+		  Alias = "88592"; };
+	iso_latin3
+		{ XmStringCharsetName = "ISO8859-3";
+		  Alias = "ISOLatin3"; 
+		  Alias = "88593"; };
+	iso_latin4
+		{ XmStringCharsetName = "ISO8859-4";
+		  Alias = "ISOLatin4";
+		  Alias = "88594"; };
+	iso_latin5
+		{ XmStringCharsetName = "ISO8859-5";
+		  Alias = "ISOLatin5";
+		  Alias = "88595"; };
+	iso_arabic
+		{ XmStringCharsetName = "ISO8859-6";
+		  Alias = "iso_latin6";
+		  Alias = "ISOLatin6";
+		  Alias = "88596"; };
+	iso_cyrillic
+		{ XmStringCharsetName = "ISO8859-5"; };
+	iso_greek
+		{ XmStringCharsetName = "ISO8859-7";
+		  Alias = "iso_latin7";
+		  Alias = "ISOLatin7";
+		  Alias = "88597";  };
+	iso_hebrew
+		{ XmStringCharsetName = "ISO8859-8";
+		  Alias = "iso_latin8";
+		  Alias = "ISOLatin8";
+		  Alias = "88598";
+		  Direction = RightToLeft; };
+	iso_hebrew_lr
+		{ XmStringCharsetName = "ISO8859-8";
+		  Alias = "iso_latin8_lr";
+		  Direction = RightToLeft;
+		  ParseDirection = LeftToRight; };
+	jis_katakana
+		{ XmStringCharsetName = "JISX0201.1976-0"; };
+	gb_hanzi
+                { XmStringCharsetName = "GB2312.1980-0";
+                  Alias = "gb_chinese";
+                  Alias = "gb_hanzi_gl";
+                  CharacterSize = TwoByte; };
+	jis_kanji
+                { XmStringCharsetName = "JISX0208.1983-0";
+                  Alias = "jis_japanese";
+                  Alias = "jis_kanji_gl";
+                  CharacterSize = TwoByte; };
+        ksc_hangul
+                { XmStringCharsetName = "KSC5601.1987-0";
+                  Alias = "ksc_korean";
+                  Alias = "ksc_hangul_gl";
+                  CharacterSize = TwoByte; };
+	gb_hanzi_gr
+                { XmStringCharsetName = "GB2312.1980-1";
+                  CharacterSize = TwoByte; };
+        jis_kanji_gr
+                { XmStringCharsetName = "JISX0208.1983-1";
+                  CharacterSize = TwoByte; };
+	ksc_hangul_gr
+                { XmStringCharsetName = "KSC5601.1987-1";
+                  CharacterSize = TwoByte; };
+
+
+!
+! UIL Enumeration Sets
+!
+EnumerationSet
+	ArrowDirection : integer
+		{ XmARROW_UP; XmARROW_DOWN; XmARROW_LEFT; XmARROW_RIGHT; };
+	ResizePolicy : integer
+		{ XmRESIZE_NONE; XmRESIZE_ANY; XmRESIZE_GROW; };
+	DialogStyle : integer
+		{ XmDIALOG_SYSTEM_MODAL; XmDIALOG_PRIMARY_APPLICATION_MODAL;
+		  XmDIALOG_MODELESS; XmDIALOG_WORK_AREA;
+		  XmDIALOG_FULL_APPLICATION_MODAL; XmDIALOG_APPLICATION_MODAL; };
+	DialogType : integer
+		{ XmDIALOG_PROMPT;  XmDIALOG_SELECTION;
+		  XmDIALOG_WORK_AREA;  XmDIALOG_FILE_SELECTION;
+		  XmDIALOG_ERROR; XmDIALOG_INFORMATION; XmDIALOG_MESSAGE;
+		  XmDIALOG_QUESTION; XmDIALOG_WARNING; XmDIALOG_WORKING; 
+		  XmDIALOG_TEMPLATE; XmDIALOG_COMMAND; }; 
+	ShadowType : integer
+		{ XmSHADOW_IN; XmSHADOW_OUT;
+		  XmSHADOW_ETCHED_IN; XmSHADOW_ETCHED_OUT; };
+	LabelType : integer
+		{ XmSTRING; XmPIXMAP; };
+	StringDirection : integer
+		{ XmSTRING_DIRECTION_L_TO_R;  XmSTRING_DIRECTION_R_TO_L; };
+	Alignment : integer
+		{ XmALIGNMENT_CENTER;  XmALIGNMENT_END;  XmALIGNMENT_BEGINNING; };
+	Attachment : integer
+		{ XmATTACH_NONE;  XmATTACH_FORM;  XmATTACH_OPPOSITE_FORM;
+		  XmATTACH_WIDGET;  XmATTACH_OPPOSITE_WIDGET;
+		  XmATTACH_POSITION; XmATTACH_SELF; };
+	SelectionPolicy : integer
+		{ XmSINGLE_SELECT; XmMULTIPLE_SELECT;
+		  XmEXTENDED_SELECT; XmBROWSE_SELECT; };
+	ScrollingPolicy : integer
+		{ XmAUTOMATIC; XmCONSTANT; XmAPPLICATION_DEFINED; };
+	ScrollBarPlacement : integer
+		{ XmTOP_LEFT; XmBOTTOM_LEFT; XmTOP_RIGHT; XmBOTTOM_RIGHT; };
+	ScrollBarDisplayPolicy : integer
+		{ XmAS_NEEDED; XmAUTOMATIC; XmSTATIC; XmAPPLICATION_DEFINED; };
+	ListSizePolicy : integer
+		{ XmCONSTANT; XmVARIABLE; XmRESIZE_IF_POSSIBLE; };
+	VisualPolicy : integer
+		{ XmVARIABLE; XmSTATIC; XmCONSTANT; };
+	DefaultButtonType : integer
+		{ XmDIALOG_CANCEL_BUTTON; XmDIALOG_DEFAULT_BUTTON;
+		  XmDIALOG_HELP_BUTTON; XmDIALOG_MESSAGE_LABEL;
+		  XmDIALOG_OK_BUTTON; XmDIALOG_SEPARATOR;
+		  XmDIALOG_SYMBOL_LABEL; };
+	RowColumnType : integer
+		{ XmWORK_AREA; XmMENU_BAR; XmMENU_PULLDOWN;
+		  XmMENU_POPUP; XmMENU_OPTION; };
+	Packing : integer
+		{ XmNO_PACKING; XmPACK_TIGHT; XmPACK_COLUMN; XmPACK_NONE; };
+	Orientation : integer
+		{ XmNO_ORIENTATION; XmVERTICAL; XmHORIZONTAL; };
+	ProcessingDirection : integer
+		{ XmMAX_ON_TOP; XmMAX_ON_BOTTOM; XmMAX_ON_LEFT; XmMAX_ON_RIGHT; };
+	SeparatorType : integer
+		{ XmSINGLE_LINE; XmDOUBLE_LINE;
+		  XmSINGLE_DASHED_LINE; XmDOUBLE_DASHED_LINE;
+		  XmNO_LINE; XmSHADOW_ETCHED_IN; XmSHADOW_ETCHED_OUT; 
+		  XmSHADOW_ETCHED_IN_DASH; XmSHADOW_ETCHED_OUT_DASH;};
+	EditMode : integer
+		{ XmSINGLE_LINE_EDIT; XmMULTI_LINE_EDIT; };
+	IndicatorType : integer
+		{ XmONE_OF_MANY; XmN_OF_MANY; };
+	UnitType : integer
+		{ XmPIXELS; Xm100TH_MILLIMETERS; Xm1000TH_INCHES;
+		  Xm100TH_POINTS; Xm100TH_FONT_UNITS; };
+	NavigationType : integer
+		{ XmNONE; XmTAB_GROUP; XmSTICKY_TAB_GROUP;
+		  XmEXCLUSIVE_TAB_GROUP; };
+	MultiClick : integer
+		{ XmMULTICLICK_DISCARD; XmMULTICLICK_KEEP; };
+	CommandWindowLocation : integer
+		{ XmCOMMAND_ABOVE_WORKSPACE; XmCOMMAND_BELOW_WORKSPACE; };
+	FileTypeMask : integer
+		{ XmFILE_REGULAR; XmFILE_DIRECTORY; };
+	InitialState : integer
+		{ NormalState; IconicState; };
+	DeleteResponse : integer
+		{ XmDESTROY; XmUNMAP; XmDO_NOTHING; };
+	KeyboardFocusPolicy : integer
+		{ XmEXPLICIT; XmPOINTER; };
+	AudibleWarning : integer
+		{ XmNONE; XmBELL; };
+	VerticalAlignment : integer
+		{XmALIGNMENT_BASELINE_TOP; XmALIGNMENT_CENTER;
+		 XmALIGNMENT_BASELINE_BOTTOM; 
+		 XmALIGNMENT_CONTENTS_TOP; XmALIGNMENT_CONTENTS_BOTTOM; };
+	UnpostBehavior : integer
+		{ XmUNPOST_AND_REPLAY; XmUNPOST; };
+	TearOffModel : integer
+		{ XmTEAR_OFF_ENABLED; XmTEAR_OFF_DISABLED; };
+	ChildType : integer
+		{ XmFRAME_GENERIC_CHILD; XmFRAME_WORKAREA_CHILD;
+		  XmFRAME_TITLE_CHILD; };
+	ChildVerticalAlignment : integer
+		{ XmALIGNMENT_BASELINE_TOP; XmALIGNMENT_CENTER;
+		  XmALIGNMENT_BASELINE_BOTTOM; XmALIGNMENT_WIDGET_BOTTOM; 
+		  XmALIGNMENT_WIDGET_TOP;};
+	ChildPlacement : integer
+		{ XmPLACE_TOP; XmPLACE_ABOVE_SELECTION; XmPLACE_BELOW_SELECTION; };
+
+
+! Define controls list of common aggregates of widgets
+
+ControlList
+	AllWidgetsAndGadgets
+		{
+		XmArrowButton;
+		XmArrowButtonGadget;
+		XmBulletinBoard;
+		XmBulletinBoardDialog;
+		XmCascadeButton;
+		XmCascadeButtonGadget;
+		XmCommand;
+		XmDialogShell;
+		XmDrawingArea;
+		XmDrawnButton;
+		XmErrorDialog;
+		XmFileSelectionBox;
+		XmFileSelectionDialog;
+		XmForm;
+		XmFormDialog;
+		XmFrame;
+		XmInformationDialog;
+		XmLabel;
+		XmLabelGadget;
+		XmList;
+		XmMainWindow;
+		XmMenuBar;
+		XmMenuShell;
+		XmMessageBox;
+		XmMessageDialog;
+		XmOptionMenu;
+		XmPanedWindow;
+		XmPopupMenu;
+		XmPromptDialog;
+		XmPulldownMenu;
+		XmPushButton;
+		XmPushButtonGadget;
+		XmQuestionDialog;
+		XmRadioBox;
+		XmRowColumn;
+		XmScale;
+		XmScrollBar;
+		XmScrolledList;
+		XmScrolledText;
+		XmScrolledWindow;
+		XmSelectionBox;
+		XmSelectionDialog;
+		XmSeparator;
+		XmSeparatorGadget;
+		XmTemplateDialog;
+		XmText;
+		XmTextField;
+		XmToggleButton;
+		XmToggleButtonGadget;
+		XmWarningDialog;
+		XmWorkArea;
+		XmWorkingDialog;
+		user_defined;
+! Include Xmds Widgets here
+
+		XmdsApplyButton;
+		XmdsCancelButton;
+		XmdsDigChans;
+		XmdsExpr;
+		XmdsExprField;
+		XmdsInput;
+		XmdsNidOptionMenu;
+		XmdsOkButton;
+		XmdsOnOffToggleButton;
+		XmdsResetButton;
+		XmdsWavedraw;
+		XmdsWaveform;
+		XmdsXdBox;
+		XmdsXdBoxDialog;
+		XmdsXdBoxDialogButton;
+		XmdsXdBoxOnOffButton;
+		XmdsPath;
+		XmdsDisplay;
+		ZmdsXdBoxOnOffButton;
+!
+		};
+
+	AllWidgets
+		{
+		XmArrowButton;
+		XmBulletinBoard;
+		XmBulletinBoardDialog;
+		XmCascadeButton;
+		XmCommand;
+		XmDialogShell;
+		XmDrawingArea;
+		XmDrawnButton;
+		XmErrorDialog;
+		XmFileSelectionBox;
+		XmFileSelectionDialog;
+		XmForm;
+		XmFormDialog;
+		XmFrame;
+		XmInformationDialog;
+		XmLabel;
+		XmList;
+		XmMainWindow;
+		XmMenuBar;
+		XmMenuShell;
+		XmMessageBox;
+		XmMessageDialog;
+		XmOptionMenu;
+		XmPanedWindow;
+		XmPopupMenu;
+		XmPromptDialog;
+		XmPulldownMenu;
+		XmPushButton;
+		XmQuestionDialog;
+		XmRadioBox;
+		XmRowColumn;
+		XmScale;
+		XmScrollBar;
+		XmScrolledList;
+		XmScrolledText;
+		XmScrolledWindow;
+		XmSelectionBox;
+		XmSelectionDialog;
+		XmSeparator;
+		XmTemplateDialog;
+		XmText;
+		XmTextField;
+		XmToggleButton;
+		XmWarningDialog;
+		XmWorkArea;
+		XmWorkingDialog;
+		user_defined;
+! Include Xmds Widgets here
+		XmdsApplyButton;
+		XmdsCancelButton;
+		XmdsDigChans;
+		XmdsDisplay;
+		XmdsExpr;
+		XmdsExprField;
+		XmdsInput;
+                XmdsNidOptionMenu;
+		XmdsOkButton;
+		XmdsOnOffToggleButton;
+		XmdsPath;
+		XmdsResetButton;
+		XmdsWavedraw;
+		XmdsWaveform;
+		XmdsXdBox;
+		XmdsXdBoxDialog;
+		XmdsXdBoxDialogButton;
+		XmdsXdBoxOnOffButton;
+		ZmdsXdBoxOnOffButton;
+
+		};
+
+	MenuWidgetsAndGadgets
+		{
+		XmCascadeButton;
+		XmCascadeButtonGadget;
+		XmDrawnButton;
+		XmLabel;
+		XmLabelGadget;
+		XmPushButton;
+		XmPushButtonGadget;
+		XmSeparator;
+		XmSeparatorGadget;
+		XmToggleButton;
+		XmToggleButtonGadget;
+		user_defined;
+!
+! Add Xmds buttons here
+!
+		XmdsApplyButton;
+		XmdsCancelButton;
+		XmdsOkButton;
+		XmdsOnOffToggleButton;
+		XmdsResetButton;
+		XmdsXdBoxDialogButton;
+!
+		};
+		
+	ManagerWidgets
+		{
+		XmDrawingArea;
+		XmFrame;
+		XmPanedWindow;
+		XmScale;
+		XmScrolledWindow;
+		XmBulletinBoard;
+		XmRowColumn;
+		XmWorkArea;
+		XmRadioBox;
+		XmForm;
+		XmMessageBox;
+		XmSelectionBox;
+		XmFileSelectionBox;
+		};
+		
+
+
+! The root metaclasses and their resources. RectObj/Windowobj constitutes
+! the Core class as documented in the toolkit manual.
+
+
+Class
+	Object : MetaClass
+		{
+		Resources
+			{
+			! new resources
+			MrmNcreateCallback;
+			XmNdestroyCallback;
+			! inherited resources
+			};
+		};
+Resource
+	MrmNcreateCallback : Reason
+		{ InternalLiteral = MrmNcreateCallback; };
+		! This InternalLiteral is provided so the name can be changed if
+		! desired. The InternalLiteral must NOT be changed.
+	XmNdestroyCallback : Reason
+		{ ResourceLiteral = XmNdestroyCallback; };
+		! This ResourceLiteral setting is included as an example
+		! only. ResourceLiterals are not provided for the rest of
+		! the Motif toolkit because the UIL names are identical
+		! to the toolkit literals (the name supplies the default
+		! literal for each UIL resource).
+
+Class
+	RectObj : MetaClass
+		{
+		SuperClass = Object;
+		Resources
+			{
+			! new resources
+			XmNancestorSensitive;
+			XmNborderWidth;
+			XmNheight;
+			XmNsensitive;
+			XmNwidth;
+			XmNx;
+			XmNy;
+			! inherited resources
+			};
+		};
+Resource
+	XmNancestorSensitive : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNborderWidth : Argument
+		{ Type = integer;
+		  Default = "1"; };
+	XmNheight : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNsensitive : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNwidth : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNx : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNy : Argument
+		{ Type = integer;
+		  Default = "0"; };
+
+
+Class
+	WindowObj : MetaClass
+	{
+		SuperClass = RectObj;
+		Resources
+			{
+			! new resources
+			XmNaccelerators;
+			XmNbackground;
+			XmNbackgroundPixmap;
+			XmNborderColor;
+			XmNborderPixmap;
+			XmNcolormap;
+			XmNdepth;
+			XmNmappedWhenManaged;
+			XmNscreen;
+			XmNtranslations;
+			XmNinitialResourcesPersistent;
+			! inherited resources
+			};
+		};
+Resource
+	XmNaccelerators : Argument
+		{ Type = translation_table;
+		  Default = "Null";};
+	XmNbackground : Argument
+		{ Type = color;
+		  Default = "White"; };
+	XmNbackgroundPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNborderColor : Argument
+		{ Type = color ;
+		  Default = "Black"; };
+	XmNborderPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNcolormap : Argument
+		{ Type = identifier;
+		  Default = "XtCopyFromParent"; };
+	XmNdepth : Argument
+		{ Type = identifier;
+		  Default = "XtCopyFromParent"; };
+	XmNmappedWhenManaged : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNscreen : Argument
+		{ Type = identifier ;
+		  Default = "XtCopyScreen"; };
+	XmNtranslations : Argument
+		{ Type = translation_table;
+		  Default = "Null"; };
+	XmNinitialResourcesPersistent : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+
+
+
+! Immediate subclasses of WindowObj
+
+Class
+	XmPrimitive : MetaClass
+		{
+		SuperClass = WindowObj;
+		Resources
+			{
+			! new resources
+			XmNbottomShadowColor;
+			XmNbottomShadowPixmap;
+			XmNforeground;
+			XmNhelpCallback;
+			XmNhighlightColor;
+			XmNhighlightOnEnter;
+			XmNhighlightPixmap;
+			XmNhighlightThickness;
+			XmNnavigationType;
+			XmNshadowThickness;
+			XmNtopShadowColor;
+			XmNtopShadowPixmap;
+			XmNtraversalOn;
+			XmNunitType;
+			XmNuserData;
+			! inherited resources
+			};
+		};
+Resource
+	XmNbottomShadowColor : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNbottomShadowPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNforeground : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNhelpCallback : Reason
+		{ };
+	XmNhighlightColor : Argument
+		{ Type = color;
+		  Default = "Black"; };
+	XmNhighlightOnEnter : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNhighlightPixmap : Argument
+		{ Type = pixmap;
+		  Default = "dynamic"; };
+	XmNhighlightThickness : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNnavigationType : Argument
+		{ Type = integer;
+		  EnumerationSet = NavigationType;
+		  Default = "XmNONE"; };
+	XmNshadowThickness : Argument
+		{ Type = integer;
+		  Default = "2"; };
+	XmNtopShadowColor : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNtopShadowPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNtraversalOn : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNunitType : Argument
+		{ Type = integer;
+		  EnumerationSet = UnitType;
+		  Default = "XmPIXELS"; };
+	XmNuserData : Argument
+		{ Type = any;
+		  Default = "Null"; };
+
+Class
+	Composite : MetaClass
+		{
+		SuperClass = WindowObj;
+		Resources
+			{
+			! new resources
+			XmNinsertPosition;
+			! inherited resources
+			};
+		};
+Resource
+	XmNinsertPosition : Argument
+		{ Type = identifier ;
+		  Default = "Null"; };
+
+
+
+! Immediate subclasses of RectObj
+
+Class
+	XmGadget : MetaClass
+		{
+		SuperClass = RectObj;
+		Resources
+			{
+			! new resources
+			XmNhelpCallback;
+			XmNhighlightOnEnter;
+			XmNhighlightThickness;
+			XmNnavigationType;	
+			XmNshadowThickness;
+			XmNtraversalOn;
+			XmNunitType;
+			XmNuserData;
+			! inherited resources
+			};
+		};
+
+
+
+! Immediate sublclasses of XmGadget
+
+Class
+	XmArrowButtonGadget : Gadget
+		{
+		SuperClass = XmGadget;
+		ConvenienceFunction = XmCreateArrowButtonGadget;
+		WidgetClass = XmArrowButton;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNarmCallback;
+			XmNarrowDirection;
+			XmNdisarmCallback;
+			XmNmultiClick;
+
+			! inherited resources
+			};
+		};
+Resource
+	XmNactivateCallback : Reason
+		{ };
+	XmNarmCallback : Reason
+		{ };
+	XmNarrowDirection : Argument
+		{ Type = integer;
+		  EnumerationSet = ArrowDirection;
+		  Default = "XmDYNAMIC"; };
+	XmNdisarmCallback : Reason
+		{ };
+
+Class
+	XmSeparatorGadget : Gadget
+		{
+		SuperClass = XmGadget;
+		ConvenienceFunction = XmCreateSeparatorGadget;
+		WidgetClass = XmSeparator;
+		Resources
+			{
+			! new resources
+			XmNmargin;
+			XmNorientation;
+			XmNseparatorType;
+			! inherited resources
+			XmNtraversalOn { Default = "False"; };
+			};
+		};
+Resource
+	XmNmargin : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNorientation : Argument
+		{ Type = integer;
+		  EnumerationSet = Orientation;
+		  Default = "XmHORIZONTAL"; };
+	XmNseparatorType : Argument
+		{ Type = integer;
+		  EnumerationSet = SeparatorType;
+		  Default = "XmSHADOW_ETCHED_IN"; };
+
+Class
+	XmLabelGadget : Gadget
+		{
+		SuperClass = XmGadget;
+		ConvenienceFunction = XmCreateLabelGadget;
+		WidgetClass = XmLabel;
+		Resources
+			{
+			! new resources
+			XmNaccelerator;
+			XmNacceleratorText;
+			XmNalignment;
+			XmNfontList;
+			XmNlabelInsensitivePixmap;
+			XmNlabelPixmap;
+			XmNlabelString;
+			XmNlabelType;
+			XmNmarginBottom;
+			XmNmarginHeight;
+			XmNmarginLeft;
+			XmNmarginRight;
+			XmNmarginTop;
+			XmNmarginWidth;
+			XmNmnemonic;
+			XmNmnemonicCharSet;
+			XmNrecomputeSize;
+			XmNstringDirection;
+			! inherited resources
+			XmNshadowThickness {Default = "0"; };
+			XmNtraversalOn { Default = "False"; };
+			};
+		};
+Resource
+	XmNaccelerator : Argument
+		{ Type = string;
+		  Default = "Null"; };
+	XmNacceleratorText : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNalignment : Argument
+		{ Type = integer;
+		  EnumerationSet = Alignment;
+		  Default = "XmALIGNMENT_CENTER"; };
+	XmNfontList : Argument
+		{ Type = font_table;
+		  Default = "Fixed"; };
+	XmNlabelInsensitivePixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNlabelPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNlabelString : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNlabelType : Argument
+		{ Type = integer;
+		  EnumerationSet = LabelType;
+		  Default = "XmSTRING"; };
+	XmNmarginBottom : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmarginHeight : Argument
+		{ Type = integer;
+		  Default = "2"; };
+	XmNmarginLeft : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmarginRight : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmarginTop : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmarginWidth : Argument
+		{ Type = integer;
+		  Default = "2"; };
+	XmNmnemonic : Argument
+		{ Type = keysym;
+		  Default = "NULL"; };
+	XmNmnemonicCharSet : Argument
+		{ Type = string;
+		  Default = "dynamic"; };
+	XmNrecomputeSize : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNstringDirection : Argument
+		{ Type = integer;
+		  EnumerationSet = StringDirection;
+		  Default = "XmSTRING_DIRECTION_L_TO_R"; };
+
+Class
+	XmTextField : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateTextField;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNcursorPosition;
+			XmNeditable;
+			XmNfocusCallback;
+			XmNgainPrimaryCallback;
+			XmNlosePrimaryCallback;
+			XmNlosingFocusCallback;
+			XmNmarginHeight { Default = "3"; };
+			XmNmarginWidth { Default = "3"; };
+			XmNmaxLength;
+			XmNmodifyVerifyCallback;
+			XmNmodifyVerifyCallbackWcs;
+			XmNmotionVerifyCallback;
+			XmNvalue;
+			XmNvalueWcs;
+			XmNvalueChangedCallback;
+			XmNverifyBell;
+			! Input resource set
+			XmNpendingDelete;
+			XmNselectionArray;
+			XmNselectionArrayCount;
+			XmNselectThreshold;
+			! Output resource set
+			XmNblinkRate;
+			XmNcolumns;
+			XmNfontList;
+			XmNcursorPositionVisible;
+			XmNresizeHeight;
+			XmNresizeWidth;
+			XmNrows;
+			XmNwordWrap;
+			!inherited resources
+			XmNnavigationType { Default = "XmTAB_GROUP"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+
+
+! Immediate subclasses of XmLabelGadget
+
+Class
+	XmCascadeButtonGadget : Gadget
+		{
+		SuperClass = XmLabelGadget;
+		ConvenienceFunction = XmCreateCascadeButtonGadget;
+		WidgetClass = XmCascadeButton;
+		ControlsMapToResource = XmNsubMenuId;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNcascadePixmap;
+			XmNcascadingCallback;
+			XmNmappingDelay;
+			XmNsubMenuId;
+			! inherited resources
+			XmNaccelerator { Exclude = True;};
+			XmNacceleratorText { Exclude = True;};
+			};
+		Controls
+			{
+			XmPulldownMenu;
+			};
+		};
+Resource
+	XmNcascadingCallback : Reason
+		{ };
+	XmNcascadePixmap : Argument
+		{ Type = pixmap;
+		  Default = "menu-cascade"; };
+	XmNmappingDelay : Argument
+		{ Type = integer;
+		  Default = "100"; };
+	XmNsubMenuId : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	
+Class
+	XmPushButtonGadget : Gadget
+		{
+		SuperClass = XmLabelGadget;
+		ConvenienceFunction = XmCreatePushButtonGadget;
+		WidgetClass = XmPushButton;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNarmCallback;
+			XmNarmColor;
+			XmNarmPixmap;
+			XmNdefaultButtonShadowThickness;
+			XmNdisarmCallback;
+			XmNfillOnArm;
+			XmNmultiClick;
+			XmNshowAsDefault ;
+			! inherited resources
+			};
+		};
+Resource
+	XmNarmColor : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNarmPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNdefaultButtonShadowThickness: Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNfillOnArm : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNmultiClick : Argument
+		{ Type = integer;
+		  EnumerationSet = MultiClick;
+		  Default = "XmMULTICLICK_DISCARD"; };
+	XmNshowAsDefault : Argument
+		{ Type = integer;
+		  Default = "0"; };
+
+Class
+	XmToggleButtonGadget : Gadget
+		{
+		SuperClass = XmLabelGadget;
+		ConvenienceFunction = XmCreateToggleButtonGadget;
+		WidgetClass = XmToggleButton;
+		Resources
+			{
+			! new resources
+			XmNarmCallback;
+			XmNdisarmCallback;
+			XmNfillOnSelect;
+			XmNindicatorOn;
+			XmNindicatorSize;
+			XmNindicatorType;
+			XmNselectColor;
+			XmNselectInsensitivePixmap;
+			XmNselectPixmap;
+			XmNset;
+			XmNspacing;
+			XmNvalueChangedCallback;
+			XmNvisibleWhenOff;
+			! inherited resources
+			};
+		};
+Resource
+	XmNfillOnSelect : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNindicatorOn : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNindicatorType : Argument
+		{ Type = integer;
+		  EnumerationSet = IndicatorType;
+		  Default = "XmN_OF_MANY"; };
+	XmNindicatorSize : Argument
+		{ Type = integer;
+		  Default = "XmINVALID_DIMENSION"; };
+	XmNselectColor : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNselectInsensitivePixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNselectPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmUNSPECIFIED_PIXMAP"; };
+	XmNset : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNspacing : Argument
+		{ Type = integer;
+		  Default = "4"; };
+	XmNvalueChangedCallback : Reason
+		{ };
+	XmNvisibleWhenOff : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+
+
+
+! Immediate subclasses of XmPrimitive
+
+Class
+	XmArrowButton : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateArrowButton;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNarmCallback;
+			XmNarrowDirection;
+			XmNdisarmCallback;
+			XmNmultiClick;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+Class
+	XmScrollBar : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateScrollBar;
+		Resources
+			{
+			! new resources
+			XmNdecrementCallback;
+			XmNdragCallback;
+			XmNincrement;
+			XmNincrementCallback;
+			XmNinitialDelay;
+			XmNmaximum;
+			XmNminimum;
+			XmNorientation { Default = "XmVERTICAL"; };
+			XmNpageDecrementCallback;
+			XmNpageIncrement;
+			XmNpageIncrementCallback;
+			XmNprocessingDirection;
+			XmNrepeatDelay;
+			XmNshowArrows;
+			XmNsliderSize;
+			XmNtoBottomCallback;
+			XmNtoTopCallback;
+			XmNtroughColor;
+			XmNvalue;
+			XmNvalueChangedCallback;
+			! inherited resources
+			XmNnavigationType { Default = "XmSTICKY_TAB_GROUP"; };
+			XmNtraversalOn { Default = "dynamic"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNdecrementCallback : Reason
+		{ };
+	XmNdragCallback : Reason
+		{ };
+	XmNincrement : Argument
+		{ Type = integer;
+		  Default = "1"; };
+	XmNincrementCallback : Reason
+		{ };
+	XmNinitialDelay : Argument
+		{ Type = integer;
+		  Default = "250"; };
+	XmNmaximum : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNminimum : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNpageDecrementCallback : Reason
+		{ };
+	XmNpageIncrement : Argument
+		{ Type = integer;
+		  Default = "10"; };
+	XmNpageIncrementCallback : Reason
+		{ };
+	XmNprocessingDirection : Argument
+		{ Type = integer;
+		  EnumerationSet = ProcessingDirection;
+		  Default = "XmMAX_ON_BOTTOM"; };
+	XmNrepeatDelay : Argument
+		{ Type = integer;
+		  Default = "50"; };
+	XmNshowArrows : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNsliderSize : Argument
+		{ Type = integer;
+		  Default = "10"; };
+	XmNtoBottomCallback : Reason
+		{ };
+	XmNtoTopCallback : Reason
+		{ };
+	XmNtroughColor : Argument
+		{ Type = color;
+		  Default = "dynamic"; };
+	XmNvalue : Argument
+		{ Type = any;
+		  Default = "Null"; };
+
+Class
+	XmSeparator : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateSeparator;
+		Resources
+			{
+			! new resources
+			XmNmargin;
+			XmNorientation;
+			XmNseparatorType;
+			! inherited resources
+			XmNtraversalOn { Default = "False"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+Class
+	XmLabel : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateLabel;
+		Resources
+			{
+			! new resources
+			XmNaccelerator;
+			XmNacceleratorText;
+			XmNalignment;
+			XmNfontList;
+			XmNlabelInsensitivePixmap;
+			XmNlabelPixmap;
+			XmNlabelString;
+			XmNlabelType;
+			XmNmarginBottom;
+			XmNmarginHeight;
+			XmNmarginLeft;
+			XmNmarginRight;
+			XmNmarginTop;
+			XmNmarginWidth;
+			XmNmnemonic;
+			XmNmnemonicCharSet;
+			XmNrecomputeSize;
+			XmNstringDirection;
+			! inherited resources
+			XmNshadowThickness { Default = "0"; };
+			XmNtraversalOn { Default = "False"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+
+! Immediate subclass of XmPrimitive. The ScrolledList variant is treated
+! as a subclass
+
+Class
+	XmList : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateList;
+		Resources
+			{
+			! new resources
+			XmNautomaticSelection;
+			XmNbrowseSelectionCallback;
+			XmNdefaultActionCallback;
+			XmNdoubleClickInterval;
+			XmNextendedSelectionCallback;
+			XmNfontList;
+			XmNitemCount;
+			XmNitems;
+			XmNlistMarginHeight;
+			XmNlistMarginWidth;
+			XmNlistSizePolicy;
+			XmNlistSpacing;
+			XmNmultipleSelectionCallback;
+			XmNselectedItemCount;
+			XmNselectedItems;
+			XmNselectionPolicy;
+			XmNsingleSelectionCallback;
+			XmNstringDirection;
+			XmNtopItemPosition;
+			XmNvisibleItemCount;
+			! inherited resources
+			XmNnavigationType { Default = "XmTAB_GROUP"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNautomaticSelection : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNbrowseSelectionCallback : Reason
+		{ };
+	XmNdefaultActionCallback : Reason
+		{ };
+	XmNdoubleClickInterval : Argument
+		{ Type = integer;
+		  Default = "250"; };
+	XmNextendedSelectionCallback : Reason
+		{ };
+	XmNitemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNitems : Argument
+		{ Type = string_table;
+		  Default = "Null"; 
+    		  Related = XmNitemCount; };
+	XmNlistMarginHeight : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNlistMarginWidth : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNlistSpacing : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmultipleSelectionCallback : Reason
+		{ };
+	XmNselectedItemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNselectedItems : Argument
+		{ Type = string_table;
+		  Default = "Null"; 
+    		  Related = XmNselectedItemCount; };
+	XmNselectionPolicy : Argument
+		{ Type = integer;
+		  EnumerationSet = SelectionPolicy;
+		  Default = "XmBROWSE_SELECT"; };
+	XmNsingleSelectionCallback : Reason
+		{ };
+	XmNtopItemPosition : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNvisibleItemCount : Argument
+		{ Type = integer;
+		  Default = "1"; };
+
+Class
+	XmScrolledList : Widget
+		{
+		SuperClass = XmList;
+		ParentClass = XmScrolledWindow;
+		ConvenienceFunction = XmCreateScrolledList;
+		Resources
+			{
+			! new resources
+			XmNhorizontalScrollBar;
+			XmNlistSizePolicy;
+			XmNscrollBarDisplayPolicy;
+			XmNscrollBarPlacement;
+			XmNscrolledWindowMarginHeight;
+			XmNscrolledWindowMarginWidth;
+			XmNspacing;
+			XmNverticalScrollBar;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNhorizontalScrollBar : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNlistSizePolicy : Argument
+		{ Type = integer ;
+		  EnumerationSet = ListSizePolicy;
+		  Default = "XmVARIABLE"; };
+	XmNscrollBarDisplayPolicy : Argument
+		{ Type = integer ;
+		  EnumerationSet = ScrollBarDisplayPolicy;
+		  Default = "XmAS_NEEDED"; };
+	XmNscrollBarPlacement : Argument
+		{ Type = integer ;
+		  EnumerationSet = ScrollBarPlacement;
+		  Default = "XmBOTTOM_RIGHT"; };
+	XmNscrolledWindowMarginHeight : Argument
+		{ Type = integer ;
+		  Default = "0"; };
+	XmNscrolledWindowMarginWidth : Argument
+		{ Type = integer ;
+		  Default = "0"; };
+	XmNverticalScrollBar : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+
+
+! Immediate subclass of XmPrimitive. The Scrolled variant is treated
+! as a subclass
+
+Class
+	XmText : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmCreateText;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNautoShowCursorPosition;
+			XmNcursorPosition;
+			XmNeditable;
+			XmNeditMode;
+			XmNfocusCallback;
+			XmNgainPrimaryCallback;
+			XmNlosePrimaryCallback;
+			XmNlosingFocusCallback;
+			XmNmarginHeight { Default = "3"; };
+			XmNmarginWidth { Default = "3"; };
+			XmNmaxLength;
+			XmNmodifyVerifyCallback;
+			XmNmodifyVerifyCallbackWcs;
+			XmNmotionVerifyCallback;
+			XmNsource;
+			XmNtopCharacter;
+			XmNvalue;
+			XmNvalueWcs;
+			XmNvalueChangedCallback;
+			XmNverifyBell;
+			! Input resource set
+			XmNpendingDelete;
+			XmNselectionArray;
+			XmNselectionArrayCount;
+			XmNselectThreshold;
+			! Output resource set
+			XmNblinkRate;
+			XmNcolumns;
+			XmNcursorPositionVisible;
+			XmNfontList;
+			XmNresizeHeight;
+			XmNresizeWidth;
+			XmNrows;
+			XmNwordWrap;
+			! inherited resources
+			XmNnavigationType { Default = "XmTAB_GROUP"; };
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNautoShowCursorPosition : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNcursorPosition : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNeditable : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNeditMode : Argument
+		{ Type = integer;
+		  EnumerationSet = EditMode;
+		  Default = "XmSINGLE_LINE_EDIT"; };
+	XmNfocusCallback : Reason
+		{ };
+	XmNgainPrimaryCallback : Reason
+		{ };
+	XmNlosePrimaryCallback : Reason
+		{ };
+	XmNlosingFocusCallback : Reason
+		{ };
+	XmNmaxLength : Argument
+		{ Type = integer;
+		  Default = "MAXINT"; };
+	XmNmodifyVerifyCallback : Reason
+		{ };
+	XmNmodifyVerifyCallbackWcs : Reason
+		{ };
+	XmNmotionVerifyCallback : Reason
+		{ };
+	XmNpendingDelete : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNsource : Argument
+		{ Type = any;
+		  Default = "Default source"; };
+	XmNselectionArray : Argument
+		{ Type = any;
+		  Default = "array of XmTextScanType; XmSELECT_POSITION, XmSELECT_WORD, XmSELECT_LINE, XmSELECT_ALL};" ; 
+		  Related = XmNselectionArrayCount; };
+	XmNselectionArrayCount : Argument
+		{ Type = integer;
+		  Default = "4"; };
+	XmNselectThreshold : Argument
+		{ Type = integer;
+		  Default = "5"; };
+	XmNblinkRate : Argument
+		{ Type = integer;
+		  Default = "500"; };
+	XmNtopCharacter : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNverifyBell : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNcolumns : Argument
+		{ Type = integer;
+		  Default = "20"; };
+	XmNcursorPositionVisible : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNresizeHeight : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNresizeWidth : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNrows : Argument
+		{ Type = integer;
+		  Default = "1"; };
+	XmNvalueWcs : Argument
+		{ Type = wide_character;
+		  Default = "Null"; };
+	XmNwordWrap : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+Class
+	XmScrolledText : Widget
+		{
+		SuperClass = XmText;
+		ParentClass = XmScrolledWindow; 
+		ConvenienceFunction = XmCreateScrolledText;
+		Resources
+			{
+			! new resources
+			XmNscrollHorizontal;
+			XmNscrollLeftSide;
+			XmNscrollTopSide;
+			XmNscrollVertical;
+			XmNscrolledWindowMarginHeight;
+			XmNscrolledWindowMarginWidth;
+			XmNspacing;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNscrollHorizontal : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNscrollLeftSide : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNscrollTopSide : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNscrollVertical : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+
+! Immediate subclasses of XmLabel
+
+Class
+	XmCascadeButton : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmCreateCascadeButton;
+		ControlsMapToResource = XmNsubMenuId;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNcascadePixmap;
+			XmNcascadingCallback;
+			XmNmappingDelay;
+			XmNsubMenuId;
+			! inherited resources
+			XmNaccelerator { Exclude = True;};
+			XmNacceleratorText { Exclude = True;};
+			};
+		Controls
+			{
+			XmPulldownMenu;
+			XmPopupMenu;
+			};
+		};
+
+Class
+	XmDrawnButton : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmCreateDrawnButton;
+		Resources
+			{
+			! new resources
+			XmNarmCallback;
+			XmNactivateCallback;
+			XmNdisarmCallback;
+			XmNexposeCallback;
+			XmNmultiClick;
+			XmNresizeCallback;
+			XmNpushButtonEnabled;
+			XmNshadowType { Default = "XmSHADOW_ETCHED_IN"; };
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNpushButtonEnabled : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+
+
+! This is a virtual class needed for accessing the automatically created
+! TearOffControl for TearOff Menus.  It cannot be instantiated directly.
+Class
+	XmTearOffButton : Widget
+		{
+		SuperClass = XmPushButton;
+		ConvenienceFunction = "";
+		Resources
+			{
+			! new resources
+			XmNseparatorType 
+				{ Default = "XmSHADOW_ETCHED_OUT_DASH"; };
+			XmNmargin;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+Class
+	XmPushButton : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmCreatePushButton;
+		Resources
+			{
+			! new resources
+			XmNactivateCallback;
+			XmNarmCallback;
+			XmNarmColor;
+			XmNarmPixmap;
+			XmNdefaultButtonShadowThickness;
+			XmNdisarmCallback;
+			XmNfillOnArm;
+			XmNmultiClick;
+			XmNshowAsDefault;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+Class
+	XmToggleButton : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmCreateToggleButton;
+		Resources
+			{
+			! new resources
+			XmNarmCallback;
+			XmNdisarmCallback;
+			XmNfillOnSelect;
+			XmNindicatorOn;
+			XmNindicatorSize;
+			XmNindicatorType;
+			XmNselectColor;
+			XmNselectInsensitivePixmap;
+			XmNselectPixmap;
+			XmNset;
+			XmNspacing;
+			XmNvalueChangedCallback;
+			XmNvisibleWhenOff;
+			! inherited resources
+			};
+		Controls {
+			XmPopupMenu;
+			};
+		};
+
+
+! Immediate subclasses of Composite. 
+
+Class
+	"Constraint" : MetaClass	! Also a keyword, so quote Constraint
+		{
+		SuperClass = Composite;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		};
+
+Class 
+	Shell : MetaClass
+	{
+	SuperClass = Composite;
+	Resources
+		{
+		! new resources
+		XmNallowShellResize;
+		XmNcreatePopupChildProc;
+		XmNgeometry;
+		XmNoverrideRedirect;
+		XmNpopdownCallback;
+		XmNpopupCallback;
+		XmNsaveUnder;
+		XmNvisual;
+		! inherited resources
+		};
+	};
+
+Resource
+	XmNallowShellResize : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNcreatePopupChildProc : Argument
+		{ Type = any;
+		  Default = "NULL"; };
+	XmNgeometry : Argument
+		{ Type = string;
+		  Default = "NULL"; };
+	XmNoverrideRedirect : Argument
+  		{ Type = boolean;
+		  Default = "False"; };
+	XmNpopdownCallback : Reason
+  		{ };
+	XmNpopupCallback : Reason
+		{ };
+	XmNsaveUnder : Argument
+  		{ Type = boolean;
+		  Default = "False"; };
+	XmNvisual : Argument
+  		{ Type = any ;
+		  Default = "CopyFromParent"; };
+  
+
+! Immediate subclasses of Constraint
+
+Class
+	XmManager : MetaClass
+		{
+		SuperClass = "Constraint";
+		Resources
+			{
+			! new resources
+			XmNbottomShadowColor;
+			XmNbottomShadowPixmap;
+			XmNforeground;
+			XmNhelpCallback;
+			XmNhighlightColor;
+			XmNhighlightPixmap;
+			XmNinitialFocus;
+			XmNnavigationType { Default = "XmTAB_GROUP"; };
+			XmNshadowThickness { Default = "0"; };
+			XmNstringDirection;
+			XmNtopShadowColor;
+			XmNtopShadowPixmap;
+			XmNtraversalOn;
+			XmNtraversalCallback;
+			XmNtraverseObscuredCallback;
+			XmNunitType;
+			XmNuserData;
+			! inherited resources
+			};
+		};
+
+Resource
+	XmNinitialFocus : Argument
+		{ Type = widget_ref;
+		  Default = "NULL"; };
+	XmNtraversalCallback : Reason
+		{ };
+	XmNtraverseObscuredCallback : Reason
+		{ };
+
+
+! Immediate subclasses of Shell
+
+Class
+	OverrideShell : MetaClass
+	{
+	SuperClass = Shell;
+	Resources
+		{
+		! new resources
+		! inherited resources
+		XmNoverrideRedirect { Default = "True"; };
+		XmNsaveUnder { Default = "True"; };
+		};
+	};
+
+Class
+	WMShell : MetaClass
+	{
+	SuperClass = Shell;
+	Resources
+		{
+		! new resources
+		XmNbaseHeight;
+		XmNbaseWidth;
+		XmNheightInc;
+		XmNiconMask;
+		XmNiconPixmap;
+		XmNiconWindow;
+		XmNiconX;
+		XmNiconY;
+		XmNinitialState;
+		XmNinput;
+		XmNmaxAspectX;
+		XmNmaxAspectY;
+		XmNmaxHeight;
+		XmNmaxWidth;
+		XmNminAspectX;
+		XmNminAspectY;
+		XmNminHeight;
+		XmNminWidth;
+		XmNtitle;
+		XmNtitleEncoding;
+		XmNtransient;
+		XmNwaitForWm;
+		XmNwidthInc;
+		XmNwindowGroup;
+		XmNwinGravity;
+		XmNwmTimeout;
+		};
+	};
+
+Resource
+	XmNbaseHeight : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNbaseWidth : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNheightInc : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNiconMask : Argument
+		{ Type = pixmap;
+		  Default = "NULL"; };
+	XmNiconPixmap : Argument
+		{ Type = pixmap;
+		  Default = "NULL"; };
+	XmNiconWindow : Argument
+		{ Type = any;
+		  Default = "NULL"; };
+	XmNiconX : Argument
+		{ Type = integer;
+		  Default = "-1"; };
+	XmNiconY : Argument
+		{ Type = integer;
+		  Default = "-1"; };
+	XmNinitialState : Argument
+		{ Type = integer;
+		  EnumerationSet = InitialState;
+		  Default = "NormalState"; };
+	XmNinput : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNmaxAspectX : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNmaxAspectY : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNmaxHeight : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNmaxWidth : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNminAspectX : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNminAspectY : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNminHeight : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNminWidth : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNtitle : Argument
+		{ Type = string;
+		  Default = "dynamic"; };
+	XmNtitleEncoding : Argument
+		{ Type = any;
+		  Default = "dynamic"; };
+	XmNtransient : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNwaitForWm : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNwidthInc : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNwindowGroup : Argument
+		{ Type = any;
+		  Default = "dynamic"; };
+	XmNwinGravity : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNwmTimeout : Argument
+		{ Type = integer;
+		  Default = "5000"; };
+
+
+! Immediate subclasses of WMShell
+Class
+	VendorShell : MetaClass
+		{
+		SuperClass = WMShell;
+		Resources
+			{
+			! new resources
+			XmNaudibleWarning;
+			XmNbuttonFontList;
+			XmNlabelFontList;
+			XmNtextFontList;
+			XmNdefaultFontList;
+			XmNdeleteResponse;
+			XmNinputMethod;
+			XmNkeyboardFocusPolicy;
+			XmNmwmDecorations;
+			XmNmwmFunctions;
+			XmNmwmInputMode;
+			XmNmwmMenu;
+			XmNpreeditType;
+			XmNshellUnitType;
+			XmNuseAsyncGeometry;
+			! inherited resources
+			};
+		};
+
+Resource 
+	XmNaudibleWarning : Argument
+		{ Type = integer;
+		  EnumerationSet = AudibleWarning;
+		  Default = "XmBELL"; };
+	XmNdefaultFontList : Argument
+		{ Type = font_table;
+		  Default = "dynamic"; };
+	XmNdeleteResponse : Argument
+		{ Type = integer;
+		  EnumerationSet = DeleteResponse;
+		  Default = "XmDESTROY"; };
+	XmNinputMethod : Argument
+		{ Type = string;
+		  Default = "Null"; };
+	XmNkeyboardFocusPolicy : Argument
+		{ Type = integer;
+		  EnumerationSet = KeyboardFocusPolicy;
+		  Default = "XmEXPLICIT"; };
+	XmNmwmDecorations : Argument
+		{ Type = integer;
+		  Default = "-1"; };
+	XmNmwmFunctions : Argument
+		{ Type = integer;
+		  Default = "-1"; };
+	XmNmwmInputMode : Argument
+		{ Type = integer;
+		  Default = "-1"; };
+	XmNmwmMenu : Argument
+		{ Type = string;
+		  Default = "NULL"; };
+	XmNpreeditType : Argument
+		{ Type = string;
+		  Default = "OverTheSpot,OffTheSpot,Root"; };
+	XmNshellUnitType : Argument
+		{ Type = integer;
+		  EnumerationSet = UnitType;
+		  Default = "XmPIXELS"; };
+	XmNuseAsyncGeometry : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+
+! Immediate subclasses of VendorShell
+
+Class
+	TopLevelShell : MetaClass
+		{	
+		SuperClass = VendorShell;
+		Resources
+			{
+			! new resources
+			XmNiconic;
+			XmNiconName;
+			XmNiconNameEncoding;
+			! inherited resources
+		};
+	};
+
+Resource
+	XmNiconic : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNiconName : Argument
+		{ Type = string;
+		  Default = "NULL"; };
+	XmNiconNameEncoding : Argument
+		{ Type = any;
+		  Default = "dynamic"; };
+
+Class
+	TransientShell : MetaClass
+		{
+		SuperClass = VendorShell;
+		Resources
+			{
+			! new resources
+			XmNtransientFor;
+			! inherited resources
+		};
+	};
+
+Resource
+	XmNtransientFor : Argument
+		{ Type = widget_ref;
+		  Default = "NULL"; };
+
+
+! Immediate subclasses of TransientShell
+
+Class
+	XmDialogShell : Widget
+		{ 
+		SuperClass = TransientShell;
+		ConvenienceFunction = XmCreateDialogShell;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			XmNdeleteResponse { Default = "XmUNMAP"; };
+			};
+		Controls
+			{
+			ManagerWidgets;
+			};
+	};
+
+
+! Immediate subclasses of OverrideShell
+
+Class
+	XmMenuShell : Widget
+		{
+		SuperClass = OverrideShell;
+		ConvenienceFunction = XmCreateMenuShell;
+		Resources
+			{
+			! new resources
+			XmNbuttonFontList;
+			XmNdefaultFontList;
+			XmNlabelFontList;
+			XmNtextFontList;
+			! inherited resources
+			XmNallowShellResize { Default = "True"; };
+		};
+		Controls
+			{
+			XmRowColumn;
+			};
+	};
+
+
+! Immediate subclasses of XmManager
+
+Class
+	XmDrawingArea : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateDrawingArea;
+		Resources
+			{
+			! new resources
+			XmNexposeCallback;
+			XmNinputCallback;
+			XmNmarginHeight { Default = "10"; };
+			XmNmarginWidth { Default = "10"; };
+			XmNresizeCallback;
+			XmNresizePolicy;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+Resource
+	XmNexposeCallback : Reason
+		{ };
+	XmNinputCallback : Reason
+		{ };
+	XmNresizeCallback : Reason
+		{ };
+	XmNresizePolicy : Argument
+		{ Type = integer;
+		  EnumerationSet = ResizePolicy;
+		  Default = "XmRESIZE_ANY"; };
+
+Class
+	XmFrame : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateFrame;
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Resources
+			{
+			! new resources
+			XmNmarginHeight { Default = "0"; };
+			XmNmarginWidth  { Default = "0"; };
+			XmNshadowType;
+			! constraint resources
+			XmNchildHorizontalAlignment;
+			XmNchildHorizontalSpacing;
+			XmNchildType;
+			XmNchildVerticalAlignment;
+			! inherited resources
+			XmNshadowThickness { Default = "dynamic"; };
+			};
+		};
+Resource
+	XmNshadowType : Argument
+		{ Type = integer;
+		  EnumerationSet = ShadowType;
+		  Default = "XmSHADOW_ETCHED_IN"; };
+! constraints
+	XmNchildHorizontalAlignment : Constraint
+		{ Type = integer;
+		  EnumerationSet = Alignment;
+		  Default = "XmALIGNMENT_BEGINNING"; };
+	XmNchildHorizontalSpacing : Constraint
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNchildType : Constraint
+		{ Type = integer;
+		  EnumerationSet = ChildType;
+		  Default = "XmFRAME_WORKAREA_CHILD"; };
+	XmNchildVerticalAlignment : Constraint
+		{ Type = integer;
+		  EnumerationSet = ChildVerticalAlignment;
+		  Default = "XmALIGNMENT_CENTER"; };
+		
+Class
+	XmPanedWindow : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreatePanedWindow;
+		Resources
+			{
+			! new resources
+			XmNmarginHeight { Default = "3"; };
+			XmNmarginWidth { Default = "3"; };
+			XmNrefigureMode;
+			XmNsashHeight;
+			XmNsashIndent;
+			XmNsashShadowThickness;
+			XmNsashWidth;
+			XmNseparatorOn;
+			XmNspacing { Default = "8"; };
+			! constraint resources
+			XmNpaneMinimum;
+			XmNpaneMaximum;
+			XmNskipAdjust;
+			XmNallowResize;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+Resource
+	XmNrefigureMode : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNsashHeight : Argument
+		{ Type = integer;
+		  Default = "10"; };
+	XmNsashIndent : Argument
+		{ Type = integer;
+		  Default = "-10"; };
+	XmNsashShadowThickness : Argument
+		{ Type = integer;
+		  Default = "2"; };
+	XmNsashWidth : Argument
+		{ Type = integer;
+		  Default = "10"; };
+	XmNseparatorOn : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNpaneMinimum : Constraint
+		{ Type = integer;
+		  Default = "1"; };
+	XmNpaneMaximum : Constraint
+		{ Type = integer;
+		  Default = "1000"; };
+	XmNskipAdjust : Constraint
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNallowResize : Constraint
+		{ Type = boolean;
+		  Default = "False"; };
+
+Class
+	XmScale : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateScale;
+		Resources
+			{
+			! new resources
+			XmNdecimalPoints;
+			XmNdragCallback;
+			XmNfontList { Default = "Fixed"; };
+			XmNhighlightOnEnter { Default = "False"; };	
+			XmNhighlightThickness { Default = "0"; };
+			XmNmaximum { Default = "100"; };
+			XmNminimum { Default = "0"; };
+			XmNorientation { Default = "XmVERTICAL"; };
+			XmNprocessingDirection {Default = "XmMAX_ON_TOP"; };
+			XmNscaleHeight;
+			XmNscaleMultiple;
+			XmNscaleWidth;
+			XmNshowValue;
+			XmNtitleString;
+			XmNvalue { Default = "0"; };
+			XmNvalueChangedCallback;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_Title;
+			};
+		};
+Child
+	Xm_Title : XmLabel;
+
+Resource
+	
+	XmNdecimalPoints: Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNscaleHeight: Argument
+		{ Type = integer;
+		  Default = "0"; };	
+	XmNscaleMultiple: Argument
+		{ Type = integer;
+		  Default = "1"; };	
+	XmNscaleWidth: Argument
+		{ Type = integer;
+		  Default = "0"; };	
+	XmNshowValue: Argument
+		{ Type = boolean;
+		  Default = "False"; };	
+	XmNtitleString: Argument
+		{ Type = compound_string;
+		  Default = "Null"; };	
+		 
+Class
+	XmScrolledWindow : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateScrolledWindow;
+		Resources
+			{
+			! new resources
+			XmNclipWindow { Exclude = True; };
+			XmNhorizontalScrollBar { Default = "Null"; };
+			XmNscrollBarDisplayPolicy { Default = "XmSTATIC"; };
+			XmNscrollBarPlacement { Default = "XmBOTTOM_RIGHT"; };
+			XmNscrolledWindowMarginHeight;
+			XmNscrolledWindowMarginWidth;
+			XmNscrollingPolicy;
+			XmNspacing { Default = "4"; };
+			XmNverticalScrollBar { Default = "Null"; };
+			XmNvisualPolicy;
+			XmNworkWindow;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_VertScrollBar;
+			Xm_HorScrollBar;
+			};
+		};
+Child
+	Xm_VertScrollBar : XmScrollBar;
+	Xm_HorScrollBar : XmScrollBar;
+
+Resource
+	XmNclipWindow : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNscrollingPolicy : Argument
+		{ Type = integer;
+		  EnumerationSet = ScrollingPolicy;
+		  Default = "XmAPPLICATION_DEFINED"; };
+	XmNvisualPolicy : Argument
+		{ Type = integer;
+		  EnumerationSet = VisualPolicy;
+		  Default = "XmVARIABLE"; };
+	XmNworkWindow : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+
+
+! Bulletin board inherits from XmManager. Its Dialog variant is treated
+! as a subclass
+
+Class
+	XmBulletinBoard : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateBulletinBoard;
+		Resources
+			{
+			! new resources
+			XmNallowOverlap;
+			XmNautoUnmanage;
+			XmNbuttonFontList;
+			XmNcancelButton;
+			XmNdefaultButton;
+			XmNdefaultPosition;
+			XmNdialogStyle;
+			XmNdialogTitle;
+			XmNfocusCallback;
+			XmNlabelFontList;
+			XmNmapCallback;
+			XmNmarginHeight { Default = "10";};
+			XmNmarginWidth { Default = "10";};
+			XmNnoResize;
+			XmNresizePolicy{ Default = "XmRESIZE_ANY"; };
+			XmNshadowType { Default = "XmSHADOW_OUT";};
+			XmNtextFontList;
+			XmNtextTranslations;
+			XmNunmapCallback;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+Resource
+	XmNallowOverlap : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNautoUnmanage : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNbuttonFontList : Argument
+		{ Type = font_table;
+		  Default = "dynamic"; };
+	XmNcancelButton : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNdefaultButton : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNdefaultPosition: Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNdialogStyle : Argument
+		{ Type = integer;
+		  EnumerationSet = DialogStyle;
+		  Default = "dynamic"; };
+	XmNdialogTitle : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNlabelFontList : Argument
+		{ Type = font_table;
+		  Default = "dynamic"; };
+    	XmNmapCallback : Reason
+		{ };
+    	XmNnoResize : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNtextFontList : Argument
+		{ Type = font_table;
+		  Default = "dynamic"; };
+	XmNtextTranslations : Argument
+		{ Type = translation_table;
+		  Default = "Null"; };
+    	XmNunmapCallback : Reason
+		{ };
+
+Class
+	XmBulletinBoardDialog : Widget
+		{
+		SuperClass = XmBulletinBoard;
+		ParentClass = XmDialogShell;
+		ConvenienceFunction = XmCreateBulletinBoardDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! RowColumn is instantiated as a number of different apparent widget
+! classes. There is a UIL widget for each creation routine, which
+! appears like a discrete class. All inherit from XmManager in fact,
+! but are made to appear as subclasses of RowColumn to make resource
+! specification easier
+
+Class
+	XmRowColumn : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmCreateRowColumn;
+		Resources
+			{
+			! new resources
+			XmNadjustLast;
+			XmNadjustMargin;
+			XmNentryAlignment;
+			XmNentryBorder;
+    			XmNentryCallback;
+			XmNentryClass;
+			XmNentryVerticalAlignment;
+			XmNisAligned;
+			XmNisHomogeneous;
+			XmNlabelString { Default = "Null"; };
+    			XmNmapCallback;
+			XmNmarginHeight{ Default = "dynamic";};
+			XmNmarginWidth { Default = "3";};
+			XmNmenuAccelerator;
+			XmNmenuHelpWidget;
+			XmNmenuHistory;
+			XmNmenuPost;
+			XmNmnemonic { Default = "dynamic"; };
+			XmNmnemonicCharSet;
+			XmNnumColumns;
+			XmNorientation { Default = "dynamic"; };
+			XmNpacking;
+			XmNpopupEnabled;
+			XmNradioAlwaysOne;
+			XmNradioBehavior;
+    			XmNresizeHeight { Default = "True"; };
+    			XmNresizeWidth { Default = "True"; };
+			XmNrowColumnType;
+			XmNspacing { Default = "dynamic"; };
+			XmNsubMenuId { Default = "Null";};
+			XmNtearOffMenuActivateCallback;
+			XmNtearOffMenuDeactivateCallback;
+			XmNtearOffModel;
+    			XmNunmapCallback;
+			XmNunpostBehavior;
+			XmNwhichButton;
+			! inherited resources
+			XmNborderWidth { Default = "0"; };
+			XmNheight { Default = "dynamic"; };
+			XmNnavigationType { Default = "dynamic"; };
+			XmNwidth { Default = "dynamic"; };
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+Resource
+	XmNadjustLast : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNadjustMargin	: Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNentryAlignment : Argument
+		{ Type = integer;
+		  EnumerationSet = Alignment;
+		  Default = "dynamic"; };
+	XmNentryBorder	: Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNentryCallback : Reason
+		{ };
+	XmNentryClass	: Argument
+		{ Type = class_rec_name;
+		  Default = "dynamic"; };
+	XmNentryVerticalAlignment : Argument
+		{ Type = integer;
+		  EnumerationSet = VerticalAlignment;
+		  Default = "XmALIGNMENT_CENTER"; };
+	XmNisAligned	: Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNisHomogeneous	: Argument
+		{ Type = boolean;
+		  Default = "dynamic"; };
+	XmNmenuAccelerator : Argument
+		{ Type = string;
+		  Default = "dynamic"; };
+!	XmNmenuTranslation : Argument
+!		{ Type = translation_table;
+!		  Default = "NULL"; };
+	XmNmenuHelpWidget : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNmenuHistory	: Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNmenuPost	: Argument
+		{ Type = string;
+		  Default = "Null"; };
+	XmNnumColumns	: Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+	XmNpacking : Argument
+		{ Type = integer;
+		  EnumerationSet = Packing;
+		  Default = "dynamic"; };
+	XmNpopupEnabled	: Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNpostFromList : Argument
+		{ Type = any;	! should be widget_list
+		  Related = XmNpostFromCount;
+		  Default = "NULL"; };
+	XmNpostFromCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNradioAlwaysOne : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNradioBehavior : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmNrowColumnType : Argument
+		{ Type = integer;
+		  EnumerationSet = RowColumnType;
+		  Default = "XmWORK_AREA"; };
+	XmNtearOffMenuActivateCallback : Reason
+		{ };
+	XmNtearOffMenuDeactivateCallback : Reason
+		{ };
+	XmNtearOffModel : Argument
+		{ Type = integer;
+		  EnumerationSet = TearOffModel;
+		  Default = "XmTEAR_OFF_DISABLED"; };
+	XmNunpostBehavior : Argument
+		{ Type = integer;
+		  EnumerationSet = UnpostBehavior;
+		  Default = "XmUNPOST_AND_REPLAY"; };
+	XmNwhichButton : Argument
+		{ Type = integer;
+		  Default = "dynamic"; };
+
+Class
+	XmWorkArea : Widget
+		{
+		SuperClass = XmRowColumn;
+		ConvenienceFunction = XmCreateWorkArea;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmMenuBar : Widget
+		{
+		SuperClass = XmRowColumn;
+		ConvenienceFunction = XmCreateMenuBar;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			MenuWidgetsAndGadgets;
+			XmPopupMenu;
+			};
+		};
+
+
+Class
+	XmOptionMenu : Widget
+		{
+		SuperClass = XmRowColumn;
+		ConvenienceFunction = XmCreateOptionMenu;
+		ControlsMapToResource = XmNsubMenuId;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			XmPulldownMenu;
+			};
+		Children
+			{
+			Xm_OptionLabel;
+			Xm_OptionButton;
+			};
+		};
+
+Child
+	Xm_OptionLabel 	: XmLabelGadget;
+	Xm_OptionButton	: XmCascadeButtonGadget;
+
+Class
+	XmPopupMenu : Widget
+		{
+		SuperClass = XmRowColumn;
+		ParentClass = XmMenuShell;
+		ConvenienceFunction = XmCreatePopupMenu;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			MenuWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_TearOffControl;
+			};
+		};
+
+Child
+	Xm_TearOffControl : XmTearOffButton;
+
+Class
+	XmPulldownMenu : Widget
+		{
+		SuperClass = XmRowColumn;
+		ParentClass = XmMenuShell;
+		ConvenienceFunction = XmCreatePulldownMenu;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			MenuWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_TearOffControl;
+			};
+		};
+
+Class
+	XmRadioBox : Widget
+		{
+		SuperClass = XmRowColumn;
+		ConvenienceFunction = XmCreateRadioBox;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+
+! Immediate subclasses of XmScrolledWindow
+
+Class
+	XmMainWindow : Widget
+		{
+		SuperClass = XmScrolledWindow;
+		ConvenienceFunction = XmCreateMainWindow;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			XmNcommandWindow;
+			XmNcommandWindowLocation;
+			XmNmainWindowMarginHeight;
+			XmNmainWindowMarginWidth;
+			XmNmenuBar;
+			XmNmessageWindow;
+			XmNshowSeparator;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_Separator1;			
+			Xm_Separator2;
+			Xm_Separator3;
+			};
+		};
+Child
+	Xm_Separator1 : XmSeparator;
+	Xm_Separator2 : XmSeparator;
+	Xm_Separator3 : XmSeparator;
+
+Resource
+	XmNcommandWindow : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNcommandWindowLocation : Argument
+		{ Type = integer;
+		  EnumerationSet = CommandWindowLocation;
+		  Default = "XmCOMMAND_ABOVE_WORKSPACE"; };
+	XmNmainWindowMarginHeight : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmainWindowMarginWidth : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNmenuBar : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNmessageWindow : Argument
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNshowSeparator : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+
+
+! Immediate subclasses of XmBulletinBoard
+! For each class, the Dialog variant is treated as a subclass
+
+Class
+	XmForm : Widget
+		{
+		SuperClass = XmBulletinBoard;
+		ConvenienceFunction = XmCreateForm;
+		Resources
+			{
+			! new resources
+			XmNfractionBase;
+			XmNhorizontalSpacing;
+			XmNrubberPositioning;
+			XmNverticalSpacing;
+			! constraint resources
+    			XmNbottomAttachment;
+    			XmNbottomOffset;
+    			XmNbottomPosition;
+    			XmNbottomWidget;
+    			XmNleftAttachment;
+    			XmNleftOffset;
+    			XmNleftPosition;
+    			XmNleftWidget;
+    			XmNresizable;
+    			XmNrightAttachment;
+    			XmNrightOffset;
+    			XmNrightPosition;
+    			XmNrightWidget;
+    			XmNtopAttachment;
+    			XmNtopOffset;
+    			XmNtopPosition;
+    			XmNtopWidget;
+			! inherited resources
+			};			
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+Resource
+	XmNfractionBase : Argument
+		{ Type = integer;
+		  Default = "100"; };
+	XmNhorizontalSpacing : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNverticalSpacing : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNrubberPositioning : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+! constraints
+	XmNbottomAttachment : Constraint
+		{ Type = integer;
+		  EnumerationSet = Attachment;
+		  Default = "XmATTACH_NONE"; };
+	XmNbottomOffset : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNbottomPosition : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNbottomWidget : Constraint
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNleftAttachment : Constraint
+		{ Type = integer;
+		  EnumerationSet = Attachment;
+		  Default = "XmATTACH_NONE"; };
+	XmNleftOffset : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNleftPosition : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNleftWidget : Constraint
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNresizable : Constraint
+		{ Type = boolean;
+		  Default = "True"; };
+	XmNrightAttachment : Constraint
+		{ Type = integer;
+		  EnumerationSet = Attachment;
+		  Default = "XmATTACH_NONE"; };
+	XmNrightOffset : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNrightPosition : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNrightWidget : Constraint
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNtopAttachment : Constraint
+		{ Type = integer;
+		  EnumerationSet = Attachment;
+		  Default = "XmATTACH_NONE"; };
+	XmNtopOffset : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+	XmNtopWidget : Constraint
+		{ Type = widget_ref;
+		  Default = "Null"; };
+	XmNtopPosition : Constraint
+		{ Type = integer;
+		  Default = "0"; };
+
+Class
+	XmFormDialog : Widget
+		{
+		SuperClass = XmForm;
+		ParentClass = XmDialogShell;
+		ConvenienceFunction = XmCreateFormDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! Immediate subclass of XmBulletinBoard
+
+! Most Dialogs are variants of MessageBox, and are treated as subclasses.
+
+Class
+	XmMessageBox : Widget
+		{
+		SuperClass = XmBulletinBoard;
+		ConvenienceFunction = XmCreateMessageBox;
+		Resources
+			{
+			! new resources
+    			XmNcancelCallback;
+    			XmNcancelLabelString;
+    			XmNdefaultButtonType;
+    			XmNdialogType;
+    			XmNhelpLabelString;
+    			XmNmessageAlignment;
+    			XmNmessageString;
+    			XmNminimizeButtons;
+    			XmNokCallback;
+    			XmNokLabelString;
+    			XmNsymbolPixmap;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_Symbol;
+			Xm_Separator;
+			Xm_Message;
+			Xm_OK;
+			Xm_Cancel;
+			Xm_Help;
+			};
+		};
+Child
+	Xm_Symbol : XmLabel;
+	Xm_Separator : XmSeparator;
+	Xm_Message : XmLabel;
+	Xm_OK : XmPushButton;
+	Xm_Cancel : XmPushButton;
+	Xm_Help : XmPushButton;
+
+Resource
+    	XmNcancelCallback : Reason
+		{ };
+	XmNcancelLabelString : Argument
+		{ Type = compound_string;
+		  Default = "Cancel"; };
+	XmNdefaultButtonType : Argument
+		{ Type = integer;
+		  EnumerationSet = DefaultButtonType;
+		  Default = "XmDIALOG_OK_BUTTON"; };
+	XmNdialogType : Argument
+		{ Type = integer;
+		  EnumerationSet = DialogType;
+		  Default = "XmDIALOG_MESSAGE"; };
+	XmNhelpLabelString : Argument
+		{ Type = compound_string;
+		  Default = "Help"; };
+	XmNmessageAlignment : Argument
+		{ Type = integer;
+		  EnumerationSet = Alignment;
+		  Default = "XmALIGNMENT_BEGINNING"; };
+	XmNmessageString : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNminimizeButtons : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+    	XmNokCallback : Reason
+		{ };
+	XmNokLabelString : Argument
+		{ Type = compound_string;
+		  Default = "OK"; };
+	XmNsymbolPixmap : Argument
+		{ Type = pixmap;
+		  Default = "XmDEFAULT_PIXMAP"; };
+
+
+Class
+	XmMessageDialog : Widget
+		{
+		SuperClass = XmMessageBox;
+		ParentClass = XmDialogShell; 
+		ConvenienceFunction = XmCreateMessageDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmErrorDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateErrorDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmInformationDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateInformationDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmQuestionDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateQuestionDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+Class
+	XmTemplateDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateTemplateDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+Class
+	XmWarningDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateWarningDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmWorkingDialog : Widget
+		{
+		SuperClass = XmMessageDialog;
+		ConvenienceFunction = XmCreateWorkingDialog;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! Immediate subclass of XmBulletinBoard
+
+! Dialog variants are treated as subclasses
+
+Class
+	XmSelectionBox : Widget
+		{
+		SuperClass = XmBulletinBoard;
+		ConvenienceFunction = XmCreateSelectionBox;
+		Resources
+			{
+			! new resources
+			XmNapplyCallback;
+			XmNapplyLabelString;
+			XmNcancelCallback;
+			XmNcancelLabelString { Default = "cancel"; };
+			XmNdialogType { Default = "dynamic"; };
+			XmNhelpLabelString { Default = "help"; };
+			XmNlistItemCount;
+			XmNlistItems;
+			XmNlistLabelString;
+			XmNlistVisibleItemCount;
+			XmNminimizeButtons { Default = "False"; };
+			XmNmustMatch;
+			XmNnoMatchCallback;
+			XmNokCallback;
+			XmNokLabelString;
+			XmNselectionLabelString;
+			XmNtextAccelerators;
+			XmNtextColumns;
+			XmNtextString;
+			! constraint resources
+			XmNchildPlacement;
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_Items;
+			Xm_ItemsList;
+			Xm_Selection;
+			Xm_Text;
+			Xm_Separator;
+			Xm_OK;
+			Xm_Cancel;
+			Xm_Help;
+			Xm_Apply;
+			};
+		};
+Child
+	Xm_Items 			: XmLabel;
+	Xm_ItemsList 			: XmScrolledList;
+	Xm_Selection 			: XmLabel;
+	Xm_Text 			: XmText;	
+	Xm_Apply 			: XmPushButton;
+
+Resource
+    	XmNapplyCallback : Reason
+		{ };
+	XmNapplyLabelString : Argument
+		{ Type = compound_string;
+		  Default = "Apply"; };
+	XmNlistItemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNlistItems : Argument
+		{ Type = string_table;
+		  Default = "Null"; 
+		  Related = XmNlistItemCount; };
+	XmNlistLabelString : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNlistVisibleItemCount : Argument
+		{ Type = integer;
+		  Default = "8"; };
+	XmNmustMatch : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+    	XmNnoMatchCallback: Reason
+		{ };
+	XmNselectionLabelString : Argument
+		{ Type = compound_string;
+		  Default = "Selection"; };
+	XmNtextAccelerators : Argument
+		{ Type = translation_table;
+		  Default = ""; };
+	XmNtextColumns : Argument
+		{ Type = integer;
+		  Default = "20"; };
+	XmNtextString : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+! constraints
+	XmNchildPlacement : Constraint
+		{ Type = integer;
+		  EnumerationSet = ChildPlacement;
+		  Default = "XmPLACE_ABOVE_SELECTION"; };
+
+Class
+	XmSelectionDialog : Widget
+		{
+		SuperClass = XmSelectionBox;
+		ParentClass = XmDialogShell; 
+		ConvenienceFunction = XmCreateSelectionDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+Class
+	XmPromptDialog : Widget
+		{
+		SuperClass = XmSelectionBox;
+		ConvenienceFunction = XmCreatePromptDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! Immediate subclasses of XmSelectionBox
+
+Class
+	XmCommand : Widget
+		{
+		SuperClass = XmSelectionBox;
+		ConvenienceFunction = XmCreateCommand;
+		Resources
+			{
+			! new resources
+    			XmNcommand;
+			XmNcommandChangedCallback;
+			XmNcommandEnteredCallback;
+			XmNhistoryItems;
+			XmNhistoryItemCount;
+			XmNhistoryMaxItems;
+			XmNhistoryVisibleItemCount;
+			XmNpromptString;
+			! inherited resources
+			XmNapplyCallback { Exclude = True; };
+			XmNapplyLabelString { Exclude = True; };
+			XmNautoUnmanage {Exclude = True;};
+			XmNcancelCallback { Exclude = True; };
+			XmNcancelLabelString { Exclude = True; };
+			XmNhelpLabelString { Exclude = True; };
+			XmNlistLabelString { Exclude = True; };
+			XmNminimizeButtons { Exclude = True; };
+			XmNmustMatch { Exclude = True; };
+			XmNnoMatchCallback { Exclude = True; };
+			XmNokCallback { Exclude = True; };
+			XmNokLabelString { Exclude = True; };
+			XmNallowOverlap { Exclude = True; };
+			XmNbuttonFontList { Exclude = True; };
+			XmNcancelButton { Exclude = True; };
+			XmNdefaultButton { Exclude = True; };
+			XmNdialogType { Default = "XmDIALOG_COMMAND"; };
+			};
+		Controls
+			{
+			XmPopupMenu;
+			};
+		};
+Resource
+	XmNcommand : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNcommandChangedCallback : Reason
+		{ };
+	XmNcommandEnteredCallback : Reason    
+		{ };
+	XmNhistoryItems : Argument
+		{ Type = string_table;
+		  Default = "Null";
+		  Related = XmNhistoryItemCount; };
+	XmNhistoryItemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNhistoryMaxItems : Argument
+		{ Type = integer;
+		  Default = "100"; };
+	XmNhistoryVisibleItemCount : Argument
+		{ Type = integer;
+		  Default = "8"; };
+	XmNpromptString : Argument
+		{ Type = compound_string;
+		  Default = ">"; };
+    
+
+
+! Immediate subclass of SelectionBox
+! The Dialog variant is treated as a subclass
+
+Class
+	XmFileSelectionBox : Widget
+		{
+		SuperClass = XmSelectionBox;
+		ConvenienceFunction = XmCreateFileSelectionBox;
+		Resources
+			{
+			! new resources
+			XmNdirMask;
+			XmNdirSpec;
+			XmNfileSearchProc;
+			XmNfileTypeMask;
+			XmNfilterLabelString;
+			XmNlistUpdated;
+			XmNdirectory;
+			XmNpattern;
+			XmNdirListLabelString;
+			XmNdirListItems;
+			XmNdirListItemCount;
+			XmNfileListItemCount;
+			XmNfileListItems;
+			XmNnoMatchString;
+			XmNqualifySearchDataProc;
+			XmNdirSearchProc;
+			XmNfileListLabelString;
+			! inherited resources
+			XmNapplyLabelString { Default = "Filter"; };
+			XmNlistLabelString { Default = "Files"; };
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		Children
+			{
+			Xm_FilterLabel;
+			Xm_FilterText;
+			Xm_DirList;
+			Xm_Dir;
+			Xm_Filter;
+			};
+		};
+Child
+	Xm_FilterLabel 			: XmLabel;
+	Xm_FilterText 			: XmText;
+	Xm_DirList 			: XmScrolledList;
+	Xm_Dir 				: XmLabel;
+	Xm_Filter 			: XmPushButton;
+
+Resource
+	XmNdirMask : Argument
+		{ Type = compound_string;
+		  Default = "*"; };
+	XmNdirSpec : Argument
+		{ Type = compound_string;
+		  Default = "Null"; };
+	XmNfileSearchProc : Argument
+		{ Type = any;
+		  Default = "default"; };
+	XmNfilterLabelString : Argument
+		{ Type = compound_string;
+		  Default = "File Filter"; };
+	XmNlistUpdated : Argument
+	  	{ Type = boolean;
+		  Default = "True"; };
+	XmNfileTypeMask : Argument
+		{ Type = integer;
+		  EnumerationSet = FileTypeMask;
+		  Default = "XmFILE_REGULAR"; };
+	XmNdirectory: Argument
+		{ Type = compound_string;
+		  Default = "current working directory"; };
+	XmNpattern: Argument
+		{ Type = compound_string;
+		  Default = "*"; };
+	XmNdirListLabelString: Argument
+		{ Type = compound_string;
+		  Default = "Directories"; };
+	XmNdirListItemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNdirListItems : Argument
+		{ Type = string_table;
+		  Default = "dynamic"; 
+		  Related = XmNdirListItemCount; };
+	XmNfileListItemCount : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmNfileListItems : Argument
+		{ Type = string_table;
+		  Default = "NULL"; 
+		  Related = XmNfileListItemCount; };
+	XmNnoMatchString: Argument
+		{ Type = compound_string;
+		  Default = " [    ] "; };
+	XmNqualifySearchDataProc : Argument
+		{ Type = any;
+		  Default = "default"; };
+	XmNdirSearchProc : Argument
+		{ Type = any;
+		  Default = "default"; };
+	XmNfileListLabelString: Argument
+		{ Type = compound_string;
+		  Default = "Files"; };
+
+Class
+	XmFileSelectionDialog : Widget
+		{
+		SuperClass = XmFileSelectionBox;
+		ParentClass = XmDialogShell;
+		ConvenienceFunction = XmCreateFileSelectionDialog;
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! the user-defined class
+Class
+	user_defined : Widget
+		{
+		ConvenienceFunction = user_defined ;
+		Controls
+			{
+			AllWidgetsAndGadgets;
+			};
+		};
+
+
+
+! define the DEC Help widget
+
+
+
+! MDS Extensions
+
+EnumerationSet
+	XmdsPointerMode: integer
+                { XmdsPOINTER_MODE_USER;
+                  XmdsPOINTER_MODE_NONE;
+                  XmdsPOINTER_MODE_POINT;
+                  XmdsPOINTER_MODE_ZOOM;
+                  XmdsPOINTER_MODE_DRAG;
+		  XmdsPOINTER_MODE_EDIT;
+		  XmdsPOINTER_MODE_DRAW1;
+		  XmdsPOINTER_MODE_DRAW2;
+		  XmdsPOINTER_MODE_SET_PEN;
+		  XmdsPOINTER_MODE_SLIDE_STRETCH;
+                };
+	XmdsGridStyle: integer
+		{ XmdsGRID_STYLE_LINES;
+		  XmdsGRID_STYLE_TICKS;
+		};
+        XmdsShowMode:  integer
+                {
+                  XmdsSHOW_MODE_LINE;
+                  XmdsSHOW_MODE_POINTS;
+                  XmdsSHOW_MODE_BOTH;
+                };
+	XmdsTreeUsage: integer
+                { TreeUSAGE_ANY;
+		  TreeUSAGE_STRUCTURE;
+		  TreeUSAGE_ACTION;
+		  TreeUSAGE_DEVICE;
+		  TreeUSAGE_DISPATCH;
+		  TreeUSAGE_NUMERIC;
+		  TreeUSAGE_SIGNAL;
+		  TreeUSAGE_TASK;
+		  TreeUSAGE_TEXT;
+		  TreeUSAGE_WINDOW;
+		  TreeUSAGE_AXIS;
+		  TreeUSAGE_SUBTREE;
+		  TreeUSAGE_COMPOUND_DATA; };
+	XmdsPathType: integer
+                { NciABSOLUTE_PATH;
+		  NciRELATIVE_PATH; };
+
+
+! define Waveform widget - wave form plot widget
+
+Class
+	XmdsWaveform : Widget
+		{
+		SuperClass = XmPrimitive;
+		ConvenienceFunction = XmdsCreateWaveform;
+                InternalLiteral = xmdsWaveform; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsWaveform;
+		Resources
+			{
+			! new resources
+			XmdsNtitle;
+			XmdsNpointerMode;
+			XmdsNgridStyle;
+			XmdsNlabelFont;
+			XmdsNshowMode;
+			XmdsNshowSelections;
+			XmdsNstepPlot;
+			XmdsNcount;
+			XmdsNpanWith;
+			XmdsNattachCrosshairs;
+			XmdsNdisabled;
+			XmdsNclosed;
+                        ! Callbacks
+			XmdsNbutton3Callback;
+			XmdsNcrosshairsCallback;
+			XmdsNalignCallback;
+			XmdsNlimitsCallback;
+			XmdsNunderlayCallback;
+			XmdsNoverlayCallback;
+			XmdsNcutCallback;
+			XmdsNpasteCallback;
+			! X-axis resources
+			XmdsNxCrosshair;
+			XmdsNxGridLines;
+			XmdsNxLabels;
+			! Y-axis resources
+			XmdsNyCrosshair;
+			XmdsNyGridLines;
+			XmdsNyLabels;
+			};
+		};
+Resource
+	XmdsNtitle : Argument
+		{ Type = string;
+		  Default = "NULL"; };
+	XmdsNpointerMode : Argument
+                { Type = integer;
+		  EnumerationSet = XmdsPointerMode;
+		  Default = "XmdsPOINTER_MODE_ZOOM"; };
+	XmdsNgridStyle : Argument
+                { Type = integer;
+		  EnumerationSet = XmdsGridStyle;
+		  Default = "XmdsGRID_STYLE_LINES"; };
+	XmdsNlabelFont : Argument
+                { Type = font;
+                  Default =  "-Adobe-Courier-Medium-R-Normal--*-*-*-*-M-*-*-1"; };
+	XmdsNshowMode : Argument
+                { Type = integer;
+		  EnumerationSet = XmdsShowMode;
+                  Default = "XmdsSHOW_MODE_LINE"; };
+	XmdsNshowSelections : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNstepPlot : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNcount : Argument
+                { Type = integer;
+                  Default = "0"; };
+	XmdsNpanWith : Argument
+                { Type = widget_ref;
+                  Default =  "NULL"; };
+	XmdsNattachCrosshairs : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNdisabled : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNclosed : Argument
+                { Type = boolean;
+                  Default = "false"; };
+        ! Callbacks
+	XmdsNbutton3Callback : Reason
+                { };
+	XmdsNcrosshairsCallback : Reason
+                { };
+	XmdsNalignCallback : Reason
+                { };
+	XmdsNlimitsCallback : Reason
+                { };
+	XmdsNunderlayCallback : Reason
+                { };
+	XmdsNoverlayCallback : Reason
+                { };
+	XmdsNcutCallback : Reason
+                { };
+	XmdsNpasteCallback : Reason
+                { };
+	! X-axis resources
+	XmdsNxCrosshair : Argument
+                { Type = float;
+                  Default = "0.0"; };
+	XmdsNxGridLines : Argument
+                { Type = integer;
+                  Default = "4"; };
+	XmdsNxLabels : Argument
+                { Type = boolean;
+                  Default = "true"; };
+	! Y-axis resources
+	XmdsNyCrosshair : Argument
+                { Type = float;
+                  Default = "0.0"; };
+	XmdsNyGridLines : Argument
+                { Type = integer;
+                  Default = "4"; };
+	XmdsNyLabels : Argument
+                { Type = boolean;
+                  Default = "true"; };
+
+! define XmdsExpr widget - Multi line expression widget
+Class
+	XmdsExpr : Widget
+		{
+		SuperClass = XmScrolledText;
+		ConvenienceFunction = XmdsCreateExpr;
+                InternalLiteral = xmdsExpr; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsExpr;
+		Resources
+			{
+			! new resources
+			XmdsNxd; 
+			XmdsNdefaultNid; 
+			XmdsNnid; 
+			XmdsNnidOffset; 
+			XmdsNcompile;
+			XmdsNdecompile;
+			XmdsNautoQuote;
+			XmdsNdefaultQuote;
+			XmdsNputOnApply;
+			};
+		};
+Resource
+	XmdsNxd : Argument
+		{ Type = any;
+		  Default = "0"; };
+	XmdsNdefaultNid : Argument
+		{ Type = any;
+		  Default = "-1"; };
+	XmdsNnid : Argument
+		{ Type = any;
+		  Default = "0"; };
+	XmdsNnidOffset : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmdsNcompile : Argument
+		{ Type = any;
+		  Default = "TdiCompile";};
+	XmdsNdecompile : Argument
+		{ Type = any;
+		  Default = "TdiDecompile";};
+	XmdsNautoQuote : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmdsNdefaultQuote : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmdsNputOnApply : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+
+
+! define XmdsExprField widget - Single line expression widget
+Class
+	XmdsExprField : Widget
+		{
+		SuperClass = XmTextField;
+		ConvenienceFunction = XmdsCreateExprField;
+                InternalLiteral = xmdsExprField; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsExprField;
+		Resources
+			{
+			! new resources
+			XmdsNxd; 
+			XmdsNdefaultNid; 
+			XmdsNnid; 
+			XmdsNnidOffset; 
+			XmdsNcompile;
+			XmdsNdecompile;
+			XmdsNautoQuote;
+			XmdsNdefaultQuote;
+			XmdsNputOnApply;
+			};
+		};
+
+! define XmdsInput widget - CAMAC Digitizer Input Channel
+Class
+	XmdsInput : Widget
+		{
+		SuperClass = XmBulletinBoard;
+		ConvenienceFunction = XmdsCreateInput;
+                InternalLiteral = xmdsInput; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsInput;
+		};
+! define XmdsOkButton widget - Device setup ok button
+Class
+	XmdsOkButton : Widget
+		{
+		SuperClass = XmPushButton;
+		ConvenienceFunction = XmdsCreateOkButton;
+                InternalLiteral = xmdsOkButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsOkButton;
+		};
+! define XmdsApplyButton widget - Device setup apply button
+Class
+	XmdsApplyButton : Widget
+		{
+		SuperClass = XmPushButton;
+		ConvenienceFunction = XmdsCreateApplyButton;
+                InternalLiteral = xmdsApplyButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsApplyButton;
+		};
+! define XmdsResetButton widget - Device setup reset button
+Class
+	XmdsResetButton : Widget
+		{
+		SuperClass = XmPushButton;
+		ConvenienceFunction = XmdsCreateResetButton;
+                InternalLiteral = xmdsResetButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsResetButton;
+		};
+! define XmdsCancelButton widget - Device setup cancel button
+Class
+	XmdsCancelButton : Widget
+		{
+		SuperClass = XmPushButton;
+		ConvenienceFunction = XmdsCreateCancelButton;
+                InternalLiteral = xmdsCancelButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsCancelButton;
+		};
+! define XmdsOnOffToggleButton widget - Set on/off state of node
+Class
+	XmdsOnOffToggleButton: Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmdsCreateOnOffToggleButton;
+                InternalLiteral = xmdsOnOffToggleButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsOnOffToggleButton;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+                        XmdsNputOnApply;
+                        XmdsNshowPath;
+			};
+		};
+
+Resource
+	XmdsNshowPath : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+! define XmdsNidOptionMenu widget - Option menu of values
+Class
+	XmdsNidOptionMenu: Widget
+		{
+		SuperClass = XmOptionMenu;
+		ConvenienceFunction = XmdsCreateNidOptionMenu;
+                InternalLiteral = xmdsNidOptionMenu; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsNidOptionMenu;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+                        XmdsNputOnApply;
+                        XmdsNlabelStrings;
+                        XmdsNvalueStrings;
+                        ! reasons
+                        XmdsNresetCallback;
+                        XmdsNvalueChangedCallback;
+			};
+		};
+
+Resource
+	XmdsNlabelStrings : Argument
+		{ Type = string_table;
+		  Default = "Null"; };
+	XmdsNvalueStrings : Argument
+		{ Type = string_table;
+		  Default = "Null"; };
+	XmdsNresetCallback : Reason { };
+	XmdsNvalueChangedCallback : Reason { };
+
+! define XmdsExpr widget - Multi line expression widget
+Class
+	XmdsXdBox : Widget
+		{
+		SuperClass = "Constraint";
+		ConvenienceFunction = XmdsCreateXdBox;
+                InternalLiteral = xmdsXdBox; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsExpr;
+		Resources
+			{
+			! new resources
+			XmdsNdefaultNid;
+			XmdsNnid;
+			XmdsNnidOffset;
+			XmdsNshowButtons;
+			XmdsNusage;
+			XmdsNxd;
+			XmdsNautoDestroy;
+			XmdsNautoUnmanage;
+			XmdsNautoPut;
+			! reasons
+			XmdsNapplyCallback;
+			XmdsNcancelCallback;
+			XmdsNokCallback;
+			XmdsNresetCallback;
+			};
+		};
+
+Resource
+	XmdsNautoDestroy : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmdsNautoPut : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmdsNautoUnmanage : Argument
+		{ Type = boolean;
+		  Default = "False"; };
+	XmdsNshowButtons : Argument
+		{ Type = boolean;
+		  Default = "True"; };
+	XmdsNusage : Argument
+                { Type = integer;
+		  EnumerationSet = XmdsTreeUsage;
+                  Default = "TreeUSAGE_NUMERIC"; };
+
+	XmdsNapplyCallback : Reason { };
+	XmdsNcancelCallback : Reason { };
+	XmdsNokCallback : Reason { };
+
+Class
+	XmdsXdBoxDialog : Widget
+		{
+		SuperClass = XmdsXdBox;
+		ConvenienceFunction = XmdsCreateXdBoxDialog;
+                InternalLiteral = xmdsXdBoxDialog; ! Needed to force widgets after user_defined
+		DialogClass = True;
+		Resources
+			{
+			! new resources
+			! inherited resources
+			};
+		};
+
+! define XmdsXdBoxDialogButton widget - Popup XdBoxDialog button
+Class
+	XmdsXdBoxDialogButton: Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmdsCreateXdBoxDialogButton;
+                InternalLiteral = xmdsXdBoxDialogButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsXdBoxDialogButton;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+                        XmdsNputOnApply;
+			};
+		};
+
+! define XmdsXdBoxOnOffButton widget - Popup XdBoxOnOff button
+Class
+	XmdsXdBoxOnOffButton: Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmdsCreateXdBoxOnOffButton;
+                InternalLiteral = xmdsXdBoxOnOffButton; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsXdBoxOnOffButton;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+                        XmdsNputOnApply;
+			};
+		};
+
+! define ZmdsXdBoxOnOffButton widget - Popup XdBoxOnOff button
+Class
+	ZmdsXdBoxOnOffButton: Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = ZmdsCreateXdBoxOnOffButton;
+                InternalLiteral = zmdsXdBoxOnOffButton; ! Needed to force widgets after user_defined
+		WidgetClass = ZmdsXdBoxOnOffButton;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+                        XmdsNputOnApply;
+			};
+		};
+
+! define XmdsDigChans widget - CAMAC Digitizer Input Channels
+Class
+	XmdsDigChans : Widget
+		{
+		SuperClass = XmManager;
+		ConvenienceFunction = XmdsCreateDigChans;
+                InternalLiteral = xmdsDigChans; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsDigChans;
+		Resources
+			{
+			! new resources
+			XmdsNchannels; 
+			XmdsNnid;
+                        XmdsNnidOffset;
+			XmdsNdataNidOffset; 
+			XmdsNstartIdxNidOffset; 
+			XmdsNendIdxNidOffset;
+			XmdsNnodesPerChannel;
+                        XmdsNputOnApply;
+			};
+		};
+
+Resource
+	XmdsNchannels : Argument
+		{ Type = integer;
+		  Default = "4"; };
+	XmdsNdataNidOffset : Argument
+		{ Type = integer;
+		  Default = "0"; };
+	XmdsNstartIdxNidOffset : Argument
+		{ Type = integer;
+		  Default = "1"; };
+	XmdsNendIdxNidOffset : Argument
+		{ Type = integer;
+		  Default = "2";};
+	XmdsNnodesPerChannel : Argument
+		{ Type = integer;
+		  Default = "3";};
+
+! define Wavedraw widget - wave form drawing widget
+
+Class
+	XmdsWavedraw : Widget
+		{
+		SuperClass = XmdsWaveform;
+		ConvenienceFunction = XmdsCreateWavedraw;
+                InternalLiteral = xmdsWavedraw; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsWavedraw;
+		Resources
+			{
+			! new resources
+			XmdsNlowX;
+			XmdsNhighX;
+			XmdsNlowY;
+			XmdsNhighY;
+			XmdsNxMinDistance;
+			XmdsNyMinDistance;
+			XmdsNxIncreasing;
+			XmdsNyIncreasing;
+                        ! Callbacks
+			XmdsNmoveCallback;
+			XmdsNselectCallback;
+			XmdsNdeselectCallback;
+			XmdsNaddPointCallback;
+			XmdsNdeletePointCallback;
+			XmdsNfitCallback;
+			};
+		};
+
+Resource
+	XmdsNlowX : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNlowY : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNhighX : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNhighY : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNxMinDistance : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNyMinDistance : Argument
+                { Type = float;
+                  Default = "NULL"; };
+	XmdsNxIncreasing : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNyIncreasing : Argument
+                { Type = boolean;
+                  Default = "false"; };
+	XmdsNmoveCallback : Reason
+                { };
+	XmdsNselectCallback : Reason
+                { };
+	XmdsNdeselectCallback : Reason
+                { };
+	XmdsNaddPointCallback : Reason
+                { };
+	XmdsNdeletePointCallback : Reason
+                { };
+	XmdsNfitCallback : Reason
+                { };
+
+!Xmds path widgets
+
+Class
+	XmdsPath : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmdsCreatePath;
+                InternalLiteral = xmdsPath; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsPath;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+			XmdsNpathType;
+			};
+		};
+
+Resource
+	XmdsNpathType : Argument
+                { Type = integer;
+		  EnumerationSet = XmdsPathType;
+                  Default = "NciRELATIVE_PATH"; };
+
+
+!Xmds display widgets
+
+Class
+	XmdsDisplay : Widget
+		{
+		SuperClass = XmLabel;
+		ConvenienceFunction = XmdsCreateDisplay;
+                InternalLiteral = xmdsDisplay; ! Needed to force widgets after user_defined
+		WidgetClass = XmdsDisplay;
+		Resources
+			{
+			! new resources
+			XmdsNnid;
+                        XmdsNnidOffset;
+			};
+		};

@@ -29,11 +29,17 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
+all :	libXmdsShr.so \
+	xmdsuil.wmd
+
 libXmdsShr.so : $(OBJECTS)
 	ld -o $@ -shared -no_archive $(OBJECTS) \
              -lc -lm -L../mdsshr -lMdsShr \
                    -lots -L../tdishr -lTdiShr -L../treeshr -lTreeShr \
 		-lMrm -lXm -lXt -lX11
+
+xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
+	./wmdcreate-osf
 
 clean :
 	- rm *.o
