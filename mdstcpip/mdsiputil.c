@@ -16,6 +16,15 @@
 #endif
 
 static unsigned char message_id = 1;
+#ifndef NOCOMPRESSION
+static int UseCompression = 1;
+#define compress(a,b,c,d) -1
+#define uncompress(a,b,c,d) -1
+#else
+static int UseCompression = 0;
+extern int compress();
+extern int uncompress();
+#endif
 Message *GetMdsMsg(SOCKET sock, int *status);
 #ifdef _WIN32
 Message *GetMdsMsgOOB(SOCKET sock, int *status);
@@ -34,6 +43,7 @@ extern int inet_addr();
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif
+
 
 void SetSocketOptions(SOCKET s)
 {
@@ -143,10 +153,6 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp = NULL;
   struct servent *sp;
   static int one=1;
-/*
-  long sendbuf = 32768,recvbuf = 32768;
-*/
-  long sendbuf = 5000,recvbuf = 5000;
   int addr;
 
 #ifndef vxWorks
@@ -279,7 +285,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
-    m->h.client_type = 0;
+    m->h.client_type = SENDCAPABILITIES;
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
     m->h.dtype = DTYPE_CSTRING;
@@ -304,6 +310,8 @@ static SOCKET ConnectToPort(char *host, char *service)
           DisconnectFromMds(s);
           return INVALID_SOCKET;
         }
+		if (!SupportsCompression(m->h.status))
+			UseCompression = 0;
       }
     }
     else
@@ -437,25 +445,91 @@ static void FlushSocket(SOCKET sock)
   struct timeval timout = {0,1};
   int status;
   int nbytes;
+  int tries = 0;
   char buffer[1000];
   fd_set readfds, writefds;
   FD_ZERO(&readfds);
   FD_SET(sock,&readfds);
   FD_ZERO(&writefds);
   FD_SET(sock,&writefds);
-  while(((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds))
+  while((((status = select(FD_SETSIZE, &readfds, &writefds, 0, &timout)) > 0) && FD_ISSET(sock,&readfds)) ||
+	       (errno == EINTR))
   {
     nbytes = recv(sock, buffer, sizeof(buffer), 0);
+	if (nbytes <= 0)
+	{
+		tries++;
+		if (tries > 5) break;
+	}
+	else
+		tries = 0;
     timout.tv_usec = 100000;
     FD_CLR(sock,&writefds);
   }
 }
 
+static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
+{
+  int tries = 0;
+  while ((bytes_to_send > 0) && (tries < 10))
+  {
+	int bytes_sent;
+    int bytes_this_time = min(bytes_to_send,BUFSIZ);
+    bytes_sent = send(sock, bptr, bytes_to_send, oob ? MSG_OOB : 0);
+    if (bytes_sent <= 0)
+    {
+      if (errno != EINTR)
+        return 0;
+	  tries++;
+    }
+    else
+    {
+      bytes_to_send -= bytes_sent;
+      bptr += bytes_sent;
+	  tries = 0;
+    }
+  }
+  return 1;
+}
+
+static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+{
+  int tries = 0;
+  while (bytes_to_recv > 0 && (tries < 10))
+  {
+	int bytes_recv;
+    int bytes_this_time = min(bytes_to_recv,BUFSIZ);
+    bytes_recv = recv(sock, bptr, bytes_to_recv, oob ? MSG_OOB : 0);
+    if (bytes_recv <= 0)
+    {
+      if (errno != EINTR)
+        return 0;
+	  tries++;
+    }
+    else
+    {
+	  tries = 0;
+      bytes_to_recv -= bytes_recv;
+      bptr += bytes_recv;
+    }
+  }
+  return 1;
+}
+
 int SendMdsMsg(SOCKET sock, Message *m, int oob)
 {
-  char *bptr = (char *)m;
-  int bytes_to_send = m->h.msglen;
+  unsigned long len = m->h.msglen - sizeof(m->h);
+  unsigned long clength = 0; 
+  Message *cm = 0;
+  int status;
+  if (len > 0 && UseCompression && m->h.client_type != SENDCAPABILITIES)
+  {
+	  clength = len;
+	  cm = (Message *)malloc(m->h.msglen + 4);
+  }
   if (!oob) FlushSocket(sock);
+  if (m->h.client_type == SENDCAPABILITIES)
+	  m->h.status = SUPPORTS_COMPRESSION;
   if ((m->h.client_type & SwapEndianOnServer) != 0)
   {
     if (Endian(m->h.client_type) != Endian(ClientType()))
@@ -466,23 +540,18 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   }
   else
     m->h.client_type = ClientType();
-  while (bytes_to_send > 0)
+  if (clength && compress(cm->bytes+4,&clength,m->bytes,len) == 0 && clength < len)
   {
-    int bytes_this_time = min(bytes_to_send,BUFSIZ);
-    int bytes_sent;
-    bytes_sent = send(sock, bptr, bytes_to_send, oob);
-    if (bytes_sent <= 0)
-    {
-      if (errno != EINTR)
-        return 0;
-    }
-    else
-    {
-      bytes_to_send -= bytes_sent;
-      bptr += bytes_sent;
-    }
+	cm->h = m->h;
+	cm->h.client_type |= COMPRESSED;
+	memcpy(cm->bytes,&cm->h.msglen,4);
+	cm->h.msglen = clength + 4 + sizeof(MsgHdr);
+	status = SendBytes(sock, (char *)cm, cm->h.msglen, oob);
   }
-  return 1;
+  else
+	  status = SendBytes(sock, (char *)m, m->h.msglen, oob);
+  if (clength) free(cm);
+  return status;
 }
 
 static void FlipBytes(int n, char *ptr)
@@ -553,111 +622,52 @@ Message *GetMdsMsg(SOCKET sock, int *status)
   static MsgHdr header;
   static Message *msg = 0;
   int msglen = 0;
-/*
-  static struct timeval timer = {10,0};
-  int tablesize = FD_SETSIZE;
-*/
-  int nbytes;
-  int selectstat=0;
-  char *bptr = (char *)&header;
-  fd_set readfds;
-  fd_set exceptfds;
-  int bytes_remaining = sizeof(MsgHdr);
-  FD_ZERO(&readfds);
-  FD_SET(sock,&readfds);
-  FD_ZERO(&exceptfds);
-  FD_SET(sock,&exceptfds);
   *status = 0;
   if (msg)
   {
     free(msg);
     msg = 0;
   }
-/*
-#ifdef MULTINET
-  while (((msglen == 0) || bytes_remaining) && 
-          (lib$ast_in_prog() || ((selectstat = select(tablesize, &readfds, 0, &exceptfds, &timer)) > 0)))
-#else
-  while (((msglen == 0) || bytes_remaining) && 
-          ((selectstat = select(tablesize, &readfds, 0, &exceptfds, &timer)) != 0))
-#endif
-*/
-  while (bytes_remaining > 0)
+  *status = GetBytes(sock, (char *)&header, sizeof(MsgHdr), 0);
+  if (*status &1)
   {
-    unsigned short flags = 0;
-    if (selectstat == -1 && errno == 4) continue;
-    if (msglen == 0)
-    {
-      nbytes = recv(sock, bptr, bytes_remaining, flags);
-      if (nbytes == 0)
-      {
-        *status = 0;
-        return 0;
-      }
-      else if (nbytes > 0)
-      {
-        bytes_remaining -= nbytes;
-        bptr += nbytes;
-        if (bytes_remaining == 0)
-        {
-          if ( Endian(header.client_type) != Endian(ClientType()) ) FlipHeader(&header);
+    if ( Endian(header.client_type) != Endian(ClientType()) ) FlipHeader(&header);
 #ifdef DEBUG
-          printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+    printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
                header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
-          printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
+    printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
 #endif
-          if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
-          {
-            *status = 0;
-            return 0;
-          }  
-          msglen = header.msglen;
-          bytes_remaining = msglen - sizeof(MsgHdr);
-          msg = malloc(msglen);
-          msg->h = header;
-          bptr = msg->bytes;
-        }
-      }
-      else
-      {
-        if (errno != EINTR)
-	{
-          perror("MDSplus GETMSG recv error");
-          *status = 0;
-          return 0;
-        }
-      }
-    }
-    else
+    if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
-      int bytes_this_time = min(bytes_remaining,BUFSIZ);
-      nbytes = recv(sock, bptr, bytes_remaining, flags);
-#ifdef DEBUG
-      {int i;
-      for (i=0;i<nbytes;i++)
-        printf("byte(%d) = 0x%x\n",i,bptr[i]);
-      }
-#endif
-      if (nbytes > 0)
-      {
-        bytes_remaining -= nbytes;
-        bptr += nbytes;
-      }
-      else
-      {
-	*status = 0;
-        return 0;
-      }
-    }
-  }
-  if (msglen && !bytes_remaining)
-  {
-    if (Endian(header.client_type) != Endian(ClientType())) FlipData(msg);
-    *status = 1;
-  }
-  else
-  {
-    perror("Select problem");
+      *status = 0;
+      return 0;
+	}  
+    msglen = header.msglen;
+    msg = malloc(header.msglen);
+    msg->h = header;
+	*status = GetBytes(sock, msg->bytes, msglen - sizeof(MsgHdr), 0);
+	if (*status & 1 && IsCompressed(header.client_type))
+	{
+      Message *m;
+	  unsigned long dlen;
+	  memcpy(&msglen, msg->bytes, 4);
+      if (Endian(header.client_type) != Endian(ClientType()))
+        FlipBytes(4,(char *)&msglen);
+      m = malloc(msglen);
+      m->h = header;
+	  dlen = msglen - sizeof(MsgHdr);
+      *status = uncompress(m->bytes, &dlen, msg->bytes + 4, header.msglen - sizeof(MsgHdr) - 4) == 0;
+      if (*status & 1)
+	  {
+	    m->h.msglen = msglen;
+        free(msg);
+		msg = m;
+	  }
+	  else
+		free(m);
+	}
+	if (*status & 1 && (Endian(header.client_type) != Endian(ClientType())))
+		FlipData(msg);
   }
   return msg;
 }
@@ -672,16 +682,12 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 
   int tablesize = FD_SETSIZE;
 
-  int nbytes;
   int selectstat=0;
   char last;
-  char *bptr = (char *)&header;
   fd_set readfds;
   fd_set exceptfds;
-  int bytes_remaining = sizeof(MsgHdr);
-    unsigned short flags = MSG_OOB;
-	DWORD oob_data;
-	int stat;
+  DWORD oob_data;
+  int stat;
   FD_ZERO(&readfds);
   FD_SET(sock,&readfds);
   FD_ZERO(&exceptfds);
@@ -700,11 +706,10 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 	  *status = 0;
 	  return 0;
   }
-  nbytes = recv(sock, &last, 1, flags);
-  if (nbytes == SOCKET_ERROR) {
+  *status = GetBytes(sock, (char *)&last, 1, 1);
+  if (!(*status & 1)) {
       perror("GETMSGOOB first recv error");
       printf("errno = %d\n",errno);
-	  *status = 0;
 	  return 0;
   }
   stat = 	ioctlsocket(sock,SIOCATMARK,&oob_data);
@@ -714,80 +719,26 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 	  *status = 0;
 	  return 0;
   }
-  while (bytes_remaining > 1) 
+  *status = GetBytes(sock, (char *)&header, sizeof(MsgHdr), 0);
+  if (*status & 1) 
   {
-    if (selectstat == -1 && errno == 4) continue;
-    if (msglen == 0)
-    {
-        nbytes = recv(sock, bptr, bytes_remaining, 0);
-      if (nbytes == 0)
-	  { 
-        *status = 0;
-        return 0;
-      }
-      else if (nbytes > 0)
-      {
-        bytes_remaining -= nbytes;
-        bptr += nbytes;
-        if (bytes_remaining == 0)
-        {
-          if ( Endian(header.client_type) != Endian(ClientType()) ) FlipHeader(&header);
+	if (Endian(header.client_type) != Endian(ClientType()) )
+	  FlipHeader(&header);
 #ifdef DEBUG
-          printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
+    printf("msglen = %d\nstatus = %d\nlength = %d\nnargs = %d\ndescriptor_idx = %d\nmessage_id = %d\ndtype = %d\n",
                header.msglen,header.status,header.length,header.nargs,header.descriptor_idx,header.message_id,header.dtype);
-          printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
+    printf("client_type = %d\nndims = %d\n",header.client_type,header.ndims);
 #endif
-          if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
-          {
-            *status = 0;
-            return 0;
-          }  
-          msglen = header.msglen;
-          bytes_remaining = msglen - sizeof(MsgHdr);
-          msg = malloc(msglen);
-          msg->h = header;
-          bptr = msg->bytes;
-        }
-      }
-      else
-      {
-        perror("GETMSGOOB recv error");
-        printf("errno = %d\n",errno);
-      }
-    }
-    else
+    if (CType(header.client_type) > CRAY_CLIENT || header.ndims > MAX_DIMS)
     {
-      int bytes_this_time = min(bytes_remaining,BUFSIZ);
-      nbytes = recv(sock, bptr, bytes_remaining, 0);
-#ifdef DEBUG
-      {int i;
-      for (i=0;i<nbytes;i++)
-        printf("byte(%d) = 0x%x\n",i,bptr[i]);
-      }
-#endif
-      if (nbytes > 0)
-      {
-        bytes_remaining -= nbytes;
-        bptr += nbytes;
-      }
-      else
-      {
-	*status = 0;
-        return 0;
-      }
-    }
+      *status = 0;
+      return 0;
+    }  
+    msg = malloc(header.msglen);
+    msg->h = header;
+	*status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr), 0);
   }
-  if (msglen && (bytes_remaining==1))
-  {
-	*bptr = last;
-    if ( Endian(header.client_type) != Endian(ClientType()) ) FlipData(msg);
-    *status = 1;
-  }
-  else
-  {
-    perror("Select problem");
-  }
-  return msg;
+  return (*status & 1) ? msg : 0;
 }
 #endif
 

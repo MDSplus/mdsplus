@@ -134,9 +134,18 @@
 #define CRAY_CLIENT    8
 #define BigEndian      0x80
 #define SwapEndianOnServer 0x40
+#define COMPRESSED    0x20
+#define SENDCAPABILITIES 0xf
 #define LittleEndian   0
 #define Endian(c)  (c & BigEndian)
 #define CType(c)   (c & 0x0f)
+#define IsCompressed(c) (c & COMPRESSED)
+#ifndef NOCOMPRESSION
+#define SUPPORTS_COMPRESSION 0x8000
+#else
+#define SUPPORTS_COMPRESSION 0
+#endif
+#define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
 
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
