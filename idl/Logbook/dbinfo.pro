@@ -36,6 +36,10 @@
 ;  An environment variable SYBASE_HOST must contain the name of
 ;  your SQLSERVER database server.
 ;
+;  Jeff Schachter 7/31/2000: do not use USER environment variable as
+;  user can override its value, and thus pretend to be someone else.
+;  Instead, use Unix shell command 'whoami',
+;
 function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   SQL
   dbtype ="SYBASE"
@@ -43,7 +47,9 @@ function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   if (strlen(host) eq 0) then host = "RED"
   catch, err
   if (err ne 0) then begin
-    dbuser=getenv("USER")
+    spawn,'\whoami',result
+    dbuser = result[0]
+    ;dbuser=getenv("USER")
     dbpass="PFCWORLD"
     conn = ["USE "+dbname, "SET TEXTSIZE 8192"]
     return, 1
