@@ -61,20 +61,6 @@ pro mdstcl_close_tree,tree,shot
   x=mds$value('treeshr->tree$close_tree($,$)',tree,shot)
 end
 
-pro mdstcl_auto_load,shot
-  cd,current=curdir
-  print,'Loading shot: ',shot 
-  cd,'$MDSROOT/tree/neutrals/gasflow'
-  load_gasflow,shot
-  cd,'$MDSROOT/tree/neutrals/pressure'
-  load_pressure,shot
-  cd,'$MDSROOT/tree/nb'
-  load_nb,shot
-  cd,'$MDSROOT/tree/spectroscopy/phd'
-  load_phd,shot
-  cd,curdir
-end
-
 function mdstcl_check_pulse,tree,shot,ask=ask
 
   forward_function mdstcl_create_pulse
@@ -175,14 +161,14 @@ pro mdstcl_use_ptdata,node,tag
   mds$put,node,cmd
 end
 
-pro mdstcl_put_1Dsignal,node,signal,sigunits,time,timeunits,timeexp=timeexp
+pro mdstcl_put_1Dsignal,node,signal,sigunits,time,timeunits,timeexp=timeexp,status=status
   cmd='BUILD_SIGNAL(BUILD_WITH_UNITS($,$),,'
   if (keyword_set(timeexp)) then begin
     cmd=cmd+timeexp+')'
-    mds$put,node,cmd,signal,sigunits
+    mds$put,node,cmd,signal,sigunits,status=status
   endif else begin
     cmd=cmd+'BUILD_WITH_UNITS($,$))'
-    mds$put,node,cmd,signal,sigunits,time,timeunits
+    mds$put,node,cmd,signal,sigunits,time,timeunits,status=status
   endelse
 end
 
