@@ -9,6 +9,11 @@ mv mdsplus mdsplus-$rev
 find . -name CVS -exec rm -Rf {} \; 2> /dev/null
 tar cf $HOME/rpm/SOURCES/mdsplus-$rev.tar mdsplus-$rev 
 gzip -f $HOME/rpm/SOURCES/mdsplus-$rev.tar
-rpm -ba mdsplus-$rev/rpm/mdsplus.rpm.spec
+if (test "$GLOBUS_LOCATION" = "")
+then
+  rpm -ba mdsplus-$rev/rpm/mdsplus.rpm.spec
+else
+  rpm -ba mdsplus-$rev/rpm/mdsplus-globus.rpm.spec
+fi
 cd $HOME
 rm -Rf mdskit
