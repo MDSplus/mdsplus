@@ -36,6 +36,7 @@ int TreeGetCurrentShotId(experiment,shot)
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();
+extern char *MaskReplace();
 #ifndef index
 extern char *index();
 #endif
@@ -69,6 +70,7 @@ static char *GetFileName(char *experiment,char **ctx)
     part = *ctx;
   if (part != NULL)
   {
+    char *tmp;
     if ((semi = (char *)index(part, ';')) != 0)
       *semi = '\0';
     strncpy(pathname,part,500);
@@ -82,7 +84,9 @@ static char *GetFileName(char *experiment,char **ctx)
     strcat(pathname,"/");
 #endif
     strcat(pathname,"shotid.sys");
-    MaskReplace(pathname,experiment,0);
+    tmp = MaskReplace(pathname,experiment,0);
+    strcpy(pathname,tmp);
+    free(tmp);
     ans = pathname;
   }
   return ans;

@@ -642,8 +642,9 @@ int _TreeSetStackSize(void **dbid, int size)
 static char TreeMask[13] = "TREE";
 static char ShotMask[11] = "JIHGFEDCBA";
 
-void MaskReplace(char *path,char *tree,int shot)
+char *MaskReplace(char *path_in,char *tree,int shot)
 {
+  char *path = strcpy(malloc(strlen(path_in)+1),path_in);
   char ShotMask[13];
   char *tilde;
   if (shot > 0)
@@ -652,7 +653,7 @@ void MaskReplace(char *path,char *tree,int shot)
     memset(ShotMask,'X',10);
   for(tilde=(char *)index(path, '~'); tilde != 0; tilde=(char *)index(path, '~'))
   {
-    char *tmp;
+    char *tmp,*tmp2;
     switch (tilde[1])
     {
     case 'a':  tilde[0]=ShotMask[11]; strcpy(&tilde[1],&tilde[2]); break;
@@ -666,12 +667,17 @@ void MaskReplace(char *path,char *tree,int shot)
     case 'i':  tilde[0]=ShotMask[3]; strcpy(&tilde[1],&tilde[2]); break;
     case 'j':  tilde[0]=ShotMask[2]; strcpy(&tilde[1],&tilde[2]); break;
     case 't':  tmp = strcpy(malloc(strlen(tilde+2)+1),tilde+2);
-               strcpy(tilde+strlen(tree), tmp);
+               tmp2 = strcpy(malloc(strlen(path)+1+strlen(tree)),path);
+               strcpy(tmp2 +(tilde-path)+strlen(tree), tmp);
                free(tmp);
-               strncpy(tilde,tree,strlen(tree)); break;
+               strncpy(tmp2+(tilde-path),tree,strlen(tree)); 
+               free(path);
+               path=tmp2;
+               break;
     default: path=tilde+1;
     }
   }
+  return path;
 }  
 
 
@@ -706,10 +712,10 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
 	{
 		char *part;
 		int pathlen = strlen(path);
-		char *npath = strcpy(malloc(pathlen+1+strlen(tree_lower)),path);
+		char *npath;
+                npath = MaskReplace(path,tree_lower,shot);
 		TranslateLogicalFree(path);
 		path = npath;
-                MaskReplace(path,tree_lower,shot);
                 pathlen = strlen(path);
 		if (shot < 0)
 			sprintf(name,"%s_model",tree_lower);
