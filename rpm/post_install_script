@@ -3,7 +3,7 @@ if ( test "$RPM_INSTALL_PREFIX" != "")
 then
   MDSPLUS_DIR=$RPM_INSTALL_PREFIX/mdsplus
 else
-  if [ -r /etc/.mdsplus_dir]
+  if [ -r /etc/.mdsplus_dir ]
   then
     MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
   else
@@ -22,7 +22,18 @@ then
   echo "MDSplus is now installed on your system. If you would like to"
   echo "have MDSplus environment variables setup for all users or"
   echo "install an MDSplus data server on your system please execute"
-  echo "$MDSPLUS_DIR/rpm/post_install_scrip"
+  echo "$MDSPLUS_DIR/rpm/post_install_script"
+  echo ""
+  echo "If you choose not to setup the MDSplus environment variables"
+  echo "for all users you will need to do one of the following commands"
+  echo "based on the shell you are using before executing any of the"
+  echo "MDSplus utilities:"
+  echo ""
+  echo ". $MDSPLUS_DIR/setup.sh"
+  echo ""
+  echo "or"
+  echo ""
+  echo "source $MDSPLUS_DIR/setup.csh"
   echo ""
   exit 0
 fi 
@@ -307,3 +318,5 @@ if [ ! -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script ]
 then
   cp $MDSPLUS_DIR/rpm/post_uninstall_script $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 fi
+unset MDSplusEnv
+unset MDSplusSrv
