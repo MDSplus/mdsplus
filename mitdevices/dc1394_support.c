@@ -153,6 +153,7 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
   DC1394Bus *Bus;
   DC1394Capture *Cam;
   int i;
+  int iso;
 
   if (Busses == NULL)
     Busses = Find1394Busses();
@@ -193,8 +194,8 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
                            Cam->misc_info.iso_channel, /* channel */ 
                            FORMAT_VGA_NONCOMPRESSED,
                            MODE_640x480_MONO,
-                           SPEED_400,
-                           FRAMERATE_30,
+                           iso_speed,
+                           frame_rate,
 			   10, /* frames */
 			   1,
                            Cam->dev_filename, 
@@ -221,6 +222,32 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
      fprintf(stderr, "unable to set trigger on to %d\n", trig_on);
    }
 
+   /* set the shutter */
+   if (shutter == 0) {
+     if (dc1394_auto_on_off(Cam->handle, Cam->camera_info.id, FEATURE_SHUTTER, 1) != DC1394_SUCCESS) {
+       fprintf(stderr, "unable to set shutter to auto\n");
+     }
+   }else {
+     if (dc1394_auto_on_off(Cam->handle, Cam->camera_info.id, FEATURE_SHUTTER, 0) != DC1394_SUCCESS) {
+       fprintf(stderr, "unable to set shutter to manual\n");
+     }
+     if(dc1394_set_shutter(Cam->handle, Cam->camera_info.id, shutter) != DC1394_SUCCESS) { 
+       fprintf(stderr, "unable to set shutter to %d\n", shutter);
+     }
+   }
+   /* and the gain */
+   if (gain == 0) {
+     if (dc1394_auto_on_off(Cam->handle, Cam->camera_info.id, FEATURE_GAIN, 1) != DC1394_SUCCESS) {
+       fprintf(stderr, "unable to set gain to auto\n");
+     }
+   }else {
+     if (dc1394_auto_on_off(Cam->handle, Cam->camera_info.id, FEATURE_GAIN, 0) != DC1394_SUCCESS) {
+       fprintf(stderr, "unable to set gain to manual\n");
+     }
+     if(dc1394_set_gain(Cam->handle, Cam->camera_info.id, gain) != DC1394_SUCCESS) { 
+       fprintf(stderr, "unable to set gain to %d\n", gain);
+     }
+   }
 
   /* make room for the answers and write down all of the knobs for later use */
   if ( (width != Cam->width) ||
