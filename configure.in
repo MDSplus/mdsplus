@@ -336,6 +336,38 @@ dnl          -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable
        SHARETYPE=".so";;
 esac
 
+dnl see if we are going to build the dc1394_support devices
+AC_MSG_CHECKING("libdb1394 - firewire camera support library")
+AC_ARG_WITH(libdc1394,
+	[  --with-libdc1394=location  compile the libdc1394 digital camera support stuff],
+	LIBDC1394="$withval"
+	if test "$LIBDC1394" = "yes"
+	then
+	  cat <<EOF
+You need to provide the location of the libdc1394 software and include files
+
+EOF
+	  exit
+        else
+         echo "LIBDC1394 is /$LIBDC1394/"
+	fi
+        if test -d /usr/local/include/libraw1394/
+	then
+	  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
+          echo "DC1394_SUPPORT=$DC1394_SUPPORT"
+        else cat <<EOF
+The libraw1394 package must be available on the sytem in order to compile and link the libdc1394
+support code.  It can be gotten from : http://www.linux1394.org/  
+
+libdc1394 support disabled.
+EOF
+	  DC1394_SUPPORT=""
+	fi
+	,
+	DC1394_SUPPORT=""
+
+)
+
 dnl Checks for programs.
 AC_PROG_RANLIB
 AC_MSG_CHECKING(for ps sysv style arguments)
@@ -730,6 +762,8 @@ AC_SUBST(uiddir)
 AC_SUBST(USE_SEMAPHORE_H)
 AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
+AC_SUBST(LIBDC1394)
+AC_SUBST(DC1394_SUPPORT)
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile 
