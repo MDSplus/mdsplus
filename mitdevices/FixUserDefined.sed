@@ -28,3 +28,17 @@ s/XmdsOnOffToggleButton widget/user_defined procedure XmdsCreateOnOffToggleButto
 s/XmdsPath widget/user_defined procedure XmdsCreatePath/g
 s/XmdsWaveform widget/user_defined procedure XmdsCreateWaveform/g
 s/XmdsWavedraw widget/user_defined procedure XmdsCreateWavedraw/g
+s/XmdsExprField/user_defined/g
+s/XmdsExpr/user_defined/g
+s/XmdsDigChans/user_defined/g
+s/XmdsXdBoxOnOffButton/user_defined/g
+s/XmdsOkButton/user_defined/g
+s/XmdsCancelButton/user_defined/g
+s/XmdsResetButton/user_defined/g
+s/XmdsApplyButton/user_defined/g
+s/XmdsXdBoxDialogButton/user_defined/g
+s/XmdsNidOptionMenu/user_defined/g
+s/XmdsOnOffToggleButton/user_defined/g
+s/XmdsPath/user_defined/g
+s/XmdsWaveform/user_defined/g
+s/XmdsWavedraw/user_defined/g

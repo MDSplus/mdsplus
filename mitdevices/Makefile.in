@@ -26,6 +26,7 @@ UIDS = \
 @MAKEUIDDIR@B5910A.uid \
 @MAKEUIDDIR@CHS_A14.uid \
 @MAKEUIDDIR@DT101.uid \
+@MAKEUIDDIR@DT196.uid \
 @MAKEUIDDIR@DT200.uid \
 @MAKEUIDDIR@DT_ACQ16.uid \
 @MAKEUIDDIR@DT200DA.uid \
@@ -258,7 +259,7 @@ b5910a_gen.c : b5910a.gen
 	rm b5910a_gentmp.c
 
 dsp2904_gen.c : dsp2904.gen
-	../bin/gen_device dsp2904.gen sx _gentmp
+	../bin/gen_device dsp2904.gen sxa _gentmp
 	echo '#include <mitdevices_msg.h>' | cat - dsp2904_gentmp.c > dsp2904_gen.c
 	rm dsp2904_gentmp.c
 
@@ -338,7 +339,7 @@ j1819_gen.c : j1819.gen
 	rm j1819_gentmp.c
 
 j221_gen.c : j221.gen
-	../bin/gen_device j221.gen sx _gentmp
+	../bin/gen_device j221.gen sxa _gentmp
 	echo '#include <mitdevices_msg.h>' | cat - j221_gentmp.c > j221_gen.c
 	rm j221_gentmp.c
 
@@ -573,7 +574,7 @@ paragon_rpt_gen.c : paragon_rpt.gen
 	rm paragon_rpt_gentmp.c
 
 preamp_gen.c : preamp.gen
-	../bin/gen_device preamp.gen sx _gentmp
+	../bin/gen_device preamp.gen sxa _gentmp
 	echo '#include <mitdevices_msg.h>' | cat - preamp_gentmp.c > preamp_gen.c
 	rm preamp_gentmp.c
 
@@ -660,6 +661,7 @@ MitDevices.exports: MitDevices.def
 @MAKEUIDDIR@B5910A.uid : B5910A.uil ; $(UIL) -o @MAKEUIDDIR@B5910A.uid B5910A.uil
 @MAKEUIDDIR@CHS_A14.uid : CHS_A14.uil ; $(UIL) -o @MAKEUIDDIR@CHS_A14.uid CHS_A14.uil
 @MAKEUIDDIR@DT101.uid : DT101.uil ; $(UIL) -o @MAKEUIDDIR@DT101.uid DT101.uil
+@MAKEUIDDIR@DT196.uid : DT196.uil ; $(UIL) -o @MAKEUIDDIR@DT196.uid DT196.uil
 @MAKEUIDDIR@DT200.uid : DT200.uil ; $(UIL) -o @MAKEUIDDIR@DT200.uid DT200.uil
 @MAKEUIDDIR@DT200DA.uid : DT200DA.uil ; $(UIL) -o @MAKEUIDDIR@DT200DA.uid DT200DA.uil
 @MAKEUIDDIR@DT_ACQ16.uid : DT_ACQ16.uil ; $(UIL) -o @MAKEUIDDIR@DT_ACQ16.uid DT_ACQ16.uil
