@@ -62,9 +62,10 @@ static int dtype_length(struct descriptor *d)
 {
   short len;
 
-  /*  This function only needs to handle the DTYPE values in ipdesc.h.
-   *  The conversion to native floating/double/complex DTYPE is done in descr()
-   *  AFTER this function is called.
+  /*  This function needs to handle the DTYPE values in ipdesc.h as well 
+   *  as the "native" DTYPEs, as it is called both for descriptors before
+   *  evaluation, and for the answer descriptor, which for local access will
+   *  be returned with native DTYPE.
    */
 
   switch (d->dtype)
@@ -77,9 +78,13 @@ static int dtype_length(struct descriptor *d)
     case DTYPE_LONG      :  len = sizeof(int); break;
     case DTYPE_ULONGLONG : 
     case DTYPE_LONGLONG  :  len = sizeof(int) * 2; break; 
+    case DTYPE_NATIVE_FLOAT : 
     case DTYPE_FLOAT     :  len = sizeof(float); break;
+    case DTYPE_NATIVE_DOUBLE :
     case DTYPE_DOUBLE    :  len = sizeof(double); break;
+    case DTYPE_FLOAT_COMPLEX :
     case DTYPE_COMPLEX   :  len = sizeof(float) * 2; break;
+    case DTYPE_DOUBLE_COMPLEX :
     case DTYPE_COMPLEX_DOUBLE: len = sizeof(double) * 2; break;
     case DTYPE_CSTRING :  len = d->length ? d->length : (d->pointer ? strlen(d->pointer) : 0); break;
   }
