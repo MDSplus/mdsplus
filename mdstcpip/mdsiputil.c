@@ -648,7 +648,7 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
   return status;
 }
 
-static void FlipBytes(int n, char *ptr)
+/* static void FlipBytes(int n, char *ptr)
 {
   int i;
   for (i=0;i<n/2;i++)
@@ -657,6 +657,19 @@ static void FlipBytes(int n, char *ptr)
     ptr[i] = ptr[n - i - 1];
     ptr[n - i - 1] = tmp;
   }
+}
+*/
+#define FlipBytes(num,ptr) \
+{\
+  int __i;\
+  int __n = num;\
+  char *__p = ptr;\
+  for (__i=0;__i<__n/2;__i++)\
+  {\
+    char __tmp = __p[__i];\
+    __p[__i] = __p[__n - __i -1];\
+    __p[__n - __i - 1] = __tmp;\
+  }\
 }
   
 static void FlipHeader(MsgHdr *header)
