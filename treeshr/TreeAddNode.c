@@ -635,10 +635,10 @@ static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
   TREE_HEADER out = *hdr;
   char flags = (hdr->sort_children ? 1 : 0) | (hdr->sort_members ? 2 : 0);
   *(char *)&out = flags;
-  out.free = swapint(hdr->free);
-  out.tags = swapint(hdr->tags);
-  out.externals = swapint(hdr->externals);
-  out.nodes = swapint(hdr->nodes);
+  out.free = swapint((char *)&hdr->free);
+  out.tags = swapint((char *)&hdr->tags);
+  out.externals = swapint((char *)&hdr->externals);
+  out.nodes = swapint((char *)&hdr->nodes);
   return &out;
 }
 #endif
