@@ -1,5 +1,890 @@
-Version 1.7-0
+Version 1.7-1
 
+
+2005-01-30 12:49  twf
+
+	* javascope/Makefile.in:
+	
+	Need to build docs before jScope.jar
+
+2005-01-27 11:10  twf
+
+	* javascope/Makefile.in:
+	
+	Need to make parent directories first
+
+2005-01-27 11:05  twf
+
+	* roam/Makefile.in:
+	
+	Makefile.in
+
+2005-01-26 17:07  jas
+
+	* tdi/MitDevices/: Dt196GetPostSamples.fun, Dt196Init.fun,
+	Dt216GetPostSamples.fun, Dt216GetPreSamples.fun,
+	dc1394__load_image.fun, dt216__store.fun:
+	
+	update the d-taq drivers add a load_image method for the cameras
+
+2005-01-26 11:23  manduchi
+
+	* javadispatcher/MdsServer.java:
+	
+	hopefully fix the race condition
+
+2005-01-26 10:10  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix race conditions and increase max active events to 50000
+
+2005-01-26 09:19  manduchi
+
+	* javadispatcher/MdsHelper.java:
+	
+	Try to avoid a race condition
+
+2005-01-26 08:27  manduchi
+
+	* javadispatcher/MdsServer.java:
+	
+	Test message
+
+2005-01-24 11:54  manduchi
+
+	* tdi/RfxDevices/RFXGClock__init.fun:
+	
+	Make clock description more precise
+
+2005-01-24 05:06  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Re-organize fields
+
+2005-01-21 16:31  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Allow tree_path=ALIAStree
+
+2005-01-21 14:44  twf
+
+	* html/index.php:
+	
+	Allow missing open keyword
+
+2005-01-21 14:04  twf
+
+	* html/toc.php:
+	
+	dont refer to index.php
+
+2005-01-21 13:58  twf
+
+	* html/toc.php:
+	
+	dont refer to index.php
+
+2005-01-21 13:54  twf
+
+	* html/: index.html, index.php, toc.php:
+	
+	Fix bookmarking problem
+
+2005-01-21 12:11  manduchi
+
+	* tdi/RfxDevices/bfm_ftheta.fun:
+	
+	User function
+
+2005-01-21 12:04  twf
+
+	* html/toc.php:
+	
+	Take out debug output
+
+2005-01-21 11:41  twf
+
+	* html/: heading.shtml, index.html, index.xml, menu.shtml, toc.php,
+	documentation/index.xml, documentation/menu.shtml,
+	documentation/beginners/index.xml,
+	documentation/beginners/menu.shtml,
+	documentation/reference/index.xml,
+	documentation/reference/menu.shtml,
+	documentation/tutorial/index.xml,
+	documentation/tutorial/menu.shtml, documentation/users/index.xml,
+	documentation/users/menu.shtml, intro/index.xml, intro/menu.shtml,
+	links/index.xml, links/menu.shtml, projects/index.xml,
+	projects/menu.shtml, software/index.xml, software/menu.shtml:
+	
+	Add new menu feature
+
+2005-01-21 08:41  manduchi
+
+	* tdi/baseline.fun:
+	
+	Improved: allows also the definition of a time range for computing
+	offset
+
+2005-01-21 05:51  manduchi
+
+	* javatraverser/: ByteArray.java, RFXControlSetup.java:
+	
+	Change labels, add method getByteArray()
+
+2005-01-21 05:50  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Mode models
+
+2005-01-20 13:39  twf
+
+	* roam/roam.php:
+	
+	The roam web page
+
+2005-01-20 11:04  manduchi
+
+	* tdi/: baseline.fun, integrate.fun:
+	
+	Baseline and integration functions
+
+2005-01-20 04:35  manduchi
+
+	* javatraverser/BOLOSetup.java:
+	
+	Modify frequency setup modality
+
+2005-01-20 04:34  manduchi
+
+	* tdi/RfxDevices/: BOLO__init.fun, BOLO__store.fun,
+	TomoErrorMsg.fun:
+	
+	Modify frequency setup list values
+
+2005-01-19 13:46  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	reuse orphaned fifos
+
+2005-01-19 12:13  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Use fifos for events on linux
+
+2005-01-19 09:42  manduchi
+
+	* tdi/RfxDevices/TOMOSetup__add.fun:
+	
+	Tomography timing setup device
+
+2005-01-19 09:29  manduchi
+
+	* javatraverser/TOMOSetupSetup.java:
+	
+	Tomography timing configuration
+
+2005-01-18 11:33  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Aestethic changes
+
+2005-01-18 11:23  manduchi
+
+	* javatraverser/SXCSetup.java:
+	
+	Rename form DSXM to SXC
+
+2005-01-18 11:21  manduchi
+
+	* javatraverser/: DSXMSetup.java, LoadPulse.java, Makefile.in:
+	
+	rename ti SXC device
+
+2005-01-18 11:16  manduchi
+
+	* javatraverser/: BOLOSetup.java, DSXMSetup.java, XRAYSetup.java:
+	
+	Add tomography setup
+
+2005-01-18 10:25  twf
+
+	* mdsip_xio/mdsipsd:
+	
+	Take out debugging
+
+2005-01-17 11:38  manduchi
+
+	* tdi/RfxDevices/: BCGetError.fun, BCGetGain.fun,
+	BCGetResistance.fun, BCGetTauEl.fun, BCGetTauOpt.fun,
+	BCGetUmeas.fun, BCGetUref.fun, BOLO__add.fun, BOLO__init.fun,
+	BOLO__reset.fun, BOLO__store.fun, BOLO__zero.fun,
+	BoloChMapping.fun, BoloGetCalibValues.fun, BoloHWInit.fun,
+	BoloHWReset.fun, BoloHWZero.fun, BoloHwStartAcq.fun, BoloInit.fun,
+	TomoAmpId.fun, TomoAmpRack.fun, TomoAmpType.fun, TomoChanId.fun,
+	TomoChanIsActive.fun, TomoDiode.fun, TomoErrorMsg.fun,
+	TomoGPIBChan.fun, TomoGPIBSlot.fun, TomoTest.fun, TomoVMEChan.fun,
+	TomoVMERack.fun, TomoVMESlot.fun, XRAY__add.fun, XRAY__init.fun,
+	XRAY__reset.fun, XRAY__store.fun, XRAY__zero.fun,
+	XrayChMapping.fun, XrayGetCalibValues.fun, XrayHWInit.fun,
+	XrayHWReset.fun, XrayHWZero.fun, XrayHwStartAcq.fun,
+	XrayTrImpCheck.fun, vt10GetData.fun:
+	
+	Add Tomography devices
+
+2005-01-17 07:52  manduchi
+
+	* javatraverser/EM_EQU_TESTSetup.java:
+	
+	Fix nid
+
+2005-01-14 08:55  manduchi
+
+	* javatraverser/LoadPulse.java:
+	
+	Fix default nids
+
+2005-01-13 12:55  manduchi
+
+	* javadispatcher/MdsMonitorEvent.java:
+	
+	More synchronized methods
+
+2005-01-13 12:46  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Change label
+
+2005-01-13 04:14  manduchi
+
+	* javascope/: LocalDataProvider.java, MultiWaveform.java,
+	Waveform.java:
+	
+	Print crosshai in Point mode
+
+2005-01-12 15:01  jas
+
+	* tdi/MitDevices/: Dt196Init.fun, Dt196ReadChannel.fun,
+	Dt196SetRoute.fun, Dt200GetPostSamples.fun, Dt200WriteMaster.fun,
+	Dt216Init.fun, b5910a.fun, dt196__store.fun, dt216__store.fun,
+	dt_acq16__store.fun:
+	
+	Update the d-tacq 2G software
+
+2005-01-12 11:38  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Change RFXControl structure
+
+2005-01-12 11:30  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Fix
+
+2005-01-12 11:09  manduchi
+
+	* javadispatcher/: Action.java, jDispatcher.java:
+	
+	Race condition fixes
+
+2005-01-12 11:08  manduchi
+
+	* javatraverser/: DeviceTable.java, LoadPulse.java, Makefile.in,
+	RFXControlSetup.java, TR10Setup.java:
+	
+	Added Load Pulse utility for copying into model the configuration
+	of a given shot
+
+2005-01-12 05:44  manduchi
+
+	* javadispatcher/jDispatchMonitor.java:
+	
+	Fix
+
+2005-01-12 03:28  manduchi
+
+	* treeshr/RemoteAccess.c:
+	
+	Avoid wrong link to MdsValue
+
+2005-01-11 14:52  twf
+
+	* roam/: Makefile.in, roam_check_access.sh:
+	
+	Add roam_check_access script
+
+2005-01-11 13:18  twf
+
+	* roam/README:
+	
+	Add README file
+
+2005-01-11 13:17  twf
+
+	* tdi/roam/cstring.fun:
+	
+	Needed for check_access.fun
+
+2005-01-11 13:17  twf
+
+	* tdi/roam/: check_access.fun, check_access_callout.fun,
+	check_access_file.fun, check_access_jobmanager.fun:
+	
+	common logic for gridmap callouts
+
+2005-01-11 11:44  twf
+
+	* roam/roam_gridmap_callout.c:
+	
+	Take out unnecessary includes
+
+2005-01-11 11:43  twf
+
+	* roam/: Makefile.in, roam_check_access.c:
+	
+	Use libcurl instead of xio for https
+
+2005-01-10 05:54  manduchi
+
+	* javatraverser/EM_FLU_TESTSetup.java:
+	
+	Fix
+
+2005-01-10 04:11  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, EM_EQU_TESTSetup.java,
+	EM_FLU_TESTSetup.java, EM_GAINSetup.java:
+	
+	Electomangnetic Fluctuation Test Setup
+
+2005-01-10 04:07  manduchi
+
+	* tdi/RfxDevices/: EM_FLU_TEST__add.fun, EM_FLU_TEST__init.fun:
+	
+	Electromagnetic fluctuation test
+
+2005-01-07 14:22  twf
+
+	* roam/roam_check_access.c:
+	
+	fix gsi
+
+2005-01-07 10:50  twf
+
+	* idlmdsevent/mdsevent.c:
+	
+	fix last patch to make it compile on linux
+
+2005-01-05 08:47  manduchi
+
+	* javatraverser/DFLUSetupSetup.java:
+	
+	Fix
+
+2005-01-05 08:30  manduchi
+
+	* javatraverser/DFLUSetupSetup.java:
+	
+	Fix
+
+2005-01-05 05:50  manduchi
+
+	* tdi/RfxDevices/DFLUSetup__add.fun:
+	
+	Add DFLU acquisition configuration device
+
+2005-01-05 05:44  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, DFLUSetupSetup.java:
+	
+	Fix & add DFLU acquisition configuration
+
+2005-01-05 05:01  manduchi
+
+	* javatraverser/: Data.java, Database.java, FLU_GAINSetup.java,
+	Makefile.in:
+	
+	Fix loadLybrary shared library name
+
+2005-01-04 10:07  manduchi
+
+	* javatraverser/: CAMERASetup.java, Data.java, Database.java,
+	FLU_GAINSetup.java, Node.java:
+	
+	Add setup for Electromagnetic Gain Device
+
+2005-01-04 10:05  manduchi
+
+	* tdi/RfxDevices/: FLU_GAIN__add.fun, FLU_GAIN__init.fun:
+	
+	Add method for Electromagnetic gain device
+
+2004-12-31 09:02  manduchi
+
+	* javascope/: jScope.java, jScopeWaveContainer.java:
+	
+	Test print on Linux
+
+2004-12-31 05:59  manduchi
+
+	* javascope/: RowColumnContainer.java, RowColumnLayout.java,
+	WavePopup.java, WaveformContainer.java, WaveformManager.java,
+	jScope.java, jScopeWaveContainer.java:
+	
+	Fix Print & Save configuration bug
+
+2004-12-29 16:50  jas
+
+	* tdi/MitDevices/: dc1394__init.fun, dc1394__store.fun:
+	
+	fix up gain and shutter etc...
+
+2004-12-29 16:49  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	add gain and shutter and iso support
+
+2004-12-28 16:30  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	find the cameras on the buses
+
+2004-12-28 09:54  manduchi
+
+	* tdi/RfxDevices/: ACQD265__pre_init.fun, LASER_ND__dump.fun,
+	LASER_ND__init.fun, LASER_ND__store.fun:
+	
+	Fix Laser Neodimium
+
+2004-12-28 04:24  manduchi
+
+	* tdi/RfxDevices/CAMERA__pulse.fun:
+	
+	Substitute by arm operation
+
+2004-12-28 04:21  manduchi
+
+	* tdi/RfxDevices/CAMERA__arm.fun:
+	
+	Change pulse method with add
+
+2004-12-28 03:12  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Add CAMERASetup.java
+
+2004-12-28 03:08  manduchi
+
+	* javatraverser/CAMERASetup.java:
+	
+	Add camera setup
+
+2004-12-28 03:07  manduchi
+
+	* tdi/RfxDevices/: CAMERA__add.fun, CAMERA__init.fun,
+	CAMERA__store.fun:
+	
+	Modify Camera device operation
+
+2004-12-24 04:44  manduchi
+
+	* javatraverser/: DispatchEditor.java, RFXParametersSetup.java:
+	
+	Minor fixes
+
+2004-12-24 04:43  manduchi
+
+	* javadispatcher/: jDispatcher.java, jDispatcher.properties,
+	jServer.java:
+	
+	Fix dependencies
+
+2004-12-23 09:39  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, l6810__abort.fun,
+	l6810__reset.fun:
+	
+	Added reset and abort for l6810
+
+2004-12-22 10:05  manduchi
+
+	* javascope/: LocalDataProvider.java, MdsDataProvider.java:
+	
+	Fix unhandled exception when giving wrong X axis
+
+2004-12-17 16:25  jas
+
+	* idlmdsevent/mdsevent.c:
+	
+	move the windows event/thread stuff from mdsipshr.c to here
+
+2004-12-17 16:24  jas
+
+	* mdstcpip/: mdsipshr.c, mdsipshr.def:
+	
+	move the windows event/thread stuff to the caller (idlmdsevent)
+
+2004-12-17 09:34  manduchi
+
+	* tdi/RfxDevices/: CAMERAReadFrames.fun, CAMERA__add.fun,
+	CAMERA__init.fun, CAMERA__pulse.fun, CAMERA__store.fun,
+	TCPRecvData.fun:
+	
+	Add Video Camera device and fix TCP read data
+
+2004-12-16 12:03  manduchi
+
+	* tdi/RfxDevices/: ACQD265__pre_init.fun, LASER_ND__init.fun:
+	
+	Mod
+
+2004-12-16 11:49  manduchi
+
+	* javatraverser/IPC901Setup.java:
+	
+	Added RESET option
+
+2004-12-16 11:29  manduchi
+
+	* javadispatcher/: InfoServer.java, jDispatcher.java, jServer.java:
+	
+	Nice exit  for jServer
+
+2004-12-16 11:26  manduchi
+
+	* javatraverser/IPC901Setup.java:
+	
+	Minor fix
+
+2004-12-16 04:29  manduchi
+
+	* javatraverser/IPC901Setup.java:
+	
+	Add trigger popup
+
+2004-12-15 09:39  manduchi
+
+	* javatraverser/RFXParametersSetup.java:
+	
+	Fix
+
+2004-12-15 03:53  manduchi
+
+	* javatraverser/DecompileTree.java:
+	
+	Fix full flag
+
+2004-12-15 03:36  manduchi
+
+	* javatraverser/DecompileTree.java:
+	
+	Fix full option
+
+2004-12-14 12:27  manduchi
+
+	* javamds/: JavaTrav.c, JavaTrav.c:
+	
+	Fix
+
+2004-12-14 12:16  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	do IDL procedures
+
+2004-12-14 11:38  manduchi
+
+	* javatraverser/RFXInverterSetupSetup.java,
+	javatraverser/RFXToroidalSetup.java,
+	tdi/RfxDevices/RFXInverterSetup__add.fun:
+	
+	Still changes in toroidal configuration
+
+2004-12-14 09:01  manduchi
+
+	* javatraverser/ProcedureEditor.java:
+	
+	Procedure and language were exchanged
+
+2004-12-13 13:05  manduchi
+
+	* javatraverser/RFXParametersSetup.java:
+	
+	Fix
+
+2004-12-13 13:02  manduchi
+
+	* javatraverser/: RFXParametersSetup.java, RFXTimesSetup.java:
+	
+	Added RFX parameters
+
+2004-12-13 12:08  manduchi
+
+	* tdi/RfxDevices/LASER_ND__store.fun:
+	
+	Fix
+
+2004-12-13 11:35  manduchi
+
+	* tdi/RfxDevices/: LASER_ND__add.fun, LASER_ND__dump.fun,
+	LASER_ND__init.fun, LASER_ND__store.fun, TCPSendCommand.fun:
+	
+	Fix
+
+2004-12-13 10:56  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXInverterSetup__add.fun,
+	RFXParameters__add.fun:
+	
+	Added RFX parameters device, changed toroidal setup
+
+2004-12-13 10:55  manduchi
+
+	* javatraverser/: L6810Setup.java, Makefile.in,
+	RFXInverterSetupSetup.java, RFXTimesSetup.java,
+	RFXToroidalSetup.java:
+	
+	Changes in toroidal setup
+
+2004-12-13 09:43  manduchi
+
+	* tdi/RfxDevices/: LASER_ND__check.fun, LASER_ND__dump.fun,
+	LASER_ND__init.fun, LASER_ND__store.fun, TCPOpenConnection.fun,
+	TCPReadFloat.fun, TCPReadInt.fun, TCPSendCommand.fun:
+	
+	Mod
+
+2004-12-13 06:41  manduchi
+
+	* tdi/RfxDevices/: LASER_ND__init.fun, LASER_ND__store.fun,
+	TCPReadFloat.fun, TCPSendCommand.fun:
+	
+	Fix
+
+2004-12-13 03:40  manduchi
+
+	* tdi/RfxDevices/: CHVPS__init.fun, EM_EQU_TEST__init.fun,
+	EM_GAIN__init.fun, RFXDClock__init.fun:
+	
+	Last Fix on timing precision (hopefully!!)
+
+2004-12-10 09:43  manduchi
+
+	* tdi/RfxDevices/: LASER_NDSendCommand.fun, LASER_ND__dump.fun,
+	LASER_ND__init.fun, LASER_ND__store.fun, TCPSendCommand.fun:
+	
+	Mod
+
+2004-12-10 05:41  manduchi
+
+	* tdi/RfxDevices/: ACQD265__store.fun, LASER_ND__add.fun,
+	LASER_ND__init.fun, LASER_ND__store.fun, TCPReadFloat.fun:
+	
+	Fix
+
+2004-12-09 12:49  manduchi
+
+	* tdi/RfxDevices/RFXControl__store.fun:
+	
+	Fix
+
+2004-12-09 12:43  manduchi
+
+	* tdi/RfxDevices/RFXControl__store.fun:
+	
+	Fix
+
+2004-12-09 11:01  manduchi
+
+	* tdi/RfxDevices/RFXControl__store.fun:
+	
+	Add user signals
+
+2004-12-09 03:09  manduchi
+
+	* tdi/RfxDevices/: RFXDClock__init.fun, RFXPulse__init.fun,
+	TRCH__init.fun, TRCH__store.fun:
+	
+	Improve precision in timing reconstruction
+
+2004-12-07 06:37  manduchi
+
+	* tdi/RfxDevices/: L5613__add.fun, RFXDClock__init.fun,
+	RFXPulse__init.fun, TRCH__init.fun:
+	
+	Fix time reconstruction
+
+2004-12-06 03:47  manduchi
+
+	* javatraverser/DEQUSetupSetup.java:
+	
+	Fix nid link
+
+2004-12-03 16:36  twf
+
+	* Setup/Setup.vdproj, WinInstall/WinInstall.c, mdsshr/MdsShr.def,
+	mdsshr/librtl.c:
+	
+	Fix uninstall
+
+2004-12-03 12:06  manduchi
+
+	* javatraverser/: RFXTimesSetup.java, RFXTimingSetup.java:
+	
+	Display more info
+
+2004-12-03 11:12  manduchi
+
+	* tdi/RfxDevices/: CADH__init.fun, TR10HWInit.fun:
+	
+	Further tests
+
+2004-12-03 09:31  manduchi
+
+	* javatraverser/: DEQUSetupSetup.java, LASER_NDSetup.java:
+	
+	Fix
+
+2004-12-02 11:23  manduchi
+
+	* javascope/: ColorDialog.java, MdsWaveInterface.java, jScope.java,
+	jScopeWaveContainer.java:
+	
+	Fix color management
+
+2004-12-02 10:34  manduchi
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	Fix memory bug
+
+2004-12-02 08:47  manduchi
+
+	* tdi/RfxDevices/TR10__store.fun:
+	
+	More cecks
+
+2004-12-02 08:41  manduchi
+
+	* tdi/RfxDevices/: TR10HWReadChan.fun, TR10__store.fun:
+	
+	More tests on TR10 readout error
+
+2004-12-02 07:34  manduchi
+
+	* tdi/RfxDevices/TR10__store.fun:
+	
+	More bug info
+
+2004-12-02 02:59  manduchi
+
+	* tdi/RfxDevices/: EM_GAIN__add.fun, RFXMOP__SendMOP.fun,
+	TR10__store.fun:
+	
+	Test for TR10 potential bug
+
+2004-12-01 08:59  manduchi
+
+	* javatraverser/: DeviceDispatch.java, DeviceDispatchField.java:
+	
+	Do not store dispatchData outside model
+
+2004-11-30 12:53  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Remove deadlock
+
+2004-11-30 11:06  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Fix Race condition creating multiple MRT threads
+
+2004-11-30 11:05  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Fix nid
+
+2004-11-30 09:37  twf
+
+	* Setup/Setup.vdproj:
+	
+	Put jscope documentation in docs not doc
+
+2004-11-30 09:15  twf
+
+	* Setup/Setup.vdproj:
+	
+	Put jscope documentation in java\classes\docs
+
+2004-11-30 08:25  twf
+
+	* gen_device/gen_device.c:
+	
+	Do not require main_path and main tree
+
+2004-11-30 08:25  twf
+
+	* mitdevices/Makefile.in:
+	
+	Add removal of the _gen.c files during clean
+
+2004-11-30 05:40  manduchi
+
+	* tdi/RfxDevices/L5613__init.fun:
+	
+	Fix conversion
+
+2004-11-30 05:18  manduchi
+
+	* javascope/Makefile.in:
+	
+	Remove protection check
+
+2004-11-30 05:02  manduchi
+
+	* javascope/Makefile.in:
+	
+	Add jScope documentation to jScope.jar
+
+2004-11-30 04:32  manduchi
+
+	* javascope/MdsDataProvider.java:
+	
+	Fix unhandled exception
+
+2004-11-29 13:45  twf
+
+	* Setup/Setup.vdproj:
+	
+	Put kit in subdirectory
+
+2004-11-29 13:08  manduchi
+
+	* tdi/RfxDevices/FrostInterleave.fun:
+	
+	Support fun for FROST diagnostic
+
+2004-11-29 12:44  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.7-0
 
 2004-11-29 12:34  twf
 
