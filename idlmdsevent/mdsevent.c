@@ -83,7 +83,7 @@ int IDLMdsEventCan(int argc, void * *argv)
 {
         EventStruct *e,*p;
 	SOCKET sock = (SOCKET)argv[0];
-	unsigned int eventid = (unsigned int)argv[1];
+	 int eventid = (unsigned int)argv[1];
         int status;
         BlockSig(SIGALRM);
 	status = MdsEventCan(sock, eventid);
@@ -102,7 +102,7 @@ int IDLMdsEventCan(int argc, void * *argv)
 
 int IDLMdsGetevi(int argc, void **argv)
 {
-  unsigned int eventid = (unsigned int)argv[0];
+  int eventid = (unsigned int)argv[0];
   EventStruct *e;
   for (e=EventList;e && e->loc_event_id != eventid;e=e->next);
   if (e) memcpy(argv[1],e,52);
