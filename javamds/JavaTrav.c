@@ -1001,6 +1001,8 @@ static int doAction(int nid)
 	struct descriptor_program *program_d_ptr;
 	struct descriptor_method *method_d_ptr;
 	struct descriptor_routine *routine_d_ptr;
+	struct descriptor_procedure *procedure_d_ptr;
+	struct descriptor *language_d_ptr, *command_proc_d_ptr;
 	struct descriptor_r *curr_rec_ptr;
 	char *command, *expression, *path;
 	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
@@ -1008,6 +1010,9 @@ static int doAction(int nid)
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	char type = DTYPE_L;
 	DESCRIPTOR_CALL(call_d, (unsigned int *)0, 256, 0, 0);
+	struct descriptor *decArgs;
+	char *currPtr; 
+	int argLen, numArgs;
 
  	nid_d.pointer = (char *)&method_nid;
  	call_d.pointer = (unsigned char *)&type;
@@ -1078,6 +1083,57 @@ static int doAction(int nid)
 	case DTYPE_FUNCTION:
 		status = TdiData(curr_rec_ptr, &xd MDS_END_ARG);
 		break;
+	case DTYPE_PROCEDURE:
+		procedure_d_ptr = (struct descriptor_procedure *)curr_rec_ptr;
+		language_d_ptr = procedure_d_ptr->language;
+		command_proc_d_ptr = procedure_d_ptr->procedure;
+		if(!language_d_ptr || !command_proc_d_ptr)
+		{
+			status = 0;
+			break;
+		}
+		decArgs = malloc(sizeof(struct descriptor) * (procedure_d_ptr->ndesc-3));
+		argLen = numArgs = 0;
+
+		for(i = 0; i < procedure_d_ptr->ndesc-3; i++)
+		{
+			if(!procedure_d_ptr->arguments[i]) break;
+			decArgs[i].dtype = DTYPE_T;
+			decArgs[i].class = CLASS_D;
+			decArgs[i].length = 0;
+			decArgs[i].pointer = 0;
+			status = TdiDecompile(procedure_d_ptr->arguments[i], &decArgs[i] MDS_END_ARG);
+			if(!(status & 1)) break;
+			numArgs++;
+			argLen += 2+decArgs[i].length;
+		}
+		command = malloc(32+argLen+language_d_ptr->length+command_proc_d_ptr->length);
+
+		currPtr = MdsDescrToCstring(command_proc_d_ptr);
+		sprintf(command, "echo \'%s ", currPtr);
+		for(i = 0; i < numArgs; i++)
+		{
+			if(!procedure_d_ptr->arguments[i]) break;
+			
+			currPtr = MdsDescrToCstring(&decArgs[i]);
+			if(i < numArgs - 1)
+				sprintf(&command[strlen(command)], "%s,", currPtr);
+			else
+				sprintf(&command[strlen(command)], "%s", currPtr);
+			StrFree1Dx(&decArgs[i]);
+		}
+
+		currPtr = MdsDescrToCstring(language_d_ptr);
+		sprintf(&command[strlen(command)], "\' | %s", currPtr);
+
+		printf("%s\n", command);
+		system(command);
+		free(command);
+		free(decArgs);
+
+
+		break;
+
 
 		default: status = 0;
 	}
