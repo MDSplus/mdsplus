@@ -137,10 +137,10 @@ static char buf[1000];
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
-//report(MdsGetMsg(status));
+/*//report(MdsGetMsg(status));*/
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, buf);//MdsGetMsg(status));
+    RaiseException(env, buf);/*//MdsGetMsg(status));*/
 }
 
 
@@ -592,16 +592,17 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
     }
   if(num_nids > 0)
 	free((char *)nids);
-
-//printf("\nEnd getSons");
+/*
+//printf("\nEnd getSons"); */
   return jnids;
 }
 
-#define MAX_NODES 50000
+#define MAX_NODES 5000
 
 JNIEXPORT jobjectArray JNICALL Java_Database_getWild
   (JNIEnv *env, jobject obj, jint usage_mask)
 {
+
   int i, num_nids = 0;
   void *ctx = 0;
   int nids[MAX_NODES];
@@ -612,11 +613,11 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getWild
   jvalue args[1];
   int status;
 
-
   while (((status = TreeFindNodeWild("***",&nids[num_nids],&ctx,1 << usage_mask)) & 1) && (num_nids < MAX_NODES))
   {
 	  num_nids++;
   }
+
   if(num_nids == 0) return NULL;
   constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LData;");
   jnids = (*env)->NewObjectArray(env, num_nids, cls, 0);
@@ -723,7 +724,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
      status = TreeTurnOff(nid);
   if(!(status & 1))
   {
-	printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));
+	/*printf("\nTreeTurnOn status: %d %s", status, MdsGetMsg(status));*/
       RaiseException(env, MdsGetMsg(status));
   }
 }	
