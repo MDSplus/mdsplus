@@ -1,7 +1,7 @@
 public fun DIO2__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'DIO2', 141, _nidout);
+    DevAddStart(_path, 'DIO2', 149, _nidout);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
@@ -29,6 +29,7 @@ public fun DIO2__add(in _path, out _nidout)
      	DevAddNode(_cn // ':CLOCK', 'NUMERIC', *, *, _nid);
      	DevAddNode(_cn // ':TRIGGER_1', 'NUMERIC', *, *, _nid);
      	DevAddNode(_cn // ':TRIGGER_2', 'NUMERIC', *, *, _nid);
+     	DevAddNode(_cn // ':COMMENT', 'TEXT', *, *, _nid);
 
    }
     DevAddNode(_path // ':REC_EVENTS', 'TEXT', *, *, _nid);

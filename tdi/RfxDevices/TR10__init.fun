@@ -20,8 +20,9 @@ public fun TR10__init(as_is _nid, optional _method)
     private _N_CHAN_START_IDX = 3;
     private _N_CHAN_END_IDX = 4;
     private _N_CHAN_DATA = 5;
-    private _N_INIT_ACTION = 48;
-    private _N_STORE_ACTION = 49;
+    private _N_TRIG_EDGE = 48;
+    private _N_INIT_ACTION = 49;
+    private _N_STORE_ACTION = 50;
     private _2M = 2097152;
 
 
@@ -38,6 +39,7 @@ public fun TR10__init(as_is _nid, optional _method)
     }
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
+    DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING', 'FALLING'], [0,1], _trig_edge = 0);
 
 	if(_remote != 0)
 	{
@@ -150,7 +152,7 @@ public fun TR10__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		_status = TR10HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig);
+		_status = TR10HWInit(_nid, _board_id, _clk_div, _pts, _ext_trig, _trig_edge);
 		if(_status == 0)
 			abort();
 	}

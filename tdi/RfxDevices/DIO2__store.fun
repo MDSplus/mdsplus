@@ -8,7 +8,7 @@ public fun DIO2__store(as_is _nid, optional _method)
     private _N_CLOCK_SOURCE = 5;
     private _N_REC_START_EV = 6;
 
-    private _K_NODES_PER_CHANNEL = 16;
+    private _K_NODES_PER_CHANNEL = 17;
     private _N_CHANNEL_0= 7;
     private _N_CHAN_FUNCTION = 1;
     private _N_CHAN_TRIG_MODE = 2;
@@ -26,10 +26,11 @@ public fun DIO2__store(as_is _nid, optional _method)
     private _N_CHAN_TRIGGER_1 = 14;
     private _N_CHAN_TRIGGER_2 = 15;
 
-    private _N_REC_EVENTS = 135;
-    private _N_REC_TIMES = 136;
-    private _N_SYNCH = 137;
-    private _N_SYNCH_EVENTS = 138;
+    private _N_REC_EVENT = 143;
+    private _N_REC_TIMES = 144;
+    private _N_SYNCH = 145;
+    private _N_SYNCH_EVENT = 146;
+
 
 	private _LARGE_TIME = 1E6;
     private _INVALID = 10E20;

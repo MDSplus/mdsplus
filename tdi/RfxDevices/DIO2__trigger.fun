@@ -4,7 +4,7 @@ public fun DIO2__trigger(as_is _nid, optional _method)
     private _N_BOARD_ID = 1;
     private _N_SW_MODE = 2;
     private _N_IP_ADDR = 3;
-    private _K_NODES_PER_CHANNEL = 16;
+    private _K_NODES_PER_CHANNEL = 17;
     private _N_CHANNEL_0= 7;
 
     private _N_CHAN_FUNCTION = 1;
