@@ -97,7 +97,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   if (shotid)
     shot = shotid;
   else
-    shot = MdsGetCurrentShotId(dblist->experiment);
+    shot = TreeGetCurrentShotId(dblist->experiment);
 
   retstatus = status;
   if (status & 1)

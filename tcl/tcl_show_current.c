@@ -22,7 +22,7 @@ int TclShowCurrent()
     static DYNAMIC_DESCRIPTOR(dsc_experiment);
 
     cli_get_value("EXPERIMENT",&dsc_experiment);
-    shot = MdsGetCurrentShotId(dsc_experiment.dscA_pointer);
+    shot = TreeGetCurrentShotId(dsc_experiment.dscA_pointer);
     if (shot)
        {
         sprintf(text,"Current shot is %d",shot);

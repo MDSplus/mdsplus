@@ -14,6 +14,7 @@ TreeFindTagWild.o \
 TreeGetDbi.o \
 TreeGetNci.o \
 TreeGetRecord.o \
+TreeGetSetShotId.o \
 TreeOpen.o \
 TreePutRecord.o \
 TreeRenameNode.o \

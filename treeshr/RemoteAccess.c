@@ -36,7 +36,7 @@ static int FindImageSymbol(char *name, void **sym)
 
 static struct _host_list {char *host; int socket; int connections; struct _host_list *next;} *host_list = 0;
 
-static int ConnectToMds(char *host)
+static int RemoteAccessConnect(char *host)
 {
   struct _host_list *hostchk;
   struct _host_list **nextone;
@@ -67,7 +67,7 @@ static int ConnectToMds(char *host)
   return socket;
 } 
   
-static int DisconnectFromMds(int socket)
+static int RemoteAccessDisconnect(int socket)
 {
   int status = 1;
   struct _host_list *hostchk;
@@ -144,13 +144,14 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,int 
       {
         int socket;
         *cptr = '\0';
-        socket = ConnectToMds(logname);
+        socket = RemoteAccessConnect(logname);
         if (socket != -1)
         {
           struct descrip ans = empty_ans;
           char *exp = malloc(strlen(subtree_list ? subtree_list : tree)+100);
           sprintf(exp,"TreeOpen('%s',%d)",subtree_list ? subtree_list : tree,dblist->shotid);
           status =  MdsValue0(socket, exp, &ans);
+          status = (status & 1) ? (((ans.dtype == DTYPE_L)  && ans.ptr) ? *(int *)ans.ptr : 0) : status;
           if (status & 1)
 	  {
             TREE_INFO *info;
@@ -204,7 +205,7 @@ int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook)
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     free(ans.ptr);
   }
-  DisconnectFromMds(dblist->tree_info->channel);
+  RemoteAccessDisconnect(dblist->tree_info->channel);
   if (dblist->tree_info && dblist->tree_info->treenam) free(dblist->tree_info->treenam);
   if (dblist->tree_info) free(dblist->tree_info);
   dblist->tree_info = 0;
@@ -588,6 +589,49 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
   {
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     free(ans.ptr);
+  }
+  return status;
+}
+
+int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
+{
+  int status = 0;
+  int channel = RemoteAccessConnect(path);
+  if (channel > 0)
+  {
+    struct descrip ans = empty_ans;
+    char exp[512];
+    sprintf(exp,"TreeGetCurrentShot(\"%s\")",tree);
+    status = MdsValue0(channel,exp,&ans);
+    if (ans.ptr)
+    {
+      if (ans.dtype == DTYPE_L)
+        *shot = *(int *)ans.ptr;
+      else
+        status = status & 1 ? 0 : status;
+      free(ans.ptr);
+    }
+    RemoteAccessDisconnect(channel);
+  }
+  return status;
+}
+
+int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
+{
+  int status = 0;
+  int channel = RemoteAccessConnect(path);
+  if (channel > 0)
+  {
+    struct descrip ans = empty_ans;
+    char exp[512];
+    sprintf(exp,"TreeSetCurrentShot(\"%s\",%d)",tree,shot);
+    status = MdsValue0(channel,exp,&ans);
+    if (ans.ptr)
+    {
+      status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+      free(ans.ptr);
+    }
+    RemoteAccessDisconnect(channel);
   }
   return status;
 }

@@ -23,111 +23,17 @@ int MdsGetCurrentShotId(experiment,shot)
    use without specific written approval of MIT Plasma Fusion Center
    Management.
 ------------------------------------------------------------------------------*/
-#include <ctype.h>
-#include <string.h>
 #include <stdio.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <libroutines.h>
-#include <strroutines.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
-#define _ToLower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-
-static FILE *CreateShotIdFile(char *experiment)
-{
-  char pathname[512];
-  char *path;
-  FILE *file = 0;
-  char *semi;
-  strcpy(pathname,experiment);
-  strcat(pathname,"_path");
-  path = (char *)TranslateLogical(pathname);
-  if (path != NULL)
-  {
-    if ((semi = (char *)index(path, ';')) != 0)
-      semi = '\0';
-    strncpy(pathname,path,500);
-    TranslateLogicalFree(path);
-#ifdef _WINDOWS
-    strcat(pathname,"\\");
-#else
-    strcat(pathname,"//");
-#endif
-    strcat(pathname,"shotid.sys");
-    file = fopen(pathname,"w+b");
-  }
-  return file;
-}
-
-static FILE *OpenShotIdFile(char *experiment,char *mode)
-{
-  FILE *file = 0;
-  static struct descriptor file_d = {0, DTYPE_T, CLASS_D, 0};
-  static DESCRIPTOR(suffix_d,"_path:shotid.sys");
-  static struct descriptor experiment_d = {0, DTYPE_T, CLASS_S, 0};
-  static struct descriptor filename = {0, DTYPE_T, CLASS_D, 0};
-  unsigned short len;
-  void *ctx = 0;
-  int status = 0;
-  int i;
-  experiment_d.length = strlen(experiment);
-  experiment_d.pointer = experiment;
-  StrTrim(&file_d,&experiment_d,&len);
-  for (i=0;i<file_d.length;i++) 
-    file_d.pointer[i] = _ToLower(file_d.pointer[i]);
-  StrAppend(&file_d,&suffix_d);
-  if (LibFindFile(&file_d,&filename,&ctx) & 1)
-  {
-    static DESCRIPTOR(nullstr,"\0");
-    StrAppend(&filename,&nullstr);
-    file = fopen(filename.pointer,mode);
-  }
-  else
-    file = CreateShotIdFile(experiment);
-  return file;
-}
-
 
 int       MdsGetCurrentShotId(char *experiment)
 {
-  int shot = 0;
-  int status = 0;
-  FILE *file = OpenShotIdFile(experiment,"rb");
-  if (file)
-  {
-    status = fread(&shot,sizeof(shot),1,file) == 1;
-    fclose(file);
-#ifdef _big_endian
-    if (status & 1)
-    {
-      int lshot = shot;
-      int i;
-      char *optr = (char *)&shot;
-      char *iptr = (char *)&lshot;
-      for (i=0;i<4;i++) optr[i] = iptr[3-i];
-    }
-#endif
-  }
-  return (status & 1) ? shot : 0;
+  printf("MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");
+  return 0;
 }
 
 int       MdsSetCurrentShotId(char *experiment, int shot)
 {
-  int status = 0;
-  FILE *file = OpenShotIdFile(experiment,"r+b");
-  if (file)
-  {
-    int lshot = shot;
-#ifdef _big_endian
-    int i;
-    char *optr = (char *)&lshot;
-    char *iptr = (char *)&shot;
-    for (i=0;i<4;i++) optr[i] = iptr[3-i];
-#endif
-    status = fwrite(&lshot,sizeof(shot),1,file) == 1;
-    fclose(file);
-  }
-  return status;
+  printf("MdsSetCurrentShotId is obsolete, use TreeSetCurrentShotId in TreeShr\n");
+  return 0;
 }
-

@@ -339,7 +339,7 @@ static int   DistributedCreate(int   shot,int   *nids,int   num)
         Shot = shot;
     else
        {
-        Shot = MdsGetCurrentShotId(NidToTree(0));
+        Shot = TreeGetCurrentShotId(NidToTree(0));
         if (!(status & 1)) return status;
        }
 

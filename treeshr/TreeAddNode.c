@@ -672,7 +672,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       for (i=0;i<12 && i<len;i++)
       uptree[i] = __toupper(exp_ptr[i]);
       uptree[i]='\0';
-      shot = (shotid == 0) ? MdsGetCurrentShotId(exp_ptr) : shotid;
+      shot = (shotid == 0) ? TreeGetCurrentShotId(exp_ptr) : shotid;
       status = TreeNOT_OPEN;
       for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next)
       {
@@ -976,7 +976,7 @@ int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid)
       for (i=0;i<12 && i<len;i++)
       uptree[i] = __toupper(exp_ptr[i]);
       uptree[i]='\0';
-      shot = (shotid == 0) ? MdsGetCurrentShotId(exp_ptr) : shotid;
+      shot = (shotid == 0) ? TreeGetCurrentShotId(exp_ptr) : shotid;
       status = TreeNOT_OPEN;
       for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next)
       {

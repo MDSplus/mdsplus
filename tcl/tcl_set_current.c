@@ -35,9 +35,9 @@ int TclSetCurrent()
     experiment = dsc_experiment.dscA_pointer;
     if (cli_present("INCREMENT") & 1)
        {
-        shot = MdsGetCurrentShotId(experiment);
+        shot = TreeGetCurrentShotId(experiment);
         shot++;
-        sts = MdsSetCurrentShotId(experiment,shot);
+        sts = TreeSetCurrentShotId(experiment,shot);
        }
     else
        {
@@ -50,7 +50,7 @@ int TclSetCurrent()
         sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
 #endif
         if (sts & 1)
-            sts = MdsSetCurrentShotId(experiment,shot);
+            sts = TreeSetCurrentShotId(experiment,shot);
        }
 
     if ((sts & 1) != 1)
