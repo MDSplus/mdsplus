@@ -293,7 +293,8 @@ more:		switch (dtype) {
 			if (status == TreeNMN || status == TreeNNF) {
 				TreeFindNodeEnd(&pctx);
 				pctx = NULL;
-				status = 1;
+				if (status == TreeNMN)
+                                  status = 1;
 				continue;
 			}
 			wild = 1;
