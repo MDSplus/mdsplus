@@ -28,7 +28,6 @@ MdsCopyDxXdZ
 MdsDescrToCstring
 MdsFree1Dx
 MdsFree
-MdsEventCan
 MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
@@ -74,3 +73,6 @@ set_pgmname
 TranslateLogical
 TranslateLogicalFree
 TranslateLogicalXd
+MDSEventCan
+MDSEventAst
+MDSEvent

@@ -81,7 +81,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
               status = 1;
   int       bit = 0,
               asize,
-              asize_rec,
               nitems,
               (*symbol) ();
   char     *pcmp,
