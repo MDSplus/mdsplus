@@ -1,0 +1,10 @@
+LIBRARY	mdsmisc
+EXPORTS
+StepResample
+Resample
+boxsmooth
+bwfilter
+GetNidArray
+GetReferences
+GetReferenceCount
+
