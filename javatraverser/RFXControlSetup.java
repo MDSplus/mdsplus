@@ -563,7 +563,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable6.setNumCols(5);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Par3", "Par4", "Par5"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "Par4", "Par5"});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable3.setOffsetNid(1171);
@@ -580,7 +580,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable5.setNumCols(5);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");
-    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Par4", "Par5"});
+    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Par5"});
         deviceTable5.setRowNames(null);
     deviceTable5.setPreferredHeight(20);
     deviceField111118.setIdentifier("");
@@ -1153,7 +1153,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField1122.setLabelString("Y:");
         deviceField1122.setNumCols(80);
         deviceField1122.setIdentifier("");
-        deviceChannel21.setLabelString("Simulink Wave 14");
+        deviceChannel21.setLabelString("TFAT Current");
         deviceChannel21.setOffsetNid(1161);
         deviceChannel21.setInSameLine(true);
         deviceChannel21.setUpdateIdentifier("");
@@ -1166,7 +1166,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField1124.setLabelString("Y:");
         deviceField1124.setNumCols(80);
         deviceField1124.setIdentifier("");
-        deviceChannel22.setLabelString("Simulink Wave 13");
+        deviceChannel22.setLabelString("PCAT Current");
         deviceChannel22.setOffsetNid(1157);
         deviceChannel22.setInSameLine(true);
         deviceChannel22.setUpdateIdentifier("");
@@ -1179,7 +1179,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField1126.setLabelString("Y:");
         deviceField1126.setNumCols(80);
         deviceField1126.setIdentifier("");
-        deviceChannel23.setLabelString("Simulink Wave 12");
+        deviceChannel23.setLabelString("PMAT Current");
         deviceChannel23.setOffsetNid(1153);
         deviceChannel23.setInSameLine(true);
         deviceChannel23.setUpdateIdentifier("");
@@ -1325,7 +1325,9 @@ public class RFXControlSetup extends DeviceSetup {
         deviceTable1.setNumRows(192);
         deviceTable1.setIdentifier("");
         deviceTable1.setColumnNames(new String[] {"Gain", "Offset"});
+        deviceTable1.setRowNames(null);
         deviceTable1.setDisplayRowNumber(true);
+        deviceTable1.setUseExpressions(true);
         gridLayout7.setColumns(2);
         deviceTable2.setOffsetNid(5);
         deviceTable2.setLabelString("Out Calibration");
@@ -1333,7 +1335,9 @@ public class RFXControlSetup extends DeviceSetup {
         deviceTable2.setNumRows(96);
         deviceTable2.setIdentifier("");
         deviceTable2.setColumnNames(new String[] {"Gain", "Offset"});
+        deviceTable2.setRowNames(null);
         deviceTable2.setDisplayRowNumber(true);
+        deviceTable2.setUseExpressions(true);
         jPanel40.setLayout(gridLayout8);
     gridLayout8.setColumns(1);
     gridLayout8.setHgap(0);

@@ -21,6 +21,7 @@ public class DeviceTable extends DeviceComponent
     boolean editable = true;
     boolean displayRowNumber = false;
     boolean binary = false;
+    boolean useExpressions = false;
     JPopupMenu popM = null;
     JMenuItem copyRowI, copyColI, copyI, pasteRowI, pasteColI, pasteI,
         propagateToRowI, propagateToColI;
@@ -60,6 +61,13 @@ public class DeviceTable extends DeviceComponent
     {
       this.preferredHeight = preferredHeight;
     }
+
+    public void setUseExpressions(boolean useExpressions)
+    {
+        this.useExpressions = useExpressions;
+    }
+
+    public boolean getUseExpressions(){return useExpressions;}
 
     public void setColumnNames(String [] columnNames)
     {
@@ -286,15 +294,31 @@ public class DeviceTable extends DeviceComponent
         initializing = true;
         String decompiled = "";
         try {
-            decompiled = Tree.dataToString(subtree.evaluateData(data, 0));
-        }catch(Exception exc){System.err.println(exc);}
-        StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
+            if(useExpressions)
+            {
+                decompiled = Tree.dataToString(data);
+                if (decompiled.startsWith("COMPILE(\'") || decompiled.startsWith("COMPILE(\""))
+                    decompiled = shrinkBackslash(decompiled.substring(9,
+                        decompiled.length() - 2));
+            }
+            else
+                decompiled = Tree.dataToString(subtree.evaluateData(data, 0));
+      }catch(Exception exc){System.err.println(exc); decompiled = null;}
         items = new String[numCols * numRows];
         int idx = 0;
-        if(!decompiled.startsWith("["))
-          st.nextToken();
-        while( idx < numCols * numRows && st.hasMoreTokens())
-            items[idx++] = st.nextToken();
+        if(decompiled == null)
+        {
+            for(int i = 0; i < items.length; i++)
+               items[i] = "";
+        }
+        else
+        {
+            StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
+            if (!decompiled.startsWith("["))
+                st.nextToken();
+            while (idx < numCols * numRows && st.hasMoreTokens())
+                items[idx++] = st.nextToken();
+        }
         label.setText(labelString);
 
 
@@ -473,7 +497,10 @@ public class DeviceTable extends DeviceComponent
             else
                 dataString += ",";
         }
-        return Tree.dataFromExpr(dataString);
+        if(useExpressions)
+            return Tree.dataFromExpr("COMPILE(\'"+expandBackslash(dataString)+"\')");
+        else
+            return Tree.dataFromExpr(dataString);
     }
     public Component add(Component c)
     {
@@ -552,7 +579,33 @@ public class DeviceTable extends DeviceComponent
 
     }
 
+    private String expandBackslash(String str)
+    {
+        String outStr = "";
+        for(int i = 0; i < str.length(); i++)
+        {
+            char currChar = str.charAt(i);
+            outStr += currChar;
+            if(currChar == '\\')
+                outStr += currChar;
 
+        }
+        return outStr;
+    }
+
+    private String shrinkBackslash(String str)
+    {
+        String outStr = "";
+        char prevChar = str.charAt(0);
+        for(int i = 1; i < str.length(); i++)
+        {
+            char currChar = str.charAt(i);
+            if(!(currChar == '\\' && prevChar == '\\'))
+                outStr += currChar;
+            prevChar = currChar;
+        }
+        return outStr;
+    }
 
 
 }

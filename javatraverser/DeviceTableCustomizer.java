@@ -13,7 +13,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         preferredColumnWidthT, preferredHeightT;
     Choice nids;
     Button doneButton;
-    Checkbox displayRowNumC, editableC, binaryC;
+    Checkbox displayRowNumC, editableC, binaryC, useExpressionsC;
 
     public DeviceTableCustomizer()
     {
@@ -67,6 +67,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp1.add(preferredHeightT = new TextField(""+bean.getPreferredHeight(),4));
         jp1.add(editableC = new Checkbox("Editable", bean.getEditable()));
         jp1.add(binaryC = new Checkbox("Binary", bean.getBinary()));
+        jp1.add(useExpressionsC = new Checkbox("Use Expressions", bean.getBinary()));
         jp.add(jp1);
 
         jp1 = new Panel();
@@ -129,6 +130,9 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 boolean oldBinary = bean.getBinary();
                 bean.setBinary(binaryC.getState());
                 listeners.firePropertyChange("binary", oldBinary, bean.getBinary());
+                boolean oldUseExpressions = bean.getUseExpressions();
+                bean.setUseExpressions(binaryC.getState());
+                listeners.firePropertyChange("useExpression", oldUseExpressions, bean.getUseExpressions());
                 int oldPreferredColumnWidth = bean.getPreferredColumnWidth();
                 bean.setPreferredColumnWidth(Integer.parseInt(preferredColumnWidthT.getText()));
                 listeners.firePropertyChange("preferredColumnWidth", oldPreferredColumnWidth, bean.getPreferredColumnWidth());

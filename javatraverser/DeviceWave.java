@@ -104,6 +104,7 @@ public class DeviceWave extends DeviceComponent
 
     private void create()
     {
+        savedWaveX = null;
         waveEditor = new WaveformEditor();
         nf.setMaximumFractionDigits(3);
         nf.setGroupingUsed(false);
@@ -324,12 +325,20 @@ public class DeviceWave extends DeviceComponent
         {
             public void actionPerformed(ActionEvent e)
             {
-                minX = savedMinX;
-                minY = savedMinY;
-                maxX = savedMaxX;
-                maxY = savedMaxY;
-                waveX = savedWaveX;
-                waveY = savedWaveY;
+                if(savedWaveX == null) return;
+                if(minXVisible) minX = savedMinX;
+                if(minYVisible) minY = savedMinY;
+                if(maxXVisible) maxX = savedMaxX;
+                if(maxYVisible) maxY = savedMaxY;
+                try {
+                    waveX = new float[savedWaveX.length];
+                    waveY = new float[savedWaveY.length];
+                    for(int i = 0; i < savedWaveX.length; i++)
+                    {
+                        waveX[i] = savedWaveX[i];
+                        waveY[i] = savedWaveY[i];
+                    }
+                }catch(Exception exc){}
                 displayData(null, true);
             }
         });
