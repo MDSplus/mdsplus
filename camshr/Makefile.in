@@ -7,7 +7,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ @LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 LIBRARYNAME=CamShr
 
@@ -101,7 +101,7 @@ cts_commands.c:	cts_commands.ocld
 
 @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
 	$(CC) -g -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \
-		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -lc
+		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr -lc
 	if [ ! -d @MAKESHLIBDIR@ ] ; then \
 		mkdir @MAKESHLIBDIR@; \
 		chmod 755 @MAKESHLIBDIR@; \
