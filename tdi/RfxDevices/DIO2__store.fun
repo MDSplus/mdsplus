@@ -59,21 +59,29 @@ public fun DIO2__store(as_is _nid, optional _method)
  		    abort();
 		}
 	}
+
+
+
 	if(_remote != 0)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
+	    _cmd = 'MdsConnect("'//_ip_addr//'")';
+	    execute(_cmd);
 	    _rec_events = MdsValue('DIO2HWGetRecEvents(0, $1)');
-	    _rec_times = _DIO2_rec_times;
-		MdsDisconnect();
+	    _rec_times =  MdsValue('_DIO2_rec_times');
+	    MdsDisconnect();
 	}
 	else
 	{
-		_rec_events = DIO2HWGetRecEvents(_nid, _board_id);
+	    _rec_events = DIO2HWGetRecEvents(_nid, _board_id);
 	    _rec_times = _DIO2_rec_times;
 	}
 
-  	DevPut(_nid, _N_REC_EVENTS, _rec_events);
+write(*, '***', _rec_events);
+
+  	_status = DevPut(_nid, _N_REC_EVENTS, _rec_events);
+
+write(*, 'status', _status);
+
   	DevPut(_nid, _N_REC_TIMES, _rec_times);
 
     for(_c = 0; _c < 8; _c++)
@@ -100,8 +108,8 @@ write(*, '***', _c);
  				_trig_path = getnci(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER), 'FULLPATH');
 				_trig1_expr = _trig_path // ' + ' // _phases_count[0];
 				_trig2_expr = _trig_path // ' + ' // _phases_count[1];
-  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1, compile(_trig1_expr));
- 	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2, compile(_trig2_expr));
+  	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1, compile(_trig1_expr));
+ 	    			DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2, compile(_trig2_expr));
 			}
 		}
 	}

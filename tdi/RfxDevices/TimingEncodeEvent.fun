@@ -6,6 +6,6 @@ public fun TimingEncodeEvent(in _event)
     	if(_event_codes[_i] == _event) 
 	    return(_event_names[_i]);
     }  
-    return ("Undefined");
+    return (trim("UndefinedCode "//adjustl(''//_event)));
 }
 

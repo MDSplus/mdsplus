@@ -21,9 +21,6 @@ public fun DIO2HWGetRecEvents(in _nid, in _board_id)
 /* Create _rec_times global variable if the first time */ 
     if_error(_DIO2_rec_times,(public _DIO2_rec_times = 0;));
 	write(*, 'DIO2HWGetRecEvents', _board_id);
-	public _DIO2_rec_times = [10,20,30];
-	return([1,2,3]);
-
 
 
 /* Initialize Library if the first time */
@@ -54,15 +51,18 @@ public fun DIO2HWGetRecEvents(in _nid, in _board_id)
 	}
 
 	_rec_events = [];
-	_DIO2_rec_times = [];
+        _DIO2_rec_times1 = [];
+
 	for(_i = 0; _i < _event_count; _i++)
 	{
 		_curr_event = byte(0);
 		_curr_time = long(0);
 		DIO2->DIO2_ER_GetEvent(val(_handle), ref(_curr_event), ref(_curr_time));
-		_rec_events = [_rec_events, _curr_event];
-		_DIO2_rec_times = [_DIO2_rec_times, _curr_time];
+		_rec_events = [_rec_events, TimingEncodeEvent(_curr_event)];
+		_DIO2_rec_times1 = [_DIO2_rec_times1, _curr_time * 1e-7];
 	}
+
+        public _DIO2_rec_times = _DIO2_rec_times1;
 
 
 /* Close device */

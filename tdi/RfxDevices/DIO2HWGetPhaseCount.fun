@@ -20,7 +20,6 @@ public fun DIO2HWGetPhaseCount(in _nid, in _board_id, in _channel)
 
 
 	write(*, 'DIO2HWGetPhaseCount', _board_id, _channel);
-	return([1,2]);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));

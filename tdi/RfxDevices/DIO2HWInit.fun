@@ -90,6 +90,17 @@ write(*,'status',_status);
 				write(*, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
 			return(0);
 		}
+
+		_status = DIO2->DIO2_Cmd_FlushEventRecorder(val(_handle));
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error flushing recorder in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting flushing recorder  in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+
 		_status = DIO2->DIO2_Cmd_ArmEventRecorder(val(_handle));
 		if(_status != 0)
 		{
