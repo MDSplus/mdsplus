@@ -1595,9 +1595,9 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
         case DTYPE_G: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_DOUBLE; break;
         case DTYPE_GC: memcpy(m->bytes,d->pointer,nbytes); m->h.dtype = DTYPE_COMPLEX_DOUBLE; break;
         case DTYPE_FS: ConvertFloat(num, CvtIEEE_S, sizeof(float), d->pointer, 
-                                              CvtVAX_G, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_FLOAT; break;
+                                              CvtVAX_F, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_FLOAT; break;
         case DTYPE_FSC: ConvertFloat(num * 2, CvtIEEE_S, sizeof(float), d->pointer, 
-                                              CvtVAX_G, (char)(m->h.length/2), m->bytes); m->h.dtype = DTYPE_COMPLEX; break;
+                                              CvtVAX_F, (char)(m->h.length/2), m->bytes); m->h.dtype = DTYPE_COMPLEX; break;
         case DTYPE_FT: ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer, 
                                               CvtVAX_G, (char)m->h.length, m->bytes); m->h.dtype = DTYPE_DOUBLE; break;
         case DTYPE_FTC: ConvertFloat(num * 2, CvtIEEE_T, sizeof(double), d->pointer, 
