@@ -492,7 +492,10 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
   if ((int)(sizeof(MsgHdr) + *numbytes) != (*m)->h.msglen)
   {
     *numbytes = 0;
-    if (*m) free(*m);
+    if (*m) {
+      	free(*m);
+        *m=0;
+    }
     return 0;
   }
   *dtype = (*m)->h.dtype;
