@@ -1,7 +1,6 @@
 public fun DevCamChk(in _name, in _status, optional _x, optional _q, optional _noabort)
 {
   /* Check CAMAC operation for successful completion */
-
   if (!(_status & 1))
   {
     write(*,'%CAMERR, module '//_name//', bad status = '//TEXT(_status)//'\n');
