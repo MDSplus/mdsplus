@@ -5,7 +5,8 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       implicit none 
 
       include 'mdslib.inc'
-      integer dsc
+      integer TreeOpen
+      integer dsc,dsc2
       integer status
       integer i,j
       integer iresult
@@ -15,7 +16,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       real    result
       real    resultarr(20)
       real    array2d(nx,ny)
-      character cresult*12
+      character cresult*12,ctag*50
       
       do i=1,nx
          do j=1,ny
@@ -45,7 +46,7 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
 
       dsc = descr(IDTYPE_LONG,42042,0)
       status = MdsPut("NUMERIC"//CHAR(0),"$",dsc,0)
-      write (6,*) "MdsPut('NUMERIC',$,42042): ",status
+      write (6,*) "MdsPut('NUMERIC',$,42042): ",status 
 
       dsc = descr(IDTYPE_LONG,iresult,0)
       status = MdsValue("NUMERIC"//CHAR(0),dsc,0,)
@@ -65,7 +66,18 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       status = MdsPut("NUMERIC"//CHAR(0),"$",dsc,0)
       write (6,*) "MdsPut('NUMERIC',$,array2d) : ",status
 
+
+      dsc = descr(IDTYPE_LONG,iresult,0)
+      dsc2 = descr(IDTYPE_CSTRING,"D3D"//CHAR(0),0,3)
+      status = MdsValue("TreeShr->TreeOpen($,-1)"//CHAR(0),dsc,dsc2,0,size)
+      write (6,*) "TreeShr->TreeOpen(D3D,-1): ",status
+
+      dsc = descr(IDTYPE_CSTRING,ctag,0,50)
+      status = MdsValue('FINDSIG("TSTE_CORE")'//CHAR(0),dsc,0,size)
+
+      write (6,*) "FINDSIG(TSTE_CORE): ",ctag(1:size),status
       
-      
+      status = TreeOpen("D3D",%val(-1))
+      write (6,*) "TreeOpen(D3D,-1): ",status
 c23456789012345678901234567890123456789012345678901234567890123456789012
       end
