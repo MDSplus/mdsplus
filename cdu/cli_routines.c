@@ -780,6 +780,9 @@ static struct cduEntity  *find_entity(	/* Return: addr of struct	*/
     struct cduValue  *val;
     struct cduEntity  *e,*kwd;
 
+    if (!entityList)
+        return(0);
+
     p = strchr(entity,'.');			/* contains '.' ?	*/
     k = p ? (p-entity) : strlen(entity);	/*..set length to look at */
     if (!k)
