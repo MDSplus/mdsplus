@@ -336,16 +336,24 @@ void pthread_cancel(HANDLE thread)
 #include <signal.h>
 #include <sys/wait.h>
 
+
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
 #include <pthread.h>
 static pthread_mutex_t GlobalMutex;
 static int Initialized = 0;
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#else
+#undef select
+#endif
 
 void pthread_lock_global_np()
 {
   if (!Initialized)
   { 
-    pthread_mutex_init(&GlobalMutex,NULL);
+    pthread_mutex_init(&GlobalMutex,pthread_mutexattr_default);
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
@@ -361,7 +369,7 @@ void pthread_unlock_global_np()
 {
   if (!Initialized)
   { 
-    pthread_mutex_init(&GlobalMutex,NULL);
+    pthread_mutex_init(&GlobalMutex,pthread_mutexattr_default);
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
