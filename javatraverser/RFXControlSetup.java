@@ -169,8 +169,8 @@ public class RFXControlSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(786);
-    this.setHeight(786);
+    this.setWidth(400);
+    this.setHeight(792);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
@@ -249,7 +249,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "MODE CONTROL"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice3.setBounds(new Rectangle(509, 139, 277, 35));
+    deviceChoice3.setBounds(new Rectangle(514, 139, 277, 35));
     deviceTable1.setOffsetNid(4);
     deviceTable1.setLabelString("Input calibration");
     deviceTable1.setNumCols(2);
