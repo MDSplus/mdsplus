@@ -9,6 +9,7 @@ FUN PUBLIC CSAKM(IN _s) {
 	_xdata = DIM_OF(_s);
 	_fdata = DATA(_s);
 	_n = SIZE(_fdata);
+	if (_n < 5) abort();  /* will cause floating exception in MdsMath */
 	IF (SIZE(_xdata) == 0) _xdata = RAMP(_n, 1.);
 	_break = ARRAY(_n, 0.);
 	_coeff = ARRAY([4,_n], 0.);
