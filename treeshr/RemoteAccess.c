@@ -1097,13 +1097,6 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 #ifdef __APPLE__
     if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
         LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-#ifdef SRB
-        if (FDS[fd-1].socket == SRB_SOCKET) {
-            pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
-	    UnlockMdsShrMutex(&IOMutex);
-	    return pos;
-        }
-#endif
         if (FDS[fd-1].socket == -1) {
             pos = (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence);
             if ((whence == SEEK_END) && (offset == 0))
@@ -1119,6 +1112,13 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+        pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
+        UnlockMdsShrMutex(&IOMutex);
+	return pos;
+    }
+#endif
     pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
     UnlockMdsShrMutex(&IOMutex);
     return pos;
