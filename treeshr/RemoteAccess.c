@@ -255,7 +255,7 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
   struct descrip ans = empty_ans;
   int status;
   char exp[512];
-  sprintf(exp,"SerializeOut(0,%d)",nid_in);
+  sprintf(exp,"SerializeOut(`getnci(%d,'RECORD'))",nid_in);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
   if (status & 1)
   {
