@@ -150,7 +150,7 @@ static  int       compress(
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) align((_pointer_int)((char *) pwork + sizeof(record_four)),sizeof(void *));
+      prec = (record_four *) align((_pointer_int)((char *) pwork + asize),sizeof(void *));
       pca1 = (array_coef *) ((char *) prec + sizeof(rec0));
       pdat = (struct descriptor_a *) align((_pointer_int)((char *) pca1 + asize),sizeof(void *));
       pcmp = (char *) pdat + sizeof(struct descriptor_a);
