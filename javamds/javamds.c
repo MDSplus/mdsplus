@@ -409,7 +409,7 @@ static JNIEnv *getJNIEnv()
 	JNIEnv *jEnv;
 	int retVal;
 
-   	retVal = (*jvm)->AttachCurrentThread(jvm, &jEnv, NULL);
+   	retVal = (*jvm)->AttachCurrentThread(jvm, (void **)&jEnv, NULL);
     if (retVal) 
         printf("AttachCurrentThread error %d\n", retVal);
     return jEnv;
