@@ -44,7 +44,7 @@ static void strcatn(char *dst, const char *src, int max)
    Prototypes for Err_Handler and Msg_Handler slightly different between
    SQLSERVER and SYBASE
 */
-#ifdef Win32
+#ifdef WIN32
 #define cnst const
 #else
 #define cnst
@@ -128,8 +128,12 @@ void Logout_Sybase() {
 /*------------------------------CONNECT--------------------------------------*/
 int	Login_Sybase(char *host, char *user, char *pass)
 {
-  int try;
-  if (dbproc)
+
+#ifdef RETRY_CONNECTS
+ int try;
+#endif
+
+ if (dbproc)
     Logout_Sybase();
 
   if (loginrec) {
