@@ -60,8 +60,8 @@ install:
 	$(AR) -r $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@libMdsIpUtil.a : mds
-	$(AR) -r $@ $(OBJECTS)
+@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o
+	$(AR) -r $@ mdsiputil.o
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
