@@ -521,7 +521,7 @@ static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
 			strcat(part,string);
 		}
 	}
-	if (!strlen(part) || !tagged)
+	if (!strlen(string) || !tagged)
 	{
 		string[0] = '\\';
 		string[1] = '\0';
