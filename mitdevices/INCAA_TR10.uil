@@ -8,6 +8,9 @@
 module MAIN_UIL
 version = 'V1.0'
 names = case_sensitive
+
+include file "XmdsWidgets.uil";
+
 !(BX) bx_info("app_class", "BuilderProduct")
 !(BX) bx_info("app_name", "builderProduct")
 !(BX) bx_info("app_defaults", "APP-DEFAULTS.DAT")
