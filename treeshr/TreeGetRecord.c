@@ -425,9 +425,10 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
     if ((fread((void *)&hdr,12,1,info->data_file->get) == 1))
     {
       unsigned int partlen = min(32755, buffer_space);
+      int nidx = swapint((char *)&hdr.node_number);
       if (first)
-        *nodenum = hdr.node_number;
-      else if (*nodenum != hdr.node_number)
+        *nodenum = nidx;
+      else if (*nodenum != nidx)
       {
         status = 0;
         break;
