@@ -545,7 +545,7 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in)
     	StrAppend(&fullpath,&nullstr);
    	msg = malloc(fullpath.length + 1024);
 
-	if(job->server)		
+	if(job->server && *job->server)		
     	   sprintf(msg,"%s %d %d %d %d %d %s %d %s %s",job->tree,job->shot,job->phase,
 					  job->nid,job->on,job->mode,job->server,
 					  job->status, fullpath.pointer, Now());
