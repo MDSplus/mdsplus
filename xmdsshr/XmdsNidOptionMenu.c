@@ -75,6 +75,9 @@ struct dsc$descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 #include <mds_stdarg.h>
+
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 typedef struct _Resources
 {
   int nid;

@@ -490,6 +490,8 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
  Local variables:                                                             */
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 enum crosshairsmode
 {
   move_xh,first_xh,last_xh

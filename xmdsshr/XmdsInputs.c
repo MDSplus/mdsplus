@@ -57,6 +57,8 @@
 #include <Xmds/XmdsInputs.h>
 #include <Xmds/XmdsExpr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */

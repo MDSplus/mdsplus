@@ -117,6 +117,8 @@ static int GetLong(int nid,int *intptr);
 
  Local variables:                                                             */
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */

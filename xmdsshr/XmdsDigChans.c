@@ -79,6 +79,8 @@ Boolean XmdsIsDigChans(Widget w)
 
  Local variables:                                                             */
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 void XmdsDigChansReset(Widget w);
 
 typedef struct _DigChansPart

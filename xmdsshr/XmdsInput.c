@@ -115,6 +115,8 @@
 
  Local variables:                                                             */
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */

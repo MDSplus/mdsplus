@@ -55,6 +55,7 @@ int XmdsOnOffToggleButtonApply(Widget w);
 #include <Xmds/XmdsOnOffToggleButton.h>
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 Widget XmdsCreateOnOffToggleButton(Widget parent,String name,ArgList args,Cardinal argcount);
 Boolean XmdsIsOnOffToggleButton(Widget w);
 void XmdsOnOffToggleButtonReset(Widget w);

@@ -52,6 +52,8 @@ void XmdsManageWindow(Widget w);
 
 #include <Xm/Xm.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 static Widget FindShellChild(Widget w)
 {
   Widget sc;

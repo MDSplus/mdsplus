@@ -46,6 +46,8 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
 #include <Xm/Xm.h>
 #include <treeshr.h>
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 void XmdsSetDeviceNid(int nid);
 
 int XmdsDeviceSetup(Widget parent,int *nid,String uids[],Cardinal num_uids,String ident,MrmRegisterArglist reglist,

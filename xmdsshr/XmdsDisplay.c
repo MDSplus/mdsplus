@@ -74,6 +74,8 @@
 
  Local variables:                                                             */
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 typedef struct _DisplayPart
 {
   int       nid;
