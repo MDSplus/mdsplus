@@ -2,11 +2,7 @@
 #define MdsLib_H
 
 #include <mdsdescrip.h>
-#ifdef __VMS 
-#include "ipdesc.h"
-#else
 #include <ipdesc.h>
-#endif
 
 #ifndef _WIN32
 #define INVALID_SOCKET -1
@@ -22,15 +18,21 @@
 
 static struct descriptor *descrs[NDESCRIP_CACHE];
 
-int descr (int *dtype, void *data, int *dim1, ...);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-
-#ifdef __VMS
-SOCKET MdsConnect(struct dsc$descriptor *host);
-int MdsValue(struct dsc$descriptor *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
-#else
 SOCKET MdsConnect(char *host);
-int MdsValue(char *expression, ...); /**** NOTE: NULL terminated argument list expected ****/
+int descr (int *dtype, void *data, int *dim1, ...);
+int MdsOpen(char *tree, int* shot);
+int MdsSetDefault(char *node);
+int MdsValue(char *expression, ...);
+int MdsPut(char *node, char *expression, ...); 
+SOCKET MdsSetSocket( SOCKET *socket );
+void MdsDisconnect();
+
+#ifdef __cplusplus
+} // extern "C"
 #endif
 
 extern SOCKET mdsSocket;

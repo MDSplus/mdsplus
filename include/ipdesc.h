@@ -1,3 +1,6 @@
+#ifndef IPDESC_H
+#define IPDESC_H
+
 #ifdef _WIN32
 #include "windows.h"
 #else
@@ -37,6 +40,10 @@ struct descrip { char dtype;
 	       };
 #define EndOfArgs ((struct descrip *)0)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef _NO_MDS_PROTO
 extern SOCKET ConnectToMds();
 extern SOCKET ConnectToMdsEvents();
@@ -75,4 +82,10 @@ extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsSetDefault(SOCKET sock, char *node);
 extern int   MdsClose(SOCKET sock);
 #endif
+#endif
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
 #endif
