@@ -1,0 +1,72 @@
+SHELL=/bin/sh
+top_srcdir=@top_srcdir@
+JAVADIR = @MAKEJAVADIR@classes
+JAVAC = @JAVAC@
+JAR = @JAR@
+
+SOURCES = Base64.java\
+ColorDialog.java\
+DataProvider.java\
+ErrorMessage.java\
+JetDataProvider.java\
+JiDataSource.java\
+JiDim.java\
+JiNcSource.java\
+JiNcVar.java\
+JiNcVarByte.java\
+JiNcVarChar.java\
+JiNcVarDouble.java\
+JiNcVarFloat.java\
+JiNcVarImp.java\
+JiNcVarInt.java\
+JiNcVarShort.java\
+JiSlab.java\
+JiSlabIterator.java\
+JiVar.java\
+JiVarImpl.java\
+LocalProvider.java\
+MdsEvent.java\
+MdsEventListener.java\
+MdsEventManager.java\
+MultiWaveform.java\
+NetworkProvider.java\
+RandomAccessData.java\
+RotateFilter.java\
+RowColumnLayout.java\
+ScopePositionDialog.java\
+Setup.java\
+SetupDataDialog.java\
+SetupDefaults.java\
+Signal.java\
+Slider.java\
+WaveInterface.java\
+WavePanel.java\
+WaveSetup.java\
+Waveform.java\
+jScope.java
+
+CLASSES = *.class
+
+all:	@MAKEBINDIR@ @MAKEBINDIR@jScope @MAKEJAVADIR@ @MAKEJAVADIR@classes @MAKEJAVADIR@classes/jScope.jar @MAKEJAVADIR@classes/MRJClasses.zip
+
+clean: ; rm $(CLASSES) @MAKEBINDIR@jScope @MAKEJAVADIR@classes/jScope.jar
+
+depend: ; @ :
+
+@MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
+
+@MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
+
+@MAKEJAVADIR@classes/MRJClasses.zip : MRJClasses.zip ; cp MRJClasses.zip $@
+
+@MAKEJAVADIR@classes/jScope.jar: jScope.class
+	$(JAR) c0f @MAKEJAVADIR@classes/jScope.jar $(CLASSES)
+
+jScope.class: 	$(SOURCES)
+	env CLASSPATH=MRJClasses.zip $(JAVAC) -g $(SOURCES)
+
+@MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
+
+@MAKEBINDIR@jScope : jScope.template
+	sed "s|MAKEJAVADIR|`cd @MAKEJAVADIR@;pwd`|g" jScope.template | sed "s|libdir|`cd @libdir@;pwd`|g" > $@
+	chmod a+x $@
