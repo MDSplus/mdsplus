@@ -755,6 +755,11 @@ int libfreevm_(int *len, void **vm, ZoneList **zone)
   return(LibFreeVm(len, vm, zone));
 }
 
+int libfreevm(int *len, void **vm, ZoneList **zone)
+{
+  return(LibFreeVm(len, vm, zone));
+}
+
 int LibGetVm(int *len, void **vm, ZoneList **zone)
 {
   VmList *list = malloc(sizeof(VmList));
@@ -772,6 +777,11 @@ int LibGetVm(int *len, void **vm, ZoneList **zone)
 }
 
 int libgetvm_(int *len, void **vm, ZoneList **zone)
+{
+  return(LibGetVm(len, vm, zone));
+}
+
+int libgetvm(int *len, void **vm, ZoneList **zone)
 {
   return(LibGetVm(len, vm, zone));
 }
