@@ -56,7 +56,7 @@ static int CamSingle(char *routine, struct descriptor *name, int *a, int *f, voi
     char cmd[512];
     strncpy(name_c,name->pointer,name->length);
     name_c[name->length] = '\0';
-    sprintf(cmd,"RemCamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*f < 8 ? "_data" : "_data=$",*mem);
+    sprintf(cmd,"CamSingle('%s','%s',%d,%d,%s,%d,_iosb)",routine,name_c,*a,*f,*f < 8 ? "_data" : "_data=$",*mem);
     if (*f < 8)
     {
       status = MdsValue(serverid,cmd,&ans_d,0);
