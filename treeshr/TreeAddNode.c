@@ -173,6 +173,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
               new_nci.flags &= ~NciM_PARENT_STATE;
             else
               new_nci.flags |= NciM_PARENT_STATE;
+            new_nci.flags |= NciM_COMPRESS_ON_PUT;
 	    status = TreePutNci(dblist->tree_info, nid.node, &new_nci, 1);
 	  }
 	}
