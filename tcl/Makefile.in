@@ -77,4 +77,4 @@ tcl_commands.c:	tcl_commands.ocld
 	$(MAKE) depend
 
 @MAKELIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ tcl_commands.o $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
