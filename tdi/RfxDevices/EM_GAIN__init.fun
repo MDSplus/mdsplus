@@ -37,26 +37,26 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 
 	private fun WordCommand(in _card_addr, in _rw, in _reset)
 	{
-		return ( word(_card_addr) << 25 | word(_rw) << 20 |  word(_reset) << 9);
+		return ( _card_addr | _rw << 11 |  _reset << 20 );
 	};
 
 	private fun WordSetGain(in _word, in _chan, in _lin_int, in _gain)
 	{
-		_word = _word & ~( word(127) << 13 );
-		_word = _word & ~( word(15)  << 21 );
-		_word = _word & ~( word(1)   << 12 );
+		_word = _word & ~( word(127) << 12 );
+		_word = _word & ~( word(15)  << 7 );
+		_word = _word & ~( word(1)   << 19 );
 
-		return ( _word |  word(_gain) << 13 | word(_chan) << 21 | word(_lin_int) << 12 );
+		return ( _word |  (_gain) << 12 | (_chan) << 7 | (_lin_int) << 19 );
 	};
 
 	private fun WordGetGain(in _word)
 	{
-		return ( ( _word | word(127) << 13 ) >> 13 );
+		return ( ( _word & (127) << 12 ) >> 12 );
 	};
 
 	private fun IsRemote(in _word)
 	{
-		return ( ( _word | word(1) << 12 ) >> 12 );
+		return ( ( _word & (1) << 19 ) >> 19 );
 	};
 
 	private fun WriteGain(in _name,  in _word)
@@ -72,23 +72,27 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 		_f = _B2601_K_CLEAR;
 		_w = 0;
 		_status = DevCamChk(_name, CamPiow(_name, _a, _f, _w, 24),1,1);
-write(*, _name);		
+		
+write(*, "1 "//_name//"  "//_cmnd);
+
 		if( _status )
 		{
-			wait(0.02);
+			wait(0.2);
 			_a = _B2601_K_OUTPUT;
 			_f = _B2601_K_WRITE;
 			_status = DevCamChk(_name, CamPiow(_name, _a, _f, _cmnd, 24),1,1);
-write(*, _name);		
+
+write(*, "2 "//_name//"  "//_cmnd);		
+
 			if( _status )
 			{
-				wait(0.02);
+				wait(0.2);
 				_a = _B2601_K_INPUT;
 				_f = _B2601_K_READ;
 				_status = DevCamChk(_name, CamPiow(_name, _a, _f, _value, 24),1,1);
 			}
 		}
-write(*, _name);		
+write(*, "3 "//_name);		
 	};
 
 
@@ -111,9 +115,11 @@ write(*, _name);
 	_write_value = WordCommand( _card_addr, _WRITE, 7);
 	_read_value  = WordCommand( _card_addr, _READ, 7);
 
+write(*, "Read "//_read_value);
+write(*, "Write "//_write_value);
 
 /* Check if card is set in local or remot mode */
-	_out = word(0);
+	_out = 0;
 		
 	ReadGain( _name,  _read_value, _out );
 

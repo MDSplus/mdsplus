@@ -4,9 +4,11 @@ public fun RFXVIConfig__store(as_is _nid, optional _method)
         private _N_COMMENT   =   1;
 	private _N_VVMC01_INI = 13;
 	private _N_VVMC01_PPC = 14;
+	
+	WRITE(*, "VI CONFIG STORE");
 
 	_status = MdsConnect("150.178.34.151:8100");
-	if( _status & 1)
+	if(_status != 0)
 	{
 		_error = mdsvalue('OPCConnect("OPC.SimaticNET", 500)');
 		if( ! _error )
@@ -18,7 +20,9 @@ public fun RFXVIConfig__store(as_is _nid, optional _method)
 			} 
 			else
 			{
+			
 				DevPut(_nid, _N_VVMC01_INI, _vvmc01_ini);
+				WRITE(*, "_N_VVMC01_INI = "//_vvmc01_ini);
 			}			
 			
 			_vvmc01_ppc = mdsvalue('OPCGet("\\\\SR:\\\\V1_ISO_Fetch\\\\VVMC1_PPC")');
@@ -29,6 +33,7 @@ public fun RFXVIConfig__store(as_is _nid, optional _method)
 			else
 			{
 				DevPut(_nid, _N_VVMC01_PPC, _vvmc01_ppc);
+				WRITE(*, "_N_VVMC01_PPC = "//_vvmc01_ppc);
 			}
 			
 			mdsvalue('OPCDisconnect()');

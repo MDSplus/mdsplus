@@ -1,7 +1,7 @@
 public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 {
 
-	write(*, 'RFXMOP è questo');
+    write(*, 'RFXMOP');
 
     private _K_CONG_NODES = 135;
     private _N_HEAD = 0;
@@ -21,9 +21,6 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
     _status = 1;
 
 
-
-
-
     _mdsip_address = if_error(data(DevNodeRef(_nid, _N_MDSIP_ADDR)), "");
 
     if(len( _mdsip_address ) == 0)
@@ -36,20 +33,20 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 
 	_opc_server = if_error(data(DevNodeRef(_nid, _N_OPC_SERVER)), "");
 
-    if(len(_opc_server) == 0)
-    {
-    	DevLogErr(_nid, "Invalid opc server name");
+	if(len(_opc_server) == 0)
+	{
+		DevLogErr(_nid, "Invalid opc server name");
  		abort();
-    }
+	}
 	write(*, 'Opc server name: '//_opc_server);
 
 
 	DevNodeCvt(_nid, _N_ACTIVITY, ['PULSE', 'PDC', 'GDC', 'BAKING', 'VAR TEMP', 'PUMPING', 'TEST'], [1,2,3,4,5,6,7], _activity=-1);
-    if(_activity < 0 )
-    {
-    	DevLogErr(_nid, "Invalid activity");
+	if(_activity < 0 )
+	{
+		DevLogErr(_nid, "Invalid activity");
  		abort();
-    }
+	}
 
 	_tagPath = "\\S7:\\Supervisore\\aliases\\SS.";
 
@@ -86,10 +83,6 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
              abort();
 	}
 
-
-
-
-
 	write(*, 'Activity: ', _tagPath//"Activity", _activity);
 	_status = MdsValue("OpcPut($1, $2)", _tagPath//"Activity", _activity );
 	if( _status == 1)
@@ -108,8 +101,8 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		_taskPath = "["//trim(adjustl(_i))//"]";
 
 		_task_name = if_error( data(DevNodeRef(_nid, (_head_task + _N_TASK_NAME) )), "" );
-        if(len(_task_name) == 0)
-			break;
+		if(len(_task_name) == 0)
+			_tast_name ="  ";
         
 		write(*, "Name: ", _tagPath//"TaskName"//_taskPath, _task_name);
 
@@ -117,17 +110,17 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		if( _status == 1)
 		{
 			_errMsg = MdsValue("OpcErrorMessage()");
-    		DevLogErr(_nid, _errMsg);
+			DevLogErr(_nid, _errMsg);
  			abort();
 		}
 
 
-	    DevNodeCvt(_nid, (_head_task + _N_TASK_FUNCTION), ['INACTIVE', 'ACTIVE', 'QUIESCENT' ], [1,4,2], _funct=-1);
-        if(_funct < 0 )
-        {
-    	   DevLogErr(_nid, "Invalid functionality for task "//(_i+1));
- 		   abort();
-        }
+	        DevNodeCvt(_nid, (_head_task + _N_TASK_FUNCTION), ['INACTIVE', 'ACTIVE', 'QUIESCENT' ], [1,4,2], _funct=-1);
+		if(_funct < 0 )
+		{
+			DevLogErr(_nid, "Invalid functionality for task "//(_i+1));
+			abort();
+		}
 
 		write(*, "Funct: ", _tagPath//"Function"//_taskPath, _funct);
 
@@ -135,31 +128,31 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		if( _status == 1)
 		{
 			_errMsg = MdsValue("OpcErrorMessage()");
-    		DevLogErr(_nid, _errMsg);
+			DevLogErr(_nid, _errMsg);
  			abort();
 		}
 
 
 		_mode = if_error(data(DevNodeRef(_nid, (_head_task + _N_TASK_MODE) )), -1);
-        if(_mode < 0 )
-        {
-    	   DevLogErr(_nid, "Invalid modality for task "//(_i+1));
+		if(_mode < 0 )
+		{
+		   DevLogErr(_nid, "Invalid modality for task "//(_i+1));
  		   abort();
-        }
+		}
 
 		write(*, "Mode: ", _tagPath//"Mode"//_taskPath, _mode);
 
 		_status = MdsValue('OpcPut($1, $2)', _tagPath//"Mod"//_taskPath, _mode );
 		if( _status == 1)
 		{
-			_errMsg = MdsValue("OpcErrorMessage()");
-    		DevLogErr(_nid, _errMsg);
+		        _errMsg = MdsValue("OpcErrorMessage()");
+    		        DevLogErr(_nid, _errMsg);
  			abort();
 		}
 
 
 	}
-
+	
 
 	MdsValue("OpcDisconnect()");
 
