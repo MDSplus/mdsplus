@@ -14,7 +14,9 @@ extern unsigned short OpcCompile;
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsshr.h>
+#ifndef HAVE_WINDOWS_H
 #include <pthread.h>
+#endif
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL

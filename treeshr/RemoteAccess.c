@@ -896,8 +896,8 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
       sprintf(cmd,"SetMdsplusFileProtection %s 2> /dev/null",filename);
       system(cmd);
       free(cmd);
-#endif
     }
+#endif
   }
   free(tmp);
   if (fd != -1)
