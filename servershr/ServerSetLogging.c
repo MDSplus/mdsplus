@@ -35,14 +35,11 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include "servershrp.h"
 
-int ServerSetLogging( char *server, char *logging_mode )
-{
-  LoggingMsg msg;
-  msg.type = (LoggingType)(*logging_mode);
-  ServerSetLinkDownHandler(0);
-  return ServerSendMessage(0, server, logging, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0);
+int ServerSetLogging(char *server, char logging_mode)
+{ 
+  struct descrip p1;
+  return ServerSendMessage(0, server, SrvSetLogging, 0, 0, 0, 0, 1, MakeDescrip(&p1,DTYPE_CHAR,0,0,&logging_mode));
 }

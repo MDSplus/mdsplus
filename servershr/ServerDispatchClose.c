@@ -30,9 +30,7 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include "servershrp.h"
 
 int ServerDispatchClose(void *vtable)
 { 

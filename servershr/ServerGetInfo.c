@@ -31,43 +31,50 @@ doing.
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 
-static int Efn;
-static int status;
-
-static void ReturnText(char **response, int *netnid, int *length, Msg *reply)
+char *ServerGetInfo(int full, char *server)
 {
-  int text_length = *length - sizeof(Msg) + 1;
-  *response = (char *)malloc(text_length + 1);
-  strncpy(*response,reply->data,text_length);
-  (*response)[text_length] = 0;
-}
-
-static void LinkDown(int *link_id)
-{
-  status = ServerPATH_DOWN;
-/*
-  sys$setef(Efn);
-*/
-}
-
-char *ServerGetInfo( int efn, int full, char *server)
-{
-  char *response;
   int status;
-  ShowMsg msg;
-  msg.full = full;
-  ServerSetLinkDownHandler(LinkDown);
-  status = ServerSendMessage(1, server, show, sizeof(msg), (char *)&msg, 0, ReturnText, (void *)&response, 0, 0);
-/*
-  if (status & 1)
-    sys$waitfr(efn);
-*/
-  ServerSetLinkDownHandler(0);
-  return response;
+  char *cmd = "ServerGetInfo()"; 
+  char *ans;
+  char *ansret;
+  short len = 0;
+  int sock = ServerConnect(server);
+  if (sock >= 0)
+  {
+    int status = SendArg(sock,0,DTYPE_CSTRING,1,strlen(cmd),0,0,cmd);
+    if (status & 1) 
+    {
+      char dtype;
+      char ndims;
+      int dims[8];
+      int numbytes;
+      char *reply;
+      status = GetAnswerInfo(sock,&dtype,&len,&ndims,dims,&numbytes,(void **)&reply);
+      if ((status & 1) && (dtype == DTYPE_CSTRING))
+        ans = reply;
+      else
+      {
+        ans = "Invalid response from server";
+        len = strlen(ans);
+      }
+    }
+    else
+    {
+      ans = "No response from server";
+      len = strlen(ans);
+    }
+  }
+  else
+  {
+    ans = "Error connecting to server";
+    len = strlen(ans);
+  }
+  ansret = strncpy((char *)malloc(len+1),ans,len);
+  ansret[len] = 0;
+  return(ansret);
 }

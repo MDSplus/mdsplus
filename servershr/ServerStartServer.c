@@ -29,11 +29,10 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include "servershrp.h"
 
-int ServerStartServer( char *server )
-{
-  return ServerSendMessage(0, server, noop, 0, 0, 0, 0, 0, 0, 0);
+int ServerStartServer(char *server)
+{ 
+  return ServerConnect(server);
 }

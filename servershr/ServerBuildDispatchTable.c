@@ -30,9 +30,12 @@ int ServerBuildDispatchTable( )
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
+#undef DTYPE_FLOAT
+#undef DTYPE_DOUBLE
+#undef DTYPE_EVENT
+#include <ipdesc.h>
 #include <usagedef.h>
 #include <dbidef.h>
-#include <mdsserver.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strroutines.h>
@@ -42,6 +45,7 @@ int ServerBuildDispatchTable( )
 #include <libroutines.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
+#include "servershrp.h"
 extern int TdiDeallocate();
 extern int TdiDispatchOf();
 extern int TdiExecute();
@@ -234,16 +238,31 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
     LinkConditions();
     if (monitor_name)
     {
-      MonitorMsg msg;
-      memcpy(msg.treename,(*table_ptr)->tree,sizeof(msg.treename));
-      msg.shot = (*table_ptr)->shot;
+      char tree[13];
+      char *cptr;
+      for (i=0, cptr = (*table_ptr)->tree;i<12;i++) 
+        if (cptr[i] == (char)32) 
+          break;
+        else
+          tree[i] = cptr[i];
+      tree[i] = 0;
       for (i=0; i<num_actions; i++)
       {
-        msg.phase = actions[i].phase;
-        msg.nid = actions[i].nid;
-        msg.on = actions[i].on;
-        msg.mode = i ? (i == (num_actions - 1) ? build_table_end : build_table) : build_table_begin;
-        if (!(ServerSendMessage(0, monitor_name, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1))
+        struct descrip p1,p2,p3,p4,p5,p6,p7,p8;
+        int mode;
+        int on = actions[i].on;
+        char *server = "";
+        mode = i ? (i == (num_actions - 1) ? MonitorBuildEnd : MonitorBuild) : MonitorBuildBegin;
+        if (!(ServerSendMessage(0, monitor_name, SrvMonitor, 0, 0, 0, 0, 8, 
+                      MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), 
+                      MakeDescrip(&p2,DTYPE_LONG,0,0,&(*table_ptr)->shot),
+                      MakeDescrip(&p3,DTYPE_LONG,0,0,&actions[i].phase),
+                      MakeDescrip(&p4,DTYPE_LONG,0,0,&actions[i].nid),
+                      MakeDescrip(&p5,DTYPE_LONG,0,0,&on),
+                      MakeDescrip(&p6,DTYPE_LONG,0,0,&mode),
+                      MakeDescrip(&p7,DTYPE_CSTRING,0,0,server),
+                      MakeDescrip(&p8,DTYPE_LONG,0,0,&actions[i].status))
+                      & 1))
           break;
       }
     }

@@ -30,24 +30,14 @@ int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$de
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
-#include <strroutines.h>
-#include <string.h>
+#include <ipdesc.h>
+#include <pthread.h>
+#include "servershrp.h"
 
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-int ServerDispatchAction(int efn, char *server, char *tree, int shot, int nid,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down_handler)(),
-                        void (*before_ast)())
+int ServerDispatchAction(pthread_cond_t *condition, char *server, char *tree, int shot, int nid,
+                        void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
-  ActionMsg msg;
-  int i;
-  strncpy(msg.treename,tree,MIN(sizeof(msg.treename),strlen(tree)));
-  for (i=strlen(tree); i<sizeof(msg.treename); i++) msg.treename[i]=' ';
-  msg.shot = shot;
-  msg.nid = nid;
-  ServerSetLinkDownHandler(link_down_handler);
-  return ServerSendMessage(0, server, action, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
+  struct descrip p1,p2,p3;
+  return ServerSendMessage(condition, server, SrvAction, retstatus, ast, astprm, before_ast, 3,
+            MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), MakeDescrip(&p2,DTYPE_LONG,0,0,&shot), MakeDescrip(&p3,DTYPE_LONG,0,0,&nid));
 }

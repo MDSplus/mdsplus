@@ -30,27 +30,14 @@ int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$d
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <strroutines.h>
-#include <servershr.h>
-#include <stdlib.h>
-#include <string.h>
+#include <ipdesc.h>
+#include <pthread.h>
+#include "servershrp.h"
 
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-int ServerDispatchCommand(int efn, char *server, char *cli, char *command,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down)(), void (*before_ast)())
+int ServerDispatchCommand(pthread_cond_t *condition, char *server, char *cli, char *command,
+                        void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
-  int status;
-  int size = sizeof(MdsDclCommandMsg) + strlen(command);
-  MdsDclCommandMsg *msg = malloc(size);
-  int tablen = MIN(sizeof(msg->cli)-1,strlen(cli));
-  strncpy(msg->cli,cli,tablen);
-  msg->cli[tablen] = 0;
-  strcpy(msg->command,command);
-  ServerSetLinkDownHandler(link_down);
-  status = ServerSendMessage(0, server, mdsdcl_command, size, (char *)msg, retstatus, ast, astprm, before_ast, netid);
-  free(msg);
-  return status;
+  struct descrip p1,p2;
+  return ServerSendMessage(condition, server, SrvCommand, retstatus, ast, astprm, before_ast, 
+                    2,MakeDescrip(&p1,DTYPE_CSTRING,0,0,cli),MakeDescrip(&p2,DTYPE_CSTRING,0,0,command));
 }

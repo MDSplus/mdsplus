@@ -29,11 +29,10 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include "servershrp.h"
 
-int ServerStopServer( char *server )
-{
-  return ServerSendMessage(1, server, stop, 0, 0, 0, 0, 0, 0, 0);
+int ServerStopServer(char *server)
+{ 
+  return ServerSendMessage(0, server, SrvStop, 0, 0, 0, 0, 0);
 }

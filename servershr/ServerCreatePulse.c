@@ -30,22 +30,14 @@ int SERVER$CREATE_PULSE(int efn, struct dsc$descriptor *server, struct dsc$descr
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
-#include <strroutines.h>
-#include <string.h>
+#include <ipdesc.h>
+#include <pthread.h>
+#include "servershrp.h"
 
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-int ServerCreatePulse(int efn, char *server, char *tree, int shot,
-                        void (*ast)(), void *astprm, int *retstatus, int *netid, void (*link_down_handler)(),void (*before_ast)())
+int ServerCreatePulse(pthread_cond_t *condition, char *server, char *tree, int shot,
+                        void (*ast)(), void *astprm, int *retstatus, void (*before_ast)())
 { 
-  CreatePulseMsg msg;
-  int i;
-  strncpy(msg.treename,tree,MIN(sizeof(msg.treename),strlen(tree)));
-  for (i=strlen(tree); i<sizeof(msg.treename); i++) msg.treename[i]=' ';
-  msg.shot = shot;
-  ServerSetLinkDownHandler(link_down_handler);
-  return ServerSendMessage(0, server, create_pulse, sizeof(msg), (char *)&msg, retstatus, ast, astprm, before_ast, netid);
+  struct descrip p1,p2;
+  return ServerSendMessage(condition, server, SrvAction, retstatus, ast, astprm, before_ast, 2,
+            MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), MakeDescrip(&p2,DTYPE_LONG,0,0,&shot));
 }

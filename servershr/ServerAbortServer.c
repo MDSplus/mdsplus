@@ -29,17 +29,12 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
-int ServerAbortServer( char *server, int *flush )
-{
-  DoAbortMsg msg;
-  int status;
-  ServerSetLinkDownHandler(0);
-  msg.flush = *flush;
-  status = ServerSendMessage(1, server, doabort, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0);
-  if (status & 1 && msg.flush)
-    status = ServerSendMessage(0, server, doabort, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0);
-  return status;
+#include <ipdesc.h>
+#include <pthread.h>
+#include "servershrp.h"
+
+int ServerAbortServer(char *server, int flush)
+{ 
+  struct descrip p1;
+  return ServerSendMessage(0, server, SrvAbort, 0, 0, 0, 0, 1,MakeDescrip(&p1,DTYPE_LONG,0,0,&flush));
 }

@@ -31,8 +31,12 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
+#undef DTYPE_FLOAT
+#undef DTYPE_DOUBLE
+#undef DTYPE_EVENT
+#include <ipdesc.h>
+#include "servershrp.h"
 #include <ncidef.h>
-#include <mdsserver.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -44,6 +48,8 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <tdimessages.h>
+#include <pthread.h>
+#include <errno.h>
 
 extern int TdiCompletionOf();
 extern int TdiExecute();
@@ -51,8 +57,7 @@ extern int TdiErrorlogsOf();
 extern int TdiGetLong();
 
 static void Dispatch(int idx);
-void SendMonitor(MonitorMode mode, int idx);
-static void LinkDown(int *netid);
+void SendMonitor(int mode, int idx);
 static void SendReply(int nid, char *message);
 static void ActionDone(int idx);
 static void Before(int idx);
@@ -69,7 +74,6 @@ static const int zero = 0;
 
 
 static ActionInfo *actions;
-static int SyncEfn;
 static char *tree;
 static int shot;
 static int num_actions;
@@ -86,6 +90,11 @@ static int last_c;
 static int first_g;
 static int last_g;
 static int WaitForAll;
+static int WorkerThreadRunning = 0;
+static pthread_t WorkerThread;
+static pthread_cond_t JobWaitCondition;
+static pthread_mutex_t JobWaitMutex;
+
 
 static char *Server(char *srv)
 {
@@ -96,57 +105,39 @@ static char *Server(char *srv)
 	return server;
 }
 
-void SendMonitor(MonitorMode mode, int idx)
+void SendMonitor(int mode, int idx)
 {
   if (MonitorOn)
   {
-    MonitorMsg msg;
-    memcpy(msg.treename,table->tree,sizeof(msg.treename));
-    msg.shot = shot;
-    msg.phase = actions[idx].phase;
-    msg.nid = actions[idx].nid;
-    msg.mode = mode;
-    msg.status = actions[idx].status;
-    memcpy(msg.server,actions[idx].server,sizeof(msg.server));
-    MonitorOn = ServerSendMessage(0, Monitor, monitor, sizeof(msg), (char *)&msg, 0, 0, 0, 0, 0) & 1;
+    struct descrip p1,p2,p3,p4,p5,p6,p7,p8;
+    char tree[13];
+    char *cptr;
+    int i;
+    int on = actions[idx].on;
+    char server[33];
+    for (i=0, cptr = table->tree;i<12;i++) 
+    if (cptr[i] == (char)32) 
+      break;
+    else
+      tree[i] = cptr[i];
+    tree[i] = 0;
+    for (i=0, cptr = actions[idx].server;i<32;i++) 
+      if (cptr[i] == (char)32) 
+        break;
+      else
+        server[i] = cptr[i];
+    server[i] = 0;
+    MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 8, 
+                      MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), 
+                      MakeDescrip(&p2,DTYPE_LONG,0,0,&table->shot),
+                      MakeDescrip(&p3,DTYPE_LONG,0,0,&actions[idx].phase),
+                      MakeDescrip(&p4,DTYPE_LONG,0,0,&actions[idx].nid),
+                      MakeDescrip(&p5,DTYPE_LONG,0,0,&on),
+                      MakeDescrip(&p6,DTYPE_LONG,0,0,&mode),
+                      MakeDescrip(&p7,DTYPE_CSTRING,0,0,server),
+                      MakeDescrip(&p8,DTYPE_LONG,0,0,&actions[idx].status));
   }
 }
-
-static void LinkDown(int *netid)
-{
-  int i;
-  int done = 1;
-  for (i=first_c;i<last_c;i++)
-  {
-    if (actions[i].dispatched && !actions[i].done)
-    {
-      if (actions[i].netid == *netid)
-      {
-/*
-        actions[i].status = SS$_CONNECFAIL;
-        sys$dclast(ActionDone,i,0);
-*/
-		ActionDone(i);
-      }
-    }
-  }
-  for (i=first_g;i<last_g;i++)
-  {
-    if (actions[i].dispatched && !actions[i].done)
-    {
-      if (actions[i].netid == *netid)
-      {
-/*
-        actions[i].status = SS$_CONNECFAIL;
-        sys$dclast(ActionDone,i,0);
-*/
-		ActionDone(i);
-      }
-    }
-  }
-  return;
-}
-
 
 static void SendReply(int nid, char *message)
 {
@@ -173,13 +164,13 @@ static void SendReply(int nid, char *message)
 
 static char *now()
 {
-  struct tm *tmtime;
-  time_t aclock;
-  time(&aclock);
-  tmtime = localtime(&aclock);
-  return asctime(tmtime);
+  static char now[64];
+  time_t tim;
+  tim = time(0);
+  strcpy(now,ctime(&tim));
+  now[strlen(now)-1]=0;
+  return now;
 }
-
 
 static void ActionDone(int idx)
 {
@@ -198,12 +189,10 @@ static void ActionDone(int idx)
 	{
 	  char *event = strncpy((char *)malloc(event_name.length+1),event_name.pointer,event_name.length);
 	  event[event_name.length] = 0;
-/*
-      MdsEvent(event,&table->shot);
-*/
+          MDSEvent(event,sizeof(int),(char *)&table->shot);
 	  free(event);
 	}
-    SendMonitor(done, idx);
+    SendMonitor(MonitorDone, idx);
     actions[idx].done = 1;
     actions[idx].recorded = 0;
     path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
@@ -240,19 +229,13 @@ static void ActionDone(int idx)
             else
             {
               actions[cidx].status = ServerNOT_DISPATCHED;
-/*
-              sys$dclast(ActionDone,cidx,0);
-*/
-			  ActionDone(cidx);
+   	      ActionDone(cidx);
             }
           }
           else if (dstat != TdiUNKNOWN_VAR)
           {
             actions[cidx].status = ServerINVALID_DEPENDENCY;
-			/*
-            sys$dclast(ActionDone,cidx,0);
-			*/
-			ActionDone(cidx);
+            ActionDone(cidx);
           }
         }
       }
@@ -260,9 +243,7 @@ static void ActionDone(int idx)
   }
   if ( WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
                     : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) )
-/*
-    sys$setef(SyncEfn);
-*/
+    pthread_cond_signal(&JobWaitCondition);
   return;
 }
 
@@ -270,7 +251,7 @@ static void Before(int idx)
 {
   char logmsg[1024];
   actions[idx].doing = 1;
-  SendMonitor(doing, idx);
+  SendMonitor(MonitorDoing, idx);
   if (Output)
   {
     static DESCRIPTOR(fao_s, "!%T !AS is beginning action !AS");
@@ -281,20 +262,6 @@ static void Before(int idx)
     (*Output)(logmsg);
   }
   return;
-}
-
-static int AbortHandler( unsigned sig_args[], unsigned mech_args[])
-{
-/*  if (sig_args[1] == SS$_UNWIND) return sig_args[1];
-  if (sig_args[1] == SS$_ABORT)
-  {
-    AbortInProgress = 1;
-    sys$setef(SyncEfn);
-    return SS$_CONTINUE;
-  }
-  return SS$_RESIGNAL;
-  */
-	return 0;
 }
 
 static void SetActionRanges(int phase)
@@ -336,8 +303,7 @@ static void AbortRange(int s,int e)
   {
     if (actions[i].dispatched && !actions[i].done)
     {
-	  int i;
-	  int one = 1;
+      int one = 1;
       ServerAbortServer(Server(actions[i].server),&one);
     }
   }
@@ -346,7 +312,9 @@ static void AbortRange(int s,int e)
 static void SetGroup(int sync)
 {
   int i;
-  int group = actions[first_g].sequence / sync;
+  int group;
+  sync = (sync < 1) ? 1 : sync;
+  group = actions[first_g].sequence / sync;
   for (i=first_g+1;i<last_s && ((actions[i].sequence/ sync) == group); i++);
   last_g = i;
 }
@@ -382,24 +350,20 @@ static void RecordStatus(int s,int e)
   }
 }
 
-static void WaitForTimer()
-{
-/*
-  int one_second[] = {-10000000,-1};
-  sys$setimr(0,one_second,WaitForTimer,WaitForTimer,0);
-  sys$dclast(ActionDone,-1,0);
-*/
-}
-
 static void WaitForActions(int all)
 {
-/*
+  int status = ETIMEDOUT;
+  struct timespec one_sec = {1,0};
+  struct timespec abstime;
   WaitForAll = all;
-  sys$clref(SyncEfn);
-  WaitForTimer();
-  sys$waitfr(SyncEfn);
-  sys$cantim(WaitForTimer,0);
-*/
+  while ((status == ETIMEDOUT) && !(WaitForAll ? NoOutstandingActions(first_g,last_g) && NoOutstandingActions(first_c,last_c)
+                    : (AbortInProgress ? 1 : NoOutstandingActions(first_g,last_g)) ))
+  {
+    pthread_mutex_lock(&JobWaitMutex);
+    pthread_get_expiration_np(&one_sec,&abstime);
+    status = pthread_cond_timedwait( &JobWaitCondition, &JobWaitMutex, &abstime);
+    pthread_mutex_unlock(&JobWaitMutex);
+  }
 }
 
 static char *DetailProc(int full)
@@ -442,25 +406,43 @@ static char *DetailProc(int full)
   return msg;
 }
 
-int ServerDispatchPhase(int efn, void *vtable, char *phasenam, char *noact_in,
-                          int *sync, void (*output_rtn)(), char *monitor)
+int ServerDispatchPhase(pthread_cond_t *cond, void *vtable, char *phasenam, char noact,
+                          int sync, void (*output_rtn)(), char *monitor)
 { 
   int i;
   int status;
   static int phase;
   static DESCRIPTOR_LONG(phase_d,&phase);
   static DESCRIPTOR(phase_lookup,"PHASE_NUMBER_LOOKUP($)");
-  tree = table->tree;
+  struct descriptor phasenam_d = {0, DTYPE_T, CLASS_S, 0};
+  static int JobWaitInitialized = 0;
   table = vtable;
+  tree = table->tree;
   shot = table->shot;
-  noact = *noact_in;
-  SyncEfn = efn;
   Output = output_rtn;
   actions = table->actions;
   num_actions = table->num;
   AbortInProgress = 0;
   table->failed_essential = 0;
-  status = TdiExecute(&phase_lookup,phasenam,&phase_d MDS_END_ARG);
+  phasenam_d.length = strlen(phasenam);
+  phasenam_d.pointer = phasenam;
+  if (JobWaitInitialized == 0)
+  {
+    status = pthread_mutex_init(&JobWaitMutex,0);
+    if (status)
+    {
+      perror("Error creating pthread mutex");
+      exit(status);
+    }
+    status = pthread_cond_init(&JobWaitCondition,0);
+    if (status)
+    {
+      perror("Error creating pthread condition");
+      exit(status);
+    }
+    JobWaitInitialized = 1;
+  }
+  status = TdiExecute(&phase_lookup,&phasenam_d,&phase_d MDS_END_ARG);
   if (status & 1 && (phase > 0))
   {
     if (monitor)
@@ -475,10 +457,7 @@ int ServerDispatchPhase(int efn, void *vtable, char *phasenam, char *noact_in,
     first_g = first_s;
     while (!AbortInProgress && (first_g < last_s))
     {
-      SetGroup(*sync);
-/*
-      lib$establish(AbortHandler);
-*/
+      SetGroup(sync);
       for (i=first_g;i<last_g;i++)
          Dispatch(i);
       WaitForActions(0);
@@ -498,17 +477,13 @@ int ServerDispatchPhase(int efn, void *vtable, char *phasenam, char *noact_in,
       if (!actions[i].done)
       {
         actions[i].status = ServerCANT_HAPPEN;
-/*
-        sys$dclast(ActionDone,i,0);
-*/
-		ActionDone(i);
+	ActionDone(i);
       }
     }
     WaitForActions(1);
     RecordStatus(first_c,last_c);
     RecordStatus(first_s,last_s);
   }
-  ServerSetLinkDownHandler(0);
   return status;
 }
 
@@ -528,10 +503,10 @@ static void Dispatch(int i)
   if (i < 0)
   {
     char *path;
-    i = 1 - i;
+    i = -1-i;
     path = TreeGetMinimumPath((int *)&zero,actions[i].nid);
-	sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(actions[i].server));
-	TreeFree(path);
+    sprintf(logmsg,"%s, Dispatching node %s to %s",now(),path,Server(actions[i].server));
+    TreeFree(path);
     (*Output)(logmsg);
     return;
   }
@@ -539,31 +514,23 @@ static void Dispatch(int i)
   actions[i].doing = 0;
   actions[i].dispatched = 0;
   if (Output)
-/*
-    sys$dclast(Dispatch,-1-i,0);
-*/
       Dispatch(-1-i);
-  SendMonitor(dispatched, i);
+  SendMonitor(MonitorDispatched, i);
   if (noact)
   {
     actions[i].status = status = 1;
-/*
-    sys$dclast(ActionDone,i,0);
-*/
+    ActionDone(i);
   }
   else
   {
     status = ServerDispatchAction(0, Server(actions[i].server), tree, shot, actions[i].nid, ActionDone, (void *)i, &actions[i].status,
-                                    &actions[i].netid, LinkDown, Before);
+                                    Before);
     if (status & 1)
       actions[i].dispatched = 1;
   }
   if (!(status & 1))
   {
     actions[i].status = status;
-	/*
-    sys$dclast(ActionDone,i,0);
-	*/
-	ActionDone(i);
+    ActionDone(i);
   }
 }

@@ -29,12 +29,10 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include <mdsdescrip.h>
-#include <mdsserver.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include "servershrp.h"
 
-int ServerCloseTrees( char *server )
-{
-  ServerSetLinkDownHandler(0);
-  return ServerSendMessage(0, server, close, 0, 0, 0, 0, 0, 0, 0);
+int ServerCloseTrees(char *server)
+{ 
+  return ServerSendMessage(0, server, SrvClose, 0, 0, 0, 0, 0);
 }
