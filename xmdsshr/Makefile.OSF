@@ -41,16 +41,16 @@ all :	../shlib/libXmdsShr.so \
 	mkdir ../uid
 
 ../uid/xmds_usage_icons.uid : xmds_usage_icons.uil
-	uil -o $@ $<
+	uil -o $@ xmds_usage_icons.uil
 
 ../uid/XmdsDigChans.uid : XmdsDigChans.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsDigChans.uil
 
 ../uid/XmdsInput.uid : XmdsInput.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsInput.uil
 
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
-	uil -wmd xmdsuil.wmd -o $@ $<
+	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.so : $(OBJECTS)
 	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm \
@@ -60,8 +60,10 @@ all :	../shlib/libXmdsShr.so \
 
 ../shlib/xmdsuil.wmd : ../bin/wmdcreate
 	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
+	rm wml-uil.mm
+	rm wml-uil.sdml
 
-../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h UilDBDef.h UilLexPars.h
+../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
 	cc -o $@ -DMDS_EXTENSION -I../include -I. wmldbcreate-xmdsshr.c -lXt -lXm
 
 UilConst.h : xmdsuil.wml tokens.dat
@@ -70,20 +72,12 @@ UilConst.h : xmdsuil.wml tokens.dat
 tokens.dat : /usr/examples/motif/wml/tokens.dat
 	ln -s /usr/examples/motif/wml/tokens.dat .
 
-UilDBDef.h : /usr/examples/motif/wml/UilDBDef.h
-	cp /usr/examples/motif/wml/UilDBDef.h .
-
-UilLexPars.h : /usr/examples/motif/wml/UilLexPars.h
-	cp /usr/examples/motif/wml/UilLexPars.h .
-
 clean :
 	- rm *.o
 	- rm ../shlib/libXmdsShr.so
 	- rm so_locations
 	- rm .depend
 	- rm ../shlib/xmdsuil.wmd
-	- rm UilDBDef.h
-	- rm UilLexPars.h
 	- rm tokens.dat
 
 depend : .depend
