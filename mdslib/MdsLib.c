@@ -17,9 +17,7 @@ bottom of this file for configuring fortran entry points.
 #include <descrip.h>
 #endif
 #include "mdslib.h"
-#ifndef __VMS
 SOCKET mdsSocket=INVALID_SOCKET;
-#endif
 #ifndef _CLIENT_ONLY
 #ifdef __VMS
 extern int MDS$OPEN();
@@ -77,13 +75,21 @@ static int dtype_length(struct descriptor *d)
     case DTYPE_LONG      :  len = sizeof(int); break;
     case DTYPE_ULONGLONG : 
     case DTYPE_LONGLONG  :  len = sizeof(int) * 2; break; 
+#if DTYPE_NATIVE_FLOAT != DTYPE_FLOAT
     case DTYPE_NATIVE_FLOAT : 
+#endif
     case DTYPE_FLOAT     :  len = sizeof(float); break;
+#if DTYPE_NATIVE_DOUBLE != DTYPE_DOUBLE
     case DTYPE_NATIVE_DOUBLE :
+#endif
     case DTYPE_DOUBLE    :  len = sizeof(double); break;
+#if DTYPE_FLOAT_COMPLEX != DTYPE_COMPLEX
     case DTYPE_FLOAT_COMPLEX :
+#endif
     case DTYPE_COMPLEX   :  len = sizeof(float) * 2; break;
+#if DTYPE_DOUBLE_COMPLEX != DTYPE_COMPLEX_DOUBLE
     case DTYPE_DOUBLE_COMPLEX :
+#endif
     case DTYPE_COMPLEX_DOUBLE: len = sizeof(double) * 2; break;
     case DTYPE_CSTRING :  len = d->length ? d->length : (d->pointer ? strlen(d->pointer) : 0); break;
   }
@@ -340,11 +346,14 @@ int  MdsOpen(struct dsc$descriptor *treedsc, int *shot)
 {
    char *tree = DscToCstring(treedsc);
 #else
- int  MdsOpen(char *tree, int *shot){return ___MdsOpen(tree,shot);}
-static int  ___MdsOpen(char *tree, int *shot)
+int  MdsOpen(char *tree, int *shot)
 {
 #endif
+  return ___MdsOpen(tree,shot);
+}
 
+static int  ___MdsOpen(char *tree, int *shot)
+{
   if (mdsSocket != INVALID_SOCKET)
   {
 
@@ -411,10 +420,14 @@ int  MdsClose(struct dsc$descriptor *treedsc, int *shot)
 {
   char *tree = DscToCstring(treedsc);
 #else
-int  MdsClose(char *tree, int *shot){return ___MdsClose(tree,shot);}
-static int  ___MdsClose(char *tree, int *shot)
+int  MdsClose(char *tree, int *shot)
 {
 #endif
+  return ___MdsClose(tree,shot);
+}
+
+static int  ___MdsClose(char *tree, int *shot)
+{
   if (mdsSocket != INVALID_SOCKET)
   {
 
@@ -476,10 +489,14 @@ int  MdsSetDefault(struct dsc$descriptor *nodedsc)
 {
    char *node = DscToCstring(nodedsc);
 #else
- int  MdsSetDefault(char *node){return ___MdsSetDefault(node);}
-static int  ___MdsSetDefault(char *node)
+int  MdsSetDefault(char *node)
 {
 #endif
+  return ___MdsSetDefault(node);
+}
+
+static int  ___MdsSetDefault(char *node)
+{
 
   if (mdsSocket != INVALID_SOCKET) {
     char *expression = strcpy((char *)malloc(strlen(node)+20),"TreeSetDefault('");
@@ -547,10 +564,14 @@ SOCKET MdsConnect(struct dsc$descriptor *hostdsc)
 {
   char *host = DscToCstring(hostdsc);
 #else
-SOCKET MdsConnect(char *host){return ___MdsConnect(host);}
-static SOCKET ___MdsConnect(char *host)
+SOCKET MdsConnect(char *host)
 {
 #endif
+  return ___MdsConnect(host);
+}
+
+static SOCKET ___MdsConnect(char *host)
+{
   if (mdsSocket != INVALID_SOCKET)
     {
       MdsDisconnect(); 
@@ -1766,14 +1787,18 @@ and c then donot define the macro.
 #define MdsPut2 mdsput2
 #define MdsValue2 mdsvalue2
 #endif
+#ifdef __VMS
+int MdsValue(struct dsc$descriptor *expression, ...);
+#else
 int MdsValue(char *expression, ...);
-int descr (int *dtype, void *data, int *dim1, ...);
+#endif
 static SOCKET ___MdsConnect(char *host);
-static void ___MdsDisconnect();
+int descr (int *dtype, void *data, int *dim1, ...);
 static int  ___MdsClose(char *tree, int *shot);
-static int  ___MdsSetSocket(int *newsocket);
-static int  ___MdsSetDefault(char *node);
+static void ___MdsDisconnect();
 static int  ___MdsOpen(char *tree, int *shot);
+static int  ___MdsSetDefault(char *node);
+static int  ___MdsSetSocket(int *newsocket);
 
 #ifdef FortranMdsConnect
 SOCKET FortranMdsConnect(char *host) { return ___MdsConnect(host);}
