@@ -9,7 +9,7 @@ import java.util.*;
 import java.beans.*;
 
 public class Tree extends JScrollPane implements TreeSelectionListener, 
-    MouseListener, ActionListener, KeyListener
+    MouseListener, ActionListener, KeyListener, DataChangeListener
 {
     boolean is_angled_style;
     DefaultMutableTreeNode top;
@@ -34,12 +34,15 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     JTextField add_node_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
+    JDialog add_device_dialog;
     JList modify_tags_list;
     JTextField curr_tag_selection;
     DefaultListModel curr_taglist_model;
     String [] tags;
     JDialog rename_dialog;
     JTextField new_node_name;
+	JTextField add_device_type, add_device_name;
+    
 // Temporary, to vercome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b; 
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
@@ -314,7 +317,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	curr_experiment.is_readonly = readonly;
 	try {
 	    curr_experiment.open();
-	    top_node = new Node(curr_experiment);
+	    top_node = new Node(curr_experiment, this);
 	} catch (Exception e) {
 	    JOptionPane.showMessageDialog(frame, e.getMessage(), "Error opening "+exp, JOptionPane.ERROR_MESSAGE);
 	    return;
@@ -400,9 +403,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    Point screen_origin = getLocationOnScreen();
 	    //curr_origin = new Point(e.getX()+screen_origin.x, e.getY()+screen_origin.y);
         curr_origin = screen_origin;
-	    //curr_tree_node = 
-	//	(DefaultMutableTreeNode)curr_tree.getClosestPathForLocation(e.getX(), e.getY()).getLastPathComponent();
-	  //  curr_node = (Node)curr_tree_node.getUserObject();
+        curr_origin.x += 20;
+        curr_origin.y += 20;
+        
+        
 	    NodeBeanInfo nbi = curr_node.getBeanInfo();
 	    final PropertyDescriptor [] node_properties = nbi.getPropertyDescriptors();
 	    final MethodDescriptor [] node_methods = nbi.getMethodDescriptors();
@@ -436,6 +440,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		add_axis_b.addActionListener(this);
 		pop.add(jm);
 		pop.add(add_device_b = new JMenuItem("Add Device"));
+		add_device_b.addActionListener(this);
 		pop.add(add_child_b = new JMenuItem("Add Child"));
 		add_child_b.addActionListener(this);
 		pop.add(delete_node_b = new JMenuItem("Delete Node"));
@@ -565,6 +570,52 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     }		    
 	    
  
+    public void addDevice()
+    {
+	    if(curr_node == null) return;
+	    if(add_device_dialog == null)
+	    {
+	        add_device_dialog = new JDialog(frame);
+	        add_device_dialog.setLocation(curr_origin);
+	        JPanel jp = new JPanel();
+	        jp.setLayout(new BorderLayout());
+	        JPanel jp1 = new JPanel();
+	        jp1.add(new JLabel("Device: "));
+	        jp1.add(add_device_type = new JTextField(12));
+	        jp.add(jp1, "North");
+	        jp1 = new JPanel();
+	        jp1.add(new JLabel("Name:   "));
+	        jp1.add(add_device_name = new JTextField(12));
+	        jp.add(jp1, "South");
+	        jp1 = new JPanel();
+	        JButton ok_button;
+	        jp1.add(ok_button = new JButton("Ok"));
+	        ok_button.addActionListener(new ActionListener()  {
+	            public void actionPerformed(ActionEvent e)  {
+	              if(addDevice(add_device_name.getText().toUpperCase(), add_device_type.getText()) == 0);
+	                add_device_dialog.setVisible(false);
+	        }});
+	        JButton cancel_b = new JButton("Cancel");
+	        cancel_b.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+		        add_device_dialog.setVisible(false); }} );
+	        jp1.add(cancel_b);
+	        JPanel jp2;
+	        jp2 = new JPanel();
+	        jp2.setLayout(new BorderLayout());
+	        jp2.add(jp, "North");
+	        jp2.add(jp1, "South");
+	        add_device_dialog.getContentPane().add(jp2);
+	        add_device_dialog.pack();
+	    }
+	    add_device_name.setText("");
+	    add_device_type.setText("");
+	    add_device_dialog.setTitle("Add device to: "+ curr_node.getFullPath());
+	    add_device_dialog.setLocation(curr_origin);
+	    add_device_dialog.show();
+    }		    
+	    
+ 
     public void addNode(int usage, String name)
     {
 	DefaultMutableTreeNode new_tree_node = null;
@@ -600,6 +651,51 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	}
 	
     }
+	 
+	    
+	    
+    public int addDevice(String name, String type)
+    {
+	    DefaultMutableTreeNode new_tree_node = null;
+	    if(name == null || name.length() == 0 || name.length() > 12)
+	    {
+	        JOptionPane.showMessageDialog(frame, "Name length must range between 1 and 12 characters",
+		        "Error adding Node", JOptionPane.WARNING_MESSAGE);
+	        return 0;
+	    }
+	    if(type == null || type.length() == 0)
+	    {
+	        JOptionPane.showMessageDialog(frame, "Missing device type",
+		        "Error adding Node", JOptionPane.WARNING_MESSAGE);
+	        return 0;
+	    }
+	    try {
+	        Node new_node = curr_node.addDevice(name, type);
+	        int num_children = curr_tree_node.getChildCount();
+	        int i;
+	        if(num_children > 0)
+	        {
+		    String curr_name;
+		    for(i = 0; i < num_children; i++)
+		    {
+		        curr_name = ((Node)((DefaultMutableTreeNode)curr_tree_node.getChildAt(i)).getUserObject()).getName();
+		        if(name.compareTo(curr_name) < 0)
+			    break;
+		    }
+		    new_tree_node = new DefaultMutableTreeNode(new_node);
+		    DefaultTreeModel tree_model = (DefaultTreeModel)curr_tree.getModel();
+		    tree_model.insertNodeInto(new_tree_node, curr_tree_node, i);
+		    curr_tree.makeVisible(new TreePath(new_tree_node.getPath()));
+	    }
+	}
+	catch(Exception e) {
+	    JOptionPane.showMessageDialog(frame, "Add routine for the selected device cannot be activated:\n" + e.getMessage(),
+		 "Error adding Device", JOptionPane.WARNING_MESSAGE);
+	    return 0;
+	}
+	return 1;
+    }
+	    
 	    
     void deleteNode()
     {
@@ -830,6 +926,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_node_dialog.setVisible(false);
 	}
 	if(jb == (Object)add_child_b) addNode(NodeInfo.USAGE_STRUCTURE);
+	if(jb == (Object)add_device_b) addDevice();
 	if(jb == (Object)delete_node_b) deleteNode();
 	if(jb == (Object)modify_tags_b) modifyTags();
 	if(jb == (Object)rename_node_b) renameNode();
@@ -874,6 +971,14 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    curr_dialog.getEditor().setNode(node);
 	    return curr_dialog;
 	}
-    }	
+    }
+    public void dataChanged(DataChangeEvent e)
+    {
+        reportChange();
+    }
+    public Point getMousePosition()
+    {
+        return curr_origin;
+    }
 }
  

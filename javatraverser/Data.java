@@ -16,6 +16,7 @@ abstract class Data
     public Data() {}
     native static public Data fromExpr(String text_descr);
     native public String toString();
+    native static public int evaluate(String expression);
     
     
     public void AddDataListener(DataListener dl)

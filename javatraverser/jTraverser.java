@@ -7,6 +7,7 @@ import javax.swing.tree.*;
 import javax.swing.event.*;
 import java.util.*;
 public class jTraverser extends JFrame implements ActionListener{
+    
     String exp_name, shot_name;
     Tree tree;
     JMenu file_m, edit_m, data_m, customize_m;
@@ -24,10 +25,11 @@ public class jTraverser extends JFrame implements ActionListener{
      * Constructor.
      */
     public static void main(String args[]) {
+	
 	if(args.length >= 2)
-	    new jTraverser(args[0], args[1]);
+	    FrameRepository.frame = new jTraverser(args[0], args[1]);
 	else
-	    new jTraverser(null, null);
+	    FrameRepository.frame = new jTraverser(null, null);
 	
     }
     
@@ -71,6 +73,7 @@ public class jTraverser extends JFrame implements ActionListener{
 	add_axis_b.addActionListener(this);
 	curr_menu.add(jm);
 	curr_menu.add(add_device_b = new JMenuItem("Add Device"));
+	add_device_b.addActionListener(this);
 	curr_menu.add(add_child_b = new JMenuItem("Add Child"));
 	add_child_b.addActionListener(this);
 	curr_menu.add(delete_node_b = new JMenuItem("Delete Node"));
@@ -143,6 +146,8 @@ public void actionPerformed(ActionEvent e)
     if(source == (Object)delete_node_b) tree.deleteNode();
     if(source == (Object)modify_tags_b) tree.modifyTags();
     if(source == (Object)rename_node_b) tree.renameNode();
+    if(source == (Object)add_device_b) tree.addDevice();
+    
     if(source == (Object)turn_on_b) 
     {
 	Node curr_node = tree.getCurrentNode();
@@ -196,15 +201,20 @@ public void actionPerformed(ActionEvent e)
 	modify_data_d.pack();
 	modify_data_d.setLocation(new Point(50,50));
 	modify_data_d.show();
-    }    
+    }
     if(source == (Object)set_default_b)
     { 
-	if(tree.getCurrentNode() == null) return;
-	try {
-	    tree.getCurrentNode().setDefault();
-	}catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
-	tree.reportChange();
+	    if(tree.getCurrentNode() == null) return;
+	    try {
+	        tree.getCurrentNode().setDefault();
+	    }catch(Exception exc) {System.out.println("Error setting default "+exc.getMessage());}
+	    tree.reportChange();
     }
+    if(source == (Object)setup_device_b)
+    {
+	    if(tree.getCurrentNode() == null) return;
+	    tree.getCurrentNode().setupDevice();
+	}
 }
 
 void reportChange(String exp, int shot, boolean editable, boolean readonly)

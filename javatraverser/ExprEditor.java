@@ -123,6 +123,12 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    expr = "";
 	else
 	    expr = data.toString();
+	if(default_to_string)
+	{
+	    int len = expr.length();
+	    if(len >= 2)
+	        expr = expr.substring(1, len - 1);
+	}
 	if(default_scroll)
 	    text_area.setText(expr);
 	else

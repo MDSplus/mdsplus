@@ -15,5 +15,13 @@ public class NidData extends IntData implements NodeId
 	dtype = DTYPE_NID;
 	datum = nid;
     }
+    public int getInt()
+    {
+        return datum;
+    }
     public boolean isResolved() {return true; }
+    public void incrementNid()
+    {
+        datum++;
+    }
 }

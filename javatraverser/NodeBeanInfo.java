@@ -6,15 +6,15 @@ import java.awt.*;
 public class NodeBeanInfo extends SimpleBeanInfo
 {
     int usage;
-    Database tree;
+    Database experiment;
     String name;
     
     /* This constructor is intended to be used only by the traverser and not
     by a standard Bean Bulder, which  considers only the class to discriminate the 
     corresponding BeanInfo object */
-    public NodeBeanInfo(Database tree, int usage, String name)
+    public NodeBeanInfo(Database experiment, int usage, String name)
     {	
-	this.tree = tree;
+	this.experiment  = experiment;
 	this.usage = usage;
 	this.name = name;
     }
@@ -55,13 +55,13 @@ public class NodeBeanInfo extends SimpleBeanInfo
 	if(usage == NodeInfo.USAGE_STRUCTURE || usage == NodeInfo.USAGE_NONE)
 	    if(short_descr.equals("Display Data") || short_descr.equals("Modify Data"))
 		return false;
-	if(usage != NodeInfo.USAGE_ACTION)
+	if(usage != NodeInfo.USAGE_ACTION && usage != NodeInfo.USAGE_TASK)
 	    if(short_descr.equals("Do Action"))
 		return false;
 	if(usage != NodeInfo.USAGE_DEVICE)
 	    if(short_descr.equals("Setup Device"))
 		return false;
-	if(tree.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
+	if(experiment.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
 	    return false;
 	return true;
     }
@@ -97,7 +97,7 @@ public class NodeBeanInfo extends SimpleBeanInfo
 		    method("setupDevice", "Setup Device"),
 		    method("toggle", "Toggle On/Off"),
 		    method("setDefault", "Set Default"),
-		    method("doAction", "Do Action ")};
+		    method("doAction", "Do Action")};
 		return methods;
 	} catch (Exception e) 
 	{

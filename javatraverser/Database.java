@@ -42,6 +42,8 @@ public class Database {
     public native void setDefault(NidData nid) throws DatabaseException;
     public native NidData getDefault() throws DatabaseException;
     public native NidData addDevice(String path, String model) throws DatabaseException;
+    public native void doAction(NidData nid) throws DatabaseException;
+    public native String[] getDeviceComponents(String device_name);
   }  
     
     

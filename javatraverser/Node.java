@@ -3,7 +3,7 @@ import javax.swing.*;
 
 public class Node
 {
-    Database tree;
+    Database experiment;
     Data data;
     NodeInfo info;
     NidData nid;
@@ -13,91 +13,102 @@ public class Node
     boolean is_member;
     JLabel tree_label = null;
     NodeBeanInfo bean_info = null;
+    Tree hierarchy;
     
-    public Node(Database tree) throws DatabaseException
+    public Node(Database experiment, Tree hierarchy) throws DatabaseException
     {
-	this.tree = tree;
+	this.experiment = experiment;
+	this.hierarchy = hierarchy;
 	nid = new NidData(0);
-	info = tree.getInfo(nid);
+	info = experiment.getInfo(nid);
 	parent = null;
 	is_member = false;
     }
     
-    public Node(Database tree, Node parent, boolean is_member, NidData nid)
+    public Node(Database experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
     {
-	this.tree = tree;
+	this.experiment = experiment;
+	this.hierarchy = hierarchy;
 	this.nid = nid;
 	this.parent = parent;
 	try {
-	    info = tree.getInfo(nid);
+	    info = experiment.getInfo(nid);
 	}catch(Exception e) {System.out.println("Error getting info " + e);}
     }
     
     public void updateData() throws DatabaseException
     {
-	data = tree.getData(nid);
+	data = experiment.getData(nid);
     }
     
     public void updateInfo() throws DatabaseException
     {
-	info = tree.getInfo(nid);
+	info = experiment.getInfo(nid);
     }
     
     public void expand() throws DatabaseException
     {
 	int i;
-	NidData sons_nid[] = tree.getSons(nid);
-	NidData members_nid[] = tree.getMembers(nid);
+	NidData sons_nid[] = experiment.getSons(nid);
+	NidData members_nid[] = experiment.getMembers(nid);
 	sons = new Node[sons_nid.length];
 	members = new Node[members_nid.length];
 	for(i = 0; i < sons_nid.length; i++)
-	    sons[i] = new Node(tree, this, false, sons_nid[i]);
+	    sons[i] = new Node(experiment, hierarchy, this, false, sons_nid[i]);
 	for(i = 0; i < members_nid.length; i++)
-	    members[i] = new Node(tree, this, true, members_nid[i]);
+	    members[i] = new Node(experiment, hierarchy, this, true, members_nid[i]);
     }
     
     public void setDefault() throws DatabaseException
     {
-	tree.setDefault(nid);
+	experiment.setDefault(nid);
     }
     public void toggle() throws DatabaseException
     {
-	if(tree.isOn(nid))
-	    tree.setOn(nid, false);
+	if(experiment.isOn(nid))
+	    experiment.setOn(nid, false);
 	else
-	    tree.setOn(nid, true);
+	    experiment.setOn(nid, true);
     }
     
     public void turnOn()
     {
 	try {
-	    tree.setOn(nid, true);
+	    experiment.setOn(nid, true);
 	}catch(Exception e) {System.out.println("Error turning on " + e.getMessage());}
     }    
     public void turnOff()
     {
 	try {
-	    tree.setOn(nid, false);
+	    experiment.setOn(nid, false);
 	}catch(Exception e) {System.out.println("Error turning on " + e.getMessage());}
     }    
     
     public void doAction() throws DatabaseException
-    {}
+    {
+        try {
+            experiment.doAction(nid);
+        }catch(Exception e) {
+		    JOptionPane.showMessageDialog(null, e.getMessage(), 
+		        "Error executing message", JOptionPane.WARNING_MESSAGE);
+		}
+        
+    }
     
     public void setData(Data data) throws DatabaseException 
     {
 	this.data = data;
-	tree.putData(nid, data);
+	experiment.putData(nid, data);
     }
     public Data getData() throws DatabaseException
     {
-	data = tree.getData(nid);
+	data = experiment.getData(nid);
 	return data;
     }
     public NodeInfo getInfo()throws DatabaseException
     {
 	if(info == null)
-	    info = tree.getInfo(nid);
+	    info = experiment.getInfo(nid);
 	return info;
     }
     public void setInfo(NodeInfo info)throws DatabaseException
@@ -106,17 +117,53 @@ public class Node
     public boolean isOn()
     {
 	try {
-	 return tree.isOn(nid);
+	 return experiment.isOn(nid);
 	 }catch (Exception e) {System.out.println("Error checking state "+e);}
 	 return false;
     }
-    public void setupDevice() {}
+    public void setupDevice() 
+    {
+        ConglomData conglom = null;
+        try{
+            conglom = (ConglomData)experiment.getData(nid);
+        } catch(Exception e) {
+ 		    JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
+		        "Error in device setup", JOptionPane.WARNING_MESSAGE);
+        }
+        if(conglom != null)
+        {
+            Data model = conglom.getModel();
+            if(model != null)
+            {
+                try
+                {
+                    String deviceClassName = model.getString()+"Setup";
+                    Class deviceClass = Class.forName(deviceClassName);
+                    DeviceSetup ds = (DeviceSetup)deviceClass.newInstance();
+                    ds.addDataChangeListener(hierarchy);
+                    ds.configure(experiment, nid.getInt());
+                    if(ds.getContentPane().getLayout() != null)
+                        ds.pack();
+                    ds.setLocation(hierarchy.getMousePosition());
+                    ds.show();
+                    return;
+                }catch(Exception e)
+                {
+ 		            JOptionPane.showMessageDialog(FrameRepository.frame, e.getMessage(), 
+		                "Error in device setup", JOptionPane.WARNING_MESSAGE);
+		            return;
+                }
+            }
+        }
+ 		JOptionPane.showMessageDialog(null, "Missing model in descriptor", 
+		        "Error in device setup", JOptionPane.WARNING_MESSAGE);
+    }
         
     public boolean isDefault()
     {
 	NidData curr_nid = null;
 	try {
-	    curr_nid = tree.getDefault();
+	    curr_nid = experiment.getDefault();
 	    } catch(Exception e) {System.out.println("Error getting default " + e);return false;}
 	return curr_nid.datum == nid.datum;
     }
@@ -125,19 +172,19 @@ public class Node
     public NodeBeanInfo getBeanInfo()
     {
 	if(bean_info == null)
-	    bean_info = new NodeBeanInfo(tree, info.usage, info.name);
+	    bean_info = new NodeBeanInfo(experiment, info.usage, info.name);
 	return bean_info;
     }
-    public String [] getTags() {return tree.getTags(nid); }
+    public String [] getTags() {return experiment.getTags(nid); }
     public void setTags(String[] tags) throws DatabaseException
     {
-	tree.setTags(nid, tags);
+	experiment.setTags(nid, tags);
     }
     public String getFullPath()
     {
     	if(info == null)
 	    try {
-		info = tree.getInfo(nid);
+		info = experiment.getInfo(nid);
 	    } catch (Exception e) {System.out.println("Error getting NCI " + e); }
 	return info.getFullPath(); 
     }
@@ -145,7 +192,7 @@ public class Node
     {
     	if(info == null)
 	    try {
-		info = tree.getInfo(nid);
+		info = experiment.getInfo(nid);
 	    } catch (Exception e) {System.out.println("Error getting NCI " + e); }
 	return info.getName(); 
     }
@@ -153,33 +200,49 @@ public class Node
     public Node[] getMembers() {return members; }
     public Node addNode(int usage, String name) throws DatabaseException
     {
-	NidData prev_default = tree.getDefault(), new_nid = null;
-	tree.setDefault(nid);
+	NidData prev_default = experiment.getDefault(), new_nid = null;
+	experiment.setDefault(nid);
 	try {
 	    if(info == null)
-		info = tree.getInfo(nid);
-	    new_nid = tree.addNode(name, usage);
+		info = experiment.getInfo(nid);
+	    new_nid = experiment.addNode(name, usage);
 	} finally {
-	    tree.setDefault(prev_default); }
-	return new Node(tree, this, true, new_nid);
+	    experiment.setDefault(prev_default); }
+	return new Node(experiment, hierarchy, this, true, new_nid);
     }
+
+    public Node addDevice(String name, String type) throws DatabaseException
+    {
+	    NidData prev_default = experiment.getDefault(), new_nid = null;
+	    experiment.setDefault(nid);
+	    try {
+	        if(info == null)
+		    info = experiment.getInfo(nid);
+	        new_nid = experiment.addDevice(name, type);
+	    } finally {
+	        experiment.setDefault(prev_default); 
+	    }
+	    return new Node(experiment, hierarchy, this, true, new_nid);
+    }
+
+	 
 	 
     public Node addChild(String name) throws DatabaseException
     {
-	NidData prev_default = tree.getDefault(), new_nid;
-	tree.setDefault(nid);
+	NidData prev_default = experiment.getDefault(), new_nid;
+	experiment.setDefault(nid);
 	if(info == null)
-	    info = tree.getInfo(nid);
-	new_nid = tree.addNode(name, NodeInfo.USAGE_STRUCTURE);
-	tree.setDefault(prev_default);
-	return new Node(tree, this, true, new_nid);
+	    info = experiment.getInfo(nid);
+	new_nid = experiment.addNode(name, NodeInfo.USAGE_STRUCTURE);
+	experiment.setDefault(prev_default);
+	return new Node(experiment, hierarchy, this, true, new_nid);
     }
 	 
     public int startDelete()
     {
 	NidData []nids = {nid};
 	try {
-	    return tree.startDelete(nids).length;
+	    return experiment.startDelete(nids).length;
 	}catch(Exception e) {System.out.println("Starting delete: " + e.getMessage());}
 	return 0;
     }
@@ -188,14 +251,14 @@ public class Node
     {
 	NidData []nids = {nid};
 	try {
-	    tree.executeDelete();
+	    experiment.executeDelete();
 	}catch(Exception e) {System.out.println("Error executing delete: " + e.getMessage());}
     }
     
     void rename(String new_name) throws DatabaseException 
     {
-        tree.renameNode(nid, new_name);
-	info = tree.getInfo(nid);
+        experiment.renameNode(nid, new_name);
+	info = experiment.getInfo(nid);
     }
 
 

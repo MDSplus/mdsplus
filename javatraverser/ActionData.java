@@ -28,10 +28,18 @@ public class ActionData extends CompoundData
 	else
 	    return null;
     }
-    public final Data getPerformance() 
+    public final Data getCompletionMessage()
     {
 	if(descs.length >= 4)
 	    return descs[3];
+	else
+	    return null;
+    }
+        
+    public final Data getPerformance() 
+    {
+	if(descs.length >= 5)
+	    return descs[4];
 	else
 	    return null;
      }

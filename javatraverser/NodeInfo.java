@@ -8,23 +8,23 @@ class NodeInfo
     boolean on, parent_on, setup, write_once, compressible, compress_on_put, 
     no_write_model, no_write_shot;
     String date_inserted, name, fullpath, minpath;
-    int owner, dtype, dclass, length, usage;
+    int owner, dtype, dclass, length, usage, conglomerate_nids;
     static NodeInfo getNodeInfo(boolean on, boolean parent_on, boolean setup, boolean write_once,
 	boolean compressible, boolean compress_on_put, boolean no_write_model, 
 	boolean no_write_shot, String date_inserted,
 	int owner, int dtype, int dclass, int length, int usage, 
-	String name, String fullpath, String minpath)
+	String name, String fullpath, String minpath, int conglomerate_nids)
     {
 	return new NodeInfo(on, parent_on, setup, write_once, compressible, compress_on_put, 
 	    no_write_model, no_write_shot, date_inserted, owner, dtype, dclass, length, 
-	    usage, name, fullpath, minpath);
+	    usage, name, fullpath, minpath, conglomerate_nids);
     }
     
     NodeInfo(boolean on, boolean parent_on, boolean setup, boolean write_once,
 	boolean compressible, boolean compress_on_put, boolean no_write_model, 
 	boolean no_write_shot,String date_inserted,
 	int owner, int dtype, int dclass, int length, int usage, 
-	String name, String fullpath, String minpath)
+	String name, String fullpath, String minpath, int conglomerate_nids)
     {
 	this.on = on;
 	this.parent_on = parent_on;
@@ -43,6 +43,7 @@ class NodeInfo
 	this.name = name;
 	this.fullpath = fullpath;
 	this.minpath = minpath;
+	this.conglomerate_nids = conglomerate_nids;
     }
     public final boolean isOn() {return on;}
     public final boolean isParentOn() {return parent_on;}
@@ -53,6 +54,8 @@ class NodeInfo
     public final int getLength() {return length;} 
     public final String getName() {return name; }
     public final String getFullPath() {return fullpath; } 
+    public final int getConglomerateNids() {return conglomerate_nids; }
+    public final int getUsage() {return usage; }
     public static final int USAGE_ANY = 0;
     public static final int USAGE_NONE = 1;
     public static final int USAGE_STRUCTURE= 1;
