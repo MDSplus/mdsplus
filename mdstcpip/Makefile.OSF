@@ -1,0 +1,44 @@
+include ../.config
+
+SRC = t.c mdsipshr.c
+
+all : t $(DEST)/usr/lib/mdsip.pro
+
+depend dep : $(DEST)/usr/include/ipdesc.h mdsip.h c_depend
+
+c_depend : $(SRC)
+	$(MAKEDEPEND)
+
+t : t.o $(DEST)/usr/lib/libMdsIpShr.$(SHARED_LIB_TYPE) $(DEST)/usr/lib/libMdsIpShr.a
+	$(CC) $(CFLAGS) -o $@ t.o -L$(DEST)/usr/lib -lMdsIpShr
+
+$(DEST)/usr/lib/libMdsIpShr.a : mdsipshr.o
+	$(AR) $(ARFLAGS) $@ mdsipshr.o
+
+$(DEST)/usr/lib/libMdsIpShr.$(SHARED_LIB_TYPE) : mdsipshr.o
+	$(LD) -o $@ $(SHARE_FLAG) mdsipshr.o
+
+clean :
+	- rm t
+	- rm t.o
+	- rm mdsipshr.o
+	- rm mdsip.h
+	- rm mdsipshr.c
+	- rm t.c
+
+$(DEST)/usr/include/ipdesc.h : $(MDSSRC)/mdstcpip/work/ipdesc.h
+	cp $(MDSSRC)/mdstcpip/work/ipdesc.h $@
+
+$(DEST)/usr/lib/mdsip.pro : $(MDSSRC)/mdstcpip/work/mdsip.pro
+	cp $(MDSSRC)/mdstcpip/work/mdsip.pro $@
+
+mdsip.h :
+	$(LN) $(MDSSRC)/mdstcpip/work/mdsip.h $@
+
+mdsipshr.c :
+	$(LN) $(MDSSRC)/mdstcpip/work/mdsipshr.c $@
+
+t.c :
+	$(LN) $(MDSSRC)/mdstcpip/work/t.c $@
+
+include .depend
