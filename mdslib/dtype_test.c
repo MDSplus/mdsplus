@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   double vComplexDouble[2] = {COMPLEX_DOUBLE_TEST0, COMPLEX_DOUBLE_TEST1};
 
   int dtype_cstring = DTYPE_CSTRING;
-  char *vCstring = CSTRING_TEST0;
+  char vCstring[] = CSTRING_TEST0;
 
   int null = 0;
   int len = 0;
