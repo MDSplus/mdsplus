@@ -3762,7 +3762,7 @@ sparc-sun-solaris2*)
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
          LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fpic ";
+         CFLAGS="$CFLAGS -fPIC ";
        else
          LINKSHARED="-G ";
          LD_LDARC="-B static ";
