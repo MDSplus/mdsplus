@@ -21,11 +21,11 @@ OBJECTS_CLIENT = MdsLib_client.o
 OBJECTS_CLIENT_ARCHIVE = ../mdstcpip/mdsiputil.o
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
-         @MAKESHLIBDIR@libMdsLib@SHARETYPE@ \
          @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ \
+         @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
+         @MAKESHLIBDIR@libMdsLib@SHARETYPE@ \
          @MAKELIBDIR@libMdsLib_client.a \
          @MAKELIBDIR@libMdsLib.a @MAKEBINDIR@mdslib_ctest  \
-         @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
 	 @MAKEBINDIR@dtype_test
 
 depend:
