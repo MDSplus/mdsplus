@@ -1,4 +1,3 @@
-sql
 .run mdsconnect
 .run dsql
 .run dsql_logout

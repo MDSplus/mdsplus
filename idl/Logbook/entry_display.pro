@@ -116,7 +116,7 @@ function read_options, file, status=status
     display_options={display_options, order_by:'Entered',descend:0b,$
                      null_first:0b,auto_scroll:0b, auto_update:1b, scroll_bottom:0b, max_rows:80}
     select_options={select_options, voided:0, runs:'CURRENT', users:'ME', topics:'SESSION_LEADER,PHYSICS_OPERATOR'}
-    print_options={print_options, queue:'NOPRINT', portrait:1, keep:0, file:'SYS$SCRATCH:ENTRY_DISPLAY.PRINT'}
+    print_options={print_options, queue:'NOPRINT', portrait:1, keep:0, file:'$HOME/entry_display.print'}
     make_options={make_options, after_action:0b,  template:''}
     custom_options={custom_options,query:'', inc_voided:1, inc_run:0, inc_user:0, inc_topic:0}
     status = 0L
@@ -237,10 +237,12 @@ function SET_PRINT_OPTIONS, print_options, leader
 
   r = widget_base(base, /row)
   b = widget_label(r, value='Printer Queue')
-  ans = trnlog("DECW$PRINTER_FORMAT_PS", queues)
-  if ((ans and 1) eq 0) then queues = 'SYS$PRINT'
-  queues = "NOPRINT,"+queues
-  queues = str_sep(queues, ',')
+  spawn, 'ScopePrinters', queues
+  if (n_elements(queues) eq 1) then $
+    if (strlen(queues) eq 0) then $
+      queues = ['lp']
+  queues = ['noprint', queues]
+
   queue_l = widget_droplist(r, /dynamic, value = queues)
   rr = widget_base(r, /row, /exclusive, /frame)
   keep_b = widget_button(rr, value = 'keep')
@@ -1038,14 +1040,16 @@ pro print_output, ctx
   free_lun, lun
   catch , /cancel
 
-  if (ctx.print_options.queue ne 'NOPRINT') then begin
-    print_cmd = 'PRINT /QUE='+ctx.print_options.queue+' '+ctx.print_options.file+'/NOTIFY'
-    if (ctx.print_options.portrait) then $
-      print_cmd = print_cmd + '/PARAM=PAGE_ORIENTATION=PORTRAIT' $
-    else $
-      print_cmd = print_cmd + '/PARAM=PAGE_ORIENTATION=LANDSCAPE'
+  if (ctx.print_options.queue ne 'noprint') then begin
+    print_cmd = 'lpr -P'+ctx.print_options.queue+' '
     if (not ctx.print_options.keep) then $
-      print_cmd = print_cmd + '/DELETE'
+      print_cmd = print_cmd + ' -r '
+    print_cmd = print_cmd +ctx.print_options.file
+;    if (ctx.print_options.portrait) then $
+;      print_cmd = print_cmd + '/PARAM=PAGE_ORIENTATION=PORTRAIT' $
+;    else $
+;      print_cmd = print_cmd + '/PARAM=PAGE_ORIENTATION=LANDSCAPE'
+;    print, 'print command is -', print_cmd,'-'
     spawn, print_cmd
   endif
 end
