@@ -272,7 +272,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField1115.setShowState(true);
     deviceField1115.setDisplayEvaluated(false);
     deviceField1115.setPreferredWidth(-1);
-    deviceField1116.setOffsetNid(1);
+    deviceField1116.setOffsetNid(27);
     deviceField1116.setLabelString("T_START_PM");
     deviceField1116.setNumCols(5);
     deviceField1116.setIdentifier("START_PM");
