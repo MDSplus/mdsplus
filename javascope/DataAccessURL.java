@@ -35,6 +35,7 @@ class DataAccessURL
         {
            da.setPassword(passwd);
            
+           /*
            float y[] = da.getY(url);
            float x[] = da.getX(url);
             
@@ -42,6 +43,12 @@ class DataAccessURL
                 throw(new IOException("Incorrect password or read signal error"));
             
             Signal s = new Signal(x, y);
+            */
+            
+            Signal s = da.getSignal(url);
+            if(s == null)
+                throw(new IOException("Incorrect password or read signal error"));
+            
             if(da.getError() == null)
             {
                 if(name == null)

@@ -71,6 +71,10 @@ class DemoProvider implements DataProvider
         error = null;
         return new String(in+"_x");
     }
+    public String GetXDataSpecification(String in)
+    {
+        return null;
+    }
     public String ErrorString()
     {
         return error;

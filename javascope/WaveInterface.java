@@ -638,7 +638,7 @@ public class WaveInterface
     }
     
     
-    public synchronized int StartEvaluate()
+    public synchronized int StartEvaluate() throws IOException
     {
  	    error = null;
 		
@@ -792,7 +792,7 @@ public class WaveInterface
     } 
 	     
 	
-    public synchronized void EvaluateShot(int shot)
+    public synchronized void EvaluateShot(int shot) throws IOException
     {
 	    int curr_wave;
         if(xmin > xmax) xmin = xmax;
@@ -830,7 +830,7 @@ public class WaveInterface
 	    }
     }
     
-    public synchronized void EvaluateOthers()
+    public synchronized void EvaluateOthers() throws IOException
     {
 	    int curr_wave;
         
@@ -1038,7 +1038,7 @@ public class WaveInterface
         }
     }
 				    
-    private Signal GetSignal(int curr_wave, float xmin, float xmax)
+    private Signal GetSignal(int curr_wave, float xmin, float xmax) throws IOException
     {			    
 		
 	    String limits = "FLOAT("+new Float(xmin).toString()+"), " +		    		    
@@ -1162,9 +1162,24 @@ public class WaveInterface
 		        min_len = curr_y.length;
 	        else
 		        min_len = x_samples;
-	    }	
-	
-    	Signal out_signal = new Signal(curr_x, curr_y, min_len);
+	    }
+	    
+	    Signal out_signal;
+	    String xdata_spec = dp.GetXDataSpecification(in_y[curr_wave]);
+	    if(xdata_spec != null)
+	    {
+	      float x_data[] = dp.GetFloatArray(xdata_spec);
+	      if(x_data != null && x_data.length > 1)
+	        out_signal = new Signal(curr_y, x_data, curr_x, Signal.MODE_YTIME);
+	      else
+	      {
+    	    out_signal = new Signal(curr_x, curr_y, min_len);
+    	    if(x_data != null && x_data.length == 1)
+    	        out_signal.setXData(x_data[0]);
+	      }
+	    } else
+    	    out_signal = new Signal(curr_x, curr_y, min_len);
+    	    
 	    if(xmin != -HUGE)
 	        out_signal.xmin = out_signal.saved_xmin = xmin;
 	    if(xmax != HUGE)
@@ -1230,46 +1245,52 @@ public class WaveInterface
 
 
     void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
-	float _orig_xmin, float _orig_xmax, int timestamp, boolean panning, MultiWaveform w)
+	                    float _orig_xmin, float _orig_xmax, 
+	                    int timestamp, boolean panning, MultiWaveform w)
     {
-	int curr_wave;
-	boolean needs_update = false;
-	if(full_flag)
-	    return;
-	wave_signals = new Signal[sigs.size()];
-	for(int i = 0; i < sigs.size(); i++)
-	    wave_signals[i] = (Signal)sigs.elementAt(i);
-	wave_xmin = xmin;
-	wave_xmax = xmax;
-	wave_timestamp = timestamp;
-	request_pending = true;
-	orig_xmin = _orig_xmin;
-	orig_xmax = _orig_xmax;
-	for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
-	{
-	    if(wave_signals[curr_wave] == null) continue;
-	    if (wave_signals[curr_wave].n_points >= MAX_POINTS - 5 || (panning && 
-		(orig_xmin < xmin || orig_xmax > xmax)))
-		needs_update = true;
-	}
-	if(needs_update && dp.SupportsAsynch())
-	{
-	    if(asynch_update)
+	    int curr_wave;
+	    boolean needs_update = false;
+	    if(full_flag)
+	        return;
+	    wave_signals = new Signal[sigs.size()];
+	    for(int i = 0; i < sigs.size(); i++)
+	        wave_signals[i] = (Signal)sigs.elementAt(i);
+	    wave_xmin = xmin;
+	    wave_xmax = xmax;
+	    wave_timestamp = timestamp;
+	    request_pending = true;
+	    orig_xmin = _orig_xmin;
+	    orig_xmax = _orig_xmax;
+	    for(curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	    {
-		if(du == null)
-		{
-		    du = new AsynchUpdater(this, w);
-		    du.start();
-		}
-		else 
-		    du.Notify();
+	        if(wave_signals[curr_wave] == null) continue;
+	        if (wave_signals[curr_wave].n_points >= MAX_POINTS - 5 || (panning && 
+		    (orig_xmin < xmin || orig_xmax > xmax)))
+		    needs_update = true;
 	    }
-	    else
-		DynamicUpdate(w);    
-	}
+	    if(needs_update && dp.SupportsAsynch())
+	    {
+	        if(asynch_update)
+	        {
+		        if(du == null)
+		        {
+		            du = new AsynchUpdater(this, w);
+		            du.start();
+		        }
+		        else 
+		            du.Notify();
+	        }
+	        else
+	        {
+	            try
+	            {
+		            DynamicUpdate(w);
+		        } catch (IOException e){}
+		    }
+	    }
     }
 
-    public synchronized void DynamicUpdate(MultiWaveform w)
+    public synchronized void DynamicUpdate(MultiWaveform w) throws IOException
     {
 	    boolean needs_update = false;
 	    int curr_wave, saved_timestamp = wave_timestamp;
@@ -1307,7 +1328,10 @@ class AsynchUpdater  extends Thread
 	        while(wi.request_pending)
 	        {
 	            wi.request_pending = false;
-	            wi.DynamicUpdate(w);
+	            try
+	            {
+	                wi.DynamicUpdate(w);
+	            } catch (IOException e) {}
 	        }
 	        try {
 	            wait();

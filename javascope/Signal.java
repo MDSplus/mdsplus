@@ -16,7 +16,8 @@ public class Signal
     static final int TYPE_2D = 1;
     static final int TYPE_CONTOUR = 2;
     static final int MODE_YTIME = 0;
-    static final int MODE_YX = 1;
+    static final int MODE_XY = 1;
+    static final int MODE_YX = 2;
     
     /**
      * String vector of markers name.
@@ -241,6 +242,23 @@ public class Signal
     
     protected int mode;
 
+    protected float curr_time_xy_plot = Float.NaN;
+    protected float curr_data_yt_plot = Float.NaN;
+    
+    private int curr_data_yt_idx = -1;
+    private int curr_time_xy_idx = -1;
+    
+    private float data_max;
+    private float data_min;
+    private float x_data_max;
+    private float x_data_min;
+    private float time_max;
+    private float time_min;
+    private double curr_xmax;
+    private double curr_xmin;
+
+
+    
     //Float flo;
     //Integer inte;
 
@@ -346,8 +364,8 @@ public class Signal
 // Evito di vedere solo l'interpolazione tra due punti
 	    if(xmax - xmin < x[1] - x[0])
 	        xmax = xmin + x[1] - x[0];
-	    saved_xmin = xmin;
-	    saved_xmax = xmax;
+	    saved_xmin = curr_xmax = xmin;
+	    saved_xmax = curr_xmin = xmax;
 	    if(xmax <= xmin)
 	        saved_xmax = xmax = xmin+(float)1E-6;
 	    if(_ymin > _ymax) _ymin = _ymax;
@@ -370,8 +388,8 @@ public class Signal
 	        x[i] = (float)i;
 	        y[i] = 0;
 	    }		
-	    saved_xmin = xmin = (double)x[0];
-	    saved_xmax = xmax = (double)x[n_points - 1];
+	    saved_xmin = curr_xmax = xmin = (double)x[0];
+	    saved_xmax = curr_xmin = xmax = (double)x[n_points - 1];
 	    saved_ymin = ymin  = -1e-6;
 	    saved_ymax = ymax = 1e-6;
 	    increasing_x = true;
@@ -406,8 +424,8 @@ public class Signal
 	    }
 	    saved_ymax = ymax = s.ymax;
 	    saved_ymin = ymin = s.ymin;
-	    saved_xmin = xmin = s.xmin;
-	    saved_xmax = xmax = s.xmax;
+	    saved_xmin = curr_xmin = xmin = s.xmin;
+	    saved_xmax = curr_xmax = xmax = s.xmax;
 	    if(xmax <= xmin)
 	        saved_xmax = xmax = xmin+ 1E-6;
 	    increasing_x = s.increasing_x;
@@ -462,9 +480,9 @@ public class Signal
 	    ymax = s.ymax;
 	    saved_ymin = s.saved_ymin;
 	    ymin = s.ymin;
-	    saved_xmax = s.saved_xmax;
+	    saved_xmax = curr_xmax = s.saved_xmax;
 	    xmax = s.xmax;
-	    saved_xmin = s.saved_xmin;
+	    saved_xmin = curr_xmin = s.saved_xmin;
 	    xmin = s.xmin;
 	    if(xmax <= xmin)
 	        saved_xmax = xmax = xmin+1E-6;
@@ -515,9 +533,9 @@ public class Signal
 	    ymax = end_y;
 	    saved_ymin = s.saved_ymin;
 	    ymin = start_y;
-	    saved_xmin = s.saved_xmin;
+	    saved_xmin = curr_xmin = s.saved_xmin;
 	    xmin = start_x;
-	    saved_xmax = s.saved_xmax;
+	    saved_xmax = curr_xmax = s.saved_xmax;
 	    xmax = end_x;
 	    if(xmax <= xmin)
 	        saved_xmax = xmax = xmin+1E-6;
@@ -529,63 +547,211 @@ public class Signal
 	    interpolate = s.interpolate;
 	    name = s.name;
     }
+
+    public Signal(float data[], float x_data[], float time[], int mode)
+    {
+        this(data, x_data, time, mode, Float.NaN);
+    }
     
     public Signal(float data[], float x_data[], float time[], int mode, float value)
-    {
+    {  
         this.data   = data;
         this.x_data = x_data;
         this.time   = time;
         this.mode   = mode;
         this.type   = TYPE_2D;
-        if(mode == MODE_YTIME)
-            showYTime(value);
+        setAxis(time, data, x_data);
+        if(Float.isNaN(value))
+            setMode(mode);
         else
-            showYX(value);
-    }
+            setMode(mode, value);
+   }
 
     private int getArrayIndex(float data[], float d)
     {
         int i = -1;
         
-        if(d <= data[0])
-            i = 0;
+        //if(d <= data[0])
+        //    i = 0;
             
-        if(d >= data[data.length-1])
-            i = data.length-1;
+        //if(d >= data[data.length-1])
+        //    i = data.length-1;
 
         if(i == -1)
         {
-            for(i = 0; i <= data.length - 1; i++)
+            for(i = 0; i < data.length - 1; i++)
             {
-                if(d > data[i] && d < data[i+1])
+                if( (d > data[i] && d < data[i+1]) || d == data[i])
                     break;
             }
         }
+        //if(i == data.length) i--;
         return i;
     }
+    
+    public float getTime(){return curr_time_xy_plot;}
+    public float getXData(){return curr_data_yt_plot;}
 
-    public void showYX(float t)
-    {
+    public void setTime(float curr_time_xy_plot){this.curr_time_xy_plot = curr_time_xy_plot;}
+    public void setXData(float curr_data_yt_plot){this.curr_data_yt_plot = curr_data_yt_plot;}
+
+    public void showXY(float t)
+    {        
+        if(curr_time_xy_plot == t) return;
         int i = getArrayIndex(time, t);
-        x = x_data;
-        y = new float[x_data.length];
-        for(int j = 0; j < x_data.length; j++)
-            y[j] = data[time.length * j + i];
-        
-	    error = asym_error = false;
-	    setAxis(x, y, x.length);
+        showXY(i);
     }
+
+    public void showXY(int idx)
+    {        
+        if(idx >= time.length || idx == curr_time_xy_idx) return;
+
+        curr_time_xy_plot = time[idx];
+        curr_time_xy_idx = idx;
+        curr_data_yt_plot = Float.NaN;
+        curr_data_yt_idx = -1;
+
+        float d[] = new float[x_data.length];
+        curr_xmax = curr_xmin = (double)data[idx] ;
+        for(int j = 0; j < x_data.length; j++) 
+        {
+            d[j] = data[time.length * j + idx];
+	        if(d[j] > curr_xmax)	
+		        curr_xmax = d[j];
+	        if(curr_xmin > d[j])
+		        curr_xmin = d[j];	
+        }
+	    error = asym_error = false;
+	    
+	    if(mode == Signal.MODE_XY)
+	    {
+            x = x_data;
+            y = d;
+	        saved_xmin = curr_xmax = xmin = x_data_min;
+	        saved_xmax = curr_xmin = xmax = x_data_max;
+	        saved_ymin = ymin = data_min;
+	        saved_ymax = ymax = data_max;
+	    } else {
+            y = x_data;
+            x = d;
+	        saved_xmin = xmin = data_min;
+	        saved_xmax = xmax = data_max;
+	        saved_ymin = ymin = x_data_min;
+	        saved_ymax = ymax = x_data_max;
+	    }
+        n_points = x.length;
+	    //setAxis(x, y, x.length);
+	    CheckIncreasingX();
+    }
+
+    
+    public void incShow()
+    {
+        if(type == TYPE_2D)
+        {
+            switch(mode)
+            {
+                case Signal.MODE_YTIME:
+                    incShowYTime();
+                break;
+                case Signal.MODE_YX:
+                case Signal.MODE_XY:
+                    incShowXY();
+                break;
+            }
+        }
+    }
+
+    public void decShow()
+    {
+        if(type == TYPE_2D)
+        {
+            switch(mode)
+            {
+                case Signal.MODE_YTIME:
+                    decShowYTime();
+                break;
+                case Signal.MODE_YX:
+                case Signal.MODE_XY:
+                    decShowXY();
+                break;
+            }
+        }
+    }
+
+    
+    
+    public void incShowYTime()
+    {
+        if(type == TYPE_2D && mode == Signal.MODE_YTIME)
+        {
+           int idx = curr_data_yt_idx;
+           idx = (idx + 1) % x_data.length;
+           showYTime((int)idx);
+        }
+    }
+    
+    public void decShowYTime()
+    {
+        if(type == TYPE_2D && mode == Signal.MODE_YTIME)
+        {
+           int idx = curr_data_yt_idx - 1;
+           if(idx < 0) idx = x_data.length - 1;
+           showYTime(idx);
+        }
+    }
+
+    public void incShowXY()
+    {
+        if(type == TYPE_2D && (mode == Signal.MODE_XY || mode == Signal.MODE_YX))
+        {
+           int idx = curr_time_xy_idx;
+           idx = (idx + 1) % time.length;
+           showXY(idx);
+        }
+    }
+    
+    public void decShowXY()
+    {
+        if(type == TYPE_2D && (mode == Signal.MODE_XY || mode == Signal.MODE_YX))
+        {
+           int idx = curr_time_xy_idx - 1;
+           if(idx < 0) idx = time.length - 1;
+           showXY(idx);
+        }
+    }
+
     
     public void showYTime(float xd)
     {
+        if(curr_data_yt_plot == xd) return;        
         int i = getArrayIndex(x_data, xd);
+        showYTime(i);
+    }
+    
+    public void showYTime(int idx)
+    {
+        if(idx > x_data.length || idx == curr_data_yt_idx) return;
+
+        curr_data_yt_plot = x_data[idx];
+        curr_data_yt_idx = idx;
+        curr_time_xy_plot = Float.NaN;        
+        curr_time_xy_idx = -1;
+        
         x = time;
         y = new float[time.length];
         for(int j = 0; j < time.length; j++)
-            y[j] = data[time.length * i + j];
+            y[j] = data[time.length * idx + j];
         
+        n_points = x.length;
+        saved_xmin = curr_xmin = xmin = time_min;
+	    saved_xmax = curr_xmax = xmax = time_max;
+	    saved_ymin = ymin = data_min;
+	    saved_ymax = ymax = data_max;
+
 	    error = asym_error = false;
-	    setAxis(x, y, x.length);
+	    //setAxis(x, y, x.length);
+	    CheckIncreasingX();
     }
     
     public void setMode(int mode)
@@ -595,6 +761,7 @@ public class Signal
             case MODE_YTIME:
                 setMode(mode, x_data[0]);
             break;
+            case MODE_XY:
             case MODE_YX:
                 setMode(mode, time[0]);
             break;
@@ -612,7 +779,8 @@ public class Signal
                 showYTime(value);
             break;
             case MODE_YX:
-                showYX(value);
+            case MODE_XY:
+                showXY(value);
             break;
         }
     }
@@ -776,19 +944,90 @@ public class Signal
      */
     public float getOffset(){return offset;}
 
+
+    public double getXmin(){return curr_xmin;}
+    public double getXmax(){return curr_xmax;}
+    public double getYmin(){return saved_ymin;}
+    public double getYmax(){return saved_ymax;}
+
+
     /**
      * Check if x array coordinates are increasing.
      */
     void CheckIncreasingX()
     {
 	    for(int i = 1; i < n_points; i++)
-	    if(x[i] < x[i - 1])
-	    {
-		    increasing_x = false;
-		    return;
-	    }
+	        if(x[i] < x[i - 1])
+	        {
+		        increasing_x = false;
+		        return;
+	        }
 	    increasing_x = true;
     }
+
+    float prev_offset = 0.0F, prev_gain = 1.0F;
+    boolean first_calib = true;
+    float origin_y[];
+    
+    private void evaluateCalib()
+    {
+	    if(offset != 0 || gain != 1.0)
+	    {
+            if(first_calib)
+            {
+                origin_y = new float[y.length];
+                for(int i = 0; i < y.length; i++)
+                {
+                    origin_y[i] = y[i];
+                    y[i] = offset + gain * y[i];
+                }
+                prev_offset = offset;
+                prev_gain = gain;
+                first_calib = false;
+            } else {
+                if(offset != prev_offset || gain != prev_gain)
+                {
+                    for(int i = 0; i < y.length; i++)
+                        y[i] = offset + gain * origin_y[i];
+                    prev_offset = offset;
+                    prev_gain = gain;
+                }
+            }
+        }
+    }
+
+    void setAxis(float time[], float data[], float x_data[])
+    {
+        int i;
+        evaluateCalib();
+	    time_max = time_min = time[0];
+	    data_max = data_min = data[0];
+	    x_data_max = x_data_min = x_data[0];
+	    for(i = 0; i < time.length; i++)
+	    {	        
+	        if(time[i] > time_max)	
+		        time_max = time[i];
+	        if(time_min > time[i])
+		        time_min = time[i];
+        }
+	        
+	    for(i = 0; i < data.length; i++)
+	    {	        
+	        if(data[i] > data_max)	
+		        data_max = data[i];
+	        if(data_min > data[i])
+		        data_min = data[i];	
+	    }
+
+	    for(i = 0; i < x_data.length; i++)
+	    {	        
+	        if(x_data[i] > x_data_max)	
+		        x_data_max = x_data[i];
+	        if(x_data_min > x_data[i])
+		        x_data_min = x_data[i];	
+	    }
+    }
+
 
     /**
      * Evaluate two-dimensional region of the signal.
@@ -797,13 +1036,11 @@ public class Signal
     {
 	    int i;
 
+        evaluateCalib();
 	    ymax = ymin = y[0];
 	    xmax = xmin = x[0];
 	    for(i = 0; i < n_points; i++)
-	    {
-	        if(offset != 0 || gain != 1.0)
-	            y[i] = offset + gain * y[i];
-	    
+	    {	        
 	        if(Float.isNaN(y[i]) && n_nans < 100)
 		    nans[n_nans++] = i; 
 	        if(y[i] > ymax)	
@@ -817,8 +1054,8 @@ public class Signal
 	
 	    }
 
-	    saved_xmin = xmin;
-	    saved_xmax = xmax;
+	    saved_xmin = curr_xmin = xmin;
+	    saved_xmax = curr_xmax = xmax;
 	    saved_ymin = ymin;
 	    saved_ymax = ymax;
     }
@@ -1082,46 +1319,76 @@ public class Signal
      */
     public int FindClosestIdx(double curr_x, double curr_y)
     {
-	double min_dist, curr_dist;	
-	int min_idx;
-	int i = 0;
-	if(increasing_x)
-	{
-	    if(curr_x > x[prev_idx])
+	    double min_dist, curr_dist;	
+	    int min_idx;
+	    int i = 0;
+	    if(increasing_x)
 	    {
-		for(i = prev_idx; i < n_points && x[i] < curr_x; i++);
-		if(i > 0) i--;
-		prev_idx = i;
-		return i;
+	        if(curr_x > x[prev_idx])
+	        {
+		        for(i = prev_idx; i < n_points && x[i] < curr_x; i++);
+		        if(i > 0) i--;
+		        prev_idx = i;
+		        return i;
+	        }
+	        if(curr_x < x[prev_idx])
+	        {
+		        for(i = prev_idx; i > 0 && x[i] > curr_x; i--);
+		        prev_idx = i;
+		        return i;
+	        }
+	        return prev_idx;
 	    }
-	    if(curr_x < x[prev_idx])
-	    {
-		for(i = prev_idx; i > 0 && x[i] > curr_x; i--);
-		prev_idx = i;
-		return i;
-	    }
-	    return prev_idx;
-	}
 
-	// Handle below x values not in ascending order
-		
-				
-	while( i < n_points && x[i] < xmin || x[i] > xmax)
-	    i++;
-	min_idx = i;
-	curr_dist = (curr_x - x[i])*(curr_x - x[i]);
-	for(min_dist = curr_dist; i < n_points; i++)
-	{
-	    curr_dist = (curr_x - x[i])*(curr_x - x[i]);
-	    if(x[i] >= xmin && x[i] <= xmax && curr_dist < min_dist)
+	    // Handle below x values not in ascending order
+
+        if(curr_x > curr_xmax)
+        {
+            for( min_idx = 0; min_idx < n_points && x[min_idx] != curr_xmax; min_idx++);
+            if(min_idx == n_points) min_idx--;
+            return min_idx;
+        }
+
+        if(curr_x < curr_xmin)
+        {
+            for( min_idx = 0; min_idx < n_points && x[min_idx] != curr_xmin; min_idx++);
+            if(min_idx == n_points) min_idx--;
+            return min_idx;
+        }
+
+        min_idx = 0;
+        min_dist = Double.MAX_VALUE;
+	    for( i = 0;  i < n_points - 1; i++)
+        {
+            if(curr_x > x[i] && curr_x < x[i + 1] || curr_x < x[i] && curr_x > x[i + 1])
+            {
+	            curr_dist = (curr_x - x[i])*(curr_x - x[i]) + (curr_y - y[i])*(curr_y - y[i]) + 
+	                        (curr_x - x[i+1])*(curr_x - x[i+1]) + (curr_y - y[i+1])*(curr_y - y[i+1]);
+	            if(curr_dist < min_dist)
+	            {
+	                min_dist = curr_dist;
+	                min_idx = i;
+	            }
+            }
+        }
+/*    						
+	    while( i < n_points && x[i] < xmin || x[i] > xmax)
+	        i++;
+	    min_idx = i;
+	    curr_dist = (curr_x - x[i])*(curr_x - x[i]); //+ (curr_y - y[i])*(curr_y - y[i]);
+	    for(min_dist = curr_dist; i < n_points; i++)
 	    {
-		min_dist = curr_dist;
-		min_idx = i;
+	        curr_dist = (curr_x - x[i])*(curr_x - x[i]);// + (curr_y - y[i])*(curr_y - y[i]);
+	        if(x[i] >= xmin && x[i] <= xmax && curr_dist < min_dist)
+	        {
+		        min_dist = curr_dist;
+		        min_idx = i;
+	        }
 	    }
-	}
-	if(min_idx > 0 && x[min_idx] > curr_x)
-	    min_idx--; 
-	return min_idx;
+	   // if(min_idx > 0 && x[min_idx] > curr_x)
+	   //     min_idx--; 
+*/
+	    return min_idx;
     }	
 
     /**

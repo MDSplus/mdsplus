@@ -1,7 +1,9 @@
 import java.util.*;
+import java.io.IOException;
+
 class FtuProvider extends NetworkProvider
 {
-    public FtuProvider(String provider) 
+    public FtuProvider(String provider) throws IOException
     {
         super(provider);
         SetEnvironment("public _IMODE = 0;");
@@ -12,7 +14,7 @@ class FtuProvider extends NetworkProvider
 		shot = s;
 	}
 	
-    public synchronized float[] GetFloatArray(String in)
+    public synchronized float[] GetFloatArray(String in) throws IOException
     {
 	  error= null;
 	  StringTokenizer st = new StringTokenizer(in, "\\", true);
@@ -110,7 +112,7 @@ private String GetFirstSignal(String [] in_y)
 }	
 
 
-public String GetDefaultTitle(String in_y[])
+public String GetDefaultTitle(String in_y[]) throws IOException
 {
 	error= null;
 	String first_sig = GetFirstSignal(in_y);
@@ -121,7 +123,7 @@ public String GetDefaultTitle(String in_y[])
 //	System.out.println(parsed);	
 	return GetString(parsed);
 }
-public String GetDefaultXLabel(String in_y[])
+public String GetDefaultXLabel(String in_y[]) throws IOException
 {
 	error= null;
 	String first_sig = GetFirstSignal(in_y);

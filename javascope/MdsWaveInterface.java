@@ -191,7 +191,7 @@ class MdsWaveInterface extends WaveInterface {
     
     static int[] GetMainShot(){return main_shots;}
     
-    public int[] EvaluateMainShot()//String main_shot_str)
+    public int[] EvaluateMainShot() throws IOException//String main_shot_str)
     {
         if( main_shot_str != null && !main_shot_evaluated) 
         {
@@ -219,7 +219,7 @@ class MdsWaveInterface extends WaveInterface {
 	return out;  
   }
   
-  public String Update()
+  public String Update() throws IOException
   {
      UpdateShot();
      if(error == null)
@@ -231,7 +231,7 @@ class MdsWaveInterface extends WaveInterface {
      return error;
   }
 
-  public void UpdateShot()
+  public void UpdateShot() throws IOException
   {
 	int curr_shots[] = null, l = 0;
   
@@ -358,7 +358,7 @@ class MdsWaveInterface extends WaveInterface {
   }
 
   
-    public int[] GetShotArray(String in_shots)
+    public int[] GetShotArray(String in_shots) throws IOException
     {
 	    int int_data[] = null;
 	
@@ -755,7 +755,7 @@ class MdsWaveInterface extends WaveInterface {
             }
     }
 
-    public void ToFile(PrintWriter out, String prompt)
+    public void ToFile(PrintWriter out, String prompt) throws IOException
     { 
 	    int exp, exp_n, sht, sht_n, cnum_shot, eval_shot = 1; 
 

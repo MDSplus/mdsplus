@@ -19,28 +19,31 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         float y[] = new float[1000], y1[] = new float[1000], y2[] = new float[1000], x [] = new float[1000];
         for(int i = 0; i < 1000; i++)
         {
-            x[i] = i;
+            x[i] = (float)(i/1000.);
             y[i] = (float)Math.sin(i/300.);
             y1[i] = (float)Math.cos(i/300.);
             y2[i] = (float)Math.sin(i/300.)*(float)Math.sin(i/300.);
         }
         
-        float data[] = new float[10*1000], time[] = new float[1000], x_data[] = new float[10]; 
-        for(int i = 0; i < 1000; i++)
+        float data[] = new float[100*100], time[] = new float[100], x_data[] = new float[100]; 
+        for(int i = 0; i < 100; i++)
         {
-            time[i] = i;
-            data[i] = (float)Math.cos(i/300.);
-            for(int j = 0; j < 10; j++)
+            time[i] = (float)(i/100.);
+            //data[i] = (float)Math.cos(i/300.);
+            for(int j = 0; j < 100; j++)
             {
-                data[j * 1000+i] = (j+1) * (float)Math.cos(i/300.);
+                data[j * 100+i] = (float)((i + 1)/100.) * (float)Math.cos(j * 6.28/100.) * (float)Math.cos(i * 6.28/100.);
             }
         }
-        for(int i = 0; i < 10; i++)
-            x_data[i] = (float)Math.cos(i/2.);
+        for(int i = 0; i < 100; i++)
+            x_data[i] = i;// (float)Math.sin(i * 6.28/100.);
             
-        Signal  sig_2d = new Signal(data, x_data, time, Signal.MODE_YTIME , 0); 
+        Signal  sig_2d = new Signal(data, x_data, time, Signal.MODE_YTIME); 
         ((CompositeWaveDisplay)cd).addSignal(sig_2d, 1, 2);
-        
+        ((CompositeWaveDisplay)cd).addSignal(x, y, 1,2,"green", "seno");
+       
+        Signal  sig_2d1 = new Signal(sig_2d);
+        ((CompositeWaveDisplay)cd).addSignal(sig_2d1, 1, 1);
         ((CompositeWaveDisplay)cd).addSignal(x, y, 1,1,"green", "seno");
         ((CompositeWaveDisplay)cd).addSignal(x, y1, 1,1,"red", "coseno");
         ((CompositeWaveDisplay)cd).addSignal(x, y2, 2,1,"blue", "seno**2");
@@ -120,17 +123,8 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 		       }
 		    });
 	
-		    /*
-            Button print = new Button("Print");
-            print.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        print();
-                    }
-                });
-            panel.add("East", print);    
-		    */
+		    
+		    
             Panel panel1 = new Panel();
             panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 3));
             panel1.add(point);
@@ -147,6 +141,16 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
                 panel.add("Center", point_pos);
             }
             
+            Button print = new Button("Print");
+            print.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        print();
+                    }
+                });
+            panel.add("East", print);    
+            
             add(wave_container, BorderLayout.CENTER);
             add(panel, BorderLayout.SOUTH);
             
@@ -160,19 +164,6 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
         validate();
     }
                     
-    private String SetStrSize(String s, int size)
-    {
-	    StringBuffer sb = new StringBuffer(size);
-	
-	    sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
-
-    	if(sb.length() < size)
-	    {
-	        for(int i = sb.length(); i < size; i++)
-		    sb.append(" ");
-	    }	
-	    return (new String(sb));
-    }
     
         
     
@@ -282,49 +273,19 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
 	            WaveformEvent we = (WaveformEvent)e.we;
 	            Waveform w = (Waveform)we.getSource();
 	            int we_id = we.getID();
-	        
-	            switch(we_id)
-	            {
-    	            case WaveformEvent.MEASURE_UPDATE:
-	                    double dx_f;
-	         
-	                    if(Math.abs(we.delta_x) < 1.e-20)
-	                        dx_f = 1.e-20;
-	                    else
-	                        dx_f = Math.abs(we.delta_x);
-	         
-                        s = SetStrSize("[" + Waveform.ConvertToString(we.point_x, false) + ", " 
-				                + Waveform.ConvertToString(we.point_y, false) + "; dx "
-				                + Waveform.ConvertToString(we.delta_x, false) + "; dy "
-				                + Waveform.ConvertToString(we.delta_y, false) + "; 1/dx "
-				                + Waveform.ConvertToString(1./dx_f, false) +
-				                "]", 80);
 
-	                case WaveformEvent.POINT_UPDATE:
-                        if(s == null)
-                        {
-	                        if(!w.IsImage())
-	                            s = SetStrSize("[" + Waveform.ConvertToString(we.point_x, false) + ", " 
-				                   + Waveform.ConvertToString(we.point_y, false) + "]", 30);
-		                    else
-	                            s = SetStrSize("[" + ((int)we.point_x) + ", " 
-				                        + ((int)we.point_y) + " : " 
-				                       + we.delta_x + "]", 30);
-		                }
-
-                        if(w instanceof MultiWaveform)
-                        {
-                            MultiWaveform mw = (MultiWaveform)w;
-                            String n = mw.getSignalName(we.signal_idx);
-                            if(n != null)
-		                        s = s + n;  
-	                    }
-                        if(isApplet) 
-                            showStatus(s);
-                        else
-                            point_pos.setText(s);
-	            break;
-	        }
+	            s = we.toString();
+                if(w instanceof MultiWaveform)
+                {
+                    MultiWaveform mw = (MultiWaveform)w;
+                    String n = mw.getSignalName(we.signal_idx);
+                    if(n != null)
+		                s = s + n;  
+	            }
+                if(isApplet) 
+                    showStatus(s);
+                else
+                    point_pos.setText(s);
 	        break;
 	    }        
     }
@@ -380,25 +341,25 @@ public class CompositeWaveDisplay extends Applet implements WaveContainerListene
     }
     
     
-    public void print(Graphics g)
+    public void print()//Graphics g)
     {
 
-        //PrintJob p = getToolkit().getPrintJob(null, "Print", null);
-        //if(p != null)
+        PrintJob p = getToolkit().getPrintJob(null, "Print", null);
+        if(p != null)
         //if(g instanceof PrintGraphics)
         {
-	        System.out.println("------- IN PRINT --------"+g);
-	      //  Graphics g = p.getGraphics();
-	      //  Dimension dim = p.getPageDimension();
-	        Dimension dim = new Dimension(500, 700);
+	        System.out.println("------- IN PRINT --------");
+	        Graphics g = p.getGraphics();
+	        Dimension dim = p.getPageDimension();
+	      //  Dimension dim = new Dimension(500, 700);
 	        System.out.println("------- OK --------");
 	        //PrintGraphics pg = (PrintGraphics)g; 
 	        //PrintJob p = pg.getPrintJob();
 	        //Dimension dim = p.getPageDimension();
 	        
 	        wave_container.PrintAll(g, 0, 0, dim.width, dim.height); 
-	        //g.dispose();
-	        //p.end();
+	        g.dispose();
+	        p.end();
 	    }
     }
 }

@@ -1,9 +1,12 @@
 import java.net.*;
+import java.io.IOException;
+
 
 public interface DataAccess
 {
-    float [] getX(String url);
-    float [] getY(String url);
+    float [] getX(String url) throws IOException;
+    float [] getY(String url) throws IOException;
+    Signal getSignal(String url);
     boolean supports(String url);
     String getError();
     String getSignal();

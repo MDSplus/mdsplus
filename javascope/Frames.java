@@ -21,6 +21,7 @@ class Frames extends Canvas {
     private int img_height;
     private int[] frames_pixel_array;
     private Rectangle frames_pixel_roi;
+    private int x_measure_pixel = 0, y_measure_pixel = 0;
     
     Frames()
     {
@@ -382,6 +383,55 @@ class Frames extends Canvas {
         return t_out;
     }
     
+    public Point getImagePoint(Point p, Dimension d)
+    {
+        Point p_out = new Point(0, 0);
+        Dimension fr_dim = getFrameSize(curr_frame_idx, d);
+        
+        if(curr_frame_idx != -1 && frame.size() != 0)
+        {
+            Dimension view_dim;
+            Dimension dim;
+            
+            if(zoom_rect == null)
+            {
+                view_dim = GetFrameDim(curr_frame_idx);
+                dim = view_dim;
+            } else {
+                dim = new Dimension(zoom_rect.width, zoom_rect.height);
+                view_dim = new Dimension(zoom_rect.x+zoom_rect.width, zoom_rect.y+zoom_rect.height);
+                p.x -= zoom_rect.x;
+                p.y -= zoom_rect.y;
+            }
+
+            double ratio_x = (double)fr_dim.width/ dim.width;
+            double ratio_y = (double)fr_dim.height/ dim.height;
+            
+            p_out.x = (int) (ratio_x * p.x);
+           
+            /*
+            if(p_out.x > view_dim.width-1)
+            {
+                p_out.x = view_dim.width-1;
+                p.x = fr_dim.width;
+            }
+            */
+            
+            p_out.y = (int) (ratio_y * p.y);
+            
+            /*
+            if(p_out.y > view_dim.height-1)
+            {
+                p_out.y = view_dim.height-1;
+                p.y = fr_dim.height;
+            }
+            */
+        }
+        
+        return p_out;
+    }
+    
+    
     public Point GetFramePoint(Point p, Dimension d)
     {
         Point p_out = new Point(0, 0);
@@ -501,6 +551,18 @@ class Frames extends Canvas {
          }
          return new Dimension(width, height);
      }
+    
+    public void setMeasurePoint(int x_pixel, int y_pixel, Dimension d)
+    {
+        Point mp = GetFramePoint(new Point(x_pixel, y_pixel), d);
+        x_measure_pixel = mp.x;
+        y_measure_pixel = mp.y;
+    }
+    
+    public Point getMeasurePoint(Dimension d)
+    {
+        return getImagePoint(new Point(x_measure_pixel, y_measure_pixel), d);
+    }
     
     public void SetZoomRegion(int idx, Dimension d, Rectangle r)
     {

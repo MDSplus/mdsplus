@@ -26,6 +26,8 @@ public class WaveformEvent extends AWTEvent {
     int    pixels_signal[];
     int    pixels_line[] = null;
     float  frames_time[];
+    float  x_value = Float.NaN;
+    float  time_value = Float.NaN;
 
     public WaveformEvent (Object source, int event_id, String status_info) 
     {
@@ -77,5 +79,87 @@ public class WaveformEvent extends AWTEvent {
     {
         pixels_line = p_line;
     }
+    
+    public void setXValue(float x_value)
+    {
+        this.x_value = x_value;
+    }
+    
+    public void setTimeValue(float time_value)
+    {
+        this.time_value = time_value;
+    }
+    
+    
+    private String SetStrSize(String s, int size)
+    {
+	    StringBuffer sb = new StringBuffer(size);
+	
+	    sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
 
+    	if(sb.length() < size)
+	    {
+	        for(int i = sb.length(); i < size; i++)
+		    sb.append(" ");
+	    }	
+	    return (new String(sb));
+    }
+
+    
+    public String toString()
+    {
+        String s = null;
+	    int event_id = getID();
+	    Waveform w = (Waveform)getSource();
+	    	 	     
+	    switch(event_id)
+	    {
+    	    case WaveformEvent.MEASURE_UPDATE:
+	            double dx_f;
+	         
+	            if(Math.abs(delta_x) < 1.e-20)
+	                dx_f = 1.e-20;
+	            else
+	                dx_f = Math.abs(delta_x);
+	         
+                s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+				        + Waveform.ConvertToString(point_y, false) + "; dx "
+				        + Waveform.ConvertToString(delta_x, false) + "; dy "
+				        + Waveform.ConvertToString(delta_y, false) + "; 1/dx "
+				        + Waveform.ConvertToString(1./dx_f, false) +
+				        "]", 80);
+
+	        case WaveformEvent.POINT_UPDATE:
+                if(s == null)
+                {
+	                if(!w.IsImage())
+	                {
+	                    Float xf = new Float(x_value);
+	                    Float tf = new Float(time_value);
+	                    Float nan_f = new Float(Float.NaN);
+	                    String xt_string = null;
+	                    if(!xf.equals(nan_f))
+	                        xt_string = ", X = "+ Waveform.ConvertToString(x_value, false);
+                        else
+	                        if(!tf.equals(nan_f))
+	                            xt_string = ", T = "+ Waveform.ConvertToString(time_value, false);
+                                
+                        if(xt_string == null)                               
+	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+				                + Waveform.ConvertToString(point_y, false) + "]", 30);
+				        else 
+	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+				                + Waveform.ConvertToString(point_y, false) + xt_string + "]", 50);
+		            } else 
+	                        s = SetStrSize("[" + ((int)point_x) + ", " 
+				                       + ((int)point_y) + " : " 
+				                       + "(" + ((pixel_value >> 16) & 0xff) + "," 
+				                       + ((pixel_value >> 8) & 0xff) + "," 
+				                       + (pixel_value & 0xff) + ")" 
+				                       + " : " + delta_x + "]", 50);
+		        }
+	        break;
+	    }
+	    return s;
+    }
 }

@@ -9,6 +9,13 @@ public class RdaAccess implements DataAccess
     JetDataProvider jp = null;
     String encoded_credentials;
     
+    class SignalInfo 
+    {
+        String signal;
+        int    mode;
+        int    type;
+        float  value = Float.NaN;
+    }
     
     public static void main(String args[])
     {
@@ -89,6 +96,86 @@ public class RdaAccess implements DataAccess
         signal = setProvider(url);
         if(signal == null) return null;
         return jp.GetFloatArray(signal);
+    }
+    
+    private SignalInfo parseSignal(String s)
+    {
+        SignalInfo sig_info = new SignalInfo();
+        int idx;
+        
+        if((idx = s.indexOf("[")) != -1)
+        {
+            sig_info.type = Signal.TYPE_2D;
+            sig_info.signal = s.substring(idx);
+            String code = s.substring(idx, s.length()).toUpperCase();
+            if(code.indexOf("XY") != -1 || code.indexOf("T=") != -1)
+                sig_info.mode = Signal.MODE_YX;
+            else
+                if(code.indexOf("YT") != -1 || code.indexOf("X=") != -1)
+                    sig_info.mode = Signal.MODE_YTIME;
+            if((idx = code.indexOf("=")) != -1)
+            {
+                String v = code.substring(idx, code.indexOf("]"));
+                sig_info.value = Float.valueOf(v).floatValue();
+            }
+            
+        } else {
+            sig_info.signal = s;
+            sig_info.type = Signal.TYPE_1D;
+        }
+        
+        return sig_info;
+    }
+    
+    
+    public Signal getSignal(String url)
+    {
+        signal = setProvider(url);
+        if(signal == null) return null;
+        SignalInfo sig_info = parseSignal(signal);
+        Signal s = null;
+        
+        if(sig_info.type == Signal.TYPE_1D)
+        {
+            float y[] = jp.GetFloatArray(sig_info.signal);
+            float x[] = jp.GetFloatArray(jp.GetXSpecification(sig_info.signal));
+            float x_data[] = jp.GetFloatArray(jp.GetXDataSpecification(sig_info.signal));
+            
+            if(x == null || y == null)
+                return null;
+
+            if(x_data == null || x_data.length == 0)
+                s = new Signal(x, y);
+            else
+                if(x_data.length > 1)
+                    s = new Signal(y, x_data, x, Signal.MODE_YTIME, Float.NaN);
+                else
+                {
+                    s = new Signal(x, y);
+                    s.setXData(x_data[0]);
+                }
+        }
+        
+        if(sig_info.type == Signal.TYPE_2D)
+        {
+
+            float y[] = jp.GetFloatArray(sig_info.signal);
+            float time[] = jp.GetFloatArray(jp.GetXSpecification(sig_info.signal));
+            float x_data[] = jp.GetFloatArray(jp.GetXDataSpecification(sig_info.signal));
+            
+            if(y == null || time == null || x_data == null)
+                return null;
+            
+            if(x_data.length > 1)
+                s = new Signal(y, x_data, time, sig_info.mode, sig_info.value); 
+            else
+            {
+                s = new Signal(time, y);
+                s.setXData(x_data[0]);
+            }
+        }        
+        
+        return s;
     }
     
     public String getError()

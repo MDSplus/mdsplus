@@ -872,11 +872,20 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
         if(new_data_server.indexOf("Ftu data") != -1)
         {
-	        String ip = new_data_server.substring(new_data_server.indexOf(":")+1, new_data_server.length());
-            dp = new FtuProvider(ip);
-            fast_network_access = false;
-		    support_fast_network = true;
-            change = true;
+            try
+            {
+	            String ip = new_data_server.substring(new_data_server.indexOf(":")+1, new_data_server.length());
+                dp = new FtuProvider(ip);
+                fast_network_access = false;
+		        support_fast_network = true;
+                change = true;
+            } 
+            catch (IOException ex) 
+            {
+		        dp = old_dp;
+		        error = "Ftu data server error :" + ex.getMessage();
+		        change = false;
+            }
         } 
 
         if(new_data_server.equals("Demo server"))
@@ -937,7 +946,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    return error;
     }
 
-    public void ToFile(PrintWriter out, String prompt)
+    public void ToFile(PrintWriter out, String prompt) throws IOException
     {
 	    jScopeMultiWave w;
         MdsWaveInterface wi;

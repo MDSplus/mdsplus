@@ -488,8 +488,10 @@ import java.util.Vector;
 	        }
 	        signalListRefresh();	    
 	    }
+	    
 	    if(sel_signal == -1 && wi.num_waves > 0)
 	        sel_signal = 0;
+	        
 	    signalSelect(sel_signal);
       }
       
@@ -541,7 +543,7 @@ import java.util.Vector;
 	      }	 
        }
        
-       public boolean evaluateShotList(String in_shot)
+       public boolean evaluateShotList(String in_shot) throws IOException
        {
         
         if(in_shot != null) in_shot = in_shot.trim();
@@ -690,7 +692,7 @@ import java.util.Vector;
 	    }
 	}
 
-      public void updateList()
+      public void updateList() throws IOException
       {
     	    if(evaluateShotList(shot.getText())) 
     	    {
@@ -1792,40 +1794,40 @@ import java.util.Vector;
 
    private int checkSetup()
    {
-	int error = 0;
-	boolean def_exp = true, def_shot = true;
+	    int error = 0;
+	    boolean def_exp = true, def_shot = true;
 
-      main_scope.SetStatusLabel("");
-				
-	if(experiment.getText() == null || experiment.getText().trim().length() == 0)
-	    def_exp = false;
+        main_scope.SetStatusLabel("");
+    				
+	    if(experiment.getText() == null || experiment.getText().trim().length() == 0)
+	        def_exp = false;
+    	
+	    if(shot.getText() == null || shot.getText().trim().length() == 0)
+	        def_shot = false;
 	
-	if(shot.getText() == null || shot.getText().trim().length() == 0)
-	    def_shot = false;
+	    if(def_exp ^ def_shot)
+	    {
+	        if(!def_shot) {
+		        error_msg.addMessage("Experiment defined but undefined shot\n");
+		        error = 1;
+		    }    
+		    /*
+	        if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.getState()) {	    
+		        error_msg.addMessage("Shot defined but undefined experiment\n");
+	            error = 1;
+	        }
+	        */
+	    }
+
+	    update();
 	
-	if(def_exp ^ def_shot)
-	{
-	    if(!def_shot) {
-		    error_msg.addMessage("Experiment defined but undefined shot\n");
-		    error = 1;
-		}    
-		/*
-	    if(!def_exp && !setup.data_server_address.equals("Ftu data") && !image_b.getState()) {	    
-		    error_msg.addMessage("Shot defined but undefined experiment\n");
+	    if(updateWI() != 0)
+	    {
+	        error_msg.addMessage("Nothing to evaluate\n");
 	        error = 1;
 	    }
-	    */
-	}
-
-	update();
-	
-	if(updateWI() != 0)
-	{
-	    error_msg.addMessage("Nothing to evaluate\n");
-	    error = 1;
-	}
-	
-	return error;
+    	
+	    return error;
 
     }
 

@@ -37,6 +37,7 @@ public class NetworkProvider implements DataProvider {
     NetworkEventManager event_manager = new NetworkEventManager();
     public String error;
     public static final long TIME_OUT = 10000; //ms
+    private SignalCache sc = new SignalCache();
     
 
     public NetworkProvider()
@@ -78,9 +79,9 @@ public class NetworkProvider implements DataProvider {
 	        status = mds.DisconnectFromMds(err);
     }
 
-public String GetDefaultTitle(String in_y[]){return null;}
-public String GetDefaultXLabel(String in_y[]){return null;}
-public String GetDefaultYLabel(String in_y[]){return null;}
+public String GetDefaultTitle(String in_y[])throws IOException {return null;}
+public String GetDefaultXLabel(String in_y[])throws IOException {return null;}
+public String GetDefaultYLabel(String in_y[]) throws IOException {return null;}
 
 
 protected String GetExperimentName(String in_frame)
@@ -99,7 +100,7 @@ protected String GetExperimentName(String in_frame)
     return exp;
 }
 
-public byte[] GetAllFrames(String in_frame)
+public byte[] GetAllFrames(String in_frame) throws IOException
 {
     byte img_buf[], out[] = null;
     float time[];
@@ -120,8 +121,8 @@ public byte[] GetAllFrames(String in_frame)
     img_buf = GetByteArray(in);
     if(img_buf == null) return null;
         
-    try
-    {
+//    try
+//    {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream d = new DataOutputStream(b);
     
@@ -136,7 +137,7 @@ public byte[] GetAllFrames(String in_frame)
         out = b.toByteArray();
         d.close();
         System.gc();
-    } catch (IOException e) { System.out.println("Errore"+e);}
+//    } catch (IOException e) { System.out.println("Errore"+e);}
     
     return out;
 }
@@ -200,6 +201,8 @@ protected byte[] GetByteArray(String in)
 public synchronized String ErrorString() { return error; }
 
 public String GetXSpecification(String yspec) {return "DIM_OF("+yspec+")";}
+public String GetXDataSpecification(String yspec) {return null;}
+
 
 public boolean SupportsAsynch() { return true; }
 
@@ -226,7 +229,7 @@ public synchronized void Update(String exp, int s)
     }
 }
 
-public synchronized String GetString(String in)
+public synchronized String GetString(String in)  throws IOException
 {
  
     error = null;
@@ -250,7 +253,7 @@ public synchronized String GetString(String in)
         return new String(in.getBytes(), 1, in.length() - 2);    
 }
 
-public synchronized void SetEnvironment(String in)
+public synchronized void SetEnvironment(String in)  throws IOException
 {
 
     error = null;
@@ -266,51 +269,60 @@ public synchronized void SetEnvironment(String in)
     }
 }
 	
-public synchronized float GetFloat(String in)
+public synchronized float GetFloat(String in)  throws IOException
 {
     error = null;
     if(NotYetNumber(in))
     {
     	if(!CheckOpen())
-	    return 0;
-	Descriptor desc = mds.MdsValue(in);
-	if(desc.error != null)
-	    error = desc.error;
-	switch (desc.dtype) {
-		case Descriptor.DTYPE_FLOAT:
-		    return desc.float_data[0];
-		case Descriptor.DTYPE_LONG:
-		    return (float)desc.int_data[0];
-		case Descriptor.DTYPE_CHAR:
-		    error = "Cannot convert a string to float";
-		    return 0;
-		case Descriptor.DTYPE_CSTRING:
-		    error = desc.error;
-		    return 0;
-	}
+	        return 0;
+	    Descriptor desc = mds.MdsValue(in);
+	    if(desc.error != null)
+	        error = desc.error;
+	    switch (desc.dtype) {
+		    case Descriptor.DTYPE_FLOAT:
+		        return desc.float_data[0];
+		    case Descriptor.DTYPE_LONG:
+		        return (float)desc.int_data[0];
+		    case Descriptor.DTYPE_CHAR:
+		        error = "Cannot convert a string to float";
+		        return 0;
+		    case Descriptor.DTYPE_CSTRING:
+		        error = desc.error;
+		        return 0;
+	    }
     }	        
     else
-	return new Float(in).floatValue();
+	    return new Float(in).floatValue();
     return 0;
 }	
 	
 	
-public synchronized float[] GetFloatArray(String in)
+public synchronized float[] GetFloatArray(String in)  throws IOException
 {
     in = "fs_float(("+in+"))";
     String open_err = new String("");
+    
+    float[] out = (float[])sc.getCacheData(in, experiment, shot);
+    if(out != null)
+        return out;
+    
     if(!CheckOpen())
-	return null;
+	    return null;
+	    
     Descriptor desc = mds.MdsValue(in);
     switch(desc.dtype)  {
 	case Descriptor.DTYPE_FLOAT:
-	    return desc.float_data;
+	    out = desc.float_data;
+	    break;
+	    //return desc.float_data;
 	case Descriptor.DTYPE_LONG: 
 	    float[] out_data = new float[desc.int_data.length];
 	    for(int i = 0; i < desc.int_data.length; i++)
 		out_data[i] = (float)desc.int_data[i];
-	    return out_data;
-	    
+		out = out_data;
+	    break;
+	    //return out_data;
 	case Descriptor.DTYPE_CHAR:
 	    error = "Cannot convert a string to float array";
 	    return null;
@@ -318,10 +330,15 @@ public synchronized float[] GetFloatArray(String in)
 	    error = desc.error;
 	    return null;
     }	
+    if(out != null)
+    {
+        sc.putCacheData(in, experiment, shot, out);
+        return out;
+    }
     return null;
 }        
 	
-public synchronized int[] GetIntArray(String in)
+public synchronized int[] GetIntArray(String in) throws IOException
 {
     String open_err = new String("");
     if(!CheckOpen())
@@ -347,22 +364,25 @@ public synchronized int[] GetIntArray(String in)
     return null;
 }        
 	    
- protected synchronized boolean  CheckOpen() 
+ protected synchronized boolean  CheckOpen() throws IOException
  {
     int status;
     if(!connected)
     {
-	status = mds.ConnectToMds();
-	if(status == 0)
-	{
-	    if(mds.error != null)
-		    error = "Cannot open experiment " + experiment + " shot "+ 
-		                shot + " : "+ mds.error;
-	    else
-		    error = "Cannot open experiment " + experiment + " shot "+ shot;	    
-	    return false;
-	}
-	connected = true;
+	    status = mds.ConnectToMds();
+	    if(status == 0)
+	    {
+	        if(mds.error != null)
+	            throw new IOException("Cannot open experiment " + experiment + " shot "+ 
+		                    shot + " : "+ mds.error);
+		                    
+		        //error = "Cannot open experiment " + experiment + " shot "+ 
+		        //            shot + " : "+ mds.error;
+	        else
+		        error = "Cannot open experiment " + experiment + " shot "+ shot;	    
+	        return false;
+	    }
+	    connected = true;
     }	
     if(!open && experiment != null)
     {
@@ -594,46 +614,47 @@ class PMET extends Thread //Process Mds Event Thread
     }	    
     
     public int ConnectToMds()
-    {
-    
-	Socket sock = null;
-	try {
-//	    sock = new Socket("pdigi1.igi.pd.cnr.it",8000);
-//	    sock = new Socket("150.178.3.80",8000);
-	    if(provider == null)
-	    {
-//System.out.println("Create Socket");
-		    sock = new Socket("150.178.3.193",8000);
-	    }
-	    else
-	    {
-	        int idx = 0;
-	        if((idx = provider.indexOf(":")) != -1)
+    {    
+	    Socket sock = null;
+	    try {
+    //	    sock = new Socket("pdigi1.igi.pd.cnr.it",8000);
+    //	    sock = new Socket("150.178.3.80",8000);
+	        if(provider == null)
 	        {
-	            host = provider.substring(0, idx);
-	            port = Integer.parseInt(provider.substring(idx+1, provider.length())); 
-		    } else
-		        host = provider;
-		    sock = new Socket(host,port);
-//System.out.println("Socket Created");		
-		}		
-	    dis = new DataInputStream(new BufferedInputStream(
-		sock.getInputStream()));
-	    dos = new DataOutputStream(new BufferedOutputStream(
-		sock.getOutputStream()));
-	    MdsMessage message = new MdsMessage("JAVA_USER");
-	    message.Send(dos);
-	    message.Receive(dis);
-	    
-	    receiveThread = new MRT();
-	    receiveThread.start();
-	    
-	} catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
-	  catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
-	  catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
+    //System.out.println("Create Socket");
+		        sock = new Socket("150.178.3.193",8000);
+	        }
+	        else
+	        {
+	            int idx = 0;
+	            if((idx = provider.indexOf(":")) != -1)
+	            {
+	                host = provider.substring(0, idx);
+	                port = Integer.parseInt(provider.substring(idx+1, provider.length())); 
+		        } else
+		            host = provider;
+    		      
+		        sock = new Socket(host,port);
+    //System.out.println("Socket Created");		
+		    }		
+	        dis = new DataInputStream(new BufferedInputStream(
+		    sock.getInputStream()));
+	        dos = new DataOutputStream(new BufferedOutputStream(
+		    sock.getOutputStream()));
+	        MdsMessage message = new MdsMessage("JAVA_USER");
+	        message.Send(dos);
+	        message.Receive(dis);
+    	    
+	        receiveThread = new MRT();
+	        receiveThread.start();
+    	    
+	    }
+	    catch(NumberFormatException e){error="Data provider syntax error "+ provider + " (host:port)"; return 0;}
+	    catch(UnknownHostException e) {error="Data provider: "+ host + " port " + port +" unknown"; return 0;}
+	    catch(IOException e) { error = "Could not get IO for " +provider+ e; return 0;}
 
 
-	return 1;
+	    return 1;
     }
     
     public void MdsSetEvent(String event, int idx)

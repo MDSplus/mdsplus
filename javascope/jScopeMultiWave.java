@@ -33,10 +33,17 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
         int curr_mode = GetMode();
 	    SetMode(Waveform.MODE_WAIT);
 
-        error = wi.Update();
-        if(error == null)
-            jScopeWaveUpdate();
-
+        try
+        {
+            error = wi.Update();
+            if(error == null)
+                jScopeWaveUpdate();
+        } 
+        catch (IOException e) 
+        {
+            wi.error = e.getMessage();
+        }
+        
     	SetMode(curr_mode);
 
         return wi.error;
@@ -71,7 +78,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 
 
     //public String Update()
-    public void jScopeWaveUpdate()
+    public void jScopeWaveUpdate() throws IOException
     {	
 	    if(wi == null)
 	        return;// "Undefine signal to evaluate";
@@ -151,6 +158,8 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
 	    if(wi.is_image && wi.frames != null)
 	    {
             super.frames.setAspectRatio(wi.keep_ratio);
+            super.curr_point_sig_idx = 0;
+            signals.removeAllElements();
 	        not_drawn = true;
 	        frame = 0;
 	        return;
@@ -203,7 +212,7 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
     
     protected void DrawLegend(Graphics g, Point p)
     {
-        int h = g.getFont().getSize() + 2;
+        int h = g.getFont().getSize() + 2, k = 0;
         Color prev_col = g.getColor();
         Point pts[] = new Point[1];
         String s, er;
@@ -229,6 +238,17 @@ public class jScopeMultiWave extends MultiWaveform implements NetworkEventListen
             } else {
                 s = name + er;
             }
+            Signal sign = (Signal)signals.elementAt(i);
+            if(sign != null && sign.getType() == Signal.TYPE_2D)
+            {
+                switch(sign.getMode())
+                {
+                    case Signal.MODE_YTIME:s = s + " [Y-TIME X = "+ Waveform.ConvertToString(sign.getXData(), false)+" ]";break;
+                    case Signal.MODE_XY:s = s + " [X-Y T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
+                    case Signal.MODE_YX:s = s + " [Y-X T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
+                }
+            }
+
             g.drawString(s, p.x + marker_width, py);
         }
        

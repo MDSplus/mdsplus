@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.print.*;
 //import com.apple.mrj.*;
 
+
 public class jScope extends Frame implements ActionListener, ItemListener, 
                              WindowListener, WaveContainerListener, 
                              NetworkEventListener
@@ -77,6 +78,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   int height = 500, width = 700, xpos = 50, ypos = 50;
   jScopeDefaultValues def_values = new jScopeDefaultValues();
   SetupDataDialog setup_dialog;
+  
+  static SignalCache sc = new SignalCache();
   
   
   
@@ -833,22 +836,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     try
     {
-        /*
-        String prop_f;
-        File f = new File("jScope_p.properties");
-        if(f.exists())
-            prop_f = "jScope";
-        else {
-            prop_f = "jScope";
-            System.out.println(prop_f);
-        }
-        */
         rb = ResourceBundle.getBundle("jScope");
     } 
-    catch( MissingResourceException e){
-        
+    catch( MissingResourceException e)
+    {
         System.out.println(e);
-        }
+    }
   }
   
   private void GetPropertiesValue()
@@ -858,8 +851,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     try {
         curr_directory = rb.getString("jScope.directory");
         default_server = rb.getString("jScope.default_server");
-    }catch(MissingResourceException e){}
-    
+        String cache_directory = rb.getString("jScope.cache_directory");
+        String cache_size = rb.getString("jScope.cache_size");
+        Properties p = System.getProperties();
+        p.put("Signal.cache_directory", cache_directory);
+        p.put("Signal.cache_size", cache_size);
+    }
+    catch(MissingResourceException e){}
   }
   
   
@@ -1262,7 +1260,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         }
   }
   
-
+/*
   private String SetStrSize(String s, int size)
   {
 	    StringBuffer sb = new StringBuffer(size);
@@ -1277,7 +1275,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    return (new String(sb));
   }
 
-
+*/
   public void processWaveContainerEvent(WaveContainerEvent e)
   {
      String s = null;
@@ -1306,33 +1304,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	                wave_panel.Refresh(w, we.status_info);
 	            break;
     	        case WaveformEvent.MEASURE_UPDATE:
-	                double dx_f;
-	         
-	                if(Math.abs(we.delta_x) < 1.e-20)
-	                    dx_f = 1.e-20;
-	                else
-	                    dx_f = Math.abs(we.delta_x);
-	         
-                    s = SetStrSize("[" + Waveform.ConvertToString(we.point_x, false) + ", " 
-				                + Waveform.ConvertToString(we.point_y, false) + "; dx "
-				                + Waveform.ConvertToString(we.delta_x, false) + "; dy "
-				                + Waveform.ConvertToString(we.delta_y, false) + "; 1/dx "
-				                + Waveform.ConvertToString(1./dx_f, false) +
-				                "]", 80);
-
 	            case WaveformEvent.POINT_UPDATE:
-                    if(s == null)
-                    {
-	                    if(!wi.is_image)
-	                        s = SetStrSize("[" + Waveform.ConvertToString(we.point_x, false) + ", " 
-				                   + Waveform.ConvertToString(we.point_y, false) + "]", 30);
-		                else
-	                        s = SetStrSize("[" + ((int)we.point_x) + ", " 
-				                       + ((int)we.point_y) + " : " 
-				                       + "(" + ((we.pixel_value >> 16) & 0xff) + "," + ((we.pixel_value >> 8) & 0xff) + "," +  (we.pixel_value & 0xff) + ")" +
-				                       " : " + we.delta_x + "]", 50);
-		            }
-
+       	            s = we.toString();
 	                if(wi.shots != null)
 	                {
 		                point_pos.setText(s +

@@ -1,5 +1,6 @@
 import java.net.*;
 import java.util.*;
+import java.io.IOException;
 
 public class MdsAccess implements DataAccess
 {
@@ -14,13 +15,13 @@ public class MdsAccess implements DataAccess
         MdsAccess access = new MdsAccess();
         String url = "mds:://150.178.3.80/a/14000/\\emra_it";
         boolean supports = access.supports(url);
-        float x [] = access.getX(url);
-        float y [] = access.getY(url);
+        try
+        {
+            float x [] = access.getX(url);
+            float y [] = access.getY(url);
+        } catch (IOException e) {}
     }
-        
-    
-    
-    
+
     public boolean supports(String url)
     {
         StringTokenizer st = new StringTokenizer(url, ":");
@@ -66,19 +67,23 @@ public class MdsAccess implements DataAccess
     }
 
     
-    public float [] getX(String url)
+    public float [] getX(String url) throws IOException
     {
- //       String signal = setProvider(url);
         signal = setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray("DIM_OF("+signal+")");
     }
-    public float [] getY(String url)
+    
+    public float [] getY(String url) throws IOException
     {
-//        String signal = setProvider(url);
         String signal = setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray(signal);
+    }
+    
+    public Signal getSignal(String url)
+    {
+        return null;
     }
     
     public void setPassword(String encoded_credentials)

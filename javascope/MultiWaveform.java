@@ -12,7 +12,7 @@ public class MultiWaveform extends Waveform
     protected Vector  signals = new Vector();
     protected Vector  orig_signals = null;
     protected double  orig_xmin, orig_xmax;
-    protected int     curr_point_sig_idx;	
+    protected int     curr_point_sig_idx = -1;	
     
     protected boolean make_legend = false;
     protected double  legend_x;
@@ -522,7 +522,17 @@ public class MultiWaveform extends Waveform
             pts[0].x = p.x - marker_width/2;
             pts[0].y = py - marker_width/2;           
             DrawMarkers(g, pts, 1, sign.getMarker(), 1);
-            g.drawString(sign.getName(), p.x + marker_width, py);
+            String lab = sign.getName();
+            if(sign.getType() == Signal.TYPE_2D)
+            {
+                switch(sign.getMode())
+                {
+                    case Signal.MODE_YTIME:lab = lab + " [Y-TIME X = "+ Waveform.ConvertToString(sign.getXData(), false)+" ]";break;
+                    case Signal.MODE_XY:lab = lab + " [X-Y T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
+                    case Signal.MODE_YX:lab = lab + " [Y-X T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;
+                }
+            }
+            g.drawString(lab, p.x + marker_width, py);
         } 
         g.setColor(prev_col); 
     }
@@ -666,6 +676,34 @@ public class MultiWaveform extends Waveform
     }
 
 
+	public void UpdatePoint(double curr_x)
+	{
+			
+        if(!is_image)
+        {
+            if(wm == null) return;
+            
+		    if(dragging || mode != MODE_POINT || signals == null || signals.size() == 0)
+			    return;
+			    
+			Signal s;
+			
+			for(int i = 0; i < signals.size(); i++)
+			{
+			    s = (Signal)signals.elementAt(i);
+			    if(s == null) continue;
+			    if(s.getType() == Signal.TYPE_2D && 
+			        (s.getMode() == Signal.MODE_XY || s.getMode() == Signal.MODE_YX))
+			    {
+			        s.showXY((float)curr_x);
+    	            not_drawn = true;
+			    }
+			}
+		}
+		super.UpdatePoint(curr_x);
+	}
+
+
 /*
     protected double FindPointY(double curr_x, double curr_y, boolean is_first)	
     {
@@ -746,6 +784,8 @@ public class MultiWaveform extends Waveform
     }
 */        
     protected int GetSelectedSignal() {return curr_point_sig_idx; }
+    
+    public Signal GetSignal() {return (Signal)signals.elementAt(curr_point_sig_idx);}
 
     public int getSignalMode(int idx)
     {

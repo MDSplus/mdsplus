@@ -16,7 +16,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	protected CheckboxMenuItem interpolate_f;
 
 	protected Menu signal_2d;
-	protected CheckboxMenuItem plot_y_time, plot_y_x;
+	protected CheckboxMenuItem plot_y_time, plot_x_y, plot_y_x;
 	
 	protected Panel setup_dialog = null;
 	protected int curr_x, curr_y;
@@ -70,6 +70,17 @@ public class WavePopup extends PopupMenu implements  ItemListener {
 	        }
 	    });
         
+        signal_2d.add(plot_x_y = new CheckboxMenuItem("Plot x & y"));
+        plot_x_y.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            Object target = e.getSource();
+	            wave.setSignalMode(Signal.MODE_XY);
+                wave.Update();
+	        }
+	    });
+
         signal_2d.add(plot_y_x = new CheckboxMenuItem("Plot y & x"));
         plot_y_x.addItemListener(new ItemListener()
 	    {
@@ -80,6 +91,7 @@ public class WavePopup extends PopupMenu implements  ItemListener {
                 wave.Update();
 	        }
 	    });
+
     
 	    add(sep2 = new MenuItem("-"));
 	    add(autoscale = new MenuItem("Autoscale"));
@@ -301,10 +313,12 @@ public class WavePopup extends PopupMenu implements  ItemListener {
                 if(wave.getSignalType() == Signal.TYPE_2D) {
                     insert(signal_2d, 4);
                     plot_y_time.setState(false);
+                    plot_x_y.setState(false);
                     plot_y_x.setState(false);
                     switch (wave.getSignalMode())
                     {
                         case Signal.MODE_YTIME : plot_y_time.setState(true); break;
+                        case Signal.MODE_XY : plot_x_y.setState(true); break;
                         case Signal.MODE_YX : plot_y_x.setState(true); break;
                     }
                 }
