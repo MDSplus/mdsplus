@@ -594,8 +594,23 @@ static void NodeTouched(int nid, NodeTouchType type)
 	switch(type) {
 	case on_off:      FixPixMaps(treew, this_item); break;
 	case set_def:     set_default(toplevel, FindChildItemByNid(treew, this_item, nid)); break;
-	case new:         this_item = insert_item(treew, this_item, nid); break;
-	case rename_node: if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) FixUpName(treew, this_item); break;
+	case new:
+	  {
+	    ListTreeItem *itm;
+	    itm = insert_item(treew, this_item, nid); 
+            FixUpName(treew, this_item);
+	    break;
+	  }
+	case rename_node: 
+	  {
+            ListTreeItem *itm;
+	    if ((itm = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) {
+              ListTreeDelete(treew, itm);
+	    }
+	    itm = insert_item(treew, this_item, nid);
+            FixUpName(treew, this_item);
+	  }
+	  break;
 	case delete:      
 	  if ((this_item = FindItemByNid(ListTreeFirstItem(treew), nid)) != NULL) 
 	  {
@@ -940,6 +955,72 @@ DeleteNode( Widget w, XtPointer client_data, XtPointer call_data)
     }
     else
       XmdsComplain(w, "Please choose one or more nodes\nbefore choosing delete node.");
+}
+
+void
+RenameNodeNow( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  int nid = (int)client_data;
+  Widget tree = XtNameToWidget(BxFindTopShell(toplevel), "*.tree");
+  Widget tw = XtNameToWidget(w, "*.new_name");
+  char *new_name = (char *)XmTextFieldGetString(tw);
+  int parent;
+  int status;
+  parent = parent_nid(nid);
+  status = TreeRenameNode(nid, new_name);
+  if (status&1) {
+    int new_parent = parent_nid(nid);
+    if (new_parent != parent) {
+      ListTreeItem *this_item = FindParentItemByNid(tree, nid);
+      ListTreeDelete(tree, FindItemByNid(ListTreeFirstItem(tree), nid));
+      FixUpName(tree, FindItemByNid(ListTreeFirstItem(tree), parent));
+      this_item = insert_item(tree, this_item, nid);
+    }
+    FixUpName(tree, FindItemByNid(ListTreeFirstItem(tree), nid));
+    XtDestroyWidget(w);
+  }
+  else
+    XmdsComplain(w, "Error renaming node");
+}
+
+void
+RenameNode( Widget w, XtPointer client_data, XtPointer call_data)
+{
+    int i;
+    if (num_selected > 0) {
+      for (i=0; i<num_selected; i++) {
+	int nid = get_nid(selections[i]);
+        char *c_path = TreeGetPath(nid);
+        static XtCallbackRec ok_callback_list[] = {{(XtCallbackProc)RenameNodeNow, 0},{0,0}};
+        static XtCallbackRec cancel_callback_list[] = {{(XtCallbackProc)XtDestroyWidget, 0},{0,0}};
+        static Arg qargs[] = {
+	  {XmNmessageString, 0},
+	  {XmNokLabelString, 0},
+	  {XmNokCallback, (long)ok_callback_list},
+	  {XmNcancelCallback, (long)cancel_callback_list},
+	};
+        static Arg targs[] = {
+	  {XmNvalue, 0},
+	  {XmNcolumns, 48},
+	  {XmNmarginHeight, 1},
+	  {XmNmarginWidth, 1},
+	};
+        Widget qdlog;
+        Widget widg;
+	ok_callback_list[0].closure = (XtPointer)nid;
+	qargs[0].value = (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
+	qargs[1].value = (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
+        qdlog = XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
+	XtFree(qargs[0].value);
+	XtFree(qargs[1].value);
+        targs[0].value = (long)c_path;
+        widg = (Widget)XmCreateTextField(qdlog, "new_name", targs, XtNumber(targs));
+        XtManageChild(widg);
+        XtManageChild(qdlog);
+      }
+    }
+    else
+      XmdsComplain(w, "Please choose one or more nodes\nbefore choosing rename node.");
 }
 
 static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method, Widget parent)

@@ -80,6 +80,7 @@ extern void tag_button_proc(Widget, XtPointer, XtPointer);
 extern void tag_selection_proc (Widget, XtPointer, XtPointer);
 extern void DeleteNode(Widget, XtPointer, XtPointer);
 extern void DeleteNodeNow(Widget, XtPointer, XtPointer);
+extern void RenameNode(Widget, XtPointer, XtPointer);
 
 /*
  * Function prototypes for routines located in utilities file
@@ -159,7 +160,7 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[47];
+    MRMRegisterArg NamesList[48];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
@@ -244,6 +245,8 @@ int main(int argc, char **argv)
     NamesList[Nlac++].value = (XtPointer) DeleteNode;
     NamesList[Nlac].name = "DeleteNodeNow";
     NamesList[Nlac++].value = (XtPointer) DeleteNodeNow;
+    NamesList[Nlac].name = "RenameNode";
+    NamesList[Nlac++].value = (XtPointer) RenameNode;
     NamesList[Nlac].name = NULL;
     NamesList[Nlac].value = NULL;
     

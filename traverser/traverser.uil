@@ -147,6 +147,7 @@ procedure CreateAddDevice();
 procedure AddDevice();
 procedure WriteTree(integer);
 procedure CreateTree();
+procedure RenameNode();
 procedure DeleteNode();
 procedure DeleteNodeNow();
 procedure ModifyTags();
@@ -1199,6 +1200,7 @@ object pulldownMenu1 : XmPulldownMenu widget {
          managed XmPushButton pushButtonAddDevice;
          managed XmPushButton pushButton4;
          managed XmPushButton pushButton5;
+         managed XmPushButton renameButton;
     };
     callbacks {
     };
@@ -1245,6 +1247,17 @@ object pushButton5 : XmPushButton widget {
     };
     callbacks {
         XmNactivateCallback = procedure DeleteNode();
+    };
+};
+
+object renameButton : XmPushButton widget {
+    arguments {
+        XmNlabelString = compound_string("Rename Node");
+    };
+    controls {
+    };
+    callbacks {
+        XmNactivateCallback = procedure RenameNode();
     };
 };
 
