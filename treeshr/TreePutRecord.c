@@ -135,9 +135,9 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       }
       if (!(open_status & 1))
       {
-	local_nci.DATA_INFO.ERROR_INFO.stv = stv;
+	local_nci.DATA_INFO.ERROR_INFO.stv = swapint((char *)&stv);
         bitassign_c(1,local_nci.flags2,NciM_ERROR_ON_PUT);
-	local_nci.DATA_INFO.ERROR_INFO.error_status = open_status;
+	local_nci.DATA_INFO.ERROR_INFO.error_status = swapint((char *)&open_status);
 	length = local_nci.length = 0;
 	TreePutNci(info_ptr, nidx, &local_nci, 1);
 	return open_status;
@@ -388,7 +388,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
         else
         {
           bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
-          nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
+          nci_ptr->DATA_INFO.ERROR_INFO.error_status = swapint((char *)&status);
           nci_ptr->length = 0;
         }
         TreePutNci(info, nodenum, nci_ptr, 1);
@@ -434,7 +434,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
         else
         {
           bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
-          nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
+          nci_ptr->DATA_INFO.ERROR_INFO.error_status = swapint((char *)&status);
           nci_ptr->length = 0;
         }
         TreePutNci(info, nodenum, nci_ptr, 1);
