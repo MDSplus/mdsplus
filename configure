@@ -4521,7 +4521,6 @@ math/umach.f
 mdsdcl/Makefile 
 mdslib/Makefile 
 mdslibidl/Makefile 
-mdsremote/Makefile
 mdsshr/Makefile 
 mdstcpip/Makefile 
 mdsvme/Makefile
@@ -4712,7 +4711,6 @@ math/umach.f
 mdsdcl/Makefile 
 mdslib/Makefile 
 mdslibidl/Makefile 
-mdsremote/Makefile
 mdsshr/Makefile 
 mdstcpip/Makefile 
 mdsvme/Makefile
