@@ -1664,12 +1664,18 @@ static void axis_change_type_proc(Widget w,int *tag)
   }
 }
 
+static int WidgetNameCmp(Widget w, char *string)
+{
+  return ((w->core.name == 0) || (w->core.name==(char *)0xffffff) || strcmp(w->core.name,"xd_box"));
+}
+
 static void dispatch_change_type_proc(Widget w,int *tag)
 {
   Widget dispatch_dlog;
   for (dispatch_dlog = w;
-       dispatch_dlog && (dispatch_dlog->core.name == 0 || strcmp(dispatch_dlog->core.name,"dispatch_dlog"));
+       dispatch_dlog && WidgetNameCmp(dispatch_dlog,"dispatch_dlog");
        dispatch_dlog = dispatch_dlog->core.parent);
+
   if (dispatch_dlog)
   {
     if (*tag == 1)
@@ -1693,8 +1699,9 @@ static void dispatch_change_type_proc(Widget w,int *tag)
 static void expression_change_type_proc(Widget w,int *tag)
 {
   Widget expression_dlog;
+
   for (expression_dlog = w;
-       expression_dlog && (expression_dlog->core.name == 0 || strcmp(expression_dlog->core.name,"expression_dlog"));
+       expression_dlog && WidgetNameCmp(expression_dlog,"expression_dlog");
        expression_dlog = expression_dlog->core.parent);
   if (expression_dlog)
   {
@@ -1716,9 +1723,11 @@ static void expression_change_type_proc(Widget w,int *tag)
 static void task_change_type_proc(Widget w,int *tag)
 {
   Widget task_dlog;
+
   for (task_dlog = w;
-       task_dlog && (task_dlog->core.name == 0 || strcmp(task_dlog->core.name,"task_dlog"));
+       task_dlog && WigetNameCmp(task_dlog,"task_dlog");
        task_dlog = task_dlog->core.parent);
+
   if (task_dlog)
   {
     if (*tag == 1)
@@ -1824,7 +1833,7 @@ static void CalculateNewSize(XmdsXdBoxWidget w,unsigned short *width,unsigned sh
 static XmdsXdBoxWidget FindXdBoxWidget(Widget w)
 {
   Widget xdbw;
-  for (xdbw = w; xdbw && ((xdbw->core.name == 0) || (xdbw->core.name==0xffffff) || strcmp(xdbw->core.name,"xd_box")); xdbw = XtParent(xdbw));
+  for (xdbw = w; xdbw && WidgetNameCmp(xdbw,"xd_box"); xdbw = XtParent(xdbw));
   if (xdbw) xdbw = XtParent(xdbw);
   return (XmdsXdBoxWidget) xdbw;
 }
