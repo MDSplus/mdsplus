@@ -75,7 +75,7 @@ static char *portname;
 static short port;
 static char mode;
 static int flags;
-static int MaxCompressionLevel;
+static int MaxCompressionLevel = 9;
 #define IS_SERVICE 0x200
 
 static void DefineTdi(char *execute_string, char dtype, short length, void *value);
@@ -1351,7 +1351,7 @@ static int ParseOption(char *option, char **argv, int argc, char **portname, sho
   }
   else if (strcmp(option,"compression") == 0)
   {
-    if (argc > 0 && *argv[0] >= '0' && *argv[0] <= '9') *compression_level = atoi(argv[0]); else *compression_level = 6;
+    if (argc > 0 && *argv[0] >= '0' && *argv[0] <= '9') *compression_level = atoi(argv[0]); else *compression_level = 9;
   }
   else
   {
