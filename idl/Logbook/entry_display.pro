@@ -1205,7 +1205,7 @@ pro make_entry, ctx
   b = widget_button(bb, value = 'Set Preferences', uvalue = {key:'set preferences', descr:'Set default behavior'})
   r = widget_base(base, /row)
   l = widget_label(r, value = 'Run ')
-  run_w = widget_text(r, xsize=6, value='', /editable)
+  run_w = widget_text(r, xsize=7, value='', /editable)
   shot_w = widget_text(r, xsize=3, value='', /editable)
   l = widget_label(r, value = 'Shot ')
   r = widget_base(base, /row)
@@ -1566,34 +1566,34 @@ pro make_event, ev
                widget_control, ctx.run_w, set_value = 'CURRENT'
              end
           'current run': begin
-               widget_control, ctx.run_w, set_value = STRTRIM(STRING(GetCurrentRun(), format='(I6.6)'), 2)
+               widget_control, ctx.run_w, set_value = STRTRIM(STRING(GetCurrentRun(), format='(I7.7)'), 2)
                widget_control, ctx.shot_w, set_value = ''
              end
           'previous run': begin
-               widget_control, ctx.run_w, set_value = STRTRIM(STRING(GetCurrentRun()-1, format='(I6.6)'), 2)
+               widget_control, ctx.run_w, set_value = STRTRIM(STRING(GetCurrentRun()-1, format='(I7.7)'), 2)
                widget_control, ctx.shot_w, set_value = ''
              end
           'next run': begin
-               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()+1, format='(I6.6)'),2)
+               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()+1, format='(I7.7)'),2)
                widget_control, ctx.shot_w, set_value = ''
              end
           'increment run': begin
                widget_control, ctx.run_w, get_value=txt
                if (STRTRIM(txt(0),2) eq 'CURRENT') then $
-                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()+1, format='(I6.6)'), 2) $
+                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()+1, format='(I7.7)'), 2) $
                else begin
                  run = long(txt(0))
-                 widget_control, ctx.run_w, set_value = strtrim(STRING(run+1, format='(I6.6)'),2)
+                 widget_control, ctx.run_w, set_value = strtrim(STRING(run+1, format='(I7.7)'),2)
                endelse
                widget_control, ctx.shot_w, set_value = ''
              end
           'decrement run': begin
                widget_control, ctx.run_w, get_value=txt
                if (STRTRIM(txt(0),2) eq 'CURRENT') then $
-                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()-1, format='(I6.6)'),2) $
+                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun()-1, format='(I7.7)'),2) $
                else begin
                  run = long(txt(0))
-                 widget_control, ctx.run_w, set_value = strtrim(STRING(run-1, format='(I6.6)'), 2)
+                 widget_control, ctx.run_w, set_value = strtrim(STRING(run-1, format='(I7.7)'), 2)
                endelse
                widget_control, ctx.shot_w, set_value = ''
              end
@@ -1607,20 +1607,20 @@ pro make_event, ev
                widget_control, ctx.shot_w, set_value = 'CURRENT'
              end
           'current shot': begin
-               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I6.6)'),2)
+               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I7.7)'),2)
                widget_control, ctx.shot_w, set_value = strtrim(STRING(GetCurrentShot(), FORMAT='(I3.3)'),2)
              end
           'previous shot': begin
                shot = GetCurrentShot()-1
                if (shot gt 0) then begin
-                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I6.6)'),2)
+                 widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I7.7)'),2)
                  widget_control, ctx.shot_w, set_value = strtrim(STRING(GetCurrentShot()-1, format='(I3.3)'),2)
                endif else begin
                  x_complain, 'No previous shot', group_leader=ev.top
                endelse
              end
           'next shot': begin
-               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I6.6)'),2)
+               widget_control, ctx.run_w, set_value = strtrim(STRING(GetCurrentRun(), format='(I7.7)'),2)
                widget_control, ctx.shot_w, set_value = strtrim(STRING(GetCurrentShot()+1, format='(I3.3)'),2)
              end
           'increment shot': begin
