@@ -765,7 +765,8 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
               if (reason->length)
               {
                 String filename;
-                if (XmStringGetLtoR(reason->value, (XmStringCharSet) XmSTRING_DEFAULT_CHARSET, &filename))
+                filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+                if (filename)
                 {
                   int       length = strlen(filename);
                   if (length)
@@ -815,7 +816,8 @@ static void /*XtCallbackProc*/Save(Widget w, int *option, XmFileSelectionBoxCall
               if (reason->length)
               {
                 String filename;
-                if (XmStringGetLtoR(reason->value, (XmStringCharSet) XmSTRING_DEFAULT_CHARSET, &filename))
+                filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+                if (filename)
                 {
                   int       length = strlen(filename);
                   if (length)
@@ -856,7 +858,8 @@ static void /*XtCallbackProc*/Save(Widget w, int *option, XmFileSelectionBoxCall
               if (reason->length)
               {
                 String filename;
-                if (XmStringGetLtoR(reason->value, (XmStringCharSet) XmSTRING_DEFAULT_CHARSET, &filename))
+                filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+                if (filename)
                 {
                   int       length = strlen(filename);
                   if (length)
@@ -999,7 +1002,7 @@ static void /*XtCallbackProc*/ResetCustomizePrint(Widget w, XtPointer client_dat
     XmString label;
     String label_string;
     XtVaGetValues(children[i],XmNlabelString,&label,NULL);
-    XmStringGetLtoR(label,XmSTRING_DEFAULT_CHARSET,&label_string);
+    label_string = XmStringUnparse(label, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
     if (strcmp(label_string,ScopePrinter) == 0)
     {
       XtFree(label_string);
@@ -1141,7 +1144,7 @@ static void /*XtCallbackProc*/ApplyCustomizePrint(Widget w, XtPointer client_dat
   Widget portrait_w = XtNameToWidget(CustomizePrintWidget,"cp_portrait_button");
   XtVaGetValues(printer_select,XmNmenuHistory,&option,NULL);
   XtVaGetValues(option,XmNlabelString,&label,NULL);
-  XmStringGetLtoR(label,XmSTRING_DEFAULT_CHARSET,&label_string);
+  label_string = XmStringUnparse(label, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   ReplaceString(&ScopePrinter,label_string,1);
   ReplaceString(&ScopePrintFile, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_file")), 1);
   ReplaceString(&ScopePrintEvent, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_event")), 1);
@@ -1192,7 +1195,8 @@ static void ResetCustomizeFont(Widget w, XtPointer client_data, XmAnyCallbackStr
 static void /*XtCallbackProc*/ApplyFont(Widget w, XtPointer client_data, XmSelectionBoxCallbackStruct *callback_data)
 {
   String font;
-  if (XmStringGetLtoR(callback_data->value,XmSTRING_DEFAULT_CHARSET,&font) && strlen(font))
+  font = XmStringUnparse(callback_data->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+  if (font)
     SetFont(font);
 }
 

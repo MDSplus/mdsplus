@@ -401,9 +401,10 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
             {
               if (reason->length)
               {
-                String filename;
-                if (XmStringGetLtoR(reason->value, (XmStringCharSet) XmSTRING_DEFAULT_CHARSET, &filename))
-                {
+                 String filename;
+                 filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+                 if (filename)
+                 {
                   int       length = strlen(filename);
                   if (length)
                   {
@@ -451,8 +452,9 @@ static void /*XtCallbackProc*/Save(Widget w, int *option, XmFileSelectionBoxCall
               if (reason->length)
               {
                 String filename;
-                if (XmStringGetLtoR(reason->value, (XmStringCharSet) XmSTRING_DEFAULT_CHARSET, &filename))
-                {
+                filename = XmStringUnparse(reason->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
+                if (filename)
+                 {
                   int       length = strlen(filename);
                   if (length)
                   {
