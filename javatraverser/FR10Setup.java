@@ -13,7 +13,6 @@ import javax.swing.border.*;
 
 public class FR10Setup
     extends DeviceSetup {
-  JPanel jPanel1 = new JPanel();
   JPanel jPanel2 = new JPanel();
   JTabbedPane jTabbedPane1 = new JTabbedPane();
   JScrollPane jScrollPane1 = new JScrollPane();
@@ -198,6 +197,19 @@ public class FR10Setup
   DeviceChoice deviceChoice5 = new DeviceChoice();
   DeviceChoice deviceChoice6 = new DeviceChoice();
   DeviceButtons deviceButtons1 = new DeviceButtons();
+  JPanel jPanel30 = new JPanel();
+  JPanel jPanel34 = new JPanel();
+  GridLayout gridLayout3 = new GridLayout();
+  JPanel jPanel35 = new JPanel();
+  JPanel jPanel36 = new JPanel();
+  GridLayout gridLayout4 = new GridLayout();
+  JPanel jPanel37 = new JPanel();
+  JPanel jPanel38 = new JPanel();
+  GridLayout gridLayout5 = new GridLayout();
+  JPanel jPanel39 = new JPanel();
+  GridLayout gridLayout6 = new GridLayout();
+  BorderLayout borderLayout1 = new BorderLayout();
+  BorderLayout borderLayout2 = new BorderLayout();
 
   public FR10Setup() {
     try {
@@ -209,19 +221,15 @@ public class FR10Setup
   }
 
   private void jbInit() throws Exception {
-    this.setWidth(604);
-    this.setHeight(550);
+    this.setWidth(531);
+    this.setHeight(531);
     this.setDeviceType("FR10");
     this.setDeviceProvider("150.178.3.101");
     this.setDeviceTitle("FR10");
-    this.getContentPane().setLayout(null);
-    jPanel1.setBounds(new Rectangle(-5, 0, 615, 686));
-    jPanel1.setLayout(null);
+    this.getContentPane().setLayout(borderLayout1);
     jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"Channels"));
-    jPanel2.setBounds(new Rectangle(8, 265, 590, 203));
-    jPanel2.setLayout(null);
+    jPanel2.setLayout(borderLayout2);
     jTabbedPane1.setBackground(new Color(153, 153, 153));
-    jTabbedPane1.setBounds(new Rectangle(16, 27, 553, 155));
     jPanel3.setLayout(gridLayout1);
     gridLayout1.setRows(16);
     deviceChannel1.setLabelString("Ch 01");
@@ -679,13 +687,11 @@ public class FR10Setup
     deviceField2119.setNumCols(12);
     deviceField2119.setIdentifier("");
     jPanel31.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"General"));
-    jPanel31.setBounds(new Rectangle(8, 3, 590, 83));
-    jPanel31.setLayout(null);
+    jPanel31.setLayout(gridLayout3);
     deviceField30.setOffsetNid(1);
     deviceField30.setLabelString("Board Id :");
     deviceField30.setNumCols(3);
     deviceField30.setIdentifier("");
-    deviceField30.setBounds(new Rectangle(19, 19, 112, 28));
     deviceChoice1.setChoiceIntValues(null);
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setOffsetNid(2);
@@ -693,28 +699,22 @@ public class FR10Setup
     deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
-    deviceChoice1.setBounds(new Rectangle(154, 17, 193, 33));
     deviceField31.setOffsetNid(4);
     deviceField31.setTextOnly(true);
     deviceField31.setLabelString("Comment :");
-    deviceField31.setNumCols(30);
+    deviceField31.setNumCols(20);
     deviceField31.setIdentifier("");
-    deviceField31.setBounds(new Rectangle(9, 47, 424, 28));
     deviceField32.setOffsetNid(3);
     deviceField32.setTextOnly(true);
     deviceField32.setLabelString("Ip Addr. :");
     deviceField32.setNumCols(11);
     deviceField32.setIdentifier("");
-    deviceField32.setBounds(new Rectangle(379, 14, 202, 33));
-    deviceDispatch1.setBounds(new Rectangle(445, 46, 130, 28));
-    jPanel32.setLayout(null);
-    jPanel32.setBounds(new Rectangle(8, 85, 590, 88));
+    jPanel32.setLayout(gridLayout4);
     jPanel32.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"Clock"));
     deviceField34.setOffsetNid(5);
     deviceField34.setLabelString("Source :");
     deviceField34.setNumCols(30);
     deviceField34.setIdentifier("");
-    deviceField34.setBounds(new Rectangle(9, 18, 412, 28));
     deviceChoice2.setChoiceIntValues(null);
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setOffsetNid(6);
@@ -722,8 +722,6 @@ public class FR10Setup
     deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(430, 17, 146, 33));
-    deviceChoice3.setBounds(new Rectangle(402, 48, 175, 33));
     deviceChoice3.setIdentifier("");
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setChoiceItems(new String[] {"200E3", "100E3", "50E3", "20E3", "10E3", "5E3", "2E3", "1E3", "500", "200", "100"});
@@ -732,8 +730,7 @@ public class FR10Setup
     deviceChoice3.setChoiceFloatValues(new float[] {(float)200000.0,(float)100000.0,(float)50000.0,(float)20000.0,(float)10000.0,(float)5000.0,(float)2000.0,(float)1000.0,(float)500.0,(float)200.0,(float)100.0});
     deviceChoice3.setChoiceIntValues(null);
     jPanel33.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"Trigger"));
-    jPanel33.setBounds(new Rectangle(8, 172, 590, 91));
-    jPanel33.setLayout(null);
+    jPanel33.setLayout(gridLayout5);
     deviceChoice4.setChoiceIntValues(null);
     deviceChoice4.setChoiceFloatValues(null);
     deviceChoice4.setOffsetNid(9);
@@ -741,13 +738,10 @@ public class FR10Setup
     deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
     deviceChoice4.setUpdateIdentifier("");
     deviceChoice4.setIdentifier("");
-    deviceChoice4.setBounds(new Rectangle(429, 19, 146, 33));
     deviceField35.setOffsetNid(8);
     deviceField35.setLabelString("Source :");
     deviceField35.setNumCols(30);
     deviceField35.setIdentifier("");
-    deviceField35.setBounds(new Rectangle(9, 19, 412, 28));
-    deviceChoice5.setBounds(new Rectangle(445, 50, 130, 33));
     deviceChoice5.setIdentifier("");
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setChoiceItems(new String[] {"RISING", "FALLING"});
@@ -762,34 +756,50 @@ public class FR10Setup
     deviceChoice6.setChoiceItems(new String[] {"TRUE", "FALSE"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
-    deviceChoice6.setBounds(new Rectangle(419, 13, 158, 33));
     deviceButtons1.setCheckExpressions(null);
     deviceButtons1.setCheckMessages(null);
     deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
-    deviceButtons1.setBounds(new Rectangle(158, 473, 286, 36));
-    this.getContentPane().add(jPanel1, null);
+    gridLayout3.setColumns(1);
+    gridLayout3.setRows(2);
+    gridLayout4.setColumns(1);
+    gridLayout4.setRows(2);
+    gridLayout5.setColumns(1);
+    gridLayout5.setRows(2);
+    jPanel39.setLayout(gridLayout6);
+    gridLayout6.setColumns(1);
+    gridLayout6.setRows(3);
+    jPanel34.setMinimumSize(new Dimension(298, 30));
+    jPanel34.setPreferredSize(new Dimension(508, 30));
+    jPanel39.setAlignmentX((float) 0.5);
+    jPanel39.setAlignmentY((float) 0.5);
     jTabbedPane1.add(jScrollPane1,   "Times");
     jTabbedPane1.add(jScrollPane2, "Samples");
+    this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     jScrollPane2.getViewport().add(jPanel4, null);
     jScrollPane1.getViewport().add(jPanel3, null);
-    jPanel1.add(jPanel33, null);
-    jPanel1.add(deviceButtons1, null);
-    jPanel1.add(jPanel31, null);
-    jPanel2.add(deviceChoice6, null);
-    jPanel2.add(jTabbedPane1, null);
-    jPanel31.add(deviceField31, null);
-    jPanel31.add(deviceChoice1, null);
-    jPanel31.add(deviceDispatch1, null);
-    jPanel31.add(deviceField32, null);
-    jPanel31.add(deviceField30, null);
-    jPanel1.add(jPanel32, null);
-    jPanel32.add(deviceChoice2, null);
-    jPanel32.add(deviceField34, null);
-    jPanel32.add(deviceChoice3, null);
-    jPanel1.add(jPanel2, null);
-    jPanel33.add(deviceChoice5, null);
-    jPanel33.add(deviceChoice4, null);
-    jPanel33.add(deviceField35, null);
+    jPanel2.add(deviceChoice6, BorderLayout.NORTH);
+    jPanel2.add(jTabbedPane1, BorderLayout.CENTER);
+    jPanel30.add(deviceField30, null);
+    jPanel30.add(deviceField32, null);
+    jPanel30.add(deviceDispatch1, null);
+    this.getContentPane().add(jPanel2,  BorderLayout.CENTER);
+
+    jPanel34.add(deviceField31, null);
+    jPanel34.add(deviceChoice1, null);
+
+    jPanel35.add(deviceChoice2, null);
+    jPanel35.add(deviceChoice3, null);
+
+    jPanel36.add(deviceField34, null);
+
+
+    jPanel37.add(deviceChoice4, null);
+    jPanel37.add(deviceChoice5, null);
+
+    jPanel38.add(deviceField35, null);
+
+    this.getContentPane().add(jPanel39, BorderLayout.NORTH);
+
 
     deviceChannel17.add(jPanel6, null);
     jPanel6.add(deviceField3, null);
@@ -922,6 +932,19 @@ public class FR10Setup
 
 
 
+
+
+    jPanel31.add(jPanel30, null);
+    jPanel31.add(jPanel34, null);
+
+        jPanel32.add(jPanel35, null);
+            jPanel32.add(jPanel36, null);
+                jPanel33.add(jPanel37, null);
+                    jPanel33.add(jPanel38, null);
+
+    jPanel39.add(jPanel31, null);
+    jPanel39.add(jPanel32, null);
+    jPanel39.add(jPanel33, null);
 
 
 
