@@ -15,7 +15,10 @@ libMdsdcl.a(mdsdcl_set_command.o)	\
 libMdsdcl.a(mdsdcl_spawn.o)		\
 libMdsdcl.a(mdsdcl_wait.o)
 
-all:	mdsdcl libMdsdcl.a  ../shlib/libMdsdcl.$(SHARE_TYPE)
+all:	libMdsdcl.a  ../bin/mdsdcl  ../shlib/libMdsdcl.$(SHARE_TYPE)
+
+clean:
+	rm  *.a  *.o  ../shlib/libMdsdcl.$(SHARE_TYPE)  ../bin/mdsdcl
 
 mdsdcl_tables.o:	mdsdcl_tables.c
 
@@ -32,8 +35,8 @@ libMdsdcl.a:	$(OBJFILES)
 		libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a	\
 		-lTreeShr  -lTdiShr  -lcurses -lc
 
-mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
-	$(CC) $(CFLAGS) -o $@ $(LFLAGS) $@.o -lMdsdcl		\
+../bin/mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
+	$(CC) $(CFLAGS) -o $@ $(LFLAGS) mdsdcl.o -lMdsdcl		\
 		$(MDSPLUS)/cdu/libCdu.a
 
 .depend:

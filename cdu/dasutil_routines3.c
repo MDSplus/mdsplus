@@ -9,6 +9,7 @@
 #include        <malloc.h>
 #include        <curses.h>
 #include        <term.h>
+#include        <termios.h>
 #endif
 
 /***********************************************************************

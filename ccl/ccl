@@ -1,2 +1,2 @@
-$MDSPLUS/mdsdcl/mdsdcl set command ccl_commands \
-	-prompt=\"CCL> \" -def_file=\"*.ccl\"
+$MDSPLUS/bin/mdsdcl	\
+    -prep "set command ccl_commands -prompt=\"CCL> \" -def_file=\"*.ccl\""

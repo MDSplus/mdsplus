@@ -5,7 +5,6 @@
 #include        <stdarg.h>
 #include        <lib$routines.h>
 #else
-#include        <dlfcn.h>
 #include        <stdlib.h>
 #include        <sys/stat.h>
 #endif
@@ -23,74 +22,11 @@
 ************************************************************************/
 
 
-
-#ifdef unix
-	/****************************************************************
-	 * dlopen_table:
-	 * Find "table" shared object ...
-	 ****************************************************************/
-static void  *dlopen_table(	/* Return: shared-object handle		*/
-    char  *tableName		/* <r> table name			*/
-   )
-   {
-    int   i,k;
-    char  filename[256];
-    char  *p;
-    char  utilString[80];
-    void  *hndl;
-    struct stat  statbuf;
-    FILE  *fp;
-
-		/*=======================================================
-		 * First, check for environment variable (upper case)
-		 *======================================================*/
-    l2u(utilString,tableName);
-    if (p = getenv(utilString))
-       {
-        strcpy(filename,p);
-        hndl = dlopen(filename,RTLD_LAZY);
-        if (hndl)
-            return(hndl);		/*--------------------> return	*/
-        p = dlerror();
-        fprintf(stderr,"\nError trying to open %s file '%s':\n%s\n\n",
-            utilString,filename,p);
-       }
-
-		/*======================================================
-		 * Next, try local directory ...
-		 *=====================================================*/
-    sprintf(filename,"./%s.so",tableName);
-    if (!stat(filename,&statbuf))
-       {			/* File exists --			*/
-        hndl = dlopen(filename,RTLD_LAZY);
-        if (hndl)
-            return(hndl);		/*--------------------> return	*/
-        p = dlerror();
-        fprintf(stderr,"\nError tryingin to open file '%s':\n%s\n\n",
-            filename,p);
-       }
-
-		/*=======================================================
-		 * Finally, try $MDSPLUS/shlib ...
-		 *======================================================*/
-    p = getenv("MDSPLUS");
-    if (!p)
-        p = "$MDSPLUS";
-    sprintf(filename,"%s/shlib/%s.so",p,tableName);
-    if (!stat(filename,&statbuf))
-       {			/* File exists --			*/
-        hndl = dlopen(filename,RTLD_LAZY);
-        if (hndl)
-            return(hndl);		/*--------------------> return	*/
-        p = dlerror();
-        fprintf(stderr,"\nError tryingin to open file '%s':\n%s\n\n",
-            filename,p);
-       }
-
-    return(0);				/*--------------------> return	*/
-   }
+#ifdef vms
+#define LibFindImageSymbol  lib$find_image_symbol
+#else
+int  LibFindImageSymbol();
 #endif
-
 
 
 	/****************************************************************
@@ -112,51 +48,15 @@ int   mdsdcl_set_command(		/* Return: status		*/
     sts = cli_get_value("TABLE",&dsc_table);
     if (sts & 1)
        {
-#ifdef vms
-        sts = lib$find_image_symbol(&dsc_table,&dsc_table,&newTable);
-        if (~sts & 1)
-           {			/* Maybe try appending "_commands" ?	*/
-            if (dsc_table.dscW_length < 10)
-               {
-                str_concat(&dsc_table,&dsc_table,"_commands",0);
-                sts = lib$find_image_symbol(&dsc_table,&dsc_table,
-                                &newTable);
-               }
-            if (~sts & 1)
-               {
-                dasmsg(sts,"set_command: *ERR* from find_image_symbol");
-                return(sts);
-               }
-           }
-#else
-        hndl = dlopen_table(dsc_table.dscA_pointer);
-        if (!hndl)
-           {			/* Maybe try appending "_commands" ?	*/
-            if (dsc_table.dscW_length < 10)
-               {
-                str_concat(&dsc_table,&dsc_table,"_commands",0);
-                hndl = dlopen_table(dsc_table.dscA_pointer);
-               }
-            if (!hndl)
-               {
-			/*-----------------------------------------------
-			 * No luck.  Print error message ...
-			 *----------------------------------------------*/
-                MdsMsg(0,"Failed to open table '%s'",
-                    dsc_table.dscA_pointer);
-                fprintf(stderr,"\n");
-                return(MDSDCL_STS_ERROR);
-               }
-           }
-
-        newTable = dlsym(hndl,dsc_table.dscA_pointer);
-        if (!newTable)
+        sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
+        if ((~sts & 1) && (dsc_table.dscW_length < 10))
            {
-            fprintf(stderr,"*ERR* table %s not found\n",
-                dsc_table.dscA_pointer);
-            return(MDSDCL_STS_ERROR);
+            str_concat(&dsc_table,&dsc_table,"_commands",0);
+            sts = LibFindImageSymbol(&dsc_table,&dsc_table,&newTable);
            }
-#endif
+        if (~sts & 1)
+            return(MdsMsg(sts,"Failed to open table %s",
+                dsc_table.dscA_pointer));
 
 		/*------------------------------------------------------
 		 *... add newTable address to "tbladr[]" list

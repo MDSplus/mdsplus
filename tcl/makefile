@@ -21,14 +21,16 @@ OBJFILES = 			\
 	libTcl.a(tcl_verify_tree.o)	\
 	libTcl.a(tcl_write.o)
 
-all:	tcl tcl_commands.o  libTcl.a	\
+all:	../bin/tcl tcl_commands.o  libTcl.a	\
 			../shlib/tcl_commands.$(SHARE_TYPE)
 
 clean:
 	find . -name libTcl.a -exec rm {} \;
+	rm *.o ../shlib/tcl_commands.$(SHARE_TYPE)
 
-tcl:
+../bin/tcl:	tcl
 	chmod +x tcl
+	cp  tcl ../bin
 
 tcl_commands.c:	tcl_commands.ocld
 	../cdu/cdu < tcl_commands.ocld
@@ -38,7 +40,7 @@ tcl_commands.o:	tcl_commands.c
 libTcl.a:	$(OBJFILES)
 	ranlib libTcl.a
 
-../shlib/tcl_commands.$(SHARE_TYPE):	tcl_commands.o  libTcl.a
+../shlib/tcl_commands.$(SHARE_TYPE):	libTcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LFLAGS) $(LD_SHARED_LIB_OPTIONS)	\
 		tcl_commands.o  libTcl.a	\
 		-lMdsdcl -lMdsShr -lTreeShr -lTdiShr	\

@@ -1,7 +1,7 @@
 #include        "clisysdef.h"
 
 		/* Filename: ccl_commands.c
-		 * created by cdu :  07-Apr-1998 13:01:55
+		 * created by cdu :  08-Apr-1998 15:01:21
 		 ********************************************************/
 
 extern int   ccl_finish();

@@ -1,7 +1,7 @@
 #include        "clisysdef.h"
 
 		/* Filename: mdsdcl_tables.c
-		 * created by cdu :  07-Apr-1998 13:01:40
+		 * created by cdu :  08-Apr-1998 15:01:19
 		 ********************************************************/
 
 extern int   MDSDCL_ACTIVATE_IMAGE();
