@@ -91,8 +91,8 @@ clean :
 	- rm ../shlib/libTdiShr.$(SHARE_TYPE)
 	- rm .depend
 
-TdiLex.c : TdiLex.x
-	lex -t TdiLex.x > $@
+#TdiLex.c : TdiLex.x
+#	lex -t TdiLex.x > $@
 
 tdiyacc.h : TdiYacc.y
 	yacc -d TdiYacc.y ; mv y.tab.h $@
