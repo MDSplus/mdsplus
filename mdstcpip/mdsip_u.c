@@ -285,16 +285,16 @@ static void InstallService(int typesrv)
 }
 
 #else
-static void InstallService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
+static void InstallService(int arg) {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static void RemoveService() {printf("install option only valid with mdsip_service on NT\n"); exit(0);}
 static void StartWorker(char **argv){}
 static void InitWorkerCommunications(){}
 static void InitializeService(){}
 static void SetThisServiceStatus(int state, int hint) {}
 #ifdef HAVE_VXWORKS_H
-static int SpawnWorker(){return taskIdSelf();}
+static int SpawnWorker(int arg){return taskIdSelf();}
 #else
-static int SpawnWorker(){return getpid();}
+static int SpawnWorker(int arg){return getpid();}
 #endif
 #ifndef SERVICE_START_PENDING
 #define SERVICE_START_PENDING 0
