@@ -7,4 +7,5 @@ LD_LIBRARY_PATH $MDSPLUS/shlib
 #
 MOTIFHOME /opt/motif/scomd12s
 source $MOTIFHOME/share/src/setup/csh-env
+. $MOTIFHOME/share/src/setup/sh-env
 UIDPATH $UIDPATH\:$MDSPLUS/uid/%U
