@@ -25,7 +25,6 @@ public fun OAM01__off ( as_is _nid, optional _method )
 
 
 
-
 	_status = 1 ;
 	_gpib_addr = if_error ( data ( DevNodeRef ( _nid, __GPIB_ADDR ) ), _status = 0 ) ;
 	if ( _status == 0 )
@@ -130,16 +129,6 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	}
 
 
-	/* Rilascio il device GPIB */
-
-	_status = GPIBClrId ( _gpib_id ) ;
-	wait ( _WAIT ) ;
-	if ( 0 == _status )
-	{
-		_msg = 'Command ' // _command // ' failed' ;
-		DevLogErr ( _nid, _msg ) ;
-		abort (  ) ;
-	}
 
 	return ( 1 ) ;
 }

@@ -1,6 +1,5 @@
 public fun OAM01__add(in _path, out _nidout) {
 
-
     DevAddStart(_path, 'OAM01', 54, _nidout);
 
     DevAddNode(_path // ':GPIB_ADDR', 'NUMERIC', *, *, _nid);

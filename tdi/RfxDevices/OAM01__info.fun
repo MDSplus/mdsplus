@@ -121,16 +121,7 @@ public fun OAM01__info ( as_is _nid, optional _method )
 	}
 
 
-	/* Rilascio il device GPIB */
 
-	_status = GPIBClrId ( _gpib_id ) ;
-	wait ( _WAIT ) ;
-	if ( 0 == _status )
-	{
-		_msg = 'Command ' // _command // ' failed' ;
-		DevLogErr ( _nid, _msg ) ;
-		abort (  ) ;
-	}
 
 	return ( 1 ) ;
 }
