@@ -170,7 +170,7 @@ static void GetPodSettings(int nid, int *settings)
   if (status&1) {
     static DESCRIPTOR(get_settings, "GET_SETTINGS");
     static DESCRIPTOR_NID(nid_dsc, &dev_nid);
-    status = TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV4032_K_CHANS_PER_POD, settings);
+    status = TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV4032_K_CHANS_PER_POD, settings MDS_END_ARG);
   }
   if ((status&1)==0) {
     int i;
