@@ -170,18 +170,19 @@ static int Store(InStoreStruct *setup, int partial)
 static int ReadChannel(int partial, struct _f0a0 *f0a0, InStoreStruct *setup, int *chan_ptr, int *samples_ptr, short *data_ptr)
 {
   int status;
+  short zero=0;
   if (partial)
   {
     pio(25,1,0);
-    pio(17,0,0);
+    pio(17,0,&zero);
     f0a0->adc = 1;
-    pio(16,0,(short *)&f0a0);
+    pio(16,0,(short *)f0a0);
     f0a0->adc = 0;
-    pio(16,0,(short *)&f0a0);
+    pio(16,0,(short *)f0a0);
   }
   else
   {
-    pio(17,0,0);
+    pio(17,0,&zero);
   }
   if (*samples_ptr < 32768)
   {
