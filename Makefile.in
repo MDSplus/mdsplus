@@ -82,6 +82,12 @@ depend:
 	  cd $${dir}; make depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
+relnotes:
+	cdir=`pwd`;\
+	for dir in . $(PARTS) ; do\
+	  cd $${dir}; cvs log -l -r$$RELEASE: > relnotes.txt; cd $$cdir;\
+        done
+
 MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include
 
 install: 
