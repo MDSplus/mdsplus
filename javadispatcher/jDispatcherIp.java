@@ -27,19 +27,19 @@ class jDispatcherIp extends MdsIp
         String command  ="", compositeCommand = "";
         try
 	{
-
 	    compositeCommand = new String(messages[0].body);
 
-	    System.err.println("Comando a jDispatcherIp " + compositeCommand);
+//	    System.err.println("Comando a jDispatcherIp " + compositeCommand);
 
             StringTokenizer st = new StringTokenizer(compositeCommand, "\"");
             while(!(st.nextToken().equals("TCL")));
-           // st.nextToken();
-	    System.err.println("Token scartato " + st.nextToken());
+            st.nextToken();
+
+//          System.err.println("Token scartato " + st.nextToken());
 
             command = st.nextToken();
 
-	    System.err.println("Comando pulito " + command);
+//	    System.err.println("Comando pulito " + command);
 
         }
 	catch (Exception exc)
