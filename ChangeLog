@@ -1,5 +1,600 @@
-Version 1.3-1
+Version 1.3-2
 
+
+2003-01-02 11:19  twf
+
+	* idlmdswidgets/Makefile.in:
+	
+	Add cw_wvedit.uid
+
+2003-01-02 11:13  twf
+
+	* configure, configure.in:
+	
+	Fix uiddir
+
+2003-01-02 11:10  twf
+
+	* mitdevices/Makefile.in:
+	
+	Fix symbolic link
+
+2003-01-02 09:44  twf
+
+	* tdi/jet/README:
+	
+	Retire JET RDA funs
+
+2003-01-02 09:41  twf
+
+	* tdi/jet/: jetconnect.fun, jetdata.fun:
+	
+	Removed jet rda functions
+
+2002-12-26 16:19  jas
+
+	* tdi/MitDevices/dt200__add.fun:
+	
+	remove debug prints
+
+2002-12-26 16:19  jas
+
+	* traverser/CallbacksUil.c, tdi/dev_support/DevAddDevice.fun:
+	
+	fix Add Device
+
+2002-12-26 11:44  twf
+
+	* tdishr/TdiVar.c:
+	
+	Fix memory leak
+
+2002-12-26 11:36  twf
+
+	* tdishr/TdiVar.c:
+	
+	Fix memory leak
+
+2002-12-23 11:02  jas
+
+	* tdi/MitDevices/dt200__add.fun, tdi/dev_support/DevAddDevice.fun,
+	treeshr/TreeAddNode.c:
+	
+	all add congloms use the DevAddDevice fun
+
+2002-12-12 08:13  manduchi
+
+	* tdi/RfxDevices/: MPBEncoder__init.fun, RFXDClock__init.fun,
+	RFXGClock__init.fun, TRCF__store.fun, TRCH__store.fun,
+	TimingRegisterEventTime.fun:
+	
+	Fix TimingRegisterEvent
+
+2002-12-11 07:33  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Added times
+
+2002-12-09 07:37  manduchi
+
+	* javatraverser/: L5613Setup.java, Makefile.in:
+	
+	Added support for LeCroy L5613
+
+2002-12-09 07:35  manduchi
+
+	* tdi/RfxDevices/: Aurora14__store.fun, L5613__add.fun,
+	L5613__init.fun, RFXClock__init.fun, RFXPulse__init.fun,
+	RFXTimes__add.fun:
+	
+	Added LeCroy L5613 device
+
+2002-12-06 08:59  twf
+
+	* camshr/Makefile.in:
+	
+	Fix install
+
+2002-12-06 08:38  twf
+
+	* configure, configure.in:
+	
+	Fix test for daylight externals
+
+2002-12-05 11:11  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Added field
+
+2002-12-05 10:18  manduchi
+
+	* tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Fixed again
+
+2002-12-05 10:10  manduchi
+
+	* tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Fixed node name
+
+2002-12-04 12:05  jas
+
+	* pixmaps/: Tcl.png, Tdi.png, dwpad.png, dwscope.png, logbook.png,
+	mdsplus.png, traverser.png:
+	
+	Pixmaps for mdsplus menu items (linux)
+
+2002-12-04 08:37  twf
+
+	* configure, configure.in:
+	
+	Fix hpux
+
+2002-12-04 08:31  twf
+
+	* configure, configure.in:
+	
+	Fix hpux
+
+2002-12-03 15:28  twf
+
+	* tdi/TreeHook.example:
+	
+	Sample tdi fun for treeshr hooks
+
+2002-12-03 15:25  twf
+
+	* treeshr/: TreeCallHook.c, TreeOpen.c:
+	
+	Add tdi fun for hooks
+
+2002-12-03 15:24  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Translate server names
+
+2002-12-03 13:38  twf
+
+	* ccl/Makefile.in:
+	
+	Use real camshr
+
+2002-12-03 13:06  twf
+
+	* camshr/: cts_commands.ocld, verbs.c:
+	
+	updated cts verbs
+
+2002-12-03 11:15  twf
+
+	* mdslibidl/MdsLibIdl.c:
+	
+	Fix strings on 64 big endian
+
+2002-12-03 10:34  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	remove special code for hp
+
+2002-12-03 09:10  twf
+
+	* configure:
+	
+	use lpthread now on hp
+
+2002-12-03 09:09  twf
+
+	* configure.in:
+	
+	Use lpthread now on hp
+
+2002-12-03 08:34  twf
+
+	* conf/config.sub:
+	
+	More modern configurations
+
+2002-12-03 08:25  twf
+
+	* conf/config.guess:
+	
+	More modern config.guess
+
+2002-12-03 05:50  manduchi
+
+	* javascope/MdsplusParser.java:
+	
+	Removed printout
+
+2002-12-03 05:34  manduchi
+
+	* javascope/: Makefile.in, MdsplusParser.java, TSDataProvider.java:
+	
+	Allow TDI expressions in Tore Supra signals
+
+2002-12-02 15:12  jas
+
+	* idlmdswidgets/Makefile.in:
+	
+	need MdsMath CVS
+	-------------------------------------------------------------------
+	---
+
+2002-12-02 13:45  jas
+
+	* idlmdswidgets/memmoveext.c:
+	
+	Add memmoveext.c
+
+2002-11-29 08:45  jgk
+
+	* javascope/TWUSignal.java:
+	
+	Some unimportant changes to the comment texts, in effect going back
+	to the situation of revision 1.14.
+
+2002-11-28 06:56  jgk
+
+	* javascope/TWUProperties.java:
+	
+	Some unimportant changes to the comment texts, in effect going back
+	to the situation of revision 1.13.
+
+2002-11-27 11:56  manduchi
+
+	* javascope/PropertiesEditor.java:
+	
+	Forgot this module....
+
+2002-11-22 16:55  jas
+
+	* tdi/: findtree.fun, findtreedir.fun, toms510.fun:
+	
+	adding some funs needed by PCS
+
+2002-11-22 16:53  jas
+
+	* math/: msceez.f, mskrv1.f, mskrv2.f, msshch.f, mstrms.f,
+	toms510.f:
+	
+	adding toms510 not sure why I have unadded msceez.f mskrv1.f
+	mskrv2.f msshch.f mstrms.f adding them ???
+
+2002-11-22 16:48  jas
+
+	* idl/: cw_wvedit.pro, wvscratch.pro, xtvagetvalues.pro,
+	xtvasetvalues.pro:
+	
+	cw_wvedit pros
+
+2002-11-22 16:44  jas
+
+	* idlmdswidgets/: Makefile.in, cw_wvedit.uil, cw_wveditv5.c,
+	mdsevent.c:
+	
+	move idl event stuff to new image, and add cw_wvedit stuff
+
+2002-11-22 16:40  jas
+
+	* configure.in:
+	
+	adding mdsidlwidgets
+
+2002-11-22 09:44  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, JetDataProvider.java, JetMdsDataProvider.java,
+	JiDataSource.java, JiDim.java, JiNcSource.java, JiNcVar.java,
+	JiNcVarByte.java, JiNcVarChar.java, JiNcVarDouble.java,
+	JiNcVarFloat.java, JiNcVarImp.java, JiNcVarInt.java,
+	JiNcVarShort.java, JiSlab.java, JiSlabIterator.java, JiVar.java,
+	JiVarImpl.java, LocalDataProvider.java, MdsAccess.java,
+	MdsConnection.java, MdsDataClient.java, MdsDataProvider.java,
+	MdsIOException.java, MdsMessage.java, MdsPlusBrowseSignals.java,
+	MdsWaveInterface.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java,
+	TextorBrowseSignals.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	New Release. Sorry for the update of all files....really do not
+	know why CVS has to report the change of filed which did not
+	change.
+
+2002-11-20 16:30  twf
+
+	* mdsshr/: librtl.c, librtl.c:
+	
+	Fix date conversion
+
+2002-11-19 05:29  manduchi
+
+	* javatraverser/: Database.java, DeviceWave.java, ModifyData.java,
+	RFXTimingSetup.java, Tree.java, TreeServer.java:
+	
+	RMIC compatibility
+
+2002-11-17 15:37  twf
+
+	* tdishr/TdiConvert.c:
+	
+	Fix convert native float to text
+
+2002-11-15 16:05  twf
+
+	* include/: ipdesc.h, mdslib.h:
+	
+	Make mdslib includes compatible with C++
+
+2002-11-15 10:17  twf
+
+	* hdf5/hdf5ToMds.c:
+	
+	Take out debug printout
+
+2002-11-14 08:28  manduchi
+
+	* javascope/WaveformEditor.java, javatraverser/DeviceWave.java:
+	
+	Fix
+
+2002-11-14 06:16  manduchi
+
+	* javascope/WaveformMetrics.java:
+	
+	Bug fix
+
+2002-11-13 09:59  manduchi
+
+	* javascope/WaveformEditor.java:
+	
+	Still fix....
+
+2002-11-13 09:52  manduchi
+
+	* javascope/WaveformEditor.java:
+	
+	fix
+
+2002-11-13 08:57  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	
+	now Make!!
+
+2002-11-13 08:45  manduchi
+
+	* javascope/Makefile.in:
+	
+	Included WaveformEditor
+
+2002-11-13 03:20  manduchi
+
+	* javascope/WaveformEditor.java:
+	
+	Better definition of selected point
+
+2002-11-12 12:22  manduchi
+
+	* tdi/RfxDevices/: RFXPConfig__add.fun, RFXPSetup__add.fun,
+	TRCH__add.fun:
+	
+	Added RFXPSetup device
+
+2002-11-12 12:20  manduchi
+
+	* javascope/Makefile.in:
+	
+	Aded support for WaveformEditor
+
+2002-11-12 12:18  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, Frames.java, FtuDataProvider.java, Grid.java,
+	JetDataProvider.java, JetMdsDataProvider.java, JiDataSource.java,
+	JiDim.java, JiNcSource.java, JiNcVar.java, JiNcVarByte.java,
+	JiNcVarChar.java, JiNcVarDouble.java, JiNcVarFloat.java,
+	JiNcVarImp.java, JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java, TWUProperties.java,
+	TWUSignal.java, TextorBrowseSignals.java, TwuAccess.java,
+	TwuDataProvider.java, UniversalDataProvider.java, UpdateEvent.java,
+	UpdateEventListener.java, WaveContainerEvent.java,
+	WaveContainerListener.java, WaveData.java, WaveDisplay.java,
+	WaveInterface.java, WavePopup.java, Waveform.java,
+	WaveformContainer.java, WaveformEditor.java,
+	WaveformEditorListener.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScope.java, jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Added support for waveform editing
+
+2002-11-12 12:13  manduchi
+
+	* javatraverser/: DeviceChoice.java, DeviceChoiceBeanInfo.java,
+	DeviceChoiceCustomizer.java, DeviceComponent.java,
+	DeviceSetup.java, DeviceWave.java, DeviceWaveBeanInfo.java,
+	DeviceWaveCustomizer.java, Makefile.in, RFXPSetupSetup.java:
+	
+	Added support for Waform editing
+
+2002-11-07 16:21  twf
+
+	* hdf5/: Makefile.in, dynhdf5.c, hdf5ToMds.c, hdf5tdi.c:
+	
+	do not use dynamic activation of hdf5 library
+
+2002-11-06 12:34  twf
+
+	* Makefile.in, configure, configure.in:
+	
+	Add hdf5 applications
+
+2002-11-06 12:32  manduchi
+
+	* javatraverser/RFXPConfigSetup.java:
+	
+	A RFX device
+
+2002-11-06 08:53  manduchi
+
+	* javascope/Makefile.in:
+	
+	Class Re-organization
+
+2002-11-06 08:49  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, JetDataProvider.java, JetMdsDataProvider.java,
+	JiDataSource.java, JiDim.java, JiNcSource.java, JiNcVar.java,
+	JiNcVarByte.java, JiNcVarChar.java, JiNcVarDouble.java,
+	JiNcVarFloat.java, JiNcVarImp.java, JiNcVarInt.java,
+	JiNcVarShort.java, JiSlab.java, JiSlabIterator.java, JiVar.java,
+	JiVarImpl.java, LocalDataProvider.java, MdsAccess.java,
+	MdsConnection.java, MdsDataClient.java, MdsDataProvider.java,
+	MdsIOException.java, MdsMessage.java, MdsPlusBrowseSignals.java,
+	MdsWaveInterface.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java, TWUProperties.java,
+	TWUSignal.java, TextorBrowseSignals.java, TwuAccess.java,
+	TwuDataProvider.java, UniversalDataProvider.java, UpdateEvent.java,
+	UpdateEventListener.java, WaveContainerEvent.java,
+	WaveContainerListener.java, WaveData.java, WaveDisplay.java,
+	WaveInterface.java, WavePopup.java, Waveform.java,
+	WaveformContainer.java, WaveformEvent.java, WaveformListener.java,
+	WaveformManager.java, WaveformMetrics.java, jScope.java,
+	jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java:
+	
+	Class re-organization
+
+2002-11-06 08:47  manduchi
+
+	* javascope/: AboutWindow.java, AsdexDataProvider.java,
+	Base64.java, ColorDialog.java, CompositeWaveDisplay.java,
+	ConnectionEvent.java, ConnectionListener.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoDataProvider.java,
+	Descriptor.java, FontSelection.java, FrameData.java, FrameJAI.java,
+	Frames.java, FtuDataProvider.java, Grid.java, JetDataProvider.java,
+	JetMdsDataProvider.java, JiDataSource.java, JiDim.java,
+	JiNcSource.java, JiNcVar.java, JiNcVarByte.java, JiNcVarChar.java,
+	JiNcVarDouble.java, JiNcVarFloat.java, JiNcVarImp.java,
+	JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, MdsAccess.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, MdsIOException.java,
+	MdsMessage.java, MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java, RdaAccess.java,
+	RotateFilter.java, RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, TSDataProvider.java, TWUProperties.java,
+	TWUSignal.java, TextorBrowseSignals.java, TwuAccess.java,
+	TwuDataProvider.java, UniversalDataProvider.java, UpdateEvent.java,
+	UpdateEventListener.java, WaveContainerEvent.java,
+	WaveContainerListener.java, WaveData.java, WaveDisplay.java,
+	WaveInterface.java, WavePopup.java, Waveform.java,
+	WaveformContainer.java, WaveformContainer_2.java,
+	WaveformEvent.java, WaveformListener.java, WaveformManager.java,
+	WaveformMetrics.java, Waveform_2.java, jScope.java,
+	jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMac.java, jScopeMultiWave.java,
+	jScopeMultiWave_2.java, jScopeProperties.java,
+	jScopeWaveContainer.java, jScopeWaveContainer_2.java,
+	jScopeWavePopup.java, jScope_1.java, jScope_2.java:
+	
+	Class re-arrangment and fixes
+
+2002-11-06 07:29  manduchi
+
+	* javatraverser/: Data.java, DoubleArray.java, DoubleData.java,
+	FloatArray.java, FloatData.java, Makefile.in, RFXPConfigSetup.java,
+	SlopeData.java:
+	
+	Added support for slope and various floating data types
+
+2002-11-06 07:27  manduchi
+
+	* javamds/: JavaData.c, JavaTrav.c:
+	
+	Added support for various floating types
+
+2002-11-06 05:37  manduchi
+
+	* treeshr/TreeSetNci.c:
+	
+	Fixed again Lock problem in TreeGetNciLw
+
+2002-11-05 10:34  manduchi
+
+	* treeshr/RemoteAccess.c, treeshr/TreeAddNode.c,
+	treeshr/TreeGetNci.c, treeshr/TreePutRecord.c, treeshr/treeshrp.h,
+	include/mdstypes.h, mdsshr/MdsEvents.c, mdsshr/MdsXdRoutines.c,
+	mdsshr/librtl.c, mdsshr/mdsshr.dsp, tdishr/TdiAdd.c,
+	tdishr/TdiBuild.c, tdishr/TdiCall.c, tdishr/TdiCompile.c,
+	tdishr/TdiDim.c, tdishr/TdiDivide.c, tdishr/TdiYacc.c,
+	tdishr/TdiYaccSubs.c, tdishr/tdirefstandard.h, mdstcpip/b_order.h,
+	mdstcpip/mdsip.h, mdstcpip/mdsip_u.c, mdstcpip/mdsiputil.c:
+	
+	Added compatibility for vxWorks
+
+2002-11-01 08:53  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.3-1
 
 2002-11-01 08:51  twf
 
