@@ -71,8 +71,8 @@ extern int TdiErrorlogsOf();
 extern int TdiGetLong();
 extern int ProgLoc;
 
-static void DoDispatch(int idx);
 static void Dispatch(int idx);
+static void DoSendMonitor(int mode, int idx);
 void SendMonitor(int mode, int idx);
 static void SendReply(int nid, char *message);
 static void ActionDone(int idx);
@@ -86,13 +86,27 @@ static int NoOutstandingActions(int s,int e);
 static void RecordStatus(int s,int e);
 static void Dispatch(int i);
 static void WaitForActions(int conditionals);
-static void lock_action_done();
-static void unlock_action_done();
 static void lock_dispatch();
 static void unlock_dispatch();
 
 static const int zero = 0;
 
+typedef struct _complete {
+  int idx;
+  struct _complete *next;
+} Complete;
+
+static Complete *CompletedQueueHead = 0;
+static Complete *CompletedQueueTail = 0;
+
+typedef struct _send_monitor {
+  int idx;
+  int mode;
+  struct _send_monitor *next;
+} SendMonitorInfo;
+
+static SendMonitorInfo *SendMonitorQueueHead = 0;
+static SendMonitorInfo *SendMonitorQueueTail = 0;
 
 static ActionInfo *actions;
 static char *tree;
@@ -113,6 +127,39 @@ static int last_g;
 static int WaitForAll;
 static pthread_cond_t JobWaitCondition;
 static pthread_mutex_t JobWaitMutex;
+
+#define def_lock(name) \
+\
+static int name##_mutex_initialized = 0;\
+static pthread_mutex_t name##_mutex;\
+\
+static void lock_##name()\
+{\
+\
+  if(! name##_mutex_initialized)\
+  {\
+    name##_mutex_initialized = 1;\
+    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
+  }\
+  pthread_mutex_lock(&name##_mutex);\
+}\
+\
+static void unlock_##name()\
+{\
+\
+  if(! name##_mutex_initialized)\
+  {\
+    name##_mutex_initialized = 1;\
+    pthread_mutex_init(&name##_mutex, pthread_mutexattr_default);\
+  }\
+\
+  pthread_mutex_unlock(&name##_mutex);\
+}
+
+def_lock(send_monitor_queue)
+def_lock(completed_queue)
+def_lock(dispatch)
+def_lock(send_msg)
 
 static char *Server(char *out, char *srv)
 {
@@ -144,6 +191,7 @@ void SendMonitor(int mode, int idx)
       else
         server[i] = cptr[i];
     server[i] = 0;
+    lock_send_msg();
     MonitorOn = ServerSendMessage(0, Monitor, SrvMonitor, 0, 0, 0, 0, 0, 8, 
                       MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), 
                       MakeDescrip(&p2,DTYPE_LONG,0,0,&table->shot),
@@ -153,6 +201,7 @@ void SendMonitor(int mode, int idx)
                       MakeDescrip(&p6,DTYPE_LONG,0,0,&mode),
                       MakeDescrip(&p7,DTYPE_CSTRING,0,0,server),
                       MakeDescrip(&p8,DTYPE_LONG,0,0,&actions[idx].status));
+    unlock_send_msg();
   }
 }
 
@@ -199,7 +248,6 @@ static void ActionDone(int idx)
   static char expression[60];
   static struct descriptor expression_d = {0, DTYPE_T, CLASS_S, expression};
   static EMPTYXD(xd);
-  lock_action_done();
   if (idx >= 0)
   {
     niddsc.pointer = (char *)&actions[idx].nid;
@@ -210,19 +258,21 @@ static void ActionDone(int idx)
       MDSEvent(event,sizeof(int),(char *)&table->shot);
       free(event);
     }
-    SendMonitor(MonitorDone, idx);
-    path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
-    if (actions[idx].status & 1)
-      sprintf(logmsg,"%s, Action %s completed",now(),path);
-    else
-    {
-      char *emsg = MdsGetMsg(actions[idx].status);
-      sprintf(logmsg,"%s, Action %s failed, %s",now(),path,emsg);
-      SendReply(actions[idx].nid,logmsg);
-    }
-    TreeFree(path);
+    DoSendMonitor(MonitorDone, idx);
     if (Output)
+    {
+      path = TreeGetMinimumPath((int *)&zero,actions[idx].nid);
+      if (actions[idx].status & 1)
+        sprintf(logmsg,"%s, Action %s completed",now(),path);
+      else
+      {
+        char *emsg = MdsGetMsg(actions[idx].status);
+        sprintf(logmsg,"%s, Action %s failed, %s",now(),path,emsg);
+        SendReply(actions[idx].nid,logmsg);
+      }
+      TreeFree(path);
       (*Output)(logmsg);
+    }
     if (!AbortInProgress)
     {
       expression_d.length = sprintf(expression,"_ACTION_%08X = %d",actions[idx].nid,actions[idx].status);
@@ -264,7 +314,6 @@ static void ActionDone(int idx)
     pthread_cond_signal(&JobWaitCondition);
     pthread_mutex_unlock(&JobWaitMutex);
   }
-  unlock_action_done();
   return;
 }
 
@@ -272,7 +321,7 @@ static void Before(int idx)
 {
   char logmsg[1024];
   actions[idx].doing = 1;
-  SendMonitor(MonitorDoing, idx);
+  DoSendMonitor(MonitorDoing, idx);
   if (Output)
   {
     char server[33];
@@ -521,10 +570,8 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact,
       ProgLoc = 6010;
       SetGroup(sync);
       ProgLoc = 6011;
-      lock_action_done();
       for (i=first_g;i<last_g;i++)
          Dispatch(i);
-      unlock_action_done();
       ProgLoc = 6012;
       WaitForActions(0);
       first_g = last_g;
@@ -589,7 +636,7 @@ static void Dispatch(int i)
       (*Output)(logmsg);
     }
     ProgLoc = 7001;
-    SendMonitor(MonitorDispatched, i);
+    DoSendMonitor(MonitorDispatched, i);
     ProgLoc = 7002;
     if (noact)
       {
@@ -598,8 +645,10 @@ static void Dispatch(int i)
       }
     else
       {
+        lock_send_msg();
 	status = ServerDispatchAction(0, Server(server,actions[i].server), tree, shot, actions[i].nid, DoActionDone, (void *)i, &actions[i].status, 
 				      &actions[i].netid, Before);
+        unlock_send_msg();
 	ProgLoc = 7003;
 	if (status & 1)
 	  actions[i].dispatched = 1;
@@ -615,86 +664,248 @@ static void Dispatch(int i)
   unlock_dispatch();
 }
 
-static int action_done_mutex_initialized = 0;
-static pthread_mutex_t action_done_mutex;
+static int ProcessActionDoneRunning = 0;
 
-static void lock_action_done()
+
+static pthread_mutex_t wake_completed_mutex;
+static pthread_cond_t wake_completed_cond;
+
+static void WakeCompletedActionQueue()
 {
-
-  if(!action_done_mutex_initialized)
+  static int init = 1;
+  if (init)
   {
-    action_done_mutex_initialized = 1;
-    pthread_mutex_init(&action_done_mutex, pthread_mutexattr_default);
+    pthread_mutex_init(&wake_completed_mutex,pthread_mutexattr_default);
+    pthread_cond_init(&wake_completed_cond,pthread_condattr_default);
+    init = 0;
   }
-  pthread_mutex_lock(&action_done_mutex);
+  pthread_mutex_lock(&wake_completed_mutex);
+  pthread_cond_signal(&wake_completed_cond);
+  pthread_mutex_unlock(&wake_completed_mutex);
 }
 
-static void unlock_action_done()
+static void WaitForActionDoneQueue()
 {
+    pthread_mutex_lock(&wake_completed_mutex);
+#ifdef HAVE_WINDOWS_H
+    pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, 1000);
+#else
+    {
+      struct timespec one_sec = {1,0};
+      struct timespec abstime;
+      struct timeval tmval;
+      /*
+	pthread_get_expiration_np(&one_sec,&abstime);
+      */
+      
+      gettimeofday(&tmval, 0);
+      abstime.tv_sec = tmval.tv_sec + 1;
+      abstime.tv_nsec = tmval.tv_usec * 1000;
+      pthread_cond_timedwait( &wake_completed_cond, &wake_completed_mutex, &abstime);
+    }
+#endif
+    pthread_mutex_unlock(&wake_completed_mutex);
+}
 
-  if(!action_done_mutex_initialized)
+static void QueueCompletedAction(int i)
+{
+  Complete *c = malloc(sizeof(Complete));
+  c->idx = i;
+  c->next = 0;
+  lock_completed_queue();
+  if (CompletedQueueTail)
+    CompletedQueueTail->next = c;
+  else
+    CompletedQueueHead = c;
+  CompletedQueueTail = c;
+  unlock_completed_queue();
+  WakeCompletedActionQueue();
+}
+
+static int DequeueCompletedAction(int *i)
+{
+  int doneAction = -1;
+  while (doneAction == -1)
   {
-    action_done_mutex_initialized = 1;
-    pthread_mutex_init(&action_done_mutex, pthread_mutexattr_default);
+    lock_completed_queue();
+    if (CompletedQueueHead)
+    {
+      Complete *c = CompletedQueueHead;
+      doneAction = CompletedQueueHead->idx;
+      CompletedQueueHead = CompletedQueueHead->next;
+      if (!CompletedQueueHead)
+        CompletedQueueTail = 0;
+      free(c);
+      unlock_completed_queue();
+    }
+    else
+    {
+      unlock_completed_queue();
+      WaitForActionDoneQueue();
+    }
   }
+  *i = doneAction;
+  return 1;
+}
 
-  pthread_mutex_unlock(&action_done_mutex);
+static void ActionDoneThreadExit()
+{
+  ProcessActionDoneRunning = 0;
+}
+
+static void ProcessActionDone()
+{
+  int i;
+  pthread_cleanup_push(ActionDoneThreadExit, 0);
+  ProcessActionDoneRunning = 1;
+  while (DequeueCompletedAction(&i)) ActionDone(i);
+  pthread_cleanup_pop(1);
+}
+
+static void StartActionDoneThread()
+{
+  pthread_t thread;
+#ifndef HAVE_WINDOWS_H
+  size_t ssize;
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+  pthread_create(&thread, &attr, (void *)(void *)ProcessActionDone, (void *)0);
+  pthread_attr_destroy(&attr);
+#else
+  pthread_create(&thread, pthread_attr_default , (void *)(void *)ProcessActionDone, (void *)0);
+#endif
 }
 
 static void DoActionDone(int i)
 {
+  QueueCompletedAction(i); /***** must be done before starting thread ****/
+  if (!ProcessActionDoneRunning) StartActionDoneThread(); 
+  return;
+}
+
+static int SendMonitorRunning = 0;
+
+
+static pthread_mutex_t wake_send_monitor_mutex;
+static pthread_cond_t wake_send_monitor_cond;
+
+static void WakeSendMonitorQueue()
+{
+  static int init = 1;
+  if (init)
+  {
+    pthread_mutex_init(&wake_send_monitor_mutex,pthread_mutexattr_default);
+    pthread_cond_init(&wake_send_monitor_cond,pthread_condattr_default);
+    init = 0;
+  }
+  pthread_mutex_lock(&wake_send_monitor_mutex);
+  pthread_cond_signal(&wake_send_monitor_cond);
+  pthread_mutex_unlock(&wake_send_monitor_mutex);
+}
+
+static void WaitForSendMonitorQueue()
+{
+    pthread_mutex_lock(&wake_send_monitor_mutex);
+#ifdef HAVE_WINDOWS_H
+    pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, 1000);
+#else
+    {
+      struct timespec one_sec = {1,0};
+      struct timespec abstime;
+      struct timeval tmval;
+      /*
+	pthread_get_expiration_np(&one_sec,&abstime);
+      */
+      
+      gettimeofday(&tmval, 0);
+      abstime.tv_sec = tmval.tv_sec + 1;
+      abstime.tv_nsec = tmval.tv_usec * 1000;
+      pthread_cond_timedwait( &wake_send_monitor_cond, &wake_send_monitor_mutex, &abstime);
+    }
+#endif
+    pthread_mutex_unlock(&wake_send_monitor_mutex);
+}
+
+static void QueueSendMonitor(int mode,int i)
+{
+  SendMonitorInfo *c = malloc(sizeof(SendMonitorInfo));
+  c->idx = i;
+  c->mode = mode;
+  c->next = 0;
+  lock_send_monitor_queue();
+  if (SendMonitorQueueTail)
+    SendMonitorQueueTail->next = c;
+  else
+    SendMonitorQueueHead = c;
+  SendMonitorQueueTail = c;
+  unlock_send_monitor_queue();
+  WakeSendMonitorQueue();
+}
+
+static int DequeueSendMonitor(int *mode_out, int *i)
+{
+  int idx = -1;
+  int mode;
+  while (idx == -1)
+  {
+    lock_send_monitor_queue();
+    if (SendMonitorQueueHead)
+    {
+      SendMonitorInfo *c = SendMonitorQueueHead;
+      idx = SendMonitorQueueHead->idx;
+      mode = SendMonitorQueueHead->mode;
+      SendMonitorQueueHead = SendMonitorQueueHead->next;
+      if (!SendMonitorQueueHead)
+        SendMonitorQueueTail = 0;
+      free(c);
+      unlock_send_monitor_queue();
+    }
+    else
+    {
+      unlock_send_monitor_queue();
+      WaitForSendMonitorQueue();
+    }
+  }
+  *i = idx;
+  *mode_out = mode;
+  return 1;
+}
+
+static void SendMonitorThreadExit()
+{
+  SendMonitorRunning = 0;
+}
+
+static void SendMonitorThread()
+{
+  int i;
+  int mode;
+  pthread_cleanup_push(SendMonitorThreadExit, 0);
+  SendMonitorRunning = 1;
+  while (DequeueSendMonitor(&mode,&i)) SendMonitor(mode,i);
+  pthread_cleanup_pop(1);
+}
+
+static void StartSendMonitorThread()
+{
   pthread_t thread;
 #ifndef HAVE_WINDOWS_H
   size_t ssize;
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
-  pthread_create(&thread, &attr, (void *)(void *)ActionDone, (void *)i);
+  pthread_create(&thread, &attr, (void *)(void *)SendMonitorThread, (void *)0);
   pthread_attr_destroy(&attr);
 #else
-  pthread_create(&thread, pthread_attr_default , (void *)(void *)ActionDone, (void *)i);
+  pthread_create(&thread, pthread_attr_default , (void *)(void *)SendMonitorThread, (void *)0);
 #endif
+}
+
+static void DoSendMonitor(int mode, int idx)
+{
+  QueueSendMonitor(mode,idx); /***** must be done before starting thread ****/
+  if (!SendMonitorRunning) StartSendMonitorThread(); 
   return;
 }
 
-static int dispatch_mutex_initialized = 0;
-static pthread_mutex_t dispatch_mutex;
-
-static void lock_dispatch()
-{
-
-  if(!dispatch_mutex_initialized)
-  {
-    dispatch_mutex_initialized = 1;
-    pthread_mutex_init(&dispatch_mutex, pthread_mutexattr_default);
-  }
-  pthread_mutex_lock(&dispatch_mutex);
-}
-
-static void unlock_dispatch()
-{
-
-  if(!dispatch_mutex_initialized)
-  {
-    dispatch_mutex_initialized = 1;
-    pthread_mutex_init(&dispatch_mutex, pthread_mutexattr_default);
-  }
-
-  pthread_mutex_unlock(&dispatch_mutex);
-}
-
-static void DoDispatch(int i)
-{
-  pthread_t thread;
-#ifndef HAVE_WINDOWS_H
-  size_t ssize;
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
-  pthread_create(&thread, &attr, (void *)(void *)Dispatch, (void *)i);
-  pthread_attr_destroy(&attr);
-#else
-  pthread_create(&thread, pthread_attr_default , (void *)(void *)Dispatch, (void *)i);
-#endif
-  return;
-}

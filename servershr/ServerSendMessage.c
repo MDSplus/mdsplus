@@ -33,6 +33,7 @@ int ServerSendMessage();
 #include <stdio.h>
 #include <string.h>
 #include <servershr.h>
+#include <mds_stdarg.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
@@ -96,7 +97,8 @@ static Client *ClientList = 0;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
-#define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); if (!(status & 1)) goto send_error;
+#define SndArgChk(a1,a2,a3,a4,a5,a6,a7,a8) status = SendArg(a1,a2,a3,a4,a5,a6,a7,a8); \
+if (!(status & 1)) goto send_error;
 
 
 static int StartReceiver(short *port);
@@ -116,8 +118,7 @@ static void unlock_job_list();
 
 int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *socket,
                          void (*ast)(), void *astparam, void (*before_ast)(),
-  int numargs_in, struct descrip *p1, struct descrip *p2, struct descrip *p3, struct descrip *p4,
-                  struct descrip *p5, struct descrip *p6, struct descrip *p7, struct descrip *p8) 
+		       int numargs_in, ...)
 {
   static unsigned int addr = 0;
   short port;
@@ -125,13 +126,12 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *so
   int flags = 0;
   int status = 0;
   int jobid;
-
+  int i;
 
   if (StartReceiver(&port) && ((sock = ServerConnect(server)) >= 0))
   {
-    char cmd[] = "MdsServerShr->ServerQAction($,$,$,$,$,$,$,$,$,$,$,$,$)";
+    char cmd[4096];
     unsigned char numargs = max(0,min(numargs_in,8));
-    int offset = strlen("MdsServerShr->ServerQAction($,$,$,$,$") + numargs * 2;
     unsigned char idx = 0;
     char dtype;
     short len;
@@ -139,14 +139,12 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *so
     int  dims[8];
     int numbytes;
     int *dptr;
+    va_list vlist;
     void *mem=0;
-    unsigned char totargs = (unsigned char)(numargs+6);
+    struct descrip *arg;
+    unsigned char totargs;
     if (socket) *socket = sock;
     jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,sock);
-    if (op == SrvMonitor && numargs == 8 && p6->dtype == DTYPE_LONG && *(int *)p6->ptr == MonitorCheckin)
-      MonJob = jobid;
-    cmd[offset] = ')';
-    cmd[offset+1] = '\0';
     if (addr == 0)
     {
       struct sockaddr_in addr_struct;
@@ -154,45 +152,40 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *so
       if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
         addr = *(int *)&addr_struct.sin_addr;
     }
-    SndArgChk(sock, idx++, DTYPE_CSTRING, totargs, (short)strlen(cmd), 0, 0, cmd);
-    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, (short)4, 0, 0, (char *)&addr);
-    SndArgChk(sock, idx++, DTYPE_SHORT,   totargs, 2, 0, 0, (char *)&port);
-    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&op);
     if (before_ast) flags |= SrvJobBEFORE_NOTIFY;
-    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&flags);
-    SndArgChk(sock, idx++, DTYPE_LONG,    totargs, 4, 0, 0, (char *)&jobid);
-    if (numargs > 0)
+    sprintf(cmd,"MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d",addr,port,op,flags,jobid);
+    va_start(vlist,numargs_in);
+    for (i=0;i<numargs;i++)
     {
-      SndArgChk(sock, idx++, p1->dtype, totargs, ArgLen(p1), p1->ndims, p1->dims, p1->ptr);
-      if (numargs > 1) 
+      strcat(cmd,",");
+      arg = va_arg(vlist,struct descrip *);
+      if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG && *(int *)arg->ptr == MonitorCheckin)
+	MonJob = jobid;
+      switch(arg->dtype)
       {
-        SndArgChk(sock, idx++, p2->dtype, totargs, ArgLen(p2), p2->ndims, p2->dims, p2->ptr);
-        if (numargs > 2) 
-        {
-          SndArgChk(sock, idx++, p3->dtype, totargs, ArgLen(p3), p3->ndims, p3->dims, p3->ptr);
-          if (numargs > 3) 
-          {
-            SndArgChk(sock, idx++, p4->dtype, totargs, ArgLen(p4), p4->ndims, p4->dims, p4->ptr);
-            if (numargs > 4) 
-            {
-              SndArgChk(sock, idx++, p5->dtype, totargs, ArgLen(p5), p5->ndims, p5->dims, p5->ptr);
-              if (numargs > 5) 
-              {
-                SndArgChk(sock, idx++, p6->dtype, totargs, ArgLen(p6), p6->ndims, p6->dims, p6->ptr);
-                if (numargs > 6) 
-                {
-                  SndArgChk(sock, idx++, p7->dtype, totargs, ArgLen(p7), p7->ndims, p7->dims, p7->ptr);
-                  if (numargs > 7) 
-                  {
-                    SndArgChk(sock, idx++, p8->dtype, totargs, ArgLen(p8), p8->ndims, p8->dims, p8->ptr);
-		  }
-                }
-              }
-            }
-          }
+      case DTYPE_CSTRING: 
+      {
+        int j;
+        int k;
+        char *c = (char *)arg->ptr;
+        int len = strlen(c);
+	strcat(cmd,"\""); 
+        for (j=0,k=strlen(cmd);j<len;j++,k++)
+	{
+          if (c[j] == '"' || c[j] == '\\') cmd[k++]='\\';
+          cmd[k]=c[j];
         }
+        cmd[k]=0;
+        strcat(cmd,"\""); 
+        break;
+      }
+      case DTYPE_LONG:	  sprintf(&cmd[strlen(cmd)],"%d",*(int *)arg->ptr); break;
+      case DTYPE_CHAR:    sprintf(&cmd[strlen(cmd)],"%d",(int)*(char *)arg->ptr); break;
+      default: printf("shouldn't get here! ServerSendMessage dtype = %d\n",arg->dtype);
       }
     }
+    strcat(cmd,")");
+    SndArgChk(sock, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
     status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
     if (mem) free(mem);
   }
