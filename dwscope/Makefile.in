@@ -45,12 +45,12 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@dwscope : dwscope.o dwscopesubs.o evaluate_local.o
-	$(CC) -o $@ $(CFLAGS) dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKELIBDIR@ -lXmdsShr -lTdiShr -lTreeShr -lMdsShr $(MLIBS)
+	$(CC) -o $@ $(CFLAGS) dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lXmdsShr -lTdiShr -lTreeShr -lMdsShr $(MLIBS)
                         
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
 	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
-              -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS) @LIBM@
+              -L@MAKESHLIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -lMdsIpShr $(MLIBS) @LIBM@
 
 @MAKEUIDDIR@dwscope.uid : dwscope.uil
 	$(UIL) -o $@ dwscope.uil
