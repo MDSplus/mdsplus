@@ -57,7 +57,7 @@ install:
 	$(UIL) -o $@ dwscope.uil
 
 @MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o
-	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS)
+	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS) @MEMCHKLIB@
 
 XmdsWidgetCallbacks.o: ../xmdsshr/XmdsWidgetCallbacks.c
 	$(CC) -c $(CFLAGS) -D_NO_XDS -o $@ ../xmdsshr/XmdsWidgetCallbacks.c
