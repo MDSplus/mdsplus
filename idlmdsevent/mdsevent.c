@@ -46,10 +46,6 @@ typedef struct _event_struct { int stub_id;
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
-extern void IDL_WidgetStubLock(int lock);
-extern char *IDL_WidgetStubLookup(int id);
-extern void IDL_WidgetIssueStubEvent(char *stub_rec, EventStruct *e);
-extern void IDL_WidgetGetStubIds(char *stub_rec, HWND *wid1, HWND *wid2);
 #else
 #include <X11/Intrinsic.h>
 extern void MdsDispatchEvent(void *, int *, unsigned long *);
@@ -162,9 +158,9 @@ static void EventAst(EventStruct *e,int len, char *data)
   {
 #ifdef WIN32
     HWND wid1, wid2;
-    IDL_WidgetGetStubIds(stub_rec, (unsigned long *)&wid1, (unsigned long *)&wid2);
+    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
 #endif
-    IDL_WidgetIssueStubEvent(stub_rec, e);
+    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
 #ifdef WIN32
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
 #else
