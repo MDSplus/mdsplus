@@ -12,7 +12,8 @@ PARTS = mdsshr \
 	mdsdcl	\
 	ccl	\
 	tcl \
-	traverser
+	traverser \
+	actions
 
 all :
 	- cdir=`pwd`; \
