@@ -7,6 +7,7 @@
 #else
 #include        <signal.h>
 #include        <sys/time.h>
+#include        <sys/timeb.h>
 #include        <pthread.h>
 #endif
 #include        <stdio.h>
@@ -98,14 +99,25 @@ int   mdsdcl_wait()		/* Return:  status			*/
       static pthread_cond_t wait_cond;
       static pthread_mutex_t wait_mutex;
       static int initialized = 0;
-      struct timespec delta_time = {nsec,millisec},abstime;
+      struct timespec abstime;
+      struct timeb now;
       if (!initialized)
       {
         pthread_cond_init(&wait_cond,pthread_condattr_default);
         pthread_mutex_init(&wait_mutex,pthread_mutexattr_default);
         initialized = 1;
       }
+      ftime(&now);
+      abstime.tv_sec = now.time + nsec;
+      abstime.tv_nsec = (now.millitm + millisec) * 1000000;
+      if (abstime.tv_nsec > 1000000000)
+      {
+        abstime.tv_nsec -= 1000000000;
+        abstime.tv_sec++;
+      }
+      /*
       pthread_get_expiration_np(&delta_time,&abstime);
+      */
       pthread_cond_timedwait(&wait_cond,&wait_mutex,&abstime);
     }
     /*
