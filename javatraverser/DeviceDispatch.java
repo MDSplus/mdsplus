@@ -35,7 +35,7 @@ public class DeviceDispatch extends DeviceComponent
             System.out.println("Cannot read device NCI: "+e);
             return;
         }
-        NidData currNid = new NidData(nidData.getInt());
+        NidData currNid = new NidData(baseNidData.getInt());
         int num_components = nodeInfo.getConglomerateNids();
         NodeInfo nodeInfos[] = new NodeInfo[num_components];
         for(i = num_actions = 0; i < num_components; i++)
@@ -45,7 +45,7 @@ public class DeviceDispatch extends DeviceComponent
             }catch(Exception e)
             {
                 System.out.println("Cannot read device NCI 1: "+e);
-                continue;
+                return;
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
                 num_actions++;

@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-
 public abstract class DeviceComponent extends JPanel
 {
     RemoteTree subtree;
@@ -11,6 +10,7 @@ public abstract class DeviceComponent extends JPanel
     protected Data curr_data, init_data;
     protected boolean curr_on, init_on;
     protected NidData nidData;
+    protected NidData baseNidData;
     protected String identifier;
     protected String updateIdentifier;
     protected boolean editable = true;
@@ -44,6 +44,7 @@ public abstract class DeviceComponent extends JPanel
     {
         this.baseNid = baseNid;
         nidData = new NidData(baseNid+offsetNid);
+        baseNidData = new NidData(baseNid);
         if(mode == DATA)
         {
             try {
