@@ -36,7 +36,7 @@ c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
       status = MdsConnect('gemini.gat.com')
 
       dsc = descr(IDTYPE_FLOAT,result,0)
-      status = MdsValue('1.'//CHAR(0),dsc,0,)
+      status = MdsValue('1.'//CHAR(0),dsc,0,1)
       write (6,*) 'MdsValue("1.") : ',result,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,30,0)
@@ -67,7 +67,7 @@ c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
       write (6,*) 'MdsPut("NUMERIC",$,42042): ',status 
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      status = MdsValue('NUMERIC'//CHAR(0),dsc,0,)
+      status = MdsValue('NUMERIC'//CHAR(0),dsc,0,1)
       write (6,*) 'MdsValue("NUMERIC"): ',iresult,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
