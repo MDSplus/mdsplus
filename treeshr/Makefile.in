@@ -54,7 +54,7 @@ install:
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libTreeShr@SHARETYPE@ @libdir@
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@
+		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@; \
 	fi;
 
 

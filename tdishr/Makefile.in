@@ -109,7 +109,7 @@ install:
 	$(INSTALL) -m 755  @MAKELIBDIR@libTdiShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShr.a @libdir@
+		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShr.a @libdir@; \
 	fi;
 
 @MAKESHLIBDIR@libTdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
