@@ -29,7 +29,7 @@ XmdsXdBoxDialog.o \
 XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
-all :	libXmdsShr.so \
+all :	../shlib/libXmdsShr.so \
 	xmdsuil.wmd \
         ../uid \
 	../uid/xmds_usage_icons.uid \
@@ -52,17 +52,22 @@ all :	libXmdsShr.so \
 ../uid/XmdsXdBox.uid : XmdsXdBox.uil
 	uil -wmd xmdsuil.wmd -o $@ $<
 
-libXmdsShr.so : $(OBJECTS)
+../shlib/libXmdsShr.so : $(OBJECTS)
 	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm \
-           -L../mdsshr -lMdsShr -L../tdishr -lTdiShr -L../treeshr -lTreeShr \
+           -L../shlib -lMdsShr -lTdiShr -lTreeShr \
 	   -lMrm -lXm -lXt -lX11
+	- rm so_locations
 
 xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
-	./wmdcreate-osf
+	mkdir wmltemp
+	cd wmltemp ; ln -s /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml ../xmdsuil.wml
+	cc -o wmltemp/wmdcreate -DMDS_EXTENSION -I../../include -I/usr/examples/motif/wml -I. -I./wmltemp wmldbcreate-xmdsshr.c -lXt -lXm
+	wmltemp/wmdcreate -o xmdsuil.wmd
+	- rm -R wmltemp
 
 clean :
 	- rm *.o
-	- rm *.so
+	- rm ../shlib/libXmdsShr.so
 	- rm so_locations
 	- rm .depend
 	- rm xmdsuil.wmd
@@ -74,3 +79,4 @@ depend : .depend
 	find *.c -exec cc -DMDS_EXTENSION -I../include -I. -I/usr/examples/motif/wml -M {} > .depend \;
 
 include .depend
+
