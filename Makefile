@@ -14,7 +14,7 @@ PARTS = mdsshr \
 	tcl
 
 all :
-	cdir=`pwd`; \
+	- cdir=`pwd`; \
         for dir in $(PARTS) ; do\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
