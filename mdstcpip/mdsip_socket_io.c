@@ -1,19 +1,3 @@
-/*
-../lib/libMdsIpShr.so: undefined reference to `sigemptyset'
-../lib/libMdsIpShr.so: undefined reference to `perror'
-../lib/libMdsIpShr.so: undefined reference to `gethostbyaddr'
-../lib/libMdsIpShr.so: undefined reference to `socket'
-../lib/libMdsIpShr.so: undefined reference to `select'
-../lib/libMdsIpShr.so: undefined reference to `sigaddset'
-../lib/libMdsIpShr.so: undefined reference to `cuserid'
-../lib/libMdsIpShr.so: undefined reference to `inet_addr'
-../lib/libMdsIpShr.so: undefined reference to `setsockopt'
-../lib/libMdsIpShr.so: undefined reference to `gethostbyname'
-../lib/libMdsIpShr.so: undefined reference to `getservbyname'
-../lib/libMdsIpShr.so: undefined reference to `fcntl'
-../lib/libMdsIpShr.so: undefined reference to `sigprocmask'
-*/
-
 #include "mdsip.h"
 #ifdef GLOBUS
 #include "globus_io.h"
@@ -100,9 +84,7 @@ void RegisterRead(SOCKET s)
   iohandles[s-1].header = malloc(sizeof(MsgHdr));
   status = globus_io_register_read(handle,(globus_byte_t *)iohandles[s-1].header,sizeof(MsgHdr),sizeof(MsgHdr),ReadCallback,(void *)s);
   if (status != GLOBUS_SUCCESS) 
-  {
     CloseSocket(s);
-  }
 }
 
 void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, globus_result_t result_in)
@@ -117,30 +99,8 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
   globus_io_tcp_get_attr(listener_handle,&attr);
   if ((result = globus_io_tcp_accept(listener_handle,&attr,handle)) != GLOBUS_SUCCESS)
   {
-    globus_object_t *  err = globus_error_get(result);
-    if (globus_object_type_match(
-		GLOBUS_IO_ERROR_TYPE_AUTHENTICATION_FAILED,
-	        globus_object_get_type(err)))
-    {
-	    globus_libc_printf("client: authentication failed\n");
-    }
-    else if (globus_object_type_match(
-       GLOBUS_IO_ERROR_TYPE_AUTHORIZATION_FAILED,
-       globus_object_get_type(err)))
-    {
-       globus_libc_printf("client: authorization failed\n");
-    }
-    else if (globus_object_type_match(
-       GLOBUS_IO_ERROR_TYPE_NO_CREDENTIALS,
-       globus_object_get_type(err)))
-    {
-       globus_libc_printf("client: failure: no credentials\n");
-    }
-    else
-    {
-       globus_libc_printf("client: accept() failed, result=%p, port=%d\n",result,port);
-    }
-    globus_object_free(err);
+    globus_libc_printf("Error accepting client connection:\n\t");
+    globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
   }
   else
   {
@@ -230,6 +190,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_handle_t *handle = NewHandle(&s);
   globus_io_secure_authorization_data_t  auth_data;
   static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
+  globus_result_t result;
   globus_io_attr_t attr;
   globus_io_tcpattr_init(&attr);
   globus_io_attr_set_socket_rcvbuf(&attr,recvbuf);
@@ -246,9 +207,10 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
 */
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
-  if (globus_io_tcp_create_listener(&netport,5,&attr,handle) != GLOBUS_SUCCESS)
+  if ((result = globus_io_tcp_create_listener(&netport,5,&attr,handle)) != GLOBUS_SUCCESS)
   {
-    printf("Error in globus_io_tcp_create_listener\n");
+    printf("Error in globus_io_tcp_create_listener:\n\t");
+    globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
     exit(1);
   }
   globus_io_tcpattr_destroy(&attr);
@@ -478,8 +440,13 @@ SOCKET Connect(char *host, unsigned short port)
   if (host[0]=='_')
   {
     globus_io_secure_authorization_data_initialize(&auth_data);
+    globus_io_secure_authorization_data_set_identity(&auth_data,
+							      "/O=Grid/O=National Fusion Collaboratory/OU=MIT/CN=LBNL-MDSplusDataServer");;
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
+    globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_IDENTITY,&auth_data);
+/*
     globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
+*/
     globus_io_attr_set_secure_delegation_mode(&attr,GLOBUS_IO_SECURE_DELEGATION_MODE_FULL_PROXY);
     globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
 /*
@@ -488,30 +455,8 @@ SOCKET Connect(char *host, unsigned short port)
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
   {
-    globus_object_t *  err = globus_error_get(result);
-    if (globus_object_type_match(
-		GLOBUS_IO_ERROR_TYPE_AUTHENTICATION_FAILED,
-	        globus_object_get_type(err)))
-    {
-	    globus_libc_printf("client: authentication failed\n");
-    }
-    else if (globus_object_type_match(
-		   GLOBUS_IO_ERROR_TYPE_AUTHORIZATION_FAILED,
-	           globus_object_get_type(err)))
-    {
-	    globus_libc_printf("client: authorization failed\n");
-    }
-    else if (globus_object_type_match(
-	           GLOBUS_IO_ERROR_TYPE_NO_CREDENTIALS,
-	           globus_object_get_type(err)))
-    {
-	    globus_libc_printf("client: failure: no credentials\n");
-    }
-    else
-    {
-	    globus_libc_printf("client: accept() failed, result=%p, port=%d\n",result,port);
-    }
-    globus_object_free(err);
+    printf("Error connecting to server:\n\t");
+    globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
     ReleaseHandle(s);
     s = INVALID_SOCKET;
   }
