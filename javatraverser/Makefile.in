@@ -38,6 +38,7 @@ RFXABUnitsSetup.java \
 RFXChopperSetupSetup.java \
 RFXInverterSetupSetup.java \
 RFXFeedforwardSetupSetup.java \
+RFXPRConfigSetup.java \
 TR10Setup.java \
 DIO2Setup.java \
 DIO2EncoderSetup.java \
