@@ -29,14 +29,19 @@ PRO	SET_DATABASE, database, QUIET=quiet, STATUS=status
   status = dbinfo(database, host, conn, dbtype, dbuser, dbpass)
   if (not status) then begin
     if (not quiet) then begin
-      Message, "Error getting connection information for database "+database 
+      Message, "Error getting connection information for database "+database
     endif
     return
-  endif 
+  endif
+
+  if (host eq "") then begin
+    Message, "The environment variable SYBASE_HOST must contain the name of your SQLSERVER"
+    return
+  endif
 
   db = get_database()
   if (strlen(db) gt 0) then begin
-    dummy = execute('stat = !database.name eq database') 
+    dummy = execute('stat = !database.name eq database')
     if (stat) then begin
       return
     endif
@@ -67,8 +72,8 @@ PRO	SET_DATABASE, database, QUIET=quiet, STATUS=status
       endif
     endif
   endif
-  
-  
+
+
   for i=0, n_elements(conn)-1 do begin
     dummy = call_function('dsql', conn(i))
   endfor

@@ -7,9 +7,9 @@
 ;  a database given its name.  This routine should be site customized to
 ;  reflect the local environment.
 ;
-;  at CMOD: if translation of dbname does not have a ',' in it then 
+;  at CMOD: if translation of dbname does not have a ',' in it then
 ;              this is an RDB database with no host, user, or  password ness
-;           else 
+;           else
 ;              this is a sybase/sqlserver database
 ;              host name preceeds the comma, database name follows
 ;              if there is a file sys$login:host.sybase_login and
@@ -29,10 +29,17 @@
 ;
 ; Josh Stillerman 5/7/99
 ;
+;  This routine returns the connection information for the
+;  local SQLSERVER database server.  To use NT authorization
+;  return empty strings for the dbuser, and dbpass arguments.
+;
+;  An environment variable SYBASE_HOST must contain the name of
+;  your SQLSERVER database server.
+;
 function dbinfo, dbname, host, conn, dbtype, dbuser, dbpass
   SQL
   dbtype ="SYBASE"
-  host='RED'
+  host=getenv("SYBASE_HOST")
   dbuser=''
   dbpass=''
   conn = ["USE "+dbname, "SET TEXTSIZE 8192"]

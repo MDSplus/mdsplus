@@ -2018,6 +2018,9 @@ common widget_common, base
   endif else $
     defaults_file = default
   options = READ_OPTIONS(defaults_file)
+  if (getenv("SYBASE_HOST") EQ "") then $
+    X_COMPLAIN, "Use the environment varable SYBASE_HOST to specify your SQLSERVER database server before using ENTRY_DISPLAY" $
+  else begin
   set_database, 'logbook'
   sql_finish
   mbar = 0l
@@ -2054,8 +2057,13 @@ common widget_common, base
   auto_w = widget_button(widget_base(r, /nonexclusive), value='Automatic Updates')
   widget_control,auto_w, set_button=options.display_options.auto_update
   if (!version.os eq "Win32") then begin
-    mdsconnect, "cmoda", port=8001
-    dummy = execute("id = mdsevent(base, 'LOGBOOK_ENTRY')")
+    host = getenv("MDS_HOST")
+    if (host eq "") then $
+       X_COMPLAIN, "Set the environment variable MDS_HOST the your MDSplus event server" $
+    else begin
+      mdsconnect, "cmoda", port=8001
+      dummy = execute("id = mdsevent(base, 'LOGBOOK_ENTRY')")
+    endelse
   endif else $
      dummy = execute("mdsevent, base, 'LOGBOOK_ENTRY'")
   ctx = {query_txt:'', txt_w:txt, handle:handle_create(), $
@@ -2085,5 +2093,7 @@ common widget_common, base
 
   Xmanager, 'display', base, group=base
   if (!version.os eq 'Win32') then $
-    mdsdisconnect
+    if (getenv("MDS_HOST") ne "") then $
+      mdsdisconnect
+  endelse
 end
