@@ -25,7 +25,7 @@ extern unsigned int TdiIndent;
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
-
+#include <librtl_messages.h>
 #ifdef max
 #undef max
 #endif
@@ -47,7 +47,7 @@ struct descriptor_d		answer = {0,DTYPE_T,CLASS_D,0};
 	if (narg > 1 && list[1]) status = TdiGetLong(list[1], &TdiDECOMPILE_MAX);
 	else TdiDECOMPILE_MAX = 0xffff;
 	if (status & 1) status = Tdi0Decompile(list[0], 9999, &answer);
-	while (status == TdiSTRTOOLON && TdiDECOMPILE_MAX > 10) {
+	while (status == StrSTRTOOLON && TdiDECOMPILE_MAX > 10) {
 		TdiDECOMPILE_MAX /= 10;
 		if (TdiDECOMPILE_MAX > 100) TdiDECOMPILE_MAX = 100;
 		StrFree1Dx(&answer);
