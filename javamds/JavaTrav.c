@@ -77,11 +77,14 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 
 
 
-static void RaiseException(JNIEnv *env, char *msg)
+static void RaiseException(JNIEnv *env, char *msg, int status)
 {
+    char fullMsg[512];
    jclass exc = (*env)->FindClass(env, "DatabaseException");
+
+   sprintf(fullMsg, "%d:%s", status, msg);
 	(*env)->ExceptionClear(env);
-   (*env)->ThrowNew(env, exc, msg);
+   (*env)->ThrowNew(env, exc, fullMsg);
    /* //free(msg);*/
 }
  
@@ -97,12 +100,10 @@ JNIEXPORT jint JNICALL Java_Database_create
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   jname = (*env)->GetObjectField(env, obj, name_fid);
   name = (*env)->GetStringUTFChars(env, jname, 0);
-  printf("ADESSO CREO IL PULSE FILE\n");
 
   status = TreeCreatePulseFile(shot, 0, NULL);
-  printf("Creato: %s\n", MdsGetMsg(status));
-  if(!(status & 1))
-    RaiseException(env, MdsGetMsg(status));
+   if(!(status & 1))
+    RaiseException(env, MdsGetMsg(status), status);
   return 0;
 }
 
@@ -153,7 +154,7 @@ static char buf[1000];
 /*//report(MdsGetMsg(status));*/
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, buf);/*//MdsGetMsg(status));*/
+    RaiseException(env, buf, status);/*//MdsGetMsg(status));*/
   return 0;
 
 }
@@ -185,7 +186,7 @@ static char buf[1000];
 
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, buf);/*//MdsGetMsg(status));*/
+    RaiseException(env, buf, status);/*//MdsGetMsg(status));*/
   return 0;
 
 }
@@ -209,7 +210,7 @@ JNIEXPORT void JNICALL Java_Database_write
 
   status = TreeWriteTree((char *)name, shot);
   if(!(status & 1))
-    RaiseException(env, MdsGetMsg(status));
+    RaiseException(env, MdsGetMsg(status), status);
 }
 
 
@@ -232,7 +233,7 @@ JNIEXPORT void JNICALL Java_Database_close (JNIEnv *env, jobject obj, jint conte
   status = TreeClose((char *)name, shot); 
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if(!(status & 1))
-   RaiseException(env, MdsGetMsg(status));
+   RaiseException(env, MdsGetMsg(status), status);
 }
 
       
@@ -254,7 +255,7 @@ JNIEXPORT void JNICALL Java_Database_quit (JNIEnv *env, jobject obj, jint contex
   status = TreeQuitTree((char *)name, shot); 
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if(!(status & 1))
-    RaiseException(env, MdsGetMsg(status));
+    RaiseException(env, MdsGetMsg(status), status);
 }
       
 
@@ -291,7 +292,7 @@ printf(out_xd.pointer->pointer);*/
 
     {
 
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
 
       return NULL;
 
@@ -328,7 +329,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
   status = TreeGetRecord(nid, &xd);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   if(!xd.l_length || !xd.pointer)
@@ -336,7 +337,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
   status = TdiData(&xd, &xd MDS_END_ARG);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   if(!xd.pointer)
@@ -362,7 +363,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
 	status = TdiData(dsc, &xd MDS_END_ARG);
 	if(!(status & 1))
     {
-		RaiseException(env, MdsGetMsg(status));
+		RaiseException(env, MdsGetMsg(status), status);
 		return NULL;
     }
 	if(!xd.l_length || !xd.pointer)
@@ -399,7 +400,7 @@ JNIEXPORT void JNICALL Java_Database_putData
     }
 	//printf("PUT RECORD: %s\n", MdsGetMsg(status));
 	if(!(status & 1))
-	    RaiseException(env, MdsGetMsg(status));
+	    RaiseException(env, MdsGetMsg(status), status);
 }
 
 
@@ -419,7 +420,7 @@ JNIEXPORT void JNICALL Java_Database_setFlags
   nci_flags = flags;
   status = TreeSetNci(nid, nci_list);
   if(!(status & 1))
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
 }
 
 
@@ -462,7 +463,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
    }
   name[name_len] = 0;
@@ -516,7 +517,7 @@ JNIEXPORT jstring JNICALL Java_Database_getOriginalPartName
 	status = TreeGetNci(nid, nci_list);
 	if(!(status & 1))
 	{
-		RaiseException(env, MdsGetMsg(status));
+		RaiseException(env, MdsGetMsg(status), status);
 		return NULL;
 	}
 	return (*env)->NewStringUTF(env, part_name);
@@ -537,7 +538,7 @@ JNIEXPORT void JNICALL Java_Database_setTags
   status = TreeRemoveNodesTags(nid);
   /*  if(!(status & 1))
    {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return;
       }*/
   for(i = 0; i < n_tags; i++)
@@ -549,7 +550,7 @@ JNIEXPORT void JNICALL Java_Database_setTags
       (*env)->ReleaseStringUTFChars(env, jtag, tag);
       if(!(status & 1))
 	{
-	  RaiseException(env, MdsGetMsg(status));
+	  RaiseException(env, MdsGetMsg(status), status);
 	  return;
 	}
     }
@@ -611,7 +612,7 @@ JNIEXPORT void JNICALL Java_Database_setSubtree
 
   if(!(status & 1))
 
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
 
 }
 
@@ -629,7 +630,7 @@ JNIEXPORT void JNICALL Java_Database_renameNode
   status = TreeRenameNode(nid, (char *)name);
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if(!(status & 1))
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
 }
 
 
@@ -650,7 +651,7 @@ JNIEXPORT jobject JNICALL Java_Database_addNode
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   cls = (*env)->FindClass(env, "NidData");
@@ -730,7 +731,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
 	  status = TreeGetNci(nid, nci_list1);
 	  if(!(status & 1))
 		{
-		  RaiseException(env, MdsGetMsg(status));
+		  RaiseException(env, MdsGetMsg(status), status);
 		  return NULL;
 		}
 	  if(num_nids > 0)	  
@@ -742,7 +743,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
 		status = TreeGetNci(nid, nci_list2);
 		if(!(status & 1))
 		{
-		  RaiseException(env, MdsGetMsg(status));
+		  RaiseException(env, MdsGetMsg(status), status);
 		  return NULL;
 		}
 	  } 
@@ -824,7 +825,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
   status = TreeGetNci(nid, nci_list1);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
 
@@ -837,7 +838,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getMembers
 	if(!(status & 1))
 
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   }
@@ -888,7 +889,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
   {
 	printf("Failed %s status: %d %s\n", TreeGetPath(nid), status, MdsGetMsg(status));
 
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
   }
 }	
 	
@@ -909,7 +910,7 @@ JNIEXPORT jobject JNICALL Java_Database_resolve
   status = TreeFindNode((char *)path, &nid);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   (*env)->ReleaseStringUTFChars(env, jpath, path);
@@ -931,7 +932,7 @@ JNIEXPORT void JNICALL Java_Database_setDefault
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   status = TreeSetDefaultNid(nid);
   if(!(status & 1))
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
 }
 
 
@@ -947,7 +948,7 @@ JNIEXPORT jobject JNICALL Java_Database_getDefault
   status = TreeGetDefaultNid(&nid);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   cls = (*env)->FindClass(env, "NidData");
@@ -981,7 +982,7 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
   if(!(status & 1))
     {
-      RaiseException(env, MdsGetMsg(status));
+      RaiseException(env, MdsGetMsg(status), status);
       return NULL;
     }
   cls = (*env)->FindClass(env, "NidData");
@@ -1096,7 +1097,7 @@ JNIEXPORT void JNICALL Java_Database_doAction
 	status = doAction(nid);
 	if(!(status & 1))
 
-		RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status));
+		RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
 
@@ -1126,7 +1127,7 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
 	status = TreeDoMethod(&nid_dsc, &method_dsc, &stat_d MDS_END_ARG);
 	(*env)->ReleaseStringUTFChars(env, jmethod, method);
 	if(!(status & 1) || !(stat & 1))
-		RaiseException(env, (status == 0)?"Cannot execute method":MdsGetMsg(status));
+		RaiseException(env, (status == 0)?"Cannot execute method":MdsGetMsg(status), status);
 }
 
 

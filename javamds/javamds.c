@@ -351,6 +351,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     }
     jarr = (*env)->NewFloatArray(env, dim);
     (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
+	free((char *)out_ptr);
     return jarr;
 }
 
@@ -370,6 +371,7 @@ JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetDoubleArrayNative(JNIEn
     }
     jarr = (*env)->NewDoubleArray(env, dim);
     (*env)->SetDoubleArrayRegion(env, jarr, 0, dim, out_ptr);
+	free((char *)out_ptr);
     return jarr;
 }
 
@@ -390,6 +392,7 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
     }
     jarr = (*env)->NewIntArray(env, dim);
     (*env)->SetIntArrayRegion(env, jarr, 0, dim, out_ptr);
+	free((char *)out_ptr);
     return jarr;
 }
 JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
@@ -409,6 +412,7 @@ JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jo
     }
     jarr = (*env)->NewByteArray(env, dim);
     (*env)->SetByteArrayRegion(env, jarr, 0, dim, (char *)out_ptr);
+	free((char *)out_ptr);
     return jarr;
 }
 
