@@ -19,12 +19,12 @@ public class DeviceDispatch extends DeviceComponent
         menu.setBorder(new LineBorder(Color.black, 1));
         add(menu);
     }
-    
+
     protected void initializeData(Data data, boolean is_on)
 //data and is_on arguments are meaningless in this context
 //The class will search actions stored in the device
 //and create and manage their dispatch configurations
-    {    
+    {
         initializing = true;
         NodeInfo nodeInfo;
         if(subtree == null) return;
@@ -44,8 +44,8 @@ public class DeviceDispatch extends DeviceComponent
                 nodeInfos[i] = subtree.getInfo(currNid, Tree.context);
             }catch(Exception e)
             {
-                System.out.println("Cannot read device NCI: "+e);
-                return;
+                System.out.println("Cannot read device NCI 1: "+e);
+                //return;
             }
             if(nodeInfos[i].getUsage() == NodeInfo.USAGE_ACTION)
                 num_actions++;
@@ -96,7 +96,7 @@ public class DeviceDispatch extends DeviceComponent
     }
      protected void activateForm(DeviceDispatchField field, String name)
      {
-        
+
         if(dialog == null)
         {
             dialog = new JDialog(FrameRepository.frame);
@@ -125,7 +125,7 @@ public class DeviceDispatch extends DeviceComponent
         dialog.repaint();
         dialog.setLocation(FrameRepository.frame.getLocationOnScreen());
         dialog.show();
-        
+
      }
     protected void displayData(Data data, boolean is_on){}
     protected Data getData(){return null; }
@@ -156,5 +156,4 @@ public class DeviceDispatch extends DeviceComponent
     }
 }
 
-    
-    
+
