@@ -172,6 +172,7 @@ public synchronized float GetFloat(String in)
 	
 public synchronized float[] GetFloatArray(String in)
 {
+    in = "fs_float((" + in + "))";
     String open_err = new String("");
     if(!CheckOpen())
 	return null;
