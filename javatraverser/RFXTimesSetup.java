@@ -435,12 +435,12 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField18.setIdentifier("STOP_INV_TC_REF");
     deviceField18.setShowState(true);
     deviceField20.setOffsetNid(44);
-    deviceField20.setLabelString("T_START_FWD_TC_REF");
+    deviceField20.setLabelString("T_START_PWM_TC_REF");
     deviceField20.setNumCols(5);
     deviceField20.setIdentifier("START_FWD_TC_REF");
     deviceField20.setShowState(true);
     deviceField21.setOffsetNid(45);
-    deviceField21.setLabelString("T_STOP_FWD_TC_REF");
+    deviceField21.setLabelString("T_STOP_PWM_TC_REF");
     deviceField21.setNumCols(5);
     deviceField21.setIdentifier("STOP_FWD_TC_REF");
     deviceField21.setShowState(true);
