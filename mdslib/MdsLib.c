@@ -541,7 +541,7 @@ int  MdsOpen(char *tree, int shot)
   }
   else 
   {
-    return TreeOpen(tree, shot);
+    return TreeOpen(tree, shot, 0);
   }
 }
 
