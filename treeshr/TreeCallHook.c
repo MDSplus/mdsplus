@@ -21,6 +21,9 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info, int nid)
   if (status & 1)
     return (*Notify)(htype, info->treenam, info->shot,nid);
   else
+    status = 1;
+/*
+  else
   {
     static DESCRIPTOR(image,"TdiShr");
     static DESCRIPTOR(rtnname,"TdiExecute");
@@ -51,6 +54,7 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info, int nid)
     else
       Notify = (int (*)(TreeshrHookType,char *,int,int))-1;
   }
+*/
   return status;
 }
 #endif
