@@ -169,7 +169,7 @@ ident:
 	  LibFindFileRecurseCaseBlind(&file, &file, &ctx);
 	  LibFindFileEnd(&ctx);
 	  StrAppend(&file,&dnul);
-	  unit = fopen(file.pointer, "r");
+	  unit = fopen(file.pointer, "rb");
 	  if (unit) {
             long flen;
             fseek(unit,0,SEEK_END);
