@@ -35,6 +35,7 @@ int main( int argc, void **argv)
   if (sock != -1)
   {
     printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",0));
+    printf("status from MdsOpen = %d\n",MdsOpen(sock,"CMOD",0));
     if (MdsValue(sock,"minval(\\magnetics::ip)",&ans,0) & 1)
       printf("%g\n",*(float *)ans.ptr);
     else

@@ -1,4 +1,13 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
+/*  *93    3-MAR-1998 14:10:54 TWF "Add TCP_NODELY" */
+/*  *92    3-MAR-1998 14:08:38 TWF "Add TCP_NODELY" */
+/*  *91    3-MAR-1998 13:53:17 TWF "Add ack again" */
+/*  *90    3-MAR-1998 13:35:14 TWF "Add ack again" */
+/*  *89    3-MAR-1998 12:57:26 TWF "Try no oob's" */
+/*  *88    3-MAR-1998 10:33:40 TWF "remove ack" */
+/*  *87    3-MAR-1998 10:03:12 TWF "Add ack to SendMsg" */
+/*  *86    3-MAR-1998 10:02:24 TWF "Add ack to SendMsg" */
+/*  *85    3-MAR-1998 09:45:06 TWF "Update from GA" */
 /*  *84    6-JAN-1998 09:29:46 TWF "Use larger window" */
 /*  *83    6-JAN-1998 09:28:25 TWF "Use larger window" */
 /*  *82   23-SEP-1997 14:29:56 TWF "Might not always get full header" */
@@ -86,6 +95,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #include "signal.h"
+#include <netinet/tcp.h>
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -150,7 +160,7 @@ static int32 ArgLen(struct descrip *d)
     case DTYPE_USHORT  :
     case DTYPE_SHORT   :  len = sizeof(short); break;
     case DTYPE_ULONG   :  
-    case DTYPE_LONG    :  len = sizeof(long); break;
+    case DTYPE_LONG    :  len = sizeof(int32); break;
     case DTYPE_FLOAT   :  len = sizeof(float); break;
     case DTYPE_DOUBLE  :  len = sizeof(double); break;
     case DTYPE_COMPLEX :  len = sizeof(float) * 2; break;
@@ -308,7 +318,7 @@ int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsiz
         newdata = calloc (totsize, sizeof(float));
 
         for (i=0;i<totsize;i++) {
-	  *(newdata+i) = ((float) *((long *)dataarg.ptr+i));
+	  *(newdata+i) = ((float) *((int32 *)dataarg.ptr+i));
         } 
 
         memcpy(data, newdata, fullsize);
@@ -432,7 +442,7 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
           memcpy(ireturn, (short *) ansarg.ptr, fullsize);
           break;
     case DTYPE_LONG : 
-          memcpy(ireturn, (long *) ansarg.ptr, fullsize);
+          memcpy(ireturn, (int32 *) ansarg.ptr, fullsize);
           break;
     default :
           printf ("Can't handle type: %u\n", *type);
@@ -539,7 +549,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp;
   struct servent *sp;
   static int one=1;
-  long sendbuf = 32768,recvbuf = 32768;
+  int32 sendbuf = 32768,recvbuf = 32768;
 
   
   hp = gethostbyname(host);
@@ -628,9 +638,10 @@ static SOCKET ConnectToPort(char *host, char *service)
       return INVALID_SOCKET;
     }
   }
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(long));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(long));
-  setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(long));
+  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,sizeof(recvbuf));
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,sizeof(sendbuf));
+  setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
+  setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 #ifdef MULTINET
   sys$qiow(0,s,IO$_SETMODE | IO$M_ATTNAST,0,0,0,MdsDispatchEvent,s,0,0,0,0);
 #endif
@@ -1018,11 +1029,11 @@ int32 PASCAL IdlSendArg(int32 lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[8], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
-  unsigned char idx    = (long)lpvArgv[1];
-  unsigned char dtype  = (long)lpvArgv[2];
-  unsigned char nargs  = (long)lpvArgv[3];
-  short         length = (long)lpvArgv[4];
-  char          ndims  = (long)lpvArgv[5];
+  unsigned char idx    = (unsigned char)lpvArgv[1];
+  unsigned char dtype  = (unsigned char)lpvArgv[2];
+  unsigned char nargs  = (unsigned char)lpvArgv[3];
+  short         length = (short)lpvArgv[4];
+  char          ndims  = (char)lpvArgv[5];
   int32 status;
   sighold(SIGALRM);
   status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int32 *)lpvArgv[6], (char *)lpvArgv[7]);
