@@ -13,9 +13,6 @@ waveforms.
 */
 public class jScopeMultiWave extends MultiWaveform implements UpdateEventListener
 {
-   // MdsWaveInterface wi;
-   
-    
     public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values, boolean cache_enabled)
     {
 	    super();
@@ -27,12 +24,10 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
          //System.out.println("Evento su waveform "+e.name);
          WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
          dispatchWaveformEvent(we);
-         //Refresh();
     }
 
     public void Refresh()
     {
-        
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         try
         {
@@ -143,7 +138,10 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		            wi.signals[i].setMarkerStep(wi.markers_step[i]);
 		            wi.signals[i].setInterpolate(wi.interpolates[i]);
 		            wi.signals[i].setColorIdx(wi.colors_idx[i]);
-		            wi.signals[i].setMode((int)wi.mode2D[i]);
+		            
+		            wi.signals[i].setMode1D((int)wi.mode1D[i]); 
+		            wi.signals[i].setMode2D((int)wi.mode2D[i]); 
+		            
 		        }
             if(!all_null)
             {
@@ -218,7 +216,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         Signal sign = (Signal)signals.elementAt(i);
         if(sign != null && sign.getType() == Signal.TYPE_2D)
         {
-            switch(sign.getMode())
+            switch(sign.getMode2D())
             {
                 case Signal.MODE_YTIME:s = s + " [Y-TIME X = "+ Waveform.ConvertToString(sign.getXData(), false)+" ]";break;
                 case Signal.MODE_XY:s = s + " [X-Y T = "+ Waveform.ConvertToString(sign.getTime(), false)+" ]";break;

@@ -10,15 +10,16 @@ class MdsWaveInterface extends WaveInterface
     public String  in_def_node, in_upd_event, last_upd_event;
  
     // Configuration parameter
-    public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax, cin_timemin;
-    public String cin_title, cin_xlabel, cin_ylabel;
-    public String cin_def_node, cin_upd_event, cexperiment;
+    public String  cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax, cin_timemin;
+    public String  cin_title, cin_xlabel, cin_ylabel;
+    public String  cin_def_node, cin_upd_event, cexperiment;
+    public boolean cin_upd_limits = true;
 
     public String cin_shot;
     public int defaults = 0xffffffff;
     static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
 		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
-		             B_default_node = 9;
+		             B_default_node = 9, B_update = 0;
     public boolean default_is_update = true;
     jScopeDefaultValues def_vals;
     MdsWaveInterface prev_wi = null;
@@ -77,6 +78,8 @@ class MdsWaveInterface extends WaveInterface
 	        out =  def_flag ? def_vals.upd_event_str : cin_upd_event;break; 
 	        case MdsWaveInterface.B_default_node:
 	        out =  def_flag ? def_vals.def_node_str : cin_def_node;break; 
+	        case MdsWaveInterface.B_update:
+	        out =  def_flag ? ""+def_vals.upd_limits : ""+cin_upd_limits;break; 
 	    }
 	    return out;
    } 
@@ -140,6 +143,10 @@ class MdsWaveInterface extends WaveInterface
       bit = MdsWaveInterface.B_default_node;
       def_flag =    ((defaults & (1<<bit)) == 1<<bit);
       in_def_node = GetDefaultValue(bit , def_flag );
+  
+      bit = MdsWaveInterface.B_update;
+      def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+      in_upd_limits = (new Boolean(GetDefaultValue(bit , def_flag))).booleanValue();
       
       /*
       bit = MdsWaveInterface.B_event;
@@ -299,7 +306,8 @@ class MdsWaveInterface extends WaveInterface
 	    markers_step = new int[num_waves];
 	    colors_idx = new int[num_waves];
 	    interpolates = new boolean[num_waves];
-	    mode2D = new byte[num_waves];
+	    mode2D = new int[num_waves];
+	    mode1D = new int[num_waves];
 	    
 	    w_error = new String[num_waves];
 	    evaluated = new boolean[num_waves];
@@ -342,6 +350,7 @@ class MdsWaveInterface extends WaveInterface
 	        colors_idx[i] = wi.colors_idx[i];
 	        interpolates[i] = wi.interpolates[i];
 	        mode2D[i] = wi.mode2D[i];
+	        mode1D[i] = wi.mode1D[i];
 	        if(wi.shots != null)
 	            shots[i] = wi.shots[i];
 /*****/
@@ -355,6 +364,8 @@ class MdsWaveInterface extends WaveInterface
 	            w_error[i] = wi.w_error[i];
 /*****/	            
 	    }
+
+        in_upd_limits = wi.in_upd_limits;
 
 	    if(wi.in_xmin != null)
 	        in_xmin = new String(wi.in_xmin);
@@ -415,6 +426,8 @@ class MdsWaveInterface extends WaveInterface
 	    else
 	        in_def_node = null;
 
+
+        cin_upd_limits = wi.cin_upd_limits;
 
 	    if(wi.cin_xmin != null)
 	        cin_xmin = new String(wi.cin_xmin);
@@ -610,6 +623,7 @@ class MdsWaveInterface extends WaveInterface
         defaults = 0xffffffff;
         default_is_update = false;
         previous_shot = "";
+        cin_upd_limits = true;
     }
    
     public void CreateVector()
@@ -624,7 +638,8 @@ class MdsWaveInterface extends WaveInterface
 	    markers_step = new int[num_waves];
 	    colors_idx   = new int[num_waves];
 	    interpolates = new boolean[num_waves];
-	    mode2D       = new byte[num_waves];
+	    mode2D       = new int[num_waves];
+	    mode1D       = new int[num_waves];
 	
 	    for(int i = 0; i < num_waves; i++)
 	    {
@@ -632,7 +647,8 @@ class MdsWaveInterface extends WaveInterface
 	        markers_step[i] = 1;
     	    colors_idx[i]   = i % Waveform.colors.length;
 	        interpolates[i] = true;
-	        mode2D[i] = (byte)Signal.MODE_YTIME;
+	        mode2D[i] = Signal.MODE_YTIME;
+	        mode1D[i] = Signal.MODE_LINE;
 	    }
     }
 
@@ -711,6 +727,8 @@ class MdsWaveInterface extends WaveInterface
 	    {
 	        WaveInterface.WriteLine(out,prompt + "x_log: "           , ""+x_log);
 	        WaveInterface.WriteLine(out,prompt + "y_log: "           , ""+y_log);
+	        WaveInterface.WriteLine(out,prompt + "update_limits: "   , ""+cin_upd_limits);
+	        
 	        if(show_legend) {
 	            WaveInterface.WriteLine(out,prompt + "legend: "           , "("+legend_x+","+legend_y+")");
 	        }
@@ -819,6 +837,11 @@ class MdsWaveInterface extends WaveInterface
             prop = pr.getProperty(prompt+".y_log");
             if(prop != null)
  		        y_log = new Boolean(prop).booleanValue();;		
+
+            prop = pr.getProperty(prompt+".update_limits");
+            if(prop != null)
+ 		        cin_upd_limits = new Boolean(prop).booleanValue();		
+
     		        
             prop = pr.getProperty(prompt+".legend");
             if(prop != null)

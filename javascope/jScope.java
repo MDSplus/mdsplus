@@ -22,7 +22,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2.4)";
+   static final String VERSION = "jScope (version 7.2.5)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -37,7 +37,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   /**Menus on menu bar */
   protected JMenu        edit_m, look_and_feel_m, pointer_mode_m,
                          customize_m, autoscale_m, network_m, help_m;
-           	JMenu		 servers_m;
+           	JMenu		 servers_m, updates_m;
+  private JCheckBoxMenuItem  update_i, update_when_icon_i;	
   /**Menu items on menu edit_m */	  
   private   JMenuItem    exit_i, win_i;
   protected JMenuItem    default_i, use_i, pub_variables_i, save_as_i, use_last_i, 
@@ -717,6 +718,13 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     customize_m.add(save_all_as_text_i);
     save_all_as_text_i.addActionListener(this);
 
+
+    updates_m = new JMenu("Updates");
+    mb.add(updates_m);
+    update_i = new JCheckBoxMenuItem("Disable", false);
+    update_when_icon_i = new JCheckBoxMenuItem("Disable when icon", true);
+    updates_m.add(update_i);
+    updates_m.add(update_when_icon_i);
 
     autoscale_m = new JMenu("Autoscale");
     mb.add(autoscale_m);
@@ -1412,6 +1420,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
         setChange(false);
         SetWindowTitle("");                   
 	    out.println("Scope.geometry: " + r.width + "x" + r.height + "+" + r.x + "+" + r.y);
+	    out.println("Scope.update.disable: " + update_i.getState());
+	    out.println("Scope.update.disable_when_icon: " + update_when_icon_i.getState());
         
         font_dialog.toFile(out, "Scope.font");
         
@@ -1492,12 +1502,15 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 			        SaveConfiguration(config_file);
 			    break;
 		    case JOptionPane.NO_OPTION:
-		        exitScope();
+//		        exitScope();
 		    break;
 	    }
-	} else {
-        exitScope();
-	}
+	} 
+//	else 
+//	{
+//        exitScope();
+//	}
+	exitScope();
   }
   
   private void exitScope()
@@ -1510,18 +1523,17 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
      num_scope--;
      System.gc();
   }
-  
+    
   private void SaveAs()
   {
 	    if(curr_directory != null &&  curr_directory.trim().length() != 0)
 	        file_diag.setCurrentDirectory(new File(curr_directory));
 	    
-
-        javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener() {
-            //byte[] imageData;
+//       javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener()
+//       {
             ByteArrayOutputStream image;
             
-            public void actionPerformed(ActionEvent ae) {
+//            public void actionPerformed(ActionEvent ae) {
 
                 int returnVal = JFileChooser.CANCEL_OPTION;
                 boolean done = false;
@@ -1552,8 +1564,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	                    else
 	                        done = true;
 	                } else
-	                    done = true;
-        	        
+	                    done = true;        	        
                 }
                               
                 if (returnVal == JFileChooser.APPROVE_OPTION) 
@@ -1573,10 +1584,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	                    SaveConfiguration(config_file);       
 	                } 
 	            }
-             }
-        });
-        tim.setRepeats(false);
-        tim.start();
+  //         }
+  //      });
+  //      tim.setRepeats(false);
+  //      tim.start();
   }
 
   private void LoadConfigurationFrom()
@@ -1770,7 +1781,8 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 	        switch(we_id)
 	        {
 	            case WaveformEvent.EVENT_UPDATE:
-	                wave_panel.Refresh(w, we.status_info);
+	                if(EventUpdateEnabled())
+	                    wave_panel.Refresh(w, we.status_info);
 	            break;
     	        case WaveformEvent.MEASURE_UPDATE:
 	            case WaveformEvent.POINT_UPDATE:
@@ -1831,17 +1843,36 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
             progress_bar.setString((e.info != null ? e.info : "")+v+"%");
         }
     }
+  
+  private boolean EventUpdateEnabled()
+  {
+     if(update_i.getState())
+     {
+        SetStatusLabel("Disable event update");
+        return false;
+     }
+     if(getExtendedState() == JFrame.ICONIFIED && 
+        update_when_icon_i.getState())
+        {
+            this.SetStatusLabel("Event update is disabled when iconified");
+            return false;
+        }
+      return true;    
+  }
 
   public void processUpdateEvent(UpdateEvent e)
-  {     
-     String print_event = wave_panel.GetPrintEvent();
-     String event = wave_panel.GetEvent();
-     
-     if(e.name.equals(event))
-        wave_panel.StartUpdate();
-             
-     if(e.name.equals(print_event))
-        wave_panel.StartPrint(prnJob,  pf);      
+  {
+     if(EventUpdateEnabled())
+     {
+        String print_event = wave_panel.GetPrintEvent();
+        String event = wave_panel.GetEvent();
+                     
+        if(e.name.equals(event))
+            wave_panel.StartUpdate();
+                             
+        if(e.name.equals(print_event))
+            wave_panel.StartPrint(prnJob,  pf);
+     }     
   }
 
   private DataServerItem getServerItem(String server)
@@ -2228,6 +2259,18 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     
         try
         {
+            if((prop = pr.getProperty("Scope.update.disable")) != null) 
+            {
+                boolean b = new Boolean(prop).booleanValue();
+                update_i.setState(b);
+            }
+            
+            if((prop = pr.getProperty("Scope.update.disable_when_icon")) != null) 
+            {
+                boolean b = new Boolean(prop).booleanValue();
+                update_when_icon_i.setState(b);
+            }            
+            
 	        if((prop = pr.getProperty("Scope.geometry")) != null) 
 	        {
 	            StringTokenizer st = new StringTokenizer(prop);
@@ -2236,6 +2279,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 		        xpos = new Integer(st.nextToken("+")).intValue();
 		        ypos = new Integer(st.nextToken("+")).intValue();
 	        }
+	        
         } 
         catch (Exception exc)
         {
@@ -2249,7 +2293,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     try
     {
         FromFile(pr);
-        font_dialog.fromFile(pr, "Scope0.font");
+        font_dialog.fromFile(pr, "Scope.font");
         color_dialog.fromFile(pr, "Scope.color_");
         pub_var_diag.fromFile(pr, "Scope.public_variable_");
 	    wave_panel.FromFile(pr , "Scope");

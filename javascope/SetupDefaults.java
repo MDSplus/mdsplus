@@ -29,6 +29,7 @@ public class SetupDefaults extends JDialog implements ActionListener
    private JComboBox     legend_mode;
    private JCheckBox     reversed_b; 
    private JComboBox     auto_color_mode;
+   private JCheckBox     upd_limits;
    int	   curr_grid_mode = 0, 
            x_curr_lines_grid = 3, 
            y_curr_lines_grid = 3,
@@ -211,10 +212,12 @@ public class SetupDefaults extends JDialog implements ActionListener
         auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);	      	
         panel1.add(auto_color_mode);
 
+        upd_limits = new JCheckBox("Upd. limits", true);
+        panel1.add(upd_limits);
+            
         gridbag.setConstraints(panel1, c);
         getContentPane().add(panel1);	
-                 	      	
-                  	      	
+                 	      	                 	      	
         JPanel p1 = new JPanel();  	      	
 
       ok = new JButton("Ok");
@@ -336,7 +339,8 @@ public class SetupDefaults extends JDialog implements ActionListener
 	y_grid_lines.setText("3");
 	horizontal_offset.setText("0");
 	vertical_offset.setText("0");
-    reversed_b.setSelected(false);	
+    reversed_b.setSelected(false);
+    upd_limits.setSelected(true);
    }
    
    private void setTextValue(JTextField t, String val)
@@ -360,7 +364,8 @@ public class SetupDefaults extends JDialog implements ActionListener
 	    setTextValue(experiment, def_vals.experiment_str);
 	    setTextValue(shot, def_vals.shot_str);		
 	    setTextValue(upd_event, def_vals.upd_event_str);
-	    setTextValue(def_node, def_vals.def_node_str);		
+	    setTextValue(def_node, def_vals.def_node_str);	
+	    upd_limits.setSelected(def_vals.upd_limits);
 	    grid_mode.setSelectedIndex(curr_grid_mode);
 	    legend_mode.setSelectedIndex(curr_legend_mode);	    
 	    x_grid_lines.setText(""+x_curr_lines_grid);
@@ -384,6 +389,7 @@ public class SetupDefaults extends JDialog implements ActionListener
       def_vals.ylabel		    = new String(y_label.getText());
       def_vals.upd_event_str  	= new String(upd_event.getText());
       def_vals.def_node_str	    = new String(def_node.getText());
+      def_vals.upd_limits       = upd_limits.isSelected();
 	  curr_grid_mode      = grid_mode.getSelectedIndex();
 	  curr_legend_mode    = legend_mode.getSelectedIndex();
 	  reversed            = reversed_b.getModel().isSelected();
@@ -458,17 +464,18 @@ public class SetupDefaults extends JDialog implements ActionListener
    
    public boolean IsChanged(jScopeDefaultValues def_vals)
    { 
-    if(!main_scope.equalsString(shot.getText(),   def_vals.shot_str))    return true;	
-    if(!main_scope.equalsString(experiment.getText(), def_vals.experiment_str))    return true;	
+    if(!main_scope.equalsString(shot.getText(),   def_vals.shot_str))            return true;	
+    if(!main_scope.equalsString(experiment.getText(), def_vals.experiment_str))  return true;	
     if(!main_scope.equalsString(upd_event.getText(), def_vals.upd_event_str))    return true;	
-    if(!main_scope.equalsString(def_node.getText(), def_vals.def_node_str))    return true;	
-    if(!main_scope.equalsString(title.getText(),   def_vals.title_str))    return true;	
-	if(!main_scope.equalsString(x_max.getText(),   def_vals.xmax))     return true;
-	if(!main_scope.equalsString(x_min.getText(),   def_vals.xmin))     return true;
-	if(!main_scope.equalsString(x_label.getText(), def_vals.xlabel))     return true;
-	if(!main_scope.equalsString(y_max.getText(),   def_vals.ymax))     return true;
-	if(!main_scope.equalsString(y_min.getText(),   def_vals.ymin))     return true;
-	if(!main_scope.equalsString(y_label.getText(), def_vals.ylabel))     return true;
+    if(!main_scope.equalsString(def_node.getText(), def_vals.def_node_str))      return true;	
+    if(!main_scope.equalsString(title.getText(),   def_vals.title_str))          return true;	
+	if(!main_scope.equalsString(x_max.getText(),   def_vals.xmax))               return true;
+	if(!main_scope.equalsString(x_min.getText(),   def_vals.xmin))               return true;
+	if(!main_scope.equalsString(x_label.getText(), def_vals.xlabel))             return true;
+	if(!main_scope.equalsString(y_max.getText(),   def_vals.ymax))               return true;
+	if(!main_scope.equalsString(y_min.getText(),   def_vals.ymin))               return true;
+	if(!main_scope.equalsString(y_label.getText(), def_vals.ylabel))             return true;
+	if(upd_limits.isSelected() != def_vals.upd_limits)                           return true;
     return false;
    }
 

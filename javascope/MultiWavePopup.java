@@ -119,7 +119,7 @@ public class MultiWavePopup extends WavePopup
             
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
-            interpolate_f.setEnabled(state);
+//            interpolate_f.setEnabled(state);
             set_point.setEnabled(wave.mode == Waveform.MODE_POINT);
             
             if(state) {
@@ -128,7 +128,7 @@ public class MultiWavePopup extends WavePopup
                 else
                     sig_idx = wave.GetSelectedSignal();
                     
-                interpolate_f.setState(wave.GetInterpolate(sig_idx));
+//                interpolate_f.setState(wave.GetInterpolate(sig_idx));
                 boolean state_m = state && (wave.GetMarker(sig_idx) != Signal.NONE 
                                         && wave.GetMarker(sig_idx) != Signal.POINT);
                 markerStep.setEnabled(state_m);
@@ -206,11 +206,12 @@ public class MultiWavePopup extends WavePopup
  	   super.SetMenu();
     }
 
+/*
     protected void SetInterpolate(boolean state)
     {
         wave.SetInterpolate(wave.GetSelectedSignal(), state);
     }
-
+*/
     protected void SetMode2D(int mode)
     {
         wave.setSignalMode(wave.GetSelectedSignal(), mode);

@@ -19,11 +19,12 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, playFrame, remove_panel,
 		      set_point, undo_zoom, maximize, cb_copy; 
-	protected JMenu markerList, colorList, markerStep, signal_2d;
-	protected JCheckBoxMenuItem interpolate_f;
+	protected JMenu markerList, colorList, markerStep, mode_2d, mode_1d;
+	//protected JCheckBoxMenuItem interpolate_f;
 	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x, plot_image;
+	protected JRadioButtonMenuItem plot_line, plot_no_line, plot_step;
 
-	protected ButtonGroup markerList_bg, colorList_bg, markerStep_bg, signal_2d_bg;
+	protected ButtonGroup markerList_bg, colorList_bg, markerStep_bg, mode_2d_bg,  mode_1d_bg;
 	
 	protected int curr_x, curr_y;
 	protected Container parent;
@@ -133,14 +134,53 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    colorList = new JMenu("Colors");
 	    colorList.setEnabled(false);
 	    
+	    /*
         interpolate_f = new JCheckBoxMenuItem("Interpolate", false);
 	    interpolate_f.setEnabled(false);
         interpolate_f.addItemListener(this);
+        */
         
-        signal_2d_bg = new ButtonGroup();	 
-        signal_2d = new JMenu("signal 2D");
-        signal_2d.add(plot_y_time = new JRadioButtonMenuItem("Plot y & time"));
-        signal_2d_bg.add(plot_y_time);
+        mode_1d_bg = new ButtonGroup();	 
+        mode_1d = new JMenu("Mode Plot 1D");
+        mode_1d.add(plot_line = new JRadioButtonMenuItem("Line"));
+        mode_1d_bg.add(plot_line);
+        plot_line.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode1D(Signal.MODE_LINE);
+	        }
+	    });
+        
+        mode_1d.add(plot_no_line = new JRadioButtonMenuItem("No Line"));
+        mode_1d_bg.add(plot_no_line);
+        plot_no_line.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode1D(Signal.MODE_NOLINE);
+	        }
+	    });
+
+        mode_1d.add(plot_step = new JRadioButtonMenuItem("Step Plot"));
+        mode_1d_bg.add(plot_step);
+        plot_step.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode1D(Signal.MODE_STEP);
+//                wave.Update();
+	        }
+	    });
+        
+        
+        mode_2d_bg = new ButtonGroup();	 
+        mode_2d = new JMenu("signal 2D");
+        mode_2d.add(plot_y_time = new JRadioButtonMenuItem("Plot y & time"));
+        mode_2d_bg.add(plot_y_time);
         plot_y_time.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
@@ -150,8 +190,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    });
         
-        signal_2d.add(plot_x_y = new JRadioButtonMenuItem("Plot x & y"));
-        signal_2d_bg.add(plot_x_y);
+        mode_2d.add(plot_x_y = new JRadioButtonMenuItem("Plot x & y"));
+        mode_2d_bg.add(plot_x_y);
         plot_x_y.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
@@ -161,8 +201,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    });
 
-        signal_2d.add(plot_y_x = new JRadioButtonMenuItem("Plot y & x"));
-        signal_2d_bg.add(plot_y_x);
+        mode_2d.add(plot_y_x = new JRadioButtonMenuItem("Plot y & x"));
+        mode_2d_bg.add(plot_y_x);
         plot_y_x.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
@@ -173,8 +213,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	        }
 	    });
 
-        signal_2d.add(plot_image = new JRadioButtonMenuItem("Plot Image"));
-        signal_2d_bg.add(plot_image);
+        mode_2d.add(plot_image = new JRadioButtonMenuItem("Plot Image"));
+        mode_2d_bg.add(plot_image);
         plot_image.addItemListener(new ItemListener()
 	    {
             public void itemStateChanged(ItemEvent e)
@@ -427,21 +467,35 @@ public class WavePopup extends JPopupMenu implements  ItemListener
            add(markerStep);
            colorList.setText("Colors");
            add(colorList);	
-           add(interpolate_f);
+          // add(interpolate_f);
            if(wave.mode == Waveform.MODE_POINT || wave.GetShowSignalCount() == 1)
            {
-                if(wave.getSignalType() == Signal.TYPE_2D) {
-                    add(signal_2d);
+                if(wave.getSignalType() == Signal.TYPE_1D)
+                {
+                    add(mode_1d);
                     switch (wave.getSignalMode())
                     {
-                        case Signal.MODE_YTIME : signal_2d_bg.setSelected(plot_y_time.getModel(), true); break;
-                        case Signal.MODE_XY    : signal_2d_bg.setSelected(plot_x_y.getModel(), true); break;
-                        case Signal.MODE_YX    : signal_2d_bg.setSelected(plot_y_x.getModel(), true); break;
-                        case Signal.MODE_IMAGE : signal_2d_bg.setSelected(plot_image.getModel(), true); break;
+                        case Signal.MODE_LINE    : mode_1d_bg.setSelected(plot_line.getModel(), true); break;
+                        case Signal.MODE_NOLINE  : mode_1d_bg.setSelected(plot_no_line.getModel(), true); break;
+                        case Signal.MODE_STEP    : mode_1d_bg.setSelected(plot_step.getModel(), true); break;
                     }
-                    plot_image.setEnabled(!wave.IsShowSigImage());
                 }
-           }     
+                else
+                {
+                    if(wave.getSignalType() == Signal.TYPE_2D) {
+                        add(mode_2d);
+                        switch (wave.getSignalMode())
+                        {
+                            case Signal.MODE_YTIME : mode_2d_bg.setSelected(plot_y_time.getModel(), true); break;
+                            case Signal.MODE_XY    : mode_2d_bg.setSelected(plot_x_y.getModel(), true); break;
+                            case Signal.MODE_YX    : mode_2d_bg.setSelected(plot_y_x.getModel(), true); break;
+                            case Signal.MODE_IMAGE : mode_2d_bg.setSelected(plot_image.getModel(), true); break;
+                        }
+                        plot_image.setEnabled(!wave.IsShowSigImage());
+                    }
+                }
+           } 
+           
 
 	       add(sep2);           
 	       add(autoscale);
@@ -494,7 +548,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
         } else {
            markerList.setEnabled(false);
            colorList.setEnabled(false);	
-           interpolate_f.setEnabled(false);
+          // interpolate_f.setEnabled(false);
            markerStep.setEnabled(false);
            set_point.setEnabled(false);
        }
@@ -508,11 +562,11 @@ public class WavePopup extends JPopupMenu implements  ItemListener
             boolean state = (wave.GetShowSignalCount() == 1);
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
-            interpolate_f.setEnabled(state);
+            //interpolate_f.setEnabled(state);
             set_point.setEnabled(true);
             
             if(state) {
-                interpolate_f.setState(wave.GetInterpolate());
+                //interpolate_f.setState(wave.GetInterpolate());
                 boolean state_m = (wave.GetMarker() != Signal.NONE);
                 markerStep.setEnabled(state_m);
                 SelectListItem(markerList_bg, wave.GetMarker());
@@ -581,12 +635,19 @@ public class WavePopup extends JPopupMenu implements  ItemListener
         if(parent instanceof WaveformManager)
             remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
     }
-
+    
+/*
     protected void SetInterpolate(boolean state)
     {
         wave.SetInterpolate(state);
     }
-
+*/
+    
+    protected void SetMode1D(int mode)
+    {
+        wave.setSignalMode(mode);
+    }
+    
     protected void SetMode2D(int mode)
     {
         wave.setSignalMode(mode);
@@ -637,13 +698,14 @@ public class WavePopup extends JPopupMenu implements  ItemListener
     {
 	    Object target = e.getSource();
 	    
+	    /*
 	    if(target == interpolate_f)
 	    {
             SetInterpolate(((JCheckBoxMenuItem)target).getState()); 	            
             wave.Repaint(true);
             return;
 	    }
-	    
+	    */
 	    if(target instanceof JRadioButtonMenuItem && e.getStateChange() == ItemEvent.SELECTED)
 	    {
 	        JRadioButtonMenuItem cb = (JRadioButtonMenuItem)target;            

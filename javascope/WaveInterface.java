@@ -15,9 +15,10 @@ public class WaveInterface
     public boolean x_log, y_log;
     public String  in_label[], in_x[], in_y[], in_up_err[], in_low_err[];
     
-    // Prameter used to evaluate waveform
+    //Prameter used to evaluate waveform
     public String  in_xmin, in_xmax, in_ymax, in_ymin, in_timemax, in_timemin;
     public String  in_title, in_xlabel, in_ylabel;
+    public boolean in_upd_limits = true;
     public String  experiment;
     public int     in_grid_mode;
     public int     height; 
@@ -39,7 +40,8 @@ public class WaveInterface
     public  int     markers[];
     public  int     colors_idx[];
     public  boolean interpolates[];
-    public  byte    mode2D[];
+    public  int     mode2D[];
+    public  int     mode1D[];
     public  long    shots[];
     public  String  error;
     private String  curr_error;
@@ -81,13 +83,11 @@ public class WaveInterface
     boolean cache_enabled = false;
     static SignalCache sc = null;
     static boolean brief_error = true;
-    
         
     public WaveInterface()
     {
         CreateWaveInterface(null);
     }    
-
 
     public WaveInterface(DataProvider dp)
     {
@@ -120,6 +120,7 @@ public class WaveInterface
         colors_idx = null;
         interpolates = null;
         mode2D = null;
+        mode1D = null;
         shots = null;
         error = null;
         curr_error = null;
@@ -247,8 +248,10 @@ public class WaveInterface
 	    markers = null;
 	    interpolates = null;
 	    mode2D = null;
+	    mode1D = null;
 	    du = null;  
 	    x_log = y_log = false;
+	    in_upd_limits = true;
 	    show_legend = false;
 	    reversed = false;
     }
@@ -297,14 +300,12 @@ public class WaveInterface
     public void ShowLegend(boolean state){show_legend = state;}
     public void setModified(boolean state){modified = state;}
     
-
     public void SetLegendPosition(double x, double y)
     {
         legend_x = x;
         legend_y = y;
         show_legend = true;
     }
-
 
     private String GetFirstLine(String str)
     {
@@ -326,7 +327,6 @@ public class WaveInterface
     
     public boolean IsSignalAdded(){return is_signal_added;}
     public void SetIsSignalAdded(boolean is_signal_added){this.is_signal_added = is_signal_added;}
-
 
     public  String getErrorTitle()
     {
@@ -483,7 +483,8 @@ public class WaveInterface
 	    int new_markers_step[] = new int[new_num_waves];
 	    int new_colors_idx[] = new int[new_num_waves];
 	    boolean new_interpolates[] = new boolean[new_num_waves];
-	    byte new_mode2D[] = new byte[new_num_waves];
+	    int new_mode2D[] = new int[new_num_waves];
+	    int new_mode1D[] = new int[new_num_waves];
 	    long new_shots[] = null;
 	    if(shots != null) 
 	        new_shots = new long[new_num_waves];
@@ -504,6 +505,7 @@ public class WaveInterface
 	        new_colors_idx[i] = colors_idx[i];
 	        new_interpolates[i] = interpolates[i];
 	        new_mode2D[i] = mode2D[i];
+	        new_mode1D[i] = mode1D[i];
 	        if(shots != null)
 	            new_shots[i] = shots[i];
 	        if(evaluated != null)
@@ -537,8 +539,9 @@ public class WaveInterface
 	                new_colors_idx[k] = j % Waveform.colors.length;
     	        
 	            new_interpolates[k] = true;
-	            new_evaluated[k] = false;
-	            new_mode2D[k] = Signal.MODE_YTIME;
+	            new_evaluated[k]    = false;
+	            new_mode2D[k]       = Signal.MODE_YTIME;
+	            new_mode1D[k]       = Signal.MODE_LINE;
 	            if(shots != null && shots.length != 0 && num_shot > 0)
 	                new_shots[k] = shots[j];
 	            k++;
@@ -555,6 +558,7 @@ public class WaveInterface
 	    colors_idx = new_colors_idx;
 	    interpolates = new_interpolates;
 	    mode2D = new_mode2D;
+	    mode1D = new_mode1D;
 	    shots = new_shots;
 	    num_waves = new_num_waves;
 	    evaluated = new_evaluated;
@@ -607,8 +611,9 @@ public class WaveInterface
 	    int[]     markers_step = new int[num_signal];
 	    int[]     colors_idx   = new int[num_signal];
 	    boolean[] interpolates = new boolean[num_signal];
-	    byte[] mode2D          = new byte[num_signal];
-	    long[]     shots = null;
+	    int[]     mode2D       = new int[num_signal];
+	    int[]     mode1D       = new int[num_signal];
+	    long[]    shots        = null;
 	    if(curr_shots != null)
 	        shots = new long[num_signal];				
 
@@ -626,6 +631,7 @@ public class WaveInterface
 		            markers_step[k] = this.markers_step[i * this.num_shot + j];	  
 		            interpolates[k] = this.interpolates[i * this.num_shot + j];
 		            mode2D[k] = this.mode2D[i * this.num_shot + j];
+		            mode1D[k] = this.mode1D[i * this.num_shot + j];
 		            if(curr_shots != null)
 		                shots[k]        = curr_shots[j];
 		            in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
@@ -636,6 +642,7 @@ public class WaveInterface
 		            markers_step[k] = this.markers_step[i * this.num_shot];	  
 		            interpolates[k] = this.interpolates[i * this.num_shot];
 		            mode2D[k]       = this.mode2D[i * this.num_shot];		            
+		            mode1D[k]       = this.mode1D[i * this.num_shot];		            
 		            in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
 		            in_low_err[k]   = this.in_low_err[i * this.num_shot];
     		        
@@ -660,6 +667,7 @@ public class WaveInterface
 	    this.colors_idx   = colors_idx;
 	    this.interpolates = interpolates;
 	    this.mode2D       = mode2D;
+	    this.mode1D       = mode1D;
 	    this.shots        = shots;
 	    if(shots != null)
 	        this.num_shot     = curr_num_shot;
@@ -727,7 +735,9 @@ public class WaveInterface
 	    }
 		
     //compute limits
-	    if(in_xmin != null && (in_xmin.trim()).length() != 0)
+	    if(in_xmin != null && 
+	       (in_xmin.trim()).length() != 0 &&
+	       in_upd_limits)
 	    {
 	        xmin = dp.GetFloat(in_xmin);
 	        if(dp.ErrorString() != null)
@@ -738,7 +748,10 @@ public class WaveInterface
 	    }
 	    else
 	        xmin = (!is_image) ? -HUGE : -1;
-	    if(in_xmax != null && (in_xmax.trim()).length() != 0)
+	        
+	    if(in_xmax != null && 
+	       (in_xmax.trim()).length() != 0 &&
+	       in_upd_limits)
 	    {
 	        xmax = dp.GetFloat(in_xmax);
 	        if(dp.ErrorString() != null)
@@ -749,7 +762,10 @@ public class WaveInterface
 	    }
 	    else
 	        xmax = (!is_image) ? HUGE : -1;
-	    if(in_ymax != null && (in_ymax.trim()).length() != 0)
+	        
+	    if(in_ymax != null && 
+	       (in_ymax.trim()).length() != 0 &&
+	       in_upd_limits)
 	    {
 	        ymax = dp.GetFloat(in_ymax);
 	        if(dp.ErrorString() != null)
@@ -761,7 +777,9 @@ public class WaveInterface
 	    else
 	        ymax = (!is_image) ? HUGE : -1;
 	    
-  	    if(in_ymin != null && (in_ymin.trim()).length() != 0)
+  	    if(in_ymin != null && 
+  	      (in_ymin.trim()).length() != 0 &&
+  	      in_upd_limits)
 	    {
 	        ymin = dp.GetFloat(in_ymin);
 	        if(dp.ErrorString() != null)
@@ -1173,17 +1191,21 @@ public class WaveInterface
             {
                 float[] curr_y = cd.y;
 	            out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
-	            out_signal.setMode(mode2D[curr_wave]);
-            } else
+	            out_signal.setMode2D(mode2D[curr_wave]);
+            } 
+            else
+            {
     	        out_signal = new Signal(curr_x, curr_data, min_len);
-            
+	            out_signal.setMode1D(mode1D[curr_wave]);
+            }
+	        
             if(up_err != null && low_err != null)
     	        out_signal.AddAsymError(up_err, low_err);
     	    else
                 if(up_err != null)
                     out_signal.AddError(up_err);
                     
-            out_signal.setLabels(title, xlabel, ylabel, zlabel);         
+            out_signal.setLabels(title, xlabel, ylabel, zlabel);
         }
         return out_signal;
     }
@@ -1209,7 +1231,6 @@ public class WaveInterface
 	        return null;
 	    }
 	    
-	    
 	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() > 0)
 	    {
 	        dimension = 1;
@@ -1221,7 +1242,9 @@ public class WaveInterface
 	            dimension = wd.GetNumDimension();
 	            if(dimension == 2)
 	                zlabel = wd.GetZLabel();	            
-	        }catch(Exception exc) {dimension = 1; }
+	        }
+	        catch(Exception exc) {dimension = 1;}
+	        
 	        if(dp.ErrorString() != null)
 	        {
 	            curr_error = dp.ErrorString();
@@ -1288,8 +1311,7 @@ public class WaveInterface
 	        }
 	        
 	        if(dimension == 1)
-	        {
-    	        
+	        {   
 	            if(curr_data != null && curr_data.length > 1 && in_up_err != null && in_up_err[curr_wave] != null 
 		            && (in_up_err[curr_wave].trim()).length() != 0)
 	            {
@@ -1299,8 +1321,8 @@ public class WaveInterface
 		                up_err = dp.GetResampledWaveData(in_up_err[curr_wave], in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS).GetFloatData();
 		            if(up_err == null || up_err.length <= 1)
 		                curr_data = null;
-    	    
-	            }				
+	            }
+	            
 	            if(curr_data != null && in_low_err != null && 
 		            in_low_err[curr_wave] != null && (in_low_err[curr_wave].trim()).length() != 0)
 	            {
@@ -1348,9 +1370,10 @@ public class WaveInterface
 	    {
 	      curr_y = wd.GetYData();
 	      out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
-	      out_signal.setMode((int)mode2D[curr_wave]);
+	      out_signal.setMode2D((int)mode2D[curr_wave]);
 	    } else {
     	  out_signal = new Signal(curr_x, curr_data, min_len);
+	      out_signal.setMode1D((int)mode1D[curr_wave]);
     	}
     	
         if(wd != null)
@@ -1553,6 +1576,7 @@ class AsynchUpdater  extends Thread
         this.wi = wi;
         this.w = w;
     }
+    
     public void run()
     {
         setName("Asynch Update Thread");
@@ -1575,6 +1599,7 @@ class AsynchUpdater  extends Thread
 	        } catch (InterruptedException e){}
         }
     }
+    
     public synchronized void Notify()
     {
         notify();

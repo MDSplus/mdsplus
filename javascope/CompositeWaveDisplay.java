@@ -55,7 +55,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             x_data[i] = i;// (float)Math.sin(i * 6.28/100.);
             
         Signal  sig_2d = new Signal(data, x_data, time, Signal.TYPE_2D);
-        sig_2d.setMode(Signal.MODE_YTIME); 
+        sig_2d.setMode2D(Signal.MODE_YTIME); 
         ((CompositeWaveDisplay)cd).addSignal(sig_2d, 1, 2);
         ((CompositeWaveDisplay)cd).addSignal(x, y, 1,2,"green", "seno");
        

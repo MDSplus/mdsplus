@@ -14,7 +14,7 @@ public  class WaveformMetrics implements Serializable
     static int INT_MIN_VALUE = (int)MIN_VALUE; 
     double xmax, xmin, ymax, ymin;
     double xrange, //xmax - xmin
-	   yrange; //ymax - ymin
+	       yrange; //ymax - ymin
     double y_range;
     boolean x_log, y_log;	
     double x_offset;
@@ -511,6 +511,33 @@ public  class WaveformMetrics implements Serializable
 		        }
 	        }
 	    }
+	    
+	    if(sig.getMode1D() == Signal.MODE_STEP)
+	    {
+	        Vector v = new Vector();
+	        int x[];
+	        int y[];
+	        for(i = 0; i < curr_vect.size(); i++)
+	        {
+	            curr_polygon = (Polygon)curr_vect.elementAt(i);
+	            int np = curr_polygon.npoints * 2 - 1;
+	            x = new int[np];
+	            y = new int[np];
+	            for(i = 0, j = 0; i < curr_polygon.npoints; i++, j++)
+	            {
+	                x[j] = curr_polygon.xpoints[i];
+	                y[j] = curr_polygon.ypoints[i];
+	                j++;
+	                if(j == np)
+	                    break;
+	                x[j] = curr_polygon.xpoints[i+1];
+	                y[j] = curr_polygon.ypoints[i];
+	            }           
+		        curr_polygon = new Polygon(x, y, np);
+		        v.addElement(curr_polygon);
+	        }
+	        curr_vect = v;
+	    }	    
 	    return curr_vect;
     }	
 }

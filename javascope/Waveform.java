@@ -419,9 +419,13 @@ public class Waveform extends JComponent
     public int getSignalMode()
     {
         int mode = -1;
-        if( waveform_signal != null && waveform_signal.getType() == Signal.TYPE_2D)
+        if( waveform_signal != null)
         {
-            mode = waveform_signal.getMode();
+            if(waveform_signal.getType() == Signal.TYPE_2D)
+                mode = waveform_signal.getMode2D();
+            else
+                if(waveform_signal.getType() == Signal.TYPE_1D)
+                    mode = waveform_signal.getMode1D();
         }
         return mode;
     }
@@ -429,9 +433,13 @@ public class Waveform extends JComponent
     
     public void setSignalMode(int mode)
     {
-        if(waveform_signal != null && waveform_signal.getType() == Signal.TYPE_2D)
+        if(waveform_signal != null)
         {
-           waveform_signal.setMode(mode);
+            if(waveform_signal.getType() == Signal.TYPE_2D)
+                waveform_signal.setMode2D(mode);
+            else
+                if(waveform_signal.getType() == Signal.TYPE_1D)
+                    waveform_signal.setMode1D(mode);
            Update();
            //dispatchWaveformEvent(we);
            //we = null;
@@ -587,7 +595,7 @@ public class Waveform extends JComponent
    	                if(mode != MODE_POINT)
 		                update_timestamp++;
 		                
-    	                start_x = end_x = prev_point_x = orig_x = x;
+    	            start_x = end_x = prev_point_x = orig_x = x;
 	                start_y = end_y = prev_point_y = orig_y = y;
 	                dragging = true;
 	                first_set_point = true;
@@ -743,19 +751,9 @@ public class Waveform extends JComponent
 	            int curr_width, curr_height;
                 int x = e.getX() - i.right;
                 int y = e.getY() - i.top;
-                
-                if(x >= d.width)
-                    x = d.width - 2;
-                if(x < 1)    
-                    x = 1;
-                if(y >= d.height)
-                    y = d.height - 2;
-                if(y < 1)    
-                    y = 1;
-
+                                
 	            if((e.getModifiers() & Event.META_MASK) != 0 || is_mb3 || e.isPopupTrigger()) //Se e' MB3
 	                return;
-
 
 	            if(mode == MODE_ZOOM && x < orig_x)
 	            {
@@ -1070,17 +1068,31 @@ public class Waveform extends JComponent
     void DrawWave(Dimension d)
     {
 	    int i;
+	    int curr_mode = waveform_signal.getMode1D();
+	    if(curr_mode == Signal.MODE_STEP)
+	        num_points = waveform_signal.n_points * 2 - 1;
+	    else
+	        num_points = waveform_signal.n_points;
+	        
 	    int x[] = new int[waveform_signal.n_points];
 	    int y[] = new int[waveform_signal.n_points];
 	    
 	    points = new Point[waveform_signal.n_points];
-	    for(i = 0; i < waveform_signal.n_points; i++)
+	    for(i = 0; i < waveform_signal.n_points; i +=2)
 	    {
 	        x[i] = wm.XPixel(waveform_signal.x[i], d);
 	        y[i] = wm.YPixel(waveform_signal.y[i], d);
-	        points[i] = new Point(x[i], y[i]);	
+	        points[i] = new Point(x[i], y[i]);
 	    }
-	    num_points = waveform_signal.n_points;
+	    
+	    if(curr_mode == Signal.MODE_STEP)
+	        for(i = 1; i < waveform_signal.n_points - 1; i +=2)
+	        {
+	            x[i] = x[i-1];
+	            y[i] = y[i+1];
+	            points[i] = new Point(x[i-1], y[i+1]);
+	        }
+	    //num_points = waveform_signal.n_points;
 	    polygon = new Polygon(x, y, i); 
 	    end_x = x[0];
 	    end_y = y[0];
@@ -1195,7 +1207,7 @@ public class Waveform extends JComponent
 	                
                     if(waveform_signal.getType() == Signal.TYPE_2D)
                     {
-                        switch(waveform_signal.getMode())
+                        switch(waveform_signal.getMode2D())
                         {
                             case Signal.MODE_IMAGE:
                                 //orizLabel = waveform_signal.getXlabel();
@@ -1653,7 +1665,7 @@ public class Waveform extends JComponent
             if(s == null)
                 return null;
 
-            if(s.getType() == Signal.TYPE_2D && s.getMode() == Signal.MODE_IMAGE)
+            if(s.getType() == Signal.TYPE_2D && s.getMode2D() == Signal.MODE_IMAGE)
             {
                 wave_point_x = s.getClosestX(curr_x);
 	            wave_point_y = s.getClosestY(curr_y);
@@ -1670,7 +1682,7 @@ public class Waveform extends JComponent
 	        }
 	        else
 	        {
-	            if(s.getMarker() != Signal.NONE && !s.getInterpolate() || s.findNaN())
+	            if(s.getMarker() != Signal.NONE && !s.getInterpolate() && s.getMode1D() != Signal.MODE_STEP || s.findNaN())
 	            {
 	                double val;
 	                boolean increase = s.x[idx] < s.x[idx+1];
@@ -1695,7 +1707,10 @@ public class Waveform extends JComponent
 	            } else {
 	                x = curr_x;
 		        try {
-	                y = s.y[idx] + (s.y[idx+1] - s.y[idx]) * (x - s.x[idx])/
+		            if(s.getMode1D() == Signal.MODE_STEP)
+		                y = s.y[idx];
+		            else
+	                    y = s.y[idx] + (s.y[idx+1] - s.y[idx]) * (x - s.x[idx])/
 	                                                        (s.x[idx+1] - s.x[idx]);
 		        } catch (ArrayIndexOutOfBoundsException e) 
 			    {
@@ -1791,10 +1806,13 @@ public class Waveform extends JComponent
 	    
 	    
 	    if(waveform_signal.getInterpolate())
+	    {
 	        g.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
+	    }    
         if(waveform_signal.getMarker() != Signal.NONE)
 	        DrawMarkers(g, points, num_points, waveform_signal.getMarker(), 
-	                                           waveform_signal.getMarkerStep());
+	                                           waveform_signal.getMarkerStep(),
+	                                           waveform_signal.getMode1D());
 	    /* ???????????????????/
         if(waveform_signal.error)
 	        DrawError(off_graphics, d, waveform_signal);
@@ -1863,10 +1881,13 @@ public class Waveform extends JComponent
     protected void HandleCopy() {}
     protected void HandlePaste() {}
 
-    protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int marker, int step)
+    protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int marker, int step, int mode)
     {
             for(int i = 0; i < n_pnt; i += step)
             {
+                if(mode == Signal.MODE_STEP && i%2 == 1)
+                    continue;
+                
 	            switch(marker)  
 	            {
 	    	        case Signal.CIRCLE : 

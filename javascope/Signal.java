@@ -16,10 +16,17 @@ public class Signal
     static final int TYPE_1D = 0;
     static final int TYPE_2D = 1;
     static final int TYPE_CONTOUR = 2;
+    
     static final int MODE_YTIME = 0;
     static final int MODE_XY = 1;
     static final int MODE_YX = 2;
     static final int MODE_IMAGE = 3;
+    
+    static final int MODE_LINE = 0;
+    static final int MODE_NOLINE = 2;    
+    static final int MODE_STEP = 3;
+    
+   // public static final int  INTERPOLATE_PLOT = 0 , STEP_PLOT = 1;
     
     /**
      * String vector of markers name.
@@ -242,7 +249,9 @@ public class Signal
 
     protected int type = TYPE_1D;
     
-    protected int mode;
+    protected int mode2D;
+
+    protected int mode1D;
 
     protected float curr_time_xy_plot = Float.NaN;
     protected float curr_data_yt_plot = Float.NaN;
@@ -432,8 +441,8 @@ public class Signal
 	    gain = s.gain;
 	    offset = s.offset;
 	    
-	    if(! (s.type == this.TYPE_2D && s.mode == this.MODE_IMAGE) )
-	    {
+	    if(! (s.type == this.TYPE_2D && s.mode2D == this.MODE_IMAGE) )
+	    {	        
 	        x = new float[n_points];
 	        y = new float[n_points];
 	        for(i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
@@ -441,6 +450,7 @@ public class Signal
 	            x[i] = s.x[i];
 	            y[i] = s.y[i];
 	        }
+	       
         }
         
 	    saved_ymax = ymax = s.ymax;
@@ -460,7 +470,8 @@ public class Signal
 	    
 	    name = s.name;
 	    type = s.type;
-	    mode = s.mode;
+	    mode1D = s.mode1D;
+	    mode2D = s.mode2D;
 	    data = s.data;
 	    time = s.time;
 	    x_data = s.x_data;
@@ -587,7 +598,8 @@ public class Signal
             this.data   = data;
             this.x_data = x_data;
             this.time   = time;
-            this.mode   = mode;
+            this.mode2D = mode2D;
+            this.mode1D = mode1D;
             this.type   = TYPE_2D;
             setAxis(time, data, x_data);
         } else {
@@ -611,7 +623,7 @@ public class Signal
     } 
 */   
     
-    public Signal(float data[], float x_data[], float time[], int mode, float value)
+    public Signal(float data[], float x_data[], float time[], int mode2D, float value)
     { 
         
 	    error = asym_error = false;
@@ -620,13 +632,13 @@ public class Signal
             this.data   = data;
             this.x_data = x_data;
             this.time   = time;
-            this.mode   = mode;
+            this.mode2D = mode2D;
             this.type   = TYPE_2D;
             setAxis(time, data, x_data);
             if(Float.isNaN(value))
-                setMode(mode);
+                setMode2D(mode2D);
             else
-                setMode(mode, value);
+                setMode2D(mode2D, value);
         } else {
             int min_len;
             if(time.length > data.length)
@@ -687,14 +699,14 @@ public class Signal
 
     public void showXY(int mode, float t)
     {        
-        if(curr_time_xy_plot == t && mode == this.mode ) return;
+        if(curr_time_xy_plot == t && mode == this.mode2D ) return;
         int i = getArrayIndex(time, t);
         showXY(mode, i);
     }
 
     public void showXY(int mode , int idx)
     {        
-        if((idx >= time.length || idx == curr_time_xy_idx) && mode == this.mode ) return;
+        if((idx >= time.length || idx == curr_time_xy_idx) && mode == this.mode2D ) return;
 
         curr_time_xy_plot = time[idx];
         curr_time_xy_idx = idx;
@@ -742,7 +754,7 @@ public class Signal
     {
         if(type == TYPE_2D)
         {
-            switch(mode)
+            switch(mode2D)
             {
                 case Signal.MODE_YTIME:
                     incShowYTime();
@@ -759,7 +771,7 @@ public class Signal
     {
         if(type == TYPE_2D)
         {
-            switch(mode)
+            switch(mode2D)
             {
                 case Signal.MODE_YTIME:
                     decShowYTime();
@@ -776,7 +788,7 @@ public class Signal
     
     public void incShowYTime()
     {
-        if(type == TYPE_2D && mode == Signal.MODE_YTIME)
+        if(type == TYPE_2D && mode2D == Signal.MODE_YTIME)
         {
            int idx = curr_data_yt_idx;
            idx = (idx + 1) % x_data.length;
@@ -786,7 +798,7 @@ public class Signal
     
     public void decShowYTime()
     {
-        if(type == TYPE_2D && mode == Signal.MODE_YTIME)
+        if(type == TYPE_2D && mode2D == Signal.MODE_YTIME)
         {
            int idx = curr_data_yt_idx - 1;
            if(idx < 0) idx = x_data.length - 1;
@@ -796,21 +808,21 @@ public class Signal
 
     public void incShowXY()
     {
-        if(type == TYPE_2D && (mode == Signal.MODE_XY || mode == Signal.MODE_YX))
+        if(type == TYPE_2D && (mode2D == Signal.MODE_XY || mode2D == Signal.MODE_YX))
         {
            int idx = curr_time_xy_idx;
            idx = (idx + 1) % time.length;
-           showXY(mode, idx);
+           showXY(mode2D, idx);
         }
     }
     
     public void decShowXY()
     {
-        if(type == TYPE_2D && (mode == Signal.MODE_XY || mode == Signal.MODE_YX))
+        if(type == TYPE_2D && (mode2D == Signal.MODE_XY || mode2D == Signal.MODE_YX))
         {
            int idx = curr_time_xy_idx - 1;
            if(idx < 0) idx = time.length - 1;
-           showXY(mode, idx);
+           showXY(mode2D, idx);
         }
     }
 
@@ -845,38 +857,55 @@ public class Signal
 	    saved_ymax = ymax = data_max;
 
 	    error = asym_error = false;
-	    //setAxis(x, y, x.length);
+	  //setAxis(x, y, x.length);
 	    CheckIncreasingX();
     }
-    
-    public void setMode(int mode)
+    public void setMode1D(int mode)
     {
-        if(type == TYPE_1D)
+        this.mode1D = mode;
+        switch(mode)
+        {
+            case MODE_LINE:
+                this.interpolate = true;
+            break;
+            case MODE_NOLINE:
+                this.interpolate = false;
+            break;
+            case MODE_STEP:
+                this.interpolate = true;
+            break;            
+        }
+    }
+    
+    public void setMode2D(int mode)
+    {
+        if(this.type == Signal.TYPE_1D)
             return;
-            
+        
         switch(mode)
         {
             case MODE_IMAGE:
-                setMode(mode, 0);
+                setMode2D(mode, 0);
             break;
             case MODE_YTIME:
-                setMode(mode, x_data[0]);
+                setMode2D(mode, x_data[0]);
             break;
             case MODE_XY:
             case MODE_YX:
                 float v = time[0];
                 if(!Float.isNaN(curr_time_xy_plot))
                     v = curr_time_xy_plot;
-                setMode(mode, v);
+                setMode2D(mode, v);
             break;
         }
     }
     
-    public void setMode(int mode, float value)
+    public void setMode2D(int mode, float value)
     {
-        if(type == TYPE_1D)
+        
+        if(this.type == Signal.TYPE_1D)
             return;
-            
+
         curr_time_xy_plot = Float.NaN;
         curr_data_yt_plot = Float.NaN;
               
@@ -897,8 +926,8 @@ public class Signal
                 showXY(mode, value);
             break;
         }
-        this.mode = mode;
-}
+        this.mode2D = mode;
+    }
 
     /**
      * Sets all signal attributs.
@@ -1056,7 +1085,8 @@ public class Signal
 
     public int getType(){return type;}    
     
-    public int getMode(){return mode;}
+    public int getMode1D(){return mode1D;}
+    public int getMode2D(){return mode2D;}
 
     /**
      * Get gain parameter.
@@ -1378,7 +1408,7 @@ public class Signal
      */
     public void AutoscaleX()
     {
-        if(mode == this.MODE_IMAGE)
+        if(type == this.TYPE_2D && mode2D == this.MODE_IMAGE)
         {
             xmax = this.time_max;
             xmin = this.time_min;
@@ -1402,7 +1432,7 @@ public class Signal
      */
     public void AutoscaleY()
     {
-        if(mode == this.MODE_IMAGE)
+        if(type == this.TYPE_2D && mode2D == this.MODE_IMAGE)
         {
             ymax = this.x_data_max;
             ymin = this.x_data_min;
@@ -1432,7 +1462,7 @@ public class Signal
     {
 	    int i;
 	    
-	    if(mode == MODE_IMAGE)
+	    if(type == this.TYPE_2D && mode2D == MODE_IMAGE)
 	    {
             ymin = this.x_data_min;
             ymax = this.x_data_max;
@@ -1501,7 +1531,7 @@ public class Signal
 
     public float getClosestX(double x)
     {
-	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    if(this.type == Signal.TYPE_2D && mode2D == Signal.MODE_IMAGE)
 	    {
 	        img_xprev = FindIndex(time, x, img_xprev);
 	        return  time[img_xprev];
@@ -1511,7 +1541,7 @@ public class Signal
 
     public float getClosestY(double y)
     {
-	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    if(this.type == Signal.TYPE_2D && mode2D == Signal.MODE_IMAGE)
 	    {
 	        img_yprev = FindIndex(x_data, y, img_yprev);
 	        return  x_data[img_yprev];
@@ -1552,7 +1582,7 @@ public class Signal
 	    double min_dist, curr_dist;	
 	    int min_idx;
 	    int i = 0;
-	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    if(this.type == Signal.TYPE_2D && mode2D == Signal.MODE_IMAGE)
 	    {
 	        img_xprev = FindIndex(time, curr_x, img_xprev);
 	        img_yprev = FindIndex(x_data, curr_y, img_yprev);	        
