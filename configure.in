@@ -115,7 +115,6 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s +DA1.1 +DS1.1 +z";
        IDL_BIN_SUF="hp";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
-       LIBPTHREAD="";
        IS_HP=1;
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
