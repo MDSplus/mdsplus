@@ -306,7 +306,7 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
 
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
 {
-  int       status = 1;
+  int       status = 0;
   if (nid->tree != *tree)
   {
     char *path_c = TreeGetPath(*(int *)nid);
@@ -320,6 +320,7 @@ static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
       }
     
     path_reference = 1;
+    status = 1;
   }
   else
     nid_reference = 1;
