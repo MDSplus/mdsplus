@@ -630,7 +630,8 @@ Message *GetMdsMsg(SOCKET sock, int *status)
       else
       {
         perror("MDSplus GETMSG recv error");
-        printf("errno = %d\n",errno);
+		*status = 0;
+		return 0;
       }
     }
     else
