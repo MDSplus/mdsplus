@@ -15,7 +15,7 @@ the_rest :	../shlib/libMdsLibIdl.sl \
 		../idl/mdsidlimage.pro
 
 ../shlib/libMdsLibIdl.sl : $(OBJECTS)
-	$(LD) -o $@ -shared $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr -lc -lm
+	$(LD) -o $@ -b $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr -lc -lm
 
 ../idl :
 	mkdir ../idl
