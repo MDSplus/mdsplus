@@ -7,7 +7,11 @@ PARTS = mdsshr \
 	mitdevices \
 	traverser \
 	mdslibidl \
-	mdstcpip
+	mdstcpip	\
+	cdu	\
+	mdsdcl	\
+	ccl	\
+	tcl
 
 all :
 	cdir=`pwd`; \
