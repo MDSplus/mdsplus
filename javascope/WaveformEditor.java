@@ -27,8 +27,13 @@ public class WaveformEditor extends Waveform
     {
         Signal sig = new Signal(x,y, x.length, x[0], x[x.length - 1], minY, maxY);
         sig.setMarker(1);
-        currentX = x;
-        currentY = y;
+        currentX = new float[x.length];
+        currentY = new float[y.length];
+        for(int i = 0; i < x.length; i++)
+        {
+            currentX[i] = x[i];
+            currentY[i] = y[i];
+        }
         this.minY = minY;
         this.maxY = maxY;
         Update(sig);

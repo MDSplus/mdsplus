@@ -10,7 +10,7 @@ import java.text.*;
 public class DeviceWave extends DeviceComponent
 {
     static final int MAX_POINTS = 50;
-    static final double MIN_STEP = 1E-6;
+    static final double MIN_STEP = 1E-4;
     
     public boolean maxXVisible = false;
     public boolean minXVisible = false;
@@ -45,6 +45,7 @@ public class DeviceWave extends DeviceComponent
     protected JTable table;
     protected JTextField maxXField = null, minXField = null, maxYField = null, minYField = null;
     protected JCheckBox editCB;
+    protected JScrollPane scroll;
     protected int numPoints;
     protected float [] waveX = null, waveY = null; 
     protected float [] waveXOld = null, waveYOld = null; 
@@ -60,6 +61,7 @@ public class DeviceWave extends DeviceComponent
     {
         waveEditor = new WaveformEditor();
         nf.setMaximumFractionDigits(3);
+        nf.setGroupingUsed(false);
         waveEditor.setPreferredSize(new Dimension(300, 200));
         waveEditor.addWaveformEditorListener(new WaveformEditorListener() {
             public void waveformUpdated(float [] waveX, float [] waveY, int newIdx)
@@ -68,7 +70,18 @@ public class DeviceWave extends DeviceComponent
                 DeviceWave.this.waveX = waveX;
                 DeviceWave.this.waveY = waveY;
                 if(newIdx >= 0)
+                {
                     table.setRowSelectionInterval(newIdx, newIdx);
+                    table.setEditingRow(newIdx);
+                    int centerIdx;
+                    if(newIdx > 8)
+                        centerIdx = newIdx - 4;
+                    else
+                        centerIdx = 0; 
+                    int rowY = centerIdx * table.getRowHeight();
+                    scroll.getViewport().setViewPosition(new Point(0, rowY));
+                    
+                }
                 table.repaint();
             }
         });
@@ -137,7 +150,7 @@ public class DeviceWave extends DeviceComponent
         });
         setLayout(new BorderLayout());
         add(waveEditor, "Center");
-        JScrollPane scroll = new JScrollPane(table);
+        scroll = new JScrollPane(table);
         scroll.setPreferredSize(new Dimension(150, 200));
         add(scroll, "East");
         
