@@ -1438,15 +1438,13 @@ public class Waveform
       curr_x = curr_point;
       curr_y = wm.YValue(end_y, d);
 
-
       Point p = FindPoint(curr_x, curr_y, first_set_point);
       first_set_point = false;
 
-      if(curr_point_y != Double.NaN)
-          p.y = wm.YPixel(curr_point_y, d);
-
-
       if (p != null) {
+        if(curr_point_y != Double.NaN)
+           p.y = wm.YPixel(curr_point_y, d);
+
         curr_x = wave_point_x;
         curr_y = wave_point_y;
 
@@ -2203,6 +2201,8 @@ public class Waveform
   public void performZoom() {
     double start_xs, end_xs, start_ys, end_ys;
     Dimension d = getWaveSize();
+
+    if(wm == null) return;
 
     start_xs = wm.XValue(start_x, d);
     end_xs = wm.XValue(end_x, d);
