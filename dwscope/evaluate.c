@@ -362,7 +362,7 @@ void SetupEventInput(XtAppContext app_context, Widget w)
 extern int TdiAdjustl();
 extern int TdiExecute();
 extern int TdiData();
-extern int TdiFloat();
+extern int TdiCvt();
 extern int TdiCompile();
 extern int TdiDimOf();
 extern int TdiDebug();
@@ -468,11 +468,14 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
   {
     struct descriptor y_dsc = {0,DTYPE_T,CLASS_S,0};
     static EMPTYXD(sig);
+    static float zero=0.0;
+    static struct descriptor float_dsc = {sizeof(float),DTYPE_FLOAT,CLASS_S,(char *)&zero};
     EMPTYXD(y_xd);
     y_dsc.length = strlen(y);
     y_dsc.pointer = y;
     ResetErrors();
-    if ((TdiExecute(&y_dsc,&sig MDS_END_ARG) & 1) && (TdiData(sig.pointer,&y_xd MDS_END_ARG) & 1) && (TdiFloat(&y_xd,&y_xd MDS_END_ARG) & 1))
+    if ((TdiExecute(&y_dsc,&sig MDS_END_ARG) & 1) && (TdiData(sig.pointer,&y_xd MDS_END_ARG) & 1) &&
+             (TdiCvt(&y_xd,&float_dsc,&y_xd MDS_END_ARG) & 1))
     {
       struct descriptor_a *y_a = (struct descriptor_a *)y_xd.pointer;
       int count = (y_a->class == CLASS_A) ? y_a->arsize/sizeof(float) : 1;
@@ -486,10 +489,12 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
           struct descriptor x_dsc = {0,DTYPE_T,CLASS_S,0};
           x_dsc.length = strlen(x);
           x_dsc.pointer = x;
-          status = (TdiCompile(&x_dsc,&sig MDS_END_ARG) & 1) && (TdiData(&sig,&x_xd MDS_END_ARG) & 1) && (TdiFloat(&x_xd,&x_xd MDS_END_ARG) & 1);
+          status = (TdiCompile(&x_dsc,&sig MDS_END_ARG) & 1) && (TdiData(&sig,&x_xd MDS_END_ARG) & 1) &&
+              (TdiCvt(&x_xd,&float_dsc,&x_xd MDS_END_ARG) & 1);
         }
         else
-          status = (TdiDimOf(&sig,&x_xd MDS_END_ARG) & 1) && (TdiData(&x_xd,&x_xd MDS_END_ARG) & 1) && (TdiFloat(&x_xd,&x_xd MDS_END_ARG) & 1);
+          status = (TdiDimOf(&sig,&x_xd MDS_END_ARG) & 1) && (TdiData(&x_xd,&x_xd MDS_END_ARG) & 1) && 
+             (TdiCvt(&x_xd,&float_dsc,&x_xd MDS_END_ARG) & 1);
         if (!(status & 1) && (y_a->class == CLASS_S))
         {
           static int zero=0;
