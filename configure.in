@@ -57,6 +57,7 @@ else
 AC_PROG_F77
 fi
 
+FORLD=ld
 LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
@@ -190,6 +191,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
+       FORLD="g77";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
@@ -586,6 +588,7 @@ AC_SUBST(D3D_FFLAGS)
 AC_SUBST(DNET_STUB)
 AC_SUBST(EXPORTS_FILE)
 AC_SUBST(FEXECLIBDIR)
+AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(GLOBUS_CFLAGS)
 AC_SUBST(GLOBUS_LIBS)

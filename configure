@@ -3674,6 +3674,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 
+FORLD=ld
 LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
@@ -3809,6 +3810,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
+       FORLD="g77";
        LINKSHARED="-shared ";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
@@ -10369,6 +10371,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
+
 ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdslib/Makefile mdslibidl/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -11011,6 +11014,7 @@ s,@D3D_FFLAGS@,$D3D_FFLAGS,;t t
 s,@DNET_STUB@,$DNET_STUB,;t t
 s,@EXPORTS_FILE@,$EXPORTS_FILE,;t t
 s,@FEXECLIBDIR@,$FEXECLIBDIR,;t t
+s,@FORLD@,$FORLD,;t t
 s,@FOR_LDFLAGS@,$FOR_LDFLAGS,;t t
 s,@GLOBUS_CFLAGS@,$GLOBUS_CFLAGS,;t t
 s,@GLOBUS_LIBS@,$GLOBUS_LIBS,;t t
