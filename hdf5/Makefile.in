@@ -1,0 +1,76 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=@LD@
+prefix=@prefix@
+top_srcdir=@top_srcdir@
+exec_prefix=@exec_prefix@
+RM=$(top_srcdir)/devscripts/rm_if
+CFLAGS=@CFLAGS@ -I.
+LDFLAGS=@LDFLAGS@
+LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @LIBS@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+SOURCES = \
+        librtl.c \
+        dasutil_routines4.c \
+        mdsmsg.c \
+        MDSprintf.c \
+        MdsCmprs.c \
+        MdsCompareXd.c \
+        MdsCompress.c \
+        MdsEvents.c \
+        MdsGet1DxA.c \
+        MdsGet1DxS.c \
+        MdsGetSetShotId.c \
+        MdsPk.c \
+        MdsSerialize.c \
+        MdsXdRoutines.c \
+	MdsMalloc.c \
+	mds_dsc_string.c
+
+OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = hdf5tdi.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @MAKELIBDIR@libhdf5tdi.a \
+	@MAKEBINDIR@ @MAKEBINDIR@hdf5ToMds
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+clean :
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKELIBDIR@libhdf5tdi.a 
+	@ $(RM) @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ 
+	@ $(RM) @MAKEBINDIR@hdf5ToMds
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdirhier @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @libdir@
+	if (test @SHARETYPE@ != .a) then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libhdf5tdi.a @libdir@; \
+	fi;
+
+@MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o dynhdf5.o @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o dynhdf5.o $(LIBS)
+
+@MAKELIBDIR@libhdf5tdi.a : hdf5tdi.o dynhdf5.o
+	$(AR) -cr $@ hdf5tdi.o dynhdf5.o
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+@MAKEBINDIR@ :
+	mkdir @MAKEBINDIR@
+
+@MAKESHLIBDIR_RULE@
+
+hdf5tdi.exports: hdf5tdi.def
+	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
+
+@MAKEBINDIR@hdf5ToMds : hdf5ToMds.o dynhdf5.o
+	$(CC) -o $@ hdf5ToMds.o dynhdf5.o $(LIBS)
