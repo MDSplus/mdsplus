@@ -8,9 +8,18 @@ void __MB(){return;}
 #include <tchar.h>
 #include <wtypes.h>
 #include <winreg.h>
-#elif defined(__osf__)
-#include <unistd.h>
+#else /* WIN32 */
+
+#if defined(__osf__)
 #include <dlfcn.h>
+#elif defined(__hpux__)
+#include <dl.h>
+#endif
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <dirent.h>
+
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -672,9 +681,10 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
   }
 }
 
-
+#ifndef MAX
 #define MAX(a,b) (a) > (b) ? (a) : (b)
 #define MIN(a,b) (a) < (b) ? (a) : (b)
+#endif
 
 int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, struct descriptor *src)
 {
@@ -933,10 +943,10 @@ unsigned int LibCallg(void **arglist, FARPROC *routine)
 
   return retval;
 }
-#elif defined(__osf__)
+#elif defined(__osf__) || defined (__hpux__)
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
-  switch (*(char *)arglist)
+  switch (*(int *)arglist & 0xff)
   {
     case 0:  return (*routine)();
     case 1:  return (*routine)(arglist[1]);
@@ -1024,6 +1034,7 @@ unsigned int LibCallg(void **arglist, unsigned int (*routine)())
   return 0;
 }
 
+#if defined(__osf__)
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
@@ -1048,9 +1059,31 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     return 1;  
 }
 
-#include <sys/types.h>
-#include <dirent.h>
-
+#else /* __osf__ */
+int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+{
+  char *c_filename = MdsDescrToCstring(filename);
+  char *full_filename = malloc(strlen(c_filename) + 10);
+  shl_t handle;
+  *symbol_value = NULL;
+  strcpy(full_filename,"lib");
+  strcat(full_filename,c_filename);
+  strcat(full_filename,".sl");
+  handle = shl_load(full_filename,BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH,0);
+  if (handle != NULL)
+  {
+    char *c_symbol = MdsDescrToCstring(symbol);
+    int s = shl_findsym(&handle,c_symbol,0,symbol_value);
+    free(c_symbol);
+  }
+  free(c_filename);
+  free(full_filename);
+  if (*symbol_value == NULL)
+    return LibKEYNOTFOU;
+  else
+    return 1;  
+}
+#endif
 typedef struct {
   char *env;
   char *file;
@@ -1141,7 +1174,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
   CSTRING_FROM_DESCRIPTOR(fspec, filespec)
 
   lctx->next_index = lctx->next_dir_index = 0;
-  colon = index(fspec, ':');
+  colon = (char *)index(fspec, ':');
   if (colon == 0) {
     lctx->env = 0;
     colon = fspec-1;
@@ -1183,7 +1216,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
         strcpy(tmp, env);
         env = tmp;
       }
-      for(semi=index(env, ';'); semi!= 0; num++, semi=index(semi+1, ';'));
+      for(semi=(char *)index(env, ';'); semi!= 0; num++, semi=(char *)index(semi+1, ';'));
       if (num > 0) {
         char *ptr;
         int i;
@@ -1191,7 +1224,7 @@ static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx, int cas
         lctx->env_strs = (char **)malloc(num*sizeof(char *));
         for (ptr=env,i=0; i<num; i++) {
           char *cptr;
-          int len = ((cptr=index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
+          int len = ((cptr= (char *)index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
 	  lctx->env_strs[i] = strncpy(malloc(len+1),ptr,len);
           lctx->env_strs[i][len] = '\0';
           ptr=cptr+1;
