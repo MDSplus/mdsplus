@@ -20,11 +20,6 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 
 
-
-
-	write(*, 'DIO2HWSetPulseChan', _board_id, _channel, _trig_mode, _cyclic, _init_level_1,
-		_init_level_2, _delay, _duration, _event);
-
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
 
@@ -104,7 +99,6 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 	_cycles = [long(0),long(0),long(0),long(0)]; 
 
-write(*, "Pulse cycle", _delay_cycles,_duration_cycles );
 
 	_status = DIO2->DIO2_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 
 		val(_duration_cycles)); 

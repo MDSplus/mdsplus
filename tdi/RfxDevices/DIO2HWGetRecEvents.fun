@@ -20,7 +20,6 @@ public fun DIO2HWGetRecEvents(in _nid, in _board_id)
 
 /* Create _rec_times global variable if the first time */ 
     if_error(_DIO2_rec_times,(public _DIO2_rec_times = 0;));
-	write(*, 'DIO2HWGetRecEvents', _board_id);
 
 
 /* Initialize Library if the first time */

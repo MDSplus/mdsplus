@@ -60,17 +60,18 @@ public fun TR10__store(as_is _nid, optional _method)
 	    _handle = MdsValue('TR10HWStartStore(0, $1, $2)', _board_id, _pts);
 		if(_handle == -1)
 		{
-			DevLogErr(_nid, 'TR10 device not in STOP stat. Board ID: '//_board_id);
+			DevLogErr(_nid, 'TR10 device not in STOP state. Board ID: '//_board_id);
 			abort();
 		}
 	}
 	else
 	{
-
-
 		_handle = TR10HWStartStore(_nid, _board_id, _pts);
 		if(_handle == -1)
+		{
+			DevLogErr(_nid, 'TR10 device not in STOP state. Board ID: '//_board_id);
 			abort();
+		}
 	}
     
 	
@@ -102,7 +103,6 @@ public fun TR10__store(as_is _nid, optional _method)
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
-				abort();
 
 			}
 		}

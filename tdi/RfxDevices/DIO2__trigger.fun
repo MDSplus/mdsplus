@@ -37,15 +37,22 @@ public fun DIO2__trigger(as_is _nid, optional _method)
     {
 
 
+write(*, _c);
+
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
-		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
+		DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_FUNCTION,
+				['PULSE', 'CLOCK', 'GCLOCK', 'DCLOCK'], [0,1,2,3], _clock_mode = 1);
+		if(_clock_mode != 1)
+		{
+			DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
 				['EVENT', 'RISING EDGE', 'FALLING EDGE', 'SOFTWARE'], [0,1,2,3], _trig_mode = 1);
 
-		if(_trig_mode == 3) 
-		{
-			write(*, 'Trigger on ', _c);
-			_channel_mask = _channel_mask | (1 << _c);
+			if(_trig_mode == 3) 
+			{
+				write(*, 'Trigger on ', _c);
+				_channel_mask = _channel_mask | (1 << _c);
+			}
 		}
 	}
     }

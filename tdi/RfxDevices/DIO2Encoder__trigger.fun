@@ -17,7 +17,6 @@ public fun DIO2Encoder__trigger(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
-    write(*, 'DIO2Encoder__trigger');
 
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
@@ -27,8 +26,6 @@ public fun DIO2Encoder__trigger(as_is _nid, optional _method)
  		abort();
     }
 
-
-    write(*, _board_id);
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
     if(_remote != 0)
@@ -45,12 +42,8 @@ public fun DIO2Encoder__trigger(as_is _nid, optional _method)
     /* Encoder Software channel event */
     _c = 16;
 
-write(*, '***', _c);
-
     if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
     { 
-
-write(*, '***', _c);
 
 	_ev_name =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_EVENT_NAME)),'');
 	 if(_ev_name != '')
@@ -91,9 +84,7 @@ write(*, '***', _c);
 	}
 	else
 	{
-write(*, 'prova', _board_id, _event);
 		_status = DIO2EncoderHWTrigger(_nid, _board_id, _event);
-write(*, '***', _c);
 		if(_status == 0)
 			abort();
 	}

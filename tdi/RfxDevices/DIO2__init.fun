@@ -35,8 +35,6 @@ public fun DIO2__init(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
-	write(*, 'DIO2_init');
-
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
     if(_board_id == _INVALID)
@@ -45,8 +43,6 @@ public fun DIO2__init(as_is _nid, optional _method)
  		abort();
     }
 
-
-	write(*,"Board Id ", _board_id);
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
@@ -112,7 +108,6 @@ public fun DIO2__init(as_is _nid, optional _method)
 
     for(_c = 0; _c < 8; _c++)
     {
-write(*, 'Impostazione Canale ', _c+1);
 
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
@@ -193,7 +188,6 @@ write(*, "------> Event time ", _event_time);
 					}
 					else
 					{
-						write(*, 'Event time: ', _event_time);
  	    					DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
 					}
 
@@ -335,7 +329,6 @@ write(*, "------> Event time ", _event_time);
 				_period = long((1. / _frequency) / 1E-7) * 1E-7;
 
 				_clock_expr = 'BUILD_RANGE(' // _trig1_expr // ', ' // _trig2_expr // ', ' // _period // ')';
-				write(*, _clock_expr);
  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_CLOCK, compile(_clock_expr));
 			}
 
@@ -440,7 +433,6 @@ write(*, "------> Event time ", _event_time);
 /*				_clock_expr = 'BUILD_RANGE([-1E6,' // _trig1_expr // ', ' // _trig2_expr // '], [' // _trig1_expr //
 					', ' //_trig2_expr // ', 1E6],['//_period_1 // ', ' // _period_2 //', ' // _period_1 // '])';
 */
-				write(*, _clock_expr);
  	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_CLOCK, compile(_clock_expr));
 			}
 		}

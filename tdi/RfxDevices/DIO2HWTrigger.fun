@@ -1,7 +1,6 @@
 public fun DIO2HWTrigger(in _nid, in _board_id, in _channel_mask)
 {
 
-write(*, "DIO HW TRIGGER");
 
 /* Initialize Library if the first time */
     	if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));

@@ -23,8 +23,6 @@ public fun DIO2HWSetDClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 
 
-	write(*, 'DIO2HWSetDClockChan', _board_id, _channel, _trig_mode, _frequency_1, _frequency_2, _delay, _duration, _event);
-
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
 
@@ -130,9 +128,6 @@ Cesare
 	_cycles_22--;
 
 	_cycles = [long(_cycles_11), long(_cycles_12), long(_cycles_21), long(_cycles_22)];
-
-write(*, "Dclock sycles ", _cycles);
-
 
 	_status = DIO2->DIO2_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 
 		val(_duration_cycles)); 

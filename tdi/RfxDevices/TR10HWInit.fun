@@ -41,8 +41,7 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	_status = TR10->TR10_Open(val(long(_board_id)), ref(_handle));
 	if(_status != 0)
 	{
-		/*DevLogErr(_nid, "Error opening TR10 device, board ID = "// _board_id);*/
-		write(*, "Error opening TR10 device, board ID = "// _board_id);
+		DevLogErr(_nid, "Error opening TR10 device, board ID = "// _board_id);
 		return(0);
 	}
 

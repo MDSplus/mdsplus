@@ -1,8 +1,5 @@
 public fun DIO2HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event)
 {
-
-	write(*, 'DIO2HWStartChan', _board_id, _chan_mask, _synch_event);
-
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
 

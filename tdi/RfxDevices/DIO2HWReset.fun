@@ -1,8 +1,6 @@
 public fun DIO2HWReset(in _board_id)
 {
 
-write(*, "DIO HW RESET");
-
 /* Initialize Library if the first time */
     	if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
 

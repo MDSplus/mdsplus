@@ -29,10 +29,6 @@ public fun DIO2HWSetClockChan(in _nid, in _board_id, in _channel, in _frequency,
 
 	_levels = [1,0,1,0];
 
-	write(*, _cycles);
-
-
-	write(*, 'DIO2HWSetClockChan', _board_id, _channel, _frequency, _duty_cycle, _cycles);
 
 
 /* Initialize Library if the first time */
