@@ -41,9 +41,9 @@ CFG=jTraverser - Java Virtual Machine Debug
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir ""
 # PROP Intermediate_Dir ""
-# PROP Cmd_Line "%JDK_DIR%\bin\javac.exe -O -d ..\java\classes *.java"
-# PROP Rebuild_Opt ""
-# PROP Target_File "..\java\classes\jTraverser\jTraverser.class"
+# PROP Cmd_Line "NMAKE /f javatraverser.mak"
+# PROP Rebuild_Opt "/a"
+# PROP Target_File "..\java\classes\MDSplus.jar"
 # PROP Bsc_Name "jTraverser.bsc"
 # PROP Target_Dir ""
 
@@ -60,9 +60,9 @@ CFG=jTraverser - Java Virtual Machine Debug
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir ""
 # PROP Intermediate_Dir ""
-# PROP Cmd_Line "%JDK_DIR%\bin\javac.exe -d ..\java\classes *.java"
-# PROP Rebuild_Opt ""
-# PROP Target_File "..\java\classes\jTraverser\jTraverser.class"
+# PROP Cmd_Line "NMAKE /f javatraverser.mak"
+# PROP Rebuild_Opt "/a"
+# PROP Target_File "..\java\classes\MDSplus.jar"
 # PROP Bsc_Name "jTraverser.bsc"
 # PROP Target_Dir ""
 
