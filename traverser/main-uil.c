@@ -47,7 +47,7 @@
  */
 #define BX_APP_NAME "builderProduct"
 #define BX_APP_CLASS "BuilderProduct"
-#define BX_UID_FILE_NAME "motiftraverser.uid"
+#define BX_UID_FILE_NAME "traverser.uid"
 
 /*
  * External procedure declarations 
@@ -72,6 +72,10 @@ extern void DoAction(Widget, XtPointer, XtPointer);
 extern void OpenTree(Widget, XtPointer, XtPointer);
 extern void AddListTree(Widget, XtPointer, XtPointer);
 extern void SetupDevice(Widget, XtPointer, XtPointer);
+extern void AddNode(Widget, XtPointer, XtPointer);
+extern void AddNodeApply(Widget, XtPointer, XtPointer);
+extern void AddNodeDismiss(Widget, XtPointer, XtPointer);
+extern void SetUsage(Widget, XtPointer, XtPointer);
 
 /*
  * Function prototypes for routines located in utilities file
@@ -110,8 +114,8 @@ static XrmOptionDescRec options[] = {
 {"-shot",	".shot",		XrmoptionSepArg,	NULL},
 {"-command",	".showCommand",		XrmoptionNoArg,		"True"},
 {"-nocommand",	".showCommand",		XrmoptionNoArg,		"False"},
-{"-read_only",	".read_only",		XrmoptionNoArg,		"read_only"},
-{"-edit",	".edit",		XrmoptionNoArg,		"edit"}};
+{"-read_only",	".read_only",		XrmoptionNoArg,		"True"},
+{"-edit",	".edit",		XrmoptionNoArg,		"True"}};
 
 /* End user code block <globals> */
 
@@ -150,7 +154,7 @@ int main(int argc, char **argv)
     MrmHierarchy HierarchyID;
     MrmType MrmWClass;
     static char *UidFile [] = { BX_UID_FILE_NAME };
-    MRMRegisterArg NamesList[21];
+    MRMRegisterArg NamesList[24];
     Cardinal Nlac;
     Nlac = 0;
     NamesList[Nlac].name = "CloseTree";
@@ -193,6 +197,14 @@ int main(int argc, char **argv)
     NamesList[Nlac++].value = (XtPointer) AddListTree;
     NamesList[Nlac].name = "SetupDevice";
     NamesList[Nlac++].value = (XtPointer) SetupDevice;
+    NamesList[Nlac].name = "AddNode";
+    NamesList[Nlac++].value = (XtPointer) AddNode;
+    NamesList[Nlac].name = "AddNodeApply";
+    NamesList[Nlac++].value = (XtPointer) AddNodeApply;
+    NamesList[Nlac].name = "AddNodeDismiss";
+    NamesList[Nlac++].value = (XtPointer) AddNodeDismiss;
+    NamesList[Nlac].name = "SetUsage";
+    NamesList[Nlac++].value = (XtPointer) SetUsage;
     NamesList[Nlac].name = NULL;
     NamesList[Nlac].value = NULL;
     

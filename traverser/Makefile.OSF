@@ -9,7 +9,7 @@ OBJECTS = \
         GetNciString.o
 
 all : ../bin/traverser \
-	../uid/motiftraverser.uid
+	../uid/traverser.uid
 
 ../bin/traverser : $(OBJECTS) ../bin
 	cc -o $@ $(OBJECTS)  -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr -lMrm -lXm -lXt -lX11 
@@ -17,13 +17,13 @@ all : ../bin/traverser \
 ../bin :
 	mkdir ../bin
 
-../uid/motiftraverser.uid : motiftraverser.uil
+../uid/traverser.uid : traverser.uil
 	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
 	
 clean :
 	- rm *.o
 	- rm ../bin/traverser
-	- rm ../uid/motiftraverser.uid
+	- rm ../uid/traverser.uid
 	- rm .depend
 	- rm *~
 

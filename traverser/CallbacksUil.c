@@ -15,6 +15,7 @@
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
+#include <Xm/ToggleB.h>
 #include <X11/Intrinsic.h>
 #include <xmdsshr.h>
 #include <Xmds/ListTree.h>
@@ -29,6 +30,7 @@
 #include <ctype.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <usagedef.h>
 /*
  * mds includes
  */
@@ -275,38 +277,6 @@ static ListTreeItem *add_item(Widget tree, ListTreeItem *parent,int nid)
     return item;
   }
 
-void HighlightCallback(Widget w, XtPointer client, XtPointer call)
-{
-ListTreeMultiReturnStruct *ret;
-ListTreeItem *item;
-int count,i;
-
-	ret=(ListTreeMultiReturnStruct *)call;
-	for (i=0; i<ret->count; i++) {
-	  item=ret->items[i];
-          add_to_selected(item, i==0);
-	  while (item->parent) {
-	    item=item->parent;
-	  }
-	}
-/*        XtOwnSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)), convert_proc, loose_selection_proc, NULL); */
-        XtOwnSelection(w, XA_PRIMARY, CurrentTime, convert_proc, loose_selection_proc, NULL);
-        menu_item = 0;
-}
-
-void
-MenuCallback(w,client,call)
-Widget w;
-XtPointer client;
-XtPointer call;
-{
-    ListTreeItemReturnStruct *ret = (ListTreeItemReturnStruct *)call;
-    Widget popup = XtNameToWidget(BxFindTopShell(w), "*.rightButtonMenu");
-    menu_item = ret->item;
-    XmMenuPosition(popup, (XButtonPressedEvent *)ret->event);
-    XtManageChild(popup);
-}
-
 void add_descendents(Widget tree, ListTreeItem *item, int nid)
 {
   static int c_nid;
@@ -339,6 +309,58 @@ void add_descendents(Widget tree, ListTreeItem *item, int nid)
     c_nid = child_nid;
   }
   set_populated(item, 1);
+}
+
+static ListTreeItem *insert_item(Widget tree, ListTreeItem *parent,int nid)
+  {
+    ListTreeItem *itm;
+    if (!is_populated(parent)) {
+      static int c_nid;
+      static DESCRIPTOR_NID(nid_dsc, &c_nid);
+      static char *get_nci = "GETNCI($, \"NODE_NAME\")";
+      char *node_name =  ReadString(get_nci, &nid_dsc MDS_END_ARG);
+      ListTreeRefreshOff(tree);
+      add_descendents(tree, parent, get_nid(parent));
+      ListTreeRefreshOn(tree);
+      itm = ListTreeFindChildName(tree, parent, node_name);
+    }else{
+       itm = add_item(tree, parent, nid);
+       ListTreeOrderChildren(tree, parent);
+    }
+    ListTreeRenameItem(tree, parent, get_node_name(get_nid(parent))); 
+    return itm;
+  }
+      
+void HighlightCallback(Widget w, XtPointer client, XtPointer call)
+{
+ListTreeMultiReturnStruct *ret;
+ListTreeItem *item;
+int count,i;
+
+	ret=(ListTreeMultiReturnStruct *)call;
+	for (i=0; i<ret->count; i++) {
+	  item=ret->items[i];
+          add_to_selected(item, i==0);
+	  while (item->parent) {
+	    item=item->parent;
+	  }
+	}
+/*        XtOwnSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)), convert_proc, loose_selection_proc, NULL); */
+        XtOwnSelection(w, XA_PRIMARY, CurrentTime, convert_proc, loose_selection_proc, NULL);
+        menu_item = 0;
+}
+
+void
+MenuCallback(w,client,call)
+Widget w;
+XtPointer client;
+XtPointer call;
+{
+    ListTreeItemReturnStruct *ret = (ListTreeItemReturnStruct *)call;
+    Widget popup = XtNameToWidget(BxFindTopShell(w), "*.rightButtonMenu");
+    menu_item = ret->item;
+    XmMenuPosition(popup, (XButtonPressedEvent *)ret->event);
+    XtManageChild(popup);
 }
 
 void ActivateCallback(Widget w, XtPointer client, XtPointer call)
@@ -441,16 +463,16 @@ static void CommandLineOpen(Display *display, Widget tree)
   static XtResource resources[] = {
 	{"tree", "Tree", XtRString, sizeof(String), XtOffsetOf(OptionsRec, tree), XtRString,  "test"},
 	{"shot", "Shot", XtRInt,    sizeof(int),    XtOffsetOf(OptionsRec, shot), XtRImmediate, (XtPointer)-1}, 
-	{"edit", "Edit", XtRBoolean,sizeof(Boolean),XtOffsetOf(OptionsRec, edit), XtRImmediate, (XtPointer)FALSE}, 
-	{"read_only", "Read_only", XtRBoolean,sizeof(Boolean),XtOffsetOf(OptionsRec, read_only), XtRImmediate, (XtPointer)TRUE}};
+	{"edit", "Edit", XtRBoolean,sizeof(Boolean), XtOffsetOf(OptionsRec, edit), XtRImmediate, (XtPointer)FALSE}, 
+	{"read_only", "Read_only", XtRBoolean,sizeof(Boolean), XtOffsetOf(OptionsRec, read_only), XtRImmediate, (XtPointer)FALSE}};
  
   XtGetApplicationResources(BxFindTopShell(tree), (XtPointer)&options, resources, XtNumber(resources), (Arg *)NULL, 0);
   {
-    struct descriptor treedsc = {0, DTYPE_T, CLASS_S, NULL};
     int status;
-    treedsc.length = strlen(options.tree);
-    treedsc.pointer = options.tree;
-    status = TreeOpen(options.tree, options.shot, 0);
+    if (options.edit)
+      status = TreeOpenEdit(options.tree, options.shot);
+    else
+      status = TreeOpen(options.tree, options.shot, options.read_only);
     if (status&1)
       Init(tree);
   }
@@ -810,8 +832,7 @@ MDisplayNci( Widget w, XtPointer client_data, XtPointer call_data)
     }
 }
 
-void
-CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
+void CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
@@ -825,10 +846,13 @@ CloseTree( Widget w, XtPointer client_data, XtPointer call_data)
 void open_tree(Widget w, char *tree, int shot)
 {
   int status;
-  //  struct descriptor treedsc = {0, DTYPE_T, CLASS_S, NULL};
-  //  treedsc.length = strlen(tree);
-  //  treedsc.pointer = tree;
-  status = TreeOpen(tree, shot, 0);
+  Widget edit = XtNameToWidget(BxFindTopShell(w), "*.edit_toggle");
+  if (XmToggleButtonGetState(edit))
+    status = TreeOpenEdit(tree, shot);
+  else {
+    Widget r_o = XtNameToWidget(BxFindTopShell(w), "*.r_o_toggle");
+    status = TreeOpen(tree, shot, XmToggleButtonGetState(r_o));
+  }
   if (status&1) {
     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
     ListTreeItem *top = ListTreeFirstItem(tree);
@@ -839,8 +863,7 @@ void open_tree(Widget w, char *tree, int shot)
   }
 }
   
-void
-OpenTree( Widget w, XtPointer client_data, XtPointer call_data)
+void OpenTree( Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget parentw=XtParent(w);
     Widget treew = XtNameToWidget(parentw, "tree_name");
@@ -887,4 +910,105 @@ void
 DoAction( Widget w, XtPointer client_data, XtPointer call_data)
 {
     XmAnyCallbackStruct *acs=(XmAnyCallbackStruct*)call_data;
+}
+
+static unsigned int usage=0;
+void
+AddNodeDismiss( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XtUnmanageChild(w);
+}
+
+Boolean add_node(Widget w, ListTreeItem *parent, char *name, int usage, ListTreeItem **itm)
+{
+  int parent_nid = get_nid(parent);
+  char *parent_path;
+  char *full_path;
+  int status;
+  static char *getnci = "GETNCI($, 'FULLPATH')";
+  static int c_nid;
+  static DESCRIPTOR_NID(nid_dsc, &c_nid);
+  int new_nid;
+  c_nid = parent_nid;
+  parent_path = ReadString(getnci, &nid_dsc MDS_END_ARG);
+  full_path=realloc(parent_path, strlen(parent_path)+1+strlen(name)+1);
+  if (usage == TreeUSAGE_DEVICE) {
+    XmdsComplain(w, "Non Motif traverser does not\nyet support adding devices to the tree");
+    return 0;
+  }
+  if (usage == TreeUSAGE_SUBTREE) {
+    XmdsComplain(w, "Non Motif traverser does not\nyet support adding subtrees to the tree");
+    return 0;
+  }
+    
+  if ((usage == TreeUSAGE_STRUCTURE) || (usage == TreeUSAGE_SUBTREE))
+    strcat(full_path, ".");
+  else
+    strcat(full_path, ":");
+  strcat(full_path,name);
+  status = TreeAddNode(full_path, &new_nid, usage);
+  if (status) {
+     Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
+     *itm = insert_item(tree, parent, new_nid);
+  }
+  return status&1;
+}
+
+void add_tags(ListTreeItem *itm, char *tags)
+{
+}
+
+Boolean AddNodeApply(Widget w)
+{
+  Boolean status = 0;
+  if (TreeEditing()) {
+    if (num_selected == 1) {
+      if (usage != 0) {
+        Widget name_w = XtNameToWidget(XtParent(w), "*.nodeName");
+        char *name_c = XmTextGetString(name_w);
+        if (strlen(name_c) > 0) {
+          if ((index(name_c, '.') == name_c) || (index(name_c, ':') == name_c))
+            XmdsComplain(w, "Remove leading punctuation");
+          else {
+            if (strlen(name_c) > 12)
+              XmdsComplain(w, "Node names must be no more than 12 characters long");
+	    else {
+              ListTreeItem *ret_itm;
+              status = add_node(w, selections[0], name_c, usage, &ret_itm);
+              if (status) {
+                Widget tag_w = XtNameToWidget(XtParent(w), "*.nodeTags");
+                char *tags_c = XmTextGetString(tag_w);
+                if (strlen(tags_c) > 0)
+                  add_tags(ret_itm, tags_c);
+              }
+              status = TRUE;
+            }
+	  }
+        }
+        else
+          XmdsComplain(w, "Specifiy a name before \"Ok\"");
+      }
+      else
+        XmdsComplain(w, "Please choose a usage before pressing \"Ok\"");
+    }
+    else
+      XmdsComplain(w, "Select exactly one node to be the parent!");
+  }
+  else
+    XmdsComplain(w, "Tree not open for edit");
+  return status;
+}
+
+void
+AddNode( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  if (AddNodeApply(w))
+    XtUnmanageChild(w);
+}
+void
+SetUsage( Widget w, XtPointer client_data, XtPointer call_data)
+{
+  XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *)call_data;
+  if (cb->set)
+    usage = *(int *)client_data;
 }
