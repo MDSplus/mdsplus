@@ -70,11 +70,7 @@ CAMSHR=""
 CFLAGS="$CFLAGS $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
 
-case "$exec_prefix" in
-NONE) : ${uiddir=/usr/lib/X11/uid};;
-/usr/local*) : ${uiddir=/usr/lib/X11/uid};;
-*) : ${uiddir=$exec_prefix/uid};;
-esac
+: ${uiddir=$exec_prefix/uid}
 
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 MAKEBINDIR="\$(top_srcdir)/bin/"
