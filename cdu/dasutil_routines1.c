@@ -319,7 +319,7 @@ int   show_timer()
     emsec = (nowTime.tv_usec-startTime.tv_usec) / 10000;
     umsec = (rnow.ru_utime.tv_usec-base.ru_utime.tv_usec) / 10000;
     smsec = (rnow.ru_stime.tv_usec-base.ru_stime.tv_usec) / 10000;
-    fprintf(stderr,"elpased=%d.%02d user=%d.%02d sys=%d.%02d sf=%d hf=%d\n",
+    fprintf(stderr,"elapsed=%d.%02d user=%d.%02d sys=%d.%02d sf=%d hf=%d\n",
         nowTime.tv_sec-startTime.tv_sec,emsec,
         rnow.ru_utime.tv_sec-base.ru_utime.tv_sec,umsec,
         rnow.ru_stime.tv_sec-base.ru_stime.tv_sec,smsec,
