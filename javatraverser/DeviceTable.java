@@ -306,18 +306,21 @@ public class DeviceTable extends DeviceComponent
       }catch(Exception exc){System.err.println(exc); decompiled = null;}
         items = new String[numCols * numRows];
         int idx = 0;
-        if(decompiled == null)
-        {
-            for(int i = 0; i < items.length; i++)
-               items[i] = "";
-        }
-        else
+        for(int i = 0; i < items.length; i++)
+           items[i] = "";
+        if(decompiled != null)
         {
             StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
             if (!decompiled.startsWith("["))
                 st.nextToken();
             while (idx < numCols * numRows && st.hasMoreTokens())
-                items[idx++] = st.nextToken();
+            {
+                items[idx] += st.nextToken();
+                if(balancedParenthesis(items[idx]))
+                    idx++;
+                else
+                    items[idx]+=",";
+            }
         }
         label.setText(labelString);
 
@@ -605,6 +608,25 @@ public class DeviceTable extends DeviceComponent
             prevChar = currChar;
         }
         return outStr;
+    }
+
+    private boolean balancedParenthesis(String inStr)
+    {
+        int roundCount = 0;
+        int squareCount = 0;
+        int braceCount = 0;
+        for(int i = 0; i < inStr.length(); i++)
+        {
+            switch(inStr.charAt(i)) {
+                case '(': roundCount++; break;
+                case ')': roundCount--; break;
+                case '[': squareCount++; break;
+                case ']': squareCount--; break;
+                case '{': braceCount++; break;
+                case '}': braceCount--; break;
+            }
+        }
+        return(roundCount == 0 && squareCount == 0 && braceCount == 0);
     }
 
 

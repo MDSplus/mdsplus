@@ -566,6 +566,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "Par4", "Par5"});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
+    deviceTable6.setUseExpressions(true);
     deviceTable3.setOffsetNid(1171);
     deviceTable3.setLabelString("Control Selection");
     deviceTable3.setNumCols(5);
@@ -1192,7 +1193,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField1128.setLabelString("Y:");
         deviceField1128.setNumCols(80);
         deviceField1128.setIdentifier("");
-        deviceChannel24.setLabelString("Simulink Wave 11");
+        deviceChannel24.setLabelString("Ref_delta_H");
         deviceChannel24.setOffsetNid(1149);
         deviceChannel24.setInSameLine(true);
         deviceChannel24.setUpdateIdentifier("");
