@@ -128,7 +128,7 @@ void      MdsUnpk(char *nbits_ptr, int *nitems_ptr, int pack[], int items[], int
     if ((off & 7) == 0)
     {
       int i;
-      ppack = (int *)((char *)ppack) + (off >> 3);
+      ppack = (int *)(((char *)ppack) + (off >> 3));
       for (i=0;i<nitems;i++,ppack++) pitems[i] = getppack;
     }
     else
