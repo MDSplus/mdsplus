@@ -1784,7 +1784,7 @@ void FortranMdsDisconnect() { ___MdsDisconnect();}
 #endif
 
 #ifdef FortranMdsSetSocket
-int FortranMdsSetSocket(int *newsocket) { return __MdsSetSocket(newsocket);}
+int FortranMdsSetSocket(int *newsocket) { return ___MdsSetSocket(newsocket);}
 #endif
 
 #ifdef FortranMdsClose
