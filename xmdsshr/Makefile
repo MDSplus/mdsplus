@@ -32,13 +32,14 @@ XmdsXdBoxDialogButton.o \
 XmdsXdBoxOnOffButton.o
 
 xmdsshr : ../shlib \
-	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	../shlib/xmdsuil.wmd \
         ../uid \
 	../uid/xmds_usage_icons.uid \
 	../uid/XmdsDigChans.uid \
 	../uid/XmdsInput.uid \
-	../uid/XmdsXdBox.uid
+	../uid/XmdsXdBox.uid \
+	../shlib/libXmdsShr.a \
+	../shlib/libXmdsShr.$(SHARE_TYPE)
 
 ../uid :
 	mkdir ../uid
@@ -59,8 +60,11 @@ xmdsshr : ../shlib \
 	uil -wmd ../shlib/xmdsuil.wmd -o $@ XmdsXdBox.uil
 
 ../shlib/libXmdsShr.$(SHARE_TYPE) : $(OBJECTS)
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm \
+	- $(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc -lm \
            -L../shlib -lMdsShr -lTdiShr -lTreeShr $(MOTIF_LIBS) $(X11_LIBS)
+
+../shlib/libXmdsShr.a : $(OBJECTS)
+	$(AR) -r $@ $(OBJECTS)
 
 ../shlib/xmdsuil.wmd : $(WMD_RULE)
 
@@ -72,6 +76,7 @@ UilConst.h : xmdsuil.wml
 
 clean :
 	- rm *.o
+	- rm ../shlib/libXmdsShr.a
 	- rm ../shlib/libXmdsShr.$(SHARE_TYPE)
 	- rm .depend
 	- rm ../shlib/xmdsuil.wmd
