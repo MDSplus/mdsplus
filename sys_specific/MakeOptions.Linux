@@ -1,11 +1,11 @@
-CFLAGS = -I../include -fpic -D_LINUX
+CFLAGS = -I../include -fpic -g -D_LINUX
 MOTIF_CFLAGS = -I../include -D_NO_DXm
 WML = ln -sf /usr/examples/motif/wml/tokens.dat . ; /usr/examples/motif/wml/wml xmdsuil.wml ; rm wml-uil.* wml.report
 WML_INCLUDE = -I/usr/examples/motif/wml
 WMD_RULE = ; echo
 SHARE_TYPE = so
 MAKE_DEPEND = cc $(CFLAGS) -M {} > .depend \;
-LD = ld
+LD = gcc
 CC = gcc
 LD_SHARED_LIB_OPTIONS = -shared
 DLD = -ldl

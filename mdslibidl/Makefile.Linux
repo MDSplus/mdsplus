@@ -3,7 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = MdsLibIdl.o
 
 ../shlib/libMdsLibIdl.$(SHARE_TYPE) : $(OBJECTS) ../shlib
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr 
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lTdiShr -static -lTreeShr -lMdsShr
 
 ../shlib :
 	mkdir ../shlib

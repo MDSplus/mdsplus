@@ -7,7 +7,7 @@ EXPORTS = mdslibidl.export
 mdslibidl : ../shlib ../shlib/libMdsLibIdl.$(SHARE_TYPE)
 
 ../shlib/libMdsLibIdl.$(SHARE_TYPE) : $(OBJECTS) 
-	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -L../shlib -lMdsShr -lTdiShr -lTreeShr -lc -lm
+	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) $(IDL_STATIC) -L../shlib -lTdiShr -lTreeShr -lMdsShr
 
 ../shlib :
 	mkdir ../shlib
