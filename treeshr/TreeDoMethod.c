@@ -41,7 +41,9 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define  count(num) va_start(incrmtr, method_ptr); \
                      for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
-  
+
+#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
+
 extern void *DBID;
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
@@ -107,6 +109,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     if (conglom_ptr->dtype != DTYPE_CONGLOM)
       return TreeNOT_CONGLOM;
     StrConcat(&method, conglom_ptr->model, &underunder, method_ptr MDS_END_ARG);
+    for (i=0;i<method.length;i++) method.pointer[i] = __tolower(method.pointer[i]);
     /*
     lib$establish(TREE$DO_METHOD_HANDLER);
     */
