@@ -139,3 +139,8 @@ void MdsShowVM(int full)
   } 
   pthread_unlock_global_np();
 }    
+
+void *MdsCALLOC(int num, int len)
+{
+  return memset(MdsMALLOC(num * len),0,num*len);
+}
