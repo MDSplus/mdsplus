@@ -33,9 +33,11 @@ typedef int SOCKET;
 #define DTYPE_UCHAR   2
 #define DTYPE_USHORT  3
 #define DTYPE_ULONG   4
+#define DTYPE_ULONGLONG 5
 #define DTYPE_CHAR    6
 #define DTYPE_SHORT   7
 #define DTYPE_LONG    8
+#define DTYPE_LONGLONG 9
 #ifndef MdsLib_H
 #define DTYPE_FLOAT   10
 #define DTYPE_DOUBLE  11

@@ -14,4 +14,4 @@
 #       $4 = optional alternate mdsip.hosts file
 cd $2
 . $2/setup.sh
-bin/mdsip $1 $4 >> $3/access 2>> $3/errors
+exec bin/mdsip $1 $4 >> $3/access 2>> $3/errors
