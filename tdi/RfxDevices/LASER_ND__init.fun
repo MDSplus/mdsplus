@@ -17,6 +17,8 @@ public fun LASER_ND__init(as_is _nid, optional _method)
 
 write(*, "LASER Neodimium");
 
+wait(1);
+
    _error = 0;
 
     _ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
@@ -97,7 +99,8 @@ write(*, "OK" );
 		abort();
 	}
 
-	wait(10);
+/*
+	wait(30);
 
 
 	if((_err_msg = TCPSendCommand(public _sock, "ND_PULSE") ) != "")
@@ -105,7 +108,7 @@ write(*, "OK" );
 		DevLogErr(_nid, _err_msg); 
 	}
 
-
+*/
 	return (1);
 
 }

@@ -29,6 +29,7 @@ public fun ACQD265__pre_init(as_is _nid, optional _method)
 	private _N_CHAN_BANDWIDTH = 4;
 
 
+
 write(*, 'Parte ACQD265__pre_init');
 
     _name = if_error(data(DevNodeRef(_nid, _N_MAME)),(DevLogErr(_nid, "Missing Instrument name"); return (1);));
@@ -40,6 +41,30 @@ write(*, 'Name: ', _name);
 	_num_devices = INT(size(_serial_num));
 
 write(*, 'Serial numbers: ', _serial_num);
+
+
+    if(allocated(public _preInitExecute))
+    {
+	_ndev = size(public _preInitExecute);
+	for(_i=0; _i < _ndev; _i++)
+	{
+	   if( (public _preInitExecute[_i]) == _name)
+	   {
+
+write(*, "Non eseguo pre initialization");
+
+		return (1);
+	   }
+	}
+	public _preInitExecute = [public _preInitExecute, _name];
+
+    } else {
+	public _preInitExecute = [_name];
+	write(*, "Creata la variabile preInitExecute");
+    }
+
+
+write(*, "Eseguo pre initialization");
 
 	_status = ACQD265->preInit(_name, _serial_num, _num_devices);
 
