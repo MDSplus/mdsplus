@@ -1,6 +1,71 @@
 Version 1.3-0
 
 
+2002-09-24 09:02  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix memory leak in multi mode operation
+
+2002-09-24 09:02  twf
+
+	* tdishr/: TdiShr.def, TdiVar.c:
+	
+	Add TdiDeleteContext
+
+2002-09-24 09:01  twf
+
+	* mdsshr/: MdsShr.def, librtl.c:
+	
+	Add LibDeleteVmZone
+
+2002-09-23 16:23  twf
+
+	* idl/: mdsclose.pro, mdsopen.pro, mdssetdefault.pro:
+	
+	use MdsValue in the idl pro's
+
+2002-09-20 08:37  jgk
+
+	* javascope/: TWUFetchOptions.java, TWUProperties.java,
+	TWUSignal.java, TwuDataProvider.java:
+	
+	Factored-out the (nested) class TwuFetchOptions in to its own
+	source file.  Clarified a minor naming convention: Classes with
+	names starting with TWU are written such that they are not strongly
+	bound to jScope, but can also be used by other java based TEC
+	Web-Umbrella clients.
+
+2002-09-17 12:19  manduchi
+
+	* servershr/: ServerQAction.c, servershr.def:
+	
+	Added routine GetDoingNid()
+
+2002-09-16 09:22  twf
+
+	* tcl/tcl_show_version.c:
+	
+	avoid compile warning
+
+2002-09-16 09:17  twf
+
+	* tcl/tcl_commands.ocld:
+	
+	Add show version
+
+2002-09-13 15:25  twf
+
+	* remcam/Makefile.in:
+	
+	Fix CamShr test
+
+2002-09-13 15:12  twf
+
+	* ChangeLog:
+	
+	Last minute additions to release
+
 2002-09-13 15:02  twf
 
 	* cts/: Makefile.in, cts, cts_commands.export, cts_commands.ocld,
