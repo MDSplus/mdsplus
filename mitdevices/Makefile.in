@@ -1,14 +1,19 @@
 SHELL=/bin/sh
 CC=@CC@
 LD=@LD@
-prefix=@prefix@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
+X_CFLAGS=@X_CFLAGS@
+CFLAGS=@CFLAGS@ $(X_CFLAGS)
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ 
+LIBS=@LIBS@ @LIBM@
+X_LIBS=@X_LIBS@
+X_EXTRA_LIBS=@X_EXTRA_LIBS@
+X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
+MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 
 UIDS = \
@@ -19,6 +24,8 @@ UIDS = \
 @MAKEUIDDIR@B3224.uid \
 @MAKEUIDDIR@B5910A.uid \
 @MAKEUIDDIR@CHS_A14.uid \
+@MAKEUIDDIR@DT101.uid \
+@MAKEUIDDIR@DT200.uid \
 @MAKEUIDDIR@DSP2904.uid \
 @MAKEUIDDIR@EC727.uid \
 @MAKEUIDDIR@FERA.uid \
@@ -83,12 +90,16 @@ UIDS = \
 @MAKEUIDDIR@UMCCD.uid \
 @MAKEUIDDIR@U_OF_M_SPECT.uid
 
-SOURCES = io.c
+SOURCES = \
+io.c \
+dt200.c
+
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = io.exports
+EXPORTS = MitDevices.exports
+
 
 all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
-       @MAKESHLIBDIR@libio@SHARETYPE@ @MAKELIBDIR@libio.a \
+       @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @MAKELIBDIR@libMitDevices.a \
        @MAKEBINDIR@daq_server  $(UIDS) 
 
 
@@ -122,17 +133,17 @@ install:
 @MAKEBINDIR@daq_server : daq_server
 	cp daq_server @MAKEBINDIR@daq_server
 
-@MAKESHLIBDIR@libio@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
-@MAKELIBDIR@libio.a : $(OBJECTS)
+@MAKELIBDIR@libMitDevices.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
 
-io.exports: io.def
+MitDevices.exports: MitDevices.def
 	sed -e /LIBRARY/\;/\;/d io.def > $@
 
 @MAKEUIDDIR@A12.uid : A12.uil ; $(UIL) -o @MAKEUIDDIR@A12.uid A12.uil
@@ -142,6 +153,8 @@ io.exports: io.def
 @MAKEUIDDIR@B3224.uid : B3224.uil ; $(UIL) -o @MAKEUIDDIR@B3224.uid B3224.uil
 @MAKEUIDDIR@B5910A.uid : B5910A.uil ; $(UIL) -o @MAKEUIDDIR@B5910A.uid B5910A.uil
 @MAKEUIDDIR@CHS_A14.uid : CHS_A14.uil ; $(UIL) -o @MAKEUIDDIR@CHS_A14.uid CHS_A14.uil
+@MAKEUIDDIR@DT101.uid : DT101.uil ; $(UIL) -o @MAKEUIDDIR@DT101.uid DT101.uil
+@MAKEUIDDIR@DT200.uid : DT200.uil ; $(UIL) -o @MAKEUIDDIR@DT200.uid DT200.uil
 @MAKEUIDDIR@DSP2904.uid : DSP2904.uil ; $(UIL) -o @MAKEUIDDIR@DSP2904.uid DSP2904.uil
 @MAKEUIDDIR@EC727.uid : EC727.uil ; $(UIL) -o @MAKEUIDDIR@EC727.uid EC727.uil
 @MAKEUIDDIR@FERA.uid : FERA.uil ; $(UIL) -o @MAKEUIDDIR@FERA.uid FERA.uil
