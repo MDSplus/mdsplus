@@ -275,7 +275,10 @@ static int locked_scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
       if (ioctl(fd, SG_IO, &sghdr) >= 0)
       {
         status = sghdr.masked_status;
-        bytes_transfered = buflen - sghdr.resid;
+        if (512 - (buflen % 512) == sghdr.resid)
+          bytes_transfered = buflen;
+        else
+          bytes_transfered = buflen - sghdr.resid;
         if (bytes_transfered > buflen)
           bytes_transfered = buflen;
         if ((direction == 1) && (bytes_transfered > 0) && use_mmap)
