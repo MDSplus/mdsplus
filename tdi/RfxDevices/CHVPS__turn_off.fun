@@ -46,6 +46,7 @@ public fun CHVPS__turn_off(as_is _nid, optional _method)
     private _K_HV_OFF		= 0;
     private _K_BIT_GROUP_A	= 2;
     private _K_BIT_GROUP_B	= 5;
+    private _K_GROUP_ALL	= 50;
     private _K_START_READOUT	= 0xff00;
 
     private _K_DISABLE  = 0;

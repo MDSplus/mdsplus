@@ -66,7 +66,7 @@ public fun IPC901__store(as_is _nid, optional _method)
 		_input_impedance = 50.;
 	else
 		_input_impedance = 15E3;
-	DevPut(_nid, _N_INPUT_IMP, _value);
+	DevPut(_nid, _N_INPUT_IMP, _input_impedance);
 
 	if(_w & 2)
 		DevPut(_nid, _N_OV_UNFL_1, "YES");
@@ -80,6 +80,9 @@ public fun IPC901__store(as_is _nid, optional _method)
 	
 	DevCamChk(_name, CamPiow(_name, 1, 1, _w=0, 16),1,1);
 
+write(*, 'CAMAC 1', _w);
+
+
 	_w = _w & 255;
 
 	_id = mod(_w, 5);
@@ -91,6 +94,8 @@ public fun IPC901__store(as_is _nid, optional _method)
 	if(_id == 4) _low_pass = 15E3;
 	DevPut(_nid, _N_LOW_PASS_1, _low_pass);
 
+write(*, 'low pass 1', _low_pass);
+
 	_id = mod(_w/5, 5);
 	_low_pass = 0;
 	if(_id == 0) _low_pass = 0.;
@@ -100,6 +105,8 @@ public fun IPC901__store(as_is _nid, optional _method)
 	if(_id == 4) _low_pass = 15E3;
 	DevPut(_nid, _N_LOW_PASS_2, _low_pass);
 
+write(*, 'low pass 2', _low_pass);
+
 	_id = mod(_w/25, 3);
 	_gain = 0;
 	if(_id == 0) _gain = 20;
@@ -107,12 +114,18 @@ public fun IPC901__store(as_is _nid, optional _method)
 	if(_id == 2) _gain = 30;
 	DevPut(_nid, _N_GAIN_1, _gain);
 
+
+write(*, 'gain 1', _gain);
+
+
 	_id = mod(_w/75, 3);
 	_gain = 0;
 	if(_id == 0) _gain = 20;
 	if(_id == 1) _gain = 25;
 	if(_id == 2) _gain = 30;
 	DevPut(_nid, _N_GAIN_2, _gain);
+
+write(*, 'gain 2', _gain);
 
 	DevCamChk(_name, CamPiow(_name, 0, 8, _w=0, 16),1,*);
 	if(!CamQ())
@@ -142,14 +155,18 @@ public fun IPC901__store(as_is _nid, optional _method)
 
 	_division = _fir_cut_off * _soft_decim * _hard_decim;
 
-	_end_time = if_error(data(DevNodeRef(_nid, _N_N_END_TIME)), _INVALID);
+	_end_time = if_error(data(DevNodeRef(_nid, _N_END_TIME)), _INVALID);
 	if(_end_time == _INVALID)
 	{
     	DevLogErr(_nid, "Invalid number of samples specification");
  		abort();
 	}
-	_num_samples = _end_time/4E-6 + 0.5;
+	_num_samples = long(_end_time/4E-6 + 0.5);
 	_period = _division / 250E3;
+
+
+write(*, 'SAMPLES', _num_samples);
+
 
     DevNodeCvt(_nid, _N_ACQ_MODE, ["CALIBRATION", "MEASURE"],[0,1], _acq_mode = _INVALID);
 	if(_acq_mode == _INVALID)
@@ -171,14 +188,18 @@ public fun IPC901__store(as_is _nid, optional _method)
 	DevCamChk(_name, CamPiow(_name, 0, 20, _w=0, 16),1,*);
 	DevCamChk(_name, CamQstopw(_name, 0, 0, _hard_samples, _acq_data=0, 24), 1, *);
 
-	DevNodeCvt(_nid, _N_STORE_FLAG, ["DISABLED", "ENABLED"],[0,1], _to_be_stored = 0);
+write(*, 'NUM SAMPLES', _num_samples);
+write(*, 'NUM HARD', _hard_samples, size(_acq_data));
+
+
+	DevNodeCvt(_nid, _N_STORE_FLAG, ["YES", "NO"],[1,0], _to_be_stored = 0);
+	_clock = make_range(*,*,1./ _period);
+	_dim = make_dim(make_window(0, _num_samples - 1, _trigger_time), _clock);
 	if(_acq_mode) /*MEASURE mode */
 	{
 		_initial_diff = _acq_data[0];
 		_acq_data = [0,_acq_data[1:*]];
 
-	    _clock = make_range(*,*,1./ _period);
-		_dim = make_dim(make_window(0, _num_samples - 1, _trigger_time), _clock);
 		_sig_nid =  DevHead(_nid) + _N_PHASE_DIFF;
 		_status = DevPutSignal(_sig_nid, 0, 1., word(_acq_data), 0, _num_samples - 1, _dim);
 		if(! _status)
@@ -190,7 +211,14 @@ public fun IPC901__store(as_is _nid, optional _method)
 
 		if(_to_be_stored)
 		{
-			_diff_array = [];
+		        _diff_array = word((_acq_data & 1) * 2);
+			_diff_array = _diff_array + word(((_acq_data & 2)>>1) * 8);
+			_diff_array = _diff_array + word((_acq_data & 4)>>3);
+			_diff_array = _diff_array + word(((_acq_data & 8)>>7) * 4);
+
+
+
+/*			_diff_array = [];
 			for(_i = 0; _i < _num_samples; _i++)
 			{
 				_flag = word(_acq_data[_i] >> 16);
@@ -202,6 +230,10 @@ public fun IPC901__store(as_is _nid, optional _method)
 
 				_diff_array = [_curr_diff, _diff_array];
 			}
+
+*/
+
+
 			_sig_nid =  DevHead(_nid) + _N_FLAGS;
 			_status = DevPutSignal(_sig_nid, 0, 1., _diff_array, 0, _num_samples - 1, _dim);
 			if(! _status)
@@ -213,6 +245,13 @@ public fun IPC901__store(as_is _nid, optional _method)
 	}
 	else /* CALIBRATION mode */
 	{
+write(*, 'NUM SAMPLES', _num_samples);
+		
+		_phase1 = word(long(_acq_data) & 65535);
+		_phase2 = word((long(_acq_data) >> 16) & 65535);
+		
+
+/*
 		_phase1 = [];
 		_phase2 = [];
 		for(_i = 0; _i < _num_samples; _i++)
@@ -222,7 +261,12 @@ public fun IPC901__store(as_is _nid, optional _method)
 			_phase1 = [word(_curr_phase), _phase1];
 			_curr_phase = (_curr_data >> 16) & 65535;
 			_phase2 = [word(_curr_phase), _phase2];
-		}
+		}*/
+		
+		
+		
+		_dim = make_dim(make_window(0, _num_samples - 1, _trigger_time), _clock);
+write(*, 'X', _dim);		
 		_sig_nid =  DevHead(_nid) + _N_PHASE_1;
 		_status = DevPutSignal(_sig_nid, 0, 1., _phase1, 0, _num_samples - 1, _dim);
 		if(! _status)
@@ -237,12 +281,27 @@ public fun IPC901__store(as_is _nid, optional _method)
 			DevLogErr(_nid, 'Error writing flag1 data in pulse file');
 			abort();
 		}
+		
+write(*, 'XX', _num_samples, size(_acq_data));		
 		if(_to_be_stored)
 		{
+		
+		
+			_flag = _acq_data[0:*:2];
+			_diff_array = word((_flag & 1)*2); 
+			_diff_array = _diff_array + word(((_flag & 2)>>1)*8); 
+			_diff_array = _diff_array + word((_flag & 4)>>3); 
+			_diff_array = _diff_array + word(((_flag & 8)>>7)*4); 
+
+		
+		
+/*		
 			_diff_array = [];
-			for(_i = 0; _i < _num_samples; _i = _i++)
+			for(_i = 0; _i < _num_samples; _i++)
 			{
-				_flag = word(_acq_data[2 * _i] >> 16);
+				_flag = _acq_data[2 * _i];
+				_flag = word(_flag >> 16);
+
 				_curr_diff = 0W;
 				if(_flag & 1) _curr_dif = _curr_diff | 2W;
 				if(_flag & 2) _curr_dif = _curr_diff | 8W;
@@ -250,7 +309,12 @@ public fun IPC901__store(as_is _nid, optional _method)
 				if(_flag & 8) _curr_dif = _curr_diff | 4W;
 
 				_diff_array = [_curr_diff, _diff_array];
+
+
+
 			}
+*/			
+			
 			_sig_nid =  DevHead(_nid) + _N_FLAGS;
 			_status = DevPutSignal(_sig_nid, 0, 1., _diff_array, 0, _num_samples - 1, _dim);
 			if(! _status)
@@ -262,9 +326,9 @@ public fun IPC901__store(as_is _nid, optional _method)
 	}
 
 
-/* Reset device */
+/* Reset device 
 	DevCamChk(_name, CamPiow(_name, 0, 10, _w=0, 16),1,*);
-
+*/
 	return(1);
 }		
 		
