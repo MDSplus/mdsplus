@@ -8,5 +8,5 @@ service mdsips
         cps             = 1000 5
 	wait            = no
         user            = root
-        server          = /usr/local/fusiongrid/mdsipsd
+        server          = /usr/local/fusiongrid/bin/mdsipsd
 }
