@@ -3,7 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
         MdsLib.o 
 
-mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)  mdslib_ctest  mdslib_ftest
+mdslib : ../bin ../shlib ../shlib/libMdsLib.$(SHARE_TYPE)  mdslib_ctest  mdslib_ftest  mdslib_fremotetest
 
 ../bin :
 	mkdir ../bin
@@ -19,6 +19,9 @@ mdslib_ctest : mdslib_ctest.c ../shlib/libMdsLib.$(SHARE_TYPE)
 
 mdslib_ftest : mdslib_ftest.f ../shlib/libMdsLib.$(SHARE_TYPE)
 	f77 -o $@ $(FFLAGS) mdslib_ftest.f -lMdsLib
+
+mdslib_fremotetest : mdslib_fremotetest.f ../shlib/libMdsLib.$(SHARE_TYPE)
+	f77 -o $@ $(FFLAGS) mdslib_fremotetest.f -lMdsLib
 
 clean :
 	- rm *.o
