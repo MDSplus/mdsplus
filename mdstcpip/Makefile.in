@@ -4,9 +4,9 @@ LD=@LD@
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
-COMPRESSION_SWITCH=-DCOMPRESSION
+COMPRESSION_SWITCH=
 #COMPRESS_SOURCES=
-#COMPRESSION_SWITCH=
+#COMPRESSION_SWITCH=-DNOCOMPRESSION
 
 top_srcdir=@top_srcdir@
 prefix=@prefix@
