@@ -122,7 +122,7 @@ public class MdsConnection
 
             public synchronized void waitExited()
             {
-	    
+
               while(!killed)
                 try{
                   wait();
@@ -234,8 +234,9 @@ public class MdsConnection
 	        out.status = message.status;
 	        switch ((out.dtype = message.dtype))
 	        {
-	            case Descriptor.DTYPE_CHAR:
-		            out.strdata = new String(message.body);
+                    case Descriptor.DTYPE_UBYTE:
+	            case Descriptor.DTYPE_BYTE:
+		            out.byte_data = message.body;
 		        break;
 	            case Descriptor.DTYPE_USHORT:
 	            case Descriptor.DTYPE_SHORT:
@@ -266,9 +267,6 @@ public class MdsConnection
 	                    out.strdata = new String(message.body);
 	                else
                             out.error = new String(message.body);
-		        break;
-	            case Descriptor.DTYPE_BYTE:
-		            out.byte_data = message.body;
 		        break;
 	            case Descriptor.DTYPE_FLOAT:
 		            out.float_data = message.ToFloatArray();
@@ -366,7 +364,7 @@ public class MdsConnection
                 connection_listener.removeAllElements();
 	        dos.close();
             dis.close();
-	    
+
             receiveThread.waitExited();
             connected = false;
 	    }

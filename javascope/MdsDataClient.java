@@ -97,7 +97,7 @@ public class MdsDataClient extends MdsConnection
                 col = desc.int_data[0];
                 row = desc.int_data[1];
 	            break;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Evaluated expression not a matrix");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -128,7 +128,7 @@ public class MdsDataClient extends MdsConnection
 	                for(int j = 0; j < col; j++)
 		                out[i][j] = (float)desc.double_data[k++];
 		        return out;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Cannot convert a string to float array");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -164,7 +164,7 @@ public class MdsDataClient extends MdsConnection
                 col = desc.int_data[0];
                 row = desc.int_data[1];
 	            break;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Evaluated expression not a matrix");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -195,7 +195,7 @@ public class MdsDataClient extends MdsConnection
 	                for(int j = 0; j < col; j++)
 		                out[i][j] = desc.double_data[k++];
 		        return out;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Cannot convert a string to float array");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -236,7 +236,7 @@ public class MdsDataClient extends MdsConnection
 		            out_data[i] = (float)desc.double_data[i];
 		        out = out_data;
 	            break;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Cannot convert a string to float array");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -269,8 +269,8 @@ public class MdsDataClient extends MdsConnection
 	            throw new MdsIOException("Cannot convert a string to byte array");
 	        case Descriptor.DTYPE_DOUBLE:
 	            throw new MdsIOException("Cannot convert a string to byte array");
-	        case Descriptor.DTYPE_CHAR:
 	        case Descriptor.DTYPE_BYTE:
+	        case Descriptor.DTYPE_UBYTE:
 	            out_data = new byte[desc.byte_data.length];
 	            for(int i = 0; i < desc.byte_data.length; i++)
 		            out_data[i] = (byte)desc.byte_data[i];
@@ -309,7 +309,7 @@ public class MdsDataClient extends MdsConnection
                     return desc.int_data;
                 case Descriptor.DTYPE_DOUBLE:
                     throw new MdsIOException("Cannot convert a double to int array");
-                case Descriptor.DTYPE_CHAR:
+                case Descriptor.DTYPE_UBYTE:
                 case Descriptor.DTYPE_BYTE:
                     out_data = new int[desc.byte_data.length];
                     for(int i = 0; i < desc.byte_data.length; i++)
@@ -353,7 +353,7 @@ public class MdsDataClient extends MdsConnection
 	        case Descriptor.DTYPE_DOUBLE:
 	            out = desc.double_data;
 	            break;
-	        case Descriptor.DTYPE_CHAR:
+	        case Descriptor.DTYPE_BYTE:
 	            throw new MdsIOException("Cannot convert a string to float array");
 	        case Descriptor.DTYPE_CSTRING:
 	            if((desc.status & 1) == 0)
@@ -385,7 +385,7 @@ public class MdsDataClient extends MdsConnection
 		        return (float)desc.int_data[0];
 	        case Descriptor.DTYPE_DOUBLE:
 	            return (float)desc.double_data[0];
-		    case Descriptor.DTYPE_CHAR:
+		    case Descriptor.DTYPE_BYTE:
 		        throw new MdsIOException("Cannot convert a string to float");
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
@@ -414,7 +414,7 @@ public class MdsDataClient extends MdsConnection
 		        return (double)desc.int_data[0];
 	            case Descriptor.DTYPE_DOUBLE:
 	            return desc.double_data[0];
-		    case Descriptor.DTYPE_CHAR:
+		    case Descriptor.DTYPE_BYTE:
 		        throw new MdsIOException("Cannot convert a string to float");
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
@@ -438,6 +438,7 @@ public class MdsDataClient extends MdsConnection
 	    Descriptor desc = MdsValue(expr);
 	    switch (desc.dtype)
 	    {
+                    case Descriptor.DTYPE_UBYTE:
                     case Descriptor.DTYPE_BYTE:
                         return (int)desc.byte_data[0];
 		    case Descriptor.DTYPE_FLOAT:
@@ -447,8 +448,6 @@ public class MdsDataClient extends MdsConnection
                         return (int)desc.short_data[0];
 		    case Descriptor.DTYPE_LONG:
 		        return desc.int_data[0];
-		    case Descriptor.DTYPE_CHAR:
-		        throw new MdsIOException("Cannot convert a string to int");
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
 		            throw new MdsIOException(desc.error);
@@ -469,6 +468,7 @@ public class MdsDataClient extends MdsConnection
 
       Descriptor desc = MdsValue(expr);
       switch (desc.dtype) {
+        case Descriptor.DTYPE_UBYTE:
         case Descriptor.DTYPE_BYTE:
           return (short) desc.byte_data[0];
         case Descriptor.DTYPE_SHORT:
@@ -477,8 +477,6 @@ public class MdsDataClient extends MdsConnection
           throw new MdsIOException("Cannot convert a float to short");
         case Descriptor.DTYPE_LONG:
           throw new MdsIOException("Cannot convert a int to short");
-        case Descriptor.DTYPE_CHAR:
-          throw new MdsIOException("Cannot convert a string to short");
         case Descriptor.DTYPE_CSTRING:
           if ( (desc.status & 1) == 0)
             throw new MdsIOException(desc.error);
@@ -509,7 +507,7 @@ public class MdsDataClient extends MdsConnection
                     throw new MdsIOException("Cannot convert a long to short array");
                 case Descriptor.DTYPE_DOUBLE:
                     throw new MdsIOException("Cannot convert a double to short array");
-                case Descriptor.DTYPE_CHAR:
+                case Descriptor.DTYPE_UBYTE:
                 case Descriptor.DTYPE_BYTE:
                     out_data = new short[desc.byte_data.length];
                     for(int i = 0; i < desc.byte_data.length; i++)
@@ -547,7 +545,7 @@ public class MdsDataClient extends MdsConnection
 		        return (long)desc.int_data[0];
 		    case Descriptor.DTYPE_ULONG:
 		        return (long)desc.long_data[0];
-		    case Descriptor.DTYPE_CHAR:
+		    case Descriptor.DTYPE_BYTE:
 		        throw new MdsIOException("Cannot convert a string to float");
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)
@@ -571,11 +569,10 @@ public class MdsDataClient extends MdsConnection
 	    Descriptor desc = MdsValue(expr);
 	    switch(desc.dtype)
 	    {
+                case Descriptor.DTYPE_UBYTE:
 	        case Descriptor.DTYPE_BYTE:
 		        return new String(desc.byte_data);
-	        case Descriptor.DTYPE_CHAR:
-		        return desc.strdata;
-		    case Descriptor.DTYPE_LONG:
+                case Descriptor.DTYPE_LONG:
 		        throw new MdsIOException("Cannot convert a integer to string");
 	        case Descriptor.DTYPE_FLOAT:
 		        throw new MdsIOException("Cannot convert a float to string");
@@ -604,7 +601,7 @@ public class MdsDataClient extends MdsConnection
 	                return new Double(desc.double_data[0]);
 		    case Descriptor.DTYPE_ULONG:
 		        return new Long((long)desc.long_data[0]);
-		    case Descriptor.DTYPE_CHAR:
+		    case Descriptor.DTYPE_BYTE:
 		        return new Character((char)desc.byte_data[0]);
 		    case Descriptor.DTYPE_CSTRING:
 		        if((desc.status & 1) == 0)

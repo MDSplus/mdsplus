@@ -4,11 +4,11 @@ import java.io.*;
 class Descriptor
 {
     public    static final byte MAX_DIM                 = 8;
-    public    static final byte DTYPE_BYTE              = 2;
+    public    static final byte DTYPE_UBYTE             = 2;
     public    static final byte DTYPE_USHORT            = 3;
     public    static final byte DTYPE_ULONG             = 4;
     public    static final byte DTYPE_ULONGLONG         = 5;
-    public    static final byte DTYPE_CHAR              = 6;
+    public    static final byte DTYPE_BYTE              = 6;
     public    static final byte DTYPE_SHORT             = 7;
     public    static final byte DTYPE_LONG              = 8;
     public    static final byte DTYPE_LONGLONG          = 9;
@@ -157,8 +157,8 @@ class Descriptor
                   return strdata.getBytes();
                 else
                   return byte_data;
+            case DTYPE_UBYTE:
             case DTYPE_BYTE:
-            case DTYPE_CHAR:
                 dos.close();
                 return byte_data;
             case DTYPE_USHORT :
