@@ -62,8 +62,6 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int       idx;
 	for (idx = 0, db = (PINO_DATABASE *)dbid; db && (idx < (*(int *) (lst->pointer) & 0xff)); idx++, db = db->next);
-	if (!(db ? db->open : 0))
-	  status = TreeNOT_OPEN;
 	break;
       }
 
