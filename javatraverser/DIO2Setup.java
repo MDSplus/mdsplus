@@ -66,7 +66,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceField116.setOffsetNid(6);
 		deviceField116.setLabelString("Rec. start event:");
 		JPanel52.add(deviceField116);
-		deviceChoice59.setOffsetNid(137);
+		deviceChoice59.setOffsetNid(145);
 		{
 			String[] tempString = new String[2];
 			tempString[0] = "NO";
@@ -76,7 +76,7 @@ public class DIO2Setup extends DeviceSetup
 		deviceChoice59.setLabelString("Synch: ");
 		JPanel52.add(deviceChoice59);
 		deviceField117.setTextOnly(true);
-		deviceField117.setOffsetNid(138);
+		deviceField117.setOffsetNid(146);
 		deviceField117.setLabelString("Synch. event: ");
 		JPanel52.add(deviceField117);
 		JPanel52.add(deviceDispatch1);
