@@ -82,14 +82,6 @@ typedef struct nci
                            (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 
-#define swapquad(ptr) ( (((_int64)((unsigned char *)ptr)[0]) << 56) | (((_int64)((unsigned char *)ptr)[1]) << 48) | \
-                        (((_int64)((unsigned char *)ptr)[2]) << 40) | (((_int64)((unsigned char *)ptr)[3]) << 32) | \
-                        (((_int64)((unsigned char *)ptr)[4]) << 24) | (((_int64)((unsigned char *)ptr)[5]) << 16) | \
-                        (((_int64)((unsigned char *)ptr)[6]) <<  8) | (((_int64)((unsigned char *)ptr)[7]) ))
-#define swapint(ptr) ( (((int)((unsigned char *)ptr)[0]) << 24) | (((int)((unsigned char *)ptr)[1]) << 16) | \
-                       (((int)((unsigned char *)ptr)[2]) <<  8) | (((int)((unsigned char *)ptr)[3]) ))
-#define swapshort(ptr) ( (((short)((unsigned char *)ptr)[0]) << 8) | (((short)((unsigned char *)ptr)[1]) ))
-
 #else
 
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
@@ -100,6 +92,8 @@ typedef struct nci
                            (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 
+#endif
+
 #define swapquad(ptr) ( (((_int64)((unsigned char *)ptr)[7]) << 56) | (((_int64)((unsigned char *)ptr)[6]) << 48) | \
                         (((_int64)((unsigned char *)ptr)[5]) << 40) | (((_int64)((unsigned char *)ptr)[4]) << 32) | \
                         (((_int64)((unsigned char *)ptr)[3]) << 24) | (((_int64)((unsigned char *)ptr)[2]) << 16) | \
@@ -107,8 +101,6 @@ typedef struct nci
 #define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
                        (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) )) 
 #define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
-
-#endif
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
 #define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
