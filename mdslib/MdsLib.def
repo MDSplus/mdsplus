@@ -1,0 +1,9 @@
+LIBRARY MdsLib
+EXPORTS
+;
+descr
+MdsConnect
+MdsValue
+MdsPut
+MdsOpen
+MdsClose

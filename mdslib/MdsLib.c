@@ -15,6 +15,14 @@ extern int lib$callg();
 extern int TdiExecute();
 extern int TdiCompile();
 extern int TdiData();
+extern int LibCallg();
+extern int MdsFree1Dx();
+extern int TreeFindNode();
+extern int TreePutRecord();
+extern int TreeWait();
+extern int TreeOpen();
+extern int TreeClose();
+extern int TreeSetDefault();
 #endif
 short ArgLen(struct descrip *d);
 static EMPTYXD(mdsValueAnswer);
@@ -171,7 +179,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
 
   if (dsc->class == CLASS_S) 
   {
-    arg = MakeDescrip(arg, dtype, 0, 0, dsc->pointer);
+    arg = MakeDescrip(arg, (char)dtype, (char)0, (int *)0, dsc->pointer);
   } 
   else 
   {
@@ -182,7 +190,7 @@ struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
       int dims[MAXDIM];
       for (i=0; i<adsc->dimct; i++) dims[i] = adsc->m[i];
       for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
-      arg = MakeDescrip(arg, dtype, adsc->dimct, dims, adsc->pointer);
+      arg = MakeDescrip(arg, (char)dtype, adsc->dimct, dims, adsc->pointer);
     }
     else 
     {
@@ -200,7 +208,6 @@ int MdsValue(char *expression, ...)
   int a_count;
   int i;
   unsigned char nargs;
-  unsigned char idx;
   int status = 1;
   int *descnum = &status;  /* initialize to point at non zero value */
   struct descriptor *dsc;
@@ -249,7 +256,7 @@ int MdsValue(char *expression, ...)
     arg = MakeDescrip(&exparg,DTYPE_CSTRING,0,0,expression);
     for (i=0;i<nargs && (status & 1);i++)
     {
-      status = SendArg(mdsSocket, i, arg->dtype, nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
+      status = SendArg(mdsSocket, (unsigned char)i, arg->dtype, (char)nargs, ArgLen(arg), arg->ndims, arg->dims, arg->ptr);
       descnum = va_arg(incrmtr, int *);
       dsc = &descrs[*descnum-1];
       arg = MakeIpDescrip(arg, dsc);
