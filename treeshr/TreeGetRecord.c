@@ -1,3 +1,4 @@
+#include <config.h>
 #ifdef _WIN32
 #include <io.h>
 #endif

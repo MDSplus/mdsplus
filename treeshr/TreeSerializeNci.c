@@ -1,3 +1,4 @@
+#include <config.h>
 #include <string.h>
 #include <ncidef.h>
 #include "treeshrp.h"

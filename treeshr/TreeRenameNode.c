@@ -29,6 +29,7 @@
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
 
+#include <config.h>
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
