@@ -803,8 +803,19 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   jclass cls;
   jmethodID constr;
   jvalue args[1];
+  char mypath[512], mymodel[512];
 
-  status = TreeAddConglom((char *)path, (char *)model, &nid);
+  strcpy(mypath, path);
+  strcpy(mymodel, model);
+
+
+printf("\nPARTE ADD DEVICE %s %s \n\n",(char *)path, (char *)model);
+
+
+  status = TreeAddConglom((char *)mypath, (char *)mymodel, &nid);
+
+printf("\nFINISCE ADD DEVICE\n\n");
+
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
   if(!(status & 1))
