@@ -48,6 +48,7 @@ extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 extern int   TdiCvt();
 extern int   GetAnswerInfoTS();
 extern int   MdsFree1Dx();
+extern int   MdsIpFree();
 #ifndef _WIN32
 #define INVALID_SOCKET -1
 #endif
@@ -401,7 +402,7 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
         MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);   /* Copy the arrival data to xd output */
      }
    }
-   if (mem) free(mem);
+   if (mem) MdsIpFree(mem);
    return(&ans_xd);
 }
 #ifdef CALLING
