@@ -1137,7 +1137,7 @@ static int BsearchCompare(const void *this_one, const void *compare_one)
  info block array.
 *******************************************/
 
-  return strncmp(tsearch->tag, tag, sizeof(TAG_NAME));
+  return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
 }
 
 extern int TREE$_SEARCH_VM_ZONE;

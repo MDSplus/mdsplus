@@ -30,6 +30,7 @@
 
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <ncidef.h>
 #include "treeshrp.h"
 #include <treeshr.h>
 #include <usagedef.h>
