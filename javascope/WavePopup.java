@@ -361,6 +361,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
            }
            add(colorList);	
 	       add(playFrame);
+           add(set_point);
 	       add(sep2);
 	       add(autoscale);
 	       if(parent instanceof WaveformManager)           
@@ -428,7 +429,7 @@ public class WavePopup extends JPopupMenu implements  ItemListener
         colorList.setEnabled(state);	
         SelectListItem(colorList_bg, wave.GetColorIdx());
 	    playFrame.setEnabled(state);
-        set_point.setEnabled(state);
+        set_point.setEnabled(state && ((wave.mode == Waveform.MODE_POINT)));
 	}
 	
 	protected void SetSignalMenu()

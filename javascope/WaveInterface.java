@@ -28,8 +28,8 @@ public class WaveInterface
     
     //Used by GetShotArray methods to define
     //if required shots must be evaluate
-    private String shot_str_eval = null;
-    private long shot_list[] = null; 
+    //private String shot_str_eval = null;
+    //private long shot_list[] = null; 
    
     boolean reversed = false;
     boolean show_legend = false;
@@ -265,8 +265,8 @@ public class WaveInterface
 		//When change data provide  
 		//shot variable is reset to 
 		//assure shot avaluation
-		shot_str_eval = null;
-		shot_list = null;
+		//shot_str_eval = null;
+		//shot_list = null;
     }
 
     public DataProvider getDataProvider()
@@ -1020,31 +1020,39 @@ public class WaveInterface
         long curr_shots[] = GetShotArray(in_shot);
         UpdateShot(curr_shots);
     }
-				    
+    
     public long[] GetShotArray(String in_shots) throws IOException
+    {
+        return GetShotArray(in_shots, dp);
+    }
+ 				    
+    static public long[] GetShotArray(String in_shots, DataProvider dp) throws IOException
     {	
-	    if(in_shots == null || in_shots.trim().length() == 0)
+        long shot_list[] = null; 
+        String error;
+        
+        if(in_shots == null || in_shots.trim().length() == 0)
 	        return null;
-	
-	    if(! (shot_list == null || shot_list.length == 0 || 
-	       this.shot_str_eval == null || !shot_str_eval.equals(in_shots) ))
-	       return shot_list;
-	       
+	        
 	    shot_list = dp.GetShots(in_shots);
 	    if( shot_list == null || shot_list.length == 0 || shot_list.length > MAX_NUM_SHOT)
 	    {
 	        if(shot_list != null && shot_list.length > MAX_NUM_SHOT)
                 error = "Too many shots. Max shot list elements " + MAX_NUM_SHOT +"\n";
 	        else {
-		        if(dp.ErrorString() != null)	    
+		        if(dp.ErrorString() != null)
+		        {
 		            error = dp.ErrorString();
+		            if(error.indexOf("_jScopeMainShots") != -1)
+		                error = "Undefined main shot value";
+		                
+		        }
 		        else
 		            error = "Shot syntax error\n";
 	        }
 	        shot_list = null;
 	        throw(new IOException(error));
 	    }
-        shot_str_eval = in_shots;
 	    return shot_list;
    }
 

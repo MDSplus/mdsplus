@@ -17,8 +17,10 @@ public class WaveformEvent extends AWTEvent
     static final int END_UPDATE           = AWTEvent.RESERVED_ID_MAX + 11;
     static final int CACHE_DATA           = AWTEvent.RESERVED_ID_MAX + 12;
     
+    int    frame_type;
     int    signal_idx;
     int    pixel_value;
+    float  point_value;
     double point_x;
     double point_y;
     double delta_x;
@@ -26,11 +28,15 @@ public class WaveformEvent extends AWTEvent
     String name;
     String status_info;
     int    pixels_x[];
+    float  values_x[];
     int    start_pixel_x;
     int    pixels_y[];
+    float  values_y[];
     int    start_pixel_y;
     int    pixels_signal[];
+    float  values_signal[];
     int    pixels_line[] = null;
+    float  values_line[] = null;
     float  frames_time[];
     float  x_value = Float.NaN;
     float  time_value = Float.NaN;
@@ -69,6 +75,14 @@ public class WaveformEvent extends AWTEvent
         this.pixel_value = pixel_value;
     }
 
+
+    public void setPointValue(float val){point_value = val;}
+    public float getPointValue(){return point_value;}
+    
+    public void setFrameType(int frame_type){this.frame_type = frame_type;}
+    
+
+
     public WaveformEvent (Object source, 
                             String name,
                             int pixels_x[], int start_pixel_x, 
@@ -85,15 +99,39 @@ public class WaveformEvent extends AWTEvent
         this.start_pixel_y = start_pixel_y;
     }
 
+
+    public WaveformEvent (Object source, 
+                            String name,
+                            float values_x[], int start_pixel_x, 
+                            float values_y[], int start_pixel_y,
+                            float values_signal[], float frames_time[]) 
+    {
+        super(source, PROFILE_UPDATE);
+        this.name = name;
+        this.values_x = values_x;
+        this.values_y = values_y;
+        this.values_signal = values_signal;
+        this.frames_time = frames_time;
+        this.start_pixel_x = start_pixel_x;
+        this.start_pixel_y = start_pixel_y;
+    }
+
+
     public void setIsMB2(boolean is_mb2)
     {
-	this.is_mb2 = is_mb2;
+	    this.is_mb2 = is_mb2;
     }
     
     public void setPixelsLine(int p_line[])
     {
         pixels_line = p_line;
     }
+
+    public void setValuesLine(float v_line[])
+    {
+        values_line = v_line;
+    }
+
     
     public void setXValue(float x_value)
     {
@@ -176,12 +214,22 @@ public class WaveformEvent extends AWTEvent
 	                        s = SetStrSize("[" + new Float(point_x) + ", " 
 				                + new Float(point_y) + xt_string + "]", 50);
 		            } else 
+		                if(frame_type == FrameData.BITMAP_IMAGE_32)
+		                {
+	                        s = SetStrSize("[" + ((int)point_x) + ", " 
+				                       + ((int)point_y) + " : " 
+				                       + "(" + new Float(point_value)+ ")" 
+				                       + " : " + delta_x + "]", 50);
+				        }
+				        else
+				        {
 	                        s = SetStrSize("[" + ((int)point_x) + ", " 
 				                       + ((int)point_y) + " : " 
 				                       + "(" + ((pixel_value >> 16) & 0xff) + "," 
 				                       + ((pixel_value >> 8) & 0xff) + "," 
 				                       + (pixel_value & 0xff) + ")" 
 				                       + " : " + delta_x + "]", 50);
+				        }
 		        }
 	        break;
 	    }

@@ -20,7 +20,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2.2)";
+   static final String VERSION = "jScope (version 7.2.3)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -845,14 +845,16 @@ static int T_messageType;
     
     shot_t = new JTextField(10);
     shot_t.addActionListener(this);
+    /*
     shot_t.addFocusListener( new FocusAdapter()
         {
            public void focusLost(FocusEvent e)
            {
-                wave_panel.SetMainShotStr(shot_t.getText().trim());
+                wave_panel.SetMainShot(shot_t.getText());
            }
         }
     );
+    */
     
     apply_b  = new JButton("Apply");
     apply_b.addActionListener(this);
@@ -1353,13 +1355,18 @@ static int T_messageType;
      //Force update in all waveform
      wave_panel.SetModifiedState(true);
   }
+  
+  public void SetMainShot()
+  {
+    wave_panel.SetMainShot(shot_t.getText());
+  }
     
   public void UpdateAllWaves()
   {
 	   executing_update = true;
        apply_b.setText("Abort");
        setPublicVariables(pub_var_diag.getPublicVar());
-       wave_panel.SetMainShotStr(shot_t.getText().trim());
+       SetMainShot();
        wave_panel.StartUpdate();
   }
   
@@ -1787,7 +1794,6 @@ static int T_messageType;
      String print_event = wave_panel.GetPrintEvent();
      String event = wave_panel.GetEvent();
      
-     setMainShot();
      if(e.name.equals(event))
         wave_panel.StartUpdate();
              
@@ -1835,6 +1841,7 @@ static int T_messageType;
         
         if(sig != null && sig.length() != 0)
         {
+            SetMainShot();
             wave_panel.AddSignal(sig, false);
             setChange(true);
         }
@@ -1850,10 +1857,9 @@ static int T_messageType;
 	    } else {
 	        if (ob == shot_t)
 	        {
-                wave_panel.SetMainShotStr(shot_t.getText().trim());
+                SetMainShot();
             }
-            
- 
+             
             String sig = signal_expr.getText().trim();         
             if(sig != null && sig.length() != 0)
             {
@@ -2144,21 +2150,6 @@ static int T_messageType;
 
   }
   
-  private String setMainShot()
-  {
-    /*
-        String error = null;
-        try
-        {
-            error = wave_panel.evaluateMainShot(shot_t.getText().trim());
-        } 
-        catch (IOException e) 
-        {
-		     error = e + "\n";
-        }
-        */
-        return null;                
-  }  
   
   public void SetWindowTitle(String info)
   {

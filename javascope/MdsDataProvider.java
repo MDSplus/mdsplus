@@ -71,7 +71,8 @@ public class MdsDataProvider implements DataProvider
                 {
                     all_times[i] = d.readFloat();
                 }
-                header_size = 13 + 4 * n_frame;
+                //header_size = 13 + 4 * n_frame;
+                header_size = 16 + 4 * n_frame;
                 /*
                 for(i = 0; i < n_frame; i++)
                 {
@@ -390,7 +391,8 @@ public class MdsDataProvider implements DataProvider
         byte img_buf[], out[] = null;
         float time[];
         int   shape[];
-        int pixel_size;
+        int pixel_size = 8;
+        int num_time = 0;
         
         if(!CheckOpen())
 	        return null;
@@ -407,17 +409,37 @@ public class MdsDataProvider implements DataProvider
         img_buf = GetByteArray(in);
         if(img_buf == null) return null;
         
-        pixel_size = img_buf.length/(shape[0]*shape[1]*shape[2]) * 8;
+        if(shape.length == 3)
+        {
+            num_time = shape[2];
+            pixel_size = img_buf.length/(shape[0]*shape[1]*shape[2]) * 8;
+        }
+        else
+        {
+            if(shape.length == 2)
+            {
+                num_time = 1;
+                pixel_size = img_buf.length/(shape[0]*shape[1]) * 8;
+            }
+            else
+                if(shape.length == 1)
+                {
+                    throw(new IOException("The evaluated signal is not an image"));
+                }
+            
+            
+        }    
               
         ByteArrayOutputStream b = new ByteArrayOutputStream();
         DataOutputStream d = new DataOutputStream(b);
         
         d.writeInt(pixel_size);
         
-        for(int i = 0; i < shape.length; i++)
-            d.writeInt(shape[i]);
+        d.writeInt(shape[0]);     
+        d.writeInt(shape[1]);
+        d.writeInt(num_time);
 
-        for(int i = 0; i < time.length; i++)
+        for(int i = 0; i < num_time; i++)
             d.writeFloat(time[i]);
 
         d.write(img_buf);
@@ -478,11 +500,17 @@ public class MdsDataProvider implements DataProvider
         Descriptor desc = mds.MdsValue(in);
         switch(desc.dtype)  {
 	        case Descriptor.DTYPE_FLOAT:
+	            for(int i = 0; i < desc.float_data.length; i++)
+                    dos.writeFloat(desc.float_data[i]);
+                out_byte = dosb.toByteArray();
+                return out_byte;
 	        case Descriptor.DTYPE_LONG:
 	            for(int i = 0; i < desc.int_data.length; i++)
                     dos.writeInt(desc.int_data[i]);
                 out_byte = dosb.toByteArray();
 	            return out_byte;
+	        case Descriptor.DTYPE_CHAR:
+	            return desc.strdata.getBytes();
 	        case Descriptor.DTYPE_BYTE:
 	            return desc.byte_data;
 	        case Descriptor.DTYPE_CSTRING:

@@ -260,7 +260,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     {
         this.wave_popup = wave_popup;
         wave_popup.setParent(this);
-        //add(this.wave_popup);
     }
     
        

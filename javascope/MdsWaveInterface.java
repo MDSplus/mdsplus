@@ -203,10 +203,25 @@ class MdsWaveInterface extends WaveInterface
      return error;
   }
 
+  static public String containMainShot(String in_shot, String m_shot)
+  {
+      int idx;
+      String out = in_shot;
+      if( (in_shot != null) && (idx = in_shot.indexOf("#") ) != -1)
+      {
+        if(m_shot != null)
+            out = "["+in_shot.substring(0, idx) + m_shot + in_shot.substring(idx+1)+"]";
+        else
+            out = "["+in_shot.substring(0, idx) + "[]" + in_shot.substring(idx+1)+"]";            
+      }
+      return out;
+    }
+
   public void UpdateShot() throws IOException
   {
 	long curr_shots[] = null;
-	String c_shot_str = this.GetUsedShot();
+	String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
+	String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
   
     error = null;
     
@@ -225,7 +240,7 @@ class MdsWaveInterface extends WaveInterface
     
     if(UseDefaultShot())
     {
-        String main_shot_str = ((jScopeWaveContainer)(wave.getParent())).getMainShotStr();
+        
 	    if(main_shot_str != null && main_shot_str.length() != 0)
 	    {
             curr_shots = ((jScopeWaveContainer)(wave.getParent())).getMainShots();
@@ -236,16 +251,16 @@ class MdsWaveInterface extends WaveInterface
 	        curr_shots =  def_vals.shots;
 	      else 
 	      {
-	        curr_shots = GetShotArray(def_vals.shot_str);
+	        curr_shots = GetShotArray(containMainShot(def_vals.shot_str, main_shot_str));
 	        if(error == null) 
 	        {
 	          def_vals.shots = curr_shots; 
 	          def_vals.is_evaluated = true;
 	        }
 	      }  
-	    }
+	   }
 	} else {
-	  curr_shots = GetShotArray(cin_shot);
+	  curr_shots = GetShotArray(containMainShot(cin_shot, main_shot_str));
 	}
 	
 	in_shot = c_shot_str;
@@ -542,6 +557,7 @@ class MdsWaveInterface extends WaveInterface
     {
 	    super.SetDataProvider(_dp);
 	    default_is_update = false;
+	    previous_shot = "";
     }
 
     public synchronized void refresh()

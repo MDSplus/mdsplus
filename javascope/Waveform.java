@@ -1239,12 +1239,17 @@ public class Waveform extends JComponent
 	        if(frames != null && frames.getNumFrame() != 0)
 	        {
 	            Point p = frames.getFramePoint(new Point(end_x, end_y), d);
+	            int frame_type = frames.getFrameType(frames.GetFrameIdx());
 
                 we = new WaveformEvent(this, WaveformEvent.POINT_UPDATE,
-                                    p.x, p.y, 
-                                    frames.GetFrameTime(), 0, 
-                                    frames.getPixel(frames.GetFrameIdx(),p.x, p.y), 0);
-
+                                p.x, p.y, 
+                                frames.GetFrameTime(), 0, 
+                                frames.getPixel(frames.GetFrameIdx(),p.x, p.y), 0);
+                if(frame_type == FrameData.BITMAP_IMAGE_32)
+                    we.setPointValue(frames.getPointValue(frames.GetFrameIdx(),p.x, p.y));
+                    
+                we.setFrameType(frame_type);
+                
                 dispatchWaveformEvent(we);
             }
         } else {      
@@ -1294,22 +1299,44 @@ public class Waveform extends JComponent
 	        WaveformEvent we;
 	        Dimension d = getWaveSize();
 	        Point p = frames.getFramePoint(new Point(end_x, end_y), d);
+            int frame_type = frames.getFrameType(frames.GetFrameIdx());
 
-	        we = new WaveformEvent(this,
-		                            frames.getName(),
-		                            frames.getPixelsX(p.y), 
-		                            frames.getStartPixelX(), 
-		                            frames.getPixelsY(p.x), 
-		                            frames.getStartPixelY(),
-		                            frames.getPixelsSignal(p.x, p.y),
-		                            frames.getFramesTime());
-	        if(show_measure) 
-	        {
-                Point p_pos = new Point((int)mark_point_x, (int)mark_point_y);
-	            Point mp = frames.getFramePoint(p_pos, d);
-		        we.setPixelsLine(frames.getPixelsLine(mp.x, mp.y, p.x, p.y));
+            if(frame_type == FrameData.BITMAP_IMAGE_32)
+            {
+	            we = new WaveformEvent(this,
+		                                frames.getName(),
+		                                frames.getValuesX(p.y), 
+		                                frames.getStartPixelX(), 
+		                                frames.getValuesY(p.x), 
+		                                frames.getStartPixelY(),
+		                                frames.getValuesSignal(p.x, p.y),
+		                                frames.getFramesTime());
+	            if(show_measure) 
+	            {
+                    Point p_pos = new Point((int)mark_point_x, (int)mark_point_y);
+	                Point mp = frames.getFramePoint(p_pos, d);
+		            we.setValuesLine(frames.getValuesLine(mp.x, mp.y, p.x, p.y));
+                }
+                we.setFrameType(frame_type);
             }
-                            
+            else
+            {
+	            we = new WaveformEvent(this,
+		                                frames.getName(),
+		                                frames.getPixelsX(p.y), 
+		                                frames.getStartPixelX(), 
+		                                frames.getPixelsY(p.x), 
+		                                frames.getStartPixelY(),
+		                                frames.getPixelsSignal(p.x, p.y),
+		                                frames.getFramesTime());
+	            if(show_measure) 
+	            {
+                    Point p_pos = new Point((int)mark_point_x, (int)mark_point_y);
+	                Point mp = frames.getFramePoint(p_pos, d);
+		            we.setPixelsLine(frames.getPixelsLine(mp.x, mp.y, p.x, p.y));
+                }
+                we.setFrameType(frame_type);
+            }
             dispatchWaveformEvent(we);
         }
     }

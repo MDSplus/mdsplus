@@ -605,17 +605,19 @@ import javax.swing.event.*;
 	        signalSelect(findSignalSetup(ws));	    
 	    }
      }
+     
        
        public boolean evaluateShotList(String in_shot) throws IOException
        {
-        
-            System.out.println("Evaluate shot "+in_shot);
-            
+                    
 		    if(shots != null && shots.length != 0)
 		        list_num_shot = shots.length;
 		    else
 		        list_num_shot = 1;
-		        
+		    
+		    main_scope.SetMainShot();
+		    in_shot = MdsWaveInterface.containMainShot(in_shot, 
+		                                               main_scope.wave_panel.getMainShotStr());
 		    long new_shots[] = wi.GetShotArray(in_shot);     
 		    if(new_shots == null)
 		    {
@@ -633,7 +635,6 @@ import javax.swing.event.*;
 		        } else {
 		            if(shots.equals(new_shots))
 		            {
-                        System.out.println("Shot non cambiato");
                         return false;
 		            }
 		            shots = new_shots;
@@ -644,7 +645,6 @@ import javax.swing.event.*;
 		                    long sh[] = new long[1];
 		                    sh[0]=shots[0];
 		                    shots = sh;
-		                    //list_num_shot = 1;
 		                }
 		            }
 		        }
@@ -812,7 +812,7 @@ import javax.swing.event.*;
 	    if(ob instanceof JCheckBox)
 	        DefaultButtonChange(ob);
 
-    	if(getSignalSelect() == -1)
+    	if(getSignalSelect() == -1 || image_b.isSelected())
 	        return;
         	    
 	    if(ob == marker) 

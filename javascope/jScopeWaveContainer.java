@@ -40,7 +40,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     private   boolean   main_shot_changed = false;
     private   String    main_shot_error = null;
     private   jScopeMultiWave profile_source = null;
-              MdsWaveInterface mds_wi[];
+              jScopeMultiWave wave_all[];
     private   String    save_as_txt_directory = null;
     private   jScopeBrowseSignals browse_sig = null;
     private   String prev_add_signal = null;
@@ -153,20 +153,14 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         return new jScopeMultiWave(dp, def_vals);
     }
     
-    public void InitMdsWaveInterface()
+    public void getjScopeMultiWave()
     {
-        jScopeMultiWave w;
+        wave_all = new jScopeMultiWave[getGridComponentCount()];
         
-        mds_wi = new MdsWaveInterface[getGridComponentCount()];
 	    for(int i = 0, k = 0; i < 4; i++)
 	    {
 	        for(int j = 0; j < rows[i]; j++, k++) 
-		    {
-		        w = (jScopeMultiWave)getGridComponent(k);
-		        w.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		        if(w != null)
-		            mds_wi[k] = (MdsWaveInterface)w.wi;
-		    }
+		        wave_all[k] = (jScopeMultiWave)getGridComponent(k);
 	    }
     }
     
@@ -301,15 +295,28 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             case WaveformEvent.PROFILE_UPDATE:
                 if(profile_dialog != null && profile_dialog.isShowing())
                 {
-                    profile_dialog.updateProfiles(e.name,
+                    if(e.frame_type == FrameData.BITMAP_IMAGE_32)
+                    {
+                        profile_dialog.updateProfiles(e.name,
+                                                  e.values_x, e.start_pixel_x, 
+                                                  e.values_y, e.start_pixel_y,
+                                                  e.values_signal, e.frames_time);
+                        if(e.pixels_line != null)
+                            profile_dialog.updateProfileLine(e.values_line);
+                        else
+                            profile_dialog.removeProfileLine();
+                    }
+                    else
+                    {
+                        profile_dialog.updateProfiles(e.name,
                                                   e.pixels_x, e.start_pixel_x, 
                                                   e.pixels_y, e.start_pixel_y,
                                                   e.pixels_signal, e.frames_time);
-                    if(e.pixels_line != null)
-                        profile_dialog.updateProfileLine(e.pixels_line);
-                    else
-                        profile_dialog.removeProfileLine();
-                    
+                        if(e.pixels_line != null)
+                            profile_dialog.updateProfileLine(e.pixels_line);
+                        else
+                            profile_dialog.removeProfileLine();
+                    }   
                 }
              break;
              case WaveformEvent.END_UPDATE :
@@ -394,7 +401,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     {
         try
         {
-            InitMdsWaveInterface();
+            getjScopeMultiWave();
             UpdateAllWave();
             PrintAllWaves(prnJob, pf);
         } catch (InterruptedException e){}
@@ -493,36 +500,37 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         updateThread = new UpdW();
         updateThread.start();
       }
-      InitMdsWaveInterface();
+      getjScopeMultiWave();
       updateThread.StartUpdate();
   }
 
 
   public long[] getMainShots()
   {
-     try
-     {
-        if(main_shot_changed)
-            EvaluateMainShot(main_shot_str);
-     } catch (IOException e){}
      return main_shots;
   }
   
   public String getMainShotStr()
   {
-    try
-    {
-        if(main_shot_changed)
-            EvaluateMainShot(main_shot_str);
-    } catch (IOException e){}
     return main_shot_str;
   }
 
-  public void SetMainShotStr(String main_shot_str)
+  public void SetMainShot(String main_shot_str)
   {
     if(main_shot_str == null || !main_shot_str.equals(this.main_shot_str))
-       main_shot_changed = true;
-    this.main_shot_str = main_shot_str;
+    {
+        try
+        {
+            this.main_shot_str = main_shot_str.trim();
+            EvaluateMainShot(this.main_shot_str);
+        }
+        catch(IOException exc)
+        {
+           main_shot_str = null;
+           main_shot_error = "Main Shots evaluations error : \n"+exc.getMessage();
+		   JOptionPane.showMessageDialog(this, main_shot_error, "alert", JOptionPane.ERROR_MESSAGE);            
+        }
+     }
   }
 
   public String getMainShotError(boolean brief)
@@ -539,40 +547,18 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	    long long_data[] = null;
 
         main_shot_error = null;
+        main_shots = null;
+        main_shot_str = null;	
         
 	    if(in_shots == null || in_shots.trim().length() == 0)
 	    {
 	        main_shot_error = "Main shot value Undefine";
-            main_shots = null;
-            main_shot_str = null;
 	        return;
         }
-        
-//        if(main_shot_str != null && main_shot_str.equals(in_shots) && main_shots != null)
-//            return null;
-
-        main_shots = null;
-        main_shot_str = null;
-	
-//	    dp.Update(null, 0);
-	    long_data = dp.GetShots(in_shots);
-	    if( long_data == null || long_data.length == 0 || long_data.length > MdsWaveInterface.MAX_NUM_SHOT)
-	    {
-	        if(long_data != null && long_data.length > MdsWaveInterface.MAX_NUM_SHOT)
-                error = "Too many shots. Max shot list elements " + MdsWaveInterface.MAX_NUM_SHOT +"\n";
-	        else {
-		        if(dp.ErrorString() != null)	    
-		            main_shot_error = dp.ErrorString();
-		        else
-		            main_shot_error = "Shot syntax error\n";
-	        }
-	    }
-	    
+	    long_data = WaveInterface.GetShotArray(in_shots, dp);
 	    if(main_shot_error == null)
-	    {
-	        main_shot_changed = false;
-                main_shots = long_data;
-	    }
+            main_shots = long_data;
+
         main_shot_str = in_shots.trim();
   }
 
@@ -688,8 +674,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		       w.Erase();
 		}
     }
-        
-    public synchronized void UpdateAllWave() throws Exception
+
+    public  void UpdateAllWave() throws Exception
     {
         jScopeMultiWave w;
         WaveContainerEvent wce;
@@ -697,7 +683,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         try
         {
 
-            if(mds_wi == null)
+            if(wave_all == null)
                 abort = true;
             else
 	            abort = false;
@@ -720,8 +706,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 	            for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-		            if(mds_wi[k] != null)
-		                mds_wi[k].Update();
+		            if(wave_all[k].wi != null)
+		                ((MdsWaveInterface)wave_all[k].wi).Update();
 		        }
 	        }
 
@@ -730,12 +716,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
 		        {
-		            if(mds_wi[k] != null && mds_wi[k].error == null)
+		            if(wave_all[k].wi != null && wave_all[k].wi.error == null)
 		            {
 			            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
 							        "Start Evaluate column " + (i + 1) + " row " + (j + 1));
                         dispatchWaveContainerEvent(wce);
-			            mds_wi[k].StartEvaluate();
+			            ((MdsWaveInterface)wave_all[k].wi).StartEvaluate();
 		            }
 		        }
 	        }
@@ -749,18 +735,19 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		            {
 			            for(int j = 0; j < rows[i] && !abort; j++, k++)
 			            {
-			                if(mds_wi[k] != null && mds_wi[k].error == null && mds_wi[k].num_waves != 0 && mds_wi[k].UseDefaultShot())
+			                if(wave_all[k].wi != null && wave_all[k].wi.error == null && 
+			                   wave_all[k].wi.num_waves != 0 && 
+			                   ((MdsWaveInterface)wave_all[k].wi).UseDefaultShot())
 			                {
 					            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
 								                "Update signal column " + (i + 1) + " row " + (j + 1) + 
 								                " main shot " + main_shots[l]);
 					            dispatchWaveContainerEvent(wce);
-				                mds_wi[k].EvaluateShot(main_shots[l]);
-				                if(mds_wi[k].allEvaluated())
+				                ((MdsWaveInterface)wave_all[k].wi).EvaluateShot(main_shots[l]);
+				                if(((MdsWaveInterface)wave_all[k].wi).allEvaluated())
 				                {
-	    	                        jScopeMultiWave wx = (jScopeMultiWave)getGridComponent(k);
-	    	                        if(wx.wi != null)
-			                            wx.Update(wx.wi);		            				                    
+	    	                        if(wave_all[k].wi != null)
+			                            wave_all[k].Update(wave_all[k].wi);		            				                    
 				                }				                
 				            }
 			            }
@@ -774,23 +761,22 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 		        for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-			        if(mds_wi[k] != null && mds_wi[k].error == null && 
-			           mds_wi[k].num_waves != 0 && !abort)
+			        if(wave_all[k].wi != null && wave_all[k].wi.error == null && 
+			           wave_all[k].wi.num_waves != 0 && !abort)
                     {
-				        if(mds_wi[k].allEvaluated())
+				        if(((MdsWaveInterface)wave_all[k].wi).allEvaluated())
                             continue;
                             
                         wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
                                 "Evaluate wave column " + (i + 1) + " row " + (j + 1));
                         dispatchWaveContainerEvent(wce);
-			            mds_wi[k].EvaluateOthers();    			        
+			            ((MdsWaveInterface)wave_all[k].wi).EvaluateOthers();    			        
 		            }
-	    	        jScopeMultiWave wx = (jScopeMultiWave)getGridComponent(k);
-	    	        if(wx.wi != null)
-			            wx.Update(wx.wi);		            
+	    	        if(wave_all[k].wi != null)
+			            wave_all[k].Update(wave_all[k].wi);		            				                    
 		        }
 	        }	    
-            mds_wi = null;
+            wave_all = null;
                     
         } 
         catch (Exception e) 
@@ -1348,7 +1334,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         WaveContainerEvent wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, label+" wave row " + p.x + " column " + p.y);
         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
 	    
-	    //If is added a signal to waveform only signal added
+	    //If is added a signal to the waveform only signal added
 	    //is evaluated, in the other cases, refresh from popup menu
 	    //or event update, all signals in the waveform must be
 	    //evaluated
