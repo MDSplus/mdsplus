@@ -7,67 +7,18 @@ then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
 fi
-case "`uname`" in
-Linux*)
-#
-# Linux post uninstall script
-#
-#
-# Remove mdsplus libraries from /etc/ld.so.conf
-#
-/bin/cp /etc/ld.so.conf /etc/ld.so.conf.before_mdsplus_removal
-/bin/grep -v "^$MDSPLUS_DIR/lib" /etc/ld.so.conf > /etc/ld.so.conf
-# 
-# Remove profile.d scripts
-#
-rm /etc/profile.d/mdsplus.csh
-rm /etc/profile.d/mdsplus.sh
-#
-# Remove man page configuration
-/bin/cp /etc/man.config /etc/man.config.before_mdsplus_removal
-/bin/grep -v "^MANPATH $MDSPLUS_DIR/man" /etc/man.config.before_mdsplus_removal > /etc/man.config
-;;
-OSF1*)
-#
-# Compaq TruUNIX post uninstall script
-#
-echo Removing mdsplus library symbolic links
-/bin/rm `/bin/ls -l /usr/local/lib/*.so | /bin/grep '\-\> $MDSPLUS_DIR/lib' | /bin/awk '{print $9}'`
-echo Removing mdsplus man page symbolic links
-/bin/rm `/bin/ls -l /usr/local/man/*/*.gz | /bin/grep '\-\> $MDSPLUS_DIR/man' | /bin/awk '{print $9}'`
-echo Removing mdsplus from login scripts
-/bin/cp /etc/profile /etc/profile.before_mdsplus_removal
-/bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
-/bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
-/bin/grep -v "^source $MDSPLUS_DIR/etc/profile.d/mdsplus.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
-;;
-HP-UX*)
-#
-# HP-UX post uninstall script
-#
-echo Removing mdsplus library symbolic links
-/bin/rm `/bin/ls -l /usr/local/lib/*.sl | /bin/grep '\-\> $MDSPLUS_DIR/lib' | /bin/awk '{print $9}'`
-echo Removing mdsplus from login scripts
-/bin/cp /etc/profile /etc/profile.before_mdsplus_removal
-/bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
-/bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
-/bin/grep -v "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
-;;
-SunOS*)
-#
-# SunOS post uninstall script
-#
-echo Removing mdsplus library symbolic links
-/bin/rm `/bin/ls -l /usr/local/lib/*.so | /bin/grep '\-\> $MDSPLUS_DIR/lib' | /bin/awk '{print $9}'`
-echo Removing mdsplus man page symbolic links
-/bin/rm `/bin/ls -l /usr/local/man/*/*.gz | /bin/grep '\-\> $MDSPLUS_DIR/man' | /bin/awk '{print $9}'`
-echo Removing mdsplus from login scripts
-/bin/cp /etc/profile /etc/profile.before_mdsplus_removal
-/bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
-/bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
-/bin/grep -v "^source $MDSPLUS_DIR/setup.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
-;;
-esac
+if [ -r /etc/profile.d/mdsplus.csh ]; then
+  rm /etc/profile.d/mdsplus.csh
+else
+  /bin/cp /etc/csh.login /etc/csh.login.before_mdsplus_removal
+  /bin/grep -v "^source $MDSPLUS_DIR/etc/profile.d/mdsplus.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
+fi
+if [ -r /etc/profile.d/mdsplus.sh ]; then
+  rm /etc/profile.d/mdsplus.sh
+else
+  /bin/cp /etc/profile /etc/profile.before_mdsplus_removal
+  /bin/grep -v "^. $MDSPLUS_DIR/setup.sh" /etc/profile.before_mdsplus_removal > /etc/profile
+fi
 if (test -r $MDSPLUS_DIR/local/mdsplus_post_uninstall_script)
 then
   rm $MDSPLUS_DIR/local/mdsplus_post_uninstall_script

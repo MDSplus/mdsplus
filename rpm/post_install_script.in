@@ -1,5 +1,5 @@
 #!/bin/sh
-PATH=/bin:/sbin
+PATH=/bin:/sbin:$PATH
 export PATH
 if ( test "$RPM_INSTALL_PREFIX" != "")
 then
@@ -121,7 +121,7 @@ then
 #
   if [ -r /etc/xinetd.d ] ; then
     echo Adding mdsip to /etc/xinetd.d
-    ln -sf $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+    ln -s $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
     @HUP_TO_XINETD@
   else
     echo Adding mdsipd service to /etc/inetd.conf
@@ -138,8 +138,8 @@ if (test "$MDSplusEnv" = "y")
 then
   echo Adding MDSplus login scripts
   if [ -r /etc/profile.d ]; then
-    ln -sf $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
-    ln -sf $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
+    ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
+    ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
   else
     if grep "^. $MDSPLUS_DIR/setup.sh" /etc/profile > /dev/null
     then
