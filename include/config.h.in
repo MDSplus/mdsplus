@@ -60,6 +60,9 @@
 /* The number of bytes in a long.  */
 #undef SIZEOF_LONG
 
+/* The number of bytes in a pointer.  */
+#undef SIZEOF_INT_P
+
 /* The number of bytes in a long long.  */
 #undef SIZEOF_LONG_LONG
 
@@ -160,8 +163,13 @@
 #ifndef HAS_SIGVEC
 #define SIGVEC sigvec
 #endif
-#define _CONFIG_INCLUDED
-#endif
-
 #define BLOCK_ALL 0xfffff
 
+#if SIZEOF_INT_P == 8
+#define _pointer_int _int64
+#else
+#define _pointer_int int
+#endif
+
+#define _CONFIG_INCLUDED
+#endif
