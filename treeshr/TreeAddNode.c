@@ -486,9 +486,9 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
   if (!IS_OPEN_FOR_EDIT(dblist))
     return TreeNOEDIT;
   if (path[0] == '\\')
-    sprintf(exp,"%s__add('\\%s',_nid)",congtype,path);
+    sprintf(exp,"DevAddDevice('\\%s', '%s')",path, congtype);
   else
-    sprintf(exp,"%s__add('%s',_nid)",congtype,path);
+     sprintf(exp,"DevAddDevice('%s', '%s')",path, congtype);
   status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
   if (status & 1)
   {
