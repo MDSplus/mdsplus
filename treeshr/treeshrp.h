@@ -78,6 +78,10 @@ typedef struct nci
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[1]; ((char *)(outp))[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
                            ((char *)(outp))[2] = ((char *)&in)[1]; ((char *)(outp))[3] = ((char *)&in)[0]
+#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[7]; (outp)[1] = ((char *)&in)[6]; \
+                           (outp)[2] = ((char *)&in)[5]; (outp)[3] = ((char *)&in)[4]; \
+                           (outp)[4] = ((char *)&in)[3]; (outp)[5] = ((char *)&in)[2]; \
+                           (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 
 static _int64 swapquad(char *in_c)
 {
@@ -111,6 +115,10 @@ static int swapshort(char *in_c)
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
                            ((char *)(outp))[2] = ((char *)&in)[2]; ((char *)(outp))[3] = ((char *)&in)[3]
+#define LoadQuad(in,outp)  (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
+                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]; \
+                           (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
+                           (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 
 static int swapint(char *in_c)
 {
