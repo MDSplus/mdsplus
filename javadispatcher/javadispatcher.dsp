@@ -98,10 +98,6 @@ SOURCE=.\Balancer.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\Descriptor.java
-# End Source File
-# Begin Source File
-
 SOURCE=.\InfoServer.java
 # End Source File
 # Begin Source File
