@@ -30,22 +30,25 @@ class TSDataProvider extends MdsDataProvider
 	
 	protected String ParseExpression(String in)
 	{
-	    if(in.startsWith("DIM_OF("))
-	        return in;
-	    StringTokenizer st = new StringTokenizer(in, ":");
+	    //if(in.startsWith("DIM_OF("))
+	    //    return in;
+	        
+	    String res = MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
+	        
+/*	    StringTokenizer st = new StringTokenizer(in, ":");
         String res = "GetTSData(\"";
 	    try{
-	        String name = st.nextToken();
+	        String name = st.nextToken();*/
 /*	        String rang0 = st.nextToken();
 	        String rang1 = st.nextToken();
 	        res = "GetTSData(\"" + name + "\", " + shot + ", " +
 	            rang0 + ", " + rang1 + ")"; */
-	        res = "GetTsBase(" + shot + ", \"" + name + "\")";
-	    }catch(Exception e)
+	        //res = "GetTsBase(" + shot + ", \"" + name + "\")";
+/*	    }catch(Exception e)
 	    {
 	        error = "Wrong signal format: must be <signal_name>:<rangs[0]>:<rangs[1]>";
 	        return null;
-	    }
+	    }*/
 	    //System.out.println(res);
 	    return res;
 	}
