@@ -309,27 +309,27 @@ int 	rblob;
 					AppendAnswer(j, buf, len, dtype);
 					break;
 				case SYBFLT8:
-					if (ind) {buf = (char *)&HUGE_D;len = 8;}
+					if (ind) {buf = (char *)&HUGE_D;bufs[j].len = 8;}
 					dtype = DTYPE_FT;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
 				case SYBREAL:
-					if (ind) {buf = (char *)&HUGE_F;len = 4;}
+					if (ind) {buf = (char *)&HUGE_F;bufs[j].len = 4;}
 					dtype = DTYPE_FS;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
 				case SYBINT4 :
-					if (ind) {buf = (char *)&HUGE_L;len = 4;}
+					if (ind) {buf = (char *)&HUGE_L;bufs[j].len = 4;}
 					dtype = DTYPE_L;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
 				case SYBINT2 :
-					if (ind) {buf = (char *)&HUGE_W;len = 2;}
+					if (ind) {buf = (char *)&HUGE_W;bufs[j].len = 2;}
 					dtype = DTYPE_W;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
 				case SYBINT1 :
-					if (ind)  {buf = (char *)&HUGE_B; len = 1;}
+					if (ind)  {buf = (char *)&HUGE_B; bufs[j].len = 1;}
 					dtype = DTYPE_BU;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
