@@ -349,8 +349,10 @@ Do this in runs.
   ******************************/
     if (*bit_ptr + xe * ye + xn * yn > limit)
       return LibSTRTRU;
+    header.n.dummy = 0;
     header.n.fields.x = xn - 1;
     header.n.fields.y = yn;
+    header.e.dummy = 0;
     header.e.fields.x = xe;
     header.e.fields.y = ye - 1;
     MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
