@@ -27,12 +27,14 @@ import java.lang.InterruptedException;
 class TwuDataProvider
     implements DataProvider
 {
-    String provider_url = "ipptwu.ipp.kfa-juelich.de";
-    String experiment;
-    long    shot;
-    String error_string;
-    transient Vector   connection_listener = new Vector();
+    protected String provider_url = "ipptwu.ipp.kfa-juelich.de";
+    protected String experiment;
+    protected long   shot;
+    protected String error_string;
+    private transient Vector   connection_listener = new Vector();
     private String user_agent;
+    private TwuWaveData lastWaveData = null ;
+
 
     //DataProvider implementation
     public boolean SupportsCompression(){return false;}
@@ -61,6 +63,7 @@ class TwuDataProvider
         return (new TwuSimpleFrameData(this, in_y, in_x, time_min, time_max));
     }
 
+    //  ---------------------------------------------------
     public synchronized WaveData GetWaveData (String in) 
     { 
         return GetWaveData (in, null); 
@@ -82,15 +85,13 @@ class TwuDataProvider
     GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points) 
     {
         TwuWaveData find = FindWaveData (in_y, in_x);
-        find.setZoom (shot, start, end, n_points);
+        find.setZoom (start, end, n_points);
         return find ;
     }
 
-    private TwuWaveData lastWaveData = null ;
-
     public synchronized TwuWaveData FindWaveData (String in_y, String in_x) 
     {
-        if ( lastWaveData == null  ||  lastWaveData.notEqualsInputSignal (in_y, in_x) )
+        if ( lastWaveData == null  ||  lastWaveData.notEqualsInputSignal (in_y, in_x, shot) )
         {
             lastWaveData = new TwuWaveData (this, in_y, in_x) ;
             try
@@ -166,197 +167,7 @@ class TwuDataProvider
         return out;
     }
 
-    //  ----------------------------------------------------
-    //       data fetching (or creation) methods below.
-    //  ----------------------------------------------------
-
-    // Should probably be in another class.
-
-    //static
-    protected synchronized TWUFetchOptions
-    FindIndicesForXRange( TwuSingleSignal xsig, long shot, float x_start, float x_end, int n_points ) 
-        throws  Exception
-    {
-        final TWUProperties prop = xsig.getTWUProperties(this) ;
-        final int           len  = prop.LengthTotal() ;
-
-        if (prop.Dimensions() == 0 || len <= 1)
-          return new TWUFetchOptions(0,1,1);  // mainly used to pick scalars out.
-
-        int           ix_start = -1;
-        int           ix_end   = -1 ;
-        final double  min      = prop.Minimum();
-        final double  max      = prop.Maximum();
-        final boolean is_equi  = prop.Equidistant() ;
-
-        if (is_equi && min < max)
-        {
-            final double first = prop.Decrementing() ? max : min;
-            final double last  = prop.Decrementing() ? min : max;
-            final double mult  = len / (last - first) ;
-
-            if (x_start < first)
-              x_start = (float) first ;
-
-            if (x_end   > last)
-              x_end = (float) last ;
-
-            ix_start = (int) Math.floor ( mult*(x_start - first) );
-            ix_end   = (int) Math.ceil  ( mult*(x_end   - first) );
-        }
-        else
-        {
-            // do an iterated search to find the indices, 
-            // by reading parts of the abscissa values.
-
-            // ------------------------------------------------
-            //   minimum assumption here: data is a 1-to-1 map,
-            //    and it's either ascending or descending ;
-            //    there should be no peaks or valleys.
-            // ------------------------------------------------
-
-            final int POINTS_PER_REQUEST = 100 ;
-            int       k    = POINTS_PER_REQUEST;
-            final int step = (int) Math.ceil ( len / (float)k ) ;
-
-            TWUFetchOptions opt = new TWUFetchOptions ( 0, step, k );
-            float[] data = xsig.doFetch (this, opt);
-
-            boolean up = data [1] > data [0] ; 
-            k = data.length ; // may be less than POINTS_PER_REQUEST .
-
-            int i=0;
-            if (up)
-            {
-                while( i<k && data[i] <= x_start)
-                  i++;
-            }
-            else
-            {
-                while( i<k && data[i] >= x_end)
-                  i++;
-            }
-            if (i != 0)
-              i-- ;     
-            // correct the overshoot from the 'break'.
-            ix_start = i * step ; 
-            // temporary starting index. will zoom in to get the index of a closer match.
-
-            int j=k-1;
-            if (up)
-            {
-                while( j>i && data[j] >= x_end )
-                  j--;
-            }
-            else
-            {
-                while( j>i && data[j] <= x_start )
-                  j--;
-            }
-        
-            ix_end = j * step ;
-
-            data = null ; 
-            // garbage-collect the now redundant data. 
-            // saves some memory [okay, now I'm optimizing... :)]
-
-            ix_start = FindNonEquiIndex(this, up ? x_start : x_end,    xsig, ix_start, step, k, len);
-            ix_end   = FindNonEquiIndex(this, up ? x_end   : x_start,  xsig, ix_end,   step, k, len);
-        }
-
-        // extra checks:
-        if (ix_start < 0   )
-          ix_start = 0   ;
-        if (ix_end   >= len)
-          ix_end   = len ;
-        if (n_points < 2)
-          n_points = 2 ;
-
-        int range = ix_end - ix_start ; 
-        int step  = range / (n_points - 1)  ; 
-        if (step < 1) step = 1 ;
-        int real_numsteps = (int) Math.floor ( (float)range / (float)step );
-        int real_n_points = real_numsteps + 1 ; 
-        // I want the last point (ix_end) included.
-
-        // you should end up getting *at least* n_point points.
-        // NB: due to clipping, it *is* still possible that you do not get the very last point ....
-
-        return new TWUFetchOptions (ix_start, step, real_n_points) ;
-    }
-
-    // Should probably be in another class.
-    static
-    protected synchronized int
-    FindNonEquiIndex(TwuDataProvider provider, float target, TwuSingleSignal xsig, int start, int laststep, int maxpts, int len)
-        throws Exception
-    {
-        // This is an iterative routine : it 'zooms in' on (a subsampled part of the)
-        // abscissa data, until it finds the closest index. It looks between indices
-        // start and start+laststep, subsamples at most maxpts at a time =>
-        // next stepsize will be ceil (laststep/maxpts) ....
-        // 
-
-        int newstep = (int) Math.ceil (laststep / ((float)maxpts)) ;
-        if (newstep < 1)
-          newstep = 1 ;
-
-        int end = start + laststep ;
-        int num = (int) Math.ceil ( laststep / ((float)newstep) );
-
-        float [] data = xsig.doFetch (provider, new TWUFetchOptions (start, newstep, num+1)); 
-
-        // the "num+1" is for reading the sample at the edge, for comparison 
-        // (we want to get the index for which the data is closest to the target value.)
-
-        int newnum = data.length ;
-
-        boolean up = data[1] > data[0] ;
-        int i=0;
-        if (up) 
-        {
-            while ( i<newnum && data[i]<=target )
-              i++;
-        }
-        else
-        {
-            while ( i<newnum && data[i]>=target )
-              i++;
-        }
-        if (i > 0)
-          i-- ; // correct overshoot.
-        int newstart = start+i*newstep ;
-        int ret ;
-        if (newstep > 1) 
-        {
-            data = null ; 
-            ret = FindNonEquiIndex (provider, target, xsig, newstart, newstep, maxpts, len) ; 
-        }
-        else 
-        {
-            if (i >= newnum-1)
-              ret = newstart ;
-            else 
-            {
-                boolean closer = 
-                    ( Math.abs (data[i] - target) <= Math.abs (data[i+1] - target) ) ;
-                ret = closer ? newstart : newstart+1 ;
-            }
-        }
-        return ret ;
-    }
-
     // ---------------------------------------------------------------------------------------------
-
-    protected static void handleException (Exception e) 
-    {
-        if (Waveform.is_debug) 
-          e.printStackTrace (System.out) ;
-
-        // this method exists only to improve consistency.
-        // alternatively : e.printStackTrace() (prints to stderr),
-        //  or if (debug) e.printStackTrace (System.out) ....
-    }
 
     public synchronized float[] GetFloatArray(String in)
     {
@@ -384,52 +195,8 @@ class TwuDataProvider
         return data ;
     }
 
-    protected synchronized float [] SimplifiedGetFloats(TWUSignal bulk, boolean is_time, int n_point)
-    {
-        boolean okay = true ;
-
-        try
-        {
-            ConnectionEvent ce;
-            ce = new ConnectionEvent(this, (is_time ? "Load X" : "Load Y"), 0, 0);
-            this.DispatchConnectionEvent(ce);
-
-            int inc = n_point/Waveform.MAX_POINTS, done = 0 ;
-            if (inc<10) 
-              inc=10;
-
-            while( !bulk.complete() && !bulk.error() )
-            {
-                try
-                {
-                    bulk.tryToRead(inc);
-
-                    ce = new ConnectionEvent(this, (is_time ? "X:" : "Y:"), 
-                                             n_point, done = bulk.getActualSampleCount());
-                    DispatchConnectionEvent(ce);
-
-                    Thread.yield () ; 
-                    // give the graphics thread a chance to update the user interface (the status bar) ...
-                }
-                catch(Exception exc) 
-                { 
-                    okay = false; break; 
-                }
-            }
-            if (bulk.error()) okay = false ;
-        }
-        catch(Exception exc)
-        {
-            error_string = "Error reading Bulk URL "+ bulk.urlstring() ;
-            okay = false ;
-        }
-        DispatchConnectionEvent(new ConnectionEvent(this, null, 0, 0));
-        return okay ? bulk.getBulkData() : null ;
-    }
-
     //  ----------------------------------------------------
-    //     workarounds for TwuAccess, which relies on
-    //       some old TwuDataProvider methods :(
+    //  Methods for TwuAccess.
     //  ----------------------------------------------------
 
     public synchronized float[] 
@@ -538,14 +305,16 @@ class TwuDataProvider
     }
 
     //  -------------------------------------------
-    //      constructor, small stuff ...
+    //  Constructor, other small stuff ...
     //  -------------------------------------------
 
-    public void Update(String experiment, long shot)
+    public synchronized void 
+    Update(String experiment, long shot)
     {
         this.experiment = experiment;
         this.shot = shot;
         error_string = null;
+        lastWaveData = null;
     }
 
     public TwuDataProvider()

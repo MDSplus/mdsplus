@@ -18,40 +18,85 @@ import java.lang.InterruptedException;
 
 class TwuSingleSignal
 {
-    TWUProperties   properties      = null  ;
-    TwuSingleSignal mainSignal      = null  ;
-    TWUFetchOptions fetchOptions    = null  ;
-    String    source                = null  ;
-    float[]   data                  = null  ;
-    boolean   propertiesAvailable   = false ;
-    long      shotOfTheProperties   = 0;
-    boolean   dataAvailable         = false ;
-    boolean   fetchOptionsAvailable = false ;
-    boolean   error                 = false ;
-    Exception errorSource           = null  ;
-    boolean   fakeAbscissa          = false ;
-    boolean   isAbscissa            = false ;
+    private TwuDataProvider provider        = null  ;
+    private TWUProperties   properties      = null  ;
+    private TwuSingleSignal mainSignal      = null  ;
+    private TWUFetchOptions fetchOptions    = null  ;
+    private String    source                = null  ;
+    private float[]   data                  = null  ;
+    private boolean   propertiesAvailable   = false ;
+    private long      shotOfTheProperties   = 0;
+    private boolean   dataAvailable         = false ;
+    private boolean   fetchOptionsAvailable = false ;
+    private boolean   error                 = false ;
+    private Exception errorSource           = null  ;
+    private boolean   fakeAbscissa          = false ;
+    private boolean   isAbscissa            = false ;
 
-    public TwuSingleSignal (String src)
+
+    public TwuSingleSignal (TwuDataProvider dp, String src)
     {
+        provider = dp;
         source = src;
     }
 
-    public TwuSingleSignal (TwuSingleSignal prnt)
+    public TwuSingleSignal (TwuDataProvider dp, TwuSingleSignal prnt)
     {
+        provider = dp;
         mainSignal = prnt ;
         isAbscissa = true ;
     }
 
-    public TWUProperties  getTWUProperties(TwuDataProvider dp)
+    //-----------------------------------------------------------------------------
+    // Access to our DataProvider should only be necessary to access its
+    // event connection methods.
+
+    private void 
+    DispatchConnectionEvent(ConnectionEvent e) 
+    {
+        provider.DispatchConnectionEvent(e);
+    }
+    
+    private ConnectionEvent 
+    makeConnectionEvent(String info, int total_size, int current_size) 
+    {
+        return  new ConnectionEvent (provider, info, total_size, current_size) ;
+    }
+
+    private ConnectionEvent 
+    makeConnectionEvent(String info ) 
+    {
+        return  new ConnectionEvent (provider, info) ;
+    }
+
+
+    private void 
+    setErrorString(String errmsg)
+    {
+        if (provider.error_string==null)
+          provider.error_string = errmsg;
+    }
+    
+
+
+    //-----------------------------------------------------------------------------
+
+    protected TWUProperties  
+    getTWUProperties()
+    {
+        return properties ;
+    }
+
+    public TWUProperties  
+    getTWUProperties(long requestedShot)
         throws IOException
     {
-        if (! propertiesAvailable || shotOfTheProperties!=dp.shot)
+        if (! propertiesAvailable || shotOfTheProperties!=requestedShot )
         {
             try
             {
-                shotOfTheProperties=dp.shot;
-                fetchProperties(dp) ;
+                shotOfTheProperties=requestedShot;
+                fetchProperties() ;
                 // NB, this throws an exception if an error occurs
                 // OR HAS occurred before. And what good did that do?
             }
@@ -61,7 +106,7 @@ class TwuSingleSignal
             }
             catch (Exception   e)
             {
-                dp.handleException(e);
+                handleException(e);
                 throw new IOException (e.toString());
                 // e.getMessage() might be nicer... but then you won't
                 // know the original exception type at all, and
@@ -72,23 +117,13 @@ class TwuSingleSignal
         return properties ;
     }
 
-    public String getProperty (String keyword, TwuDataProvider dp)
-        throws Exception
-    {
-        if (! propertiesAvailable || shotOfTheProperties!=dp.shot)
-        {
-            shotOfTheProperties=dp.shot;
-            fetchProperties(dp) ;
-        }
-
-        return properties.getProperty (keyword);
-    }
-
     // note that this setup only fetches the properties (and, later on, data)
     // if (and when) it is needed. it's less likely to do redundant work than
     // if I'd get the properties in the constructor.
 
-    private void fetchProperties(TwuDataProvider dp) throws Exception
+    private void 
+    fetchProperties() 
+        throws Exception
     {
         try
         {
@@ -98,9 +133,9 @@ class TwuSingleSignal
             dataAvailable = false ;
 
             if (isAbscissa)
-              fetch_X_Properties(dp) ;
+              fetch_X_Properties() ;
             else
-              fetch_Y_Properties(dp) ;
+              fetch_Y_Properties() ;
         }
         catch (Exception e)
         {
@@ -111,10 +146,12 @@ class TwuSingleSignal
         propertiesAvailable = true ;
     }
 
-    private void fetch_X_Properties(TwuDataProvider dp) throws Exception
+    private void 
+    fetch_X_Properties() 
+        throws Exception
     {
         checkForError( mainSignal ) ;
-        TWUProperties yprops = mainSignal.getTWUProperties(dp);
+        TWUProperties yprops = mainSignal.getTWUProperties();
         int dim = yprops.Dimensions() ;
 
         if (dim > 1 || dim < 0)
@@ -122,42 +159,47 @@ class TwuSingleSignal
 
         if (! yprops.hasAbscissa0() )
         {
-            fake_my_Properties(dp) ;
+            fake_my_Properties() ;
             return ;
         }
 
         String mypropsurl = yprops.FQAbscissa0Name() ;
-        fetch_my_Properties (dp, mypropsurl, "X");
+        fetch_my_Properties (mypropsurl, "X");
     }
 
-    private void fetch_Y_Properties(TwuDataProvider dp) throws Exception
+    private void 
+    fetch_Y_Properties() 
+        throws Exception
     {
         if (source == null)
           throwError ("No input signal set !");
 
-        String propsurl = TwuDataProvider.GetSignalPath (source, dp.shot, dp.provider_url, dp.experiment) ;
-        fetch_my_Properties (dp, propsurl, "Y");
+        String propsurl = 
+            TwuDataProvider.GetSignalPath (source, shotOfTheProperties, 
+                                           provider.provider_url, provider.experiment) ;
+        fetch_my_Properties (propsurl, "Y");
     }
 
-    private void fetch_my_Properties(TwuDataProvider dp, String propsurl, String XorY ) 
+    private void 
+    fetch_my_Properties(String propsurl, String XorY ) 
         throws Exception
     {
-        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, "Load Properties", 0, 0));
+        DispatchConnectionEvent ( makeConnectionEvent ("Load Properties", 0, 0));
         properties = new TWUProperties (propsurl);
-        dp.DispatchConnectionEvent ( new ConnectionEvent (dp, null, 0, 0));
+        DispatchConnectionEvent ( makeConnectionEvent (null, 0, 0));
 
         if (! properties.valid())
         {
-            if (dp.error_string==null)
-              dp.error_string = "No Such "+XorY+" Signal : " + propsurl ;
+            setErrorString("No Such "+XorY+" Signal : " + propsurl );
             throwError ("Error loading properties of "+XorY+" data !" + propsurl );
         }
     }
 
-    private void fake_my_Properties(TwuDataProvider dp) throws Exception
+    private void 
+    fake_my_Properties()
     {
         fakeAbscissa = true ;
-        int len = mainSignal.getTWUProperties(dp).LengthTotal() ;
+        int len = mainSignal.getTWUProperties().LengthTotal() ;
         properties = new FakeTWUProperties (len) ;
         // creates an empty (but non-null!) Properties object,
         // which can used _almost_ just like the real thing.
@@ -186,21 +228,21 @@ class TwuSingleSignal
         return errorSource ;
     }
 
-    public float [] getData (TWUFetchOptions opt, TwuDataProvider dp )
+    public float [] getData (TWUFetchOptions opt )
         throws IOException
     {
-        setFetchOptions (opt, dp) ;
-        return getData(dp) ;
+        setFetchOptions (opt) ;
+        return getData() ;
     }
 
-    public float [] getData ( TwuDataProvider dp ) throws IOException
+    public float [] getData ( ) throws IOException
     {
         if (dataAvailable)
           return data ;
 
         try
         {
-            fetchBulkData (dp) ;
+            fetchBulkData () ;
         }
         catch (IOException e)
         {
@@ -208,16 +250,16 @@ class TwuSingleSignal
         }
         catch (Exception   e)
         {
-            dp.handleException(e);
+            handleException(e);
             throw new IOException (e.toString()) ;
         }
         return data ;
     }
 
-    public void setFetchOptions (TWUFetchOptions opt, TwuDataProvider dp)
+    public void setFetchOptions (TWUFetchOptions opt)
         throws IOException
     {
-        doClip (opt, dp);
+        doClip (opt);
         if ( fetchOptionsAvailable
              &&
              fetchOptions.equalsForBulkData (opt) )
@@ -231,7 +273,7 @@ class TwuSingleSignal
         data = null ;
     }
 
-    private void doClip (TWUFetchOptions opt, TwuDataProvider dp)
+    private void doClip (TWUFetchOptions opt)
         throws IOException
     {
         if (fakeAbscissa)
@@ -239,46 +281,76 @@ class TwuSingleSignal
         // there *is* no abscissa so there aren't any properties
         // (and certainly no length)!
 
-        int length = getTWUProperties(dp).LengthTotal();
+        int length = getTWUProperties(shotOfTheProperties).LengthTotal();
         opt.clip (length);
     }
 
-    private synchronized void fetchBulkData(TwuDataProvider dp) throws Exception
+    private void fetchBulkData() throws Exception
     {
         if (! fetchOptionsAvailable)
           throwError ("unspecified fetch options (internal error)");
 
         if (fetchOptions.total == -1 )
-          doClip(fetchOptions, dp); // just in case ...
+          doClip(fetchOptions); // just in case ...
 
         if (fetchOptions.total <=  1 )
         {
-            createScalarData (dp);
+            createScalarData ();
             return ;
         }
         if ( (isAbscissa && fakeAbscissa) || properties.Equidistant() )
         {
-            createEquidistantData(fetchOptions, dp );
+            createEquidistantData(fetchOptions );
             return ;
         }
-        data = doFetch (dp, fetchOptions);
+
+        data = doFetch (fetchOptions);
         dataAvailable = true ;
     }
 
-    protected synchronized float[] doFetch(TwuDataProvider dp, TWUFetchOptions opt)
+    protected float[] doFetch(TWUFetchOptions opt)
     {
-        TWUSignal bulk ;
-
         ConnectionEvent ce;
-        ce = new ConnectionEvent(this, "Start Loading "+ (isAbscissa ? "X" : "Y"));
+        ce = makeConnectionEvent("Start Loading "+ (isAbscissa ? "X" : "Y"));
+        DispatchConnectionEvent(ce);
 
-        dp.DispatchConnectionEvent(ce);
+        TWUSignal bulk = new TWUSignal (properties, opt.start, opt.step, opt.total);
 
-        bulk = new TWUSignal (properties, opt.start, opt.step, opt.total);
-        return dp.SimplifiedGetFloats(bulk, isAbscissa, opt.total);
+        return SimplifiedGetFloats(bulk, isAbscissa, opt.total);
     }
 
-    private void createScalarData(TwuDataProvider dp)
+    private float [] 
+    SimplifiedGetFloats(TWUSignal bulk, boolean is_time, int n_point)
+    {
+        ConnectionEvent ce;
+        ce = makeConnectionEvent((is_time ? "Load X" : "Load Y"), 0, 0);
+        DispatchConnectionEvent(ce);
+
+        int inc = Waveform.MAX_POINTS!=0 ? n_point/Waveform.MAX_POINTS : 0;
+        if (inc<10) 
+          inc=10;
+
+        while( !bulk.complete() && !bulk.error() )
+        {
+            bulk.tryToRead(inc);
+
+            ce = makeConnectionEvent((is_time ? "X:" : "Y:"), 
+                                     n_point, bulk.getActualSampleCount());
+            DispatchConnectionEvent(ce);
+                
+            Thread.yield () ; 
+            // give the graphics thread a chance to update the user interface (the status bar) ...
+        }
+        if (bulk.error()) 
+          setErrorString("Error reading Bulk Data");
+        
+        DispatchConnectionEvent(makeConnectionEvent(null, 0, 0));
+        return bulk.error() ? null : bulk.getBulkData() ;
+    }
+
+
+    private void 
+    createScalarData()
     {
         // an extra check to see if it really is a scalar
         if (fetchOptions.total == 1)
@@ -293,15 +365,17 @@ class TwuSingleSignal
             return ;
         }
         else
-          dp.error_string = "No numerical data available!" ;
+          setErrorString("No numerical data available!" );
 
         data = null ; // 'triggers' display of the error_string.
         dataAvailable = true ;
     }
 
-    public synchronized String ScalarToTitle(TwuDataProvider dp) throws Exception
+    public String 
+    ScalarToTitle(TwuDataProvider dp) 
+        throws Exception
     {
-        TWUProperties props = getTWUProperties(dp);
+        TWUProperties props = getTWUProperties(dp.shot);
         // makes sure that the properties are really fetched.
         // although they should already have been if this method is called.
 
@@ -315,14 +389,14 @@ class TwuSingleSignal
           min = (float) props.Minimum() ;
         else
         {
-            float[] scalar = doFetch (dp, new TWUFetchOptions());
+            float[] scalar = doFetch (new TWUFetchOptions());
             min = scalar[0] ;
         }
         return name + " = " + min + " " + units ;
     }
 
     private void
-    createEquidistantData(TWUFetchOptions opt, TwuDataProvider dp)
+    createEquidistantData(TWUFetchOptions opt)
         throws Exception
     {
         float fullstep, start ;
@@ -331,15 +405,8 @@ class TwuSingleSignal
 
         if (fakeAbscissa)
         {
-            TWUProperties props = null ;
-            try
-            {
-                props = mainSignal.getTWUProperties(dp) ;
-            }
-            catch (IOException e)
-            {
-                return ;  // the error flag should already be set.
-            }
+            TWUProperties props = mainSignal.getTWUProperties() ;
+
             total    = props.LengthTotal() - 1 ;
             fullstep = opt.step  ;
             start    = opt.start ;
@@ -391,6 +458,16 @@ class TwuSingleSignal
     {
         if (sig.error)
           throw( (Exception) sig.errorSource.fillInStackTrace() ) ;
+    }
+
+    protected static void handleException (Exception e) 
+    {
+        if (Waveform.is_debug) 
+          e.printStackTrace (System.out) ;
+
+        // this method exists only to improve consistency.
+        // alternatively : e.printStackTrace() (prints to stderr),
+        //  or if (debug) e.printStackTrace (System.out) ....
     }
 }
 
