@@ -11,18 +11,18 @@ OBJECTS = \
 	librtl.o
 
 all : .depend
-	make -f Makefile.HPUX -f .depend ../shlib/libMdsShr.so
+	make -f Makefile.HPUX -f .depend ../shlib/libMdsShr.sl
 
-../shlib/libMdsShr.so : $(OBJECTS) ../shlib 
+../shlib/libMdsShr.sl : $(OBJECTS) ../shlib 
 	$(LD) -o $@ $(OBJECTS) -b -lc -ldld
 
 ../shlib :
 	mkdir ../shlib
 
 clean :
-	- rm ../shlib/libMdsShr.so 2> /dev/null
-	- rm *.o 2> /dev/null
-	- rm .depend 2> /dev/null
+	- rm ../shlib/libMdsShr.sl
+	- rm *.o
+	- rm .depend
 
 depend : .depend
 
