@@ -1,6 +1,5 @@
 /* $Id$ */
 import java.awt.*;
-import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -53,6 +52,7 @@ public class Waveform extends JComponent
     protected WaveformMetrics wm;	
     protected boolean not_drawn; 
     protected boolean reversed = false;
+    protected boolean show_sig_image = false;
     protected Polygon polygon;
     protected int prev_width;
     protected int prev_height;
@@ -70,7 +70,7 @@ public class Waveform extends JComponent
     protected Image off_image;
     protected Graphics off_graphics;	
     protected Rectangle wave_b_box;
-    protected String x_label, y_label, title;
+    protected String x_label, y_label, z_label, title;
     protected int mode, grid_mode;
     protected boolean dragging,  copy_selected = false, resizing = true;
     protected int pan_x, pan_y;
@@ -317,6 +317,16 @@ public class Waveform extends JComponent
 	        else
 	            g.setFont(font);
         }
+    }
+
+    public boolean IsShowSigImage()
+    {
+        return show_sig_image;
+    }
+
+    public void setShowSigImage(boolean show_sig_image)
+    {
+        this.show_sig_image = show_sig_image;
     }
     
     static boolean isColorsChanged(){return colors_changed;}
@@ -840,6 +850,7 @@ public class Waveform extends JComponent
 	    y_label = null;
 	    not_drawn = true;
 	   // wave_error = null;
+	    show_sig_image = false;
 	    repaint();
     }
 	
@@ -1145,6 +1156,9 @@ public class Waveform extends JComponent
     protected void PaintSignal(Graphics g, Dimension dim, int print_mode)
     {
         Dimension d;
+	    String orizLabel = x_label;
+	    String vertLabel = y_label;
+	    String sigTitle = title;
 	
 	    if(print_mode == NO_PRINT)
             d = getWaveSize();
@@ -1170,19 +1184,45 @@ public class Waveform extends JComponent
 		            ymax += yrange * vertical_offset/200.;
 		            ymin -= yrange * vertical_offset/200.;
 		            
-		        }
+	                orizLabel = (x_label == null) ? waveform_signal.getXlabel() : x_label;
+	                vertLabel = (y_label == null) ? waveform_signal.getYlabel() : y_label;
+	                sigTitle  = (title == null || title.length() == 0) ? waveform_signal.getTitlelabel() : title;
+	                
+                    if(waveform_signal.getType() == Signal.TYPE_2D)
+                    {
+                        switch(waveform_signal.getMode())
+                        {
+                            case Signal.MODE_IMAGE:
+                                //orizLabel = waveform_signal.getXlabel();
+                                vertLabel = waveform_signal.getZlabel();
+                            break;
+                            case Signal.MODE_XY:
+                                orizLabel = vertLabel;
+                                vertLabel = waveform_signal.getZlabel();
+                        break;
+                            case Signal.MODE_YX:
+                                orizLabel = waveform_signal.getZlabel();
+                             //   vertLabel = waveform_signal.getYlabel();
+                            break;
+                        }
+	                }
+	            }
 	        }
 	    
 	        if(resizing || grid == null || wm == null || change_limits)
 	        {
 	            change_limits = false;
-		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    title, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
+	            
+	            
+		        grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, orizLabel, vertLabel, 
+		                    sigTitle, wave_error, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
 		        curr_display_limits = new Rectangle();
 		        grid.GetLimits(g, curr_display_limits, y_log);
 		        wm = new WaveformMetrics(xmax, xmin, ymax, ymin, curr_display_limits, 
 		                                 d, x_log, y_log, 0, 0);
 	        }
+	        else
+	            grid.setLabels(sigTitle, orizLabel, vertLabel);
 		    
 	    
 	        if(!copy_selected || print_mode != NO_PRINT)
@@ -1196,10 +1236,11 @@ public class Waveform extends JComponent
 		        g.setColor(Color.lightGray);
 		        
 	        g.fillRect(1, 1, d.width - 2, d.height - 2);
-	        	        
+	        
+	        /*	        
             if(!is_min_size)
 	            grid.paint(g, d, this, wm);
-
+            */
 	        if(waveform_signal != null)
 	        {
 	            wave_b_box = new Rectangle(wm.XPixel(MinXSignal(), d),
@@ -1210,8 +1251,11 @@ public class Waveform extends JComponent
                 if(print_mode == NO_PRINT)
 		            g.clipRect(curr_display_limits.width, 0, 
 		                                  d.width - curr_display_limits.width, d.height - curr_display_limits.height);
-    	        DrawSignal(g, d, print_mode);
+    	        DrawSignal(g, d, print_mode);    	        
 	        }
+	        
+            if(!is_min_size)
+	            grid.paint(g, d, this, wm);
     }
   
     //Send Waveform event routines
@@ -1259,19 +1303,19 @@ public class Waveform extends JComponent
 	        {
 
         	        
-    	            curr_x = wm.XValue(end_x, d);
+    	        curr_x = wm.XValue(end_x, d);
 	            curr_y = wm.YValue(end_y, d);	
         		
 	            Point p = FindPoint(curr_x, curr_y, first_set_point);
 	            first_set_point = false;
 
-    	            curr_x = curr_point = wave_point_x;
+    	        curr_x = curr_point = wave_point_x;
 	            curr_y = wave_point_y;
 
 		    //System.out.println("Curr point "+curr_point+" on "+getName());
                     
 	            double dx = 0, dy = 0;
-                    int event_id;
+                int event_id;
                             
 		        dx = curr_x - mark_point_x;
 		        dy = curr_y - mark_point_y;
@@ -1285,6 +1329,7 @@ public class Waveform extends JComponent
                 Signal s = GetSignal();
                 we.setTimeValue(s.getTime());
                 we.setXValue(s.getXData());
+		        we.setDataValue(s.getDataValue());
 		        we.setIsMB2(is_mb2);
 				
                 dispatchWaveformEvent(we);
@@ -1600,47 +1645,57 @@ public class Waveform extends JComponent
     {
             double x = 0.0, y = 0.0;
         
-            if(s == null) return null;
-        
+            if(s == null)
+                return null;
+
+            if(s.getType() == Signal.TYPE_2D && s.getMode() == Signal.MODE_IMAGE)
+            {
+                wave_point_x = s.getClosestX(curr_x);
+	            wave_point_y = s.getClosestY(curr_y);
+	            Dimension d = getWaveSize();
+	            Point p = new Point(wm.XPixel(wave_point_x, d), wm.YPixel(wave_point_y, d));
+	            return p;
+            }
+            
             int idx = s.FindClosestIdx(curr_x, curr_y);
             if(curr_x > s.getXmax() || curr_x < s.getXmin() || idx == s.getNumPoints() - 1)
             {
 	    	    y = s.y[idx];
 	    	    x = s.x[idx];
-	    }
-	    else
-	    {
-	        if(s.getMarker() != Signal.NONE && !s.getInterpolate() || s.findNaN())
+	        }
+	        else
 	        {
-	            double val;
-	            boolean increase = s.x[idx] < s.x[idx+1];
-	            	            
-	            if(increase)
-	                val = s.x[idx] +  (s.x[idx+1] - s.x[idx])/2;
-	            else
-	                val = s.x[idx + 1] +  (s.x[idx] - s.x[idx + 1])/2;
-
-                //Patch to elaborate strange RFX signal (roprand bar error signal)
-	            if(s.x[idx] == s.x[idx+1] && !Float.isNaN(s.y[idx+1]))
-                    val += curr_x;
-	            
-	            if(curr_x < val)
+	            if(s.getMarker() != Signal.NONE && !s.getInterpolate() || s.findNaN())
 	            {
-	                y = s.y[idx + (increase ? 0 : 1)];
-	                x = s.x[idx + (increase ? 0 : 1)];
+	                double val;
+	                boolean increase = s.x[idx] < s.x[idx+1];
+    	            	            
+	                if(increase)
+	                    val = s.x[idx] +  (s.x[idx+1] - s.x[idx])/2;
+	                else
+	                    val = s.x[idx + 1] +  (s.x[idx] - s.x[idx + 1])/2;
+
+                    //Patch to elaborate strange RFX signal (roprand bar error signal)
+	                if(s.x[idx] == s.x[idx+1] && !Float.isNaN(s.y[idx+1]))
+                        val += curr_x;
+    	            
+	                if(curr_x < val)
+	                {
+	                    y = s.y[idx + (increase ? 0 : 1)];
+	                    x = s.x[idx + (increase ? 0 : 1)];
+	                } else {
+	                    y = s.y[idx + (increase ? 1 : 0)];
+	                    x = s.x[idx + (increase ? 1 : 0)];
+	                }
 	            } else {
-	                y = s.y[idx + (increase ? 1 : 0)];
-	                x = s.x[idx + (increase ? 1 : 0)];
-	            }
-	        } else {
-	            x = curr_x;
-		    try {
-	            y = s.y[idx] + (s.y[idx+1] - s.y[idx]) * (x - s.x[idx])/
-	                                                     (s.x[idx+1] - s.x[idx]);
-		    } catch (ArrayIndexOutOfBoundsException e) 
-			{
-			    System.out.println("Excepion on "+getName()+" "+s.x.length+ " "+idx);
-			}
+	                x = curr_x;
+		        try {
+	                y = s.y[idx] + (s.y[idx+1] - s.y[idx]) * (x - s.x[idx])/
+	                                                        (s.x[idx+1] - s.x[idx]);
+		        } catch (ArrayIndexOutOfBoundsException e) 
+			    {
+			        System.out.println("Excepion on "+getName()+" "+s.x.length+ " "+idx);
+			    }
 	        }
 	    }
 	    wave_point_x = x;
@@ -1653,49 +1708,7 @@ public class Waveform extends JComponent
     {
         return FindPoint(waveform_signal, curr_x, curr_y);
     }
-    
-    /*
-    private int FindPointX(double curr_x, double curr_y)
-    {
-	   if(waveform_signal.getMarker() != Signal.NONE && !waveform_signal.getInterpolate())
-	   {
-	     int idx =  waveform_signal.FindClosestIdx(curr_x, curr_y);
-	     if(curr_y == waveform_signal.y[idx])
-	        curr_x = waveform_signal.x[idx];	     
-	     else
-	        curr_x = waveform_signal.x[idx+1];
-	     return wm.XPixel(curr_x, getSize());
-	   } else
-	     return end_x;
-    }
-    
-    
-    protected double FindPointY(double curr_x, double curr_y, boolean is_first)
-    {
-	    int idx =  waveform_signal.FindClosestIdx(curr_x, curr_y);	
-	    if((idx == waveform_signal.n_points -1) || idx == 0)
-	    	return waveform_signal.y[idx];
-	    else 
-	    {
-	        if(waveform_signal.getMarker() != Signal.NONE && !waveform_signal.getInterpolate())
-	        {
-	            if(curr_x - waveform_signal.y[idx] <  waveform_signal.y[idx+1] - curr_x)
-	                return waveform_signal.y[idx];
-	            else
-	                return waveform_signal.y[idx+1];
-	        } else
-		        return waveform_signal.y[idx] + 
-	                   (waveform_signal.y[idx+1] - waveform_signal.y[idx]) * 
-	                   (curr_x - waveform_signal.x[idx])/
-	                   (waveform_signal.x[idx+1] - waveform_signal.x[idx]);
-	    }
-		//return waveform_signal.y[idx] + 
-	    //    (waveform_signal.y[idx+1] - waveform_signal.y[idx]) * 
-	    //    (curr_x - waveform_signal.x[idx])/
-	    //    (waveform_signal.x[idx+1] - waveform_signal.x[idx]);
-    }
-    */
-    
+        
     Rectangle frame_zoom = null;
     
     protected boolean DrawFrame(Graphics g, Dimension d, int frame_idx)
@@ -1826,6 +1839,12 @@ public class Waveform extends JComponent
 	        return 0.;
 	    return waveform_signal.xmin;
 	}
+	
+	public boolean isWaveformVisible()
+	{
+	    Dimension d = getWaveSize();
+	    return !(d.width <= 0 || d.height <=0);
+	}
 
     protected double MinYSignal() 
     {
@@ -1909,7 +1928,7 @@ public class Waveform extends JComponent
         if(curr_x == curr_point && !dragging) return;
         curr_point = curr_x;
 	
-	//System.out.println("Update Curr point "+curr_point+" on "+getName());
+	    //System.out.println("Update Curr point "+curr_point+" on "+getName());
 
 
         if(!is_image)
@@ -1917,7 +1936,7 @@ public class Waveform extends JComponent
            // if(wm == null) { System.out.println("wm == null"); return;}
             
 	   // if(dragging || mode != MODE_POINT || waveform_signal == null)
-	    if(mode != MODE_POINT || waveform_signal == null)
+	        if(mode != MODE_POINT || waveform_signal == null)
 			    return;
 			/*
 			if(waveform_signal.getType() == Signal.TYPE_2D && 

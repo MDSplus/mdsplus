@@ -5,6 +5,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
+import java.awt.image.*;
+import java.awt.datatransfer.*;
+
 
 
 public class WavePopup extends JPopupMenu implements  ItemListener 
@@ -15,10 +18,10 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll, autoscaleAllY,
 		      allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
 		      resetScales, resetAllScales, playFrame, remove_panel,
-		      set_point, undo_zoom, maximize; 
+		      set_point, undo_zoom, maximize, cb_copy; 
 	protected JMenu markerList, colorList, markerStep, signal_2d;
 	protected JCheckBoxMenuItem interpolate_f;
-	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x;
+	protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x, plot_image;
 
 	protected ButtonGroup markerList_bg, colorList_bg, markerStep_bg, signal_2d_bg;
 	
@@ -142,7 +145,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    {
             public void itemStateChanged(ItemEvent e)
 	        {
-	            wave.setSignalMode(Signal.MODE_YTIME);
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode2D(Signal.MODE_YTIME);
 	        }
 	    });
         
@@ -152,7 +156,8 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    {
             public void itemStateChanged(ItemEvent e)
 	        {
-	            wave.setSignalMode(Signal.MODE_XY);
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode2D(Signal.MODE_XY);
 	        }
 	    });
 
@@ -162,11 +167,27 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    {
             public void itemStateChanged(ItemEvent e)
 	        {
-	            Object target = e.getSource();
-	            wave.setSignalMode(Signal.MODE_YX);
-                wave.Update();
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	                SetMode2D(Signal.MODE_YX);
+//                wave.Update();
 	        }
 	    });
+
+        signal_2d.add(plot_image = new JRadioButtonMenuItem("Plot Image"));
+        signal_2d_bg.add(plot_image);
+        plot_image.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(e.getStateChange() == ItemEvent.SELECTED)
+	            {
+	                wave.setShowSigImage(true);
+	                SetMode2D(Signal.MODE_IMAGE);
+	            } else
+	                wave.setShowSigImage(false);
+	        }
+	    });
+
 
         sep1 = new JSeparator();    
 	    sep2 = new JSeparator();
@@ -288,6 +309,31 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	    );
 	    
 	    
+	    cb_copy = new JMenuItem("Copy to Clipboard");
+	    cb_copy.addActionListener(new ActionListener()
+	        {
+	            public void actionPerformed(ActionEvent e)
+	            {
+	                Dimension dim = wave.getSize();
+	                BufferedImage ri = new BufferedImage(dim.width , dim.height, BufferedImage.TYPE_INT_RGB);
+	                Graphics2D g2d = (Graphics2D)ri.getGraphics();
+	                g2d.setBackground(Color.white);
+	                wave.paint(g2d, dim, Waveform.PRINT);	                
+	                try
+	                {
+                        ImageTransferable imageTransferable = new ImageTransferable(ri); 
+                        Clipboard cli = Toolkit.getDefaultToolkit().getSystemClipboard();                
+	                    cli.setContents(imageTransferable, imageTransferable);	                        
+	                } 
+	                catch(Exception exc)
+	                {
+	                    System.out.println("Exception "+exc);
+	                }
+	            }
+	        }
+	    );
+
+	
 	
 	    playFrame = new JMenuItem();
 	    playFrame.addActionListener(new ActionListener()
@@ -382,6 +428,21 @@ public class WavePopup extends JPopupMenu implements  ItemListener
            colorList.setText("Colors");
            add(colorList);	
            add(interpolate_f);
+           if(wave.mode == Waveform.MODE_POINT || wave.GetShowSignalCount() == 1)
+           {
+                if(wave.getSignalType() == Signal.TYPE_2D) {
+                    add(signal_2d);
+                    switch (wave.getSignalMode())
+                    {
+                        case Signal.MODE_YTIME : signal_2d_bg.setSelected(plot_y_time.getModel(), true); break;
+                        case Signal.MODE_XY    : signal_2d_bg.setSelected(plot_x_y.getModel(), true); break;
+                        case Signal.MODE_YX    : signal_2d_bg.setSelected(plot_y_x.getModel(), true); break;
+                        case Signal.MODE_IMAGE : signal_2d_bg.setSelected(plot_image.getModel(), true); break;
+                    }
+                    plot_image.setEnabled(!wave.IsShowSigImage());
+                }
+           }     
+
 	       add(sep2);           
 	       add(autoscale);
 	       add(autoscaleY);
@@ -402,22 +463,12 @@ public class WavePopup extends JPopupMenu implements  ItemListener
 	       }
 	       add(resetScales);
 	       add(undo_zoom);
-	       
-           if(wave.mode == Waveform.MODE_POINT || wave.GetShowSignalCount() == 1)
-           {
-                if(wave.getSignalType() == Signal.TYPE_2D) {
-                    insert(signal_2d, 4);
-                    //plot_y_time.setState(false);
-                    //plot_x_y.setState(false);
-                    //plot_y_x.setState(false);
-                    switch (wave.getSignalMode())
-                    {
-                        case Signal.MODE_YTIME : signal_2d_bg.setSelected(plot_y_time.getModel(), true); break;
-                        case Signal.MODE_XY    : signal_2d_bg.setSelected(plot_x_y.getModel(), true); break;
-                        case Signal.MODE_YX    : signal_2d_bg.setSelected(plot_y_x.getModel(), true); break;
-                    }
-                }
-           }     
+           //Copy image to clipborad can be done only with
+           //java release 1.4
+           if(AboutWindow.javaVersion.indexOf("1.4") != -1)
+           { 	       
+	            add(cb_copy);
+	       }
         }
 	}
 
@@ -535,6 +586,12 @@ public class WavePopup extends JPopupMenu implements  ItemListener
     {
         wave.SetInterpolate(state);
     }
+
+    protected void SetMode2D(int mode)
+    {
+        wave.setSignalMode(mode);
+    }
+
 
     protected void SetMarker(int idx)
     {

@@ -258,15 +258,80 @@ public class MdsDataProvider implements DataProvider
                 return GetFloatArray(in_y);   
         }
         
+        private float[] encodeTimeBase(String expr)
+        {            
+            try
+            {
+                float t0 = GetFloat("dscptr(window_of(dim_of("+expr+")),2)");
+                int startIdx[] = GetIntArray("begin_of(window_of(dim_of("+expr+")))");
+                int endIdx[] = GetIntArray("end_of(window_of(dim_of("+expr+")))");
+                
+                if(startIdx.length != 1 || endIdx.length != 1)
+                    return null;
+                
+                int numPoint = endIdx[0] - startIdx[0] + 1;
+                float delta[] = GetFloatArray("slope_of(axis_of(dim_of("+expr+")))");
+                float begin[] = null;
+                float end[] = null;
+                float firstTime[] = GetFloatArray("i_to_x(dim_of("+expr+"),"+startIdx[0]+")");
+                try
+                {
+                    begin = GetFloatArray("begin_of(axis_of(dim_of("+expr+")))");
+                    end = GetFloatArray("end_of(axis_of(dim_of("+expr+")))");
+                }
+                catch(IOException e) {}
+                
+                if(delta.length == 1 && numPoint > 1)
+                {
+                    int i;
+                    float out[] = new float[numPoint];
+                    
+                    for(i = 1, out[0] = firstTime[0]; i < numPoint; i++)
+                        out[i] = out[i-1] + delta[0];
+                
+                    return out;
+                }
+                
+                if(delta.length > 1 && numPoint > 1)
+                {
+                    int i, j, idx;
+                    float out[] = new float[numPoint];
+                    float curr;
+                    
+                    for(i = j = 0, idx = 0, curr = firstTime[0]; i < numPoint; i++, j++)
+                    {
+                            out[i] = curr + j * delta[idx];
+                            if(out[i] > end[idx])
+                            {
+                                out[i] = end[idx];
+                                idx++;
+                                curr = begin[idx];
+                                j = 0;
+                            }
+                    }
+                    return out;
+                    
+                }
+            } 
+            catch (Exception exc){};//System.out.println(exc.getMessage());}
+            return null;
+            
+        }
         
         public float[] GetXData() throws IOException 
         {
-            String expr;
+            String expr = null;
+            boolean isCoded = false;
+            float tBaseOut[] = null;
+            
             if(in_x == null)
             {
                 if(_jscope_set)
                 {
-                    expr = "DIM_OF(_jscope_"+v_idx+", 0)";
+                    expr = "dim_of(_jscope_"+v_idx+")";
+                    tBaseOut =  encodeTimeBase("_jscope_"+v_idx);
+                   // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                   // isCoded = true;
                 } 
                 else
                 {
@@ -278,10 +343,17 @@ public class MdsDataProvider implements DataProvider
                     }
                     else
                     {
-                       expr =  "DIM_OF("+in_y+", 0)";
+                        expr = "dim_of("+in_y+")";
+                        tBaseOut = encodeTimeBase(in_y);
+                      // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                      // isCoded = true;
+                       
                     }
                 }
-                return GetFloatArray(expr);
+                if(tBaseOut != null)
+                    return tBaseOut;
+                else
+                    return GetFloatArray(expr);
             }
             else
                 return GetFloatArray(in_x);
@@ -295,13 +367,16 @@ public class MdsDataProvider implements DataProvider
         public String GetTitle() throws IOException
         {return GetDefaultTitle(in_y);}
         public String GetXLabel() throws IOException
-        {return GetDefaultXLabel(in_y);}
+        {
+            if(in_x == null || in_x.length() == 0)
+                return GetDefaultXLabel(in_y);
+            else
+                return GetDefaultYLabel(in_x);            
+        }
         public String GetYLabel() throws IOException
         {return GetDefaultYLabel(in_y);}
         public String GetZLabel()  throws IOException
-        {
-            return null;
-        }
+        {return GetDefaultZLabel(in_y);}
     }
              
         
@@ -629,10 +704,14 @@ public class MdsDataProvider implements DataProvider
 		            return (float)desc.int_data[0];
 		        case Descriptor.DTYPE_CHAR:
 		            error = "Cannot convert a string to float";
-		            return 0;
+		            throw(new IOException(error));
+		            //return 0;
 		        case Descriptor.DTYPE_CSTRING:
 		            if((desc.status & 1) == 0)
+		            {
 		                error = desc.error;
+		                throw(new IOException(error));
+		            }
 		            return 0;
 	        }
         }	        
@@ -641,34 +720,42 @@ public class MdsDataProvider implements DataProvider
         return 0;
     }	
     
-    private int ExpandTimes(float coded_time[], float expanded_time[])
+    private float[] ExpandTimes(float codedTime[])
     {
-	    int max_len = expanded_time.length;
-	    int num_blocks = (coded_time.length-1) / 3;
-    //each block codes start, end, delta
-	    int out_idx, in_idx, curr_block;
-	    float curr_time;
+        float[] expandedTime = null;
     	
-	    if(coded_time[0] > 0) //JAVA$DIM decided to apply coding
+	    if(codedTime[0] > 0) //JavaDim decided to apply coding
 	    {
+            int max_len = 0;
+	        int num_blocks = (codedTime.length-1) / 3;
+        //each block codes start, end, delta
+	        int out_idx, in_idx, curr_block = 0;
+	        float curr_time;
+	        
+	        for(curr_block = 0; curr_block < num_blocks; curr_block++)
+	            max_len += (int)((codedTime[curr_block*3+2] - codedTime[curr_block*3+1])/codedTime[curr_block*3+3] + 0.5);
+	    
+	        expandedTime = new float[max_len];
+	        
 	        for(curr_block = 0, out_idx = 0; out_idx < max_len && curr_block < num_blocks; 
 		    curr_block++)
 	        {   
 	            for(in_idx = 0; out_idx < max_len; in_idx++)
 	            { 
-		            curr_time = coded_time[curr_block*3+1] + 
-		            in_idx * coded_time[curr_block*3+3];
-		            if(curr_time > coded_time[curr_block*3+2])
+		            curr_time = codedTime[curr_block*3+1] + 
+		            in_idx * codedTime[curr_block*3+3];
+		            if(curr_time > codedTime[curr_block*3+2])
 		            break;
-		            expanded_time[out_idx++] = curr_time;
+		            expandedTime[out_idx++] = curr_time;
 	            }		    		    
 	        }
 	    }
-	    else //JAVA$DIM did not apply coding
-	        for(out_idx = 0; out_idx < max_len && out_idx < coded_time.length-1; out_idx++)
-		        expanded_time[out_idx] = coded_time[out_idx+1];		
-    	
-        return out_idx;
+	    else //JavaDim did not apply coding
+	    {
+	        expandedTime = new float[codedTime.length - 1];
+	        System.arraycopy(codedTime, 1, expandedTime, 0, expandedTime.length);
+    	}
+        return expandedTime;
     }
         
 
@@ -856,7 +943,7 @@ public class MdsDataProvider implements DataProvider
 	                descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
 	            */
 	            open = true;
-//	            def_node_changed = false;
+	            def_node_changed = true;
 	        }
 	        else
 	        {
@@ -1000,18 +1087,48 @@ public class MdsDataProvider implements DataProvider
     
     protected String GetDefaultTitle(String in_y)   throws IOException
     {
-        return null;
+        String out = GetString("help_of("+in_y+")");
+        if(out == null || out.length() == 0 || error != null)
+        {
+            error = null;
+            return null;
+        }
+        return out;
     }
             
     protected String GetDefaultXLabel(String in_y)  throws IOException
     {
-        return null;
+        String out = GetString("Units(dim_of("+in_y+"))");
+        if(out == null || out.length() == 0 || error != null)
+        {
+            error = null;
+            return null;
+        }
+        return out;
     }
             
     protected String GetDefaultYLabel(String in_y)  throws IOException
     {
-        return null;
+        String out = GetString("Units("+in_y+")");
+        if(out == null || out.length() == 0 || error != null)
+        {
+            error = null;
+            return null;
+        }
+        return out;
     }
+ 
+    protected String GetDefaultZLabel(String in_y)  throws IOException
+    {
+        String out = GetString("Units(dim_of("+in_y+", 1))");
+        if(out == null || out.length() == 0 || error != null)
+        {
+            error = null;
+            return null;
+        }
+        return out;
+    }
+
     
     protected int [] GetNumDimensions(String in_y) throws IOException
     {

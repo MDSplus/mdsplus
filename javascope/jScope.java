@@ -13,6 +13,8 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.awt.print.*;
+import java.awt.datatransfer.*;
+import java.awt.image.*;
 
 
 public class jScope extends JFrame implements ActionListener, ItemListener, 
@@ -20,7 +22,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2.3)";
+   static final String VERSION = "jScope (version 7.2.4)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -28,6 +30,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
    private static int spos_x = 100, spos_y = 100;
 
   JWindow aboutScreen;
+  
 
   /**Main menu bar*/
   protected JMenuBar       mb;
@@ -91,7 +94,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
 
   private boolean modified = false;
   
-
+ 
 
     // LookAndFeel class names
     static String macClassName =
@@ -111,10 +114,10 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
     
     
     
-static Component T_parentComponent;
-static Object T_message;
-static String T_title;
-static int T_messageType;
+    static Component T_parentComponent;
+    static Object T_message;
+    static String T_title;
+    static int T_messageType;
 
   static public void ShowMessage(Component parentComponent, Object message,
                                     String title,int messageType)  
@@ -488,8 +491,38 @@ static int T_messageType;
     });
     
     edit_m.add(sign);
-    
+ 
     edit_m.addSeparator();
+    
+    //Copy image to clipborad can be done only with
+    //java release 1.4
+    if(AboutWindow.javaVersion.indexOf("1.4") != -1)
+    { 
+        JMenuItem cb_copy = new JMenuItem("Copy to Clipboard");
+        cb_copy.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e) 
+            {
+	            Dimension dim = wave_panel.getSize();
+	            BufferedImage ri = new BufferedImage(dim.width , dim.height, BufferedImage.TYPE_INT_RGB);
+	            Graphics2D g2d = (Graphics2D)ri.getGraphics();
+	            g2d.setBackground(Color.white);
+	            wave_panel.PrintAll(g2d, dim.height, dim.width);	                        
+	            try
+	            {
+                    ImageTransferable imageTransferable = new ImageTransferable(ri); 
+                    Clipboard cli = Toolkit.getDefaultToolkit().getSystemClipboard();                
+	                cli.setContents(imageTransferable, imageTransferable);	                        
+	            } 
+	            catch(Exception exc)
+	            {
+	                System.out.println("Exception "+exc);
+	            }
+            }
+        });
+        edit_m.add(cb_copy);
+        edit_m.addSeparator();
+    }
     
     print_i = new JMenuItem("Print Setup ...");
     print_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
@@ -1484,7 +1517,10 @@ static int T_messageType;
 	        file_diag.setCurrentDirectory(new File(curr_directory));
 	    
 
-        javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener() {
+        javax.swing.Timer tim = new javax.swing.Timer(20, new ActionListener() {
+            //byte[] imageData;
+            ByteArrayOutputStream image;
+            
             public void actionPerformed(ActionEvent ae) {
 
                 int returnVal = JFileChooser.CANCEL_OPTION;
@@ -1522,25 +1558,25 @@ static int T_messageType;
                               
                 if (returnVal == JFileChooser.APPROVE_OPTION) 
                 {
-                        File file = file_diag.getSelectedFile();
-                        String d = file.getAbsolutePath();
-	                    String f = file.getName();
-	                    if(f != null && f.trim().length() != 0 && 
-	                        d != null && d.trim().length() != 0)
-	                    {
-                            curr_directory = d;
-	                        config_file = curr_directory;
-	                    } else
-	                    config_file = null;
-	                    if(config_file != null)
-	                    {
-	                        SaveConfiguration(config_file);
-	                    } 
+                    File file = file_diag.getSelectedFile();
+                    String d = file.getAbsolutePath();
+	                String f = file.getName();
+	                if(f != null && f.trim().length() != 0 && 
+	                    d != null && d.trim().length() != 0)
+	                {
+                        curr_directory = d;
+	                    config_file = curr_directory;
+	                } else
+	                config_file = null;
+	                if(config_file != null)
+	                {
+	                    SaveConfiguration(config_file);       
+	                } 
 	            }
              }
         });
-        t.setRepeats(false);
-        t.start();
+        tim.setRepeats(false);
+        tim.start();
   }
 
   private void LoadConfigurationFrom()
@@ -1922,7 +1958,7 @@ static int T_messageType;
 	            if(returnFlag)
 	            {
 	                wave_panel.ResetDrawPanel(win_diag.out_row);
-	                wave_panel.update();
+//	                wave_panel.update();
 	                UpdateColors();
 	                UpdateFont();
 	                setChange(true);
@@ -2602,12 +2638,16 @@ class WindowDialog extends JDialog implements ActionListener
 	    if(	parent.wave_panel.GetPrintEvent() != null)
 	        printEventText.setText(parent.wave_panel.GetPrintEvent());
 	
-	    in_row = parent.wave_panel.getComponentsInColumns();
+	    int in_row[] = parent.wave_panel.getComponentsInColumns();
 	    
 	    row_1.setValue(in_row[0]);
 	    row_2.setValue(in_row[1]);
 	    row_3.setValue(in_row[2]);
 	    row_4.setValue(in_row[3]);
+
+        this.in_row = new int[in_row.length];
+        for(int i = 0; i < in_row.length; i++)
+            this.in_row[i] = in_row[i];
 
 	    setLocationRelativeTo(parent);
         show();
@@ -2688,7 +2728,8 @@ class ServerDialog extends JDialog implements ActionListener
                                              "JetDataProvider",
                                              "FtuDataProvider",
                                              "TSDataProvider",
-                                             "AsdexDataProvider"};
+                                             "AsdexDataProvider",
+                                             "ASCIIDataProvider"};
     
 
     ServerDialog(JFrame _dw, String title)
@@ -3090,5 +3131,4 @@ class ServerDialog extends JDialog implements ActionListener
 	    }   
     }
 }
-
 

@@ -40,6 +40,7 @@ public class WaveformEvent extends AWTEvent
     float  frames_time[];
     float  x_value = Float.NaN;
     float  time_value = Float.NaN;
+    float  data_value = Float.NaN;
     boolean is_mb2 = false;
 
     public WaveformEvent (Object source, int event_id, String status_info) 
@@ -143,6 +144,10 @@ public class WaveformEvent extends AWTEvent
         this.time_value = time_value;
     }
     
+    public void setDataValue(float data_value)
+    {
+        this.data_value = data_value;
+    }
     
     private String SetStrSize(String s, int size)
     {
@@ -190,6 +195,7 @@ public class WaveformEvent extends AWTEvent
 	                {
 	                    Float xf = new Float(x_value);
 	                    Float tf = new Float(time_value);
+	                    Float df = new Float(data_value);
 	                    Float nan_f = new Float(Float.NaN);
 	                    String xt_string = null;
 	                    if(!xf.equals(nan_f))
@@ -197,6 +203,10 @@ public class WaveformEvent extends AWTEvent
                         else
 	                        if(!tf.equals(nan_f))
 	                            xt_string = ", T = "+ Waveform.ConvertToString(time_value, false);
+	                        else
+	                            if(!df.equals(nan_f))
+	                                xt_string = ", Data = "+ Waveform.ConvertToString(data_value, false);
+	                        
 //required to view exact values 
 //remove conversion to exponential form
 /*                  

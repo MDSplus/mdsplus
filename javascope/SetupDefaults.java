@@ -188,8 +188,9 @@ public class SetupDefaults extends JDialog implements ActionListener
 
         lab = new JLabel("Grid: Mode");
         panel1.add(lab);
-                        
-        grid_mode = new JComboBox(Grid.GRID_MODE);    
+        
+        String grd[] = {"Dotted", "Gray"};
+        grid_mode = new JComboBox(grd);//Grid.GRID_MODE);    
         grid_mode.setSelectedIndex(curr_grid_mode);	      	
         panel1.add(grid_mode);    
                 

@@ -105,6 +105,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 	    orig_signals = null;
         super.x_label = wi.xlabel;
 	    super.y_label = wi.ylabel;
+	    super.z_label = wi.zlabel;
 	    super.x_log = wi.x_log;
 	    super.y_log = wi.y_log;
 	    
@@ -138,6 +139,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		            wi.signals[i].setMarkerStep(wi.markers_step[i]);
 		            wi.signals[i].setInterpolate(wi.interpolates[i]);
 		            wi.signals[i].setColorIdx(wi.colors_idx[i]);
+		            wi.signals[i].setMode((int)wi.mode2D[i]);
 		        }
             if(!all_null)
             {

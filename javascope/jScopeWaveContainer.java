@@ -37,7 +37,6 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     private   ProfileDialog profile_dialog;
     private   long       main_shots[] = null;
     private   String    main_shot_str = null;
-    private   boolean   main_shot_changed = false;
     private   String    main_shot_error = null;
     private   jScopeMultiWave profile_source = null;
               jScopeMultiWave wave_all[];
@@ -168,8 +167,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     public void ChangeDataProvider(DataProvider dp)
     {
         jScopeMultiWave w;
-                 
-        main_shot_changed = true;
+        
+        main_shot_str = null;
 	    for(int i = 0; i < getGridComponentCount(); i++)
         {
 	        w = (jScopeMultiWave)GetWavePanel(i);
@@ -456,8 +455,25 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         } else
             return Printable.NO_SUCH_PAGE;
     }
-   
-   
+    
+  public void PrintAll(Graphics g, int height, int width)
+  {
+    
+	if(font == null)
+	{
+	    font = g.getFont();
+	    font = new Font(font.getName(), font.getStyle(), 18);
+	    g.setFont(font);
+	}
+	else
+	{
+	    font = new Font(font.getName(), font.getStyle(), 18);
+	    g.setFont(font);
+	}
+    
+	super.PrintAll(g, 0, 0, height, width);  
+  }
+  
   public void PrintAll(Graphics g, int st_x, int st_y, int height, int width)
   {
 	
@@ -662,7 +678,15 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		       w.wi.setModified(true);
 		    }
 		}
-    }    
+    }
+    
+    public void maximizeComponent(Waveform w)
+    {
+        super.maximizeComponent(w);
+        if(w == null)
+            this.StartUpdate();
+    }
+
 
     public void EraseAllWave()
     {
@@ -682,7 +706,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             	
         try
         {
-
+            
             if(wave_all == null)
                 abort = true;
             else
@@ -706,7 +730,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 	            for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-		            if(wave_all[k].wi != null)
+		            if(wave_all[k].wi != null && wave_all[k].isWaveformVisible())
 		                ((MdsWaveInterface)wave_all[k].wi).Update();
 		        }
 	        }
@@ -716,7 +740,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 		        for(int j = 0; j < rows[i] && !abort; j++, k++) 
 		        {
-		            if(wave_all[k].wi != null && wave_all[k].wi.error == null)
+		            if(wave_all[k].wi != null && wave_all[k].wi.error == null && wave_all[k].isWaveformVisible())
 		            {
 			            wce = new WaveContainerEvent(this, WaveContainerEvent.START_UPDATE, 
 							        "Start Evaluate column " + (i + 1) + " row " + (j + 1));
@@ -735,7 +759,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		            {
 			            for(int j = 0; j < rows[i] && !abort; j++, k++)
 			            {
-			                if(wave_all[k].wi != null && wave_all[k].wi.error == null && 
+			                if(wave_all[k].wi != null && wave_all[k].wi.error == null &&
+			                   wave_all[k].isWaveformVisible() &&
 			                   wave_all[k].wi.num_waves != 0 && 
 			                   ((MdsWaveInterface)wave_all[k].wi).UseDefaultShot())
 			                {
@@ -761,7 +786,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	        {
 		        for(int j = 0; j < rows[i]; j++, k++) 
 		        {
-			        if(wave_all[k].wi != null && wave_all[k].wi.error == null && 
+			        if(wave_all[k].wi != null && wave_all[k].wi.error == null &&
+			           wave_all[k].isWaveformVisible() &&
 			           wave_all[k].wi.num_waves != 0 && !abort)
                     {
 				        if(((MdsWaveInterface)wave_all[k].wi).allEvaluated())
@@ -772,7 +798,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                         dispatchWaveContainerEvent(wce);
 			            ((MdsWaveInterface)wave_all[k].wi).EvaluateOthers();    			        
 		            }
-	    	        if(wave_all[k].wi != null)
+	    	        if(wave_all[k].wi != null && wave_all[k].isWaveformVisible())
 			            wave_all[k].Update(wave_all[k].wi);		            				                    
 		        }
 	        }	    
@@ -907,7 +933,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
                 prop = pr.getProperty(prompt+".vpane_"+c);
                 if(prop == null)
                 {
-	                throw(new IOException("missing vpan_"+ c +" keyword"));
+	                throw(new IOException("missing vpane_"+ c +" keyword"));
                 }
 		        int w = new Integer(prop).intValue();
 		        pw[c-1] = (float)w;

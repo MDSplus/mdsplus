@@ -39,6 +39,7 @@ public class WaveInterface
     public  int     markers[];
     public  int     colors_idx[];
     public  boolean interpolates[];
+    public  byte    mode2D[];
     public  long    shots[];
     public  String  error;
     private String  curr_error;
@@ -46,7 +47,7 @@ public class WaveInterface
     public  String  w_error[];
     public  Signal  signals[];
     public  float   xmax, xmin, ymax, ymin, timemax, timemin; 
-    public  String  title, xlabel, ylabel;
+    public  String  title, xlabel, ylabel, zlabel;
     protected DataProvider dp;
     
 // Used for asynchronous Update  
@@ -118,6 +119,7 @@ public class WaveInterface
         markers = null;
         colors_idx = null;
         interpolates = null;
+        mode2D = null;
         shots = null;
         error = null;
         curr_error = null;
@@ -126,6 +128,7 @@ public class WaveInterface
         title = null; 
         xlabel = null; 
         ylabel = null;
+        zlabel = null;
         is_image = false;
         keep_ratio = true;
         horizontal_flip = false;
@@ -246,6 +249,7 @@ public class WaveInterface
 	    in_xlabel = in_ylabel = in_timemax = in_timemin= null;
 	    markers = null;
 	    interpolates = null;
+	    mode2D = null;
 	    du = null;  
 	    x_log = y_log = false;
 	    show_legend = false;
@@ -482,6 +486,7 @@ public class WaveInterface
 	    int new_markers_step[] = new int[new_num_waves];
 	    int new_colors_idx[] = new int[new_num_waves];
 	    boolean new_interpolates[] = new boolean[new_num_waves];
+	    byte new_mode2D[] = new byte[new_num_waves];
 	    long new_shots[] = null;
 	    if(shots != null) 
 	        new_shots = new long[new_num_waves];
@@ -501,6 +506,7 @@ public class WaveInterface
 	        new_markers_step[i] = markers_step[i];
 	        new_colors_idx[i] = colors_idx[i];
 	        new_interpolates[i] = interpolates[i];
+	        new_mode2D[i] = mode2D[i];
 	        if(shots != null)
 	            new_shots[i] = shots[i];
 	        if(evaluated != null)
@@ -535,6 +541,7 @@ public class WaveInterface
     	        
 	            new_interpolates[k] = true;
 	            new_evaluated[k] = false;
+	            new_mode2D[k] = Signal.MODE_YTIME;
 	            if(shots != null && shots.length != 0 && num_shot > 0)
 	                new_shots[k] = shots[j];
 	            k++;
@@ -550,6 +557,7 @@ public class WaveInterface
 	    markers_step = new_markers_step;
 	    colors_idx = new_colors_idx;
 	    interpolates = new_interpolates;
+	    mode2D = new_mode2D;
 	    shots = new_shots;
 	    num_waves = new_num_waves;
 	    evaluated = new_evaluated;
@@ -602,6 +610,7 @@ public class WaveInterface
 	    int[]     markers_step = new int[num_signal];
 	    int[]     colors_idx   = new int[num_signal];
 	    boolean[] interpolates = new boolean[num_signal];
+	    byte[] mode2D          = new byte[num_signal];
 	    long[]     shots = null;
 	    if(curr_shots != null)
 	        shots = new long[num_signal];				
@@ -619,6 +628,7 @@ public class WaveInterface
 		            markers[k]	    = this.markers[i * this.num_shot + j];	  
 		            markers_step[k] = this.markers_step[i * this.num_shot + j];	  
 		            interpolates[k] = this.interpolates[i * this.num_shot + j];
+		            mode2D[k] = this.mode2D[i * this.num_shot + j];
 		            if(curr_shots != null)
 		                shots[k]        = curr_shots[j];
 		            in_up_err[k]    = this.in_up_err[i * this.num_shot + j];	    
@@ -628,6 +638,7 @@ public class WaveInterface
 		            markers[k]	    = this.markers[i * this.num_shot];	  
 		            markers_step[k] = this.markers_step[i * this.num_shot];	  
 		            interpolates[k] = this.interpolates[i * this.num_shot];
+		            mode2D[k]       = this.mode2D[i * this.num_shot];		            
 		            in_up_err[k]    = this.in_up_err[i * this.num_shot];	    
 		            in_low_err[k]   = this.in_low_err[i * this.num_shot];
     		        
@@ -651,6 +662,7 @@ public class WaveInterface
 	    this.markers_step = markers_step;
 	    this.colors_idx   = colors_idx;
 	    this.interpolates = interpolates;
+	    this.mode2D       = mode2D;
 	    this.shots        = shots;
 	    if(shots != null)
 	        this.num_shot     = curr_num_shot;
@@ -800,13 +812,15 @@ public class WaveInterface
 		        error = dp.ErrorString();
 		        return 0;
 	        }
-	    }    
+	    }
+	    /*
 	    else
 	    {
 	        try{
 	            title = dp.GetWaveData(in_y[0]).GetTitle();
 	        }catch(Exception exc) {title = null;}
 	    }
+	   */
 	    if(in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	    {
 	        xlabel = dp.GetString(in_xlabel);
@@ -815,13 +829,15 @@ public class WaveInterface
 		        error = dp.ErrorString();
 		        return 0;
 	        }
-	    }	
+	    }
+	    /*
 	    else
 	    {
 	        try {
 	            xlabel = dp.GetWaveData(in_y[0], in_x[0]).GetXLabel();
 	        }catch(Exception exc) {xlabel = null;}
 	    }
+	    */
 	    
 	    if(in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	    {
@@ -831,13 +847,15 @@ public class WaveInterface
 		        error = dp.ErrorString();
 		        return 0;
 	        }
-	    }	
+	    }
+	    /*
 	    else
 	    {
 	        try {
 	            ylabel = dp.GetWaveData(in_y[0]).GetYLabel();
             }catch(Exception exc) {ylabel = null; }
         }
+        */
 
         if(xmin > xmax) xmin = xmax;
         if(ymin > ymax) ymin = ymax;
@@ -1141,6 +1159,7 @@ public class WaveInterface
             title = cd.title;
             xlabel = cd.x_label;
             ylabel = cd.y_label;
+            zlabel = cd.z_label;
             up_err = cd.up_err;
             low_err = cd.low_err;
             curr_data = cd.data;
@@ -1156,7 +1175,8 @@ public class WaveInterface
             if(cd.dimension == 2)
             {
                 float[] curr_y = cd.y;
-	            out_signal = new Signal(curr_data, curr_y, curr_x, Signal.MODE_YTIME);
+	            out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
+	            out_signal.setMode(mode2D[curr_wave]);
             } else
     	        out_signal = new Signal(curr_x, curr_data, min_len);
             
@@ -1174,9 +1194,10 @@ public class WaveInterface
 	    float curr_data[] = null, curr_x[] = null, curr_y[] = null, up_err[] = null,
 	          low_err[] = null;
 	    int x_samples = 0, min_len;
-	    WaveData wd;
+	    WaveData wd = null;
 	    int dimension;
 	    Signal out_signal;
+	    String xlabel = null, ylabel = null, zlabel = null, title = null;
 
  	    if(shots != null && shots.length != 0)
 	        dp.Update(experiment, shots[curr_wave]);
@@ -1191,11 +1212,16 @@ public class WaveInterface
 	    
 	    
 	    if(in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() > 0)
+	    {
 	        dimension = 1;
+	    }
 	    else
 	    {
 	        try {
-	            dimension = dp.GetWaveData(in_y[curr_wave]).GetNumDimension();
+	            wd = dp.GetWaveData(in_y[curr_wave]);
+	            dimension = wd.GetNumDimension();
+	            if(dimension == 2)
+	                zlabel = wd.GetZLabel();	            
 	        }catch(Exception exc) {dimension = 1; }
 	        if(dp.ErrorString() != null)
 	        {
@@ -1215,7 +1241,11 @@ public class WaveInterface
 	        if(wd == null)
 	            curr_data = null;
 	        else
+	        {
+	            xlabel = wd.GetXLabel();
+	            ylabel = wd.GetYLabel();
 		        curr_data = wd.GetFloatData();
+            }
 	
 	        if(curr_data != null && curr_data.length > 1 && in_up_err != null && 
 		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
@@ -1243,14 +1273,20 @@ public class WaveInterface
 	    else // Campo X non definito
 	    {
 	        if(full_flag || dimension > 1)
-		        wd = dp.GetWaveData(in_y[curr_wave]);
-	        else
+	        {
+	            if(wd == null)
+		            wd = dp.GetWaveData(in_y[curr_wave]);
+	        } else
 		        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS);
 
             if(wd == null)
                 curr_data = null;
             else
+            {
+	            xlabel = wd.GetXLabel();
+	            ylabel = wd.GetYLabel();
 		        curr_data = wd.GetFloatData();	        
+	        }
 	        
 	        if(dimension == 1)
 	        {
@@ -1312,7 +1348,8 @@ public class WaveInterface
 	    if(dimension == 2)
 	    {
 	      curr_y = wd.GetYData();
-	      out_signal = new Signal(curr_data, curr_y, curr_x, Signal.MODE_YTIME);
+	      out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
+	      out_signal.setMode((int)mode2D[curr_wave]);
 	    } else {
     	  out_signal = new Signal(curr_x, curr_data, min_len);
     	}
@@ -1330,8 +1367,9 @@ public class WaveInterface
                 expr = expr+in_low_err[curr_wave];
     	    
             cd.title = title;
-            cd.x_label = xlabel;
-            cd.y_label = ylabel;
+            cd.x_label = (xlabel == null) ? this.xlabel : xlabel;
+            cd.y_label = (ylabel == null) ? this.ylabel : ylabel;
+            cd.z_label = (zlabel == null) ? this.zlabel : zlabel;
             cd.up_err = up_err;
             cd.low_err = low_err;
             cd.data = curr_data;
@@ -1341,6 +1379,7 @@ public class WaveInterface
             
             if(shots != null && shots.length != 0)
                 sh = shots[curr_wave];
+                
             
             sc.putCacheData(provider, expr, experiment, sh, cd);          
     	}
@@ -1350,7 +1389,10 @@ public class WaveInterface
     	else
             if(up_err != null)
                 out_signal.AddError(up_err);
-    	    
+        
+        if(wd != null)
+            title = wd.GetTitle();       
+        out_signal.setLabels(title, xlabel, ylabel, zlabel);   
         return out_signal;
    }
     
@@ -1372,10 +1414,12 @@ public class WaveInterface
         cu.start();
 	}
 
-
-    void AsynchUpdate(/*Signal sigs[],*/ Vector sigs, float xmin, float xmax, 
+    
+    
+    void AsynchUpdate(  Vector sigs, float xmin, float xmax, 
 	                    float _orig_xmin, float _orig_xmax, 
-	                    int timestamp, boolean panning, MultiWaveform w)
+	                    int timestamp, boolean panning,
+	                    MultiWaveform w)
     {
 	    int curr_wave;
 	    boolean needs_update = false;

@@ -24,7 +24,7 @@ public  class WaveformMetrics implements Serializable
     
     int horizontal_offset, vertical_offset;
     
-    
+    static IndexColorModel cm = null;
     static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100; 
 
     public WaveformMetrics(double _xmax, double _xmin, 
@@ -179,6 +179,115 @@ public  class WaveformMetrics implements Serializable
 	    return ris;
     }
 
+
+    private IndexColorModel getColorModel()
+    {
+        byte rgb[] = new byte[256], b = 0;
+        for(int i = 0; i < 256; i++, b++)
+            rgb[i] = b;                   
+        return new IndexColorModel(8, 256, rgb, rgb, rgb);
+    }
+    
+    private void drawRectagle(Graphics g, int x, int y, int w, int h, int cIdx)
+    {
+	        g.setColor(new Color(cm.getRed(cIdx), cm.getGreen(cIdx), 
+	                              cm.getBlue(cIdx), cm.getAlpha(cIdx)));	    
+	        g.fillRect(x, y, w, h);
+    }
+    
+    
+    public void ToImage(Signal s, Image img, Dimension d)
+    {
+        int i, j;
+        int xSt, xEt, ySt, yEt;
+        Graphics2D g2 = (Graphics2D)img.getGraphics();
+        
+        if(cm == null)
+            cm = getColorModel();
+
+	    ComputeFactors(d);
+	    
+	    g2.setColor(Color.white);
+	    g2.fillRect(0, 0, d.width - 1, d.height - 1);
+
+	    for(i = 1; i < s.time.length && s.time[i] < xmin; i++);
+	    xSt = i-1;
+	    for(;i < s.time.length-1 && s.time[i] < xmax; i++);
+	    xEt = i+1;
+	    for(i = 1; i < s.x_data.length && s.x_data[i] < ymin; i++);
+	    ySt = i-1;
+	    for(;i < s.x_data.length-1 && s.x_data[i] < ymax; i++);
+	    yEt = i+1;
+	    
+	    int p = 0;
+	    int h = 0;
+	    int w = 0;
+	    int yPix0;
+	    int yPix1;
+	    int xPix0;
+	    int xPix1;
+	    int pix;
+	    
+	    yPix1 = (YPixel(s.x_data[ySt+1]) + YPixel(s.x_data[ySt])) / 2;
+	    yPix1 = 2*YPixel(s.x_data[ySt]) - yPix1;
+	    
+	    for(int y = ySt; y < yEt - 1; y++) 
+	    {	       
+	        yPix0 = yPix1;
+	        yPix1 = (YPixel(s.x_data[y+1]) + YPixel(s.x_data[y])) / 2;
+	        h  = yPix0 - yPix1;
+	        
+	        p = y * s.time.length + xSt;
+	        
+	        xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt+1]))/2;
+	        xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
+
+	        for(int x = xSt; x < xEt-1 && p < s.data.length; x++)
+	        {
+	            xPix0 = xPix1;
+	            xPix1 = (XPixel(s.time[x+1]) + XPixel(s.time[x]))/2;
+	            w = xPix1 - xPix0;
+	            
+	  	        pix = (int)(255 * (s.data[p++] - s.data_min)/(s.data_max - s.data_min));	    
+	            drawRectagle(g2, xPix0, yPix1, w, h, pix);
+	        }        
+	        
+	        if(p < s.data.length)
+	        {
+	            xPix0 = xPix1;
+	            w = 2 * (XPixel(s.time[xEt-1]) - xPix1);
+	            pix = (int)(255 * (s.data[p] - s.data_min)/(s.data_max - s.data_min));
+	            drawRectagle(g2, xPix0, yPix1, w, h, pix);
+	        } else
+	            break;
+        }
+
+	    
+	    yPix0 = yPix1;
+	    yPix1 = 2 * YPixel(s.x_data[yEt-1]) - yPix1;
+	    h  = yPix0 - yPix1;
+	    
+	    xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt+1]))/2;
+	    xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
+	    
+	    for(int x = xSt; x < xEt-1 && p < s.data.length; x++)
+	    {
+	        xPix0 = xPix1;
+	        xPix1 = (XPixel(s.time[x+1]) + XPixel(s.time[x]))/2;
+	        w = xPix1 - xPix0;
+	            
+	  	    pix = (int)(255 * (s.data[p++] - s.data_min)/(s.data_max - s.data_min));	    
+	        drawRectagle(g2, xPix0, yPix1, w, h, pix);
+	    }
+	    
+	    if(p < s.data.length)
+	    {
+	        xPix0 = xPix1;
+	        w = 2 * (XPixel(s.time[xEt-1]) - xPix1);
+	        pix = (int)(255 * (s.data[p] - s.data_min)/(s.data_max - s.data_min));
+	        drawRectagle(g2, xPix0, yPix1, w, h, pix);
+	    }
+    }
     
     public Vector ToPolygons(Signal sig, Dimension d)
     {
@@ -240,12 +349,6 @@ public  class WaveformMetrics implements Serializable
 		                curr_num_points++;
 		            }
 		        }
-/*		        {
-		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
-		            ypoints[curr_num_points] = YPixel(min_y, d);
-		            ypoints[curr_num_points + 1] = YPixel(max_y, d);
-		            curr_num_points +=2;
-		        }*/
 		        else
 		        {
 		            xpoints[curr_num_points] = start_x;
@@ -299,32 +402,6 @@ public  class WaveformMetrics implements Serializable
 		            if(curr_y < min_y) min_y = curr_y;
 		            if(curr_y > max_y) max_y = curr_y;
 		        }
-		   /*     if(max_y > min_y)
-		        {
-		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
-		            ypoints[curr_num_points] = YPixel(min_y);
-		            ypoints[curr_num_points + 1] = YPixel(max_y);
-		            curr_num_points +=2;
-		        }*/
-		 /*       if(max_y > min_y)
-		        {
-                    if(min_y != first_y)
-                    {
-		                xpoints[curr_num_points] = start_x;
-		                ypoints[curr_num_points] = YPixel(first_y);
-		                curr_num_points++;
-		            }
-		            xpoints[curr_num_points] = xpoints[curr_num_points + 1] = start_x;
-		            ypoints[curr_num_points] = YPixel(min_y);
-		            ypoints[curr_num_points + 1] = YPixel(max_y);
-		            curr_num_points +=2;
-		            if(max_y != last_y)
-                    {
-		                xpoints[curr_num_points] = start_x;
-		                ypoints[curr_num_points] = YPixel(last_y);
-		                curr_num_points++;
-		            }
-		        }*/
 		        if(max_y > min_y)
 		        {
 		            if(first_y == min_y)

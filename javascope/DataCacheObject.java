@@ -12,4 +12,5 @@ class DataCacheObject implements Serializable
     String title;
     String x_label;
     String y_label;
+    String z_label;
 }

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class AboutWindow extends JLabel  {
   
+  static String javaVersion = System.getProperty("java.version");
   ImageIcon io = null;
   
   public AboutWindow() 
@@ -50,8 +51,8 @@ public class AboutWindow extends JLabel  {
     g.drawRect( -1, -1, getWidth(), getHeight() ); // makes a bevel border likeness
     
     g.drawString( jScope.VERSION, start, botton - 3*delta);
-    g.drawString( "http://www.igi.pd.cnr.it",  start, botton - 2*delta );
-    g.drawString( "JVM used :" +  System.getProperty("java.version"), start, botton -  delta );
+    g.drawString( "http://www.igi.cnr.it",  start, botton - 2*delta );
+    g.drawString( "JVM used :" +  javaVersion, start, botton -  delta );
     
 	gReal.drawImage( imageBuffer, 0, 0, this );
   }

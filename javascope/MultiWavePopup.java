@@ -211,6 +211,11 @@ public class MultiWavePopup extends WavePopup
         wave.SetInterpolate(wave.GetSelectedSignal(), state);
     }
 
+    protected void SetMode2D(int mode)
+    {
+        wave.setSignalMode(wave.GetSelectedSignal(), mode);
+    }
+
     public void SetSignalState(String label, boolean state)
     {        
         wave.SetSignalState(label, state);

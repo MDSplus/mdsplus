@@ -159,6 +159,13 @@ class jScopeWavePopup extends MultiWavePopup
         w.wi.interpolates[w.GetSelectedSignal()] = state;
     }
 
+    protected void SetMode2D(int mode)
+    {
+        super.SetMode2D(mode);
+	    jScopeMultiWave w = (jScopeMultiWave)wave;
+        w.wi.mode2D[w.GetSelectedSignal()] = (byte)mode;
+    }
+
     public void SetDeselectPoint(Waveform w)
     {
         

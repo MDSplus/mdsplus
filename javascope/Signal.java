@@ -19,6 +19,7 @@ public class Signal
     static final int MODE_YTIME = 0;
     static final int MODE_XY = 1;
     static final int MODE_YX = 2;
+    static final int MODE_IMAGE = 3;
     
     /**
      * String vector of markers name.
@@ -249,14 +250,20 @@ public class Signal
     private int curr_data_yt_idx = -1;
     private int curr_time_xy_idx = -1;
     
-    private float data_max;
-    private float data_min;
-    private float x_data_max;
-    private float x_data_min;
-    private float time_max;
-    private float time_min;
-    private double curr_xmax;
-    private double curr_xmin;
+    protected float data_max;
+    protected float data_min;
+    protected float x_data_max;
+    protected float x_data_min;
+    protected float time_max;
+    protected float time_min;
+    protected double curr_xmax;
+    protected double curr_xmin;
+    
+    protected String xlabel;
+    protected String ylabel;
+    protected String zlabel;
+    protected String title;
+    
 
     //True if signal is resampled on server side to 
     //reduce net load 
@@ -424,21 +431,27 @@ public class Signal
 	    n_nans = s.n_nans;
 	    gain = s.gain;
 	    offset = s.offset;
-	    x = new float[n_points];
-	    y = new float[n_points];
-	    for(i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
+	    
+	    if(! (s.type == this.TYPE_2D && s.mode == this.MODE_IMAGE) )
 	    {
-	        x[i] = s.x[i];
-	        y[i] = s.y[i];
-	    }
+	        x = new float[n_points];
+	        y = new float[n_points];
+	        for(i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
+	        {
+	            x[i] = s.x[i];
+	            y[i] = s.y[i];
+	        }
+        }
+        
 	    saved_ymax = ymax = s.ymax;
 	    saved_ymin = ymin = s.ymin;
 	    saved_xmin = curr_xmin = xmin = s.xmin;
 	    saved_xmax = curr_xmax = xmax = s.xmax;
-	    if(xmax <= xmin)
+        
+ 	    if(xmax <= xmin)
 	        saved_xmax = xmax = xmin+ 1E-6;
 	    increasing_x = s.increasing_x;
-	    
+       
 	    marker = s.marker;
 	    marker_step = s.marker_step;
 	    color_idx = s.color_idx;
@@ -451,6 +464,10 @@ public class Signal
 	    data = s.data;
 	    time = s.time;
 	    x_data = s.x_data;
+	    xlabel = s.xlabel;
+	    ylabel = s.ylabel;
+	    zlabel = s.zlabel;
+	    title = s.title;
     }
 
     /**
@@ -557,11 +574,42 @@ public class Signal
 	    name = s.name;
     }
 
+    public Signal(float data[], float x_data[], float time[], int type)
+    {
+        /*
+        if(type == Signal.TYPE_1D)
+            da stampare errore
+            this(data, time, x_data);
+        */
+	    error = asym_error = false;
+        if(x_data != null && x_data.length > 1)
+        {
+            this.data   = data;
+            this.x_data = x_data;
+            this.time   = time;
+            this.mode   = mode;
+            this.type   = TYPE_2D;
+            setAxis(time, data, x_data);
+        } else {
+            int min_len;
+            if(time.length > data.length)
+                min_len = data.length;
+            else
+                min_len = time.length;
+                
+	        setAxis(time, data, min_len);
+	        CheckIncreasingX();
+    	    if(x_data != null && x_data.length == 1)
+    	        setXData(x_data[0]);
+        }
+    } 
+
+/*
     public Signal(float data[], float x_data[], float time[], int mode)
     {
         this(data, x_data, time, mode, Float.NaN);
     } 
-    
+*/   
     
     public Signal(float data[], float x_data[], float time[], int mode, float value)
     { 
@@ -625,6 +673,18 @@ public class Signal
     public void setTime(float curr_time_xy_plot){this.curr_time_xy_plot = curr_time_xy_plot;}
     public void setXData(float curr_data_yt_plot){this.curr_data_yt_plot = curr_data_yt_plot;}
 
+    public float getDataValue()
+    {
+        if(time != null)
+        {
+            int idx = img_yprev * time.length + img_xprev;
+            if(data != null && idx < data.length)
+                return data[idx];
+        }
+        return Float.NaN;
+    }
+
+
     public void showXY(int mode, float t)
     {        
         if(curr_time_xy_plot == t && mode == this.mode ) return;
@@ -645,7 +705,10 @@ public class Signal
         curr_xmax = curr_xmin = (double)data[idx] ;
         for(int j = 0; j < x_data.length; j++) 
         {
-            d[j] = data[time.length * j + idx];
+            int k = time.length * j + idx;
+            if( k >= data.length)
+                break;
+            d[j] = data[k];
 	        if(d[j] > curr_xmax)	
 		        curr_xmax = d[j];
 	        if(curr_xmin > d[j])
@@ -788,8 +851,14 @@ public class Signal
     
     public void setMode(int mode)
     {
+        if(type == TYPE_1D)
+            return;
+            
         switch(mode)
         {
+            case MODE_IMAGE:
+                setMode(mode, 0);
+            break;
             case MODE_YTIME:
                 setMode(mode, x_data[0]);
             break;
@@ -807,9 +876,18 @@ public class Signal
     {
         if(type == TYPE_1D)
             return;
-                
+            
+        curr_time_xy_plot = Float.NaN;
+        curr_data_yt_plot = Float.NaN;
+              
         switch(mode)
         {
+            case MODE_IMAGE:
+	            saved_ymin = ymin = x_data_min;
+	            saved_ymax = ymax = x_data_max;
+	            saved_xmin = xmin = time_min;
+	            saved_xmax = xmax = time_max;
+            break;
             case MODE_YTIME:
                 showYTime(value);
             break;
@@ -976,7 +1054,7 @@ public class Signal
     }
 
 
-    public int getType(){return type;}
+    public int getType(){return type;}    
     
     public int getMode(){return mode;}
 
@@ -1300,6 +1378,13 @@ public class Signal
      */
     public void AutoscaleX()
     {
+        if(mode == this.MODE_IMAGE)
+        {
+            xmax = this.time_max;
+            xmin = this.time_min;
+            return;
+        }
+        
 	    int i;
 	    for(i = 0, xmin = xmax = x[0]; i < n_points; i++)
 	    {
@@ -1317,6 +1402,12 @@ public class Signal
      */
     public void AutoscaleY()
     {
+        if(mode == this.MODE_IMAGE)
+        {
+            ymax = this.x_data_max;
+            ymin = this.x_data_min;
+            return;
+        }
 	    int i;
 	    for(ymin = ymax = y[0], i = 0; i < n_points; i++)
 	    {
@@ -1340,8 +1431,17 @@ public class Signal
     public void AutoscaleY(double min, double max)
     {
 	    int i;
+	    
+	    if(mode == MODE_IMAGE)
+	    {
+            ymin = this.x_data_min;
+            ymax = this.x_data_max;
+            return;
+	    }
+
 	    ymin = Float.POSITIVE_INFINITY;
 	    ymax = Float.NEGATIVE_INFINITY;
+	    
 	    for(i = 0; i < n_points; i++)
 	    {
 	       // if(x[i] >= min && x[i] <= max && y[i] < ymin)
@@ -1399,6 +1499,44 @@ public class Signal
         return find_NaN;
     }
 
+    public float getClosestX(double x)
+    {
+	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    {
+	        img_xprev = FindIndex(time, x, img_xprev);
+	        return  time[img_xprev];
+	    }
+	    return 0;
+    }
+
+    public float getClosestY(double y)
+    {
+	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    {
+	        img_yprev = FindIndex(x_data, y, img_yprev);
+	        return  x_data[img_yprev];
+	    }
+	    return 0;
+    }
+
+    private int FindIndex(float d[], double v, int pIdx)
+    {
+        int i;
+        
+	    if(v > d[pIdx])
+	    {
+		    for(i = pIdx; i < d.length && d[i] < v; i++);
+		    if(i > 0) i--;
+		    return i;
+	    }
+	    if(v < d[pIdx])
+	    {
+		    for(i = pIdx; i > 0 && d[i] > v; i--);
+		    return i;
+	    }
+	    return pIdx;
+    }
+
     /**
      * Return index of nearest signal point to aurgumet 
      * (curr_x, curr_y) point.
@@ -1407,11 +1545,21 @@ public class Signal
      * @param curr_y value
      * @return index of signal point
      */
+    private int img_xprev = 0;
+    private int img_yprev = 0;    
     public int FindClosestIdx(double curr_x, double curr_y)
     {
 	    double min_dist, curr_dist;	
 	    int min_idx;
 	    int i = 0;
+	    if(this.type == Signal.TYPE_2D && mode == Signal.MODE_IMAGE)
+	    {
+	        img_xprev = FindIndex(time, curr_x, img_xprev);
+	        img_yprev = FindIndex(x_data, curr_y, img_yprev);	        
+	        if(img_xprev > time.length) return img_xprev - 6;
+	        return img_xprev;
+	    }
+	    
 	    if(increasing_x)
 	    {
 	        if(curr_x > x[prev_idx])
@@ -1449,7 +1597,7 @@ public class Signal
         min_idx = 0;
         min_dist = Double.MAX_VALUE;
         find_NaN = false;
-	for( i = 0;  i < n_points - 1; i++)
+	    for( i = 0;  i < n_points - 1; i++)
         {
             if(Float.isNaN(y[i]))
             {
@@ -1471,23 +1619,6 @@ public class Signal
 	            }
             }
         }
-/*    						
-	    while( i < n_points && x[i] < xmin || x[i] > xmax)
-	        i++;
-	    min_idx = i;
-	    curr_dist = (curr_x - x[i])*(curr_x - x[i]); //+ (curr_y - y[i])*(curr_y - y[i]);
-	    for(min_dist = curr_dist; i < n_points; i++)
-	    {
-	        curr_dist = (curr_x - x[i])*(curr_x - x[i]);// + (curr_y - y[i])*(curr_y - y[i]);
-	        if(x[i] >= xmin && x[i] <= xmax && curr_dist < min_dist)
-	        {
-		        min_dist = curr_dist;
-		        min_idx = i;
-	        }
-	    }
-	   // if(min_idx > 0 && x[min_idx] > curr_x)
-	   //     min_idx--; 
-*/
 	    return min_idx;
     }	
 
@@ -1535,6 +1666,20 @@ public class Signal
     }	
 
     final public boolean isIncreasingX() {return increasing_x;}
+    
+    public void setLabels(String title, String xlabel, String ylabel, String zlabel)
+    {
+        this.title  = title;
+        this.xlabel = xlabel;
+        this.ylabel = ylabel;
+        this.zlabel = zlabel;
+    }
+    
+    public String getXlabel(){return xlabel;}
+    public String getYlabel(){return ylabel;}
+    public String getZlabel(){return zlabel;}
+    public String getTitlelabel(){return title;}
+        
 }
 
 

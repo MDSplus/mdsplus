@@ -326,8 +326,11 @@ public class RowColumnLayout implements LayoutManager {
 	    }
 	    b_comp--;
         this.column = column;
+//        setSize(main_p);
 	    sizeUnknown = true;
+	    
     }
+    
     
     /**
      * Return normalize height of ith componet
@@ -384,6 +387,7 @@ public class RowColumnLayout implements LayoutManager {
      * @param comp Component
      */
     public void addLayoutComponent(String name, Component comp) {
+//        System.out.println("Add cmp");
     }
 
     /**
@@ -392,6 +396,7 @@ public class RowColumnLayout implements LayoutManager {
      * @param comp component
      */
     public void removeLayoutComponent(Component comp) {
+//        System.out.println("remove cmp");
     }
 
     /**
@@ -475,14 +480,20 @@ public class RowColumnLayout implements LayoutManager {
  */
     private void ResetHeight(int col)
     {
-	    int k = 0;
-    	for(int i = 0; i < col; i++) 
-	        k += row[i];
-	    
-	    for(int j = 0; j < row[col]; j++) {
-	        percent_height[k] = (float)1./row[col];
-		    k++;
-	    }        
+        if(row != null && col < row.length)
+        {
+	        int k = 0;
+    	    for(int i = 0; i < col; i++) 
+	            k += row[i];
+    	    
+    	    if(percent_height != null && k + row[col] <= percent_height.length)
+    	    {
+	            for(int j = 0; j < row[col]; j++) {
+	                percent_height[k] = (float)1./row[col];
+		            k++;
+	            }
+	        }
+	    }
      }
     
     /**
@@ -490,10 +501,13 @@ public class RowColumnLayout implements LayoutManager {
      */
     private void ResetWidth()
     {
-    	for(int i = 0; i < row.length; i++) {//column; i++)
-    	    if(row[i] == 0) continue;
- 	        percent_width[i]  = (float)1./column;
- 	    }
+         if(row != null && percent_width != null && percent_width.length >= row.length)
+         {
+   	        for(int i = 0; i < row.length; i++) {//column; i++)
+    	        if(row[i] == 0) continue;
+ 	            percent_width[i]  = (float)1./column;
+ 	        }
+ 	     }
     }
     
     
@@ -1006,6 +1020,7 @@ public class RowColumnLayout implements LayoutManager {
 	
 	    if(maxWidth <= 0 || maxHeight <= 0)
           return;
+	  	
 	  	  
         // Go through the components' sizes, if neither preferredLayoutSize()
         // nor minimumLayoutSize() has been called.

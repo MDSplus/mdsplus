@@ -95,6 +95,7 @@ import javax.swing.event.*;
 	int     marker_step;
 	String  up_err;
 	String  low_err;
+	byte    mode2D;
 	
 
 	public boolean equals(Data ws)
@@ -539,6 +540,7 @@ import javax.swing.event.*;
 		        ws.up_err	     = wi.in_up_err[i];
 		        ws.low_err	     = wi.in_low_err[i];
 		        ws.interpolate   = wi.interpolates[i];
+		        ws.mode2D        = wi.mode2D[i];
 		        ws.marker        = wi.markers[i];	
 		        ws.marker_step	 = wi.markers_step[i];
 		        ws.color_idx     = wi.colors_idx[i];
@@ -1624,6 +1626,7 @@ import javax.swing.event.*;
 		    wave.wi.markers[i]      = s[i].marker;
 		    wave.wi.markers_step[i] = s[i].marker_step;
 		    wave.wi.interpolates[i] = s[i].interpolate;
+		    wave.wi.mode2D[i]       = s[i].mode2D;
 //		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
 		    wave.wi.colors_idx[i]   = s[i].color_idx;
 		    wave.wi.in_label[i]     = s[i].label;
@@ -1668,6 +1671,7 @@ import javax.swing.event.*;
       wi.markers_step = new int[num_signal];	  
       wi.colors_idx   = new int[num_signal];
       wi.interpolates = new boolean[num_signal];
+      wi.mode2D       = new byte[num_signal];
  
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];				
@@ -1690,6 +1694,7 @@ import javax.swing.event.*;
 	            wi.markers[i]      = s[i].marker;
 	            wi.markers_step[i] = s[i].marker_step;
 	            wi.interpolates[i] = s[i].interpolate;
+	            wi.mode2D[i]       = s[i].mode2D;
 	            if(s[i].up_err != null)
 		            wi.in_up_err[i] = new String(s[i].up_err);
 	            if(s[i].low_err != null)      

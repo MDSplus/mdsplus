@@ -183,7 +183,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 
     
     
-    public void paint(Graphics g, Dimension d, Waveform w, WaveformMetrics _wm)
+    public void paint(Graphics g, Dimension d, Waveform w, WaveformMetrics wm)
     {
 	    int i,j, dim, num_steps, curr_dim;
 	    Color prev_col;
@@ -195,19 +195,7 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 	    else
 	        g.setColor(Color.black);
 	        
-	    wm = _wm;
-/*
-	    if(font == null)
-	    {
-	        font = g.getFont();
-	        font = new Font(font.getName(), font.getStyle(), 10);
-	        g.setFont(font);
-	    }
-	    else
-	    {
-	        g.setFont(font);
-	    }
-*/	    
+	    this.wm = wm;
 	    fm = g.getFontMetrics();
 	    
 	    if(int_xlabels)
@@ -374,8 +362,14 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
 
     public Rectangle GetBoundingBox(Dimension d)
     {
-	return new Rectangle(label_width, 0, d.width - label_width+1, d.height - label_height+1);
+	    return new Rectangle(label_width, 0, d.width - label_width+1, d.height - label_height+1);
     }
 
+    public void setLabels(String title, String x_label, String y_label)
+    {
+        this.title = title;
+        this.x_label = x_label;
+        this.y_label = y_label;
+    }
  }
  

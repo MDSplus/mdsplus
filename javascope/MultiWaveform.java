@@ -27,7 +27,7 @@ public class MultiWaveform extends Waveform
     protected double  orig_xmin, orig_xmax;
     protected int     curr_point_sig_idx = -1;	
     
-    protected boolean show_legend = false;
+    protected boolean show_legend    = false;
     protected double  legend_x;
     protected double  legend_y;
     private   Point   legend_point;
@@ -46,7 +46,12 @@ public class MultiWaveform extends Waveform
 	    if(signals.size() != 0)
 	        signals.removeAllElements(); 
 	    orig_signals = null;
-  	}
+  	
+		//{{REGISTER_LISTENERS
+		SymContainer aSymContainer = new SymContainer();
+		this.addContainerListener(aSymContainer);
+		//}}
+	}
     
     
     public void Erase()
@@ -76,6 +81,7 @@ public class MultiWaveform extends Waveform
                 signals.addElement(new Signal((Signal)s.elementAt(i)));
 
             show_legend = w.show_legend;
+            show_sig_image = w.show_sig_image;
             if(w.show_legend)
             {
                 legend_x = w.legend_x;
@@ -145,6 +151,7 @@ public class MultiWaveform extends Waveform
 	    }
 
     }
+
 
     public boolean IsShowLegend()
     {
@@ -270,6 +277,12 @@ public class MultiWaveform extends Waveform
  	            super.Update(waveform_signal); 
 	        else
  	            super.UpdateSignal(waveform_signal); 
+       }
+       
+       if(asinchAutoscale)
+       {
+            AutoscaleY();
+            asinchAutoscale = false;
        }
        
        if(force_update)
@@ -492,7 +505,6 @@ public class MultiWaveform extends Waveform
                Dimension d = getSize();
                double curr_x = wm.XValue(end_x, d),
 	                  curr_y = wm.YValue(end_y, d); 
-//               FindPointY(curr_x, curr_y, true);
                FindPoint(curr_x, curr_y, true);
             }
         }
@@ -557,13 +569,22 @@ public class MultiWaveform extends Waveform
 	    int i;
 	    
 	    waveform_signal = null;
-	    for(i = 0; i < signals.size(); i++)
-	        if(signals.elementAt(i) != null)
-		        break;
-	    if(i == signals.size()) return;
+	    if(curr_point_sig_idx == -1 ||  
+	       curr_point_sig_idx >= signals.size() || 
+	       signals.elementAt(curr_point_sig_idx) == null)
+	    {
+	        for(i = 0; i < signals.size(); i++)
+	            if(signals.elementAt(i) != null)
+		            break;
+	        if(i == signals.size()) return;
+        } else
+            i = curr_point_sig_idx;
+        
 	    waveform_signal = new Signal((Signal)signals.elementAt(i));
-
-	    for(i = 1; i <  signals.size(); i++)
+        
+        //????
+	    //for(i = 1; i <  signals.size(); i++)
+	    for(i = 0; i <  signals.size(); i++)
 	    {
 	        if((Signal)signals.elementAt(i) == null) continue;
 	        if(waveform_signal.xmax < ((Signal)signals.elementAt(i)).xmax)
@@ -778,6 +799,7 @@ public class MultiWaveform extends Waveform
 	        s = (Signal)signals.elementAt(i); 
 	        if(s == null) continue;
 	        
+	        
 	        if((print_mode & PRINT_BW) != PRINT_BW)
 	        {
 	            marker_step = (s.getMarkerStep() > 0 ) ? s.getMarkerStep() : 1;
@@ -814,28 +836,34 @@ public class MultiWaveform extends Waveform
 	         }
 	         else 
 	         {
-		        segments = wm.ToPolygons(s, d);
-		        Polygon curr_polygon;
+	            if(s.getType() == Signal.TYPE_2D && s.getMode() == Signal.MODE_IMAGE)
+	            {
+	                if(!(mode == MODE_PAN && dragging))
+	                {
+	                    Image img = this.createImage(d.width, d.height);	            
+	                    wm.ToImage(s, img, d);
+	                    g.drawImage(img, 0, 0, d.width, d.height, this);
+	                }
+	            }
+                else
+                {
+		            segments = wm.ToPolygons(s, d);
+		            Polygon curr_polygon;
 
-		        if(s.getInterpolate() || mode == MODE_PAN && dragging)
-		            for(int k = 0; k < segments.size(); k++)
-		            {
-			            curr_polygon = (Polygon)segments.elementAt(k);
-			            g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints, curr_polygon.npoints);
-		            }
+		            if(s.getInterpolate() || mode == MODE_PAN && dragging)
+		                for(int k = 0; k < segments.size(); k++)
+		                {
+			                curr_polygon = (Polygon)segments.elementAt(k);
+			                g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints, curr_polygon.npoints);
+		                }
+		        }
 	        }
 	    
 	        if(dragging && mode == MODE_PAN)
 		        continue;
 
-	        if(s.getMarker() != Signal.NONE)
+	        if(s.getMarker() != Signal.NONE && s.getMode() != Signal.MODE_IMAGE)
 		        DrawMarkers(g, segments, s.getMarker(), marker_step);
-	        /*
-		        if(s.getMarkerStep() != 0)
-		            DrawMarkers(g, segments, s.getMarker(), s.getMarkerStep());
-		        else
-		            DrawMarkers(g, segments, s.getMarker(), 1);
-            */
 	        if(s.error)
 	            DrawError(g, d, s);
 	    }
@@ -906,13 +934,18 @@ public class MultiWaveform extends Waveform
 	    {
 	        curr_signal = (Signal)signals.elementAt(i);
 	        if(curr_signal  == null || !GetSignalState(i))
-	        {
-	            //curr_point_sig_idx++;
 	            continue;
-	        }
+	        
 	        curr_idx =  curr_signal.FindClosestIdx(curr_x, curr_y);	
-	        curr_dist = (curr_signal.y[curr_idx] - curr_y)*
-		        (curr_signal.y[curr_idx] - curr_y);
+	        if(curr_signal.getType() == Signal.TYPE_2D && 
+	           curr_signal.getMode() == Signal.MODE_IMAGE)
+	        {
+	            curr_dist = (curr_signal.time[curr_idx] - curr_x)*
+		                    (curr_signal.time[curr_idx] - curr_x);
+		    } else {
+	            curr_dist = (curr_signal.y[curr_idx] - curr_y)*
+		                    (curr_signal.y[curr_idx] - curr_y);
+	        }
 	        if(i == 0 || curr_dist < min_dist)
 	        {
 		        min_dist = curr_dist;
@@ -921,14 +954,13 @@ public class MultiWaveform extends Waveform
 	        }
 	    }
 	    setPointSignalIndex(curr_point_sig_idx);
-	    curr_signal= (Signal)signals.elementAt(curr_point_sig_idx);
+	    curr_signal = (Signal)signals.elementAt(curr_point_sig_idx);
+	    
+	    UpdateLimits();
+	    not_drawn = true;
 	    	    
 	    Point p = FindPoint(curr_signal, curr_x, curr_y);
-	    
-	    if(p == null)
-            curr_point_sig_idx = -1;
         return p;
-	    
     }
 
 	public void UpdatePoint(double curr_x)
@@ -940,7 +972,7 @@ public class MultiWaveform extends Waveform
 
             
 		   // if(dragging || mode != MODE_POINT || signals == null || signals.size() == 0)
-	              if(mode != MODE_POINT || signals == null || signals.size() == 0)
+	        if(mode != MODE_POINT || signals == null || signals.size() == 0)
 			    return;
 			    
 			Signal s;
@@ -950,11 +982,12 @@ public class MultiWaveform extends Waveform
 			    s = (Signal)signals.elementAt(i);
 			    if(s == null) continue;
 			    if(s.getType() == Signal.TYPE_2D && 
-			        (s.getMode() == Signal.MODE_XY || s.getMode() == Signal.MODE_YX))
+			      (s.getMode() == Signal.MODE_XY || s.getMode() == Signal.MODE_YX))
 			    {
 			        s.showXY(s.getMode(), (float)curr_x);
-				not_drawn = true;
+				    not_drawn = true;
 			    }
+			    
 			}
 		}
 		super.UpdatePoint(curr_x);
@@ -1004,7 +1037,7 @@ public class MultiWaveform extends Waveform
             if(mode == Signal.MODE_YTIME && s.getMode() == Signal.MODE_YX)
                 s.setMode(mode, (float)wave_point_y);
             else
-                s.setMode(mode, (float)wave_point_x);
+                s.setMode(mode, (float)wave_point_x);                      
           }
        }
        Update();
@@ -1056,8 +1089,10 @@ public class MultiWaveform extends Waveform
 	    {
 	        signals = orig_signals;
 	        orig_signals = null;
-	    }    
-	
+	    } 
+	    this.UpdateLimits();
+
+	/*
 	    for(i = 0; i < signals.size(); i++)
 	        if(signals.elementAt(i) != null) break;
 	    if(i == signals.size()) return;
@@ -1077,6 +1112,7 @@ public class MultiWaveform extends Waveform
 	        if(((Signal)signals.elementAt(i)).ymax > waveform_signal.ymax)
 		        waveform_signal.ymax = ((Signal)signals.elementAt(i)).ymax;
 	    }
+	    */
 	    ReportChanges();
     }
 
@@ -1110,6 +1146,7 @@ public class MultiWaveform extends Waveform
 	    	    
     }
     
+    private boolean asinchAutoscale = false;
     public void SetXScaleAutoY(Waveform w)
     {
 	    double xmin, xmax;
@@ -1125,6 +1162,7 @@ public class MultiWaveform extends Waveform
 	        orig_signals = new Vector();
 	        for(int i = 0; i < signals.size(); i++)
 	            orig_signals.addElement(signals.elementAt(i));
+	            
         }
 	    waveform_signal.xmin = w.waveform_signal.xmin;
 	    waveform_signal.xmax = w.waveform_signal.xmax;
@@ -1132,6 +1170,7 @@ public class MultiWaveform extends Waveform
 	    AutoscaleY();
 	    
 	    update_timestamp++;
+	    asinchAutoscale = true;
 	    NotifyZoom(waveform_signal.xmin, 
 	               waveform_signal.xmax, 
 	               waveform_signal.ymin,
@@ -1148,8 +1187,7 @@ public class MultiWaveform extends Waveform
 	        signals = orig_signals;
 	        int i;
 	        for(i = 0; i < signals.size() && ((Signal)signals.elementAt(i)) == null; i++);
-	        waveform_signal = ((Signal)signals.elementAt(i));
-	        
+	        waveform_signal = ((Signal)signals.elementAt(i));	        
 	    }
 	    waveform_signal.ResetScales();
 	    ReportChanges();
@@ -1212,4 +1250,19 @@ public class MultiWaveform extends Waveform
     {
         super.SetMode(mod);
     }
- }
+ 
+	class SymContainer extends java.awt.event.ContainerAdapter
+	{
+		public void componentAdded(java.awt.event.ContainerEvent event)
+		{
+			Object object = event.getSource();
+			if (object == MultiWaveform.this)
+				MultiWaveform_ComponentAdded(event);
+		}
+	}
+
+	void MultiWaveform_ComponentAdded(java.awt.event.ContainerEvent event)
+	{
+		// to do: code goes here.
+	}
+}
