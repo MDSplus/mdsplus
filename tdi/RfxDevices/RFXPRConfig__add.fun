@@ -23,7 +23,7 @@ public fun RFXPRConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':SENT_157_168', 'NUMERIC', ZERO(72, 0.), *, _nid);
     DevAddNode(_path // ':SENT_169_180', 'NUMERIC', ZERO(72, 0.), *, _nid);
     DevAddNode(_path // ':SENT_181_192', 'NUMERIC', ZERO(72, 0.), *, _nid);
-    DevAddNode(_path // ':GTO_STATE', 'NUMERIC', ZERO(192, 1), *, _nid);
+    DevAddNode(_path // ':CHOP_STATE', 'NUMERIC', ZERO(192, 1), *, _nid);
 
 
 /* Parameters Received */
