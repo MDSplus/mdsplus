@@ -1494,12 +1494,14 @@ static char *_FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
   int found = 0;
   while (! found) {
     while (ctx->dir_ptr==0)
+    {
       if (ctx->next_index < ctx->num_env) {
         ctx->dir_ptr=opendir(ctx->env_strs[ctx->next_index++]);
 	ctx->next_dir_index = ctx->next_index;
       }
       else
         return 0;
+    }
     dp = readdir(ctx->dir_ptr);
     if (dp != NULL) {
       struct descriptor upname = {0,DTYPE_T,CLASS_D,0};
