@@ -1,12 +1,3 @@
-/*  CMS REPLACEMENT HISTORY, Element TdiConvert.C */
-/*  *7    29-AUG-1996 12:58:39 TWF "Change MAXTYPE" */
-/*  *6    26-AUG-1996 16:41:08 TWF "Fix compile warnings" */
-/*  *5    26-AUG-1996 16:19:23 TWF "Fix compile warnings" */
-/*  *4    15-AUG-1996 15:05:02 TWF "export WideInt routines" */
-/*  *3    12-AUG-1996 14:56:22 TWF "Add ieee support" */
-/*  *2    12-AUG-1996 09:54:46 TWF "Add roprand output" */
-/*  *1    12-AUG-1996 09:20:23 TWF "New portable version" */
-/*  CMS REPLACEMENT HISTORY, Element TdiConvert.C */
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <string.h>
@@ -16,7 +7,7 @@
 #define MAXTYPE (DTYPE_FTC + 1)
 extern void CvtConvertFloat();
 extern int IsRoprand();
-#ifdef _MSC_VER
+#ifdef WIN32
 #pragma warning (disable : 4127) /* conditional expression is constant */
 #endif
 

@@ -44,16 +44,6 @@ extern unsigned short OpcItoX;
 extern unsigned short OpcVector;
 extern unsigned short OpcValue;
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY(int) array;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 extern int MdsFree1Dx();
 extern int MdsCopyDxXd();
 extern int TdiGetData();
@@ -413,7 +403,7 @@ select:
 		if (status & 1)
 		if (special) {
 		int	limits[2];
-		array dlimits = *(array *)&duo;
+		array_int dlimits = *(array_int *)&duo;
                         limits[0] = k0;
                         limits[1] = k1;
 			dlimits.pointer = limits;
@@ -562,7 +552,7 @@ plain:		status = TdiData(&axis, &axis MDS_END_ARG);
 			}
 			else {
 			int	limits[2];
-			array dlimits = *(array *)&duo;
+			array_int dlimits = *(array_int *)&duo;
                                 limits[0] = k0;
                                 limits[1] = k1;
 				dlimits.pointer = limits;

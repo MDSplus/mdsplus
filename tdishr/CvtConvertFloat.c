@@ -1,6 +1,6 @@
 #include <string.h>
 #include <mdsdescrip.h>
-#ifdef _MSC_VER
+#ifdef WIN32
 #pragma warning (disable : 4100) /* options parameter is never referenced! */
 #endif
 

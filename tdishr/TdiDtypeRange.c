@@ -46,16 +46,6 @@ extern int TdiMasterData();
 
 extern struct descriptor *TdiItoXSpecial;
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY(char) array;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 TdiRefStandard(Tdi1DtypeRange)
 unsigned short len;
 unsigned char dtype;

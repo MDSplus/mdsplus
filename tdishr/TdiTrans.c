@@ -49,7 +49,6 @@
 	NEED units for DERIVATIVE INTEGRAL.
 	NEED to know about REPLICATE and SPREAD with subscript ranges.
 */
-#define MAXDIM 8
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern  unsigned short
@@ -85,17 +84,6 @@ static unsigned char		zero_val = 0;
 static int			one_val = 1;
 static struct descriptor	zero = {sizeof(zero_val),DTYPE_BU,CLASS_S,(char *)&zero_val};
 static struct descriptor	one = {sizeof(one_val),DTYPE_L,CLASS_S,(char *)&one_val};
-
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef SIGNAL(MAXDIM)	signal_maxdim;
-typedef ARRAY_BOUNDS(char,MAXDIM) array_bounds;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
 
 TdiRefStandard(Tdi1Trans)
 struct descriptor		*pmask = &one;

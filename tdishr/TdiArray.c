@@ -15,7 +15,6 @@
 	Limitation: product of dimensions must not exceed virtual-memory paging space.
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
-#define MAXDIM 8
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <stdlib.h>
@@ -26,16 +25,6 @@
 
 int Tdi_RandomSeed = 1234567;
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(char, MAXDIM) array_coeff;
-typedef ARRAY(int) array_int;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
 extern int TdiData();
 extern int TdiConvert();
 extern int Tdi3Add();
@@ -43,10 +32,8 @@ extern int MdsFree1Dx();
 extern int CvtConvertFloat();
 
 TdiRefStandard(Tdi1Array)
-static DESCRIPTOR_A_COEFF(	arr0,sizeof(int),DTYPE_L,0,MAXDIM,0);
-static DESCRIPTOR_A(		cvt0,sizeof(int),DTYPE_L,0,0);
-array_coeff arr = *(array_coeff *)&arr0;
-array_int cvt = *(array_int *)&cvt0;
+array_coeff arr = {sizeof(int),DTYPE_L,CLASS_A,(char *)0,0,0,{0,1,1,1,0},MAXDIM,0};
+array_int cvt = {sizeof(int),DTYPE_L,CLASS_A,(int *)0,0,0,{0,1,1,0,0},1,0};
 struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned short length;

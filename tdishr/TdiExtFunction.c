@@ -56,7 +56,7 @@ static DESCRIPTOR(def_name, "dna=");
 #if defined(__VMS)
 static DESCRIPTOR(def_image, "MDS$FUNCTIONS");
 static DESCRIPTOR(def_path, "MDS$PATH:");
-#elif defined(_MSC_VER)
+#elif defined(WIN32)
 static DESCRIPTOR(def_image, "MdsFunctions");
 static DESCRIPTOR(def_path, "MDS_PATH:");
 #else

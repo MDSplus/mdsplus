@@ -330,7 +330,7 @@ int			j, status = 1;
 		status = TdiFindIdent(3, (struct descriptor_r *)list[j], &user.match, 0, &user.block_ptr);
 		if (status & 1) status = StrUpcase(&user.match, &user.match);
 		if (status & 1)
-		if (StrPosition(&user.match, &star) || StrPosition(&user.match, &percent, 0))
+		if (StrPosition(&user.match, &star, 0) || StrPosition(&user.match, &percent, 0))
 			status = LibTraverseTree(&user.block_ptr->head, doit, &user);
 		else {
 			status = LibLookupTree(&user.block_ptr->head, &user.match, compare, &node_ptr);

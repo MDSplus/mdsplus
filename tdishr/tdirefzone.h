@@ -20,16 +20,25 @@ extern struct TdiZoneStruct TdiRefZone;
 
 #include <libroutines.h>
 
-	/*--------------------------------------------------
-	Definitions needed by Lex and Yacc.
-	--------------------------------------------------*/
 struct marker {
 		struct descriptor_r	*rptr;
 		short			builtin;
 		unsigned short		w_ok;
 };
+	/*--------------------------------------------------
+	Definitions needed by Lex and friends.
+	--------------------------------------------------*/
+#define LEX_M_TOKEN	1023
+#define LEX_K_IMMED	2048
+#define LEX_K_NAMED	4096
+#define LEX_K_SYMBOL	8192
+#define LEX_K_UNUSUAL	16384
 
+	/*--------------------------------------------------
+	Definitions needed by Lex and Yacc.
+	--------------------------------------------------*/
 #define yylex()		TdiLex()
+#define yyerror(s)	TdiRefZone.l_ok = yyval.mark.w_ok; return 1
 
 #define MAKE_S(dtype_in,bytes,out)\
 	{int dsc_size = sizeof(struct descriptor_s);\
@@ -59,36 +68,8 @@ struct marker {
 		((struct descriptor *)(out))->class = CLASS_R;\
 		((struct descriptor *)(out))->pointer = (char *)(out) + dsc_size;}
 
-	/*--------------------------------------------------
-	Definitions needed by Lex and friends.
-	--------------------------------------------------*/
-#define LEX_M_TOKEN	1023
-#define LEX_K_IMMED	2048
-#define LEX_K_NAMED	4096
-#define LEX_K_SYMBOL	8192
-#define LEX_K_UNUSUAL	16384
 	/**********************************************
 	Give an extra semicolon. Must be able to unput.
 	Caution: side effect--unput changes c pointer.
 	**********************************************/
 
-#define yyerror(s)	TdiRefZone.l_ok = yyval.mark.w_ok; return 1
-
-#define yywrap()	1
-#ifdef yygetc
-#undef yygetc
-#endif
-#define yygetc()		(TdiRefZone.a_cur < TdiRefZone.a_end ? *TdiRefZone.a_cur++ : \
-	        		(TdiRefZone.a_cur++ == TdiRefZone.a_end ? ';' : 0))
-#ifdef output
-#undef output
-#endif
-#define output(c)	(c)
-
-#ifdef unput
-#undef unput
-#endif
-#define unput(c)	(--TdiRefZone.a_cur, c)
-#define pos()		(TdiYylvalPtr->w_ok = TdiRefZone.a_cur - TdiRefZone.a_begin)
-#define nlpos()
-extern int input();

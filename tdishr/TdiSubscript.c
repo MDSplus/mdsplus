@@ -32,7 +32,6 @@
 
 	Ken Klare, LANL P-4	(c)1990,1991
 */
-#define MAXDIM 8
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
@@ -66,17 +65,6 @@ extern int TdiDataWithUnits();
 
 typedef struct {int x[2];} quadw;
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(char,1) array_coeff_1;
-typedef ARRAY_COEFF(char,MAXDIM) array_coeff_max;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 TdiRefStandard(Tdi1Subscript)
 static DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
 register char			*pin, *pout;
@@ -87,8 +75,8 @@ int				stride[MAXDIM+1], *px[MAXDIM], count[MAXDIM];
 struct descriptor_signal	*psig;
 struct descriptor_dimension *pdim;
 struct descriptor		*keeps = TdiSELF_PTR;
-array_coeff_1			*pdat, *pdi=0;
-array_coeff_max			arr = *(array_coeff_max *)&coeff0;
+array_coeff			*pdat, *pdi=0;
+array_coeff			arr = *(array_coeff *)&coeff0;
 struct descriptor	        ddim = {sizeof(dim),DTYPE_L,CLASS_S,0};
 struct descriptor_xd	ii[MAXDIM], xx[MAXDIM];
 struct descriptor_xd	sig[1], uni[1], dat[1];
@@ -97,7 +85,7 @@ struct TdiCatStruct		cats[2];
 	status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
 	if (!(status & 1)) goto baddat;
 	psig = (struct descriptor_signal *)sig[0].pointer;
-	pdat = (array_coeff_1 *)dat[0].pointer;
+	pdat = (array_coeff *)dat[0].pointer;
 	stride[0] = len = pdat->length;
 
 	/****************************
@@ -178,7 +166,7 @@ struct TdiCatStruct		cats[2];
                   status = TdiData(&ii[dim], &ii[dim] MDS_END_ARG);
 		if (status & 1 && ii[dim].pointer->dtype != DTYPE_L) 
                   status = TdiNint(&ii[dim], &ii[dim] MDS_END_ARG);
-		if (status & 1 && (pdi = (array_coeff_1 *)ii[dim].pointer) != 0) {
+		if (status & 1 && (pdi = (array_coeff *)ii[dim].pointer) != 0) {
 			if (pdi->class == CLASS_A) highest = dim + 1;
 			N_ELEMENTS(pdi, arr.m[dim]);
 		}
@@ -266,7 +254,7 @@ struct descriptor		*keep[3];
 struct descriptor		range[2] = {
 	{sizeof(int),DTYPE_L,CLASS_S,0},
 	{sizeof(int),DTYPE_L,CLASS_S,0}};
-array_coeff_1			*pa;
+array_coeff			*pa;
 char				*abase, *po=0;
 int				*pindex=0;
         keep[0] = TdiRANGE_PTRS[0];
@@ -280,7 +268,7 @@ int				*pindex=0;
 	status = TdiDataWithUnits(list[0], &dwu MDS_END_ARG);
 	if (!(status & 1)) goto bad;
 	pwu = (struct descriptor_with_units *)dwu.pointer;
-	pa = (array_coeff_1 *)pwu->data;
+	pa = (array_coeff *)pwu->data;
 	len = pa->length;
 	abase = pa->pointer;
 	left = 0;

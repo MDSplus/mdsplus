@@ -53,7 +53,7 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 #include <string.h>
 #include <tdimessages.h>
 
-#ifdef _MSC_VER
+#ifdef WIN32
 #pragma warning (disable : 4003) /* Not enough actual parameters to macro */
 #endif
 

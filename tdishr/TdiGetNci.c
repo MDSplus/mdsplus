@@ -48,16 +48,6 @@ extern int TdiData();
 extern int TdiUpcase();
 extern int Tdi1Vector();
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY(char) array;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 static struct item {
 	char		*item_name;
 	unsigned short	item_mask;

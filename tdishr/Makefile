@@ -1,4 +1,4 @@
-CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects -ieee_with_inexact
+CFLAGS = -c -I../include -I. -g -migrate -assume noaligned_objects -ieee_with_inexact
 
 OBJECTS = \
 CvtConvertFloat.o \
@@ -80,6 +80,17 @@ TdiYacc.o
 
 libTdiShr.so : $(OBJECTS)
 	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -lots -L../treeshr -lTreeShr
+
+clean :
+	- rm *.o
+	- rm *.so
+	- rm so_locations
+
+TdiLex.c : TdiLex.x
+	lex -t TdiLex.x > $@
+
+tdiyacc.h : TdiYacc.y
+	yacc -d TdiYacc.y ; mv y.tab.h $@
 
 CvtConvertFloat.o : /mdsport/include/mdsdescrip.h
 IsRoprand.o : /mdsport/include/mdsdescrip.h

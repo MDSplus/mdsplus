@@ -20,16 +20,6 @@ extern int TdiValueOf();
 extern int TdiTaskOf();
 
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_BOUNDS(char,1) array_bounds;
-typedef ARRAY(struct descriptor *) array;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
 /*--------------------------------------------------------------
 	Return one of the class-R descriptor arguments.
 		argument = ARG_OF(classR)
@@ -342,7 +332,7 @@ unsigned int		iarg = 0;
 			else status=MdsCopyDxXd(pr->dscptrs[iarg], out_ptr);
 			break;
 		case CLASS_APD :
-			{array *pa = (array *)pr;
+			{array_desc *pa = (array_desc *)pr;
 				if (iarg >= pa->arsize/pa->length) status=TdiBAD_INDEX;
 				else status=MdsCopyDxXd(pa->pointer[iarg], out_ptr);
 			}

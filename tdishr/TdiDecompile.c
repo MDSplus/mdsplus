@@ -33,16 +33,6 @@ extern int TdiTrace();
 
 int Tdi0Decompile(struct descriptor *in_ptr,int prec, struct descriptor_d *out_ptr);
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_BOUNDS(struct descriptor *,1) array_bounds;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 TdiRefStandard(Tdi1Decompile)
 struct descriptor_d		answer = {0,DTYPE_T,CLASS_D,0};
 
@@ -102,7 +92,7 @@ int			level,
 char			**item_ptr_ptr,
 struct descriptor_d	*out_ptr)
 {
-array_bounds *a_ptr = (array_bounds *)in_ptr;
+array_bounds_desc *a_ptr = (array_bounds_desc *)in_ptr;
 int	n = a_ptr->aflags.coeff ? a_ptr->m[level] : (int)a_ptr->arsize / (int)a_ptr->length;
 int	j, status;
 
@@ -555,7 +545,7 @@ int	status = 1, j, dtype, n1, n2;
 	******************/
 	case CLASS_APD :
 	case CLASS_A :
-		{array_bounds *a_ptr = (array_bounds *)in_ptr;
+		{array_bounds_desc *a_ptr = (array_bounds_desc *)in_ptr;
 		int	length = a_ptr->length;
 		int	coeff = a_ptr->aflags.coeff;
 		int	dimct = coeff ? a_ptr->dimct : 1;

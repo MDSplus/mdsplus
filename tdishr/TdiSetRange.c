@@ -16,7 +16,6 @@
 	Ken Klare, LANL CTR-7	(c)1989,1990
 	NEED way to specify character string subscript range
 */
-#define MAXDIM 8
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
@@ -26,16 +25,6 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
-
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_BOUNDS(char,MAXDIM) array_bounds;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
 
 extern int MdsFree1Dx();
 extern int TdiGetArgs();

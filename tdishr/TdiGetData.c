@@ -22,7 +22,6 @@
 	NEED to think, should "TdiImpose" convert data type?
 	ASSUMES VECTOR works for any size.
 */
-#define MAXDIM 8
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdimessages.h>
@@ -50,16 +49,6 @@ extern int MdsCopyDxXd();
 extern int MdsFree1Dx();
 
 int TdiImpose();
-
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_BOUNDS(char, MAXDIM) array_bounds;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
 
 int				TdiImpose(
 struct descriptor_a		*in_ptr,

@@ -38,15 +38,7 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(float, 12) ARRAY;
 typedef struct _bounds { int l; int u; } BOUNDS;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern int TdiDECOMPILE_MAX;
@@ -379,11 +371,11 @@ int	option = -1;
 static struct descriptor *FixedArray(struct descriptor *in)
 {
 
-  ARRAY *a = (ARRAY *)in;
-  int dsize = sizeof(struct descriptor_a)+4+12*a->dimct;
+  array_coeff *a = (array_coeff *)in;
+  int dsize = sizeof(struct descriptor_a)+sizeof(int)+3*sizeof(int)*a->dimct;
   int i;
   BOUNDS *bounds = (BOUNDS *)&a->m[a->dimct];
-  ARRAY *answer = (ARRAY *)memcpy(malloc(dsize),a,dsize);
+  array_coeff *answer = (array_coeff *)memcpy(malloc(dsize),a,dsize);
   answer->class = CLASS_A;
   answer->aflags.column = 1;
   answer->aflags.coeff = 1;

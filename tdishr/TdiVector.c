@@ -8,7 +8,6 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 */
-#define MAXDIM 8
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -26,27 +25,15 @@ extern int Tdi2Vector();
 extern int MdsCopyDxXd();
 extern int MdsFree1Dx();
 
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_COEFF(char,MAXDIM+1) array_coeff_max;
-typedef ARRAY_COEFF(char,1) array_coeff_1;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
-
-
 TdiRefStandard(Tdi1Vector)
-static DESCRIPTOR_A(		miss,0,DTYPE_MISSING,0,0);
-static DESCRIPTOR_A_COEFF(	arr0,1,DTYPE_BU,0,MAXDIM+1,0);
-array_coeff_max                 arr = *(array_coeff_max *)&arr0;
+array miss = {sizeof(char),DTYPE_MISSING,CLASS_A,(char *)0,0,0,{0,1,1,0,0},1,0};
+array_coeff arr = {sizeof(char),DTYPE_BU,CLASS_A,(char *)0,0,0,{0,1,1,1,0},MAXDIM,0};
 struct descriptor_xd	(*psig)[], (*puni)[]=0, (*pdat)[]=0;
 struct TdiCatStruct		(*pcats)[]=0;
 int	cmode = -1, j, n, (*pnelem)[]=0, jd, mind = MAXDIM, maxd = 0, nmiss = 0;
 int	virt = (sizeof(struct descriptor_xd)*3 + sizeof(int *))*narg + sizeof(struct TdiCatStruct)*(narg+1);
 
-	if (narg == 0) return MdsCopyDxXd((struct descriptor *)&miss, out_ptr);
+        if (narg == 0) return MdsCopyDxXd((struct descriptor *)&miss, out_ptr);
 	/************************************
 	Dynamic number of descriptors.
 	Memory for sig[narg], uni[narg],
@@ -70,7 +57,7 @@ int	virt = (sizeof(struct descriptor_xd)*3 + sizeof(int *))*narg + sizeof(struct
 	Save and accumulate lengths of all inputs.
 	*****************************************/
 	if (status & 1) for (j = narg; --j >= 0;) {
-	array_coeff_1 *pnew = (array_coeff_1 *)(*pdat)[j].pointer;
+	array_coeff *pnew = (array_coeff *)(*pdat)[j].pointer;
 		if ((*pcats)[j].digits > (*pcats)[narg].digits) (*pcats)[narg].digits = (*pcats)[j].digits;
 		if (pnew->dtype == DTYPE_MISSING) {n = 0; nmiss++;}
 		else {
@@ -95,7 +82,7 @@ int	virt = (sizeof(struct descriptor_xd)*3 + sizeof(int *))*narg + sizeof(struct
 	else if (mind > 0 && mind >= maxd-1 && mind < MAXDIM && nmiss == 0) {
 		n = 0;
 		for (j = 0; j < narg; ++j) {		
-		array_coeff_1 *pnew = (array_coeff_1 *)(*pdat)[j].pointer;
+		array_coeff *pnew = (array_coeff *)(*pdat)[j].pointer;
 			if (pnew->aflags.coeff) {
 				jd = pnew->dimct;
 				n += (jd == maxd) ? pnew->m[maxd-1] : 1;

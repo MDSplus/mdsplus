@@ -24,7 +24,6 @@
 	YY=highest.
 	******************************/
 
-#define MAXDIM 8
 #define DTYPE_SUBSCRIPT	DTYPE_L
 #define DTYPE_UNITS	DTYPE_T
 #define DTYPE_VV		DTYPE_BU

@@ -16,7 +16,6 @@
 
 	Ken Klare, LANL P-4	(c)1989,1990,1991,1992
 */
-#define MAXDIM 8
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <stdlib.h>
@@ -33,16 +32,6 @@ extern unsigned short
 	OpcShape,
 	OpcSize,
 	OpcVector;
-
-#ifdef __DECC
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-typedef ARRAY_BOUNDS(char,1) array_bounds;
-typedef ARRAY(char) array;
-#ifdef __DECC
-#pragma member_alignment restore
-#endif
 
 extern int MdsFree1Dx();
 extern int TdiGetArgs();

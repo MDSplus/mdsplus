@@ -1,33 +1,7 @@
-# include "stdio.h"
-# define U(x) ((x)&0377)
-# define NLSTATE yyprevious=YYNEWLINE
-# define BEGIN yybgin = yysvec + 1 +
-# define INITIAL 0
-# define YYLERR yysvec
-# define YYSTATE (yyestate-yysvec-1)
-# define YYOPTIM 1
-# define YYLMAX 200
-# define output(c) putc(c,yyout)
-# define input() (((yytchar=yysptr>yysbuf?U(*--yysptr):getc(yyin))==10?(yylineno++,yytchar):yytchar)==EOF?0:yytchar)
-# define unput(c) {yytchar= (c);if(yytchar=='\n')yylineno--;*yysptr++=yytchar;}
-# define yymore() (yymorfg=1)
-# define ECHO fprintf(yyout, "%s",yytext)
-# define REJECT { nstr = yyreject(); goto yyfussy;}
-int yyleng; extern unsigned char yytext[];
-int yymorfg;
-extern unsigned char *yysptr, yysbuf[];
-int yytchar;
-FILE *yyin = {stdin}, *yyout = {stdout};
-extern int yylineno;
-struct yysvf { 
-	struct yywork *yystoff;
-	struct yysvf *yyother;
-	int *yystops;};
-struct yysvf *yyestate;
-extern struct yysvf yysvec[], *yybgin;
 	/*	TdiLex.x
 	Lexical analysis to parse tokens for TdiYacc.y.
 	Definition section precedes rule section.
+
 	Lex regular expression operators:
 	\x "x"		as is unless "" or []
 	[xyz] [x-z]	chars x through z
@@ -47,22 +21,29 @@ extern struct yysvf yysvec[], *yybgin;
 	%k	/1000	packed classes
 	%a	/~2000	packed transitions
 	%o	/3000	output slots
+
 	Ken Klare, LANL P-4	(c)1989,1990,1991
 	NEED to handle 6..8 and 6...8 and 6...8.9, should use spaces.
+
 	Limitations:
+
 	Floating requires (1) digit before exponent
 	(2) either decimal point or exponent, (.E3) looks like path.
 	(3) 6..8 is 6 .. 8 and not 6. .8, 6...8 is ambiguous?
 	(4) prefix + or - on numbers handled elsewhere, a-6 would be tokens a -6.
+
 	Pathname apostrophe required (1) with wildcards (% or *),
 	(2) without leading \ . or : (path:member looks like file),
 	(3) with son or member starting with number (.7E6 is float not son),
 	(4) with up-tree minus requires leading period. .-.over
+
 	Filename double quote required for non-simple names.
 	"node::node::device:[--.dir.sub.sub]file.extension;version".
+
 	Input, nlpos, output, pos, unput, and yylex defined by include file.
 	Floating for exponent but no decimal would fall into integer.
 	*/
+%{
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -687,666 +668,50 @@ int		cur = 0, limit;
 	TdiRefZone.l_status = TdiUNBALANCE;
 	return(LEX_ERROR);
 }
-# define YYNEWLINE 10
-yylex(){
-int nstr; extern int yyprevious;
-while((nstr = yylook()) >= 0)
-yyfussy: switch(nstr){
-case 0:
-if(yywrap()) return(0); break;
-case 1:
-	{;}
-break;
-case 2:
-{nlpos();}
-break;
-case 3:
-	{pos();  return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 4:
-{pos(); return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 5:
-{pos();  return	(TdiLexInteger(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 6:
-	{pos();  return	(TdiLexIdent(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 7:
-	{pos();  return	(TdiLexPath(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 8:
-	{pos();  return	(TdiLexQuote(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 9:
-	{pos();  return	(TdiLexPoint(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case 10:
-           {pos(); if      (TdiLexComment(      yyleng, yytext, TdiYylvalPtr)) return(LEX_ERROR);}
-break;
-case 11:
-	{pos(); return	(TdiLexPunct(	yyleng, yytext, TdiYylvalPtr));}
-break;
-case -1:
-break;
-default:
-fprintf(yyout,"bad switch yylook %d",nstr);
-} return(0); }
-/* end of yylex */
+%}
 
-int yyvstop[] = {
-0,
+%a 2888
+%o 4000
+anum		[A-Za-z$_0-9]
+name		[A-Za-z$_]{anum}*
+exponent	[DdEeFfGgHhSsTt][\-+]?[0-9]+
+integer		[0-9][0-9A-Za-z]*
+flt0		[0-9]+"."/[^0-9DdEeFfGgHhSsTt.]
+flt1		[0-9]*"."[0-9]+
+flt2		[0-9]+"."[0-9]*{exponent}
+flt3		"."?[0-9]+{exponent}
+node		{anum}+"::"
+device		[A-Za-z$_]{anum}*":"
+dir		"["("-"*|{anum}*)("."{anum}+)*"]"
+ext		"."{anum}+
+image		{node}*{device}?{dir}?{anum}+{ext}?
 
-11,
-0,
+path		((("\\"({name}"::")?|[.:])?{name})|(".-"("."?"-")*))([.:]{name})*
+point		"->"{anum}+(":"|"..")?
 
-1,
-11,
-0,
+%%
 
-2,
-0,
+[ \t\r]		{;}
 
-8,
-11,
-0,
+\n	{nlpos();}
 
-6,
-7,
-11,
-0,
+{flt0}		{pos();  return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
 
-11,
-0,
+({flt1})|({flt2})|({flt3}) {pos(); return	(TdiLexFloat(	yyleng, yytext, TdiYylvalPtr));}
 
-11,
-0,
+{integer}	{pos();  return	(TdiLexInteger(	yyleng, yytext, TdiYylvalPtr));}
 
-11,
-0,
+{name}		{pos();  return	(TdiLexIdent(	yyleng, yytext, TdiYylvalPtr));}
 
-5,
-11,
-0,
+{path}		{pos();  return	(TdiLexPath(	yyleng, yytext, TdiYylvalPtr));}
 
-11,
-0,
+[\"\']		{pos();  return	(TdiLexQuote(	yyleng, yytext, TdiYylvalPtr));}
 
-11,
-0,
+{point}		{pos();  return	(TdiLexPoint(	yyleng, yytext, TdiYylvalPtr));}
 
-6,
-7,
-0,
+"/*"            {pos(); if      (TdiLexComment(      yyleng, yytext, TdiYylvalPtr)) return(LEX_ERROR);}
 
-7,
-0,
+.		{pos(); return	(TdiLexPunct(	yyleng, yytext, TdiYylvalPtr));}
 
-7,
-0,
+%%
 
-4,
-0,
-
-10,
-0,
-
--3,
-0,
-
-5,
-0,
-
-5,
-0,
-
-5,
-0,
-
-7,
-0,
-
-7,
-0,
-
-9,
-0,
-
-3,
-0,
-
-4,
-0,
-
-4,
-5,
-0,
-
-9,
-0,
-
-4,
-0,
-
-4,
-0,
-0};
-# define YYTYPE unsigned char
-struct yywork { YYTYPE verify, advance; } yycrank[] = {
-0,0,	0,0,	1,3,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	1,4,	1,5,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	1,6,	
-0,0,	1,7,	0,0,	0,0,	
-0,0,	0,0,	0,0,	10,20,	
-1,3,	0,0,	1,8,	1,9,	
-1,10,	1,11,	2,8,	28,18,	
-2,10,	27,36,	18,18,	18,28,	
-36,37,	0,0,	0,0,	1,12,	
-35,41,	0,0,	0,0,	8,16,	
-0,0,	27,37,	1,7,	18,15,	
-0,0,	1,7,	7,14,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-7,15,	0,0,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,15,	1,13,	0,0,	0,0,	
-0,0,	2,13,	0,0,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	0,0,	0,0,	0,0,	
-0,0,	7,14,	0,0,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	7,14,	7,14,	7,14,	
-7,14,	9,17,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	9,18,	0,0,	
-0,0,	9,19,	9,19,	9,19,	
-9,19,	9,19,	9,19,	9,19,	
-9,19,	9,19,	9,19,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-0,0,	0,0,	0,0,	0,0,	
-9,17,	0,0,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-9,17,	9,17,	9,17,	9,17,	
-11,21,	0,0,	11,22,	11,22,	
-11,22,	11,22,	11,22,	11,22,	
-11,22,	11,22,	11,22,	11,22,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	11,23,	
-11,23,	11,23,	11,24,	11,24,	
-11,24,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	0,0,	0,0,	0,0,	
-12,17,	0,0,	0,0,	11,23,	
-11,23,	11,23,	11,24,	11,24,	
-11,24,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	11,24,	11,24,	11,23,	
-11,23,	11,23,	11,23,	11,23,	
-11,23,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	0,0,	
-0,0,	0,0,	13,25,	12,17,	
-0,0,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	12,17,	
-12,17,	12,17,	12,17,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	0,0,	0,0,	0,0,	
-15,26,	13,25,	0,0,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	13,25,	13,25,	13,25,	
-13,25,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	0,0,	
-0,0,	0,0,	0,0,	15,26,	
-0,0,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	15,26,	
-15,26,	15,26,	15,26,	16,27,	
-33,38,	33,38,	33,38,	33,38,	
-33,38,	33,38,	33,38,	33,38,	
-33,38,	33,38,	0,0,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	0,0,	0,0,	
-0,0,	0,0,	16,27,	0,0,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	16,27,	16,27,	
-16,27,	16,27,	17,15,	0,0,	
-17,17,	17,17,	17,17,	17,17,	
-17,17,	17,17,	17,17,	17,17,	
-17,17,	17,17,	17,15,	19,19,	
-19,19,	19,19,	19,19,	19,19,	
-19,19,	19,19,	19,19,	19,19,	
-19,19,	34,34,	34,34,	34,34,	
-34,34,	34,34,	34,34,	34,34,	
-34,34,	34,34,	34,34,	19,29,	
-19,29,	19,29,	19,29,	19,29,	
-0,0,	0,0,	0,0,	0,0,	
-21,30,	0,0,	0,0,	0,0,	
-0,0,	0,0,	19,29,	19,29,	
-21,30,	21,30,	25,15,	0,0,	
-25,25,	25,25,	25,25,	25,25,	
-25,25,	25,25,	25,25,	25,25,	
-25,25,	25,25,	25,35,	19,29,	
-19,29,	19,29,	19,29,	19,29,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	21,30,	0,0,	21,30,	
-0,0,	0,0,	19,29,	19,29,	
-0,0,	0,0,	21,30,	0,0,	
-0,0,	21,0,	0,0,	21,31,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	21,30,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-21,30,	0,0,	0,0,	21,32,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	23,23,	
-23,23,	23,23,	23,23,	24,33,	
-0,0,	24,33,	0,0,	0,0,	
-24,34,	24,34,	24,34,	24,34,	
-24,34,	24,34,	24,34,	24,34,	
-24,34,	24,34,	26,15,	0,0,	
-26,26,	26,26,	26,26,	26,26,	
-26,26,	26,26,	26,26,	26,26,	
-26,26,	26,26,	26,15,	29,33,	
-0,0,	29,33,	0,0,	0,0,	
-29,38,	29,38,	29,38,	29,38,	
-29,38,	29,38,	29,38,	29,38,	
-29,38,	29,38,	31,31,	31,31,	
-31,31,	31,31,	31,31,	31,31,	
-31,31,	31,31,	31,31,	31,31,	
-39,40,	39,40,	39,40,	39,40,	
-39,40,	39,40,	39,40,	39,40,	
-39,40,	39,40,	31,32,	31,32,	
-31,32,	31,32,	31,32,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	32,39,	0,0,	
-32,39,	31,32,	31,32,	32,40,	
-32,40,	32,40,	32,40,	32,40,	
-32,40,	32,40,	32,40,	32,40,	
-32,40,	0,0,	0,0,	0,0,	
-0,0,	0,0,	31,32,	31,32,	
-31,32,	31,32,	31,32,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	0,0,	0,0,	0,0,	
-0,0,	31,32,	31,32,	0,0,	
-0,0};
-struct yysvf yysvec[] = {
-0,	0,	0,
-yycrank+-1,	0,		0,	
-yycrank+-5,	yysvec+1,	0,	
-yycrank+0,	0,		yyvstop+1,
-yycrank+0,	0,		yyvstop+3,
-yycrank+0,	0,		yyvstop+6,
-yycrank+0,	0,		yyvstop+8,
-yycrank+34,	0,		yyvstop+11,
-yycrank+1,	0,		yyvstop+15,
-yycrank+121,	0,		yyvstop+17,
-yycrank+1,	0,		yyvstop+19,
-yycrank+198,	0,		yyvstop+21,
-yycrank+256,	0,		yyvstop+24,
-yycrank+314,	0,		yyvstop+26,
-yycrank+0,	yysvec+7,	yyvstop+28,
-yycrank+372,	0,		0,	
-yycrank+459,	0,		0,	
-yycrank+536,	yysvec+12,	yyvstop+31,
-yycrank+9,	0,		yyvstop+33,
-yycrank+547,	0,		yyvstop+35,
-yycrank+0,	0,		yyvstop+37,
-yycrank+-623,	0,		yyvstop+39,
-yycrank+0,	yysvec+11,	yyvstop+41,
-yycrank+644,	0,		yyvstop+43,
-yycrank+724,	yysvec+23,	yyvstop+45,
-yycrank+588,	yysvec+13,	yyvstop+47,
-yycrank+736,	yysvec+15,	yyvstop+49,
-yycrank+7,	yysvec+16,	yyvstop+51,
-yycrank+6,	yysvec+15,	0,	
-yycrank+752,	0,		0,	
-yycrank+0,	0,		yyvstop+53,
-yycrank+762,	0,		yyvstop+55,
-yycrank+799,	0,		0,	
-yycrank+448,	0,		0,	
-yycrank+557,	yysvec+23,	yyvstop+57,
-yycrank+2,	yysvec+15,	0,	
-yycrank+10,	0,		0,	
-yycrank+0,	0,		yyvstop+60,
-yycrank+0,	yysvec+33,	yyvstop+62,
-yycrank+772,	0,		0,	
-yycrank+0,	yysvec+39,	yyvstop+64,
-yycrank+0,	yysvec+12,	0,	
-0,	0,	0};
-struct yywork *yytop = yycrank+878;
-struct yysvf *yybgin = yysvec+1;
-unsigned char yymatch[] = {
-00  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,011 ,012 ,01  ,01  ,011 ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-011 ,01  ,'"' ,01  ,'$' ,01  ,01  ,'"' ,
-01  ,01  ,01  ,'+' ,01  ,'+' ,'.' ,01  ,
-'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,'0' ,
-'0' ,'0' ,':' ,01  ,01  ,01  ,01  ,01  ,
-01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
-'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,'$' ,
-01  ,'A' ,'A' ,'A' ,'D' ,'D' ,'D' ,'D' ,
-'D' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,'D' ,'D' ,'A' ,'A' ,'A' ,
-'A' ,'A' ,'A' ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-01  ,01  ,01  ,01  ,01  ,01  ,01  ,01  ,
-0};
-unsigned char yyextra[] = {
-0,0,0,1,0,0,0,0,
-0,0,0,0,0,0,0,0,
-0};
-/*
- * (c) Copyright 1990, OPEN SOFTWARE FOUNDATION, INC.
- * ALL RIGHTS RESERVED
- */
-/*
- * OSF/1 Release 1.0
-*/
-/*
-#
-# IBM CONFIDENTIAL
-# Copyright International Business Machines Corp. 1989
-# Unpublished Work
-# All Rights Reserved
-# Licensed Material - Property of IBM
-#
-#
-# US Government Users Restricted Rights - Use, duplication or
-# disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-# 
-*/
-/* @(#)ncform	1.3  com/lib/l,3.1,8951 9/7/89 18:48:47 */
-int yylineno =1;
-# define YYU(x) x
-# define NLSTATE yyprevious=YYNEWLINE
-unsigned char yytext[YYLMAX];
-struct yysvf *yylstate [YYLMAX], **yylsp, **yyolsp;
-unsigned char yysbuf[YYLMAX];
-unsigned char *yysptr = yysbuf;
-int *yyfnd;
-extern struct yysvf *yyestate;
-int yyprevious = YYNEWLINE;
-yylook(){
-	register struct yysvf *yystate, **lsp;
-	register struct yywork *yyt;
-	struct yysvf *yyz;
-	int yych, yyfirst;
-	struct yywork *yyr;
-# ifdef LEXDEBUG
-	int debug;
-# endif
-	unsigned char *yylastch;
-	/* start off machines */
-# ifdef LEXDEBUG
-	debug = 0;
-# endif
-	yyfirst=1;
-	if (!yymorfg)
-		yylastch = yytext;
-	else {
-		yymorfg=0;
-		yylastch = yytext+yyleng;
-		}
-	for(;;){
-		lsp = yylstate;
-		yyestate = yystate = yybgin;
-		if (yyprevious==YYNEWLINE) yystate++;
-		for (;;){
-# ifdef LEXDEBUG
-			if(debug)fprintf(yyout,"state %d\n",yystate-yysvec-1);
-# endif
-			yyt = yystate->yystoff;
-			if(yyt == yycrank && !yyfirst){  /* may not be any transitions */
-				yyz = yystate->yyother;
-				if(yyz == 0)break;
-				if(yyz->yystoff == yycrank)break;
-				}
-			*yylastch++ = yych = input();
-            if (yylastch >= yytext + YYLMAX) {
-                fprintf(yyout, "Maximum token length exceeded\n");
-                yytext[YYLMAX] = 0;
-                return 0;
-            }
-			yyfirst=0;
-		tryagain:
-# ifdef LEXDEBUG
-			if(debug){
-				fprintf(yyout,"char ");
-				allprint(yych);
-				putchar('\n');
-				}
-# endif
-			yyr = yyt;
-			if ( yyt > yycrank){
-				yyt = yyr + yych;
-				if (yyt <= yytop && yyt->verify+yysvec == yystate){
-					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
-						{unput(*--yylastch);break;}
-					*lsp++ = yystate = yyt->advance+yysvec;
-					goto contin;
-					}
-				}
-# ifdef YYOPTIM
-			else if(yyt < yycrank) {		/* r < yycrank */
-				yyt = yyr = yycrank+(yycrank-yyt);
-# ifdef LEXDEBUG
-				if(debug)fprintf(yyout,"compressed state\n");
-# endif
-				yyt = yyt + yych;
-				if(yyt <= yytop && yyt->verify+yysvec == yystate){
-					if(yyt->advance+yysvec == YYLERR)	/* error transitions */
-						{unput(*--yylastch);break;}
-					*lsp++ = yystate = yyt->advance+yysvec;
-					goto contin;
-					}
-				yyt = yyr + YYU(yymatch[yych]);
-# ifdef LEXDEBUG
-				if(debug){
-					fprintf(yyout,"try fall back character ");
-					allprint(YYU(yymatch[yych]));
-					putchar('\n');
-					}
-# endif
-				if(yyt <= yytop && yyt->verify+yysvec == yystate){
-					if(yyt->advance+yysvec == YYLERR)	/* error transition */
-						{unput(*--yylastch);break;}
-					*lsp++ = yystate = yyt->advance+yysvec;
-					goto contin;
-					}
-				}
-			if ((yystate = yystate->yyother) && (yyt= yystate->yystoff) != yycrank){
-# ifdef LEXDEBUG
-				if(debug)fprintf(yyout,"fall back to state %d\n",yystate-yysvec-1);
-# endif
-				goto tryagain;
-				}
-# endif
-			else
-				{unput(*--yylastch);break;}
-		contin:
-# ifdef LEXDEBUG
-			if(debug){
-				fprintf(yyout,"state %d char ",yystate-yysvec-1);
-				allprint(yych);
-				putchar('\n');
-				}
-# endif
-			;
-			}
-# ifdef LEXDEBUG
-		if(debug){
-			fprintf(yyout,"stopped at %d with ",*(lsp-1)-yysvec-1);
-			allprint(yych);
-			putchar('\n');
-			}
-# endif
-		while (lsp-- > yylstate){
-			*yylastch-- = 0;
-			if (*lsp != 0 && (yyfnd= (*lsp)->yystops) && *yyfnd > 0){
-				yyolsp = lsp;
-				if(yyextra[*yyfnd]){		/* must backup */
-					while(yyback((*lsp)->yystops,-*yyfnd) != 1 && lsp > yylstate){
-						lsp--;
-						unput(*yylastch--);
-						}
-					}
-				yyprevious = YYU(*yylastch);
-				yylsp = lsp;
-				yyleng = yylastch-yytext+1;
-                if (yyleng >= YYLMAX) {
-                    fprintf(yyout, "Maximum token length exceeded\n");
-                    yytext[YYLMAX] = 0;
-                    return 0;
-                }
-				yytext[yyleng] = 0;
-# ifdef LEXDEBUG
-				if(debug){
-					fprintf(yyout,"\nmatch ");
-					sprint(yytext);
-					fprintf(yyout," action %d\n",*yyfnd);
-					}
-# endif
-				return(*yyfnd++);
-				}
-			unput(*yylastch);
-			}
-		if (yytext[0] == 0  /* && feof(yyin) */)
-			{
-			yysptr=yysbuf;
-			return(0);
-			}
-		yyprevious = yytext[0] = input();
-		if (yyprevious>0)
-			output(yyprevious);
-		yylastch=yytext;
-# ifdef LEXDEBUG
-		if(debug)putchar('\n');
-# endif
-		}
-	}
-yyback(p, m)
-	int *p;
-{
-if (p==0) return(0);
-while (*p)
-	{
-	if (*p++ == m)
-		return(1);
-	}
-return(0);
-}
-	/* the following are only used in the lex library */
-yyinput(){
-	return(input());
-	}
-yyoutput(c)
-  int c; {
-	output(c);
-	}
-yyunput(c)
-   int c; {
-	unput(c);
-	}
