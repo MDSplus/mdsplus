@@ -7,6 +7,7 @@ class jDispatcherIp extends MdsIp
     int shot;
     static Vector servers = new Vector();
     String treeName;
+    String currTreeName;
 
     Database tree;
     
@@ -111,7 +112,15 @@ class jDispatcherIp extends MdsIp
             {
                 String second_part = st.nextToken();
                 if(second_part.equals("TREE"))
-                    dispatcher.setTree(st.nextToken());
+                {
+                    currTreeName = st.nextToken();
+                    dispatcher.setTree(currTreeName);
+                }
+                else if(second_part.equals("CURRENT"))
+                {
+                    String third_part = st.nextToken();
+                    setCurrentShot(Integer.parseInt(third_part));
+                }
                 else throw new Exception("Invalid Command");
             }
             else if (first_part.equals("CLOSE"))
@@ -159,6 +168,12 @@ class jDispatcherIp extends MdsIp
         try {
             return tree.getCurrentShot(treeName);
         }catch(Exception exc){return -1;}
+    }
+    void setCurrentShot(int shot)
+    {
+        try {
+             tree.setCurrentShot(currTreeName, shot);
+        }catch(Exception exc){}
     }
     
     void incrementCurrentShot()
