@@ -396,16 +396,14 @@ char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
 char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
 {
   struct descrip ans = empty_ans;
-  struct descrip pdsc;
+  char *exp = (char *)malloc(strlen(inpath)+20);
   static char *path = 0;
   char *retans = 0;
   int status;
   char *tag = 0;
-  pdsc.dtype = DTYPE_T;
-  pdsc.ndims = 0;
-  pdsc.length = strlen(inpath);
-  pdsc.ptr = inpath;
-  status = MdsValue1(dblist->tree_info->channel,"TreeAbsPath($)",&pdsc,&ans);
+  sprintf(exp,"TreeAbsPath(\"%s\")",inpath);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  free(exp);
   if (ans.ptr)
   {
     if (ans.dtype == DTYPE_T)
@@ -512,6 +510,7 @@ void FindTagEndRemote(void **ctx_inout)
 
 int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
 {
+  NID nid = *(NID *)&nid_in;
   int       status = TreeNORMAL;
   NCI_ITM  *itm;
   struct descrip ans;
@@ -540,7 +539,7 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
     case NciMEMBER:              getnci_str = "getnci(getnci(%d,'member'),'nid_number')"; break;
     case NciCHILD:               getnci_str = "getnci(getnci(%d,'child'),'nid_number')"; break;
     case NciPARENT_RELATIONSHIP: getnci_str = "getnci(%d,'parent_relationship')"; break;
-    case NciCONGLOMERATE_NIDS:   getnci_str = "getnci(%d,'conglomerate_nids')"; break;
+    case NciCONGLOMERATE_NIDS:   getnci_str = "getnci(getnci(%d,'conglomerate_nids'),'nid_number')"; break;
     case NciNUMBER_OF_CHILDREN:  getnci_str = "getnci(%d,'number_of_children')"; break;
     case NciNUMBER_OF_MEMBERS:   getnci_str = "getnci(%d,'number_of_members')"; break;
     case NciNUMBER_OF_ELTS:      getnci_str = "getnci(%d,'number_of_elts')"; break;
