@@ -125,11 +125,24 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float)
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
     struct descriptor_a *arr_ptr;
+	char *expanded_in;
+
 
     *out_dim = 0;
-    in_d.length = strlen(in);
-    in_d.pointer = in;
+	if(is_float)
+	{
+		expanded_in = malloc(strlen(in) + 16);
+		sprintf(expanded_in, "fs_float((%s))", in);
+		in_d.length = strlen(expanded_in);
+		in_d.pointer = expanded_in;
+	}
+	else
+	{
+		in_d.length = strlen(in);
+		in_d.pointer = in;
+	}
     status = TdiCompile(&in_d, &xd MDS_END_ARG);
+	if(is_float) free(expanded_in);
     if(status & 1)
     	status = TdiData(&xd, &xd MDS_END_ARG);
     if(!(status & 1))
