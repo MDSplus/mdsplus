@@ -5,10 +5,6 @@
 #include "globus_gss_assist.h"
 #include "globus_gridmap_callout_error.h"
 #include <stdlib.h>
-#include "globus_xio.h"
-#include "globus_xio_tcp_driver.h"
-#include "globus_xio_gsi.h"
-#include "globus_xio_http.h"
 
 extern int TdiExecute();
 extern int MdsFree1Dx();
