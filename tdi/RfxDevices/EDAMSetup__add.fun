@@ -26,8 +26,8 @@ public fun EDAMSetup__add(in _path, out _nidout)
    	DevAddNode(_cn // ':START_ACQ', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':END_ACQ', 'NUMERIC', *, *, _nid);
 
-    DevAddNode(_path // '.PBMC_UF', 'STRUCTURE', *, *, _nid);
-	_cn = _path // '.PBMC_UF';
+    DevAddNode(_path // '.PBMV_UF', 'STRUCTURE', *, *, _nid);
+	_cn = _path // '.PBMV_UF';
    	DevAddNode(_cn // ':EVENT', 'TEXT', 'T_START_RFX', *, _nid);
    	DevAddNode(_cn // ':DELAY', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':DURATION', 'NUMERIC', *, *, _nid);
@@ -38,8 +38,8 @@ public fun EDAMSetup__add(in _path, out _nidout)
    	DevAddNode(_cn // ':START_ACQ', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':END_ACQ', 'NUMERIC', *, *, _nid);
 
-    DevAddNode(_path // '.PBMC_UM', 'STRUCTURE', *, *, _nid);
-	_cn = _path // '.PBMC_UM';
+    DevAddNode(_path // '.PBMV_UM', 'STRUCTURE', *, *, _nid);
+	_cn = _path // '.PBMV_UM';
    	DevAddNode(_cn // ':EVENT', 'TEXT', 'T_START_RFX', *, _nid);
    	DevAddNode(_cn // ':DELAY', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':DURATION', 'NUMERIC', *, *, _nid);
