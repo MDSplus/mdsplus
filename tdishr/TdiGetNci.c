@@ -334,7 +334,7 @@ more:		switch (dtype) {
                         masked[0].pointer = (unsigned char *)&flag;
 			masked[0].return_length_address = &retlen;
 			if (status & 1) status = TreeGetNci(nid, masked);
-			if (status & 1) *(char *)hold_ptr = (char)((flag & key_ptr->item_mask) == key_ptr->item_test);
+			if (status & 1) *(char *)hold_ptr = (char)((unsigned short)(flag & key_ptr->item_mask) == key_ptr->item_test);
 		}
 		/*************************
 		Only nid arrays are here.
