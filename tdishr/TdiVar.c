@@ -309,7 +309,10 @@ static int zero = 0;
                   status = MdsCopyDxXdZ(data_ptr->pointer, &node_ptr->xd, &block_ptr->data_zone, 
 						NULL, NULL, NULL, NULL);
 		else
-                  MdsFree1Dx(&node_ptr->xd,&block_ptr->data_zone);  
+		{
+                  MdsFree1Dx(&node_ptr->xd,&block_ptr->data_zone);
+                  node_ptr->xd = NULL_XD;
+                }
 	}
 	return status;
 }
