@@ -1457,9 +1457,9 @@ done:
     widget_control, ctx.apply_b, sensitive=0
     widget_control, ctx.status_w, set_value = string(ctx.status_txt, format='(a132)')
     if !version.os eq 'vms' then $
-      mds$setevent, 'LOGBOOK_ENTRY' $
+      dummy = execute("mds$setevent, 'LOGBOOK_ENTRY'") $
     else $
-      mdssetevent, 'LOGBOOK_ENTRY
+      dummy = execute("mdssetevent, 'LOGBOOK_ENTRY")
     make_entry_reset, ctx
     return, 1
   endif else begin
@@ -1742,9 +1742,9 @@ pro edit_event, ev
                 if status then begin
                   if status then begin
                   	if !version.os eq 'vms' then $
-      					mds$setevent, 'LOGBOOK_ENTRY' $
+      					DUMMY=EXECUTE("mds$setevent, 'LOGBOOK_ENTRY'") $
     				else $
-      					mdssetevent, 'LOGBOOK_ENTRY
+      					DUMMY = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
                   endif else begin
                     X_Complain, "Could not commit new entry, changes not entered", group_leader=ev.top
                   endelse
@@ -1770,9 +1770,9 @@ pro edit_event, ev
            if (status) then begin
              if (status) then begin
     			if !version.os eq 'vms' then $
-      				mds$setevent, 'LOGBOOK_ENTRY' $
+      				dummy = EXECUTE("mds$setevent, 'LOGBOOK_ENTRY'") $
     			else $
-      				mdssetevent, 'LOGBOOK_ENTRY
+      				dummy = EXECUTE("mdssetevent, 'LOGBOOK_ENTRY")
              endif else begin
                X_Complain, "Could not void entry, changes not commited", group_leader=ev.top
              endelse
@@ -2055,9 +2055,9 @@ common widget_common, base
   widget_control,auto_w, set_button=options.display_options.auto_update
   if (!version.os eq "Win32") then begin
     mdsconnect, "cmoda", port=8001
-    id = mdsevent(base, 'LOGBOOK_ENTRY')
+    dummy = execute("id = mdsevent(base, 'LOGBOOK_ENTRY')")
   endif else $
-     mdsevent, base, 'LOGBOOK_ENTRY'
+     dummy = execute("mdsevent, base, 'LOGBOOK_ENTRY'")
   ctx = {query_txt:'', txt_w:txt, handle:handle_create(), $
          num_w:num_w, auto_w:auto_w, message_w:message_w, $
          defaults_file:defaults_file,$
