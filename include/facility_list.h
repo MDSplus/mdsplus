@@ -21,13 +21,15 @@
 #define CLI_FACILITY           0x4002
 #define CCL_FACILITY           0x4003
 #define TCL_FACILITY           0x4004
+#define TREESHR_FACILITY       0x0FD1
 
 #define STATUS(F,C)  ((F<<16) + C)
-#define STS_TEXT(N)   {N,#N}
+#define STS_TEXT(N,T)   {N,#N,T}
 
 struct stsText  {
         int   stsL_num;
         char  *stsA_name;
+        char  *stsA_text;
        };
 
 #endif

@@ -835,7 +835,8 @@ int   cli_dcl_parse(		/* Returns: status			*/
         if (!(val->valL_flags & VAL_M_REQUIRED))
             break;		/* done:  required params come first	*/
         sprintf(prompt,"_%s: ",
-            prm->prmA_prompt ? prm->prmA_prompt : prm->prmA_name);
+            prm->prmA_prompt ? prm->prmA_prompt :
+            (prm->prmA_label ? prm->prmA_label : prm->prmA_name));
 
         for (p=0 ; !p ; )
            {

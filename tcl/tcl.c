@@ -38,16 +38,10 @@ main(				/* TCL main program			*/
     int   i,k;
     int   sts;
 
-    set_pgmname(argv[0]);
     sts = mdsdcl_do_command(set_command);
 
     if (~sts & 1)
         exit(mdsMsg(sts,"Error in startup"));
 
-    for ( ; ; )
-       {
-        sts = mdsdcl_do_command(0);
-        if (sts == CLI_STS_EOF)
-            exit(0);
-       }
+    mdsdcl_main(argc,argv);
    }

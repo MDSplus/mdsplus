@@ -79,6 +79,10 @@ struct _mdsdcl_ctrl  {
 	/***************************************************************
 	 * Function prototypes:
 	 ***************************************************************/
+int   mdsdcl_main(		/* The real main program		*/
+    int   argc			/* <r> argument count			*/
+   ,char  *argv[]		/* <r> arg list				*/
+   );
 int   mdsdcl_dcl_parse(			/* Returns CLI_STS_xxx status	*/
     void  *command			/* <r:opt> command string	*/
    ,struct _mdsdcl_ctrl  *ctrl		/* <m> control structure	*/
@@ -125,82 +129,12 @@ int   mdsdcl_close_indirect_all();
 
 #ifdef CREATE_STS_TEXT
 static struct stsText  mdsdcl_stsText[] = {
-        STS_TEXT(MDSDCL_STS_SUCCESS)
-       ,STS_TEXT(MDSDCL_STS_INDIRECT_DONE)
+        STS_TEXT(MDSDCL_STS_SUCCESS,"Normal successful completion")
+       ,STS_TEXT(MDSDCL_STS_INDIRECT_DONE,"Success from indirect command")
 
-       ,STS_TEXT(MDSDCL_STS_ERROR)
-       ,STS_TEXT(MDSDCL_STS_INDIRECT_ERROR)
-       ,STS_TEXT(MDSDCL_STS_INDIRECT_EOF)
-       };
-
-
-#include        "treeshr.h"
-
-#define TREESHR_FACILITY  (TreeALREADY_OFF >> 16)
-
-static struct stsText  treeshr_stsText[] = {
-        STS_TEXT(TreeALREADY_OFF)
-       ,STS_TEXT(TreeALREADY_ON)
-       ,STS_TEXT(TreeALREADY_OPEN)
-       ,STS_TEXT(TreeALREADY_THERE)
-       ,STS_TEXT(TreeBADRECORD)
-       ,STS_TEXT(TreeBLOCKID)
-       ,STS_TEXT(TreeBOTH_OFF)
-       ,STS_TEXT(TreeBUFFEROVF)
-       ,STS_TEXT(TreeCONGLOMFULL)
-       ,STS_TEXT(TreeCONGLOM_NOT_FULL)
-       ,STS_TEXT(TreeCONTINUING)
-       ,STS_TEXT(TreeDUPTAG)
-       ,STS_TEXT(TreeEDITTING)
-       ,STS_TEXT(TreeILLEGAL_ITEM)
-       ,STS_TEXT(TreeILLPAGCNT)
-       ,STS_TEXT(TreeINVDFFCLASS)
-       ,STS_TEXT(TreeINVDTPUSG)
-       ,STS_TEXT(TreeINVPATH)
-       ,STS_TEXT(TreeINVRECTYP)
-       ,STS_TEXT(TreeINVTREE)
-       ,STS_TEXT(TreeMAXOPENEDIT)
-       ,STS_TEXT(TreeNEW)
-       ,STS_TEXT(TreeNMN)
-       ,STS_TEXT(TreeNMT)
-       ,STS_TEXT(TreeNNF)
-       ,STS_TEXT(TreeNODATA)
-       ,STS_TEXT(TreeNODNAMLEN)
-       ,STS_TEXT(TreeNOEDIT)
-       ,STS_TEXT(TreeNOLOG)
-       ,STS_TEXT(TreeNOMETHOD)
-       ,STS_TEXT(TreeNOOVERWRITE)
-       ,STS_TEXT(TreeNORMAL)
-       ,STS_TEXT(TreeNOTALLSUBS)
-       ,STS_TEXT(TreeNOTCHILDLESS)
-       ,STS_TEXT(TreeNOT_IN_LIST)
-       ,STS_TEXT(TreeNOTMEMBERLESS)
-       ,STS_TEXT(TreeNOTOPEN)
-       ,STS_TEXT(TreeNOTSON)
-       ,STS_TEXT(TreeNOT_CONGLOM)
-       ,STS_TEXT(TreeNOT_OPEN)
-       ,STS_TEXT(TreeNOWRITEMODEL)
-       ,STS_TEXT(TreeNOWRITESHOT)
-       ,STS_TEXT(TreeNO_CONTEXT)
-       ,STS_TEXT(TreeOFF)
-       ,STS_TEXT(TreeON)
-       ,STS_TEXT(TreeOPEN)
-       ,STS_TEXT(TreeOPEN_EDIT)
-       ,STS_TEXT(TreePARENT_OFF)
-       ,STS_TEXT(TreeREADERR)
-       ,STS_TEXT(TreeREADONLY)
-       ,STS_TEXT(TreeRESOLVED)
-       ,STS_TEXT(TreeSUCCESS)
-       ,STS_TEXT(TreeTAGNAMLEN)
-       ,STS_TEXT(TreeTNF)
-       ,STS_TEXT(TreeTREENF)
-       ,STS_TEXT(TreeUNRESOLVED)
-       ,STS_TEXT(TreeUNSPRTCLASS)
-       ,STS_TEXT(TreeUNSUPARRDTYPE)
-       ,STS_TEXT(TreeWRITEFIRST)
-       ,STS_TEXT(TreeFAILURE)
-       ,STS_TEXT(TreeFILE_NOT_FOUND)
-       ,STS_TEXT(TreeCANCEL)
+       ,STS_TEXT(MDSDCL_STS_ERROR,"Generic MDSDCL Error")
+       ,STS_TEXT(MDSDCL_STS_INDIRECT_ERROR,"Error from indirect command")
+       ,STS_TEXT(MDSDCL_STS_INDIRECT_EOF,"End-Of-File in indirect command")
        };
 #endif
 

@@ -25,6 +25,6 @@
 
 #ifdef CREATE_STS_TEXT
 static struct stsText  ccl_stsText[] = {
-        STS_TEXT(CCL_STS_SUCCESS)
+        STS_TEXT(CCL_STS_SUCCESS,"Success")
        };
 #endif

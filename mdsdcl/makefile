@@ -15,21 +15,20 @@ mdsdcl_set_command.o	\
 mdsdcl_spawn.o		\
 mdsdcl_wait.o
 
-all:	clean  mdsdcl_tables.o  libMdsdcl.a	\
+all:	mdsdcl_main.o  mdsdcl_tables.o  libMdsdcl.a	\
 	../shlib/libMdsdcl.$(SHARE_TYPE)  mdsdcl
 
+mdsdcl_main.o:
 mdsdcl_tables.o:
 
 libMdsdcl.a:	libMdsdcl.a( $(OBJFILES) )
 		ranlib libMdsdcl.a
 
-clean:
-	find ../shlib -name libMdsdcl.$(SHARE_TYPE) -exec rm {} \;
-
 ../shlib/libMdsdcl.$(SHARE_TYPE):	libMdsdcl.a
 	$(CC) $(CFLAGS)  -o $@ $(LD_SHARED_LIB_OPTIONS)	\
-		mdsdcl_tables.o  libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a \
-		-lcurses -lc
+		mdsdcl_main.o  mdsdcl_tables.o		\
+		libMdsdcl.a  $(MDSPLUS)/cdu/libCdu.a	\
+		-lTreeShr  -lTdiShr  -lcurses -lc
 
 mdsdcl:	mdsdcl.o  ../shlib/libMdsdcl.$(SHARE_TYPE)
 	$(CC) $(CFLAGS) -o $@ $(LFLAGS) $@.o -lMdsdcl		\

@@ -26,6 +26,9 @@
 ************************************************************************/
 
 
+static int   mdsMsgFlag = 1;		/* 1 for longer "status" string	*/
+
+
 
 	/*****************************************************************
 	 * statusText:
@@ -39,7 +42,8 @@ static char  *statusText(	/* Return: addr of "status" string	*/
     int   max;
     char  *facilityText;
     struct stsText  *stsText;
-    static char  text[32];
+    static char  text[72];
+    static DESCRIPTOR(dsc_text,text);
 
     facility = sts >> 16;
     if (facility == MDSDCL_FACILITY)
@@ -81,11 +85,35 @@ static char  *statusText(	/* Return: addr of "status" string	*/
     for (i=0 ; i<max ; i++)
        {
         if (sts == stsText[i].stsL_num)
-            return(stsText[i].stsA_name);	/*---------> return	*/
+          {
+           str_copy_dx(&dsc_text,stsText[i].stsA_name);
+           if (mdsMsgFlag & 1)
+              {		/* if longer messages ...		*/
+               str_append(&dsc_text," : ");
+               str_append(&dsc_text,stsText[i].stsA_text);
+              }
+           return(text);
+          }
        }
 
     sprintf(text,"%s %s : %08X",facilityText,(sts&1)?"Success":"Error",sts);
     return(text);
+   }
+
+
+
+	/****************************************************************
+	 * setMdsMsgFlag:
+	 ****************************************************************/
+int   setMdsMsgFlag(		/* Return: old setting of flag		*/
+    int   new			/* <r> new setting for flag		*/
+   )
+   {
+    int   old;
+
+    old = mdsMsgFlag;
+    mdsMsgFlag = new;
+    return(old);
    }
 
 
@@ -105,11 +133,16 @@ int   mdsMsg(			/* Return: sts provided by user		*/
 
     sprintf(text,"%s: ",pgmname());
     k = strlen(text);
-    va_start(ap,fmt);		/* initialize "ap"			*/
-    vsprintf(text+k,fmt,ap);
-    if (sts)
-        fprintf(stderr,"%s\n    sts=%s\n\n",text,statusText(sts));
+    if (fmt)
+       {
+        va_start(ap,fmt);	/* initialize "ap"			*/
+        vsprintf(text+k,fmt,ap);
+        if (sts)
+            fprintf(stderr,"%s\n    sts=%s\n\n",text,statusText(sts));
+        else
+            fprintf(stderr,"%s\n",text);
+       }
     else
-        fprintf(stderr,"%s\n",text);
+        fprintf(stderr,"%s:  sts=%s",text,statusText(sts));
     return(sts);
    }

@@ -156,7 +156,7 @@ error:
 #ifdef vms
     lib$signal(status,0);
 #else
-    mdsMsg(status,"Error in TclSetNode()",0);
+    mdsMsg(status,0);
 #endif
     return status;
    }

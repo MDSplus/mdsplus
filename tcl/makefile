@@ -8,6 +8,7 @@ OBJFILES = 			\
 	tcl_add_tag.o		\
 	tcl_close.o		\
 	tcl_create_pulse.o	\
+	tcl_decompile.o		\
 	tcl_directory.o		\
 	tcl_directory_tag.o	\
 	tcl_do_method.o		\
@@ -17,7 +18,8 @@ OBJFILES = 			\
 	tcl_set_node.o		\
 	tcl_set_tree.o		\
 	tcl_show_data.o		\
-	tcl_verify_tree.o
+	tcl_verify_tree.o	\
+	tcl_write.o
 
 all:	clean  tcl tcl_commands.o  libTcl.a	\
 			../shlib/tcl_commands.$(SHARE_TYPE)

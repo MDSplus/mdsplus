@@ -6,7 +6,6 @@
 dummy(TclDispatch_abort_server)
 dummy(TclCleanDatafile)
 dummy(TclCompressDatafile)
-dummy(TclDecompile)
 dummy(TclDeleteNode)
 dummy(TclDeletePulse)
 dummy(TclDispatch)
@@ -32,7 +31,6 @@ dummy(TclDispatch_show_server)
 dummy(TclDispatch_start_server)
 dummy(TclDispatch_stop_server)
 dummy(TclWfevent)
-dummy(TclWrite)
 
 
 	/* Some MDS and TREESHR routines not implemented on unix ...	*/

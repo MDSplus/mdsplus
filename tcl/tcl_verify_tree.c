@@ -20,6 +20,6 @@ int   TclVerifyTree()		/* Returns: status			*/
 
     sts = TreeVerifyTree();
     if (~sts & 1)
-        mdsMsg(sts,"TclVerifyTree: *WARN* status from TreeVerifyTree");
+        mdsMsg(sts,0);
     return(sts);
    }

@@ -24,7 +24,7 @@
 
 #ifdef CREATE_STS_TEXT
 struct stsText  tcl_stsText[] = {
-        STS_TEXT(TCL_STS_SUCCESS)
+        STS_TEXT(TCL_STS_SUCCESS,"Normal successful completion")
        };
 #endif
 

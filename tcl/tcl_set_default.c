@@ -29,7 +29,8 @@ int   TclSetDefault()
     if (sts & 1)
         TclNodeTouched(nid,set_def);
     else
-        mdsMsg(sts,"Error trying to set %s",dsc_nodename.dscA_pointer);
+        mdsMsg(sts,"Error trying to set default to %s",
+            dsc_nodename.dscA_pointer);
     return sts;
    }
 
