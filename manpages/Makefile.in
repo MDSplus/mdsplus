@@ -5,6 +5,7 @@ RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 GROFF_FLAGS=@GROFF_MAN_FLAGS@
+INSTALL=@top_srcdir@/conf/install-sh -c
 
 manpages = $(top_srcdir)/man/man1/mdsplus.1.gz \
            $(top_srcdir)/man/man1/traverser.1.gz \
