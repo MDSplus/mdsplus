@@ -1029,16 +1029,165 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   else
     return 1;  
 }
-int LibFindFile(struct descriptor *filespec, struct descriptor *result, int *ctx)
+
+#include <sys/types.h>
+#include <dirent.h>
+
+typedef struct {
+  char *env;
+  char *file;
+  struct descriptor wild_descr;
+  char **env_strs;
+  int  num_env;
+  int  next_index;
+  DIR  *dir_ptr;
+} FindFileCtx;
+
+
+static  int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx);
+static char *FindNextFile(FindFileCtx *ctx);
+static int FindFileEnd(FindFileCtx *ctx);
+
+extern int LibFindFile(struct descriptor *filespec, struct descriptor *result, int **ctx)
 {
-  printf("LibFindFile not yet supported\n");
-  return 0;
+  unsigned int status;
+  char *ans;
+  if (*ctx == 0) {
+    status = FindFileStart(filespec, (FindFileCtx **)ctx);
+    if ((status&1) ==0)
+      return status;
+  }
+  ans = FindNextFile((FindFileCtx *)*ctx);
+  if (ans != 0) {
+    if (result->pointer != 0)
+      free(result->pointer);
+    result->pointer = ans;
+    status = 1;
+  }
+  else {
+    status = 0;
+    LibFindFileEnd(ctx);    
+    /* find file end */
+  }
+  return status;
 }
-int LibFindFileEnd(int *ctx)
+
+extern int LibFindFileEnd(int **ctx)
 {
-  printf("LibFindFileEnd not yet supported\n");
-  return 0;
+  int status = FindFileEnd((FindFileCtx *)*ctx);
+  if (status) *ctx=NULL;
+  return status;
 }
+
+static int FindFileEnd(FindFileCtx *ctx)
+{
+  int i;
+  if (ctx != NULL) {
+    if (ctx->dir_ptr) {
+      closedir(ctx->dir_ptr);
+      ctx->dir_ptr = 0;
+    }
+    free (ctx->env);
+    free (ctx->file);
+    for (i=0; i<ctx->num_env; i++)
+      free(ctx->env_strs[i]);
+    free(ctx);
+  }
+  return 1;
+}
+
+#define CSTRING_FROM_DESCRIPTOR(cstring, descr)\
+  cstring=malloc(descr->length+1);\
+  strncpy(cstring, descr->pointer,descr->length);
+
+static int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx)
+{
+  FindFileCtx *lctx;
+  char *fspec;
+  char *colon;
+  *ctx = (FindFileCtx *)malloc(sizeof(FindFileCtx));
+  lctx = *ctx;
+
+  CSTRING_FROM_DESCRIPTOR(fspec, filespec)
+
+  colon = index(fspec, ':');
+  if (colon == 0) {
+    lctx->env = 0;
+    colon = fspec-1;
+  }
+  else {
+    lctx->env = malloc(colon-fspec+1);
+    strncpy(lctx->env, fspec, colon-fspec);
+  }
+  if (strlen(colon+1)==0) {
+    if (lctx->env) free(lctx->env);
+    free(fspec);
+    return 0;    
+  }
+  else {
+    lctx->file = malloc(strlen(colon+1));
+    strcpy(lctx->file, colon+1);
+    lctx->wild_descr.length = strlen(colon+1);
+    lctx->wild_descr.pointer=lctx->file;
+    lctx->wild_descr.dtype = DTYPE_T;
+    lctx->wild_descr.class = CLASS_S;
+    free(fspec);
+  }
+  if (lctx->env != 0) {
+    int num = 0;
+    char *env;
+    char *semi;
+    env = getenv(lctx->env);
+    if (env != 0) {
+      for(semi=index(env, ';'); semi!= 0; num++, semi=index(semi+1, ';'));
+      if (num > 0) {
+        char *ptr;
+        int i;
+        lctx->num_env = num;
+        lctx->env_strs = (char **)malloc(num*sizeof(char *));
+        for (ptr=env,i=0; i<num; i++) {
+          char *cptr;
+          int len = ((cptr=index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
+	  lctx->env_strs[i] = malloc(len+1);
+          strncpy(lctx->env_strs[i], ptr, len);
+          ptr=cptr+1;
+	}
+      }
+    }
+  }
+  lctx->dir_ptr = 0;
+  return 1;
+}
+
+static char *FindNextFile(FindFileCtx *ctx)
+{
+  char *ans;
+  struct dirent *dp;
+
+  int found = 0;
+  while (! found) {
+    while (ctx->dir_ptr==0)
+      if (ctx->next_index < ctx->num_env)
+        ctx->dir_ptr=opendir(ctx->env_strs[ctx->next_index++]);
+      else
+        return 0;
+    dp = readdir(ctx->dir_ptr);
+    if (dp != NULL) {
+      DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)
+      found = StrMatchWild(&filename, &ctx->wild_descr)&1;
+    }
+    else {
+     closedir(ctx->dir_ptr);
+     ctx->dir_ptr = NULL;
+    }
+  }
+  ans = malloc(strlen(ctx->env_strs[ctx->next_index-1])+1+strlen(dp->d_name)+1);
+  strcpy(ans, ctx->env_strs[ctx->next_index-1]);
+  strcat(ans, "/");
+  strcat(ans, dp->d_name);
+  return ans;
+}
+
 int LibSpawn(struct descriptor *cmd, struct descriptor *in, struct descriptor *out)
 {
   printf("LibSpawn not yet supported\n");
