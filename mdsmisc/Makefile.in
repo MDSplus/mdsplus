@@ -16,7 +16,13 @@ SOURCES = boxsmooth.c \
           getreferences.c  \
           resample.c  \
           step_resample.c \
-	  fformat.c
+	  fformat.c \
+	  filter.c \
+	  complex.c \
+	  butterworth.c \
+	  fir.c \
+	  iir.c \
+	  MdsFilter.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
