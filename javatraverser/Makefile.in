@@ -88,33 +88,33 @@ jTraverser.java
 
 CLASSES = *.class
 
-GIFS = @MAKEJAVADIR@classes/DeviceApply.gif \
-       @MAKEJAVADIR@classes/DeviceChoice.gif \
-       @MAKEJAVADIR@classes/DeviceReset.gif \
-       @MAKEJAVADIR@classes/compound.gif \
-       @MAKEJAVADIR@classes/signal.gif \
-       @MAKEJAVADIR@classes/text.gif \
-       @MAKEJAVADIR@classes/DeviceButtons.gif \
-       @MAKEJAVADIR@classes/DeviceDispatch.gif \
-       @MAKEJAVADIR@classes/DeviceSetup.gif \
-       @MAKEJAVADIR@classes/device.gif \
-       @MAKEJAVADIR@classes/structure.gif \
-       @MAKEJAVADIR@classes/window.gif \
-       @MAKEJAVADIR@classes/DeviceCancel.gif \
-       @MAKEJAVADIR@classes/DeviceField.gif \
-       @MAKEJAVADIR@classes/action.gif \
-       @MAKEJAVADIR@classes/dispatch.gif \
-       @MAKEJAVADIR@classes/subtree.gif \
-       @MAKEJAVADIR@classes/DeviceChannel.gif \
-       @MAKEJAVADIR@classes/DeviceOk.gif \
-       @MAKEJAVADIR@classes/axis.gif \
-       @MAKEJAVADIR@classes/numeric.gif \
-       @MAKEJAVADIR@classes/task.gif
+GIFS = DeviceApply.gif \
+       DeviceChoice.gif \
+       DeviceReset.gif \
+       compound.gif \
+       signal.gif \
+       text.gif \
+       DeviceButtons.gif \
+       DeviceDispatch.gif \
+       DeviceSetup.gif \
+       device.gif \
+       structure.gif \
+       window.gif \
+       DeviceCancel.gif \
+       DeviceField.gif \
+       action.gif \
+       dispatch.gif \
+       subtree.gif \
+       DeviceChannel.gif \
+       DeviceOk.gif \
+       axis.gif \
+       numeric.gif \
+       task.gif
 
-all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes $(GIFS) \
+all: @MAKEBINDIR@ @MAKEBINDIR@jTraverser @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jTraverser.jar
 
-clean: ; rm $(CLASSES) rm $(TARG_GIFS) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.jar
+clean: ; rm $(CLASSES) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.jar
 
 depend: ; @ :
 
@@ -131,7 +131,7 @@ install:
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
 @MAKEJAVADIR@classes/jTraverser.jar: jTraverser.class
-	$(JAR) c0f $@ $(CLASSES)
+	$(JAR) c0f $@ $(CLASSES) $(GIFS)
 
 jTraverser.class: 	$(SOURCES)
 	env CLASSPATH=@MAKEJAVADIR@classes/MRJClasses.zip:. $(JAVAC) -g -d . $(SOURCES)
