@@ -88,7 +88,7 @@ install:
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
 	cp jScope.properties ../java/classes
 
-MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
+@MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
 	rm *.class
 	$(JAVAC) -g  $(APPLETSOURCES) 
 	$(JAR) c0f $@ *.class

@@ -160,7 +160,9 @@ static void FreeBuffers() {
 static void AppendAnswer(int idx, void *buffer, int len, int dtype)
 {
 	int needed = len;
-//	if ((dtype == SYBDATETIME) || (dtype == SYBDATETIME4) && !date) dtype = SYBTEXT;
+	/*
+	if ((dtype == SYBDATETIME) || (dtype == SYBDATETIME4) && !date) dtype = SYBTEXT;
+	*/
 	if (dtype == DTYPE_T) needed++;
 /*
 	if (idx > num_bufs) {
@@ -188,8 +190,9 @@ static void StoreAnswer(int idx, struct descriptor *dst, int type)
 {
 	int status = 1;
 	DESCRIPTOR_A(src, 0, 0, 0, 0);
-	struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XS, (struct descriptor *)&src, sizeof(src)}; 
+	struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XS, 0, sizeof(src)}; 
 	struct descriptor t_dsc = {0, DTYPE_T, CLASS_S, 0 };
+        xd.pointer = (struct descriptor *)&src;
 	if (((type==SYBDATETIME) || (type==SYBDATETIME4)) && !date) type = SYBTEXT;
         src.pointer = bufs[idx].vptr;
         src.arsize = bufs[idx].offset;
@@ -258,15 +261,17 @@ int 	rblob;
 		bufs = (struct ans_buf *)calloc(ncol,sizeof(struct ans_buf));
 		num_bufs = ncol;
 		
+		/*
 		//	  if (used + ncol < arg->c) status = TdiEXTRA_ARG;
 		//	  if (used + ncol > arg->c) status = TdiMISS_ARG;
+		*/
 	}
 	else 
 		for (j = 0; j < ncol; ++j, ++used) { 
 			if (rows < 0) { 	/*		dst = (struct descriptor *)(used + j > arg->c ? 0 : *(argv+used)); // should'nt it be used > arg-> c ? */
-				dst = (struct descriptor *)(used  > arg->c ? 0 : *(argv+used)); // should'nt it be used > arg-> c ?
+				dst = (struct descriptor *)(used  > arg->c ? 0 : *(argv+used)); /* // should'nt it be used > arg-> c ? */
 				while (dst && dst->dtype == DTYPE_DSC) dst = (struct descriptor *)dst->pointer;
-				if (dst == 0) { // && (rblob || (pda->SQLTYPE & ~1) != SQL_TYPE_SEGMENT_ID)) {
+				if (dst == 0) { /* // && (rblob || (pda->SQLTYPE & ~1) != SQL_TYPE_SEGMENT_ID)) { */
 					name.pointer = SYB_dbcolname(dbproc,j+1) ;
 					name.length = strlen(name.pointer);
 					status = StrConcat(dst = (struct descriptor *)&madeup, &dunderscore, &name MDS_END_ARG);
@@ -288,8 +293,9 @@ int 	rblob;
 					bufs[j].syb_type = SYB_dbcoltype(dbproc, j+1);
 					bufs[j].len = SYB_dbdatlen(dbproc, j+1);
 				}
-
-				//		if (rows == -1) status = TdiPutIdent(dst, &tmp);
+				/*
+				//if (rows == -1) status = TdiPutIdent(dst, &tmp);
+				*/
 /*
 				len = SYB_dbdatlen(dbproc, j+1);
 				buf = SYB_dbdata(dbproc, j+1);
@@ -470,7 +476,7 @@ ARGLIST 	*arg;
     case '?' : ++pin;		/* parameter marker */
       ++*nmarks;
       if (used >= arg->c) {
-	//	sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c);
+	/* //	sprintf(hold, "Expect >= %d parameters, %d given.", arg->used, arg->c); */
 	return TdiMISS_ARG;
       }
       if (argv

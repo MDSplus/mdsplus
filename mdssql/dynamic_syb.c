@@ -158,8 +158,9 @@ int	Login_Sybase(char *host, char *user, char *pass)
   }
 #endif
   DBSETLAPP(loginrec, "MdsSql");
-//  DBSETLPACKET(loginrec, 8192);
+  /*//  DBSETLPACKET(loginrec, 8192);
  // DBSETOPT(dbproc, DBBUFFER, "0") ;
+ */
   dbclropt(dbproc, DBBUFFER, "0") ;
 
 

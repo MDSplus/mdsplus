@@ -832,8 +832,12 @@ static int io_open_remote(char *host, char *filename, int options, mode_t mode, 
   *sock = RemoteAccessConnect(host, 1);
   if (*sock != -1)
   {
-    int info[] = {strlen(filename)+1,options,(int)mode};
-    int status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    int status;
+    int info[3];
+    info[0]=strlen(filename)+1;
+    info[1]=options;
+    info[2]=(int)mode;
+    status = SendArg(*sock,MDS_IO_OPEN_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
     if (status & 1)
     {
       char dtype;
@@ -871,9 +875,11 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 static int io_close_remote(int fd)
 {
   int ret = -1;
-  int info[] = {0,FDS[fd-1].fd};
+  int info[] = {0,0};
   int sock = FDS[fd-1].socket;
-  int status = SendArg(sock,MDS_IO_CLOSE_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  int status;
+  info[1]=FDS[fd-1].fd;
+  status = SendArg(sock,MDS_IO_CLOSE_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
   {
     char dtype;
@@ -910,9 +916,11 @@ int MDS_IO_CLOSE(int fd)
 static _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 {
   _int64 ret = -1;
-  int info[] = {0,FDS[fd-1].fd,0,0,whence};
+  int info[] = {0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  info[1]=FDS[fd-1].fd;
+  info[4]=whence;
   *(_int64 *)(&info[2]) = offset;
   status = SendArg(sock,MDS_IO_LSEEK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
@@ -952,9 +960,11 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 static int io_write_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
-  int info[] = {count,FDS[fd-1].fd};
+  int info[] = {0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  info[0]=count;
+  info[1]=FDS[fd-1].fd;
   status = SendArg(sock,MDS_IO_WRITE_K,0,0,0,sizeof(info)/sizeof(int),info,buff);
   if (status & 1)
   {
@@ -989,9 +999,11 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
 static ssize_t io_read_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
-  int info[] = {0,FDS[fd-1].fd,count};
+  int info[] = {0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  info[1]=FDS[fd-1].fd;
+  info[2]=count;
   status = SendArg(sock,MDS_IO_READ_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
   {
@@ -1028,9 +1040,12 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 static int io_lock_remote(int fd, _int64 offset, int size, int mode)
 {
   ssize_t ret = 0;
-  int info[] = {0,FDS[fd-1].fd,0,0,size,mode};
+  int info[] = {0,0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  info[1]=FDS[fd-1].fd;
+  info[4]=size;
+  info[5]=mode;
   *(_int64 *)(&info[2]) = offset;
   status = SendArg(sock,MDS_IO_LOCK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
@@ -1094,8 +1109,10 @@ static int io_exists_remote(char *host, char *filename)
   int sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
-    int info[] = {strlen(filename)+1};
-    int status = SendArg(sock,MDS_IO_EXISTS_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    int info[] = {0};
+    int status;
+    info[0]=strlen(filename)+1;
+    status = SendArg(sock,MDS_IO_EXISTS_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
     if (status & 1)
     {
       char dtype;
@@ -1135,8 +1152,10 @@ static int io_remove_remote(char *host, char *filename)
   int sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
-    int info[] = {strlen(filename)+1};
-    int status = SendArg(sock,MDS_IO_REMOVE_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
+    int info[] = {0};
+    int status;
+    info[0]=strlen(filename)+1;
+    status = SendArg(sock,MDS_IO_REMOVE_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
     if (status & 1)
     {
       char dtype;
@@ -1176,10 +1195,11 @@ static int io_rename_remote(char *host, char *filename_old, char *filename_new)
   int sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
-    int info[] = {strlen(filename_old)+1+strlen(filename_new)+1};
+    int info[] = {0};
     char *names = strcpy(malloc(info[0]),filename_old);
     int status;
     strcpy(&names[strlen(filename_old)+1],filename_new);
+    info[0]=strlen(filename_old)+1+strlen(filename_new)+1;
     status = SendArg(sock,MDS_IO_RENAME_K,0,0,0,sizeof(info)/sizeof(int),info,names);
     if (status & 1)
     {

@@ -1055,7 +1055,8 @@ static void ProcessMessage(Client *c, Message *message)
     case MDS_IO_LSEEK_K:
       {
 	_int64 ans = (_int64)lseek(message->h.dims[1],(off_t)*(_int64 *)&message->h.dims[2],message->h.dims[4]);
-        struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, (char *)&ans};
+        struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
+        ans_d.pointer = (char *)&ans;
         SendResponse(c, 1, (struct descriptor *)&ans_d);
 	break;
       }
@@ -1065,7 +1066,9 @@ static void ProcessMessage(Client *c, Message *message)
 	ssize_t nbytes = read(message->h.dims[1],buf,(size_t)message->h.dims[2]);
         if (nbytes > 0)
 	{
-          DESCRIPTOR_A(ans_d,1,DTYPE_B,buf,nbytes);
+          DESCRIPTOR_A(ans_d,1,DTYPE_B,0,0);
+          ans_d.pointer=buf;
+          ans_d.arsize=nbytes;
           SendResponse(c,1,(struct descriptor *)&ans_d);
         }
         else

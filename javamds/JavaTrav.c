@@ -120,7 +120,7 @@ JNIEXPORT jint JNICALL Java_Database_open
   int is_editable, is_readonly, shot;
 static char buf[1000];
  
-//printf("Parte Open\n");
+/* //printf("Parte Open\n");*/
 
 
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
@@ -142,7 +142,7 @@ static char buf[1000];
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
 
-  //printf("Aperto\n");
+/*  //printf("Aperto\n");*/
 
 /*//report(MdsGetMsg(status));*/
 sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
@@ -1050,7 +1050,7 @@ JNIEXPORT jlong JNICALL Java_Database_saveContext
   (JNIEnv *env, jobject obj)
 {
 	void *context =  TreeSaveContext();
-//	printf("Saved context: %x\n", context);
+/*//	printf("Saved context: %x\n", context);*/
 	return (long)context;
 }
 
@@ -1059,7 +1059,7 @@ JNIEXPORT void JNICALL Java_Database_restoreContext
 {
 	char **ctx = (char **)context;
 	if(context == 0) return;
-//	printf("Restored context: %x %s\n", ctx, *ctx);
+/*//	printf("Restored context: %x %s\n", ctx, *ctx);*/
 	TreeRestoreContext((void *)context);
 }
 
