@@ -1,6 +1,7 @@
 #include "globus_xio.h"
 #include <ipdesc.h>
-
+#include <grp.h>
+#include <pwd.h>
 #define MAX_DIMS       7
 #define VMS_CLIENT     1
 #define IEEE_CLIENT    2
@@ -121,7 +122,10 @@ typedef struct _mdsip_client_t {
   void    *tdicontext[6];
   int     addr;
   mdsip_options_t *options;
-  int     uid_set;
+  uid_t   uid;
+  gid_t   gid;
+  int     num_groups;
+  gid_t   gids[NGROUPS];
   void (*mdsip_read_cb)();
   MdsEventList *event;
 } mdsip_client_t;
@@ -147,7 +151,7 @@ extern void mdsip_initialize_io(mdsip_options_t *options);
 extern int  mdsip_listen(void *io_handle, mdsip_options_t *options);
 extern mdsip_client_t *mdsip_new_client(mdsip_options_t *options);
 extern int  mdsip_authenticate_client(mdsip_client_t *ctx);
-extern int  mdsip_become_user(char *local_user, char *remote_user);
+extern int  mdsip_become_user(mdsip_client_t *c);
 extern void mdsip_do_message_cb();
 extern void mdsip_io_wait();
 extern void mdsip_free_client(mdsip_client_t *ctx);

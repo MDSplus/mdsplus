@@ -6,6 +6,10 @@ void *MDSIP_IO_HANDLES[MAX_CONNECTIONS];
 static int client_addr = 0;
 static char *server_portname = NULL;
 
+extern  int MdsOpen();
+extern int MdsClose();
+extern int MdsSetDefault();
+
 int ConnectToMds(char *server)
 {
   int i;

@@ -374,9 +374,9 @@ static void ExecuteMessage(void *io_handle, mdsip_client_t *c)
   static DESCRIPTOR(eventastreq,EVENTASTREQUEST);
   static DESCRIPTOR(eventcanreq,EVENTCANREQUEST);
   int java = CType(c->client_type) == JAVA_CLIENT;
-  if (c->options->port_name == NULL && c->uid_set == 0)
+  if (c->options->port_name == NULL)
   {
-    if (!mdsip_become_user(c->local_user,c->remote_user))
+    if (!mdsip_become_user(c))
     {
       printf("Error becoming user, %s/%s\n",c->local_user,c->remote_user);
       globus_xio_register_close(io_handle,NULL,mdsip_close_cb,c);

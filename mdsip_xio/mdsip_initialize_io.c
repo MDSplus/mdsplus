@@ -17,7 +17,12 @@ void  mdsip_initialize_io(mdsip_options_t *options)
   char *local_account;
 
   if (options->port_name && mdsip_find_user_mapping(options->hostfile,0,0,"multi@localhost",&local_account))
-    mdsip_become_user(local_account,0);
+  {
+    mdsip_client_t *c = mdsip_new_client(0);
+    c->local_user = local_account;    
+    mdsip_become_user(c);
+    free(c);
+  }
 
   globus_module_activate(GLOBUS_XIO_MODULE);
 

@@ -3,7 +3,7 @@
 
 short mdsip_arglen(struct descrip *d)
 {
-  short len;
+  short len=0;
   switch (d->dtype)
   {
     case DTYPE_CSTRING :  len = d->length ? d->length : (d->ptr ? strlen(d->ptr) : 0); break;

@@ -243,7 +243,7 @@ void mdsip_authenticate_cb(
     }
     status = mdsip_find_user_mapping(ctx->options->hostfile, ctx->ipaddr,ctx->host,ctx->remote_user,&ctx->local_user);
     if (status & 1 && ctx->options->port_name == 0)
-      status = mdsip_become_user(ctx->local_user,ctx->remote_user);
+      status = mdsip_become_user(ctx);
     reply->h.msglen = sizeof(mdsip_message_header_t);
     reply->h.status = status;
     if (status & 1)
@@ -260,6 +260,7 @@ void mdsip_authenticate_cb(
     {
       fprintf(stdout,"%s, REJECT - %s@%s(%s)\n",mdsip_current_time(),ctx->remote_user,ctx->host,ctx->ipaddr);
     }
+    fflush(stdout);
     free(ctx->message);
     mdsip_write((void *)xio_handle,ctx,reply,0);
     if (status & 1)

@@ -9,6 +9,7 @@ mdsip_client_t *mdsip_new_client(mdsip_options_t *options)
   mdsip_client_t *ctx = (mdsip_client_t *)malloc(sizeof(mdsip_client_t));
   memset(ctx,0,sizeof(mdsip_client_t));
   ctx->options = options;
+  ctx->num_groups = -1;
   return ctx;
 }
 
