@@ -95,3 +95,6 @@ libfreevm
 libgetvm
 libfreevm_
 libgetvm_
+MdsUsageString
+MdsClassString
+MdsDtypeString
