@@ -25,8 +25,13 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
 
 extern void SetSocketOptions(SOCKET s, int reuse);
 static int initialized = 0;
-static void FlipHeader(MsgHdr *header);
+void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
+extern int SocketSend(SOCKET s, char *bptr, int num, int oob);
+extern int SocketRecv(SOCKET s, char *bptr, int num,int oob);
+extern int CloseSocket(SOCKET s);
+extern SOCKET Connect(char *host, unsigned short port);
+extern void FlushSocket(SOCKET sock);
 
 #if defined( _UCX) || defined(_WIN32)
 #else
@@ -66,7 +71,7 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int oob)
   return 1;
 }
 
-static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
 {
   int tries = 0;
   while (bytes_to_recv > 0 && (tries < 10))
@@ -108,7 +113,7 @@ int GetCompressionLevel()
   return CompressionLevel;
 }
 
-static char ClientType(void)
+char ClientType(void)
 {
   static char ctype = 0;
   if (!ctype)
@@ -194,13 +199,11 @@ void MdsIpFree(void *ptr)
 
 static SOCKET ConnectToPort(char *host, char *service)
 {
-  int status;
   SOCKET s;
   unsigned short portnum = 0;
   static struct sockaddr_in sin;
   struct servent *sp;
   static int one=1;
-  int addr;
 
 #ifdef HAVE_VXWORKS_H
   portnum = htons((atoi(service) == 0) ? 8000 : (unsigned short)atoi(service));
@@ -574,7 +577,7 @@ int SendMdsMsg(SOCKET sock, Message *m, int oob)
 }
 
   
-static void FlipHeader(MsgHdr *header)
+void FlipHeader(MsgHdr *header)
 {
   int i;
 #ifdef __CRAY

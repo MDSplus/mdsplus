@@ -130,6 +130,10 @@ SOURCE=.\mdsip.pro
 # End Source File
 # Begin Source File
 
+SOURCE=.\mdsip_socket_io.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\mdsipshr.c
 # End Source File
 # Begin Source File
