@@ -196,7 +196,7 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
    * is of the right type.  It is only used for remote MDSplus 
    */
 
-  char *newexpression = (char *) malloc(strlen(expression)+13);
+  char *newexpression = (char *) malloc(strlen(expression)+16);
 				
   switch (dsc->dtype) 
     {
@@ -213,7 +213,7 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
 
   strcat(newexpression, "(");
   strcat(newexpression, expression);
-  strcat(newexpression, ")\0");
+  strcat(newexpression, ")");
 
   return newexpression;
 
@@ -745,6 +745,7 @@ int MdsValue(char *expression, ...)
       int numbytes;
       short len;
       void *dptr;
+      char *dnew = 0;
       struct descrip exparg;
       struct descrip *arg = &exparg;
 
@@ -772,10 +773,9 @@ int MdsValue(char *expression, ...)
 	  int i;
 	  int nelements = numbytes/len;
 	  int s = nelements * dscAnswer->length;
-	  char *dnew = (char *) malloc(s);
+	  dnew = (char *) malloc(s);
 	  for (i=0; i<s; i++) dnew[i]=32;  /*fill*/
-	  for (i=0; i<nelements; i++) memcpy(dnew+(i*dscAnswer->length), (char *) dptr+(i*len), len);
-	  /*	  if (dptr) free(dptr); */  /*** &&& WHY DO I GET A SEGFAULT HERE ??? ***/
+	  for (i=0; i<nelements; i++) memcpy(dnew+(i*dscAnswer->length), (char *) dptr+(i*len), MIN(dscAnswer->length,len));
 	  dptr = dnew;
 	  dlen = dscAnswer->length;
 	}
@@ -794,6 +794,8 @@ int MdsValue(char *expression, ...)
 
 	MdsValueSet(dscAnswer, descrs[ansdescr-1], length);
       }
+      if (dnew)
+        free(dnew);
     }
 
   }
