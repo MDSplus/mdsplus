@@ -114,7 +114,7 @@ typedef struct {
 } Iosb;
 
 typedef struct { 
-		unsigned       status;
+	unsigned short status;
         unsigned short bytcnt;
         unsigned       x        : 1;
         unsigned       q        : 1;

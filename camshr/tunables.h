@@ -20,6 +20,6 @@
 
 // environment variable names
 #define	DB_DIR				"CTS_DB_DIR"		// environment variable
-#define	DEBUG_VAR_NAME		"DEBUG"				// for debugging purposes
+#define	DEBUG_VAR_NAME		"CTS_DEBUG"				// for debugging purposes
 
 #endif

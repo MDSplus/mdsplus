@@ -19,7 +19,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-
+#include <mdsdescrip.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -76,4 +76,42 @@ int lookup_entry( int dbType, char *entry_name )
 
 Lookup_Exit:
 	return retval;	// return results
+}
+
+extern struct CRATE		*CRATEdb;
+
+int find_crate( char *wild, char **crate, void **ctx)
+{
+  struct context { 
+    int numEntries; 
+    int next; 
+  } *context;
+  int i;
+  int status = 0;
+  if (*ctx == 0)
+  {
+    *ctx = malloc(sizeof(struct context));
+    ((struct context *)*ctx)->next = 0;
+    ((struct context *)*ctx)->numEntries = get_file_count(CRATE_DB);
+  }
+  context = (struct context *)*ctx;
+  while (context->next < context->numEntries)
+  {
+    struct descriptor wild_d = {strlen(wild),DTYPE_T,CLASS_S,wild};
+    struct descriptor crate_d = {sizeof(struct CRATE_NAME),DTYPE_T,CLASS_S,(char *)&CRATEdb[context->next++]};
+    if (StrMatchWild(&crate_d,&wild_d) & 1)
+    {
+      *crate = memcpy(malloc(crate_d.length+1),crate_d.pointer,sizeof(struct CRATE_NAME));
+      (*crate)[crate_d.length]=0;
+      status = 1;
+      break;
+    }
+  }
+  return status;
+}
+
+void find_crate_end(void **ctx)
+{
+  free(*ctx);
+  *ctx=0;
 }

@@ -20,7 +20,7 @@ MINOR = 8
 SOURCES	= \
 		add_entry.c              \
 		bisearch.c               \
-		CamFunctions.c           \
+		cam_functions.c           \
 		check_for_file.c         \
 		check_sema4.c            \
 		commit_entry.c           \
@@ -46,7 +46,7 @@ SOURCES	= \
 		parse_cts_db.c           \
 		QueryHighwayType.c 		 \
 		remove_entry.c           \
-		ScsiIo.c                 \
+		scsi_io.c                 \
 		ScsiSystemStatus.c		 \
 		turn_crate_on_off_line.c \
 		unlock_file.c            \

@@ -13,6 +13,7 @@
 #include "module.h"
 #include "crate.h"
 
+
 // SCSI CAMAC funtion prototypes
 int CamPiow(	
 			char *Name,				// CAMAC module name
@@ -131,7 +132,7 @@ char *get_file_name( char *filename );
 int  get_scsi_device_number( char *highway_name );
 int  issort( void *data, int size, int esize,
 			 int (*compare)(const void *key1, const void *key2));
-void JorwayTranslateIosb( UserParams *user );
+int JorwayTranslateIosb( SenseData *sense, int scsi_status );
 void KsTranslateIosb( UserParams *user );
 int  lock_file();
 int  lookup_entry( int dbType, char *module_name );
@@ -151,5 +152,10 @@ int  xlate_logicalname( char *Name, CamKey *Key );
 //-------------------------------------------------------------------------
 void dump_db(int count);
 void ShowStatus(int statcode);
+
+int scsi_io(int scsiDevice, int direction, unsigned char *cmdp, 
+         unsigned char cmd_len, char *buffer, unsigned int buflen, 
+         unsigned char *sbp, unsigned char mx_sb_len, 
+	    unsigned char *sb_out_len, int *transfer_len);
 
 #endif

@@ -20,6 +20,8 @@
 // Fri Jan 25 15:56:16 EST 2002	-- fixed 'show' using wildcard characters
 // Wed Feb 20 12:46:12 EST 2002	-- 'removed' memory leak
 // Fri Feb 22 10:56:55 EST 2002	-- restructured 'deassign()'
+// Thu Dec  5 12:32:50 EST 2002	-- make call to 'Autoconfig()' after Addcrate
+// Mon Dec  9 15:51:05 EST 2002	-- 'ShowCrate()' fixed crate status
 //-------------------------------------------------------------------------
 
 #define	NEED_WARM_N_FUZZY	1
@@ -249,7 +251,7 @@ int Autoconfig()
 
 	// open file for read-only
 	if( (fp = Fopen(CRATE_DB_FILE, "r")) == NULL ) {
-		if( MSGLLV(2) )
+		if( MSGLVL(2) )
 			fprintf( stderr, "crate.db does not exist\n" );
 
 		status = FILE_ERROR;
@@ -445,9 +447,11 @@ int ResetHighway()
 int SetCrate()
 {
 	int status;
+        char *cratename; 
+        void *ctx=0;
 
 	static DESCRIPTOR( crate_p, "CRATE" );
-	static DESCRIPTOR( quiet, "QUIET" );
+	static DESCRIPTOR( quietq, "QUIET" );
 
 	static DYNAMIC_DESCRIPTOR( wild );
 	static DYNAMIC_DESCRIPTOR( crate );
@@ -457,6 +461,7 @@ int SetCrate()
 
 	int off = cli_present(&offq) & 1;
 	int on  = cli_present(&onq ) & 1;
+        int quiet = cli_present(&quietq) & 1;
 
 	cli_get_value( &crate_p, &wild );
 	str_upcase( &wild, &wild );
@@ -471,9 +476,16 @@ int SetCrate()
 			goto SetCrate_Exit;
 		}
 	}
+        
+        while (find_crate(wild.pointer,&cratename,&ctx))
+        {
 
-	status = turn_crate_on_off_line( wild.pointer, (on) ? ON : OFF );
-
+	  status = turn_crate_on_off_line( cratename , (on) ? ON : OFF );
+          if (!(status & 1) && !quiet)
+            printf("Error turning crate %s %\n",cratename,on ? "online" : "offline");
+          free(cratename);
+        }
+        find_crate_end(&ctx);
 SetCrate_Exit:
 	return SUCCESS;
 }
@@ -574,12 +586,15 @@ int ShowCrate()
 							printf("gcs(%s) returned %d, crate 0x%x\n", pCr8->name, status, crateStatus);
 
 						if( status == SUCCESS ) {
-							online = !(crateStatus & 0x3c00)    ? TRUE  : FALSE;
-							if( !crateStatus || crateStatus == 0x3 )	// [2001.09.10]
-								online = FALSE;
+//							online = !(crateStatus & 0x3c00)    ? TRUE  : FALSE;				// [2002.12.09]
+//							online = !(crateStatus & 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
+							online = ((crateStatus & 0x1000) != 0x1000)    ? TRUE  : FALSE;				// [2002.12.09]
+							if( !crateStatus || crateStatus == 0x3 )	// [2001.09.10]			// [2002.12.09]
+								online = FALSE;													// [2002.12.09]
 							sprintf(colorON,  "%s", (online)    ? GREEN : RED);
 
-							enhanced = (online && (crateStatus & 0x4030)) ? TRUE  : FALSE;
+//							enhanced = (online && (crateStatus & 0x4030)) ? TRUE  : FALSE;		// [2002.12.09]
+							enhanced = (online && (crateStatus & 0x4000)) ? TRUE  : FALSE;		// [2002.12.09]
 							sprintf(colorENH, "%s", (enhanced)  ? GREEN : RED);
 
 							printf("%s:   %s%c%s   .   .   %s%c%s",
@@ -773,6 +788,9 @@ AddCrate_Exit:
 		printf("AddCrate(): "); ShowStatus(status);
 	}
 
+	if( status == SUCCESS )			// if everything is OK ...
+		Autoconfig();				// ... map crate to /dev/sg#
+
 //ShowCrate();
 	return status;
 }
@@ -841,6 +859,7 @@ DelCrate_Exit:
 //-------------------------------------------------------------------------
 int Help()
 {
+printf("2002.12.11 - a\n");
 	printf( "CTS usage:   (NB! entries are case insensitive)\n" );
 	printf( "\n" );
 	printf( "ASSIGN\n" );
