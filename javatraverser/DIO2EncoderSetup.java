@@ -22,7 +22,7 @@ public class DIO2EncoderSetup extends DeviceSetup
 		setDeviceTitle("INCAA DIO2 timing module - Encoder configuration");
 		setDeviceType("DIO2Encoder");
 		getContentPane().setLayout(new BorderLayout(0,0));
-		setSize(677,382);
+		setSize(716,384);
 		JPanel1.setLayout(new BorderLayout(0,0));
 		getContentPane().add(BorderLayout.NORTH,JPanel1);
 		JPanel50.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
@@ -63,13 +63,13 @@ public class DIO2EncoderSetup extends DeviceSetup
 		JPanel51.add(deviceDispatch1);
 		JPanel2.setLayout(new BorderLayout(0,0));
 		getContentPane().add(BorderLayout.CENTER,JPanel2);
-		JPanel3.setBounds(0,0,635,656);
+		JPanel3.setBounds(0,0,698,697);
 		JPanel2.add(JScrollPane1);
 		JViewport1.setExtentSize(new java.awt.Dimension(521,656));
 		JViewport1.setViewSize(new java.awt.Dimension(505,656));
 		JScrollPane1.getViewport().add(JViewport1);
-		JViewport1.setBounds(0,0,635,656);
-		JPanel3.setLayout(new GridLayout(16,1,0,0));
+		JViewport1.setBounds(0,0,698,697);
+		JPanel3.setLayout(new GridLayout(17,1,0,0));
 		JViewport1.add(JPanel3);
 		deviceChannel1.setInSameLine(true);
 		deviceChannel1.setOffsetNid(6);
@@ -359,6 +359,30 @@ public class DIO2EncoderSetup extends DeviceSetup
 		deviceField51.setOffsetNid(69);
 		deviceField51.setLabelString("Time: ");
 		deviceChannel16.add(deviceField51);
+		deviceChannel17.setInSameLine(true);
+		deviceChannel17.setOffsetNid(70);
+		deviceChannel17.setLabelString("Ch Software:");
+		deviceChannel17.setBorderVisible(true);
+		deviceChannel17.setLayout(new BorderLayout(0,0));
+		JPanel3.add(deviceChannel17);
+		deviceField52.setTextOnly(true);
+		deviceField52.setOffsetNid(71);
+		deviceField52.setLabelString("Event name: ");
+		deviceChannel17.add(deviceField52);
+		deviceField53.setNumCols(4);
+		deviceField53.setOffsetNid(72);
+		deviceField53.setLabelString("Event code: ");
+		deviceChannel17.add(deviceField53);
+		deviceField54.setNumCols(15);
+		deviceField54.setOffsetNid(73);
+		deviceField54.setLabelString("Time: ");
+		deviceChannel17.add(deviceField54);
+		{
+			String[] tempString = new String[2];
+			tempString[0] = "INIT";
+			tempString[1] = "TRIGGER";
+			deviceButtons1.setMethods(tempString);
+		}
 		getContentPane().add(BorderLayout.SOUTH,deviceButtons1);
 		//}}
 	}
@@ -476,6 +500,10 @@ public class DIO2EncoderSetup extends DeviceSetup
 	DeviceField deviceField49 = new DeviceField();
 	DeviceField deviceField50 = new DeviceField();
 	DeviceField deviceField51 = new DeviceField();
+	DeviceChannel deviceChannel17 = new DeviceChannel();
+	DeviceField deviceField52 = new DeviceField();
+	DeviceField deviceField53 = new DeviceField();
+	DeviceField deviceField54 = new DeviceField();
 	DeviceButtons deviceButtons1 = new DeviceButtons();
 	//}}
 

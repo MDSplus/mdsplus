@@ -80,9 +80,10 @@ public class DIO2Setup extends DeviceSetup
 		deviceField117.setLabelString("Synch. event: ");
 		JPanel52.add(deviceField117);
 		{
-			String[] tempString = new String[2];
+			String[] tempString = new String[3];
 			tempString[0] = "INIT";
-			tempString[1] = "STORE";
+			tempString[1] = "TRIGGER";
+			tempString[2] = "STORE";
 			deviceButtons1.setMethods(tempString);
 		}
 		getContentPane().add(BorderLayout.SOUTH, deviceButtons1);

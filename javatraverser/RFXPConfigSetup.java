@@ -51,7 +51,7 @@ public class RFXPConfigSetup extends DeviceSetup
 		getContentPane().add(deviceField15);
 		deviceField15.setBounds(168,360,240,40);
 		getContentPane().add(deviceButtons1);
-		deviceButtons1.setBounds(144,408,281,40);
+		deviceButtons1.setBounds(144,408,300,40);
 		JPanel1.setBorder(etchedBorder1);
 		JPanel1.setLayout(new FlowLayout(FlowLayout.CENTER,5,5));
 		getContentPane().add(JPanel1);
