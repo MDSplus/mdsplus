@@ -187,7 +187,7 @@ public class ACQD240Setup extends DeviceSetup
                     (float)1.0E6,(float)2.0E6,(float)2.5E6,(float)4.0E6,(float)5.0E6,
                     (float)1.0E7,(float)2.0E7,(float)2.5E7,(float)4.0E7,(float)5.0E7,
                     (float)1.0E8,(float)2.0E8,(float)2.5E8,(float)4.0E8,(float)5.0E8,
-                    (float)1.0E9,(float)2.0E9);
+                    (float)1.0E9,(float)2.0E9});
  		deviceChoice5.setOffsetNid(8);
 		{
 			String[] tempString = new String[37];
