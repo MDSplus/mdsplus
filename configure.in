@@ -21,8 +21,10 @@ fi
 
 if test "$enable_memcheck" = yes -o "$enable_memcheck" = on ; then
   MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC"
+  MEMCHKLIB="-lMdsShr"
 else
   MEMCHK=""
+  MEMCHKLIB=""
 fi
 
 dnl Check out the compiler
@@ -433,6 +435,7 @@ AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
 AC_SUBST(MDSVME)
+AC_SUBST(MEMCHKLIB)
 AC_SUBST(MOTIF_LDSHARE)
 AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
