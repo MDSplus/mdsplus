@@ -10,12 +10,12 @@ public abstract class NodeDataPropertyEditor implements PropertyEditor {
     public void setAsText(String s) 
     {
 	try {
-	    data = Data.fromExpr(s);
+	    data = Tree.dataFromExpr(s);
 	    } catch (Exception e) {data = null; }
     }
     public String getAsText() {
 	try {
-	    return data.toString();
+	    return Tree.dataToString(data);
 	    } catch (Exception e) {return null; }
     }
     public String []getTags() {return null;}

@@ -87,7 +87,7 @@ public class DeviceTable extends DeviceComponent
     public void initializeData(Data data, boolean is_on)
     {
         initializing = true;
-        String decompiled = data.toString();
+        String decompiled = Tree.dataToString(data);
         StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
         items = new String[numCols * numRows];
         int idx = 0;
@@ -124,7 +124,7 @@ public class DeviceTable extends DeviceComponent
     public void displayData(Data data, boolean is_on)
     {
         state = is_on;
-        String decompiled = data.toString();
+        String decompiled = Tree.dataToString(data);
         StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
         items = new String[numCols * numRows];
         int idx = 0;
@@ -158,7 +158,7 @@ public class DeviceTable extends DeviceComponent
             else
                 dataString += ",";
         }
-        return Data.fromExpr(dataString);
+        return Tree.dataFromExpr(dataString);
     }
     public Component add(Component c)
     {

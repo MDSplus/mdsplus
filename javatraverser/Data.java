@@ -7,15 +7,25 @@ import java.io.*;
 
 public abstract class Data implements Serializable
 {
-    static {
+    static boolean library_loaded = false;
+/*    static {
         try {
 	    System.loadLibrary("JavaMds");
 	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
     }
-    int dclass;
+*/    int dclass;
     int dtype;
     Vector data_listeners = new Vector();
-    public Data() {}
+    public Data() 
+    {
+        if(!library_loaded)
+        {
+            library_loaded = true;
+            try {
+	        System.loadLibrary("JavaMds");
+	        }catch(Throwable e) {}
+	    }
+    }
     native static public Data fromExpr(String text_descr);
     native public String toString();
     native static public int evaluate(String expression);

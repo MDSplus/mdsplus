@@ -65,6 +65,8 @@ public class Database implements RemoteTree{
     public native void doDeviceMethod(NidData nid, String method) throws DatabaseException;
     public native NidData [] getWild(int usage_mask) throws DatabaseException;
     public native void create(int shot) throws DatabaseException;
+    public String dataToString(Data data){return "ERROR this method cannot be called";}
+    public Data dataFromExpr(String expr){return null;}
   }  
     
     

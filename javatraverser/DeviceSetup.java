@@ -200,7 +200,7 @@ public class DeviceSetup extends JDialog
             {
                 currData = ((DeviceComponent)(device_components.elementAt(idx))).getData();
                 if(currData != null)
-                    varExpr.append("_"+currId+ " = " + currData.toString() + ";");
+                    varExpr.append("_"+currId+ " = " + Tree.dataToString(currData) + ";");
             }
         }
         for(idx = 0; idx < num_expr; idx++)

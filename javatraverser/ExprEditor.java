@@ -37,7 +37,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	if(rows > 1)
 	    default_scroll = true;
 	if(data != null)
-	    expr = data.toString();
+	    expr = Tree.dataToString(data);
 	else
 	    expr = null;
 	quotes_needed = (default_to_string && (expr == null || expr.charAt(0) == '\"'));
@@ -122,7 +122,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	if(data == null)
 	    expr = "";
 	else
-	    expr = data.toString();
+	    expr = Tree.dataToString(data);
 	if(default_to_string)
 	{
 	    int len = expr.length();
@@ -142,9 +142,9 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	    expr = text_field.getText();
 	    
 	if(quotes_added)
-	    return Data.fromExpr("\"" + expr + "\"");
+	    return Tree.dataFromExpr("\"" + expr + "\"");
 	else
-	    return Data.fromExpr(expr);
+	    return Tree.dataFromExpr(expr);
     }
     
     public void setData(Data data)

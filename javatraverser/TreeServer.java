@@ -5,7 +5,7 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
 {
     String experiment;
     int shot;
-    Database tree;
+    transient Database tree;
     
     public TreeServer() throws RemoteException
     {
@@ -51,6 +51,8 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
     public void doDeviceMethod(NidData nid, String method) throws DatabaseException {tree.doDeviceMethod(nid, method);}
     public NidData [] getWild(int usage_mask) throws DatabaseException {return tree.getWild(usage_mask);}
     public void create(int shot) throws DatabaseException  {tree.create(shot);}
+    public String dataToString(Data data){return data.toString();}
+    public Data dataFromExpr(String expr){return Data.fromExpr(expr);}
     
     
     

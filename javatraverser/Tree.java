@@ -13,6 +13,7 @@ import java.rmi.RemoteException.*;
 public class Tree extends JScrollPane implements TreeSelectionListener, 
     MouseListener, ActionListener, KeyListener, DataChangeListener
 {
+    static boolean is_remote;
     boolean is_angled_style;
     DefaultMutableTreeNode top;
     //Node top_node, curr_node;
@@ -27,7 +28,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     DialogSet dialog_sets[];
     java.util.Stack trees, experiments;
     JTree curr_tree;
-    RemoteTree curr_experiment;
+    static RemoteTree curr_experiment;
     Node curr_node = null;
     DefaultMutableTreeNode curr_tree_node; 
     JDialog open_dialog = null, add_node_dialog = null;
@@ -79,20 +80,41 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	}
 	
     }
+   
+    
+    static String dataToString(Data data)
+    {
+        if(is_remote)
+            try {
+                return curr_experiment.dataToString(data);
+            }catch(Exception exc){return exc.toString();}
+        else
+            return data.toString();
+    }
+    
+    static Data dataFromExpr(String expr)
+    {
+        if(is_remote)
+            try {
+                return curr_experiment.dataFromExpr(expr);
+            }catch(Exception exc){return null;}
+        else
+            return Data.fromExpr(expr);
+    }
+    
     
     void setAngled(boolean is_angled)
     {
-	is_angled_style = is_angled;
-	for(int i = 0; i < trees.size(); i++)
-	{
-	    JTree curr_tree = (JTree)trees.elementAt(i);
-	    if(is_angled_style)
-		curr_tree.putClientProperty("JTree.lineStyle", "Angled");
-	    else  
-		curr_tree.putClientProperty("JTree.lineStyle", "None");
-	    curr_tree.treeDidChange();
-	}
-	    
+	    is_angled_style = is_angled;
+	    for(int i = 0; i < trees.size(); i++)
+	    {
+	        JTree curr_tree = (JTree)trees.elementAt(i);
+	        if(is_angled_style)
+		    curr_tree.putClientProperty("JTree.lineStyle", "Angled");
+	        else  
+		    curr_tree.putClientProperty("JTree.lineStyle", "None");
+	        curr_tree.treeDidChange();
+	    }
     }
 		    
     
@@ -333,9 +355,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	
 	String remote_tree_ip = System.getProperty("remote_tree.ip");
 	if(remote_tree_ip == null)
+	{
+	    is_remote = false;
 	    curr_experiment = new Database();
+	}
 	else
 	{
+	    is_remote = true;
         if (System.getSecurityManager() == null) 
             System.setSecurityManager(new RMISecurityManager()
                 {

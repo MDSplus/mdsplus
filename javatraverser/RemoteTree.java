@@ -38,6 +38,8 @@ public interface RemoteTree extends Remote {
     public void doDeviceMethod(NidData nid, String method) throws RemoteException, DatabaseException;
     public NidData [] getWild(int usage_mask) throws RemoteException, DatabaseException;
     public void create(int shot) throws RemoteException, DatabaseException;
+    public String dataToString(Data data)throws RemoteException;
+    public Data dataFromExpr(String expr)throws RemoteException; 
   }  
     
     

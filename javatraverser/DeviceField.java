@@ -82,7 +82,7 @@ public class DeviceField extends DeviceComponent
             checkB.setSelected(is_on);
         if(data != null)
         {
-            String textString = data.toString();
+            String textString = Tree.dataToString(data);
             if(textString != null)
             {
                 if(textOnly && textString.charAt(0) == '"')
@@ -103,9 +103,9 @@ public class DeviceField extends DeviceComponent
         String dataString = textF.getText();
         if(dataString == null) return null;
         if(textOnly)
-            return Data.fromExpr("\""+dataString+"\"");
+            return Tree.dataFromExpr("\""+dataString+"\"");
         else
-            return Data.fromExpr(dataString);
+            return Tree.dataFromExpr(dataString);
     }
     
     protected boolean getState()
