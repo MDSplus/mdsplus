@@ -1,6 +1,6 @@
 public fun Dt200GetNumchans(in _board)
 {
-  _ans = Dt100WriteMaster(_board, "getNumChannels");
+  _ans = Dt200WriteMaster(_board, "getNumChannels");
   if (extract(0,6,_ans) != 'ACQ32:') {
     Write (*, "Non ACQ32 response from board\n/"//_ans//"/\n");
     abort();

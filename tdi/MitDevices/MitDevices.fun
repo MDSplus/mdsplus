@@ -8,8 +8,6 @@ FUN  PUBLIC MITDEVICES() {
 	'B5910A\0',	 'MitDevices\0',
         'CHS_A14\0',     'MitDevices\0',		
 	'DSP2904\0',	 'MitDevices\0',		
-	'DT100\0',	 'MitDevices\0',		
-	'DT101\0',	 'MitDevices\0',		
 	'DT200\0',	 'MitDevices\0',		
 	'DT200DA\0',	 'MitDevices\0',
         'DT_ACQ16\0',	 'MitDevices\0',		

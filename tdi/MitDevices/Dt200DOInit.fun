@@ -18,7 +18,7 @@ public fun Dt200DOInit(IN _board, IN _trigSrc, IN _clockSource, IN _bits, IN _ti
     Dt200WriteMaster(_board, "setPhase DO P2 "//_num);
     Dt200WriteMaster(_board, "setEvent DO E1 EV_TRUE");
     Dt200WriteMaster(_board, "setEvent DO E2 EV_TRIGGER_FALLING "//_trigSrc);
-    Dt200WriteMaster(_board, "setEvent DO E3 EV_NONE");
+    Dt200WriteMaster(_board, "setEvent DO E3 EV_TRUE");
 
     /* pack the bits */
     _buf = (_times << 8) | (_bits & 0xFF);

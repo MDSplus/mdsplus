@@ -40,8 +40,8 @@ Public fun dt200DA__add(in _path, out _nidout)
 
   _dpath = _path//'.DIG_OUT';
   DevAddNode(_dpath, 'STRUCTURE', *, *, _nid);
-  DevAddNode(_dpath//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
-  DevAddNode(_dpath//':CLOCK_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
+  DevAddNode(_dpath//':TRIG_SRC', 'TEXT', 'DI2 '/noshot_write', _nid);
+  DevAddNode(_dpath//':CLOCK_SRC', 'TEXT', 'DI0', '/noshot_write', _nid);
   for (_c=1;_c<=8;_c++)
   {
     _cn = _dpath//':OUTPUT_'//TEXT(_c, 1);
@@ -55,8 +55,8 @@ Public fun dt200DA__add(in _path, out _nidout)
 
   _apath = _path//'.ANALOG_OUT';
   DevAddNode(_apath, 'STRUCTURE', *, *, _nid);
-  DevAddNode(_apath//':TRIG_SRC', 'TEXT', 'DI1', '/noshot_write', _nid);
-  DevAddNode(_apath//':CLOCK_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
+  DevAddNode(_apath//':TRIG_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
+  DevAddNode(_apath//':CLOCK_SRC', 'TEXT', 'DI0', '/noshot_write', _nid);
   DevAddNode(_apath//':TBASE', 'AXIS', 0 : 2 : 1/1D6 , '/noshot_write', _nid);
   for (_c=1;_c<=2;_c++)
   {

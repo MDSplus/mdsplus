@@ -1,6 +1,6 @@
-fun Dt100GetNumSamples(in _board)
+fun Dt200GetPostSamples(in _board)
 {
-  _ans = Dt100WriteMaster(_board, "getNumSamples");
+  _ans = Dt200WriteMaster(_board, "getNumSamples");
   if (extract(0,6,_ans) != 'ACQ32:') {
     Write (*, "Non ACQ32 response from board\n/"//_ans//"/\n");
     abort();
@@ -9,11 +9,8 @@ fun Dt100GetNumSamples(in _board)
     Write (*, "Non getNumSamples response from board\n/"//_ans//"/\n");
     abort();
   }
-  _numstr=extract(20, len(_ans)-20, _ans);
-  _sp = index(_numstr, ' ');
-  if (_sp > 0) {
-    _numstr = extract(0, _sp, _numstr);
-  }
+  _post = index(_ans, 'post=');
+  _numstr = extract(_post+5, len(_ans)-_post-5, _ans);
   _ans = if_error(execute(_numstr), 0);
   return(_ans);
 }

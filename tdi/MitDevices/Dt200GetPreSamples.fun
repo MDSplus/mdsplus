@@ -1,6 +1,6 @@
-fun Dt100GetPreSamples(in _board)
+fun Dt200GetPreSamples(in _board)
 {
-  _ans = Dt100WriteMaster(_board, "getNumSamples");
+  _ans = Dt200WriteMaster(_board, "getNumSamples");
   if (extract(0,6,_ans) != 'ACQ32:') {
     Write (*, "Non ACQ32 response from board\n/"//_ans//"/\n");
     abort();

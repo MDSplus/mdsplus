@@ -12,7 +12,7 @@ public fun Dt200Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
   if (_clockSource == 'INT') {
     Dt200WriteMaster(_board, "setInternalClock "//LONG(_clockFreq));
   } else {
-    Dt200WriteMaster(_board, "setClock "//_clockSource);
+    Dt200WriteMaster(_board, "setExternalClock "//_clockSource);
     if (_clockFreq > 0) {
       write (*, "don't forget about the clock divider");
     }

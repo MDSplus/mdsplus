@@ -1,6 +1,6 @@
-public fun dt200__store(as_is _nid, optional _method)
+public fun dt200da__store(as_is _nid, optional _method)
 {
-   _DTYPE_RANGE = 201BU;
+  _DTYPE_RANGE = 201BU;
    _DT200_NODE = 1;
    _DT200_BOARD = 2;
    _DT200_DIs = 4;
@@ -99,20 +99,12 @@ public fun dt200__store(as_is _nid, optional _method)
       _ubound = if_error(long(data(_endidx)),_post_trig); /* or _post_trig -1 ? */
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
-/*
-      _lbound = _first_idx;
-      _ubound = _post_trig;
-      _filter_coefs = 1.0;
-      _inc = 1;
 
       write(*, "MdsValue('Dt200ReadChannel("//_board//","//_chan+1//","//_lbound-_first_idx//","//_ubound-_first_idx//","//_inc//",_filter_coefs)')");
-*/ 
-     _data= MdsValue('Dt200ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
+      _data= MdsValue('Dt200ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
 
-/*
       write(*, "Read the data "//size(_data));
 
-*/
       if (_inc > 1) {
         _slope = IF_ERROR(SLOPE_OF(_clk), 0);
         if (_slope != 0) {
@@ -125,10 +117,8 @@ public fun dt200__store(as_is _nid, optional _method)
       } else {
         _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
       }
-/*
       WRITE(*, "About to write channel "//_chan+1);
       write (*, size(_data));
-*/
       DevPutSignalNoBounds(_chan_nid, _offset, 10./(32*1024), _data, _dim);
     }
   }

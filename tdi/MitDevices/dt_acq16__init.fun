@@ -1,4 +1,4 @@
-public fun DT200__INIT(as_is _nid, optional _method)
+public fun DT_ACQ16__INIT(as_is _nid, optional _method)
 {
    _DT200_NODE = 1;
    _DT200_BOARD = 2;
@@ -25,18 +25,11 @@ public fun DT200__INIT(as_is _nid, optional _method)
   }
   _board = if_error(data(DevNodeRef(_nid,_DT200_BOARD)), DevError("Dt200 board must be specified"));
 
-  MdsValue("Dt200Reset($)", _board);
-  for (_di=0; _di<6; _di++)
-  {
-    _line = "DI"//TEXT(_di,1);
-    _wire=if_error(data(DevNodeRef(_nid, _DT200_DIs+_di*_DT200_NODES_PER_DI+_DT200_DI_WIRE)), " ");
-    _bus=if_error(data(DevNodeRef(_nid, _DT200_DIs+_di*_DT200_NODES_PER_DI+_DT200_DI_BUS)), " ");
-    MdsValue("Dt200SetRoute($,$,$,$)", _board, _line, _wire, _bus);
-  }
-              
+  MdsValue('Dt200WriteMaster($,"setAbort")', _board);
+
   _memSize = if_error(data(DevNodeRef(_nid,_DT200_DAQ_MEM)), 64);
-  _activeChans = if_error(data(DevNodeRef(_nid,_DT200_ACTIVE_CHAN)), 32);
-  _activeChans = min(max(_activeChans, 0), 32);
+  _activeChans = if_error(data(DevNodeRef(_nid,_DT200_ACTIVE_CHAN)), 16);
+  _activeChans = min(max(_activeChans, 0), 16);
   if (_activeChans == 0) {
     Write(*, "No active channels aborting...");
     Abort();
@@ -52,10 +45,9 @@ public fun DT200__INIT(as_is _nid, optional _method)
   _clockSource = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_SRC)), '');
   _clockFreq = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_DIV)), 0);
 
-  MdsValue('Dt200Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
+  write(*,'Dt200Init('//_board//','//_activeChans//','//_trigSource//','//_clockSource//','//
+                        _clockFreq//','//_preTrig//','//_postTrig//')');
+  MdsValue('DtAcq16Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
 
-  /* now arm the hardware */
-  MdsValue('Dt200WriteMaster($,"setArm")', _board);
-  
   return(1);
 }

@@ -1,9 +1,9 @@
-Public fun dt200__add(in _path, out _nidout)
+Public fun dt_acq16__add(in _path, out _nidout)
 {
-/*  DevAddStart(_path,'DT200',231,_nidout); */
-  DevAddStart(_path,'DT200',191,_nidout, 'MitDevices');
+/*  DevAddStart(_path,'DT_ACQ16',231,_nidout); */
+  DevAddStart(_path,'DT_ACQ16',111,_nidout, 'MitDevices');
   DevAddNode(_path//':NODE','TEXT',*,*,_nid);
-  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshotwrite',_nid);
+  DevAddNode(_path//':BOARD','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
 
   /* trigger routing */
@@ -16,17 +16,17 @@ Public fun dt200__add(in _path, out _nidout)
     DevAddNode(_name//':BUS', 'TEXT', *,'/noshot_write', _nid);
   }
   /* internal clock / clock divider (or int clock freq) */
-  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshotwrite', _nid);
-  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshotwrite', _nid);
+  DevAddNode(_path//':CLOCK_SRC', 'TEXT', 'INT', '/noshot_write', _nid);
+  DevAddNode(_path//':CLOCK_DIV', 'NUMERIC', 200000., '/noshot_write', _nid);
 
   /* data acquisition */
 
   DevAddNode(_path//':DAQ_MEM', 'NUMERIC', 64, '/noshot_write', _nid);
-  DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 32, '/noshot_write', _nid);
+  DevAddNode(_path//':ACTIVE_CHAN', 'NUMERIC', 16, '/noshot_write', _nid);
   DevAddNode(_path//':TRIG_SRC', 'TEXT', 'DI2', '/noshot_write', _nid);
   DevAddNode(_path//':POST_TRIG','NUMERIC',64,'/noshot_write',_nid);
   DevAddNode(_path//':PRE_TRIG','NUMERIC',1,'/noshot_write',_nid);
-   for (_c=1;_c<=32;_c++)
+   for (_c=1;_c<=16;_c++)
   {
     _cn = _path//':INPUT_'//TEXT(_c/10,1)//TEXT(_c mod 10,1);
     DevAddNode(_cn,'SIGNAL',*,'/write_once/compress_on_put/nomodel_write',_nid);
