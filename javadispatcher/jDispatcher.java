@@ -61,6 +61,12 @@ class jDispatcher implements ServerListener
         Note that the hierarchy of ActionData does not override equals and hashCode, and therefore
         two actions are equal only if ther refer to the same instance.
         */
+        Vector immediate_actions = new Vector();
+        /**
+        List of conditional actions with no dependency. These actions will be started immediately
+        at the beginning of the phase
+        */
+
         PhaseDescriptor(String phase_name)
         {
             this.phase_name = phase_name;
@@ -145,7 +151,7 @@ class jDispatcher implements ServerListener
                     insertAction(curr_actions[i], i == 0, i == curr_actions.length - 1);
             }
         }
-        //buildDependencies();
+        buildDependencies();
         //fireMonitorEvent(null, MONITOR_BUILD_END);
     }
 
@@ -231,6 +237,19 @@ class jDispatcher implements ServerListener
                     }
                 }
             }
+//////////////////////////GAB CHRISTMAS 2004
+            //Handle Conditional actions with no dependencies
+            //these will be dispatched asynchronously at the beginning of the phase
+            if(dispatch.getType() == DispatchData.SCHED_COND && dispatch.getWhen() == null)
+            {
+              curr_phase.immediate_actions.addElement(action);
+            }
+//////////////////////////GAB CHRISTMAS 2440
+
+
+
+
+
             curr_phase.dependencies.put(action.getAction(), new Vector());  //Insert every new action in dependencies hashtable
             if(is_first)
                 fireMonitorEvent(action, MONITOR_BUILD_BEGIN);
@@ -240,31 +259,39 @@ class jDispatcher implements ServerListener
                 fireMonitorEvent(action, MONITOR_BUILD);
         }
     }
-/*
+
     protected void buildDependencies()
     {
         DispatchData dispatch;
-        if(curr_phase == null) return;
-        Enumeration action_list = curr_phase.dependencies.keys();
-        while(action_list.hasMoreElements())
-        {
-            ActionData action_data = (ActionData)action_list.nextElement();
-            try {
-                dispatch = (DispatchData)action_data.getDispatch();
-            }catch (Exception e)
-            {  continue; }
-              if(dispatch.getType() == DispatchData.SCHED_COND)
-                traverseDispatch(action_data, dispatch.getWhen());
-        }
-    }
 
-   protected void traverseDispatch(ActionData action_data, Data when)
+        Enumeration phaseNames = phases.keys();
+        while (phaseNames.hasMoreElements()) {
+          PhaseDescriptor currPhase = (PhaseDescriptor) phases.get(phaseNames.
+              nextElement());
+          if (currPhase == null)
+            continue;
+          Enumeration action_list = currPhase.dependencies.keys();
+          while (action_list.hasMoreElements()) {
+            ActionData action_data = (ActionData) action_list.nextElement();
+            try {
+              dispatch = (DispatchData) action_data.getDispatch();
+            }
+            catch (Exception e) {
+              continue;
+            }
+            if (dispatch.getType() == DispatchData.SCHED_COND)
+              traverseDispatch(action_data, dispatch.getWhen(), currPhase);
+          }
+        }
+      }
+
+   protected void traverseDispatch(ActionData action_data, Data when, PhaseDescriptor currPhase)
     {
         Action action;
         if(when == null) return;
         if(when instanceof ConditionData)
         {
-            Vector act_vector = (Vector)curr_phase.dependencies.get(((ConditionData)when).getArgument());
+            Vector act_vector = (Vector)currPhase.dependencies.get(((ConditionData)when).getArgument());
             if (act_vector != null && (action = (Action)actions.get(action_data)) != null)
                 act_vector.addElement(action);
             else
@@ -272,7 +299,7 @@ class jDispatcher implements ServerListener
         }
         else if(when instanceof ActionData)
         {
-            Vector act_vector = (Vector)curr_phase.dependencies.get(when);
+            Vector act_vector = (Vector)currPhase.dependencies.get(when);
             if (act_vector != null && (action = (Action)actions.get(action_data)) != null)
                 act_vector.addElement(action);
             else
@@ -282,10 +309,10 @@ class jDispatcher implements ServerListener
         {
             Data[] args = ((DependencyData)when).getArguments();
             for(int i = 0; i < args.length; i++)
-                traverseDispatch(action_data, args[i]);
+                traverseDispatch(action_data, args[i], currPhase);
         }
     }
-*/
+
 
    protected int getInt(Data data)
    /**
@@ -334,8 +361,30 @@ class jDispatcher implements ServerListener
         //increment timestamp. Incoming messages with older timestamp will be ignored
         curr_phase = (PhaseDescriptor)phases.get(phase_name); //select data structures for the current phase
         if(curr_phase == null) return false; //Phase name does not correspond to any known phase.
+
+ //GAB CHRISTMAS 2004
+
+ //dispatch immediate actions, if any
+        if(curr_phase.immediate_actions.size() > 0)
+        {
+          for(int i = 0; i < curr_phase.immediate_actions.size(); i++)
+          {
+            Action action = (Action) curr_phase.immediate_actions.elementAt(i);
+            if (action.isOn()) {
+              doing_phase = true;
+              dep_dispatched.addElement(action);
+              action.setStatus(Action.DISPATCHED, 0, verbose);
+              balancer.enqueueAction(action);
+              fireMonitorEvent(action, MONITOR_DISPATCHED);
+            }
+          }
+
+        }
+ //////////////////////
         curr_seq_numbers = curr_phase.seq_numbers.elements();
         //curr_seq_numbers contains the sequence number for the selected phase
+
+
 
         if(curr_seq_numbers.hasMoreElements())
         {

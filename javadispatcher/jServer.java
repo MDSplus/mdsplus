@@ -332,11 +332,13 @@ public class jServer extends MdsIp {
 
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     try {
-      String command = br.readLine();
-      if (command.equals("exit"))
+      while(true)
       {
-        server.closeAll();
-        System.exit(0);
+        String command = br.readLine();
+        if (command.equals("exit")) {
+          server.closeAll();
+          System.exit(0);
+        }
       }
     }catch(Exception exc){}
 
