@@ -71,6 +71,7 @@ write(*, _delay_pulse );
 
     if( ( public _laser_nd_connected ) == 0 )
     {
+	public _answer_pending = 0;
 
 	public _sock = TCPOpenConnection(_ip, _port, _ASCII_MODE);
 	if(public _sock == 0)
@@ -81,6 +82,12 @@ write(*, _delay_pulse );
         public _laser_nd_connected = 1;
     }    
 
+	if(public _answer_pending)
+	{
+	    _out = TCPCheckAnswer(public _sock);
+write(*, "OK letti i dati pendenti "//_out);
+
+	}
 
 	if((_err_msg = TCPSendCommand(public _sock, "ND_DUMP") ) != "")
 	{
@@ -99,6 +106,8 @@ write(*, _delay_pulse );
 
 
 	_data = TCPReadFloat(public _sock);
+
+	write(*,  _data);
 
 	if( size( _data ) < 4)
 	{

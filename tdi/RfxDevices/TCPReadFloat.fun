@@ -1,4 +1,4 @@
-public fun TCPReadFloat(in _sock, in _swap)
+public fun TCPReadFloat(in _sock)
 {
-    return ( TcpClient->ReadFloatArray:dsc(val(_sock), val(_swap)) );
+    return ( TcpClient->ReadFloatArray:dsc(val(_sock)) );
 }
