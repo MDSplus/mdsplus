@@ -6,6 +6,8 @@
 ;
 ; FORMAT:
 ;	SET_DATABASE, name [,/reset] [,/debug]
+; or
+;       SET_DATABASE, file=db-file-name [,/reset] [,/debug]
 ;
 ; ARGUMENTS
 ;   name - name of the database.  This name is used to find a file
@@ -20,6 +22,9 @@
 ;   reset - if specified a new database definition file is created for
 ;           this database name, even if it already exists
 ;   debug - if present extra debugging information is displayed
+;   file  - if present specifies the full filename of the database
+;           definition file.  For example:  
+;           set_database, file='/home/john_doe/logbook.sybase_login'
 ;
 ; DESCRIPTION
 ;  1. set_database first calls DBINFO to translate the name specified by its input
@@ -35,6 +40,7 @@
 ;  described above under 'name' if it does not exist or /RESET is specified'
 ;
 ;  Josh Stillerman 2/14/02
+;  10/8/02  - added file keyword
 ;
 
 @mdsconnect.pro
@@ -248,6 +254,7 @@ function CreateNewDBFile, file, dbname
   l = widget_label(r, value="Database server Name")
   db_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance')
   l = widget_label(r, value="Database Name")
+  if (n_elements(dbname) eq 0) then dbname = ''
   db_name_w = widget_text(r, xsize=20, value=dbname,/editable,/all_events, event_func='TabAdvance')
   l = widget_label(r, value="Database USERNAME")
   username_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance')
@@ -311,19 +318,20 @@ end
 ; if the file does not exist, or /reset is specified then a new file
 ; is created and the procedure recurses.
 ;
-function DBInfo, name, mdshost, dbhost, dbname, username, password, reset=reset
-
-	case !version.os of
-	  'Win32'	: envar = 'userprofile'
-	  'vms'		: envar = 'sys$login'
-	  else		: envar = 'HOME'
-	endcase
-	path = getenv(envar)
-	if (strlen(path) eq 0) then begin
-		message, 'Missing environent variable '+envar+'.  Please define it and try again'
-	  	return, 0
-	endif
-	file = path+'/'+strtrim(name,2)+'.sybase_login'
+function DBInfo, name, mdshost, dbhost, dbname, username, password, reset=reset, file=file
+        if n_elements(file) eq 0 then begin
+            case !version.os of
+                'Win32'	: envar = 'userprofile'
+                'vms'		: envar = 'sys$login'
+                else		: envar = 'HOME'
+            endcase
+            path = getenv(envar)
+            if (strlen(path) eq 0) then begin
+                message, 'Missing environent variable '+envar+'.  Please define it and try again'
+                return, 0
+            endif
+            file = path+'/'+strtrim(name,2)+'.sybase_login'
+        endif
 	if (keyword_set(reset)) then begin
 		if (CreateNewDBFile(file, name)) then $
 			return, dbinfo(name, mdshost, dbhost, dbname, username, password) $
@@ -390,10 +398,10 @@ pro MDSDbConnect, host
 end
 
 
-pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset
+pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset, file=file
   debug = keyword_set(debug)
   reset = keyword_set(reset)
-  status = dbinfo(dbname, mdshost, host, name, user, pass, reset=reset)
+  status = dbinfo(dbname, mdshost, host, name, user, pass, reset=reset, file=file)
   if (status eq 0) then $
     return
   MDSDbconnect, mdshost

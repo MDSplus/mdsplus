@@ -29,6 +29,11 @@ SOURCES = \
 	dsvrgn.f  \
 	gn.f  \
 	isrch.f  \
+	msceez.f \
+	mskrv2.f \
+	mstrms.f \
+	mskrv1.f \
+	msshch.f \
 	permu.f  \
 	ppval.f  \
 	saxpy.f  \
@@ -38,11 +43,11 @@ SOURCES = \
 	ssrch.f  \
 	svign.f  \
 	svrgn.f  \
+	toms510.f \
 	umach.f  \
 	zaxpy.f  \
 	zgeco.f  \
 	zmul.f
-         
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 EXPORTS = MdsMath.export
