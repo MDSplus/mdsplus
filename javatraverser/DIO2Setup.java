@@ -76,7 +76,8 @@ public class DIO2Setup extends DeviceSetup
 		}
 		deviceChoice59.setLabelString("Synch: ");
 		JPanel52.add(deviceChoice59);
-		deviceField117.setOffsetNid(1);
+		deviceField117.setTextOnly(true);
+		deviceField117.setOffsetNid(138);
 		deviceField117.setLabelString("Synch. event: ");
 		JPanel52.add(deviceField117);
 		{
