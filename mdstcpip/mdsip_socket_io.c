@@ -390,8 +390,29 @@ void SetSocketOptions(SOCKET s, int reuse)
 #ifndef GLOBUS
   static int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
+  int len;
+  static int debug_winsize=0;
+  static int init=1;
+  if (init)
+  {
+    char *winsize=getenv("TCP_WINDOW_SIZE");
+    if (winsize)
+    {
+      sendbuf = atoi(winsize);
+      recvbuf = atoi(winsize);
+    }
+    debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
+    init = 0;
+  }
   setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(int));
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(int));
+  if (debug_winsize)
+  {
+    getsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,&len);
+    printf("Got a recvbuf of %d\n",recvbuf);
+    getsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,&len);
+    printf("Got a sendbuf of %d\n",sendbuf);
+  }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
   if (reuse)
     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&one,sizeof(one));
