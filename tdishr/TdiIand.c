@@ -226,6 +226,8 @@ common(Inand,&)
 common(InandNot,& ~)
 common(Inor,|)
 common(InorNot,| ~)
+#undef not
+#define not
 common(Iand,&)
 common(IandNot,& ~)
 common(Ior,|)
