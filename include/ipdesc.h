@@ -36,11 +36,13 @@ typedef int SOCKET;
 #define DTYPE_CHAR    6
 #define DTYPE_SHORT   7
 #define DTYPE_LONG    8
+#ifndef MdsLib_H
 #define DTYPE_FLOAT   10
 #define DTYPE_DOUBLE  11
 #define DTYPE_COMPLEX 12
-#define DTYPE_CSTRING 14
 #define DTYPE_EVENT   99
+#endif
+#define DTYPE_CSTRING 14
 
 struct descrip { char dtype;
                  char ndims;
@@ -79,10 +81,12 @@ extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char 
 extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
 extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
 extern int   MdsEventCan(SOCKET sock, int eventid);
+#ifndef MdsLib_H
 extern int   MdsValue(SOCKET sock, char *,...);
 extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsSetDefault(SOCKET sock, char *node);
 extern int   MdsClose(SOCKET sock);
+#endif
 #endif
 

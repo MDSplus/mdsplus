@@ -6,11 +6,6 @@
 #else
 #include <ipdesc.h>
 #endif
-/*** undefine conflicting data types ***/
-#undef DTYPE_FLOAT
-#undef DTYPE_DOUBLE
-#undef DTYPE_COMPLEX
-#undef DTYPE_EVENT
 
 #ifndef _WIN32
 #define INVALID_SOCKET -1
