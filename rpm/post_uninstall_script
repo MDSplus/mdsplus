@@ -55,4 +55,9 @@ echo Removing mdsplus from login scripts
 /bin/grep -v "^source /usr/local/mdsplus/etc/profile.d/mdsplus.csh" /etc/csh.login.before_mdsplus_removal > /etc/csh.login
 ;;
 esac
-rm /usr/local/mdsplus_post_uninstall_script
+if (test -r /etc/.mdsplus_dir)
+then
+  rm `/bin/cat /etc/.mdsplus_dir`/mdsplus/local/mdsplus_post_uninstall_script
+  rm /etc/.mdsplus_dir
+fi
+
