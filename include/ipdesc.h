@@ -77,13 +77,12 @@ extern int   GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int *
 extern int   DisconnectFromMds(SOCKET sock);
 extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr);
 extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
-extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, void **eventid);
-extern int   MdsEventCan(SOCKET sock, void *eventid);
-#ifndef MdsLib_H
+extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+extern int   MdsEventCan(SOCKET sock, int eventid);
 extern int   MdsValue(SOCKET sock, char *,...);
 extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsSetDefault(SOCKET sock, char *node);
 extern int   MdsClose(SOCKET sock);
 #endif
-#endif
+
