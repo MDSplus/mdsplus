@@ -1,10 +1,11 @@
-LIBRARY	mdsmisc
+LIBRARY mdsmisc
 EXPORTS
-StepResample
+resample
 Resample
 boxsmooth
 bwfilter
+StepResample
+fformat
 GetNidArray
-GetReferences
 GetReferenceCount
-
+GetReferences
