@@ -1083,7 +1083,7 @@ sparc-sun-solaris2*)
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        jni_inc_dir="/usr/java1.1/include";
-       jni_md_inc_dir="/usr/include/java/solaris";;
+       jni_md_inc_dir="/usr/java1.1/include/solaris";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
        GROFF_MAN_FLAGS="-t -mgan -Tascii";
