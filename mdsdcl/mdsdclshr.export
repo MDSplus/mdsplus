@@ -6,3 +6,4 @@ cli_get_value
 cmd_lookup
 l2u
 yesno
+mdsdcl_ctrl_address

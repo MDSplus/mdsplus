@@ -1795,7 +1795,7 @@ and c then donot define the macro.
 #define MdsValue mdsvalue_
 #define MdsPut2 mdsput2_
 #define MdsValue2 mdsvalue2_
-#elif defined(__hpux)
+#elif defined(__hpux) || defined(_AIX)
 #define FortranMdsConnect mdsconnect
 #define FortranMdsClose mdsclose
 #define FortranMdsDisconnect mdsdisconnect

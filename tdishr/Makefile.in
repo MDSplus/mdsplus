@@ -7,7 +7,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKELIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@
+LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@
 SYBASE_INC=@SYBASE_INC@
 
 INSTALL=@top_srcdir@/conf/install-sh -c

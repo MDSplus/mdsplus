@@ -85,7 +85,7 @@ install:
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsXdBox.uid @uiddir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libXmdsShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libXmdsShr@SHARETYPE@ @libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@; \
 	fi;

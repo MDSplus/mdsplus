@@ -21,5 +21,23 @@ MakeDescrip
 MakeDescripWithLength
 SendMdsMsg
 GetMdsMsg
-GetMdsMsgOOB
+SetCompressionLevel
+MdsSetServerPortname
+ConnectToInet
+FdActive
+CloseSocket
+RegisterRead
+MdsSetClientAddr
+GetCompressionLevel
+ClearFD
+SetSocketOptions
+SetFD
+CreateListener
+SendArg
+ArgLen
+GetAnswerInfoTS
+MdsGetServerPortname
+MdsGetClientAddr
+HostToIp
+MdsIpFree
 

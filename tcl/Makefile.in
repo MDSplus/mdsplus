@@ -48,7 +48,7 @@ SOURCES = 			\
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tcl_commands.export
 
-all:	@MAKEBINDIR@mdstcl @MAKELIBDIR@libtcl_commands@SHARETYPE@
+all:	@MAKEBINDIR@mdstcl @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) 
@@ -58,14 +58,14 @@ clean:
 	@ $(RM) so_locations
 	@ $(RM) tcl_commands.c
 	@ $(RM) @MAKEBINDIR@mdstcl
-	@ $(RM) @MAKELIBDIR@libtcl_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libtcl_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libtcl_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdstcl @bindir@
 
 @MAKEBINDIR@mdstcl:	tcl
@@ -73,8 +73,8 @@ install:
 	chmod +x $@
 
 tcl_commands.c:	tcl_commands.ocld
-	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < tcl_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < tcl_commands.ocld
 	$(MAKE) depend
 
-@MAKELIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+@MAKESHLIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)
+	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)

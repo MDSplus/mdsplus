@@ -28,14 +28,14 @@ mdsdcl_wait.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsdclshr.export
 
-all:	@MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a  @MAKELIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl
+all:	@MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl
 
 clean:
 	@ $(RM) $(OBJECTS) mdsdcl.o
 	@ $(RM) so_locations
 	@ $(RM) mdsdcl_tables.c
 	@ $(RM) @MAKELIBDIR@libMdsdcl.a
-	@ $(RM) @MAKELIBDIR@libMdsdcl@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsdcl
 
 depend: 
@@ -46,18 +46,18 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsdcl@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
 
 mdsdcl_tables.c:	mdsdcl_tables.ocld
-	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < mdsdcl_tables.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < mdsdcl_tables.ocld
 
 @MAKELIBDIR@libMdsdcl.a:	$(OBJECTS)
 		$(AR) -cr $@ $(OBJECTS)
 		@RANLIB@ $@
 
-@MAKELIBDIR@libMdsdcl@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lCdu -lMdsShr  $(LIBS)
+@MAKESHLIBDIR@libMdsdcl@SHARETYPE@:	$(OBJECTS)
+	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lCdu -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS)
 
 @MAKEBINDIR@mdsdcl:	mdsdcl.o
-	$(CC) $(CFLAGS) -o $@ mdsdcl.o -L@MAKELIBDIR@ -lMdsdcl -lCdu -lMdsShr
+	$(CC) $(CFLAGS) -o $@ mdsdcl.o -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -L@MAKELIBDIR@ -lCdu

@@ -7,20 +7,20 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+LIBS=@LIBS@ @LIBM@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = MdsLibIdl.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdslibidl.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libMdsLibIdl@SHARETYPE@
+all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsLibIdl@SHARETYPE@
 
-@MAKELIBDIR@libMdsLibIdl@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
+@MAKESHLIBDIR@libMdsLibIdl@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+@MAKESHLIBDIR@ :
+	mkdir @MAKESHLIBDIR@
 
 clean :
 	@ $(RM) $(OBJECTS)
@@ -35,4 +35,4 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsLibIdl@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLibIdl@SHARETYPE@ @libdir@

@@ -7,20 +7,20 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKELIBDIR@ -lMdsdcl -lMdsShr -lRemCamShr @LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lRemCamShr @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = ccl_commands.c ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
-all:	@MAKELIBDIR@ @MAKELIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
+all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
 	@ $(RM) ccl_commands.c
-	@ $(RM) @MAKELIBDIR@libccl_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libccl_commands@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsccl
 
 depend:
@@ -31,14 +31,14 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libccl_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libccl_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl @bindir@
 
 ccl_commands.c:	ccl_commands.ocld
-	env @LIBPATH@=@MAKELIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
 	$(MAKE) depend
 
-@MAKELIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)
+@MAKESHLIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKEBINDIR@mdsccl:	ccl

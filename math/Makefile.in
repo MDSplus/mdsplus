@@ -45,8 +45,9 @@ SOURCES = \
          
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
+EXPORTS = MdsMath.export
 
-all: @MAKELIBDIR@ @MAKELIBDIR@libMdsMath@SHARETYPE@ 
+all: @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMath@SHARETYPE@ 
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -54,17 +55,17 @@ depend:
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libMdsMath@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMdsMath@SHARETYPE@
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsMath@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMath@SHARETYPE@ @libdir@
 
-@MAKELIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS)
+@MAKESHLIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS)
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+@MAKESHLIBDIR@ :
+	mkdir @MAKESHLIBDIR@

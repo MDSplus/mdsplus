@@ -43,4 +43,4 @@ install:
 		@RANLIB@ $@
 
 @MAKEBINDIR@cdu:	$(MAIN_OBJECTS)
-	$(CC) $(CFLAGS) -o $@  $(MAIN_OBJECTS) -L@MAKELIBDIR@ -lCdu -lMdsShr $(LIBS)
+	$(CC) $(CFLAGS) -o $@  $(MAIN_OBJECTS) -L@MAKELIBDIR@ -lCdu -L@MAKESHLIBDIR@ -lMdsShr $(LIBS)

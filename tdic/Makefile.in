@@ -7,15 +7,15 @@ RM=$(top_srcdir)/devscripts/rm_if
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ -L$(top_srcdir)/lib -lMdsIpShr -lTdiShr -lMdsShr
-TDIC_LIBS= -L$(top_srcdir)/lib -lTdiShr -lTreeShr -lMdsdcl  -lMdsShr @LIBREADLINE@ @LIBS@
+LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr
+TDIC_LIBS= -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsdcl  -lMdsShr @LIBREADLINE@ @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
         TdiShrExt.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShrExt.exports
+EXPORTS = tdishrext.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @MAKELIBDIR@libTdiShrExt.a @MAKEBINDIR@tdic
 
@@ -58,5 +58,5 @@ install:
 
 @MAKESHLIBDIR_RULE@
 
-TdiShrExt.exports: TdiShrExt.def
-	sed -e /LIBRARY/\;/\;/d TdiShrExt.def > $@
+tdishrext.exports: tdishrext.def
+	sed -e /LIBRARY/\;/\;/d tdishrext.def > $@

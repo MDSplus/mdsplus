@@ -2,17 +2,17 @@
 !***********************************************************************
 !********************* 10.3 Sort ***************************************
 !-----------------------------------------------------------------------
-	Subroutine SVIGN(n,ra,rb)
+	Subroutine SVRGN(n,ra,rb)
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Call SVIGP(n,ra,rb,%val(0))
+	Call SVRGP(n,ra,rb,%val(0))
 	End
 !-----------------------------------------------------------------------
-	Subroutine SVIGP(n,ra,rb,iperm)
+	Subroutine SVRGP(n,ra,rb,iperm)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra
+	Real	ra(*)	!input, [n] vector to be sorted
+	Real	rb(*)	!output, [n] vector, may be ra
 	Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
 !		If a NULL address it is not referenced.
@@ -20,10 +20,10 @@
 !*uses randomizer and not median-of-three
 	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
-	Integer	keep
+	Real	keep
 	Data	ran/0/
 
-	perm = %loc(iperm).ne.0
+	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n
@@ -92,28 +92,28 @@
 	Enddo
 	End
 !-----------------------------------------------------------------------
-	Subroutine SVIBN(n,ra,rb)
+	Subroutine SVRBN(n,ra,rb)
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
 !+sort absolute without permutations
-	Call SVIBP(n,ra,rb,%val(0))
+	Call SVRBP(n,ra,rb,%val(0))
 	End
 !-----------------------------------------------------------------------
-	Subroutine SVIBP(n,ra,rb,iperm)
+	Subroutine SVRBP(n,ra,rb,iperm)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra
+	Real	ra(*)	!input, [n] vector to be sorted
+	Real	rb(*)	!output, [n] vector, may be ra
 	Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
 !		If a NULL address it is not referenced.
 !+Hoare quick sort modified from "Numerical Recipies" with permutations
 	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
-	Integer	keep,bkeep
+	Real	keep,bkeep
 	Data	ran/0/
 
-	perm = %loc(iperm).ne.0
+	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n

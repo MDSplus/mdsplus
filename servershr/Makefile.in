@@ -31,13 +31,14 @@ SOURCES = \
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
+EXPORTS = servershr.export
 
-all: @MAKELIBDIR@ @MAKELIBDIR@libMdsServerShr@SHARETYPE@ @MAKELIBDIR@libMdsServerShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ @MAKELIBDIR@libMdsServerShr.a
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libMdsServerShr@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsServerShr.a
 
 depend:
@@ -48,11 +49,11 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsServerShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libMdsServerShr.a @libdir@
 
-@MAKELIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS)
+@MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS)
 
 @MAKELIBDIR@libMdsServerShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

@@ -29,7 +29,7 @@ clean :
 	@ $(RM) @MAKEBINDIR@setevent
 
 @MAKEBINDIR@setevent : $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(CFLAGS) -L@MAKELIBDIR@ -lMdsShr $(LIBS)
+	$(CC) -o $@ $(OBJECTS) $(CFLAGS) -L@MAKESHLIBDIR@ -lMdsShr $(LIBS)
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@

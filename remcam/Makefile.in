@@ -14,18 +14,18 @@ SOURCES = CamIosb.c CamMulti.c CamSingle.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = remcam.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libRemCamShr@SHARETYPE@
+all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
 
-@MAKELIBDIR@libRemCamShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsIpShr $(LIBS)
+@MAKESHLIBDIR@libRemCamShr@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+@MAKESHLIBDIR@ :
+	mkdir @MAKESHLIBDIR@
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libRemCamShr@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -35,4 +35,4 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKELIBDIR@libRemCamShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ @libdir@

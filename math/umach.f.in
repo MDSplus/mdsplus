@@ -123,11 +123,11 @@
 	If (igot(2).ne.iwant) Then
 		If (igot(2).ne.0)
      1	Call LibFreeVm(BytesPerInt*igot(2),
-     1          igot(1)*BytesPerInt+%loc(igot(1)),%val(0))
+     1          igot(1)*BytesPerInt+@LOC@(igot(1)),%val(0))
 		igot(2) = 0
 		If (iwant.gt.0) Then
 			If (LibGetVm(BytesPerInt*iwant,igot(1),%val(0))) Then
-				igot(1) = (igot(1) - %loc(igot(1)))/BytesPerInt
+				igot(1) = (igot(1) - @LOC@(igot(1)))/BytesPerInt
 				igot(2) = iwant
 			Endif
 		Endif
