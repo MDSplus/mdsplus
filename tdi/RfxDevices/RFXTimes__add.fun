@@ -1,6 +1,6 @@
 public fun RFXTimes__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXTimes', 39, _nidout);
+    DevAddStart(_path, 'RFXTimes', 46, _nidout);
     DevAddNode(_path // ':CLOSE_PNSS', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CLOSE_PNSS T_CLOSE_PNSS');
     DevAddNode(_path // ':CLOSE_PP1', 'NUMERIC', *, *, _nid);
@@ -68,17 +68,31 @@ public fun RFXTimes__add(in _path, out _nidout)
     DevAddNode(_path // ':START_RFX', 'NUMERIC', -5., *, _nid);
 	tcl('add tag '//_path //':START_RFX T_START_RFX');
 
-    DevAddNode(_path // ':EN_CHOP_TC', 'NUMERIC', *, *, _nid);
-	tcl('add tag '//_path //':EN_CHOP_TC T_EN_CHOP_TC');
-    DevAddNode(_path // ':EN_INV_TC', 'NUMERIC', *, *, _nid);
-	tcl('add tag '//_path //':EN_INV_TC T_EN_INV_TC');
-    DevAddNode(_path // ':FOR_PWM_TC', 'NUMERIC', *, *, _nid);
-	tcl('add tag '//_path //':FOR_PWM_TC T_FOR_PWM_TC');
+    DevAddNode(_path // ':START_CP_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_CP_TC T_START_CHOP_TC');
+    DevAddNode(_path // ':STOP_CP_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_CP_TC T_STOP_CHOP_TC');
+    DevAddNode(_path // ':START_INV_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_INV_TC T_START_INV_TC');
+    DevAddNode(_path // ':STOP_INV_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_INV_TC T_STOP_INV_TC');
+    DevAddNode(_path // ':START_PWM_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_PWM_TC T_START_PWM_TC');
+    DevAddNode(_path // ':STOP_PWM_TC', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_PWM_TC T_STOP_PWM_TC');
     DevAddNode(_path // ':CLOSE_IS_TC', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CLOSE_IS_TC T_CLOSE_IS_TC');
     DevAddNode(_path // ':CROWB_ON_TC', 'NUMERIC', *, *, _nid);
 	tcl('add tag '//_path //':CROWB_ON_TC T_CROWBAR_ON_TC');
 
+    DevAddNode(_path // ':START_INV_R', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_INV_R T_START_INV_TC_REF');
+    DevAddNode(_path // ':STOP_INV_R', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_INV_R T_STOP_INV_TC_REF');
+    DevAddNode(_path // ':START_PWM_R', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':START_PWM_R T_START_PWM_TC_REF');
+    DevAddNode(_path // ':STOP_PWM_R', 'NUMERIC', *, *, _nid);
+	tcl('add tag '//_path //':STOP_PWM_R T_STOP_PWM_TC_REF');
 
 
     DevAddEnd();
