@@ -70,11 +70,11 @@ function BreakupStringAnswer, str, count
       str = [str]
 	leftover=''
 	for i = 0, n_elements(str)-1 do begin
-		tmp = strsplit(str(i), string(1b), /extract)
 		if leftover ne '' then begin
-		  tmp[0] = leftover+tmp[0]
+		  str(i) = leftover+str(i)
 		  leftover = ''
 		endif
+		tmp = strsplit(str(i), string(1b), /extract)
 		if strpos(str(i), string(1b), /reverse_search) ne strlen(str(i))-1 then begin
 			leftover = tmp[n_elements(tmp)-1]
             if(n_elements(tmp) gt 1) then $
