@@ -5,20 +5,10 @@ AC_CONFIG_HEADER(include/config.h)
 AC_CONFIG_AUX_DIR(conf)
 AC_CANONICAL_SYSTEM
 
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-XM_LIBS="-lMrm -lXm"
-AC_CHECK_LIB(c,printf)
-AC_CHECK_LIB(m,pow)
-AC_CHECK_LIB(resolv,dn_skipname)
-AC_CHECK_LIB(dl,dlopen)
-AC_CHECK_LIB(dld,shl_load)
-AC_CHECK_LIB(nsl,main)
-AC_CHECK_LIB(socket,socket)
 case "$target" in
 hppa*) CC=cc;
        CFLAGS="$CFLAGS -Ae -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
+       LDFLAGS="+s +b\$(exec_prefix)/lib";
        LDSHARE="-Wl,-a shared";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
@@ -74,8 +64,22 @@ else
 fi
 AC_MSG_RESULT($mdsplus_ok)
 
+dnl Define build directories
+
+MAKEBINDIR="\$(top_srcdir)/bin/"
+MAKELIBDIR="\$(top_srcdir)/lib/"
+MAKEUIDDIR="\$(top_srcdir)/uid/"
 
 dnl Checks for libraries.
+
+XM_LIBS="-lMrm -lXm"
+AC_CHECK_LIB(c,printf)
+AC_CHECK_LIB(m,pow)
+AC_CHECK_LIB(resolv,dn_skipname)
+AC_CHECK_LIB(dl,dlopen)
+AC_CHECK_LIB(dld,shl_load)
+AC_CHECK_LIB(nsl,main)
+AC_CHECK_LIB(socket,socket)
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
