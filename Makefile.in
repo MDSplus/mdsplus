@@ -63,6 +63,8 @@ install:
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; make install; cd $$cdir;\
 	done
+        mkdir @prefix@/mdsplus
+	tar cf - etc tdi idl trees envsyms setup.sh setup.csh java LabView include | (cd @prefix@/mdsplus; tar xf -)
 
 BINARIES = bin etc lib uid \
            tdi idl trees envsyms \
