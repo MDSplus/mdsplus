@@ -101,7 +101,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define xxxxUNIX_SERVER
+#define _UNIX_SERVER
 
 int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {

@@ -324,11 +324,14 @@ static void FreeDescriptors(Client *c)
   int i;
   for (i=0;i<MAX_ARGS;i++)
   {
-    if (c->descrip[i] && c->descrip[i] != MdsEND_ARG)
+    if (c->descrip[i])
     {
-      if (c->descrip[i]->pointer)
-        free(c->descrip[i]->pointer);
-      free(c->descrip[i]);
+      if (c->descrip[i] != MdsEND_ARG)
+      {
+        if (c->descrip[i]->pointer)
+          free(c->descrip[i]->pointer);
+        free(c->descrip[i]);
+      }
       c->descrip[i] = NULL;
     }
   }
