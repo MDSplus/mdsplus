@@ -366,6 +366,30 @@ JNIEXPORT jfloat JNICALL Java_LocalProvider_GetFloat(JNIEnv *env, jobject obj, j
 }
 
 
+JNIEXPORT void JNICALL Java_LocalProvider_SetEnvironment(JNIEnv *env, jobject obj, jstring in)
+{
+	int status;
+    const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
+    struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
+    EMPTYXD(xd);
+	error_message[0] = 0;
+	if(in_char && *in_char)
+	{
+		in_d.length = strlen(in_char);
+		in_d.pointer = in_char;
+		status = TdiCompile(&in_d, &xd MDS_END_ARG);
+		if(status & 1)
+    		status = TdiData(&xd, &xd MDS_END_ARG);
+		if(!(status & 1))
+   			strncpy(error_message, MdsGetMsg(status), 512);
+		MdsFree1Dx(&xd, NULL);
+		(*env)->ReleaseStringUTFChars(env, in, in_char);
+    }
+}
+
+
+
+
 /* CompositeWaveDisplay management routines for using 
 jScope panels outside java application */
 
@@ -506,4 +530,6 @@ void showWindow(int obj_idx, int x, int y, int width, int height)
 
 
 
-
+
+	
+ 
