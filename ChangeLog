@@ -1,5 +1,268 @@
-Version 1.6-0
+Version 1.6-1
 
+
+2004-05-12 16:31  jas
+
+	* mdsshr/MdsEvents.c:
+	
+	Only keep trying to get a msgque if msgget returns EEXIST - prevent
+	infinite loop
+
+2004-05-12 16:30  jas
+
+	* wfevent/wfevent.c:
+	
+	return(0) instead of _exit(0) so exit handlers are called
+
+2004-05-12 09:59  manduchi
+
+	* javadispatcher/javadispatcher.dsp:
+	
+	Fix dummies
+
+2004-05-12 09:34  manduchi
+
+	* servershr/ServerDispatchPhase.c:
+	
+	Compile under Windows
+
+2004-05-12 09:28  manduchi
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Make mdsip compile under windows
+
+2004-05-12 04:06  manduchi
+
+	* tdi/RfxDevices/: DIO2HWGetVersion.fun, DIO2_GetVersion.fun,
+	RFXControl__store.fun, TR10HWGetVersion.fun, TR10_GetVersion.fun:
+	
+	New funs
+
+2004-05-12 04:05  manduchi
+
+	* tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Fixes
+
+2004-05-11 08:32  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Use layout managers
+
+2004-05-11 08:05  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Added start/stop PR
+
+2004-05-07 12:03  manduchi
+
+	* tdi/RfxDevices/: OPCAsyncGet.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Fix
+
+2004-05-06 11:51  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Changed RFXControl internal organization
+
+2004-05-06 05:01  manduchi
+
+	* tdi/RfxDevices/RFXPRConfig__add.fun:
+	
+	EEI configuration device for RFX
+
+2004-05-06 04:12  manduchi
+
+	* javascope/: MdsContinuousDataProvider.java, jScope.java:
+	
+	Added MdsContinuousDataProvider for (raw) contiunous monitoring
+
+2004-05-06 04:10  manduchi
+
+	* javatraverser/: DeviceComponent.java, DeviceSetup.java,
+	DeviceTable.java, RFXPRConfigSetup.java, RFXToroidalSetup.java,
+	javatraverser.dsp:
+	
+	New RFX device, some fixes in DeviceBeans, Improvements in
+	DeviceTable
+
+2004-05-03 20:52  twf
+
+	* html/projects/hdf5.shtml:
+	
+	more edits
+
+2004-05-03 20:48  twf
+
+	* html/projects/: hdf5.shtml, hdf5.shtml:
+	
+	more edits
+
+2004-05-03 20:39  twf
+
+	* html/projects/hdf5.shtml:
+	
+	more hdf5 updates
+
+2004-05-03 20:11  twf
+
+	* html/projects/hdf5.shtml:
+	
+	add more to hdf5 documentation
+
+2004-04-30 13:25  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Add faster buffered_io
+
+2004-04-30 13:24  twf
+
+	* treeshr/RemoteAccess.c, treeshr/TreeOpen.c, mdstcpip/mdsip_u.c,
+	mdsip_xio/mdsip_process_message.c:
+	
+	Prevent multiple editors
+
+2004-04-29 15:37  twf
+
+	* idl/mdstcl.pro:
+	
+	Use public variables
+
+2004-04-29 14:07  twf
+
+	* mdsip_xio/mdsip_process_message.c:
+	
+	take out debug printout
+
+2004-04-29 13:34  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Need MdsShr if building with memcheck
+
+2004-04-29 12:11  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	set GLOBUS_LOCATION
+
+2004-04-29 03:37  manduchi
+
+	* tdi/RfxDevices/: FR10HWInit.fun, FR10HWReadChan.fun,
+	FR10__init.fun, FR10__store.fun, TR32HWInit.fun, TR32__init.fun:
+	
+	Fix sub-sampling
+
+2004-04-28 15:41  twf
+
+	* mdsip_xio/: mdsip_connect.c, mdsip_initialize_io.c:
+	
+	Add nodelay and keepalive options
+
+2004-04-28 11:59  twf
+
+	* mdsip_xio/mdsip_connect.c:
+	
+	Add client side buffer size selection, mdsip_set_bufsize
+
+2004-04-28 11:58  twf
+
+	* mdsip_xio/mdsip_become_user.c:
+	
+	Remove debug printout
+
+2004-04-28 11:58  twf
+
+	* mdsip_xio/: mdsip.h, mdsip_open_cb.c, mdsip_parse_command.c:
+	
+	handle proxy delegation for spawned processes
+
+2004-04-27 12:23  manduchi
+
+	* javatraverser/DeviceField.java, javatraverser/RFXTimesSetup.java,
+	tdi/RfxDevices/RFXTimes__add.fun:
+	
+	Fix
+
+2004-04-27 11:40  manduchi
+
+	* javatraverser/RFXToroidalSetup.java:
+	
+	Minor fixes
+
+2004-04-27 09:30  manduchi
+
+	* javatraverser/RFXToroidalSetup.java:
+	
+	Fix
+
+2004-04-27 08:31  manduchi
+
+	* javatraverser/RFXToroidalSetup.java:
+	
+	Fix par names
+
+2004-04-27 06:45  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Fix expression compilation: repeat failed compilations after the
+	tree has been built
+
+2004-04-27 04:44  manduchi
+
+	* tdi/RfxDevices/inverter_pert.fun:
+	
+	
+	Perturbation generation for RFX Toroidal Inverter
+
+2004-04-27 04:43  manduchi
+
+	* tdi/RfxDevices/RFXPMSetup__add.fun:
+	
+	Added fields
+
+2004-04-27 04:42  manduchi
+
+	* javatraverser/: RFXPMSetupSetup.java, RFXToroidalSetup.java:
+	
+	Fixes
+
+2004-04-27 02:43  manduchi
+
+	* javadispatcher/Balancer.java:
+	
+	Fix
+
+2004-04-26 15:25  twf
+
+	* tcl/tcl_set_callbacks.c:
+	
+	declare old_saved_output before call lock
+
+2004-04-26 14:42  twf
+
+	* devscripts/MakeRpm:
+	
+	Add mdsip_xio support
+
+2004-04-26 14:42  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Add bindir creation for install
+
+2004-04-26 11:42  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.6-0
 
 2004-04-26 11:02  twf
 
