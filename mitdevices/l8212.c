@@ -226,9 +226,7 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 	  static int channels[4][4] = {{1,2,4,8},{1,2,4,8},{2,4,8,16},{4,8,16,32}};\
           int chan_index;\
 	  int base = chans>>2;\
-          printf("chans = %d, base = %d\n",chans,base); \
           libffs(&zero,&four,&base,&chan_index);\
-          printf("chan_indx = %d, noc = %d\n",chan_index,noc); \
 	  *chans_ptr = channels[chan_index][noc];\
 	}
 #define ClockToDt(chans,period,freq_ptr)\

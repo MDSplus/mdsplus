@@ -116,7 +116,7 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
             default: printf("Cannot parse report line: %s",line);
           }
         }
-        else
+        else if (strcmp(name,"DATE:"))
           printf("Cannot parse report line: %s",line);
       }
     }
