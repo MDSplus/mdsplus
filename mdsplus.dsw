@@ -3,6 +3,18 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "WaveDisplay"=.\javascope\WaveDisplay.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "cdu"=.\cdu\cdu.dsp - Package Owner=<4>
 
 Package=<5>
@@ -59,6 +71,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name mdsipshr
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -75,6 +90,27 @@ Package=<4>
 
 ###############################################################################
 
+Project: "jWebTree"=.\javatraverser\jWebTree.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name javamds
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name javascope
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name javatraverser
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "javadispatcher"=.\javadispatcher\javadispatcher.dsp - Package Owner=<4>
 
 Package=<5>
@@ -83,26 +119,11 @@ Package=<5>
 
 Package=<4>
 {{{
-}}}
-
-###############################################################################
-
-Project: "javamds"=.\javamds\javamds.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
     Begin Project Dependency
-    Project_Dep_Name mdsshr
+    Project_Dep_Name javascope
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name tdishr
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name treeshr
+    Project_Dep_Name javatraverser
     End Project Dependency
 }}}
 
@@ -349,6 +370,18 @@ Package=<4>
 ###############################################################################
 
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdssql"=.\mdssql\mdssql.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
