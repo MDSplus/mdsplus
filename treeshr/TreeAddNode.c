@@ -458,10 +458,12 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
   }
   else
   {
+    int tmp;
     for (node_ptr = (NODE *) ((char *) info_ptr->node + header_ptr->free);
 	 node_ptr->parent; node_ptr = parent_of(node_ptr));
-    node_ptr->parent = (int) (info_ptr->node + header_ptr->nodes) - (int) node_ptr;
-    (info_ptr->node + header_ptr->nodes)->child = -node_ptr->parent;
+    link_it(node_ptr->parent,(info_ptr->node + header_ptr->nodes),node_ptr);
+    tmp = -swapint((char *)&node_ptr->parent);
+    (info_ptr->node + header_ptr->nodes)->child = swapint((char *)&tmp);
   }
   header_ptr->nodes += EXTEND_NODES;
   return status;
