@@ -59,11 +59,12 @@ struct TdiCatStruct		cats[4];
 	* Scalar MASK: Result is ARRAY for true or null for false.
 	*******************************************************************************/
 		if (dat[1].pointer->class == CLASS_A) {
+		  static int endiantest = 1;
 			lenm = dat[1].pointer->length;
 			numa = bytes / lena;
 			numm = (int)((struct descriptor_a *)dat[1].pointer)->arsize / lenm;
 			pi = parr->pointer;
-			pm = dat[1].pointer->pointer;
+			pm = ((*(char *)&endiantest) == 1) ? dat[1].pointer->pointer : (dat[1].pointer->pointer + lenm - 1);
 			po = pi;
 
 			if (numa < numm) numm = numa;

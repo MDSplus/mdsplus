@@ -302,6 +302,7 @@ char		c0[85], *cptr, *bptr;
 struct descriptor	cdsc = {11,DTYPE_T,CLASS_S,0};
 struct descriptor	t2 = {0,DTYPE_T,CLASS_S,0};
 int	status = 1, j, dtype, n1, n2;
+char n1c;
         cdsc.pointer = c0;
 	/******************
 	Watch null pointer.
@@ -335,12 +336,12 @@ int	status = 1, j, dtype, n1, n2;
 				if (*cptr == '\'') n1++;
 				else if (*cptr == '\"') n2++;
 			}
-			n1 = n1 < n2 ? '\'' : '\"';
-			QUOTE.pointer = (char *)&n1;
+			n1c = n1 < n2 ? '\'' : '\"';
+			QUOTE.pointer = &n1c;
 			status = StrAppend(out_ptr, &QUOTE);
 			cptr = in_ptr->pointer;
 			for (j = in_ptr->length; --j >= 0; cptr++) {
-				if (*cptr == n1) c0[1] = (char)n1;
+				if (*cptr == n1c) c0[1] = n1c;
 				else switch (*cptr) {
 			/******************
 			Special characters.
@@ -409,11 +410,13 @@ int	status = 1, j, dtype, n1, n2;
 		case DTYPE_QU :
 		case DTYPE_O :
 		case DTYPE_OU :
+		  {     static int endiantest = 1;
+                        char littleendian = *(char *)&endiantest;
 			cptr = c0;
 			j = in_ptr->length;
-			bptr = in_ptr->pointer+j;
+			bptr = littleendian ? (in_ptr->pointer+j) : (in_ptr->pointer - 1);
 			while (--j >= 0) {
-				*cptr++ = htab[(*--bptr >> 4) & 15];
+				*cptr++ = htab[( *(littleendian ? --bptr : ++bptr) >> 4) & 15];
 				*cptr++ = htab[*bptr & 15];
 			}
 			while (cdsc.pointer < cptr-1 && *cdsc.pointer == '0') {cdsc.pointer++;}
@@ -423,6 +426,7 @@ int	status = 1, j, dtype, n1, n2;
                                 sdsc.pointer = TdiREF_CAT[dtype].name;
 				status = StrConcat(out_ptr, out_ptr, &HEX, &cdsc, &sdsc MDS_END_ARG);
 			}
+		  }
 			break;
 
 		case DTYPE_D :

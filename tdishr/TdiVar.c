@@ -119,14 +119,14 @@ struct descriptor *Tdi3Narg(){return &TdiNargConstant;}
 	Put a byte to output.
 */
 int			TdiPutLogical(
-unsigned char		*data,
+unsigned char		data,
 struct descriptor_xd *out_ptr) {
 int	status;
 static unsigned short len = (unsigned short)sizeof(unsigned char);
 static unsigned char dtype = (unsigned char)DTYPE_BU;
 	if (out_ptr == 0) return 0;
 	status = MdsGet1DxS(&len, &dtype, out_ptr);
-	if (status & 1) *(unsigned char *) out_ptr->pointer->pointer = *data;
+	if (status & 1) *(unsigned char *) out_ptr->pointer->pointer = data;
 	return status;
 }
 /*--------------------------------------------------------------
@@ -421,7 +421,7 @@ int			found;
         found = status & 1;
 	if (found) found = node_ptr->xd.class != 0;
 	else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR) status = 1;
-	if (status & 1) status = TdiPutLogical((unsigned char *)&found, out_ptr);
+	if (status & 1) status = TdiPutLogical((unsigned char)found, out_ptr);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -438,7 +438,7 @@ int			found;
         found = status & 1;
 	if (found) ;
 	else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR) status = 1;
-	if (status & 1) status = TdiPutLogical((unsigned char *)&found, out_ptr);
+	if (status & 1) status = TdiPutLogical((unsigned char)found, out_ptr);
 	return status;
 }
 /***************************************************************
@@ -683,8 +683,8 @@ struct descriptor_xd	tmp = EMPTY_XD;
 TdiRefStandard(Tdi1Fun)
 DESCRIPTOR_FUNCTION(hold,0,255);
 int			j;
-
-        hold.pointer = (unsigned char *)&opcode;
+unsigned short opcode_s = (unsigned short)opcode;
+        hold.pointer = (unsigned char *)&opcode_s;
         hold.ndesc = (unsigned char)narg;
 	for (j = narg; --j >=0;) if ((hold.arguments[j] = list[j]) == 0) return TdiNULL_PTR;
 	status = MdsCopyDxXd((struct descriptor *)&hold, out_ptr);

@@ -282,16 +282,32 @@ static int emul(int *m1, int *m2, int *add, int *out)
 }
 #endif
 
+#define swapquad(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[1]; iptr[1]=stmp;}
+#define swapocta(in) if (!littleendian) {int stmp; int *iptr = (int *)in; stmp=iptr[0]; iptr[0]=iptr[3]; iptr[3]=stmp; \
+                                                                   stmp=iptr[1]; iptr[1]=iptr[2]; iptr[2]=stmp;}
+
 int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 {
   int tmp[3];
-  emul(&in2[0],&in1[0],&zero,&tmp[0]);
-  emul(&in2[1],&in1[0],&tmp[1],&tmp[1]);
-  emul(&in2[0],&in1[1],&tmp[1],&tmp[1]);
-  if (in1[0] < 0)
-    tmp[1] += in2[0];
-  if (in2[0] < 0)
-    tmp[1] += in1[0];
+  int in1l[2];
+  int in2l[2];
+  static int endiantest=1;
+  int littleendian = (int)*(char *)&endiantest;
+  in1l[0] = littleendian ? in1[0] : in1[1];
+  in1l[1] = littleendian ? in1[1] : in1[0];
+  in2l[0] = littleendian ? in2[0] : in2[1];
+  in2l[1] = littleendian ? in2[1] : in2[0];
+  emul(&in2l[0],&in1l[0],&zero,&tmp[0]);
+  swapquad(&tmp[0])
+  emul(&in2l[1],&in1l[0],&tmp[1],&tmp[1]);
+  swapquad(&tmp[1])
+  emul(&in2l[0],&in1l[1],&tmp[1],&tmp[1]);
+  swapquad(&tmp[1])
+  if (in1l[0] < 0)
+    tmp[1] += in2l[0];
+  if (in2l[0] < 0)
+    tmp[1] += in1l[0];
+  swapquad(&tmp[0])
   memcpy(out,tmp,8);
   return 1;
 }
@@ -299,39 +315,92 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 int TdiMultiplyOctaword(int *in1, int *in2, int *out)
 {
   int tmp[8];
-  emul(&in2[0],in1,&zero,&tmp[0]);
-  emul(&in2[1],in1,&tmp[1],&tmp[1]);
-  emul(&in2[2],in1,&tmp[2],&tmp[2]);
-  emul(&in2[3],in1,&tmp[3],&tmp[3]);
-  emul(&in2[0],&in1[1],&zero,&tmp[4]);
-  emul(&in2[1],&in1[1],&tmp[5],&tmp[5]);
-  emul(&in2[2],&in1[1],&tmp[6],&tmp[6]);
-  TdiAddOctaword(&tmp[4],&tmp[1],&tmp[1]);
-  emul(&in2[0],&in1[2],&zero,&tmp[4]);
-  emul(&in2[1],&in1[2],&tmp[5],&tmp[5]);
-  TdiAddQuadword(&tmp[4],&tmp[2],&tmp[2]);
-  emul(&in2[0],&in1[3],&tmp[3],&tmp[3]);
-  if (in1[0] < 0)
+  int in1l[4];
+  int in2l[4];
+  int tmp2[4];
+  int tmp3[4];
+  static int endiantest=1;
+  int littleendian = (int)*(char *)&endiantest;
+  in1l[0] = littleendian ? in1[0] : in1[3];
+  in1l[1] = littleendian ? in1[1] : in1[2];
+  in1l[2] = littleendian ? in1[2] : in1[1];
+  in1l[3] = littleendian ? in1[3] : in1[0];
+  in2l[0] = littleendian ? in2[0] : in2[3];
+  in2l[1] = littleendian ? in2[1] : in2[2];
+  in2l[2] = littleendian ? in2[2] : in2[1];
+  in2l[3] = littleendian ? in2[3] : in2[0];
+  emul(&in2l[0],in1l,&zero,&tmp[0]);
+  swapquad(&tmp[0]);
+  emul(&in2l[1],in1l,&tmp[1],&tmp[1]);
+  swapquad(&tmp[1]);
+  emul(&in2l[2],in1l,&tmp[2],&tmp[2]);
+  swapquad(&tmp[2]);
+  emul(&in2l[3],in1l,&tmp[3],&tmp[3]);
+  swapquad(&tmp[3]);
+  emul(&in2l[0],&in1l[1],&zero,&tmp[4]);
+  swapquad(&tmp[4]);
+  emul(&in2l[1],&in1l[1],&tmp[5],&tmp[5]);
+  swapquad(&tmp[5]);
+  emul(&in2l[2],&in1l[1],&tmp[6],&tmp[6]);
+  swapquad(&tmp[6]);
+  memcpy(tmp2,&tmp[4],16);
+  memcpy(tmp3,&tmp[1],16);
+  swapocta(tmp2);
+  swapocta(tmp3);
+  TdiAddOctaword(tmp2,tmp3,&tmp[1]);
+  swapocta(&tmp[1]);
+  emul(&in2l[0],&in1l[2],&zero,&tmp[4]);
+  swapquad(&tmp[4]);
+  emul(&in2l[1],&in1l[2],&tmp[5],&tmp[5]);
+  swapquad(&tmp[5]);
+  memcpy(tmp2,&tmp[4],8);
+  memcpy(tmp3,&tmp[2],8);
+  swapquad(tmp2);
+  swapquad(tmp3);
+  TdiAddQuadword(tmp2,tmp3,&tmp[2]);
+  swapquad(&tmp[2]);
+  emul(&in2l[0],&in1l[3],&tmp[3],&tmp[3]);
+  swapquad(&tmp[3]);
+  if (in1l[0] < 0)
   {
     tmp[7] = tmp[4];
-    TdiAddOctaword(&in2[0],&tmp[1],&tmp[1]);
+    memcpy(tmp2,&tmp[1],16);
+    swapocta(tmp2);
+    TdiAddOctaword(in2,tmp2,&tmp[1]);
+    swapocta(&tmp[1]);
     tmp[4] = tmp[7];
   }
-  if (in1[1] < 0)    
-    TdiAddQuadword(&in2[0],&tmp[2],&tmp[2]);
-  if (in1[2] < 0)
-    tmp[3] += in2[0];
-  if (in2[0] < 0)
+  if (in1l[1] < 0)
+  {
+    memcpy(tmp2,&tmp[2],8);
+    swapquad(tmp2);
+    TdiAddQuadword(littleendian ? in2 : in2+2 ,tmp2,&tmp[2]);
+    swapquad(&tmp[2]);
+  }
+  if (in1l[2] < 0)
+    tmp[3] += in2l[0];
+  if (in2l[0] < 0)
   {
     tmp[7] = tmp[4];
-    TdiAddOctaword(&in1[0],&tmp[1],&tmp[1]);
+    memcpy(tmp2,&tmp[1],16);
+    swapocta(tmp2);
+    TdiAddOctaword(in1,tmp2,&tmp[1]);
+    swapocta(&tmp[1]);
     tmp[4] = tmp[7];
   }
-  if (in2[1] < 0)
-    TdiAddQuadword(&in1[0],&tmp[2],&tmp[2]);
-  if (in2[2] < 0)
-    tmp[3] += in1[0];
-  memcpy(out,tmp,16);
+  if (in2l[1] < 0)
+  {
+    memcpy(tmp2,&tmp[2],8);
+    swapquad(tmp2);
+    TdiAddQuadword(littleendian ? in1 : in1+2 ,tmp2,&tmp[2]);
+    swapquad(&tmp[2]);
+  }
+  if (in2l[2] < 0)
+    tmp[3] += in1l[0];
+  out[0] = littleendian ? tmp[0] : tmp[3];
+  out[1] = littleendian ? tmp[1] : tmp[2];
+  out[2] = littleendian ? tmp[2] : tmp[1];
+  out[3] = littleendian ? tmp[3] : tmp[0];
   return 1;
 }
 
@@ -339,12 +408,23 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int carry=0;
+  static int endiantest = 1;
+  int littleendian = (int)*(char *)&endiantest;
+  unsigned int la[2];
+  unsigned int lb[2];
+  la[0] = a[0];
+  la[1] = a[1];
+  lb[0] = b[0];
+  lb[1] = b[1];
+  swapquad(la);
+  swapquad(lb);
   for (i=0; i<2; i++) {
-    unsigned int _a = a[i];
-    unsigned int _b = b[i];
+    unsigned int _a = la[i];
+    unsigned int _b = lb[i];
     ans[i] = _a + _b + carry;
     carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
   }
+  swapquad(ans);
   return !carry;
 }
 
@@ -352,12 +432,21 @@ int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int carry=0;
+  static int endiantest = 1;
+  int littleendian = (int)*(char *)&endiantest;
+  unsigned int la[4];
+  unsigned int lb[4];
+  memcpy(la,a,16);
+  memcpy(lb,b,16);
+  swapocta(la);
+  swapocta(lb);
   for (i=0; i<4; i++) {
-    unsigned int _a = a[i];
-    unsigned int _b = b[i];
+    unsigned int _a = la[i];
+    unsigned int _b = lb[i];
     ans[i] = _a + _b + carry;
     carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
   }
+  swapocta(ans);
   return !carry;
 }
 
@@ -365,15 +454,22 @@ int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int status;
+  static int endiantest = 1;
+  int littleendian = (int)*(char *)&endiantest;
+  unsigned int lb[2];
   unsigned int sub[2];
+  lb[0] = b[0];
+  lb[1] = b[1];
+  swapquad(lb);
   for (i=0 ; i<2; i++) {
-    sub[i] = ~b[i];
+    sub[i] = ~lb[i];
     if (i == 0) 
       sub[i]++;
     else
-      if(sub[i-1] < (~b[i-1])) 
+      if(sub[i-1] < (~lb[i-1])) 
         sub[i]++;
   }
+  swapquad(sub);
   status = TdiAddQuadword(a, sub, ans);
   return status;
 }
@@ -382,15 +478,21 @@ int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
   int i;
   int status;
+  static int endiantest = 1;
+  int littleendian = (int)*(char *)&endiantest;
+  unsigned int lb[4];
   unsigned int sub[4];
+  memcpy(lb,b,16);
+  swapocta(lb);
   for (i=0 ; i<4; i++) {
-    sub[i] = ~b[i];
+    sub[i] = ~lb[i];
     if (i == 0) 
       sub[i]++;
     else
-      if(sub[i-1] < (~b[i-1])) 
+      if(sub[i-1] < (~lb[i-1])) 
         sub[i]++;
   }
+  swapocta(sub);
   status = TdiAddOctaword(a, sub, ans);
   return status;
 }

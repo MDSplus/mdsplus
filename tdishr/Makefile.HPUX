@@ -80,7 +80,7 @@ TdiYaccSubs.o \
 TdiYacc.o
 
 libTdiShr.sl : $(OBJECTS)
-	ld -o $@ +vallcompatwarnings -b $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
+	ld -o $@ +vallcompatwarnings +s -b $(OBJECTS) -lc -lm -L../mdsshr -lMdsShr -L../treeshr -lTreeShr
 
 clean :
 	- rm *.o

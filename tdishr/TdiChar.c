@@ -72,9 +72,11 @@ struct descriptor *dummy = kind_ptr;
 char	*p1 = in_ptr->pointer;
 char	*p2 = out_ptr->pointer;
 int	step = in_ptr->length, n, status = 1;
+static int endiantest = 1;
+char little = *(char *)&endiantest;
 
 	N_ELEMENTS(out_ptr, n);
-	for (; --n >= 0; p1 += step) *p2++ = *p1;
+	for (; --n >= 0; p1 += step) *p2++ = *(p1 + (little ? 0 : step - 1));
 	return status;
 }
 /*------------------------------------------------------------------------------
@@ -181,9 +183,11 @@ int	step = in_ptr->length;
 char	*p1 = in_ptr->pointer;
 char	*p2 = out_ptr->pointer;
 int	n, status = 1;
+static int endiantest = 1;
+char little = *(char *)&endiantest;
 
 	N_ELEMENTS(out_ptr, n);
-	if (status & 1) for (; --n >= 0; p1 += step) *p2++ = *p1;
+	if (status & 1) for (; --n >= 0; p1 += step) *p2++ = *(p1 + (little ? 0 : (step - 1)));
 	return status;
 }
 /*------------------------------------------------------------------------------

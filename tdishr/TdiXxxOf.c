@@ -146,7 +146,7 @@ unsigned char	class;
 	while (px && px->dtype == DTYPE_DSC) px = (struct descriptor *)px->pointer;
 	if (px) class = px->class;
 	else class = DTYPE_MISSING;
-	status = TdiPutLogical(&class, out_ptr);
+	status = TdiPutLogical(class, out_ptr);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -366,7 +366,7 @@ unsigned char	dtype;
 	while (px && px->dtype == DTYPE_DSC) px = (struct descriptor *)px->pointer;
 	if (px) dtype = px->dtype;
 	else dtype = DTYPE_MISSING;
-	status = TdiPutLogical(&dtype, out_ptr);
+	status = TdiPutLogical(dtype, out_ptr);
 	return status;
 }
 /*--------------------------------------------------------------
@@ -646,7 +646,7 @@ unsigned char	ndesc;
 	if (pr) switch (pr->class) {
 	case CLASS_R :
 		ndesc = pr->ndesc;
-		status = TdiPutLogical(&ndesc, out_ptr);
+		status = TdiPutLogical(ndesc, out_ptr);
 		break;
 	default : status=TdiINVCLADSC; break;
 	}

@@ -71,7 +71,7 @@ struct TdiCatStruct		cats[4];
 	**********************************************/
 	if (new[2]
 	&& new[2]->dtype == DTYPE_FUNCTION
-	&& *new[2]->pointer == OpcValue) {
+	&& *(unsigned short *)new[2]->pointer == OpcValue) {
 	DESCRIPTOR_RANGE(range, 0, 0, 0);
                 range.begin = &dx0;
                 range.ending = &dx1;

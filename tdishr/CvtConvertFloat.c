@@ -195,18 +195,26 @@ typedef CVT_BYTE	CVT_IBM_SHORT[4];
 typedef CVT_BYTE	CVT_IBM_LONG[8];
 typedef CVT_BYTE	CVT_CRAY[8];
 typedef U_Int_32	CVT_STATUS;
+/*
 typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16;} f_float;
 typedef struct {unsigned hi : 7; unsigned exp :  8; unsigned sign : 1; unsigned low : 16; unsigned int low2;} d_float;
 typedef struct {unsigned hi : 4; unsigned exp : 11; unsigned sign : 1; unsigned low : 16; unsigned int low2;} g_float;
 typedef struct {		 unsigned exp : 15; unsigned sign : 1; unsigned low : 16; unsigned int low2[3];} h_float;
 typedef struct {unsigned low:16; unsigned hi : 7;   unsigned exp:8;    unsigned sign :1;} s_float;
 typedef struct {unsigned int low2; unsigned low:16; unsigned hi : 4; unsigned exp:11; unsigned sign :1;} t_float;
+*/
 
-#define IsRoprandF(val) ((((f_float *)val)->exp == 0) && (((f_float *)val)->sign == 1))
-#define IsRoprandS(val) (((s_float *)val)->exp == 255)
-#define IsRoprandD(val) ((((d_float *)val)->exp == 0) && (((d_float *)val)->sign == 1))
-#define IsRoprandG(val) ((((g_float *)val)->exp == 0) && (((g_float *)val)->sign == 1))
-#define IsRoprandT(val) (((t_float *)val)->exp == 2047)
+#define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
+#define f_float_sign(val) ((*(int *)val >> 15) &0x1)
+#define IsRoprandF(val) ((f_float_exp(val) == 0) && (f_float_sign(val) == 1))
+#define s_float_exp(val) ((*(int *)val >> 23) & 0xff)
+#define IsRoprandS(val) (s_float_exp(val) == 255)
+#define IsRoprandD(val) IsRoprandF(val)
+#define g_float_exp(val) ((*(int *)val >> 4) & 0x7ff)
+#define g_float_sign(val) ((*(int *)val >> 15) &0x1)
+#define IsRoprandG(val) ((g_float_exp(val) == 0) && (g_float_sign(val) == 1))
+#define t_float_exp(val) ((((int *)val)[1] >> 4) & 0x7ff)
+#define IsRoprandT(val) (t_float_exp(val) == 2047)
 
 #define cvt_s_normal 			CVT$_NORMAL
 #define cvt_s_input_conversion_error 	CVT$_INPCONERR
@@ -639,7 +647,6 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   ** ==========================================================================
   */	  
   return_status = cvt_s_normal;
-
   /*	  
   ** Validate the options parameter.
   ** ==========================================================================
@@ -648,11 +655,11 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   {
     switch (input_type)
     {
-      case CVT$K_VAX_F	 : *(f_float *)output_value = *(f_float *)input_value; return !IsRoprandF(input_value);
-      case CVT$K_VAX_D	 : *(d_float *)output_value = *(d_float *)input_value; return !IsRoprandD(input_value);
-      case CVT$K_VAX_G	 : *(g_float *)output_value = *(g_float *)input_value; return !IsRoprandG(input_value);
-      case CVT$K_IEEE_S	 : *(s_float *)output_value = *(s_float *)input_value; return !IsRoprandS(input_value);
-      case CVT$K_IEEE_T	 : *(t_float *)output_value = *(t_float *)input_value; return !IsRoprandT(input_value);
+      case CVT$K_VAX_F	 : *(float *)output_value = *(float *)input_value; return !IsRoprandF(input_value);
+      case CVT$K_VAX_D	 : *(double *)output_value = *(double *)input_value; return !IsRoprandD(input_value);
+      case CVT$K_VAX_G	 : *(double *)output_value = *(double *)input_value; return !IsRoprandG(input_value);
+      case CVT$K_IEEE_S	 : *(float *)output_value = *(float *)input_value; return !IsRoprandS(input_value);
+      case CVT$K_IEEE_T	 : *(double *)output_value = *(double *)input_value; return !IsRoprandT(input_value);
       default		 : RAISE(cvt_s_invalid_input_type);   break;
     }
   }
@@ -815,6 +822,13 @@ CVT_STATUS CvtConvertFloat(void	*input_value,
   */	  
   return return_status&1;
 
+}
+
+static void FlipDouble(int *in)
+{
+  int tmp = in[0];
+  in[0] = in[1];
+  in[1] = tmp;
 }
 
 static CVT_STATUS pack_vax_f(UNPACKED_REAL  intermediate_value,
@@ -1956,6 +1970,8 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
   int	      round_bit_position;
   int	      i;
   CVT_STATUS  return_status;
+  static double fliptest = 42.;
+  int flip = *(int *)&fliptest != 0;
 
   /*	  
   ** Initialization.
@@ -1974,10 +1990,12 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
       {
 	memcpy(output_value, IEEE_T_NEG_ZERO, 8);
+        if (flip) FlipDouble((int *)output_value);
       }
       else
       {
 	memcpy(output_value, IEEE_T_POS_ZERO, 8);
+        if (flip) FlipDouble((int *)output_value);
       }
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INFINITY)
@@ -1985,16 +2003,19 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
       {
 	memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
+        if (flip) FlipDouble((int *)output_value);
       }
       else
       {
 	memcpy(output_value, IEEE_T_POS_INFINITY, 8);
+        if (flip) FlipDouble((int *)output_value);
       }
     } 
 
     else if (intermediate_value[U_R_FLAGS] & U_R_INVALID) 
     {
       memcpy(output_value, IEEE_T_INVALID, 8);
+      if (flip) FlipDouble((int *)output_value);
       RAISE(cvt_s_invalid_value);
     }
   } 
@@ -2029,10 +2050,12 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
 	  memcpy(output_value, IEEE_T_NEG_ZERO, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
 	else
 	{
 	  memcpy(output_value, IEEE_T_POS_ZERO, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
 
 	if (options & CVT$M_ERR_UNDERFLOW)
@@ -2080,6 +2103,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	  intermediate_value[0] = intermediate_value[2];
 	}
 	memcpy(output_value, intermediate_value, 8);
+        if (flip) FlipDouble((int *)output_value);
       }
     } 
 
@@ -2094,10 +2118,12 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
 	  memcpy(output_value, IEEE_T_NEG_HUGE, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
 	else
 	{
 	  memcpy(output_value, IEEE_T_POS_HUGE, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
       } 
 
@@ -2105,12 +2131,14 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	       (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_T_NEG_HUGE, 8);
+        if (flip) FlipDouble((int *)output_value);
       } 
 
       else if ((options & CVT$M_ROUND_TO_NEG) &&
 		!(intermediate_value[U_R_FLAGS] & U_R_NEGATIVE))
       {
 	memcpy(output_value, IEEE_T_POS_HUGE, 8);
+        if (flip) FlipDouble((int *)output_value);
       } 
 
       else 
@@ -2118,10 +2146,12 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
 	{
 	  memcpy(output_value, IEEE_T_NEG_INFINITY, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
 	else
 	{
 	  memcpy(output_value, IEEE_T_POS_INFINITY, 8);
+          if (flip) FlipDouble((int *)output_value);
 	}
       }
       RAISE(cvt_s_overflow);
@@ -2176,6 +2206,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
 	intermediate_value[0] = intermediate_value[2];
       }
       memcpy(output_value, &intermediate_value[0], 8);
+      if (flip) FlipDouble((int *)output_value);
     }
   }
 
@@ -4261,13 +4292,16 @@ static void unpack_ieee_t(CVT_IEEE_T      input_value,
   ** ==========================================================================
   */	  
   int	i;
+  static double fliptest = 42.;
+  int flip = *(int *)&fliptest != 0;
+
 
   /*	  
   ** Initialization.
   ** ==========================================================================
   */	  
   memcpy(output_value, input_value, 8);
-
+  if (flip) FlipDouble((int *)output_value);
   if (options & CVT$M_BIG_ENDIAN)
   {
     /*	  
@@ -4431,7 +4465,6 @@ static void unpack_ieee_t(CVT_IEEE_T      input_value,
     output_value[3] = 0;
     output_value[4] = 0;
   }
-
   /*	  
   ** Exit the routine.
   ** ==========================================================================

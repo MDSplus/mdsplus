@@ -150,17 +150,19 @@ int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   {
     int *in2p = (int *)in2->pointer;
     char *outp = (char *)out->pointer;
+    static int endiantest = 1;
+    int little = *(char *)&endiantest == 1;
     switch (scalars)
     {
       case 0:
       case 1:
 	      while (nout--) {if (*in2p < size * 8)
-	      *(outp+*in2p/8) |= 1 << (*in2p % 8);
+	      *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) |= 1 << (*in2p % 8);
 	      in2p++; outp += size;} break;
       case 2: while (nout--) {if (*in2p < size * 8)
-	      *(outp+*in2p/8) |= 1 << (*in2p % 8);
+	      *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) |= 1 << (*in2p % 8);
 	      outp += size;} break;
-      case 3: if (*in2p < size * 8) *(outp+*in2p/8) |= 1 << (*in2p % 8);
+      case 3: if (*in2p < size * 8) *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) |= 1 << (*in2p % 8);
 	      break;
     }
   }
@@ -200,17 +202,19 @@ int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   {
     int *in2p = (int *)in2->pointer;
     char *outp = (char *)out->pointer;
+    static int endiantest = 1;
+    int little = *(char *)&endiantest == 1;
     switch (scalars)
     {
       case 0:
       case 1:
 	      while (nout--) {if (*in2p < size * 8)
-	      *(outp+*in2p/8) &= ~(1 << (*in2p % 8));
+	      *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) &= ~(1 << (*in2p % 8));
 	      in2p++; outp += size;} break;
       case 2: while (nout--) {if (*in2p < size * 8)
-	      *(outp+*in2p/8) &= ~(1 << (*in2p % 8));
+	      *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) &= ~(1 << (*in2p % 8));
 	      outp += size;} break;
-      case 3: if (*in2p < size * 8) *(outp+*in2p/8) &= ~(1 << (*in2p % 8));
+      case 3: if (*in2p < size * 8) *(outp + (little ? *in2p/8 : (size - *in2p/8 - 1))) &= ~(1 << (*in2p % 8));
 	      break;
     }
   }

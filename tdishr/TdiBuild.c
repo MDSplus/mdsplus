@@ -53,6 +53,8 @@ struct descriptor	*ptr;
 struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 DESCRIPTOR_FUNCTION(build,0,255);
 int			j, k, modif;
+unsigned short modif_s;
+unsigned char modif_c;
 
         build.length = 0;
         build.dtype = fun_ptr->o1;
@@ -60,11 +62,10 @@ int			j, k, modif;
 	if (fun_ptr->o2 != fun_ptr->o1) {
 		status = TdiGetLong(list[0], &modif);
 		switch (fun_ptr->o2) {
-		case DTYPE_BU : build.length = 1; break;
-		case DTYPE_WU : build.length = 2; break;
+		case DTYPE_BU : build.length = 1; modif_c = (unsigned char)modif; build.pointer = &modif_c; break;
+		case DTYPE_WU : build.length = 2; modif_s = (unsigned short)modif; build.pointer = (unsigned char *)&modif_s; break;
 		default : status = TdiINVDTYDSC; break;
 		}
-		build.pointer = (unsigned char *)&modif;
 		--build.ndesc;
 		j = 1;
 	}
@@ -118,6 +119,8 @@ int			j, k, modif;
 struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 DESCRIPTOR_FUNCTION(build,0,255);
 struct descriptor_xd xd[255];
+unsigned char modif_c;
+unsigned short modif_s;
 
         build.length = 0;
         build.dtype = fun_ptr->o1;
@@ -125,11 +128,10 @@ struct descriptor_xd xd[255];
 	if (fun_ptr->o2 != fun_ptr->o1) {
 		status = TdiGetLong(list[0], &modif);
 		switch (fun_ptr->o2) {
-		case DTYPE_BU : build.length = 1; break;
-		case DTYPE_WU : build.length = 2; break;
+		case DTYPE_BU : build.length = 1; modif_c = (unsigned char)modif; build.pointer = &modif_c; break;
+		case DTYPE_WU : build.length = 2; modif_s = (unsigned short)modif; build.pointer = (unsigned char *)&modif_s; break;
 		default : status = TdiINVDTYDSC; break;
 		}
-		build.pointer = (unsigned char *)&modif;
 		--build.ndesc;
 		j = 1;
 	}

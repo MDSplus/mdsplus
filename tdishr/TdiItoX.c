@@ -543,7 +543,8 @@ plain:		status = TdiData(&axis, &axis MDS_END_ARG);
 		if (status & 1)
 		if (special) {
 			if (flag) {
-				status = MdsGet1DxA((struct descriptor_a *)&duo, (unsigned short *)&j1, &paxis->dtype,
+				unsigned short num = (unsigned short)j1;
+				status = MdsGet1DxA((struct descriptor_a *)&duo, &num, &paxis->dtype,
                                                                      out_ptr);
 				if (status & 1) {
 	_MOVC3(j1, (char *)window.pointer->pointer,		out_ptr->pointer->pointer);

@@ -128,7 +128,8 @@ int	stepf = pdfalse->class == CLASS_A ? len : 0;
 char	*pf = pdfalse->pointer;
 
 int	stepm = pdmask->class == CLASS_A ? pdmask->length : 0;
-char	*pm = pdmask->pointer;
+static int endiantest = 1;
+char	*pm = (*(char *)endiantest == 1) ? pdmask->pointer : (pdmask->pointer + pdmask->length - 1);
 char    *pc;
 short   *ps;
 int    *pl;
