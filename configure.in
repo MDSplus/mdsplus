@@ -262,10 +262,12 @@ if test -r $IDL_DIR
 then
         IDL_INC="-I$IDL_DIR/external"
         IDL_LIB="-L$IDL_DIR/bin/bin.$IDL_BIN_SUF -lidl"
+        IDLMDSEVENT="idlmdsevent"
         AC_MSG_RESULT(have idl $IDL_INC)
 else
         IDL_INC=""
         IDL_LIB=""
+        IDLMDSEVENT=""
         AC_MSG_RESULT(no idl)
 fi
 
@@ -308,6 +310,7 @@ AC_SUBST(D3D_FFLAGS)
 AC_SUBST(DNET_STUB)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
+AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLSQL)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
@@ -357,6 +360,7 @@ ccl/Makefile
 cdu/Makefile 
 d3dshr/Makefile 
 dwscope/Makefile 
+idlmdsevent/Makefile
 idlsql/Makefile
 ipcs/Makefile 
 ipcs/lib/Makefile 
