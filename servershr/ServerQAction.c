@@ -477,6 +477,12 @@ static void DoSrvAction(SrvJob *job_in)
 	  fflush(stdout);
       }
     status = TdiDoTask(&nid_dsc,&ans_dsc MDS_END_ARG);
+    if (Logging)
+      {
+	memcpy(current_job_text,"Done ",5);
+	printf("%s, %s\n",Now(),current_job_text);
+	fflush(stdout);
+      }
     if (status & 1)
       status = retstatus;
   }
