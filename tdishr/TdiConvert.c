@@ -7,9 +7,6 @@
 #define MAXTYPE (DTYPE_FTC + 1)
 extern void CvtConvertFloat();
 extern int IsRoprand();
-#ifdef WIN32
-#pragma warning (disable : 4127) /* conditional expression is constant */
-#endif
 
 #define TWO_32 (double)4294967296.
 double WideIntToDouble(unsigned int *bin, int size, int is_signed)

@@ -1,8 +1,5 @@
 #include <string.h>
 #include <mdsdescrip.h>
-#ifdef WIN32
-#pragma warning (disable : 4100) /* options parameter is never referenced! */
-#endif
 
 /** Adapted from VMS V7.0 sources CVT$CONVERT_FLOAT.LIS                      **/  
 /******************************************************************************/

@@ -5,9 +5,6 @@
 
 	Ken Klare, LANL P-4	(c)1989,1991
 */
-#ifdef _MSC_VER
-#pragma warning (disable : 4100) /* unreferenced formal parameter */
-#endif
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>

@@ -53,16 +53,10 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 #include <string.h>
 #include <tdimessages.h>
 
-#ifdef WIN32
-#pragma warning (disable : 4003) /* Not enough actual parameters to macro */
-#endif
-
 extern int CvtConvertFloat();
 extern void DoubleToWideInt();
 
-#define noop
-
-#define Operate(type,operator,not) \
+#define Operate(type,operator) \
 { type *in1p = (type *)in1->pointer;\
   type *in2p = (type *)in2->pointer;\
   type *outp = (type *)out->pointer;\
@@ -76,7 +70,7 @@ extern void DoubleToWideInt();
   break;\
 }
 
-#define OperateSpecial(size,operator,not) \
+#define OperateSpecial(size,operator) \
 { unsigned int *in1p = (unsigned int *)in1->pointer;\
   unsigned int *in2p = (unsigned int *)in2->pointer;\
   unsigned int *outp = (unsigned int *)out->pointer;\
@@ -91,11 +85,11 @@ extern void DoubleToWideInt();
   break;\
 }
 
-#define OperateFloatOne(dtype,operator,not) \
+#define OperateFloatOne(dtype,operator) \
     *outp++ = (CvtConvertFloat(in1p,dtype,&a,DTYPE_FLOAT,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_FLOAT,0)) ? \
       not((unsigned int)a operator (unsigned int)b) : (unsigned int)0;
 
-#define OperateFloat(dtype,operator,not) \
+#define OperateFloat(dtype,operator) \
 { float *in1p = (float *)in1->pointer;\
   float *in2p = (float *)in2->pointer;\
   unsigned int *outp = (unsigned int *)out->pointer;\
@@ -103,14 +97,14 @@ extern void DoubleToWideInt();
   switch (scalars)\
   {\
     case 0: \
-    case 3: while (nout--) {OperateFloatOne(dtype,operator,not) in1p++; in2p++; } break; \
-    case 1: while (nout--) {OperateFloatOne(dtype,operator,not)         in2p++; } break; \
-    case 2: while (nout--) {OperateFloatOne(dtype,operator,not) in1p++;         } break; \
+    case 3: while (nout--) {OperateFloatOne(dtype,operator) in1p++; in2p++; } break; \
+    case 1: while (nout--) {OperateFloatOne(dtype,operator)         in2p++; } break; \
+    case 2: while (nout--) {OperateFloatOne(dtype,operator) in1p++;         } break; \
   }\
   break;\
 }
 
-#define OperateFloatC(dtype,operator,not) \
+#define OperateFloatC(dtype,operator) \
 { float *in1p = (float *)in1->pointer;\
   float *in2p = (float *)in2->pointer;\
   unsigned int *outp = (unsigned int *)out->pointer;\
@@ -119,16 +113,16 @@ extern void DoubleToWideInt();
   switch (scalars)\
   {\
     case 0: \
-    case 3: while (nout--) {for (j=0;j<2;j++) { OperateFloatOne(dtype,operator,not) in1p++; in2p++; }} break; \
+    case 3: while (nout--) {for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
     case 1: while (nout--) {in1p = (float *)in1->pointer;\
-                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator,not) in1p++; in2p++; }} break; \
+                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
     case 2: while (nout--) {in2p = (float *)in2->pointer;\
-                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator,not) in1p++; in2p++; }} break; \
+                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
   }\
   break;\
 }
 
-#define OperateDoubleOne(dtype,operator,not) \
+#define OperateDoubleOne(dtype,operator) \
       if (CvtConvertFloat(in1p,dtype,&a,DTYPE_DOUBLE,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_DOUBLE,0)) \
       { unsigned int a_int[2],b_int[2];\
         DoubleToWideInt(&a,2,a_int); DoubleToWideInt(&b,2,b_int); \
@@ -136,7 +130,7 @@ extern void DoubleToWideInt();
       }\
       else { *outp++ = (unsigned int)0; *outp++ = (unsigned int)0; }
 
-#define OperateDouble(dtype,operator,not) \
+#define OperateDouble(dtype,operator) \
 { double *in1p = (double *)in1->pointer;\
   double *in2p = (double *)in2->pointer;\
   unsigned int *outp = (unsigned int *)out->pointer;\
@@ -145,14 +139,14 @@ extern void DoubleToWideInt();
   switch (scalars)\
   {\
     case 0: \
-    case 3: while (nout--) {OperateDoubleOne(dtype,operator,not) in1p++; in2p++; } break; \
-    case 1: while (nout--) {OperateDoubleOne(dtype,operator,not)         in2p++; } break; \
-    case 2: while (nout--) {OperateDoubleOne(dtype,operator,not) in1p++;         } break; \
+    case 3: while (nout--) {OperateDoubleOne(dtype,operator) in1p++; in2p++; } break; \
+    case 1: while (nout--) {OperateDoubleOne(dtype,operator)         in2p++; } break; \
+    case 2: while (nout--) {OperateDoubleOne(dtype,operator) in1p++;         } break; \
   }\
   break;\
 }
 
-#define OperateDoubleC(dtype,operator,not) \
+#define OperateDoubleC(dtype,operator) \
 { double *in1p = (double *)in1->pointer;\
   double *in2p = (double *)in2->pointer;\
   unsigned int *outp = (unsigned int *)out->pointer;\
@@ -162,16 +156,16 @@ extern void DoubleToWideInt();
   switch (scalars)\
   {\
     case 0: \
-    case 3: while (nout--) {for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator,not) in1p++; in2p++; }} break; \
+    case 3: while (nout--) {for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
     case 1: while (nout--) {in1p = (double *)in1->pointer;\
-                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator,not) in1p++; in2p++; }} break; \
+                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
     case 2: while (nout--) {in2p = (double *)in2->pointer;\
-                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator,not) in1p++; in2p++; }} break; \
+                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
   }\
   break;\
 }
 
-#define common(name,operator,not)\
+#define common(name,operator)\
 int Tdi3##name(struct descriptor *in1, struct descriptor *in2, struct descriptor *out) {\
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
   struct descriptor_a *ina2 = (struct descriptor_a *)in2;\
@@ -202,40 +196,43 @@ int Tdi3##name(struct descriptor *in1, struct descriptor *in2, struct descriptor
   switch (in1->dtype)\
   {\
     case DTYPE_B:\
-    case DTYPE_BU:  Operate(unsigned char,operator,not)\
+    case DTYPE_BU:  Operate(unsigned char,operator)\
     case DTYPE_W:\
-    case DTYPE_WU:  Operate(unsigned short,operator,not)\
+    case DTYPE_WU:  Operate(unsigned short,operator)\
     case DTYPE_L:\
-    case DTYPE_LU:  Operate(unsigned int,operator,not)\
-    case DTYPE_Q:   OperateSpecial(2,operator,not)\
-    case DTYPE_QU:  OperateSpecial(2,operator,not)\
-    case DTYPE_O:   OperateSpecial(4,operator,not)\
-    case DTYPE_OU:  OperateSpecial(4,operator,not)\
-    case DTYPE_F:   OperateFloat(DTYPE_F, operator,not)\
-    case DTYPE_FS:  OperateFloat(DTYPE_FS, operator,not)\
-    case DTYPE_G:   OperateDouble(DTYPE_G, operator,not)\
-    case DTYPE_D:   OperateDouble(DTYPE_D, operator,not)\
-    case DTYPE_FT:  OperateDouble(DTYPE_FT, operator,not)\
-    case DTYPE_FC:  OperateFloatC(DTYPE_F, operator,not)\
-    case DTYPE_FSC: OperateFloatC(DTYPE_FS, operator,not)\
-    case DTYPE_GC:  OperateDoubleC(DTYPE_G, operator,not)\
-    case DTYPE_DC:  OperateDoubleC(DTYPE_D, operator,not)\
-    case DTYPE_FTC: OperateDoubleC(DTYPE_FT, operator,not)\
+    case DTYPE_LU:  Operate(unsigned int,operator)\
+    case DTYPE_Q:   OperateSpecial(2,operator)\
+    case DTYPE_QU:  OperateSpecial(2,operator)\
+    case DTYPE_O:   OperateSpecial(4,operator)\
+    case DTYPE_OU:  OperateSpecial(4,operator)\
+    case DTYPE_F:   OperateFloat(DTYPE_F, operator)\
+    case DTYPE_FS:  OperateFloat(DTYPE_FS, operator)\
+    case DTYPE_G:   OperateDouble(DTYPE_G, operator)\
+    case DTYPE_D:   OperateDouble(DTYPE_D, operator)\
+    case DTYPE_FT:  OperateDouble(DTYPE_FT, operator)\
+    case DTYPE_FC:  OperateFloatC(DTYPE_F, operator)\
+    case DTYPE_FSC: OperateFloatC(DTYPE_FS, operator)\
+    case DTYPE_GC:  OperateDoubleC(DTYPE_G, operator)\
+    case DTYPE_DC:  OperateDoubleC(DTYPE_D, operator)\
+    case DTYPE_FTC: OperateDoubleC(DTYPE_FT, operator)\
     default: return TdiINVDTYDSC;\
   }\
   return 1;\
 }
 
-common(Iand,&,noop)
-common(IandNot,& ~,noop)
-common(Inand,&,~)
-common(InandNot,& ~,~)
-common(Ior,|,noop)
-common(Inor,|,~)
-common(InorNot,| ~,~)
-common(IorNot,| ~,noop)
-common(Ieor,^,noop)
-common(IeorNot,^ ~,noop)
+#define not
+common(Iand,&)
+common(IandNot,& ~)
+common(Ior,|)
+common(IorNot,| ~)
+common(Ieor,^)
+common(IeorNot,^ ~)
+#undef not
+#define not ~
+common(Inand,&)
+common(InandNot,& ~)
+common(Inor,|)
+common(InorNot,| ~)
 /*  CMS REPLACEMENT HISTORY, Element Tdi3Iand.C */
 /*  *15   26-AUG-1996 16:34:16 TWF "Fix compile warnings" */
 /*  *14   16-AUG-1996 14:40:44 TWF "Add ieee support" */

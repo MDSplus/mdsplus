@@ -30,6 +30,9 @@ extern int Tdi3Conjg();
 extern int Tdi3Multiply();
 extern int TdiSum();
 extern int TdiMasterData();
+extern int TdiDigits();
+extern int TdiPower();
+
 #define _factor ((float).30103)
 
 TdiRefStandard(Tdi1Scalar)

@@ -75,6 +75,10 @@ extern struct yysvf yysvec[], *yybgin;
 #include <tdimessages.h>
 #include <treeshr.h>
 
+#ifdef WIN32
+#pragma warning (disable : 4013 4102 4035) /* LEX produces code with no forward declarations of yylook and yyback. Also has unreferenced label yyfussy. And two int functions: yyoutput and yyunput do not return a value.*/
+#endif
+
 #ifdef output
 #undef output
 #endif
@@ -115,7 +119,7 @@ extern int TdiHash(  );
 static void	upcase(unsigned char *str, int str_len) {
 	unsigned char	*pc;
 
-	for (pc = str; pc < str+str_len; ++pc) if (*pc >= 'a' && *pc <= 'z') *pc += 'A' - 'a';
+	for (pc = str; pc < str+str_len; ++pc) if (*pc >= 'a' && *pc <= 'z') *pc += (unsigned char)('A' - 'a');
 }
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
