@@ -1321,13 +1321,13 @@ struct descriptor_xd *TaskUnload(Widget w)
   Widget routine_widget = XtNameToWidget(w, "routine_box");
   XmdsXdBoxWidget method_widget = (XmdsXdBoxWidget) XtNameToWidget(w, "method_box");
 
-  if (XtIsManaged(expr_widget) || XtIsManaged(routine_widget) || XtIsManaged(method_widget))
+  if (XtIsManaged(expr_widget) || XtIsManaged(routine_widget) || XtIsManaged((Widget)method_widget))
   {
     if (XtIsManaged(expr_widget))
     {
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
     }
-    else if (XtIsManaged(method_widget))
+    else if (XtIsManaged((Widget)method_widget))
     {
       int i;
       int nargs = 0;

@@ -170,6 +170,6 @@ static Widget CreateButton(Widget parent,String name,ArgList args,Cardinal numar
     XtSetValues(w,args,numargs);
   if (set_default)
     XtVaSetValues(FindShellChild(w),XmNdefaultButton,w,NULL);
-  XmStringFree((unsigned char *) arglist[0].value);
+  XmStringFree((XmString) arglist[0].value);
   return w;
 }

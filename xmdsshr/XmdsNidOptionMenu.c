@@ -153,7 +153,7 @@ Widget XmdsCreateNidOptionMenu(Widget parent,String name,ArgList args,Cardinal a
     arglist[2].value = info->nid_offset;
     arglist[3].value = info->put_on_apply;
     XmdsCreateXdBoxDialogButton(info->pulldown,"computed",arglist,XtNumber(arglist));
-    XmStringFree((unsigned char *) arglist[0].value);
+    XmStringFree((XmString) arglist[0].value);
   }
   XtVaGetValues(info->pulldown,XtNnumChildren,&num,XtNchildren,&children,NULL);
   XtManageChildren(children,num);
