@@ -24,8 +24,6 @@
 #include        "treeshr.h"
 #include        "servershr.h"
 
-extern void StrCopyDx();
-
 /**********************************************************************
 * MDSMSG.C --
 *
@@ -37,9 +35,23 @@ extern void StrCopyDx();
 ************************************************************************/
 
 
+		/*========================================================
+		 * "Define"s and structure definitions ...
+		 *=======================================================*/
 #define ALREADY_DISPLAYED  0x80000000
 
 
+		/*========================================================
+		 * Function prototypes ...
+		 *=======================================================*/
+extern void StrCopyDx();
+extern int MDSprintf( char *fmt , ... );
+extern int MDSfprintf( FILE *fp , char *fmt , ... );
+
+
+		/*========================================================
+		 * Static variables ...
+		 *=======================================================*/
 static int   mdsmsgFlag = 1;		/* 1 for longer "status" string	*/
 
 
@@ -215,22 +227,22 @@ int   MdsMsg(			/* Return: sts provided by user		*/
         vsprintf(text+k,fmt,ap);
         if (sts)
            {
-            fprintf(stderr,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+            MDSfprintf(stderr,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
             if (write2stdout)
-                fprintf(stdout,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
+                MDSfprintf(stdout,"%s\n    sts=%s\n\n",text,MdsGetMsg(sts));
            }
         else
            {
-            fprintf(stderr,"%s\n",text);
+            MDSfprintf(stderr,"%s\n",text);
             if (write2stdout)
-                fprintf(stdout,"%s\n",text);
+                MDSfprintf(stdout,"%s\n",text);
            }
        }
     else
        {
-        fprintf(stderr,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+        MDSfprintf(stderr,"%s:  sts=%s\n",text,MdsGetMsg(sts));
         if (write2stdout)
-            fprintf(stdout,"%s:  sts=%s\n",text,MdsGetMsg(sts));
+            MDSfprintf(stdout,"%s:  sts=%s\n",text,MdsGetMsg(sts));
        }
 
     return(sts | ALREADY_DISPLAYED);
@@ -239,13 +251,13 @@ int   MdsMsg(			/* Return: sts provided by user		*/
 #ifdef MAIN
 void  main()
    {
-    MdsMsg(MDSDCL_STS_SUCCESS,0);  printf("\n");
-    MdsMsg(CLI_STS_PRESENT,0);  printf("\n");
-    MdsMsg(CCL_STS_SUCCESS,0);  printf("\n");
-    MdsMsg(TCL_STS_SUCCESS,0);  printf("\n");
-    MdsMsg(TreeNORMAL,0);  printf("\n");
-    MdsMsg(LibNOTFOU,0);  printf("\n");
-    MdsMsg(StrMATCH,0);  printf("\n");
-    MdsMsg(SsINTOVF,0);  printf("\n");
+    MdsMsg(MDSDCL_STS_SUCCESS,0);  MDSprintf("\n");
+    MdsMsg(CLI_STS_PRESENT,0);  MDSprintf("\n");
+    MdsMsg(CCL_STS_SUCCESS,0);  MDSprintf("\n");
+    MdsMsg(TCL_STS_SUCCESS,0);  MDSprintf("\n");
+    MdsMsg(TreeNORMAL,0);  MDSprintf("\n");
+    MdsMsg(LibNOTFOU,0);  MDSprintf("\n");
+    MdsMsg(StrMATCH,0);  MDSprintf("\n");
+    MdsMsg(SsINTOVF,0);  MDSprintf("\n");
    }
 #endif

@@ -15,6 +15,7 @@ SOURCES = \
         librtl.c \
         dasutil_routines4.c \
         mdsmsg.c \
+        MDSprintf.c \
         MdsCmprs.c \
         MdsCompareXd.c \
         MdsCompress.c \
