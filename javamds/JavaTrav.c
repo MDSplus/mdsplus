@@ -1110,7 +1110,10 @@ static int doAction(int nid)
 		command = malloc(32+argLen+language_d_ptr->length+command_proc_d_ptr->length);
 
 		currPtr = MdsDescrToCstring(command_proc_d_ptr);
-		sprintf(command, "echo \'%s ", currPtr);
+		if(numArgs > 0)
+			sprintf(command, "echo \'%s", currPtr);
+		else
+			sprintf(command, "echo \'%s,", currPtr);
 		for(i = 0; i < numArgs; i++)
 		{
 			if(!procedure_d_ptr->arguments[i]) break;
