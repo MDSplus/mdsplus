@@ -43,13 +43,24 @@
 ;
 ; change the tdi variable names to _SqlRetNNN
 ;
-function replace_input, qry, idx, val
-  return, strmid(qry, 0, idx-1)+STRING(val)+strmid(qry, idx, strlen(qry)-idx)
+function replace_input, qry, idx, val, debug=debug
+
+  sz = size(val)
+  if (sz(n_elements(sz)-2) eq 7) then begin
+      ans =  strmid(qry, 0, idx-1)+'"'+STRING(val)+'"'+strmid(qry, idx, strlen(qry)-idx)
+      if (debug) then $
+        print, "replace_input - string ("+ans+")"
+  endif else begin
+      ans = strmid(qry, 0, idx-1)+STRING(val)+strmid(qry, idx, strlen(qry)-idx)
+      if (debug) then $
+        print, "replace_input - number ("+ans+")"
+  endelse
+  return, ans
 end
 
 function QuoteQuotes, qry
-  qry = strjoin(strsplit(qry, '"', escape="\", /extract), '\"')
-  qry = strjoin(strsplit(qry, "'", escape="\", /extract), "\'")
+  qry = strjoin(strsplit(qry, '"', escape="\", /extract,/preserve_null), '\"')
+  qry = strjoin(strsplit(qry, "'", escape="\", /extract,/preserve_null), "\'")
   return, qry
 end
 
@@ -151,11 +162,17 @@ endelse
 if (debug) then $
   print, "        IDXs: ",idxs
 for i = 0, num_inputs-1 do begin
-    cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+')'
+    if (debug) then $
+      cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+',/debug)' $
+    else $
+      cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+')'
     old_len = strlen(query)
     x = execute(cmd)
     idxs = idxs + (strlen(query)-old_len)
 endfor
+
+if (debug) then $
+  print, "        Query (before QuoteQuotes: "+query+"***"
 
 query = QuoteQuotes(query)
 
