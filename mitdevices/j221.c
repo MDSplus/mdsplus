@@ -91,7 +91,7 @@ int j221___init(struct descriptor *nid, InInitStruct *setup)
 
 static int merge_data(int nid, int **data, int **times, int *ndata)
 {
-  int i,j,xdsize,*wave_pointer[12],wave_arsize[12];
+  int i,j,xdsize,*wave_pointer[12], *orig_wave_pointer[12], wave_arsize[12];
   short *output;
   int *setpoint,next,status=1;
 
@@ -131,6 +131,7 @@ static int merge_data(int nid, int **data, int **times, int *ndata)
               {
                 if (width) xdsize = 2*xdsize;
                 wave_pointer[i] = malloc((xdsize+1)*4);
+                orig_wave_pointer[i] = wave_pointer[i];
                 wave_arsize[i] = xdsize;
                 if (!width)
                   memcpy(wave_pointer[i],((struct descriptor_a *)xd.pointer)->pointer,wave_arsize[i]*4);
@@ -181,8 +182,7 @@ static int merge_data(int nid, int **data, int **times, int *ndata)
   setpoint[j] = 16777215;
   *ndata = j+1;
   for (i=0; i<12; i++) if (wave_arsize[i]) {
-    wave_pointer[i] -= wave_arsize[i];
-    free(wave_pointer[i]);
+    free(orig_wave_pointer[i]);
   }
   return status;
 }
