@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <strroutines.h>
 #include <treeshr.h>
 #include "treeshrp.h"
 
@@ -893,6 +894,7 @@ int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
   }
   else
     status = 0;
+  return status;
 }
 
 char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
