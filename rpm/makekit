@@ -1,0 +1,12 @@
+#/bin/sh
+#
+cd $HOME
+mkdir mdskit
+cd mdskit
+cvs -d :pserver:`whami`@lost.pfc.mit.edu:/mdsplus/repos -Q checkout mdsplus
+mv mdsplus mdsplus-1.0
+find . -name CVS -exec rm -Rf {} \;
+tar cf $HOME/rpm/SOURCES/mdsplus-1.0.tar ; gzip -f $HOME/rpm/SOURCES/mdsplus-1.0.tar )
+rpm -ba mdsplus-1.0/rpm/mdsplus.rpm.spec
+cd $HOME
+rm -Rf mdskit
