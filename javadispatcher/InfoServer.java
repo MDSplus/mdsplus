@@ -20,12 +20,14 @@ class InfoServer implements Server
     public void setTree(String tree) {this.tree = tree; }
     public void beginSequence(int shot)
     {
+      System.out.println("InfoServer: beginSequence...");
         try {
             model_database = new Database(tree, -1);
             model_database.open();
             model_database.create(shot);
         }catch(Exception exc) {model_database = null; System.out.println("Error opening " + tree + " shot " + shot + ": " + exc);}
-    }
+        System.out.println("InfoServer: beginSequence terminated");
+      }
     public void endSequence(int shot)
     {
         if(model_database != null)
