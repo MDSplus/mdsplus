@@ -571,6 +571,11 @@ void pthread_cancel(unsigned long *thread)
 #include <signal.h>
 #include <sys/wait.h>
 
+
+#ifdef _AIX
+#define pthread_mutexattr_default NULL
+#endif
+
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
 #include <inttypes.h>
 #include <pthread.h>
@@ -704,7 +709,7 @@ char *TranslateLogical(char *name)
 }
 unsigned int LibCallg(void **arglist, unsigned int (*routine)())
 {
-  switch (*(int *)arglist & 0xff)
+  switch (*(long *)arglist & 0xff)
   {
     case 0:  return (*routine)();
     case 1:  return (*routine)(arglist[1]);
