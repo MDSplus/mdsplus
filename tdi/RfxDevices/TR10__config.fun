@@ -1,18 +1,16 @@
-public fun TR10__config(in _board_id, optional in _remoteIp)
+public fun TR10__config(as_is _nid, optional _method)
 {
-   if( present(_remoteIp) )
-	{
-		_cmd = 'MdsConnect("'//_remoteIp//'")';
-		execute(_cmd);
-		_status = MdsValue('TR10HWConfig($1)', _board_id);
-		MdsDisconnect();
-		if(_status == 0)
-			{
-				DevLogErr(_nid, "Error Configuration TR10 device: seet CPCI console for details");
-				abort();
-			}
-	}	
-   else
+    private _INVALID = 10E20;
+
+    write(*, 'TR10 Config');
+
+    _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
+    if(_board_id == _INVALID)
+    {
+        DevLogErr(_nid, "Invalid Board ID specification");
+                abort();
+    }
+  else
 	{
 		_status = TR10HWConfig(_board_id);
 	}
