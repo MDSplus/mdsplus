@@ -734,7 +734,7 @@ static int doAction(int nid)
 	if(!curr_rec_ptr) return 0;
 	switch(curr_rec_ptr->dtype) {
 	case DTYPE_PROGRAM:
-		program_d_ptr = (struct descriptor_program *)xd.pointer;
+		program_d_ptr = (struct descriptor_program *)curr_rec_ptr;
 		if(!program_d_ptr->program) {status = 0; break;}
 		status = TdiEvaluate(program_d_ptr->program, &xd1 MDS_END_ARG);
 		if(!(status & 1)) break;
