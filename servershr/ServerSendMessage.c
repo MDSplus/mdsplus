@@ -270,8 +270,7 @@ void ServerWait(int jobid)
       {
         if (j->done == NOT_DONE)
           pthread_cond_wait(&j->condition,&j->mutex);
-        else
-          pthread_mutex_unlock(&j->mutex);
+        pthread_mutex_unlock(&j->mutex);
         if (j->done != NOT_DONE)
           break;
       }
