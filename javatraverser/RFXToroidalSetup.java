@@ -51,6 +51,11 @@ public class RFXToroidalSetup extends DeviceSetup {
   JScrollPane jScrollPane5 = new JScrollPane();
   DeviceTable deviceTable8 = new DeviceTable();
   GridLayout gridLayout3 = new GridLayout();
+  JPanel jPanel2 = new JPanel();
+  DeviceField deviceField2 = new DeviceField();
+  DeviceField deviceField5 = new DeviceField();
+  DeviceChoice deviceChoice7 = new DeviceChoice();
+  DeviceField deviceField6 = new DeviceField();
   public RFXToroidalSetup() {
     try {
       jbInit();
@@ -118,12 +123,12 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceChoice5.setIdentifier("");
     deviceTable1.setOffsetNid(8);
     deviceTable1.setLabelString("Send Parameters CPU1");
-    deviceTable1.setNumCols(12);
-    deviceTable1.setNumRows(6);
+    deviceTable1.setNumCols(6);
+    deviceTable1.setNumRows(12);
     deviceTable1.setIdentifier("");
-    deviceTable1.setColumnNames(new String[] {"ls_chinit:st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
+    deviceTable1.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
+    deviceTable1.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
         "s0_reg_iac", "s0_iac_lim", "s0_reg_vac_lim"});
-    deviceTable1.setRowNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable1.setDisplayRowNumber(true);
     deviceTable1.setPreferredColumnWidth(70);
     deviceTable1.setPreferredHeight(100);
@@ -133,12 +138,12 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable2.setPreferredHeight(100);
     deviceTable2.setPreferredColumnWidth(70);
     deviceTable2.setDisplayRowNumber(true);
-    deviceTable2.setRowNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
-    deviceTable2.setColumnNames(new String[] {"ls_chinit:st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
+    deviceTable2.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_iac", "s0_reg_vac",
         "s0_reg_iac", "s0_iac_lim", "s0_reg_vac_lim"});
+    deviceTable2.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
     deviceTable2.setIdentifier("");
-    deviceTable2.setNumRows(6);
-    deviceTable2.setNumCols(12);
+    deviceTable2.setNumRows(12);
+    deviceTable2.setNumCols(6);
     deviceTable2.setLabelString("Send Parameters CPU2");
     deviceTable2.setOffsetNid(15);
     jPanel10.setDebugGraphicsOptions(0);
@@ -219,6 +224,30 @@ public class RFXToroidalSetup extends DeviceSetup {
     jPanel12.setBorder(null);
     gridLayout3.setColumns(1);
     gridLayout3.setRows(2);
+    deviceField5.setOffsetNid(16);
+    deviceField5.setTextOnly(true);
+    deviceField5.setLabelString("TF Units: ");
+    deviceField5.setNumCols(30);
+    deviceField5.setIdentifier("");
+    deviceField5.setEditable(false);
+    deviceField2.setOffsetNid(17);
+    deviceField2.setTextOnly(true);
+    deviceField2.setLabelString("TF Connection: ");
+    deviceField2.setNumCols(8);
+    deviceField2.setIdentifier("");
+    deviceField2.setEditable(false);
+    deviceChoice7.setChoiceIntValues(null);
+    deviceChoice7.setChoiceFloatValues(null);
+    deviceChoice7.setOffsetNid(18);
+    deviceChoice7.setLabelString("TF Control: ");
+    deviceChoice7.setChoiceItems(new String[] {"VOLTAGE", "CURRENT", "OPEN LOOP"});
+    deviceChoice7.setUpdateIdentifier("");
+    deviceChoice7.setIdentifier("");
+    deviceField6.setOffsetNid(20);
+    deviceField6.setLabelString("TF Window: ");
+    deviceField6.setNumCols(4);
+    deviceField6.setIdentifier("");
+    deviceField6.setEditable(false);
     this.getContentPane().add(deviceField1, BorderLayout.NORTH);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
@@ -250,6 +279,11 @@ public class RFXToroidalSetup extends DeviceSetup {
     jPanel14.add(deviceField4, null);
     jPanel14.add(deviceTable7, null);
     jPanel12.add(jScrollPane5,  BorderLayout.CENTER);
+    jTabbedPane1.add(jPanel2,  "TF");
+    jPanel2.add(deviceField5, null);
+    jPanel2.add(deviceField2, null);
+    jPanel2.add(deviceChoice7, null);
+    jPanel2.add(deviceField6, null);
     jScrollPane5.getViewport().add(deviceTable8, null);
   }
 
