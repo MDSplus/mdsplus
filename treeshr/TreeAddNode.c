@@ -639,7 +639,7 @@ static TREE_HEADER *HeaderOut(TREE_HEADER *hdr)
   SwapBytesInt((char *)&out.tags);
   SwapBytesInt((char *)&out.externals);
   SwapBytesInt((char *)&out.nodes);
-  return *out;
+  return &out;
 }
 #endif
 
