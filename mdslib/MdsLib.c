@@ -14,6 +14,15 @@ necessary to create the fortran entry points.  See more notes at
 bottom of this file for configuring fortran entry points.
 **************************************************************************/
 
+#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
+extern int mdsvalue_(char *expression, ...);
+#define MDSVALUE mdsvalue_
+#elif defined(__hpux)
+extern int mdsvalue(char *expression, ...);
+#define MDSVALUE mdsvalue
+#else
+#define MDSVALUE MdsValue
+#endif
 #ifdef __VMS
 #include <descrip.h>
 #endif
@@ -368,7 +377,7 @@ int  MdsOpen(char *tree, int *shot)
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
-    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
+    status = MDSVALUE(expression, &d1, &d2, &d3, &null, &length);
     if ((status & 1))
     {
       return *(int *)&answer; 
@@ -430,7 +439,7 @@ int  MdsClose(char *tree, int *shot)
     d2 = descr(&dtype_long,shot, &null);
     d3 = descr(&dtype_long,&answer,&null);
 
-    status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
+    status = MDSVALUE(expression, &d1, &d2, &d3, &null, &length);
     
 #ifdef __VMS
     free(tree);
@@ -489,9 +498,9 @@ int  MdsSetDefault(char *node)
     expressiondsc.dsc$w_length = strlen(expression)+1;
     expressiondsc.dsc$a_pointer = expression;
     free(node);
-    status = MdsValue(&expressiondsc, &d1, &null, &length);
+    status = MDSVALUE(&expressiondsc, &d1, &null, &length);
 #else
-    status = MdsValue(expression, &d1, &null, &length);
+    status = MDSVALUE(expression, &d1, &null, &length);
 #endif
     free(expression);
     if ((status & 1))
