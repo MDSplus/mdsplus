@@ -116,7 +116,7 @@ write(*, 'T2Control init');
 	}
 
 	_status = MdsValue('Feedback->stopLocal()');
-	_status = MdsValue('Feedback->startFeedback()');
+	_status = MdsValue('Feedback->startLocal()');
 
     MdsDisconnect();
     return (1);
