@@ -20,6 +20,7 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 SOURCES = \
 	mdsipshr.c mdsiputil.c vmshpwd.c $(COMPRESSION_SOURCES)
 
+COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsipshr.export
 
@@ -73,8 +74,8 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o
-	$(AR) -cr $@ mdsiputil.o
+@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o $(COMPRESSION_OBJECTS)
+	$(AR) -cr $@ mdsiputil.o $(COMPRESSION_OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
