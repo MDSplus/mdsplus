@@ -179,7 +179,7 @@ void main(int argc, char *argv[])
   printf("=================== TEST 8 ======================\n");
 
   sresult = 1000;
-  dsc = descr(&dtype_float, &thomsondata, &sresult, &null);
+  dsc = descr(&dtype_float, thomsondata, &sresult, &null);
   status = MdsOpen("EFIT01", &shot);
   if (status & 1)
     {
