@@ -20,4 +20,3 @@ IDL_PATH $IDL_PATH\\:\+$MDSPLUS/idl
 # Make options file
 #
 MAKE_OPTIONS $MDSPLUS/sys_specific/MakeOptions.$os
-DEPEND .depend
