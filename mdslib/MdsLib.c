@@ -1052,7 +1052,7 @@ If any of these entry points share the same name for fortran
 and c then donot define the macro.
 *************************************************************/
        
-#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined (HAVE_WINDOWS_H)
+#if defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined (HAVE_WINDOWS_H)
 #define descr descr_
 #define FortranMdsConnect mdsconnect_
 #define FortranMdsClose mdsclose_
