@@ -43,12 +43,6 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_RANDOM
-#define O_RANDOM 0
-#endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
@@ -340,13 +334,13 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     char *filename = strncpy(malloc(len+20),info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "datafile#" : "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename,(tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY) | O_BINARY | O_RANDOM, 0664);
+    df_ptr->get = MDS_IO_OPEN(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;
     if (status & 1)
     {
-      df_ptr->put = MDS_IO_OPEN(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
+      df_ptr->put = MDS_IO_OPEN(filename,O_RDWR, 0);
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
       if (df_ptr->put == -1)
         df_ptr->put = 0;

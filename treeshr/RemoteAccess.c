@@ -860,13 +860,20 @@ static int io_open_remote(char *host, char *filename, int options, mode_t mode, 
   }
   return fd;
 }
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+#ifndef O_RANDOM
+#define O_RANDOM 0
+#endif
 
 int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 {
   int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) : open(filename, options, mode);
+  int fd = hostpart ? io_open_remote(hostpart,filepart,options,mode,&socket) : open(filename, options | O_BINARY | O_RANDOM, mode);
   free(tmp);
   if (fd != -1)
     fd = NewFD(fd,socket);
@@ -950,9 +957,7 @@ static _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
-  {
     return (FDS[fd-1].socket == -1) ? lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
-  }
   else
     return -1; 
 }
@@ -1028,9 +1033,7 @@ static ssize_t io_read_remote(int fd, void *buff, size_t count)
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 {
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
-  {
     return (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
-  }
   else
     return -1; 
 }

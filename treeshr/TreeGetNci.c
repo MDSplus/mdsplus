@@ -731,10 +731,10 @@ _int64 RfaToSeek(unsigned char *rfa)
 void SeekToRfa(_int64 seek, unsigned char *rfa)
 {
   _int64 tmp = seek + 512;
-  rfa[0] = (tmp >> 9) & 0xff;
-  rfa[1] = (tmp >> 17) & 0xff;
-  rfa[2] = (tmp >> 25) & 0xff;
-  rfa[3] = (tmp >> 33) & 0xff;
-  rfa[4] = tmp & 0xff;
-  rfa[5] = tmp >> 8 & 0x1;
+  rfa[0] = (unsigned char)((tmp >> 9) & 0xff);
+  rfa[1] = (unsigned char)((tmp >> 17) & 0xff);
+  rfa[2] = (unsigned char)((tmp >> 25) & 0xff);
+  rfa[3] = (unsigned char)((tmp >> 33) & 0xff);
+  rfa[4] = (unsigned char)(tmp & 0xff);
+  rfa[5] = (unsigned char)(tmp >> 8 & 0x1);
 }
