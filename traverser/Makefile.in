@@ -47,7 +47,7 @@ install:
 
 
 @MAKEBINDIR@traverser : $(OBJECTS)
-	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lXmdsShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
+	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@

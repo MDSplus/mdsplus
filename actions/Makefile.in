@@ -38,7 +38,7 @@ install:
 	$(INSTALL) -m 644  @MAKEUIDDIR@actions.uid @uiddir@
 
 @MAKEBINDIR@actions : $(OBJECTS) 
-	 $(CC) -o $@ $(CFLAGS) $(OBJECTS)  -L@MAKELIBDIR@ -lXmdsShr -lTdiShr -lTreeShr -lMdsShr $(MLIBS) $(LIBS)
+	 $(CC) -o $@ $(CFLAGS) $(OBJECTS)  -L@MAKELIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@

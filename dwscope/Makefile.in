@@ -46,7 +46,7 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@dwscope : dwscope.o dwscopesubs.o evaluate_local.o
-	$(CC) -o $@ $(CFLAGS) dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lXmdsShr -lTdiShr -lTreeShr -lMdsShr $(MLIBS)
+	$(CC) -o $@ $(CFLAGS) dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS)
                         
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
