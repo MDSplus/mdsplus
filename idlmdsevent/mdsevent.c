@@ -128,7 +128,7 @@ int IDLMdsEvent(int argc, void * *argv)
     {
       /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
 #ifndef WIN32
-      if (!XTINPUTID) {
+      if (!XTINPUTID && (sock >= 0)) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
         XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, (void *)sock);
@@ -149,12 +149,12 @@ int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
-static void EventAst(EventStruct *e,int eventid, char *data)
+static void EventAst(EventStruct *e,int len, char *data)
 {
   char *stub_rec;
   char *base_rec;
   IDL_WidgetStubLock(TRUE);
-  memcpy(e->value,data,12);
+  if (len > 0) memcpy(e->value,data,len > 12 ? 12 : len);
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) && (base_rec = IDL_WidgetStubLookup(e->base_id)))
   {
 #ifdef WIN32
