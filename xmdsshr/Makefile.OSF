@@ -53,10 +53,9 @@ all :	libXmdsShr.so \
 	uil -wmd xmdsuil.wmd -o $@ $<
 
 libXmdsShr.so : $(OBJECTS)
-	ld -o $@ -shared -no_archive $(OBJECTS) \
-             -lc -lm -L../mdsshr -lMdsShr \
-                   -lots -L../tdishr -lTdiShr -L../treeshr -lTreeShr \
-		-lMrm -lXm -lXt -lX11
+	ld -o $@ -shared -no_archive $(OBJECTS) -lc -lm \
+           -L../mdsshr -lMdsShr -L../tdishr -lTdiShr -L../treeshr -lTreeShr \
+	   -lMrm -lXm -lXt -lX11
 
 xmdsuil.wmd : xmdsuil.wml wmldbcreate-xmdsshr.c
 	./wmdcreate-osf
