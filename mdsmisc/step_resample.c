@@ -43,9 +43,10 @@ extern int TdiCvt();
 struct descriptor *StepResample(struct descriptor *in_sig,struct descriptor *in_x)
 { 
 
-#define return_on_error(func) if (!((status = func)&1)) return status
+#define return_on_error(func) if (!((status = func)&1)) return (struct descriptor *)&emptyxd;
 
 int status;
+static EMPTYXD(emptyxd);
 static EMPTYXD(sig_x_xd);
 static EMPTYXD(sig_y_xd);
 static EMPTYXD(new_x_xd);
