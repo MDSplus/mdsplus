@@ -86,6 +86,7 @@ public class TR32Setup extends DeviceSetup {
   DeviceField deviceField20 = new DeviceField();
   DeviceField deviceField21 = new DeviceField();
   DeviceChoice deviceChoice13 = new DeviceChoice();
+  DeviceChoice deviceChoice14 = new DeviceChoice();
   public TR32Setup() {
     try {
       jbInit();
@@ -168,7 +169,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice5.setChoiceItems(new String[] {"200E3", "100E3", "50E3", "20E3", "10E3", "5E3", "2E3", "1E3", "500", "200", "100"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
-    deviceChoice5.setBounds(new Rectangle(41, 143, 249, 35));
+    deviceChoice5.setBounds(new Rectangle(205, 144, 208, 35));
     jTabbedPane1.setBounds(new Rectangle(10, 179, 758, 238));
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
@@ -382,9 +383,16 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice13.setChoiceItems(new String[] {"0.125", "0.15625", "0.25", "0.3125", "0.5", "0.625", "1", "1.25", "2", "2.5", "4", "5", "8", "10"});
     deviceChoice13.setUpdateIdentifier("");
     deviceChoice13.setIdentifier("");
+    deviceChoice14.setChoiceIntValues(null);
+    deviceChoice14.setChoiceFloatValues(null);
+    deviceChoice14.setOffsetNid(10);
+    deviceChoice14.setLabelString("Use Time:");
+    deviceChoice14.setChoiceItems(new String[] {"TRUE", "FALSE"});
+    deviceChoice14.setUpdateIdentifier("");
+    deviceChoice14.setIdentifier("");
+    deviceChoice14.setBounds(new Rectangle(23, 144, 172, 35));
     this.getContentPane().add(deviceField3, null);
     this.getContentPane().add(deviceChoice3, null);
-    this.getContentPane().add(deviceChoice5, null);
     jPanel3.add(deviceField7, null);
     jPanel3.add(deviceField6, null);
     jPanel3.add(deviceChoice6, null);
@@ -428,6 +436,8 @@ public class TR32Setup extends DeviceSetup {
     this.getContentPane().add(deviceChoice1, null);
     this.getContentPane().add(deviceField2, null);
     this.getContentPane().add(deviceChoice2, null);
+    this.getContentPane().add(deviceChoice5, null);
+    this.getContentPane().add(deviceChoice14, null);
     deviceChannel7.add(jPanel9, null);
     jPanel9.add(deviceField18, null);
     jPanel9.add(deviceField19, null);
