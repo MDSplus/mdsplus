@@ -1053,7 +1053,8 @@ public class MultiWaveform extends Waveform
        int type = -1;
        if(idx >= 0 && idx < signals.size())
        {
-           type = ((Signal)signals.elementAt(idx)).getType();
+           if(signals.elementAt(idx) != null)
+               type = ((Signal)signals.elementAt(idx)).getType();
        }
        return type;
     }
