@@ -373,8 +373,8 @@ public class RFXControlSetup extends DeviceSetup {
     gridLayout1114.setColumns(2);
     gridLayout1114.setRows(1);
     gridLayout1114.setVgap(-5);
-    deviceField10.setOffsetNid(473);
-    deviceField10.setLabelString("Y1: ");
+    deviceField10.setOffsetNid(481);
+    deviceField10.setLabelString("Y3: ");
     deviceField10.setNumCols(40);
     deviceField10.setIdentifier("");
     gridLayout8.setColumns(2);
@@ -423,8 +423,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField111111110.setIdentifier("");
     deviceField111111110.setShowState(false);
     deviceField111111110.setNumCols(40);
-    deviceField111111110.setLabelString("Y3: ");
-    deviceField111111110.setOffsetNid(481);
+    deviceField111111110.setLabelString("Y1: ");
+    deviceField111111110.setOffsetNid(473);
     jPanel1114.setLayout(gridLayout1112);
     jPanel1114.setDebugGraphicsOptions(0);
     deviceField11111117.setIdentifier("");
@@ -747,8 +747,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField1111115.setOffsetNid(507);
     jPanel1112.setLayout(gridLayout1110);
     jPanel1112.setDebugGraphicsOptions(0);
-    deviceField11.setOffsetNid(471);
-    deviceField11.setLabelString("X1: ");
+    deviceField11.setOffsetNid(479);
+    deviceField11.setLabelString("X3: ");
     deviceField11.setNumCols(40);
     deviceField11.setIdentifier("");
     deviceField11.setShowState(true);
@@ -756,7 +756,7 @@ public class RFXControlSetup extends DeviceSetup {
     gridLayout10.setRows(1);
     gridLayout10.setVgap(-5);
     deviceField11112.setIdentifier("");
-    deviceField11112.setNumCols(50);
+    deviceField11112.setNumCols(40);
     deviceField11112.setLabelString("Y21: ");
     deviceField11112.setOffsetNid(553);
     deviceField1111116.setIdentifier("");
@@ -779,8 +779,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField111111111.setIdentifier("");
     deviceField111111111.setShowState(true);
     deviceField111111111.setNumCols(40);
-    deviceField111111111.setLabelString("X3: ");
-    deviceField111111111.setOffsetNid(479);
+    deviceField111111111.setLabelString("X1: ");
+    deviceField111111111.setOffsetNid(471);
     deviceField111117.setIdentifier("");
     deviceField111117.setShowState(true);
     deviceField111117.setNumCols(40);
