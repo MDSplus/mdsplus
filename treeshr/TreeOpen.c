@@ -822,7 +822,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
                                 }
                                 else
 				{
-#if (defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
+#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
 				  info->channel = open(resnam,O_RDONLY);
 				  file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
 #else
