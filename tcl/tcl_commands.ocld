@@ -6,7 +6,7 @@ define type abort_type												       ! 83
 define syntax abort_server											       ! 83 
         Routine TclDispatch_abort_server									       ! 83
         parameter p1,prompt="What",value(required,type=stop_type)						       ! 83 
-        parameter p2,label=server,prompt="Server",value(required,list)						       ! 83 
+        parameter p2,label=server_name,prompt="Server",value(required,list)						       ! 83 
 define verb add
         parameter p1,prompt="What",value(required,type=ADD_TYPE)
 define type ADD_TYPE
@@ -288,7 +288,7 @@ Define syntax show_default
 define syntax show_server											       ! 83 
         Routine TclDispatch_show_server									       ! 83
         parameter p1,prompt="What",value(required,type=stop_type)						       ! 83 
-        parameter p2,label=server,prompt="Server",value(required,list)						       ! 83 
+        parameter p2,label=server_name,prompt="Server",value(required,list)						       ! 83 
         qualifier output,default										       ! 92 
         qualifier full												       ! 102
 define verb start												       ! 92 

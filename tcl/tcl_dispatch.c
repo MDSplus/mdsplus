@@ -1,8 +1,9 @@
 #include        "tclsysdef.h"
-#include        "serverdef.h"
+#include        <servershr.h>
 #include        <stdlib.h>
 #include        <dbidef.h>
 #include        <ncidef.h>
+#include        <pthread.h>
 
 #ifdef vms
 #include        <lib$routines.h>
@@ -11,6 +12,7 @@
 #define TdiIdentOf    TDI$IDENT_OF
 #endif
 
+extern char *ServerGetInfo(int full, char *server);
 
 /**********************************************************************
 * TCL_DISPATCH.C --
@@ -32,7 +34,15 @@
 #define IS_WILD(T)   (strcspn(T,"*%") < strlen(T))
 
 
+static int SyncEfnInit = 0;
+#ifdef vms
 static int SyncEfn = 0;
+#else
+static pthread_mutex_t SyncEfnMutex;
+static pthread_cond_t *SyncEfn;
+static pthread_cond_t SyncEfnCond;
+#endif
+
 static void  *dispatch_table = 0;
 
 extern void TclTextOut();
@@ -91,8 +101,34 @@ static void ConnectionDown()
    {
 #ifdef vms
     sys$setef(SyncEfn);
+#else
+    pthread_cond_signal(SyncEfn);
 #endif
    }
+
+static void InitSyncEfn()
+{
+#ifdef vms
+    lib$get_ef(&SyncEfn);
+#else
+    pthread_mutex_init(&SyncEfnMutex,0);
+    pthread_cond_init(&SyncEfnCond,0);
+    SyncEfn = &SyncEfnCond;
+#endif
+    SyncEfnInit = 1;
+}
+  
+
+#ifdef vms
+static void WaitfrEf(int efn) {sys$waitfr(SyncEfn);}
+#else
+static void WaitfrEf(pthread_cond_t *efn)
+{
+  pthread_mutex_lock(&SyncEfnMutex);
+  pthread_cond_wait(efn,&SyncEfnMutex);
+  pthread_mutex_unlock(&SyncEfnMutex);
+}
+#endif
 
 int TclDispatch()
    {
@@ -101,45 +137,39 @@ int TclDispatch()
     int sts;
     int iostatus;
     int nid;
-    int netid;
     int waiting = cli_present("WAIT") != CLI_STS_NEGATED;
     cli_get_value("NODE",&treenode);
     l2u(treenode.dscA_pointer,0);
-#ifdef vms
-    if (!SyncEfn) lib$get_ef(&SyncEfn);
-#endif
+    if (!SyncEfnInit) InitSyncEfn();
     sts = TreeFindNode(treenode.dscA_pointer,&nid);
     if (sts & 1)
        {
         static struct descriptor  niddsc =
                 {4, DTYPE_NID, CLASS_S, (char *)0};
         niddsc.dscA_pointer = (char *) &nid;
-        sts = TdiIdentOf(&niddsc,&ident);
+        sts = TdiIdentOf(&niddsc,&ident MDS_END_ARG);
         if (sts & 1)
            {
-            static DYNAMIC_DESCRIPTOR(treename);
+            static char treename[13];
+            static DESCRIPTOR(nullstr,"\0");
             static int shot;
             static DBI_ITM itmlst[] =
-                           {{0,DbiNAME,&treename,0},
+                           {{13,DbiNAME,treename,0},
                             {4,DbiSHOTID,&shot,0},
                             {0,0,0,0}};
             TreeGetDbi(itmlst);
+            StrAppend(&ident,&nullstr);
             sts = ServerDispatchAction(SyncEfn,ident.dscA_pointer
-                        ,treename.dscA_pointer,shot,nid,0,0
-                        ,waiting ? &iostatus:0,&netid,ConnectionDown,0);
+                        ,treename,shot,nid,0,0
+                        ,waiting ? &iostatus:0,0);
             if (sts & 1)
-               {
-                if (waiting)
-                   {
-#ifdef vms
-                    sys$waitfr(SyncEfn);
-                    sts = iostatus;
-#else
-                    MdsMsg(0,"*WARN* wait-mode not available yet");
-                    sts = MDSDCL_STS_ERROR;
-#endif
-                   }
-               }
+              {
+              if (waiting)
+                {
+                WaitfrEf(SyncEfn);
+                sts = iostatus;
+		}
+              }
            }
        }
     if (!(sts & 1))
@@ -159,7 +189,7 @@ int TclDispatch_abort_server()
     int sts = 1;
     static DYNAMIC_DESCRIPTOR(ident);
 
-    while ((sts & 1) && (cli_get_value("SERVER",&ident) & 1))
+    while ((sts & 1) && (cli_get_value("SERVER_NAME",&ident) & 1))
         sts = ServerAbortServer(ident.dscA_pointer,0);
     if (~sts & 1)
         MdsMsg(sts,"Error from ServerAbortServer");
@@ -236,37 +266,37 @@ int TclDispatch_set_server()
 int TclDispatch_show_server()
    {
     int sts = 1;
-    static DYNAMIC_DESCRIPTOR(response);
     static DYNAMIC_DESCRIPTOR(ident);
     int output = cli_present("OUTPUT") & 1;
     int full = cli_present("FULL") & 1;
 
-#ifdef vms
-    if (!SyncEfn) lib$get_ef(&SyncEfn);
-#endif
-    while (sts & 1 && cli_get_value("SERVER",&ident) & 1)
+    while (sts & 1 && cli_get_value("SERVER_NAME",&ident) & 1)
        {
         if (IS_WILD(ident.dscA_pointer))	/* contains wildcard?	*/
            {
             static DYNAMIC_DESCRIPTOR(server);
             void  *ctx = 0;
-            while (ServerFindServers(&ctx,ident.dscA_pointer,&server) & 1)
+            while (0 /* ServerFindServers(&ctx,ident.dscA_pointer,&server) & 1 */)
                {
-                int wstat = ServerGetInfo(SyncEfn,full,
-                                server.dscA_pointer,&response);
-                if (output && (wstat & 1))
-                    TclTextOut(response.dscA_pointer);
+                if (output)
+		{
+                    char *info;
+                    TclTextOut(info=ServerGetInfo(full,server.dscA_pointer));
+                    free(info);
+                }
                }
             str_free1_dx(&server);
            }
         else
            {
-            sts = ServerGetInfo(SyncEfn,full,ident.dscA_pointer,&response);
             if (output)
-                TclTextOut(response.dscA_pointer);
+	    {
+                char *info;
+                TclTextOut(info=ServerGetInfo(full,ident.dscA_pointer));
+                free(info);
+            }
            }
        }
-    str_free1_dx(&response);
     str_free1_dx(&ident);
     if (~sts & 1)
         MdsMsg(sts,"Error getting server info");
@@ -291,9 +321,7 @@ int TclDispatch_phase()
 
     monitor = (cli_get_value("MONITOR",&monitor_str) & 1) ?
                                      monitor_str.dscA_pointer : 0;
-#ifdef vms
-    if (!SyncEfn) lib$get_ef(&SyncEfn);
-#endif
+    if (!SyncEfnInit) InitSyncEfn();
     cli_get_value("PHASE",&dsc_phase);
     cli_get_value("SYNCH",&synch_str);
     sscanf(synch_str.dscA_pointer,"%d",&synch);
@@ -336,12 +364,9 @@ int TclDispatch_command()
     DispatchedCommand *command = malloc(sizeof(DispatchedCommand));
     static DYNAMIC_DESCRIPTOR(ident);
     int sts = 1;
-    int netid;
     int length;
 
-#ifdef vms
-    if (!SyncEfn) lib$get_ef(&SyncEfn);
-#endif
+    if (!SyncEfnInit) InitSyncEfn();
     cli_get_value("SERVER",&ident);
     cli_get_value("TABLE",&cli);
     command->command.dscW_length = 0;
@@ -355,16 +380,11 @@ int TclDispatch_command()
            {
             sts = ServerDispatchCommand(SyncEfn,ident.dscA_pointer,
                     cli.dscA_pointer,command->command.dscA_pointer,
-                    0,0,&command->sts,&netid,ConnectionDown,0);
+                    0,0,&command->sts,0);
             if (sts & 1)
                {
-#ifdef vms
-                    sys$waitfr(SyncEfn);
+                    WaitfrEf(SyncEfn);
                     sts = command->sts;
-#else
-                    MdsMsg(0,"*WARN* wait-mode not available yet");
-                    sts = MDSDCL_STS_ERROR;
-#endif
                }
            }
         str_free1_dx(&command->command);
@@ -376,7 +396,7 @@ int TclDispatch_command()
        {
         sts = ServerDispatchCommand(0,ident.dscA_pointer,cli.dscA_pointer,
                   command->command.dscA_pointer,CommandDone,command,
-                  &command->sts,&netid,0,0);
+                  &command->sts,0);
         if (~sts & 1)
            {
             str_free1_dx(&command->command);
