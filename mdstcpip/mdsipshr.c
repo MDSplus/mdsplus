@@ -1,4 +1,9 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
+/*  *98   14-APR-1998 14:17:43 TWF "fix negative bytes_remaining" */
+/*  *97   14-APR-1998 11:58:43 TWF "Reduce maxdims and return length field" */
+/*  *96    7-APR-1998 10:10:59 TWF "Support VAXG client (from epfl)" */
+/*  *95   10-MAR-1998 09:20:53 TWF "Fix mdsvaluec for zero length strings" */
+/*  *94    4-MAR-1998 10:25:10 TWF "Fix sending user info" */
 /*  *93    3-MAR-1998 14:10:54 TWF "Add TCP_NODELY" */
 /*  *92    3-MAR-1998 14:08:38 TWF "Add TCP_NODELY" */
 /*  *91    3-MAR-1998 13:53:17 TWF "Add ack again" */
@@ -103,8 +108,6 @@ static unsigned char message_id = 1;
 Message *GetMdsMsg(SOCKET sock, int32 *status);
 int32 SendMdsMsg(SOCKET sock, Message *m, int oob);
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 static int32 initialized = 0;
 
 #ifdef __MSDOS__
@@ -126,10 +129,16 @@ static char ClientType(void)
     union { int32 i;
             char  c[sizeof(int32)];
             float x;
+            double d;
           } client_test;
     client_test.x = 1.;
-    if (client_test.i == 0x4080)
+    if (client_test.i == 0x4080) {
+      client_test.d=12345678;
+      if(client_test.c[5])
+       ctype = VMSG_CLIENT;
+      else
       ctype = VMS_CLIENT;
+    }
     else if (client_test.i == 0x3F800000)
       ctype = IEEE_CLIENT;
     else
@@ -162,7 +171,7 @@ static int32 ArgLen(struct descrip *d)
     case DTYPE_USHORT  :
     case DTYPE_SHORT   :  len = sizeof(short); break;
     case DTYPE_ULONG   :  
-    case DTYPE_LONG    :  len = sizeof(int32); break;
+    case DTYPE_LONG    :  len = sizeof(long); break;
     case DTYPE_FLOAT   :  len = sizeof(float); break;
     case DTYPE_DOUBLE  :  len = sizeof(double); break;
     case DTYPE_COMPLEX :  len = sizeof(float) * 2; break;
@@ -200,6 +209,7 @@ int32 MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated 
     int32 numbytes;
     void *dptr;
     status = GetAnswerInfo(sock, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
+    arg->length = len;
     if (numbytes)
     {
       if (arg->dtype == DTYPE_CSTRING)
@@ -276,7 +286,7 @@ int32 MdsValueFtotSize (struct descrip *dataarg)
 {
   int32 totsize = 0;
   if (dataarg->ndims == 0) {
-    /*    printf("MDSvalueF: scalar\n"); */
+    printf("MDSvalueF: scalar\n");
     totsize=1;
   } else { 
     int i;
@@ -320,17 +330,14 @@ int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsiz
         newdata = calloc (totsize, sizeof(float));
 
         for (i=0;i<totsize;i++) {
-	  *(newdata+i) = ((float) *((int32 *)dataarg.ptr+i));
+	  *(newdata+i) = ((float) *((long *)dataarg.ptr+i));
         } 
 
         memcpy(data, newdata, fullsize);
 	free(newdata);
 	break;
-    case DTYPE_CSTRING : 
-      /*      printf("ERROR: %s\n",dataarg.ptr); */
-      break;
     default :
-      /*	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);*/
+	printf ("MDSValueF: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -355,7 +362,7 @@ int32 PASCAL MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
 	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
 	break;
     default :
-      /*	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);*/
+	printf ("MDSValueC: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -379,7 +386,7 @@ int32 PASCAL MdsValueI(SOCKET sock, char *expression, int32 *data)
 	memcpy(data, (int32 *) dataarg.ptr, ArgLen(&dataarg));
 	break;
     default :
-      /*	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);*/
+	printf ("MDSValueI: Can't handle type: %u\n", dataarg.dtype);
 	status=0;
 	break;
     }
@@ -444,7 +451,7 @@ int32 PASCAL MdsValueAll(SOCKET sock, char *expression, int32 *ireturn,
           memcpy(ireturn, (short *) ansarg.ptr, fullsize);
           break;
     case DTYPE_LONG : 
-          memcpy(ireturn, (int32 *) ansarg.ptr, fullsize);
+          memcpy(ireturn, (long *) ansarg.ptr, fullsize);
           break;
     default :
           printf ("Can't handle type: %u\n", *type);
@@ -551,7 +558,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   struct hostent *hp;
   struct servent *sp;
   static int one=1;
-  int32 sendbuf = 32768,recvbuf = 32768;
+  long sendbuf = 32768,recvbuf = 32768;
 
   
   hp = gethostbyname(host);
@@ -871,7 +878,7 @@ Message *GetMdsMsg(SOCKET sock, int32 *status)
           ((selectstat = select(tablesize, &readfds, 0, &exceptfds, &timer)) != 0))
 #endif
 */
-  while (bytes_remaining)
+  while (bytes_remaining > 0)
   {
     unsigned short flags = 0;
     if (selectstat == -1 && errno == 4) continue;
@@ -1004,7 +1011,7 @@ int32 PASCAL IdlMdsSetDefault(int32 lArgc, void * * lpvArgv)
 
 int32 PASCAL IdlGetAnsInfo(int32 lArgc, void * * lpvArgv)
 {
-/*  status = call_external('mdsipshr','IdlGetAnsInfo', socket_l, dtype_b, length_w, ndims_b, dims_l[8], numbytes_l, 
+/*  status = call_external('mdsipshr','IdlGetAnsInfo', socket_l, dtype_b, length_w, ndims_b, dims_l[7], numbytes_l, 
                                value=[1b,0b,0b,0b,0b,0b,0b])
 */
   int32 status;
@@ -1029,14 +1036,14 @@ int32 PASCAL Idlmemcpy(int32 lArgc, void * * lpvArgv)
 
 int32 PASCAL IdlSendArg(int32 lArgc, void * * lpvArgv)
 {
-/*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[8], 
+/*  status = call_external('mdsipshr','IdlSendArg', sock_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
-  unsigned char idx    = (unsigned char)lpvArgv[1];
-  unsigned char dtype  = (unsigned char)lpvArgv[2];
-  unsigned char nargs  = (unsigned char)lpvArgv[3];
-  short         length = (short)lpvArgv[4];
-  char          ndims  = (char)lpvArgv[5];
+  unsigned char idx    = (long)lpvArgv[1];
+  unsigned char dtype  = (long)lpvArgv[2];
+  unsigned char nargs  = (long)lpvArgv[3];
+  short         length = (long)lpvArgv[4];
+  char          ndims  = (long)lpvArgv[5];
   int32 status;
   sighold(SIGALRM);
   status = SendArg((SOCKET)lpvArgv[0], idx, dtype, nargs, length, ndims, (int32 *)lpvArgv[6], (char *)lpvArgv[7]);

@@ -1,4 +1,7 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIP.H */
+/*  *58   14-APR-1998 15:58:00 TWF "Add sighold defines" */
+/*  *57   14-APR-1998 15:23:06 TWF "Fix header length to be compatible" */
+/*  *56    7-APR-1998 10:10:45 TWF "Support VAXG client (from epfl)" */
 /*  *55   23-SEP-1997 10:22:14 TWF "Avoid interrupts from IDL" */
 /*  *54   23-SEP-1997 10:21:52 TWF "Avoid interrupts from IDL" */
 /*  *53   21-MAY-1997 14:20:56 TWF "add save/restore context" */
@@ -90,6 +93,7 @@
 #define VMS_CLIENT     1
 #define IEEE_CLIENT    2
 #define JAVA_CLIENT    3
+#define VMSG_CLIENT    4
 #define CRAY_CLIENT    8
 #define BigEndian      0x80
 #define LittleEndian   0
@@ -103,6 +107,9 @@
 #include <starlet.h>
 #include <iodef.h>
 #include <lib$routines.h>
+#endif
+
+#if defined(__VMS) || defined(WIN32) || defined(__linux__)
 #define sighold(arg)
 #define sigrelse(arg)
 #endif
@@ -152,6 +159,7 @@ typedef struct _msghdr { int32 msglen bits32;
 			 long  dims[MAX_DIMS/2];
 #else
                          int32  dims[MAX_DIMS];
+                         int32  fill;
 #endif
                        } MsgHdr;
 

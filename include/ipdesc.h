@@ -1,4 +1,5 @@
 /*  CMS REPLACEMENT HISTORY, Element IPDESC.H */
+/*  *18   14-APR-1998 11:58:54 TWF "Reduce maxdims and return length field" */
 /*  *17   16-OCT-1995 13:23:47 TWF "Cleaner windows version" */
 /*  *16   23-DEC-1994 09:13:03 TWF "Change how events are handled" */
 /*  *15   21-DEC-1994 14:16:20 TWF "Add event can" */
@@ -26,7 +27,7 @@ typedef int int32;
 #define PASCAL
 #endif
 
-#define MAX_DIMS 8
+#define MAX_DIMS 7
 #define DTYPE_UCHAR   2
 #define DTYPE_USHORT  3
 #define DTYPE_ULONG   4
@@ -42,6 +43,7 @@ typedef int int32;
 struct descrip { char dtype;
                  char ndims;
                  int32  dims[MAX_DIMS];
+                 int32  length;
 		 void *ptr;
 	       };
 #define EndOfArgs ((struct descrip *)0)
@@ -74,8 +76,4 @@ extern int32   PASCAL MdsSetDefault(SOCKET sock, char *node);
 extern int32   PASCAL MdsClose(SOCKET sock);
 extern int32   PASCAL MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int32 *eventid);
 extern int32   PASCAL MdsEventCan(SOCKET sock, int32 eventid);
-
-extern int32 MdsValueFtotSize (struct descrip *dataarg);
-extern int32 PASCAL MdsValueF(SOCKET sock, char *expression, double *data, int32 maxsize, int32 *retsize);
-
 #endif
