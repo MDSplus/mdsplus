@@ -470,19 +470,29 @@ extern int IsRoprand();
 #define FTC_O(lena,pa,lenb,pb,numb)  DOUBLEC_TO_LBINARY(DTYPE_FT,pa,pb,numb,4)
 
 /************ Float to Float *************************/
+typedef union {float f; char i;} binary_float;
+typedef union {double f; char i;} binary_double;
+
 #define FLOAT_TO_FLOAT(itype,it,pa,otype,ot,pb,numb)  \
-  {int i=numb; it *ip=(it*)pa; ot *op=(ot*)pb; \
-   while (i-- > 0) { it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} status = 1;}
+  {int i=numb; \
+   binary_##it *ip=(binary_##it*)pa; \
+   binary_##ot *op=(binary_##ot*)pb; \
+   while (i-- > 0) { \
+     binary_##it tmp = *ip++; \
+     CvtConvertFloat(&tmp, itype, op++, otype,0);} status = 1;}
 
 #define FLOAT_TO_COMPLEX(itype,it,pa,otype,ot,pb,numb)  \
-  {int i=numb; it *ip=(it*)pa; ot *op=(ot*)pb; \
-   while (i-- > 0) { if (itype == otype) *op++ = (ot)*ip++; else { \
-          it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} *op++ = (ot)0.0;} status = 1;}
+  {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
+   binary_##ot zero = {0.0};\
+   while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
+          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} \
+   *op++ = zero;\
+   } status = 1;}
 
 #define COMPLEX_TO_FLOAT(itype,it,pa,otype,ot,pb,numb)  \
-  {int i=numb; it *ip=(it*)pa; ot *op=(ot*)pb; \
-   while (i-- > 0) { if (itype == otype) *op++ = (ot)*ip++; else { \
-          it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = 1;}
+  {int i=numb; binary_##it *ip=(binary_##it*)pa; binary_##ot *op=(binary_##ot*)pb; \
+   while (i-- > 0) { if (itype == otype) *op++ = *(binary_##ot *)ip++; else { \
+          binary_##it tmp = *ip++; CvtConvertFloat(&tmp, itype, op++, otype,0);} ip++;} status = 1;}
 
 #define COMPLEX_TO_COMPLEX(itype,it,pa,otype,ot,pb,numb) FLOAT_TO_FLOAT(itype,it,pa,otype,ot,pb,numb*2)
 
