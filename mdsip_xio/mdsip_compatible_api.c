@@ -128,11 +128,15 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
                                value=[1b,0b,0b,0b,0b,0b,0b])
 */
   int status;
-  void *mem;
+  static void *mem = NULL;
   int *sock = (int *)&lpvArgv[0];
+  if (mem != NULL)
+  {
+    free(mem);
+    mem = NULL;
+  }
   status = mdsip_get_result(MDSIP_IO_HANDLES[(*sock)-1], (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
                        (int *)lpvArgv[4], (int *)lpvArgv[5], (void **)lpvArgv[6], &mem);
-  free(mem);
   return status;
 }
 
