@@ -105,16 +105,17 @@ end
 
 pro mdsdecomp_tree,tree,shot,path=path,quiet=quiet,status=status
 
-mdstcl,'close',/quiet
+mdsclose,/quiet
 
 if (not(keyword_set(quiet))) then quiet = 0
 if (n_elements(path) eq 0) then path = "\\TOP***"
-
+status = 1
 case n_params() of
-  1: mdstcl,'edit '+tree,quiet=quiet,status=status
-  2: mdstcl,'edit '+tree+'/shot='+string(shot),quiet=quiet,status=status
+  1: tclcmd = 'set tree "'+tree+',asjhkasd"'
+  2: tclcmd = 'set tree "'+tree+',asdjkhsd"/shot='+string(shot)
   else: status=0
 endcase
+if status then mdstcl,tclcmd,quiet=quiet,status=status
 if not status then return
 
 tree=mdsvalue('$EXPT')
