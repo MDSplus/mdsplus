@@ -62,15 +62,15 @@ all :	../shlib/libXmdsShr.$(SHARE_TYPE) \
 	../bin/wmdcreate -o ../shlib/xmdsuil.wmd
 
 ../bin/wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
-	cc -o $@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
+	cc -o $@ -DMDS_EXTENSION $(CFLAGS) $(WML_INCLUDE) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X11_LIBS) $(SOCKET_LIB)
 
 UilConst.h : xmdsuil.wml 
 	$(WML) xmdsuil.wml
 	- rm wml-uil.mm
 	- rm wml-uil.sdml
 
-tokens.dat : 
-	ln -s /usr/examples/motif/wml/tokens.dat .
+#tokens.dat : 
+#	ln -s /usr/examples/motif/wml/tokens.dat .
 
 clean :
 	- rm *.o
