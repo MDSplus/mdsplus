@@ -139,6 +139,15 @@
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 
+/* Define if you compiler likes 0xnnnnll long long constants  */
+#define HAVE_LL_CONSTANTS
+
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+
 #undef HAS_SIGVEC
 #ifdef HAVE_SIGVEC
 #define SIGVEC sigvec
