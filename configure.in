@@ -113,6 +113,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s +DA1.1 +DS1.1 +z";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
+       LIBPTHREAD="";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
        IS_HP=1;
@@ -572,6 +573,7 @@ mdsdcl/Makefile
 mdsjet/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
+mdsmisc/Makefile
 mdsshr/Makefile 
 mdstcpip/Makefile 
 mdsvme/Makefile
