@@ -41,9 +41,36 @@ public fun TRCH__store(as_is _nid, optional _method)
     _clock = evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE));
     _clock = execute('evaluate(`_clock)');
     _pts = data(DevNodeRef(_nid, _N_PTS));
+
+    
     DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
 
-    write(*, "MAR = ", _base_mar);
+/* TACON */
+/* TACON DEL TACON */    
+    _ticks = long((_trig + 5. - 200E-6)/slope_of(_clock) + 0.5);
+    _ticks = 2*(_ticks + _pts);
+    _ticks = mod(_ticks, _1M);
+
+    write(*, 'MAR STIMATO: ', _ticks);
+    write(*, 'MAR: ', _base_mar);
+
+    if(_base_mar > _1M)
+    {
+/*DevLogErr(_nid, 'MAR Readout error');
+*/
+	_base_mar = (_base_mar & 0x0003ffffUL)|(_ticks & 0xfffc0000UL); 
+        write(*, 'MAR CORRETTO: ', _base_mar);
+
+    }
+
+
+
+/* FINE TACON */
+
+    _base_mar = _base_mar & 0x000fffff;	 
+    write(*, "MAR1 = ", _base_mar);
+    write(*, "PTS = ", _pts);
+
 
     for(_i = 0; _i < _num_chans; _i++)
     {
@@ -70,8 +97,8 @@ public fun TRCH__store(as_is _nid, optional _method)
 			else
 				_mar = (_mar + mod(_i, 2))|((_i /2)<<20);
     			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
-			DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
-		/*	DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);*/
+	/*		DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *); */
+			DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 			_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
@@ -82,6 +109,6 @@ public fun TRCH__store(as_is _nid, optional _method)
             }
 		}
     }
-    DevCamChk(_name, CamPiow(_name, 0,16,_base_mar, 24),1,1);
+/*    DevCamChk(_name, CamPiow(_name, 0,16,_base_mar, 24),1,1);*/
     return(1);
 }

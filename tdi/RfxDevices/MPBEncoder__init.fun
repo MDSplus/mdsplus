@@ -18,6 +18,9 @@ public fun MPBEncoder__init(as_is _nid, optional _method)
     _name =  if_error(DevNodeRef(_nid, _N_NAME), (DevLogErr(_nid, 'Cannot resolve CAMAC name');abort();));
     _w = 0;
     _status=DevCamChk(_name, CamPiow(_name, 0, 0, _w, 16), 1,*); 
+
+    write(*, 'W: ', _w);
+
     if((_w & (1 << 6)) == 0)
     {
 		DevLogErr(_nid, 'Clock signal NOT present');

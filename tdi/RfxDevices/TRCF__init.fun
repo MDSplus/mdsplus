@@ -24,6 +24,8 @@ public fun TRCF__init(as_is _nid, optional _method)
     private _256K = 262144;
     private _64K = 65536;
 
+    private _INVALID = 10E20;
+
      _name = DevNodeRef(_nid, _N_NAME);
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
 /*Check if CADF or TRCF */
@@ -45,9 +47,15 @@ public fun TRCF__init(as_is _nid, optional _method)
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
     if(_ext_clock)
     {
-        _clk = if_error(DevNodeRef(_nid, _N_CLOCK_SOURCE), (DevLogErr(_nid, "Cannot resolve clock"); abort();));
-		_clock_val = execute('`_clk');
-		_clk = 0;
+	_status = 1;
+        _clk = if_error(DevNodeRef(_nid, _N_CLOCK_SOURCE), _status = 0);
+	if(_status == 0)
+	{
+	    DevLogErr(_nid, "Cannot resolve clock"); 
+	    abort();
+  	}
+	_clock_val = execute('`_clk');
+	_clk = 0;
     }
     else
     {
@@ -59,8 +67,14 @@ public fun TRCF__init(as_is _nid, optional _method)
     _control_reg = word(_clk) | (word(_chans) << 4) | (word(_offset) << 7);
     if(_buffer_size == _256K)
 	_control_reg = _control_reg | (1 << 15);
-    _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*); 
-    _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
+    _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*);
+    _status = 1; 
+    _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
+    if(_trig == _INVALID)
+    {
+    	DevLogErr(_nid, "Cannot resolve trigger ");
+ 	abort();
+     }
     _num_chans = data(DevNodeRef(_nid, _N_CHANNELS));
     _max_chan_samples = _buffer_size/_num_chans;
     _pts = 0;
@@ -94,6 +108,11 @@ public fun TRCF__init(as_is _nid, optional _method)
     {
         DevLogErr(_nid, 'Too many samples. Truncated.');
         _pts = _max_chan_samples;
+    }
+    if(_pts < 0)
+    {
+        DevLogErr(_nid, 'Negative PTS value');
+        abort();
     }
     DevPut(_nid, _N_PTS, _pts);
     _status=DevCamChk(_name, CamPiow(_name, 1,16, _pts,24),1,*); 

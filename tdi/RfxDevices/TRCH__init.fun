@@ -26,6 +26,7 @@ public fun TRCH__init(as_is _nid, optional _method)
 
     _name = DevNodeRef(_nid, _N_NAME);
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
+
     DevNodeCvt(_nid, _N_CHANNELS, [3,6], [0,1], _chans = 0);
     _offset = word(DevNodeRef(_nid, _N_CHAN_OFFSET));
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
@@ -44,6 +45,7 @@ public fun TRCH__init(as_is _nid, optional _method)
    }
     _control_reg = word(_clk) | (word(_chans) << 4) | (word(_offset) << 7);
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,16),1,*); 
+
     _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
     _num_chans = data(DevNodeRef(_nid, _N_CHANNELS));
     _max_chan_samples = _3M/_num_chans;
@@ -80,9 +82,18 @@ public fun TRCH__init(as_is _nid, optional _method)
         DevLogErr(_nid, 'Too many samples. Truncated.');
         _pts = _max_chan_samples;
     }
+    if(_pts < 0)
+    {
+        DevLogErr(_nid, 'Negative PTS value');
+        abort();
+    }
+
     DevPut(_nid, _N_PTS, _pts);
     _status=DevCamChk(_name, CamPiow(_name, 1,16, _pts,24),1,*); 
+
     _status = DevCamChk(_name, CamPiow(_name, 0,11, _dummy=0, 16),1,1); 
+
     _status = DevCamChk(_name, CamPiow(_name, 0,25, _dummy=0, 16),1,1); 
+
     return (1);
 }

@@ -24,7 +24,9 @@ public fun RFXClock__init(as_is _nid, optional _method)
     private _N_CHAN_OUTPUT_MODE = 12;
     private _N_CHAN_CLOCK = 13;
     private _N_CLOCK_DIVIDE = 3;
-    private _N_CLOCK_SOURCE = 4
+    private _N_CLOCK_SOURCE = 4;
+
+write(*, "RFX Clock init");
 
     _decoder =  if_error(DevNodeRef(_nid, _N_TARGET), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
     _decoder_nid = compile(getnci(getnci(_decoder, 'record'), 'fullpath'));
@@ -105,6 +107,7 @@ public fun RFXClock__init(as_is _nid, optional _method)
 		DevPut(_base_nid, _N_CLOCK_DIVIDE, _load); 
 		DevPut(_nid, _N_CLOCK, make_range(*,*,_effective_period));
    }
+
    return (1);
 }
 
