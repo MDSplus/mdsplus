@@ -19,7 +19,7 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
 static char *AbsPath(void *dbid, char *inpath, int nid_in);
 static char *Treename(PINO_DATABASE *dblist, int nidin);
 static int BsearchCompare(const void *this_one, const void *compare_one);
-static int FindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr);
+static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx);
 
 
 int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(DBID,path,outnid); }
@@ -28,6 +28,11 @@ int TreeFindNodeWild(char *path, int *nid_out, void **ctx_inout, int usage_mask)
 int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(DBID, ctx_in); }
 char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(DBID, nid_in, ctx_ptr); }
 char *TreeAbsPath(char *inpath) { return _TreeAbsPath(DBID, inpath); }
+int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
+  PINO_DATABASE *dblist = (PINO_DATABASE *)DBID;
+  NODE *nodeptr;
+  return _TreeFindTag(DBID, dblist->default_node, strlen(treename), treename, strlen(tagnam), tagnam, &nodeptr, tagidx);
+}
 
 #define isident(b) ( ((*(b) >= 'A') && (*(b) <= 'Z')) || \
                      ((*(b) >= 'a') && (*(b) <= 'z')) || \
@@ -185,6 +190,7 @@ int _TreeFindNodeWild(void *dbid, char *path, int *nid_out, void **ctx_inout, in
 
 static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out)
 {
+  int tagidx;
   NODE *node = *node_in_out;
   SEARCH_CONTEXT *search = ctx + idx;
   switch (search->type)
@@ -224,7 +230,7 @@ static int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **n
       if(search->node)
         node = 0;
       else
-        FindTag(db, node, search->tag_tree_name_len, search->tag_tree_name, search->len, search->string, &node); 
+        _TreeFindTag(db, node, search->tag_tree_name_len, search->tag_tree_name, search->len, search->string, &node, &tagidx); 
       break;
     }
     case ANCESTOR_TYPE:
@@ -1045,10 +1051,9 @@ struct tag_search { TAG_NAME   tag;
                     TREE_INFO *info;
                   };
 
-static int FindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr)
+static int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
 
 {
-  int *tag;
   int       status;
   int slen = strlen(tagnam);
   struct tag_search tsearch;
@@ -1111,10 +1116,10 @@ static int FindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *t
 		      else
 			    return TreeTNF;
        default:
-		   if ((tag = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
+		   if ((tagidx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
 			   tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0)
 		   {
-			   *nodeptr = tsearch.info->node + (tsearch.info->tag_info + *tag)->node_idx;
+			   *nodeptr = tsearch.info->node + (tsearch.info->tag_info + *tagidx)->node_idx;
 			   return TreeNORMAL;
 		   }
 		   else

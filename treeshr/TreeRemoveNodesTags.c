@@ -1,3 +1,4 @@
+
 /*------------------------------------------------------------------------------
 
 		Name: TreeRemoveNodesTags
@@ -34,8 +35,9 @@
 extern void *DBID;
 
 static int       _TreeRemoveNodesTags(void *dbid, int nid);
-static void      _RemoveTag(PINO_DATABASE *dblist, int tagidx);
+static void      _RemoveTagIdx(PINO_DATABASE *dblist, int tagidx);
 
+int TreeRemoveTag(char *name) { return _TreeRemoveTag(DBID, name); }
 int TreeRemoveNodesTags(int nid) { return _TreeRemoveNodesTags(DBID, nid);}
 
 static int       _TreeRemoveNodesTags(void *dbid, int nid)
@@ -59,7 +61,7 @@ static int       _TreeRemoveNodesTags(void *dbid, int nid)
   nid_to_node(dblist, nid_ptr, node);
   for (tagidx=node->tag_link; tagidx !=0; tagidx = next_tag) {
     next_tag = dblist->tree_info->tag_info[tagidx-1].tag_link;
-    _RemoveTag(dblist, tagidx);
+    _RemoveTagIdx(dblist, tagidx);
   }
   node->tag_link=0;
   dblist->modified = 1;
@@ -67,18 +69,44 @@ static int       _TreeRemoveNodesTags(void *dbid, int nid)
 }
 
 /*
- *  Routine to remove a tag from the tree.  Note that it does not
- *  remove the tag from tag list of the node.  In its current state
- *  this routine can only be used by TreeRemoveNodesTags, which is 
- *  removing all of the tags from a node.
- *
- *  To be general, it would also need to fix up the node's tag_link.
+ *  Routine to remove a tag from the tree given its name
  */
-static void _RemoveTag(PINO_DATABASE  *dblist, int tagidx)
+static int _TreeRemoveTag(PINO_DATABASE  *dblist, char *name)
 {
-  TAG_INFO *info_ptr;
+  int idx;
+  int status;
+  if ((status = TreeFindTag(name, "\0", &idx))&1)
+    _RemoveTagIdx(dblist, idx);
+  return status;
+}
+ 
+/*
+ *  Routine to remove a tag from the tree given its tag index
+ */
+static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
+{
+  TAG_INFO *info_ptr, *remove_info_ptr;
   NODE     *node_ptr;
   int      *tags_ptr, *this_tags_ptr;
+
+  /****************************************
+   First we must remove the linked list of
+   tag info blocks connected to the node via
+   tag links.
+  *****************************************/
+
+    remove_info_ptr = dblist->tree_info->tag_info + tagidx - 1;
+    node_ptr = dblist->tree_info->node;
+    if (node_ptr->tag_link == tagidx)
+      node_ptr->tag_link = remove_info_ptr->tag_link;
+    else
+    {
+      for (info_ptr = dblist->tree_info->tag_info + node_ptr->tag_link - 1;
+           (info_ptr->tag_link != tagidx) && (info_ptr->tag_link >= 0);
+           info_ptr = dblist->tree_info->tag_info + info_ptr->tag_link - 1);
+      if (info_ptr->tag_link == tagidx)
+        info_ptr->tag_link = remove_info_ptr->tag_link;
+    }
 
   /*********************************************
    Next we will fix up all the tag links in the
@@ -122,13 +150,9 @@ static void _RemoveTag(PINO_DATABASE  *dblist, int tagidx)
     if (dblist->tree_info->header->tags > 0) {
       int bytes;
       if( (bytes = (dblist->tree_info->header->tags - (this_tags_ptr - dblist->tree_info->tags)) * sizeof(int)) > 0) 
-	memcpy(this_tags_ptr, 
-	       this_tags_ptr+1,
-	       bytes);
+	memcpy(this_tags_ptr, this_tags_ptr+1, bytes);
       if( (bytes = (dblist->tree_info->header->tags - tagidx) * sizeof(TAG_INFO)) > 0) 
-	memcpy(&dblist->tree_info->tag_info[tagidx-1], 
-	       &dblist->tree_info->tag_info[tagidx], 
-	       bytes);
+	memcpy(&dblist->tree_info->tag_info[tagidx-1], &dblist->tree_info->tag_info[tagidx], bytes);
     }
     dblist->tree_info->header->tags--;
 }

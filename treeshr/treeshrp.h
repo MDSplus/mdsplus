@@ -651,7 +651,8 @@ extern int TreeGetNciLw(TREE_INFO *info, int node_number, NCI *nci);
 extern int TreePutNci(TREE_INFO *info, int node_number, NCI *nci, int flush);
 extern int TreeIsChild(NODE *node);
 extern struct descriptor *TreeSectionName(TREE_INFO *info);
-extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **search_string, NODE **node_in_out);
+/* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **search_string, NODE **node_in_out); */
+extern int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
 extern DATA_FILE *TreeGetVmDatafile();
