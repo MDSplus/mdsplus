@@ -10115,7 +10115,6 @@ object nidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
 	compound_string("\' \'"),
-	compound_string("\'mezz\'"),
 	compound_string("\'fpga\'"),
 	compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
@@ -10211,7 +10210,6 @@ object nidOptionMenu6 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
         compound_string("\' \'"),
-        compound_string("\'mezz\'"),
         compound_string("\'fpga\'"),
         compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
@@ -10307,7 +10305,6 @@ object nidOptionMenu8 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
         compound_string("\' \'"),
-        compound_string("\'mezz\'"),
         compound_string("\'fpga\'"),
         compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
@@ -10403,7 +10400,6 @@ object nidOptionMenu10 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
         compound_string("\' \'"),
-        compound_string("\'mezz\'"),
         compound_string("\'fpga\'"),
         compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
@@ -10499,7 +10495,6 @@ object nidOptionMenu12 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
         compound_string("\' \'"),
-        compound_string("\'mezz\'"),
         compound_string("\'fpga\'"),
         compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
@@ -10595,7 +10590,6 @@ object nidOptionMenu14 : user_defined procedure XmdsCreateNidOptionMenu {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
         compound_string("\' \'"),
-        compound_string("\'mezz\'"),
         compound_string("\'fpga\'"),
         compound_string("\'pxi\'"),
         compound_string("\'fpga pxi\'"));
