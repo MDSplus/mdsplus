@@ -7,7 +7,6 @@ import java.awt.TextField;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.*;
 import java.awt.print.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -116,7 +115,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     {
         this(rows, new NotConnectedDataProvider(), def_vals);
         server_item = new DataServerItem("Not Connected", null, null, 
-                          null, null, null, false);
+                          "NotConnectedDataProvider", null, null, null, false);
         
     }
 
@@ -228,7 +227,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         if(title == null || title.length() == 0 || dp == null) return "";
         try
         {
-            return dp.GetString(title);
+            String t = dp.GetString(title);
+            if (dp.ErrorString() == null || dp.ErrorString().length() == 0)
+                return t;
+            else
+                return "< evalution error >";
+           
         }
         catch(IOException exc)
         {
@@ -238,7 +242,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
     
     public String GetEvent(){return event;}
     public String GetPrintEvent(){return print_event;}
-  //  public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
+//  public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
     public String GetServerArgument(){return (server_item != null ? server_item.argument : "");}
     public String GetBrowseClass(){return (server_item != null ? server_item.browse_class : "");}
     public String GetBrowseUrl(){return (server_item != null ? server_item.browse_url : "");}
@@ -403,6 +407,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         prnJob.setPrintable(this, pf);
         prnJob.print();
     }
+
    
     public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException 
     {
@@ -885,6 +890,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             server_item.class_name = pr.getProperty(prompt+".data_server_class");
 		    server_item.browse_class = pr.getProperty(prompt+".data_server_browse_class");
 		    server_item.browse_url = pr.getProperty(prompt+".data_server_browse_url");
+		    server_item.tunnel_port = pr.getProperty(prompt+".data_server_tunnel_port");
 		    try
 		    {
 		        server_item.fast_network_access = new Boolean(pr.getProperty(prompt+".fast_network_access")).booleanValue();
@@ -1102,8 +1108,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
         } else {
 	        throw(new Exception("Undefine data provider class for "+ server_item.name));
         }
-
-        int option = new_dp.InquireCredentials(GetFrameParent(), server_item.user);
+    
+        int option = new_dp.InquireCredentials(GetFrameParent(), server_item);
         switch(option)
         {
             case DataProvider.LOGIN_OK :
@@ -1114,7 +1120,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
             case DataProvider.LOGIN_ERROR :
             case DataProvider.LOGIN_CANCEL :
                 server_item = new DataServerItem("Not Connected", null, null, 
-                          null, null, null, false);
+                          null, null, null, null, false);
                 new_dp = new NotConnectedDataProvider();            
                 change = true;
        }
@@ -1259,6 +1265,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	            WaveInterface.WriteLine(out, prompt + "data_server_browse_class: ", server_item.browse_class);
 	        if(server_item.browse_url != null)
 	            WaveInterface.WriteLine(out, prompt + "data_server_browse_url: ",   server_item.browse_url);
+	        if(server_item.tunnel_port != null)
+	            WaveInterface.WriteLine(out, prompt + "data_server_tunnel_port: ",   server_item.tunnel_port);
 	            
 	        WaveInterface.WriteLine(out, prompt + "fast_network_access: ", ""+server_item.fast_network_access);		    
 	    }

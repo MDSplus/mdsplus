@@ -48,9 +48,9 @@ class JetDataProvider implements DataProvider
     }
 
 //DataProvider implementation
- //   public float[] GetFrameTimes(String in_frame){return null;}
-  //  public byte[]  GetFrameAt(String in_frame, int frame_idx){return null;}
-  //  public byte[]  GetAllFrames(String in_frame){return null;}
+//  public float[] GetFrameTimes(String in_frame){return null;}
+//  public byte[]  GetFrameAt(String in_frame, int frame_idx){return null;}
+//  public byte[]  GetAllFrames(String in_frame){return null;}
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
         throw(new IOException("Frames visualization on JetDataProvider not implemented"));
@@ -66,6 +66,8 @@ class JetDataProvider implements DataProvider
     public boolean DataPending() {return  false;}
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
+    public boolean SupportsTunneling() {return false; }
+    
     
     class SimpleWaveData implements WaveData
     {
@@ -161,8 +163,10 @@ class JetDataProvider implements DataProvider
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
 
-    public int InquireCredentials(JFrame f, String user)
+    public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
+        String user = server_item.user;
+        
         login_status = DataProvider.LOGIN_OK;
         owner_f = f;
         inquiry_dialog = new JDialog(f, "JET data server login", true);

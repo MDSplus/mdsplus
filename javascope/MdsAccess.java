@@ -50,11 +50,13 @@ public class MdsAccess implements DataAccess
         if(ip_addr == null || !ip_addr.equals(addr))
         {
             np = new MdsDataProvider(addr);
+            /*
             if(encoded_credentials == null ||( ip_addr != null && !ip_addr.equals(addr)))
             {
                 encoded_credentials = new String();
                 np.InquireCredentials(null, encoded_credentials);
             }
+            */
             ip_addr = addr;
         }
         experiment = st2.nextToken();

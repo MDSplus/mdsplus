@@ -167,7 +167,7 @@ public boolean SupportsCompression(){return false;}
 public void    SetCompression(boolean state){}
 public boolean SupportsContinuous() {return false; }
 public boolean DataPending() {return  false;}
-public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
+public int     InquireCredentials(JFrame f, DataServerItem server_item){return DataProvider.LOGIN_OK;}
 public boolean SupportsFastNetwork(){return false;}
 }
 								

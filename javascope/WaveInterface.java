@@ -1008,6 +1008,7 @@ public class WaveInterface
                 curr_error = dp.ErrorString();            
             frames.WaitLoadFrame();
         } catch (Throwable e) {
+            e.printStackTrace();
             frames = null;
             curr_error = " Load Frames error " + e; 
         }

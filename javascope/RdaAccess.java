@@ -64,7 +64,7 @@ public class RdaAccess implements DataAccess
                 ( ip_addr != null && !ip_addr.equals(addr)) )
             {
                 encoded_credentials = new String();
-                login_status = jp.InquireCredentials(null, "");
+                login_status = jp.InquireCredentials(null, null);
                 if(login_status == DataProvider.LOGIN_OK)
                     ip_addr = addr;
                 else

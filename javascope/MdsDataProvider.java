@@ -2,11 +2,11 @@
 import java.io.*;
 import java.net.*;
 import java.awt.*;
-import java.util.Vector;
-import java.util.Properties;
+import java.util.*;
 import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.event.*;
 
 
 public class MdsDataProvider implements DataProvider 
@@ -20,8 +20,10 @@ public class MdsDataProvider implements DataProvider
     MdsConnection mds;
     public String error;
     private boolean use_compression = false;
-    //static int var_idx = 0;
     int var_idx = 0;
+    
+    boolean is_tunneling = false;
+    SshTunneling ssh_tunneling;
 
     class SimpleFrameData implements FrameData
     {
@@ -310,13 +312,13 @@ public class MdsDataProvider implements DataProvider
         error = null;
     }
 
-    public MdsDataProvider(String _provider)
+    public MdsDataProvider(String provider)
     {
-        provider = _provider;
+        setProvider(provider);
         experiment = null;
         shot = 0;
         open = connected = false;
-        mds = new MdsConnection(provider);
+        mds = new MdsConnection(this.provider);
         error = null;
     }
 
@@ -339,16 +341,25 @@ public class MdsDataProvider implements DataProvider
 	        status = mds.DisconnectFromMds();
     }
 
-    public void    SetArgument(String arg) throws IOException
+    public void SetArgument(String arg) throws IOException
     {
-        provider = arg;
+        setProvider(arg);
         mds.setProvider(provider);
+    }
+    
+    private void setProvider(String arg)
+    {
+        if(is_tunneling)
+            provider = "localhost";
+        else
+            provider = arg;
     }
     
     public boolean SupportsCompression(){return true;}
     public void    SetCompression(boolean state)
     {
-        Dispose();
+        if(connected)
+            Dispose();
         use_compression = state;
     }
 
@@ -496,7 +507,7 @@ public class MdsDataProvider implements DataProvider
             return;
         }
         */
-        if(s != shot || experiment == null || experiment.length() == 0 || !experiment.equals(exp) )
+        if(s != shot || s == 0 || experiment == null || experiment.length() == 0 || !experiment.equals(exp) )
         {
           //  System.out.println("Close "+experiment+ " "+shot);
 	        experiment = ((exp != null && exp.trim().length() >  0) ? exp : null);
@@ -528,7 +539,7 @@ public class MdsDataProvider implements DataProvider
 	                    if((desc.status & 1) == 1)
 		                    return desc.strdata;
 	                    else
-		                    return desc.error;
+		                    return (error = desc.error);
 	        }
 	        return null;
         }
@@ -762,6 +773,12 @@ public class MdsDataProvider implements DataProvider
             connected = false;
             mds.DisconnectFromMds();
         }
+        if(is_tunneling && ssh_tunneling != null)
+        {
+            ssh_tunneling.Dispose();           
+        }        
+        ConnectionEvent ce = new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider); 
+	    mds.dispatchConnectionEvent(ce);
     }
 
     protected synchronized  void CheckConnection() throws IOException
@@ -911,25 +928,39 @@ public class MdsDataProvider implements DataProvider
 	    }
         mds.dispatchConnectionEvent(e);
     }
+    
+    public boolean SupportsTunneling() {return true; }
     public boolean SupportsContinuous() {return false; }
     public boolean DataPending() {return  false;}
-
-    public int     InquireCredentials(JFrame f, String user)
+    
+    public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
-       mds.setUser(user);
-       /*
-       try
+        
+       mds.setUser(server_item.user);
+       is_tunneling = false;
+       if(server_item.tunnel_port != null && server_item.tunnel_port.trim().length() != 0)
        {
-        Process p = java.lang.Runtime.getRuntime().exec("cmd.exe /K plink -L 8000:igi.pd.cnr.it:8000");
-        PrintWriter bo = new PrintWriter(p.getOutputStream(), true);
-        bo.println();
-        String line;
-        while(true)            
-            System.out.println(bo);
-        java.lang.Runtime.getRuntime().exec("cmd.exe /K dir > c:\\pippo.txt ");
-       }
-       catch(Exception exc){System.out.println("plink error");}
-       */
+            StringTokenizer st = new StringTokenizer(server_item.argument, ":");
+            String ip;
+            String remote_port = ""+MdsConnection.DEFAULT_PORT;
+            
+            ip = st.nextToken();
+            if(st.hasMoreTokens())
+                remote_port = st.nextToken();
+            
+            is_tunneling = true;
+            
+            try
+            {
+                ssh_tunneling = new SshTunneling(f, this, ip, remote_port, 
+                                             server_item.user, server_item.tunnel_port);
+                ssh_tunneling.start();
+            }
+            catch(Exception e)
+            {
+                return DataProvider.LOGIN_ERROR;
+            }
+       }      
        return DataProvider.LOGIN_OK;
     }
     public boolean SupportsFastNetwork(){return true;}

@@ -22,6 +22,8 @@ class JetMdsDataProvider extends MdsDataProvider
         return super.GetIntArray(ParseExpression(in));
     }
 	
+	//Syntax: ppf/<signal> or jpf/<signal>
+	//Ex: ppf/magn/ipla
 	protected String ParseExpression(String in)
 	{
 	  error= null;
@@ -64,7 +66,7 @@ class JetMdsDataProvider extends MdsDataProvider
 		        state = 0;
 		        break;
 		    }   
-		} 	  
+		} 
 	}
 	catch(Exception e)
 	{
@@ -93,7 +95,7 @@ public boolean SupportsCompression(){return false;}
 public void    SetCompression(boolean state){}
 public boolean SupportsContinuous() {return false; }
 public boolean DataPending() {return  false;}
-public int     InquireCredentials(JFrame f, String user){return DataProvider.LOGIN_OK;}
+public int     InquireCredentials(JFrame f, DataServerItem server_item){return DataProvider.LOGIN_OK;}
 public boolean SupportsFastNetwork(){return true;}
 }
 								

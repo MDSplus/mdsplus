@@ -8,15 +8,21 @@ public class DataServerItem
     String browse_class;
     String browse_url;
     boolean fast_network_access;
+    String tunnel_port;
+    
+    public DataServerItem(String user)
+    {
+        this(null, null, user, null, null, null, null, false);
+    }
     
     public DataServerItem()
     {
-        this(null, null, null, null, null, null, false);
+        this(null, null, null, null, null, null, null, false);
     }
     
     public DataServerItem(String name, String argument, String user, 
                           String class_name, String browse_class, 
-                          String browse_url, boolean fast_network_access)
+                          String browse_url, String tunnel_port, boolean fast_network_access)
     {
         this.name = name;
         this.argument = argument;
@@ -25,6 +31,7 @@ public class DataServerItem
         this.browse_class = browse_class;
         this.browse_url = browse_url;
         this.fast_network_access = fast_network_access;
+        this.tunnel_port = tunnel_port;
     }
             
     public String toString() {return name;}

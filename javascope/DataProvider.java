@@ -140,8 +140,18 @@ public interface DataProvider
          */
         public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points);
 
+  
+         /**
+         * Called by jScope to verify whether the DataProvider implementation supports 
+         * Secure Shell (ssh) tunneling option. 
+         * 
+         * @return The ability of supporting ssh tunneling.
+         */
+        public boolean SupportsTunneling();
+
+        
         /**
-         * Called by jScope to verify whether the DataProvider impementation supports the Fast Network
+         * Called by jScope to verify whether the DataProvider implementation supports the Fast Network
          * option. If SupportsFastNetwork return true, jScope retrieves data by calling GetResampledWaveData
          * which has to be thread safe. GetResampledWaveData is in fact called by a separate
          * thread each time a zoom is done, to retrieve more points for the selected region.
@@ -338,7 +348,7 @@ public interface DataProvider
          * @param user Local username as specified in the property file or in the Network->Edit server list... dialog
          * @return The status of the DataProvider specific validation process
          */
-        public int     InquireCredentials(JFrame f, String user);
+        public int     InquireCredentials(JFrame f, DataServerItem server_item);
 
         /**
          * As DataProvider implementations are instantiated by jScope by means of the 

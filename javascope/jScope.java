@@ -20,7 +20,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
                              UpdateEventListener, ConnectionListener
 {
  
-   static final String VERSION = "jScope (version 7.2.1)";
+   static final String VERSION = "jScope (version 7.2.2)";
    static public boolean is_debug = false;
     
    public  static final int MAX_NUM_SHOT   = 30;
@@ -33,7 +33,7 @@ public class jScope extends JFrame implements ActionListener, ItemListener,
   protected JMenuBar       mb;
   /**Menus on menu bar */
   protected JMenu        edit_m, look_and_feel_m, pointer_mode_m,
-                         customize_m, autoscale_m, print_m, network_m, help_m;
+                         customize_m, autoscale_m, network_m, help_m;
            	JMenu		 servers_m;
   /**Menu items on menu edit_m */	  
   private   JMenuItem    exit_i, win_i;
@@ -511,7 +511,7 @@ static int T_messageType;
     edit_m.add(print_i);
     
     
-    page_i = new JMenuItem("Page setup ...");
+    page_i = new JMenuItem("Page Setup ...");
     page_i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_J, ActionEvent.CTRL_MASK));
     page_i.addActionListener(new ActionListener()
     {
@@ -529,6 +529,24 @@ static int T_messageType;
         }
     });
     edit_m.add(page_i);
+
+    print_all_i = new JMenuItem("Print");
+    print_all_i.addActionListener(new ActionListener()
+    {
+        public void actionPerformed(ActionEvent e) 
+        {
+            Thread print_page = new Thread()
+            {
+                public void run() 
+                {
+                    setName("Print All Thread");
+                    PrintAllWaves();
+                }
+            };
+            print_page.start();        
+        }
+    });
+    edit_m.add(print_all_i);      
       
     edit_m.addSeparator();
    
@@ -611,28 +629,6 @@ static int T_messageType;
     pointer_mode_m.add(copy_i);
     copy_i.addActionListener(this);
     pointer_mode_m.add(copy_i);
-
-    print_m = new JMenu("Print");
-    mb.add(print_m);
-    print_all_i = new JMenuItem("Print All");
-    print_all_i.addActionListener(new ActionListener()
-    {
-        public void actionPerformed(ActionEvent e) 
-        {
-            Thread print_page = new Thread()
-            {
-                public void run() 
-                {
-                    setName("Print All Thread");
-                    PrintAllWaves();
-                }
-            };
-            print_page.start();        
-        }
-    });
-    
-    print_m.add(print_all_i);
-    mb.add(print_m);
     
     customize_m = new JMenu("Customize");
     mb.add(customize_m);    
@@ -1270,7 +1266,7 @@ static int T_messageType;
     
     if(ip_addr != null && dp_class != null)//|| is_local == null || (is_local != null && is_local.equals("no")))
     {
-	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null, false); 
+	    srv_item = new DataServerItem(ip_addr, ip_addr, null, dp_class,  null, null, null, false); 
         //Add server to the server list and if presente browse class and
         //url browse signal set it into srv_item
         server_diag.addServerIp(srv_item); 	    
@@ -1365,7 +1361,6 @@ static int T_messageType;
        setPublicVariables(pub_var_diag.getPublicVar());
        wave_panel.SetMainShotStr(shot_t.getText().trim());
        wave_panel.StartUpdate();
-       SetWindowTitle("");
   }
   
   
@@ -1707,9 +1702,10 @@ static int T_messageType;
                 JOptionPane.showMessageDialog(this, e.info, 
 		                                "alert", JOptionPane.ERROR_MESSAGE);
 	            SetStatusLabel(" Aborted ");		    
-		    }
+		    }    
 		    else
 	            SetStatusLabel(e.info);		    
+            SetWindowTitle("");
 		    break;
 	    case WaveContainerEvent.START_UPDATE:
 	        SetStatusLabel(e.info);
@@ -1758,6 +1754,20 @@ static int T_messageType;
     public void processConnectionEvent(ConnectionEvent e)
     {   
         progress_bar.setString("");
+        
+        if(e.getID() == ConnectionEvent.LOST_CONNECTION)
+        {
+            
+		    JOptionPane.showMessageDialog(this, 
+		                                    e.info, 
+		                                    "alert", 
+		                                    JOptionPane.ERROR_MESSAGE);
+            
+            SetDataServer(new DataServerItem("Not Connected", null, null, 
+                          "NotConnectedDataProvider", null, null, null, false));
+            return;
+        }
+        
         if(e.current_size == 0 && e.total_size == 0)
         {
             if(e.info != null)
@@ -2160,12 +2170,9 @@ static int T_messageType;
 	    f_name = "Untitled";
   
 	if(wave_panel.GetTitle() != null)
-	{
 	    setTitle(" - " + wave_panel.GetEvaluatedTitle() + " - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
-	}
 	else
 	    setTitle("- Scope - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
-	
   }
   
   public void FromFile(Properties pr) throws IOException
@@ -2679,6 +2686,10 @@ class ServerDialog extends JDialog implements ActionListener
             JTextField server_l, server_a, server_u;
             JCheckBox automatic;
             JComboBox data_provider_list;
+            
+            JCheckBox tunneling;
+            JTextField tunnel_port;
+            
     jScope dw;
     private static String know_provider[] = {"MdsDataProvider",
                                              "JetMdsDataProvider",
@@ -2722,6 +2733,23 @@ class ServerDialog extends JDialog implements ActionListener
                         server_a.setText(dw.server_ip_list[idx].argument);
                         server_u.setText(dw.server_ip_list[idx].user);
                         data_provider_list.setSelectedItem(dw.server_ip_list[idx].class_name);
+                        if(dw.server_ip_list[idx].tunnel_port != null)
+                        {
+                            if(dw.server_ip_list[idx].tunnel_port.trim().length() == 0)
+                                dw.server_ip_list[idx].tunnel_port = null;
+                            else
+                            {
+                                tunneling.setSelected(true);
+                                tunnel_port.setText(dw.server_ip_list[idx].tunnel_port);
+                                tunnel_port.setEditable(true);                            
+                            }
+                        }
+                        if(dw.server_ip_list[idx].tunnel_port == null)
+                        {
+                            tunnel_port.setText("");
+                            tunneling.setSelected(false);
+                            tunnel_port.setEditable(false);        
+                        }
                     } else {
                         remove_b.setEnabled(false);
                         modify_b.setEnabled(false);
@@ -2758,6 +2786,31 @@ class ServerDialog extends JDialog implements ActionListener
 	    server_a = new JTextField(20);
 	    gridbag.setConstraints(server_a, c);
 	    getContentPane().add(server_a);
+
+        c.gridwidth = 1;	    
+	    tunneling = new JCheckBox("Tunneling local Port:");
+        tunneling.addItemListener(new ItemListener()
+	    {
+            public void itemStateChanged(ItemEvent e)
+	        {
+	            if(tunneling.isSelected())
+	            {
+	                tunnel_port.setEditable(true);
+	            } else {
+	                tunnel_port.setEditable(false);
+	            }
+	        }
+	    });	    
+	    gridbag.setConstraints(tunneling, c);
+	    getContentPane().add(tunneling);
+	    
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	    c.fill =  GridBagConstraints.BOTH;
+	    tunnel_port = new JTextField(6);
+	    tunnel_port.setEditable(false);
+	    gridbag.setConstraints(tunnel_port, c);
+	    getContentPane().add(tunnel_port);
+	    	    
 	    
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.fill =  GridBagConstraints.BOTH;
@@ -2778,7 +2831,7 @@ class ServerDialog extends JDialog implements ActionListener
 	    });	    
 	    gridbag.setConstraints(automatic, c);
 	    getContentPane().add(automatic);
-
+	    
 	    c.gridwidth = 1;	
 	    server_label = new JLabel("User name ");
 	    gridbag.setConstraints(server_label, c);
@@ -2801,6 +2854,26 @@ class ServerDialog extends JDialog implements ActionListener
         data_provider_list = new JComboBox();
 	    gridbag.setConstraints(data_provider_list, c);
 	    getContentPane().add(data_provider_list);
+	    data_provider_list.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+	        {
+                try
+                {
+	                String srv = (String)data_provider_list.getSelectedItem();
+	                if(srv != null)
+	                {
+                        Class cl = Class.forName(srv);
+                        boolean state = ((DataProvider)cl.newInstance()).SupportsTunneling();
+                        tunneling.setEnabled(state);
+                        tunnel_port.setEnabled(state);
+	                }
+	            }
+                catch (Exception exc)
+                {}
+	        }
+	        
+	    });
 	        
 	    JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));			
 	    add_b = new JButton("Add");
@@ -2850,6 +2923,7 @@ class ServerDialog extends JDialog implements ActionListener
            dsi.class_name = (String)js_prop.getProperty("jScope.data_server_"+i+".class");
            dsi.browse_class = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_class");
            dsi.browse_url = (String)js_prop.getProperty("jScope.data_server_"+i+".browse_url");
+           dsi.tunnel_port = (String)js_prop.getProperty("jScope.data_server_"+i+".tunnel_port");
 		    try
 		    {
 		        dsi.fast_network_access = new Boolean((String)js_prop.getProperty("jScope.data_server_"+i+".fast_network_access")).booleanValue();
@@ -2866,28 +2940,48 @@ class ServerDialog extends JDialog implements ActionListener
     public void Show()
     {   
         pack();
+        resetAll();
+        DataServerItem found_dsi = findServer(dw.wave_panel.GetServerItem());
+        if(found_dsi != null)
+            server_list.setSelectedValue(found_dsi, true);
 	    setLocationRelativeTo(dw);
 	    show();
     }
+    
+    private void resetAll()
+    {
+        server_list.clearSelection();
+        server_l.setText("");
+        server_a.setText("");
+        server_u.setText("");
+        tunnel_port.setText("");
+        data_provider_list.setSelectedIndex(0);
+    }
+    
+    private DataServerItem findServer(DataServerItem dsi)
+    {
+	    DataServerItem found_dsi = null;
+	    Enumeration e = list_model.elements();	
+	    while(e.hasMoreElements())
+	    {   
+	        found_dsi = (DataServerItem)e.nextElement();
+	        if(found_dsi.equals(dsi))
+	        {
+	            return found_dsi;
+	        }
+	    }
+	    return null;
+    }
+    
     
     public void addServerIp(DataServerItem dsi)
     {
 	    int i;
 	    JMenuItem new_ip;
 	    DataServerItem found_dsi = null;
-
-	
-	    Enumeration e = list_model.elements();	
 	    boolean found = false;
-	    while(e.hasMoreElements())
-	    {   
-	        found_dsi = (DataServerItem)e.nextElement();
-	        if(found_dsi.equals(dsi))
-	        {
-	            found = true;
-	            break;
-	        }
-	    }
+	    
+	    found = ((found_dsi = findServer(dsi)) != null);
 	    
 	    if(dsi.class_name != null &&
            !data_server_class.containsValue(dsi.class_name))
@@ -2915,7 +3009,8 @@ class ServerDialog extends JDialog implements ActionListener
 	            dsi.user = found_dsi.user;
 	            dsi.class_name = found_dsi.class_name;
 	            dsi.browse_class = found_dsi.browse_class;
-	            dsi.browse_url = found_dsi.browse_url;	            
+	            dsi.browse_url = found_dsi.browse_url;
+	            dsi.tunnel_port = found_dsi.tunnel_port;
 	        }
 	    }
     }
@@ -2967,7 +3062,7 @@ class ServerDialog extends JDialog implements ActionListener
             addServerIp(new DataServerItem(srv, server_a.getText().trim(), 
                                            server_u.getText().trim(), 
                                            (String)data_provider_list.getSelectedItem(),
-                                           null, null, false));
+                                           null, null, tunnel_port.getText(),false));
 	       }
 	    }
 	
@@ -2991,8 +3086,9 @@ class ServerDialog extends JDialog implements ActionListener
                     dw.server_ip_list[idx].argument = server_a.getText().trim();
                     dw.server_ip_list[idx].user = server_u.getText().trim();
                     dw.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
+                    dw.server_ip_list[idx].tunnel_port = tunnel_port.getText();
                     server_list.repaint();
-                    //It is need tu update the current data server if it is
+                    //It is need to update the current data server if it is
                     //the modified server
                     if(dw.wave_panel.GetServerItem().equals(dw.server_ip_list[idx]))
                     {

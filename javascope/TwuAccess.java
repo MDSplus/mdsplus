@@ -49,7 +49,7 @@ public class TwuAccess implements DataAccess
         
         if(tw == null)
         {
-            tw = new TwuDataProvider("jScope applet (Version 7.2)");
+            tw = new TwuDataProvider("jScope applet (Version 7.2.2)");
         }        
         return signal;
     }
