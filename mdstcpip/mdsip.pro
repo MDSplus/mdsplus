@@ -8,7 +8,10 @@ Function MdsIPImage
     'IRIX' : return,'libMdsIpShr.so'
     'OSF' : return,'libMdsIpShr.so'
     'sunos' : return,'libMdsIpShr.so'
-    'hp-ux' : return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
+    'hp-ux' : begin
+              if getenv('MDS_SHLIB_PATH') eq '' then setenv,'MDS_SHLIB_PATH=/usr/lib'
+              return,getenv('MDS_SHLIB_PATH')+'/libMdsIpShr.sl'
+              end
     else  : message,'MDS is not supported on this platform',/IOERROR 
   endcase
 end
@@ -60,8 +63,13 @@ pro Mds$SendArg,sock,n,idx,arg
   return
 end 
 
-pro mds$connect,host,status=status,quiet=quiet
+pro mds$connect,host,status=status,quiet=quiet,port=port
   mds$disconnect,/quiet
+  if n_elements(port) ne 0 then begin
+    setenv,'mdsip='+strtrim(port,2)
+  endif else if getenv('mdsip') eq '' then begin
+    setenv,'mdsip=8000'
+  endif
   sock = call_external(MdsIPImage(),MdsRoutinePrefix()+'ConnectToMds',host,value=[byte(!version.os ne 'windows')])
   if (sock gt 0) then begin
     x=execute('!MDS_SOCKET = sock')
