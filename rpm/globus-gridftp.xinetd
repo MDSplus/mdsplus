@@ -1,0 +1,18 @@
+service gsiftp
+  {
+      instances       = 100
+      socket_type     = stream
+      wait            = no
+      user            = root
+      env            += GLOBUS_PATH=/usr/local/fusiongrid
+      env            += GLOBUS_LOCATION=/usr/local/fusiongrid
+      env            += PATH=/usr/local/fusiongrid/bin:/usr/local/fusiongrid/sbin:/bin:/usr/bin:/usr/X11R6/bin
+      env            += LD_LIBRARY_PATH=/usr/local/fusiongrid/lib
+      env            += MDS_PATH=/usr/local/fusiongrid/local/tdi;/usr/local/fusiongrid/tdi
+      server          = /usr/local/fusiongrid/sbin/globus-gridftp-server
+      server_args     = -i
+      log_on_success += DURATION USERID
+      log_on_failure += USERID
+      nice = 10
+      disable = no
+}
