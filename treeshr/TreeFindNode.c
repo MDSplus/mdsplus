@@ -8,7 +8,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 

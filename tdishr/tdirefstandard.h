@@ -5,8 +5,12 @@
 
 	Ken Klare, LANL P-4	(c)1989,1991
 */
-#include <mds_stdarg.h>
+#ifdef HAVE_VXWORKS_H
+#include <stdio.h>
+/*Just a workaround for a gnu c compiler bug in checking definitions */
+#endif
 #include <mdsdescrip.h>
+#include <mds_stdarg.h>
 /*#include <mdsdescrip.h>*/
 
 static struct descriptor_xd const EMPTY_XD = {0,DTYPE_DSC,CLASS_XD,0,0};

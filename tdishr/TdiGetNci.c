@@ -22,7 +22,7 @@
 	NEED parameter for sizeof(NODE_NAME).
 	NEED to be careful about any new names. They could take away uniqueness from existing code.
 */
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #undef MAX
 #endif
 #define EOL {0,NciEND_OF_LIST,0,0}

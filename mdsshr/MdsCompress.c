@@ -54,6 +54,9 @@ The expansion routine "xentry":
 #include <libroutines.h>
 #include <strroutines.h>
 #include <librtl_messages.h>
+#ifdef HAVE_VXWORKS_H
+#define _pointer_int int
+#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))

@@ -1,4 +1,6 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
@@ -10,8 +12,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
-#ifndef HAVE_WINDOWS_H
+#if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
 #include <pthread.h>
+#endif
+#ifdef HAVE_VXWORKS_H
+#include <vxWorks.h>
+#include <taskLib.h>
+#undef max
+#undef min
 #endif
 #include "mdsip.h"
 #define MAX_ARGS 256
@@ -24,8 +32,13 @@
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1
 #endif
+#ifdef HAVE_VXWORKS_H
+#undef BIG_ENDIAN
+#include <resolvLib.h>
+#else
 #include <pwd.h>
 #include <unistd.h>  /* for getpid() */
+#endif
 #define closesocket close
 #endif
 #ifdef HAVE_WINDOWS_H
@@ -278,7 +291,11 @@ static void StartWorker(char **argv){}
 static void InitWorkerCommunications(){}
 static void InitializeService(){}
 static void SetThisServiceStatus(int state, int hint) {}
+#ifdef HAVE_VXWORKS_H
+static int SpawnWorker(){return taskIdSelf();}
+#else
 static int SpawnWorker(){return getpid();}
+#endif
 #ifndef SERVICE_START_PENDING
 #define SERVICE_START_PENDING 0
 #define SERVICE_RUNNING 1
@@ -300,8 +317,15 @@ static void InitializeSockets()
 
 #else
 static void InitializeSockets(){}
-static int BecomeUser(char *remuser, struct descriptor *local_user)
+#ifdef HAVE_VXWORKS_H
+static int BecomeUser(char *remuser, struct descriptor *user)
 {
+	return 1;
+}
+#else
+
+ static int BecomeUser(char *remuser, struct descriptor *local_user){}
+ {
   int ok = 1;
   CompressString(local_user,0);
   if (local_user->length)
@@ -334,6 +358,32 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
   return ok;
 }
 #endif
+#endif
+
+#ifdef HAVE_VXWORKS_H
+
+int mdsip(int portIn, char modeIn, char *hostfileIn, int compressionIn)
+{
+  char port_name[64];
+  static struct sockaddr_in sin;
+  int tablesize = FD_SETSIZE;
+  fd_set readfds;
+  struct timeval timeout = {1,0};
+  InitializeSockets();
+  /* DebugBreak(); */
+  FD_ZERO(&fdactive);
+  
+  sprintf(port_name, "%d", portIn);
+  Portname = malloc(strlen(port_name) + 1);
+  strcpy(Portname, port_name);
+  port = portIn;
+  SetMode(modeIn, &mode);
+  hostfile = malloc(strlen(hostfileIn)+1);
+  strcpy(hostfile, hostfileIn);
+  flags = 0;
+  MaxCompressionLevel = compressionIn;
+
+#else
 
 int main(int argc, char **argv)
 {
@@ -346,6 +396,9 @@ int main(int argc, char **argv)
   FD_ZERO(&fdactive);
   if (!CommandParsed) 
     ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
+
+#endif
+
   MdsSetServerPortname(Portname);
   if (IsService)
     InitializeService();
@@ -360,7 +413,9 @@ int main(int argc, char **argv)
     case 'M':   InstallService(1); exit(0); break;
     case 'S':   InstallService(2); exit(0); break;
     case 'r':   RemoveService(); exit(0); break;
+#ifndef HAVE_VXWORKS_H
     case 'w':   StartWorker(argv); break;
+#endif
     }
   }
   if (multi || IsService)
@@ -398,7 +453,7 @@ int main(int argc, char **argv)
           {
             shutdown(c->sock,2);
             closesocket(c->sock);
-            _exit(0);
+            exit(0);
           }
         }
         if (FD_ISSET(c->sock, &readfds))
@@ -506,6 +561,9 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     char *user = 0;
     char *user_p = 0;
     struct hostent *hp;
+#ifdef HAVE_VXWORKS_H
+    char hostent_buf[512];
+#endif
     int i;
     int status;
     int pid;
@@ -515,7 +573,11 @@ static void AddClient(int sock,struct sockaddr_in *sin)
     int m_status;
     int user_compression_level;
     m.h.msglen = sizeof(MsgHdr);
+#ifdef HAVE_VXWORKS_H
+    hp = resolvGetHostByAddr((const char *)&sin->sin_addr, hostent_buf, 512);
+#else
     hp = gethostbyaddr((char *)&sin->sin_addr,sizeof(sin->sin_addr),AF_INET);
+#endif
     m_user = GetMdsMsg(sock,&status);
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING))
     {
@@ -563,7 +625,13 @@ static void AddClient(int sock,struct sockaddr_in *sin)
         else
           ClientList = new;
        }
-	  pid = getpid();
+
+#ifndef HAVE_VXWORKS_H
+      pid = getpid();
+#else
+      pid = taskIdSelf();
+#endif
+
     }
     else
     {
@@ -614,7 +682,9 @@ static void RemoveClient(Client *c)
   {
     nexte = e->next;
     /**/
+#ifndef HAVE_VXWORKS_H
     MDSEventCan(e->eventid);
+#endif
     /**/
     if (e->info_len > 0) free(e->info);
     free(e);
@@ -871,7 +941,9 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
   }
   else
   {
+#ifndef HAVE_VXWORKS_H
     MDSEventCan(e->eventid);
+#endif
     if (e->info_len > 0) free(e->info);
     free(e);
   }
@@ -897,7 +969,9 @@ static void ExecuteMessage(Client *c)
     evname = malloc(c->descrip[1]->length + 1);
     memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
     evname[c->descrip[1]->length] = 0;
+#ifndef HAVE_VXWORKS_H
     status = MDSEventAst(evname,(void (*)(void *,int,char *))ClientEventAst,newe,&newe->eventid);
+#endif
     free(evname); 
  /**/
     if (java)
@@ -949,7 +1023,9 @@ static void ExecuteMessage(Client *c)
       if (e)
       {
 	/**/
+#ifndef HAVE_VXWORKS_H
         MDSEventCan(e->eventid);
+#endif
 	/**/
         free(e);
         *p = e->next;
@@ -1291,6 +1367,7 @@ void GetErrorText(int status, struct descriptor_xd *xd)
   }
 }
 
+#ifndef HAVE_VXWORKS_H
 static short ParsePort(char *name, char **portname)
 {
   short port;
@@ -1310,7 +1387,8 @@ static short ParsePort(char *name, char **portname)
   *portname = strcpy((char *)malloc(strlen(sp ? sp->s_name : name)+1),sp ? sp->s_name : name);
   return port;
 }
-  
+#endif
+
 static void PrintHelp(char *option)
 {
   if (option)
@@ -1339,6 +1417,7 @@ static void PrintHelp(char *option)
   exit(1);
 } 
 
+#ifndef HAVE_VXWORKS_H
 static int ParseOption(char *option, char **argv, int argc, char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level)
 {
   int increment = 0;
@@ -1400,6 +1479,8 @@ static int ParseOption(char *option, char **argv, int argc, char **portname, sho
   return increment;
 }
 
+#endif
+
 static void SetMode(char modein,char *mode)
 {
   int multiple = 0;
@@ -1441,6 +1522,7 @@ static void SetMode(char modein,char *mode)
   }
 }
 
+#ifndef HAVE_VXWORKS_H
 static void ParseCommand(int argc, char **argv,char **portname, short *port, char **hostfile, char *mode, int *flags, int *compression_level)
 {
   int i;
@@ -1526,3 +1608,4 @@ static void ParseCommand(int argc, char **argv,char **portname, short *port, cha
     PrintHelp(0);
   }
 }
+#endif

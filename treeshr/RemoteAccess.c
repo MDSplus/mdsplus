@@ -6,7 +6,7 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 #define MAX_DIMS 7

@@ -1,5 +1,5 @@
-#include        <stdarg.h>
 #include        <stdio.h>
+#include        <stdarg.h>
 #include        <stdlib.h>
 #if defined(vms)
 #include        <lib$routines.h>
@@ -8,7 +8,7 @@
 #elif defined(_WIN32)
 #include        <io.h>
 #define isatty(a) _isatty(a)
-#elif defined(vxWorks)
+#elif defined(HAVE_VXWORKS_H)
 #include 	<time.h>
 #else
 #include        <sys/time.h>
@@ -22,8 +22,20 @@
 #include        "librtl_messages.h"
 #include        "tdimessages.h"
 #include        "treeshr.h"
-#include        "servershr.h"
 
+
+		/*========================================================
+		 * Static variables ...
+		 *=======================================================*/
+static int   mdsmsgFlag = 1;		/* 1 for longer "status" string	*/
+		/*========================================================
+		 * "Define"s and structure definitions ...
+		 *=======================================================*/
+#define ALREADY_DISPLAYED  0x80000000
+
+#ifndef HAVE_VXWORKS_H
+#include        "servershr.h"
+#endif
 /**********************************************************************
 * MDSMSG.C --
 *
@@ -36,25 +48,16 @@
 ************************************************************************/
 
 
-		/*========================================================
-		 * "Define"s and structure definitions ...
-		 *=======================================================*/
-#define ALREADY_DISPLAYED  0x80000000
 
 
 		/*========================================================
 		 * Function prototypes ...
 		 *=======================================================*/
 extern void StrCopyDx();
+#ifndef HAVE_VXWORKS_H
 extern int MDSprintf( char *fmt , ... );
 extern int MDSfprintf( FILE *fp , char *fmt , ... );
-
-
-		/*========================================================
-		 * Static variables ...
-		 *=======================================================*/
-static int   mdsmsgFlag = 1;		/* 1 for longer "status" string	*/
-
+#endif
 
 
 	/*****************************************************************
@@ -88,12 +91,14 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
         *facilityText = "CCL_FACILITY";
         max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
        }
+#ifndef HAVE_VXWORKS_H
     else if (facility == SERVERSHR_FACILITY)
        {
         *stsText = servershr_stsText;		/* point to array		*/
         *facilityText = "SERVERSHR_FACILITY";
         max = sizeof(servershr_stsText)/sizeof(servershr_stsText[0]);
        }
+#endif
     else if (facility == TDI_FACILITY)
        {
         *stsText = tdi_stsText;		/* point to array		*/
@@ -139,8 +144,6 @@ static int   getFacility(	/* Return: num entries in stsText[]	*/
 
     return(max);
    }
-
-
 
 	/*****************************************************************
 	 * MdsGetMsg:

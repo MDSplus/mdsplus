@@ -5,7 +5,9 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
-
+#ifdef HAVE_VXWORKS_H
+#include <stdio.h>
+#endif
 #include <mds_stdarg.h>
 #include <libroutines.h>
 #include <tdimessages.h>

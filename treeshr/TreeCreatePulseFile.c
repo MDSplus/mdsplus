@@ -28,6 +28,9 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 
 
 ------------------------------------------------------------------------------*/
+#ifdef HAVE_VXWORKS_H
+#include <ioLib.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>

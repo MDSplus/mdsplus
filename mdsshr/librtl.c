@@ -325,6 +325,121 @@ void pthread_cancel(HANDLE thread)
 }
 
 #else /* WIN32 */
+#ifdef HAVE_VXWORKS_H
+
+#include <vxWorks.h>
+#include <wdLib.h>
+#include <semLib.h>
+#include <taskLib.h>
+#include <ioLib.h>
+#include <dirent.h>
+
+int pthread_mutex_init(SEM_ID *mutex);
+void pthread_mutex_lock(SEM_ID *mutex);
+void pthread_mutex_unlock(SEM_ID *mutex);
+
+
+void pthread_detach(int *thread)
+{
+	return;
+}
+
+int pthread_cond_init(SEM_ID *cond)
+{
+  *cond = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
+  return (*cond ==NULL);
+}
+
+BOOL pthread_cond_destroy(SEM_ID *cond)
+{
+  int status = semDelete(*cond);
+  return (status == ERROR);
+}
+
+int pthread_cond_signal(SEM_ID *cond)
+{
+  int status;
+  status = semGive(*cond);
+  status = semTake(*cond, WAIT_FOREVER);
+  return (status == ERROR);
+}
+
+
+
+int pthread_cond_wait(SEM_ID *cond)
+{
+  int status;
+  status = semTake(*cond, WAIT_FOREVER);
+  if(status != ERROR)
+    status = semGive(*cond);
+  return (status == ERROR);
+}
+
+void pthread_cond_timedwait(SEM_ID *cond, int msec)
+{
+  STATUS status;
+  status = semTake(*cond, (sysClkRateGet() * msec) / 1000);
+  if(status != ERROR)
+    status = semGive(*cond);
+}
+
+int pthread_mutex_init(SEM_ID *mutex)
+{
+  *mutex = semBCreate(SEM_Q_FIFO, SEM_FULL);
+  return (*mutex == NULL);
+}
+
+BOOL pthread_mutex_destroy(SEM_ID *mutex)
+{
+  return (semDelete(*mutex) != ERROR);
+}
+
+static SEM_ID global_mutex = NULL;
+void pthread_unlock_global_np()
+{
+  if (global_mutex == NULL)
+     pthread_mutex_init(&global_mutex);
+  pthread_mutex_unlock(&global_mutex);
+
+}
+void pthread_lock_global_np()
+{
+  if (global_mutex == NULL)
+     pthread_mutex_init(&global_mutex);
+  pthread_mutex_lock(&global_mutex);
+}
+
+int pthread_exit(int status)
+{
+	return status;
+}
+
+int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param)
+{
+  *thread = taskSpawn(NULL, 90, 0, 20000, (FUNCPTR)rtn, (int)rtn_param, 0,0,0,0,0,0,0,0,0);
+  return (*thread == ERROR);
+}
+
+void pthread_cleanup_pop(){}
+void pthread_cleanup_push(){}
+
+void pthread_mutex_lock(SEM_ID *mutex)
+{
+  semTake(*mutex, WAIT_FOREVER);
+}
+
+void pthread_mutex_unlock(SEM_ID *mutex)
+{
+  semGive(*mutex);
+}
+
+
+void pthread_cancel(unsigned long *thread)
+{
+  taskDelete(*thread);
+}
+
+#else /* VXWORKS */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -399,6 +514,8 @@ void *dlsym(void *handle, char *name)
 }
 #else
 #include <dlfcn.h>
+#endif
+
 #endif
 
 static char *nonblank( char *p)
@@ -571,10 +688,6 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 #endif
 #ifdef HAVE_VXWORKS_H
-
-#include <vxWorks.h>
-#include <wdLib.h>
-#include <semLib.h>
 
 
 static WDOG_ID wd;
@@ -841,6 +954,8 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
 
 #ifdef HAVE_VXWORKS_H
 static int timezone = 0;
+typedef long long _int64;
+typedef unsigned long long _int64u;
 #endif
 
 
@@ -1015,7 +1130,6 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   unsigned short slen=sizeof(time_out);
 #ifndef HAVE_VXWORKS_H
   tzset();
-#endif
   if (time_in)
   {
     _int64 time_local;
@@ -1023,6 +1137,7 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
     bintim = (time_t)((double)(time_local >> 24) * 1.6777216 - 3.5067168e+09) + timezone; 
   }
   else
+#endif
     bintim = time(0) + timezone;
   time_str = ctime(&bintim);
   time_out[0]  = time_str[8];

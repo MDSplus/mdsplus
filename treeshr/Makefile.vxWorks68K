@@ -1,10 +1,13 @@
-include $(MAKE_OPTIONS)
+CC = cc68k
+VXWORKS_BASE = /app/tornado/target
+CFLAGS  = -c -g -fno-builtin  -DWORDS_BIGENDIAN -m68040 -DCPU=MC68040 -DVME_ENV  -fvolatile -fpack-struct -DHAVE_VXWORKS_H -D_big_endian -I $(VXWORKS_BASE)/h  -I../include 
 
 
 OBJECTS = \
 dummies.o \
 TreeAddNode.o \
 TreeAddTag.o \
+TreeCallHook.o \
 TreeCleanDatafile.o \
 TreeCreatePulseFile.o \
 TreeDeleteNode.o \
@@ -15,6 +18,7 @@ TreeFindTagWild.o \
 TreeGetDbi.o \
 TreeGetNci.o \
 TreeGetRecord.o \
+TreeGetSetShotId.o \
 TreeOpen.o \
 TreePutRecord.o \
 TreeRenameNode.o \

@@ -34,7 +34,7 @@ extern void *DBID;
 
 
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
@@ -161,7 +161,7 @@ static int OpenDatafileR(TREE_INFO *info)
     char *filename = strncpy(malloc(len+9),info->filespec,len);
     filename[len]='\0';
     strcat(filename,"datafile");
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
     df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM, 0);
 #else
     df_ptr->get = open(filename,O_RDONLY | O_BINARY | O_RANDOM);

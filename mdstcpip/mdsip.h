@@ -23,7 +23,11 @@
 #else
 #include <sys/ioctl.h>
 #ifndef I_NREAD
+#ifdef HAVE_VXWORKS_H
+#include <streams/stropts.h>
+#else
 #include <stropts.h>
+#endif
 #endif
 #endif
 
@@ -34,11 +38,11 @@
 #include <errno.h>
 #include <time.h>
 #else
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #include <sys/errno.h>
 #endif
 #endif
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #include <types/vxTypesOld.h>
 #include <errno.h>
 #include <time.h>
@@ -51,7 +55,7 @@
 #else
 #define INVALID_SOCKET -1
 #include <sys/types.h>
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #ifndef __VMS
 #include <fcntl.h>
 #endif
@@ -59,7 +63,7 @@
 #endif
 #include <netinet/in.h>
 #include <sys/socket.h>
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #include <netdb.h>
 #endif
 #include "signal.h"

@@ -23,7 +23,7 @@
 #define end	1
 #define delta	2
 #define HUGE (1<<28)
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 #define const
 #endif
 #define ROPRAND(fptr) (*(unsigned short *)(fptr) == 0x8000)

@@ -56,6 +56,7 @@
 
 #ifdef HAVE_VXWORKS_H
 static int timezone = 0;
+#define LONG_LONG_CONSTANT(value) value##ll
 #endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -96,7 +97,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       length = 0;
   int       shot_open;
   compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H) && !defined(vxWorks)
+#if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -136,7 +137,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
         tzset();
 #endif
         m1 = (unsigned int)time(NULL) - timezone;
@@ -479,7 +480,7 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int offset)
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
 #else
-#ifdef vxWorks 
+#ifdef HAVE_VXWORKS_H 
 int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 { return TreeSUCCESS; }
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)

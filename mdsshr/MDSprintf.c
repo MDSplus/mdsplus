@@ -39,8 +39,8 @@
 *
 *********************************************************************/
 
-#include <stdarg.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 
 
@@ -93,7 +93,7 @@ void  MdsSetOutputFunctions(
    ,int (*NEWvfprintf)(FILE *,const char *,void *)
    )
    {
-    MDSvprintf = ((void *)NEWvprintf==(void *)-1) ? vprintf : NEWvprintf;
+    MDSvprintf =  ((void *)NEWvprintf ==(void *)-1) ? vprintf : NEWvprintf;
     MDSvfprintf = ((void *)NEWvfprintf==(void *)-1) ? vfprintf : NEWvfprintf;
     return;
    }

@@ -3,7 +3,7 @@ extern int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims
 
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
-#define UnBlockSig(arg)
+#define UnBlockSig(arg) 
 #else
 static int BlockSig(int sig_number)
 {
@@ -486,7 +486,7 @@ void MdsSetClientAddr(int addr) { ClientAddr = addr; }
 char *MdsGetServerPortname() {return ServerPortname;}
 int MdsGetClientAddr() {return ClientAddr;}
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
@@ -603,4 +603,4 @@ int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
   return MdsSetCompression((SOCKET)lpvArgv[0],(int)lpvArgv[1]);
 }
 
-#endif //vxWorks
+#endif //HAVE_VXWORKS_H

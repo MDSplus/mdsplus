@@ -9,6 +9,10 @@
 #include <mdstypes.h>
 #include <treeshr_hooks.h>
 
+#ifdef HAVE_VXWORKS_H
+#define _int64 long long
+#endif
+
 /********************************************
   NCI
 
@@ -325,7 +329,7 @@ typedef struct record_header
 
 #define MAX_SEARCH_LEVELS 32
 
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #undef NONE
 #endif
 

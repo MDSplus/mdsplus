@@ -21,6 +21,10 @@ extern char *index(char *str,char c);
 #include <errno.h>
 #include <fcntl.h>
 
+#ifdef HAVE_VXWORKS_H
+#include <ioLib.h>
+#endif
+
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #endif
@@ -42,8 +46,9 @@ extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 
 int treeshr_errno = 0;
-
+#ifndef HAVE_VXWORKS_H
 extern int MDSEventCan();
+#endif
 static void RemoveBlanksAndUpcase(char *out, char *in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
@@ -269,11 +274,13 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 				{
 					if (local_info->blockid == TreeBLOCKID)
 					{
+#ifndef HAVE_VXWORKS_H
 						if (local_info->rundown_id)
 							MDSEventCan(local_info->rundown_id);
+#endif
 						if (local_info->section_addr[0])
 						{
-#ifndef HAVE_WINDOWS_H
+#if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
               if (local_info->channel)
 							{ int status;
 							  close(local_info->channel);
@@ -815,7 +822,7 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,
                                 }
                                 else
 				{
-#if (defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(vxWorks)
+#if (defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX)) && !defined(HAVE_VXWORKS_H)
 				  info->channel = open(resnam,O_RDONLY);
 				  file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
 #else
@@ -932,7 +939,7 @@ static int MapFile(void *file_handle, TREE_INFO *info, int edit_flag, int nomap)
 			fclose(*(FILE **)file_handle);
 			status = 1;
 		}
-#ifndef HAVE_WINDOWS_H
+#if (!defined (HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
 		else
 		{
 #ifndef MAP_FILE

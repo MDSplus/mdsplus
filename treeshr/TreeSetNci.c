@@ -304,7 +304,7 @@ int TreeOpenNciW(TREE_INFO *info, int tmpfile)
         info->nci_file->get = 0;
       if (status & 1)
       {
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
         info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM, 0);
 #else
         info->nci_file->put = open(filename,O_RDWR | O_BINARY | O_RANDOM);
@@ -703,7 +703,7 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 }
 #else
 
-#ifdef vxWorks 
+#ifdef HAVE_VXWORKS_H 
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
 { return TreeSUCCESS; }
 int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)

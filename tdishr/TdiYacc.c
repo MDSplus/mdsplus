@@ -51,7 +51,7 @@
 #include <tdimessages.h>
 #include <mds_stdarg.h>
 
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #undef ERROR
 #endif
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -1,8 +1,23 @@
-include $(MAKE_OPTIONS)
+CC = cc68k
+VXWORKS_BASE = /app/tornado/target
+CFLAGS  = -c -g -fno-builtin  -DBIG_ENDIAN  -DWORDS_BIGENDIAN -m68040 -DCPU=MC68040 -DVME_ENV  -fvolatile -fpack-struct -DHAVE_VXWORKS_H -D_big_endian -I $(VXWORKS_BASE)/h  -I../include 
 
-OBJECTS = \
-	mdsipshr.o \
-	mdsiputil.o
+OBJECTS = adler32.o \
+	  deflate.o \
+	  infcodes.o \
+	  inflate.o \
+	  infutil.o \
+	  mdsipshr.o \
+	  uncompr.o \
+	  zutil.o \
+	  compress.o \
+	  infblock.o \
+	  inffast.o \
+	  inftrees.o \
+	  mdsip_u.o \
+	  mdsiputil.o \
+	  trees.o \
+	  vmshpwd.o	
 
 mdstcpip:  ../vxWorks ../vxWorks/68K $(OBJECTS)
 	ld68k -o ../vxWorks/68K/MdsIpShr.o -r *.o

@@ -142,7 +142,7 @@ void MdsIpFree(void *ptr)
 }
 #endif
 
-#if !defined(__VMS) && !defined(_WIN32) && !defined(vxWorks)
+#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
 static struct timeval connectTimer = {0,0};
 
 int SetMdsConnectTimeout(int sec)
@@ -163,7 +163,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   static int one=1;
   int addr;
 
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
   hp = gethostbyname(host);
 #endif
 #ifdef _WIN32
@@ -179,12 +179,12 @@ static SOCKET ConnectToPort(char *host, char *service)
   if (hp == NULL)
   {
     addr = inet_addr(host);
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
     if (addr != 0xffffffff)
     	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
 #endif
   }
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
   if (addr == 0xffffffff)
 #else
   if (hp == NULL)
@@ -195,7 +195,7 @@ static SOCKET ConnectToPort(char *host, char *service)
   }
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) return INVALID_SOCKET;
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
   if (atoi(service) == 0)
   {
       char *port;
@@ -226,14 +226,14 @@ static SOCKET ConnectToPort(char *host, char *service)
     return INVALID_SOCKET;
   }
   sin.sin_family = AF_INET;
-#if defined( vxWorks )
+#if defined( HAVE_VXWORKS_H )
   memcpy(&sin.sin_addr, &addr, sizeof(addr));
 #elif defined(ANET)
   memcpy(&sin.sin_addr, hp->h_addr, sizeof(sin.sin_addr));
 #else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
-#if !defined(__VMS) && !defined(_WIN32) && !defined(vxWorks)
+#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
   if (connectTimer.tv_sec)
   {
     status = fcntl(s,F_SETFL,O_NONBLOCK);
@@ -288,7 +288,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #else
     static char user[L_cuserid];
     char *user_p;
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
     user_p = "vxWorks";
 #else
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
@@ -357,7 +357,7 @@ int HostToIp(char *host, int *addr, short *port)
     *port = 0;
     return 1;
   }
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
   hp = gethostbyname(hostpart);
 #endif
 #ifdef _WIN32
@@ -373,12 +373,12 @@ int HostToIp(char *host, int *addr, short *port)
   if (hp == NULL)
   {
     *addr = inet_addr(hostpart);
-#ifndef vxWorks
+#ifndef HAVE_VXWORKS_H
     if (*addr != 0xffffffff)
       hp = gethostbyaddr((void *) addr, (int) sizeof(* addr), AF_INET);
 #endif
   }
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
   if (*addr == 0xffffffff)
 #else
   if (hp == NULL)
@@ -387,13 +387,13 @@ int HostToIp(char *host, int *addr, short *port)
     printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
     return INVALID_SOCKET;
   }
-#ifdef vxWorks
-  if (atoi(service) == 0)
+#ifdef HAVE_VXWORKS_H
+  if (atoi(portpart) == 0)
   {
     *port=8000;
   }
   else
-    *port = (short)atoi(service);
+    *port = (short)atoi(portpart);
 #else
   if (atoi(portpart) == 0)
   {
@@ -415,10 +415,12 @@ int HostToIp(char *host, int *addr, short *port)
     return INVALID_SOCKET;
   }
 /* for vxWorks addr is already filled in */
+#ifndef HAVE_VXWORKS_H
 #ifdef ANET
   memcpy(addr, hp->h_addr, sizeof(*addr));
 #else
   memcpy(addr, hp->h_addr_list[0], sizeof(*addr));
+#endif
 #endif
   return 1;
 }

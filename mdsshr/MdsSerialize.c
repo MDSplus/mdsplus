@@ -45,11 +45,16 @@
                                      | (inp->aflags.coeff << 6) | (inp->aflags.bounds << 7)
 #define offset(ptr)       *(unsigned int *)&ptr
 
+#ifdef HAVE_VXWORKS_H
+#define _int64 long long
+#endif
+
 union __bswap { char   b[8];
              int    int_;
              short  short_;
-             _int64 _int64_;
+             long long  _int64_;
              };
+
 #if defined(WORDS_BIGENDIAN)
 
 #define swap(dtype,ptr,ans) \

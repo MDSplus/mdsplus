@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <tdimessages.h>
 #include "tdirefstandard.h"
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #undef MAX
 #endif
 

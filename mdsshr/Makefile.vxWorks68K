@@ -1,9 +1,13 @@
-include $(MAKE_OPTIONS)
-
+CC = cc68k
+VXWORKS_BASE = /app/tornado/target
+CFLAGS  = -c -g -fno-builtin  -DWORDS_BIGENDIAN -m68040 -DCPU=MC68040 -DVME_ENV  -fvolatile -fpack-struct -DHAVE_VXWORKS_H -D_big_endian -I $(VXWORKS_BASE)/h  -I../include 
+SHARE_TYPE = o
+MAKE_DEPEND = $(CC) $(CFLAGS) -M {} > .depend \;
+OBJECTDIR = ../vxWorks
 
 OBJECTS = \
-	dummies.o  \
 	librtl.o \
+	dummies.o  \
 	dasutil_routines4.o \
 	mdsmsg.o \
 	MdsCmprs.o \
@@ -14,12 +18,13 @@ OBJECTS = \
         MdsGetSetShotId.o \
         MdsPk.o \
         MdsSerialize.o \
-	MdsXdRoutines.o
+	MDSprintf.o \
+	MdsXdRoutines.o 
 
 
 
 mdsshr:  ../vxWorks ../vxWorks/68K $(OBJECTS)
-	ld68k -o ../vxWorks/68K/libMdsShr.o -r *.o
+	ld68k -o ../vxWorks/68K/libMdsShr.o -r -Map cacca *.o
 	rm *.o
 
 

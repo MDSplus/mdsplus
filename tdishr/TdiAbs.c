@@ -58,7 +58,7 @@ extern int TdiUnary(  );
 extern int Tdi3Multiply(  );
 extern int CvtConvertFloat();
 
-#ifdef vxWorks
+#ifdef HAVE_VXWORKS_H
 #undef min
 #undef max
 #endif

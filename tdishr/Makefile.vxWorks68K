@@ -1,4 +1,7 @@
-include $(MAKE_OPTIONS)
+CC = cc68k
+VXWORKS_BASE = /app/tornado/target
+CFLAGS  = -c -g -fno-builtin  -DWORDS_BIGENDIAN -m68040 -DCPU=MC68040 -DVME_ENV  -fvolatile -fpack-struct -DHAVE_VXWORKS_H -D_big_endian -I $(VXWORKS_BASE)/h  -I../include 
+
 
 OBJECTS = \
 CvtConvertFloat.o \
