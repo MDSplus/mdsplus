@@ -4,6 +4,9 @@ int CloseSocket(SOCKET s);
 extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
 extern char ClientType(void);
 extern void FlipHeader(MsgHdr *header);
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
 #ifdef GLOBUS
 #if defined(__VMS)
 #include <descrip.h>
@@ -289,7 +292,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
-  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+  globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
   globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
@@ -429,7 +432,7 @@ void SetSocketOptions(SOCKET s, int reuse)
 #ifndef GLOBUS
   STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
-  int len;
+  unsigned long len;
   static int debug_winsize=0;
   static int init=1;
   if (init)
@@ -580,7 +583,7 @@ SOCKET MConnect(char *host, unsigned short port)
     globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
     globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_HOST,&auth_data);
     globus_io_attr_set_secure_delegation_mode(&attr,GLOBUS_IO_SECURE_DELEGATION_MODE_FULL_PROXY);
-    globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+    globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
     globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   }
   if ((result = globus_io_tcp_connect((host[0] == '_') ? &host[1] : host,htons(port),&attr,handle)) != GLOBUS_SUCCESS)
@@ -789,9 +792,11 @@ globus_result_t globus_io_tcp_accept_inetd(globus_io_attr_t *attr,   globus_io_h
         char *cp;
         cp = strchr(delcname,'=');
         cp++;
+#ifndef _AIX
         unsetenv("X509_USER_KEY");
         unsetenv("X509_USER_CERT");
         unsetenv("X509_USER_PROXY");
+#endif
         setenv("X509_USER_PROXY",cp,1);
       }
     }
@@ -830,7 +835,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   SOCKET s=-1;
 #ifndef GLOBUS
   struct sockaddr_in sin;
-  int n = sizeof(sin);
+  unsigned long n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
   status = sys$assign(&INET, &s, 0, 0);
@@ -868,7 +873,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   result = globus_io_secure_authorization_data_set_callback(&auth_data,AuthenticationCallback,0);
   result = globus_io_attr_set_secure_authentication_mode(&attr,GLOBUS_IO_SECURE_AUTHENTICATION_MODE_GSSAPI,GSS_C_NO_CREDENTIAL);
   result = globus_io_attr_set_secure_authorization_mode(&attr,GLOBUS_IO_SECURE_AUTHORIZATION_MODE_CALLBACK,&auth_data);
-  result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_GSI_WRAP);
+  result = globus_io_attr_set_secure_channel_mode(&attr,GLOBUS_IO_SECURE_CHANNEL_MODE_CLEAR);
   globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   result = globus_io_tcp_accept_inetd(&attr,handle);
   result = globus_io_tcpattr_destroy(&attr);
