@@ -6,6 +6,8 @@ OBJECTS = \
 	MdsXdRoutines.o \
 	MdsCmprs.o \
 	MdsPk.o \
+        MdsCompareXd.o \
+        MdsCompress.o \
 	dummies.o \
 	librtl.o
 
