@@ -54,7 +54,12 @@ SOURCES	= \
 
 OBJECTS =	$(SOURCES:.c=.o)
 
-all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+CTS_SOURCES = cts_commands.c verbs.c
+
+CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
+
+all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ \
+      @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @MAKEBINDIR@mdscts
 
 .PHONY: clean
 clean:
@@ -63,6 +68,10 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
 	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR)
 	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
+	@ $(RM) so_locations
+	@ $(RM) cts_commands.c
+	@ $(RM) @MAKEBINDIR@mdscts
+	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -75,6 +84,20 @@ install:
 	$(INSTALL) -m 755  @MAKESHLIBDIR@$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@lib$(LIBRARYNAME)@SHARETYPE@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@mdscts @bindir@
+
+
+@MAKEBINDIR@mdscts:	cts
+	cp  cts $@
+	chmod +x $@
+
+cts_commands.c:	cts_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < cts_commands.ocld
+	$(MAKE) depend
+
+@MAKESHLIBDIR@libcts_commands@SHARETYPE@:	$(CTS_OBJECTS) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+	$(LD)  -o $@ @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lCamShr $(LIBS)
 
 @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
 	$(CC) -g -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \

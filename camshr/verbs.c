@@ -501,7 +501,7 @@ SetCrate_Exit:
 #define	RED		1
 int ShowCrate()
 {
-	char			colorENH[9], colorON[9], NORMAL[] = "\033[0m";
+  char			colorENH[9], colorON[9];//, NORMAL[] = "\033[0m";
 	char tmp[7];
 	int				enhanced, i, j, online, moduleFound, numOfCrates, numOfModules;
 	int				crateStatus;

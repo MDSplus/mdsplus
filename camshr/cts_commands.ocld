@@ -1,0 +1,50 @@
+module cts_commands
+define verb assign
+	routine Assign
+        parameter p1,label=PHY_NAME,value(required),prompt="Physical name:"
+	parameter p2,label=LOG_NAME,value(required),prompt="Logical name:"
+        qualifier comment,value
+define verb autoconfig
+	routine Autoconfig
+define verb cts													       
+	routine Noop												       
+	Parameter p1,value(type=$rest_of_line)									       
+	qualifier tables,default, value(default="cts_commands",LIST)						       
+	qualifier helplib,default,value(default="ctsHELP")							       
+	qualifier auxhelplib,value										       
+	qualifier prompt,default,value(default="CTS>")								       
+	qualifier def_file,default,value(default="*.cts")								
+	qualifier key_defs,default,value(default="ctskeys")							       
+	qualifier def_libraries,default,value(default="cts$library")						       
+	qualifier command,default,value(default="ctsinit")							       
+	Qualifier ini_def_File,default,value(default="sys$login:*.cts")						       
+	qualifier library,value(required)									       
+        Qualifier debug 											       
+define verb deassign
+        routine Deassign
+        parameter p1,label=MODULE,value(required),prompt="Module:"
+        qualifier physical
+														       
+define verb reset												       
+        routine ResetHighway											       
+        parameter p1,label=MODULE,value(required),prompt="Highway:"						       
+        													       
+define verb set
+        routine SetCrate
+        parameter p1,label=CRATE,value(default="*")
+        qualifier online
+        qualifier offline
+        qualifier quiet												       
+define verb show
+        routine ShowModule
+        parameter p1,label=MODULE,value(default="*")
+        qualifier crate,syntax=show_crate
+        qualifier highway,syntax=show_highway
+        qualifier physical
+	qualifier format											       
+define syntax show_crate
+        routine ShowCrate
+        parameter p1,label=MODULE,value(default="*")
+define syntax show_highway
+        routine ShowModule
+        parameter p1,label=MODULE,value(default="*")
