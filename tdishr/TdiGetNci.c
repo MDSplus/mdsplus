@@ -187,6 +187,7 @@ char				*hold_ptr=0, *dat_ptr=0;
 unsigned char omits[] = {DTYPE_NID,DTYPE_PATH,0};
 int				wild, usage_mask;
 void			*pctx = NULL;
+unsigned short                  maxlen = 0;
 
 	if (list[0]) {
 		status = TdiGetData(omits, list[0], &nids);
@@ -382,7 +383,9 @@ more:		switch (dtype) {
 			if (status & 1 && texted[0].pointer)
 			{
 				unsigned short len = (unsigned short)strlen((char *)texted[0].pointer);
+                                if (maxlen < len) maxlen = len;
 				StrCopyR((struct descriptor *)hold_ptr,&len,texted[0].pointer);
+                                TreeFree(texted[0].pointer);
 			}
 		}
 		/***********************************
@@ -413,6 +416,26 @@ skip:		if (status & 1 && wild) goto more;
 		else if (outcount == 0) MdsFree1Dx(out_ptr, NULL);
 		else if (outcount == 1 && class != CLASS_A)
 			status = MdsCopyDxXd((struct descriptor *)holda_ptr->pointer, out_ptr);
+                else if (maxlen > 0)
+		  {
+		    array arr = *(array *)&arr0;
+                    unsigned char dtype = DTYPE_T;
+                    arr.arsize = outcount;
+                    status = MdsGet1DxA((struct descriptor_a *)&arr, &maxlen, &dtype, (struct descriptor_xd *)out_ptr);
+                    if (status & 1)
+                    {
+                      char *p;
+                      struct descriptor_xd *dp;
+                      int j;
+                      memset(out_ptr->pointer->pointer,32,outcount * maxlen);
+                      for (j=0,p=out_ptr->pointer->pointer,dp = (struct descriptor_xd *)holda_ptr->pointer;
+                           j<outcount;j++,p+=maxlen,dp++)
+		      {
+                        memcpy(p,dp->pointer,dp->length);
+                      }
+                    }
+                        
+                  }
 		else {
                        unsigned short dlen = sizeof(int *);
                        unsigned char dtype = (unsigned char)DTYPE_L;
@@ -421,7 +444,9 @@ skip:		if (status & 1 && wild) goto more;
 			char **xd_ptr = (char **)tmp.pointer->pointer;
 				hold_ptr = holda_ptr->pointer;
 				for (j=outcount; --j>=0; hold_ptr+=step) *xd_ptr++ = hold_ptr;
+                                printf("About to Tdi1Vector\n");
 				status = Tdi1Vector(OpcVector, outcount, tmp.pointer->pointer, out_ptr);
+                                printf("Done Tdi1Vector\n");
 			}
 			MdsFree1Dx(&tmp, NULL);
 		}
