@@ -106,7 +106,9 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 int idx = 0;
                 while(st.hasMoreTokens())
                     colNames[idx++] = st.nextToken();
+                String []oldColumnNames = bean.getColumnNames();
                 bean.setColumnNames(colNames);
+                listeners.firePropertyChange("columnNames", oldColumnNames, bean.getColumnNames());
             }
         });
         add(jp,"South");
