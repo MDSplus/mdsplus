@@ -216,6 +216,7 @@ clean:
 	@ $(RM) $(UIDS)
 	@ $(RM) $(OBJECTS)
 	@ $(RM) $(IO_OBJECTS)
+	@ $(RM) *_gen.c
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMitDevices.a
 	@ $(RM) @MAKESHLIBDIR@libMitDevices@SHARETYPE@
