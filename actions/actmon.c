@@ -293,9 +293,13 @@ static int ParseMsg(char *msg, LinkedEvent *event)
 static void MessageAst(int dummy, char *reply)
 {
   LinkedEvent event;
-  if (ParseMsg(reply,&event))
+  if (reply && ParseMsg(reply,&event))
   {
     EventUpdate(&event);
+  }
+  else
+  {
+    CheckIn(0);
   }
 }
 
@@ -504,17 +508,21 @@ static void Done(LinkedEvent *event)
     PutError(event->time, "DONE",  event->status_text, event->server, event->fullpath);
 }
 
-static void MonitorDown()
+static void CheckIn(String monitor_in)
 {
- exit(0);
-}
-
-static void CheckIn(String monitor)
-{
-  int status;
-  status =ServerMonitorCheckin(monitor, MessageAst, 0, MonitorDown);
-  if (!(status & 1))
-    exit(0);
+  static String monitor;
+  int status = 0;
+  if (monitor_in)
+    monitor = monitor_in;
+  while (!(status & 1))
+  {
+    status =ServerMonitorCheckin(monitor , MessageAst, 0);
+    if (!(status & 1))
+    {
+      printf("Error connecting to monitor: %s, will try again shortly\n",monitor);
+      sleep(2);
+    }
+  }
 }
 
 static void ActivateImages(String images)
