@@ -1,4 +1,4 @@
-public fun TR10_Config(in _board_id, optional in _remoteIp)
+public fun TR10__config(in _board_id, optional in _remoteIp)
 {
    if( present(_remoteIp) )
 	{
