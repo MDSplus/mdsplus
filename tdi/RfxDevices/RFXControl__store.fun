@@ -103,6 +103,11 @@ write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_DAC_OUT_1  + _c;
 			_data = MdsValue( 'Feedback->getDacSignal:dsc($1, $2)', _c/32, mod(_c, 32));
 
+			if(size(_data) <= 2)
+			{
+				DevLogErr(_nid, 'VME not triggered' // _status);
+				abort();	
+			}
 			_status = DevPutSignal(_sig_nid, -2048, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
