@@ -21,7 +21,7 @@
 /*  *2    17-MAY-1994 09:34:55 TWF "Add CDECL" */
 /*  *1    17-MAY-1994 09:33:58 TWF "descriptor structures" */
 /*  CMS REPLACEMENT HISTORY, Element IPDESC.H */
-#ifdef __MSDOS__
+#ifdef _WIN32
 #include "winsock.h"
 typedef long int32;
 #else

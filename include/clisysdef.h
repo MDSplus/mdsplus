@@ -99,7 +99,7 @@ struct cduVerb  {
 #endif
 
 #define IS_COMMENT_CHARACTER(C)       ((C)=='!' || (C)==';')
-#define IS_CONTINUATION_CHARACTER(C)  ((C)=='-' || (C)=='\')
+#define IS_CONTINUATION_CHARACTER(C)  ((C)=='-' || (C)=='\\')
 #define IS_QUALIFIER_CHARACTER(C)     ((C)=='/' || (C)=='-')
 
 
