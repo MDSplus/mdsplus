@@ -101,7 +101,6 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#define _UNIX_SERVER
 
 int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated argument list expected ****/
 {
@@ -162,13 +161,8 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   unsigned char nargs;
   unsigned char idx = 0;
   int status = 1;
-#ifdef _UNIX_SERVER
   static char *putexpprefix = "TreePutRecord(";
   static char *argplace = "$,";
-#else
-  static char *putexpprefix = "MDSLIB->MDS$PUT(";
-  static char *argplace = "descr($),";
-#endif
   char *putexp;
   struct descrip putexparg;
   struct descrip exparg;
@@ -207,131 +201,12 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   return status;
 }
 
-/*JMS--->*/
-
-
-int MdsValueFtotSize (struct descrip *dataarg)
-{
-  int totsize = 0;
-  if (dataarg->ndims == 0) {
-    totsize=1;
-  } else { 
-    int i;
-    totsize = dataarg->dims[0];
-    for (i=1;i<dataarg->ndims;i++) {
-      totsize=totsize*dataarg->dims[i];
-    }
-  }
-  return totsize;
-}
-
-int  MdsValueF(SOCKET sock, char *expression, double *data, int maxsize, int *retsize)
-{
-
-  struct descrip dataarg;
-
-  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
-
-  /*printf("EXPRESSION IN MDSVALUEF: %s %u \n",expression,strlen(expression)); */
-  if (status & 1) {
-
-    int fullsize;
-    float *newdata;
-    int totsize = MdsValueFtotSize( (struct descrip *)&dataarg );
-    memcpy(retsize,&totsize,sizeof(int));
-
-
-    if (totsize > maxsize) totsize=maxsize;
-
-    fullsize=totsize*ArgLen(&dataarg);
-
-    switch (dataarg.dtype) {
-    int i;
-    case DTYPE_FLOAT : 
-	memcpy(data, (float *) dataarg.ptr, fullsize);
-	break;
-    case DTYPE_DOUBLE : 
-	memcpy(data, (double *) dataarg.ptr, fullsize);
-	break;
-    case DTYPE_LONG : 
-
-        newdata = calloc (totsize, sizeof(float));
-
-        for (i=0;i<totsize;i++) {
-	  *(newdata+i) = ((float) *((long *)dataarg.ptr+i));
-        } 
-
-        memcpy(data, newdata, fullsize);
-	free(newdata);
-	break;
-    default :
-	status=0;
-	break;
-    }
-  }
-  if (dataarg.ptr) free(dataarg.ptr);
-  return status;
-
-}
-
-int  MdsValueC(SOCKET sock, char *expression, char *data, int *retsize)
-{
-
-  struct descrip dataarg;
-  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
-  /* printf("EXPRESSION IN MDSVALUEC: -->%s<--\n",expression); */
-  if (status & 1) {
-    int size = ArgLen(&dataarg);
-    memcpy(retsize,&size,sizeof(int));
-    switch (dataarg.dtype) {
-    case DTYPE_CSTRING : 
-	memcpy(data, (char *) dataarg.ptr, ArgLen(&dataarg)*sizeof(char));
-	break;
-    default :
-	status=0;
-	break;
-    }
-  }
-  if (dataarg.ptr) free(dataarg.ptr);
-  return status;
-
-}
-
-int  MdsValueI(SOCKET sock, char *expression, int *data);
-int  MdsValueI(SOCKET sock, char *expression, int *data) 
-{
-
-  struct descrip dataarg;
-  int status = MdsValue(sock, expression, (struct descrip *)&dataarg, (struct descrip *)NULL);
-
-  if (status & 1) {
-    switch (dataarg.dtype) {
-    case DTYPE_SHORT : case DTYPE_LONG :
-	memcpy(data, (int *) dataarg.ptr, ArgLen(&dataarg));
-	break;
-    default :
-	status=0;
-	break;
-    }
-  }
-  if (dataarg.ptr) free(dataarg.ptr);
-  return status;
-
-}
-
-
-/*JMS<---*/
-
 int  MdsOpen(SOCKET sock, char *tree, int shot)
 {
   struct descrip treearg;
   struct descrip shotarg;
   struct descrip ansarg;
-#ifdef _UNIX_SERVER
   static char *expression = "TreeOpen($,$)";
-#else
-  static char *expression = "MDSLIB->MDS$OPEN($,$)";
-#endif
   int status = MdsValue(sock, expression, MakeDescrip((struct descrip *)&treearg,DTYPE_CSTRING,0,0,tree), 
 			      MakeDescrip((struct descrip *)&shotarg,DTYPE_LONG,0,0,&shot),
 			      (struct descrip *)&ansarg, (struct descrip *)NULL);
@@ -344,11 +219,7 @@ int  MdsOpen(SOCKET sock, char *tree, int shot)
 int  MdsClose(SOCKET sock)
 {
   struct descrip ansarg;
-#ifdef _UNIX_SERVER
   static char *expression = "TreeClose()";
-#else
-  static char *expression = "MDSLIB->MDS$CLOSE()";
-#endif
   int status = MdsValue(sock, expression, &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
@@ -359,11 +230,7 @@ int  MdsSetDefault(SOCKET sock, char *node)
 {
   struct descrip nodearg;
   struct descrip ansarg;
-#ifdef _UNIX_SERVER
   static char *expression = "TreeSetDefault($)";
-#else
-  static char *expression = "MDSLIB->MDS$SET_DEFAULT($)";
-#endif
   int status = MdsValue(sock, expression, MakeDescrip(&nodearg,DTYPE_CSTRING,0,0,node), &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG)) status = *(int *)ansarg.ptr;
   if (ansarg.ptr) free(ansarg.ptr);
