@@ -1,7 +1,7 @@
 public fun DIO2Encoder__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'DIO2Encoder', 75, _nidout);
+    DevAddStart(_path, 'DIO2Encoder', 91, _nidout);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
@@ -15,6 +15,7 @@ public fun DIO2Encoder__add(in _path, out _nidout)
     	DevAddNode(_cn // ':EVENT_NAME', 'TEXT', *, *, _nid);
         DevAddNode(_cn // ':EVENT', 'NUMERIC', 1, *, _nid);
         DevAddNode(_cn // ':EVENT_TIME', 'NUMERIC', 0, *, _nid);
+        DevAddNode(_cn // ':TERMINATION', 'TEXT', 'OFF', *, _nid);
     }
     for (_c = 10; _c <=16; _c++)
     {
@@ -23,7 +24,8 @@ public fun DIO2Encoder__add(in _path, out _nidout)
     	DevAddNode(_cn // ':EVENT_NAME', 'TEXT', *, *, _nid);
         DevAddNode(_cn // ':EVENT', 'NUMERIC', 1., *, _nid);
         DevAddNode(_cn // ':EVENT_TIME', 'NUMERIC', 0, *, _nid);
- 
+        DevAddNode(_cn // ':TERMINATION', 'TEXT', 'OFF', *, _nid);
+
 	}
     _cn = _path // '.CHANNEL_SW';
     DevAddNode(_cn, 'STRUCTURE', *, *, _nid);

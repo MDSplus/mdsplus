@@ -1,4 +1,4 @@
-public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events)
+public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events, in _terminations)
 {
 
 	private _DIO2_CLOCK_SOURCE_INTERNAL	=	0x0;
@@ -81,7 +81,8 @@ write(*, '----> ', _events);
 	for(_c = 0; _c < 16; _c++)
 	{
 		_status = DIO2->DIO2_IO_SetIOConnectionInput(val(_handle), val(byte(_c + 1)),
-			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_ON)));
+			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_terminations[_c])));
+/*			val(byte(_DIO2_IO_CONNECTION_SIDE_FRONT)), val(byte(_DIO2_IO_CONNECTION_TERMINATION_ON)));*/
 	}
 		
 	for(_c = 0; _c < 16; _c++)

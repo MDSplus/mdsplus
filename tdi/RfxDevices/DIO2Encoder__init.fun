@@ -7,11 +7,12 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 	private _N_COMMENT = 4;
     private _N_CLOCK_SOURCE = 5;
 
-    private _K_NODES_PER_CHANNEL = 4;
+    private _K_NODES_PER_CHANNEL = 5;
     private _N_CHANNEL_0= 6;
     private _N_CHAN_EVENT_NAME = 1;
     private _N_CHAN_EVENT = 2;
     private _N_CHAN_EVENT_TIME = 3;
+    private _N_CHAN_TERMINATION = 4;
 
 	private _LARGE_TIME = 1E6;
     private _INVALID = 10E20;
@@ -43,6 +44,7 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 
 
 	_events = [];
+	_terminations = [];
     for(_c = 0; _c < 17; _c++)
     {
 
@@ -73,18 +75,25 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 				{
 					_status = TimingRegisterEventTime(_ev_name, getnci(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_EVENT_TIME), 'fullpath'));
 				}
-			if(_status == -1)
-			{
-			    DevLogErr(_nid, "Internal error in TimingRegisterEventTimes: different array sizes");
-			    abort();
-			}		
+				if(_status == -1)
+				{
+					DevLogErr(_nid, "Internal error in TimingRegisterEventTimes: different array sizes");
+					abort();
+				}		
+		    }
+			DevNodeCvt(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TERMINATION, ['OFF', 'ON'], [0,1], _termination = 0);
 
-			}
 		}
 		else
+		{
 			_event = 0;
-	 	if(_c < 16) 
+			_termination = 0;
+		}
+	 	if(_c < 16)
+		{ 
 		    _events = [_events, _event];
+			_terminations = [_terminations, _termination];
+		}
 	}
 
 
@@ -94,7 +103,7 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('DIO2EncoderHWInit(0, $1, $2, $3)', _board_id, _ext_clock, _events);
+	    _status = MdsValue('DIO2EncoderHWInit(0, $1, $2, $3, $4)', _board_id, _ext_clock, _events, _terminations);
 		MdsDisconnect();
 		if(_status == 0)
 		{
@@ -104,7 +113,7 @@ public fun DIO2Encoder__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		_status = DIO2EncoderHWInit(_nid, _board_id, _ext_clock, _events);
+		_status = DIO2EncoderHWInit(_nid, _board_id, _ext_clock, _events, _terminations);
 		if(_status == 0)
 			abort();
 	}
