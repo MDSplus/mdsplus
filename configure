@@ -1015,6 +1015,7 @@ IDL_BIN_SUF=""
 
 CFLAGS="$CFLAGS -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS -I\$(top_srcdir)/include"
+
 uiddir="/usr/lib/X11/uid"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
@@ -1032,6 +1033,7 @@ hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
+       FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";;
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -1042,6 +1044,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LINKSHARED="-shared -rpath \$(exec_prefix)/lib";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 sparc-sun-solaris2*)  
        if test $CC = gcc; then
@@ -1063,6 +1066,7 @@ sparc-sun-solaris2*)
        FFLAGS="$FFLAGS -PIC";
        IDL_BIN_SUF="solaris2.sparc"
        LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
@@ -1074,6 +1078,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
+       FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic";
@@ -1085,6 +1090,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        MOTIF_STATIC_EXTRA_LIBS="-lXp -lXext"
+       FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 *aix*) CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -1095,11 +1101,13 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="LIBPATH";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
+       FEXECLIBDIR="-L";
        SHARETYPE=".a";;
 *windows*)     CFLAGS="$CFLAGS";
        LDSHARE="";
        LDARC="";
        LINKSHARED="";
+       FEXECLIBDIR="-L";
        SHARETYPE="";;
 *)     CFLAGS="$CFLAGS";
        FFLAGS="$FFLAGS";
@@ -1108,6 +1116,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        LINKSHARED="";
        LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 esac
 
@@ -4312,6 +4321,7 @@ s%@XM_LIBS@%$XM_LIBS%g
 s%@LD@%$LD%g
 s%@FOR_LDFLAGS@%$FOR_LDFLAGS%g
 s%@SIZEOF_INT_P@%$SIZEOF_INT_P%g
+s%@FEXECLIBDIR@%$FEXECLIBDIR%g
 
 CEOF
 EOF
