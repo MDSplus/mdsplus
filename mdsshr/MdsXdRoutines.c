@@ -268,7 +268,7 @@ static int copy_dx(
 	if (po)
 	{
 	  _MOVC3(dscsize, (char *) pi, (char *) po);
-	  po->pointer = (char *)align(((unsigned int)((char *)po + dscsize)),align_size);
+	  po->pointer = (char *)po + (align(((unsigned int)((char *)po + dscsize)),align_size) - (unsigned int)po);
 	  _MOVC3(pi->arsize, pi->pointer, po->pointer);
 	  if (pi->aflags.coeff)
 	    po->a0 = po->pointer + (pi->a0 - pi->pointer);
