@@ -40,7 +40,7 @@ public fun TR32HWReadChan(in _handle, in _chan, in _start_idx, in _end_idx, in _
 /* Read channel */
 	TR32->TR32_Mem_Read_DMA(val(_handle), val(byte(_chan)), val(long(_act_sample)), ref(_data), val(_n_samples));
 
-	return(_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
+	return(-_data[_start_ofs:(_end_idx - _start_idx + _start_ofs)]);
 }
 
 	

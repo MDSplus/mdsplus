@@ -64,6 +64,8 @@ public fun TR32HWInit(in _nid, in _board_id, in _ext_clock, in _clock_div, in _p
 
 write(*, 'Clock div: ', data(_clock_div)); 
 write(*, 'Clock source: ', _clock_source); 
+write(*, 'prova init '); 
+
 
 	TR32->TR32_Clk_SetClock(val(_handle), val(_clock_source), val(_TR32_CLK_NO_EXT_CLOCK),
 		val(_TR32_CLK_DIVIDE), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(data(_clock_div))));
@@ -91,7 +93,6 @@ write(*, 'Clock source: ', _clock_source);
 /* Set Channel input range */ 
 	for (_c = 1; _c <= 4; _c++)
 {
-	write(*,  'Range: ', _ranges[_c - 1]);
 		TR32->TR32_Rng_SetChannelRange(val(_handle), val(byte(_c)), val(word(_ranges[_c - 1]))); 
 }	
 
