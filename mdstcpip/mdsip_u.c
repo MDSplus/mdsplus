@@ -55,6 +55,7 @@ static fd_set fdactive;
 static int multi = 0;
 static int IsService = 0;
 static int IsWorker = 0;
+static int ContextSwitching = 0;
 #if defined(_WIN32)
 static char *hostfile = "C:\\mdsip.hosts";
 #else
@@ -328,22 +329,24 @@ int main(int argc, char **argv)
   FD_ZERO(&fdactive);
   if (argc <= 1 && !IsService)
   {
-    printf("Usage: mdsip portname|portnumber [multi|install|remove] [hostfile]\n");
+    printf("Usage: mdsip portname|portnumber [multi|install|remove|server] [hostfile]\n");
     exit(0);
   }
   multi = 0;
+  ContextSwitching = 0;
   if (IsService)
 	  InitializeService();
   else
   {
-	portname = argv[1];
+    portname = argv[1];
     if (argc > 2)
 	{
       if (argc > 3)
         hostfile = argv[3];
       if (strcmp("multi",argv[2]) == 0)
 	  {
-        multi = 1;
+                multi = 1;
+                ContextSwitching = 1;
 	  }
 	  else if (strcmp("install",argv[2]) == 0)
 	  {
@@ -356,7 +359,13 @@ int main(int argc, char **argv)
 		exit(0);
 	  }
 	  else if (strcmp("worker",argv[2]) == 0)
+	  {
 		StartWorker(argv);
+          }
+          else if (strcmp("server",argv[2]) == 0)
+	  {
+                multi = 1;
+          }
       else
         hostfile = argv[2];
 	}
@@ -929,10 +938,13 @@ static void ExecuteMessage(Client *c)
   {
     void  *old_context;
     void *tdi_context[6];
-	EMPTYXD(ans);
-    old_context = TreeSwitchDbid(c->context.tree);
-    TdiSaveContext(tdi_context);
-    TdiRestoreContext(c->tdicontext);
+    EMPTYXD(ans);
+    if (ContextSwitching)
+    {
+      old_context = TreeSwitchDbid(c->context.tree);
+      TdiSaveContext(tdi_context);
+      TdiRestoreContext(c->tdicontext);
+    }
     c->descrip[c->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)memcpy(malloc(sizeof(emptyxd)),&emptyxd,sizeof(emptyxd)));
     c->descrip[c->nargs++] = MdsEND_ARG;
     ResetErrors();
@@ -942,9 +954,12 @@ static void ExecuteMessage(Client *c)
     SendResponse(c,status,ans.pointer);
     MdsFree1Dx(xd,NULL);
 	MdsFree1Dx(&ans,NULL);
-    TdiSaveContext(c->tdicontext);
-    TdiRestoreContext(tdi_context);
-    c->context.tree = TreeSwitchDbid(old_context);
+    if (ContextSwitching)
+    {
+      TdiSaveContext(c->tdicontext);
+      TdiRestoreContext(tdi_context);
+      c->context.tree = TreeSwitchDbid(old_context);
+    }
   }
   FreeDescriptors(c);
 }
