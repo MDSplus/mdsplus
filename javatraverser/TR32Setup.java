@@ -145,7 +145,7 @@ public class TR32Setup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"RISING", "FALLING"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice2.setBounds(new Rectangle(461, 142, 184, 35));
+    deviceChoice2.setBounds(new Rectangle(461, 143, 184, 35));
     deviceChoice3.setChoiceIntValues(null);
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setOffsetNid(5);
@@ -435,9 +435,9 @@ public class TR32Setup extends DeviceSetup {
     this.getContentPane().add(deviceField1, null);
     this.getContentPane().add(deviceChoice1, null);
     this.getContentPane().add(deviceField2, null);
-    this.getContentPane().add(deviceChoice2, null);
     this.getContentPane().add(deviceChoice5, null);
     this.getContentPane().add(deviceChoice14, null);
+    this.getContentPane().add(deviceChoice2, null);
     deviceChannel7.add(jPanel9, null);
     jPanel9.add(deviceField18, null);
     jPanel9.add(deviceField19, null);
