@@ -1232,7 +1232,7 @@ static char *FindNextFile(FindFileCtx *ctx, int recursively, int caseBlind)
 	    char **tmp;
 	    closedir(tmp_dir);
 	    ctx->env_strs = realloc(ctx->env_strs, sizeof(char*)*(ctx->num_env+1));
-	    for(i=ctx->next_dir_index; i<ctx->num_env; i++)
+	    for(i=ctx->num_env-1; i>=ctx->next_dir_index; i--)
 	      ctx->env_strs[i+1] = ctx->env_strs[i];
 	    ctx->env_strs[ctx->next_dir_index] = tmp_dirname;
 	    ctx->num_env++;
