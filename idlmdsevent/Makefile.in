@@ -36,7 +36,7 @@ install:
 	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsEvent@SHARETYPE@ @libdir@
 
 @MAKELIBDIR@libIdlMdsEvent@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS) @MEMCHKLIB@
 
 @MAKELIBDIR@libIdlMdsEvent.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
