@@ -4,6 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <mdsdescrip.h>
+#include <mds_stdarg.h>
+#include <mdsshr.h>
+
+extern int TdiExecute();
 
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
@@ -74,79 +79,109 @@ static int match_wild(char *candidate, char *pattern)
 
 int mdsip_find_user_mapping(char *hostfile, char *ipaddr, char *host, char *name, char **local_account)
 {
-  FILE *f = fopen(hostfile,"r");
   int ok = 0;
-  if (f)
+  if (strncmp(hostfile,"TDI",3))
   {
-    char line[1024];
-    char *line_name;
-    char *line_local_account;
-    char *match_host = 0;
-    char *match_ipaddr = 0;
-    int i;
-    match_ipaddr = strcpy(malloc((ipaddr ? strlen(ipaddr) : 0)+strlen(name)+2),name);
-    if (ipaddr)
+    FILE *f = fopen(hostfile,"r");
+    if (f)
     {
-      strcat(match_ipaddr,"@");
-      strcat(match_ipaddr,ipaddr);
-    }
-    if (host)
-    {
-      match_host = strcpy(malloc(strlen(host)+strlen(name)+2),name);
-      strcat(match_host,"@");
-      strcat(match_host,host);
-    }
-
-    while (ok==0 && fgets(line,1023,f))
-    {
-      if (line[0] != '#')
+      char line[1024];
+      char *line_name;
+      char *line_local_account;
+      char *match_host = 0;
+      char *match_ipaddr = 0;
+      int i;
+      match_ipaddr = strcpy(malloc((ipaddr ? strlen(ipaddr) : 0)+strlen(name)+2),name);
+      if (ipaddr)
       {
-        size_t len=strcspn(line,"|");
-        size_t wildlen=strcspn(line,"*%");
-        if ((len < strlen(line)) && (ipaddr || (wildlen == strlen(line))))
-	{
-          line_name=line;
-          line_name[len]=0;
-          line_local_account=line+len+1;
-          while(line_name[0] == 32 || line_name[0] == 8) line_name++;
-          for (i=strlen(line_name);(i>0) && ((line_name[i-1] == 32) || (line_name[i-1] == 8)); line_name[i-1]=0,i--);
-          if (i>0)
-          {
-            int match_type=1;
-            int line_name_free=0;
-            if (strcspn(line_name,"@")==strlen(line_name))
-	    {
-              line_name = strcpy(malloc(strlen(line_name)+3),line_name);
-              strcat(line_name,"@*");
-              line_name_free=1;
-            }
-            if (line_name[0] == '!')
-	    {
-              match_type = 2;
-              line_name++;
-            }
-            if (match_wild(match_ipaddr,line_name) || (match_host && match_wild(match_host,line_name)))
-            {
-	      while(line_local_account[0] == 32 || line_local_account[0] == 8) line_local_account++;
-	      for (i=strlen(line_local_account);i>0 && (line_local_account[i-1] == 32 || line_local_account[i-1] == 8); line_local_account[i-1]=0,i--);
-              line_local_account[strlen(line_local_account)-1]=0;
-	      *local_account = strcpy(malloc(strlen(line_local_account)+1),line_local_account);
-              ok = match_type;
-	    }
-            if (line_name_free)
-              free(line_name);
-          }
-        }
+	strcat(match_ipaddr,"@");
+	strcat(match_ipaddr,ipaddr);
       }
+      if (host)
+      {
+	match_host = strcpy(malloc(strlen(host)+strlen(name)+2),name);
+	strcat(match_host,"@");
+	strcat(match_host,host);
+      }
+      while (ok==0 && fgets(line,1023,f))
+      {
+	if (line[0] != '#')
+	{
+	  size_t len=strcspn(line,"|");
+	  size_t wildlen=strcspn(line,"*%");
+	  if ((len < strlen(line)) && (ipaddr || (wildlen == strlen(line))))
+	  {
+	    line_name=line;
+	    line_name[len]=0;
+	    line_local_account=line+len+1;
+	    while(line_name[0] == 32 || line_name[0] == 8) line_name++;
+	    for (i=strlen(line_name);(i>0) && ((line_name[i-1] == 32) || (line_name[i-1] == 8)); line_name[i-1]=0,i--);
+	    if (i>0)
+	    {
+	      int match_type=1;
+	      int line_name_free=0;
+	      if (strcspn(line_name,"@")==strlen(line_name))
+	      {
+		line_name = strcpy(malloc(strlen(line_name)+3),line_name);
+		strcat(line_name,"@*");
+		line_name_free=1;
+	      }
+	      if (line_name[0] == '!')
+	      {
+		match_type = 2;
+		line_name++;
+	      }
+	      if (match_wild(match_ipaddr,line_name) || (match_host && match_wild(match_host,line_name)))
+	      {
+		while(line_local_account[0] == 32 || line_local_account[0] == 8) line_local_account++;
+		for (i=strlen(line_local_account);i>0 && (line_local_account[i-1] == 32 || line_local_account[i-1] == 8); line_local_account[i-1]=0,i--);
+		line_local_account[strlen(line_local_account)-1]=0;
+		*local_account = strcpy(malloc(strlen(line_local_account)+1),line_local_account);
+		ok = match_type;
+	      }
+	      if (line_name_free)
+		free(line_name);
+	    }
+	  }
+	}
+      }
+      free(match_ipaddr);
+      free(match_host);
+      fclose(f);
     }
-    free(match_ipaddr);
-    free(match_host);
-    fclose(f);
+    else
+    {
+      printf("Unable to open hostfile: %s\n",hostfile);
+      ok=2;
+    }
   }
   else
   {
-    printf("Unable to open hostfile: %s\n",hostfile);
-    ok=2;
+    int status;
+    struct descriptor cmd_d={0,DTYPE_T,CLASS_S,0};
+    struct descriptor ans_d={0,DTYPE_T,CLASS_D,0};
+    char *cmd = (char *)malloc(100+(ipaddr ? strlen(ipaddr) : 1)+(host ? strlen(host) : 1) + (name ? strlen(name) : 1));
+    strcpy(cmd,&hostfile[3]);
+    strcat(cmd,"(\"");
+    strcat(cmd,ipaddr?ipaddr:"");
+    strcat(cmd,"\",\"");
+    strcat(cmd,host?host:"");
+    strcat(cmd,"\",\"");
+    strcat(cmd,name?name:"");
+    strcat(cmd,"\")");
+    cmd_d.length=strlen(cmd);
+    cmd_d.pointer=cmd;
+    status = TdiExecute(&cmd_d,&ans_d MDS_END_ARG);
+    printf("Executing the cmd: /%s/ returned a status of %d\n",cmd,status);
+    if (status & 1)
+    {
+      *local_account = strncpy(malloc(ans_d.length+1),ans_d.pointer,ans_d.length);
+      (*local_account)[ans_d.length]=0;
+      MdsFree1Dx((struct descriptor_xd *)&ans_d,0);
+      ok=1;
+    }
+    else
+      ok=2;
   }
   return ok == 1;
 }
