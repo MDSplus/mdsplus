@@ -251,6 +251,10 @@ static SOCKET ConnectToPort(char *host, char *service)
 	static char user[128];
 	int bsize=128;
 	char *user_p = GetUserName(user,&bsize) ? user : "Windows User";
+#elif __MWERKS__
+	static char user[128];
+	int bsize=128;
+	char *user_p = "Macintosh User";
 #else
     static char user[L_cuserid];
     char *user_p;

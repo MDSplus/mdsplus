@@ -125,6 +125,24 @@
 /*  CMS REPLACEMENT HISTORY, Element MDSIPSHR.C */
 #include "mdsip.h"
 
+#ifdef __MWERKS__
+// Start of Mac Changes
+static short bGUSIInit = 0;
+
+static void sighold ( int ) {
+	if ( !bGUSIInit ) {
+	//	GUSISetup ( GUSIwithInternetSockets );
+		GUSISetupConfig ();
+		bGUSIInit = 1;
+		}
+	}
+static void sigrelse ( int ) {}
+
+void main () {}
+
+// End of Mac Changes
+#endif
+
 extern short ArgLen();
 extern int Lgihpwd();
 extern Message *GetMdsMsg();
