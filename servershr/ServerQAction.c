@@ -634,7 +634,7 @@ static void DoSrvMonitor(SrvJob *job_in)
   int status;
   SrvMonitorJob *job = (SrvMonitorJob *)job_in;
   status = (job->mode == MonitorCheckin) ? AddMonitorClient(job_in) : SendToMonitors(job_in);
-  SendReply(job_in,SrvJobFINISHED,status,0,0);
+  SendReply(job_in,(job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED,status,0,0);
 }
 
 static void LogPrefix(char *ans_c)

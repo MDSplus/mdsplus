@@ -71,6 +71,7 @@ typedef struct _Job { int has_condition;
                       pthread_cond_t condition;
                       pthread_mutex_t mutex;
                       int done;
+                      int marked_for_delete;
                       int *retstatus;
                       void (*ast)();
                       void *astparam;
@@ -304,6 +305,7 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
   j->ast = ast;
   j->astparam = astparam;
   j->before_ast = before_ast;
+  j->marked_for_delete = 0;
   j->sock = sock;
   lock_job_list();
   j->jobid = ++JobId;
@@ -649,6 +651,7 @@ static void DoMessage(Client *c, fd_set *fdactive)
   {
   case SrvJobFINISHED: DoCompletionAst(jobid,status,msg,1); break;
   case SrvJobSTARTING: DoBeforeAst(jobid); break;
+  case SrvJobCHECKEDIN: break;
   default: RemoveClient(c,fdactive);
   }
   if (msglen != 0)
@@ -659,18 +662,7 @@ static void RemoveClient(Client *c, fd_set *fdactive)
 {
   Job *j;
   int found = 1;
-  while (found)
-  {
-    found = 0;
-    lock_job_list();
-    for (j=Jobs;j && (j->sock != c->send_sock);j=j->next);
-    unlock_job_list();
-    if (j)
-    {
-      found = 1;
-      DoCompletionAst(j->jobid, ServerPATH_DOWN, 0, 1);
-    }
-  }
+  int sock = c->send_sock;
   if (fdactive)
     FD_CLR(c->reply_sock,fdactive);
   if (c->reply_sock >= 0)
@@ -695,6 +687,23 @@ static void RemoveClient(Client *c, fd_set *fdactive)
   }
   unlock_client_list();
   free(c);
+  lock_job_list();
+  for (j=Jobs;j;j=j->next) if (j->sock == sock) 
+     j->marked_for_delete = 1;
+  unlock_job_list();
+  while (found)
+  {
+    found = 0;
+    lock_job_list();
+    for (j=Jobs;j && !j->marked_for_delete;j=j->next);
+    unlock_job_list();
+    if (j)
+    {
+      found = 1;
+      DoCompletionAst(j->jobid, ServerPATH_DOWN, 0, 1);
+      RemoveJob(j);
+    }
+  }
 }
   
 static unsigned int GetHostAddr(char *host)

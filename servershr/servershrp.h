@@ -51,6 +51,7 @@ extern void pthread_unlock_global_np();
 #define SrvJobABORTED     1
 #define SrvJobSTARTING    2
 #define SrvJobFINISHED    3
+#define SrvJobCHECKEDIN   4
 
 #define SrvJobBEFORE_NOTIFY 1
 #define SrvJobAFTER_NOTIFY  2
