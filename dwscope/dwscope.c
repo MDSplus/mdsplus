@@ -274,6 +274,8 @@ $ dwcope [-default setup]
 #include <DXm/DECspecific.h>
 #endif
 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 extern void XmdsInitialize();
 extern void XmdsDestroyWidgetCallback();
 extern void XmdsManageChildCallback();

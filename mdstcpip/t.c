@@ -5,6 +5,7 @@
 /*  CMS REPLACEMENT HISTORY, Element T.C */
 #include <ipdesc.h>
 #include <stdio.h>
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef __MSDOS__
 #pragma argsused
 int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpszCmdLine, int cmdShow)
