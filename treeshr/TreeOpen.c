@@ -80,16 +80,15 @@ int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 		int db_slot_status = CreateDbSlot(dblist, tree, shot, 0);
 		if (db_slot_status == TreeNORMAL || db_slot_status == TreeALREADY_OPEN)
 		{
-			if (((status = ConnectTree(*dblist, tree, 0, subtree_list)) == TreeNORMAL) ||
+			if (((status = ConnectTreeRemote(*dblist, tree, subtree_list, status)) == TreeNORMAL) ||
 			    (status == TreeNOTALLSUBS) ||
-			    ((status = ConnectTreeRemote(*dblist, tree, subtree_list, status)) == TreeNORMAL) ||
+                            ((status = ConnectTree(*dblist, tree, 0, subtree_list)) == TreeNORMAL) ||
 			    (status == TreeNOTALLSUBS))
 			{
                                 if (db_slot_status == TreeNORMAL)
 				  (*dblist)->default_node = (*dblist)->tree_info->root;
 				(*dblist)->open = 1;
 				(*dblist)->open_readonly = read_only_flag;
-				(*dblist)->remote = 0;
 			}
 			else
 			{
@@ -417,7 +416,10 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 
 	    info->root = info->node;
 	    if (parent == 0)
+	    {
 	      dblist->tree_info = info;
+              dblist->remote = 0;
+            }
 	    else
 	      {
 		SubtreeNodeConnect(parent, info->node);
