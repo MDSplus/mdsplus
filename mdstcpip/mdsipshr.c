@@ -591,7 +591,7 @@ int  MdsEventCan(SOCKET sock, void *eventid)
   if (et) {
 	et->event_count--;
 	if (et->event_count == 0)
-	  closesocket(et->sock);
+		TerminateThread(et->thread_handle, 0);
       if (prev)
 		  prev->next = et->next;
 	  else
@@ -1065,8 +1065,26 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   }
 
   selectstat = select(tablesize, 0, 0, &exceptfds, NULL);
+  if (selectstat == SOCKET_ERROR) {
+      perror("GETMSGOOB select error");
+      printf(" errno = %d\n",errno);
+	  *status = 0;
+	  return 0;
+  }
   nbytes = recv(sock, &last, 1, flags);
+  if (nbytes == SOCKET_ERROR) {
+      perror("GETMSGOOB first recv error");
+      printf("errno = %d\n",errno);
+	  *status = 0;
+	  return 0;
+  }
   stat = 	ioctlsocket(sock,SIOCATMARK,&oob_data);
+  if (stat == SOCKET_ERROR) {
+      perror("GETMSGOOB IOCTL error");
+      printf("errno = %d\n",errno);
+	  *status = 0;
+	  return 0;
+  }
   while (bytes_remaining > 1) 
   {
     if (selectstat == -1 && errno == 4) continue;
@@ -1104,7 +1122,7 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
       }
       else
       {
-        perror("GETMSG recv error");
+        perror("GETMSGOOB recv error");
         printf("errno = %d\n",errno);
       }
     }
