@@ -229,6 +229,19 @@ class jScopeWaveContainer extends WaveformContainer
     }
 
     public String GetTitle(){return title;}
+    public String GetEvaluatedTitle()
+    {
+        if(title == null || title.length() == 0 || dp == null ) return "";
+        try
+        {
+            return dp.GetString(title);
+        }
+        catch(IOException exc)
+        {
+            return "";
+        }
+    }
+    
     public String GetEvent(){return event;}
     public String GetPrintEvent(){return print_event;}
   //  public String GetServerLabel(){return (server_item != null ? server_item.name : "");}
@@ -393,6 +406,8 @@ class jScopeWaveContainer extends WaveformContainer
    
   public void PrintAll(Graphics g, int st_x, int st_y, int height, int width)
   {
+	
+	String title = GetEvaluatedTitle();
 	  
 	if(title != null && title.length() != 0)
 	{
@@ -809,30 +824,10 @@ class jScopeWaveContainer extends WaveformContainer
 	    {
 	        server_item = new DataServerItem();
 		    server_item.name = prop;
-        }
-
-        if(server_item != null)
-        {
             server_item.argument = pr.getProperty(prompt+".data_server_argument");
-        }
-        
-        if(server_item != null)
-        {
             server_item.user = pr.getProperty(prompt+".data_server_user");
-        }
-
-        if(server_item != null)
-        {
             server_item.class_name = pr.getProperty(prompt+".data_server_class");
-        }
-        
-        if(server_item != null)
-        {
 		    server_item.browse_class = pr.getProperty(prompt+".data_server_browse_class");
-        }
-        
-        if(server_item != null)
-        {
 		    server_item.browse_url = pr.getProperty(prompt+".data_server_browse_url");
         }
 

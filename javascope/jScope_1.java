@@ -2018,7 +2018,9 @@ static int T_messageType;
 	    f_name = "Untitled";
   
 	if(wave_panel.GetTitle() != null)
-	    setTitle(" - " + wave_panel.GetTitle() + " - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
+	{
+	    setTitle(" - " + wave_panel.GetEvaluatedTitle() + " - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
+	}
 	else
 	    setTitle("- Scope - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
 	
@@ -2051,7 +2053,7 @@ static int T_messageType;
     try
     {
         FromFile(pr);
-        font_dialog.fromFile(pr, "Scope.font");
+        font_dialog.fromFile(pr, "Scope0.font");
         color_dialog.fromFile(pr, "Scope.color_");
         pub_var_diag.fromFile(pr, "Scope.public_variable_");
 	    wave_panel.FromFile(pr , "Scope");
@@ -2304,7 +2306,7 @@ static int T_messageType;
 class WindowDialog extends JDialog implements ActionListener 
 {
     
-    JTextField titleText, iconText, eventText, printEventText;
+    JTextField titleText, eventText, printEventText;
     JSlider row_1, row_2, row_3, row_4;
     JButton ok, apply, cancel;
     jScope_1 parent;
@@ -2520,7 +2522,8 @@ class ServerDialog extends JDialog implements ActionListener
                                              "JetMdsDataProvider",
                                              "TwuDataProvider",
                                              "JetDataProvider",
-                                             "FtuDataProvider"};
+                                             "FtuDataProvider",
+                                             "TSDataProvider"};
     
 
     ServerDialog(JFrame _dw, String title)

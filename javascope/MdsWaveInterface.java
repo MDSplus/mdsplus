@@ -189,7 +189,13 @@ class MdsWaveInterface extends WaveInterface
      {
         UpdateDefault();
         if(in_def_node != null)
-            dp.SetEnvironment("__default_node = " + " "+in_def_node);
+        {
+            String def = in_def_node;
+	        if(in_def_node.indexOf("\\") == 0)
+	            def = "\\\\\\"+in_def_node;
+            
+            dp.SetEnvironment("__default_node = " + def);
+        }
      } else {
         signals = null;
      }
@@ -199,7 +205,6 @@ class MdsWaveInterface extends WaveInterface
   public void UpdateShot() throws IOException
   {
 	int curr_shots[] = null;
-	//, l = 0, curr_num_shot;
 	String c_shot_str = this.GetUsedShot();
   
     error = null;

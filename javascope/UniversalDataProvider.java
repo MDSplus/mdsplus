@@ -9,6 +9,7 @@ class UniversalDataProvider implements DataProvider
     TwuDataProvider twu;
     JetDataProvider jet;
     JetMdsDataProvider jetmds;
+    TSDataProvider ts;
     public UniversalDataProvider() throws IOException
     {
         rfx = new MdsDataProvider();
@@ -18,6 +19,8 @@ class UniversalDataProvider implements DataProvider
         twu = new TwuDataProvider();
         jet = new JetDataProvider();
         jetmds = new JetMdsDataProvider();
+        ts = new TSDataProvider();
+        ts.SetArgument("132.169.8.122:8000");
     }
 
 
@@ -33,6 +36,8 @@ class UniversalDataProvider implements DataProvider
             return jet;
         if(spec.startsWith("jetmds:"))
             return jetmds;
+        if(spec.startsWith("ts:"))
+            return ts;
         error = "Unknown experiment";
             
         return null;
@@ -42,6 +47,8 @@ class UniversalDataProvider implements DataProvider
     {
         if(spec.startsWith("jetmds:"))
             return spec.substring(7);
+        if(spec.startsWith("ts:"))
+            return spec.substring(3);
         return spec.substring(4);
     }
     
@@ -73,6 +80,7 @@ class UniversalDataProvider implements DataProvider
         twu.Dispose();
         jet.Dispose();
         jetmds.Dispose();
+        ts.Dispose();
     }
     public boolean SupportsCompression(){return false;}
     public void    SetCompression(boolean state){}
@@ -103,6 +111,8 @@ class UniversalDataProvider implements DataProvider
             jet.Update(null, s);
         else if(exp.equals("jetmds"))
             jetmds.Update(null, s);
+        else if(exp.equals("ts"))
+            ts.Update(null, s);
         error = null;
     }
 
@@ -139,6 +149,7 @@ class UniversalDataProvider implements DataProvider
         ftu.AddUpdateEventListener(l, event);
         jet.AddUpdateEventListener(l, event);
         jetmds.AddUpdateEventListener(l, event);
+        ts.AddUpdateEventListener(l, event);
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)throws IOException
     {
@@ -147,6 +158,7 @@ class UniversalDataProvider implements DataProvider
         ftu.RemoveUpdateEventListener(l, event);
         jet.RemoveUpdateEventListener(l, event);
         jetmds.RemoveUpdateEventListener(l, event);
+        ts.RemoveUpdateEventListener(l, event);
         
     }
     public void    AddConnectionListener(ConnectionListener l)
@@ -156,6 +168,7 @@ class UniversalDataProvider implements DataProvider
         ftu.AddConnectionListener(l);
         jet.AddConnectionListener(l);
         jetmds.AddConnectionListener(l);
+        ts.AddConnectionListener(l);
     }
     public void    RemoveConnectionListener(ConnectionListener l)
     {
@@ -164,7 +177,8 @@ class UniversalDataProvider implements DataProvider
         ftu.RemoveConnectionListener(l);
         jet.RemoveConnectionListener(l);
         jetmds.RemoveConnectionListener(l);
-        
+        ts.RemoveConnectionListener(l);
+       
     }
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException

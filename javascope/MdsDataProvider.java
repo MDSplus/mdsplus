@@ -228,7 +228,7 @@ public class MdsDataProvider implements DataProvider
         
         public int GetNumDimension() throws IOException
         {
-            int shape[] = GetIntArray("shape("+in_y+")");
+            int shape[] = GetNumDimensions(in_y);
             if(error != null)
             {
                 error = null;
@@ -381,7 +381,7 @@ public class MdsDataProvider implements DataProvider
         if(!CheckOpen())
 	        return null;
 	                
-        String in = "dim_of("+in_frame+")";
+        String in = "DIM_OF("+in_frame+")";
         time = GetFloatArray(in);
         if(time == null) return null;
 
@@ -506,7 +506,10 @@ public class MdsDataProvider implements DataProvider
     public synchronized String GetString(String in)  throws IOException
     {
      
+        if(in == null) return null;
+        
         error = null;
+    
         if(NotYetString(in))
         {
     	    if(!CheckOpen())
@@ -769,13 +772,14 @@ public class MdsDataProvider implements DataProvider
 		        && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null 
 		        && descr.int_data.length > 0 && (descr.int_data[0]%2 == 1))
 	        {
+	            /*
 	            if(default_node != null)
 	                descr = mds.MdsValue("TreeSetDefault(\""+default_node+"\")");
 	            else
 	                descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
-	            
+	            */
 	            open = true;
-	            def_node_changed = false;
+//	            def_node_changed = false;
 	        }
 	        else
 	        {
@@ -791,8 +795,11 @@ public class MdsDataProvider implements DataProvider
         if(open && def_node_changed)
         {
 	       Descriptor  descr;
-	       if(default_node != null)	       
+	       String set_node;
+	       if(default_node != null)
+	       {
 	            descr = mds.MdsValue("TreeSetDefault(\""+default_node+"\")");
+	       }
 	       else
 	            descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
 	       
@@ -897,6 +904,12 @@ public class MdsDataProvider implements DataProvider
     {
         return null;
     }
+    
+    protected int [] GetNumDimensions(String in_y) throws IOException
+    {
+        return GetIntArray("shape("+in_y+")");
+    } 
+       
     
 }
 

@@ -13,6 +13,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2002/04/09 16:25:41  jgk
+ * Fixed zoming-bug in TWU support classes.
+ *
  * Revision 1.1  2002/04/05 09:36:36  manduchi
  * Upgraded TWUDataProvider
  *
@@ -109,12 +112,12 @@ public class TWUSignal
         {
             ydata[sampleCount] = (float)((sampleCount + firstSample) *step * delta + first);
 
-  	    if (ydata[sampleCount] > twup.Maximum())
-  	      ydata[sampleCount] = (float)twup.Maximum();
-	    
-  	    else if (ydata[sampleCount] < twup.Minimum())
-  	      ydata[sampleCount] = (float)twup.Minimum();
-	    
+            if (ydata[sampleCount] > twup.Maximum())
+              ydata[sampleCount] = (float)twup.Maximum();
+            
+            else if (ydata[sampleCount] < twup.Minimum())
+              ydata[sampleCount] = (float)twup.Minimum();
+            
             sampleCount++;
         }
         finished =true;
@@ -137,14 +140,14 @@ public class TWUSignal
 
             bulkURL = new URL(bulk.toString());
 
-	    URLConnection con = bulkURL.openConnection();
+            URLConnection con = bulkURL.openConnection();
 
-	    con.setRequestProperty("User-Agent",
-				   "TWUSignal.java for jScope ($Revision$)");
-	    con.connect();
+            con.setRequestProperty("User-Agent",
+                                   "TWUSignal.java for jScope ($Revision$)");
+            con.connect();
 
-	    instream = 
-		new BufferedReader(new InputStreamReader(con.getInputStream()));
+            instream = 
+                new BufferedReader(new InputStreamReader(con.getInputStream()));
         }
         catch (Exception e) 
         {
@@ -186,18 +189,18 @@ public class TWUSignal
                 catch (Exception e) {}
                 finished =true;
 
-		if (sampleCount<samples2Read)
-		{
-		    // Fill-up required
-		    if (sampleCount==0)
-		      ydata[sampleCount++]=0.0F;
+                if (sampleCount<samples2Read)
+                {
+                    // Fill-up required
+                    if (sampleCount==0)
+                      ydata[sampleCount++]=0.0F;
 
-		    while (sampleCount<samples2Read)
-		    {
-			ydata[sampleCount] = ydata[sampleCount-1] ;
-			sampleCount++;
-		    }
-		}
+                    while (sampleCount<samples2Read)
+                    {
+                        ydata[sampleCount] = ydata[sampleCount-1] ;
+                        sampleCount++;
+                    }
+                }
             }
             else
               finished = sampleCount>=samples2Read ;
