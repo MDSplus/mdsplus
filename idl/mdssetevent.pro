@@ -1,3 +1,3 @@
-pro mdssetevent, ev
-  dummy = MdsValue('mdsshr->mds$event($, 0)', ev)
+pro mdssetevent, ev, quiet=quiet, status=status
+  dummy = MdsValue('SETEVENT($)',ev, quiet=quiet, status=status)
 end
