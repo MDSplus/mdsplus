@@ -1,0 +1,46 @@
+SHARE_TYPE = o
+MAKE_DEPEND = $(CC) $(CFLAGS) -M {} > .depend \;
+CFLAGS = -c -g -DAXPVME -DCPU=21064  -DVME_ENV  -DvxWorks -I$(VXWORKS_BASE)/h  -I$(MDSPLUS)/include -I/usr/include 
+
+
+OBJECTS = \
+dummies.o \
+TreeAddNode.o \
+TreeAddTag.o \
+TreeCleanDatafile.o \
+TreeCreatePulseFile.o \
+TreeDeleteNode.o \
+TreeDeletePulseFile.o \
+TreeDoMethod.o \
+TreeFindNode.o \
+TreeFindTagWild.o \
+TreeGetDbi.o \
+TreeGetNci.o \
+TreeGetRecord.o \
+TreeOpen.o \
+TreePutRecord.o \
+TreeRenameNode.o \
+TreeRemoveNodesTags.o\
+TreeSerializeNci.o\
+TreeSetDefault.o \
+TreeSetNci.o \
+TreeVerify.o \
+RemoteAccess.o
+
+treeshr : ../shlib ../shlib/Alpha $(OBJECTS)
+	mv dummies.o treeshr_dummies.o
+	ld -o ../vxWorks/Alpha/libTreeShr.o -r *.o
+	rm *.o
+
+
+../shlib :
+	mkdir ../shlib
+
+../shlib/Alpha :
+	mkdir ../shlib/Alpha
+
+
+clean :
+	- rm ../vxWorks/*.o
+	- rm .depend
+

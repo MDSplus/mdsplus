@@ -1,0 +1,37 @@
+SHARE_TYPE = o
+MAKE_DEPEND = $(CC) $(CFLAGS) -M {} > .depend \;
+CFLAGS = -c -g  -DAXPVME -DCPU=21064  -DVME_ENV  -std -DvxWorks -I$(VXWORKS_BASE)/h  -I$(MDSPLUS)/include -I/usr/include 
+
+
+OBJECTS = \
+	dummies.o  \
+	librtl.o \
+	dasutil_routines4.o \
+	mdsmsg.o \
+	MdsCmprs.o \
+	MdsCompareXd.o \
+	MdsCompress.o \
+	MdsGet1DxA.o \
+ 	MdsGet1DxS.o \
+        MdsGetSetShotId.o \
+        MdsPk.o \
+        MdsSerialize.o \
+	MdsXdRoutines.o
+
+
+
+mdsshr:  ../vxWorks ../vxWorks/Alpha $(OBJECTS)
+	ld -o ../vxWorks/Alpha/libMdsShr.o -r *.o
+	rm *.o
+
+
+../vxWorks :
+	mkdir ../vxWorks
+
+../vxWorks/Alpha :
+	mkdir ../vxWorks/Alpha
+
+clean :
+	rm ../vxWorks/*.o
+	rm .depend
+
