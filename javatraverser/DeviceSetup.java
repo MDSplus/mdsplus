@@ -313,7 +313,7 @@ public class DeviceSetup extends JDialog
         for(idx = 0; idx < device_components.size(); idx++)
         {
             currId = ((DeviceComponent)(device_components.elementAt(idx))).getIdentifier();
-            if(currId != null)
+            if(currId != null && !currId.trim().equals(""))
             {
                 currData = ((DeviceComponent)(device_components.elementAt(idx))).getData();
                 if(currData != null)
