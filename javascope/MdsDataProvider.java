@@ -19,7 +19,8 @@ public class MdsDataProvider implements DataProvider
     MdsConnection mds;
     public String error;
     private boolean use_compression = false;
-    static int var_idx = 0;
+    //static int var_idx = 0;
+    int var_idx = 0;
 
     class SimpleFrameData implements FrameData
     {
@@ -484,6 +485,7 @@ public class MdsDataProvider implements DataProvider
     public synchronized void Update(String exp, int s)
     {
         error = null;
+	    var_idx = 0;
         /*
         if(exp == null || exp.length() == 0)  
         { 
