@@ -748,7 +748,7 @@ static void ProcessMessage(Client *c, Message *message)
         a->pointer = a->a0 = malloc(a->arsize);
       }
       else
-        d->pointer = malloc(d->length);
+        d->pointer = d->length ? malloc(d->length) : 0;
       c->descrip[message->h.descriptor_idx] = d;
     }
     if (d)
