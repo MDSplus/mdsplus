@@ -19,13 +19,11 @@ OBJECTS = \
 	mkdir ../shlib
 
 clean :
-	if (test -f *.o) then rm *.o; fi
-	if (test -f ../shlib/libMdsShr.$(SHARE_TYPE)) then rm ../shlib/libMdsShr.$(SHARE_TYPE); fi
-	if (test -f .depend) then rm .depend; fi
-
-depend : .depend
+	rm *.o
+	rm ../shlib/libMdsShr.$(SHARE_TYPE)
+	rm .depend
 
 .depend :
 	- find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)

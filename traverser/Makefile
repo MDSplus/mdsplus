@@ -29,10 +29,8 @@ clean :
 	- rm ../uid/traverser.uid
 	- rm .depend
 
-depend : .depend
-
 .depend :
 	find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)
 

@@ -18,11 +18,9 @@ clean :
 	- rm .depend
 	- rm t
 
-depend : .depend
-
 .depend :
 	- rm .depend
 	find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)
 

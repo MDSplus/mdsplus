@@ -78,11 +78,9 @@ clean :
 	- rm .depend
 	- rm ../shlib/xmdsuil.wmd
 
-depend : .depend
-
 .depend :
 	- rm .depend
 	find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)
 

@@ -14,7 +14,12 @@ all :
         for dir in $(PARTS) ; do\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
-	    make;\
+            if (test -f $(DEPEND)) then \
+	      make;\
+            else\
+              make DEPEND=/dev/null $(DEPEND);\
+              make;\
+            fi;\
 	    cd $$cdir;\
           fi;\
 	done
@@ -24,7 +29,7 @@ clean :
 	for dir in $(PARTS) ; do\
 	  if (test -d $${dir}) then \
 	    cd $${dir};\
-	    make clean;\
+	    make DEPEND=/dev/null clean;\
 	    cd $$cdir;\
           fi;\
 	done

@@ -40,9 +40,7 @@ clean :
 	- rm ../shlib/libMdsLibIdl.$(SHARE_TYPE)
 	- rm .depend
 
-depend : .depend
-
 .depend :
 	find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)

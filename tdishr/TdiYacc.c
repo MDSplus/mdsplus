@@ -105,11 +105,11 @@ static struct marker _EMPTY_MARKER = {0,0};
 
 
 # line 110 "TdiYacc.y"
-typedef union
+typedef union 	{struct marker mark;} YYSTYPE;
 #ifdef __cplusplus
-	YYSTYPE
-#endif
-	{struct marker mark;} YYSTYPE;
+#  include <stdio.h>
+#  include <yacc.h>
+#endif	/* __cplusplus */ 
 # define ERROR 257
 # define IDENT 258
 # define POINT 259
@@ -163,51 +163,27 @@ typedef union
 # define FUN 307
 # define MODIF 308
 # define VBL 309
-
-#ifdef __STDC__
-#include <stdlib.h>
-#include <string.h>
-#else
-#include <malloc.h>
-#include <memory.h>
-#endif
-
-#include <values.h>
-
-#ifdef __cplusplus
-
-#ifndef yyerror
-	void yyerror(const char *);
-#endif
-
-#ifndef yylex
-#ifdef __EXTERN_C__
-	extern "C" { int yylex(void); }
-#else
-	int yylex(void);
-#endif
-#endif
-	int yyparse(void);
-
-#endif
 #define yyclearin yychar = -1
 #define yyerrok yyerrflag = 0
 extern int yychar;
-extern int yyerrflag;
-YYSTYPE yylval;
-YYSTYPE yyval;
-typedef int yytabelem;
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 150
 #endif
-#if YYMAXDEPTH > 0
-int yy_yys[YYMAXDEPTH], *yys = yy_yys;
-YYSTYPE yy_yyv[YYMAXDEPTH], *yyv = yy_yyv;
-#else	/* user does initial allocation */
-int *yys;
-YYSTYPE *yyv;
+
+/* __YYSCLASS defines the scoping/storage class for global objects
+ * that are NOT renamed by the -p option.  By default these names
+ * are going to be 'static' so that multi-definition errors
+ * will not occur with multiple parsers.
+ * If you want (unsupported) access to internal names you need
+ * to define this to be null so it implies 'extern' scope.
+ * This should not be used in conjunction with -p.
+ */
+#ifndef __YYSCLASS
+# define __YYSCLASS static
 #endif
-static int yymaxdepth = YYMAXDEPTH;
+YYSTYPE yylval;
+__YYSCLASS YYSTYPE yyval;
+typedef int yytabelem;
 # define YYERRCODE 256
 
 # line 467 "TdiYacc.y"
@@ -269,7 +245,7 @@ LEX_VBL		= VBL,
 LEX_MODIF	= MODIF;
 
 YYSTYPE *TdiYylvalPtr = &yylval;
-yytabelem yyexca[] ={
+__YYSCLASS yytabelem yyexca[] ={
 -1, 0,
 	0, 120,
 	44, 78,
@@ -305,7 +281,7 @@ yytabelem yyexca[] ={
 	};
 # define YYNPROD 123
 # define YYLAST 1236
-yytabelem yyact[]={
+__YYSCLASS yytabelem yyact[]={
 
     59,   160,    27,    98,    97,    96,    97,    96,    42,    79,
     67,   122,    85,    86,    69,    44,    87,    46,    47,    88,
@@ -431,36 +407,36 @@ yytabelem yyact[]={
    213,   211,   212,     0,     0,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
      0,     0,     0,     0,     0,   224 };
-yytabelem yypact[]={
+__YYSCLASS yytabelem yypact[]={
 
-   -40,-10000000,   260,-10000000,-10000000,-10000000,     7,    -3,   -85,    50,
+   -40, -3000,   260, -3000, -3000, -3000,     7,    -3,   -85,    50,
   -299,    45,  -278,    45,    45,    45,   260,   260,   260,    20,
-  -300,    48,-10000000,  -124,  -304,   482,   -50,-10000000,   401,   401,
-   401,   401,   -28,-10000000,     2,   325,   325,-10000000,  -225,-10000000,
-    -4,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,    47,
--10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,   260,
-   325,-10000000,-10000000,   260,   260,   260,   325,   -15,   260,   260,
-   260,   260,   260,-10000000,   482,-10000000,   128,   325,-10000000,-10000000,
-   325,-10000000,  -250,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,
--10000000,-10000000,-10000000,-10000000,-10000000,-10000000,-10000000,  -308,  -250,   325,
+  -300,    48, -3000,  -124,  -304,   482,   -50, -3000,   401,   401,
+   401,   401,   -28, -3000,     2,   325,   325, -3000,  -225, -3000,
+    -4, -3000, -3000, -3000, -3000, -3000, -3000, -3000, -3000,    47,
+ -3000, -3000, -3000, -3000, -3000, -3000, -3000, -3000, -3000,   260,
+   325, -3000, -3000,   260,   260,   260,   325,   -15,   260,   260,
+   260,   260,   260, -3000,   482, -3000,   128,   325, -3000, -3000,
+   325, -3000,  -250, -3000, -3000, -3000, -3000, -3000, -3000, -3000,
+ -3000, -3000, -3000, -3000, -3000, -3000, -3000,  -308,  -250,   325,
    325,   325,   325,   325,   325,   325,   325,   325,   325,   325,
    325,   325,   325,   325,   325,   325,   325,   325,   325,   325,
-   325,   325,   325,   325,-10000000,  -302,-10000000,-10000000,-10000000,   325,
--10000000,   325,   453,    43,-10000000,    27,   325,   573,-10000000,   325,
--10000000,-10000000,    41,    64,   482,-10000000,-10000000,    12,    18,-10000000,
-  -233,-10000000,-10000000,  -235,-10000000,-10000000,-10000000,    40,-10000000,-10000000,
--10000000,-10000000,   482,   547,   159,   596,   623,   623,   646,   646,
+   325,   325,   325,   325, -3000,  -302, -3000, -3000, -3000,   325,
+ -3000,   325,   453,    43, -3000,    27,   325,   573, -3000,   325,
+ -3000, -3000,    41,    64,   482, -3000, -3000,    12,    18, -3000,
+  -233, -3000, -3000,  -235, -3000, -3000, -3000,    40, -3000, -3000,
+ -3000, -3000,   482,   547,   159,   596,   623,   623,   646,   646,
    670,   693,   716,   740,   740,   698,   698,   748,   271,   336,
     53,  -261,  -261,  -261,  -261,   482,   482,   -52,    39,   325,
-    46,-10000000,   482,   208,   482,-10000000,-10000000,  -246,   325,   260,
-   260,-10000000,   325,-10000000,-10000000,    35,   325,   509,-10000000,    45,
-    16,-10000000,-10000000,   482,-10000000,    31,-10000000,-10000000,   -16,   325,
--10000000,-10000000,    29,   260,-10000000 };
-yytabelem yypgo[]={
+    46, -3000,   482,   208,   482, -3000, -3000,  -246,   325,   260,
+   260, -3000,   325, -3000, -3000,    35,   325,   509, -3000,    45,
+    16, -3000, -3000,   482, -3000,    31, -3000, -3000,   -16,   325,
+ -3000, -3000,    29,   260, -3000 };
+__YYSCLASS yytabelem yypgo[]={
 
      0,   107,    55,  1011,   101,    78,   100,    99,    98,    97,
    974,  1007,   968,    93,    96,    94,    92,    53,   613,    91 };
-yytabelem yyr1[]={
+__YYSCLASS yytabelem yyr1[]={
 
      0,     4,     5,     5,     5,     5,     5,     5,     5,     5,
      5,     5,     5,     5,     5,     5,     5,     5,     5,     5,
@@ -475,7 +451,7 @@ yytabelem yyr1[]={
      3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
      3,     3,     3,     3,     3,     3,     3,     2,     2,     1,
      1,     1,     1 };
-yytabelem yyr2[]={
+__YYSCLASS yytabelem yyr2[]={
 
      0,     5,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -490,9 +466,9 @@ yytabelem yyr2[]={
      5,     7,     7,    15,    19,     7,    11,     7,     7,     7,
     11,     7,     7,     5,     5,     7,     4,     2,     5,     3,
      1,     3,     3 };
-yytabelem yychk[]={
+__YYSCLASS yytabelem yychk[]={
 
--10000000,    -1,    -2,   257,   256,    -3,   262,   263,   266,   269,
+ -3000,    -1,    -2,   257,   256,    -3,   262,   263,   266,   269,
    270,   271,    -4,   275,   277,   278,    -8,    96,   123,   -12,
    272,    -9,   -10,   307,   308,   -11,   -13,    42,   283,   300,
    306,   282,   -14,   -15,    -5,    -6,    -7,   261,   -19,   -17,
@@ -515,7 +491,7 @@ yytabelem yychk[]={
    268,    41,   292,    93,    41,   -18,    40,   -11,    44,   278,
    -12,    -3,    -3,   -11,    41,   -18,    44,    41,   -17,    59,
     41,    59,   -12,    41,    -3 };
-yytabelem yydef[]={
+__YYSCLASS yytabelem yydef[]={
 
     -2,    -2,    -2,   121,   122,   117,     9,    12,    13,    15,
      6,    16,     0,    18,    20,    21,    78,    78,    78,     0,
@@ -540,18 +516,14 @@ yytabelem yydef[]={
     78,    99,     0,    80,    82,     0,    -2,     0,    76,     0,
      0,   106,   110,    36,    83,     0,    75,    86,     0,    78,
     84,   103,     0,    78,   104 };
-typedef struct
-#ifdef __cplusplus
-	yytoktype
-#endif
-{ char *t_name; int t_val; } yytoktype;
+typedef struct { char *t_name; int t_val; } yytoktype;
 #ifndef YYDEBUG
 #	define YYDEBUG	0	/* don't allow debugging */
 #endif
 
 #if YYDEBUG
 
-yytoktype yytoks[] =
+__YYSCLASS yytoktype yytoks[] =
 {
 	"ERROR",	257,
 	"IDENT",	258,
@@ -614,7 +586,7 @@ yytoktype yytoks[] =
 	"-unknown-",	-1	/* ends search */
 };
 
-char * yyreds[] =
+__YYSCLASS char * yyreds[] =
 {
 	"-no such reduction-",
 	"slabel : LABEL VBL",
@@ -741,28 +713,39 @@ char * yyreds[] =
 	"program : error",
 };
 #endif /* YYDEBUG */
-# line	1 "/usr/ccs/bin/yaccpar"
-/*
- * Copyright (c) 1993 by Sun Microsystems, Inc.
- */
-
-#pragma ident	"@(#)yaccpar	6.12	93/06/07 SMI"
+#define YYFLAG  (-3000)
+/* @(#) $Revision$ */    
 
 /*
 ** Skeleton parser driver for yacc output
 */
 
+#if defined(NLS) && !defined(NL_SETN)
+#include <msgbuf.h>
+#endif
+
+#ifndef nl_msg
+#define nl_msg(i,s) (s)
+#endif
+
 /*
 ** yacc user known macros and defines
 */
 #define YYERROR		goto yyerrlab
+
+#ifndef __RUNTIME_YYMAXDEPTH
 #define YYACCEPT	return(0)
 #define YYABORT		return(1)
+#else
+#define YYACCEPT	{free_stacks(); return(0);}
+#define YYABORT		{free_stacks(); return(1);}
+#endif
+
 #define YYBACKUP( newtoken, newvalue )\
 {\
 	if ( yychar >= 0 || ( yyr2[ yytmp ] >> 1 ) != 1 )\
 	{\
-		yyerror( "syntax error - cannot backup" );\
+		yyerror( (nl_msg(30001,"syntax error - cannot backup")) );\
 		goto yyerrlab;\
 	}\
 	yychar = newtoken;\
@@ -771,11 +754,6 @@ char * yyreds[] =
 	goto yynewstate;\
 }
 #define YYRECOVERING()	(!!yyerrflag)
-#define YYNEW(type)	malloc(sizeof(type) * yynewmax)
-#define YYCOPY(to, from, type) \
-	(type *) memcpy(to, (char *) from, yynewmax * sizeof(type))
-#define YYENLARGE( from, type) \
-	(type *) realloc((char *) from, yynewmax * sizeof(type))
 #ifndef YYDEBUG
 #	define YYDEBUG	1	/* make debugging available */
 #endif
@@ -788,94 +766,62 @@ int yydebug;			/* set to 1 to get debugging */
 /*
 ** driver internal defines
 */
-#define YYFLAG		(-10000000)
+/* define for YYFLAG now generated by yacc program. */
+/*#define YYFLAG		(FLAGVAL)*/
 
 /*
 ** global variables used by the parser
 */
-YYSTYPE *yypv;			/* top of value stack */
-int *yyps;			/* top of state stack */
+# ifndef __RUNTIME_YYMAXDEPTH
+__YYSCLASS YYSTYPE yyv[ YYMAXDEPTH ];	/* value stack */
+__YYSCLASS int yys[ YYMAXDEPTH ];		/* state stack */
+# else
+__YYSCLASS YYSTYPE *yyv;			/* pointer to malloc'ed value stack */
+__YYSCLASS int *yys;			/* pointer to malloc'ed stack stack */
 
-int yystate;			/* current state */
-int yytmp;			/* extra var (lasts between blocks) */
+#if defined(__STDC__) || defined (__cplusplus)
+#include <stdlib.h>
+#else
+	extern char *malloc();
+	extern char *realloc();
+	extern void free();
+#endif /* __STDC__ or __cplusplus */
+
+
+static int allocate_stacks(); 
+static void free_stacks();
+# ifndef YYINCREMENT
+# define YYINCREMENT (YYMAXDEPTH/2) + 10
+# endif
+# endif	/* __RUNTIME_YYMAXDEPTH */
+long  yymaxdepth = YYMAXDEPTH;
+
+__YYSCLASS YYSTYPE *yypv;			/* top of value stack */
+__YYSCLASS int *yyps;			/* top of state stack */
+
+__YYSCLASS int yystate;			/* current state */
+__YYSCLASS int yytmp;			/* extra var (lasts between blocks) */
 
 int yynerrs;			/* number of errors */
-int yyerrflag;			/* error recovery flag */
+__YYSCLASS int yyerrflag;			/* error recovery flag */
 int yychar;			/* current input token number */
 
 
 
-#ifdef YYNMBCHARS
-#define YYLEX()		yycvtok(yylex())
-/*
-** yycvtok - return a token if i is a wchar_t value that exceeds 255.
-**	If i<255, i itself is the token.  If i>255 but the neither 
-**	of the 30th or 31st bit is on, i is already a token.
-*/
-#if defined(__STDC__) || defined(__cplusplus)
-int yycvtok(int i)
-#else
-int yycvtok(i) int i;
-#endif
-{
-	int first = 0;
-	int last = YYNMBCHARS - 1;
-	int mid;
-	wchar_t j;
-
-	if(i&0x60000000){/*Must convert to a token. */
-		if( yymbchars[last].character < i ){
-			return i;/*Giving up*/
-		}
-		while ((last>=first)&&(first>=0)) {/*Binary search loop*/
-			mid = (first+last)/2;
-			j = yymbchars[mid].character;
-			if( j==i ){/*Found*/ 
-				return yymbchars[mid].tvalue;
-			}else if( j<i ){
-				first = mid + 1;
-			}else{
-				last = mid -1;
-			}
-		}
-		/*No entry in the table.*/
-		return i;/* Giving up.*/
-	}else{/* i is already a token. */
-		return i;
-	}
-}
-#else/*!YYNMBCHARS*/
-#define YYLEX()		yylex()
-#endif/*!YYNMBCHARS*/
-
 /*
 ** yyparse - return 0 if worked, 1 if syntax error not recovered from
 */
-#if defined(__STDC__) || defined(__cplusplus)
-int yyparse(void)
-#else
-int yyparse()
-#endif
+int
+yyparse()
 {
 	register YYSTYPE *yypvt;	/* top of value stack for $vars */
-
-#if defined(__cplusplus) || defined(lint)
-/*
-	hacks to please C++ and lint - goto's inside switch should never be
-	executed; yypvt is set to 0 to avoid "used before set" warning.
-*/
-	static int __yaccpar_lint_hack__ = 0;
-	switch (__yaccpar_lint_hack__)
-	{
-		case 1: goto yyerrlab;
-		case 2: goto yynewstate;
-	}
-	yypvt = 0;
-#endif
 
 	/*
 	** Initialize externals - yyparse may be called more than once
 	*/
+# ifdef __RUNTIME_YYMAXDEPTH
+	if (allocate_stacks()) YYABORT;
+# endif
 	yypv = &yyv[-1];
 	yyps = &yys[-1];
 	yystate = 0;
@@ -884,23 +830,12 @@ int yyparse()
 	yyerrflag = 0;
 	yychar = -1;
 
-#if YYMAXDEPTH <= 0
-	if (yymaxdepth <= 0)
-	{
-		if ((yymaxdepth = YYEXPAND(0)) <= 0)
-		{
-			yyerror("yacc initialization error");
-			YYABORT;
-		}
-	}
-#endif
-
+	goto yystack;
 	{
 		register YYSTYPE *yy_pv;	/* top of value stack */
 		register int *yy_ps;		/* top of state stack */
 		register int yy_state;		/* current state */
 		register int  yy_n;		/* internal state number info */
-	goto yystack;	/* moved from 6 lines above to here to please C++ */
 
 		/*
 		** get globals into registers.
@@ -958,48 +893,27 @@ int yyparse()
 #endif /* YYDEBUG */
 		if ( ++yy_ps >= &yys[ yymaxdepth ] )	/* room on stack? */
 		{
-			/*
-			** reallocate and recover.  Note that pointers
-			** have to be reset, or bad things will happen
-			*/
-			int yyps_index = (yy_ps - yys);
-			int yypv_index = (yy_pv - yyv);
-			int yypvt_index = (yypvt - yyv);
-			int yynewmax;
-#ifdef YYEXPAND
-			yynewmax = YYEXPAND(yymaxdepth);
-#else
-			yynewmax = 2 * yymaxdepth;	/* double table size */
-			if (yymaxdepth == YYMAXDEPTH)	/* first time growth */
-			{
-				char *newyys = (char *)YYNEW(int);
-				char *newyyv = (char *)YYNEW(YYSTYPE);
-				if (newyys != 0 && newyyv != 0)
-				{
-					yys = YYCOPY(newyys, yys, int);
-					yyv = YYCOPY(newyyv, yyv, YYSTYPE);
-				}
-				else
-					yynewmax = 0;	/* failed */
-			}
-			else				/* not first time */
-			{
-				yys = YYENLARGE(yys, int);
-				yyv = YYENLARGE(yyv, YYSTYPE);
-				if (yys == 0 || yyv == 0)
-					yynewmax = 0;	/* failed */
-			}
-#endif
-			if (yynewmax <= yymaxdepth)	/* tables not expanded */
-			{
-				yyerror( "yacc stack overflow" );
-				YYABORT;
-			}
-			yymaxdepth = yynewmax;
+# ifndef __RUNTIME_YYMAXDEPTH
+			yyerror( (nl_msg(30002,"yacc stack overflow")) );
+			YYABORT;
+# else
+			/* save old stack bases to recalculate pointers */
+			YYSTYPE * yyv_old = yyv;
+			int * yys_old = yys;
+			yymaxdepth += YYINCREMENT;
+			yys = (int *) realloc(yys, yymaxdepth * sizeof(int));
+			yyv = (YYSTYPE *) realloc(yyv, yymaxdepth * sizeof(YYSTYPE));
+			if (yys==0 || yyv==0) {
+			    yyerror( (nl_msg(30002,"yacc stack overflow")) );
+			    YYABORT;
+			    }
+			/* Reset pointers into stack */
+			yy_ps = (yy_ps - yys_old) + yys;
+			yyps = (yyps - yys_old) + yys;
+			yy_pv = (yy_pv - yyv_old) + yyv;
+			yypv = (yypv - yyv_old) + yyv;
+# endif
 
-			yy_ps = yys + yyps_index;
-			yy_pv = yyv + yypv_index;
-			yypvt = yyv + yypvt_index;
 		}
 		*yy_ps = yy_state;
 		*++yy_pv = yyval;
@@ -1016,7 +930,7 @@ int yyparse()
 		*/
 		yytmp = yychar < 0;
 #endif
-		if ( ( yychar < 0 ) && ( ( yychar = YYLEX() ) < 0 ) )
+		if ( ( yychar < 0 ) && ( ( yychar = yylex() ) < 0 ) )
 			yychar = 0;		/* reached EOF */
 #if YYDEBUG
 		if ( yydebug && yytmp )
@@ -1058,7 +972,7 @@ int yyparse()
 #if YYDEBUG
 			yytmp = yychar < 0;
 #endif
-			if ( ( yychar < 0 ) && ( ( yychar = YYLEX() ) < 0 ) )
+			if ( ( yychar < 0 ) && ( ( yychar = yylex() ) < 0 ) )
 				yychar = 0;		/* reached EOF */
 #if YYDEBUG
 			if ( yydebug && yytmp )
@@ -1114,7 +1028,8 @@ int yyparse()
 			switch ( yyerrflag )
 			{
 			case 0:		/* new error */
-				yyerror( "syntax error" );
+				yyerror( (nl_msg(30003,"syntax error")) );
+				yynerrs++;
 				goto skip_init;
 			yyerrlab:
 				/*
@@ -1124,9 +1039,8 @@ int yyparse()
 				yy_pv = yypv;
 				yy_ps = yyps;
 				yy_state = yystate;
-			skip_init:
 				yynerrs++;
-				/* FALLTHRU */
+			skip_init:
 			case 1:
 			case 2:		/* incompletely recovered error */
 					/* try again... */
@@ -1654,8 +1568,30 @@ case 121:
 case 122:
 # line 465 "TdiYacc.y"
 {TdiRefZone.l_status=TdiSYNTAX;} break;
-# line	532 "/usr/ccs/bin/yaccpar"
 	}
 	goto yystack;		/* reset registers in driver code */
 }
+
+# ifdef __RUNTIME_YYMAXDEPTH
+
+static int allocate_stacks() {
+	/* allocate the yys and yyv stacks */
+	yys = (int *) malloc(yymaxdepth * sizeof(int));
+	yyv = (YYSTYPE *) malloc(yymaxdepth * sizeof(YYSTYPE));
+
+	if (yys==0 || yyv==0) {
+	   yyerror( (nl_msg(30004,"unable to allocate space for yacc stacks")) );
+	   return(1);
+	   }
+	else return(0);
+
+}
+
+
+static void free_stacks() {
+	if (yys!=0) free((char *) yys);
+	if (yyv!=0) free((char *) yyv);
+}
+
+# endif  /* defined(__RUNTIME_YYMAXDEPTH) */
 

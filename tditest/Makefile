@@ -14,9 +14,7 @@ clean :
 	- rm *.o
 	- rm ../bin/tditest
 
-depend : .depend
-
 .depend :
 	find *.c -exec $(MAKE_DEPEND)
 
-include .depend
+include $(DEPEND)
