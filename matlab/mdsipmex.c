@@ -175,6 +175,7 @@ void GetMatReply(int nlhs,mxArray *plhs[])
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
+   _int64u *uqptr;
 #endif
    float *fptr;
    double *dptr, *dpout;
