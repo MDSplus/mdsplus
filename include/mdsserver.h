@@ -4,7 +4,7 @@
 
 typedef enum { doabort,           /**** Abort current action or mdsdcl command ***/
                action,            /**** Execute an action nid in a tree ***/
-               close,		  /**** Close open trees ***/
+               close_tree,		  /**** Close open trees ***/
 	           create_pulse,      /**** Create pulse files for single tree (no subtrees) ***/
                logging,           /**** Turn logging on/off ***/
                mdsdcl_command,    /**** Execute MDSDCL command ***/
