@@ -1104,6 +1104,7 @@ alpha-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="/usr/include/java/`uname -m`";;
 *linux*) CFLAGS="$CFLAGS -fpic";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
+       IDL_BIN_SUF="linux"
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
        LD_LDSHARE="-Bdynamic ";
