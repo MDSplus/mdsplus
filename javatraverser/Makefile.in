@@ -95,6 +95,14 @@ clean: ; rm $(CLASSES) @MAKEBINDIR@jTraverser @MAKEJAVADIR@classes/jTraverser.ja
 
 depend: ; @ :
 
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jTraverser.jar @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@jTraverser @bindir@
+
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes

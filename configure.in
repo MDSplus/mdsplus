@@ -204,7 +204,6 @@ then
 else
 	X_CFLAGS=-D_NO_DXm
 fi
-
 AC_DEFINE_UNQUOTED(TARGET_OS,${target_os})
 AC_DEFINE_UNQUOTED(TARGET_CPU,${target_cpu})
 AC_DEFINE_UNQUOTED(TARGET_VENDOR,${target_vendor})
@@ -234,7 +233,7 @@ AC_SUBST(X_PRE_LIBS)
 AC_SUBST(UIL)
 AC_SUBST(XM_LIBS)
 AC_SUBST(LD)
-AC_SUBST(FOR_LDFLAGS);
+AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(SIZEOF_INT_P)
 AC_LINK_FILES(ipcs/include/ipcs, include/ipcs)
 AC_LINK_FILES(include/config.h, ipcs/include/ipcs/config.h)

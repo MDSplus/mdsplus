@@ -3772,7 +3772,6 @@ then
 else
 	X_CFLAGS=-D_NO_DXm
 fi
-
 cat >> confdefs.h <<EOF
 #define TARGET_OS ${target_os}
 EOF
@@ -3811,7 +3810,7 @@ EOF
 
 
 
-;
+
 
 
 
