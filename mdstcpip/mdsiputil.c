@@ -39,8 +39,8 @@ void SetSocketOptions(SOCKET s)
 {
   int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
-  setsockopt(s, SOL_SOCKET,SO_RCVBUF,&recvbuf,sizeof(int));
-  setsockopt(s, SOL_SOCKET,SO_SNDBUF,&sendbuf,sizeof(int));
+  setsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,sizeof(int));
+  setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(int));
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
 }
 
