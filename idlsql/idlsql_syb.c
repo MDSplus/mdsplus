@@ -104,6 +104,7 @@ extern int GetDBStatus();
 #define SYBINT2		SQLINT2 
 #define SYBINT1		SQLINT1
 #define SYBDATETIME	SQLDATETIME
+#define SYBDATETIME4	SQLDATETIME4
 #define SYBMONEY	SQLMONEY
 #endif
 #include <string.h>
@@ -328,6 +329,7 @@ int		rblob;
 			temp.i = ind ? HUGE_W : (short)(*(char *)buf);
 			type = IDL_TYP_INT;
 			break;
+		case SYBDATETIME4 :		/***convert date to double***/
 		case SYBDATETIME :		/***convert date to double***/
 		    if (date) 
 		    {		/*Julian day 3 million?? is 17-Nov-1858*/
@@ -365,8 +367,15 @@ int		rblob;
 				type = IDL_TYP_DOUBLE;
 				if (status < 0) {temp.d = HUGE_D; break;}
 				ddate[status] = '\0';
-				sscanf(ddate, "%3s %2d %4d %2d:%2d:%2d:%3d%2s",
+                                if (type == SYBDATETIME)
+				  sscanf(ddate, "%3s %2d %4d %2d:%2d:%2d:%3d%2s",
 					mon, &da, &yr, &hr, &mi, &se, &th, ampm);
+				else {
+				  sscanf(ddate, "%3s %2d %4d %2d:%2d%2s",
+					mon, &da, &yr, &hr, &mi, ampm);
+                                  se = 0;
+                                  th = 0;
+                                }
 				if (hr == 12) hr = 0;
 				if (ampm[0] == 'P') hr += 12;
 				moptr = strstr(moname, mon);

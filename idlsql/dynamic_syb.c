@@ -210,6 +210,7 @@ int	SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
 			while ((status = dbnextrow(dbproc)) != NO_MORE_ROWS) {
 				++rowcount;
 				status = USER_PUTS(dbproc, &rowcount, user_args, rblob);
+				if (!status) goto close;
 			}
 		}
 		if (status == NO_MORE_ROWS || status == NO_MORE_RESULTS) {
