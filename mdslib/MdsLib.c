@@ -958,6 +958,8 @@ int MdsValue(char *expression, ...)
   struct descriptor *dsc;
   int *length;
   static int clear=4;
+  static DESCRIPTOR_LONG(clear_d,&clear);
+  EMPTYXD(tmpxd);
   int status = 1;
   int *descnum = &status;  /* initialize to point at non zero value */
 
@@ -1156,7 +1158,8 @@ int MdsValue(char *expression, ...)
       }
     }
   }
-  TdiDebug(&clear,0 MDS_END_ARG);
+  TdiDebug(&clear_d,&tmpxd MDS_END_ARG);
+  MdsFree1Dx(&tmpxd,0);
 #endif
   return(status);
 

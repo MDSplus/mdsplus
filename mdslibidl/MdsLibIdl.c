@@ -224,6 +224,7 @@ int IdlMdsValue(int argc, void **argv)
   int argidx = 1;
   int i;
   static int clear=4;
+  static DESCRIPTOR_LONG(clear_d,&clear);
   BlockSig(SIGALRM);
   expression.length = strlen((char *)argv[0]);
   expression.pointer = (char *)argv[0];
@@ -360,7 +361,8 @@ int IdlMdsValue(int argc, void **argv)
       arrayArgs[i].pointer = 0;
     }
   }
-  TdiDebug(&clear,0 MDS_END_ARG);
+  TdiDebug(&clear_d,&tmp MDS_END_ARG);
+  MdsFree1Dx(&tmp,0);
   UnBlockSig(SIGALRM);
   return status;
 }
