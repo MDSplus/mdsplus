@@ -1257,11 +1257,7 @@ static void *handleMessage(void * dummy)
 			memcpy(arg_d->data, data, data_len);
 			} /* will be freed by the ExecuteAst */
 		    createThread(&local_thread, executeAst, arg_d);
-#ifdef __hpux
-                    pthread_detach(&local_thread);
-#else
                     pthread_detach(local_thread);
-#endif
 		}
 	    }
 	}
