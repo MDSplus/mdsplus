@@ -113,7 +113,7 @@ int descr (int *dtype, void *data, int *dim1, ...)
   {
     dsc->class = CLASS_S;
 
-    if (dsc->dtype == DTYPE_CSTRING && dsc->length == 0) 
+    if (dsc->dtype == DTYPE_CSTRING) /* && dsc->length == 0)  */
     {
 	 va_list incrmtr;
 	 va_start(incrmtr, dim1);
