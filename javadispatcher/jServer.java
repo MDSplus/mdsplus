@@ -318,18 +318,28 @@ public class jServer extends MdsIp {
 
   }
 
-  public static void main(String args[])
-  {
+  public static void main(String args[]) {
     int port;
     try {
       System.out.println(args[0]);
       port = Integer.parseInt(args[0]);
-    }catch(Exception exc)
-    {
+    }
+    catch (Exception exc) {
       port = 8002;
     }
     jServer server = new jServer(port);
     server.start();
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    try {
+      String command = br.readLine();
+      if (command.equals("exit"))
+      {
+        server.closeAll();
+        System.exit(0);
+      }
+    }catch(Exception exc){}
+
   }
 
 
@@ -371,8 +381,28 @@ public class jServer extends MdsIp {
     }catch(Exception exc)
     {
       System.out.println(""+new Date()+ ", Failed " + name + " in " + tree + " shot " + shot + ": " + exc);
+      if(exc instanceof DatabaseException)
+        status = ((DatabaseException)exc).getStatus();
+      else
       status = 0;
     }
     return status;
   }
+
+  public void closeAll()
+  {
+    for(int i = 0; i < retSocketsV.size(); i++)
+    {
+      Socket currSock = (Socket)retSocketsV.elementAt(i);
+      if(currSock != null)
+      {
+        try {
+          currSock.shutdownInput();
+          currSock.shutdownOutput();
+          currSock.close();
+        }catch(Exception exc){}
+      }
+    }
+  }
+
 }

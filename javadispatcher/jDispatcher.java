@@ -145,7 +145,7 @@ class jDispatcher implements ServerListener
                     insertAction(curr_actions[i], i == 0, i == curr_actions.length - 1);
             }
         }
-        buildDependencies();
+        //buildDependencies();
         //fireMonitorEvent(null, MONITOR_BUILD_END);
     }
 
@@ -240,7 +240,7 @@ class jDispatcher implements ServerListener
                 fireMonitorEvent(action, MONITOR_BUILD);
         }
     }
-
+/*
     protected void buildDependencies()
     {
         DispatchData dispatch;
@@ -253,12 +253,12 @@ class jDispatcher implements ServerListener
                 dispatch = (DispatchData)action_data.getDispatch();
             }catch (Exception e)
             {  continue; }
-            if(dispatch.getType() == DispatchData.SCHED_COND)
+              if(dispatch.getType() == DispatchData.SCHED_COND)
                 traverseDispatch(action_data, dispatch.getWhen());
         }
     }
 
-    protected void traverseDispatch(ActionData action_data, Data when)
+   protected void traverseDispatch(ActionData action_data, Data when)
     {
         Action action;
         if(when == null) return;
@@ -285,7 +285,7 @@ class jDispatcher implements ServerListener
                 traverseDispatch(action_data, args[i]);
         }
     }
-
+*/
 
    protected int getInt(Data data)
    /**
