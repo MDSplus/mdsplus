@@ -73,7 +73,7 @@ fi
 
 AC_ARG_WITH(xio,
 	[  --with-xio=globus-location:flavor  use globus xio for mdsip communications],
-          MDSTCPIP="mdsip_xio"
+          MDSTCPIP="mdsip_xio roam"
           GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
           GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
           if test "$GLOBUS_FLAVOR" = ""
@@ -82,12 +82,20 @@ AC_ARG_WITH(xio,
 
 YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
 Format:   --with-xio=globus-install-directory:flavor
-Example:  --with-xio=/usr/local/gt3:gcc32pthr
+Example:  --with-xio=/usr/local/gt3:gcc32dbg
 
-Note you should use a pthr (pthreads) variant of the flavor installed on your system.
+Note do not include pthr in the flavor as it is automatically added.
 
 EOF
             exit
+          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
+          then
+	    cat <<EOF
+
+Do NOT INCLUDE pthr in the globus flavor!
+
+EOF
+	    exit
           fi 
         ,
           MDSTCPIP="mdstcpip"
@@ -842,6 +850,7 @@ mdstcpip/Makefile
 mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 
+roam/Makefile
 rpm/Makefile
 rpm/envsyms
 rpm/post_install_script

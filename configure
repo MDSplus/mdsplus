@@ -4056,7 +4056,7 @@ fi
 # Check whether --with-xio or --without-xio was given.
 if test "${with_xio+set}" = set; then
   withval="$with_xio"
-  MDSTCPIP="mdsip_xio"
+  MDSTCPIP="mdsip_xio roam"
           GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
           GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
           if test "$GLOBUS_FLAVOR" = ""
@@ -4065,12 +4065,20 @@ if test "${with_xio+set}" = set; then
 
 YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
 Format:   --with-xio=globus-install-directory:flavor
-Example:  --with-xio=/usr/local/gt3:gcc32pthr
+Example:  --with-xio=/usr/local/gt3:gcc32dbg
 
-Note you should use a pthr (pthreads) variant of the flavor installed on your system.
+Note do not include pthr in the flavor as it is automatically added.
 
 EOF
             exit
+          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
+          then
+	    cat <<EOF
+
+Do NOT INCLUDE pthr in the globus flavor!
+
+EOF
+	    exit
           fi
 
 else
@@ -4237,7 +4245,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:4240:" \
+echo "$as_me:4248:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -11291,7 +11299,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -11852,6 +11860,7 @@ do
   "mdsvme/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdsvme/Makefile" ;;
   "mitdevices/Makefile" ) CONFIG_FILES="$CONFIG_FILES mitdevices/Makefile" ;;
   "remcam/Makefile" ) CONFIG_FILES="$CONFIG_FILES remcam/Makefile" ;;
+  "roam/Makefile" ) CONFIG_FILES="$CONFIG_FILES roam/Makefile" ;;
   "rpm/Makefile" ) CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
   "rpm/envsyms" ) CONFIG_FILES="$CONFIG_FILES rpm/envsyms" ;;
   "rpm/post_install_script" ) CONFIG_FILES="$CONFIG_FILES rpm/post_install_script" ;;
