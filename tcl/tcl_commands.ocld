@@ -245,6 +245,7 @@ Define syntax set_node
 	qualifier INCLUDED											       ! 77 
 	qualifier LOG												       ! 68 
         qualifier ESSENTIAL											       ! 98 
+        qualifier STATUS,value(required)
         disallow ON AND OFF											       ! 53 
 define syntax set_server											       ! 83 
         Routine TclDispatch_set_server										       ! 83

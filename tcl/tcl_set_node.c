@@ -26,8 +26,9 @@ int TclSetNode()
     void  *ctx = 0;
     char  *nodename;
     static DYNAMIC_DESCRIPTOR(dsc_nodename);
-
+    static DYNAMIC_DESCRIPTOR(dsc_status);
     cli_get_value("NODENAME",&dsc_nodename);
+    cli_get_value("STATUS",&dsc_status);
     nodename = dsc_nodename.dscA_pointer;
     l2u(nodename,0);
     log = cli_present("LOG") & 1;
@@ -35,7 +36,14 @@ int TclSetNode()
     usageMask = -1;
     while ((status = TreeFindNodeWild(nodename,&nid,&ctx,usageMask)) & 1)
        {
-        switch (cli_present("SUBTREE"))
+	 if (dsc_status.dscA_pointer)
+	 {
+           int statval = atoi(dsc_status.dscA_pointer);
+           NCI_ITM setnci[] = {{sizeof(int), NciSTATUS, 0, 0},{0,NciEND_OF_LIST,0,0}};
+           setnci[0].pointer = (unsigned char *)&statval;
+           TreeSetNci(nid,setnci);
+         }
+	 switch (cli_present("SUBTREE"))
            {
             case CLI_STS_PRESENT:
               status = TreeSetSubtree(nid);
