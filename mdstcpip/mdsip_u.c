@@ -735,7 +735,7 @@ static void ProcessMessage(Client *c, Message *message)
     c->client_type = message->h.client_type;
     if (!d)
     {
-      static short lengths[] = {0,0,1,2,4,0,1,2,4,0,4,8,8,0,0};
+      static short lengths[] = {0,0,1,2,4,8,1,2,4,8,4,8,8,0,0};
       switch (message->h.ndims)
       {
         static struct descriptor scalar = {0, 0, CLASS_S, 0};
