@@ -1028,6 +1028,11 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
   info[1]=FDS[fd-1].fd;
   info[4]=whence;
   *(_int64 *)(&info[2]) = offset;
+#ifdef _big_endian
+  status = info[2];
+  info[2]=info[3];
+  info[3]=status;
+#endif
   status = SendArg(sock,MDS_IO_LSEEK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
   {
@@ -1176,6 +1181,11 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
   info[4]=size;
   info[5]=mode;
   *(_int64 *)(&info[2]) = offset;
+#ifdef _big_endian
+  status = info[2];
+  info[2] = info[3];
+  info[3] = status;
+#endif
   status = SendArg(sock,MDS_IO_LOCK_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
   {
