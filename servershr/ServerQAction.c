@@ -605,6 +605,7 @@ static void UnlockQueue()
 
 static void WaitForJob()
 {
+  int status;
   ProgLoc = 11;
   pthread_mutex_lock(&JobWaitMutex);
   ProgLoc = 12;
