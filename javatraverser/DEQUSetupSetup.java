@@ -65,8 +65,11 @@ public class DEQUSetupSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(800);
-    this.setHeight(250);
+    this.setWidth(597);
+    this.setHeight(597);
+    this.setDeviceType("DEQUSetup");
+    this.setDeviceProvider("150.178.3.33");
+    this.setDeviceTitle("EQU device timing setup");
     this.getContentPane().setLayout(borderLayout1);
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setHgap(0);
@@ -121,7 +124,7 @@ public class DEQUSetupSetup extends DeviceSetup {
     flowLayout3.setAlignment(FlowLayout.CENTER);
     flowLayout3.setHgap(0);
     flowLayout3.setVgap(0);
-    deviceField10.setOffsetNid(4);
+    deviceField10.setOffsetNid(12);
     deviceField10.setLabelString("Duration: ");
     deviceField10.setNumCols(15);
     deviceField10.setIdentifier("");
