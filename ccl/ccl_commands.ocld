@@ -172,7 +172,7 @@ Define syntax set_memory
 Define syntax set_module
 	routine ccl_set_module
         parameter p1,value(required,type=set_keywords)
-	parameter p2,label=module,prompt="Module",value(required)
+	parameter p2,label=name,prompt="Module",value(required)
 Define type XANDQ_KEYWORDS
 	keyword any
 	keyword no
@@ -194,7 +194,7 @@ Define syntax show_module
 Define syntax show_data
 	routine ccl_show_data
 	qualifier START,nonnegatable,default,value(default=1)
-	qualifier END,nonnegatable,default,value(default=1)
+	qualifier END,nonnegatable,default,value(default=5)
 	qualifier binary,nonnegatable
 	qualifier decimal,nonnegatable,default
 	qualifier octal,nonnegatable

@@ -6,10 +6,10 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+LIBS=-L@MAKELIBDIR@ -lMdsdcl -lMdsShr -lRemCamShr @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-SOURCES = ccl_commands.c ccl_dummy.c
+SOURCES = ccl_commands.c ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
