@@ -47,6 +47,7 @@ extern int LibCallg();
 extern int TreeFindNode();
 extern int TreePutRecord();
 extern int TreeWait();
+extern int TdiDebug();
 #endif
 
 short ArgLen(struct descrip *d);
@@ -956,6 +957,7 @@ int MdsValue(char *expression, ...)
   unsigned char nargs;
   struct descriptor *dsc;
   int *length;
+  static int clear=4;
   int status = 1;
   int *descnum = &status;  /* initialize to point at non zero value */
 
@@ -1154,6 +1156,7 @@ int MdsValue(char *expression, ...)
       }
     }
   }
+  TdiDebug(&clear,0 MDS_END_ARG);
 #endif
   return(status);
 
