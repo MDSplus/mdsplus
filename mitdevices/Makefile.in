@@ -220,7 +220,7 @@ install:
 	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ @libdir@
-	ln -sf libMitDevices@SHARETYPE@ @libdir@libMIT\$$DEVICES@SHARETYPE@
+	ln -sf libMitDevices@SHARETYPE@ @libdir@/libMIT\$$DEVICES@SHARETYPE@
 	if (test @SHARETYPE@ != .a) then \
 	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a @libdir@; \
 	fi;
