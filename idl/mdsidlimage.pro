@@ -1,7 +1,7 @@
 Function MdsIdlImage
   case !version.os of
     'vms' : return,'mdslibidl'
-    'Win32' : return,'mdslibidl'
+    'Win32' : if float(!version.release) lt 5.5 then return, 'mdslibidlv54' else return,'mdslibidl'
     'AIX' : return,'libMdsLibIdl.lib'
     'IRIX' : return,'libMdsLibIdl.so'
     'OSF' : return,'libMdsLibIdl.so'

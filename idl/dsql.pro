@@ -1,104 +1,41 @@
-@mdsconnect.pro
-;function dbinfo, dbname, host, name, user, pass, mdshost
-;  name = dbname
-;  host = 'red'
-;  user = 'test'
-;  pass = 'pfcworld'
-;  mdshost = 'local'
-;  return, 1
-;end
+;+
+; NAME:         DSQL
+; PURPOSE:      Do dynamic SQL expression using TDISQL
+; CATEGORY:     MDSPLUS
+; CALLING SEQUENCE:
+;       ans = DSQL(expression [,arg1,...,argn]
+;       [,COUNT=count]$         ;number of selected items
+;       [,DATE=date]$           ;binary date format
+;       [,ERROR=error]$         ;VMS error code
+;       [,EXCESS=excess]$       ;allow excessive args (ignored on this pass)
+;       [,QUIET=quiet]$         ;suppress printing of error message
+;       [,STATUS=status]$       ;VMS error code
+;       [,DEBUG=debug])			;Print out debugging information.
 ;
-; function to return the information used to connect to
-; a particular database from this node.
-; note that if the mdshost is the server that has the database
-; locally, then the  host can be blank.
+; INPUT PARAMETERS:       expression = character string with SQL operation
+; OPTIONAL INPUT PARAMETERS:
+;       arg1,...,argn = values to substitute into the expression for
+;       "?" input parameters.
+; KEYWORDS:     See above.
+; OUTPUTS:      None except for SELECT operations where the remaining
+;               arg1,...argn variables receive the output.
+;               They may not be expressions or constants.
+; COMMON BLOCKS: None.
+; SIDE EFFECTS: SQL database opened or accessed.
+; RESTRICTIONS: set_database must preceed calls to DSQL.  If local access is used
+;               an appropriate database client library (DBLIB) must be installed.
+;               If remote access is used, the database server must be running an
+;               mdsip server also.
+; PROCEDURE:
+;  1. '?' markers in the query are replaced with their cooresponding input arguments.
+;  2. a TDI expression for the query with tdi variables for all the answers is constructed
+;  3. Execute the expression either locally or remotely
+;  4. Retrieve the values of each of the output arguments (again either locally or not)
 ;
-; alternatively the mdshost can be 'local' and we will use
-; a local copy of dblib to access the host over the network.
-;
-function dbinfo, dbname, host, name, user, pass, mdshost
-;  host=getenv("SYBASE_HOST")
-;  if (strlen(host) eq 0) then host = "red.psfc.mit.edu"
-;  catch, err
-;  if (err ne 0) then begin
-;    catch,/cancel
-;    spawn,'\whoami',result
-;    dbuser = result[n_elements(result)-1]
-;    dbpass="PFCWORLD"
-;    name = dbname
-;    mdshost='red'
-;    return, 1
-;  endif
-  OPENR,1,getenv('HOME')+'/'+dbname+".sybase_login"
-  mdshost=''
-  host = ''
-  user=''
-  pass=''
-  readf,1,mdshost
-  readf,1,host
-  readf,1,user
-  readf,1,pass
-  name = dbname
-  close, 1
-;  name = dbname
-;  host = 'red'
-;  user = 'test'
-;  pass = 'pfcworld'
-;  mdshost = 'red.psfc.mit.edu'
-  return, 1
-end
-
-pro MDSDbDisconnect
-   defsysv,'!MDSDB_SOCKET',exists=old_sock
-   if (not old_sock) then begin
-       defsysv, '!MDSDB_SOCKET', -1
-       defsysv, '!MDSDB_HOST', ''
-   endif
-   MdsDisconnect, socket=!MDSDB_SOCKET
-   !MDSDB_SOCKET = -1
-   !MDSDB_HOST = ""
-end
-
-pro MDSDbConnect, host
-   defsysv,'!MDSDB_SOCKET',exists=old_sock
-   if (not old_sock) then begin
-       defsysv, '!MDSDB_SOCKET', -1
-       defsysv, '!MDSDB_HOST', ''
-   endif
-   if (!MDSDB_HOST ne host) then begin
-       MDSDbDisconnect
-   endif
-   if (host ne "" and host ne "local") then begin
-       socket=-1
-       MdsConnect, host, socket=socket
-       !MDSDB_SOCKET = socket
-       !MDSDB_HOST=host
-   endif
-end
-
-pro set_database, dbname, status=status, quiet=quiet,debug=debug
-  status = dbinfo(dbname, host, name, user, pass, mdshost)
-  MDSDbconnect, mdshost
-  status = mdsvalue("DBLogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
-  if (not status) then begin
-      if not (keyword_set(quiet)) then begin
-          Message, "Error logging on to DbHost "+host, /continue
-      endif else begin
-          Message, "Error logging on to DbHost "+host, /continue, /noprint
-      endelse
-      return
-  endif
-;  status = mdsvalue("SetDatabase('"+ name+"')", socket=!MDSDB_SOCKET)
-  status = dsql('USE ?', name)
-  if (status ne 0) then begin
-      if not (keyword_set(quiet)) then begin
-          Message, "Error attaching to database "+name, /continue
-      endif else begin
-          Message, "Error attaching to database "+name, /continue, /noprint
-      endelse
-      return
-  endif
-end
+; MODIFICATION HISTORY:
+;        Idea by T.W. Fredian, September 22, 1992
+;        TDI based implementation Josh Stillerman Feb. 2002.
+;-
 
 ;
 ; function which replaces on '?' with the string of an idl variable

@@ -70,16 +70,16 @@ common widget_common, base
 END ;=================================================================
 
 function GetCurrentShot
-  set_database, 'logbook'
+;  set_database, 'logbook'
   dummy = dsql("select max(shot) from shots", shots)
-  sql_finish
+;  sql_finish
   return, shots(0) mod 1000
 end
 
 function GetCurrentRun
-  set_database, 'logbook'
-  dummy = dsql("select max(run) from runs", runs)
-  sql_finish
+;  set_database, 'logbook'
+  dummy = dsql("select max(run) from runs", runs, /debug)
+;  sql_finish
   return, runs(0)
 end
 
@@ -165,9 +165,9 @@ function SET_SELECTION_OPTIONS, selection_options, leader
   user_w = WIDGET_TEXT(r, /editable, xsize=20)
   r = widget_base(c, /row)
   l = widget_label(r, value='or TOPIC = ')
-  set_database, 'logbook'
+;  set_database, 'logbook'
   count = dsql("select topic from topics order by topic", topics)
-  sql_finish
+;  sql_finish
   tb_w = lonarr(count)
   tb = widget_base(c, col=4, /nonexclusive)
   for i = 0, count -1 do begin
@@ -355,9 +355,9 @@ function get_query, ctx, voided=voided, user=user, run=run, topic=topic
     runs = str_sep(runs, ',')
     for i=0, n_elements(runs)-1 do begin
       if (strtrim(runs(i),2) eq 'CURRENT') then begin
-        set_database, 'logbook'
-        n = dsql('select max(run) from runs', run)
-        sql_finish
+;        set_database, 'logbook'
+        n = dsql('select max(run) from runs', run,/debug)
+;        sql_finish
         runs(i) = string(run(0), format='(I7)')
       endif
     endfor
@@ -385,10 +385,10 @@ function get_query, ctx, voided=voided, user=user, run=run, topic=topic
 ;        k=call_external('LIBRTL','LIB$GETJPI',514,0,0,0,user,0,value=[0,1,1,1,0,1])
         users(i) = GETENV("user")
         if strlen(users(i)) eq 0 then begin
-          set_database, 'logbook'
+;          set_database, 'logbook'
           dummy = dsql('select suser_sname()', user)
           users(i)=user(0)
-          sql_finish
+;          sql_finish
 		endif
       endif
     endfor
@@ -1195,9 +1195,9 @@ pro make_entry, ctx
   b = widget_button(bb, value = 'Decrement', /tracking, uvalue = {key:'decrement shot', descr:'Shot will be set to the current value minus 1'})
   b = widget_button(bb, value = 'None', /tracking, uvalue = {key:'no shot', descr:'Shot will be cleared'})
   bb = widget_button(mbar, value='Topic', /menu, /tracking, uvalue={key:'', descr:'Set the topic field from list of available topics'})
-  set_database, 'logbook'
+;  set_database, 'logbook'
   count = dsql("select topic, brief from topics order by topic", topics, briefs)
-  sql_finish
+;  sql_finish
   for i=0, count-1 do begin
     b = widget_button(bb, value=topics(i), uvalue = {key:'topic', descr:briefs(i)}, /tracking)
   endfor
@@ -1211,10 +1211,10 @@ pro make_entry, ctx
   r = widget_base(base, /row)
   user = GETENV("user")
   if strlen(user) eq 0 then begin
-    set_database, 'logbook'
+;    set_database, 'logbook'
     dummy = dsql('select suser_sname()', user)
     user=user(0)
-    sql_finish
+;    sql_finish
   endif
   l = widget_label(r, value = 'User ')
   user_w = widget_label(r, value=user)
@@ -1262,10 +1262,10 @@ pro edit_entry, ctx
   if (hand.selected eq -1) then $
     X_Complain, "No entry selected to edit" $
   else begin
-  set_database, 'logbook'
+;  set_database, 'logbook'
     count = dsql('select run, shot, username, topic, text from entries where dbkey=?', hand.key(hand.selected), $
                  run, shot, user, topic, text)
-    SQL_FINISH
+;    SQL_FINISH
     if (count eq 1) then begin
       NULL = 2147483647L
       base = widget_base(title="Edit logbook entry", /col, /modal, group_leader=ctx.group_leader)
@@ -1305,9 +1305,9 @@ pro void_entry, ctx
   if (hand.selected eq -1) then $
     X_Complain, "No entry selected to edit" $
   else begin
-    set_database, 'logbook'
+;    set_database, 'logbook'
     count = dsql('select username, topic, text from entries where dbkey=?', hand.key(hand.selected), user, topic, text)
-    SQL_FINISH
+;    SQL_FINISH
     if (count eq 1) then begin
       base = widget_base(title="Void logbook entry - are you sure?", /col, /modal, group_leader=ctx.group_leader)
       r = widget_base(base, /row)
@@ -1429,24 +1429,24 @@ function make_new_entry, ctx
 ;  dummy = dsql("set transaction read write reserving entries for shared write")
   text_txt = fix_quotes(text_txt)
   if (run eq -1) then begin
-    set_database, 'logbook'
+;    set_database, 'logbook'
     dummy = dsql("INSERT INTO ENTRIES (topic, text) values (?,?)", topic_txt, text_txt, status=status, /quiet)
-    SQL_FINISH
+;    SQL_FINISH
     goto, done
   endif
 
   if (shot eq -1) then begin
-    set_database, 'logbook'
+;    set_database, 'logbook'
     dummy = dsql("INSERT INTO ENTRIES (run, topic, text) values (?,?,?)", run, topic_txt, text_txt, status=status, /quiet)
-    SQL_FINISH
+;    SQL_FINISH
     goto, done
   endif
 
   lshot = 0l
   lshot = run*1000+shot
-  set_database, 'logbook'
+;  set_database, 'logbook'
   dummy = dsql("INSERT INTO ENTRIES (run, shot, topic, text) values (?,?,?,?)", run,  lshot, topic_txt, text_txt, status=status, /quiet)
-  SQL_FINISH
+;  SQL_FINISH
 
 done:
   if (status) then begin
@@ -1703,7 +1703,7 @@ pro edit_event, ev
         WIDGET_CONTROL, ev.id, get_value=button
         case (button) of
         "Ok" : begin
-           set_database, 'logbook'
+;           set_database, 'logbook'
            widget_control, ev.top, get_uvalue = ctx
            if (ctx.dirty) then begin
              widget_control, ctx.txt, get_value=new_text
@@ -1761,10 +1761,10 @@ pro edit_event, ev
              endelse
            endif
            widget_control, ev.top, /destroy
-           sql_finish
+   ;       sql_finish
            end
         "Void" : begin
-           set_database, 'logbook'
+;           set_database, 'logbook'
            widget_control, ev.top, get_uvalue = ctx
            dummy = dsql("update entries set voided = getdate() where dbkey = ?", ctx.key, status = status, error =error)
            if (status) then begin
@@ -1780,7 +1780,7 @@ pro edit_event, ev
              X_Complain, ["Could not void entry, changes not entered",error], group_leader=ev.top
            endelse
            widget_control, ev.top, /destroy
-           sql_finish
+ ;          sql_finish
            end
         "Cancel" : begin
            widget_control, ev.top, /destroy
@@ -1902,13 +1902,13 @@ pro do_query, ctx, custom=custom
   if (strlen(query) GT 0) then begin
 ;    query=query+ ' order by '+ctx.display_options.order_by+' limit to '+string(ctx.display_options.max_rows)+' rows'
     query=query+ ' order by '+ctx.display_options.order_by
-  set_database, 'logbook'
+;  set_database, 'logbook'
     dummy = dsql('set rowcount '+string(ctx.display_options.max_rows))
     count = dsql('select dbkey, username, run, shot, topic, text, entered from entries where '+query,  $
 		   dbk2, user2, run2, shot2, topic2, text2, entered2, /QUIET, STATUS=STATUS, error=error)
 ;    print, "GOT BACK ", count
     dummy = dsql('set rowcount 0')
-    sql_finish
+;    sql_finish
     if(not status) then begin
       X_Complain, ["SQL Error",error,"No records selected..." ]
       return
@@ -2024,7 +2024,7 @@ common widget_common, base
     X_COMPLAIN, "Use the environment varable SYBASE_HOST to specify your SQLSERVER database server before using ENTRY_DISPLAY" $
   else begin
   set_database, 'logbook'
-  sql_finish
+;  sql_finish
   mbar = 0l
   base = widget_base(title='logbook entries', RESOURCE_NAME='entryDisplay', /column, /tlb_size_events, mbar=mbar)
   bb = widget_button(mbar, value='File',/menu)
@@ -2064,6 +2064,7 @@ common widget_common, base
        X_COMPLAIN, "Set the environment variable MDS_HOST the your MDSplus event server" $
     else begin
       mdsconnect, host, port=8001
+;      mdsconnect, host
       dummy = execute("id = mdsevent(base, 'LOGBOOK_ENTRY')")
     endelse
   endif else $
@@ -2094,8 +2095,8 @@ common widget_common, base
   widget_control, base, set_uvalue=ctx
 
   Xmanager, 'display', base, group=base
-  if (!version.os eq 'Win32') then $
-    if (getenv("MDS_HOST") ne "") then $
-      mdsdisconnect
+;  if (!version.os eq 'Win32') then $
+;    if (getenv("MDS_HOST") ne "") then $
+;      mdsdisconnect
   endelse
 end
