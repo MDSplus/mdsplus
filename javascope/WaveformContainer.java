@@ -588,14 +588,14 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     public void SetColors(Color colors[], String colors_name[])
     {
  //     Waveform.SetColors(colors, colors_name);
-        jScopeMultiWave w;
+        Waveform w;
         for(int i = 0, k = 0; i < rows.length; i++)
         {
             for(int j = 0; j < rows[i]; j++, k++)
             {
-                w = (jScopeMultiWave) GetWavePanel(k);
+                w = GetWavePanel(k);
                 if (w != null) {
-                w.SetColors(colors, colors_name);
+                    w.SetColors(colors, colors_name);
                 }
             }
         }

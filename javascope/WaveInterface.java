@@ -1177,6 +1177,7 @@ public class WaveInterface
     {
 	    float curr_data[] = null, curr_x[] = null, up_err[] = null,
 	          low_err[] = null;
+            double curr_x_double[] = null;
 	    int x_samples = 0, min_len;
 	    long sh = 0;
 	    WaveData wd;
@@ -1209,24 +1210,40 @@ public class WaveInterface
             low_err = cd.low_err;
             curr_data = cd.data;
             curr_x = cd.x;
-            if(curr_x == null || curr_data == null)
+            curr_x_double = cd.x_double;
+            if( (curr_x == null &&  curr_x_double == null ) || curr_data == null)
                 return null;
 
+            if( curr_x != null )
+            {
 	        if(curr_data.length < curr_x.length)
 		        min_len = curr_data.length;
 	        else
 		        min_len = curr_x.length;
-
+            } else {
+                if(curr_data.length < curr_x_double.length)
+                     min_len = curr_data.length;
+                else
+                     min_len = curr_x_double.length;
+            }
             if(cd.dimension == 2)
             {
                 float[] curr_y = cd.y;
-	            out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
-	            out_signal.setMode2D(mode2D[curr_wave]);
+                if(curr_x != null)
+                  out_signal = new Signal(curr_data, curr_y, curr_x, Signal.TYPE_2D);
+                else
+                  out_signal = new Signal(curr_data, curr_y, curr_x_double, Signal.TYPE_2D);
+                out_signal.setMode2D(mode2D[curr_wave]);
             }
             else
             {
+
+              if(curr_x != null)
     	        out_signal = new Signal(curr_x, curr_data, min_len);
-	            out_signal.setMode1D(mode1D[curr_wave]);
+              else
+                out_signal = new Signal(curr_x_double, curr_data, min_len);
+
+              out_signal.setMode1D(mode1D[curr_wave]);
             }
 
             if(up_err != null && low_err != null)
@@ -1299,8 +1316,8 @@ public class WaveInterface
 	        {
 	            xlabel = wd.GetXLabel();
 	            ylabel = wd.GetYLabel();
-		        curr_data = wd.GetFloatData();
-            }
+                    curr_data = wd.GetFloatData();
+                }
 
 	        if(curr_data != null && curr_data.length > 1 && in_up_err != null &&
 		        in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
@@ -1332,17 +1349,17 @@ public class WaveInterface
 	        if(full_flag || dimension > 1)
 	        {
 	            if(wd == null)
-		            wd = dp.GetWaveData(in_y[curr_wave]);
+                        wd = dp.GetWaveData(in_y[curr_wave]);
 	        } else
 		        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax, Waveform.MAX_POINTS);
 
-            if(wd == null)
-                curr_data = null;
-            else
-            {
+                if(wd == null)
+                   curr_data = null;
+                else
+                {
 	            xlabel = wd.GetXLabel();
 	            ylabel = wd.GetYLabel();
-		        curr_data = wd.GetFloatData();
+                    curr_data = wd.GetFloatData();
 	        }
 
 	        if(dimension == 1)
@@ -1369,7 +1386,7 @@ public class WaveInterface
 		            if(low_err == null || low_err.length <= 1)
 		                curr_data = null;
 	            }
-            }
+                }
 
 	        if(curr_data != null)
 	        {
@@ -1422,10 +1439,10 @@ public class WaveInterface
               else
                 out_signal = new Signal(curr_x, curr_data, min_len);
 	      out_signal.setMode1D((int)mode1D[curr_wave]);
-    	}
+            }
 
-        if(wd != null)
-            title = wd.GetTitle();
+            if(wd != null)
+              title = wd.GetTitle();
 
     	if( (cache_enabled || sc != null) && full_flag && !is_async_update)
     	{
@@ -1447,6 +1464,7 @@ public class WaveInterface
             cd.low_err = low_err;
             cd.data = curr_data;
             cd.x = curr_x;
+            cd.x_double = curr_x_double;
             cd.y = curr_y;
             cd.dimension = dimension;
 
