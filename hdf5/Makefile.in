@@ -12,13 +12,14 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
         hdf5tdi.c  \
-        hdf5ToMds.c
+        hdf5ToMds.c \
+	MDSplus2HDF5.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = hdf5tdi.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @MAKELIBDIR@libhdf5tdi.a \
-	@MAKEBINDIR@ @MAKEBINDIR@hdf5ToMds
+	@MAKEBINDIR@ @MAKEBINDIR@hdf5ToMds  @MAKEBINDIR@MDSplus2HDF5
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -29,6 +30,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@libhdf5tdi.a 
 	@ $(RM) @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ 
 	@ $(RM) @MAKEBINDIR@hdf5ToMds
+	@ $(RM) @MAKEBINDIR@MDSplus2HDF5
 
 install:
 	if [ ! -d @libdir@ ] ; then \
@@ -60,3 +62,7 @@ hdf5tdi.exports: hdf5tdi.def
 
 @MAKEBINDIR@hdf5ToMds : hdf5ToMds.o 
 	$(CC) -o $@ hdf5ToMds.o $(LIBS)
+
+@MAKEBINDIR@MDSplus2HDF5 : MDSplus2HDF5.o
+	$(CC) -o $@ MDSplus2HDF5.o $(LIBS)
+
