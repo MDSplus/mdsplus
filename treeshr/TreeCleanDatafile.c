@@ -44,13 +44,21 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
               int i;
               for (i=0;i<info1->header->nodes;i++)
               {
-                STATIC_CONSTANT EMPTYXD(xd);
+                EMPTYXD(xd);
+                EMPTYXD(mtxd);
                 NCI nci;
                 TreeGetNciW(info1, i, &nci);
                 TreePutNci(info2, i, &nci, 1);
                 lstatus = _TreeGetRecord(dbid1, i, &xd);
                 if (lstatus & 1)
                   lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
+                else if (lstatus == TreeBADRECORD)
+		{
+                  fprintf(stderr,"TreeBADRECORD, Clearing nid %d\n",i);
+                  lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&mtxd, compress ? 2 : 1);
+                }
+                MdsFree1Dx(&xd,NULL);
+                
               }
               from_c = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
               strcpy(from_c+strlen(info1->filespec)-4,"characteristics#");
