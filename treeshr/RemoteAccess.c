@@ -36,7 +36,6 @@ static int FindImageSymbol(char *name, void **sym)
 
 static struct _host_list {char *host; int socket; int connections; struct _host_list *next;} *host_list = 0;
 
-#ifdef _WIN32
 static void MdsIpFree(void *ptr)
 {
 	static void (*rtn)(void *) = 0;
@@ -47,9 +46,6 @@ static void MdsIpFree(void *ptr)
 	}
 	(*rtn)(ptr);
 }
-#else
-#define MdsIpFree free
-#endif
 
 static int RemoteAccessConnect(char *host, int inc_count)
 {
@@ -316,7 +312,7 @@ int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_inout)
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (ctx)
   {
-    free(ctx->ptr);
+    MdsIpFree(ctx->ptr);
     free(ctx);
     *ctx_inout = 0;
   }
@@ -373,22 +369,14 @@ char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
 {
   struct descrip ans = empty_ans;
   char exp[64];
-  static char tagname[64];
   int status;
   char *tag = 0;
   sprintf(exp,"TreeFindNodeTags(%d)",nid_in);
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
-  if (ans.ptr)
+  if (ans.ptr && (ans.dtype == DTYPE_T) && (strlen(ans.ptr) > 0))
   {
-    if (ans.dtype == DTYPE_T)
-    {
-      if (strlen(ans.ptr) > 0)
-      {
-        strcpy(tagname,ans.ptr);
-        tag = tagname;
-      }
-      MdsIpFree(ans.ptr);
-    }
+    tag = strcpy(malloc(strlen(ans.ptr)+1),ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return tag;
 }
@@ -397,7 +385,6 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
 {
   struct descrip ans = empty_ans;
   char *exp = (char *)malloc(strlen(inpath)+20);
-  static char *path = 0;
   char *retans = 0;
   int status;
   char *tag = 0;
@@ -406,14 +393,11 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
   free(exp);
   if (ans.ptr)
   {
-    if (ans.dtype == DTYPE_T)
+    if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0))
     {
-      if (path != 0)
-        MdsIpFree(path);
-      retans = path = (char *)ans.ptr;
+      retans = strcpy(malloc(strlen(ans.ptr)+1),ans.ptr);
     }
-    else
-      MdsIpFree(ans.ptr);
+    MdsIpFree(ans.ptr);
   }
   return retans;
 }
@@ -480,7 +464,13 @@ char *FindTagWildRemote(PINO_DATABASE *dblist, char *wild, int *nidout, void **c
     if ((*ctx)->remote_tag) free((*ctx)->remote_tag);
   sprintf(exp,"TreeFindTagWild(\"%s\",_nid,%s)//\"\\0\"",wild,first_time ? "_remftwctx = 0" : "_remftwctx");
   status = MdsValue0(dblist->tree_info->channel,exp,&ans);
-  (*ctx)->remote_tag = ans.ptr;
+  if (status & 1 && ans.ptr)
+  {
+    (*ctx)->remote_tag = strcpy(malloc(strlen(ans.ptr)+1),ans.ptr);
+    MdsIpFree(ans.ptr);
+  }
+  else
+    (*ctx)->remote_tag = 0;
   if (status & 1 && nidout)
   {
     status = MdsValue0(dblist->tree_info->channel,"_nid",&nid_ans);
