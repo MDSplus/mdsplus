@@ -377,7 +377,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
               mds_server.addMdsServerListener(ActionServer.this);
               mds_server.addConnectionListener(ActionServer.this);
               System.out.println("Reconnected to to server " + ip_address + " server class " + server_class);
-              ready = true;
+              ready = active = true;
             }
             catch (Exception exc){}
           }
