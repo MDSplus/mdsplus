@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-
 //public class Waveform extends Canvas 
 //{
 
@@ -288,6 +287,7 @@ import java.util.*;
 
  class Grid {
     WaveformMetrics wm;
+    boolean reversed = false;
     int x_dim, y_dim;
     double x_values[], y_values[], x_step, y_step;
     int grid_step_x, grid_step_y;
@@ -302,25 +302,29 @@ import java.util.*;
 	
     public Grid(double xmax, double ymax, double xmin, double ymin, boolean xlog, boolean ylog, 
 	int _mode, String _x_label, String _y_label, String _title, int _grid_step_x, int _grid_step_y,
-	boolean _int_xlabels, boolean _int_ylabels)
+	boolean _int_xlabels, boolean _int_ylabels, boolean _reversed)
     {
-	mode = _mode;
-	x_label = _x_label;
-	y_label = _y_label;
-	title = _title;
-	grid_step_x = _grid_step_x;
-	grid_step_y = _grid_step_y;
-	int_xlabels = _int_xlabels;
-	int_ylabels = _int_ylabels;
-	font = null;
-	x_values = new double[50];
-	y_values = new double[50];
+        reversed = _reversed;
+	    mode = _mode;
+	    x_label = _x_label;
+	    y_label = _y_label;
+	    title = _title;
+	    grid_step_x = _grid_step_x;
+	    grid_step_y = _grid_step_y;
+	    int_xlabels = _int_xlabels;
+	    int_ylabels = _int_ylabels;
+	    font = null;
+	    x_values = new double[50];
+	    y_values = new double[50];
         x_dim = BuildGrid(x_values, IS_X, xmax, ymax, xmin, ymin, xlog, ylog);
         y_dim = BuildGrid(y_values, IS_Y,  xmax, ymax, xmin, ymin, xlog, ylog);
     }	
 
-    
-    private int BuildGrid(double val[], int mode, double xmax, double ymax, double xmin, 
+    void SetReversed(boolean reversed)
+    {
+        this.reversed = reversed;
+    }
+private int BuildGrid(double val[], int mode, double xmax, double ymax, double xmin, 
 	double ymin, boolean xlog, boolean ylog)
     {
     if(ymax < ymin) ymax = ymin + 1E-10;   
@@ -461,6 +465,10 @@ import java.util.*;
 	FontMetrics fm;
 	double curr_step;
 	String curr_string;
+	if(reversed) 
+	    g.setColor(Color.white);
+	else
+	    g.setColor(Color.black);
 	//Varibili per la stampa PS
 	int grid_lines_x[] = new int[4*x_dim];
 	int grid_lines_y[] = new int[4*y_dim];
@@ -744,13 +752,13 @@ public class Waveform extends Canvas
     public Signal waveform_signal; 
     protected WaveformMetrics wm;	
     boolean not_drawn; 
+    boolean reversed = false;
     Polygon polygon;
     int prev_width, prev_height, prev_point_x, prev_point_y;
     protected Grid grid;
     protected Color  crosshair_color;	
     Rectangle curr_rect;
-    int start_x, start_y, end_x, end_y, prev_clip_w, prev_clip_h,
-		curr_clip_w, curr_clip_h;	
+    int start_x, start_y, end_x, end_y, orig_x, orig_y;	
     Image off_image;
     Graphics off_graphics;	
     Rectangle wave_b_box;
@@ -779,7 +787,7 @@ public class Waveform extends Canvas
     Cursor def_cursor;
     boolean is_select;
     static Font font = null;
-
+    boolean just_deselected;
     static float dashes_ps[];
     static int num_dashes_ps;
     static float offset_dashes_ps;
@@ -816,7 +824,7 @@ public class Waveform extends Canvas
 	dashe[0] = 1;
 	dashe[1] = 2;
 	SetDashes(0,dashe,2);
-  }
+	}
 
     public Waveform(WaveSetup c)
     {
@@ -891,9 +899,15 @@ public class Waveform extends Canvas
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e)
             {
+                just_deselected = false;
                 int x = e.getX();
                 int y = e.getY();
         
+                if(mode == MODE_COPY && IsSelected()) //for Scope compatibility
+                {
+                    just_deselected = true;
+                    HandlePaste();
+                }
 	            if((e.getModifiers() & Event.ALT_MASK) != 0) 
 	            {
 	                is_mb2 = true;
@@ -918,7 +932,7 @@ public class Waveform extends Canvas
 		                controller.Hide();     
 	                if(mode != MODE_POINT)
 		                update_timestamp++;
-	                if(mode ==  MODE_COPY)
+	                if(mode ==  MODE_COPY && !just_deselected)
 	                {
 		                HandleCopy();
 		                return;
@@ -938,9 +952,8 @@ public class Waveform extends Canvas
 	                }
 	                
 	                
-    	            start_x = end_x = prev_point_x = x;
-	                start_y = end_y = prev_point_y = y;
-	                prev_clip_w = curr_clip_w = prev_clip_h = curr_clip_h = 0;
+    	            start_x = end_x = prev_point_x = orig_x = x;
+	                start_y = end_y = prev_point_y = orig_y = y;
 	                dragging = true;
 	                first_set_point = true;
 	                if(mode == MODE_PAN && waveform_signal != null)
@@ -966,7 +979,7 @@ public class Waveform extends Canvas
 	                return;
 	
 	            Dimension d = getSize();
-	            if(mode == MODE_ZOOM && x > start_x && y > start_y)
+	            if(mode == MODE_ZOOM && x != orig_x && y != orig_y)
 	            {
 
 	                start_xs = wm.XValue(start_x, d);
@@ -977,7 +990,7 @@ public class Waveform extends Canvas
 	                ReportLimits(start_xs, end_xs, start_ys, end_ys);
 	                not_drawn = true;
 	            }
-	            if(mode == MODE_ZOOM && x == start_x && y == start_y)
+	            if(mode == MODE_ZOOM && x == orig_x  && y == orig_y)
 	            {
 	                if((e.getModifiers() & Event.ALT_MASK) != 0)
 		                Resize(x, y, false);
@@ -1013,7 +1026,7 @@ public class Waveform extends Canvas
         addMouseMotionListener(new MouseMotionAdapter() {            
 	        public void mouseDragged(MouseEvent e)
             {
-	            int curr_width, curr_height, prev_end_x, prev_end_y;
+	            int curr_width, curr_height;
                 int x = e.getX();
                 int y = e.getY();
 
@@ -1021,19 +1034,22 @@ public class Waveform extends Canvas
 	                return;
 	            if(waveform_signal == null)
 	                return;
-	            curr_clip_w = x - start_x;
-	            curr_clip_h = y - start_y;
-
-	            prev_end_x = end_x;
-	            prev_end_y = end_y;
-	            end_x = x;
-	            end_y = y;
-	            if(mode == MODE_ZOOM && x > start_x && y > start_y)
+	            if(mode == MODE_ZOOM && x < orig_x)
+	                start_x = x;
+	            else
+	                end_x = x;
+	            if(mode == MODE_ZOOM && y < orig_y)
+	                start_y = y;
+	            else
+	                end_y = y;
+	            if(mode == MODE_ZOOM)// && x > start_x && y > start_y)
 	            {
 	                if(curr_rect == null)
-		                curr_rect = new Rectangle(start_x, start_y, x - start_x, y - start_y);
+		                //curr_rect = new Rectangle(start_x, start_y, x - start_x, y - start_y);
+		                curr_rect = new Rectangle(start_x, start_y, end_x - start_x, end_y - start_y);
 	                else
-		                curr_rect.setSize(x - start_x, y - start_y);
+//		                curr_rect.setSize(end_x - start_x, end_y - start_y);
+		                curr_rect.setBounds(start_x, start_y, end_x - start_x, end_y - start_y);
 	                repaint();
 	            }
 	            else
@@ -1166,11 +1182,6 @@ public class Waveform extends Canvas
 
    protected void SetMode(int mod)
     {
-//	if(selected) Prova Cesare per la copia su scope differenti
-//	{
-//	    selected = false;
-//	    not_drawn = true;
-//	}
 	if(def_cursor == null)
 	    def_cursor = getCursor();
 	mode = mod;
@@ -1316,7 +1327,7 @@ public class Waveform extends Canvas
 	    if(!resizing) // If new Grid and WaveformMatrics have not been computed before
 	    {
 		    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label, y_label, 
-		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel);
+		                    title, grid_step_x, grid_step_y, int_xlabel, int_ylabel, reversed);
 		    grid.font = font;
 		    curr_display_limits = new Rectangle();
 		    grid.GetLimits(off_graphics, curr_display_limits, y_log);
@@ -1327,7 +1338,12 @@ public class Waveform extends Canvas
 		    
 	    
 	    if(!selected || print_flag)
-		    off_graphics.setColor(Color.white);
+	    {
+	        if(reversed && !print_flag)
+	            off_graphics.setColor(Color.black);
+	        else
+		        off_graphics.setColor(Color.white);
+		}
 	    else
 		    off_graphics.setColor(Color.lightGray);
 	    off_graphics.fillRect(0, 0, d.width, d.height);
@@ -1381,7 +1397,6 @@ public class Waveform extends Canvas
 	}
 	
 	if(!(mode == MODE_PAN && dragging && waveform_signal != null)) 
-	//&& !(waveform_signal != null && mode == MODE_POINT && !not_drawn))
 	{
 	    g.clipRect(0, 0, d.width, d.height);
 	    g.drawImage(off_image, 0, 0, this);
@@ -1393,27 +1408,13 @@ public class Waveform extends Canvas
 	{
 	    if(curr_rect != null)
 	    {
-	        /*
-	    	g.clearRect(start_x, start_y, prev_clip_w, prev_clip_h);
-		    g1 = g.create();
-	  	    g1.clipRect(start_x, start_y, prev_clip_w + 4, prev_clip_h + 4);
-	    	g1.drawImage(off_image, 0, 0, this);
-	    	*/
-	    	prev_clip_w = curr_clip_w;
-	    	prev_clip_h = curr_clip_h;
+	        if(reversed)
+	            g.setColor(Color.white);
+	        else
+	            g.setColor(Color.black);
 	    	g.drawRect(curr_rect.x, curr_rect.y, curr_rect.width, curr_rect.height);
 	    }
-	    else 
-	    {
-		//g.clipRect(0, 0, d.width, d.height);
-		//Cesare
-//		   if(off_image != null && !print_flag)
-//	            g.drawImage(off_image, 0, 0, this);
-	    }
 	}
-//	else
-//	    g.drawImage(off_image, 0, 0, this);
-	    
     
 	if(waveform_signal != null && mode == MODE_POINT 
 	    && !not_drawn && !is_min_size)
@@ -1486,8 +1487,10 @@ public class Waveform extends Canvas
 	    waveform_signal.Traslate(pan_delta_x, pan_delta_y, wm.x_log, wm.y_log);
 	    wm = new WaveformMetrics(MaxXSignal(), MinXSignal(), MaxYSignal(), 
 			MinYSignal(), curr_display_limits, d, wm.x_log, wm.y_log);
-
-	    g.setColor(Color.white);
+        if(reversed)
+            g.setColor(Color.black);
+        else
+	        g.setColor(Color.white);
 	    g.fillRect(1, 1, d.width-2, d.height-2);
 	    g.setColor(Color.black);
 	    g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width, wave_b_box.height);
@@ -1498,7 +1501,7 @@ public class Waveform extends Canvas
     if(resize_y != 0)
 	{
 		Color c = g.getColor();
-		g.setColor(Color.black);
+		g.setColor(reversed ? Color.white : Color.black);
 		for(int i = 0; i < resize_line; i++)
 		{
 		    g.drawLine(0, resize_y+i*resize_space, 
@@ -1509,7 +1512,7 @@ public class Waveform extends Canvas
     if(resize_x != 0)
 	{
 		Color c = g.getColor();
-		g.setColor(Color.black);
+		g.setColor(reversed ? Color.white : Color.black);
 		g.drawLine(resize_x, 0, resize_x, d.height);
 		g.setColor(c);
     }
@@ -2608,7 +2611,19 @@ public void DrawLines(Polygon p) throws IOException
               }
           }
         printfid.write("grestore\n");
-   }
+    }
+    
+    
+    void SetReversed(boolean reversed)
+    {
+        if(this.reversed != reversed)
+        {
+            this.reversed = reversed;
+            if(grid != null)
+                grid.SetReversed(reversed);
+           // repaint();
+        }
+    }
 
 }
 

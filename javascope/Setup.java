@@ -2,6 +2,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.*;
 //import com.apple.mrj.*;
 
 public class Setup extends Object implements WaveSetup {
@@ -22,7 +23,6 @@ public class Setup extends Object implements WaveSetup {
     int height = 500, width = 700, xpos = 50, ypos = 50;
     boolean fast_network_access = false;
     float height_percent[], width_percent[]; 
-    BufferedWriter out;
     boolean modified;
     MultiWaveform sel_wave;
     int signal_idx;
@@ -36,7 +36,7 @@ public class Setup extends Object implements WaveSetup {
 	    prec_rows[0] = 1;
 	    coords_label = label;
 	    sd = new SetupDataDialog(pw, "Setup data");
-	    if(!main_scope.is_applet)
+	    //if(!main_scope.is_applet) boooo!!!!!!!
 	    {
 	        menu = new Button3Menu(pw, sd, this);
 	        pw.add(menu);
@@ -587,15 +587,17 @@ public class Setup extends Object implements WaveSetup {
 	    }		
 	}
 	
-	if(width_percent != null)
-	{
-	    //Evaluate real number of columns
-	    int r_columns =  0;
-	    for(int i = 0; i < 4; i++)
-		    if(rows[i] != 0)
-		        r_columns = i + 1;
-		        //r_columns++;
+	//Evaluate real number of columns
+	int r_columns =  0;
+	for(int i = 0; i < 4; i++)
+	    if(rows[i] != 0)
+		    r_columns = i + 1;
 
+	if(width_percent == null)
+	{
+	    width_percent = new float[r_columns];
+	    columns = 0;
+    }
 	    //Silent file configuration correction
 	    //possible define same warning information	    	    
 
@@ -615,8 +617,8 @@ public class Setup extends Object implements WaveSetup {
 		if(columns >= 1)
 		    width_percent[0] = (float)(((width_percent[0] == 0) ? 1000 : width_percent[0])/1000.);
 	    }
-	} else
-	    error = 0;
+	
+	
 	return error;
     }
     
@@ -644,26 +646,11 @@ public class Setup extends Object implements WaveSetup {
 	        }
     }
 
-
-    public void toFile(String conf_file, boolean is_html)    
+    private void SaveConfiguration(PrintWriter out, boolean is_html) throws IOException
     {
 	    MultiWaveform w[] = waves;//main_scope.setup.waves;
 	    int wc_idx, height_w[] = new int[4];
-	    File f;
-	
-	
-//	    if(System.getProperty("os.name").equals("Mac OS"))
-//	    {	
-//	        MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
-//	        MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
-//	    } 
-	
-	    f = new File(conf_file);    
-	    if(f.exists()) f.delete();   
-	
-        try {
-	        out = new BufferedWriter(new FileWriter(f));
-	        
+                
 	        if(is_html)
 	        {         
 	            out.write("<HTML>\n");
@@ -675,27 +662,13 @@ public class Setup extends Object implements WaveSetup {
                 out.write("<PARAM NAME = CONFIGURATION VALUE = \"\n");
 	        }
 	        
-	        out.write("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
-	        out.newLine();
+	        out.println("Scope.geometry: " + width + "x" + height + "+" + ypos + "+" + xpos);
 
-	        if(title != null) {
-		        out.write("Scope.title: " + title);
-		        out.newLine();
-	        }
-
-	        if(this.event != null) {
-		        out.write("Scope.update_event: " + event);
-		        out.newLine();
-	        }
-
-	        if(this.print_event != null) {
-		        out.write("Scope.print_event: " + print_event);
-		        out.newLine();
-	        }
-
+	        jScope.writeLine(out, "Scope.title: ", title);		    
+	        jScope.writeLine(out, "Scope.update_event: ", event);		    
+	        jScope.writeLine(out, "Scope.print_event: ", print_event);		    
         
-	        out.write("Scope.columns: " + columns);
-	        out.newLine();
+	        out.println("Scope.columns: " + columns);
 
 	        jScope.writeLine(out, "Scope.fast_network_access: ", ""+fast_network_access);		    
 	        jScope.writeLine(out, "Scope.data_server_address: ",    data_server_address);		    
@@ -711,7 +684,7 @@ public class Setup extends Object implements WaveSetup {
 		        jScope.writeLine(out, "Scope.rows_in_column_" + c + ": " , ""+rows[i]);
     		    for(int j = 0, r = 1; j < rows[i]; j++, r++)
 		        {		
-		            out.newLine();
+		            out.println("\n");
 
 		            jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".height: "          , ""+w[k].getSize().height );
 		            jScope.writeLine(out, "Scope.plot_" + r + "_" + c + ".grid_mode: "       , ""+w[k].grid_mode);
@@ -734,7 +707,57 @@ public class Setup extends Object implements WaveSetup {
 	            out.write("</BODY>\n");
 	            out.write("</HTML>\n");
 	        }
+        
+    }
 
+    public void toURL(String conf_file, boolean is_html)
+    {
+         PrintWriter out;
+
+         try {
+        
+            URL save_url = new URL(main_scope.url_path+"jScopeSave");   
+            URLConnection save_con = save_url.openConnection();
+            save_con.setDoOutput(true);   
+          
+            out = new PrintWriter(save_con.getOutputStream());
+            out.println(conf_file);
+	        SaveConfiguration(out, is_html);
+	        out.close();
+
+            BufferedReader in = new BufferedReader(
+				new InputStreamReader(save_con.getInputStream()));
+
+	        in.close();
+	     
+          } catch (UnknownHostException e) { 
+            System.out.println("Unknown host -- check for network or DNS problems."); 
+          } catch (MalformedURLException e) { 
+            System.out.println("PROBLEM: Bad or no URL received from the server."); 
+          } catch (IOException e) { 
+            System.out.println("IO exception: " + e.getMessage()); 
+          } 
+
+    }
+
+    public void toFile(String conf_file, boolean is_html)    
+    {
+        PrintWriter out;
+	    File f;	
+	
+//	    if(System.getProperty("os.name").equals("Mac OS"))
+//	    {	
+//	        MRJFileUtils.setDefaultFileType(new MRJOSType("TEXT"));
+//	        MRJFileUtils.setDefaultFileCreator(new MRJOSType("JSCP"));
+//	    } 
+	
+	    f = new File(conf_file);    
+	    if(f.exists()) f.delete();   
+	
+        try {
+	        //out = new BufferedWriter(new FileWriter(f));
+	        out = new PrintWriter(new FileWriter(f));
+	        SaveConfiguration(out, is_html);
 	        out.close();
     	} catch(IOException e) {
 	        System.out.println("Errore : " + e);
@@ -863,12 +886,15 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 
 
             
-            boolean state = (w.mode == Waveform.MODE_POINT && controller.signal_idx != -1);
+            boolean state = ((w.mode == Waveform.MODE_POINT && controller.signal_idx != -1) || 
+                                w.num_signals == 1);
             
             markerList.setEnabled(state);
             colorList.setEnabled(state);	
             interpolate_f.setEnabled(state);
             if(state) {
+                if(w.num_signals == 1)
+                    controller.signal_idx = 0;
                 interpolate_f.setState(w.wi.interpolates[controller.signal_idx]);
                 boolean state_m = state && (w.wi.markers[controller.signal_idx] != Waveform.NONE 
                                         && w.wi.markers[controller.signal_idx] != Waveform.POINT);
@@ -991,6 +1017,13 @@ class Button3Menu extends PopupMenu implements ActionListener, ItemListener {
 	   // wave.repaint();	
 	}
 	if(target == (Object)setup) {
+	    if(wave.mode == Waveform.MODE_POINT && controller.signal_idx != -1)
+	    {
+	        sd.selectSignal(controller.signal_idx);
+	    } else
+	        if(wave.num_signals > 0)
+	            sd.selectSignal(0);
+	    
 	    sd.Show(wave, controller);
 	}
 

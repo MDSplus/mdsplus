@@ -18,10 +18,12 @@ public class SetupDefaults extends ScopePositionDialog {
    String title_str, xlabel, ylabel;
    String experiment_str, shot_str;
    String upd_event_str, def_node_str;
+   boolean reversed;
    
    private Panel         panel;
    private TextField     x_grid_lines, y_grid_lines;
-   private Choice	     grid_mode;  
+   private Choice	     grid_mode;
+   private Checkbox      reversed_b; 
    int	   curr_grid_mode = 0, x_curr_lines_grid = 3, y_curr_lines_grid = 3;
 
 
@@ -166,6 +168,8 @@ public class SetupDefaults extends ScopePositionDialog {
     panel.add(y_grid_lines = new TextField(2));
     y_grid_lines.addActionListener(this);
     y_grid_lines.setText(""+y_curr_lines_grid);    
+
+    panel.add(reversed_b = new Checkbox("Reversed"));
         
     gridbag.setConstraints(panel, c);
     add(panel);	
@@ -218,6 +222,11 @@ public class SetupDefaults extends ScopePositionDialog {
       return y_curr_lines_grid;
    }
 
+   public boolean getReversed()
+   {
+      return reversed;
+   }
+
    public void eraseForm()
    {
 	title.setText("");
@@ -234,7 +243,7 @@ public class SetupDefaults extends ScopePositionDialog {
 	grid_mode.select(0);
 	x_grid_lines.setText("3");
 	y_grid_lines.setText("3");
-	
+    reversed_b.setState(false);	
    }
    
    private void setTextValue(TextField t, String val)
@@ -262,6 +271,7 @@ public class SetupDefaults extends ScopePositionDialog {
 	    grid_mode.select(curr_grid_mode);
 	    x_grid_lines.setText(""+x_curr_lines_grid);
 	    y_grid_lines.setText(""+y_curr_lines_grid);
+	    reversed_b.setState(reversed);
    }
    
    private void saveDefaultConfiguration()
@@ -279,6 +289,7 @@ public class SetupDefaults extends ScopePositionDialog {
       upd_event_str  	= new String(upd_event.getText());
       def_node_str	    = new String(def_node.getText());
 	  curr_grid_mode    = grid_mode.getSelectedIndex();
+	  reversed          = reversed_b.getState();
 	  x_curr_lines_grid = new Integer(x_grid_lines.getText().trim()).intValue();
 	  if(x_curr_lines_grid > 10) {
 	    x_curr_lines_grid = 10;
@@ -375,6 +386,8 @@ public class SetupDefaults extends ScopePositionDialog {
       bit = WaveInterface.B_event;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
       wi.in_upd_event = getDefaultValue(bit , def_flag , wi);
+      
+      wi.reversed = reversed;
    }
    
    public String GetEvent(WaveInterface wi)
@@ -393,7 +406,7 @@ public class SetupDefaults extends ScopePositionDialog {
    }
    
    
-   public void toFile(BufferedWriter out, String prompt)
+   public void toFile(PrintWriter out, String prompt)
    {
 	jScope.writeLine(out, prompt + "experiment: " , experiment_str);
 	jScope.writeLine(out, prompt + "event: " , upd_event_str);
@@ -406,6 +419,7 @@ public class SetupDefaults extends ScopePositionDialog {
 	jScope.writeLine(out, prompt + "ymax: "       , ymax);
 	jScope.writeLine(out, prompt + "ymin: "       , ymin);
 	jScope.writeLine(out, prompt + "y_label: "    , ylabel);
+    jScope.writeLine(out, prompt + "reversed: "      , ""+reversed);
    }
 
    public int fromFile(ReaderConfig in, String prompt) throws IOException
@@ -478,8 +492,13 @@ public class SetupDefaults extends ScopePositionDialog {
 		    def_node_str = str.substring(len, str.length());
 		    continue;		
 		}
+	    if(str.indexOf(".reversed:") != -1)
+        {
+            reversed = new Boolean(str.substring(len, str.length())).booleanValue();
+        }
 	    
 	    }
+	    
 	}
 	return error;
    }
@@ -504,9 +523,11 @@ public class SetupDefaults extends ScopePositionDialog {
 	    if(ob == ok)
 	        setVisible(false);
 	    shots = main_scope.evaluateShot(shot_str);
+	    main_scope.color_dialog.setReversed(getReversed());
         main_scope.setScopeAllMode(main_scope.wave_mode, getGridMode(), 
                                                          getXLines(),
-                                                         getYLines());
+                                                         getYLines(), 
+                                                         getReversed());
 	    
 	    main_scope.UpdateAllWaves(false);
      }

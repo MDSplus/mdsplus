@@ -559,7 +559,4 @@ public WaveInterface GetWaveInterface()
     return new WaveInterface(wi);
 }    
 
-
-
-
 }

@@ -55,15 +55,17 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   private TextField     shot_t, signal_expr;//, x_grid_lines, y_grid_lines;
   private Button        apply_b;
   private FileDialog    file_diag;
-  private String        curr_directory, curr_file_name, file_name;
+  private String        curr_directory, curr_file_name;
+  private String        last_directory, last_file_name;
   private Label	        point_pos;
   private TextField	info_text, net_text;
-          WavePanel     draw_pan;
   private ErrorMessage  error_msg;
   private ErrorMessage  warning_msg;
   private WindowDialog  win_diag;
   public  ColorDialog	color_dialog;
   public  FontSelection font_dialog;
+          WavePanel     draw_pan;
+  
   int	  wave_mode = Waveform.MODE_ZOOM;//, curr_grid_mode = 0, x_curr_lines_grid = 3, y_curr_lines_grid = 3;
   DataProvider		db;
   Setup	            setup; 
@@ -71,7 +73,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   PubVarDialog      pub_var_diag;
   static int		num_scope = 0;
   static String     MACfile;
-  private String	config_file, last_config_file;
+  private String	config_file;
   static  String[]	server_ip_list; 
   ServerDialog      server_diag;
   static  WaveInterface wi_source;
@@ -83,8 +85,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   private boolean	abort = false, isUpdateAllWaves = false;
   private Frame		main_scope;
   boolean           is_applet;
-  PrinterJob        prnJob = PrinterJob.getPrinterJob();
+  PrinterJob        prnJob;
   PageFormat        pf;
+  String            url_path;
+  String            user_name;
+  URLDialog         url_diag;
 
 
   class PrintThread extends Thread {
@@ -386,7 +391,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
        }
        
-       public void toFile(BufferedWriter out, String prompt)
+       public void toFile(PrintWriter out, String prompt)
        {
 	        for(int i = 0; i < name_list.size() ; i++)
             {
@@ -435,8 +440,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     setup_default = new SetupDefaults(this, "Default Setup");
     pub_var_diag  = new PubVarDialog(this);
 
-    if(System.getProperty("java.version").indexOf("1.2") != -1)
+    if(System.getProperty("java.version").indexOf("1.2") != -1 && !is_applet)
     {
+        prnJob = PrinterJob.getPrinterJob();
         pf = prnJob.defaultPage();
         pf.setOrientation(PageFormat.LANDSCAPE);
         Paper p = pf.getPaper();
@@ -455,7 +461,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
  //     MRJApplicationUtils.registerQuitHandler(this);
  //   }
 
-    if(!is_applet)
+//    if(!is_applet) 
     {
     mb = new MenuBar();
     setMenuBar(mb);
@@ -464,9 +470,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     open_i = new MenuItem("New Window", new MenuShortcut(KeyEvent.VK_N));
     edit_m.add(open_i);	
     open_i.addActionListener(this);
+    open_i.setEnabled(!is_applet);
+
     close_i = new MenuItem("Close", new MenuShortcut(KeyEvent.VK_Q)); 
-    edit_m.add(close_i);	
+    edit_m.add(close_i);
     close_i.addActionListener(this);    
+
     exit_i = new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_E));
     edit_m.add(exit_i);	
     exit_i.addActionListener(this);
@@ -492,8 +501,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     print_all_i = new MenuItem("Print all ...");
     print_m.add(print_all_i);
     print_all_i.addActionListener(this);
-
     mb.add(print_m);
+    print_all_i.setEnabled(!is_applet);
+
 /*    
     save_as_ps_i = new MenuItem("Save as PostScript ...");
     print_m.add(save_as_ps_i);
@@ -508,7 +518,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     win_i = new MenuItem("Window ...", new MenuShortcut(KeyEvent.VK_W));
     win_i.addActionListener(this);        
     customize_m.add(win_i);
-    if(System.getProperty("java.version").indexOf("1.2") != -1)
+    if(System.getProperty("java.version").indexOf("1.2") != -1 && !is_applet)
     {
         print_i = new MenuItem("Printer ...", new MenuShortcut(KeyEvent.VK_P));
         customize_m.add(print_i);
@@ -534,16 +544,24 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     use_last_i = new MenuItem("Use last saved settings");
     customize_m.add(use_last_i);
     use_last_i.addActionListener(this);
+    use_last_i.setEnabled(!is_applet);
+
     use_i = new MenuItem("Use saved settings from ...");
     customize_m.add(use_i);
     use_i.addActionListener(this);
+    use_i.setEnabled(!is_applet);
+
     customize_m.add(new MenuItem("-"));
     save_i = new MenuItem("Save current settings");
     customize_m.add(save_i);
     save_i.addActionListener(this);
+    save_i.setEnabled(!is_applet);
+    
     save_as_i = new MenuItem("Save current settings as ...");
     customize_m.add(save_as_i);
     save_as_i.addActionListener(this);
+    save_as_i.setEnabled(!is_applet);
+
 //    save_as_html_i = new MenuItem("Save current settings as HTML...");
 //    customize_m.add(save_as_html_i);
 //    save_as_html_i.addActionListener(this);
@@ -568,6 +586,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     server_list_i  = new MenuItem("Edit server list ...");
     network_m.add(server_list_i);
     server_list_i.addActionListener(this);
+    server_list_i.setEnabled(!is_applet);
+
     }
     
     point_pos = new Label("[0.000000000, 0.000000000]");    
@@ -576,7 +596,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 //    setScopeAllMode(wave_mode, curr_grid_mode, x_curr_lines_grid, y_curr_lines_grid); 
     setScopeAllMode(wave_mode, setup_default.getGridMode(), 
                                setup_default.getXLines(),
-                               setup_default.getYLines());
+                               setup_default.getYLines(), 
+                               setup_default.getReversed());
     add("Center", draw_pan);
 
     panel1 = new Panel();
@@ -645,14 +666,27 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     add("South",panel1);
    
-    initDataServer();
-        
+    if(!is_applet)
+        initDataServer();
+    
     if(is_applet && config != null)
     {
         LoadConfFromURL(config);
  	}  
 
 	}
+  
+  public void setAsDemoScope()
+  {
+        setup.data_server_address = "Demo server";
+        setDataServerLabel();
+        db = new DemoProvider();
+        fast_network_i.setEnabled(false);
+        this.setTitle("jScope Demo Applet");
+        setup.ChangeDataProvider();
+  }
+  
+  
   
   public void SetRemoveMdsEvent(MdsEventListener w)
   {
@@ -680,17 +714,18 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   }
 
   
-  static void writeLine(BufferedWriter out, String prompt, String value)
+  static void writeLine(PrintWriter out, String prompt, String value)
   {
-        try {
+//        try {
 	    if(value != null && !value.equals("null") && value.length() != 0)
 	    {
-		out.write(prompt + value);
-		out.newLine();	    	
+		//out.write(prompt + value);
+		//out.newLine();
+		out.println(prompt + value);
 	    }
-	} catch(IOException e) {
-	    System.out.println("Errore : " + e);
-	}		
+//	} catch(IOException e) {
+//	    System.out.println("Errore : " + e);
+//	}		
   }
   
   public void evaluateWave(MultiWaveform w, String shot, boolean add_sig)
@@ -858,7 +893,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	                setDataServer(setup.data_server_address);
 	        }
 	    } else {
-	        if(!is_applet)
+	        if(!is_applet) 
 	            servers_m.getItem(0).setEnabled(false); //local server sempre indice 0
 	        setup.data_server_address = DEFAULT_SERVER;
             if(IsIpAddress(DEFAULT_SERVER))
@@ -910,7 +945,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	draw_pan.createWavePanel(db);
     setScopeAllMode(wave_mode, setup_default.getGridMode(), 
                                setup_default.getXLines(),
-                               setup_default.getYLines());
+                               setup_default.getYLines(),
+                               setup_default.getReversed());
     if(setup.sel_wave != null)
         setup.sel_wave.SelectWave();
     System.gc();
@@ -1067,9 +1103,11 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   public void updateMainShot()
   {
     main_shot_str = new String(shot_t.getText());
-    if(main_shot_str.length() == 0)
-        main_shots = null;
-    else
+    if(main_shot_str.length() == 0) 
+//    {
+          main_shot_str = "0";
+//        main_shots = null;
+//    } else
         if(!equalsString(main_shot_str, curr_main_shot_str)) { 
 	        main_shots = evaluateShot(main_shot_str);
 	        if(main_shots[0] != jScope.UNDEF_SHOT)
@@ -1089,7 +1127,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	{
 	    case 0: out = wi.cin_shot; break;
 	    case 1: out = setup_default.getDefaultValue(WaveInterface.B_shot, true, wi);break;
-	    case 2: out = shot_t.getText();break;
+	    case 2: out = shot_t.getText(); break;
 	}
 	return out;  
   }
@@ -1122,6 +1160,16 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    return str.substring(0, idx);
 	else
 	    return str;
+  }
+  
+  public void SetURL(String url)
+  {
+     url_path = new String(url);
+  }
+  
+  public void SetUserName(String u_name)
+  {
+     user_name = new String(u_name);
   }
   
   public synchronized void SetAllEvents()
@@ -1220,7 +1268,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
   public void printAllWaves()
   {
-        if(System.getProperty("java.version").indexOf("1.2") != -1)
+        if(System.getProperty("java.version").indexOf("1.2") != -1 && !is_applet)
         {
             prnJob.setPrintable(draw_pan, pf);
             try {
@@ -1265,11 +1313,33 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   
   private void SaveAs(boolean is_html)
   {
-	file_diag = new FileDialog(this, "Save current setting as", FileDialog.SAVE);
-    file_diag.pack();
-    file_diag.show();
-	last_config_file = config_file;  
-	config_file = file_diag.getDirectory() + file_diag.getFile();
+    if(!is_applet)
+    {
+	    file_diag = new FileDialog(this, "Save current setting as", FileDialog.SAVE);
+	    if(curr_directory != null)
+	        file_diag.setDirectory(curr_directory);
+        file_diag.pack();
+        file_diag.show();
+	    String d = file_diag.getDirectory();
+	    String f = file_diag.getFile();
+	    if(f != null && f.trim().length() != 0 && 
+	       d != null && d.trim().length() != 0)
+	    {
+            curr_directory = d;
+	        curr_file_name = f;
+	        last_directory = new String(curr_directory);
+	        last_file_name = new String(curr_file_name); 
+	        config_file = curr_directory + curr_file_name;
+	    } else
+	        config_file = null;
+	} else {
+	    if(url_diag == null)
+	        url_diag = new URLDialog(this, "Save current setting as");
+        if(url_diag.Show() == URLDialog.OK)
+	       config_file = url_diag.getFile();
+	    else
+	       config_file = null;	    
+	}
 	if(config_file != null)
 	   saveConf(config_file, is_html);	
 	file_diag = null;
@@ -1279,17 +1349,24 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
 	file_diag = new FileDialog(this, "Use saved setting from", FileDialog.LOAD);      
 	if(curr_directory != null)
-	    file_diag.setDirectory(curr_directory);
+	    file_diag.setDirectory(curr_directory); 
     file_diag.pack();
     file_diag.show();
-	curr_directory = file_diag.getDirectory();
-	curr_file_name = file_diag.getFile();
-	file_name = new String(curr_directory + curr_file_name);
-	if(curr_file_name != null) {
-	   last_config_file = config_file;  
-    	   config_file = new String(file_name);
-    	   LoadConf(config_file);	
-	}
+	String d = file_diag.getDirectory();
+	String f = file_diag.getFile();
+	if(f != null && f.trim().length() != 0 && 
+	    d != null && d.trim().length() != 0)
+	{ 
+//	   last_directory = curr_directory;
+//	   last_file_name = curr_file_name; 
+	   curr_directory = d;
+	   curr_file_name = f;
+	   config_file = curr_directory + curr_file_name;
+	} else
+	   config_file = null;
+	   
+	if(config_file != null)
+    	   LoadConf(config_file);
 	file_diag =  null;      
   }
   
@@ -1344,7 +1421,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 //	    
 	    
             else {
-                if(!is_applet) {
+                if(!is_applet)
+                {
 	                fast_network_i.setEnabled(true);
 	                fast_network_i.setState(setup.fast_network_access);
                 }
@@ -1497,9 +1575,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 
     if (ob == use_last_i)
     {
-	    if(last_config_file != null)
+	    if(last_file_name != null && last_file_name.trim().length() != 0 && 
+	       last_directory != null && last_directory.trim().length() != 0)
 	    {
-	        config_file = last_config_file;  
+	        curr_directory = last_directory;
+	        curr_file_name = last_file_name; 
+	        config_file = curr_directory + curr_file_name;  
 	        LoadConf(config_file);
 	    }		
     }
@@ -1527,7 +1608,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     if (ob == print_all_i)
     {
-       if(System.getProperty("java.version").indexOf("1.2") != -1)
+       if(System.getProperty("java.version").indexOf("1.2") != -1 && !is_applet)
        {
             Thread print_page = new Thread()
             {
@@ -1688,7 +1769,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
    }
   
-   public void setScopeAllMode(int mode, int grid_mode, int x_grid_lines, int y_grid_lines)   
+   public void setScopeAllMode(int mode, int grid_mode, 
+                               int x_grid_lines, int y_grid_lines,
+                               boolean reversed)   
    {
       boolean int_label = (grid_mode == 2 ? false : true);
       
@@ -1696,6 +1779,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
    
       for(int i = 0; i < setup.num_waves; i++)
       {
+	    setup.waves[i].SetReversed(reversed);
 	    setup.waves[i].SetMode(mode);
 	    setup.waves[i].SetGridMode(grid_mode, int_label, int_label);
 	    setup.waves[i].SetGridSteps(x_grid_lines, y_grid_lines);
@@ -1805,6 +1889,9 @@ public class jScope extends Frame implements ActionListener, ItemListener,
             font_dialog.fromFile(in, "Scope.font:");	    
 	    in.reset();
 	    if(error == 0)
+            this.color_dialog.fromFile(in, "Scope.item_color_");	    
+	    in.reset();
+	    if(error == 0)
 	    {    
 	        error = setup_default.fromFile(in, "Scope.global_1_1");
 	        in.reset();
@@ -1822,7 +1909,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 		            {
 			            setup.waves[k].wi = new WaveInterface(db);
 			            setup.waves[k].wi.fromFile(in, "Scope.plot_"+(r+1)+"_"+(c+1), this);
-			            setColor(setup.waves[k].wi);
+                        setColor(setup.waves[k].wi);
 			            k++;
 			            SetStatusLabel("Load wave configuration column "+(c+1)+" row "+(r+1));	    
 			            in.reset();
@@ -1906,7 +1993,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    draw_pan.updateWavePanel();
         setScopeAllMode(wave_mode, setup_default.getGridMode(), 
                                setup_default.getXLines(),
-                               setup_default.getYLines());
+                               setup_default.getYLines(), 
+                               setup_default.getReversed());
 
 	    if(setup.data_server_address != null && !curr_dsa.equals(setup.data_server_address))
 	        setDataServer(setup.data_server_address);
@@ -1930,7 +2018,10 @@ public class jScope extends Frame implements ActionListener, ItemListener,
      setup.width  = r.width;
      setup.modified = false;
      setWindowTitle();
-     setup.toFile(file, is_html);
+     if(!is_applet)
+        setup.toFile(file, is_html);
+     else
+        setup.toURL(file, is_html);
   }
   
 
@@ -1954,7 +2045,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     String file = null;      
     jScope win = new jScope(100, 100, false, null);
     win.pack();
-
+    
     if(args.length == 1) {
         win.show();  
 	    file = new String(args[0]); 
@@ -2030,20 +2121,6 @@ public class jScope extends Frame implements ActionListener, ItemListener,
    
    }
 
-	class SymMouse extends java.awt.event.MouseAdapter
-	{
-		public void mousePressed(java.awt.event.MouseEvent event)
-		{
-			Object object = event.getSource();
-			if (object == jScope.this)
-				jScope_MousePressed(event);
-		}
-	}
-
-	void jScope_MousePressed(java.awt.event.MouseEvent event)
-	{
-		// to do: code goes here.
-	}
 }
 
 class WindowDialog extends ScopePositionDialog {
@@ -2207,6 +2284,77 @@ class WindowDialog extends ScopePositionDialog {
     }  
 }
 
+class URLDialog extends ScopePositionDialog {
+    private Button ok_b, cancel_b;
+    private TextField file_name;
+    private String file;
+    static final int OK = 1, CANCEL = 0;
+    int status;
+    jScope dw;
+
+    URLDialog(Frame _dw, String title)
+    {
+        super(_dw, title, true);
+	    dw = (jScope)_dw;
+	    setResizable(false);
+
+        setLayout(new GridLayout(4, 1, 5, 5));
+		
+		Label label = new Label("URL: " + dw.url_path);
+		add(label);
+		
+		label = new Label("User: " + dw.user_name);
+		add(label);
+		
+		Panel p = new Panel(new FlowLayout());
+		label = new Label("File name: ");
+		p.add(label);
+		file_name = new TextField(30);
+		p.add(file_name);
+		add(p);
+		
+		Panel p1 = new Panel(new FlowLayout());
+		ok_b = new Button("Ok");
+		ok_b.addActionListener(new ActionListener()
+		    {
+		       public void actionPerformed(ActionEvent event)
+		       {
+		           file = file_name.getText();
+		           status = OK;
+		           if(file != null && file.length() != 0)
+		            setVisible(false);
+		       }
+		    });
+		p1.add(ok_b);
+		cancel_b = new Button("Cancel");
+		cancel_b.addActionListener(new ActionListener()
+		    {
+		       public void actionPerformed(ActionEvent event)
+		       {
+		           status = CANCEL;
+		           setVisible(false);
+		       }
+		    });
+		p1.add(cancel_b);
+		add(p1);	
+					
+    }
+    
+    public String getFile()
+    {
+        return file;
+    }
+
+    public int Show()
+    {
+	    pack();
+	    setPosition(dw);
+	    show();
+	    return status;
+    }
+
+}
+
 
 class ServerDialog extends ScopePositionDialog {
     private List server_list;
@@ -2247,7 +2395,7 @@ class ServerDialog extends ScopePositionDialog {
 	gridbag.setConstraints(server_label, c);
 	add(server_label);
  
-        c.gridwidth = GridBagConstraints.REMAINDER;
+    c.gridwidth = GridBagConstraints.REMAINDER;
 	c.fill =  GridBagConstraints.BOTH;
 	server_ip = new TextField(20);
 	gridbag.setConstraints(server_ip, c);
@@ -2266,8 +2414,8 @@ class ServerDialog extends ScopePositionDialog {
 	cancel_b.addActionListener(this);
 	p.add(cancel_b);
 
-        c.gridwidth = GridBagConstraints.REMAINDER;
-    	gridbag.setConstraints(p, c);
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(p, c);
 	add(p);
 	
 		

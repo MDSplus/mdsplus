@@ -15,7 +15,7 @@ public class RowColumnLayout implements LayoutManager {
     private int pos_x, pos_y;
     private Container main_p;
     static final int HORIZONTAL = 1, VERTICAL = 2, NONE = 3;
-    private int MIN_SIZE_H = 30, MIN_SIZE_W = 30;
+    private int MIN_SIZE_H = 10, MIN_SIZE_W = 10;
     private int by_pos = 20, bx_pos = 25;
     
 

@@ -19,6 +19,8 @@ class ColorDialog extends ScopePositionDialog  {
     Vector color_set = new Vector();
     Vector color_set_clone;
     Color color_vector[];
+    String color_name[];
+    boolean reversed = false;
     
         
     static class Item {
@@ -78,7 +80,13 @@ class ColorDialog extends ScopePositionDialog  {
 //      gridbag.setConstraints(p0, c);
 //	    add(p0);
 
-	color = new Choice();
+        ColorSetItems(COLOR_NAME, COLOR_SET);
+	    setColorVector();
+        GetColorsName();
+	    color = new Choice();
+	    for(int i = 1; i < color_name.length; i++)
+	        color.addItem(color_name[i]);
+/*
 	color.addItem("Black");	
 	color.addItem("Blue");	
 	color.addItem("Cyan");	
@@ -91,6 +99,8 @@ class ColorDialog extends ScopePositionDialog  {
 	color.addItem("Pink");	
 	color.addItem("Red");	
 	color.addItem("Yellow");      	
+	color.addItem("White");
+*/
 	color.addItemListener(this);
 	gridbag.setConstraints(color, c);
 	add(color);	
@@ -175,8 +185,6 @@ class ColorDialog extends ScopePositionDialog  {
         gridbag.setConstraints(p1, c);
 	add(p1);
 	
-	defaultColorSet();
-	setColorVector();
 	 
      }
      
@@ -197,30 +205,79 @@ class ColorDialog extends ScopePositionDialog  {
 	setPosition(f);
     	show();	
     }
-     
-    public void defaultColorSet()
+         
+    
+    public void setReversed(boolean reversed)
     {
-	ColorSetItems(COLOR_NAME, COLOR_SET);
+      if(this.reversed != reversed)
+      {
+        this.reversed = reversed;
+        reversedColor(color_name, color_vector);
+	    setColorVector();
+        GetColorsName();
+        main_scope.RepaintAllWaves();
+      }
+    }
+
+    private void reversedColor(String[] color_name, Color[] colors)
+    {
+	    for(int i = 0; i < color_name.length; i++)
+	    {
+	        if(reversed)
+	        {
+	            if(colors[i].equals(Color.black))
+	            {
+	                Item c_item = new Item("White", Color.white);
+	                color_set.setElementAt(c_item, i);
+	                break;
+	            }
+	        } else {
+	            if(colors[i].equals(Color.white))
+	            {
+	                Item c_item = new Item("Black", Color.black);
+	                color_set.setElementAt(c_item, i);
+	                break;
+	            }
+	        }
+	    }
+	    main_scope.setup.sd.SetColorList(); 
     }
     
     public void ColorSetItems(String[] color_name, Color[] colors)
     {
-	for(int i = 0; i < color_name.length; i++)
-	{
-	    Item c_item = new Item(color_name[i], colors[i]);
-	    color_set.addElement(c_item);
-	}
+	    for(int i = 0; i < color_name.length; i++)
+	    {
+	        if(reversed)
+	        {
+	            if(colors[i].equals(Color.black))
+	            {
+	                Item c_item = new Item("White", Color.white);
+	                color_set.addElement(c_item);
+	                continue;
+	            }
+	        } else {
+	            if(colors[i].equals(Color.white))
+	            {
+	                Item c_item = new Item("Black", Color.black);
+	                color_set.addElement(c_item);
+	                continue;
+	            }
+	        }
+	        
+	        Item c_item = new Item(color_name[i], colors[i]);
+	        color_set.addElement(c_item);
+	    }
     }
         
     
     public  Color GetColorAt(int idx)
     {
-	if(idx >= 0 && idx < color_set.size())
-	{
-	    Color color = ((Item)color_set.elementAt(idx)).color;
-	    return color;
-	}
-	return null;
+	    if(idx >= 0 && idx < color_set.size())
+	    {
+	        Color color = ((Item)color_set.elementAt(idx)).color;
+	        return color;
+	    }
+	    return null;
     }
     
     public  String GetNameAt(int idx)
@@ -235,22 +292,22 @@ class ColorDialog extends ScopePositionDialog  {
     
     public int GetNumColor()
     {
-	return color_set.size();
+	    return color_set.size();
     } 
 
     public String[] GetColorsName()
     {
-	String colors_name[] = null;
+	    color_name = null;
 	
-	if(color_set.size() > 0)
-	{
-	    colors_name = new String[color_set.size()];
-	    for (int i = 0; i < color_set.size(); i++)
+	    if(color_set.size() > 0)
 	    {
-		colors_name[i] = new String(((Item)color_set.elementAt(i)).name);
+	        color_name = new String[color_set.size()];
+	        for (int i = 0; i < color_set.size(); i++)
+	        {
+		        color_name[i] = new String(((Item)color_set.elementAt(i)).name);
+	        }
 	    }
-	}
-	return colors_name;
+	    return color_name;
     }
 
     public void itemStateChanged(ItemEvent e)
@@ -406,7 +463,7 @@ class ColorDialog extends ScopePositionDialog  {
     }
     
     
-    public void toFile(BufferedWriter out, String prompt)
+    public void toFile(PrintWriter out, String prompt)
     {
 	for(int i = 0; i < GetNumColor(); i++)
         {
@@ -462,6 +519,6 @@ class ColorDialog extends ScopePositionDialog  {
 	    color_set_clone = null;
 	    setVisible(false);
 	}
-	main_scope.validate();
+	//main_scope.validate();
     }
 }

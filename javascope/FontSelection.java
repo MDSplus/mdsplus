@@ -181,7 +181,7 @@ public class FontSelection extends ScopePositionDialog {
     }
     
     
-    public void toFile(BufferedWriter out, String prompt)
+    public void toFile(PrintWriter out, String prompt)
     {
         if(font != null)
 	        jScope.writeLine(out, prompt +": ", font.toString());		

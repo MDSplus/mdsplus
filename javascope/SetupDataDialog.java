@@ -299,9 +299,9 @@ import java.util.Vector;
     private List             sig_list;
     private Choice           show_type, color, marker;
     private TextField	     marker_step_t;
-    private Vector	     signals = new Vector();
-    private String	     shot_str;
-    private int		     shots[]={jScope.UNDEF_SHOT}, list_num_shot = 1;
+    private Vector	         signals = new Vector();
+    private String	         shot_str;
+    private int		         shots[]={jScope.UNDEF_SHOT}, list_num_shot = 1;
     private int              sel_signal = -1;
 
     
@@ -380,21 +380,28 @@ import java.util.Vector;
 
       }
       
+      public void setSignalSelect(int sig)
+      {
+	    sel_signal = sig;
+      }
+      
+      
       private void signalSelect(int sig)
       {
-	sel_signal = sig;
+	    sel_signal = sig;
         sig_list.select(sel_signal + 1);
-	if(sig >= 0)
-	    setOptionState(true);  
-	else
-	    setOptionState(false);  
+        if(sig >= 0)
+            putSignalSetup((Data)signals.elementAt(sel_signal));
+        else
+        	resetSignalSetup();
+	    setOptionState(sig >= 0);  
       }
       
       private void setOptionState(boolean state)
       {
-	marker.setEnabled(state);
-	show_type.setEnabled(state);
-	color.setEnabled(state);
+	    marker.setEnabled(state);
+	    show_type.setEnabled(state);
+	    color.setEnabled(state);
       }
       
       public int getNumShot()
@@ -415,37 +422,37 @@ import java.util.Vector;
 
      public int findSignalSetup(Data ws)
      {
-	for(int i=0; i < signals.size(); i++)
-	    if(((Data)signals.elementAt(i)).equals(ws))
-		return i;	 		
-	return -1;
+	    for(int i=0; i < signals.size(); i++)
+	        if(((Data)signals.elementAt(i)).equals(ws))
+		        return i;	 		
+	    return -1;
      }
    
      public void updateSignalSetup(int idx, Data ws)
      {
-	signals.setElementAt(ws, idx);
+	    signals.setElementAt(ws, idx);
      }
 
      public void removeSignalSetup()
      {
-	int i, sig_idx, start_idx, end_idx;
-	int num_shot = shots.length;
-	int num_signal = signals.size();  		
+	    int i, sig_idx, start_idx, end_idx;
+	    int num_shot = shots.length;
+	    int num_signal = signals.size();  		
           	
-	if(sel_signal != -1) 
-	{
+	    if(sel_signal != -1) 
+	    {
     	    start_idx = (sel_signal/num_shot) * num_shot; // Divisione intera
-	    end_idx   = start_idx + num_shot; 
-	    for (i = 0; i < num_signal; i++)
-		if(i >= start_idx && i < end_idx) { 
-		    sig_list.remove(start_idx + 1);
-		    signals.removeElementAt(start_idx);
-		}	     	     
-	}
-	signalSelect(-1);
-	signal_label.setText("");
-	x_expr.setText("");
-	y_expr.setText("");      
+	        end_idx   = start_idx + num_shot; 
+	        for (i = 0; i < num_signal; i++)
+		    if(i >= start_idx && i < end_idx) { 
+		        sig_list.remove(start_idx + 1);
+		        signals.removeElementAt(start_idx);
+		    }	     	     
+	    }
+	    signalSelect(-1);
+	    signal_label.setText("");
+	    x_expr.setText("");
+	    y_expr.setText("");      
      }
      
      private void setMarkerTextState(int marker_idx)
@@ -519,49 +526,49 @@ import java.util.Vector;
       
       public void reset()
       {
-	signalSelect(-1);
-	signals.removeAllElements();
+	    signalSelect(-1);
+	    signals.removeAllElements();
       }
       
       public void init(WaveInterface wi)
       {
-	  Data ws;
+	    Data ws;
       
-	  if(wi != null)
-	  {
-	    shots = new int[wi.num_shot];
-	    
-	    if(wi.shots == null)
-	      for(int i = 0; i < wi.num_shot; i++)
-		shots[i] = jScope.UNDEF_SHOT;	    
-	    else
-	      for(int i = 0; i < wi.num_shot; i++)
-		shots[i] = wi.shots[i];
-		
-	    list_num_shot = wi.num_shot;
-	    shot_str = wi.in_shot;
-	    
-	    for(int i = 0; i < wi.num_waves; i++)
+	    if(wi != null)
 	    {
-		ws = new Data();
-		ws.label         = wi.in_label[i];
-		ws.x_expr        = wi.in_x[i];
-		ws.y_expr        = wi.in_y[i];
-		ws.up_err	     = wi.in_up_err[i];
-		ws.low_err	     = wi.in_low_err[i];
-		ws.interpolate   = wi.interpolates[i];
-		ws.marker        = wi.markers[i];	
-		ws.marker_step	 = wi.markers_step[i];
-		ws.color_idx     = wi.colors_idx[i];
-		if(wi.shots != null)
-		    ws.shot = wi.shots[i];
-		else
-		    ws.shot = jScope.UNDEF_SHOT;
-		addSignalSetup(ws);       
+	        shots = new int[wi.num_shot];
+	    
+	        if(wi.shots == null)
+	            for(int i = 0; i < wi.num_shot; i++)
+		            shots[i] = jScope.UNDEF_SHOT;	    
+	        else
+	            for(int i = 0; i < wi.num_shot; i++)
+		            shots[i] = wi.shots[i];
+		
+	        list_num_shot = wi.num_shot;
+	        shot_str = wi.in_shot;
+	    
+	        for(int i = 0; i < wi.num_waves; i++)
+	        {
+		        ws = new Data();
+		        ws.label         = wi.in_label[i];
+		        ws.x_expr        = wi.in_x[i];
+		        ws.y_expr        = wi.in_y[i];
+		        ws.up_err	     = wi.in_up_err[i];
+		        ws.low_err	     = wi.in_low_err[i];
+		        ws.interpolate   = wi.interpolates[i];
+		        ws.marker        = wi.markers[i];	
+		        ws.marker_step	 = wi.markers_step[i];
+		        ws.color_idx     = wi.colors_idx[i];
+		        if(wi.shots != null)
+		            ws.shot = wi.shots[i];
+		        else
+		            ws.shot = jScope.UNDEF_SHOT;
+		        addSignalSetup(ws);       
+	        }
+	        signalListRefresh();	    
 	    }
-	    signalListRefresh();	    
-	  }
-	  signalSelect(sel_signal);
+	    signalSelect(sel_signal);
       }
       
       public Data[] getSignals()
@@ -573,42 +580,43 @@ import java.util.Vector;
     
       private void addSignalSetup(Data ws)
       { 
-	signals.addElement((Object)ws);
+	    signals.addElement((Object)ws);
       }
       
       public void addSignals()
       {
-	int idx, color_idx = 0;
-	Data ws;
+	    int idx, color_idx = 0;
+	    Data ws;
       
-	if(y_expr.getText().length() == 0)
-	    return;
+	    if(y_expr.getText().length() == 0)
+	        return;
 	
-	ws = getSignalSetup();
-	idx = findSignalSetup(ws);
-	if( idx == -1) {
-      
-	    String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ; 
-	    String y_e =  new String(y_expr.getText());
-
-	    if(shots.length != 0)
+	    ws = getSignalSetup();
+	    idx = findSignalSetup(ws);
+	    if( idx == -1) 
 	    {
-		for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
-		{
-		    ws.shot = shots[i];
-		    ws.color_idx = color_idx;
-		    color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
-		    addSignalSetup(ws);
-		    signalListAdd(ws);
-		}	
-	    } else {
-		ws.shot = jScope.UNDEF_SHOT;
-		addSignalSetup(ws);
-		signalListAdd(ws);
-	    } 
-	    signalSelect(findSignalSetup(ws));	    
-	    putSignalSetup(ws);
-	 }	 
+      
+	        String x_e =  new String(x_expr.getText() == null ? "" : x_expr.getText()) ; 
+	        String y_e =  new String(y_expr.getText());
+
+	        if(shots.length != 0)
+	        {
+		        for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
+		        {
+		            ws.shot = shots[i];
+		            ws.color_idx = color_idx;
+		            color_idx = (color_idx + 1) % setup.main_scope.color_dialog.GetNumColor();
+		            addSignalSetup(ws);
+		            signalListAdd(ws);
+		        }	
+	        } else {
+		        ws.shot = jScope.UNDEF_SHOT;
+		        addSignalSetup(ws);
+		        signalListAdd(ws);
+	        } 
+	        signalSelect(findSignalSetup(ws));	    
+	        //putSignalSetup(ws);
+	      }	 
        }
        
        public boolean evaluateShotList(String in_shot)
@@ -784,19 +792,13 @@ import java.util.Vector;
       
       public void itemStateChanged(ItemEvent e)
       {
-	Object ob = e.getSource();
+	    Object ob = e.getSource();
 
     	if(ob == sig_list)
-	{
+	    {
            sel_signal = sig_list.getSelectedIndex() - 1;
-	   if(sel_signal >= 0) {
-	       setOptionState(true);
-	       signalList.putSignalSetup((Data)signals.elementAt(sel_signal));
-	   } else {
-	       signalList.resetSignalSetup();
-	       setOptionState(false);
-	    }
-	} 
+           signalList.signalSelect(sel_signal);
+	    } 
 
 	if(ob instanceof Checkbox)
 	    defaultButtonChange(ob);
@@ -891,10 +893,10 @@ import java.util.Vector;
      */
      public void setExpressionString(String x, String y)
      {
-	if(x != null)
-	    x_expr.setText(x);
-	if(y != null)
-	    y_expr.setText(y);
+	    if(x != null)
+	        x_expr.setText(x);
+	    if(y != null)
+	        y_expr.setText(y);
      }
      
      public void actionPerformed(ActionEvent e)
@@ -1192,6 +1194,11 @@ import java.util.Vector;
 	signalList.SetColorList();
    }
 
+   public void selectSignal(int sig)
+   {
+      signalList.setSignalSelect(sig);
+   }
+
    private void resetDefaultFlags()
    {
     boolean state = true;
@@ -1322,7 +1329,8 @@ import java.util.Vector;
 	this.wi.legend_x        = wi.legend_x;
 	this.wi.legend_y        = wi.legend_y;
     this.wi.make_legend     = wi.make_legend;
-
+    this.wi.reversed        = wi.reversed;
+    
 	setDefaultFlags(wi.defaults);
 	putDefaultValues();
 /*

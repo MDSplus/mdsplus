@@ -9,17 +9,18 @@ public class WaveInterface
     public String  in_label[], in_x[], in_y[], in_up_err[], in_low_err[];
     
     // Prameter used to evaluate waveform
-    public String in_xmin, in_xmax, in_ymax, in_ymin;
-    public String in_title, in_xlabel, in_ylabel;
-    public String in_def_node, in_upd_event, experiment, last_upd_event;
-    public int    in_grid_mode;
-    public int    height; 
+    public String  in_xmin, in_xmax, in_ymax, in_ymin;
+    public String  in_title, in_xlabel, in_ylabel;
+    public String  in_def_node, in_upd_event, experiment, last_upd_event;
+    public int     in_grid_mode;
+    public int     height; 
 
     // Configuration parameter
     public String cin_xmin, cin_xmax, cin_ymax, cin_ymin;
     public String cin_title, cin_xlabel, cin_ylabel;
     public String cin_def_node, cin_upd_event, cexperiment;
 
+    boolean reversed = false;
     boolean make_legend = false;
     int legend_x, legend_y;
      
@@ -33,11 +34,10 @@ public class WaveInterface
     private String  curr_error;
     public  String  provider;
     public  String  w_error[];
-    public Signal signals[];
-    public float xmax, xmin, ymax, ymin; 
-    public String title, xlabel, ylabel;
+    public  Signal  signals[];
+    public  float xmax, xmin, ymax, ymin; 
+    public  String title, xlabel, ylabel;
     private DataProvider dp;
-    //public DataProvider dp;
     
 // Used for asynchronous Update  
     public boolean asynch_update = true;  
@@ -73,6 +73,7 @@ public class WaveInterface
 	x_log = wi.x_log;
 	y_log = wi.y_log;
 	make_legend = wi.make_legend;
+	reversed = wi.reversed;
 	legend_x = wi.legend_x;
 	legend_y = wi.legend_y;
 	in_label = new String[num_waves];
@@ -247,6 +248,7 @@ public class WaveInterface
 	du = null;  
 	x_log = y_log = false;
 	make_legend = false;
+	reversed = false;
     }
     
     public boolean UseDefaultShot()
@@ -865,7 +867,7 @@ public class WaveInterface
     }
  
 
-    public void toFile(BufferedWriter out, String prompt, jScope main_scope)
+    public void toFile(PrintWriter out, String prompt, jScope main_scope)
     { 
 	    int exp, exp_n, sht, sht_n, cnum_shot; 
 
@@ -1034,6 +1036,8 @@ public class WaveInterface
 		            legend_y = Integer.parseInt(str.substring(str.indexOf(",") + 1, str.indexOf(")")));
 		            continue;		
 		        }
+		        
+		        
 		        if(str.indexOf(".experiment:") != -1)
 		        {
 		            cexperiment = str.substring(len, str.length());
