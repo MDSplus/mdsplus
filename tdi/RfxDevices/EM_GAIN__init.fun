@@ -115,23 +115,41 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 /* Write integral gain value */
 		
 			_int_gain = if_error(data(DevNodeRef(_nid, _head_channel + _N_CHAN_INT_GAIN)), _noerror = 1)));
+
+			_gain = int (8 * ( _int_gain + 0.5 ));
+
+			_real_gain = _gain / 8.;
+			 DevPut(_nid, _head_channel + _N_CHAN_INT_GAIN, _real_gain);
+
 		
-			if( _noerror && (_int_gain >= 0 && _int_gain <= 127 )
+			if( _noerror && (_gain >= 0 && _gain <= 127 )
 			{
-				_word = WordSetGain(_write_value, _i, _INTEGRAL, _int_gain)
+				_word = WordSetGain(_write_value, _i, _INTEGRAL, _gain)
 				WriteGain(_name, _word);
+			} 
+			else
+			{
+				DevLogErr(_nid, "EM gain card "//_card_addr//": Error set integral gain value for channel "//(_i + 1)//" "); 
 			}
 
 /* Write linear gain value */
 
 			_lin_gain = if_error(data(DevNodeRef(_nid, _head_channel + _N_CHAN_LIN_GAIN)), _noerror = 1)));
+
+			_gain = int (8 * ( _lin_gain + 0.5 ));
 		
-			if( _noerror && ( _lin_gain >= 0 && _lin_gain <= 127 )
+			_real_gain = _gain / 8.;
+			 DevPut(_nid, _head_channel + _N_CHAN_INT_GAIN, _real_gain);
+
+			if( _noerror && ( _gain >= 0 && _gain <= 127 )
 			{
-				_word = WordSetGain(_write_value, _i, _LINEAR, _lin_gain)
+				_word = WordSetGain(_write_value, _i, _LINEAR, _gain)
 				WriteGain(_name, _word);
 			}
-
+			else
+			{
+				DevLogErr(_nid, "EM gain card "//_card_addr//": Error set linear gain value for channel "//(_i + 1)//" "); 
+			}
         }
     }
 
