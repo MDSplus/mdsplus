@@ -21,6 +21,5 @@ ret name args \
 
 Dummy(TreeCallHook,1)
 Dummy(TreeEstablishRundownEvent,1)
-DummyArgs(TreeAddTag,int,(int nid,char *tag),1)
 DummyArgs(TreeRemoveNodesTags,int,(int nid),1)
 Dummy(TreeWait,1)

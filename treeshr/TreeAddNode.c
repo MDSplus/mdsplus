@@ -764,19 +764,16 @@ static void trim_excess_nodes(TREE_INFO *info_ptr)
 int TreeWriteNci(TREE_INFO *info)
 {
   int       status = 1;
-  if (info->edit->first_in_mem)
+  if (info->header->nodes > info->edit->first_in_mem)
   {
-    if (info->header->nodes > info->edit->first_in_mem)
+    status = TreeFAILURE;
+    if (!fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET))
     {
-      status = TreeFAILURE;
-      if (!fseek(info->nci_file->put,info->edit->first_in_mem * sizeof(struct nci),SEEK_SET))
+      size_t num = fwrite(info->edit->nci,sizeof(struct nci),info->header->nodes - info->edit->first_in_mem,info->nci_file->put);
+      if (num == (info->header->nodes - info->edit->first_in_mem))
       {
-        size_t num = fwrite(info->edit->nci,sizeof(struct nci),info->header->nodes - info->edit->first_in_mem,info->nci_file->put);
-        if (num == (info->header->nodes - info->edit->first_in_mem))
-	{
-          info->edit->first_in_mem = info->header->nodes;
-          status = TreeNORMAL;
-        }
+        info->edit->first_in_mem = info->header->nodes;
+        status = TreeNORMAL;
       }
     }
   }

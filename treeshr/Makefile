@@ -3,6 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 dummies.o \
 TreeAddNode.o \
+TreeAddTag.o \
 TreeCreatePulseFile.o \
 TreeDeletePulseFile.o \
 TreeDoMethod.o \

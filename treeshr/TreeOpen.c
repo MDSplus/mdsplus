@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <usagedef.h>
+#include <ncidef.h>
 #include <errno.h>
 #include <fcntl.h>
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
@@ -42,6 +43,7 @@ int TreeSetStackSize(int size) { return _TreeSetStackSize(&DBID, size);}
 void TreeRestoreContext(void *ctx) { _TreeRestoreContext(&DBID,ctx); }
 void *TreeSaveContext() { return _TreeSaveContext(DBID);}
 int TreeOpenEdit(char *tree, int shot) { return _TreeOpenEdit(&DBID,tree,shot);}
+int TreeOpenNew(char *tree, int shot) { return _TreeOpenNew(&DBID, tree, shot);}
 
 int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 {
@@ -656,7 +658,7 @@ static char *GetRegistryPath(char *pathname)
 }
 #endif
 
-static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *options,char **resnam_out)
+static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,char **resnam_out)
 {
 	FILE *file = 0;
 	int len = strlen(tree);
@@ -701,21 +703,31 @@ static FILE  *OpenOne(TREE_INFO *info, char *tree, int shot, char *type,char *op
 					strcat(resnam,TREE_PATH_DELIM);
 				strcat(resnam,name);
 				strcat(resnam,type);
+				if (new)
+				{
+                                  file = fopen(resnam,"wb");
+                                }
+                                else
+				{
 #if defined(__osf__) || defined(__hpux) || defined(__sun) || defined(__sgi)
-				info->channel = open(resnam,O_RDONLY);
-				file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
+				  info->channel = open(resnam,O_RDONLY);
+				  file = (info->channel != -1) ? fdopen(info->channel,"rb") : NULL;
 #else
-				info->channel = 0;
-				file = fopen(resnam,"rb");
+				  info->channel = 0;
+				  file = fopen(resnam,"rb");
 #endif
+				}
 				if (file == NULL)
 				{
-					perror("Error opening tree file");
-					free(resnam);
-					resnam = NULL;
-				}
+				  free(resnam);
+				  resnam = NULL;
+                                }
 				part = &path[i+1];
 			}
+		}
+		if (file == NULL)
+		{
+		   perror("Error opening tree file");
 		}
 		free(path);
 	}
@@ -756,7 +768,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
 	char *resnam;
 	*file_handle = malloc(sizeof(FILE *));
 	file = (FILE **)*file_handle;
-	*file = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, "r", &resnam);
+	*file = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam);
 	if (*file)
 	{
 		fseek(*file, 0, SEEK_END);
@@ -1229,7 +1241,6 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
           info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
   	  if (info->edit)
 	  {
-	    int       new_tree = 0;
             memset(info->edit, 0, sizeof(TREE_EDIT));
 	    (*dblist)->tree_info = info;
 	    (*dblist)->open = 1;
@@ -1238,6 +1249,97 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 	    info->root = info->node;
 	    (*dblist)->default_node = info->root;
             TreeOpenNciW(info);
+	  }
+	}
+	else
+	{
+          free(info->treenam);
+          free(info);
+	}
+      }
+    }
+  }
+  return status;
+}
+
+int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
+{
+  PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
+  TREE_INFO *info;
+  char     *tree = malloc(strlen(tree_in)+1);
+  int       shot;
+  int       status = TreeFAILURE;
+
+  RemoveBlanksAndUpcase(tree,tree_in);
+  shot = shot_in ? shot_in : MdsGetCurrentShotId(tree);
+  if (shot)
+  {
+    PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
+    status = CreateDbSlot(dblist, tree, shot, 1);
+    if (status == TreeNORMAL)
+    {
+      info = (TREE_INFO *)malloc(sizeof(TREE_INFO));
+      if (info)
+      {
+        FILE *file;
+        memset(info,0,sizeof(*info));
+        info->flush = ((*dblist)->shotid == -1);
+        info->treenam = strcpy(malloc(strlen(tree)+1),tree);
+        file = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec);
+        if (file)
+	{
+          char *resnam = 0;
+          fclose(file);
+          file = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam);
+          if (resnam)
+            free(resnam);
+          if (file)
+	  {
+            fclose(file);
+            file = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam);
+            if (resnam)
+              free(resnam);
+            if (file)
+              fclose(file);
+	  }
+	}
+        if (file)
+        {
+	  TreeCallHook(OpenTreeEdit, info);
+          info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
+  	  if (info->edit)
+	  {
+            memset(info->edit, 0, sizeof(TREE_EDIT));
+	    info->blockid = TreeBLOCKID;
+            info->header = malloc(512);
+            memset(info->header, 0, sizeof(TREE_HEADER));
+            info->header->free = -1;
+            info->edit->header_pages = 1;
+	    (*dblist)->tree_info = info;
+	    (*dblist)->open = 1;
+	    (*dblist)->open_for_edit = 1;
+	    (*dblist)->open_readonly = 0;
+	    info->root = info->node;
+	    (*dblist)->default_node = info->root;
+            TreeOpenNciW(info);
+            status = TreeExpandNodes(*dblist, 0, 0);
+            strncpy(info->node->name,"TOP         ",sizeof(info->node->name));
+            info->node->parent = 0;
+            info->node->child = 0;
+            info->node->member = 0;
+            info->node->usage = TreeUSAGE_SUBTREE;
+            (info->node + 1)->child = 0;
+            bitassign(1,info->edit->nci->flags,NciM_INCLUDE_IN_PULSE);
+            info->tags = malloc(512);
+            info->edit->tags_pages = 1;
+            info->tag_info = malloc(sizeof(TAG_INFO)*512);
+            info->edit->tag_info_pages = sizeof(TAG_INFO);
+            info->external = malloc(512);
+            info->edit->external_pages = 1;
+            info->header->version = 1;
+            info->header->sort_children = 1;
+            info->header->sort_members = 1;
+            info->header->free = sizeof(NODE);
 	  }
 	}
 	else
