@@ -38,6 +38,7 @@ int TreeOpen(char *tree, int shot, int read_only) { return _TreeOpen(&DBID,tree,
 int TreeSetStackSize(int size) { return _TreeSetStackSize(&DBID, size);}
 void TreeRestoreContext(void *ctx) { _TreeRestoreContext(&DBID,ctx); }
 void *TreeSaveContext() { return _TreeSaveContext(DBID);}
+int TreeOpenEdit(char *tree, int shot) { return _TreeOpenEdit(&DBID,tree,shot);}
 
 int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 {
@@ -1078,8 +1079,6 @@ void *_TreeSaveContext(void *dbid)
 	return (void *)ctx;
 }
 
-int _TreeOpenEdit(void *dbid, char *tree, int shotid){return 1;}
-
 void _TreeRestoreContext(void **dbid, void *ctxin)
 {
 	if (ctxin)
@@ -1134,4 +1133,60 @@ int TreeCloseFiles(TREE_INFO *info)
 			status = TreeINVTREE;
 	}
 	return status;
+}
+
+int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
+{
+  PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
+  TREE_INFO *info;
+  char     *tree = malloc(strlen(tree_in)+1);
+  int       shot;
+  int       status = TreeFAILURE;
+
+  RemoveBlanksAndUpcase(tree,tree_in);
+  shot = shot_in ? shot_in : MdsGetCurrentShotid(tree);
+  if (shot)
+  {
+    PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
+    status = CreateDbSlot(dblist, tree, shot, 1);
+    if (status == TreeNORMAL)
+    {
+      info = (TREE_INFO *)malloc(sizeof(TREE_INFO));
+      if (info)
+      {
+        memset(info,0,sizeof(*info));
+        info->flush = ((*dblist)->shotid == -1);
+        info->treenam = strcpy(malloc(strlen(tree)+1),tree);
+        status = MapTree(tree, (*dblist)->shotid, info, 1);
+        if (status == TreeFAILURE && treeshr_errno == TreeFILE_NOT_FOUND)
+        {
+          status = TreeCallHook(RetrieveTree, info);
+          if (status == TreeNORMAL)
+              status = MapTree(tree, (*dblist)->shotid, info, 1);
+        }
+        if (status & 1)
+        {
+	  TreeCallHook(OpenTreeEdit, info);
+          info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
+  	  if (info->edit)
+	  {
+	    int       new_tree = 0;
+            memset(info->edit, 0, sizeof(TREE_EDIT));
+	    (*dblist)->tree_info = info;
+	    (*dblist)->open = 1;
+	    (*dblist)->open_for_edit = 1;
+	    (*dblist)->open_readonly = 0;
+	    info->root = info->node;
+	    (*dblist)->default_node = info->root;
+	  }
+	}
+	else
+	{
+          free(info->treenam);
+          free(info);
+	}
+      }
+    }
+  }
+  return status;
 }

@@ -217,13 +217,13 @@ struct nci_itm;
 
 /******************* Prototypes for TREESHR routines *********************/
 
-#ifdef _NO_PROTO
+#ifdef _MDS_NO_PROTO
 
 extern char* TreeAbsPath();
 extern char* _TreeAbsPath();
 	extern int TreeAddConglom();
 	extern int TreeAddMethodImage();
-	extern int TreeAddNode();
+extern int TreeAddNode();
 	extern int TreeAddTag();
 	extern int TreeCleanDatafile();
 	extern int TreeClearMethodImageS();
@@ -273,7 +273,8 @@ extern int _TreeIsOpen();
 	extern int TreeLink();
 	extern int TreeMarkIncludes();
 extern int TreeOpen();
-	extern int TreeOpenTreeEdit();
+extern int TreeOpenEdit();
+extern int _TreeOpenEdit();
 	extern int TreeOpenTreeNew();
 extern int TreePutRecord();
 extern int _TreePutRecord();
@@ -313,11 +314,8 @@ extern char *_TreeAbsPath( void *dbid, char *in);
 extern int TreeAddConglom(struct descriptor *path, struct descriptor *congtype,
 			             struct descriptor *qualifiers, int *nid);
 extern int TreeAddMethodImage();
-extern int TreeAddNode(struct descriptor *name, ...);
-/** Optional arguments *****************************************************************
-			  int  *nid;
-			  char *usage;
-***************************************************************************************/
+extern int TreeAddNode(char *name, int *nid_ret, char usage);
+extern int _TreeAddNode(void *dbid, char *name, int *nid_ret, char usage);
 extern int TreeAddTag(int nid, char *tagnam);
 extern int TreeCleanDatafile(struct descriptor *tree, int *shot);
 extern int TreeClearMethodImageS();
@@ -354,9 +352,7 @@ extern int _TreeFlushOff(void *dbid, int nid);
 extern int TreeFlushReset(int nid);
 extern int _TreeFlushReset(void *dbid, int nid);
 extern void TreeFree(void *);
-
 extern int TreeGetDbi(struct dbi_itm *itmlst);
-
 extern int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
 extern int TreeGetNci(int nid, struct nci_itm *itmlst);
 extern int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
@@ -367,9 +363,7 @@ extern char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid);
 extern char *TreeGetPath(int nid);
 extern char *_TreeGetPath(void *dbid, int nid);
 extern int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
-
 extern int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
-
 extern int TreeGetStackSize();
 extern int _TreeGetStackSize(void *dbid);
 extern int TreeIsOn(int nid);
@@ -381,10 +375,12 @@ extern int TreeMarkIncludes();
 extern int TreeNodePresent(int *nid);
 extern int TreeOpen(char *tree, int shot, int flags);
 extern int _TreeOpen(void **dbid,char *tree, int shot, int flags);
-extern int TreeOpenTree_EDIT(struct descriptor *treenam, int *shotid);
-extern int TreeOpenTree_NEW(struct descriptor *treenam, int *shotid);
+extern int TreeOpenEdit(char *tree, int shot);
+extern int _TreeOpenEdit(void **dbid, char *tree, int shot);
+extern int TreeOpenNew(char *tree, int shot);
+extern int _TreeOpenNew(void **dbid, char *tree, int shot);
 extern int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
-extern int _TreePutRecord(void **dbud, int nid, struct descriptor *descriptor, int utility_update);
+extern int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor, int utility_update);
 extern int TreeQuitTree();
 /** Optional arguments *****************************************************************
 			  struct descriptor *treename;

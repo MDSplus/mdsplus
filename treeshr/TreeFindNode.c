@@ -1138,3 +1138,62 @@ static int BsearchCompare(const void *this_one, const void *compare_one)
 
   return strncmp(tsearch->tag, tag, sizeof(TAG_NAME));
 }
+
+extern int TREE$_SEARCH_VM_ZONE;
+
+int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr)
+{
+  static SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
+  int       status;
+  NODE     *node_ptr;
+  int       ctxidx;
+  int       len = strlen(path_ptr);
+  int       i;
+  if (!(IS_OPEN(dblist)))
+    return TreeNOT_OPEN;
+  status = 1;
+  memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  ctx->type = EOL;
+  ctx->string = strcpy(malloc(len+1),path_ptr);
+  for (i=0;i<len && path_ptr[i] != ' ';i++)
+    ctx->string[i] = __toupper(path_ptr[i]);
+  ctx->string[i]=0;
+  status = Parse(ctx,0);
+  if (status & 1)
+  {
+    node_ptr = dblist->default_node;
+    ctxidx = 1;
+    for (; ctx[ctxidx + 1].type != EOL;)
+    {
+    /********************************************
+       Look for this thing.  If OK then move
+       on to next thing, otherwise move back to
+       previous one.
+    ********************************************/
+
+      status = TreeSearch(dblist, ctx, ctxidx, &node_ptr);
+      if (status & 1)
+	ctxidx++;
+      else
+      {
+	ctx[ctxidx].node = NULL;
+	ctxidx--;
+	if (ctxidx >= 0)
+	  node_ptr = ctx[ctxidx].node;
+      }
+    }
+    if (status & 1)
+    {
+      *namedsc_ptr = strcpy(malloc(strlen(ctx[ctxidx].string)+1),ctx[ctxidx].string);
+      *type_ptr = ctx[ctxidx].type;
+      *node_ptrptr = node_ptr;
+    }
+    else
+    {
+      *namedsc_ptr = NULL;
+      *type_ptr = NONE;
+      *node_ptrptr = NULL;
+    }
+  }
+  return status;
+}

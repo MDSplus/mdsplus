@@ -2,6 +2,7 @@ CFLAGS = -c -I../include -I. -g -assume noaligned_objects
 
 OBJECTS = \
 dummies.o \
+TreeAddNode.o \
 TreeFindNode.o \
 TreeGetDbi.o \
 TreeGetNci.o \
