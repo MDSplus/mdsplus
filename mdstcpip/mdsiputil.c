@@ -233,6 +233,9 @@ static SOCKET ConnectToPort(char *host, char *service)
     return INVALID_SOCKET;
   }
   s = MConnect(host, portnum);
+#ifdef GLOBUS
+  sleep(1);
+#endif
   if (s == INVALID_SOCKET)
   {
     perror("Error in connect to service\n");
