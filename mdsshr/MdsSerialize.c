@@ -496,7 +496,10 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	  {
             memcpy(out_ptr,((char *)inp)+offset(inp->pointer),inp->length);
             if (inp->dtype == DTYPE_FUNCTION && inp->length == 2)
-              memcpy(out_ptr,swapshort((char *)out_ptr),2);
+			{
+			  short value = swapshort((char *)out_ptr);
+              memcpy(out_ptr,&value,2);
+			}
           }
           out_ptr += inp->length;
         }
