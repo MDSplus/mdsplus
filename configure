@@ -4519,6 +4519,7 @@ math/Makefile
 math/csint.f 
 math/umach.f 
 mdsdcl/Makefile 
+mdsjet/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
 mdsshr/Makefile 
@@ -4708,6 +4709,7 @@ math/Makefile
 math/csint.f 
 math/umach.f 
 mdsdcl/Makefile 
+mdsjet/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
 mdsshr/Makefile 
