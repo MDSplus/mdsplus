@@ -54,11 +54,12 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	_status = DIO2->DIO2_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
 
 
+	_status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(1)));
 /* Set clock functions */
 	if(_ext_clock)
 	{
+	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(0)));
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_TIMING_HIGHWAY);
-		_status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(0)));
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -70,7 +71,10 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 	}
 	else
+	{
+	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(1)));
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
+	}	
 
 		
 	for(_c = 1; _c <= 8; _c++)
