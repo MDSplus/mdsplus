@@ -76,7 +76,7 @@ depend:
 	  cd $${dir}; make depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include rpm
+MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include
 
 install: 
 	mkdirhier @exec_prefix@/local/tdi
