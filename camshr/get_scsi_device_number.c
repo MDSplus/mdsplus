@@ -51,9 +51,9 @@ int get_scsi_device_number( char *highway_name, int *enhanced, int *online )
 	}
 
 	// lookup name
-	sprintf(highway, "%.4s", highway_name);				// trim to highway name, only
+	//	sprintf(highway, "%.4s", highway_name);				// trim to highway name, only
 
-	if( (i = lookup_entry( CRATE_DB, highway )) < 0 ) {	// lookup actual device num
+	if( (i = lookup_entry( CRATE_DB, highway_name )) < 0 ) {	// lookup actual device num
 		if( MSGLVL(IMPORTANT) )
 			fprintf( stderr, "no such highway in 'crate.db'\n" );
 

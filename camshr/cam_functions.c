@@ -555,7 +555,7 @@ static int JorwayDoIo(
 		printf( "%s()\n", J_ROUTINE_NAME );
 //printf( "%s(iosb is %sNULL)\n", J_ROUTINE_NAME, (iosb)?"NOT ":"" );		// [2002.12.13]
 
-	sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
+	sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
         if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 ) {
 		if( MSGLVL(IMPORTANT) )
 			fprintf( stderr, "%s(): error -- no scsi device found for '%s'\n", J_ROUTINE_NAME, dev_name );
