@@ -67,7 +67,8 @@ if ( ! $?MDSPLUS_DIR ) then
   if ( -r /etc/.mdsplus_dir ) then
     set MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
   endif
-endif 
+endif
+setenv MDSPLUS_DIR $MDSPLUS_DIR 
 if ( $?temp_sym_name ) then
   set temp_sym_old_value=`printenv $temp_sym_name`
   if ( $temp_sym_old_value == '' ) then
