@@ -74,7 +74,7 @@ public class DeviceSetup extends JDialog
         try {
             oldNid = subtree.getDefault(Tree.context);
             subtree.setDefault(new NidData(baseNid), Tree.context);
-        }catch(Exception exc){}
+        }catch(Exception exc){System.out.println(exc);}
  
         this.baseNid = baseNid;
         this.subtree = subtree;  
@@ -83,12 +83,11 @@ public class DeviceSetup extends JDialog
         try {
             NodeInfo info = subtree.getInfo(new NidData(baseNid), 0);
             path = info.getFullPath();
-        }catch(Exception exc){}
+        }catch(Exception exc){System.out.println(exc);}
         if(path == null)
             setTitle(deviceTitle);
         else
             setTitle(deviceTitle + " -- " + path);
-            
         
         //collect every DeviceComponent
         java.util.Stack search_stack = new java.util.Stack();  
@@ -128,13 +127,14 @@ public class DeviceSetup extends JDialog
                 components.addElement(device_components.elementAt(i));
             }
         }
-        
+        try {
         //A secod turn in order to carry out actions which need inter-component info
         for(int i = 0; i < num_components; i++)
         {
             ((DeviceComponent)device_components.elementAt(i)).postConfigure();
         }
-        
+        }
+        catch(Throwable exc){System.out.println(exc);}
         
         
         if(methods != null && methods.length > 0)
@@ -197,7 +197,9 @@ public class DeviceSetup extends JDialog
         }
         try {
             subtree.setDefault(oldNid, Tree.context);
-        }catch(Exception exc){}
+        }catch(Exception exc){
+            System.out.println("Error in Configure: " + exc);
+        }
                 
     }
     

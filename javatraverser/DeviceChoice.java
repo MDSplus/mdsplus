@@ -87,7 +87,8 @@ public class DeviceChoice extends DeviceComponent
     public void postConfigure()
     {
         String currItem = (String)comboB.getSelectedItem();
-        master.fireUpdate(updateIdentifier, new StringData(currItem));
+        if(master != null && updateIdentifier != null)
+            master.fireUpdate(updateIdentifier, new StringData(currItem));
     }
  
     protected void displayData(Data data, boolean is_on)
