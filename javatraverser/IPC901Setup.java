@@ -39,7 +39,6 @@ public class IPC901Setup extends DeviceSetup {
   DeviceChoice deviceChoice6 = new DeviceChoice();
   DeviceChoice deviceChoice7 = new DeviceChoice();
   DeviceChoice deviceChoice9 = new DeviceChoice();
-  DeviceChoice deviceChoice8 = new DeviceChoice();
   DeviceField deviceField7 = new DeviceField();
   DeviceField deviceField8 = new DeviceField();
   DeviceField deviceField9 = new DeviceField();
@@ -145,13 +144,6 @@ public class IPC901Setup extends DeviceSetup {
     deviceChoice9.setChoiceItems(new String[] {"1", "2", "4", "8", "16", "32"});
     deviceChoice9.setUpdateIdentifier("");
     deviceChoice9.setIdentifier("");
-    deviceChoice8.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3,(int)4,(int)6,(int)10,(int)20,(int)40});
-    deviceChoice8.setChoiceFloatValues(null);
-    deviceChoice8.setOffsetNid(15);
-    deviceChoice8.setLabelString("Soft Decim.");
-    deviceChoice8.setChoiceItems(new String[] {"1", "2", "3", "4", "6", "10", "20", "40"});
-    deviceChoice8.setUpdateIdentifier("");
-    deviceChoice8.setIdentifier("");
     deviceField10.setOffsetNid(16);
     deviceField10.setLabelString("OVF lev. 1:");
     deviceField10.setNumCols(6);
@@ -192,7 +184,6 @@ public class IPC901Setup extends DeviceSetup {
     jPanel7.add(deviceChoice5, null);
     jPanel7.add(deviceChoice4, null);
     jPanel1.add(jPanel6, null);
-    jPanel6.add(deviceChoice8, null);
     jPanel6.add(deviceChoice9, null);
     jPanel6.add(deviceChoice7, null);
     jPanel6.add(deviceChoice6, null);
