@@ -40,7 +40,7 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f   
 
-OBJECTS = $(SOURCES:.f=.o)
+OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 
 all: @MAKELIBDIR@ @MAKELIBDIR@libMdsMath@SHARETYPE@ 
 
