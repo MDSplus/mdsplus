@@ -1245,6 +1245,7 @@ int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, ch
       *node_ptrptr = NULL;
     }
   }
+  if (ctx->string) free(ctx->string);
   return status;
 }
 
