@@ -197,7 +197,7 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
    
 static int QJob(SrvJob *job)
 {
-  SrvJob *qjob = memcpy(malloc(job->h.length),job,job->h.length);
+  SrvJob *qjob = (SrvJob *)memcpy(malloc(job->h.length),job,job->h.length);
   LockQueue();
   if (LastQueueEntry != 0)
     LastQueueEntry->h.next = qjob;
