@@ -8,7 +8,7 @@ MdsClose
 MdsSetDefault
 MdsEventAst
 MdsEventCan
-;MdsDispatchEvent
+MdsDispatchEvent
 MdsSetCompression
 ;ConnectToPort
 ConnectToMds

@@ -624,6 +624,7 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
 	  *status = 0;
 	  return 0;
   }
+
   *status = GetBytes(sock, (char *)&header, sizeof(MsgHdr), 0);
   if (*status & 1) 
   {
@@ -641,7 +642,8 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
     }  
     msg = malloc(header.msglen);
     msg->h = header;
-    *status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr), 0);
+    *status = GetBytes(sock, msg->bytes, header.msglen - sizeof(MsgHdr)-1, 0);
+    msg->bytes[header.msglen - sizeof(MsgHdr) -1] = last;
   }
   if (!(*status & 1) && msg)
     free(msg);
