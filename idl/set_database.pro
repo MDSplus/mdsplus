@@ -366,7 +366,8 @@ pro MDSDbDisconnect
        defsysv, '!MDSDB_SOCKET', -1
        defsysv, '!MDSDB_HOST', ''
    endif
-   MdsDisconnect, socket=!MDSDB_SOCKET
+   if !MDSDB_SOCKET ne -1 then $
+     MdsDisconnect, socket=!MDSDB_SOCKET
    !MDSDB_SOCKET = -1
    !MDSDB_HOST = ""
 end
@@ -423,5 +424,6 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset
       endelse
       return
   endif
+  status = 1
 
 end
