@@ -44,8 +44,8 @@ public fun TR10HWInit(in _nid, in _board_id, in _clock_div, in _pts, in _ext_tri
 	}
 
 /* Reset module */
-	TR10->TR10_Reset(val(_handle));
-
+/*	TR10->TR10_Reset(val(_handle));
+*/
 
 /* Set clock functions */
 	if(_clock_div == 0) /*_clock_div == 0 means external clock */

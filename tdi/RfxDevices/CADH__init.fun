@@ -23,6 +23,8 @@ public fun CADH__init(as_is _nid, optional _method)
 
     private _INVALID = 10E20;
 
+    _data_invalid = 0;
+
      _name = DevNodeRef(_nid, _N_NAME);
     DevCamChk(_name, CamPiow(_name, 0,28, _dummy=0, 16),1,1); 
 
@@ -68,13 +70,24 @@ public fun CADH__init(as_is _nid, optional _method)
         { 
         	if(_time_cvt)
         	{
-				_curr_end = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_TIME)),(DevLogErr(_nid, "Cannot resolve start time"); abort();));
+				_curr_end = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_TIME)), _data_invalid = 1);
+				if(_data_invalid)
+				{
+				    DevLogErr(_nid, "Cannot resolve end time"); 
+				    abort();
+				}
 				if(_curr_end > 0)
 	    			_curr_pts = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig);
 				else
 	    			_curr_pts = - x_to_i(build_dim(build_window(0,*,_trig + _curr_end), _clock_val),  _trig);
 				DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX, long(_curr_pts));
-				_curr_start = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_TIME)),(DevLogErr(_nid, "Cannot end time"); abort();));
+				_curr_start = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_TIME)), _data_invalid =
+				1);
+				if(_data_invalid)
+				{
+				    DevLogErr(_nid, "Cannot resolve start time"); 
+				    abort();
+				}
 				if(_curr_start > 0)
 	    			_curr_start_idx = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_start + _trig);
 				else
