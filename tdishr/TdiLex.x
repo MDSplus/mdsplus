@@ -459,7 +459,22 @@ int			length, is_signed, status = 1, tst, type;
 	if (carry != 0 || (is_signed && ((qtst != 0) ^ (sign == '-')))) status = TdiTOO_BIG;
 	else for (qptr = &qq[length]; qptr < &qq[num1]; ++qptr) if (*qptr != qtst) status = TdiTOO_BIG;
 
-	if (status & 1) return(LEX_VALUE);
+	if (status & 1)
+        {
+          int endianTest = 1;
+          if (*(char *)&endianTest != 1)
+          {
+            int i;
+            char *ptr = mark_ptr->rptr->pointer;
+            for (i=0;i<length/2;i++)
+            {
+              char sav = ptr[i];
+              ptr[i] = ptr[length - i - 1];
+              prt[length - i - 1] = sav;
+            }
+          }
+          return(LEX_VALUE);
+        }
 	TdiRefZone.l_status = status;
 	return(LEX_ERROR);
 }
