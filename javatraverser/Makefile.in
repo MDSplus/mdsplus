@@ -68,7 +68,8 @@ EM_GAINSetup.java\
 EM_EQU_TESTSetup.java\
 CHVPSSetup.java\
 CHVPS_SETSetup.java\
-RFXParametersSetup.java
+RFXParametersSetup.java\
+CAMERASetup.java\
 
 
 SOURCES = ActionData.java\
