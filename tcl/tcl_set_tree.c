@@ -39,13 +39,9 @@ int TclSetTree()
 		 *-------------------------------------------------------*/
     cli_get_value("FILE",&dsc_filnam);
     cli_get_value("SHOTID",&dsc_asciiShot);
-#ifdef vms
     dsc_asciiShot.dscB_class = CLASS_S;		/* vms: malloc vs str$	*/
     sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
     dsc_asciiShot.dscB_class = CLASS_D;
-#else
-    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
-#endif
     if (sts & 1)
        {
         filnam = dsc_filnam.dscA_pointer;
