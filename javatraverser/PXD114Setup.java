@@ -12,7 +12,7 @@ import javax.swing.border.*;
  * @version 1.0
  */
 
-public class PXD14Setup extends DeviceSetup {
+public class PXD114Setup extends DeviceSetup {
   DeviceButtons deviceButtons1 = new DeviceButtons();
   BorderLayout borderLayout1 = new BorderLayout();
   JPanel jPanel1 = new JPanel();
@@ -62,7 +62,15 @@ public class PXD14Setup extends DeviceSetup {
   JPanel jPanel11 = new JPanel();
   DeviceChoice deviceChoice15 = new DeviceChoice();
   DeviceChoice deviceChoice16 = new DeviceChoice();
-  public PXD14Setup() {
+  Border border2;
+  TitledBorder titledBorder2;
+  Border border3;
+  TitledBorder titledBorder3;
+  Border border4;
+  TitledBorder titledBorder4;
+  Border border5;
+  TitledBorder titledBorder5;
+  public PXD114Setup() {
     try {
       jbInit();
     }
@@ -73,11 +81,19 @@ public class PXD14Setup extends DeviceSetup {
   private void jbInit() throws Exception {
     border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
     titledBorder1 = new TitledBorder(BorderFactory.createLineBorder(Color.black,1),"Channel 4");
-    this.setWidth(627);
-    this.setHeight(627);
-    this.setDeviceType("PXD14");
+    border2 = BorderFactory.createLineBorder(Color.black,1);
+    titledBorder2 = new TitledBorder(border2,"Channel 1");
+    border3 = BorderFactory.createLineBorder(Color.black,1);
+    titledBorder3 = new TitledBorder(border3,"Channel 2");
+    border4 = BorderFactory.createLineBorder(Color.black,1);
+    titledBorder4 = new TitledBorder(border4,"Channel 3");
+    border5 = BorderFactory.createLineBorder(Color.black,1);
+    titledBorder5 = new TitledBorder(border5,"Channel 4");
+    this.setWidth(603);
+    this.setHeight(603);
+    this.setDeviceType("PXD114");
     this.setDeviceProvider("localhost");
-    this.setDeviceTitle("LeCroy PXD14 Transient Recorder");
+    this.setDeviceTitle("LeCroy PXD114 Transient Recorder");
     this.getContentPane().setLayout(borderLayout1);
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
@@ -103,7 +119,7 @@ public class PXD14Setup extends DeviceSetup {
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setOffsetNid(6);
     deviceChoice2.setLabelString("Trig. Coupling: ");
-    deviceChoice2.setChoiceItems(new String[] {"AC", "DC", "GND"});
+    deviceChoice2.setChoiceItems(new String[] {"DC", "AC", "GND"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     deviceChoice1.setChoiceIntValues(new int[] {(int)50,(int)1000000});
@@ -143,7 +159,7 @@ public class PXD14Setup extends DeviceSetup {
     jPanel2.setLayout(gridLayout2);
     gridLayout2.setColumns(1);
     gridLayout2.setRows(4);
-    jPanel8.setBorder(titledBorder1);
+    jPanel8.setBorder(titledBorder2);
     jPanel8.setLayout(flowLayout1);
     deviceChoice7.setChoiceIntValues(new int[] {(int)50,(int)1000000});
     deviceChoice7.setChoiceFloatValues(null);
@@ -153,11 +169,11 @@ public class PXD14Setup extends DeviceSetup {
     deviceChoice7.setChoiceItems(new String[] {"50 Ohm", "1 MOhm"});
     deviceChoice7.setUpdateIdentifier("");
     deviceChoice7.setIdentifier("");
-    deviceChoice6.setChoiceIntValues(new int[] {(int)1,(int)20,(int)40});
-    deviceChoice6.setChoiceFloatValues(null);
+    deviceChoice6.setChoiceIntValues(null);
+    deviceChoice6.setChoiceFloatValues(new float[] {(float)0.04,(float)0.08,(float)0.16,(float)0.4,(float)0.8,(float)1.6,(float)4.0,(float)8.0});
     deviceChoice6.setOffsetNid(16);
     deviceChoice6.setLabelString("Range (V):");
-    deviceChoice6.setChoiceItems(new String[] {"1", "20", "40"});
+    deviceChoice6.setChoiceItems(new String[] {"0.04", "0.08", "0.16", "0.4", "0.8", "1.6", "4", "8"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
     deviceChoice5.setChoiceIntValues(null);
@@ -173,17 +189,17 @@ public class PXD14Setup extends DeviceSetup {
     deviceField8.setIdentifier("");
     deviceChoice8.setIdentifier("");
     deviceChoice8.setUpdateIdentifier("");
-    deviceChoice8.setChoiceItems(new String[] {"1", "20", "40"});
+    deviceChoice8.setChoiceItems(new String[] {"0.04", "0.08", "0.16", "0.4", "0.8", "1.6", "4", "8"});
     deviceChoice8.setLabelString("Range (V):");
     deviceChoice8.setOffsetNid(34);
-    deviceChoice8.setChoiceFloatValues(null);
-    deviceChoice8.setChoiceIntValues(new int[] {(int)1,(int)20,(int)40});
+    deviceChoice8.setChoiceFloatValues(new float[] {(float)0.04,(float)0.08,(float)0.16,(float)0.4,(float)0.8,(float)1.6,(float)4.0,(float)8.0});
+    deviceChoice8.setChoiceIntValues(null);
     deviceField9.setIdentifier("");
     deviceField9.setNumCols(8);
     deviceField9.setLabelString("Offset(V):");
     deviceField9.setOffsetNid(35);
     jPanel9.setLayout(flowLayout2);
-    jPanel9.setBorder(titledBorder1);
+    jPanel9.setBorder(titledBorder5);
     deviceChoice9.setChoiceIntValues(null);
     deviceChoice9.setChoiceFloatValues(null);
     deviceChoice9.setOffsetNid(36);
@@ -201,17 +217,17 @@ public class PXD14Setup extends DeviceSetup {
     deviceChoice10.setIdentifier("");
     deviceChoice11.setIdentifier("");
     deviceChoice11.setUpdateIdentifier("");
-    deviceChoice11.setChoiceItems(new String[] {"1", "20", "40"});
+    deviceChoice11.setChoiceItems(new String[] {"0.04", "0.08", "0.16", "0.4", "0.8", "1.6", "4", "8"});
     deviceChoice11.setLabelString("Range (V):");
     deviceChoice11.setOffsetNid(28);
-    deviceChoice11.setChoiceFloatValues(null);
-    deviceChoice11.setChoiceIntValues(new int[] {(int)1,(int)20,(int)40});
+    deviceChoice11.setChoiceFloatValues(new float[] {(float)0.04,(float)0.08,(float)0.16,(float)0.4,(float)0.8,(float)1.6,(float)4.0,(float)8.0});
+    deviceChoice11.setChoiceIntValues(null);
     deviceField10.setIdentifier("");
     deviceField10.setNumCols(8);
     deviceField10.setLabelString("Offset(V):");
     deviceField10.setOffsetNid(29);
     jPanel10.setLayout(flowLayout3);
-    jPanel10.setBorder(titledBorder1);
+    jPanel10.setBorder(titledBorder4);
     deviceChoice12.setChoiceIntValues(null);
     deviceChoice12.setChoiceFloatValues(null);
     deviceChoice12.setOffsetNid(30);
@@ -229,17 +245,17 @@ public class PXD14Setup extends DeviceSetup {
     deviceChoice13.setIdentifier("");
     deviceChoice14.setIdentifier("");
     deviceChoice14.setUpdateIdentifier("");
-    deviceChoice14.setChoiceItems(new String[] {"1", "20", "40"});
+    deviceChoice14.setChoiceItems(new String[] {"0.04", "0.08", "0.16", "0.4", "0.8", "1.6", "4", "8"});
     deviceChoice14.setLabelString("Range (V):");
     deviceChoice14.setOffsetNid(22);
-    deviceChoice14.setChoiceFloatValues(null);
-    deviceChoice14.setChoiceIntValues(new int[] {(int)1,(int)20,(int)40});
+    deviceChoice14.setChoiceFloatValues(new float[] {(float)0.04,(float)0.08,(float)0.16,(float)0.4,(float)0.8,(float)1.6,(float)4.0,(float)8.0});
+    deviceChoice14.setChoiceIntValues(null);
     deviceField11.setIdentifier("");
     deviceField11.setNumCols(8);
     deviceField11.setLabelString("Offset(V):");
     deviceField11.setOffsetNid(23);
     jPanel11.setLayout(flowLayout4);
-    jPanel11.setBorder(titledBorder1);
+    jPanel11.setBorder(titledBorder3);
     deviceChoice15.setChoiceIntValues(null);
     deviceChoice15.setChoiceFloatValues(null);
     deviceChoice15.setOffsetNid(24);
