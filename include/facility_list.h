@@ -27,6 +27,7 @@
 #define LIB_FACILITY           0x0015
 #define STRMDS_FACILITY        0x0024
 #define SS_FACILITY            0x0000
+#define CAM_FACILITY           0x0801
 
 #define STATUS(F,C)  ((F<<16) + C)
 #define STS_TEXT(N,T)   {N,#N,T}
