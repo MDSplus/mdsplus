@@ -2508,7 +2508,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
           break;
 	}
         strcpy(fontname,fontinfo);
-        XtFree(fontinfo);
+        XFree(fontinfo);
         if (strstr(fontname,"New Century Schoolbook"))
             strcpy(fontname,"NewCenturySchlbk");
         while (strstr(fontname," ")) strncpy(strstr(fontname," "),"-",1);
@@ -2519,7 +2519,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
           break;
 	}
         if (strstr(fontinfo,"Bold")) strcat(fontname,"-Bold");
-        XtFree(fontinfo);
+        XFree(fontinfo);
         fatom = XInternAtom (XtDisplay(w), "FULL_NAME", False);
         for (i = 0; i < fs->n_properties; i++)
 	if (fs->properties[i].name == fatom) {
@@ -2538,7 +2538,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
         }
         if (!strcmp(fontname,"Times") || !strcmp(fontname,"NewCenturySchlbk"))
             strcat(fontname,"-Roman");
-        XtFree(fontinfo);
+        XFree(fontinfo);
       }
       fatom = XInternAtom (XtDisplay(w), "POINT_SIZE", False);
       for (i = 0; i < fs->n_properties; i++)
