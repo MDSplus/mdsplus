@@ -1128,11 +1128,12 @@ public class WaveInterface
 	        if(xmax != HUGE)
 	            out_signal.xmax = out_signal.saved_xmax = xmax;    
         
-	        if(in_ymax != null && (in_ymax.trim()).length() != 0)
+	        if(in_ymax != null && (in_ymax.trim()).length() != 0 && in_upd_limits)
 	            out_signal.ymax = out_signal.saved_ymax = ymax;
 	        if(out_signal.xmin > out_signal.xmax)
 	            out_signal.xmin = out_signal.xmax;
-	        if(in_ymin != null && (in_ymin.trim()).length() != 0)
+
+	        if(in_ymin != null && (in_ymin.trim()).length() != 0 && in_upd_limits)
 	            out_signal.ymin = out_signal.saved_ymin = ymin;
 	        if(out_signal.ymin > out_signal.ymax)
 	            out_signal.ymin = out_signal.ymax;       
