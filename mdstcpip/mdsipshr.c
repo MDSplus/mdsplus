@@ -166,7 +166,7 @@ static int32 ArgLen(struct descrip *d)
   int32 len;
   switch (d->dtype)
   {
-    case DTYPE_CSTRING :  len = d->ptr ? strlen(d->ptr) : 0; break;
+    case DTYPE_CSTRING :  len = d->length ? d->length : (d->ptr ? strlen(d->ptr) : 0); break;
     case DTYPE_UCHAR   :
     case DTYPE_CHAR    :  len = sizeof(char); break;
     case DTYPE_USHORT  :
