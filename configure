@@ -1021,14 +1021,14 @@ MAKESHLIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
 
 case "$target" in
-hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
+hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\\\$\$SHLIB_PATH:\$(exec_prefix)/lib +DA1.1 +DS1.1 +z";
        FFLAGS="$FFLAGS +z +es";
        D3D_FFLAGS="+U77 +E1 -K"; 
        LDSHARE="-Wl,-a,shared_archive";
        LDARC="-Wl,-a,archive";
        LD_LDSHARE="-a shared_archive";
        LD_LDARC="-a archive";
-       LINKSHARED="-b +s +b\$(exec_prefix)/lib";
+       LINKSHARED="-b +s +b\\\$\$SHLIB_PATH:\$(exec_prefix)/lib";
        FOR_LDFLAGS="-v -L/usr/lib/pa1.1 -lcl -lf";
        LIBPATH="SHLIB_PATH";
        IDL_BIN_SUF="hp";
@@ -1040,7 +1040,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LDARC="-B static";
        LD_LDSHARE="-B dynamic";
        LD_LDARC="-B static";
-       LINKSHARED="-shared -rpath \$(exec_prefix)/lib";
+       LINKSHARED="-shared -rpath \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
@@ -1048,14 +1048,14 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 sparc-sun-solaris2*)  
        if test $CC = gcc; then
 	 LD=gcc;
-         LINKSHARED="-Wl,-G -symbolic -Wl,-R,\$(exec_prefix)/lib";
+         LINKSHARED="-Wl,-G -symbolic -Wl,-R,\\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
          LDARC="-Wl,-B,static";
          CFLAGS="$CFLAGS -fpic";
        else 
-         LINKSHARED="-G -B symbolic -R \$(exec_prefix)/lib";
+         LINKSHARED="-G -B symbolic -R \\\$\$LD_LIBRARY_PATH:\$(exec_prefix)/lib";
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
          LDSHARE="-B dynamic";
