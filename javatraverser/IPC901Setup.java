@@ -170,7 +170,7 @@ public class IPC901Setup extends DeviceSetup {
     deviceField7.setIdentifier("");
     deviceButtons1.setCheckExpressions(null);
     deviceButtons1.setCheckMessages(null);
-    deviceButtons1.setMethods(new String[] {"INIT", "STORE"});
+    deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     jPanel1.add(jPanel2, null);
