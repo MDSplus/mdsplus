@@ -995,6 +995,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice2.setOffsetNid(13);
     deviceChoice2.setLabelString("Gain:");
     deviceChoice2.setChoiceItems(new String[] {"1", "2", "5", "10"});
+    deviceChoice2.setIdentifier("ti_1");
     jPanel7.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel7.setLayout(flowLayout4);
     deviceChoice3.setChoiceIntValues(new int[] {(int)0,(int)2000,(int)5000,(int)20000,(int)50000,(int)100000,(int)200000});
@@ -1089,7 +1090,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice6.setOffsetNid(24);
     deviceChoice6.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice6.setChoiceIntValues(null);
-    deviceChoice7.setIdentifier("");
+    deviceChoice7.setIdentifier("ti_2");
     deviceChoice7.setUpdateIdentifier("");
     deviceChoice7.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice7.setLabelString("Gain:");
@@ -1134,6 +1135,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11.setUpdateIdentifier("");
     deviceChoice11.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11.setLabelString("Gain:");
+    deviceChoice11.setIdentifier("ti_19");
     deviceChoice11.setOffsetNid(175);
     deviceChoice11.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice11.setChoiceIntValues(null);
@@ -1174,6 +1176,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice15.setUpdateIdentifier("");
     deviceChoice15.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice15.setLabelString("Gain:");
+    deviceChoice15.setIdentifier("ti_18");
     deviceChoice15.setOffsetNid(166);
     deviceChoice15.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice15.setChoiceIntValues(null);
@@ -1214,6 +1217,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice19.setUpdateIdentifier("");
     deviceChoice19.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice19.setLabelString("Gain:");
+    deviceChoice19.setIdentifier("ti_17");
     deviceChoice19.setOffsetNid(157);
     deviceChoice19.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice19.setChoiceIntValues(null);
@@ -1249,7 +1253,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice112.setOffsetNid(150);
     deviceChoice112.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice112.setChoiceIntValues(null);
-    deviceChoice113.setIdentifier("");
+    deviceChoice113.setIdentifier("ti_16");
     deviceChoice113.setUpdateIdentifier("");
     deviceChoice113.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice113.setLabelString("Gain:");
@@ -1290,7 +1294,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice116.setOffsetNid(141);
     deviceChoice116.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice116.setChoiceIntValues(null);
-    deviceChoice117.setIdentifier("");
+    deviceChoice117.setIdentifier("ti_15");
     deviceChoice117.setUpdateIdentifier("");
     deviceChoice117.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice117.setLabelString("Gain:");
@@ -1330,7 +1334,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1110.setOffsetNid(132);
     deviceChoice1110.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1110.setChoiceIntValues(null);
-    deviceChoice1111.setIdentifier("");
+    deviceChoice1111.setIdentifier("ti_14");
     deviceChoice1111.setUpdateIdentifier("");
     deviceChoice1111.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111.setLabelString("Gain:");
@@ -1369,7 +1373,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1114.setOffsetNid(123);
     deviceChoice1114.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1114.setChoiceIntValues(null);
-    deviceChoice1115.setIdentifier("");
+    deviceChoice1115.setIdentifier("ti_13");
     deviceChoice1115.setUpdateIdentifier("");
     deviceChoice1115.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1115.setLabelString("Gain:");
@@ -1408,7 +1412,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1118.setOffsetNid(114);
     deviceChoice1118.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1118.setChoiceIntValues(null);
-    deviceChoice1119.setIdentifier("");
+    deviceChoice1119.setIdentifier("ti_12");
 
     deviceChoice1119.setUpdateIdentifier("");
     deviceChoice1119.setChoiceItems(new String[] {"1", "2", "5", "10"});
@@ -1449,7 +1453,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11112.setOffsetNid(105);
     deviceChoice11112.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11112.setChoiceIntValues(null);
-    deviceChoice11113.setIdentifier("");
+    deviceChoice11113.setIdentifier("t_11");
     deviceChoice11113.setUpdateIdentifier("");
     deviceChoice11113.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11113.setLabelString("Gain:");
@@ -1488,7 +1492,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11116.setOffsetNid(96);
     deviceChoice11116.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11116.setChoiceIntValues(null);
-    deviceChoice11117.setIdentifier("");
+    deviceChoice11117.setIdentifier("ti_10");
     deviceChoice11117.setUpdateIdentifier("");
     deviceChoice11117.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11117.setLabelString("Gain:");
@@ -1529,7 +1533,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111118.setOffsetNid(69);
     deviceChoice111118.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice111118.setChoiceIntValues(null);
-    deviceChoice111119.setIdentifier("");
+    deviceChoice111119.setIdentifier("ti_7");
     deviceChoice111119.setUpdateIdentifier("");
     deviceChoice111119.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111119.setLabelString("Gain:");
@@ -1568,7 +1572,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1111112.setOffsetNid(60);
     deviceChoice1111112.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1111112.setChoiceIntValues(null);
-    deviceChoice1111113.setIdentifier("");
+    deviceChoice1111113.setIdentifier("ti_6");
     deviceChoice1111113.setUpdateIdentifier("");
     deviceChoice1111113.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111113.setLabelString("Gain:");
@@ -1607,7 +1611,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1111116.setOffsetNid(51);
     deviceChoice1111116.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1111116.setChoiceIntValues(null);
-    deviceChoice1111117.setIdentifier("");
+    deviceChoice1111117.setIdentifier("ti_5");
     deviceChoice1111117.setUpdateIdentifier("");
 
     deviceChoice1111117.setChoiceItems(new String[] {"1", "2", "5", "10"});
@@ -1647,7 +1651,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11111110.setOffsetNid(42);
     deviceChoice11111110.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11111110.setChoiceIntValues(null);
-    deviceChoice11111111.setIdentifier("");
+    deviceChoice11111111.setIdentifier("ti_4");
     deviceChoice11111111.setUpdateIdentifier("");
     deviceChoice11111111.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111111.setLabelString("Gain:");
@@ -1687,7 +1691,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11111114.setOffsetNid(33);
     deviceChoice11111114.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11111114.setChoiceIntValues(null);
-    deviceChoice11111115.setIdentifier("");
+    deviceChoice11111115.setIdentifier("ti_3");
     deviceChoice11111115.setUpdateIdentifier("");
     deviceChoice11111115.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111115.setLabelString("Gain:");
@@ -1727,7 +1731,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice120.setLabelString("Gain:");
     deviceChoice120.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice120.setUpdateIdentifier("");
-    deviceChoice120.setIdentifier("");
+    deviceChoice120.setIdentifier("ti_9");
     deviceChoice121.setChoiceIntValues(null);
     deviceChoice121.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice121.setOffsetNid(87);
@@ -1766,7 +1770,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice124.setLabelString("Gain:");
     deviceChoice124.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice124.setUpdateIdentifier("");
-    deviceChoice124.setIdentifier("");
+    deviceChoice124.setIdentifier("ti_8");
     deviceChoice125.setChoiceIntValues(null);
     deviceChoice125.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice125.setOffsetNid(78);
@@ -1805,7 +1809,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice128.setLabelString("Gain:");
     deviceChoice128.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice128.setUpdateIdentifier("");
-    deviceChoice128.setIdentifier("");
+    deviceChoice128.setIdentifier("ti_37");
     deviceChoice11120.setChoiceIntValues(null);
     deviceChoice11120.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11120.setOffsetNid(303);
@@ -1856,7 +1860,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111110.setOffsetNid(277);
     deviceChoice111110.setChoiceFloatValues(null);
     deviceChoice111110.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)4,(int)6,(int)8,(int)10,(int)12,(int)14,(int)16,(int)18,(int)20,(int)22,(int)24,(int)26,(int)28});
-    deviceChoice1120.setIdentifier("");
+    deviceChoice1120.setIdentifier("ti_34");
     deviceChoice1120.setUpdateIdentifier("");
     deviceChoice1120.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1120.setLabelString("Gain:");
@@ -1870,7 +1874,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111111.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice111111.setUpdateIdentifier("");
     deviceChoice111111.setIdentifier("");
-    deviceChoice11122.setIdentifier("");
+    deviceChoice11122.setIdentifier("ti_31");
     deviceChoice11122.setUpdateIdentifier("");
     deviceChoice11122.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11122.setLabelString("Gain:");
@@ -1955,7 +1959,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel112.setBorderVisible(false);
     deviceChannel112.setOffsetNid(235);
     deviceChannel112.setLabelString("26");
-    deviceChoice130.setIdentifier("");
+    deviceChoice130.setIdentifier("ti_36");
     deviceChoice130.setUpdateIdentifier("");
     deviceChoice130.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice130.setLabelString("Gain:");
@@ -2066,7 +2070,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1211.setIdentifier("");
     flowLayout114.setVgap(0);
     flowLayout114.setAlignment(FlowLayout.LEFT);
-    deviceChoice11126.setIdentifier("");
+    deviceChoice11126.setIdentifier("ti_33");
     deviceChoice11126.setUpdateIdentifier("");
     deviceChoice11126.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11126.setLabelString("Gain:");
@@ -2087,14 +2091,14 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111111111.setOffsetNid(204);
     deviceChoice111111111.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice111111111.setChoiceIntValues(null);
-    deviceChoice111114.setIdentifier("");
+    deviceChoice111114.setIdentifier("ti_30");
     deviceChoice111114.setUpdateIdentifier("");
     deviceChoice111114.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111114.setLabelString("Gain:");
     deviceChoice111114.setOffsetNid(274);
     deviceChoice111114.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice111114.setChoiceIntValues(null);
-    deviceChoice111115.setIdentifier("");
+    deviceChoice111115.setIdentifier("ti_29");
     deviceChoice111115.setUpdateIdentifier("");
     deviceChoice111115.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111115.setLabelString("Gain:");
@@ -2111,7 +2115,7 @@ public class XRAYSetup extends DeviceSetup {
     flowLayout115.setAlignment(FlowLayout.LEFT);
     flowLayout115.setVgap(0);
 
-    deviceChoice111111112.setIdentifier("");
+    deviceChoice111111112.setIdentifier("ti_22");
     deviceChoice111111112.setUpdateIdentifier("");
     deviceChoice111111112.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111111112.setLabelString("Gain:");
@@ -2125,8 +2129,8 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1212.setLabelString("Gain:");
     deviceChoice1212.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1212.setUpdateIdentifier("");
-    deviceChoice1212.setIdentifier("");
-    deviceChoice22.setIdentifier("");
+    deviceChoice1212.setIdentifier("ti_27");
+    deviceChoice22.setIdentifier("ti_20");
     deviceChoice22.setUpdateIdentifier("");
     deviceChoice22.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice22.setLabelString("Gain:");
@@ -2171,7 +2175,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice23.setLabelString("Gain:");
     deviceChoice23.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice23.setUpdateIdentifier("");
-    deviceChoice23.setIdentifier("");
+    deviceChoice23.setIdentifier("ti_21");
     flowLayout117.setAlignment(FlowLayout.LEFT);
     flowLayout117.setVgap(0);
     deviceChoice111116.setIdentifier("ti_30");
@@ -2241,7 +2245,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice27.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice27.setUpdateIdentifier("");
     deviceChoice27.setIdentifier("");
-    deviceChoice1111121.setIdentifier("");
+    deviceChoice1111121.setIdentifier("ti_26");
     deviceChoice1111121.setUpdateIdentifier("");
     deviceChoice1111121.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111121.setLabelString("Gain:");
@@ -2281,7 +2285,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1214.setLabelString("Gain:");
     deviceChoice1214.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1214.setUpdateIdentifier("");
-    deviceChoice1214.setIdentifier("");
+    deviceChoice1214.setIdentifier("ti_28");
     deviceChoice11111120.setChoiceIntValues(new int[] {(int)0,(int)2000,(int)5000,(int)20000,(int)50000,(int)100000,(int)200000});
     deviceChoice11111120.setChoiceFloatValues(null);
     deviceChoice11111120.setOffsetNid(221);
@@ -2382,7 +2386,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1128.setUpdateIdentifier("");
     deviceChoice1128.setIdentifier("");
     jPanel24.setLayout(gridLayout3);
-    deviceChoice1129.setIdentifier("");
+    deviceChoice1129.setIdentifier("ti_35");
     deviceChoice1129.setUpdateIdentifier("");
     deviceChoice1129.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1129.setLabelString("Gain:");
@@ -2393,7 +2397,7 @@ public class XRAYSetup extends DeviceSetup {
     jPanel128.setLayout(flowLayout125);
     flowLayout119.setAlignment(FlowLayout.LEFT);
     flowLayout119.setVgap(0);
-    deviceChoice111111117.setIdentifier("");
+    deviceChoice111111117.setIdentifier("ti_23");
     deviceChoice111111117.setUpdateIdentifier("");
     deviceChoice111111117.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111111117.setLabelString("Gain:");
@@ -2477,7 +2481,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel116.setLabelString("30");
     jPanel129.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel129.setLayout(flowLayout22);
-    deviceChoice11111124.setIdentifier("");
+    deviceChoice11111124.setIdentifier("ti_24");
     deviceChoice11111124.setUpdateIdentifier("");
     deviceChoice11111124.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111124.setLabelString("Gain:");
@@ -2516,7 +2520,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice136.setOffsetNid(330);
     deviceChoice136.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice136.setChoiceIntValues(null);
-    deviceChoice11129.setIdentifier("");
+    deviceChoice11129.setIdentifier("ti_32");
     deviceChoice11129.setUpdateIdentifier("");
     deviceChoice11129.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11129.setLabelString("Gain:");
@@ -2532,7 +2536,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel119.setBorderVisible(false);
     deviceChannel119.setOffsetNid(262);
     deviceChannel119.setLabelString("29");
-    deviceChoice137.setIdentifier("");
+    deviceChoice137.setIdentifier("ti_38");
     deviceChoice137.setUpdateIdentifier("");
     deviceChoice137.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice137.setLabelString("Gain:");
@@ -2546,7 +2550,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11111125.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice11111125.setUpdateIdentifier("");
     deviceChoice11111125.setIdentifier("");
-    deviceChoice11111126.setIdentifier("");
+    deviceChoice11111126.setIdentifier("ti_25");
     deviceChoice11111126.setUpdateIdentifier("");
     deviceChoice11111126.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111126.setLabelString("Gain:");
@@ -2587,8 +2591,8 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1218.setLabelString("Gain:");
     deviceChoice1218.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1218.setUpdateIdentifier("");
-    deviceChoice1218.setIdentifier("");
-    deviceChoice1111122.setIdentifier("");
+    deviceChoice1218.setIdentifier("ti_46");
+    deviceChoice1111122.setIdentifier("ti_49");
     deviceChoice1111122.setUpdateIdentifier("");
     deviceChoice1111122.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111122.setLabelString("Gain:");
@@ -2697,7 +2701,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1111124.setOffsetNid(447);
     deviceChoice1111124.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1111124.setChoiceIntValues(null);
-    deviceChoice111111211.setIdentifier("");
+    deviceChoice111111211.setIdentifier("ti_43");
     deviceChoice111111211.setUpdateIdentifier("");
     deviceChoice111111211.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111111211.setLabelString("Gain:");
@@ -2790,7 +2794,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1111127.setOffsetNid(411);
     deviceChoice1111127.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1111127.setChoiceIntValues(null);
-    deviceChoice111212.setIdentifier("");
+    deviceChoice111212.setIdentifier("ti_51");
     deviceChoice111212.setUpdateIdentifier("");
     deviceChoice111212.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111212.setLabelString("Gain:");
@@ -2805,7 +2809,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel211.setLines(1);
     deviceChannel211.setOffsetNid(361);
     deviceChannel211.setLabelString("40");
-    deviceChoice11215.setIdentifier("");
+    deviceChoice11215.setIdentifier("ti_54");
     deviceChoice11215.setUpdateIdentifier("");
     deviceChoice11215.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11215.setLabelString("Gain:");
@@ -2817,7 +2821,7 @@ public class XRAYSetup extends DeviceSetup {
 
     jPanel1212.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel1212.setLayout(flowLayout129);
-    deviceChoice1111111110.setIdentifier("");
+    deviceChoice1111111110.setIdentifier("ti_42");
     deviceChoice1111111110.setUpdateIdentifier("");
     deviceChoice1111111110.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111111110.setLabelString("Gain:");
@@ -2881,7 +2885,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111111213.setOffsetNid(393);
     deviceChoice111111213.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice111111213.setChoiceIntValues(null);
-    deviceChoice138.setIdentifier("");
+    deviceChoice138.setIdentifier("ti_57");
     deviceChoice138.setUpdateIdentifier("");
     deviceChoice138.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice138.setLabelString("Gain:");
@@ -2943,7 +2947,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel1113.setBorderVisible(false);
     deviceChannel1113.setOffsetNid(370);
     deviceChannel1113.setLabelString("41");
-    deviceChoice111111214.setIdentifier("");
+    deviceChoice111111214.setIdentifier("ti_44");
     deviceChoice111111214.setUpdateIdentifier("");
     deviceChoice111111214.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111111214.setLabelString("Gain:");
@@ -2958,7 +2962,7 @@ public class XRAYSetup extends DeviceSetup {
     jPanel29.setLayout(flowLayout28);
     jPanel1215.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel1215.setLayout(flowLayout210);
-    deviceChoice11111210.setIdentifier("");
+    deviceChoice11111210.setIdentifier("ti_45");
     deviceChoice11111210.setUpdateIdentifier("");
     deviceChoice11111210.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111210.setLabelString("Gain:");
@@ -2991,7 +2995,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice29.setLabelString("Gain:");
     deviceChoice29.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice29.setUpdateIdentifier("");
-    deviceChoice29.setIdentifier("");
+    deviceChoice29.setIdentifier("ti_39");
     deviceChannel216.setLayout(null);
     deviceChannel216.setShowVal("");
     deviceChannel216.setUpdateIdentifier("");
@@ -3042,7 +3046,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1311.setChoiceIntValues(null);
     flowLayout1113.setVgap(0);
     flowLayout1113.setAlignment(FlowLayout.LEFT);
-    deviceChoice11217.setIdentifier("");
+    deviceChoice11217.setIdentifier("ti_53");
     deviceChoice11217.setUpdateIdentifier("");
     deviceChoice11217.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11217.setLabelString("Gain:");
@@ -3064,7 +3068,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice12114.setLabelString("Gain:");
     deviceChoice12114.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice12114.setUpdateIdentifier("");
-    deviceChoice12114.setIdentifier("");
+    deviceChoice12114.setIdentifier("ti_47");
     gridLayout4.setColumns(0);
     gridLayout4.setRows(19);
     gridLayout4.setVgap(0);
@@ -3106,7 +3110,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1220.setLabelString("Gain:");
     deviceChoice1220.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1220.setUpdateIdentifier("");
-    deviceChoice1220.setIdentifier("");
+    deviceChoice1220.setIdentifier("ti_56");
     jPanel1218.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel1218.setLayout(flowLayout1114);
     deviceChoice11219.setIdentifier("ti_53");
@@ -3157,7 +3161,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice12115.setIdentifier("ti_46");
     flowLayout1115.setAlignment(FlowLayout.LEFT);
     flowLayout1115.setVgap(0);
-    deviceChoice211.setIdentifier("");
+    deviceChoice211.setIdentifier("ti_40");
     deviceChoice211.setUpdateIdentifier("");
     deviceChoice211.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice211.setLabelString("Gain:");
@@ -3245,7 +3249,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice214.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice214.setUpdateIdentifier("");
     deviceChoice214.setIdentifier("");
-    deviceChoice1111111115.setIdentifier("");
+    deviceChoice1111111115.setIdentifier("ti_41");
     deviceChoice1111111115.setUpdateIdentifier("");
     deviceChoice1111111115.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111111115.setLabelString("Gain:");
@@ -3259,14 +3263,14 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel1118.setBorderVisible(false);
     deviceChannel1118.setOffsetNid(424);
     deviceChannel1118.setLabelString("47");
-    deviceChoice1315.setIdentifier("");
+    deviceChoice1315.setIdentifier("ti_55");
     deviceChoice1315.setUpdateIdentifier("");
     deviceChoice1315.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1315.setLabelString("Gain:");
     deviceChoice1315.setOffsetNid(499);
     deviceChoice1315.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice1315.setChoiceIntValues(null);
-    deviceChoice1111130.setIdentifier("");
+    deviceChoice1111130.setIdentifier("ti_48");
     deviceChoice1111130.setUpdateIdentifier("");
     deviceChoice1111130.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111130.setLabelString("Gain:");
@@ -3287,7 +3291,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice111217.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice111217.setUpdateIdentifier("");
     deviceChoice111217.setIdentifier("");
-    deviceChoice111218.setIdentifier("");
+    deviceChoice111218.setIdentifier("ti_52");
     deviceChoice111218.setUpdateIdentifier("");
     deviceChoice111218.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111218.setLabelString("Gain:");
@@ -3321,7 +3325,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel1119.setOffsetNid(415);
     flowLayout1116.setAlignment(FlowLayout.LEFT);
     flowLayout1116.setVgap(0);
-    deviceChoice111219.setIdentifier("");
+    deviceChoice111219.setIdentifier("ti_50");
     deviceChoice111219.setUpdateIdentifier("");
     deviceChoice111219.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111219.setLabelString("Gain:");
@@ -3356,8 +3360,8 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice12116.setLabelString("Gain:");
     deviceChoice12116.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice12116.setUpdateIdentifier("");
-    deviceChoice12116.setIdentifier("");
-    deviceChoice11111211.setIdentifier("");
+    deviceChoice12116.setIdentifier("ti_66");
+    deviceChoice11111211.setIdentifier("ti_69");
     deviceChoice11111211.setUpdateIdentifier("");
     deviceChoice11111211.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111211.setLabelString("Gain:");
@@ -3466,7 +3470,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11111213.setOffsetNid(627);
     deviceChoice11111213.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11111213.setChoiceIntValues(null);
-    deviceChoice111111219.setIdentifier("");
+    deviceChoice111111219.setIdentifier("ti_63");
     deviceChoice111111219.setUpdateIdentifier("");
     deviceChoice111111219.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice111111219.setLabelString("Gain:");
@@ -3555,7 +3559,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice11111216.setOffsetNid(591);
     deviceChoice11111216.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice11111216.setChoiceIntValues(null);
-    deviceChoice1112112.setIdentifier("");
+    deviceChoice1112112.setIdentifier("ti_71");
     deviceChoice1112112.setUpdateIdentifier("");
     deviceChoice1112112.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1112112.setLabelString("Gain:");
@@ -3570,7 +3574,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel2110.setLines(1);
     deviceChannel2110.setOffsetNid(541);
     deviceChannel2110.setLabelString("60");
-    deviceChoice112115.setIdentifier("");
+    deviceChoice112115.setIdentifier("ti_74");
     deviceChoice112115.setUpdateIdentifier("");
     deviceChoice112115.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice112115.setLabelString("Gain:");
@@ -3581,7 +3585,7 @@ public class XRAYSetup extends DeviceSetup {
     flowLayout1212.setVgap(0);
     jPanel12112.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel12112.setLayout(flowLayout1215);
-    deviceChoice1111111119.setIdentifier("");
+    deviceChoice1111111119.setIdentifier("ti_62");
     deviceChoice1111111119.setUpdateIdentifier("");
     deviceChoice1111111119.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111111119.setLabelString("Gain:");
@@ -3646,7 +3650,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1111112111.setOffsetNid(573);
     deviceChoice1111112111.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice1111112111.setChoiceIntValues(null);
-    deviceChoice1316.setIdentifier("");
+    deviceChoice1316.setIdentifier("ti_77");
     deviceChoice1316.setUpdateIdentifier("");
     deviceChoice1316.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1316.setLabelString("Gain:");
@@ -3706,7 +3710,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel11113.setBorderVisible(false);
     deviceChannel11113.setOffsetNid(550);
     deviceChannel11113.setLabelString("61");
-    deviceChoice1111112112.setIdentifier("");
+    deviceChoice1111112112.setIdentifier("ti_64");
     deviceChoice1111112112.setUpdateIdentifier("");
     deviceChoice1111112112.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111112112.setLabelString("Gain:");
@@ -3722,7 +3726,7 @@ public class XRAYSetup extends DeviceSetup {
     jPanel214.setLayout(flowLayout214);
     jPanel12115.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel12115.setLayout(flowLayout216);
-    deviceChoice11111219.setIdentifier("");
+    deviceChoice11111219.setIdentifier("ti_65");
     deviceChoice11111219.setUpdateIdentifier("");
     deviceChoice11111219.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111219.setLabelString("Gain:");
@@ -3755,7 +3759,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice217.setLabelString("Gain:");
     deviceChoice217.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice217.setUpdateIdentifier("");
-    deviceChoice217.setIdentifier("");
+    deviceChoice217.setIdentifier("ti_59");
     deviceChannel2115.setLayout(null);
     deviceChannel2115.setShowVal("");
     deviceChannel2115.setUpdateIdentifier("");
@@ -3805,7 +3809,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1319.setChoiceIntValues(null);
     flowLayout11110.setVgap(0);
     flowLayout11110.setAlignment(FlowLayout.LEFT);
-    deviceChoice112117.setIdentifier("");
+    deviceChoice112117.setIdentifier("ti_73");
     deviceChoice112117.setUpdateIdentifier("");
     deviceChoice112117.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice112117.setLabelString("Gain:");
@@ -3828,7 +3832,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice121112.setLabelString("Gain:");
     deviceChoice121112.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice121112.setUpdateIdentifier("");
-    deviceChoice121112.setIdentifier("");
+    deviceChoice121112.setIdentifier("ti_67");
     gridLayout5.setColumns(0);
     gridLayout5.setRows(21);
     gridLayout5.setVgap(0);
@@ -3870,7 +3874,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1222.setLabelString("Gain:");
     deviceChoice1222.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1222.setUpdateIdentifier("");
-    deviceChoice1222.setIdentifier("");
+    deviceChoice1222.setIdentifier("ti_76");
     jPanel12118.setBounds(new Rectangle(0, 0, 70, 41));
     jPanel12118.setLayout(flowLayout11111);
     deviceChoice112119.setIdentifier("ti_73");
@@ -3921,7 +3925,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice121113.setIdentifier("ti_66");
     flowLayout11112.setAlignment(FlowLayout.LEFT);
     flowLayout11112.setVgap(0);
-    deviceChoice219.setIdentifier("");
+    deviceChoice219.setIdentifier("ti_60");
     deviceChoice219.setUpdateIdentifier("");
     deviceChoice219.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice219.setLabelString("Gain:");
@@ -4005,7 +4009,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice2112.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice2112.setUpdateIdentifier("");
     deviceChoice2112.setIdentifier("");
-    deviceChoice11111111114.setIdentifier("");
+    deviceChoice11111111114.setIdentifier("ti_61");
     deviceChoice11111111114.setUpdateIdentifier("");
     deviceChoice11111111114.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice11111111114.setLabelString("Gain:");
@@ -4020,14 +4024,14 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel11118.setBorderVisible(false);
     deviceChannel11118.setOffsetNid(604);
     deviceChannel11118.setLabelString("67");
-    deviceChoice13113.setIdentifier("");
+    deviceChoice13113.setIdentifier("ti_75");
     deviceChoice13113.setUpdateIdentifier("");
     deviceChoice13113.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice13113.setLabelString("Gain:");
     deviceChoice13113.setOffsetNid(679);
     deviceChoice13113.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)5.0,(float)10.0});
     deviceChoice13113.setChoiceIntValues(null);
-    deviceChoice1111131.setIdentifier("");
+    deviceChoice1111131.setIdentifier("ti_68");
     deviceChoice1111131.setUpdateIdentifier("");
     deviceChoice1111131.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1111131.setLabelString("Gain:");
@@ -4048,7 +4052,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice1112117.setChoiceItems(new String[] {"0", "2000", "5000", "20000", "50000", "100000", "200000"});
     deviceChoice1112117.setUpdateIdentifier("");
     deviceChoice1112117.setIdentifier("");
-    deviceChoice1112118.setIdentifier("");
+    deviceChoice1112118.setIdentifier("ti_72");
     deviceChoice1112118.setUpdateIdentifier("");
     deviceChoice1112118.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1112118.setLabelString("Gain:");
@@ -4081,7 +4085,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChannel11119.setOffsetNid(595);
     flowLayout11113.setAlignment(FlowLayout.LEFT);
     flowLayout11113.setVgap(0);
-    deviceChoice1112119.setIdentifier("");
+    deviceChoice1112119.setIdentifier("ti_70");
     deviceChoice1112119.setUpdateIdentifier("");
     deviceChoice1112119.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice1112119.setLabelString("Gain:");
@@ -4106,7 +4110,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice2115.setOffsetNid(529);
     deviceChoice2115.setChoiceFloatValues(null);
     deviceChoice2115.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2,(int)4,(int)6,(int)8,(int)10,(int)12,(int)14,(int)16,(int)18,(int)20,(int)22,(int)24,(int)26,(int)28});
-    deviceChoice2116.setIdentifier("");
+    deviceChoice2116.setIdentifier("ti_58");
     deviceChoice2116.setUpdateIdentifier("");
     deviceChoice2116.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice2116.setLabelString("Gain:");
