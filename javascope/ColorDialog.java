@@ -22,7 +22,7 @@ class ColorDialog extends ScopePositionDialog  {
     Vector color_set_clone;
     Color color_vector[];
     String color_name[];
-    boolean reversed = false;
+    private boolean reversed = false;
     
         
     static class Item {
@@ -81,9 +81,6 @@ class ColorDialog extends ScopePositionDialog  {
 	    colorName.addKeyListener(this);			
         gridbag.setConstraints(colorName, c);
         add(colorName);
-//      p0.add(colorName);
-//      gridbag.setConstraints(p0, c);
-//	    add(p0);
 
         if(GetNumColor() == 0)
             ColorSetItems(COLOR_NAME, COLOR_SET);
@@ -92,21 +89,8 @@ class ColorDialog extends ScopePositionDialog  {
 	    color = new Choice();
 	    for(int i = 1; i < color_name.length; i++)
 	        color.addItem(color_name[i]);
-/*
-	color.addItem("Black");	
-	color.addItem("Blue");	
-	color.addItem("Cyan");	
-	color.addItem("DarkGray");	
-	color.addItem("Gray");	
-	color.addItem("Green");	
-	color.addItem("LightGray");	
-	color.addItem("Magenta");	
-	color.addItem("Orange");
-	color.addItem("Pink");	
-	color.addItem("Red");	
-	color.addItem("Yellow");      	
-	color.addItem("White");
-*/
+	        
+
 	color.addItemListener(this);
 	gridbag.setConstraints(color, c);
 	add(color);	
@@ -204,9 +188,11 @@ class ColorDialog extends ScopePositionDialog  {
        if(rb == null) return;
        try {
         
-       prop = rb.getString("jScope.reversed");
-       if(prop != null && ( prop.equals("true") || prop.equals("false")))
-         reversed = new Boolean(prop).booleanValue();
+       //prop = rb.getString("jScope.reversed");
+       //if(prop != null && ( prop.equals("true") || prop.equals("false")))
+       //{
+       //  prop_reversed = new Boolean(prop).booleanValue();
+       //}
  
        while(true) {
            prop = rb.getString("jScope.item_color_"+i);
@@ -215,7 +201,10 @@ class ColorDialog extends ScopePositionDialog  {
 		   insertItemAt(name, cr, i);
            i++;
        }
+
+       
        } catch(MissingResourceException e){}
+       
     }     
      
      
@@ -247,7 +236,7 @@ class ColorDialog extends ScopePositionDialog  {
         reversedColor(color_name, color_vector);
 	    setColorVector();
         GetColorsName();
-        main_scope.RepaintAllWaves();
+//        main_scope.RepaintAllWaves();
       }
     }
 
@@ -481,17 +470,29 @@ class ColorDialog extends ScopePositionDialog  {
 
 	    while((str = in.readLine()) != null) {
 
-	    if(str.indexOf(prompt) != -1)
-	    {
-		int len;
-		int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
-		String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
-		Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
-		insertItemAt(name, cr, i);
-		continue;
+	        if(str.indexOf(prompt) != -1)
+	        {
+		        int len;
+		        int i = new Integer(str.substring("Scope.item_color_".length(), len = str.indexOf(":"))).intValue();
+		        String name = new String(str.substring(len  + 2, len = str.indexOf(",")));
+		        Color cr = StringToColor(new String(str.substring(len + 2, str.length())));
+		        insertItemAt(name, cr, i);
+		        continue;
+	        }
 	    }
-	}
-	return error;
+	    
+	    if(GetNumColor() == 0)
+	    {
+	        if(main_scope.rb != null)
+	        {
+	            GetPropertiesValue();
+	        } else {
+                ColorSetItems(COLOR_NAME, COLOR_SET);
+	            setColorVector();
+                GetColorsName();
+            }
+	    }
+	    return error;
     }
     
     

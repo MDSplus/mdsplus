@@ -1,10 +1,10 @@
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 
-class WaveformMetrics {
+ 
+ class WaveformMetrics {
     static double MAX_VALUE = 10000.;//(double)Integer.MAX_VALUE;
     static double MIN_VALUE = -10000.;//(double)Integer.MIN_VALUE;
     static int INT_MAX_VALUE = (int)MAX_VALUE; 

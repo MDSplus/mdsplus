@@ -12,7 +12,7 @@ import java.util.*;
 
 
 
- 
+
 // Definition of Waveform class
 public class Waveform extends Canvas
 {

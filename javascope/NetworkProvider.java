@@ -172,7 +172,7 @@ public synchronized float GetFloat(String in)
 	
 public synchronized float[] GetFloatArray(String in)
 {
-    in = "fs_float((" + in + "))";
+    in = "fs_float(("+in+"))";
     String open_err = new String("");
     if(!CheckOpen())
 	return null;
@@ -639,9 +639,104 @@ public synchronized void Send(DataOutputStream dos) throws IOException
     dos.flush();
     message_id++;
 }
+
+private int ByteToIntSwap(byte b[], int idx)
+{
+    int ch1, ch2, ch3, ch4;
+    ch1 = (b[idx+3] & 0xff) << 24;
+    ch2 = (b[idx+2] & 0xff) << 16;
+    ch3 = (b[idx+1] & 0xff) << 8;
+    ch4 = (b[idx+0] & 0xff) << 0;    
+    return ((ch1) + (ch2) + (ch3) + (ch4));
+}
+
+private int ByteToInt(byte b[], int idx)
+{
+    int ch1, ch2, ch3, ch4;
+    ch1 = (b[idx+0] & 0xff) << 24;
+    ch2 = (b[idx+1] & 0xff) << 16;
+    ch3 = (b[idx+2] & 0xff) << 8;
+    ch4 = (b[idx+3] & 0xff) << 0;    
+    return ((ch1) + (ch2) + (ch3) + (ch4));
+}
+
+private short ByteToShortSwap(byte b[], int idx)
+{
+    short ch1, ch2;
+    ch1 = (short)((b[idx+1] & 0xff) << 8);
+    ch2 = (short)((b[idx+0] & 0xff) << 0);    
+    return (short)((ch1) + (ch2));
+}
+
+private short ByteToShort(byte b[], int idx)
+{
+    short ch1, ch2;
+    ch1 = (short)((b[idx+0] & 0xff) << 8);
+    ch2 = (short)((b[idx+1] & 0xff) << 0);
+    return (short)((ch1) + (ch2));
+}
+
+public synchronized void Receive(DataInputStream dis)throws IOException
+{	
+    byte header_b[] = new byte[16 + Descriptor.MAX_DIM*4];
+    byte b4[] = new byte[4];
+    byte b2[] = new byte[2];
+    int idx = 0;
+    
+    ReadBuf(header_b, dis);
+
+    client_type = header_b[14];
+    swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
+
+    if(swap)
+    {        
+        msglen = ByteToIntSwap(header_b, 0);
+        idx = 4;
+        status = ByteToIntSwap(header_b, idx);
+        idx += 4;
+        length = ByteToShortSwap(header_b, idx);;                
+        idx += 2;
+    } else {
+        msglen = ByteToInt(header_b, 0);
+        idx = 4;
+        status = ByteToInt(header_b, idx);
+        idx += 4;
+        length = ByteToShort(header_b, idx);;                
+        idx += 2;
+    }
+
+    nargs = header_b[idx++];
+    descr_idx = header_b[idx++];
+    message_id = header_b[idx++];
+    dtype = header_b[idx++];
+    client_type = header_b[idx++];
+    ndims = header_b[idx++];
+    
+    if(swap)
+    {
+        for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
+        {
+           dims[i]  = ByteToIntSwap(header_b, j);
+        }
+    } else {
+        for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, idx += 4)
+        {
+           dims[i]  = ByteToInt(header_b, j);
+        }
+    }
+//    System.out.println("msglen = "+(new Integer(msglen)).toString());
+    if(msglen > 48)
+    {
+        body = new byte[msglen - 48];
+        ReadBuf(body, dis);
+    }
+    else
+	    body = new byte[0];
+    
+}	
 	
 	 
-public synchronized void Receive(DataInputStream dis)throws IOException
+public synchronized void Receive_old(DataInputStream dis)throws IOException
 {
     byte msglen_b[] = new byte[4];
     byte status_b[] = new byte[4];
@@ -661,7 +756,7 @@ public synchronized void Receive(DataInputStream dis)throws IOException
     dtype = dis.readByte();
     client_type = dis.readByte();
     swap = ((client_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
-    //System.out.println("Client type = "+(new Integer(client_type)).toString());
+    System.out.println("Client type = "+(new Integer(client_type)).toString());
     msglen = ToInt(msglen_b);
     status = ToInt(status_b);
     length = ToShort(length_b);                
@@ -680,7 +775,10 @@ public synchronized void Receive(DataInputStream dis)throws IOException
     }
     else
 	    body = new byte[0];
- }	
+ }
+ 
+ 
+ 
  private void Flip(byte bytes[], int size)
  {
     int i;
@@ -732,7 +830,34 @@ private float ToFloat(byte bytes[]) throws IOException
     DataInputStream dis = new DataInputStream(bis);
     return dis.readFloat();
 }
+
 public int[] ToIntArray() throws IOException
+{
+    int ch1, ch2, ch3, ch4;
+    int out[] = new int[body.length / 4];
+    if(swap)
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (body[j+3] & 0xff) << 24;
+            ch2 = (body[j+2] & 0xff) << 16;
+            ch3 = (body[j+1] & 0xff) << 8;
+            ch4 = (body[j+0] & 0xff) << 0;    
+            out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
+        }
+	else
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (body[j+0] & 0xff) << 24;
+            ch2 = (body[j+1] & 0xff) << 16;
+            ch3 = (body[j+2] & 0xff) << 8;
+            ch4 = (body[j+3] & 0xff) << 0;    
+            out[i] = ((ch1) + (ch2) + (ch3) + (ch4));
+        }
+    return out;
+}
+
+
+public int[] ToIntArray_old() throws IOException
 {
     if (swap)
       Flip(body, 4);
@@ -743,7 +868,30 @@ public int[] ToIntArray() throws IOException
 	out[i] = dis.readInt();
     return out;
 }
+
+
 public short[] ToShortArray() throws IOException
+{
+    short ch1, ch2;
+    short out[] = new short[body.length / 4];
+    if(swap)
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (short)((body[j+1] & 0xff) << 8);
+            ch2 = (short)((body[j+0] & 0xff) << 0);    
+            out[i] = (short)((ch1) + (ch2));
+        }
+	else
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (short)((body[j+0] & 0xff) << 8);
+            ch2 = (short)((body[j+1] & 0xff) << 0);    
+            out[i] = (short)((ch1) + (ch2));
+        }
+    return out;
+}
+
+public short[] ToShortArray_old() throws IOException
 {
     if (swap)
       Flip(body, 2);
@@ -754,7 +902,36 @@ public short[] ToShortArray() throws IOException
 	out[i] = dis.readShort();
     return out;
 }
+
+
 public float[] ToFloatArray() throws IOException
+{
+    int ch1, ch2, ch3, ch4;
+    float out[] = new float[body.length / 4];    
+    if(swap)
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (body[j+3] & 0xff) << 24;
+            ch2 = (body[j+2] & 0xff) << 16;
+            ch3 = (body[j+1] & 0xff) << 8;
+            ch4 = (body[j+0] & 0xff) << 0;    
+            out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
+        }
+	else
+        for(int i = 0, j = 0; i < body.length / 4; i++, j+=4)
+        {
+            ch1 = (body[j+0] & 0xff) << 24;
+            ch2 = (body[j+1] & 0xff) << 16;
+            ch3 = (body[j+2] & 0xff) << 8;
+            ch4 = (body[j+3] & 0xff) << 0;    
+            out[i] = Float.intBitsToFloat((int)((ch1) + (ch2) + (ch3) + (ch4)));
+        }
+    return out;
+
+}
+
+
+public float[] ToFloatArray_old() throws IOException
 {
     if (swap)
       Flip(body, 4);

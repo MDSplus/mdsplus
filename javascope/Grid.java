@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
- 
+  
  class Grid {
     WaveformMetrics wm;
     boolean reversed = false;
@@ -464,3 +464,4 @@ private int BuildGrid(double val[], int mode, double xmax, double ymax, double x
     }
 
  }
+ 

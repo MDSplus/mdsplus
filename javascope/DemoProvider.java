@@ -26,12 +26,12 @@ class DemoProvider implements DataProvider
         float d[] = new float[1000];
         
         error = null;
-        if(!in.equals("fs_float((sin))") &&
-           !in.equals("fs_float((cos))") &&
-           !in.equals("fs_float((sin*cos))") &&
-           !in.equals("fs_float((sin_x))") &&
-           !in.equals("fs_float((cos_x))") &&
-           !in.equals("fs_float((sin*cos_x))"))
+        if(!in.equals("sin") &&
+           !in.equals("cos") &&
+           !in.equals("sin*cos") &&
+           !in.equals("sin_x") &&
+           !in.equals("cos_x") &&
+           !in.equals("sin*cos_x"))
         {
             error = new String("Not a demo signal \n Demo signals name are \n sin \n cos \n sin*cos \n");
             return null;

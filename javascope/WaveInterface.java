@@ -55,7 +55,8 @@ public class WaveInterface
     public boolean modified = true;
     static final int B_shot = 8, B_x_min = 12, B_x_max = 13, B_y_min = 14, B_y_max = 15,
 		             B_title = 16, B_x_label = 10, B_y_label = 11, B_exp = 7, B_event = 17,
-		             B_default_node = 9; 
+		             B_default_node = 9;
+    boolean default_update = false;
 
 
     static final float HUGE = (float)1E8;

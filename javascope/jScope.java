@@ -119,13 +119,19 @@ public class jScope extends Frame implements ActionListener, ItemListener,
     
     synchronized public void run()
     {
-        
+      Date date = new Date();
+      long start, end;
+         
       while(true)
       {
         
         try {
             wait();
         } catch (InterruptedException e){}
+
+        date = new Date();
+        start = date.getTime();
+        System.out.println("Start "+start+" ms ");
         
 	    isUpdateAllWaves = true;
 	    SetStatusLabel("");
@@ -224,6 +230,12 @@ public class jScope extends Frame implements ActionListener, ItemListener,
 	    {
 	        jScope.this.printAllWaves();
 	    }
+
+        date = new Date();
+        end = date.getTime();
+        System.out.println("End "+end+" ms ");
+        
+        System.out.println("Durata "+(end-start)+" ms ");
 	    	    
 
 	    } catch(Throwable e ) {
@@ -690,6 +702,8 @@ public class jScope extends Frame implements ActionListener, ItemListener,
         LoadConfFromURL(config);
  	}  
 
+    color_dialog.setReversed(setup_default.getReversed());
+
 	}
   
   public void setAsDemoScope()
@@ -1010,18 +1024,18 @@ public class jScope extends Frame implements ActionListener, ItemListener,
           
      for(int i = 0, k = 0; i < 4; i++)
      {
-	for(int j = 0; j < setup.rows[i]; j++, k++) 
-	{
-	    if(setup.waves[k].wi != null)
+	    for(int j = 0; j < setup.rows[i]; j++, k++) 
 	    {
-		SetStatusLabel("Repaint signal column " + (i + 1) + " row " + (j + 1));
-		setColor(setup.waves[k].wi);    
-		setup.waves[k].Update(setup.waves[k].wi);
-	    }	    
-	}
-      }
-      repaintAllWaves();
-      setup.SetAllWaveformPointer(wave_mode);     
+	        if(setup.waves[k].wi != null)
+	        {
+		        SetStatusLabel("Repaint signal column " + (i + 1) + " row " + (j + 1));
+		        setColor(setup.waves[k].wi);    
+		        setup.waves[k].Update(setup.waves[k].wi);
+	        }	    
+	    }
+     }
+     repaintAllWaves();
+     setup.SetAllWaveformPointer(wave_mode);     
   }
   
   public boolean briefError()
@@ -1154,15 +1168,13 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   {
     main_shot_str = new String(shot_t.getText());
     if(main_shot_str.length() == 0) 
-//    {
           main_shot_str = "0";
-//        main_shots = null;
-//    } else
-        if(!equalsString(main_shot_str, curr_main_shot_str)) { 
+    if(!equalsString(main_shot_str, curr_main_shot_str) ||
+            main_shot_str.equals("0")) { 
 	        main_shots = evaluateShot(main_shot_str);
 //	        if(main_shots[0] != jScope.UNDEF_SHOT)
 	            curr_main_shot_str = main_shot_str;
-	    }
+	}
   }
   
  /**
@@ -1315,7 +1327,7 @@ public class jScope extends Frame implements ActionListener, ItemListener,
   public void repaintAllWaves()
   {
     for(int i = 0; i < setup.num_waves; i++)
-	setup.waves[i].repaint();
+	    setup.waves[i].repaint();
   }
   
   public void printAllWaves()

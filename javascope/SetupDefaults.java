@@ -26,7 +26,7 @@ public class SetupDefaults extends ScopePositionDialog {
    private Choice	     grid_mode;
    private Checkbox      reversed_b; 
    int	   curr_grid_mode = 0, x_curr_lines_grid = 3, y_curr_lines_grid = 3;
-
+   private boolean is_changed = false; 
 
    public SetupDefaults(Frame fw, String frame_title) 
    {
@@ -237,7 +237,9 @@ public class SetupDefaults extends ScopePositionDialog {
        try {
        prop = rb.getString("jScope.reversed");
        if(prop != null && ( prop.equals("true") || prop.equals("false")))
+       {
          reversed = new Boolean(prop).booleanValue();
+       }
        
        prop = rb.getString("jScope.grid_mode");
        if(prop != null && (val = IsGridMode(prop)) > 0)
@@ -395,6 +397,12 @@ public class SetupDefaults extends ScopePositionDialog {
       int bit;
       
       if(wi == null) return;
+
+      wi.reversed = reversed;
+
+      if(!is_changed && wi.default_update) return;
+      
+      wi.default_update = true;
       
       bit = WaveInterface.B_title;
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);
@@ -440,7 +448,6 @@ public class SetupDefaults extends ScopePositionDialog {
       def_flag =    ((wi.defaults & (1<<bit)) == 1<<bit);      
       wi.in_upd_event = getDefaultValue(bit , def_flag , wi);
       
-      wi.reversed = reversed;
    }
    
    public String GetEvent(WaveInterface wi)
@@ -587,8 +594,8 @@ public class SetupDefaults extends ScopePositionDialog {
       {
 	    if(ob == ok)
 	        setVisible(false);
-	    main_scope.color_dialog.setReversed(getReversed());
-	    if(isChanged())
+	    main_scope.color_dialog.setReversed(reversed_b.getState());
+	    if((is_changed = isChanged()))
 	    {
 	        main_scope.RemoveAllEvents();
 	        saveDefaultConfiguration();
@@ -601,6 +608,10 @@ public class SetupDefaults extends ScopePositionDialog {
                                                          getXLines(),
                                                          getYLines(), 
                                                          getReversed());
+                                                         
+	    
+	    if(!is_changed)
+	      main_scope.RepaintAllWaves();
 	    
      }
       
