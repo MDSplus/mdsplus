@@ -21,17 +21,19 @@ dwscopesubs.o
 	mkdir ../bin
 
 ../bin/dwscope : $(OBJECTS_DWSCOPE) evaluate_local.o
-	cc -o $@ $(OBJECTS_DWSCOPE)  evaluate_local.o -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS) $(DLD) -lm
+	cc -o $@ $(OBJECTS_DWSCOPE)  evaluate_local.o -static \
+           -L../shlib -lXmdsShr -lTdiShr -lTreeShr -lMdsShr \
+           -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11 -lXp -lXext -lSM -lICE -ldl -lc -lm
 
 ../bin/dwscope_remote : $(OBJECTS_DWSCOPE) evaluate.o RemoteDummies.o
-	cc -o $@ $(OBJECTS_DWSCOPE)  evaluate.o RemoteDummies.o \
-                  -L../shlib $(STATIC_LIB) ../shlib/libXmdsShr.a $(SHARED_LIB) -lMdsIpShr $(MOTIF_LIBS) $(X11_LIBS) -lm $(DLD) -lc
+	cc -o $@ $(OBJECTS_DWSCOPE)  evaluate.o RemoteDummies.o -static \
+                  -L../shlib -lXmdsShr -lMdsIpShr -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11 -lXp -lXext -lSM -lICE -ldl -lc -lm
 
 ../uid/dwscope.uid : dwscope.uil
 	uil -o $@ dwscope.uil
 
 ../bin/dwpad : $(OBJECTS_DWPAD)
-	cc -o $@ $(OBJECTS_DWPAD) -L../shlib -lMdsShr -lTreeShr -lTdiShr -lXmdsShr $(MOTIF_LIBS) $(X11_LIBS) $(DLD) -lm
+	cc -o $@ $(OBJECTS_DWPAD) -static -L../shlib -lXmdsShr -lTdiShr -lTreeShr -lMdsShr -L/usr/X11R6/lib -lMrm -lXm -lXt -lX11 -lXp -lXext -lSM -lICE -ldl -lc -lm
 
 ../uid/dwpad.uid : dwpad.uil
 	uil -o $@ dwpad.uil
