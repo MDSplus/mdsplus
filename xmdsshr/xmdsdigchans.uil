@@ -1,0 +1,232 @@
+module DIGCHANS
+    names = case_sensitive
+    version = 
+    "v1.0"
+
+identifier
+    c_nid;
+    c_name;
+    c_startidx_nid;
+    c_endidx_nid;
+   c_path;
+!value
+!   c_nid: 0;
+!    c_name: 
+!    "42";
+!    c_startidx_nid: 0;
+!    c_endidx_nid: 0;
+!    c_path: 
+!    "TOP.FOO.GUB";
+
+object
+    channels: XmForm 
+        {
+        arguments
+            {
+            XmNheight = 170;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNhorizontalSpacing = 10;
+            XmNverticalSpacing = 10;
+            XmNmarginWidth = 5;
+            XmNmarginHeight = 0;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("On/Off");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Start IDX");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 90;
+                    XmNy = 0;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("End IDX");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 210;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Path Name");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 310;
+                    };
+                };
+            XmScrolledWindow this_is_a_DigChans_widget;
+            };
+        };
+    c_rowcol: XmRowColumn 
+        {
+        arguments
+            {
+            XmNspacing = 0;
+            XmNorientation = XmVERTICAL;
+            XmNpacking = XmPACK_COLUMN;
+            XmNnumColumns = 1;
+            };
+        };
+    channels_1: XmForm 
+        {
+        arguments
+            {
+            XmNheight = 170;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNhorizontalSpacing = 10;
+            XmNverticalSpacing = 10;
+            XmNmarginWidth = 5;
+            XmNmarginHeight = 0;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("On/Off");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = 
+                    compound_string("Path Name");
+                    XmNtopAttachment = XmATTACH_FORM;
+                    XmNleftAttachment = XmATTACH_FORM;
+                    XmNleftOffset = 90;
+                    };
+                };
+            XmScrolledWindow this_is_a_DigChans_widget;
+            };
+        };
+    channel_dlog: XmRowColumn 
+        {
+        arguments
+            {
+            XmNspacing = 0;
+            XmNorientation = XmHORIZONTAL;
+            XmNpacking = XmPACK_TIGHT;
+            XmNwidth = 350;
+            XmNuserData = c_nid;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString =  c_name;
+                    };
+                };
+            XmToggleButtonGadget on_off_button;
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 12;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = c_startidx_nid;
+                    };
+                };
+            XmdsExprField 
+                {
+                arguments
+                    {
+                    XmNcolumns = 12;
+                    XmNmarginHeight = 1;
+                    XmdsNnid = c_endidx_nid;
+                    };
+                };
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = c_path;
+                    };
+                };
+            };
+        };
+    on_off_button: XmToggleButtonGadget 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string(" ");
+            };
+        };
+    this_is_a_DigChans_widget: XmScrolledWindow 
+        {
+        arguments
+            {
+            XmNtopAttachment = XmATTACH_FORM;
+            XmNtopOffset = 20;
+            XmNleftAttachment = XmATTACH_FORM;
+            XmNrightAttachment = XmATTACH_FORM;
+            XmNbottomAttachment = XmATTACH_FORM;
+            XmNworkWindow = XmRowColumn c_rowcol;
+            XmNscrollingPolicy = XmAUTOMATIC;
+            };
+        controls
+            {
+            XmRowColumn c_rowcol;
+            };
+        };
+    channel_dlog_1: XmRowColumn 
+        {
+        arguments
+            {
+            XmNspacing = 0;
+            XmNorientation = XmHORIZONTAL;
+            XmNpacking = XmPACK_TIGHT;
+            XmNwidth = 350;
+            XmNuserData = c_nid;
+            };
+        controls
+            {
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = c_name;
+                    };
+                };
+            XmToggleButtonGadget on_off_button;
+            XmLabelGadget 
+                {
+                arguments
+                    {
+                    XmNlabelString = c_path;
+                    };
+                };
+            };
+        };
+end module;

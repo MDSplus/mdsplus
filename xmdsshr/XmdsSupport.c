@@ -172,7 +172,7 @@ Boolean PutIfChanged(int nid,struct descriptor_xd *xd)
 	status = TreePutRecord(nid,(struct descriptor *)xd,0);
       if (old_xd)
       {
-	MdsFree1Dx(old_xd);
+	MdsFree1Dx(old_xd, 0);
 	XtFree((char *)old_xd);
       }
     }

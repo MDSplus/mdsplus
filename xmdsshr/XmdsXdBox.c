@@ -237,7 +237,7 @@ static XtResource resources[] = {
   {XmdsNnidOffset, "Nid", XtRInt, sizeof(int), XtOffset(XmdsXdBoxWidget, xdbox.nid_offset), XtRImmediate, 0},
   {XmdsNshowButtons, "ShowButtons", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.show_buttons), XtRImmediate, 0},
   {XmdsNusage, "Usage", XtRShort, sizeof(short), XtOffset(XmdsXdBoxWidget, xdbox.usage), XtRImmediate, 0},
-  {XmdsNxd, "Xd", XtRInt, sizeof(int), XtOffset(XmdsXdBoxWidget, xdbox.xd), XtRImmediate, 0},
+  {XmdsNxd, "Xd", XtRPointer, sizeof(struct descriptor_xd *), XtOffset(XmdsXdBoxWidget, xdbox.xd), XtRImmediate, 0},
   {XmdsNautoDestroy, "AutoDestroy", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.auto_destroy), XtRImmediate, 0},
   {XmdsNautoUnmanage, "AutoUnmanage", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.auto_unmanage), 
    XtRImmediate, (void *) 1},
@@ -367,7 +367,7 @@ void XmdsXdBoxReset(Widget w)
     int nid = xdbw->xdbox.nid + xdbw->xdbox.nid_offset;
     if (xdbw->xdbox.xd)
     {
-      MdsFree1Dx(xdbw->xdbox.xd);
+      MdsFree1Dx(xdbw->xdbox.xd, 0);
       XtFree((char *)xdbw->xdbox.xd);
     }
     xdbw->xdbox.xd = (struct descriptor_xd *) TdiGet(nid);
@@ -403,7 +403,7 @@ void XmdsXdBoxSetNid(Widget w,int nid)
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   int status;
   if (xdbw->xdbox.xd)
-    MdsFree1Dx(xdbw->xdbox.xd);
+    MdsFree1Dx(xdbw->xdbox.xd, 0);
   else
   {
     xdbw->xdbox.xd = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
@@ -434,7 +434,7 @@ void XmdsXdBoxSetXd(Widget w,struct descriptor *dsc)
   struct descriptor_xd *xd = (struct descriptor_xd *) dsc;
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
   if (xdbw->xdbox.xd)
-    MdsFree1Dx(xdbw->xdbox.xd);
+    MdsFree1Dx(xdbw->xdbox.xd, 0);
   else
   {
     xdbw->xdbox.xd = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
@@ -492,7 +492,7 @@ static void ClassInitialize()
 			   {"window_change_type_proc", (char *) window_change_type_proc},
 			  };
 
-  static char *hierarchy_name[] = {"XmdsXdBox"};
+  static char *hierarchy_name[] = {"XmdsXdBox.uid"};
   MrmOpenHierarchy(1,hierarchy_name,0,&xmdsXdBoxClassRec.xdbox_class.drm);
   MrmRegisterNamesInHierarchy(xmdsXdBoxClassRec.xdbox_class.drm,routines,XtNumber(routines));
 }
@@ -505,7 +505,7 @@ static void Destroy(Widget w)
     XtDestroyWidget(par);
   if (xdbw->xdbox.xd)
   {
-    MdsFree1Dx(xdbw->xdbox.xd);
+    MdsFree1Dx(xdbw->xdbox.xd, 0);
     XtFree((char *)xdbw->xdbox.xd);
   }
   if (xdbw->xdbox.tag_list) XtFree((char *)xdbw->xdbox.tag_list);
@@ -942,8 +942,8 @@ struct descriptor_xd *AxisUnload(Widget w)
       ans = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
       *ans = empty_xd;
       TdiCompile(&w_units,data,units,ans);
-      MdsFree1Dx(units);
-      MdsFree1Dx(data);
+      MdsFree1Dx(units, 0);
+      MdsFree1Dx(data, 0);
       XtFree((char *)units);
       XtFree((char *)data);
     }
@@ -1165,11 +1165,11 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
         ans = 0;
       }
       if (units) {
-         MdsFree1Dx(units);
+         MdsFree1Dx(units, 0);
          XtFree((char *)units);
       }
       if (data) {
-         MdsFree1Dx(data);
+         MdsFree1Dx(data, 0);
          XtFree((char *)data);
       }
     }
@@ -1994,7 +1994,7 @@ static Boolean Put(XmdsXdBoxWidget w)
 	XmdsComplain((Widget)w, "Error turning node On/Off");
       if (w->xdbox.loaded)
       {
-	MdsFree1Dx(xd);
+	MdsFree1Dx(xd, 0);
 	XtFree((char *)xd);
       }
     }

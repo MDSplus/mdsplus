@@ -79,18 +79,19 @@ static Pixmap *gray_icons;
 
 void XmdsUsageIconsInitialize(Widget w)
 {
-  static String hierarchy_name[] = {{"DECW$SYSTEM_DEFAULTS:XMDS_USAGE_ICONS.UID"}};
+  static String hierarchy_name[] = {{"xmds_usage_icons.uid"}};
   static MrmHierarchy mrm_hierarchy;
   int usage;
   int usages;
   if (!icons)
   {
     int *TREE$K_MAX_USAGE;
-    short int type;
+    MrmCode type;
     MrmInitialize();
     MrmOpenHierarchy(1,hierarchy_name,0,&mrm_hierarchy);
-    MrmFetchLiteral(mrm_hierarchy,"TREE$K_MAX_USAGE",XtDisplay(w),(void *) &TREE$K_MAX_USAGE,&type);
-    usages = *TREE$K_MAX_USAGE + 1;
+    //    MrmFetchLiteral(mrm_hierarchy,"TREE$K_MAX_USAGE",XtDisplay(w),(void *) &TREE$K_MAX_USAGE,&type);
+    //    usages = *TREE$K_MAX_USAGE + 1;
+    usages = 13;
     icons = (unsigned long *) XtMalloc(sizeof(Pixmap) * usages * 2);
     gray_icons = icons + usages;
     for (usage = 0; usage < usages; usage++)

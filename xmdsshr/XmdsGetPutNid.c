@@ -141,7 +141,7 @@ int XmdsGetNidFloatOption(int nid,float *options,int numOptions)
       option = min(numOptions - 1,i);
     }
   }
-  MdsFree1Dx(&xd);
+  MdsFree1Dx(&xd, 0);
   return option;
 }
 
@@ -159,7 +159,7 @@ int XmdsGetNidIntOption(int nid,int *options,int numOptions)
       option = min(numOptions - 1,i);
     }
   }
-  MdsFree1Dx(&xd);
+  MdsFree1Dx(&xd, 0);
   return option;
 }
 
@@ -180,7 +180,7 @@ char *XmdsGetNidText(int nid)
   }
   else
     value = XtNewString("");
-  MdsFree1Dx(&xd);
+  MdsFree1Dx(&xd, 0);
   return value;
 }
 
@@ -259,7 +259,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsExprGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd);
+      MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
     }
     else
@@ -270,7 +270,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsExprFieldGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd);
+      MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
     }
     else
@@ -281,7 +281,7 @@ Boolean XmdsXdsAreValid(Widget w)
     struct descriptor_xd *xd = (struct descriptor_xd *) XmdsXdBoxGetXd(w);
     if (xd)
     {
-      MdsFree1Dx(xd);
+      MdsFree1Dx(xd, 0);
       XtFree((char *)xd);
     }
     else

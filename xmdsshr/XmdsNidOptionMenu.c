@@ -178,7 +178,7 @@ static void Destroy(Widget w,Resources *info,XtPointer cb)
   {
     struct descriptor_xd *xd;
     XtVaGetValues(labels[i],XmNuserData,&xd,NULL);
-    MdsFree1Dx(xd);
+    MdsFree1Dx(xd, 0);
     XtFree((char *)xd);
   }
   XtFree((char *)info);
@@ -239,7 +239,7 @@ void XmdsNidOptionMenuReset(Widget w)
 	    MdsCompareXd((struct descriptor *) & xd,(struct descriptor *) button_xd) & 1 : 1)
 	  break;
       }
-      MdsFree1Dx(&xd);
+      MdsFree1Dx(&xd, 0);
       XmdsSetOptionIdx(w,idx);
     }
   }
