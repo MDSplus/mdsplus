@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Get latest release tag from repository
+#
+#
+# Must be run in top directory
+#
+# Format:
+#
+#      GetRelease [current]              - Returns current release tag in the format release-1-2[-3]
+#      GetRelease next_major             - Returns a new release tag for a major release
+#      GetRelease next_minor             - Returns a new release tag for a minor release
+#      GetRelease next_sub               - Returns a new release tag for a sub release
+#      GetRelease version "release-tag"  - Returns version created from release tag in the format 1.2
+#      GetRelease release "release-tag"  - Returns sub release number in the format 5
+#
+case "$1" in
+  "version")
+     echo $2 | awk -F - '{ print $2 "." $3 }';;
+  "release")
+     echo $2 | awk -F - 'NF == 3 { print "1" } NF > 3 { print $4 }';; 
+  "next_major")
+     $0 | awk -F - '{print "release-" $2+1 "-0"}';;
+  "next_minor")
+     $0 | awk -F - '{print "release-" $2 "-" $3+1 "-0"}';;
+  "next_sub")
+     $0 | awk -F - 'NF == 3 { print "release-" $2 "-" $3 "-2"} NF > 3 {print "release-" $2 "-" $3 "-" $4+1 }';;
+  *)
+     cvs log -h include/release.h | awk -F : '$1 ~ /release-/ {print $1; exit}' | awk '{print $1}';;
+esac

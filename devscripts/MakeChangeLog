@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+#
+tag=`devscripts/GetRelease`
+version=`devscripts/GetRelease version $tag`
+release=`devscripts/GetRelease release $tag`
+echo "Generating Change Log for MDSplus "
+echo "Version $version-$release" > header.tmp
+echo "" >> header.tmp
+echo "" >> header.tmp
+touch ChangeLog
+devscripts/cvs2cl.pl --prune --accum --header header.tmp --separate-header 2> /dev/null
+rm header.tmp

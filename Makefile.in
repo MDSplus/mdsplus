@@ -83,9 +83,15 @@ depend:
 	done
 
 ChangeLog :
-	devscripts/cvs2cl.pl --prune
+	devscripts/MakeChangeLog
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh java LabView include
+Release:
+	devscripts/MakeRelease
+
+rpm :
+	devscripts/MakeRpm
+
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include
 
 install: 
 	mkdirhier @exec_prefix@/local/tdi

@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+#
+until [ "$reltype" = "major" -o "$reltype" = "minor" -o "$reltype" = "sub" ]
+do
+  /bin/echo -n "Which type of release are you creating? major, minor or sub [sub]: "
+  read reltype
+  case "${reltype:=sub}" in
+	"major");;
+	"minor");;
+	"sub");;
+	*) echo "Invalid type";;
+  esac
+done
+tag=`devscripts/GetRelease next_$reltype`
+version=`devscripts/GetRelease version $tag`
+release=`devscripts/GetRelease release $tag`
+echo "Establishing MDSplus Version $version-$release"
+echo ""
+echo "Assigning the tag $tag to all files in the MDSplus CVS repository"
+cvs -Q tag -RF $tag
+cvs update ChangeLog
+devscripts/MakeChangeLog
+cvs commit -m "New MDSplus release $version-$release"
+
