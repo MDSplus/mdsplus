@@ -27,7 +27,6 @@ PARTS = \
 	gen_device \
 	@CAMSHR@ \
         remcam \
-        mitdevices \
         ccl     \
 	servershr \
         tcl \
@@ -36,6 +35,7 @@ PARTS = \
         actions \
         mdslib \
         math \
+        mitdevices \
         wfevent \
         setevent \
         mdsmisc \
