@@ -132,7 +132,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
         tzset();
         m1 = (unsigned int)time(NULL) - timezone;
-	LibEmul(m1,m2,zero,temp);
+	LibEmul(&m1,&m2,zero,temp);
         AddQuadword(temp,addin,time_inserted);
 #ifdef _big_endian
         local_nci.time_inserted[0] = swapint((char *)&time_inserted[1]);
