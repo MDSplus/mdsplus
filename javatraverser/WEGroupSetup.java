@@ -75,8 +75,8 @@ public class WEGroupSetup extends DeviceSetup {
     gridLayout2.setVgap(0);
     deviceField111115.setOffsetNid(8);
     deviceField111115.setNumCols(7);
-    deviceChoice111113.setChoiceItems(new String[] {"100e-3", "200e-3", "500-3", "1", "2", "5", "10", "20", "50"});
-    deviceChoice111113.setChoiceFloatValues(new float[] {(float)100e-3, (float)200e-3, (float)500-3, (float)1, (float)2, (float)5, (float)10, (float)20, (float)50});
+    deviceChoice111113.setChoiceItems(new String[] {"100e-3", "200e-3", "500e-3", "1", "2", "5", "10", "20", "50"});
+    deviceChoice111113.setChoiceFloatValues(new float[] {(float)100e-3, (float)200e-3, (float)500e-3, (float)1, (float)2, (float)5, (float)10, (float)20, (float)50});
     deviceChoice111113.setOffsetNid(7);
     deviceChoice111113.setLabelString("  ");
     jPanel119.setLayout(flowLayout2);
@@ -111,8 +111,8 @@ public class WEGroupSetup extends DeviceSetup {
     gridLayout3.setVgap(0);
     deviceChoice11111111117.setLabelString("  ");
     deviceChoice11111111117.setOffsetNid(14);
-    deviceChoice11111111117.setChoiceFloatValues(new float[] {(float)100e-3, (float)200e-3, (float)500-3, (float)1, (float)2, (float)5, (float)10, (float)20, (float)50, (float)100, (float)200, (float)350 });
-    deviceChoice11111111117.setChoiceItems(new String[] {"100e-3", "200e-3", "500-3", "1", "2", "5", "10", "20", "50", "100", "200", "350"});
+    deviceChoice11111111117.setChoiceFloatValues(new float[] {(float)100e-3, (float)200e-3, (float)500e-3, (float)1, (float)2, (float)5, (float)10, (float)20, (float)50, (float)100, (float)200, (float)350 });
+    deviceChoice11111111117.setChoiceItems(new String[] {"100e-3", "200e-3", "500e-3", "1", "2", "5", "10", "20", "50", "100", "200", "350"});
     deviceChoice11111111118.setChoiceIntValues(null);
     deviceChoice11111111118.setChoiceFloatValues(null);
     deviceChoice11111111118.setOffsetNid(13);
