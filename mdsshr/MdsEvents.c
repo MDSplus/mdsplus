@@ -14,6 +14,7 @@ int MDSEvent(char *evname){}
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/msg.h>
+#include <sys/time.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <signal.h>
@@ -32,7 +33,7 @@ int MDSEvent(char *evname){}
 
 
 #define SEM_ID 12
-#define SHMEM_ID 75
+#define SHMEM_ID 77
 #define MSG_ID 500
 
 /* Shared memory organization: 
@@ -49,16 +50,23 @@ int MDSEvent(char *evname){}
 #define MAX_DATA_LEN 64		 /* Maximum number of bytes to be broadcasted by events */
 
 
+#define IGNORE_MSG_TIME 10	/* Messages are not sent to a message queue stalled for more than IGNORE_MSG_TIME seconds*/
+#define DEAD_MSG_TIME 60	/* Message queues stalled for more than DEAD_MSG_TIME seconds are removed*/
+
+
+
 /* Description of event names */
 struct SharedEventName {
     short refcount;  /* number of active event connections making reference to this name */
     char name[MAX_EVENTNAME_LEN];  /* name of the event */
+    int first_id;
 };
 
 struct SharedEventInfo{
     int nameid; /* Index of the corresponding name descriptor in the SharedEventName array */
 		 /* if == -1 this item is not currently used */
     int msgkey;  /* message ID of the message queue connecting to the target process */
+    int next_id;
 };
 
 /* Description of the message sent ove msg queues: name of the event and up to 64 bytes of data */
@@ -91,6 +99,7 @@ static struct SharedEventName *shared_name = 0;
 
 static void initializeShared();
 static void *handleMessage(void * dummy);
+static void removeDeadMsg(int key);
 
 
 static int remote_local_initialized = 0;
@@ -217,6 +226,8 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 {
     struct EventMessage message;
     int status, msgid;
+    struct msqid_ds msginfo;
+    time_t curr_time;
 
     strncpy(message.name, evname, MAX_EVENTNAME_LEN - 1);
     message.mtype = 1;
@@ -232,7 +243,34 @@ static int sendMessage(char *evname, int key, int data_len, char *data)
 	perror("msgget");
     else
     {
-    	if((status = msgsnd(msgid, &message, sizeof(message), IPC_NOWAIT)) == -1)
+/* Check for dummies: if there are messages on the queue, compare the current time with
+   the time in which a messages has been read the last time: if it is greater than IGNORE_MSG_TIME,
+   do not send the message; 
+*/
+        if((status = msgctl(msgid, IPC_STAT, &msginfo)) == -1)
+	    perror("msgctl");
+	if(msginfo.msg_qnum > 0)
+	{
+	    curr_time = time(0);
+		
+	    if(msginfo.msg_stime == 0 || (curr_time - msginfo.msg_stime > IGNORE_MSG_TIME)) /* if no new messages have just been sent */	
+	    {
+	    	if(((msginfo.msg_rtime > 0)?(curr_time - msginfo.msg_rtime):(curr_time - msginfo.msg_ctime)) > DEAD_MSG_TIME)
+	    	{
+		    removeDeadMsg(key);
+		    printf("\nRemoved dead message queue %d!!!", key);
+		    return 0;
+	        }  	
+
+	        if(((msginfo.msg_rtime > 0)?(curr_time - msginfo.msg_rtime):(curr_time - msginfo.msg_ctime)) > IGNORE_MSG_TIME)
+	        {
+		    printf("\nQueue %d stalled from %d seconds: message NOT sent", msgid, 
+			((msginfo.msg_rtime > 0)?(curr_time - msginfo.msg_rtime):(curr_time - msginfo.msg_ctime)));
+		    return 0;
+		}
+	    }
+	}
+    	if((status = msgsnd(msgid, &message, sizeof(message), /*IPC_NOWAIT*/0)) == -1)
 	    perror("msgsend");
     }
     return status;
@@ -260,7 +298,48 @@ static void releaseMessages()
 
 }
 
+
+static void removeMessage(int key)
+{
+    struct msqid_ds buf;
+    int status, msgid;
+   
+    status = msgid = msgget(key, 0777);
+    if(msgid == -1)
+	perror("msgget");
+    status = msgctl(msgid, IPC_RMID, &buf);
+    if(status == -1) perror("msgctl");
+}
+ 
+
+
 /***************** End of OS dependent part ****************/
+
+
+static void removeDeadMsg(int key)
+{
+    int i, curr, prev;
+
+    for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+    {
+	if(shared_info[i].nameid >= 0 && shared_info[i].msgkey == key)
+	{
+	    if(shared_name[shared_info[i].nameid].first_id == i) /*If it is the first in the queue */
+		shared_name[shared_info[i].nameid].first_id = shared_info[i].next_id;
+	    else
+	    {
+		for(curr = prev = shared_name[shared_info[i].nameid].first_id; curr != i; curr = shared_info[curr].next_id);
+		shared_info[prev].next_id = shared_info[curr].next_id;
+	    }
+	    shared_name[shared_info[i].nameid].refcount--;
+	    shared_info[i].nameid = -1;
+	}
+    }
+    removeMessage(key);
+}
+
+
+
 
 
 
@@ -269,9 +348,15 @@ static void initializeShared()
 {	
     int i;
     for(i = 0; i < MAX_EVENTNAMES; i++)
+    {
 	shared_name[i].refcount = 0;
+	shared_name[i].first_id = -1;
+    }
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
+    {
 	shared_info[i].nameid = -1;
+	shared_info[i].next_id = -1;
+    }
 }
 
 
@@ -304,7 +389,7 @@ static void *handleMessage(void * dummy)
 static void cleanup(int dummy)
 {
 /* remove all events declared by the process and not removed by MdsEventCan */
-    int i, j;
+    int i, j, curr_id, prev_id;
 
 
     if(is_exiting) return;
@@ -319,7 +404,22 @@ static void cleanup(int dummy)
 	{
 	    if(shared_name[shared_info[i].nameid].refcount > 0)
 	    	shared_name[shared_info[i].nameid].refcount--;
-	    shared_info[i].nameid = -1;
+/* remove shared_infos */
+	    if(shared_name[shared_info[i].nameid].refcount == 0)
+		shared_name[shared_info[i].nameid].first_id = -1;
+	    else
+	    {
+		for(curr_id = prev_id = shared_name[shared_info[i].nameid].first_id;
+			curr_id != i; curr_id = shared_info[curr_id].next_id)
+		    prev_id = curr_id;
+		if(curr_id == shared_name[shared_info[i].nameid].first_id)
+		    shared_name[shared_info[i].nameid].first_id = shared_info[curr_id].next_id;
+		else
+		    shared_info[prev_id].next_id = shared_info[curr_id].next_id;
+	    } 	
+
+
+	    shared_info[i].nameid = shared_info[i].next_id = -1;
 	}
     }
     releaseLock();
@@ -327,10 +427,6 @@ static void cleanup(int dummy)
     releaseMessages();
 
 }
-
-
-/*    status = MDSEventAst(c->descrip[1]->pointer,(void (*)())ClientEventAst,newe,&newe->eventid); */
-
 
 static void initializeLocalRemote()
 {
@@ -404,7 +500,6 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 
     /* define internal event dispatching structure */ 
     for(i = 0; i < MAX_EVENTNAMES; i++)
-	/* if(private_info[i].active && !strcmp(eventnam, private_info[i].name)) */
 	if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 		private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	     break;
@@ -459,7 +554,16 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 	    return 0;
 	}
 	strncpy(shared_name[j].name, eventnam, MAX_EVENTNAME_LEN - 1);
+	shared_name[j].first_id = i;
+	shared_info[i].next_id = -1;
     }
+    else
+    {
+	shared_info[i].next_id = shared_name[j].first_id;
+	shared_name[j].first_id = i;
+    }
+	
+
     shared_name[j].refcount++;
     shared_info[i].nameid = j;
 
@@ -486,7 +590,7 @@ static int canEventRemote(int eventid)
 	
 int MDSEventCan(int eventid)
 {
-    int i, j, k;
+    int i, j, k, curr_id, prev_id;
     struct PrivateEventInfo *evinfo;
 
     initializeLocalRemote();
@@ -509,7 +613,22 @@ int MDSEventCan(int eventid)
     if(i < MAX_ACTIVE_EVENTS) /* if corresponding slot found */
     {
 	shared_name[shared_info[i].nameid].refcount--;
-	shared_info[i].nameid = -1;
+
+/* Remove shared info from list */
+	if(shared_name[shared_info[i].nameid].refcount == 0)
+	    shared_name[shared_info[i].nameid].first_id = -1;
+	else
+	{
+	    for(curr_id = prev_id = shared_name[shared_info[i].nameid].first_id;
+		    curr_id != i; curr_id = shared_info[curr_id].next_id)
+		prev_id = curr_id;
+	    if(curr_id == shared_name[shared_info[i].nameid].first_id)
+		shared_name[shared_info[i].nameid].first_id = shared_info[curr_id].next_id;
+	    else
+		shared_info[prev_id].next_id = shared_info[curr_id].next_id;
+	} 	
+
+	shared_info[i].nameid = shared_info[i].next_id = -1;
     }
 
     releaseLock();
@@ -543,7 +662,7 @@ static int sendRemoteEvent(char *evname, int data_len, char *data)
 
 int MDSEvent(char *evname, int data_len, char *data)
 {
-    int i, j, name_idx;
+    int i, j, name_idx, curr_id;
     
     initializeLocalRemote();
     if(remote_id)
@@ -565,10 +684,9 @@ int MDSEvent(char *evname, int data_len, char *data)
 	|| strcmp(shared_name[name_idx].name, evname)); name_idx++);
     if(name_idx < MAX_EVENTNAMES)
     {
-    	for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
-		/* if(shared_info[i].nameid >= 0 && !strcmp(evname, shared_name[shared_info[i].nameid].name)) */
-	    if(shared_info[i].nameid == name_idx)
-	    	sendMessage(evname, shared_info[i].msgkey, data_len, data);
+	for(curr_id = shared_name[name_idx].first_id; curr_id != -1;
+		curr_id = shared_info[curr_id].next_id)
+	    sendMessage(evname, shared_info[curr_id].msgkey, data_len, data);
     }
 
     releaseLock();
@@ -630,7 +748,7 @@ void RemoveMessages()
     	if(msgid != -1)
 	{
     	    status = msgctl(msgid, IPC_RMID, &buf);
-	    printf("\nArato queue %d status %d", i, status);
+	    printf("\nRemoved queue %d status %d", i, status);
 	    if(status == -1) perror("Error in msgctl");
 	}
     }
