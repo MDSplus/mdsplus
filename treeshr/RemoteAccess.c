@@ -15,6 +15,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <pthread.h>
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
