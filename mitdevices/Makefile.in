@@ -94,7 +94,8 @@ SOURCES = \
 dt200.c
 
 IO_SOURCES = \
-io.c 
+io.c\
+curvefit.c 
 
 OBJECTS = $(SOURCES:.c=.o)
 
