@@ -486,6 +486,7 @@ static int ShowCurrentJob(struct descriptor_xd *ans)
       LogPrefix(ans_c);
       strcat(ans_c,job_text);
       strcat(ans_c,detail);
+      free(detail);
     }
     else
     {

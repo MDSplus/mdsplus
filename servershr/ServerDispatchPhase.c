@@ -399,7 +399,7 @@ static char *DetailProc(int full)
   int first=1;
   int doing;
   char msg1[1024];
-  char *msg;
+  char *msg = 0;
   unsigned int msglen;
   for (doing = 1; doing > (full ? -1 : 0); doing--)
   {
@@ -425,7 +425,7 @@ static char *DetailProc(int full)
           msg = (char *)malloc(msglen + 4096);
           msglen += 4096;
           strcpy(msg,oldmsg);
-          free(msg);
+          free(oldmsg);
         }
         strcat(msg,msg1);
       }
