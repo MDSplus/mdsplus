@@ -322,6 +322,7 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
        int homelen = strlen(pwd->pw_dir); 
        char *cmd = strcpy(malloc(homelen+10),"HOME=");
        char *mds_path = getenv("MDS_PATH");
+       initgroups(pwd->pw_name,pwd->pw_gid);
        status = setuid(pwd->pw_uid);
        strcat(cmd,pwd->pw_dir);
        putenv(cmd);
