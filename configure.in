@@ -1,19 +1,27 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl @(#)$RCSfile$ $Revision$
 AC_INIT()
+
 AC_CONFIG_HEADER(include/config.h)
 AC_CONFIG_AUX_DIR(conf)
 AC_CANONICAL_SYSTEM
 
+dnl See if we need to use native compiler
 case "$target" in
-hppa*) CC=cc;
-       CFLAGS="$CFLAGS -Ae -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
-       LDFLAGS="+s +b\$(exec_prefix)/lib";
+hppa*) CC=cc;;
+alpha-dec-osf*) CC=cc;;
+esac
+
+dnl Check out the compiler
+AC_PROG_CC
+
+case "$target" in
+hppa*) CFLAGS="$CFLAGS -Ae -Wl,+s,+b\$(exec_prefix)/lib -I\$(top_srcdir)/include +DA1.1 +DS1.1 +z";
        LDSHARE="-Wl,-a shared";
        LDARC="-Wl,-a archive";
        LINKSHARED="-b";
        SHARETYPE=".sl";;
-mips*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
+mips*) CFLAGS="$(CFLAGS) -I\$(top_srcdir)/include -cckr -signed -D_BSD_SIGNALS -KPIC";
        LDSHARE="-B dynamic ";
        LDARC="-B static ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
@@ -23,8 +31,7 @@ sparc-sun-solaris2*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include -fpic";
        LDARC="-B static ";
        LINKSHARED="-b -R $(exec_prefix)/lib";
        SHARETYPE=".so";;
-alpha-dec-osf*) CC=cc;
-       CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
+alpha-dec-osf*) CFLAGS="$CFLAGS -I\$(top_srcdir)/include";
        LDSHARE="-so_archive ";
        LDARC="-no_so ";
        LINKSHARED="-shared -rpath $(exec_prefix)/lib";
@@ -52,7 +59,6 @@ alpha-dec-osf*) CC=cc;
 esac
 
 dnl Checks for programs.
-AC_PROG_CC
 AC_PROG_RANLIB
 AC_MSG_CHECKING(for ps sysv style arguments)
 mdsplus_ok=`ps -ef >/dev/null 2>/dev/null`
