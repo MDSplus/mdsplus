@@ -162,10 +162,7 @@ endelse
 if (debug) then $
   print, "        IDXs: ",idxs
 for i = 0, num_inputs-1 do begin
-    if (debug) then $
-      cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+',/debug)' $
-    else $
-      cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+')'
+    cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+',debug=debug)'
     old_len = strlen(query)
     x = execute(cmd)
     idxs = idxs + (strlen(query)-old_len)

@@ -406,7 +406,7 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset
       endelse
       return
   endif
-  status = dsql('USE ?', name, debug=debug)
+  status = dsql('USE '+name, debug=debug)
   if (status ne 0) then begin
       if not (keyword_set(quiet)) then begin
           Message, "Error attaching to database "+name, /continue
