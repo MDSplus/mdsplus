@@ -65,7 +65,10 @@ LASER_NDSetup.java\
 EDAMSetupSetup.java\
 DEQUSetupSetup.java\
 EM_GAINSetup.java\
-EM_EQU_TESTSetup.java
+EM_EQU_TESTSetup.java\
+CHVPSSetup.java\
+CHVPS_SETSetup.java\
+RFXParametersSetup.java
 
 
 SOURCES = ActionData.java\

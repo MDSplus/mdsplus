@@ -81,7 +81,7 @@ public class L6810Setup extends DeviceSetup
     private void jbInit() throws Exception
     {
       titledBorder1 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Trigger Information");
-        this.setWidth(550);
+        this.setWidth(650);
       this.setHeight(450);
       this.setDeviceType("L6810");
       this.setDeviceProvider("localhost");

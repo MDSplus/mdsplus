@@ -153,10 +153,10 @@ public class RFXTimesSetup extends DeviceSetup {
     titledBorder5 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PC");
     titledBorder6 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"P");
     titledBorder7 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"TF");
-    titledBorder8 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"INT.");
-    titledBorder9 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"CHOPPER");
-    titledBorder10 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"INVERTER");
-    titledBorder11 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"CROWBAR");
+    titledBorder8 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Toroidal Static Switches IS");
+    titledBorder9 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Toroidal Choppers");
+    titledBorder10 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Toroidal Inverters");
+    titledBorder11 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Toroidal Crowbar");
     titledBorder12 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PP");
     titledBorder13 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PTSO");
     titledBorder14 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PTCB");
@@ -214,7 +214,7 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel17.setBorder(titledBorder9);
     jPanel17.setLayout(gridLayout15);
     deviceField3.setOffsetNid(37);
-    deviceField3.setLabelString("T_STOP_PWM_TC");
+    deviceField3.setLabelString("T_STOP_FOR_TC");
     deviceField3.setNumCols(5);
     deviceField3.setIdentifier("STOP_PWM_TC");
     deviceField3.setShowState(false);
@@ -226,7 +226,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField18.setIdentifier("STOP_INV_TC_REF");
     deviceField18.setShowState(false);
     deviceField20.setOffsetNid(43);
-    deviceField20.setLabelString("T_START_PWM_TC_REF");
+    deviceField20.setLabelString("T_START_INV_TC_FF");
     deviceField20.setNumCols(5);
     deviceField20.setIdentifier("START_FWD_TC_REF");
     deviceField20.setShowState(false);
@@ -251,12 +251,12 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField16.setOffsetNid(35);
     deviceField16.setDisplayEvaluated(false);
     deviceField21.setOffsetNid(44);
-    deviceField21.setLabelString("T_STOP_PWM_TC_REF");
+    deviceField21.setLabelString("T_STOP_INV_TC_FF");
     deviceField21.setNumCols(5);
     deviceField21.setIdentifier("STOP_FWD_TC_REF");
     deviceField21.setShowState(false);
     deviceField2.setOffsetNid(36);
-    deviceField2.setLabelString("T_START_PWM_TC");
+    deviceField2.setLabelString("T_START_FOR_TC");
     deviceField2.setNumCols(5);
     deviceField2.setIdentifier("START_PWM_TC");
     deviceField2.setShowState(true);
@@ -598,11 +598,11 @@ public class RFXTimesSetup extends DeviceSetup {
     jPanel19.add(deviceField1113, null);
     jPanel1.add(jPanel18, BorderLayout.CENTER);
     jPanel18.add(deviceField15, null);
-    jPanel18.add(deviceField16, null);
+        jPanel18.add(deviceField16, null);
+        jPanel18.add(deviceField2, null);
+        jPanel18.add(deviceField3, null);
     jPanel18.add(deviceField9, null);
     jPanel18.add(deviceField18, null);
-    jPanel18.add(deviceField2, null);
-    jPanel18.add(deviceField3, null);
     jPanel18.add(deviceField20, null);
     jPanel18.add(deviceField21, null);
     deviceButtons1.setCheckExpressions(new String[] {"if(_CLOSE_PNSS_state == 1) tcl(\'set node \\\\CLOSE_PNSS /on\'); else " +

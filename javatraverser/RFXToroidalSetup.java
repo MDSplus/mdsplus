@@ -59,7 +59,7 @@ public class RFXToroidalSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(652);
+    this.setWidth(670);
     this.setHeight(652);
     this.setDeviceType("RFXToroidal");
     this.setDeviceProvider("localhost");
@@ -83,10 +83,10 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable1.setOffsetNid(8);
     deviceTable1.setLabelString("");
     deviceTable1.setNumCols(6);
-    deviceTable1.setNumRows(12);
+    deviceTable1.setNumRows(10);
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"Sect.1", "Sect.2", "Sect.3", "Sect.4", "Sect.5", "Sect.6"});
-    deviceTable1.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_reg_iac",
+    deviceTable1.setRowNames(new String[] {"ls_ch_init_state", "ch2_lockt_ls", "hs_ch_init_state", "ch1_lockt_hs", "ith_inv_on", "ith_inv_end_force", "s0_reg_iac",
         "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable1.setDisplayRowNumber(true);
     deviceTable1.setPreferredColumnWidth(70);
@@ -97,11 +97,11 @@ public class RFXToroidalSetup extends DeviceSetup {
     deviceTable2.setPreferredHeight(100);
     deviceTable2.setPreferredColumnWidth(70);
     deviceTable2.setDisplayRowNumber(true);
-    deviceTable2.setRowNames(new String[] {"ls_chinit_st", "ch2_lockt_ls", "irel_ls", "hs_chinit_st", "ch1_lockt_hs", "irel_hs", "ith_inv_on", "ith_inv_endf", "s0_reg_iac",
+    deviceTable2.setRowNames(new String[] {"ls_ch_init_state", "ch2_lockt_ls", "hs_ch_init_state", "ch1_lockt_hs", "ith_inv_on", "ith_inv_end_force", "s0_reg_iac",
         "s0_reg_vac", "s0_reg_iac_lim", "s0_reg_vac_lim"});
     deviceTable2.setColumnNames(new String[] {"Sect.7", "Sect.8", "Sect.9", "Sect.10", "Sect.11", "Sect.12"});
     deviceTable2.setIdentifier("");
-    deviceTable2.setNumRows(12);
+    deviceTable2.setNumRows(10);
     deviceTable2.setNumCols(6);
     deviceTable2.setLabelString("");
     deviceTable2.setOffsetNid(9);
