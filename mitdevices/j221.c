@@ -14,6 +14,7 @@ extern int TdiLong();
 extern int TdiExecute();
 extern int TdiCompile();
 static int one=1;
+static short zero=0;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define do_if_no_error(f,retstatus) if (status & 1) retstatus = f;
 #define pio(f,a,d)  status = DevCamChk(CamPiow(setup->name,a,f,d,16,0),&one,&one);
@@ -59,7 +60,7 @@ int j221___init(struct descriptor *nid, InInitStruct *setup)
     if (status & 1) {
       int i;
       for (i=0,status=0; (i<10) && !(status&1); i++) {
-        pio(16,2,0);    /* Clear the memory address */
+        pio(16,2,&zero);    /* Clear the memory address */
         if (status)
           status = CamStopw(setup->name,1,16,num,time,24,0); /* Load trigger times */
       }

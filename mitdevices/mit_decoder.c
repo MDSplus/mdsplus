@@ -85,7 +85,7 @@ int mit_decoder___init(struct descriptor *niddsc_ptr, InInitStruct *setup)
         return_on_error(GetPseudoDevNid(&pseudo_xd, &dev_nid), status);    
         if (status != TIMING$_NOPSEUDODEV) {
           return_on_error(TreeDoMethod(&nid_dsc, (struct descriptor *)&GET_SETUP, &regs[chan], &events[chan], 
-                          &out_dsc_ptr), status);
+                          &out_dsc_ptr MDS_END_ARG), status);
           return_on_error(TreePutRecord(c_nid, (struct descriptor *)out_dsc_ptr,0),status);
         }
       }

@@ -17,7 +17,7 @@ static int one=1;
 #define pio(f,a) {\
  if (!((status = DevCamChk(CamPiow(setup->name,a,f,0,16,0),&one,0)) & 1)) return status;}
 #define pioqrep(f,a,d) {\
- if (!((status = DevCamChk(CamPioQrep(setup->name,a,f,d,16,0),&one,&one)) & 1)) return status;}
+ if (!((status = DevCamChk(CamPioQrepw(setup->name,a,f,d,16,0),&one,&one)) & 1)) return status;}
 #define fstopw(f,a,n,d) {\
  if (!((status = DevCamChk(CamFStopw(setup->name,a,f,n,d,16,0),&one,0)) & 1)) return status;}
 #define CHAN_NID(chan, field) c_nids[L2256_N_INPUTS+chan*L2256_K_NODES_PER_INP+field]

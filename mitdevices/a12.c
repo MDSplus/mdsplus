@@ -120,11 +120,11 @@ int max_samples;
   {
     if (TreeIsOn(CHAN_NID(chan,A12_N_INP_HEAD)) & 1)
     {
-      status = DevLong(CHAN_NID(chan,A12_N_INP_STARTIDX),(int *)&raw.bounds[0].l);
+      status = DevLong(&CHAN_NID(chan,A12_N_INP_STARTIDX),(int *)&raw.bounds[0].l);
       if (status&1) raw.bounds[0].l = min(max_samples-1,max(0,raw.bounds[0].l));
       else raw.bounds[0].l = 0;
 
-      status = DevLong(CHAN_NID(chan,A12_N_INP_ENDIDX), (int *)&raw.bounds[0].u);
+      status = DevLong(&CHAN_NID(chan,A12_N_INP_ENDIDX), (int *)&raw.bounds[0].u);
       if (status&1) raw.bounds[0].u = min(max_samples-1,max(0,raw.bounds[0].u));
       else raw.bounds[0].u = max_samples-1;
 
@@ -132,7 +132,7 @@ int max_samples;
       if (raw.m[0] > 0)
       {
         samples_to_read = raw.bounds[0].u + 1;
-        status = ReadChannel((char *)&name,fast,&max_samples,chan,channel_data);
+        status = ReadChannel(name,fast,&max_samples,chan,channel_data);
         if (status & 1)
         {
           offset = ((1 << chan) & polarity) != 0 ? -2048 : 0;
@@ -176,10 +176,11 @@ static int ReadChannel(char *name,
                 int                     chan,
                 short			*data_ptr)
 {
-int serial;
-int chan_sel;
-int status;
- int one = 1;
+  int serial;
+  int chan_sel;
+  int status;
+  int one = 1;
+  int zero = 0;
   return_on_error(DevCamChk(CamPiow(name,0,6,&serial,16,0),&one,&one),status);
   if ( ((serial >> 8) & 255) <= 4)					/* If serial number is less equal to 4 then*/
     chan_sel = 7 - chan;                            		/* Channel select backwards from 7 */
@@ -187,7 +188,7 @@ int status;
     return_on_error(DevCamChk(CamPiow(name,1,24,0,16,0),&one,&one),status);
     chan_sel = chan;                                               /* Channel select starts at 0 */
   }    
-  return_on_error(DevCamChk(CamPiow(name,chan_sel,16,0,16,0),&one,0),status);
+  return_on_error(DevCamChk(CamPiow(name,chan_sel,16,&zero,16,0),&one,0),status);
   if (fast)
   {
     return_on_error(DevCamChk(CamFStopw(name,0,2,*max_samps_ptr,data_ptr,16,0),&one,0),status);
