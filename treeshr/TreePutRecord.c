@@ -650,21 +650,12 @@ static int AddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
   return !carry;
 }
 
-#define length_of(ptr)    ((unsigned short *)&ptr[0])
-#define dtype_of(ptr)     ((unsigned char  *)&ptr[2])
-#define class_of(ptr)     ((unsigned char  *)&ptr[3])
-#define pointer_of(ptr)   ((int   *)&ptr[4])
-#define l_length_of(ptr)  ((unsigned int   *)&ptr[8])
-#define ndesc_of(ptr)     ((unsigned char  *)&ptr[8])
-#define dscptrs_of(ptr,j) ((unsigned int   *)&ptr[12+j*4])
-#define scale_of(ptr)     ((unsigned char  *)&ptr[8])
-#define digits_of(ptr)	  ((unsigned char  *)&ptr[9])
+#define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
+#define LoadShort(in,outp) (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]
+#define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[0]; (outp)[1] = ((char *)&in)[1]; \
+                           (outp)[2] = ((char *)&in)[2]; (outp)[3] = ((char *)&in)[3]
 #define set_aflags(ptr,in)  ptr[10] = (inp->aflags.binscale << 3)  | (inp->aflags.redim << 4) | (inp->aflags.column << 5) \
                                      | (inp->aflags.coeff << 6) | (inp->aflags.bounds << 7)
-#define dimct_of(ptr)     ((unsigned char  *)&ptr[11])
-#define arsize_of(ptr)    ((unsigned int   *)&ptr[12])
-#define a0_of(ptr)        ((int   *)&ptr[16])
-#define m_of(ptr)         ((unsigned int   *)&ptr[20])
 #define offset(ptr)       *(unsigned int *)&ptr
 
 
@@ -691,10 +682,11 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
       {
 	if (out_ptr)
 	{
-          *length_of(out_ptr) = in_ptr->length;
-          *dtype_of(out_ptr) = in_ptr->dtype;
-          *class_of(out_ptr) = in_ptr->class;
-          *pointer_of(out_ptr) = 8;
+          int dscsize = 8;
+          LoadShort(in_ptr->length, out_ptr);
+          LoadChar(in_ptr->dtype, out_ptr+2);
+          LoadChar(in_ptr->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
           out_ptr += 8;
           memcpy(out_ptr,((char *)in_ptr) + offset(in_ptr->pointer), in_ptr->length); 
           out_ptr += in_ptr->length;
@@ -710,11 +702,12 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	struct descriptor_xs *inp = (struct descriptor_xs *)in_ptr;
 	if (out_ptr)
 	{
-          *length_of(out_ptr) = 0;
-          *dtype_of(out_ptr) = inp->dtype;
-          *class_of(out_ptr) = inp->class;
-          *pointer_of(out_ptr) = 12;
-          *l_length_of(out_ptr) = inp->l_length;
+          int dscsize = 12;
+          LoadShort(in_ptr->length, out_ptr);
+          LoadChar(in_ptr->dtype, out_ptr+2);
+          LoadChar(in_ptr->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
+          LoadInt(inp->l_length,out_ptr+8);
           out_ptr += 12; 
           memcpy(out_ptr, ((char *)in_ptr) + offset(in_ptr->pointer), inp->l_length);
           out_ptr += inp->l_length;
@@ -728,15 +721,16 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
       {
         struct descriptor_r *inp = (struct descriptor_r *)in_ptr;
         char *begin = out_ptr;
-        unsigned int *dscptrs = NULL;
+        char *dscptrs = NULL;
         if (out_ptr)
 	{
-          *length_of(out_ptr) = inp->length;
-          *dtype_of(out_ptr) = inp->dtype;
-          *class_of(out_ptr) = inp->class;
-          *pointer_of(out_ptr) = inp->length ? 12 + inp->ndesc * 4 : 0;
-          *ndesc_of(out_ptr) = inp->ndesc;
-          dscptrs = (unsigned int *)(out_ptr + 12);
+          int dscsize = inp->length ? 12 + inp->ndesc * 4 : 0;
+          LoadShort(inp->length, out_ptr);
+          LoadChar(inp->dtype, out_ptr+2);
+          LoadChar(inp->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
+          LoadChar(inp->ndesc, out_ptr+8);
+          dscptrs = out_ptr + 12;
           memset(dscptrs,0,inp->ndesc * 4);
           out_ptr += 12 + inp->ndesc * 4;
           if (inp->length)
@@ -752,7 +746,8 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
 	    status = copy_dx_rec((struct descriptor *)(((char *)inp) + offset(inp->dscptrs[j])), out_ptr, &size_out, &size_in);
             if (out_ptr)
 	    {
-              dscptrs[j] = out_ptr - begin;
+              int poffset = out_ptr - begin;
+              LoadInt(poffset, dscptrs + (j * 4));
               out_ptr += size_out;
             }
             bytes_out += size_out;
@@ -767,33 +762,34 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
         array_coeff *inp = (array_coeff *)in_ptr;
         if (out_ptr)
 	{
-          *length_of(out_ptr) = inp->length;
-          *dtype_of(out_ptr) = inp->dtype;
-          *class_of(out_ptr) = inp->class;
-          *pointer_of(out_ptr) = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
-		                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
-          *scale_of(out_ptr) = inp->scale;
-          *digits_of(out_ptr) = inp->digits;
+          int dscsize = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
+                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
+          LoadShort(inp->length, out_ptr);
+          LoadChar(inp->dtype, out_ptr+2);
+          LoadChar(inp->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
+          LoadChar(inp->scale,out_ptr+8);
+          LoadChar(inp->digits,out_ptr+9);
           set_aflags(out_ptr,in);
-          *dimct_of(out_ptr) = inp->dimct;
-          *arsize_of(out_ptr) = inp->arsize;
-          out_ptr += 16;
+          LoadChar(inp->dimct,out_ptr+11);
+          LoadInt(inp->arsize,out_ptr+12);
           if (inp->aflags.coeff)
 	  {
-            *(unsigned int *)out_ptr = *pointer_of(out_ptr) + (offset(inp->a0) - offset(inp->pointer));
-            out_ptr += 4;
+            int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
+            LoadInt(a0,out_ptr + 16);
+            out_ptr += 20;
             for (j=0;j<inp->dimct;j++)
 	    {
-              *(unsigned int *)out_ptr = inp->m[j];
+              LoadInt(inp->m[j],out_ptr);
               out_ptr += 4;
             }
             if (inp->aflags.bounds)
 	    {
               for (j=0;j<inp->dimct;j++)
 	      {
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j];
+                LoadInt(inp->m[inp->dimct + 2 * j],out_ptr);
                 out_ptr += 4;
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j + 1];
+                LoadInt(inp->m[inp->dimct + 2 * j + 1],out_ptr);
                 out_ptr += 4;
               }
             }
@@ -818,42 +814,43 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
         array_coeff *inp = (array_coeff *)in_ptr;
         struct descriptor **dsc = (struct descriptor **)  (((char *)in_ptr) + offset(inp->pointer));
         char *begin = out_ptr;
-        int *dscptr;
+        char *dscptr;
 	num_dsc = inp->arsize / inp->length;
         if (out_ptr)
 	{
-          *length_of(out_ptr) = 4;
-          *dtype_of(out_ptr) = inp->dtype;
-          *class_of(out_ptr) = inp->class;
-          *pointer_of(out_ptr) = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
-		                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
-          *scale_of(out_ptr) = inp->scale;
-          *digits_of(out_ptr) = inp->digits;
+          int dscsize = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
+                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
+          LoadShort(inp->length, out_ptr);
+          LoadChar(inp->dtype, out_ptr+2);
+          LoadChar(inp->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
+          LoadChar(inp->scale,out_ptr+8);
+          LoadChar(inp->digits,out_ptr+9);
           set_aflags(out_ptr,in);
-          *dimct_of(out_ptr) = inp->dimct;
-          *arsize_of(out_ptr) = num_dsc * 4;
-          out_ptr += 16;
+          LoadChar(inp->dimct,out_ptr+11);
+          LoadInt(inp->arsize,out_ptr+12);
           if (inp->aflags.coeff)
 	  {
-            *(unsigned int *)out_ptr = *pointer_of(out_ptr) + (offset(inp->a0) - offset(inp->pointer));
-            out_ptr += 4;
+            int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
+            LoadInt(a0,out_ptr + 16);
+            out_ptr += 20;
             for (j=0;j<inp->dimct;j++)
 	    {
-              *(unsigned int *)out_ptr = inp->m[j];
+              LoadInt(inp->m[j],out_ptr);
               out_ptr += 4;
             }
             if (inp->aflags.bounds)
 	    {
               for (j=0;j<inp->dimct;j++)
 	      {
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j];
+                LoadInt(inp->m[inp->dimct + 2 * j],out_ptr);
                 out_ptr += 4;
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j + 1];
+                LoadInt(inp->m[inp->dimct + 2 * j + 1],out_ptr);
                 out_ptr += 4;
               }
             }
           }
-          dscptr = (int *)out_ptr;
+          dscptr = out_ptr;
           out_ptr += num_dsc * 4;
           memset(dscptr, 0, num_dsc * 4);
         }
@@ -873,7 +870,8 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
             status = copy_dx_rec((struct descriptor *)(((char *)in_ptr) + offset(dsc[j])), out_ptr, &size_out, &size_in);
   	    if (out_ptr)
 	    {
-              dscptr[i] = out_ptr - begin;
+              int poffset = out_ptr - begin;
+              LoadInt(poffset, dscptr + (j * 4));
 	      out_ptr += size_out;
             }
 	    bytes_out += size_out;
@@ -888,33 +886,34 @@ static int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned int *b_
         array_coeff *inp = (array_coeff *)in_ptr;
         if (out_ptr)
 	{
-          *length_of(out_ptr) = inp->length;
-          *dtype_of(out_ptr) = inp->dtype;
-          *class_of(out_ptr) = inp->class;
-          *pointer_of(out_ptr) = inp->pointer ? 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
-		                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0) : 0;
-          *scale_of(out_ptr) = inp->scale;
-          *digits_of(out_ptr) = inp->digits;
+          int dscsize = inp->pointer ? 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
+                    + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0) : 0;
+          LoadShort(inp->length, out_ptr);
+          LoadChar(inp->dtype, out_ptr+2);
+          LoadChar(inp->class,out_ptr+3);
+          LoadInt(dscsize,out_ptr+4);
+          LoadChar(inp->scale,out_ptr+8);
+          LoadChar(inp->digits,out_ptr+9);
           set_aflags(out_ptr,in);
-          *dimct_of(out_ptr) = inp->dimct;
-          *arsize_of(out_ptr) = inp->arsize;
-          out_ptr += 16;
+          LoadChar(inp->dimct,out_ptr+11);
+          LoadInt(inp->arsize,out_ptr+12);
           if (inp->aflags.coeff)
 	  {
-            *(unsigned int *)out_ptr = *pointer_of(out_ptr) + (offset(inp->a0) - offset(inp->pointer));
-            out_ptr += 4;
+            int a0 = dscsize + (offset(inp->a0) - offset(inp->pointer));
+            LoadInt(a0,out_ptr + 16);
+            out_ptr += 20;
             for (j=0;j<inp->dimct;j++)
 	    {
-              *(unsigned int *)out_ptr = inp->m[j];
+              LoadInt(inp->m[j],out_ptr);
               out_ptr += 4;
             }
             if (inp->aflags.bounds)
 	    {
               for (j=0;j<inp->dimct;j++)
 	      {
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j];
+                LoadInt(inp->m[inp->dimct + 2 * j],out_ptr);
                 out_ptr += 4;
-                *(unsigned int *)out_ptr = inp->m[inp->dimct + 2 * j + 1];
+                LoadInt(inp->m[inp->dimct + 2 * j + 1],out_ptr);
                 out_ptr += 4;
               }
             }

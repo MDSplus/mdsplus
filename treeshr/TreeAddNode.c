@@ -702,6 +702,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         remove(info_ptr->filespec);
         rename(nfilenam,info_ptr->filespec);
 	(*dblist)->modified = 0;
+        fclose(ntreef);
         TreeCallHook(WriteTree, info_ptr);
       }
     }
