@@ -17,4 +17,5 @@ public fun RFXDClock__add(in _path, out _nidout)
     DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'TIME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
+
        

@@ -15,8 +15,6 @@ public fun RFXGClock__init(as_is _nid, optional _method)
     private _N_CLOCK     =     12;
     private _N_INIT_ACTION=    13;
 
-
-
     private _K_NODES_PER_CHANNEL = 14;
     private _N_CHANNEL_0= 9;
     private _N_CHAN_EVENTS = 1;
@@ -50,13 +48,13 @@ write(*, 'Parte RFXGClock__init');
 
     if(_clock_chan < 1 || _clock_chan > 6)
     {
-	DevLogErr(_nid, "Wrong clock channel number");
-	abort();
+		DevLogErr(_nid, "Wrong clock channel number");
+		abort();
     }
     if(_gate_chan < 1 || _gate_chan > 6)
     {
-	DevLogErr(_nid, "Wrong gate channel number");
-	abort();
+		DevLogErr(_nid, "Wrong gate channel number");
+		abort();
     }
 
     _base_nid = if_error(getnci(_decoder_nid, 'nid_number'), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
@@ -81,49 +79,47 @@ write(*, 'Parte RFXGClock__init');
 	    DevLogErr(_nid, "Invalid Event name");
     }
     else
-	_event_num = 0;
+		_event_num = 0;
     if(_event_num != 0)
-	_event_time = TimingGetEventTime(_event_num);
+		_event_time = TimingGetEventTime(_event_num);
     else
-	_event_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));
-
+		_event_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));
     _delay = if_error(data(DevNodeRef(_nid, _N_DELAY)), (DevLogErr(_nid, 'Cannot resolve delay');abort();));
     if(_delay < 0 || _delay >655.35)
     { 
-	DevLogErr(_nid, "Invalid Delay: "//_delay);
-	_delay = 0;
+		DevLogErr(_nid, "Invalid Delay: "//_delay);
+		_delay = 0;
     }
     if(_output_mode >= 3)
     {
-	_duration = if_error(data(DevNodeRef(_nid, _N_DURATION)), (DevLogErr(_nid, 'Cannot resolve duration');abort();));
+		_duration = if_error(data(DevNodeRef(_nid, _N_DURATION)), (DevLogErr(_nid, 'Cannot resolve duration');abort();));
     	if(_duration < 0 || _duration > 655.35)
     	{ 
-	    DevLogErr(_nid, "Invalid Duration: "//_duration);
-	    _duration = 0;
+			DevLogErr(_nid, "Invalid Duration: "//_duration);
+			_duration = 0;
     	}
     }
     else
 	_duration = 0;
 
     _frequency = if_error(data(DevNodeRef(_nid, _N_FREQUENCY)), (DevLogErr(_nid, 'Cannot resolve frequency ');abort();));
-
     if(_frequency > 500E3 || _frequency < 100./65535)
     {
-	DevLogErr(_nid, 'Invalid frequency');
-	abort();
+		DevLogErr(_nid, 'Invalid frequency');
+		abort();
     }
 
 
    _curr_period = 1E-6;
     if(_delay > _duration)
-	_max_delay = _delay;
+		_max_delay = _delay;
     else
-	_max_delay = _duration;
+		_max_delay = _duration;
     _clock_source = 0;
     while(_curr_period * 65534 < _max_delay)
     {
-	_clock_source++;
-  	_curr_period = _curr_period * 10;
+		_clock_source++;
+  		_curr_period = _curr_period * 10;
     }
     _load = long(_delay / _curr_period + 0.5);
     _hold = long(_duration / _curr_period + 0.5);
@@ -153,13 +149,13 @@ write(*, 'Parte RFXGClock__init');
 
 
 
-    _period = 1/_frequency;
+	_period = 1/_frequency;
     _curr_period = 1E-6;
     _clock_source = 0;
     while(_curr_period * 65534 < _period)
     {
-	_clock_source++;
-  	_curr_period = _curr_period * 10;
+		_clock_source++;
+  		_curr_period = _curr_period * 10;
     }
     _load = long(_period/(_curr_period*2) + 0.5);
     _hold = long(_period/_curr_period - _load + 0.5);
@@ -168,18 +164,18 @@ write(*, 'Parte RFXGClock__init');
 
     if(_load == 0)
     {
-	_load++;
-	_hold--;
+		_load++;
+		_hold--;
     }
     if(_hold == 0)
     {
-	_hold++;
-	_load--;
+		_hold++;
+		_load--;
     }
     if((_output_mode != 0)&&(_output_mode != 3))
     {
-	_load = _load * 2;
-	_hold = _hold * 2;
+		_load = _load * 2;
+		_hold = _hold * 2;
     }
 
 
@@ -204,24 +200,20 @@ write(*, 'Parte RFXGClock__init');
 
     if(_event_num != 0)
     {
-	_trigger_time = TimingGetEventTime(_event_num);
-	DevPut(_nid, _N_EXT_TRIG, _event_time); 
+		_trigger_time = TimingGetEventTime(_event_num);
+		DevPut(_nid, _N_EXT_TRIG, _event_time); 
     }
-   else
-	_trigger_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));  
-
-
+	else
+		_trigger_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));  
 
         
     if(_output_mode >=3)
-	_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//','// 
-	 _trigger_time//'+'//_delay//'+'//_duration//','// _period//')');
-    else
-	_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//',HUGE(0.),'// _period//')');
+		_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//','// 
+			_trigger_time//'+'//_delay//'+'//_duration//','// _period//')');
+	else
+		_axis = compile('MAKE_RANGE('//_trigger_time//'+'//_delay//',HUGE(0.),'// _period//')');
 
    write(*, _axis);
-   DevPut(_nid, _N_CLOCK, _axis); 
-
-
+	DevPut(_nid, _N_CLOCK, _axis); 
     return (1);
 }

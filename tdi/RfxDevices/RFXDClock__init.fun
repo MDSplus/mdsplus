@@ -16,8 +16,6 @@ public fun RFXDClock__init(as_is _nid, optional _method)
     private _N_CLOCK     =     13;
     private _N_INIT_ACTION=    14;
 
-
-
     private _K_NODES_PER_CHANNEL = 14;
     private _N_CHANNEL_0= 9;
     private _N_CHAN_EVENTS = 1;
@@ -35,7 +33,6 @@ public fun RFXDClock__init(as_is _nid, optional _method)
     private _N_CHAN_CLOCK = 13;
     private _N_CLOCK_DIVIDE = 3;
     private _N_CLOCK_SOURCE = 4;
-
     private _N_SYNCHRONIZE = 6;
     private _N_START_EVENT = 7;
 
@@ -51,12 +48,12 @@ write(*, 'Parte RFXDClock__init');
 
     if(_clock_chan < 1 || _clock_chan > 6)
     {
-	DevLogErr(_nid, "Wrong clock channel number");
+		DevLogErr(_nid, "Wrong clock channel number");
         abort();
     }
     if(_gate_chan < 1 || _gate_chan > 6)
     {
-	DevLogErr(_nid, "Wrong gate channel number");
+		DevLogErr(_nid, "Wrong gate channel number");
         abort();
     }
 
@@ -81,57 +78,53 @@ write(*, 'Parte RFXDClock__init');
 	    DevLogErr(_nid, "Invalid Event name");
     }
     else
-	_event_num = 0;
+		_event_num = 0;
     if(_event_num != 0)
-	_event_time = TimingGetEventTime(_event);
+		_event_time = TimingGetEventTime(_event);
     else
-	_event_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));
+		_event_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));
 
     _delay = if_error(data(DevNodeRef(_nid, _N_DELAY)), (DevLogErr(_nid, 'Cannot resolve delay');abort();));
     if(_delay < 0 || _delay >655.35)
     { 
-	DevLogErr(_nid, "Invalid Delay: "//_delay);
-	_delay = 0;
-    }
+		DevLogErr(_nid, "Invalid Delay: "//_delay);
+		_delay = 0;
+	}
     if(_output_mode >= 3)
     {
-	_duration = if_error(data(DevNodeRef(_nid, _N_DURATION)), (DevLogErr(_nid, 'Cannot resolve duration');abort();));
+		_duration = if_error(data(DevNodeRef(_nid, _N_DURATION)), (DevLogErr(_nid, 'Cannot resolve duration');abort();));
     	if(_duration < 0 || _duration > 655.35)
     	{ 
-	    DevLogErr(_nid, "Invalid Duration: "//_duration);
-	    _duration = 0;
+			DevLogErr(_nid, "Invalid Duration: "//_duration);
+			_duration = 0;
     	}
     }
     else
-	_duration = 0;
+		_duration = 0;
 
     _frequency1 = if_error(data(DevNodeRef(_nid, _N_FREQUENCY1)), (DevLogErr(_nid, 'Cannot resolve frequency 1');abort();));
     _frequency2 = if_error(data(DevNodeRef(_nid, _N_FREQUENCY2)), (DevLogErr(_nid, 'Cannot resolve frequency 2');abort();));
 
     if(_frequency1 > 500E3 || _frequency1 < 100./65535)
     {
-	DevLogErr(_nid, 'Invalid frequency 1');
-	abort();
+		DevLogErr(_nid, 'Invalid frequency 1');
+		abort();
     }
-   if(_frequency2 > 500E3 || _frequency2 < 100./65535)
+	if(_frequency2 > 500E3 || _frequency2 < 100./65535)
     {
-	DevLogErr(_nid, 'Invalid frequency 2');
-	abort();
+		DevLogErr(_nid, 'Invalid frequency 2');
+		abort();
     }
-
-
-
-
-   _curr_period = 1E-6;
-    if(_delay > _duration)
-	_max_delay = _delay;
+	_curr_period = 1E-6;
+   	 if(_delay > _duration)
+		_max_delay = _delay;
     else
-	_max_delay = _duration;
+		_max_delay = _duration;
     _clock_source = 0;
     while(_curr_period * 65534 < _max_delay)
     {
-	_clock_source++;
-  	_curr_period = _curr_period * 10;
+		_clock_source++;
+  		_curr_period = _curr_period * 10;
     }
     _load = long(_delay / _curr_period + 0.5);
     _hold = long(_duration / _curr_period + 0.5);
@@ -151,40 +144,39 @@ write(*, 'Parte RFXDClock__init');
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_CLOCK_EDGE, 'RISING'); 
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_SPECIAL_GATE, 'DISABLED'); 
     if(_output_mode >= 3)
-	DevPut(_base_nid, _gate_chan_nid + _N_CHAN_DOUBLE_LOAD, 'ENABLED'); 
+		DevPut(_base_nid, _gate_chan_nid + _N_CHAN_DOUBLE_LOAD, 'ENABLED'); 
     else
-	DevPut(_base_nid, _gate_chan_nid + _N_CHAN_DOUBLE_LOAD, 'DISABLED'); 
+		DevPut(_base_nid, _gate_chan_nid + _N_CHAN_DOUBLE_LOAD, 'DISABLED'); 
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_REPEAT_COUNT, 'DISABLED'); 
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_COUNT_MODE, 'BINARY'); 
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_COUNT_DIR, 'DESCENDING');
     DevPut(_base_nid, _gate_chan_nid + _N_CHAN_OUTPUT_MODE, 'TOGGLE: INITIAL LOW'); 
-
     _period1 = 1./_frequency1;
     _period2 = 1./_frequency2;
     if(_period1 > _period2)
-	_period = _period1;
+		_period = _period1;
     else
-	_period = _period2;
+		_period = _period2;
     _curr_period = 1E-6;
     _clock_source = 0;
     while(_curr_period * 65534 < _period)
     {
-	_clock_source++;
-  	_curr_period = _curr_period * 10;
+		_clock_source++;
+  		_curr_period = _curr_period * 10;
     }
     if(_output_mode == 0 || _output_mode == 3)
     {
-	_load = long(_period1 / (_curr_period * 2) + 0.5);
-	_hold = long(_period2 / (_curr_period * 2) + 0.5);
-	_effective_period1 = _curr_period * _load * 2;
-	_effective_period2 = _curr_period * _hold * 2;
+		_load = long(_period1 / (_curr_period * 2) + 0.5);
+		_hold = long(_period2 / (_curr_period * 2) + 0.5);
+		_effective_period1 = _curr_period * _load * 2;
+		_effective_period2 = _curr_period * _hold * 2;
     }
     else
     {
-	_load = long(_period1 / _curr_period + 0.5);
-	_hold = long(_period2 / _curr_period + 0.5);
-	_effective_period1 = _curr_period * _load;
-	_effective_period2 = _curr_period * _hold;
+		_load = long(_period1 / _curr_period + 0.5);
+		_hold = long(_period2 / _curr_period + 0.5);
+		_effective_period1 = _curr_period * _load;
+		_effective_period2 = _curr_period * _hold;
     }
 
 
@@ -209,17 +201,14 @@ write(*, 'Parte RFXDClock__init');
 
     if(_event_num != 0)
     {
-	_trigger_time = TimingGetEventTime(_event);
-	DevPut(_nid, _N_EXT_TRIG, _event_time); 
+		_trigger_time = TimingGetEventTime(_event);
+		DevPut(_nid, _N_EXT_TRIG, _event_time); 
     }
-   else
-	_trigger_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));  
+	else
+		_trigger_time = if_error(data(DevNodeRef(_nid, _N_EXT_TRIG)), (DevLogErr(_nid, 'Cannot resolve trigger time');abort();));  
 
     _real_delay = _effective_delay;
     _real_duration = _effective_duration;
-
-
-
 
     DevNodeCvt(_decoder_nid, _N_SYNCHRONIZE, ['ENABLED', 'DISABLED'],[1,0], _synchronize = 0);
     if(_event_num != 0 && _synchronize == 1)
@@ -228,41 +217,41 @@ write(*, 'Parte RFXDClock__init');
 
 write(*, 'SYNCH SCALERS EVENT: ', _start_event);
 
-	_start_time = TimingGetEventTime(TimingEncodeEvent(_start_event));
+		_start_time = TimingGetEventTime(TimingEncodeEvent(_start_event));
 
 write(*, 'START SCALERS TIME: ', _start_time);
-	_interval = _trigger_time - _start_time;
-	if(_start_event == _event_num)
-	    _correction = 0;
-	else
-	    _correction = _interval - long((_interval + 1E-7)/_gate_period) * _gate_period - _gate_period;
+		_interval = _trigger_time - _start_time;
+		if(_start_event == _event_num)
+			_correction = 0;
+		else
+			_correction = _interval - long((_interval + 1E-7)/_gate_period) * _gate_period - _gate_period;
 
 write(*, 'CORRECTION: ', _correction);
 write(*, 'GATE_PERIOD: ', _gate_period);
 
-	_effective_delay = _effective_delay - _correction;
-	if((_output_mode == 0) || (_output_mode == 3))
-	{
-	    _semi_periods = (_interval + _effective_delay + 1E-7)/(_effective_period1/2.);
-	    _int_semi_periods = long(_semi_periods);
-	    _real_delay = _int_semi_periods * _effective_period1/2. + _effective_period1/2. - _interval;
-	}
-	else
-	{
-	    _semi_periods = (_interval + _effective_delay + 1E-7)/_effective_period1;
-	    _int_semi_periods = long(_semi_periods);
-	    _real_delay = _int_semi_periods * _effective_period1 + _effective_period1 - _interval;
-	}
+		_effective_delay = _effective_delay - _correction;
+		if((_output_mode == 0) || (_output_mode == 3))
+		{
+			_semi_periods = (_interval + _effective_delay + 1E-7)/(_effective_period1/2.);
+			_int_semi_periods = long(_semi_periods);
+			_real_delay = _int_semi_periods * _effective_period1/2. + _effective_period1/2. - _interval;
+		}
+		else
+		{
+			_semi_periods = (_interval + _effective_delay + 1E-7)/_effective_period1;
+			_int_semi_periods = long(_semi_periods);
+			_real_delay = _int_semi_periods * _effective_period1 + _effective_period1 - _interval;
+		}
 /*	_real_duration = _effective_delay + _effective_duration - _real_delay;
 */
-	_real_duration = _real_duration - _correction - _effective_period1/2.;
+		_real_duration = _real_duration - _correction - _effective_period1/2.;
 
 
-    }
+	}
     if(_effective_period1 < 1./148E3)
-	_real_delay = _real_delay - _effective_period1/2.;
+		_real_delay = _real_delay - _effective_period1/2.;
     if(_effective_period2 < 1./148E3)
-	_real_duration = _real_duration - _effective_period2/2.;
+		_real_duration = _real_duration - _effective_period2/2.;
 
     _real_duration_r = _real_duration - _effective_period2/2.;
     _real_delay_r = _real_delay - _effective_period1/2.;
@@ -270,18 +259,17 @@ write(*, 'GATE_PERIOD: ', _gate_period);
 write(*,'REAL DURATION: ', _real_duration);
         
     if(_output_mode >=3)
-	_axis = compile('MAKE_RANGE([-10000,'//_trigger_time//'+'//_real_delay//','// 
-	 _trigger_time//'+'//_real_delay//'+'//_real_duration//'],['//_trigger_time//'+'//_real_delay_r//','//
-	 _trigger_time//'+'//_real_delay//'+'//_real_duration_r//', `_LARGE_TIME],['//
-	 _period1//','//_period2//','//_period1//'])');
-    else
-	_axis = compile('MAKE_RANGE([-HUGE(0.), '//_trigger_time//'+'//_real_delay//'],['//
-	 _trigger_time//'+'//_real_delay_r//',10000],['//
-	 _period1//','//_period2//'])');
+		_axis = compile('MAKE_RANGE([-10000,'//_trigger_time//'+'//_real_delay//','// 
+			_trigger_time//'+'//_real_delay//'+'//_real_duration//'],['//_trigger_time//'+'//_real_delay_r//','//
+			_trigger_time//'+'//_real_delay//'+'//_real_duration_r//', `_LARGE_TIME],['//
+			_period1//','//_period2//','//_period1//'])');
+	else
+		_axis = compile('MAKE_RANGE([-HUGE(0.), '//_trigger_time//'+'//_real_delay//'],['//
+			_trigger_time//'+'//_real_delay_r//',10000],['//
+			_period1//','//_period2//'])');
 
-   write(*, _axis);
-   DevPut(_nid, _N_CLOCK, _axis); 
-
+	write(*, _axis);
+	DevPut(_nid, _N_CLOCK, _axis); 
 
     return (1);
 }
