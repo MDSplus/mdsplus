@@ -8,12 +8,21 @@ public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       _mask = _mask//'0';
     }
   }
-  Dt200WriteMaster(_board, 'set.event event0 DI3 falling;get.event event0', 1);
+  if (_preTrig == 0) {
+   Dt200WriteMaster(_board, 'set.trig '//_trigSrc//' falling', 1);
+  } else {
+    if (_preTrig < 10*1024) {
+      write(*, 'Pre trig must be either 0 or > 10K');
+      _preTrig = 1024*10;
+    }
+    Dt200WriteMaster(_board, 'set.event event0 '//_trigSrc//' falling;get.event event0', 1);
+  }
   Dt200WriteMaster(_board, "setChannelMask "//_mask);
   if (_clockSource == 'INT') {
     Dt200WriteMaster(_board, "setInternalClock "//LONG(_clockFreq));
   } else {
-    Dt200WriteMaster(_board, "setClock "//_clockSource);
+    Dt200WriteMaster(_board, "set.ext_clk "//_clockSource, 1);
+    Dt200WriteMaster(_board, "setInternalClock 0"); 
     if (_clockFreq > 0) {
       write (*, "don't forget about the clock divider");
     }

@@ -61,10 +61,13 @@ public fun dt216__store(as_is _nid, optional _method)
    for now assume the board did what we asked */
 
   _clockSource = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_SRC)), '');
-  if (_clockSource == 'INT') {
+  if ((_clockSource == 'INT') || (_clockSource == 'MASTER')) {
      /*    _clockFreq = if_error(data(DevNodeRef(_nid, _DT200_CLOCK_DIV)), 0); */
     _clockFreq = MdsValue('Dt200GetInternalClock($)', _board);
     _clk = make_range(*, *, 1.0D0/_clockFreq);
+    if (_clockSource == 'MASTER') {
+     TreeShr->TreePutRecord(val(DevHead(_nid) + _DT200_DIs + _DT200_NODES_PER_DI), xd(_clk), val(0));
+    }
   }
   else {
     _clk = DevNodeRef(_nid, _DT200_DIs + _DI_NUMBERS[_clockSource]*_DT200_NODES_PER_DI);
@@ -81,11 +84,14 @@ public fun dt216__store(as_is _nid, optional _method)
   *************************************/
   _num_chans=MdsValue('Dt200GetNumChans($)',_board);
   _pre_trig = MdsValue('Dt200GetPreSamples($)', _board);
-  _post_trig = MdsValue('Dt196GetPostSamples($)', _board);
+  _post_trig = MdsValue('Dt200GetPostSamples($)', _board);
 
    _first_idx = - _pre_trig;
   _last_idx = _post_trig;
   _max_samples = _pre_trig+_post_trig-1;
+
+  _offset = mdsvalue('Dt196GetVoltOffset($)', _board);
+  _coeff = MdsValue('Dt196GetVoltCoef($)', _board);
 
   /***********************************************************
    For each channel:
@@ -142,7 +148,7 @@ public fun dt216__store(as_is _nid, optional _method)
       WRITE(*, "About to write channel "//_chan+1);
       write (*, size(_data));
 */
-      DevPutSignalNoBounds(_chan_nid, mdsvalue('Dt200GetVoltOffset($)', _board), MdsValue('Dt200GetVoltCoef($)', _board), _data, _dim);
+      DevPutSignalNoBounds(_chan_nid,_offset, _coeff, _data, _dim);
       tcl("show timer");
     }
   }

@@ -11,6 +11,10 @@ public fun Dt200GetPostSamples(in _board)
   }
   _post = index(_ans, 'post=');
   _numstr = extract(_post+5, len(_ans)-_post-5, _ans);
+  _end = index(_numstr, ' ');
+  if (_end > 0) {
+    _numstr = extract(0, _end, _numstr);
+  }
   _ans = if_error(execute(_numstr), 0);
   return(_ans);
 }
