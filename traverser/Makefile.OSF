@@ -1,0 +1,34 @@
+CFLAGS = -c -I../include -I. -g -migrate -U__DECC -assume noaligned_objects
+
+OBJECTS = \
+	main-uil.o \
+	bxutils-uil.o \
+	CallbacksUil.o \
+        ReadInt.o \
+        ReadString.o \
+        GetNciString.o
+
+all : traverser \
+	../uid/motiftraverser.uid
+
+traverser : $(OBJECTS)
+	cc -o traverser $(OBJECTS)  -L../mdsshr -lMdsShr -lTreeShr -L../tdishr -lTdiShr -lMrm -lXm -lXt -lX11 -L../xmdsshr -lXmdsShr
+
+../uid/motiftraverser.uid : motiftraverser.uil
+	uil -wmd ../xmdsshr/xmdsuil.wmd -o $@ $<
+	
+clean :
+	- rm *.o
+	- rm traverser
+	- rm ../uid/motiftraverser.uid
+	- rm .depend
+	- rm *~
+
+depend : .depend
+
+.depend :
+	- rm .depend
+	find *.c -exec cc -DMDS_EXTENSION -I../include -I.  -M {} > .depend \;
+
+include .depend
+
