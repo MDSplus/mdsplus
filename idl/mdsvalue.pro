@@ -57,6 +57,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           2: answer = answer
           3: answer = fix(answer)
           4: answer = long(answer)
+          6: answer = byte(answer)
           7: answer = fix(answer)
           8: answer = long(answer)
           10: answer = float(answer)
