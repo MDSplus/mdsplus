@@ -43,7 +43,7 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
               int i;
               for (i=0;i<info1->header->nodes;i++)
               {
-                EMPTYXD(xd);
+                static EMPTYXD(xd);
                 NCI nci;
                 TreeGetNciW(info1, i, &nci);
                 TreePutNci(info2, i, &nci, 1);
@@ -65,18 +65,18 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
       }
     }
     _TreeClose(&dbid1, 0, 0);
-	if (status & 1)
-	{
-		status = remove(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
-		if (status & 1)
-			status = remove(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
-		if (status & 1)
-			status = ((rename(from_c,to_c) == 0) && (rename(from_d,to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
-	}
+    if (status & 1)
+    {
+      status = remove(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
+      if (status & 1)
+	status = remove(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
+      if (status & 1)
+      status = ((rename(from_c,to_c) == 0) && (rename(from_d,to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
+    }
     if (from_c) free(from_c);
-	if (to_c) free(to_c);
-	if (from_d) free(from_d);
-	if (to_d) free(to_d);
+    if (to_c) free(to_c);
+    if (from_d) free(from_d);
+    if (to_d) free(to_d);
   }
   return status;
 }

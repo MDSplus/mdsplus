@@ -650,7 +650,7 @@ char *MaskReplace(char *path_in,char *tree,int shot)
   if (shot > 0)
     sprintf(ShotMask,"%012u",shot);
   else
-    memset(ShotMask,'X',10);
+    memset(ShotMask,'X',12);
   for(tilde=(char *)index(path, '~'); tilde != 0; tilde=(char *)index(path, '~'))
   {
     char *tmp,*tmp2;
