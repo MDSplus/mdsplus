@@ -29,14 +29,14 @@ static struct descriptor value = {0, DTYPE_T, CLASS_D, 0};
 #define multi_io(ccl_name,cam_name) int ccl_name()\
 {\
   int status = ParseQualifiers();\
-  if (status & 1) status = cam_name(&Name,&A,&F,&Count,D,&Mem,&iosb);\
+  if (status & 1) status = cam_name(Name.pointer,A,F,Count,D,Mem,&iosb);\
   return CheckErrors(status,&iosb);\
 }
 
 #define single_io(ccl_name,cam_name) int ccl_name()\
 {\
   int status = ParseQualifiers();\
-  if (status & 1) status = cam_name(&Name,&A,&F,D,&Mem,&iosb);\
+  if (status & 1) status = cam_name(Name.pointer,A,F,D,Mem,&iosb);\
   return CheckErrors(status,&iosb);\
 }
 
