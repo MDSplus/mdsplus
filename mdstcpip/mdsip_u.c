@@ -155,7 +155,9 @@ extern int SendMdsMsg(int sock, Message *m, int oob);
 void GetErrorText(int status, struct descriptor_xd *xd);
 void ResetErrors();
 static void CompressString(struct descriptor *in, int upcase);
+#ifndef _AIX
 extern char *index();
+#endif
 extern void MdsIpFree();
 extern int TdiDeleteContext();
 
