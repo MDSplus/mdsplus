@@ -4152,7 +4152,7 @@ public class XRAYSetup extends DeviceSetup {
     deviceChoice2118.setOffsetNid(708);
     deviceChoice2118.setChoiceFloatValues(new float[] {(float)10000.0,(float)100000.0,(float)1000000.0,(float)1.0E7,(float)1.0E8,(float)1.0E9});
     deviceChoice2118.setChoiceIntValues(null);
-    deviceChoice2119.setIdentifier("");
+    deviceChoice2119.setIdentifier("ti_78");
     deviceChoice2119.setUpdateIdentifier("");
     deviceChoice2119.setChoiceItems(new String[] {"1", "2", "5", "10"});
     deviceChoice2119.setLabelString("Gain:");
