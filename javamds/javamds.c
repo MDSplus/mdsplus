@@ -364,24 +364,24 @@ void createWindow(char *name, int idx)
 			sprintf(classpath, "%s%c%s", vm_args.classpath, PATH_SEPARATOR, curr_classpath);
 			vm_args.classpath = classpath;
 		}
-		res = JNI_CreateJavaVM(&jvm, &env, &vm_args);
+		res = JNI_CreateJavaVM(&jvm, (void *)&env, &vm_args);
 		if(res < 0)
 		{
 			printf("\nCannot create Java VM!!\n");
-			return 0;
+			return;
 		}
 	}
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find jScope classes!");
-		return 0;
+		return;
 	}
 	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
 	if(mid == 0)
 	{
 		printf("\nCannot find main\n");
-		return 0;
+		return;
 	}
 	if(name)
 		jstr = (*env)->NewStringUTF(env, name);
