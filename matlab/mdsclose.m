@@ -9,7 +9,7 @@ function status = mdsclose(para)
 %status  = mdsipmex('MDSLIB->MDS$CLOSE()');
 if(nargin < 1);para=0;end
 if(para)
-status = mdsdisconnect();
+status = mdsdisconnect(0);
 else
 status  = mdsipmex('TreeClose()');
 end
