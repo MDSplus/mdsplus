@@ -121,7 +121,7 @@ else
     set awkcmd="$awkcmd""'"
     set awkcmd="$awkcmd"'; set temp_delim='
     set awkcmd="$awkcmd"'" substr($3,2) "'
-    set awkcmd="$awkcmd"'; source \$temp_setup_script;" ; }'
+    set awkcmd="$awkcmd"'; source $temp_setup_script;" ; }'
     set shellcmd=`/bin/awk "$awkcmd" $temp_file`
     unset temp_file
     eval $shellcmd
