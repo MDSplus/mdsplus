@@ -35,16 +35,124 @@ public fun IPC901__init(as_is _nid, optional _method)
     private _N_PHASE_1 = 32;
     private _N_PHASE_2 = 33;
     private _N_FLAGS = 34;
- 
 
     private _INVALID = 10E20;
-
+	
 
     _name = DevNodeRef(_nid, _N_NAME);
 
-		DevCamChk(_name, CamPiow(_name, 0, 1, _dummy=0, 16),1,1);
-write(*, 'CAMIN');
 
+/*	Enable LAM */
+
+	DevCamChk(_name, CamPiow(_name, 0, 26, _dummy=0, 16),1,1);		
+	wait(0.01);
+
+
+/*	Set two bytes configuration */
+
+    DevNodeCvt(_nid, _N_FIR_CUT_OFF, [0.,2.5E3,5E3,10E3,25E3,50E3],[0,1,2,3,4,5], _fir_cut_off = _INVALID);
+	if(_fir_cut_off == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid FIR cutoff specification");
+ 		abort();
+	}
+    DevNodeCvt(_nid, _N_FIR_WINDOW, [8,16,32],[1,2,3], _fir_window = _INVALID);
+	if(_fir_window == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid FIR window specification");
+ 		abort();
+	}
+	
+	_end_time = if_error(data(DevNodeRef(_nid, _N_END_TIME)), _INVALID);	/*IP */
+	if(_end_time == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid number of samples specification");
+ 		abort();
+	}
+	_num_samples_hd = long(_end_time/4E-6 + 0.5);
+	if(_num_samples_hd < (1<<15))									/* filtraggio su 1/4 memoria da 256K */
+	{
+		_mem_filt = 0;
+	}
+	else if(_num_samples_hd < (1<<16))								/* filtraggio su 1/2 memoria da 256K */
+	{
+		_mem_filt = 1;
+	}
+	else if(_num_samples_hd < (1<<16)+(1<<15))						/* filtraggio su 3/4 memoria da 256K */
+	{
+		_mem_filt = 2;
+	}
+	else															/* filtraggio su tutta memoria da 256K */
+	{
+		_mem_filt = 3;
+	}
+
+    DevNodeCvt(_nid, _N_HARD_DECIM, [1,2,4,8,16,32],[0,1,2,3,4,5], _hard_decim = _INVALID);
+	if(_hard_decim == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid Hardware decimation specification");
+ 		abort();
+	}
+    DevNodeCvt(_nid, _N_DAC_GAIN, [1,2,4,8,16,32],[0,1,2,3,4,5], _dac_gain = _INVALID);
+	if(_dac_gain == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid DAC gain specification");
+ 		abort();
+	}
+    DevNodeCvt(_nid, _N_DAC_OUTPUT, ["PHASE_1", "PHASE_2"],[0,1], _dac_output = _INVALID);
+	if(_dac_output == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid DAC output specification");
+ 		abort();
+	}
+    DevNodeCvt(_nid, _N_ACQ_MODE, ["CALIBRATION", "MEASURE"],[0,1], _acq_mode = _INVALID);
+	if(_acq_mode == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid Acquisition mode specification");
+ 		abort();
+	}
+     _w = (_fir_cut_off<< 1) | (_fir_window << 4) | (_mem_filt << 6)
+        | (_hard_decim << 8) | (_dac_gain << 11) | (_acq_mode << 14)
+        | (_dac_output << 15);
+	DevCamChk(_name, CamPiow(_name, 0, 16, _w, 16),1,1);
+	wait(0.01);
+
+
+/*	Set C (Wavelength ratio) constant */
+
+	_wave_len_1 = if_error(data(DevNodeRef(_nid, _N_WAVE_LEN_1)), _INVALID);
+	if(_wave_len_1 == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid Wavelength 1 specification");
+ 		abort();
+	}
+	if(_wave_len_1 < -1. || _wave_len_1 > 1)
+	{
+    	DevLogErr(_nid, "Invalid Wavelength 1 specification");
+ 		abort();
+	}
+	
+	_wave_len_2 = if_error(data(DevNodeRef(_nid, _N_WAVE_LEN_2)), _INVALID);
+	if(_wave_len_2 == _INVALID)
+	{
+    	DevLogErr(_nid, "Invalid Wavelength 2 specification");
+ 		abort();
+	}
+	if(_wave_len_2 < -1. || _wave_len_2 > 1)
+	{
+    	DevLogErr(_nid, "Invalid Wavelength 2 specification");
+ 		abort();
+	}
+	_wave_rate = long(1048576 * abs(float(_wave_len_2)/_wave_len_1) + 0.5);
+	_w = _wave_rate & 1023;
+	DevCamChk(_name, CamPiow(_name, 2, 16, _w, 16),1,1); 
+	_w = ((_wave_rate >> 10) & 1023);
+	DevCamChk(_name, CamPiow(_name, 1, 16, _w, 16),1,1); 
+	wait(0.01);
+
+
+/*	Set Angle correction tables */
+	
 	for(_chan = 0; _chan < 2; _chan++)
 	{
 
@@ -55,7 +163,6 @@ write(*, 'CAMIN');
 		{
 			_calibration = data(0W:1023W);
 
-write(*, 'Calibration: ', _calibration);		
 			
 		}
 		else
@@ -76,17 +183,15 @@ write(*, 'Calibration: ', _calibration);
 				_calibration = [_calibration, _curr_corr];
 			}
 		}
-write(*, 'CAMAC1', _chan);
-wait(0.5);
 		DevCamChk(_name, CamPiow(_name, long(_chan), 23, _dummy=0, 16),1,1);
- 
-write(*, 'CAMAC2', _chan);
+ 		wait(0.01);
+
 		DevCamChk(_name, CamQstopw(_name, _chan, 17, 1024, _calibration, 16), 1, *);
-		wait(0.5);
+		wait(0.1);
 	}
 
-write(*, 'Fatta correzoe');
 
+/*	Set Overflow Undeflow tables */
 
 	for(_phase = 0; _phase < 2; _phase++)
 	{
@@ -114,9 +219,6 @@ write(*, 'Fatta correzoe');
  			abort();
 		}
 
-
-write(*, 'OVFL UFL', _ovfl_lev, _unfl_lev);
-
 		_over_radius = _ovfl_lev * _ovfl_lev;
 		_under_radius = _unfl_lev * _unfl_lev;
 		_over_underflow_table = [];
@@ -136,105 +238,12 @@ write(*, 'OVFL UFL', _ovfl_lev, _unfl_lev);
             }
 		}
 		
-		
-write(*, _over_underflow_table);		
-		
 		DevCamChk(_name, CamPiow(_name, _phase + 2, 23, _dummy=0, 16),1,1); 
+		wait(0.01);
 
 		DevCamChk(_name, CamQstopw(_name, _phase + 2, 17, 1024, _over_underflow_table, 16), 1, *);
-		wait(0.5);
+		if(_phase==0)wait(0.25);
 	}
 	
-write(*, 'Scritta _over_underflow_table');		
-	
-	_wave_len_1 = if_error(data(DevNodeRef(_nid, _N_WAVE_LEN_1)), _INVALID);
-write(*, _wave_len_1);
-	if(_wave_len_1 == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid Wavelength 1 specification");
- 		abort();
-	}
-	if(_wave_len_1 < -1. || _wave_len_1 > 1)
-	{
-    	DevLogErr(_nid, "Invalid Wavelength 1 specification");
- 		abort();
-	}
-write(*, "XX");
-	
-	_wave_len_2 = if_error(data(DevNodeRef(_nid, _N_WAVE_LEN_2)), _INVALID);
-	if(_wave_len_2 == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid Wavelength 2 specification");
- 		abort();
-	}
-	if(_wave_len_2 < -1. || _wave_len_2 > 1)
-	{
-    	DevLogErr(_nid, "Invalid Wavelength 2 specification");
- 		abort();
-	}
-	_wave_rate = long(1048576 * abs(float(_wave_len_2)/_wave_len_1) + 0.5);
-write(*, _wave_rate);
-	_w = _wave_rate & 1023;
-write(*, _w);
-	DevCamChk(_name, CamPiow(_name, 2, 16, _w, 16),1,1); 
-	_w = ((_wave_rate >> 10) & 1023);
-write(*, _w);
-	DevCamChk(_name, CamPiow(_name, 1, 16, _w, 16),1,1); 
-write(*, 'FATO');
-
-    DevNodeCvt(_nid, _N_FIR_CUT_OFF, [0.,2.5E3,5E3,10E3,25E3,50E3],[0,1,2,3,4,5], _fir_cut_off = _INVALID);
-	if(_fir_cut_off == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid FIR cutoff specification");
- 		abort();
-	}
-
-    DevNodeCvt(_nid, _N_FIR_WINDOW, [8,16,32],[1,2,3], _fir_window = _INVALID);
-	if(_fir_window == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid FIR window specification");
- 		abort();
-	}
-    DevNodeCvt(_nid, _N_SOFT_DECIM, [1,2,3,4,6,10,20,40],[0,1,2,3,4,5,6,7], _soft_decim = _INVALID);
-	if(_soft_decim == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid Software decimation specification");
- 		abort();
-	}
-    DevNodeCvt(_nid, _N_HARD_DECIM, [1,2,4,8,16,32],[0,1,2,3,4,5], _hard_decim = _INVALID);
-	if(_hard_decim == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid Hardware decimation specification");
- 		abort();
-	}
-    DevNodeCvt(_nid, _N_DAC_GAIN, [1,2,4,8,16,32],[0,1,2,3,4,5], _dac_gain = _INVALID);
-	if(_dac_gain == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid DAC gain specification");
- 		abort();
-	}
-    DevNodeCvt(_nid, _N_DAC_OUTPUT, ["PHASE_1", "PHASE_2"],[0,1], _dac_output = _INVALID);
-	if(_dac_output == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid DAC output specification");
- 		abort();
-	}
-    DevNodeCvt(_nid, _N_ACQ_MODE, ["CALIBRATION", "MEASURE"],[0,1], _acq_mode = _INVALID);
-	if(_acq_mode == _INVALID)
-	{
-    	DevLogErr(_nid, "Invalid Acquisition mode specification");
- 		abort();
-	}
-
-/* Other settings */
-     _w = _fir_cut_off | (_fir_window << 3) | (_soft_decim << 5)
-        | (_hard_decim << 8) | (_dac_gain << 11) | (_acq_mode << 14)
-        | (_dac_output << 15);
-
-	DevCamChk(_name, CamPiow(_name, 0, 16, _w, 16),1,1); 
-
-/* Enable LAM */			
-	DevCamChk(_name, CamPiow(_name, 0, 26, _w=0, 16),1,1); 
-		
 	return(1);
 }

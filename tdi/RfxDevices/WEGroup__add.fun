@@ -22,6 +22,6 @@ public fun WEGroup__add(in _path, out _nidout)
 	DevAddNode(_cn // ':AAF', 'NUMERIC', 0, *, _nid);
 	DevAddNode(_cn // ':FILTER', 'NUMERIC', 0, *, _nid);
 	
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 45,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 45,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

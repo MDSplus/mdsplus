@@ -69,7 +69,7 @@ write(*, _n_frames);
 
 write(*, "Open Connection");
 
-	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _sw=0);
+	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 4000, _sw=0);
 	if(_sock == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
@@ -81,7 +81,8 @@ write(*, "Send init");
 
 	if((_err_msg = TCPSendCommand(_sock, "CAMERA_INIT "//_name//" "//trim(adjustl(_n_frames))//" "//trim(adjustl(_trig_mode))) ) != "")
 	{
-		DevLogErr(_nid, "CAMERA INIT operation error : "//_err_msg); 
+		DevLogErr(_nid, "CAMERA INIT operation error : "//_err_msg);
+		TCPCloseConnection(_sock); 
 		abort();
 	}
 

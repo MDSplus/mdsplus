@@ -60,42 +60,60 @@ write(*, "CAMERA store");
 
 	write(*, _n_frames);
 
-		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _error = 1);
-		if(_error)
+
+
+    		DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _trig_mode = 0);
+		
+		if(_trig_mode)
 		{
-		DevLogErr(_nid, "Missing delay between frame");
-		abort();
+			_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _error = 1);
+			if(_error)
+			{
+				DevLogErr(_nid, "Missing trigger source");
+				abort();
+			}
+		} else {
+			_trig_time = 0;
 		}
 
 		_frame_rate = if_error(data(DevNodeRef(_nid, _N_FRAME_RATE)), _error = 1);
 		if(_error)
 		{
-		DevLogErr(_nid, "Missing delay between frame");
+		DevLogErr(_nid, "Missing frame rate");
 		abort();
 		}
 
 		_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 10000, _sw=0);
 		if(_sock == 0)
 		{
-			DevLogErr(_nid, "Cannot connect to remote instruments"); 
+			DevLogErr(_nid, "Cannot connect to remote instruments");
 			abort();
 		}
 
 		if((_err_msg = TCPSendCommand( _sock, "CAMERA_STORE") ) != "")
 		{
-			DevLogErr(_nid, "Error during send  CAMERA_STORE command "//_err_msg); 
+			DevLogErr(_nid, "Error during send  CAMERA_STORE command "//_err_msg);
+			TCPCloseConnection(_sock);  
 			abort();
 		}
 
-        _img = CAMERAReadFrames(_sock, _n_frames = 0, _x_pixel = 0, _y_pixel = 0);
+                _img = CAMERAReadFrames(_sock, _n_frames = 0, _x_pixel = 0, _y_pixel = 0);
+
+write(*,_n_frames);
+write(*,_x_pixel);
+write(*,_y_pixel);
+
 
 		if( size( _img ) == 0)
 		{
 			DevLogErr(_nid, "No image read for CAMERA"); 
 		} else {
-			_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), *:*:(1./_frame_rate));
-			_img = set_range(_y_pixel, _x_pixel, _n_frames, _img);
-			_video = compile('build_signal(($VALUE), (`_img), (`_dim))');
+			_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), make_range(*,*,(1./_frame_rate)) );
+			_frames_img = set_range(_y_pixel, _x_pixel, _n_frames, _img);
+write(*,shape(_frames_img));			
+			_video = compile('build_signal(($VALUE), set_range(`_y_pixel, `_x_pixel, `_n_frames, `_img), (`_dim))');
+write(*,_video);			
+			
 			_video_nid =  DevHead(_nid) + _N_VIDEO;
 			_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
 			if(! (_status & 1))

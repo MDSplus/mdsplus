@@ -28,10 +28,10 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 	private _B2601$K_INPUT	  = 0;
 	private _B2601$K_OUTPUT	  = 1;
 
-    private _READ = 1;
+    	private _READ = 1;
 	private _WRITE = 0;
 
-    private _LINEAR   = 0;
+    	private _LINEAR   = 0;
 	private _INTEGRAL = 1;
 
 
@@ -39,7 +39,7 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 	public _B2601_K_READ	   = 0;
 	public _B2601_K_CLEAR	   = 9;
 	public _B2601_K_WRITE	   = 16;	
-	public _B2601_K_DISABLE   = 24;
+	public _B2601_K_DISABLE    = 24;
 	public _B2601_K_ENABLE	   = 26;
 
 /*  CAMAC Argument definition	*/
@@ -159,6 +159,7 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 		}	
 	};
 
+	
 	_name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
 	if(_name == "")
 	{
@@ -188,9 +189,14 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 	};
 
 	_status = tcl("do/method \\acq_trigger init");
-	_status = tcl("do/method \\DEQU_TEST::TOP.TIMING:AUTOZERO init");
+	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:AUTOZERO init");
 	_status = tcl("do/method \\CADH_CLOCK init");
 	_status = tcl("do/method \\TRCF_CLOCK init");
+	
+	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_CLOCK_1 init");
+	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_CLOCK_2 init");
+	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_TRIGGER init");
+	
 	
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
 	{
@@ -224,8 +230,14 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 			_gain_path = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_GAIN)), "");
 			if(_gain_path != "")
 			{
-				_status = tcl("do/method \\"//_gain_path//" init");
 				write(*,"do/method \\"//_gain_path//" init");
+				_status = tcl("do/method \\"//_gain_path//" init");
+			}
+
+			if( DevIsOn( getnci(Build_path('\\DEQU_RAW_T::CONTROL'), 'NID_NUMBER')) )
+			{
+				write(*,"do/method  \\DEQU_RAW_T::CONTROL init");
+				_status = tcl("do/method \\DEQU_RAW_T::CONTROL init");
 			}
 
 
@@ -247,6 +259,13 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 				genFendPulses(_name, _card_id);
 
 				wait(6.0);
+
+				if( DevIsOn( getnci(Build_path('\\DEQU_RAW_T::CONTROL'), 'NID_NUMBER')) )
+				{
+					write(*,"do/method  \\DEQU_RAW_T::CONTROL store");
+					_status = tcl("do/method \\DEQU_RAW_T::CONTROL store");
+				}
+	
 				if(_adc_lin != "")
 				{
 					write(*,"do/method \\"//_adc_lin//" store");

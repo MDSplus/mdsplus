@@ -60,16 +60,8 @@ write(*, _port);
 
 write(*, _n_frames);
 
-	_delay_frames = if_error(data(DevNodeRef(_nid, _N_DELAY_FRAMES)), _error = 1);
-	if(_error)
-	{
-	DevLogErr(_nid, "Missing delay between frame");
-	abort();
-	}
 
-write(*, _delay_frames );
-
-	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 2000, _sw=0);
+	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 4000, _sw=0);
 	if(_sock == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
@@ -79,6 +71,7 @@ write(*, _delay_frames );
 	if((_err_msg = TCPSendCommand(_sock, "CAMERA_ARM") ) != "")
 	{
 		DevLogErr(_nid, "CAMERA arm command execution error "//_err_msg); 
+		TCPCloseConnection(_sock);
 		abort();
 	}
 

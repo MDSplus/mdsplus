@@ -65,7 +65,11 @@ public fun BOLO__store(as_is _nid, optional _method)
 
 	write(*, "test");
 
-/*   
+	DevNodeCvt(_nid, _N_FREQUENCY, [1000000,500000,250000,200000,100000,40000,20000,10000,5000],
+	                               [1,      2,     4,     5 ,    10,    25,   50,   100,  250], _reduction = 1);
+
+
+/****************************************************************************************************   
 	_reduction = int(1000000./_freq + 0.5) - 1;
 
 	if(_reduction < 0)
@@ -73,7 +77,7 @@ public fun BOLO__store(as_is _nid, optional _method)
 		_reduction = 1;
 		_freq = 1e6;
 	}
-*/
+*****************************************************************************************************/
 	_start_idx = 0;
 	_end_idx = int(_freq * _acq_duration);
 
@@ -96,11 +100,12 @@ public fun BOLO__store(as_is _nid, optional _method)
 				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
 				_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
 
+write(*, "test ", TomoVMESlot(_chan_id), TomoVMEChan(_chan_id), _error);
+
 
 				if(TomoChanIsActive(_chan_id) && _error == 0 )
 				{
 
-	write(*, "test ", TomoVMESlot(_chan_id), TomoVMEChan(_chan_id), _error);
 
 					_c = TomoVMEChan(_chan_id);
 					_m = TomoVMESlot(_chan_id);

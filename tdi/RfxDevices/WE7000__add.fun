@@ -21,7 +21,7 @@ public fun WE7000__add(in _path, out _nidout)
 		DevAddNode(_cs // ':LINK_MODULE', 'NUMERIC', 1, *, _nid);
 	}
 
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path//':ARM_ACTION', 'INIT', 'ARM', 70,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 50,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':ARM_ACTION',  'PULSE_PREPARATION', 'ARM', 70,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

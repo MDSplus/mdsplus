@@ -11,7 +11,7 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
     private _N_POL_CARD_01 = 7;
 
     private _N_TOROIDAL = 43;
-	private _N_TOR_DECODER_1 = 44;
+    private _N_TOR_DECODER_1 = 44;
     private _N_TOR_DECODER_2 = 45;
     private _N_TOR_CARD_01 = 48;
 
@@ -20,36 +20,40 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
     private _N_CARD_GAIN  = 1;
     private _N_CARD_ADC  = 2;
 
-
 	
-	_pol_dec_1 = if_error(data(DevNodeRef(_nid, _N_POL_DECODER_1)), "");
-	if(_pol_dec_1 == "")
+	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
-		DevLogErr(_nid, "Missing poloidal Decoder 1 path reference"); 
-		abort();
-	};
-
-	_pol_dec_2 = if_error(data(DevNodeRef(_nid, _N_POL_DECODER_2)), "");;
-	if(_pol_dec_2 == "")
+		_pol_dec_1 = if_error(data(DevNodeRef(_nid, _N_POL_DECODER_1)), "");
+		if(_pol_dec_1 == "")
+		{
+			DevLogErr(_nid, "Missing poloidal Decoder 1 path reference"); 
+			abort();
+		};
+	
+		_pol_dec_2 = if_error(data(DevNodeRef(_nid, _N_POL_DECODER_2)), "");;
+		if(_pol_dec_2 == "")
+		{
+			DevLogErr(_nid, "Missing poloidal Decoder 2 path reference"); 
+			abort();
+		};
+	}
+	
+	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
 	{
-		DevLogErr(_nid, "Missing poloidal Decoder 2 path reference"); 
-		abort();
-	};
-
-	_tor_dec_1 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_1)), "");
-	if(_tor_dec_1 == "")
-	{
-		DevLogErr(_nid, "Missing toroidal Decoder 1 path reference"); 
-		abort();
-	};
-
-	_tor_dec_2 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_2)), "");;
-	if(_tor_dec_2 == "")
-	{
-		DevLogErr(_nid, "Missing toroidal Decoder 2 path reference"); 
-		abort();
-	};
-
+		_tor_dec_1 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_1)), "");
+		if(_tor_dec_1 == "")
+		{
+			DevLogErr(_nid, "Missing toroidal Decoder 1 path reference"); 
+			abort();
+		};
+	
+		_tor_dec_2 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_2)), "");;
+		if(_tor_dec_2 == "")
+		{
+			DevLogErr(_nid, "Missing toroidal Decoder 2 path reference"); 
+			abort();
+		};
+	}	
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
@@ -69,31 +73,31 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
 
 				_adc = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC)), "");
 				
-				write(*, "ADC  "//_adc_lin);
 
 				if( _adc != "" )
 				{
-					_status = tcl("do/method \\"//_adc//" init");
 					write(*,"do/method \\"//_adc//" init"); 
+					_status = tcl("do/method \\"//_adc//" init");
 				}
 
 				_gain = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_GAIN)), "");
 				
-				write(*, "GAIN  "//_gain);
-
 				
 				if(_gain != "")
 				{
-					_status = tcl("do/method \\"//_gain//" init");
 					write(*,"do/method \\"//_gain//" init"); 
+					_status = tcl("do/method \\"//_gain//" init");
 				}
 			}
 		}
 	}
 
+write(*, "OK");
 
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
 	{
+
+write(*, "OK1");
 
 		_status = tcl("do/method \\TOR_AUTOZERO init");
 		_status = tcl("do/method \\TOR_TRIG init");
@@ -103,50 +107,55 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
-			_head_channel = _N_POL_CARD_01 + (_i *  _K_NODES_PER_CARD);
+			_head_channel = _N_TOR_CARD_01 + (_i *  _K_NODES_PER_CARD);
 
 			if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
 			{ 
 
 				_adc = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC)), "");
 				
-				write(*, "ADC  "//_adc_lin);
-
 				if( _adc != "" )
 				{
-					_status = tcl("do/method \\"//_adc//" init");
 					write(*,"do/method \\"//_adc//" init"); 
+					_status = tcl("do/method \\"//_adc//" init");
 				}
 
 				_gain = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_GAIN)), "");
 				
-				write(*, "GAIN  "//_gain);
-
 				
 				if(_gain != "")
 				{
-					_status = tcl("do/method \\"//_gain//" init");
 					write(*,"do/method \\"//_gain//" init"); 
+					_status = tcl("do/method \\"//_gain//" init");
 				}
 			}
 		}
 	}
 
+write(*, "OK3");
+
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
+
+write(*, "OK4");
+
+		write(*,"do/method \\"//_pol_dec_1//" init"); 
 		_status = tcl("do/method \\"//_pol_dec_1//" init");
+		write(*,"do/method \\"//_pol_dec_2//" init"); 
 		_status = tcl("do/method \\"//_pol_dec_2//" init");
 	}
 
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
 	{
+		write(*,"do/method \\"//_tor_dec_1//" init"); 
 		_status = tcl("do/method \\"//_tor_dec_1//" init");
+		write(*,"do/method \\"//_tor_dec_2//" init"); 
 		_status = tcl("do/method \\"//_tor_dec_2//" init");
 	}
 
 
-	wait(2.0);
+	wait(4.0);
 
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
@@ -161,12 +170,10 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
 
 				_adc = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC)), "");
 				
-				write(*, "ADC  "//_adc_lin);
-
 				if( _adc != "" )
 				{
-					_status = tcl("do/method \\"//_adc//" store");
 					write(*,"do/method \\"//_adc//" store"); 
+					_status = tcl("do/method \\"//_adc//" store");
 				}
 			}
 		}
@@ -178,19 +185,17 @@ public fun EM_FLU_TEST__init(as_is _nid, optional _method)
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
-			_head_channel = _N_POL_CARD_01 + (_i *  _K_NODES_PER_CARD);
+			_head_channel = _N_TOR_CARD_01 + (_i *  _K_NODES_PER_CARD);
 
 			if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
 			{ 
 
 				_adc = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_ADC)), "");
 				
-				write(*, "ADC  "//_adc_lin);
-
 				if( _adc != "" )
 				{
-					_status = tcl("do/method \\"//_adc//" store");
 					write(*,"do/method \\"//_adc//" store"); 
+					_status = tcl("do/method \\"//_adc//" store");
 				}
 			}
 		}

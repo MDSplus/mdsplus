@@ -53,7 +53,7 @@ public fun WE7116__add(in _path, out _nidout)
 		DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
 	
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 55,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'ISIS_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

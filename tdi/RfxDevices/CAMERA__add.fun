@@ -2,13 +2,13 @@ public fun CAMERA__add(in _path, out _nidout)
 {
     DevAddStart(_path, 'CAMERA', 22, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT', *, *, _nid);
-    DevAddNode(_path // ':NAME',		'TEXT', *, *, _nid);
+    DevAddNode(_path // ':NAME',	'TEXT', *, *, _nid);
     DevAddNode(_path // ':IP_ADDRESS',  'TEXT', *, *, _nid);
-    DevAddNode(_path // ':PORT',		'NUMERIC', *, *, _nid);
-    DevAddNode(_path // ':TRIG_MODE',	'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':PORT',	'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':TRIG_MODE',	'TEXT', 'INTERNAL', *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE',	'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':NUM_FRAMES',  'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // ':MODEL',		'TEXT', *, *, _nid);
+    DevAddNode(_path // ':MODEL',	'TEXT', *, *, _nid);
     DevAddNode(_path // ':LENS_TYPE',	'TEXT', *, *, _nid);
     DevAddNode(_path // ':APERTURE',	'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':F_DISTANCE',	'NUMERIC', *, *, _nid);

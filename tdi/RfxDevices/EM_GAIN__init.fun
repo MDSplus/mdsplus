@@ -45,16 +45,24 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 
 	private fun WordSetGain(in _word, in _chan, in _lin_int, in _gain)
 	{
-		_word = _word & ~( word(127) << 12 );
-		_word = _word & ~( word(15)  << 7 );
-		_word = _word & ~( word(1)   << 19 );
+		_word = _word & ~( (127) << 12 );
+		_word = _word & ~( (15)  << 7 );
+		_word = _word & ~( (1)   << 19 );
 
 		return  ( _word |  (_gain) << 12 | (_chan) << 7 | (_lin_int) << 19 );
 	};
 	
+	
+	private fun WordSetLinInt(inout _word, in _lin_int)
+	{
+		_word = _word & ~( (1)   << 19 );
+
+		_word = ( _word |  (_lin_int) << 19 );
+	};
+	
 	private fun WordSetChan(inout _word, in _chan)
 	{
-		_word = _word & ~( word(15) << 7 );
+		_word = _word & ~( (15) << 7 );
 
 		_word = ( _word |  (_chan) << 7 );
 	};
@@ -120,7 +128,7 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 		}
 	};
 
-	private fun ReadGain(in _name, in _cmnd, inout _value)
+	private fun ReadWord(in _name, in _cmnd, inout _value)
 	{		
 		_a = _B2601_K_INPUT;
 		_f = _B2601_K_CLEAR;
@@ -145,14 +153,14 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 		}	
 	};
 
-   _name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
-   if(_name == "")
-   {
-	    DevLogErr(_nid, "Missing BIRA 2601 camac name"); 
-	    abort();
-   }
-
-   _card_addr = if_error(data(DevNodeRef(_nid, _N_CARD_ADDR)), -1);
+	_name = if_error(data(DevNodeRef(_nid, _N_BIRA_CTRLR)), "");
+	if(_name == "")
+	{
+		DevLogErr(_nid, "Missing BIRA 2601 camac name"); 
+		abort();
+	}
+	
+	   _card_addr = if_error(data(DevNodeRef(_nid, _N_CARD_ADDR)), -1);
 	if(_card_addr == -1) 
 	{ 
 	    DevLogErr(_nid, "EM gain card address"); 
@@ -173,13 +181,50 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	/* Check if card is set in local or remot mode */
 	_out = 0;
 		
-	ReadGain( _name,  _read_value, _out );
+	ReadWord( _name,  _read_value, _out );
+
+	_gain_read = 0;
+	_word_read = 0;
 
 	if( ! IsRemote(_out) )
 	{
-		DevLogErr(_nid, "EM gain card "// _card_addr //" is set in local mode"); 
-		abort();
+		/*
+		Save manual configuration into Pulse File
+		*/
+		for(_i = 0; _i < _K_NUM_CHANNEL; _i++)
+		{
+write(*, _i);
+			_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
+		
+			if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+			{ 
+		
+		/*Read and save manual integral gain value set*/				
+
+				WordSetLinInt(_read_value, _INTEGRAL);
+				WordSetChan( _read_value, ( 15 - _i ) );
+				ReadWord( _name,  _read_value, _word_read );				
+				_gain_read = WordGetGain(_word_read);
+		
+				_real_gain = _gain_read / 8.;
+				DevPut(_nid, _head_channel + _N_CHAN_INT_GAIN, _real_gain);
+							
+		/*Read and save manual linear gain value set*/				
+		
+				WordSetLinInt(_read_value, _LINEAR);
+				WordSetChan( _read_value, ( 15 - _i ) );
+				ReadWord( _name,  _read_value,  _word_read );
+				_gain_read = WordGetGain(_word_read);
+				
+				_real_gain = _gain_read / 8.;
+				DevPut(_nid, _head_channel + _N_CHAN_LIN_GAIN, _real_gain);
+
+			}
+		}
+		DevLogErr(_nid, "EM gain card "// _card_addr //" is set in local mode");
+		return(1);
 	}
+	
 	
    
 	for(_i = 0; _i < _K_NUM_CHANNEL; _i++)
@@ -188,7 +233,7 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 	
 		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
 		{ 
-	
+write(*, _i);	
 	/* Write integral gain value */
 			_noerror = 0;
 			
@@ -206,15 +251,27 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 			* Per come sono stati realizzati i cablaggi il canale 1 corrisponde
 			* al canale 16
 			*/
-				_word = WordSetGain(_write_value, ( 15 - _i), _INTEGRAL, _gain);
-				
-	write(*, "Integral Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
-				
+				_word = WordSetGain(_write_value, ( 15 - _i ), _INTEGRAL, _gain);								
 				WriteGain(_name, _word);
+/*
+write(*, "Integral Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
+*/
+				WordSetLinInt(_read_value, _INTEGRAL);
+				WordSetChan( _read_value, ( 15 - _i ) );
+				ReadWord( _name,  _read_value, _word_read );
+				_gain_read = WordGetGain(_word_read);
+/*				
+write(*, _gain_read , _gain);
+*/				
+				if(_gain_read != _gain)
+				{
+					DevLogErr(_nid, "EM gain card "//_card_addr//": Error set integral gain value for channel "//(_i + 1)//" write "//_gain//" read "//_gain_read); 
+				}
+				
 			} 
 			else
 			{
-				DevLogErr(_nid, "EM gain card "//_card_addr//": Error set integral gain value for channel "//(_i + 1)//" "); 
+				DevLogErr(_nid, "EM gain card "//_card_addr//": out of range integral gain for channel "//(_i + 1)//" "); 
 			}
 	
 	/* Write linear gain value */
@@ -238,14 +295,29 @@ public fun EM_GAIN__init(as_is _nid, optional _method)
 			*/
 
 				_word = WordSetGain(_write_value, (15 - _i), _LINEAR, _gain);
-
-	write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
-	
+/*
+write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
+*/	
 				WriteGain(_name, _word);
+
+				WordSetLinInt(_read_value, _LINEAR);
+				WordSetChan( _read_value, ( 15 - _i ) );
+				ReadWord( _name,  _read_value, _word_read );
+				_gain_read = WordGetGain(_word_read);
+/*				
+write(*, _gain_read , _gain);
+*/
+				if(_gain_read != _gain)
+				{
+					DevLogErr(_nid, "EM gain card "//_card_addr//": Error set linear gain value for channel "//(_i + 1)//" write "//_gain//" read "//_gain_read); 
+				}
+				
+				
+				
 			}
 			else
 			{
-				DevLogErr(_nid, "EM gain card "//_card_addr//": Error set linear gain value for channel "//(_i + 1)//" "); 
+				DevLogErr(_nid, "EM gain card "//_card_addr//": out of range linear gain for channel "//(_i + 1)//" "); 
 			}
 		}
 	}
