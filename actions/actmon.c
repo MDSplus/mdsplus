@@ -298,8 +298,8 @@ static void ConfirmServerAbort(Widget w, void *tag, void *cb)
   if (strlen(server) > 0) {
     switch (operation) {
       case 0: strcpy(cmd, "mdsserver_abort "); strcat(cmd, server); break;
-      case 1: strcpy(cmd, "mdsserver_stop "); strcat(cmd, server); break;
-      case 2: strcpy(cmd, "mdsserver_stop_dispatcher"); break;
+      case 1: strcpy(cmd, "mdsserver_kill "); strcat(cmd, server); break;
+      case 2: strcpy(cmd, "mdsserver_kill_dispatcher"); break;
     default:; 
     }
     printf("About to execute / %s /\n", cmd);
