@@ -113,7 +113,7 @@ SOURCE=.\MdsSql.def
 # End Group
 # Begin Source File
 
-SOURCE="$(SQL_DIR)\DevTools\Lib\ntwdblib.lib"
+SOURCE="..\..\Program Files\Microsoft Visual Studio\VC98\Lib\NTWDBLIB.LIB"
 # End Source File
 # End Target
 # End Project
