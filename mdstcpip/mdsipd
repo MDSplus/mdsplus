@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# MDSplus server daemon procedure
+#
+cd $1
+. $1/setup.sh
+if [ ! -d "logs" ]
+then
+  mkdir logs
+fi
+bin/mdsip mdsip >> $1/logs/access 2>> $1/logs/errors

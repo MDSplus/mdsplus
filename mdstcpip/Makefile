@@ -3,7 +3,7 @@ include $(MAKE_OPTIONS)
 OBJECTS = \
 	mdsipshr.o
 
-mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip
+mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip ../bin/mdsipd
 
 ../bin :
 	mkdir ../bin
@@ -13,6 +13,9 @@ mdstcpip : ../bin ../shlib ../bin/mdsiptest ../bin/mdsip
 
 ../bin/mdsip : mdsip_u.c
 	cc -o $@ $(CFLAGS) mdsip_u.c -L../shlib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(SOCKET_LIB)
+
+../bin/mdsipd : mdsipd
+	cp mdsipd ../bin/mdsipd
 
 ../shlib/libMdsIpShr.$(SHARE_TYPE) : $(OBJECTS) 
 	$(LD) -o $@ $(LD_SHARED_LIB_OPTIONS) $(OBJECTS) -lc $(SOCKET_LIB)
