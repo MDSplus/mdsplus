@@ -1,0 +1,22 @@
+MDSPLUS $cwd
+#
+# TDI Functions
+#
+MDS_PATH $MDSPLUS/tdi
+#
+# Test trees
+#
+main_path $MDSPLUS/trees
+subtree_path $main_path/subtree
+#
+# UID path
+#
+XAPPLRESDIR $MDSPLUS
+#
+# IDL path
+#
+IDL_PATH $IDL_PATH\\:\+$MDSPLUS/idl
+#
+# LIBRARY path
+#
+@LIBPATH@ $MDSPLUS/lib
