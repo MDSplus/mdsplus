@@ -934,7 +934,7 @@ static void *dlopen(char *filename, int flags)
 void *dlsym(void *handle, char *name)
 {
   void *symbol = NULL;
-  int s = shl_findsym((shl_t *)&handle,name,0,&symbol_value);
+  int s = shl_findsym((shl_t *)&handle,name,0,&symbol);
   return symbol;
 }
 #endif
