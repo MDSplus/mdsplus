@@ -321,7 +321,7 @@ int			(* doit)(),
 int			narg,
 struct descriptor	*list[],
 block_type		*block_ptr,
-struct descriptor_xd *out_ptr)
+int                     *count)
 {
   node_type		*node_ptr;
   user_type		user = {{0,DTYPE_T,CLASS_D,0},0,0};
@@ -331,18 +331,22 @@ struct descriptor_xd *out_ptr)
 	if (narg == 0 || list[0] == 0) status = LibTraverseTree(&block_ptr->head, doit, &user);
 	else for (j = 0; status & 1 && j < narg; ++j) {
 		status = TdiFindIdent(3, (struct descriptor_r *)list[j], &user.match, 0, &user.block_ptr);
-		if (status & 1) status = StrUpcase(&user.match, &user.match);
+		if (status & 1) 
+                {
+                  status = StrUpcase(&user.match, &user.match);
+                  user.block_ptr=block_ptr;
+                }
 		if (status & 1)
 		if (StrPosition(&user.match, &star, 0) || StrPosition(&user.match, &percent, 0))
-			status = LibTraverseTree(&user.block_ptr->head, doit, &user);
+			status = LibTraverseTree(&block_ptr->head, doit, &user);
 		else {
-			status = LibLookupTree(&user.block_ptr->head, &user.match, compare, &node_ptr);
+			status = LibLookupTree(&block_ptr->head, &user.match, compare, &node_ptr);
 			if (status & 1) status = (* doit)(node_ptr, &user);
 			else if (status == LibKEYNOTFOU) status = 1;
 		}
 	}
 	if (user.match.class == CLASS_D) StrFree1Dx(&user.match);
-	if (status & 1) status = TdiPutLong(&user.count, out_ptr);
+	if (status & 1) *count = user.count;
 	UnlockTdiMutex(&lock);
 	return status;
 }
@@ -361,7 +365,14 @@ int			status = 1;
 	***************************************************/
 	if (node_ptr->xd.class == 0) return 1;
 	if (user_ptr->match.length == 0) status = 1;
-	else status = StrMatchWild(&node_ptr->name_dsc, &user_ptr->match);
+	else
+        {
+	  struct descriptor str = {0, DTYPE_T, CLASS_D, 0};
+          StrCopyDx(&str,&node_ptr->name_dsc);
+          StrUpcase(&str,&str);
+	  status = StrMatchWild(&str, &user_ptr->match);
+          StrFree1Dx(&str);
+        }
 	if (status & 1) {
 		if (node_ptr->xd.l_length) status = LibFreeVm(
 			&node_ptr->xd.l_length,
@@ -378,24 +389,23 @@ int			status = 1;
 	Release all variables under a header and the headers too.
 	Used to release the FUN variables.
 */
-STATIC_ROUTINE int free_all(node_type **pnode) {
+STATIC_ROUTINE int free_all(node_type **pnode,block_type *block) {
 int	status = 1, stat2, len;
-block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
 	if ((*pnode)->xd.l_length) status = LibFreeVm(
 		&(*pnode)->xd.l_length,
 		&(*pnode)->xd.pointer,
-		&private->data_zone);
+		&block->data_zone);
 	if ((*pnode)->left) {
-		stat2 = free_all(&((*pnode)->left));
+		stat2 = free_all(&((*pnode)->left),block);
 		if (status & 1) status = stat2;
 	}
 	if ((*pnode)->right) {
-		stat2 = free_all(&((*pnode)->right));
+		stat2 = free_all(&((*pnode)->right),block);
 		if (status & 1) status = stat2;
 	}
 	len = sizeof(struct link) - 1 + (*pnode)->name_dsc.length;
-	stat2 = LibFreeVm(&len, pnode, &private->head_zone);
+	stat2 = LibFreeVm(&len, pnode, &block->head_zone);
         *pnode = 0;
 	if (status & 1) status = stat2;
 	return status;
@@ -404,13 +414,31 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 	Release variables.
 */
 TdiRefStandard(Tdi1Deallocate)
-block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
-	if (narg == 0 && private->head) {
-           status = free_all(&private->head); 
-           private->head = 0;
-           return status;
+        block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
+        int count_private=0,count_public=0,count;
+	if (narg == 0 && ((private->head != NULL) || (_public.head != NULL)))
+        {
+	  if (private->head)
+          {
+	    status = free_all(&private->head,private); 
+	    private->head = 0;
+	  }
+	  if (_public.head)
+	  {
+	    LockTdiMutex(&lock,&lock_initialized);
+	    status = free_all(&_public.head,&_public); 
+	    _public.head = 0;
+	    UnlockTdiMutex(&lock);
+	  }
+	  return status;
         }
-	return wild((int (*)())free_one, narg, list, private, out_ptr);
+	status = wild((int (*)())free_one, narg, list, private, &count_private);
+        LockTdiMutex(&lock,&lock_initialized);
+        status = wild((int (*)())free_one, narg, list, &_public, &count_public);
+        UnlockTdiMutex(&lock);
+        count = count_private + count_public;
+        status = TdiPutLong(&count, out_ptr);
+	return status;
 }
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
@@ -744,7 +772,14 @@ struct descriptor_r	*rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 
 	if (node_ptr->xd.class == 0) return 1;
 	if (user_ptr->match.length == 0) status = 1;
-	else status = StrMatchWild(&node_ptr->name_dsc, &user_ptr->match);
+	else
+        {
+	  struct descriptor str = {0, DTYPE_T, CLASS_D, 0};
+          StrCopyDx(&str,&node_ptr->name_dsc);
+          StrUpcase(&str,&str);
+	  status = StrMatchWild(&str, &user_ptr->match);
+          StrFree1Dx(&str);
+        }
 	if (status & 1) {
 		if (rptr) status = TdiDecompile(rptr, &tmp MDS_END_ARG);
 		if (status & 1) {
@@ -772,15 +807,22 @@ struct descriptor_r	*rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 */
 TdiRefStandard(Tdi1ShowPrivate)
 block_type *_private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
-	return wild((int (*)())show_one, narg, list, _private, out_ptr);
+int count;
+	status = wild((int (*)())show_one, narg, list, _private, &count);
+if (status & 1)
+  status = TdiPutLong(&count, out_ptr);
+  return status;
 }
 /*--------------------------------------------------------------
 	Display public variables.
 */
 TdiRefStandard(Tdi1ShowPublic)
+     int count;
   LockTdiMutex(&lock,&lock_initialized);
-	status = wild((int (*)())show_one, narg, list, &_public, out_ptr);
+	status = wild((int (*)())show_one, narg, list, &_public, &count);
 	UnlockTdiMutex(&lock);
+if (status & 1)
+  status = TdiPutLong(&count, out_ptr);
      return status;
 }
 
