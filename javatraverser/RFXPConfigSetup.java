@@ -50,7 +50,7 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField15.setOffsetNid(20);
 		deviceField15.setLabelString("Max I Magn (A):");
 		getContentPane().add(deviceField15);
-		deviceField15.setBounds(300,360,240,40);
+		deviceField15.setBounds(168,360,240,40);
 		getContentPane().add(deviceButtons1);
 		deviceButtons1.setBounds(144,408,281,40);
 		JPanel1.setBorder(etchedBorder1);
@@ -114,10 +114,6 @@ public class RFXPConfigSetup extends DeviceSetup
 		deviceField13.setEditable(false);
 		JPanel3.add(deviceField13);
 		//$$ etchedBorder1.move(24,417);
-		deviceField16.setOffsetNid(21);
-		deviceField16.setLabelString("PTCB Voltage: ");
-		getContentPane().add(deviceField16);
-		deviceField16.setBounds(12,360,276,40);
 		deviceField14.setNumCols(8);
 		deviceField14.setOffsetNid(19);
 		deviceField14.setLabelString("Transfer R (Ohm):");
@@ -188,8 +184,7 @@ public class RFXPConfigSetup extends DeviceSetup
 	DeviceField deviceField12 = new DeviceField();
 	DeviceField deviceField13 = new DeviceField();
 	//com.symantec.itools.javax.swing.borders.EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
-	EtchedBorder etchedBorder1 = new EtchedBorder();
-	DeviceField deviceField16 = new DeviceField();
+	EtchedBorder etchedBorder1 = new com.symantec.itools.javax.swing.borders.EtchedBorder();
 	DeviceField deviceField14 = new DeviceField();
 	//}}
 
