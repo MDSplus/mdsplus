@@ -38,6 +38,7 @@ procedure
     ApplyOverride;
     Autoscale(string);
     Clear;
+    Close;
     Crosshairs;
     CreateCustomizeFont;
     Cut;
@@ -593,6 +594,7 @@ object
         controls
             {
             XmPushButton exit_button;
+            XmPushButton close_button;
             };
         };
     exit_button: XmPushButton 
@@ -612,6 +614,22 @@ object
             XmNactivateCallback = procedures
                 {
                 Exit();
+                };
+            };
+        };
+    close_button: XmPushButton 
+        {
+        arguments
+            {
+            XmNlabelString = 
+            compound_string("Close Data Sources");
+            XmNmnemonic = keysym("C");
+            };
+        callbacks
+            {
+            XmNactivateCallback = procedures
+                {
+                Close();
                 };
             };
         };

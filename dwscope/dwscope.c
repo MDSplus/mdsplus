@@ -239,6 +239,7 @@ int       main(int argc, String *argv)
 			    {"ApplyOverride", (XtPointer)ApplyOverride},
 			    {"Autoscale", (XtPointer)Autoscale},
 			    {"Clear", (XtPointer)Clear},
+			    {"Close",(XtPointer)CloseDataSources},
                             {"CreateCustomizeFont", (XtPointer)CreateCustomizeFont},
 			    {"Crosshairs", (XtPointer)Crosshairs},
 			    {"Cut", (XtPointer)Cut},
