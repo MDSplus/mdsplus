@@ -101,6 +101,7 @@ int turn_crate_on_off_line( char *crate_name, int state )
         else {
 	    CRATEdb[idx].online = (status == ON) ? '1' : '0';
             CRATEdb[idx].enhanced = '0';
+            status = 1;
 	}
 
 //-----------------------------------------------------------
