@@ -355,7 +355,7 @@ class Frames extends Canvas
                     continue;
                 }
                 b_img = new byte[img_size];
-                d.read(b_img);
+                d.readFully(b_img);
 
                 source = new MemoryImageSource(width, height, c_model, b_img, 0, width);
                 img = createImage(source);
@@ -974,9 +974,14 @@ class Frames extends Canvas
                 width = d.width;
                 height = (int)(d.width/ratio);
             }
-         }
-         return new Dimension(width, height);
-     }
+	}
+	/*
+	Temporary fix, in order to avoid modification image if it is resized,
+	must be investigate
+	*/
+//                return new Dimension(width, height);
+        return GetFrameDim(idx);
+    }
 
     public void setMeasurePoint(int x_pixel, int y_pixel, Dimension d)
     {

@@ -226,8 +226,12 @@ class MdsMessage extends Object
         int idx = 0;
 
         //ReadBuf(header_b, dis);
-        if(dis.read(header_b)== -1)
+
+/*
+        if(dis.read(header_b) == -1)
             throw(new IOException("Broken connection with mdsip server"));
+*/
+        dis.readFully(header_b);
 
         c_type = header_b[14];
         swap = ((c_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
