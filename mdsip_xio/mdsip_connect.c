@@ -2,6 +2,9 @@
 #include "globus_xio_tcp_driver.h"
 #include "globus_xio_gsi.h"
 
+static int MDSIP_SNDBUF = 32768;
+static int MDSIP_RCVBUF = 32768;
+
 void *mdsip_connect(char *host)
 {
   static int activated=0;
@@ -57,17 +60,23 @@ void *mdsip_connect(char *host)
   
   if (strstr(contact_string,":") == NULL)
     strcat(contact_string,is_gsi ? ":8200" : ":8000");
+  result = globus_xio_attr_init(&attr);
+  mdsip_test_status(0,result,"mdsip_connect globus_xio_attr_init");
+  if (result != GLOBUS_SUCCESS) return 0;
   if (is_gsi)
   {
-    result = globus_xio_attr_init(&attr);
-    mdsip_test_status(0,result,"mdsip_connect globus_xio_attr_init");
-    if (result != GLOBUS_SUCCESS) return 0;
     result = globus_xio_attr_cntl(attr,gsi_driver,GLOBUS_XIO_GSI_SET_DELEGATION_MODE,
 				  GLOBUS_XIO_GSI_DELEGATION_MODE_FULL);
     mdsip_test_status(0,result,"mdsip_connect globus_xio_attr_cntl");
     if (result != GLOBUS_SUCCESS) return 0;
   }
-  result = globus_xio_open(xio_handle, contact_string, is_gsi ? attr : NULL);
+  result = globus_xio_attr_cntl(attr,tcp_driver,GLOBUS_XIO_TCP_SET_SNDBUF,MDSIP_SNDBUF);
+  mdsip_test_status(0,result,"mdsip_connect SET_SNDBUF");
+  if (result != GLOBUS_SUCCESS) return 0;
+  result = globus_xio_attr_cntl(attr,tcp_driver,GLOBUS_XIO_TCP_SET_RCVBUF,MDSIP_RCVBUF);
+  mdsip_test_status(0,result,"mdsip_connect SET_RCVBUF");
+  if (result != GLOBUS_SUCCESS) return 0;
+  result = globus_xio_open(xio_handle, contact_string, attr);
   mdsip_test_status(0,result,"mdsip_connect globus_xio_open");
   if (result != GLOBUS_SUCCESS) 
     xio_handle = 0;
@@ -124,4 +133,10 @@ void *mdsip_connect(char *host)
       free(m);
   }
   return (void *)xio_handle;
+}
+
+void mdsip_set_bufsize(int sndbuf, int rcvbuf)
+{
+  MDSIP_SNDBUF=sndbuf;
+  MDSIP_RCVBUF=rcvbuf;
 }
