@@ -24,7 +24,7 @@ int   sys$waitfr();
 
 
 
-#ifdef unix
+#if !(defined(_WIN32) || defined(vms))
 static void  child_done(	/* Return: meaningless sts		*/
     int   sig			/* <r> signal number			*/
    )
