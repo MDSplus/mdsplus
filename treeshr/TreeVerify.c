@@ -30,6 +30,7 @@ int TreeVerify( )
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
+#include <ncidef.h>
 #include "treeshrp.h"
 #include <stdio.h>
 

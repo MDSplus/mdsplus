@@ -56,7 +56,8 @@ static int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
               strcpy(from+strlen(info1->filespec)-4,"datafile#");
               strcpy(to+strlen(info1->filespec)-4,"datafile");
               lstatus = rename(from,to);
-              free(from,to);
+              free(from);
+              free(to);
             }
           }
           _TreeClose(&dbid2, 0, 0);
