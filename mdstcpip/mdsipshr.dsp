@@ -99,5 +99,9 @@ SOURCE=.\mdsipshr.c
 
 SOURCE=.\mdsipshr.def
 # End Source File
+# Begin Source File
+
+SOURCE=.\mdsiputil.c
+# End Source File
 # End Target
 # End Project
