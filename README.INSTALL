@@ -17,10 +17,6 @@ To build the software do the following (See special notes below):
     # ./configure
     # make all
 
-To install the software:
-
-    # make install
-
 ---------------------------------------------------------------------------
 Special Notes
 
