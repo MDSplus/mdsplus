@@ -68,12 +68,13 @@ write(*, _n_frames);
 		abort();
 	}
 
-	if((_err_msg = TCPSendCommand(_sock, "CAMERA_ARM") ) != "")
+	if((_err_msg = TCPSendCommand(_sock, "CAMERA_ARM "//_name) ) != "")
 	{
 		DevLogErr(_nid, "CAMERA arm command execution error "//_err_msg); 
 		TCPCloseConnection(_sock);
 		abort();
 	}
+
 
 
 	TCPCloseConnection(_sock);

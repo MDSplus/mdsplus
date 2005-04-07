@@ -90,7 +90,7 @@ write(*, "CAMERA store");
 			abort();
 		}
 
-		if((_err_msg = TCPSendCommand( _sock, "CAMERA_STORE") ) != "")
+		if((_err_msg = TCPSendCommand( _sock, "CAMERA_STORE "//_name) ) != "")
 		{
 			DevLogErr(_nid, "Error during send  CAMERA_STORE command "//_err_msg);
 			TCPCloseConnection(_sock);  
