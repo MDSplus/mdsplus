@@ -1,6 +1,5 @@
 public fun RFXControl__store(as_is _nid, optional _method)
 {
-
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_VME_IP = 2;
@@ -32,9 +31,7 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_ROUTINE_NAME = 23;
 	private _N_N_ADC_IN = 24;
 	private _N_N_DAC_OUT = 25;
-	private _N_N_NET_IN = 26;
-	private _N_N_NET_OUT = 27;
-	private _N_N_MODES = 28;
+	private _N_N_MODES = 27;
 	
 	private _N_ADC_IN_1 = 30;
 	private _N_DAC_OUT_1 = 222;
@@ -69,10 +66,6 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	write(*, 'Num ADC in: ', _num_adc_in);
 	_num_dac_out = data(DevNodeRef(_nid, _N_N_DAC_OUT));
 	write(*, 'Num DAC out: ', _num_dac_out);
-	_num_net_in = data(DevNodeRef(_nid, _N_N_NET_IN));
-	write(*, 'Num NET in: ', _num_net_in);
-	_num_net_out = data(DevNodeRef(_nid, _N_N_NET_OUT));
-	write(*, 'Num NET out: ', _num_net_out);
 	_num_modes = data(DevNodeRef(_nid, _N_N_MODES));
 	write(*, 'Num MODES: ', _num_modes);
 
