@@ -58,16 +58,17 @@ public fun TRCF__init(as_is _nid, optional _method)
 	    abort();
   	}
 	_clock_val = execute('`_clk');
-	_clk = 0;
+	/*_clk = 0;*/
+	_clk_id = 0;
     }
     else
     {
-        DevNodeCvt(_nid, _N_FREQUENCY, [50E3,20E3,10E3,5E3,2E3,1E3,500,200,100],[1,2,3,4,5,6,7,8,9], _clk = 0);
+        DevNodeCvt(_nid, _N_FREQUENCY, [50E3,20E3,10E3,5E3,2E3,1E3,500,200,100],[1,2,3,4,5,6,7,8,9], _clk_id = 0);
         _freq = data(DevNodeRef(_nid, _N_FREQUENCY));
         _clock_val = make_range(*,*,1./ _freq);
     	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
    }
-    _control_reg = word(_clk) | (word(_chans) << 4) | (word(_offset) << 7);
+    _control_reg = word(_clk_id) | (word(_chans) << 4) | (word(_offset) << 7);
     if(_buffer_size == _256K)
 	_control_reg = _control_reg | (1 << 15);
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*);

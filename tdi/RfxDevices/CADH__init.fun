@@ -34,25 +34,28 @@ public fun CADH__init(as_is _nid, optional _method)
     if(_ext_clock)
     {
 	_status = 1;
+	
         _clk = if_error(DevNodeRef(_nid, _N_CLOCK_SOURCE), _status = 0);
 	if(_status == 0)
 	{
 	    DevLogErr(_nid, "Cannot resolve clock"); 
 	    abort();
   	}
-/*	_clock_val = execute('`_clk');
-*/	_clock_val = evaluate(_clk);
-	write(*, _clock_val);
-	_clk = 0;
+	_clock_val = execute('`_clk');
+	
+	/* write(*, _clock_val); */
+	
+	/*_clk = 0;*/
+	_clk_id = 0;
     }
     else
     {
-        DevNodeCvt(_nid, _N_FREQUENCY, [500E3,250E3,125E3,50E3,10E3,5E3, 1E3,500],[1,2,3,4,5,6,7,8], _clk = 0);
+        DevNodeCvt(_nid, _N_FREQUENCY, [500E3,250E3,125E3,50E3,10E3,5E3, 1E3,500],[1,2,3,4,5,6,7,8], _clk_id = 0);
         _freq = data(DevNodeRef(_nid, _N_FREQUENCY));
-        _clock_val = make_range(*,*,1./ _freq);
+        _clock_val = build_range(*,*,1./ _freq);
     	DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
    }
-    _control_reg = word(_clk) | (word(_chans) << 4);
+    _control_reg = word(_clk_id) | (word(_chans) << 4);
     _status=DevCamChk(_name, CamPiow(_name, 2,16, _control_reg,24),1,*);
     _status = 1; 
     _trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);

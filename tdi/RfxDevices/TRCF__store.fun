@@ -53,6 +53,12 @@ public fun TRCF__store(as_is _nid, optional _method)
     _clock = evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE));
     _clock = execute('evaluate(`_clock)');
     _pts = data(DevNodeRef(_nid, _N_PTS));
+    if(_pts == 0)
+    {
+        DevLogErr(_nid, 'PTS = 0. No data acquired');
+        abort();
+    }
+
     DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
     for(_i = 0; _i < _num_chans; _i++)
     {
@@ -90,10 +96,23 @@ public fun TRCF__store(as_is _nid, optional _method)
 			DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
 		/*	DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);*/
 
-			_dim = make_dim(make_window(_start_idx, _end_idx - 1, ft_float(_trig)), _clock);
+
+/* Convert clock to double */
+			_clock_converted = 1;
+			/* _clock_conv = if_error(make_range(begin_of(_clock), end_of(_clock), data(ft_float(slope_of(_clock)))),
+				_clock_converted = 0);
+			if(!_clock_converted)  */
+			    _clock_conv = _clock;	
+
+
+
+			_dim = make_dim(make_window(_start_idx, _end_idx - 1, ft_float(_trig)), _clock_conv);
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
-			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+
+
+
+			_status = DevPutSignal1(_sig_nid, 0, 10/2048., word(_data), 0, _end_idx - _start_idx - 1, _dim);
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');

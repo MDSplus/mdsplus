@@ -475,11 +475,11 @@ write(*, 'CICCIO');
 
     DevAddNode(_path // '.PARAMETERS:PAR171_NAME', 'TEXT', "LockRotStart", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR171_VAL', 'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR172_NAME', 'TEXT', "LockThreshStrength", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR172_NAME', 'TEXT', "LockTreshStrength", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR172_VAL', 'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR173_NAME', 'TEXT', "LockThreshTime", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR173_NAME', 'TEXT', "LockTreshTime", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR173_VAL', 'NUMERIC', 0, *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR174_NAME', 'TEXT', "LockThreshInterval", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR174_NAME', 'TEXT', "LockTreshInterval", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR174_VAL', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR175_NAME', 'TEXT', "LockCycleTime", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR175_VAL', 'NUMERIC', 0, *, _nid);
