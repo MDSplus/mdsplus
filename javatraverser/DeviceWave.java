@@ -19,6 +19,14 @@ public class DeviceWave extends DeviceComponent
     public boolean minYVisible = false;
     public boolean waveEditable = false;
     public String updateExpression = null;
+    protected int prefHeight = 200;
+
+    public void setPrefHeight(int prefHeight)
+    {
+        this.prefHeight = prefHeight;
+    }
+
+    public int getPrefHeight(){return prefHeight;}
 
     public void setMaxXVisible(boolean visible)
     {
@@ -108,7 +116,7 @@ public class DeviceWave extends DeviceComponent
         waveEditor = new WaveformEditor();
         nf.setMaximumFractionDigits(3);
         nf.setGroupingUsed(false);
-        waveEditor.setPreferredSize(new Dimension(300, 200));
+        waveEditor.setPreferredSize(new Dimension(300, prefHeight));
         waveEditor.addWaveformEditorListener(new WaveformEditorListener()
         {
             public void waveformUpdated(float[] waveX, float[] waveY,

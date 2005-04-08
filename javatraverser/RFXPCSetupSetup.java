@@ -25,6 +25,12 @@ public class RFXPCSetupSetup extends DeviceSetup {
   DeviceField deviceField3 = new DeviceField();
   DeviceField deviceField5 = new DeviceField();
   DeviceChoice deviceChoice1 = new DeviceChoice();
+  JPanel jPanel5 = new JPanel();
+  JLabel jLabel1 = new JLabel();
+  DeviceField deviceField4 = new DeviceField();
+  DeviceField deviceField6 = new DeviceField();
+  DeviceField deviceField7 = new DeviceField();
+  DeviceField deviceField8 = new DeviceField();
   public RFXPCSetupSetup() {
     try {
       jbInit();
@@ -34,7 +40,7 @@ public class RFXPCSetupSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(515);
+    this.setWidth(700);
     this.setHeight(515);
     this.setDeviceType("RFXPCSetup");
     this.setDeviceProvider("localhost");
@@ -45,7 +51,7 @@ public class RFXPCSetupSetup extends DeviceSetup {
     deviceWave1.setUpdateExpression("");
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
-    gridLayout1.setRows(3);
+    gridLayout1.setRows(4);
     deviceField1.setOffsetNid(1);
     deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment:");
@@ -78,6 +84,24 @@ public class RFXPCSetupSetup extends DeviceSetup {
     deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
+    jLabel1.setIconTextGap(4);
+    jLabel1.setText("Perturbation: ");
+    deviceField8.setOffsetNid(12);
+    deviceField8.setLabelString("Ampl. (A): ");
+    deviceField8.setNumCols(5);
+    deviceField8.setIdentifier("");
+    deviceField7.setOffsetNid(13);
+    deviceField7.setLabelString("Freq. (Hz): ");
+    deviceField7.setNumCols(5);
+    deviceField7.setIdentifier("");
+    deviceField6.setOffsetNid(14);
+    deviceField6.setLabelString("Phase (Rad): ");
+    deviceField6.setNumCols(5);
+    deviceField6.setIdentifier("");
+    deviceField4.setOffsetNid(15);
+    deviceField4.setLabelString("Start Time(s): ");
+    deviceField4.setNumCols(5);
+    deviceField4.setIdentifier("");
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(deviceWave1, BorderLayout.CENTER);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
@@ -89,6 +113,12 @@ public class RFXPCSetupSetup extends DeviceSetup {
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField5, null);
     jPanel3.add(deviceChoice1, null);
+    jPanel1.add(jPanel5, null);
+    jPanel5.add(jLabel1, null);
+    jPanel5.add(deviceField8, null);
+    jPanel5.add(deviceField7, null);
+    jPanel5.add(deviceField6, null);
+    jPanel5.add(deviceField4, null);
   }
 
 }
