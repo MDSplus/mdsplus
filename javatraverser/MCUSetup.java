@@ -38,8 +38,8 @@ public class MCUSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(576);
-    this.setHeight(576);
+    this.setWidth(680);
+    this.setHeight(250);
     this.setDeviceType("MCU");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("MCU Tomography");

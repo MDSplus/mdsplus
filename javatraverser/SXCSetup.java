@@ -296,7 +296,7 @@ public class SXCSetup extends DeviceSetup {
     deviceField6.setIdentifier("");
     deviceField6.setLabelString("Duration: ");
     deviceField6.setOffsetNid(6);
-    this.setWidth(587);
+    this.setWidth(700);
     this.setHeight(587);
     this.setDeviceType("SXC");
     this.setDeviceProvider("150.178.3.33");
@@ -1175,7 +1175,7 @@ public class SXCSetup extends DeviceSetup {
     jPanel1.add(jPanel4, null);
     jPanel4.add(deviceChoice30, null);
     jPanel4.add(deviceField6, null);
-    jPanel4.add(deviceChoice1, null);
+//    jPanel4.add(deviceChoice1, null);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceChoice31, null);
     jPanel3.add(deviceField5, null);

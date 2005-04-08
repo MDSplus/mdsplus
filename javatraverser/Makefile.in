@@ -117,7 +117,7 @@ DeviceApply.java\
 DeviceCancel.java\
 DeviceWave.java\
 DeviceWaveDisplay.java\
-DeviceWaveDisplayCistomizer.java\
+DeviceWaveDisplayCustomizer.java\
 DeviceWaveDisplayBeanInfo.java\
 DimensionData.java\
 DispatchData.java\
