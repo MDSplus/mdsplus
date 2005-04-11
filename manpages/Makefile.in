@@ -29,20 +29,20 @@ clean :
 	@ $(RM) $(top_srcdir)/man
 
 install: 
-	- mkdirhier $(exec_prefix)/man/man1
+	- $(top_srcdir)/bin/mkdirhier $(exec_prefix)/man/man1
 	$(INSTALL) -m 755  $(top_srcdir)/man/man1/mdsplus.1.gz $(exec_prefix)/man/man1
 	$(INSTALL) -m 755  $(top_srcdir)/man/man1/traverser.1.gz $(exec_prefix)/man/man1
-	- mkdirhier $(exec_prefix)/man/man5
+	- $(top_srcdir)/bin/mkdirhier $(exec_prefix)/man/man5
 	$(INSTALL) -m 755  $(top_srcdir)/man/man5/mdsplus.conf.5.gz $(exec_prefix)/man/man5
 	$(INSTALL) -m 755  $(top_srcdir)/man/man5/.mdsplus.5.gz $(exec_prefix)/man/man5
 	$(INSTALL) -m 755  $(top_srcdir)/man/man5/mdsip.hosts.5.gz $(exec_prefix)/man/man5
 
 
 $(top_srcdir)/man/man1 :
-	mkdirhier $@
+	$(top_srcdir)/bin/mkdirhier $@
 
 $(top_srcdir)/man/man5 :
-	mkdirhier $@
+	$(top_srcdir)/bin/mkdirhier $@
 
 $(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
 	$(GROFF) $(GROFF_FLAGS) traverser.groff | gzip - -c > $@
