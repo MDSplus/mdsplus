@@ -290,6 +290,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField2.setNumCols(4);
     deviceField2.setIdentifier("");
         deviceWave2.setOffsetNid(6);
+    deviceWave2.setMinYVisible(true);
     deviceWave2.setIdentifier("");
     deviceWave2.setUpdateExpression("");
         deviceWave2.setPrefHeight(100);
@@ -314,6 +315,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel2.setShowVal("");
     jLabel2.setText("Perturbation:");
     deviceWave3.setOffsetNid(25);
+    deviceWave3.setMinYVisible(true);
     deviceWave3.setIdentifier("");
     deviceWave3.setUpdateExpression("");
     deviceWave3.setPrefHeight(100);
@@ -351,6 +353,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel3.setShowVal("");
     jLabel3.setText("Perturbation:");
     deviceWave5.setOffsetNid(44);
+    deviceWave5.setMinYVisible(true);
     deviceWave5.setIdentifier("");
     deviceWave5.setUpdateExpression("");
     deviceWave5.setPrefHeight(100);
@@ -388,6 +391,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel4.setShowVal("");
     jLabel4.setText("Perturbation:");
     deviceWave7.setOffsetNid(63);
+    deviceWave7.setMinYVisible(true);
     deviceWave7.setIdentifier("");
     deviceWave7.setUpdateExpression("");
     deviceWave7.setPrefHeight(100);
@@ -425,6 +429,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel5.setShowVal("");
     jLabel5.setText("Perturbation:");
     deviceWave9.setOffsetNid(82);
+    deviceWave9.setMinYVisible(true);
     deviceWave9.setIdentifier("");
     deviceWave9.setUpdateExpression("");
     deviceWave9.setPrefHeight(100);
@@ -462,6 +467,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel6.setShowVal("");
     jLabel6.setText("Perturbation:");
     deviceWave11.setOffsetNid(101);
+    deviceWave11.setMinYVisible(true);
     deviceWave11.setIdentifier("");
     deviceWave11.setUpdateExpression("");
     deviceWave11.setPrefHeight(100);
@@ -499,6 +505,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel7.setShowVal("");
     jLabel7.setText("Perturbation:");
     deviceWave13.setOffsetNid(120);
+    deviceWave13.setMinYVisible(true);
     deviceWave13.setIdentifier("");
     deviceWave13.setUpdateExpression("");
     deviceWave13.setPrefHeight(100);
@@ -536,6 +543,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel8.setShowVal("");
     jLabel8.setText("Perturbation:");
     deviceWave15.setOffsetNid(139);
+    deviceWave15.setMinYVisible(true);
     deviceWave15.setIdentifier("");
     deviceWave15.setUpdateExpression("");
     deviceWave15.setPrefHeight(100);
@@ -573,6 +581,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel9.setShowVal("");
     jLabel9.setText("Perturbation:");
     deviceWave17.setOffsetNid(158);
+    deviceWave17.setMinYVisible(true);
     deviceWave17.setIdentifier("");
     deviceWave17.setUpdateExpression("");
     deviceWave17.setPrefHeight(100);
@@ -610,6 +619,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel10.setShowVal("");
     jLabel10.setText("Perturbation:");
     deviceWave19.setOffsetNid(177);
+    deviceWave19.setMinYVisible(true);
     deviceWave19.setIdentifier("");
     deviceWave19.setUpdateExpression("");
     deviceWave19.setPrefHeight(100);
@@ -647,6 +657,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel13.setShowVal("");
     jLabel13.setText("Perturbation:");
     deviceWave115.setOffsetNid(196);
+    deviceWave115.setMinYVisible(true);
     deviceWave115.setIdentifier("");
     deviceWave115.setUpdateExpression("");
     deviceWave115.setPrefHeight(100);
@@ -684,6 +695,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceChannel14.setShowVal("");
     jLabel14.setText("Perturbation:");
     deviceWave117.setOffsetNid(215);
+    deviceWave117.setMinYVisible(true);
     deviceWave117.setIdentifier("");
     deviceWave117.setUpdateExpression("");
     deviceWave117.setPrefHeight(215);
