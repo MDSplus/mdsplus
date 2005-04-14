@@ -26,6 +26,8 @@ export SYBASE=/usr/local/sybase
 # currently freetds bombs on connection from MDSplus... I don't know why.
 #export SYBASE=/usr/local/freetds
 
+export MACOSX_DEPLOYMENT_TARGET=10.3
+
 all: $(src_dir)/Makefile
 	$(MAKE) -C $(src_dir)
 
@@ -33,14 +35,17 @@ $(src_dir)/configure: $(src_dir)/configure.in
 	cd $(src_dir) && autoconf
 
 $(src_dir)/Makefile: $(src_dir)/configure $(src_dir)/configure.in $(src_dir)/Makefile.in
-	cd $(src_dir) && ./configure --prefix=/usr/local/mdsplus
+	cd $(src_dir) && ./configure --prefix=/usr/local/mdsplus --exec_prefix=/usr/local/mdsplus
 
 install: $(src_dir)/Makefile
 	$(MAKE) -C $(src_dir) install
 
-installer: 
-	$(MAKE) -C $(src_dir)/macosx/installer
+binaries:  
+	cd $(src_dir)/macosx/installer && make all
  
+.IGNORE:
+
 clean:
-	$(MAKE) -C $(src_dir)
-	$(MAKE) -C $(src_dir)/macosx/installer
+	$(MAKE) -C $(src_dir) clean
+	cd $(src_dir)/macosx/installer && make clean
+
