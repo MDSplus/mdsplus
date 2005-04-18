@@ -1471,10 +1471,10 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel410.setLayout(borderLayout4);
     deviceTable4.setOffsetNid(1223);
         deviceTable4.setLabelString("Pert. Values");
-        deviceTable4.setNumCols(12);
+        deviceTable4.setNumCols(14);
         deviceTable4.setNumRows(1);
         deviceTable4.setIdentifier("");
-        deviceTable4.setColumnNames(new String[] {"-6", "-5", "-4", "-3", "-2", "-1", "1", "2", "3", "4", "5", "6"});
+        deviceTable4.setColumnNames(new String[] {"-6", "-5", "-4", "-3", "-2", "-1", "1", "2", "3", "4", "5", "6", "DeltaPhi(Rad)", "Rot.", "Freq.", "(Hz)"});
         deviceTable4.setRowNames(null);
         jPanel41.setLayout(gridLayout2);
         gridLayout2.setRows(6);
