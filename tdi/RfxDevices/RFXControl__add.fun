@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 961 + 391, _nidout);
+    DevAddStart(_path, 'RFXControl', 961 + 393, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -523,6 +523,8 @@ write(*, 'CICCIO');
     DevAddNode(_path // '.PARAMETERS:PAR194_VAL', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR195_NAME', 'TEXT', "LockPertFreq5", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR195_VAL', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR196_NAME', 'TEXT', "LockWaveform", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR196_VAL', 'NUMERIC', 0, *, _nid);
 
 
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
