@@ -60,6 +60,10 @@ write(*, _port);
 
 write(*, _n_frames);
 
+   DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _trig_mode = 0);
+
+	wait(1.0);
+
 
 	_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 4000, _sw=0);
 	if(_sock == 0)
@@ -68,13 +72,14 @@ write(*, _n_frames);
 		abort();
 	}
 
-	if((_err_msg = TCPSendCommand(_sock, "CAMERA_ARM "//_name) ) != "")
+	if((_err_msg = TCPSendCommand(_sock, "CAMERA_ARM "//_name//" "//trim(adjustl(_trig_mode))) ) != "")
 	{
 		DevLogErr(_nid, "CAMERA arm command execution error "//_err_msg); 
 		TCPCloseConnection(_sock);
 		abort();
 	}
 
+	wait(1.0);
 
 
 	TCPCloseConnection(_sock);

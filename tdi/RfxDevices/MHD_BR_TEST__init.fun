@@ -15,12 +15,15 @@ public fun MHD_BR_TEST__init(as_is _nid, optional _method)
     private _N_CARD_ADC  = 2;
 
 	
-	_dec_1 = if_error(data(DevNodeRef(_nid, _N_DECODER_1)), "");
-	if(_dec_1 == "")
+	_dec = if_error(data(DevNodeRef(_nid, _N_DECODER)), "");
+	if(_dec == "")
 	{
 		DevLogErr(_nid, "Missing Decoder path reference"); 
 		abort();
 	};
+
+	write(*,"do/method \\"//_dec//" init"); 
+	_status = tcl("do/method \\"//_dec//" init");
 	
 	
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
@@ -52,14 +55,11 @@ public fun MHD_BR_TEST__init(as_is _nid, optional _method)
 
 write(*, "OK");
 
-
-write(*, "OK4");
-
-	write(*,"do/method \\"//_dec_1//" init"); 
-	_status = tcl("do/method \\"//_dec_1//" init");
+	write(*,"do/method \\"//_dec//" trigger"); 
+	_status = tcl("do/method \\"//_dec//" trigger");
 
 
-	wait(4.0);
+	wait(10.0);
 
 
 	for(_i = 0; _i < _K_NUM_CARD; _i++)

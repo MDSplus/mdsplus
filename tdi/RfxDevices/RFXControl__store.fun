@@ -20,23 +20,25 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_ZERO = 17;
     private _N_MAPPING_ID = 18;
     private _N_MAPPING = 19;
-    private _N_N_ADC_IN = 16;
-    private _N_N_DAC_OUT = 17;
-    private _N_N_USER = 17;
-    private _N_N_NET_IN = 18;
-    private _N_N_NET_OUT = 19;
-	private _N_RAMP_SLOPE = 20;
-	private _N_RAMP_TRIGGER = 21;
-	private _N_FEEDFORWARD = 22;
+    private _N_RAMP_SLOPE = 20;
+    private _N_RAMP_TRIGGER = 21;
+    private _N_FEEDFORWARD = 22;
     private _N_ROUTINE_NAME = 23;
-	private _N_N_ADC_IN = 24;
-	private _N_N_DAC_OUT = 25;
-	private _N_N_MODES = 27;
+    private _N_N_ADC_IN = 24;
+    private _N_N_DAC_OUT = 25;
+    private _N_N_MODES = 27;
+    private _N_MODEL_1 = 28;
+    private _N_MODEL_2 = 29;
 	
-	private _N_ADC_IN_1 = 30;
-	private _N_DAC_OUT_1 = 222;
-	private _N_USER_1 = 1224;
-	private _N_MODES_1 = 446;
+    private _N_ADC_IN_1 = 31;
+    private _N_DAC_OUT_1 = 223;
+    private _N_USER_1 = 1224;
+    private _N_MODES_1 = 447;
+
+
+
+    private _N_PAR1_NAME = 832;
+    private _N_PAR1_VALUE = 833; 
 
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);

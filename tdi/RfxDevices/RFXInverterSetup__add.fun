@@ -26,7 +26,7 @@ public fun RFXInverterSetup__add(in _path, out _nidout)
 		DevAddNode(_cn // ':P_MIN_Y', 'NUMERIC', *, *, _nid);
 		DevAddNode(_cn // ':P_MAX_Y', 'NUMERIC', *, *, _nid);
 
-		DevAddNode(_cn // ':USER_PERT', 'NUMERIC', 0, *, _nid);
+		DevAddNode(_cn // ':USER_PERT', 'SIGNAL', build_signal(zero(100),,build_range(0,1,0.01)), *, _nid);
 		DevAddNode(_cn // ':OUT_SIGNAL', 'NUMERIC', compile('INVERTER_WAVE('//_cn//':WAVE,'//_cn//':MIN_X,'//_cn//':MAX_X,' 
 			//_cn//':PERT_AMP,'//_cn//':PERT_FREQ,'//_cn//':PERT_PHASE,'
 			//_cn//':PERT_START, '//_cn//':P_WAVE,'//_cn//':USER_PERT, 100E-6)'), '/write_once', _nid);

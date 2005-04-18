@@ -48,7 +48,7 @@ write(*, 'TR10 STORE');
 		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
 		if(_ip_addr == "")
 		{
-    	    DevLogErr(_nid, "Invalid Crate IP specification");
+		    DevLogErr(_nid, "Invalid Crate IP specification");
  		    abort();
 		}
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
@@ -63,7 +63,9 @@ write(*, 'TR10 STORE');
 
 	if(_remote)
 	{
-	    _handle = MdsValue('TR10HWStartStore(0, $1, $2)', _board_id, _pts);
+	
+
+		_handle = MdsValue('TR10HWStartStore(0, $, $)', _board_id, _pts);
 		if(_handle == -1)
 		{
 			DevLogErr(_nid, 'TR10 device not in STOP state. Board ID: '//_board_id);
@@ -96,10 +98,12 @@ write(*, 'TR10 START STORE');
 	/* Read data */
 			if(_remote)
 			{
-				_data = MdsValue('TR10HWReadChan($1, $2, $3, $4, $5)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
-			}
+				_data = MdsValue('TR10HWReadChan($, $, $, $, $)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
+
+		        }
 			else
 			{
+			write(*, 'TR10 READ DATA');
 				_data = TR10HWReadChan(_handle, _i + 1, _start_idx, _end_idx, _pts, _tr10_status);	
 				
 				/* TEST FOR TR10 READOUT BUG */
@@ -119,20 +123,23 @@ write(*, 'TR10 START STORE');
 
 	/* Build signal */
 			_dim = make_dim(make_window(_start_idx, _end_idx - 1, _trig), _clock);
+
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
+
 			_status = DevPutSignal(_sig_nid, 0, 10/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file');
 
 			}
 		}
-    }
+        }
 	if(_remote)
 	{
-		MdsValue('TR10HWClose($1)', _handle);
-		MdsDisconnect();
+		MdsValue('TR10HWClose($)', _handle);
+		MdsDisconnect();				
 	}
 	else
 		TR10HWClose(_handle);
@@ -144,7 +151,7 @@ write(*, 'TR10 START STORE');
 	
 	}
 
-    return(1);
+        return(1);
 }
 
 
