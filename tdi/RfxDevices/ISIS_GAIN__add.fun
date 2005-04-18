@@ -16,13 +16,13 @@ public fun ISIS_GAIN__add(in _path, out _nidout)
       	DevAddNode(_cn // ':NAME_1',   'TEXT',    *,  *, _nid);
 	    DevAddNode(_cn // ':CALIB_1',  'NUMERIC', 1., *, _nid);
       	DevAddNode(_cn // ':GAIN_1',   'NUMERIC', 1,  *, _nid);
-	    DevAddNode(_cn // ':INPUT_1',  'NUMERIC', compile('('//_cn//':OUTPUT_1) / ('//_cn//':GAIN_1 ) /  ( '//_cn//':CALIB_1) '),  '/nomodel_write', _nid);
+	    DevAddNode(_cn // ':INPUT_1',  'NUMERIC', compile('('//_cn//':OUTPUT_1) / ('//_cn//':GAIN_1 ) *  ( '//_cn//':CALIB_1) '),  '/nomodel_write', _nid);
    	    DevAddNode(_cn // ':OUTPUT_1', 'NUMERIC', *,  *, _nid);
 
       	DevAddNode(_cn // ':NAME_2',   'TEXT',    *,  *, _nid);
 	    DevAddNode(_cn // ':CALIB_2',  'NUMERIC', 1., *, _nid);
       	DevAddNode(_cn // ':GAIN_2',   'NUMERIC', 1,  *, _nid);
-	    DevAddNode(_cn // ':INPUT_2',  'NUMERIC', compile('('//_cn//':OUTPUT_2) / ('//_cn//':GAIN_2 ) /  ( '//_cn//':CALIB_2) '),  '/nomodel_write', _nid);
+	    DevAddNode(_cn // ':INPUT_2',  'NUMERIC', compile('('//_cn//':OUTPUT_2) / ('//_cn//':GAIN_2 ) *  ( '//_cn//':CALIB_2) '),  '/nomodel_write', _nid);
    	    DevAddNode(_cn // ':OUTPUT_2', 'NUMERIC', *,  *, _nid);
 
 	}
