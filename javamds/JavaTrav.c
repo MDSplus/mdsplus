@@ -430,11 +430,11 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
   jmethodID constr;
-  jvalue args[20];
+  jvalue args[21];
   static  int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len, conglomerate_nids,
     owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, 
-	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len;
-  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512], original_part_name[512];
+	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len, path_len;
+  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512], original_part_name[512], path[512];
   unsigned short asctime_len;
   struct descriptor time_dsc = {256, DTYPE_T, CLASS_S, time_str};
 
@@ -450,6 +450,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
    {16, NciNODE_NAME, name, &name_len},
    {511, NciFULLPATH, fullpath, &fullpath_len},
    {511, NciMINPATH, minpath, &minpath_len},
+   {511, NciPATH, path, &path_len},
   {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
   {4, NciCONGLOMERATE_ELT, &conglomerate_elt, &conglomerate_elt_len}, 
    {NciEND_OF_LIST, 0, 0, 0}};
@@ -468,8 +469,9 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   name[name_len] = 0;
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
+  path[path_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
   args[0].z = !(nci_flags & NciM_STATE);
   args[1].z = !(nci_flags & NciM_PARENT_STATE);
   args[2].z = nci_flags & NciM_SETUP_INFORMATION;
@@ -495,8 +497,9 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[14].l = (*env)->NewStringUTF(env, name);
   args[15].l = (*env)->NewStringUTF(env, fullpath);
   args[16].l = (*env)->NewStringUTF(env, minpath);
-  args[17].i = conglomerate_nids;
-  args[18].i = conglomerate_elt;
+  args[17].l = (*env)->NewStringUTF(env, path);
+  args[18].i = conglomerate_nids;
+  args[19].i = conglomerate_elt;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
