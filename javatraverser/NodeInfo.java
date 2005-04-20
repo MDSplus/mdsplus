@@ -6,27 +6,27 @@ import java.io.*;
 public class NodeInfo implements Serializable
 {
 
-    boolean on, parent_on, setup, write_once, compressible, compress_on_put, 
+    boolean on, parent_on, setup, write_once, compressible, compress_on_put,
     no_write_model, no_write_shot;
-    String date_inserted, name, fullpath, minpath;
+    String date_inserted, name, fullpath, minpath, path;
     int owner, dtype, dclass, length, usage, conglomerate_elt, conglomerate_nids;
     static NodeInfo getNodeInfo(boolean on, boolean parent_on, boolean setup, boolean write_once,
-	    boolean compressible, boolean compress_on_put, boolean no_write_model, 
+	    boolean compressible, boolean compress_on_put, boolean no_write_model,
 	    boolean no_write_shot, String date_inserted,
-	    int owner, int dtype, int dclass, int length, int usage, 
-	    String name, String fullpath, String minpath, int conglomerate_nids, int conglomerate_elt)
-	    
+	    int owner, int dtype, int dclass, int length, int usage,
+	    String name, String fullpath, String minpath, String path, int conglomerate_nids, int conglomerate_elt)
+
     {
-	return new NodeInfo(on, parent_on, setup, write_once, compressible, compress_on_put, 
-	    no_write_model, no_write_shot, date_inserted, owner, dtype, dclass, length, 
-	    usage, name, fullpath, minpath, conglomerate_nids, conglomerate_elt);
+	return new NodeInfo(on, parent_on, setup, write_once, compressible, compress_on_put,
+	    no_write_model, no_write_shot, date_inserted, owner, dtype, dclass, length,
+	    usage, name, fullpath, minpath, path, conglomerate_nids, conglomerate_elt);
     }
-    
+
     NodeInfo(boolean on, boolean parent_on, boolean setup, boolean write_once,
-	boolean compressible, boolean compress_on_put, boolean no_write_model, 
+	boolean compressible, boolean compress_on_put, boolean no_write_model,
 	boolean no_write_shot,String date_inserted,
-	int owner, int dtype, int dclass, int length, int usage, 
-	String name, String fullpath, String minpath, int conglomerate_nids, int conglomerate_elt)
+	int owner, int dtype, int dclass, int length, int usage,
+	String name, String fullpath, String minpath, String path, int conglomerate_nids, int conglomerate_elt)
     {
 	this.on = on;
 	this.parent_on = parent_on;
@@ -45,6 +45,7 @@ public class NodeInfo implements Serializable
 	this.name = name;
 	this.fullpath = fullpath;
 	this.minpath = minpath;
+    this.path = path;
 	this.conglomerate_nids = conglomerate_nids;
 	this.conglomerate_elt = conglomerate_elt;
     }
@@ -56,14 +57,16 @@ public class NodeInfo implements Serializable
     public final boolean isCompressOnPut() { return compress_on_put;}
     public final boolean isNoWriteModel() { return no_write_model;}
     public final boolean isNoWriteShot() { return no_write_shot;}
-    
+
     public final String getDate() {return date_inserted;}
     public final int getOwner() {return owner;}
     public final int getDtype() {return dtype;}
     public final int getDClass() {return dclass;}
-    public final int getLength() {return length;} 
+    public final int getLength() {return length;}
     public final String getName() {return name; }
-    public final String getFullPath() {return fullpath; } 
+    public final String getFullPath() {return fullpath; }
+    public final String getMinpath() { return minpath;}
+    public final String getPath() { return path;}
     public final int getConglomerateNids() {return conglomerate_nids; }
     public final int getConglomerateElt() { return conglomerate_elt;}
     public final int getUsage() {return usage; }
@@ -82,9 +85,9 @@ public class NodeInfo implements Serializable
     public static final int USAGE_SUBTREE = 11;
     public static final int USAGE_COMPOUND_DATA = 12;
     public static final int USAGE_MAXIMUM = 12;
-    
-    
-    
+
+
+
     public static final int WRITE_ONCE = 0x00000080;
     public static final int COMPRESSIBLE   =     0x00000100;
     public static final int DO_NOT_COMPRESS =    0x00000200;

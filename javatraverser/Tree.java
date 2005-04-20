@@ -446,6 +446,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        nodeHash.put(currNode, sons[i]);
 	    }
 	    curr_tree = new JTree(top);
+        ToolTipManager.sharedInstance().registerComponent(curr_tree);
+
 
             curr_tree.addKeyListener(new KeyAdapter() {
               public void keyTyped(KeyEvent e) {
