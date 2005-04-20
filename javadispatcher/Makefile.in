@@ -11,7 +11,8 @@ SOURCES = Action.java   MdsHelper.java          MdsServerEvent.java     NetworkL
 ActionServer.java       MdsIp.java              MdsServerListener.java  Server.java             jDispatcherIp.java \
 Balancer.java           MdsMonitor.java         MonitorEvent.java       ServerEvent.java \
 MdsMonitorEvent.java    MonitorListener.java    ServerListener.java \
-InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java	jServer.java
+InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java	jServer.java \
+KillServer.java
 
 
 CLASSES = $(SOURCES:.java=.class)

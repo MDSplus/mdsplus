@@ -3,6 +3,7 @@ import java.io.*;
 import java.util.*;
 
 
+
 public class jServer extends MdsIp {
   static final int SrvNoop        =0;           /**** Used to start server ****/
   static final int SrvAbort       =1;           /**** Abort current action or mdsdcl command ***/
@@ -182,6 +183,7 @@ public class jServer extends MdsIp {
         return currSock;
     }
     try {
+
       Socket newSock = new Socket(ip, port);
       retSocketsV.addElement(newSock);
       return newSock;
@@ -203,6 +205,14 @@ public class jServer extends MdsIp {
     try {
       command = new String(messages[0].body);
       //System.out.println("Command: " + command);
+      if(command.toLowerCase().startsWith("kill"))
+      {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+          public void run() {System.exit(0); }}, 500);
+      }
+
+
       if (command.startsWith("ServerQAction")) {
         InetAddress address = InetAddress.getByAddress(messages[1].body);
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
@@ -297,7 +307,7 @@ public class jServer extends MdsIp {
     return msg;
   }
 
-  void writeAnswer(InetAddress ip, int port, String answer)
+  synchronized void writeAnswer(InetAddress ip, int port, String answer)
   {
 
    // System.out.println("Answer: " + answer);
