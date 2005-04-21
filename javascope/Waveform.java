@@ -1794,7 +1794,7 @@ public class Waveform
     img = frames.GetFrame(frame_idx, d);
 
     if (img == null) {
-      wave_error = " No frame at time " + frames.GetTime(frame_idx);
+      wave_error = " No frame at time " + curr_point;//frames.GetTime(frame_idx);
       return false;
     }
 

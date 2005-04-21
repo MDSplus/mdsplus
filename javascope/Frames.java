@@ -961,13 +961,13 @@ class Frames extends Canvas
 
     public float GetTime(int frame_idx)
     {
-        if(frame_idx > frame.size() - 1 ) return (float)0.0;
+        if(frame_idx > frame.size() - 1 || frame_idx < 0) return (float)0.0;
         return ((Float)frame_time.elementAt(frame_idx)).floatValue();
     }
 
     public int GetFrameIdxAtTime(float t)
     {
-        int idx = 0;
+        int idx = -1;
 
         if(frame.size() < 0)
             return -1;
@@ -977,7 +977,8 @@ class Frames extends Canvas
             return 0;
 
         if(t > ((Float)frame_time.elementAt(frame.size()-1)).floatValue())
-            return frame.size()-1;
+//            return frame.size()-1;
+            return -1;
 
         for(int i = 0; i < frame.size() - 1; i++)
         {
