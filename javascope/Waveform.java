@@ -9,7 +9,7 @@ import java.awt.Insets;
 import java.awt.image.*;
 import java.awt.geom.*;
 
-//import java.awt.geom.*;
+
 
 public class Waveform
     extends JComponent {
@@ -28,6 +28,8 @@ public class Waveform
       "Gray", "Green", "LightGray",
       "Magenta", "Orange", "Pink",
       "Red", "Yellow"};
+
+ // private ColorMap colorMap = new ColorMap();
 
   public static boolean zoom_on_mb1 = true;
 
@@ -295,15 +297,14 @@ public class Waveform
 
   protected Dimension getPrintWaveSize(Dimension dim) {
     // Dimension dim = getSize();
-    return new Dimension(dim.width - getRightSize()
-                         , dim.height - getBottomSize());
+    return new Dimension(dim.width - getRightSize(), dim.height - getBottomSize());
   }
 
   protected Dimension getWaveSize() {
     Dimension dim = getSize();
     Insets i = getInsets();
-    return new Dimension(dim.width - getRightSize() - i.top - i.bottom
-                         , dim.height - getBottomSize() - i.right - i.left);
+    return new Dimension(dim.width  - getRightSize()  - i.top - i.bottom,
+                         dim.height - getBottomSize() - i.right - i.left);
   }
 
   static public void SetFont(Font f) {
@@ -345,6 +346,18 @@ public class Waveform
   public WaveformMetrics GetWaveformMetrics() {
     return wm;
   }
+
+/*
+  public ColorMap getColorMap()
+  {
+    return colorMap;
+  }
+
+  public void setColorMap(ColorMap colorMap)
+  {
+    this.colorMap = colorMap;
+  }
+*/
 
   static public String[] getColorsName() {
     colors_changed = false;
@@ -1785,7 +1798,7 @@ public class Waveform
       return false;
     }
 
-    Dimension dim = frames.getFrameSize(frame_idx, d);
+    Dimension dim = frames.getFrameSize(frame_idx, getWaveSize());
 
     DrawImage(g, img, dim);
 
@@ -1796,13 +1809,18 @@ public class Waveform
   protected void DrawImage(Graphics g, Object img, Dimension dim) {
 
     Rectangle r = frames.GetZoomRect();
+    Graphics2D g2 = (Graphics2D)g;
 
-    if (! (img instanceof RenderedImage)) {
+    // Turn on antialiasing.
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+
+    if ( !(img instanceof RenderedImage) ) {
       if (r == null) {
-        g.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
+        g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
       }
       else {
-        g.drawImage( (Image) img,
+        g2.drawImage( (Image) img,
                     1,
                     1,
                     dim.width,
@@ -1815,8 +1833,8 @@ public class Waveform
       }
     }
     else {
-      ( (Graphics2D) g).clearRect(0, 0, dim.width, dim.height);
-      ( (Graphics2D) g).drawRenderedImage( (RenderedImage) img,
+      g2.clearRect(0, 0, dim.width, dim.height);
+      g2.drawRenderedImage( (RenderedImage) img,
                                           new
                                           AffineTransform(1f, 0f, 0f, 1f, 0F,
           0F));

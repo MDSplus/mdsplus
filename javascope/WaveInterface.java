@@ -1023,8 +1023,10 @@ public class WaveInterface
             {
                 throw(new IOException("Java Advanced Imaging must be installed to show this type of image"));
             }
-        } else
+        } else {
             frames = new Frames();
+ //           frames.setColorMap(wave.getColorMap());
+        }
     }
 
 
