@@ -10,7 +10,7 @@ public fun dc1394__store(as_is _nid, optional _method)
   _DC1394_SHUTTER = 7;
   _DC1394_GAIN = 8;
   _DC1394_TRIG_MODE = 9;
-  _DC1394_ISO_SPEED = 10;
+  _DC1394_MODE = 10;
   _DC1394_FRAME_RATE = 11;
   _DC1394_TRIG_ON = 12;
   _DC1394_FRAMES = 13;
@@ -24,12 +24,21 @@ public fun dc1394__store(as_is _nid, optional _method)
   _num_frames = libdc1394_support->dc1394NumFrames(val(_camera_no));
   if (_num_frames <= 0) {
      write(*, "no frames taken");
+     libdc1394_support->dc1394Cleanup(val(_camera_no));
      return(1);
   }
   _width = if_error(DevNodeRef(_nid, _DC1394_WIDTH), 640);
   _height = if_error(DevNodeRef(_nid, _DC1394_HEIGHT), 480);
 
-  _frames = zero([_width, _height, _num_frames] , 0bu);
+  _mode = if_error(DevNodeRef(_nid, _DC1394_MODE), 69);
+  if (_mode == 400) {
+	_mode = 69;
+  }
+  if ((_mode == 69) || (_mode == 101)) {
+    _frames = zero([_width, _height, _num_frames] , 0bu);
+  } else {
+    _frames = zero([_width, _height, _num_frames] , 0wu);
+  }
   _times = zero(_num_frames, 0.0D0);
 
   _status = libdc1394_support->dc1394ReadFrames((val(_camera_no)), ref(_frames));
