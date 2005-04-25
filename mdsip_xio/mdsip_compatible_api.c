@@ -10,6 +10,36 @@ extern  int MdsOpen();
 extern int MdsClose();
 extern int MdsSetDefault();
 
+static int BlockSig(int sig_number)
+{
+  sigset_t newsigset;
+#if defined(sun)
+  if (sig_number == SIGALRM)
+  {				/* Solaris: simple block doesn't work?	*/
+     struct sigaction  act;
+     sigaction(sig_number,NULL,&act);	/* get current state ...	*/
+     if (~act.sa_flags & SA_RESTART)
+        {				/*...set SA_RESTART bit		*/
+         act.sa_flags |= SA_RESTART;
+         if (sigaction(sig_number,&act,NULL))
+             perror("BlockSig *err* sigaction");
+        }
+    }
+#endif
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_BLOCK, &newsigset, NULL);
+}
+
+static int UnBlockSig(int sig_number)
+{
+  sigset_t newsigset;
+  sigemptyset(&newsigset);
+  sigaddset(&newsigset,sig_number);
+  return sigprocmask(SIG_UNBLOCK, &newsigset, NULL);
+}
+
+
 int ConnectToMds(char *server)
 {
   int i;
@@ -92,21 +122,31 @@ int  IdlMdsClose(int lArgc, int *sock)
 {
 /*  status = call_external('mdsipshr','IdlMdsClose', socket, value=[1b])
 */
-  return MdsClose(*sock);
+  int status;
+  BlockSig(SIGALRM);
+  status = MdsClose(*sock);
+  UnBlockSig(SIGALRM);
+  return status;
 }
 
 int  IdlConnectToMds(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlConnectToMds', 'host-name')
 */
-  return ConnectToMds((char *)lpvArgv[0]);
+  int status;
+  BlockSig(SIGALRM);
+  status =  ConnectToMds((char *)lpvArgv[0]);
+  UnBlockSig(SIGALRM);
+  return status;
 }
 
 int  IdlDisconnectFromMds(int lArgc, int *sock)
 {
 /*  status = call_external('mdsipshr','IdlDisconnectFromMds', socket, value=[1b])
 */
+  BlockSig(SIGALRM);
   DisconnectFromMds(*sock);
+  UnBlockSig(SIGALRM);
   return 1;
 }
 
@@ -115,7 +155,11 @@ int  IdlMdsOpen(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsOpen', sock, 'tree-name', shot, value = [1b,0b,1b]) 
 */
   int *sock = (int *)&lpvArgv[0];
-  return MdsOpen(*sock,(char *)lpvArgv[1],*((int *)&lpvArgv[2]));
+  int status;
+  BlockSig(SIGALRM);
+  status = MdsOpen(*sock,(char *)lpvArgv[1],*((int *)&lpvArgv[2]));
+  UnBlockSig(SIGALRM);
+  return status;
 }
 
 int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
@@ -123,7 +167,11 @@ int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
 /*  status = call_external('mdsipshr','IdlMdsSetDefault', sock, 'node', value = [1b,0b]) 
 */
   int *sock = (int *)&lpvArgv[0];
-  return MdsSetDefault(*sock,(char *)lpvArgv[1]);
+  int status;
+  BlockSig(SIGALRM);
+  status = MdsSetDefault(*sock,(char *)lpvArgv[1]);
+  UnBlockSig(SIGALRM);
+  return status;
 }
 
 int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
@@ -134,6 +182,7 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
   int status;
   static void *mem = NULL;
   int *sock = (int *)&lpvArgv[0];
+  BlockSig(SIGALRM);
   if (mem != NULL)
   {
     free(mem);
@@ -141,6 +190,7 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
   }
   status = mdsip_get_result(MDSIP_IO_HANDLES[(*sock)-1], (char *)lpvArgv[1], (short *)lpvArgv[2], (char *)lpvArgv[3],
                        (int *)lpvArgv[4], (int *)lpvArgv[5], (void **)lpvArgv[6], &mem);
+  UnBlockSig(SIGALRM);
   return status;
 }
 
@@ -158,12 +208,16 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
 */
   int *sock = (int *)&lpvArgv[0];
-  unsigned char idx    = *((unsigned char *)&lpvArgv[1]);
-  unsigned char dtype  = *((unsigned char *)&lpvArgv[2]);
-  unsigned char nargs  = *((unsigned char *)&lpvArgv[3]);
-  short         length = *((short *)&lpvArgv[4]);
-  char          ndims  = *((char *)&lpvArgv[5]);
-  return mdsip_send_arg(MDSIP_IO_HANDLES[(*sock)-1], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
+  unsigned char idx    = (unsigned char)*((int *)&lpvArgv[1]);
+  unsigned char dtype  = (unsigned char)*((int *)&lpvArgv[2]);
+  unsigned char nargs  = (unsigned char)*((int *)&lpvArgv[3]);
+  short         length = (short)*((int *)&lpvArgv[4]);
+  char          ndims  = (char)*((int *)&lpvArgv[5]);
+  int status;
+  BlockSig(SIGALRM);
+  status =  mdsip_send_arg(MDSIP_IO_HANDLES[(*sock)-1], idx, dtype, nargs, length, ndims, (int *)lpvArgv[6], (char *)lpvArgv[7]);
+  UnBlockSig(SIGALRM);
+  return status;
 }
 
 void MdsSetClientAddr(int addr)
