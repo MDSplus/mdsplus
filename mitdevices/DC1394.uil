@@ -419,16 +419,18 @@ object nidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("100"),
-	compound_string(" 200"),
-	compound_string(" 400"));
-        XmNlabelString = compound_string("ISO Speed:");
+	compound_string("69"),
+	compound_string("70"),
+	compound_string("101"),
+	compound_string("103"));
+        XmNlabelString = compound_string("Mode:");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DC1394_ISO_SPEED;
         XmdsNlabelStrings = string_table(
-	compound_string("100"),
-	compound_string(" 200"),
-	compound_string(" 400"));
+	compound_string(" 640x480(8bit)"),
+	compound_string(" 640x480(16bit)"),
+	compound_string("1024x768(8bit)"),
+	compound_string("1024x768(16bit)"));
         XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
         XmNbottomAttachment = XmATTACH_NONE;
         XmNleftAttachment = XmATTACH_OPPOSITE_WIDGET;
