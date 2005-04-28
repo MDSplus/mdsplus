@@ -23,6 +23,12 @@ extern void FlipHeader(MsgHdr *header);
 #elif defined(WIN32)
 #define globus_libc_printf printf
 #else
+#include <pthread.h>
+#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#endif
 #include <syslog.h>
 #include <sys/param.h>
 #include <pwd.h>
