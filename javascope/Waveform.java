@@ -1835,9 +1835,7 @@ public class Waveform
     else {
       g2.clearRect(0, 0, dim.width, dim.height);
       g2.drawRenderedImage( (RenderedImage) img,
-                                          new
-                                          AffineTransform(1f, 0f, 0f, 1f, 0F,
-          0F));
+                             new AffineTransform(1f, 0f, 0f, 1f, 0F,0F));
     }
   }
 

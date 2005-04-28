@@ -1192,15 +1192,17 @@ public class MdsDataProvider
 
     public synchronized void Dispose()
     {
-        if (connected)
+
+       if (is_tunneling && ssh_tunneling != null)
+       {
+           ssh_tunneling.Dispose();
+       }
+
+       if (connected)
         {
             connected = false;
             mds.DisconnectFromMds();
 
-            if (is_tunneling && ssh_tunneling != null)
-            {
-                ssh_tunneling.Dispose();
-            }
             ConnectionEvent ce = new ConnectionEvent(this,
                 ConnectionEvent.
                 LOST_CONNECTION,
