@@ -747,18 +747,19 @@ public class WaveInterface
             return 0;
         }
 
-        if (shots == null)
+        if (shots == null && ! ( experiment == null || experiment.trim().length() == 0) )
         {
             error = "Missing shot value";
             signals = null;
 
         }
 
-        if ( experiment == null || experiment.trim().length() == 0)
+        if (shots != null && ( experiment == null || experiment.trim().length() == 0) )
         {
             error = "Missing experiment name";
             signals = null;
         }
+
 
         num_waves = in_y.length;
 
