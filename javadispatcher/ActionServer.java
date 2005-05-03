@@ -89,6 +89,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     public void setTree(String tree) {this.tree = tree; }
    // public boolean isActive() {return mds_server != null; }
     public boolean isActive() {return ready && active; }
+    public String getAddress(){return ip_address;}
     public boolean isReady() {if(ready) active = true; return ready;}
     public void processConnectionEvent(ConnectionEvent e)
     {
