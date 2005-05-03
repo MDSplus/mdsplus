@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 961 + 393, _nidout);
+    DevAddStart(_path, 'RFXControl', 961 + 473, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -470,9 +470,6 @@ write(*,'RFXControl__add');
 
 /* Lock rotation parameters */
 
-write(*, 'CICCIO');
-
-
     DevAddNode(_path // '.PARAMETERS:PAR171_NAME', 'TEXT', "LockRotStart", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR171_VAL', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR172_NAME', 'TEXT', "LockTreshStrength", *, _nid);
@@ -525,6 +522,98 @@ write(*, 'CICCIO');
     DevAddNode(_path // '.PARAMETERS:PAR195_VAL', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR196_NAME', 'TEXT', "LockWaveform", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR196_VAL', 'NUMERIC', 0, *, _nid);
+
+/* Mode Control Parameters */
+
+    DevAddNode(_path // '.PARAMETERS:PAR197_NAME', 'TEXT', "ModeControl1Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR197_VAL', 'NUMERIC', -1, *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR198_NAME', 'TEXT', "ModeControl1End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR198_VAL', 'NUMERIC', -1, *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR199_NAME', 'TEXT', "ModeControl1KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR199_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR200_NAME', 'TEXT', "ModeControl1KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR200_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR201_NAME', 'TEXT', "ModeControl1M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR201_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR202_NAME', 'TEXT', "ModeControl2Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR202_VAL', 'NUMERIC', -1, *,_nid);
+    DevAddNode(_path // '.PARAMETERS:PAR203_NAME', 'TEXT', "ModeControl2End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR203_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR204_NAME', 'TEXT', "ModeControl2KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR204_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR205_NAME', 'TEXT', "ModeControl2KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR205_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR206_NAME', 'TEXT', "ModeControl2M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR206_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR207_NAME', 'TEXT', "ModeControl3Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR207_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR208_NAME', 'TEXT', "ModeControl3End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR208_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR209_NAME', 'TEXT', "ModeControl3KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR209_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR210_NAME', 'TEXT', "ModeControl3KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR210_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR211_NAME', 'TEXT', "ModeControl3M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR211_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR212_NAME', 'TEXT', "ModeControl4Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR212_VAL', 'NUMERIC', -1, *,_nid);
+    DevAddNode(_path // '.PARAMETERS:PAR213_NAME', 'TEXT', "ModeControl4End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR213_VAL', 'NUMERIC', -1, *,_nid);
+    DevAddNode(_path // '.PARAMETERS:PAR214_NAME', 'TEXT', "ModeControl4KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR214_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControl4KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR215_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControl4M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR216_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR217_NAME', 'TEXT', "ModeControl5Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR217_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR218_NAME', 'TEXT', "ModeControl5End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR218_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR219_NAME', 'TEXT', "ModeControl5KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR219_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR220_NAME', 'TEXT', "ModeControl5KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR220_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR221_NAME', 'TEXT', "ModeControl5M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR221_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR222_NAME', 'TEXT', "ModeControl6Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR222_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR223_NAME', 'TEXT', "ModeControl6End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR223_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR224_NAME', 'TEXT', "ModeControl6KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR224_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR225_NAME', 'TEXT', "ModeControl6KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR225_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR226_NAME', 'TEXT', "ModeControl6M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR226_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR227_NAME', 'TEXT', "ModeControl7Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR227_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR228_NAME', 'TEXT', "ModeControl7End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR228_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR229_NAME', 'TEXT', "ModeControl7KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR229_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR230_NAME', 'TEXT', "ModeControl7KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR230_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR231_NAME', 'TEXT', "ModeControl7M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR231_VAL', 'NUMERIC', 0, *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR232_NAME', 'TEXT', "ModeControl8Start", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR232_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR233_NAME', 'TEXT', "ModeControl8End", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR233_VAL', 'NUMERIC', -1,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR234_NAME', 'TEXT', "ModeControl8KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR234_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR235_NAME', 'TEXT', "ModeControl8KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR235_VAL', 'NUMERIC',zero(48), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR236_NAME', 'TEXT', "ModeControl8M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR236_VAL', 'NUMERIC', 0, *, _nid);
+
+
 
 
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);

@@ -32,13 +32,18 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	
     private _N_ADC_IN_1 = 31;
     private _N_DAC_OUT_1 = 223;
-    private _N_USER_1 = 1226;
+/*    private _N_USER_1 = 1226; */
+    private _N_USER_1 = 1306;
     private _N_MODES_1 = 447;
-
 
 
     private _N_PAR1_NAME = 832;
     private _N_PAR1_VALUE = 833; 
+
+ 
+	private _MAX_CONTROLS = 8;
+/*	private _NUM_PARAMETERS = 195;*/
+	private _NUM_PARAMETERS = 235;
 
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
@@ -60,8 +65,8 @@ public fun RFXControl__store(as_is _nid, optional _method)
     _clock = make_range(*,*, _period);
 
  	/* Build signal dimension */
-/*	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);*/
-	_dim = MdsValue('Feedback->getTimebase:dsc()');
+	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
+/*	_dim = MdsValue('Feedback->getTimebase:dsc()'); */
 
 	/* Read number of signals */
 	_num_adc_in = data(DevNodeRef(_nid, _N_N_ADC_IN));
