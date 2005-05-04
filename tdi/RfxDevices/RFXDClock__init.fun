@@ -266,12 +266,12 @@ public fun RFXDClock__init(as_is _nid, optional _method)
 /*		_axis = compile('MAKE_RANGE([-100.,'//f_float(_trigger_time)//'+'//f_float(_real_delay)//','// 
 		f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration)//'],['//f_float(_trigger_time)//'+'//f_float(_real_delay_r)//','//
 			f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration_r)//', `_LARGE_TIME],['//
-			ft_float(_effective_period1)//','//ft_float(_effective_period2)//','//ft_float(_effective_period1)//'])');
+			f_float(_effective_period1)//','//f_float(_effective_period2)//','//f_float(_effective_period1)//'])');
 */
 		_axis1 = compile('MAKE_RANGE([-100.,'//f_float(_trigger_time)//'+'//f_float(_real_delay)//','// 
 		f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration)//'],['//f_float(_trigger_time)//'+'//f_float(_real_delay_r)//','//
 			f_float(_trigger_time)//'+'//f_float(_real_delay)//'+'//f_float(_real_duration_r)//', `_LARGE_TIME],['//
-			f_float(_effective_period1)//','//f_float(_effective_period2)//','//f_float(_effective_period1)//'])');
+			ft_float(_effective_period1)//','//ft_float(_effective_period2)//','//ft_float(_effective_period1)//'])');
 
 	}
 	else
