@@ -38,9 +38,11 @@ public fun TR10__config(as_is _nid, optional _method)
     }
   else
 	{
+		_version = TR10HWGetVersion(_board_id);
 		_status = TR10HWConfig(_board_id);
 	}
 
+   write(*, "TR10 Firmware version = ", _version);
    write(*, "TR10 Configured =", _status);
    return(1);
 }
