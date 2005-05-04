@@ -46,8 +46,8 @@ public fun TR10HWConfig(in _board_id)
 
 
 /* Reset module */
-/*	TR10->TR10_Reset(val(_handle));
-*/
+	TR10->TR10_Reset(val(_handle));
+
 
 /* Set clock functions on external clock */
 	_clock_source = byte(_TR10_TRG_SOURCE_EXTERNAL);
