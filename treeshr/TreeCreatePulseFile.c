@@ -57,7 +57,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
-STATIC_ROUTINE int CopyFile(char *src, char *dst, int dont_replace);
+STATIC_ROUTINE int CopyFile(char *src, char *dst, int lock_it);
 #endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
@@ -265,7 +265,11 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         free(path);
         if (dstfile)
         {
+#ifndef _WIN32
+          status = CopyFile(srcfile,dstfile,itype != 0);
+#else
           status = CopyFile(srcfile,dstfile,0);
+#endif
           free(dstfile);
         }
         else
@@ -283,7 +287,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 }
 
 #if !defined(_WIN32)
-STATIC_ROUTINE int CopyFile(char *src, char *dst, int dont_replace)
+STATIC_ROUTINE int CopyFile(char *src, char *dst, int lock_it)
 {
   /*
   int status=0;
@@ -309,7 +313,7 @@ STATIC_ROUTINE int CopyFile(char *src, char *dst, int dont_replace)
     if (dst_fd != -1)
     {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
-      MDS_IO_LOCK(src_fd,0,src_len,1);
+      if (lock_it) MDS_IO_LOCK(src_fd,0,src_len,1);
       if (src_len > 0)
       {
         void *buff = malloc(src_len);
@@ -325,7 +329,7 @@ STATIC_ROUTINE int CopyFile(char *src, char *dst, int dont_replace)
       }
       else if (src_len == 0)
           status = TreeSUCCESS;
-      MDS_IO_LOCK(src_fd,0,src_len,0);
+      if (lock_it) MDS_IO_LOCK(src_fd,0,src_len,0);
       MDS_IO_CLOSE(dst_fd);
     }
     MDS_IO_CLOSE(src_fd);
