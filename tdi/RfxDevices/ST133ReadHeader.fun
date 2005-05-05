@@ -1,6 +1,6 @@
 public fun ST133ReadHeader( in _shot )
 {
-    _file = "L:\\Taliercio\\devices\\ValisaCamera\\ccd_shot\\ "//trim(adjustl(_shot))//".SPE";
+    _file = "R:\\ricercatori\\FA\\CCD_SHOT\\ "//trim(adjustl(_shot))//".SPE";
 write(*, _file);
 	_out = ST133->ST133ReadHeader:dsc(_file);
 
