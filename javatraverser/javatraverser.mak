@@ -110,7 +110,9 @@ VMEWavesSetup.java\
 WE7000Setup.java\
 WE7116Setup.java\
 WE7275Setup.java\
-WEGroupSetup.java
+WEGroupSetup.java\
+CAMERASetup.java\
+ST133Setup.java
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \
