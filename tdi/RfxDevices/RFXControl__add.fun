@@ -375,7 +375,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR126_VAL', 'NUMERIC', zero(192), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR127_NAME', 'TEXT', "ModeControlKd", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR127_VAL', 'NUMERIC', zero(192), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR128_NAME', 'TEXT', "ExcludedModes", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR128_NAME', 'TEXT', "ModeControlExcluded", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR128_VAL', 'NUMERIC', zero(192, 0), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR129_NAME', 'TEXT', "K5", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR129_VAL', 'NUMERIC', 0., *, _nid);
