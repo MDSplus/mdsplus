@@ -3,6 +3,8 @@ public fun CCDGetChannel(in _node, in _channel)
 
 	_data = raw_of(_node);
 
+	_dims = shape(_data);
+
 	_data_sig = _data[*,_channel,*];
 
 	_dims = shape(_data_sig);

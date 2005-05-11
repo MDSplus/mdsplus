@@ -356,6 +356,8 @@ public fun ST133__store(as_is _nid, optional _method)
 
 **********************************************************************************************/
 
+_debug = 0;
+
 	_ip_address = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), "");
 	if(_ip_address == "")
 	{
@@ -363,7 +365,7 @@ public fun ST133__store(as_is _nid, optional _method)
  		abort();
 	}
 
-    _shot = 16333;
+    _shot = $SHOT;
 
     write(*, "ST133__store");
 
@@ -376,88 +378,88 @@ public fun ST133__store(as_is _nid, optional _method)
 	{
 
 	    _grooves = ST133HeaderParam(_header, _WINX_SpecGrooves, float(0));	
-		write(*, "_grooves ", _grooves);
+		if( _debug ) write(*, "_grooves ", _grooves);
 		DevPutValue(DevHead(_nid) + _N_SPEC_GROOVES, _grooves);
 
 	    _wave_mid = ST133HeaderParam( _header, _WINX_SpecCenterWlNm, float(0));
-		write(*, "_wave_mid ", _wave_mid);
+		if( _debug ) write(*, "_wave_mid ", _wave_mid);
 		DevPutValue(DevHead(_nid) + _N_SPEC_WAV_MID, _wave_mid);
 
 		_mir_pos_type = zero(2, 0W);
 		_mirrow_pos = ST133HeaderParam( _header, _WINX_SpecMirrorPos, _mir_pos_type);
-		write(*, "_mirrow_pos ", _mirrow_pos);
+		if( _debug ) write(*, "_mirrow_pos ", _mirrow_pos);
 		DevPutValue(DevHead(_nid) + _N_SPEC_MIR_POS, _mirrow_pos);
 
 		_glue_flag = ST133HeaderParam( _header, _WINX_SpecGlueFlag, 0B);
-		write(*, "_glue_flag ", _glue_flag);
+		if( _debug ) write(*, "_glue_flag ", _glue_flag);
 		DevPutValue(DevHead(_nid) + _N_GLUE_FLAG, _glue_flag);
 
 	    _x_dim_det = ST133HeaderParam( _header, _WINX_xDimDet, 0UW);
-		write(*, "_x_dim_det ", _x_dim_det);
+		if( _debug ) write(*, "_x_dim_det ", _x_dim_det);
 		DevPutValue(DevHead(_nid) + _N_X_DIM_DET, _x_dim_det);
 
 	    _y_dim_det = ST133HeaderParam( _header, _WINX_yDimDet, 0UW);	
-		write(*, "_y_dim_det ", _y_dim_det);
+		if( _debug ) write(*, "_y_dim_det ", _y_dim_det);
 		DevPutValue(DevHead(_nid) + _N_Y_DIM_DET, _y_dim_det);
 
 	    _x_dim = ST133HeaderParam( _header, _WINX_xdim, 0UW);
-		write(*, "_x_dim ", _x_dim);
+		if( _debug ) write(*, "_x_dim ", _x_dim);
 		DevPutValue(DevHead(_nid) + _N_X_DIM, _x_dim);
 
 	    _y_dim = ST133HeaderParam( _header, _WINX_ydim, 0UW);
-		write(*, "_y_dim ", _y_dim);
+		if( _debug ) write(*, "_y_dim ", _y_dim);
 		DevPutValue(DevHead(_nid) + _N_Y_DIM, _y_dim);
 
 	    _det_temp = ST133HeaderParam( _header, _WINX_DetTemperature, float(0));
-		write(*, "_det_temp ", _det_temp);
+		if( _debug ) write(*, "_det_temp ", _det_temp);
 		DevPutValue(DevHead(_nid) + _N_DET_TEMP, _det_temp);
 
 	    _exp_sec = ST133HeaderParam( _header, _WINX_exp_sec, float(0));
-		write(*, "_exp_sec ", _exp_sec);
+		if( _debug ) write(*, "_exp_sec ", _exp_sec);
 		DevPutValue(DevHead(_nid) + _N_EXP_TIME, _exp_sec);
 
 		_read_out = ST133HeaderParam( _header, _WINX_ReadoutTime, float(0));
-		write(*, "_read_out ", _read_out);
+		if( _debug ) write(*, "_read_out ", _read_out);
 		DevPutValue(DevHead(_nid) + _N_READ_OUT, _read_out);
 
 		_cleans = ST133HeaderParam( _header, _WINX_cleans, 0UW);
-		write(*, "_cleans ", _cleans);
+		if( _debug ) write(*, "_cleans ", _cleans);
 		DevPutValue(DevHead(_nid) + _N_CLEANS, _cleans);
 
 		_n_skip_cleans = ST133HeaderParam( _header, _WINX_NumSkpPerCln, 0UW);
-		write(*, "_n_skip_cleans ", _n_skip_cleans);
+		if( _debug ) write(*, "_n_skip_cleans ", _n_skip_cleans);
 		DevPutValue(DevHead(_nid) + _N_N_SKIP_CLEAN, _n_skip_cleans);
 
 /*                      
 		_n_scans = ST133HeaderParam( _header, _WINX_lnoscan, 0UW);
-		write(*, "_n_scans ", _n_scans);
+		if( _debug ) write(*, "_n_scans ", _n_scans);
 */
 		_n_frames = ST133HeaderParam( _header, _WINX_NumFrames, 0UW);
-		write(*, "_n_frames ", _n_frames);
+		if( _debug ) write(*, "_n_frames ", _n_frames);
 		DevPutValue(DevHead(_nid) + _N_N_FRAMES, _n_frames);
 
 /*
 		_n_exp_roi = ST133HeaderParam( _header, _WINX_NumROIsInExperiment, 0UW);
 		if(_n_exp_roi == 0) _n_exp_roi = 1;
-		write(*, "_n_exp_roi ", _n_exp_roi);
+		if( _debug ) write(*, "_n_exp_roi ", _n_exp_roi);
 */
 
 		_num_roi = ST133HeaderParam( _header, _WINX_NumROI, 0UW);
 		if(_num_roi == 0) _num_roi = 1;
-		write(*, "_num_roi ", _num_roi);
+		if( _debug ) write(*, "_num_roi ", _num_roi);
 		DevPutValue(DevHead(_nid) + _N_NROI, _num_roi);
 
 		_roi_type = zero(6 * _ROIMAX, 0UW);
 		_roi = ST133HeaderParam( _header, _WINX_NumROI+2, _roi_type);
-		write(*, "_roi ",  _roi );
+		if( _debug ) write(*, "_roi ",  _roi );
 		DevPutValue(DevHead(_nid) + _N_ROI, _roi );
 
 		_num_acc = ST133HeaderParam( _header, _WINX_lavgexp, 0L);
-		write(*, "_num_acc ", _num_acc);
+		if( _debug ) write(*, "_num_acc ", _num_acc);
 		DevPutValue(DevHead(_nid) + _N_NUM_ACC, _num_acc);
 		
 		_calib_x_valid = ST133HeaderParam( _header, _WINX_X_calib_valid, 0B);
-		write(*, "_calib_x_valid ", _calib_x_valid);
+		if( _debug ) write(*, "_calib_x_valid ", _calib_x_valid);
 		DevPutValue(DevHead(_nid) + _N_XCAL_VALID, _calib_x_valid);
 
 		if(_calib_x_valid)
@@ -467,7 +469,7 @@ public fun ST133__store(as_is _nid, optional _method)
 
 			_cal_x_pol_ord = ST133HeaderParam( _header, _WINX_X_polynom_order, 0B);
 
-			_poly_type = zero(6, float(0));
+			_poly_type = zero(6, ft_float(0));
 			_cal_x_coeff = ST133HeaderParam( _header, _WINX_X_polynom_coeff, _poly_type);
 		}
 		else
@@ -478,13 +480,13 @@ public fun ST133__store(as_is _nid, optional _method)
 			_cal_x_coeff = zero(6, float(0));
 		}
 
-		write(*, "_cal_x_string ", _cal_x_string);
+		if( _debug ) write(*, "_cal_x_string ", _cal_x_string);
 		DevPutValue(DevHead(_nid) + _N_XCAL_STING, _cal_x_string);
 
-		write(*, "_cal_x_pol_ord ", _cal_x_pol_ord);
+		if( _debug ) write(*, "_cal_x_pol_ord ", _cal_x_pol_ord);
 		DevPutValue(DevHead(_nid) + _N_XCAL_POL_ORD, _cal_x_pol_ord);
 
-		write(*, "_cal_x_coeff ", _cal_x_coeff);
+		if( _debug ) write(*, "_cal_x_coeff ", _cal_x_coeff);
 		DevPutValue(DevHead(_nid) + _N_XCAL_COEFF, _cal_x_coeff);
 
 		DevPutValue(DevHead(_nid) + _N_HEADER, _header);
@@ -494,10 +496,10 @@ public fun ST133__store(as_is _nid, optional _method)
 		 DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_clock = 0);
 
 		 if(_ext_clock == 1)
-	     {
+	         {
 			_clock = evaluate(DevNodeRef(_nid, _N_CLOCK_SOURCE));
 			_clock = execute('evaluate(`_clock)');
-			write(*,_clock);
+			if( _debug ) write(*,_clock);
 			_trig_time = dscptr(_clock, 0);
 			_delta = dscptr(_clock, 2);
 		 }
@@ -519,7 +521,7 @@ public fun ST133__store(as_is _nid, optional _method)
 		_status = TreeShr->TreePutRecord(val(_sig_nid),xd(_sig_img),val(0));
 		if(! (_status & 1))
 		{
-				DevLogErr(_nid, 'Error writing data in pulse file');
+			DevLogErr(_nid, 'Error writing data in pulse file');
 		}
 
 
