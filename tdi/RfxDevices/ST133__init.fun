@@ -30,10 +30,13 @@ public fun ST133__init(as_is _nid, optional _method)
     private _N_HEADER =        26;
     private _N_DATA   =        27;
 
-
     write(*, "ST133__init");
 
-    _shot_num = current_shot('rfx');
+	_status = 1;
+
+    _shot_num = $SHOT;
+
+	write(*, "_shot_num ", _shot_num);
 
 	_ip_address = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), "");
 	if(_ip_address == "")
@@ -42,15 +45,31 @@ public fun ST133__init(as_is _nid, optional _method)
  		abort();
 	}
 
-	MdsConnect(_ip_address);
+	_status = MdsConnect(_ip_address);
+
+write(*, "_status ", _status);
+
+    if( ~_status & 1 )
+	{
+/*
+
+		_u = mdsvalue('fopen("C:\\\\Documents and settings\\\\spectroscopy\\\\CCD_experiment\\\\shotnum.txt","w")');
+
+		write(*, "Id file ", _u);
+
+		if( _u !=  0 )
+		{
+			_status = mdsvalue('write($,$)', _u, _shot_num);
+
+			_status = mdsvalue('fclose($)', _u);
+		}
+*/		 
+		_status = mdsvalue('ST133HwInit($)', _shot_num);
+
+  	    MdsDisconnect();
+	}
 
 
-    _u=mdsvalue('fopen("C:\CURRENT_SHOT.TXT","w")');
-	mdsvalue('write($,$)', _u, _shot_num);
-	mdsvalue('fclose($)', _u); 
 
-	MdsDisconnect();
-
-
-    return(1);
+    return(_status);
 }
