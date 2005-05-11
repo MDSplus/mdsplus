@@ -1,6 +1,6 @@
 public fun RFXPCSetup__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPCSetup',16, _nidout);
+    DevAddStart(_path, 'RFXPCSetup',17, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CONFIG', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CONTROL', 'TEXT', *, *, _nid);
@@ -16,6 +16,7 @@ public fun RFXPCSetup__add(in _path, out _nidout)
   	DevAddNode(_path // ':PERT_FREQ', 'NUMERIC', 0, *, _nid);
   	DevAddNode(_path // ':PERT_PHASE', 'NUMERIC', 0, *, _nid);
   	DevAddNode(_path // ':PERT_START', 'NUMERIC', 0, *, _nid);
+  	DevAddNode(_path // ':PERT_STOP', 'NUMERIC', 0, *, _nid);
     DevAddEnd();
 }
 
