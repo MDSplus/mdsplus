@@ -31,6 +31,7 @@ public class RFXPCSetupSetup extends DeviceSetup {
   DeviceField deviceField6 = new DeviceField();
   DeviceField deviceField7 = new DeviceField();
   DeviceField deviceField8 = new DeviceField();
+  DeviceField deviceField9 = new DeviceField();
   public RFXPCSetupSetup() {
     try {
       jbInit();
@@ -102,6 +103,10 @@ public class RFXPCSetupSetup extends DeviceSetup {
     deviceField4.setLabelString("Start Time(s): ");
     deviceField4.setNumCols(5);
     deviceField4.setIdentifier("");
+    deviceField9.setOffsetNid(16);
+    deviceField9.setLabelString("End Time (s):");
+    deviceField9.setNumCols(5);
+    deviceField9.setIdentifier("");
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(deviceWave1, BorderLayout.CENTER);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
@@ -119,6 +124,7 @@ public class RFXPCSetupSetup extends DeviceSetup {
     jPanel5.add(deviceField7, null);
     jPanel5.add(deviceField6, null);
     jPanel5.add(deviceField4, null);
+    jPanel5.add(deviceField9, null);
   }
 
 }
