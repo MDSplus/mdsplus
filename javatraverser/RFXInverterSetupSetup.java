@@ -235,6 +235,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
   JPanel jPanel111117 = new JPanel();
   DeviceWaveDisplay deviceWaveDisplay14 = new DeviceWaveDisplay();
   DeviceField deviceField11113 = new DeviceField();
+    DeviceChoice deviceChoice1 = new DeviceChoice();
   public RFXInverterSetupSetup() {
     try {
       jbInit();
@@ -719,9 +720,18 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField11113.setLabelString("Start Time:");
     deviceField11113.setNumCols(4);
     deviceField11113.setIdentifier("");
-    this.getContentPane().add(jPanel1, BorderLayout.NORTH);
-    jPanel1.add(deviceField1, null);
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)2,(int)3});
+        deviceChoice1.setChoiceFloatValues(null);
+        deviceChoice1.setConvert(true);
+        deviceChoice1.setOffsetNid(233);
+        deviceChoice1.setLabelString("Pert. Form: ");
+        deviceChoice1.setChoiceItems(new String[] {"COSINE", "TRANGLE", "SQUARE"});
+        deviceChoice1.setUpdateIdentifier("");
+        deviceChoice1.setIdentifier("");
+        this.getContentPane().add(jPanel1, BorderLayout.NORTH);
+        jPanel1.add(deviceField1, null);
     jPanel1.add(deviceField30, null);
+        jPanel1.add(deviceChoice1, null);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
     jTabbedPane1.add(deviceChannel1,   "1");
