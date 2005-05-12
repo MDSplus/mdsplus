@@ -134,7 +134,7 @@ public class LoadPulse
                 {
                     NidData currNid = tree.resolve(new PathData(currNode.getPath()), 0);
 
-                    if(currNode.isNoWriteModel()) System.out.println("NO WRITE MODEL!!");
+                    //if(currNode.isNoWriteModel()) System.out.println("NO WRITE MODEL!!" + currNode.getPath());
 
                     if(currNode.getDecompiled() != null && !currNode.isNoWriteModel())
                     {

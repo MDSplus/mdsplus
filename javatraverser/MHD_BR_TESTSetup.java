@@ -119,8 +119,8 @@ public class MHD_BR_TESTSetup
   }
 
   private void jbInit() throws Exception {
-    this.setWidth(634);
-    this.setHeight(634);
+    this.setWidth(670);
+    this.setHeight(460);
     this.setDeviceType("MHD_BR_TEST");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("Eletromagnetic Test");

@@ -725,7 +725,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
         deviceChoice1.setConvert(true);
         deviceChoice1.setOffsetNid(233);
         deviceChoice1.setLabelString("Pert. Form: ");
-        deviceChoice1.setChoiceItems(new String[] {"COSINE", "TRANGLE", "SQUARE"});
+        deviceChoice1.setChoiceItems(new String[] {"COSINE", "TRIANGLE", "SQUARE"});
         deviceChoice1.setUpdateIdentifier("");
         deviceChoice1.setIdentifier("");
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
