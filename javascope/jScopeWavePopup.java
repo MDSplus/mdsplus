@@ -37,7 +37,7 @@ class jScopeWavePopup extends MultiWavePopup
 	        }
 	    );
 
-        sep1 = new JSeparator();
+            sep1 = new JSeparator();
 	    refresh = new JMenuItem("Refresh");
 	    refresh.addActionListener(new ActionListener()
 	        {
@@ -174,6 +174,7 @@ class jScopeWavePopup extends MultiWavePopup
         super.SetMode2D(mode);
 	    jScopeMultiWave w = (jScopeMultiWave)wave;
         w.wi.mode2D[w.GetSelectedSignal()] = mode;
+        w.Refresh();
     }
 
     public void SetDeselectPoint(Waveform w)

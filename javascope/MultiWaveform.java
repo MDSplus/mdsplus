@@ -602,14 +602,14 @@ public class MultiWaveform extends Waveform
 	    for(i = 0; i <  signals.size(); i++)
 	    {
 	        if((Signal)signals.elementAt(i) == null) continue;
-	        if(waveform_signal.xmax < ((Signal)signals.elementAt(i)).xmax)
-		        waveform_signal.xmax = ((Signal)signals.elementAt(i)).xmax;
-	        if(waveform_signal.ymax < ((Signal)signals.elementAt(i)).ymax)
-		        waveform_signal.ymax = ((Signal)signals.elementAt(i)).ymax;
-	        if(waveform_signal.xmin > ((Signal)signals.elementAt(i)).xmin)
-		        waveform_signal.xmin = ((Signal)signals.elementAt(i)).xmin;
-	        if(waveform_signal.ymin > ((Signal)signals.elementAt(i)).ymin)
-		        waveform_signal.ymin = ((Signal)signals.elementAt(i)).ymin;
+	        if(waveform_signal.getXmax() < ((Signal)signals.elementAt(i)).getXmax())
+		        waveform_signal.setXmax(((Signal)signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+	        if(waveform_signal.getYmax() < ((Signal)signals.elementAt(i)).getYmax())
+		        waveform_signal.setYmax(((Signal)signals.elementAt(i)).getYmax(), Signal.SIMPLE);
+	        if(waveform_signal.getXmin() > ((Signal)signals.elementAt(i)).getXmin())
+		        waveform_signal.setXmin( ((Signal)signals.elementAt(i)).getXmin(), Signal.SIMPLE);
+	        if(waveform_signal.getYmin() > ((Signal)signals.elementAt(i)).getYmin())
+		        waveform_signal.setYmin(((Signal)signals.elementAt(i)).getYmin(), Signal.SIMPLE);
 	    }
     }
 
@@ -993,13 +993,16 @@ public class MultiWaveform extends Waveform
 
   public void UpdatePoint(double curr_x)
   {
+      UpdatePoint(curr_x, Double.NaN);
+  }
+
+  public synchronized void UpdatePoint(double curr_x, double curr_y)
+  {
 
         if(!is_image)
         {
-                     // if(wm == null) { System.out.println("wm == null"); return;}
-
-
-		   // if(dragging || mode != MODE_POINT || signals == null || signals.size() == 0)
+             // if(wm == null) { System.out.println("wm == null"); return;}
+             // if(dragging || mode != MODE_POINT || signals == null || signals.size() == 0)
 	        if(mode != MODE_POINT || signals == null || signals.size() == 0)
 			    return;
 
@@ -1013,12 +1016,12 @@ public class MultiWaveform extends Waveform
 			      (s.getMode2D() == Signal.MODE_XY || s.getMode2D() == Signal.MODE_YX))
 			    {
 			        s.showXY(s.getMode2D(), (float)curr_x);
-				    not_drawn = true;
+                                not_drawn = true;
 			    }
 
 			}
 		}
-		super.UpdatePoint(curr_x);
+		super.UpdatePoint(curr_x, curr_y);
 	}
 
     protected int GetSelectedSignal() {return curr_point_sig_idx; }
@@ -1151,14 +1154,14 @@ public class MultiWaveform extends Waveform
 	    {
 	        if((Signal)signals.elementAt(i) == null) continue;
 	        ((Signal)signals.elementAt(i)).Autoscale();
-	        if(((Signal)signals.elementAt(i)).xmin < waveform_signal.xmin)
-		        waveform_signal.xmin = ((Signal)signals.elementAt(i)).xmin;
-	        if(((Signal)signals.elementAt(i)).xmax > waveform_signal.xmax)
-		        waveform_signal.xmax = ((Signal)signals.elementAt(i)).xmax;
-	        if(((Signal)signals.elementAt(i)).ymin < waveform_signal.ymin)
-		        waveform_signal.ymin = ((Signal)signals.elementAt(i)).ymin;
-	        if(((Signal)signals.elementAt(i)).ymax > waveform_signal.ymax)
-		        waveform_signal.ymax = ((Signal)signals.elementAt(i)).ymax;
+	        if(((Signal)signals.elementAt(i)).getXmin() < waveform_signal.getXmin())
+		        waveform_signal.setXmin( ((Signal)signals.elementAt(i)).getXmin(), Signal.SIMPLE);
+	        if(((Signal)signals.elementAt(i)).getXmax() > waveform_signal.getXmax())
+		        waveform_signal.setYmax(((Signal)signals.elementAt(i)).getXmax(), Signal.SIMPLE);
+	        if(((Signal)signals.elementAt(i)).getYmin() < waveform_signal.getYmin())
+		        waveform_signal.setYmin(((Signal)signals.elementAt(i)).getYmin(), Signal.SIMPLE);
+	        if(((Signal)signals.elementAt(i)).getYmax() > waveform_signal.getYmax())
+		        waveform_signal.setYmax(((Signal)signals.elementAt(i)).getYmax(), Signal.SIMPLE);
 	    }
 
 	    ReportChanges();
@@ -1168,7 +1171,7 @@ public class MultiWaveform extends Waveform
     {
 	    int i;
 	    if(waveform_signal == null) return;
-	    double prev_xmin = waveform_signal.xmin, prev_xmax = waveform_signal.xmax;
+	    double prev_xmin = waveform_signal.getXmin(), prev_xmax = waveform_signal.getXmax();
     	    if(signals == null)
 	            return;
 
@@ -1177,10 +1180,10 @@ public class MultiWaveform extends Waveform
 	    {
 	        if(((Signal)signals.elementAt(i)) == null) continue;
 	            ((Signal)signals.elementAt(i)).AutoscaleY(prev_xmin, prev_xmax);
-            if(((Signal)signals.elementAt(i)).ymin < ymin)
- 	    	    ymin = ((Signal)signals.elementAt(i)).ymin;
-            if(((Signal)signals.elementAt(i)).ymax > ymax)
-    	    	ymax = ((Signal)signals.elementAt(i)).ymax;
+            if(((Signal)signals.elementAt(i)).getYmin() < ymin)
+ 	    	    ymin = ((Signal)signals.elementAt(i)).getYmin();
+            if(((Signal)signals.elementAt(i)).getYmax() > ymax)
+    	    	ymax = ((Signal)signals.elementAt(i)).getYmax();
 	    }
 
 	    if(ymin >= ymax)
@@ -1188,8 +1191,8 @@ public class MultiWaveform extends Waveform
 	        ymax = ymin+2*ymin;
 	        ymin = ymin-2*ymin;
 	    }
-	    waveform_signal.ymin = ymin;
-	    waveform_signal.ymax = ymax;
+	    waveform_signal.setYmin(ymin, Signal.SIMPLE);
+	    waveform_signal.setYmax(ymax, Signal.SIMPLE);
 	    ReportChanges();
 
     }
@@ -1212,17 +1215,17 @@ public class MultiWaveform extends Waveform
 	            orig_signals.addElement(signals.elementAt(i));
 
         }
-	    waveform_signal.xmin = w.waveform_signal.xmin;
-	    waveform_signal.xmax = w.waveform_signal.xmax;
+	    waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
+	    waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
 
 	    AutoscaleY();
 
 	    update_timestamp++;
 	    asinchAutoscale = true;
-	    NotifyZoom(waveform_signal.xmin,
-	               waveform_signal.xmax,
-	               waveform_signal.ymin,
-	               waveform_signal.ymax,
+	    NotifyZoom(waveform_signal.getXmin(),
+	               waveform_signal.getXmax(),
+	               waveform_signal.getYmin(),
+	               waveform_signal.getYmax(),
                    update_timestamp);
     }
 
@@ -1253,8 +1256,8 @@ public class MultiWaveform extends Waveform
 	        orig_signals = new Vector();
 	        for(int i = 0; i < signals.size(); i++)
 	            orig_signals.addElement(signals.elementAt(i));
-	        orig_xmin = waveform_signal.xmin;
-	        orig_xmax = waveform_signal.xmax;
+	        orig_xmin = waveform_signal.getXmin();
+	        orig_xmax = waveform_signal.getXmax();
         }
 
 

@@ -41,9 +41,9 @@ SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.
 TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformEditorListener.java MdsplusParser.java \
 ASCIIDataProvider.java      ImageTransferable.java
 
-DOCS=ConnectionEvent.html      DataProvider.html         UpdateEvent.html          WaveData.html\
-ConnectionListener.html   FrameData.html            UpdateEventListener.html  jScope.html    data_setup.jpg \
-frame_popup.jpg  image_setup.jpg  jScope.jpg       popup.jpg CompositeWaveDisplay.html
+DOCS=ConnectionEvent.html +  DataProvider.html  +  UpdateEvent.html  +   WaveData.html + \
+ConnectionListener.html +  FrameData.html  +  UpdateEventListener.html  + jScope.html  +  data_setup.jpg + \
+frame_popup.jpg + image_setup.jpg + jScope.jpg  +     popup.jpg + CompositeWaveDisplay.html
 
 CLASSES = $(SOURCES:.java=.class)
 
@@ -53,23 +53,23 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 ..\java\classes\jScope.jar : jScope.class CompositeWaveDisplay.class
 	- rmdir/s/q docs
 	mkdir docs
-	cp $(DOCS) docs
-	%JDK_DIR%\bin\jar.exe -cf ..\java\classes\jScope.jar *.class *.html docs
+	copy $(DOCS) docs
+	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\jScope.jar *.class *.html docs
 	- rmdir/s/q docs
 
 ..\java\classes\MindTerm.jar : MindTerm.jar
 	copy MindTerm.jar ..\java\classes\MindTerm.jar
 
 jScope.class : $(SOURCES)
-	%JDK_DIR%\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
 
 ..\java\classes\jScope.properties : jScope.properties
 	copy jScope.properties ..\java\classes
 
 ..\java\classes\WaveDisplay.jar : $(APPLETSOURCES)
 	del/q *.class
-	%JDK_DIR%\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(APPLETSOURCES)
-	%JDK_DIR%\bin\jar.exe -cf ..\java\classes\WaveDisplay.jar *.class
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(APPLETSOURCES)
+	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\WaveDisplay.jar *.class
 	
 CompositeWaveDisplay.class : $(SOURCES)
-	%JDK_DIR%\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar CompositeWaveDisplay.java	
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar CompositeWaveDisplay.java	

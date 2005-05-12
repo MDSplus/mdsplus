@@ -988,13 +988,13 @@ public class WaveInterface
     public void setLimits(Signal s)
     {
         if (xmin != -HUGE)
-            s.xmin = xmin;
+            s.setXmin(xmin, Signal.SIMPLE);
         if (xmax != HUGE)
-            s.xmax = xmax;
+            s.setXmax(xmax, Signal.SIMPLE);
         if (ymin != -HUGE)
-            s.ymin = ymin;
+            s.setYmin(ymin, Signal.SIMPLE);
         if (ymax != HUGE)
-            s.ymax = ymax;
+            s.setYmax(ymax, Signal.SIMPLE);
     }
 
     public boolean allEvaluated()
@@ -1036,8 +1036,8 @@ public class WaveInterface
             {
                 w_error[curr_wave] = null;
                 evaluated[curr_wave] = true;
-                signals[curr_wave] = GetSignal(curr_wave, (float) - HUGE,
-                                               (float) HUGE);
+//                signals[curr_wave] = GetSignal(curr_wave, (float) - HUGE, (float) HUGE);
+                signals[curr_wave] = GetSignal(curr_wave, (float) xmin, (float) xmax);
                 if (signals[curr_wave] == null)
                 {
                     w_error[curr_wave] = curr_error;
@@ -1208,22 +1208,21 @@ public class WaveInterface
 
         if (out_signal != null)
         {
+            if(xmin > xmax) xmin = xmax;
+            if(ymin > ymax) ymin = ymax;
+
             if (xmin != -HUGE)
-                out_signal.xmin = out_signal.saved_xmin = xmin;
+                out_signal.setXmin(xmin, Signal.AT_CREATION | Signal.FIXED_LIMIT);
             if (xmax != HUGE)
-                out_signal.xmax = out_signal.saved_xmax = xmax;
+                out_signal.setXmax(xmax, Signal.AT_CREATION | Signal.FIXED_LIMIT);
 
             if (in_ymax != null && (in_ymax.trim()).length() != 0 &&
                 in_upd_limits)
-                out_signal.ymax = out_signal.saved_ymax = ymax;
-            if (out_signal.xmin > out_signal.xmax)
-                out_signal.xmin = out_signal.xmax;
+                out_signal.setYmax(ymax, Signal.AT_CREATION | Signal.FIXED_LIMIT);
 
             if (in_ymin != null && (in_ymin.trim()).length() != 0 &&
                 in_upd_limits)
-                out_signal.ymin = out_signal.saved_ymin = ymin;
-            if (out_signal.ymin > out_signal.ymax)
-                out_signal.ymin = out_signal.ymax;
+                out_signal.setYmin(ymin, Signal.AT_CREATION | Signal.FIXED_LIMIT);
 
             out_signal.setFullLoad(full_flag);
         }
