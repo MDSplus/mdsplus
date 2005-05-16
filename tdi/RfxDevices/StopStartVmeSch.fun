@@ -39,7 +39,7 @@ public fun StopStartVmeSch(in _node)
    {	
 
       MdsConnect("150.178.34.46");
-      write(*,"Stop e start dello scheduler su DEQU"); 
+      write(*,"Stop e start dello scheduler su DFLU"); 
       MdsValue("VmeStateMachine->engdaStop()");
       wait(1);
       MdsValue('VmeStateMachine->engdaStart("R4","150.178.34.130", val(2015), val(1))');
