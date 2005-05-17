@@ -1655,7 +1655,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice5.setConvert(true);
     deviceChoice5.setOffsetNid(1233);
     deviceChoice5.setLabelString("Mode: ");
-    deviceChoice5.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice5.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceTable11.setRowNames(null);
@@ -1675,7 +1675,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice6.setConvert(true);
     deviceChoice6.setOffsetNid(1243);
     deviceChoice6.setLabelString("Mode: ");
-    deviceChoice6.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice6.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
     deviceTable13.setRowNames(null);
@@ -1723,7 +1723,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice7.setConvert(true);
     deviceChoice7.setOffsetNid(1253);
     deviceChoice7.setLabelString("Mode: ");
-    deviceChoice7.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice7.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice7.setUpdateIdentifier("");
     deviceChoice7.setIdentifier("");
     deviceField39.setOffsetNid(1245);
@@ -1757,7 +1757,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice8.setConvert(true);
     deviceChoice8.setOffsetNid(1263);
     deviceChoice8.setLabelString("Mode: ");
-    deviceChoice8.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice8.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice8.setUpdateIdentifier("");
     deviceChoice8.setIdentifier("");
     deviceField310.setIdentifier("");
@@ -1793,7 +1793,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice9.setConvert(true);
     deviceChoice9.setOffsetNid(1273);
     deviceChoice9.setLabelString("Mode: ");
-    deviceChoice9.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice9.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice9.setUpdateIdentifier("");
     deviceChoice9.setIdentifier("");
     jPanel4113.setLayout(borderLayout9);
@@ -1817,7 +1817,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice10.setConvert(true);
     deviceChoice10.setOffsetNid(1279);
     deviceChoice10.setLabelString("Mode: ");
-    deviceChoice10.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice10.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice10.setUpdateIdentifier("");
     deviceChoice10.setIdentifier("");
     jPanel4116.setLayout(borderLayout10);
@@ -1861,7 +1861,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice11.setConvert(true);
     deviceChoice11.setOffsetNid(1293);
     deviceChoice11.setLabelString("Mode: ");
-    deviceChoice11.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice11.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice11.setUpdateIdentifier("");
     deviceChoice11.setIdentifier("");
     deviceField3115.setOffsetNid(1285);
@@ -1902,7 +1902,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice12.setConvert(true);
     deviceChoice12.setOffsetNid(1303);
     deviceChoice12.setLabelString("Mode: ");
-    deviceChoice12.setChoiceItems(new String[] {"M1->M1", "M1->M0"});
+    deviceChoice12.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice12.setUpdateIdentifier("");
     deviceChoice12.setIdentifier("");
     jPanel41112.setLayout(borderLayout12);
