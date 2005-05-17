@@ -24,10 +24,9 @@ class Action
         this.on = on;
         dispatch_status = NOT_DISPATCHED;
         status = 0;
-
     }
 
-   // public int getTimestamp() {return timestamp; }
+  //public int getTimestamp() {return timestamp; }
     public synchronized void setTimestamp(int timestamp) {this.timestamp = timestamp; }
     public synchronized ActionData getAction() {return action; }
     public synchronized int getNid() {return nid; }
@@ -67,5 +66,4 @@ class Action
         }
     }
     public synchronized String toString() {return name; }
-
 }

@@ -652,6 +652,7 @@ class jDispatcher
 
     public void startInfoServer(int port)
     {
+         System.out.println("Start info server on port " + port );
         (new jDispatcherInfo(port)).start();
     }
 
@@ -680,8 +681,10 @@ class jDispatcher
                     String command  =  dis.readUTF();
                     if(command.toLowerCase().equals("servers"))
                     {
+                        dos.writeInt (servers.size());
                         for(int i = 0; i < servers.size(); i++)
                         {
+                            System.out.println("Send server info " + i);
                             Server currServer = (Server)servers.elementAt(i);
                             String serverClass = currServer.getServerClass();
                             String address = "";

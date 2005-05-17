@@ -30,7 +30,8 @@ class jDispatcherIp
         //System.err.println("Comando a jDispatcherIp " + compositeCommand);
 
         //Handle direct commands: ABORT and DISPATCH
-        if (compositeCommand.toUpperCase().startsWith("ABORT"))
+        if (compositeCommand.toUpperCase().startsWith("ABORT") ||
+            compositeCommand.toUpperCase().startsWith("DISPATCH") )
             command = compositeCommand;
         else {
             try {
@@ -44,7 +45,6 @@ class jDispatcherIp
                 System.err.println(
                     "Unexpected message has been received by jDispatcherIp:" +
                     compositeCommand + " " + exc);
-
             }
         }
         try {
@@ -75,11 +75,12 @@ class jDispatcherIp
     }
 
     protected int doCommand(String command) {
-        System.out.println(command);
+        System.out.println("Comando Test " + command);
 
         StringTokenizer st = new StringTokenizer(command, "/ ");
         try {
             String first_part = st.nextToken();
+            System.out.println("Comando Test first_part" + first_part);
             if (first_part.equals("DISPATCH")) {
                 String second_part = st.nextToken();
                 if (second_part.equals("BUILD"))
@@ -93,6 +94,7 @@ class jDispatcherIp
                     int nid;
                     try {
                         nid = Integer.parseInt(second_part);
+                       System.out.println("Comando Test nid" + nid);
                     }
                     catch (Exception ex) {
                         throw new Exception("Invalid command");
@@ -213,6 +215,16 @@ class jDispatcherIp
         }
         catch (Exception exc) {
             System.out.println("Cannot read port");
+            System.exit(0);
+        }
+
+        int info_port = 0;
+        try {
+            info_port = Integer.parseInt(properties.getProperty("jDispatcher.info_port"));
+            dispatcher.startInfoServer(info_port);
+        }
+        catch (Exception exc) {
+            System.out.println("Cannot read info_port");
             System.exit(0);
         }
 

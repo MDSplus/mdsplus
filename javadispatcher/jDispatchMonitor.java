@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.text.*;
+import java.net.*;
 
 public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                  ConnectionListener
@@ -46,7 +48,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 				me.error_message = me_failed.error_message;
 			    else
 				me.error_message += " " + me_failed.error_message;
-
+                            me_failed.error_message = new String(me.error_message);
 			}
 		     }
                 case MdsMonitorEvent.MonitorDispatched :
@@ -81,7 +83,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     }
 
 
-
     public class ErrorMgr extends MdsIp
     {
     //The constructor
@@ -96,7 +97,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             int nids[] = null;
             int nid = 0;
             String message = null;
-
 
             //method MdsMessage.ToString returns the argument as a string
             //in this ase messages[0] contains the expression to be evaluated
@@ -114,11 +114,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 return new MdsMessage((byte)1);
             }
 
-            //do the stuff here
-
             if(nids == null || message == null)
                 return new MdsMessage((byte)1);
-
 
             Hashtable actions = null;
 
@@ -137,14 +134,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             {
                 MdsMonitorEvent me = new MdsMonitorEvent(this, curr_phase, nids[0], message);
                 actions.put(new Integer(nids[0]), me);
-//                System.out.println("Add error on "+nids[0] + " " + message);
+//              System.out.println("Add error on "+nids[0] + " " + message);
             }
 
             //In this example the mdsip returns a string value
             return new MdsMessage((byte)1);
             //if a integer number has to be returned instead,
             //you can type return new MdsMessage((Byte)<number>)
-
 	}
     }
 
@@ -158,8 +154,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     MdsServer dispatcher = null;
 
     JDesktopPane desktop = null;
-    JLabel total_actions_l, dispatched_l,    doing_l, done_l, failed_l, exp_l, shot_l, phase_l;
-    int    disp_count = 0,  doing_count = 0, done_count = 0, failed_count = 0, total_count;
+    JLabel total_actions_l, dispatched_l,    doing_l, done_l,
+           failed_l, exp_l, shot_l, phase_l;
+    int    disp_count = 0,  doing_count = 0, done_count = 0,
+           failed_count = 0, total_count;
 
     ButtonGroup   phase_group = new ButtonGroup();
     JMenu         phase_m = new JMenu("Phase");
@@ -191,6 +189,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     Hashtable phase_failed = new Hashtable();
 
     ErrorMgr error_mgr;
+    int info_port;
 
     class ToolTipJList extends JList
     {
@@ -223,7 +222,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                             "alert",
                                             JOptionPane.WARNING_MESSAGE);
                         }
-//                        System.out.println("Double clicked on " + item);
+//                      System.out.println("Double clicked on " + item);
                     }
                 }
             });
@@ -433,6 +432,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         error_mgr = new ErrorMgr(error_port);
         error_mgr.start();
 
+        info_port = 0;
+        try {
+            info_port = Integer.parseInt(properties.getProperty("jDispatcher.info_port"));
+        }
+        catch(Exception exc)
+        {
+            System.out.println("Cannot read info port");
+        }
+
         try
         {
             if(monitor_server != null && monitor_server.length() != 0)
@@ -517,9 +525,36 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         view.add(auto_scroll_cb);
 
 
+
+        JMenu info_m = new JMenu("Info");
+        JMenuItem showServer_cb = new JMenuItem("Show Server");
+        showServer_cb.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                   showServers();
+                }
+            }
+        );
+        info_m.add(showServer_cb);
+
+
+        JMenuItem statistics_cb = new JMenuItem("Statistics");
+        statistics_cb.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                }
+            }
+        );
+        //info_m.add(statistics_cb);
+
+
+
         mb.add(file);
         mb.add(view);
         mb.add(phase_m);
+        mb.add(info_m);
 
         JPanel p0 = new JPanel();
         p0.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -810,7 +845,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     private void redispatch(MdsMonitorEvent me) throws IOException
     {
         if(me.mode == MdsMonitorEvent.MonitorDone)
-            doCommand("Dispatch", me);
+            doCommand("DISPATCH", me);
     }
 
     private void doCommand(String command, MdsMonitorEvent me) throws IOException
@@ -1010,16 +1045,26 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
                 if(e.error_message != null && e.error_message.indexOf("SS-W-NOMSG") == -1)
                 {
-                    me.error_message += " " + e.error_message;
+                    //me.error_message += " " + e.error_message;
+                    e.error_message = new String(e.error_message + me.error_message);
+                }
+                else
+                {
+                    e.error_message = new String(me.error_message);
                 }
 
+                long start_date = e.date.getTime();
+                long end_date = me.date.getTime();
+                e.execution_time =  end_date - start_date;
+                me.execution_time = e.execution_time;
+/*
                 if(e.mode == MdsMonitorEvent.MonitorDispatched)
                     doing_count++;
+*/
             }
             e.ret_status = me.ret_status;
             e.mode = me.mode;
             e.date = me.date;
-
             return e.jobid;
         }
         else
@@ -1104,7 +1149,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             if(e.getID() == ConnectionEvent.LOST_CONNECTION)
             {
-                    // do the following on the gui thread
+                 // do the following on the gui thread
                     ShowMessage alert = new ShowMessage(e.info);
                 SwingUtilities.invokeLater(alert);
                 setWindowTitle();
@@ -1124,6 +1169,37 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 dispatcher = null;
 
         }
+    }
+
+    private void showServers()
+    {
+      try
+      {
+        String address = new StringTokenizer(this.monitor_server).nextToken(":");
+        Socket s = new Socket(address, info_port);
+        s.setSoTimeout(500);
+        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+        DataInputStream dis = new DataInputStream(s.getInputStream());
+
+        dos.writeUTF("servers");
+        int numServer = dis.readInt();
+        ServerShowDialog ssd = new ServerShowDialog(this, "Servers List");
+
+        for(int i = 0; i < numServer; i++)
+        {
+          //System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean());
+          ssd.addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
+        }
+        s.close();
+        ssd.pack();
+        ssd.setSize(400,300);
+        ssd.setVisible(true);
+      }
+      catch(Exception exc)
+      {
+        ShowMessage alert = new ShowMessage(exc.getMessage());
+        SwingUtilities.invokeLater(alert);
+      }
     }
 
     public static void main(String arg[])

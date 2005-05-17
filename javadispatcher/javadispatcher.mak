@@ -1,6 +1,6 @@
 .SUFFIXES: .class .java
 .java.class:
-	%JDK_DIR%\bin\javac.exe $*.java
+	$(JDK_DIR)\bin\javac.exe $*.java
 
 SOURCES = \
 Action.java             MdsHelper.java          MdsServerEvent.java     NetworkListener.java    jDispatcher.java \
@@ -11,5 +11,5 @@ InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatc
 
 all : $(SOURCES)
 	set CLASSPATH=..\java\classes\MDSplus.jar;..\javascope
-	%JDK_DIR%\bin\javac.exe *.java
-	%JDK_DIR%\bin\jar.exe -uf ..\java\classes\MDSplus.jar *.class
+	$(JDK_DIR)\bin\javac.exe *.java
+	$(JDK_DIR)\bin\jar.exe -uf ..\java\classes\MDSplus.jar *.class
