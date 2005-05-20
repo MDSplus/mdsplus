@@ -87,17 +87,20 @@ public fun XRAY__init(as_is _nid, optional _method)
 	{
 
            _chan_nid = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
+		 
+		  _is_on = DevIsOn(DevNodeRef(_nid, _chan_nid));
 
-		   if( ( _is_on = DevIsOn(DevNodeRef(_nid, _chan_nid)) && _i < 58) || 
-			   ( _is_on && _i > 58 && _hor_head == 1) ) /* Disabilito i canali della testa orizzontale se non utilizzati */
+		   if( ( _is_on && _i < 58 ) || ( _is_on && _hor_head == 1) ) /* Disabilito i canali della testa orizzontale se non utilizzati */
 		   {
 				_enabled = 1;
 				_detector_id = [_detector_id, byte(1)];
+				write(*, "Enabled channel"//_i);
 		   }
 		   else
 		   {
 				_enabled = 0;
 				_detector_id = [_detector_id, byte(0)];
+				write(*, "DISABLED channel"//_i);
 		   }
 
 

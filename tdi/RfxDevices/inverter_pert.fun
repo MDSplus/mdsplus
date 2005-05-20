@@ -21,9 +21,14 @@ OPTIONAL _wform)
     else
     {
 	if(_mode == 3)
-   	    _pert = [_pert, square_wave(_end - _start_pert, _dt, _freq, _amp)];
-	else
-    	    _pert = [_pert, _amp * cos(6.28 * _freq * (0 : (_end - _start_pert) : _dt) + _phase)];
+  	    _pert = [_pert, square_wave(_end - _start_pert, _dt, _freq, _amp)];
+  	else 
+	{
+	    if(_mode == 4)
+    	        _pert = [_pert, sawtooth(_end - _start_pert, _dt, _freq, _amp)];
+	    else		
+    	        _pert = [_pert, _amp * cos(6.28 * _freq * (0 : (_end - _start_pert) : _dt) + _phase)];
+	}
     }
 
     _pert_base = [_start, _start_pert];

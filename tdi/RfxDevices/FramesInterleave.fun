@@ -4,14 +4,19 @@ public fun FramesInterleave(in _frame_sig)
 	_frames = data( _frame_sig );
 	_times = dim_of(_frame_sig);
 	
-	_t0 = _times[0];
-	_dt = _times[1] - _times[0];
 
 	_dims = shape(_frames);
 
 	_num_col = _dims[0];
 	_num_row = _dims[1];
 	_num_frame = _dims[2];
+
+	_t0 = _times[0];
+	/*
+	_dt = _times[1] - _times[0];
+	*/
+	_dt = dscptr(axis_of(_times), 2);
+
 		
 	_ndims = size(_dims);
 	

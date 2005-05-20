@@ -49,25 +49,11 @@ public fun ST133__init(as_is _nid, optional _method)
 
 write(*, "_status ", _status);
 
-    if( ~_status & 1 )
+        if( _status != 0 )
 	{
-/*
-
-		_u = mdsvalue('fopen("C:\\\\Documents and settings\\\\spectroscopy\\\\CCD_experiment\\\\shotnum.txt","w")');
-
-		write(*, "Id file ", _u);
-
-		if( _u !=  0 )
-		{
-			_status = mdsvalue('write($,$)', _u, _shot_num);
-
-			_status = mdsvalue('fclose($)', _u);
-		}
-*/		 
-		_status = mdsvalue('ST133HwInit($)', _shot_num);
-
+	    _status = mdsvalue('ST133HwInit($)', _shot_num);
   	    MdsDisconnect();
-	}
+	}  
 
 
 
