@@ -356,7 +356,7 @@ public fun ST133__store(as_is _nid, optional _method)
 
 **********************************************************************************************/
 
-_debug = 0;
+_debug = 1;
 
 	_ip_address = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), "");
 	if(_ip_address == "")
@@ -526,6 +526,7 @@ _debug = 0;
 
 
 	} else {
+		MdsDisconnect();
 		DevLogErr(_nid, 'File not found for shot: '//_shot);
 		abort();
 	}
