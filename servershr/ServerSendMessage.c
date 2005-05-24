@@ -317,17 +317,17 @@ static int RegisterJob(int *msgid, int *retstatus,void (*ast)(), void *astparam,
 
 static void  CleanupJob(int status, int jobid)
 {
-  Job *j,*prev;
+  Job *j;
   SOCKET sock;
   lock_job_list();
-  for (j=Jobs; j && (j->jobid != jobid); j++);
+  for (j=Jobs; j && (j->jobid != jobid); j=j->next);
   unlock_job_list();
   if (j)
   {
     sock = j->sock;
     shutdown(sock,2);
     close(sock);
-    for (j=Jobs,prev=0;j;)
+    for (j=Jobs;j;j=j->next)
       if (j->sock == sock)
         DoCompletionAst(j->jobid,status,0,0);
     for (j=Jobs;j;)
@@ -337,6 +337,8 @@ static void  CleanupJob(int status, int jobid)
         RemoveJob(j);
         j=next;
       }
+      else
+        j=j->next;
   }
 }
 
