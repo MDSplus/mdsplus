@@ -662,7 +662,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceWave115.setIdentifier("");
     deviceWave115.setUpdateExpression("");
     deviceWave115.setPrefHeight(100);
-    deviceField1119.setOffsetNid(191);
+    deviceField1119.setOffsetNid(210);
     deviceField1119.setLabelString("Amp.:");
     deviceField1119.setNumCols(4);
     deviceField1119.setIdentifier("");
