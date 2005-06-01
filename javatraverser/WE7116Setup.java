@@ -396,11 +396,11 @@ public class WE7116Setup extends DeviceSetup {
     deviceChoice3.setIdentifier("");
     flowLayout3.setAlignment(FlowLayout.LEFT);
     deviceChoice2.setChoiceIntValues(null);
-    deviceChoice2.setChoiceFloatValues(new float[] {(float)1000000.0,(float)5000000.0,(float)1.0E7,(float)2.0E7});
+    deviceChoice2.setChoiceFloatValues(new float[] {(float)1000000.0,(float)2000000.0,(float)5000000.0,(float)1.0E7,(float)2.0E7});
     deviceChoice2.setOffsetNid(6);
     deviceChoice2.setLabelString("Frequency:");
     deviceChoice2.setShowState(false);
-    deviceChoice2.setChoiceItems(new String[] {"1e6", "5e6", "10e6", "20e6"});
+    deviceChoice2.setChoiceItems(new String[] {"1e6", "2e6", "5e6", "10e6", "20e6"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     jPanel4.setLayout(flowLayout3);
