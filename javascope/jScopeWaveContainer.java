@@ -281,6 +281,11 @@ class jScopeWaveContainer
         return server_item;
     }
 
+    public void SetServerItem(DataServerItem dsi)
+    {
+        server_item = dsi;
+    }
+
     public String GetServerLabel()
     {
         if (dp == null && server_item != null && server_item.name != null)
@@ -498,16 +503,13 @@ class jScopeWaveContainer
                 font = new Font(font.getName(), font.getStyle(), 18);
                 g.setFont(font);
             }
-
             fm = g.getFontMetrics();
             s_width = fm.stringWidth(title);
             st_y += fm.getHeight() / 2 + 2;
             g.drawString(title, st_x + (width - s_width) / 2, st_y);
             st_y += 2;
             height -= st_y;
-
         }
-
         super.PrintAll(g, st_x, st_y, height, width);
     }
 
@@ -555,7 +557,7 @@ class jScopeWaveContainer
     public String getMainShotError(boolean brief)
     {
         //if(brief)
-        //    return main_shot_error.substring(0, main_shot_error.indexOf("\n"));
+        //return main_shot_error.substring(0, main_shot_error.indexOf("\n"));
         //else
         return main_shot_error;
     }

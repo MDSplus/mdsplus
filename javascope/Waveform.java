@@ -172,7 +172,7 @@ public class Waveform
         Color.red,
         Color.red));
 
-    play_timer = new javax.swing.Timer(200, new ActionListener() {
+    play_timer = new javax.swing.Timer(1000, new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         frame = frames.getNextFrameIdx();
         if (frame == frames.getNumFrame() - 1) {
@@ -199,6 +199,7 @@ public class Waveform
     marker_width = MARKER_WIDTH;
     x_log = y_log = false;
     setMouse();
+    setKeys();
     SetDefaultColors();
   }
 
@@ -566,6 +567,55 @@ public class Waveform
   public boolean isSendProfile() {
     return send_profile;
   }
+
+  protected void setKeys() {
+      final Waveform w = this;
+      addKeyListener( new KeyAdapter() {
+          public void keyPressed(KeyEvent e)
+          {
+              if ( e.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
+                if (is_image) {
+                  if (frames != null && frames.GetFrameIdx() > 0) {
+                    frame = frames.getLastFrameIdx();
+                    not_drawn = false;
+                  }
+                }
+                else {
+                  Signal s = GetSignal();
+                  if (s.getType() == Signal.TYPE_2D) {
+                    s.decShow();
+                    not_drawn = true;
+                  }
+                }
+              }
+
+              if ( e.getKeyCode() == KeyEvent.VK_PAGE_UP ) {
+                if (is_image) {
+                  if (frames != null) {
+                    frame = frames.getNextFrameIdx();
+                    not_drawn = false;
+                 }
+                }
+                else {
+                  Signal s = GetSignal();
+                  if (s.getType() == Signal.TYPE_2D) {
+                    s.incShow();
+                    not_drawn = true;
+                  }
+                }
+              }
+              repaint();
+              sendUpdateEvent();
+
+          }
+          public void keyReleased(KeyEvent e)
+          {}
+          public void keyTyyped(KeyEvent e)
+          {}
+
+      });
+  }
+
 
   protected void setMouse() {
     final Waveform w = this;

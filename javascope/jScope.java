@@ -23,7 +23,7 @@ public class jScope
     UpdateEventListener, ConnectionListener
 {
 
-    static final String VERSION = "jScope (version 7.3.2)";
+    static final String VERSION = "jScope (version 7.3.3)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -2510,9 +2510,14 @@ public class jScope
             UpdateFont();
             wave_panel.update();
             validate();
-            server_diag.addServerIp(wave_panel.GetServerItem());
-            SetDataServer(wave_panel.GetServerItem());
-            //SetFastNetworkState(wave_panel.GetFastNetworkState());
+            DataServerItem dsi = wave_panel.GetServerItem();
+            dsi = server_diag.addServerIp(dsi);
+
+            wave_panel.SetServerItem(dsi);
+
+            SetDataServer(dsi);
+
+          //SetFastNetworkState(wave_panel.GetFastNetworkState());
             UpdateAllWaves();
         }
         catch (Exception e)
@@ -3287,14 +3292,20 @@ class ServerDialog
         return null;
     }
 
-    public void addServerIp(DataServerItem dsi)
+    public DataServerItem addServerIp(DataServerItem dsi)
     {
         int i;
         JMenuItem new_ip;
         DataServerItem found_dsi = null;
         boolean found = false;
 
+        /*
+        23-05-2005
         found = ( (found_dsi = findServer(dsi)) != null);
+        */
+        found_dsi = findServer(dsi);
+        if(found_dsi != null)
+             return found_dsi;
 
         if (dsi.class_name != null &&
             !data_server_class.containsValue(dsi.class_name))
@@ -3303,7 +3314,8 @@ class ServerDialog
             data_provider_list.addItem(dsi.class_name);
         }
 
-        if (!found && dsi.class_name == null)
+ //     if (!found && dsi.class_name == null)
+        if (dsi.class_name == null)
         {
             JOptionPane.showMessageDialog(null,
                                           "Undefine data server class for " +
@@ -3311,7 +3323,7 @@ class ServerDialog
                                           JOptionPane.ERROR_MESSAGE);
         }
 
-        if (!found)
+//        if (!found)
         {
             list_model.addElement(dsi);
             new_ip = new JMenuItem(dsi.name);
@@ -3320,8 +3332,15 @@ class ServerDialog
             new_ip.addActionListener(dw);
             dw.server_ip_list = getServerIpList();
         }
+
+        /*
+        23-05-2005
+        Ovverride configuration file server definitions
+        with property server definition with the same name
+
         else
         {
+
             if (found_dsi != null)
             {
                 dsi.user = found_dsi.user;
@@ -3331,6 +3350,8 @@ class ServerDialog
                 dsi.tunnel_port = found_dsi.tunnel_port;
             }
         }
+        */
+        return dsi;
     }
 
     private void addKnowProvider()
