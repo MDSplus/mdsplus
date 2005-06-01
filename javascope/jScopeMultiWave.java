@@ -13,17 +13,26 @@ waveforms.
 */
 public class jScopeMultiWave extends MultiWaveform implements UpdateEventListener
 {
+    String eventName;
     public jScopeMultiWave(DataProvider dp, jScopeDefaultValues def_values, boolean cache_enabled)
     {
 	    super();
 	    wi = new MdsWaveInterface(this, dp, def_values, cache_enabled);
     }
-    
+
     public void processUpdateEvent(UpdateEvent e)
     {
-         //System.out.println("Evento su waveform "+e.name);
-         WaveformEvent we = new WaveformEvent(this, WaveformEvent.EVENT_UPDATE,  "Update on event " + e.name);
-         dispatchWaveformEvent(we);
+        eventName = e.name;
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                //System.out.println("Evento su waveform "+e.name);
+                WaveformEvent we = new WaveformEvent(jScopeMultiWave.this,
+                    WaveformEvent.EVENT_UPDATE, "Update on event " + eventName);
+                dispatchWaveformEvent(we);
+            }
+        });
     }
 
     public void Refresh()
@@ -33,7 +42,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         {
             AddEvent();
         } catch (IOException e){}
-        
+
         Thread p = new Thread() {
             public void run()
             {
@@ -42,24 +51,24 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
                 mwi.cache_enabled = false;
                 mwi.refresh();
                 mwi.cache_enabled = cache_state;
-                    
+
 	            SwingUtilities.invokeLater(new Runnable() {
 	                public void run() {
 		            jScopeWaveUpdate();
 	                }
-	            });                
+	            });
             }
         };
         p.start();
     }
-    
-    
+
+
     public void jScopeErase()
     {
         Erase();
         wi.Erase();
     }
-    
+
     public String getBriefError(String er, boolean brief)
     {
         if(brief)
@@ -69,25 +78,25 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         }
         return er;
     }
-    
+
     public synchronized void jScopeWaveUpdate()
     {
         String out_error;
-        
+
         if(wi.isAddSignal())
         {
             //reset to previous configuration if signal/s are not added
-            if(((MdsWaveInterface)wi).prev_wi != null && 
-            ((MdsWaveInterface)wi).prev_wi.GetNumEvaluatedSignal() == ((MdsWaveInterface)wi).GetNumEvaluatedSignal()) 
+            if(((MdsWaveInterface)wi).prev_wi != null &&
+            ((MdsWaveInterface)wi).prev_wi.GetNumEvaluatedSignal() == ((MdsWaveInterface)wi).GetNumEvaluatedSignal())
             {
-                ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;            
-                ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;            
-                ((MdsWaveInterface)wi).prev_wi.setAddSignal(wi.isAddSignal());                    
+                ((MdsWaveInterface)wi).prev_wi.error = ((MdsWaveInterface)wi).error;
+                ((MdsWaveInterface)wi).prev_wi.w_error = ((MdsWaveInterface)wi).w_error;
+                ((MdsWaveInterface)wi).prev_wi.setAddSignal(wi.isAddSignal());
                 wi = ((MdsWaveInterface)wi).prev_wi;
                 wi.SetIsSignalAdded(false);
             } else
                 wi.SetIsSignalAdded(true);
-            
+
             ((MdsWaveInterface)wi).prev_wi = null;
         }
         Update(wi);
@@ -97,26 +106,26 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 
     public void Update(WaveInterface _wi)
     {
-	    wi = (MdsWaveInterface)_wi;	     	    
-	    
+	    wi = (MdsWaveInterface)_wi;
+
 	    resetMode();
-	    	    
+
 	    orig_signals = null;
         super.x_label = wi.xlabel;
 	    super.y_label = wi.ylabel;
 	    super.z_label = wi.zlabel;
 	    super.x_log = wi.x_log;
 	    super.y_log = wi.y_log;
-	    
+
 	  //  String error = null;
 	  //  if(!wi.isAddSignal())
 	    wave_error = wi.getErrorTitle(true);
-	        
+
 	    if(wi.title != null)
 	        super.title = wi.title;
-	    else 
+	    else
 	        super.title = "";
-	    
+
         super.show_legend = wi.show_legend;
 	    super.legend_x = wi.legend_x;
         super.legend_y = wi.legend_y;
@@ -133,23 +142,23 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 		            if(wi.in_label[i] != null && wi.in_label[i].length() != 0)
 		                wi.signals[i].setName(wi.in_label[i]);
 		            else
-		                wi.signals[i].setName(wi.in_y[i]);		            
+		                wi.signals[i].setName(wi.in_y[i]);
 		            wi.signals[i].setMarker(wi.markers[i]);
 		            wi.signals[i].setMarkerStep(wi.markers_step[i]);
 		            wi.signals[i].setInterpolate(wi.interpolates[i]);
 		            wi.signals[i].setColorIdx(wi.colors_idx[i]);
-		            
-		            wi.signals[i].setMode1D((int)wi.mode1D[i]); 
-		            wi.signals[i].setMode2D((int)wi.mode2D[i]); 
-		            
+
+		            wi.signals[i].setMode1D((int)wi.mode1D[i]);
+		            wi.signals[i].setMode2D((int)wi.mode2D[i]);
+
 		        }
             if(!all_null)
             {
-                Update(wi.signals);	    
+                Update(wi.signals);
                 return;
             }
         }
-	    
+
 	    if(wi.is_image && wi.frames != null)
 	    {
             super.frames.setAspectRatio(wi.keep_ratio);
@@ -162,7 +171,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
 	        frame = 0;
 	        super.Update();
 	        return;
-	    }	        	        
+	    }
 	    Erase();
     }
 
@@ -202,11 +211,11 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         wi.setSignalState(label, state);
         super.SetSignalState(label, state);
     }
-    
+
     protected String getSignalInfo(int i)
     {
         String s;
-        String name = (wi.in_label != null &&  wi.in_label[i] != null && wi.in_label[i].length() > 0 ) ? wi.in_label[i] : wi.in_y[i]; 
+        String name = (wi.in_label != null &&  wi.in_label[i] != null && wi.in_label[i].length() > 0 ) ? wi.in_label[i] : wi.in_y[i];
         String er = (wi.w_error != null && wi.w_error[i] != null) ? " ERROR " : "";
         if(wi.shots != null) {
             s = name+" "+wi.shots[i] + er;
@@ -259,13 +268,13 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
     {
         ((MdsWaveInterface)wi).RemoveEvent(this);
     }
-    
+
     public void removeNotify()
     {
         //System.out.println("Rimuovo jScopeMultiWave");
         try {
             RemoveEvent();
-        } 
+        }
         catch(IOException e){}
 
         this.wi = null;
@@ -275,7 +284,7 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
         g.dispose();
         super.removeNotify();
     }
-    
+
     protected void DrawImage(Graphics g, Object img, Dimension dim)
     {
        if(!(img instanceof RenderedImage))
@@ -287,5 +296,5 @@ public class jScopeMultiWave extends MultiWaveform implements UpdateEventListene
            ((Graphics2D)g).clearRect(0, 0, dim.width, dim.height);
            ((Graphics2D)g).drawRenderedImage((RenderedImage)img, new AffineTransform(1f,0f,0f,1f,0F,0F));
        }
-    }    
+    }
 }

@@ -2007,7 +2007,9 @@ public class jScope
             String event = wave_panel.GetEvent();
 
             if (e.name.equals(event))
-                UpdateAllWaves();
+            {
+               SwingUtilities.invokeLater(new Runnable() {public void run() {UpdateAllWaves();}});
+            }
                 //wave_panel.StartUpdate();
 
             if (e.name.equals(print_event))
@@ -2983,7 +2985,9 @@ class ServerDialog
         "AsdexDataProvider",
         "ASCIIDataProvider",
         "T2DataProvider",
-        "MdsContinuousDataProvider"};
+        "MdsContinuousDataProvider",
+        "LocalDataProvider",
+        "LocalRealtimeDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
     {
