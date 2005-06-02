@@ -474,7 +474,7 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
 #endif
 #endif				       /* of DEBUG */
 /* Check type of variable from MATLAB */
-   if(mxIsDouble(Tarray)
+   if(mxIsNumeric(Tarray)
 #ifdef V4
       && !mxIsChar(Tarray)
 #endif
