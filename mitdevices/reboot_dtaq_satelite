@@ -1,0 +1,11 @@
+#!/bin/bash
+# script to reboot a d-tacq satelite card 
+#
+# takes one argument which is the 'card number'
+#
+# usage:
+#   reboot_satelite n
+#
+acqcmd -s $1 reboot &
+sleep 1
+kill -9 `ps -ef | grep acqcmd | grep -v grep | awk '{print $2}'`
