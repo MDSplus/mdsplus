@@ -1205,7 +1205,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   dlopen_lock();
 #endif
 #ifdef linux
-  dlopen_mode = RTLD_NOW | RTLD_GLOBAL;
+  dlopen_mode = RTLD_NOW /* | RTLD_GLOBAL */;
 #endif
   handle = dlopen(full_filename,dlopen_mode);
   if (handle == NULL) {
