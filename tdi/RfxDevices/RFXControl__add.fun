@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 961 + 473, _nidout);
+    DevAddStart(_path, 'RFXControl', 1562, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -602,15 +602,17 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR231_NAME', 'TEXT', "ModeControl7M1M0", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR231_VAL', 'NUMERIC', 0, *, _nid);
 
-    DevAddNode(_path // '.PARAMETERS:PAR232_NAME', 'TEXT', "ModeControl8Start", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR232_VAL', 'NUMERIC', -1,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR233_NAME', 'TEXT', "ModeControl8End", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR233_VAL', 'NUMERIC', -1,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR234_NAME', 'TEXT', "ModeControl8KMod", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR234_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR235_NAME', 'TEXT', "ModeControl8KPhs", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR235_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR236_NAME', 'TEXT', "ModeControl8M1M0", *, _nid);
+/* Rise times for rotating perturbations */
+
+    DevAddNode(_path // '.PARAMETERS:PAR232_NAME', 'TEXT', "RotPertRiseTime1", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR232_VAL', 'NUMERIC', 0,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR233_NAME', 'TEXT', "RotPertRiseTime2", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR233_VAL', 'NUMERIC', 0,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR234_NAME', 'TEXT', "RotPertRiseTime3", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR234_VAL', 'NUMERIC', 0,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR235_NAME', 'TEXT', "RotPertRiseTime4", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR235_VAL', 'NUMERIC', 0,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR236_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR236_VAL', 'NUMERIC', 0, *, _nid);
 
 
