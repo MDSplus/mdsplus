@@ -77,6 +77,8 @@ public class LoadPulse
                     NidData[] nidsStruct = tree.getWild( NodeInfo.USAGE_STRUCTURE, 0);
                     if(nidsStruct == null) nidsStruct = new NidData[0];
 
+ ////Get also data from subtree root
+
                     int addedLen;
                     try {
                         tree.getData(currNid, 0);
@@ -89,7 +91,7 @@ public class LoadPulse
                     if(addedLen > 0)
                         nids[nidsNumeric.length + nidsText.length +
                         nidsSignal.length + nidsStruct.length] = currNid;
-
+///////////////////////
 
                     int j = 0;
                     for (int i = 0; i < nidsNumeric.length; i++)

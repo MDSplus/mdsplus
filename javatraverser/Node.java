@@ -24,7 +24,10 @@ public class Node
     {
 	    this.experiment = experiment;
 	    this.hierarchy = hierarchy;
-	    nid = new NidData(0);
+        if(experiment.isRealtime())
+            nid = new NidData(1);
+        else
+            nid = new NidData(0);
 	    info = experiment.getInfo(nid, Tree.context);
 	    parent = null;
 	    is_member = false;

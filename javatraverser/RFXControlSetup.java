@@ -626,7 +626,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable3.setNumCols(5);
     deviceTable3.setNumRows(1);
     deviceTable3.setIdentifier("");
-    deviceTable3.setColumnNames(new String[] {"AxiFeedforward", "AxiControl", "VoltageControl", "ResCompType", "Control5", "Control6", "Control7", "Control8"});
+    deviceTable3.setColumnNames(new String[] {"AxiFeedforward", "AxiControl", "VoltageControl", "EquiFlux", "Control5", "Control6", "Control7", "Control8"});
     deviceTable3.setRowNames(null);
     deviceTable3.setBinary(true);
     deviceTable3.setPreferredHeight(20);

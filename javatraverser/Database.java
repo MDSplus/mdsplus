@@ -6,6 +6,7 @@ public class Database implements RemoteTree{
     boolean is_open = false;
     boolean is_readonly = false;
     boolean is_editable = false;
+    boolean is_realtime = false;
     static {
         try {
             System.loadLibrary("MdsShr");
@@ -37,6 +38,11 @@ public class Database implements RemoteTree{
         this.is_editable = editable;
     }
 
+    public void setRealtime(boolean realtime)
+    {
+        this.is_realtime = realtime;
+    }
+
     public void setReadonly(boolean readonly)
     {
         this.is_readonly = readonly;
@@ -50,6 +56,7 @@ public class Database implements RemoteTree{
     public boolean isOpen() {return is_open; }
     public boolean isEditable() {return is_editable; }
     public boolean isReadonly() {return is_readonly;}
+    public boolean isRealtime() {return is_realtime;}
    /* Low level MDS database management routines, will be  masked by the Node class*/
     public native int open() throws DatabaseException;
     public native int openNew() throws DatabaseException;

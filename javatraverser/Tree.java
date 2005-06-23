@@ -34,7 +34,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     static DefaultMutableTreeNode curr_tree_node;
     JDialog open_dialog = null, add_node_dialog = null, add_subtree_dialog = null;
     JTextField open_exp, open_shot;
-    JCheckBox open_readonly, open_edit;
+    JCheckBox open_readonly, open_edit, open_realtime;
     JTextField add_node_name, add_node_tag, add_subtree_name;
     int add_node_usage;
     JDialog modify_tags_dialog;
@@ -80,7 +80,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		    shot = Integer.parseInt(def_shot);
 	        else
 		    shot = -1;
-	        open(def_tree, shot, false, false);
+	        open(def_tree, shot, false, false, false);
 	    }
 
     }
@@ -250,11 +250,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    JPanel mjp = new JPanel();
 	    mjp.setLayout(new BorderLayout());
 	    JPanel jp1 = new JPanel();
-	    jp1.setLayout(new GridLayout(3,1));
+	    jp1.setLayout(new GridLayout(4,1));
 	    jp1.add(new JLabel("Tree: "));
 	    jp1.add(new JLabel("Shot: "));
-	    open_edit = new JCheckBox("edit");
-	    jp1.add(open_edit);
+        open_edit = new JCheckBox("edit");
+        jp1.add(open_edit);
+        open_realtime = new JCheckBox("realtime");
+        jp1.add(open_realtime);
 	    mjp.add(jp1, "West");
 	    jp1 = new JPanel();
 	    jp1.setLayout(new GridLayout(3,1));
@@ -289,7 +291,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_shot.setText("");
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
-	    open_edit.setSelected(false);
+        open_edit.setSelected(false);
+        open_realtime.setSelected(false);
 	    open_readonly.setSelected(false);
 	}
     }
@@ -329,7 +332,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    }
 	    if(is_editable != open_edit.isSelected())
 	        pop = null;
-	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected());
+	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected(), open_realtime.isSelected());
 	    open_dialog.setVisible(false);
 	    frame.pack();
 	    repaint();
@@ -338,7 +341,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 
 
-    public void open(String exp, int shot, boolean editable, boolean readonly)
+    public void open(String exp, int shot, boolean editable, boolean readonly, boolean realtime)
     {
 	    int i;
 	    Node top_node = null;
@@ -409,6 +412,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             curr_experiment.setTree(exp, shot);
             curr_experiment.setEditable(editable);
             curr_experiment.setReadonly(readonly);
+            curr_experiment.setRealtime(realtime);
         }catch(Exception exc)
         {
             System.err.println("Error in RMI communication: "+ exc);
