@@ -51,7 +51,7 @@ then
     echo "ROAM_SITE_RESOURCE MYSITE" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIPS_RESOURCE MYDATA" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_GRIDFTP_RESOURCE MYSITE-GRIDFTP" >> $MDSPLUS_DIR/local/roam.env
-    echo "ROAM_JOBCONTROL_RESOURCE MYSITE-JOBS" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_JOBMANAGER_RESOURCE MYSITE-JOBS" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_GRIDFTP_GUEST_ACCOUNT nobody" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIP_RESOURCE MYSITE-MDSIP" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIP_GUEST_ACCOUNT" >> $MDSPLUS_DIR/local/roam.env
