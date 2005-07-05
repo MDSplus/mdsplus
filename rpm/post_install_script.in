@@ -39,7 +39,18 @@ then
   GPT_LOCATION=$MDSPLUS_DIR
   export GPT_LOCATION
   export GLOBUS_LOCATION
-  $GPT_LOCATION/sbin/gpt-postinstall --force
+  if ( test "$RPM_INSTALL_PREFIX" != "")
+  then
+    $GPT_LOCATION/sbin/gpt-postinstall --force
+    echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo ". $MDSPLUS_DIR/setup.sh" >> $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo "$MDSPLUS_DIR/sbin/globus-gatekeeper -conf $mdsplus_dir/etc/globus-gatekeeper.conf" >> $MDSPLUS_DIR/sbin/gsigatekeeper
+    chmod a+x $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsiftp
+    echo ". $MDSPLUS_DIR/setup.sh >> $MDSPLUS_DIR/sbin/gsiftp
+    echo "$MDSPLUS_DIR/sbin/globus-gridftp-server -i" >> $MDSPLUS_DIR/sbin/gsiftp
+    chmod a+x $MDSPLUS_DIR/sbin/gsiftp 
+  fi
   if [ ! -r $MDSPLUS_DIR/local/envsyms ]
   then
     echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms

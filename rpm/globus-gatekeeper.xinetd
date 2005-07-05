@@ -4,11 +4,6 @@ service gsigatekeeper
       protocol     = tcp
       wait         = no
       user         = root
-      env          += GLOBUS_LOCATION=/usr/local/fusiongrid
-      env          += PATH=/usr/local/fusiongrid/bin:/usr/local/fusiongrid/sbin:/bin:/usr/bin:/usr/X11R6/bin
-      env          += LD_LIBRARY_PATH=/usr/local/fusiongrid/lib
-      env	   += MDS_PATH=/usr/local/fusiongrid/local/tdi;/usr/local/fusiongrid/tdi
-      server       = /usr/local/fusiongrid/sbin/globus-gatekeeper
-      server_args  = -conf /usr/local/fusiongrid/etc/globus-gatekeeper.conf
+      server       = /usr/local/fusiongrid/sbin/gsigatekeeper
       disable      = no
 }
