@@ -44,7 +44,7 @@ then
     $GPT_LOCATION/sbin/gpt-postinstall --force
     echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsigatekeeper
     echo ". $MDSPLUS_DIR/setup.sh" >> $MDSPLUS_DIR/sbin/gsigatekeeper
-    echo "$MDSPLUS_DIR/sbin/globus-gatekeeper -conf $mdsplus_dir/etc/globus-gatekeeper.conf" >> $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo "$MDSPLUS_DIR/sbin/globus-gatekeeper -conf $MDSPLUS_DIR/etc/globus-gatekeeper.conf" >> $MDSPLUS_DIR/sbin/gsigatekeeper
     chmod a+x $MDSPLUS_DIR/sbin/gsigatekeeper
     echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsiftp
     echo ". $MDSPLUS_DIR/setup.sh" >> $MDSPLUS_DIR/sbin/gsiftp
