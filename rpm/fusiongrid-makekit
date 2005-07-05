@@ -1,5 +1,6 @@
 #!/bin/sh
 export MAKEKIT_DIR=`pwd`
+rm -Rf ~/rpm/BUILD/packaging
 rm -Rf /tmp/fusiongrid
 rpmbuild -ba fusiongrid.spec
 
