@@ -163,7 +163,7 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   char *res=urlencode(resource);
   char *perm=urlencode(permit);
   char *uname=urlencode(dn);
-  sprintf(url,"http%s://%s/?check_access&rname=%s&permission=%s&uname=%s",
+  sprintf(url,"http%s://%s/roam.php?check_access&rname=%s&permission=%s&uname=%s",
 	  https ? "s" : "",host,res,perm,uname);
   free(res);
   free(perm);
