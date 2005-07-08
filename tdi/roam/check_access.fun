@@ -9,7 +9,7 @@ public fun check_access(in _resource, in _permission, in _dn, optional out _aux)
   _servers=if_error(execute("["//getenv('ROAM_SERVER')//"]"),getenv('ROAM_SERVER'));
   for(_status=-1,_idx=0;_status == -1 && _idx < size(_servers);_idx++)
   {
-    _status=Roam->roam_check_access(_servers[_idx]//"/roam.php",val(1),_resource,_permission,_dn,ref(_aux_ptr));
+    _status=Roam->roam_check_access(trim(_servers[_idx]),val(1),_resource,_permission,_dn,ref(_aux_ptr));
   }
   _aux=cstring(_aux_ptr);
   return(_status == 0);
