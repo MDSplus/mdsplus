@@ -1,5 +1,1601 @@
-Version 1.7-3
+Version 1.7-4
 
+
+2005-07-21 10:09  twf
+
+	* Setup/Setup.vdproj:
+	
+	Windows update
+
+2005-07-21 10:09  twf
+
+	* mdsplus.sln:
+	
+	windows update
+
+2005-07-21 10:08  twf
+
+	* javadispatcher/: javadispatcher.mak, javadispatcher.vcproj:
+	
+	Need more jtraverser classes to build
+
+2005-07-21 10:07  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsip_u.c:
+	
+	Fix locking on windows
+
+2005-07-21 10:06  twf
+
+	* idlsql/idlsql.vcproj, mdssql/mdssql.vcproj:
+	
+	include quotes in libraries paths
+
+2005-07-21 10:03  twf
+
+	* rpm/post_install_script.in:
+	
+	Fix typo
+
+2005-07-21 09:58  twf
+
+	* treeshr/: TreeCreatePulseFile.c, TreeOpen.c, treeshr.vcproj,
+	treeshrp.h:
+	
+	fix create pulse for distributed client on windows
+
+2005-07-08 09:35  twf
+
+	* tdi/roam/check_access.fun:
+	
+	trim the server name
+
+2005-07-08 09:34  twf
+
+	* roam/roam_check_access.c:
+	
+	Include roam.php in url
+
+2005-07-07 16:25  twf
+
+	* tdi/roam/check_access.fun:
+	
+	append roam.php to the host names
+
+2005-07-07 16:16  twf
+
+	* tdi/roam/check_access.fun:
+	
+	MDSPLUS setup does not permit brackets in environment variables
+
+2005-07-05 17:35  twf
+
+	* rpm/post_install_script.in:
+	
+	fix mdsplus_dir reference
+
+2005-07-05 13:40  twf
+
+	* rpm/: fusiongrid-makekit, post_install_script.in:
+	
+	Fix post_install_script
+
+2005-07-05 12:06  twf
+
+	* rpm/: globus-gatekeeper.xinetd, globus-gridftp.xinetd,
+	post_install_script.in:
+	
+	invoke login script in gatekeeper and gridftp server
+
+2005-06-29 16:51  jas
+
+	* mitdevices/b5910a.c:
+	
+	don't xtfree what is not xtmalloced
+
+2005-06-27 14:34  twf
+
+	* rpm/post_install_script.in:
+	
+	Change JOBCONTROL to JOBMANAGER
+
+2005-06-27 13:10  twf
+
+	* roam/Makefile.in:
+	
+	Fix libRoam symbolix link
+
+2005-06-27 12:05  twf
+
+	* rpm/post_install_script.in:
+	
+	Do gpt-postinstall even if roam.env exists
+
+2005-06-27 12:04  twf
+
+	* rpm/fusiongrid-makekit:
+	
+	Change rpm spec file name
+
+2005-06-23 11:27  manduchi
+
+	* javatraverser/: Database.java, DeviceBeansManifest.mf,
+	Devicebeans.jar, LoadPulse.java, Node.java, RFXControlSetup.java,
+	RemoteTree.java, Tree.java, TreeServer.java, jTraverser.java:
+	
+	Changed parameter name
+
+2005-06-20 12:11  manduchi
+
+	* javatraverser/RFXControlSetup.java,
+	tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun:
+	
+	New controls
+
+2005-06-15 15:07  twf
+
+	* mdsshr/librtl.c:
+	
+	Do not use RTLD_GLOBAL in dlopen as this causes problem with
+	ambiguous routine names such as MdsValue
+
+2005-06-06 15:27  jas
+
+	* mitdevices/: Makefile.in, reboot_dtaq_satelite:
+	
+	reboot method for d-taq cards
+
+2005-06-06 15:25  jas
+
+	* tdi/MitDevices/: dt196__reboot.fun, dt216__reboot.fun:
+	
+	new reboot methods
+
+2005-06-02 15:17  jas
+
+	* matlab/mdsipmex.c:
+	
+	change IsDouble to IsNumeric as per Darren G.
+
+2005-06-01 11:47  manduchi
+
+	* javascope/: Frames.java, Waveform.java, jScope.java,
+	jScopeWaveContainer.java:
+	
+	Modify image visualization
+
+2005-06-01 11:34  manduchi
+
+	* javascope/: LocalRealtimeDataProvider.java, jScope.java,
+	jScopeMultiWave.java:
+	
+	Fix race conditions
+
+2005-06-01 11:28  manduchi
+
+	* javatraverser/WE7116Setup.java:
+	
+	Add 2MHz frequency value
+
+2005-05-26 08:26  manduchi
+
+	* javatraverser/RFXInverterSetupSetup.java:
+	
+	Fix nid
+
+2005-05-25 02:46  manduchi
+
+	* javatraverser/LoadPulse.java:
+	
+	Save also subtree roots
+
+2005-05-24 16:42  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Fix CleanupJob bugs
+
+2005-05-23 09:05  manduchi
+
+	* tdi/RfxDevices/: ST133ReadData.fun, ST133ReadHeader.fun,
+	ST133__store.fun:
+	
+	fix
+
+2005-05-20 13:00  manduchi
+
+	* tdi/RfxDevices/: FramesInterleave.fun, ST133__init.fun,
+	XRAY__init.fun, inverter_pert.fun, sawtooth.fun, triangle.fun:
+	
+	New inverter perturbation waveforms
+
+2005-05-20 12:47  manduchi
+
+	* javatraverser/RFXInverterSetupSetup.java:
+	
+	Fix
+
+2005-05-20 12:44  manduchi
+
+	* javatraverser/RFXInverterSetupSetup.java:
+	
+	Add a new waveform
+
+2005-05-17 12:31  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Changed label
+
+2005-05-17 06:47  manduchi
+
+	* javadispatcher/ServerShowDialog.java:
+	
+	Server dialog info class
+
+2005-05-17 06:46  manduchi
+
+	* javadispatcher/: Action.java, MdsMonitorEvent.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcher.properties,
+	jDispatcherIp.java, javadispatcher.mak:
+	
+	Fix Bugs and add server information
+
+2005-05-16 12:04  manduchi
+
+	* tdi/RfxDevices/: BoloChMapping.fun, StopStartVmeSch.fun,
+	XrayChMapping.fun:
+	
+	Change Bolo and Xray Channel mapping Franz
+
+2005-05-12 12:08  manduchi
+
+	* javatraverser/: LoadPulse.java, MHD_BR_TESTSetup.java,
+	RFXInverterSetupSetup.java:
+	
+	Fix field label
+
+2005-05-12 12:07  manduchi
+
+	* tdi/RfxDevices/inverter_wave.fun:
+	
+	Use different perturbations
+
+2005-05-12 05:34  manduchi
+
+	* tdi/RfxDevices/RFXInverterSetup__add.fun,
+	javatraverser/RFXInverterSetupSetup.java:
+	
+	Added perturbation waveform selection
+
+2005-05-12 05:23  manduchi
+
+	* tdi/RfxDevices/: inverter_pert.fun, square_wave.fun,
+	triangle.fun:
+	
+	Use multiple waveforms
+
+2005-05-12 04:29  manduchi
+
+	* javascope/: MultiWavePopup.java, MultiWaveform.java, Signal.java,
+	WaveInterface.java, Waveform.java, WaveformMetrics.java,
+	jScopeWavePopup.java, javascope.mak:
+	
+	fix 2D signal management
+
+2005-05-11 10:33  manduchi
+
+	* tdi/RfxDevices/: ST133ReadData.fun, ST133ReadHeader.fun,
+	ST133__init.fun:
+	
+	Fix
+
+2005-05-11 07:52  manduchi
+
+	* tdi/RfxDevices/DIO2EncoderHWInit.fun:
+	
+	Fix Highway source
+
+2005-05-11 07:35  manduchi
+
+	* javatraverser/RFXPCSetupSetup.java:
+	
+	Changed field length
+
+2005-05-11 06:13  manduchi
+
+	* tdi/RfxDevices/: CCDGetChannel.fun, ST133HeaderParam.fun,
+	ST133__store.fun, inverter_pert.fun, inverter_wave.fun:
+	
+	Fix perturbations to inverter and PCAT
+
+2005-05-11 03:13  manduchi
+
+	* tdi/RfxDevices/RFXPCSetup__add.fun:
+	
+	Stop perturbation in PC setup
+
+2005-05-11 03:12  manduchi
+
+	* javatraverser/RFXPCSetupSetup.java:
+	
+	More fields in PC setup
+
+2005-05-09 05:39  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Number modes
+
+2005-05-09 05:18  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Fix name
+
+2005-05-09 04:20  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	Mhd control
+
+2005-05-05 12:19  manduchi
+
+	* tdi/RfxDevices/: CCDGetChannel.fun, ST133ReadData.fun,
+	ST133ReadHeader.fun:
+	
+	Support routine for CCD image acquisition
+
+2005-05-05 10:28  twf
+
+	* treeshr/TreeCreatePulseFile.c:
+	
+	Do not lock treefile when creating pulse. prevents lock when
+	someone has tree open for edit
+
+2005-05-05 09:32  manduchi
+
+	* javatraverser/: ST133Setup.java, javatraverser.mak:
+	
+	Setup for ST133 device
+
+2005-05-05 09:26  manduchi
+
+	* tdi/RfxDevices/: ST133HeaderParam.fun, ST133ReadData.fun,
+	ST133ReadHeader.fun, ST133__add.fun, ST133__init.fun,
+	ST133__store.fun:
+	
+	Add operation and function for Princeton Instruments CCD controller
+
+2005-05-04 15:35  jas
+
+	* tdi/SetDatabase.fun:
+	
+	Cache the database connection
+
+2005-05-04 11:24  manduchi
+
+	* javamds/JavaData.c:
+	
+	Fix CLASS_S DTYPE_MISSING
+
+2005-05-04 05:48  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Add GetVersion
+
+2005-05-04 05:33  manduchi
+
+	* tdi/RfxDevices/TR10HWConfig.fun:
+	
+	Fix Reset
+
+2005-05-04 05:24  manduchi
+
+	* tdi/RfxDevices/: RFXDClock__init.fun, TR10HWInit.fun,
+	TimingGetEvents.fun:
+	
+	Improvements
+
+2005-05-03 09:37  manduchi
+
+	* javatraverser/DeviceTable.java:
+	
+	Fix tables
+
+2005-05-03 08:16  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	More flexible individual outputs
+
+2005-05-03 06:18  manduchi
+
+	* javadispatcher/: ActionServer.java, jDispatcher.java,
+	jDispatcher.properties:
+	
+	Added info server
+
+2005-05-03 06:18  manduchi
+
+	* javatraverser/RFXControlSetup.java,
+	tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun,
+	tdi/RfxDevices/RFXControl__store.fun:
+	
+	Added Mode Control
+
+2005-04-29 11:02  manduchi
+
+	* mdsshr/MdsXdRoutines.c:
+	
+	Fix wrong alignment for addresses greater than 0x80000000
+
+2005-04-29 03:40  manduchi
+
+	* javascope/WaveInterface.java:
+	
+	Fix shots, experiment missing error
+
+2005-04-28 12:53  manduchi
+
+	* javascope/WaveInterface.java:
+	
+	Fix missing experiment name
+
+2005-04-28 11:39  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Fix for globus build
+
+2005-04-28 10:52  manduchi
+
+	* javascope/: Frames.java, MdsDataProvider.java, SshTunneling.java,
+	Waveform.java, jScope.java, jScopeWaveContainer.java:
+	
+	Fix ssh tunneling connection
+
+2005-04-27 14:18  jas
+
+	* mitdevices/DC1394.uil:
+	
+	change ios_speed to mode
+
+2005-04-25 16:24  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	support for sony camera (1024x768x{8/16})
+
+2005-04-25 16:23  jas
+
+	* tdi/MitDevices/: dc1394__add.fun, dc1394__init.fun,
+	dc1394__store.fun:
+	
+	support for Sony camera
+
+2005-04-25 15:36  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Reduce number of active events
+
+2005-04-25 13:52  twf
+
+	* mdsip_xio/mdsip_compatible_api.c:
+	
+	Fix for big endian and SIGALRM's
+
+2005-04-25 12:28  twf
+
+	* html/documentation/reference/f.shtml:
+	
+	Add mdslib documentation for the Fortran page
+
+2005-04-21 12:56  manduchi
+
+	* javascope/: Frames.java, Waveform.java:
+	
+	Fix frame visualization
+
+2005-04-21 12:05  manduchi
+
+	* javascope/: Frames.java, MdsDataProvider.java,
+	WaveInterface.java, WavePopup.java, Waveform.java:
+	
+	Modify frame visualization
+
+2005-04-20 05:50  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Get Path in getInfo
+
+2005-04-20 05:49  manduchi
+
+	* javatraverser/: NodeInfo.java, Tree.java, TreeNode.java:
+	
+	Fix clipboard copy/paste, add tags tooltips
+
+2005-04-20 04:15  manduchi
+
+	* javadispatcher/: KillServer.java, Makefile.in,
+	MdsServerEvent.java, jServer.java:
+	
+	Kill remotely jServer
+
+2005-04-19 05:16  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Change label
+
+2005-04-18 12:57  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix name
+
+2005-04-18 11:31  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix parameters
+
+2005-04-18 10:44  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Parameter added
+
+2005-04-18 10:30  manduchi
+
+	* tdi/RfxDevices/ISIS_GAIN__add.fun:
+	
+	fixed calib parameter
+
+2005-04-18 10:11  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Added new parameters
+
+2005-04-18 08:29  manduchi
+
+	* tdi/RfxDevices/: CAMERA__arm.fun, CAMERA__init.fun,
+	CAMERA__store.fun, MHD_BR_TEST__init.fun, RFXControl__init.fun,
+	RFXControl__store.fun, RFXInverterSetup__add.fun, TR10__init.fun,
+	TR10__store.fun, inverter_wave.fun:
+	
+	Fix offsets
+
+2005-04-18 04:27  manduchi
+
+	* tdi/RfxDevices/ISIS_GAIN__add.fun:
+	
+	Add new device
+
+2005-04-15 13:27  twf
+
+	* mdsip_xio/Makefile-gsilite-macosx:
+	
+	file Makefile-gsilite-macosx was initially added on branch
+	macosx_branch_050405.
+
+2005-04-15 13:27  twf
+
+	* mdsip_xio/Makefile-gsilite-macosx:
+	
+	Add gsilite makefile
+
+2005-04-14 19:48  garnier
+
+	* macosx/Makefile:
+	
+	macosx makefile improvements...
+
+2005-04-14 18:50  garnier
+
+	* macosx/Makefile:
+	
+	Found problem with prefix not being set...
+
+2005-04-12 11:11  manduchi
+
+	* javatraverser/RFXInverterSetupSetup.java:
+	
+	Minor fix
+
+2005-04-11 14:45  twf
+
+	* manpages/Makefile.in:
+	
+	use mkdirhier in bin
+
+2005-04-08 13:25  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXControl__store.fun:
+	
+	Fix
+
+2005-04-08 12:55  manduchi
+
+	* tdi/RfxDevices/: CADH__init.fun, CADH__store.fun,
+	RFXControl__add.fun, RFXDClock__init.fun, TRCF__init.fun,
+	TRCF__store.fun, TRCH__init.fun, TRCH__store.fun,
+	TimingGetEventTime.fun:
+	
+	ix
+
+2005-04-08 11:51  manduchi
+
+	* tdi/RfxDevices/inverter_wave.fun:
+	
+	Inverter perturbation
+
+2005-04-08 11:40  manduchi
+
+	* javatraverser/: MCUSetup.java, Makefile.in, SXCSetup.java:
+	
+	Fix
+
+2005-04-08 11:38  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun, RFXInverterSetup__add.fun,
+	RFXPCSetup__add.fun:
+	
+	Improvements
+
+2005-04-08 11:36  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	New ean
+
+2005-04-08 11:34  manduchi
+
+	* javatraverser/: DeviceWaveDisplay.java,
+	DeviceWaveDisplayBeanInfo.java, DeviceWaveDisplayCustomizer.java:
+	
+	New Bean for waveform display
+
+2005-04-08 10:38  manduchi
+
+	* javatraverser/MHD_BR_TESTSetup.java:
+	
+	Add MHD br setup
+
+2005-04-08 10:35  manduchi
+
+	* tdi/RfxDevices/: MHD_BR_TEST__add.fun, MHD_BR_TEST__init.fun:
+	
+	Add MHD br test device
+
+2005-04-08 10:10  manduchi
+
+	* javascope/jScope.java:
+	
+	Fix Update Event management
+
+2005-04-08 09:27  twf
+
+	* scripts/unix_submit:
+	
+	use touch instead of lockfile to prevent race condition
+
+2005-04-07 11:29  manduchi
+
+	* tdi/RfxDevices/: CAMERA__arm.fun, CAMERA__store.fun:
+	
+	Mod
+
+2005-04-06 11:56  garnier
+
+	* macosx/installer/: logicals_resources/Info.plist,
+	server_resources/Info.plist:
+	
+	file Info.plist was initially added on branch macosx_branch_050405.
+
+2005-04-06 11:56  garnier
+
+	* macosx/installer/: logicals_resources/Description.plist,
+	server_resources/Description.plist:
+	
+	file Description.plist was initially added on branch
+	macosx_branch_050405.
+
+2005-04-06 11:56  garnier
+
+	* macosx/installer/: Makefile, logicals.pmsp, server.pmsp,
+	logicals_resources/Description.plist,
+	logicals_resources/Info.plist, server_resources/Description.plist,
+	server_resources/Info.plist:
+	
+	Fixed so Makefile makes all packages w/o GUI packagemaker
+
+2005-04-06 11:07  garnier
+
+	* macosx/Makefile:
+	
+	Adding Makefile in macosx directory... To build the source on MacOS
+	X, just:
+	
+	cd "MDSPLUS_SOURCE"/macosx make sudo make install
+	
+	then build the installers with
+	
+	make installer
+	
+	 Added Files:
+	  Tag: macosx_branch_050405
+		Makefile
+
+2005-04-06 11:07  garnier
+
+	* macosx/Makefile:
+	
+	file Makefile was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/metapkg_resources/PkgInfo:
+	
+	file PkgInfo was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/metapkg_resources/Welcome.rtf:
+	
+	file Welcome.rtf was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/metapkg_resources/MDSplus.info:
+	
+	file MDSplus.info was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/mdsplus.xcode/project.pbxproj:
+	
+	file project.pbxproj was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/metapkg_resources/ReadMe.rtf:
+	
+	file ReadMe.rtf was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/: logicals_resources/postupgrade,
+	server_resources/postupgrade:
+	
+	file postupgrade was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* gsilite/Makefile.darwin:
+	
+	file Makefile.darwin was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/Makefile:
+	
+	file Makefile was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/: logicals_resources/postinstall,
+	server_resources/postinstall:
+	
+	file postinstall was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/make_dmg:
+	
+	file make_dmg was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/logicals.pmsp:
+	
+	file logicals.pmsp was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/server.pmsp:
+	
+	file server.pmsp was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/: files_resources/Info.plist,
+	local_resources/Info.plist, metapkg_resources/Info.plist,
+	openmotif_resources/Info.plist:
+	
+	file Info.plist was initially added on branch macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/macosx.xinetd:
+	
+	file macosx.xinetd was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/: files_resources/Description.plist,
+	local_resources/Description.plist,
+	metapkg_resources/Description.plist,
+	openmotif_resources/Description.plist:
+	
+	file Description.plist was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* macosx/installer/dmg_dsstore:
+	
+	file dmg_dsstore was initially added on branch
+	macosx_branch_050405.
+
+2005-04-05 23:35  garnier
+
+	* configure, configure.in, envsyms.in, setup.csh, setup.sh,
+	dwscope/ScopePrinters, gsilite/Makefile, gsilite/Makefile.darwin,
+	gsilite/config/config.h, gsilite/config/globus_config.h,
+	gsilite/config/globus_dc.h, idl/mdsconnect.pro, idl/mdsevent.pro,
+	idl/mdsidlimage.pro, idlmdsevent/Makefile.in,
+	idlmdswidgets/Makefile.in, idlsql/Makefile.in, include/mdstypes.h,
+	javaclient/Makefile.in, macosx/bindtable, macosx/macmake.sh,
+	macosx/macosx.xinetd, macosx/installer/Makefile,
+	macosx/installer/dmg_dsstore, macosx/installer/logicals.pmsp,
+	macosx/installer/make_dmg, macosx/installer/server.pmsp,
+	macosx/installer/files_resources/Description.plist,
+	macosx/installer/files_resources/Info.plist,
+	macosx/installer/local_resources/Description.plist,
+	macosx/installer/local_resources/Info.plist,
+	macosx/installer/logicals_resources/postinstall,
+	macosx/installer/logicals_resources/postupgrade,
+	macosx/installer/metapkg_resources/Description.plist,
+	macosx/installer/metapkg_resources/Info.plist,
+	macosx/installer/metapkg_resources/MDSplus.info,
+	macosx/installer/metapkg_resources/PkgInfo,
+	macosx/installer/metapkg_resources/ReadMe.rtf,
+	macosx/installer/metapkg_resources/Welcome.rtf,
+	macosx/installer/openmotif_resources/Description.plist,
+	macosx/installer/openmotif_resources/Info.plist,
+	macosx/installer/server_resources/postinstall,
+	macosx/installer/server_resources/postupgrade,
+	macosx/mdsplus.xcode/project.pbxproj, math/gn.f,
+	mdslib/dtype_test.c, mdslibidl/Makefile.in, mdsshr/librtl.c,
+	mdssql/dynamic_syb.c, remcam/Makefile.in,
+	rpm/mdsplus.conf.template, servershr/ServerFindServers.c,
+	tcl/tcl_directory.c, tdishr/TdiSql.c, treeshr/RemoteAccess.c:
+	
+	Adding changes made to mdsplus for MacOS X so others can build from
+	source.  Changes should be compatible with all systems, but not
+	guaranteed and need to be tested.  (Exception is in the gsilite
+	area where there is no configure, so don't merge these yet... also
+	gsilite doesn't yet fully compile.)
+	
+	D. Garnier, April 4, 2005.
+	
+	Modified Files:  Tag: macosx_branch_050405	configure
+	configure.in envsyms.in setup.csh setup.sh    dwscope/ScopePrinters
+	gsilite/Makefile gsilite/config/config.h	 
+	gsilite/config/globus_config.h gsilite/config/globus_dc.h      
+	idl/mdsconnect.pro idl/mdsevent.pro idl/mdsidlimage.pro        
+	idlmdsevent/Makefile.in idlmdswidgets/Makefile.in      
+	idlsql/Makefile.in include/mdstypes.h javaclient/Makefile.in   
+	macosx/bindtable macosx/macmake.sh math/gn.f	mdslib/dtype_test.c
+	mdslibidl/Makefile.in mdsshr/librtl.c	    mdssql/dynamic_syb.c
+	remcam/Makefile.in	   rpm/mdsplus.conf.template
+	servershr/ServerFindServers.c	      tcl/tcl_directory.c
+	tdishr/TdiSql.c treeshr/RemoteAccess.c	Added Files:   Tag:
+	macosx_branch_050405	gsilite/Makefile.darwin
+	macosx/macosx.xinetd	macosx/installer/Makefile
+	macosx/installer/dmg_dsstore	     
+	macosx/installer/logicals.pmsp macosx/installer/make_dmg       
+	macosx/installer/server.pmsp   
+	macosx/installer/files_resources/Description.plist     
+	macosx/installer/files_resources/Info.plist    
+	macosx/installer/local_resources/Description.plist     
+	macosx/installer/local_resources/Info.plist    
+	macosx/installer/logicals_resources/postinstall        
+	macosx/installer/logicals_resources/postupgrade        
+	macosx/installer/metapkg_resources/Description.plist   
+	macosx/installer/metapkg_resources/Info.plist  
+	macosx/installer/metapkg_resources/MDSplus.info        
+	macosx/installer/metapkg_resources/PkgInfo     
+	macosx/installer/metapkg_resources/ReadMe.rtf  
+	macosx/installer/metapkg_resources/Welcome.rtf	       
+	macosx/installer/openmotif_resources/Description.plist	       
+	macosx/installer/openmotif_resources/Info.plist        
+	macosx/installer/server_resources/postinstall  
+	macosx/installer/server_resources/postupgrade  
+	macosx/mdsplus.xcode/project.pbxproj
+
+2005-04-04 12:18  manduchi
+
+	* tdi/RfxDevices/SXC__store.fun:
+	
+	Fix
+
+2005-04-04 12:07  manduchi
+
+	* javatraverser/SXCSetup.java:
+	
+	Modify
+
+2005-04-04 09:11  manduchi
+
+	* tdi/RfxDevices/: BOLO__init.fun, SXC__add.fun, SXC__init.fun,
+	SXC__reset.fun, SXC__setAmpType.fun, SXC__store.fun, SXC__zero.fun,
+	SxcChMapping.fun, SxcHWInit.fun, SxcHWReset.fun, SxcHWZero.fun,
+	SxcHwStartAcq.fun, SxcRealGain.fun, SxcSetCalibGains.fun,
+	SxcSetRealGains.fun, SxcTrImpCheck.fun, XRAY__init.fun:
+	
+	Add SXR multichord device
+
+2005-04-01 05:54  manduchi
+
+	* javascope/: WaveInterface.java, Waveform.java:
+	
+	Fix
+
+2005-03-29 10:23  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Add START_GP management
+
+2005-03-23 02:53  manduchi
+
+	* javatraverser/: DIO2Setup.java, RFXControlSetup.java:
+	
+	Minor fixes
+
+2005-03-22 10:53  jas
+
+	* mitdevices/dc1394_support.c:
+	
+	fill the frames with 0 before running the camera
+
+2005-03-22 10:24  jas
+
+	* tdi/MitDevices/dc1394__init.fun:
+	
+	add debug printout to camera stuff
+
+2005-03-22 10:19  jas
+
+	* mitdevices/Makefile.in:
+	
+	need lpthread in devicemsg.so
+
+2005-03-22 10:05  jas
+
+	* mitdevices/Makefile.in:
+	
+	need the standard (LIBS) in the link for dc1394 for thread support
+
+2005-03-22 09:55  jas
+
+	* mitdevices/joerger_tr612.c:
+	
+	Chunking changes found in /home/mdsplus/mdsplus/mitdevices
+
+2005-03-22 09:40  jas
+
+	* mitdevices/: dc1394_support.c, j221.gen:
+	
+	camera debugging + j221 add code
+
+2005-03-22 08:23  manduchi
+
+	* javatraverser/CAMERASetup.java:
+	
+	Fix
+
+2005-03-22 08:07  twf
+
+	* mdstcpip/mdsipshr.c:
+	
+	fix MdsDispatchEvent to pass correct data length to ast
+
+2005-03-21 15:18  twf
+
+	* rpm/myproxy-1.16.tar.gz:
+	
+	myproxy source
+
+2005-03-21 15:16  twf
+
+	* rpm/: fusiongrid-makekit, fusiongrid.spec:
+	
+	Add fusiongrid rpm building tools
+
+2005-03-21 15:15  twf
+
+	* rpm/fglogin:
+	
+	Add fusiongrid login script
+
+2005-03-21 14:56  twf
+
+	* roam/roam_check_access.c:
+	
+	Return -2 for access denied
+
+2005-03-21 14:55  twf
+
+	* roam/Makefile.in:
+	
+	New library link
+
+2005-03-21 14:53  twf
+
+	* tdi/roam/check_access.fun:
+	
+	Add array of roam servers capability
+
+2005-03-21 10:39  manduchi
+
+	* tdi/RfxDevices/: CADH__init.fun, DFT12mod.fun, DFT12phase.fun,
+	RFXDClock__init.fun, StopStartVmeSch.fun, TRCH__init.fun:
+	
+	add & fix
+
+2005-03-21 09:36  manduchi
+
+	* javascope/: WaveInterface.java, WavePopup.java, jScope.java:
+	
+	Fix copy image to clipboard
+
+2005-03-21 05:40  manduchi
+
+	* tdi/RfxDevices/setversion.fun:
+	
+	RFX pulse file version function
+
+2005-03-18 16:21  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsip_u.c, mdsiputil.c:
+	
+	add non-blocking io for events and recv abort capability by sending
+	SIGALRM to process
+
+2005-03-18 03:04  manduchi
+
+	* tdi/RfxDevices/: XRAY__setAmpType.fun, XrayRealGain.fun,
+	XraySetCalibGains.fun, XraySetRealGains.fun:
+	
+	Add XRAY calibration value management
+
+2005-03-18 02:35  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__store.fun:
+	
+	More user signals
+
+2005-03-17 08:26  manduchi
+
+	* tdi/RfxDevices/: MCU__add.fun, MCU__store.fun, TRCF__store.fun,
+	TomoCheckAcqMemory.fun, XRAY__init.fun:
+	
+	fix
+
+2005-03-17 04:35  manduchi
+
+	* javascope/: Waveform.java, WaveformContainer.java:
+	
+	Change crosshair management
+
+2005-03-15 12:42  manduchi
+
+	* tdi/RfxDevices/E1463__store.fun:
+	
+	Fix clock readout
+
+2005-03-15 11:07  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	New Parameter
+
+2005-03-14 10:41  manduchi
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix previous correction
+
+2005-03-14 10:20  manduchi
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix forgotten UnlockMdsShrMutex()
+
+2005-03-14 09:42  twf
+
+	* configure, configure.in:
+	
+	Add JDK_DIR substitution
+
+2005-03-14 09:41  twf
+
+	* javaclient/: Makefile.in, MdsPlusEventMonitor.java:
+	
+	Add MdsPlusEventMonitor class
+
+2005-03-11 11:51  manduchi
+
+	* javatraverser/: MCUSetup.java, XRAYSetup.java:
+	
+	Add setup for Tomography device MCU
+
+2005-03-11 11:45  manduchi
+
+	* tdi/RfxDevices/: MCU__add.fun, MCU__store.fun:
+	
+	Add MCU tomography device
+
+2005-03-11 09:30  manduchi
+
+	* javatraverser/: BOLOSetup.java, Makefile.in, TOMOSetupSetup.java,
+	XRAYSetup.java:
+	
+	Fix
+
+2005-03-11 07:16  manduchi
+
+	* javatraverser/DeviceSetup.java:
+	
+	Use identifiers only if meaningful
+
+2005-03-11 06:58  manduchi
+
+	* javatraverser/XRAYSetup.java:
+	
+	Fix
+
+2005-03-11 05:15  manduchi
+
+	* javatraverser/XRAYSetup.java:
+	
+	Modify
+
+2005-03-11 05:14  manduchi
+
+	* tdi/RfxDevices/: XRAY__init.fun, XRAY__store.fun:
+	
+	Fix
+
+2005-03-09 12:17  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Fix race condition for posix threads
+
+2005-03-09 11:51  manduchi
+
+	* javatraverser/: BOLOSetup.java, TOMOSetupSetup.java,
+	XRAYSetup.java:
+	
+	Fix thomography setup
+
+2005-03-09 11:46  manduchi
+
+	* tdi/RfxDevices/: BOLO__add.fun, BOLO__init.fun, BOLO__reset.fun,
+	BOLO__store.fun, BOLO__zero.fun, BoloChMapping.fun,
+	BoloGetCalibValues.fun, BoloRealGain.fun, BoloSetRealGains.fun,
+	TomoChanId.fun, TomoCheckAcqMemory.fun, TomoGPIBModule.fun,
+	TomoGPIBSlot.fun, TomoLogicalInfo.fun, TomoVMEModule.fun,
+	TomoVMESlot.fun, XRAY__add.fun, XRAY__init.fun, XRAY__reset.fun,
+	XRAY__store.fun, XRAY__zero.fun, XrayChMapping.fun,
+	XrayGetCalibValues.fun:
+	
+	Modify tomography methods and routines
+
+2005-03-09 10:54  manduchi
+
+	* javascope/MultiWaveform.java:
+	
+	Fix
+
+2005-03-07 09:40  twf
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	Fix multi line title handling
+
+2005-03-04 10:09  twf
+
+	* scripts/unix_submit, tdi/submit.fun:
+	
+	Add PRE option to precreate log file. Avoids race condition with
+	dependent submits
+
+2005-03-03 13:51  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix wfevent
+
+2005-03-02 04:25  manduchi
+
+	* tdi/RfxDevices/: AAMaxValue.fun, ABGain.fun:
+	
+	Fix Ansaldo Gain tables
+
+2005-02-28 10:32  twf
+
+	* mdstcpip/: mdsip_u.c, mdsipshr.def:
+	
+	fix for windows
+
+2005-02-28 09:03  manduchi
+
+	* javascope/: MdsDataProvider.java, jScope.properties:
+	
+	Fix
+
+2005-02-26 11:50  twf
+
+	* javatraverser/: ACQD240Setup.java, ACQD240Setup.java:
+	
+	Add ACQD240 setup
+
+2005-02-26 11:33  twf
+
+	* javatraverser/: ACQD240Setup.java, ACQD265Setup.java:
+	
+	Add ACQD240 setup
+
+2005-02-25 02:49  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	Change variable names
+
+2005-02-24 09:43  twf
+
+	* tdi/ndims.fun:
+	
+	Fix ndims to handle non-signal arguments and avoid infinite loop
+
+2005-02-23 22:03  twf
+
+	* javatraverser/: ACQD241Setup.java, ACQD265Setup.java,
+	ACQD270Setup.java:
+	
+	Add more acqiris cards
+
+2005-02-23 13:19  twf
+
+	* html/toc.php:
+	
+	Fix for Safari
+
+2005-02-23 10:32  twf
+
+	* html/index.php:
+	
+	Make it more standard xhtml
+
+2005-02-23 10:32  twf
+
+	* html/toc.php:
+	
+	Fix closing </head> tag
+
+2005-02-21 10:00  manduchi
+
+	* tdi/RfxDevices/FramesReshape.fun:
+	
+	Doubles horizontal pixel line in the arguments frame
+
+2005-02-21 09:36  manduchi
+
+	* tdi/RfxDevices/: BOLO__store.fun, FramesEven.fun,
+	FramesInterleave.fun, FramesOdd.fun, XRAY__init.fun,
+	XRAY__store.fun:
+	
+	Fix Tomography operation  add Frames functions
+
+2005-02-18 15:48  twf
+
+	* gsilite/: Makefile, README, config/config.h, config/extensions.h,
+	config/globus_common.h, config/globus_config.h, config/globus_dc.h,
+	config/version.h:
+	
+	Add a gsilite implementation
+
+2005-02-18 03:04  manduchi
+
+	* javascope/: Frames.java, MdsMessage.java:
+	
+	Fix images visualization
+
+2005-02-17 13:09  manduchi
+
+	* javatraverser/RFXAxiControlSetup.java:
+	
+	Display min Y
+
+2005-02-17 12:46  manduchi
+
+	* tdi/: baseline.fun, RfxDevices/BoloHwStartAcq.fun,
+	RfxDevices/TRCH__store.fun, RfxDevices/TomoChanId.fun,
+	RfxDevices/TomoDiode.fun, RfxDevices/XRAY__init.fun,
+	RfxDevices/XrayChMapping.fun, RfxDevices/XrayHWInit.fun,
+	RfxDevices/XrayHwStartAcq.fun:
+	
+	avoid for loop in baseline. Use Sum instead
+
+2005-02-16 13:02  manduchi
+
+	* tdi/: filter.fun, MitDevices/l6810__add.fun,
+	java/JavaResample.fun:
+	
+	Allow the optional definition of the numbetr of poles in filter
+
+2005-02-16 13:02  manduchi
+
+	* mdsmisc/: MdsFilter.c, complex.c, filter.c, iir.c:
+	
+	Fix double Nan underflow in threads for Linux RedHat
+
+2005-02-16 11:24  manduchi
+
+	* javatraverser/LoadPulse.java:
+	
+	Fix state ON/OFF
+
+2005-02-16 10:12  manduchi
+
+	* javamds/: JavaData.c, javamds.c:
+	
+	Fix DTYPE_MISSING
+
+2005-02-15 18:01  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix cleanup of bad client sockets
+
+2005-02-15 12:44  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Fix
+
+2005-02-15 12:40  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Fix
+
+2005-02-15 12:28  manduchi
+
+	* tdi/RfxDevices/: TR10HWConfig.fun, TR10__config.fun:
+	
+	Fix final
+
+2005-02-15 12:22  manduchi
+
+	* tdi/RfxDevices/: TR10HWConfig.fun, TR10HWConfig.fun:
+	
+	Fix
+
+2005-02-15 12:15  manduchi
+
+	* tdi/RfxDevices/TR10HWConfig.fun:
+	
+	Fix TR10HWConfig
+
+2005-02-15 12:03  manduchi
+
+	* tdi/RfxDevices/TR10HWConfig.fun:
+	
+	Fix TR10HWConfig
+
+2005-02-15 11:58  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Fix TR10__config
+
+2005-02-15 11:55  twf
+
+	* tdi/MitDevices/a14__add.fun:
+	
+	a14 tdi support funs do not work
+
+2005-02-15 11:52  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Fix TR10__config.fun by EZ
+
+2005-02-15 11:41  manduchi
+
+	* tdi/RfxDevices/TR10__config.fun:
+	
+	Fix TR10__config.fun by EZ
+
+2005-02-15 11:25  manduchi
+
+	* tdi/RfxDevices/: BOLO__add.fun, BOLO__init.fun, BOLO__store.fun,
+	CADH__store.fun, CAMERA__add.fun, CAMERA__arm.fun,
+	CAMERA__init.fun, CAMERA__store.fun, EM_EQU_TEST__init.fun,
+	EM_FLU_TEST__init.fun, EM_GAIN__init.fun, IPC901__init.fun,
+	IPC901__store.fun, TOMOSetup__add.fun, TR10HWConfig.fun,
+	TR10__config.fun, TRCF__store.fun, TRCH__store.fun,
+	WE7000__add.fun, WE7116__add.fun, WE7275__add.fun,
+	WEGroup__add.fun:
+	
+	Add Configuratio Setup for TR10
+
+2005-02-14 13:10  manduchi
+
+	* mdsmisc/: MdsFilter.c, butterworth.c, complex.c, filter.c, iir.c:
+	
+	Adjust group delay in filtered signal reconstruction
+
+2005-02-14 08:12  manduchi
+
+	* javatraverser/: Makefile.in, RFXAxiControlSetup.java,
+	RfxAxiControlSetup.java:
+	
+	Fix lower/uppercase
+
+2005-02-14 08:08  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Fixed upper/lowercase
+
+2005-02-11 17:31  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	clean up disconnected clients before redoing select
+
+2005-02-11 17:06  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	try again if select error, tracking down why event server is
+	exitting
+
+2005-02-11 12:10  manduchi
+
+	* tdi/filter.fun:
+	
+	dded filter
+
+2005-02-11 12:10  manduchi
+
+	* mdsmisc/: Makefile.in, MdsFilter.c, butterworth.c, complex.c,
+	complex.h, filter.c, filter.h, fir.c, iir.c:
+	
+	Added support for TDI filtering (10 poles, Butterworth)
+
+2005-02-11 08:03  manduchi
+
+	* tdi/RfxDevices/RFXAxiControl__add.fun,
+	javatraverser/RfxAxiControlSetup.java:
+	
+	Add Bv_Gain
+
+2005-02-11 06:22  manduchi
+
+	* javatraverser/Makefile.in, javatraverser/RfxAxiControlSetup.java,
+	tdi/RfxDevices/RFXAxiControl__add.fun,
+	tdi/RfxDevices/RFXControl__add.fun:
+	
+	Added Axisymmetric setup device
+
+2005-02-11 05:30  manduchi
+
+	* javascope/: Descriptor.java, MdsConnection.java,
+	MdsDataClient.java, MdsDataProvider.java, jScopeWavePopup.java:
+	
+	Fix byte data conversion
+
+2005-02-11 02:49  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Window check for RFX times
+
+2005-02-10 19:20  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Add thread locking
+
+2005-02-10 10:42  manduchi
+
+	* javatraverser/LoadPulse.java:
+	
+	Fix node ON/OFF in LoadPulse
+
+2005-02-10 09:57  manduchi
+
+	* javascope/: MdsDataProvider.java, MultiWaveform.java:
+	
+	Fix FastNetworkAccess option
+
+2005-02-10 09:02  manduchi
+
+	* javascope/: Frames.java, MdsDataProvider.java:
+	
+	Fix bitmap frame visualization
+
+2005-02-08 17:28  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Take out the exit in the exit handler
+
+2005-02-08 14:12  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	remove leading and trailing blanks from event name
+
+2005-02-08 12:34  manduchi
+
+	* javatraverser/: DeviceTable.java, RFXControlSetup.java:
+	
+	Fix expressions in tables
+
+2005-02-08 12:30  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	Allow initial execution of a TCL batch
+
+2005-02-07 15:53  twf
+
+	* Setup/Setup.vdproj, javascope/javascope.mak,
+	javascope/javascope.vcproj, javatraverser/javatraverser.mak,
+	javatraverser/javatraverser.vcproj:
+	
+	New windows release
+
+2005-02-07 15:32  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix debug routine
+
+2005-02-07 14:22  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.7-3
 
 2005-02-07 14:01  twf
 
