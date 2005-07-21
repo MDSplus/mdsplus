@@ -544,7 +544,7 @@ to databases
 #define TREE_PATH_DELIM  ":"
 #elif defined(_MSC_VER)
 #define TREE_PATH_SUFFIX "_path"
-#define TREE_PATH_DELIM  "\\"
+#define TREE_PATH_DELIM  "/"
 #else
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_PATH_DELIM  "/"

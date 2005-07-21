@@ -47,17 +47,17 @@ extern char *MaskReplace();
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+#include <fcntl.h>
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <fcntl.h>
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
-STATIC_ROUTINE int CopyFile(char *src, char *dst, int lock_it);
+STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it);
 #endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
@@ -167,7 +167,6 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
     pathlen = strlen(pathin);
     for (itype=0;itype<3 && (status & 1);itype++)
     {
-      struct stat stat_info;
       char *srcfile = 0;
       char *dstfile = 0;
       char *type = types[itype];
@@ -265,11 +264,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         free(path);
         if (dstfile)
         {
-#ifndef _WIN32
-          status = CopyFile(srcfile,dstfile,itype != 0);
-#else
-          status = CopyFile(srcfile,dstfile,0);
-#endif
+          status = MdsCopyFile(srcfile,dstfile,itype != 0);
           free(dstfile);
         }
         else
@@ -286,23 +281,8 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   return status;
 }
 
-#if !defined(_WIN32)
-STATIC_ROUTINE int CopyFile(char *src, char *dst, int lock_it)
+STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it)
 {
-  /*
-  int status=0;
-  char *cmd = (char *)malloc(strlen(src)+strlen(dst) + 100);
-  sprintf(cmd,"cp %s %s",src,dst);
-  status = system(cmd);
-  if (status != 0)
-     printf("Error creating pulse with command: %s, status = %d\n",cmd,status);
-  else {
-    sprintf(cmd,"SetMdsplusFileProtection %s 2> /dev/null",dst);
-    system(cmd);
-  }
-  free(cmd);
-  return status == 0;
-  */
   int status = TreeFAILURE;
 
   int src_fd = MDS_IO_OPEN(src,O_RDONLY | O_BINARY | O_RANDOM, 0);
@@ -336,4 +316,3 @@ STATIC_ROUTINE int CopyFile(char *src, char *dst, int lock_it)
   }
   return status;
 }
-#endif
