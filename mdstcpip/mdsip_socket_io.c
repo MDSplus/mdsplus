@@ -107,8 +107,16 @@ void ClearFD(SOCKET sock) {}
 
 #else
 //#include <signal.h>
+#ifndef WIN32
 #include <pthread.h>
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
+#define pthread_attr_default NULL
+#define pthread_mutexattr_default NULL
+#define pthread_condattr_default NULL
+#endif
+#else
+typedef void *pthread_mutex_t;
+typedef int socklen_t;
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
 #define pthread_condattr_default NULL
@@ -451,7 +459,9 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
   SocketList this_socket = {s,0};
   PushSocket(&this_socket);
   this_socket.socket=s;
+#ifndef WIN32
   signal(SIGABRT,ABORT);
+#endif
   if (getpeername(s, (struct sockaddr *)&sin, &n)==0)
     num_got=recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
   PopSocket(&this_socket);
