@@ -3,14 +3,31 @@
 	$(JDK_DIR)\bin\javac.exe $*.java
 
 SOURCES = \
-Action.java	 ActionData.java CompoundData.java Data.java DataListener.java  IllegalDataException.java \
-Database.java     MdsHelper.java          MdsServerEvent.java     NetworkListener.java    jDispatcher.java \
-ActionServer.java       MdsIp.java              MdsServerListener.java  Server.java             jDispatcherIp.java \
-Balancer.java           MdsMonitor.java         MonitorEvent.java       ServerEvent.java \
-MdsMonitorEvent.java    MonitorListener.java    ServerListener.java \
-InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java jServer.java
+Action.java\
+ActionServer.java\
+Balancer.java\
+InfoServer.java\
+jDispatcher.java\
+jDispatcherIp.java\
+jDispatchMonitor.java\
+jServer.java\
+KillServer.java\
+MdsHelper.java\
+MdsIp.java\
+MdsMonitor.java\
+MdsMonitorEvent.java\
+MdsServer.java\
+MdsServerEvent.java\
+MdsServerListener.java\
+MonitorEvent.java\
+MonitorListener.java\
+NetworkEvent.java\
+NetworkListener.java\
+Server.java\
+ServerEvent.java\
+ServerListener.java\
+ServerShowDialog.java
 
 all : $(SOURCES)
-	set CLASSPATH=..\java\classes\MDSplus.jar;..\javascope
-	$(JDK_DIR)\bin\javac.exe *.java
-	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\javadispatcher.jar *.class
+	$(JDK_DIR)\bin\javac.exe -classpath ..\java\classes\jScope.jar;..\java\classes\jTraverser.jar  *.java
+	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\jDispatcher.jar *.class
