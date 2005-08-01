@@ -13,11 +13,13 @@ public fun SxcSetRealGains()
 		_trImp = _path//TEXT(_c, 1)//":TR_IMPEDANCE";
 		_trImpPath = build_path(_trImp);
 
-		_gainCal = "\\DSXC::PAR_L"//TEXT(_c, 1)//":CALIBRATION";
+		_id = TomoChanId( _c, 0, _chMapping);
+		_amp_id = TomoAmpId(_id);
+
+		_gainCal = "\\DSXC::PAR_AMP_"//trim(adjustl(text(_amp_id)))//":CALIBRATION";
 		_gainCalPath = build_path(_gainCal);
 
-
-		_id = TomoChanId( _c, 0, _chMapping);
+write(*, _gainCal);
 
 		_ampType = TomoAmpType(_id);
 
@@ -42,15 +44,15 @@ public fun SxcSetRealGains()
 		_trImp = _path//TEXT(_c, 2)//":TR_IMPEDANCE";
 		_trImpPath = build_path(_trImp);
 
+		_id = TomoChanId( _c, 0, _chMapping);
+		_amp_id = TomoAmpId(_id);
 
-		_gainCal = "\\DSXC::PAR_L"//TEXT(_c, 2)//":CALIBRATION";
+		_gainCal = "\\DSXC::PAR_AMP_"//trim(adjustl(text(_amp_id)))//":CALIBRATION";
 		_gainCalPath = build_path(_gainCal);
 
-
-		_id = TomoChanId( _c, 0, _chMapping );
+write(*, _gainCal);
 
 		_ampType = TomoAmpType(_id);
-
 
 		_gainR = SxcRealGain(_gainImpPath, _trImpPath, _ampType,  _gainCalPath);
 

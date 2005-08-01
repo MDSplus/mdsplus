@@ -60,6 +60,21 @@ public fun TRCF__store(as_is _nid, optional _method)
     }
 
     DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
+    DevCamChk(_name, CamPiow(_name, 0,0,_base_mar_1=0, 24),1,1);
+    
+    _count = 0;
+    while(_base_mar != _base_mar_1)
+    {
+    	_count++;
+	if(_count == 10) abort();
+        DevLogErr(_nid, 'Error reading MAR');
+    	DevCamChk(_name, CamPiow(_name, 0,0,_base_mar=0, 24),1,1);
+    	DevCamChk(_name, CamPiow(_name, 0,0,_base_mar_1=0, 24),1,1);
+    }
+    
+    
+    
+    
     for(_i = 0; _i < _num_chans; _i++)
     {
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_i *  _K_NODES_PER_CHANNEL))))
@@ -89,12 +104,25 @@ public fun TRCF__store(as_is _nid, optional _method)
 			if(_end_idx  - _start_idx >  _max_samples) _start_idx = _pts - _max_samples;
 			if(_end_idx < _start_idx) _start_idx = _end_idx - 1;
 	/* Compute MAR */
-			/*_mar = _base_mar - _num_chans * (_pts - _start_idx);*/
 	    		_mar = _base_mar - _num_chans * (_pts - _start_idx) + _i;
 			if(_mar < 0) _mar = _mar + _256K;
+
     			DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
+    			DevCamChk(_name, CamPiow(_name, 0,0,_mar_1=0, 24),1,1);
+			
+			_count = 0;
+    			while((_mar != _mar_1) && (_count < 10))
+    			{
+    			    _count++;
+        		    DevLogErr(_nid, 'Error writing MAR');
+   			    DevCamChk(_name, CamPiow(_name, 0,16,_mar, 24),1,1);
+    			    DevCamChk(_name, CamPiow(_name, 0,0,_mar_1=0, 24),1,1);
+    			}
+			
+			
+			
+			
 			DevCamChk(_name, CamFstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);
-		/*	DevCamChk(_name, CamQstopw(_name, 0, 2, _end_idx - _start_idx, _data=0, 16), 1, *);*/
 
 
 /* Convert clock to double */
