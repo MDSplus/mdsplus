@@ -159,7 +159,7 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   CURL *ctx=curl_easy_init();
   CURLcode status;
   struct _buf buf = {0,0};
-  char *url = malloc(strlen(host)+30+(strlen(resource)+strlen(permit)+strlen(dn))*3);
+  char *url = malloc(strlen(host)+100+(strlen(resource)+strlen(permit)+strlen(dn))*3);
   char *res=urlencode(resource);
   char *perm=urlencode(permit);
   char *uname=urlencode(dn);
@@ -168,6 +168,9 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   free(res);
   free(perm);
   free(uname);
+  *aux=(char *)0;  
+  curl_easy_setopt(ctx,CURLOPT_NOSIGNAL,1);
+  curl_easy_setopt(ctx,CURLOPT_TIMEOUT,15);
   curl_easy_setopt(ctx,CURLOPT_WRITEFUNCTION,callback);
   curl_easy_setopt(ctx,CURLOPT_WRITEDATA,&buf);
   curl_easy_setopt(ctx,CURLOPT_URL,url);
@@ -185,10 +188,6 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
 	  strncpy(*aux,&buf.ptr[4],buf.size-4);
 	(*aux)[buf.size-4]=0;
       }
-      else
-      {
-        (*aux)=strcpy(malloc(1),"");
-      }
     }
     else
       status=-2;
@@ -199,6 +198,8 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   }
   if (buf.ptr)
     free(buf.ptr);
+  if (*aux == (char *)0)
+    (*aux)=strcpy(malloc(1),"");
   return status;
 }
 #endif
