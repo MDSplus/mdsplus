@@ -61,7 +61,7 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKESHLIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lMdsIpUtil -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $(OBJECTS) -L@MAKELIBDIR@ -lMdsIpUtil -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
 @MAKELIBDIR@libMdsLib.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -92,4 +92,4 @@ MdsLib_client.o : MdsLib.c
 	$(CC) -o $@ $(CFLAGS) dtype_test.c -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
 makefile-header:  
-	@GLOBUS_LOCATION@/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio > makefile-header
+	@GLOBUS_LOCATION@/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header
