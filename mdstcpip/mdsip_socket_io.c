@@ -450,9 +450,6 @@ static void ABORT(int sigval)
 int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 {
 #ifndef GLOBUS
-#ifdef HAVE_WINDOWS_H
-  return recv(s,bptr,num,(oob ? MSG_OOB : 0));
-#else
   int num_got=0;
   struct sockaddr sin;
   socklen_t n = sizeof(sin);
@@ -463,10 +460,12 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
   signal(SIGABRT,ABORT);
 #endif
   if (getpeername(s, (struct sockaddr *)&sin, &n)==0)
+#ifdef WIN32
+	  num=num > 256000 ? 256000 : num;
+#endif
     num_got=recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
   PopSocket(&this_socket);
   return num_got;
-#endif
 #else
   int bytes_to_read = num;
   char *ptr = bptr;
@@ -503,11 +502,10 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 int SocketSend(SOCKET s, char *bptr, int num, int options)
 {
 #ifndef GLOBUS
-#ifdef HAVE_WINDOWS_H
-  return send(s,bptr,num,options);
-#else
-  return send(s,bptr,num, options | MSG_NOSIGNAL);
+#ifdef WIN32
+	num=(num > 256000 ? 256000 : num);
 #endif
+  return send(s,bptr,num, options | MSG_NOSIGNAL);
 #else
   globus_io_handle_t *handle = GetHandle(s);
   globus_size_t nbytes_written = 0;
