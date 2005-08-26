@@ -105,11 +105,12 @@ static char  *TclDtypeString(	/* Returns:  address of formatted string */
 static int CvtIdentT(struct descriptor *in_dsc_ptr,int depth)
    {
     static DYNAMIC_DESCRIPTOR(out_str);
-
+    char *ident=MdsDescrToCstring(in_dsc_ptr);
     str_dupl_char(&out_str,depth,' ');
     str_concat(&out_str,&out_str,
-        TclDtypeString(in_dsc_ptr->dscB_dtype),in_dsc_ptr->dscA_pointer,0);
+        TclDtypeString(in_dsc_ptr->dscB_dtype),ident,0);
     TclTextOut(out_str.dscA_pointer);
+    free(ident);
     str_free1_dx(&out_str);
     return 1;
    }
@@ -210,12 +211,12 @@ static int CvtPathT(struct descriptor *in_dsc_ptr,int depth)
     static DYNAMIC_DESCRIPTOR(out_str);
     static DYNAMIC_DESCRIPTOR(spaces);
     struct descriptor_xd lxd = {0, 0, CLASS_XD, 0, 0};
-
+    char *ident=MdsDescrToCstring(in_dsc_ptr);
     str_dupl_char(&spaces,depth,' ');
     dstr = TclDtypeString(in_dsc_ptr->dscB_dtype);
-    str_concat(&out_str,&spaces,dstr,in_dsc_ptr->dscA_pointer,0);
+    str_concat(&out_str,&spaces,dstr,ident,0);
     TclTextOut(out_str.dscA_pointer);
-
+    free(ident);
     ldepth = depth + 4;
     str_free1_dx(&spaces);
     str_dupl_char(&spaces,ldepth,' ');
