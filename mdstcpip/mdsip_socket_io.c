@@ -1,5 +1,6 @@
 #include "mdsip.h"
 #include <STATICdef.h>
+
 int CloseSocket(SOCKET s);
 extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
 extern char ClientType(void);
@@ -396,10 +397,13 @@ static void lock_socket_list()
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
+#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+#endif
   }
-
+#ifdef HAVE_WINDOWS_H
   pthread_mutex_lock(&socket_mutex);
+#endif
 }
 
 static void unlock_socket_list()
@@ -408,10 +412,13 @@ static void unlock_socket_list()
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
+#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
+#endif
   }
-
+#ifdef HAVE_WINDOWS_H
   pthread_mutex_unlock(&socket_mutex);
+#endif
 }
 
 static void PushSocket(SocketList *s)
