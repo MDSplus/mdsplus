@@ -1,11 +1,167 @@
-Version 1.7-4
+Version 1.7-5
 
+
+2005-08-29 00:36  manduchi
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Let it compile under Windows
+
+2005-08-26 16:30  twf
+
+	* tcl/tcl_show_data.c:
+	
+	Fix printing of non-terminated descriptor strings
+
+2005-08-26 10:37  twf
+
+	* php/logbook.php:
+	
+	Sample cmod logbook application
+
+2005-08-25 16:30  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	fix for big buffers on windows
+
+2005-08-22 10:52  twf
+
+	* rpm/fusiongrid.spec:
+	
+	use files in cvs
+
+2005-08-22 10:45  twf
+
+	* mdslib/Makefile.in:
+	
+	add globus libraries to MdsLib link
+
+2005-08-19 10:50  shseo
+
+	* kbsidevices/nidaq.c:
+	
+	All the NI digitizers that are supported by NI-DAQmx are controlled
+	by MDSplus TDI functions through this driver.
+
+2005-08-19 10:47  shseo
+
+	* kbsidevices/: hpe1429.c, hpe1564.c, tkvx4244.c:
+	
+	Vendor-distributed driver is modified for TDI function call
+
+2005-08-19 09:39  shseo
+
+	* kbsidevices/ni5122.c:
+	
+	NI 5122 driver developed based on NI-SCOPE
+
+2005-08-19 09:34  shseo
+
+	* kbsidevices/NI5122Setup.java:
+	
+	National Instruments 100 MHz PXI digitizer
+
+2005-08-19 07:56  shseo
+
+	* kbsidevices/VXI8340Setup.java:
+	
+	VXI-8340 is a VXI MXI-3 Interface module. It distributes the
+	external trigger signal to the VXI backplane trigger lines.
+
+2005-08-19 07:36  shseo
+
+	* kbsidevices/VX4244Setup.java:
+	
+	Remove the comments written in Korean
+
+2005-08-19 07:22  shseo
+
+	* kbsidevices/E1564Setup.java:
+	
+	More descriptive GUI panel
+
+2005-08-19 07:05  shseo
+
+	* kbsidevices/E1429Setup.java:
+	
+	More descriptive GUI panel
+
+2005-08-19 01:54  shseo
+
+	* tdi/KbsiDevices/VX4244__setup.fun:
+	
+	Correcting a function parameter type: _count -> VAL(_count)
+
+2005-08-19 01:16  shseo
+
+	* tdi/KbsiDevices/VX4244__store.fun:
+	
+	In the previous version,  only the GPIB interface was supported. 
+	Now, it supports GPIB, MXI, and embeded controller .
+
+2005-08-15 16:28  twf
+
+	* roam/roam_check_access.c:
+	
+	Add 15 second timeout
+
+2005-08-11 11:15  twf
+
+	* html/links/index.shtml:
+	
+	Add EPFL long pulse link
+
+2005-08-01 08:11  manduchi
+
+	* tdi/RfxDevices/: SXC__setAmpType.fun, SxcChMapping.fun,
+	SxcSetRealGains.fun, TRCF__store.fun, XRAY_TREE.fun,
+	XRAY__setAmpType.fun, XrayChMapping.fun, XraySetRealGains.fun:
+	
+	Change Tomography channel mapping and add XRAY_TREE function to
+	access signals stored in old XRAY pulse file
+
+2005-08-01 05:21  manduchi
+
+	* mdsmisc/: Makefile.in, bessel.c, bessel.h:
+	
+	Handle Bessel filters
+
+2005-07-27 08:32  manduchi
+
+	* javatraverser/javatraverser.mak:
+	
+	Build jTraverser and DeviceBeans.jar under windows
+
+2005-07-27 08:31  manduchi
+
+	* javadispatcher/javadispatcher.mak:
+	
+	Build jDispatcher on Windows
+
+2005-07-26 11:22  jas
+
+	* xmdsshr/XmdsNidOptionMenu.c:
+	
+	add CHARSET_TEXT to XmStringUnparse call
+
+2005-07-21 10:11  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.7-4
 
 2005-07-21 10:09  twf
 
 	* Setup/Setup.vdproj:
 	
 	Windows update
+
+2005-07-21 10:09  twf
+
+	* mdsplus.sln:
+	
+	windows update
 
 2005-07-21 10:09  twf
 
