@@ -712,12 +712,12 @@ else if (array_key_exists('main_display',$_GET))
     if ($ans['RUN'] != '')
     {
       if ($ans['SHOT'] == '')
-        $link="<a target=\"_blank\" href=\"http://www-cmod/cmod_runs.php?run=" . $ans['RUN'] . "\">" . $ans['RUN'] . "xxx</a>";
+        $link="<a target=\"_blank\" href=\"program/cmod_runs.php?run=" . $ans['RUN'] . "\">" . $ans['RUN'] . "xxx</a>";
       else
-        $link="<a target=\"_blank\" href=\"http://www-cmod/shot_display.php?shot=" . $ans['SHOT'] . "\">" . $ans['SHOT'] . "</a>";
+        $link="<a target=\"_blank\" href=\"program/shot_display.php?shot=" . $ans['SHOT'] . "\">" . $ans['SHOT'] . "</a>";
     }
     else if ($ans['SHOT'] != '')
-        $link="<a target=\"_blank\" href=\"http://www-cmod/shot_display.php?shot=" . $ans['SHOT'] . "\">" . $ans['SHOT'] . "</a>";
+        $link="<a target=\"_blank\" href=\"program/shot_display.php?shot=" . $ans['SHOT'] . "\">" . $ans['SHOT'] . "</a>";
     else
       $link="";
     print "<tr><td class=\"entries\">\n" .
