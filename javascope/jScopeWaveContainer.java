@@ -6,7 +6,11 @@ import java.awt.FontMetrics;
 import java.awt.TextField;
 import java.util.*;
 import java.io.*;
+import java.net.*;
 import javax.swing.*;
+import javax.print.*;
+import javax.print.attribute.*;
+import javax.print.attribute.standard.*;
 import java.awt.print.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -41,6 +45,8 @@ class jScopeWaveContainer
     private String save_as_txt_directory = null;
     private jScopeBrowseSignals browse_sig = null;
     private String prev_add_signal = null;
+
+    private Object mainShotLock = new Object();
 
     class UpdW
         extends Thread
@@ -98,8 +104,9 @@ class jScopeWaveContainer
                     }
                     catch (Throwable e)
                     {
+                        e.printStackTrace();
                         wce = new WaveContainerEvent(this,
-                            WaveContainerEvent.KILL_UPDATE, e.getMessage());
+                        WaveContainerEvent.KILL_UPDATE, e.getMessage());
                         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
                     }
                 }
@@ -159,7 +166,7 @@ class jScopeWaveContainer
         return new jScopeMultiWave(dp, def_vals, IsCacheEnabled());
     }
 
-    public void getjScopeMultiWave()
+    public synchronized void getjScopeMultiWave()
     {
         wave_all = new jScopeMultiWave[getGridComponentCount()];
 
@@ -280,12 +287,13 @@ class jScopeWaveContainer
     {
         return server_item;
     }
-
+/*
+remove 28/06/2005
     public void SetServerItem(DataServerItem dsi)
     {
         server_item = dsi;
     }
-
+*/
     public String GetServerLabel()
     {
         if (dp == null && server_item != null && server_item.name != null)
@@ -346,7 +354,7 @@ class jScopeWaveContainer
                         er = ( (MdsWaveInterface) w.wi).getErrorString(); //this.brief_error);
                     if (er != null)
                         JOptionPane.showMessageDialog(this, er,
-                            "alert",
+                            "alert processWaveformEvent",
                             JOptionPane.ERROR_MESSAGE);
                     w.wi.setAddSignal(false);
                 }
@@ -396,13 +404,13 @@ class jScopeWaveContainer
         }
     }
 
-    public void StartPrint(PrinterJob prnJob, PageFormat pf)
+    public void StartPrint(DocPrintJob prnJob, PrintRequestAttributeSet attrs)
     {
         try
         {
             getjScopeMultiWave();
             UpdateAllWave();
-            PrintAllWaves(prnJob, pf);
+            PrintAllWaves(prnJob, attrs);
         }
         catch (InterruptedException e)
         {}
@@ -412,12 +420,12 @@ class jScopeWaveContainer
         {}
     }
 
-    public void PrintAllWaves(PrinterJob prnJob, PageFormat pf) throws
-        PrinterException
+    public void PrintAllWaves(DocPrintJob prnJob, PrintRequestAttributeSet attrs) throws
+        PrinterException, PrintException
     {
-        prnJob.setPrintable(this, pf);
-//        jScope.displayPageFormatAttributes(3, pf);
-        prnJob.print();
+        DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
+        Doc doc = new SimpleDoc(this, flavor, null);
+        prnJob.print(doc, attrs);
     }
 
     public int print(Graphics g, PageFormat pf, int pageIndex) throws
@@ -425,33 +433,15 @@ class jScopeWaveContainer
     {
         int st_x = 0, st_y = 0;
         double height = pf.getImageableHeight();
-        double width = pf.getImageableWidth();
+        double width  = pf.getImageableWidth();
         Graphics2D g2 = (Graphics2D) g;
-        String ver = System.getProperty("java.version");
 
 //        jScope.displayPageFormatAttributes(4,pf);
 
         if (pageIndex == 0)
         {
-
-            //fix page margin error on jdk 1.2.X
-            if (ver.indexOf("1.2") != -1)
-            {
-                if (pf.getOrientation() == PageFormat.LANDSCAPE)
-                {
-                    st_y = -13;
-                    st_x = 15;
-                    width -= 5;
-                }
-                else
-                {
-                    //st_x = 10;
-                    st_y = -5;
-                    width -= 25;
-                    height -= 25;
-                }
-            }
             g2.translate(pf.getImageableX(), pf.getImageableY());
+
             PrintAll(g2, st_x,
                      st_y,
                      (int) height,
@@ -548,7 +538,7 @@ class jScopeWaveContainer
                 main_shot_str = null;
                 main_shot_error = "Main Shots evaluations error : \n" +
                     exc.getMessage();
-                JOptionPane.showMessageDialog(this, main_shot_error, "alert",
+                JOptionPane.showMessageDialog(this, main_shot_error, "alert SetMainShot",
                                               JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -567,20 +557,23 @@ class jScopeWaveContainer
         String error = null;
         long long_data[] = null;
 
-        main_shot_error = null;
-        main_shots = null;
-        main_shot_str = null;
-
-        if (in_shots == null || in_shots.trim().length() == 0)
+        synchronized (mainShotLock)
         {
-            main_shot_error = "Main shot value Undefine";
-            return;
-        }
-        long_data = WaveInterface.GetShotArray(in_shots, dp);
-        if (main_shot_error == null)
-            main_shots = long_data;
+            main_shot_error = null;
+            main_shots = null;
+            main_shot_str = null;
 
-        main_shot_str = in_shots.trim();
+            if (in_shots == null || in_shots.trim().length() == 0)
+            {
+                main_shot_error = "Main shot value Undefine";
+                return;
+            }
+            long_data = WaveInterface.GetShotArray(in_shots, dp);
+            if (main_shot_error == null)
+                main_shots = long_data;
+
+            main_shot_str = in_shots.trim();
+        }
     }
 
     public void AbortUpdate()
@@ -727,7 +720,7 @@ class jScopeWaveContainer
         }
     }
 
-    public void UpdateAllWave() throws Exception
+    public synchronized void UpdateAllWave() throws Exception
     {
         jScopeMultiWave w;
         WaveContainerEvent wce;
@@ -782,33 +775,38 @@ class jScopeWaveContainer
                 }
             }
 
-            if (main_shots != null)
+            synchronized (mainShotLock)
             {
-                for (int l = 0; l < main_shots.length && !abort; l++)
+                if (main_shots != null)
                 {
-                    for (int i = 0, k = 0; i < 4 && !abort; i++)
+                    for (int l = 0; l < main_shots.length && !abort; l++)
                     {
-                        for (int j = 0; j < rows[i] && !abort; j++, k++)
+                        for (int i = 0, k = 0; i < 4 && !abort; i++)
                         {
-                            if (wave_all[k].wi != null && wave_all[k].wi.error == null &&
-                                wave_all[k].isWaveformVisible() &&
-                                wave_all[k].wi.num_waves != 0 &&
-                                ( (MdsWaveInterface) wave_all[k].wi).
-                                UseDefaultShot())
+                            for (int j = 0; j < rows[i] && !abort; j++, k++)
                             {
-                                wce = new WaveContainerEvent(this,
-                                    WaveContainerEvent.START_UPDATE,
-                                    "Update signal column " + (i + 1) + " row " +
-                                    (j + 1) +
-                                    " main shot " + main_shots[l]);
-                                dispatchWaveContainerEvent(wce);
-                                ( (MdsWaveInterface) wave_all[k].wi).
-                                    EvaluateShot(main_shots[l]);
-                                if ( ( (MdsWaveInterface) wave_all[k].wi).
-                                    allEvaluated())
+                                if (wave_all[k].wi != null &&
+                                    wave_all[k].wi.error == null &&
+                                    wave_all[k].isWaveformVisible() &&
+                                    wave_all[k].wi.num_waves != 0 &&
+                                    ( (MdsWaveInterface) wave_all[k].wi).
+                                    UseDefaultShot())
                                 {
-                                    if (wave_all[k].wi != null)
-                                        wave_all[k].Update(wave_all[k].wi);
+                                    wce = new WaveContainerEvent(this,
+                                        WaveContainerEvent.START_UPDATE,
+                                        "Update signal column " + (i + 1) +
+                                        " row " +
+                                        (j + 1) +
+                                        " main shot " + main_shots[l]);
+                                    dispatchWaveContainerEvent(wce);
+                                    ( (MdsWaveInterface) wave_all[k].wi).
+                                        EvaluateShot(main_shots[l]);
+                                    if ( ( (MdsWaveInterface) wave_all[k].wi).
+                                        allEvaluated())
+                                    {
+                                        if (wave_all[k].wi != null)
+                                            wave_all[k].Update(wave_all[k].wi);
+                                    }
                                 }
                             }
                         }
@@ -822,22 +820,27 @@ class jScopeWaveContainer
             {
                 for (int j = 0; j < rows[i]; j++, k++)
                 {
-                    if (wave_all[k].wi != null && wave_all[k].wi.error == null &&
-                        wave_all[k].isWaveformVisible() &&
-                        wave_all[k].wi.num_waves != 0 && !abort)
+                    if (wave_all != null && wave_all[k] != null)
                     {
-                        if ( ( (MdsWaveInterface) wave_all[k].wi).allEvaluated())
-                            continue;
+                        if (wave_all[k].wi != null && wave_all[k].wi.error == null &&
+                            wave_all[k].isWaveformVisible() &&
+                            wave_all[k].wi.num_waves != 0 && !abort)
+                        {
+                            if ( ( (MdsWaveInterface) wave_all[k].wi).
+                                allEvaluated())
+                                continue;
 
-                        wce = new WaveContainerEvent(this,
-                            WaveContainerEvent.START_UPDATE,
-                            "Evaluate wave column " + (i + 1) + " row " +
-                            (j + 1));
-                        dispatchWaveContainerEvent(wce);
-                        ( (MdsWaveInterface) wave_all[k].wi).EvaluateOthers();
+                            wce = new WaveContainerEvent(this,
+                                WaveContainerEvent.START_UPDATE,
+                                "Evaluate wave column " + (i + 1) + " row " +
+                                (j + 1));
+                            dispatchWaveContainerEvent(wce);
+                            ( (MdsWaveInterface) wave_all[k].wi).EvaluateOthers();
+                        }
+                        if (wave_all[k].wi != null &&
+                            wave_all[k].isWaveformVisible())
+                            wave_all[k].Update(wave_all[k].wi);
                     }
-                    if (wave_all[k].wi != null && wave_all[k].isWaveformVisible())
-                        wave_all[k].Update(wave_all[k].wi);
                 }
             }
             wave_all = null;
@@ -845,6 +848,7 @@ class jScopeWaveContainer
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             RepaintAllWave();
             throw (new Exception("UpdateAllWaves " + e));
         }
@@ -911,34 +915,81 @@ class jScopeWaveContainer
         this.print_event = AddRemoveEvent(l, this.print_event, print_event);
     }
 
-    public void FromFile(Properties pr, String prompt, int colorMap[]) throws
-        IOException
+    public DataServerItem DataServerFromClient()
     {
-        String prop;
-        int read_rows[] =
+        int c = 0;
+        boolean found = false;
+        String clientMask;
+        DataServerItem out = null;
+        String prompt;
+
+        try
+        {
+            InetAddress localaddr = InetAddress.getLocalHost();
+            String localIpAdddress = localaddr.getHostAddress();
+
+            String f_name = System.getProperty("user.home") + File.separator +
+                     "jScope" + File.separator + "jScope_servers.conf";
+
+            if ( (new File(f_name)).exists() )
             {
-            0, 0, 0, 0};
+                Properties srvFromClientProp = new Properties();
+                FileInputStream fis = new FileInputStream(f_name);
+                srvFromClientProp.load(fis);
+                fis.close();
 
-        prop = pr.getProperty(prompt + ".columns");
-        if (prop == null)
-            throw (new IOException("missing columns keyword"));
-        else
-        {
-            columns = new Integer(prop).intValue();
-            pw = new float[MAX_COLUMN];
+                while (!found )
+                {
+                    c++;
+                    prompt = "jScope.server_from_client_" + c ;
+                    clientMask = srvFromClientProp.getProperty(prompt + ".client_mask");
+                    if(clientMask == null)
+                        break;
+
+                    StringTokenizer tokenLocalIp = new StringTokenizer(localIpAdddress, ".");
+                    StringTokenizer clientMaskIp = new StringTokenizer(clientMask, ".");
+
+                    if(tokenLocalIp.countTokens() != clientMaskIp.countTokens())
+                        continue;
+
+                    while(tokenLocalIp.hasMoreElements() && clientMaskIp.hasMoreTokens())
+                    {
+                        String tl = tokenLocalIp.nextToken();
+                        String tm = clientMaskIp.nextToken();
+                        if(tl.equals(tm) || tm.equals("*") )
+                        {
+                           found = true;
+                           continue;
+                        }
+                        found = false;
+                        break;
+                    }
+
+                    if(found)
+                    {
+                        out = buildDataServerItem(srvFromClientProp, prompt);
+                    }
+                }
+            }
         }
+        catch (Exception exc) {out = null;}
+        return out;
+    }
 
-        title = pr.getProperty(prompt + ".title");
+    public DataServerItem buildDataServerItem(Properties pr, String prompt)
+    {
+        DataServerItem  server_item = null;
 
-        event = pr.getProperty(prompt + ".update_event");
-
-        print_event = pr.getProperty(prompt + ".print_event");
-
-        prop = pr.getProperty(prompt + ".data_server_name");
-        if (prop != null)
+        if (pr != null)
         {
+            String prop = pr.getProperty(prompt + ".data_server_name");
+
+            if(prop == null)
+                return null;
+
             server_item = new DataServerItem();
             server_item.name = prop;
+
             server_item.argument = pr.getProperty(prompt +
                                                   ".data_server_argument");
             server_item.user = pr.getProperty(prompt + ".data_server_user");
@@ -979,7 +1030,49 @@ class jScopeWaveContainer
             {
                 server_item.enable_compression = false;
             }
+        }
+        return server_item;
+    }
 
+    public void FromFile(Properties pr, String prompt, int colorMap[]) throws
+        IOException
+    {
+        String prop;
+        int read_rows[] =
+            {
+            0, 0, 0, 0};
+
+        prop = pr.getProperty(prompt + ".columns");
+        if (prop == null)
+            throw (new IOException("missing columns keyword"));
+        else
+        {
+            columns = new Integer(prop).intValue();
+            pw = new float[MAX_COLUMN];
+        }
+
+        title = pr.getProperty(prompt + ".title");
+
+        event = pr.getProperty(prompt + ".update_event");
+
+        print_event = pr.getProperty(prompt + ".print_event");
+
+
+        server_item = buildDataServerItem(pr, prompt);
+        DataServerItem server_item_conf = DataServerFromClient();
+        if(server_item_conf != null)
+        {
+/*
+            Object[] options = { "YES", "NO" };
+            int out = JOptionPane.showOptionDialog(null,
+                                          "Replace data server " + server_item.name + " defined in jScope\n" +
+                                          "configuration file with "+ server_item_conf.name + " defined in jScope configuration,\n"+
+                                          "optimal solution for  access data from this node.",
+                                          "Warning",
+                                          JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+            if(out == JOptionPane.OK_OPTION)
+*/
+                server_item = server_item_conf;
         }
 
         for (int c = 1; c <= MAX_COLUMN; c++)

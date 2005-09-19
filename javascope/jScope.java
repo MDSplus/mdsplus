@@ -13,8 +13,15 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.awt.print.*;
+import javax.print.*;
+import javax.print.attribute.*;
+import javax.print.attribute.standard.*;
 import java.awt.datatransfer.*;
 import java.awt.image.*;
+
+import javax.swing.plaf.basic.BasicArrowButton;
+
+import java.lang.reflect.Array;
 
 public class jScope
     extends JFrame
@@ -23,7 +30,7 @@ public class jScope
     UpdateEventListener, ConnectionListener
 {
 
-    static final String VERSION = "jScope (version 7.3.3)";
+    static final String VERSION = "jScope (version 7.3.5)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -81,8 +88,12 @@ public class jScope
     private boolean executing_update = false;
     private JFrame main_scope;
 
-    PrinterJob prnJob;
-    PageFormat pageFormat;
+    DocPrintJob prnJob;
+  //  PageFormat pageFormat;
+    PrintRequestAttributeSet attrs;
+    PrintService[] printersServices;
+    PrintService   printerSelection;
+
 
     Properties js_prop = null;
     int default_server_idx;
@@ -117,6 +128,10 @@ public class jScope
     static String T_title;
     static int T_messageType;
 
+
+    BasicArrowButton incShot, decShot;
+    int incShotValue = 0;
+
     static public void ShowMessage(Component parentComponent, Object message,
                                    String title, int messageType)
     {
@@ -149,8 +164,7 @@ public class jScope
         System.out.println("ImageableX = " + myPageFormat.getImageableX());
         System.out.println("ImageableY = " + myPageFormat.getImageableY());
         System.out.println("ImageableWidth = " + myPageFormat.getImageableWidth());
-        System.out.println("ImageableHeight = " +
-                           myPageFormat.getImageableHeight());
+        System.out.println("ImageableHeight = " + myPageFormat.getImageableHeight());
         int o = myPageFormat.getOrientation();
         System.out.println("Orientation = " +
                            (o == PageFormat.PORTRAIT ? "PORTRAIT" :
@@ -447,16 +461,59 @@ public class jScope
     public void jScopeCreate(int spos_x, int spos_y)
     {
 
-        prnJob = PrinterJob.getPrinterJob();
-        pageFormat = prnJob.defaultPage();
-        pageFormat.setOrientation(PageFormat.LANDSCAPE);
-        Paper p = pageFormat.getPaper();
-        p.setSize(597, 844);
-        p.setImageableArea(15., 15., 567., 814.);
-        pageFormat.setPaper(p);
-        //prnJob.validatePage(pageFormat);
-        //displayPageFormatAttributes(pageFormat);
+        printersServices = PrintServiceLookup.lookupPrintServices(null, null);
+        printerSelection = PrintServiceLookup.lookupDefaultPrintService();
+        attrs = new HashPrintRequestAttributeSet();
+        PrinterResolution res = new PrinterResolution(600, 600,
+            PrinterResolution.DPI);
+        attrs.add(MediaSizeName.ISO_A4);
+        attrs.add(OrientationRequested.LANDSCAPE);
+        attrs.add(new MediaPrintableArea(5, 5,
+                                         MediaSize.ISO.A4.getX(MediaSize.MM) -
+                                         5,
+                                         MediaSize.ISO.A4.getY(MediaSize.MM) -
+                                         5,
+                                         MediaPrintableArea.MM));
+        attrs.add(res);
+        prnJob = printerSelection.createPrintJob();
 
+/*
+        PrintServiceAttributeSet pras = printerSelection.getAttributes();
+
+        MediaSize at = (MediaSize) printerSelection.getDefaultAttributeValue(
+            MediaSize.ISO.A4.getCategory());
+
+        System.out.println("Size name " + at);
+
+        {
+            PrintService[] pservice = PrintServiceLookup.lookupPrintServices(null,null);
+            for (int i=0; i<pservice.length; i++)
+            { System.out.println(pservice[i]);
+              System.out.println(" --- Job Attributes ---");
+              Class[] cats = pservice[i].getSupportedAttributeCategories();
+              for (int j=0; j < cats.length; j++)
+              { Attribute attr=(Attribute)pservice[i].getDefaultAttributeValue(cats[j]);
+                if (attr != null)
+                { // Get attribute name and values
+                  String attrName = attr.getName();
+                  String attrValue = attr.toString();
+                  System.out.println(" "+attrName+": "+attrValue);
+                  Object o = pservice[i].getSupportedAttributeValues(attr.getCategory(),null, null);
+                  if (o.getClass().isArray())
+                  { for (int k=0; k < Array.getLength(o); k++)
+                    { Object o2 = Array.get(o, k);
+                      System.out.println(" "+o2);
+                    }
+                  }
+                  else
+                  {
+                    System.out.println(" "+o);
+                  }
+                }
+              }
+            }
+        }
+*/
         help_dialog = new jScopeBrowseUrl(this);
         try
         {
@@ -475,10 +532,10 @@ public class jScope
         InitProperties();
         GetPropertiesValue();
 
-        font_dialog = new FontSelection(this, "Waveform Font Selection");
+        font_dialog   = new FontSelection(this, "Waveform Font Selection");
         setup_default = new SetupDefaults(this, "Default Setup", def_values);
-        color_dialog = new ColorDialog(this, "Color Configuration Dialog");
-        pub_var_diag = new PubVarDialog(this);
+        color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
+        pub_var_diag  = new PubVarDialog(this);
 
         getContentPane().setLayout(new BorderLayout());
         setBackground(Color.lightGray);
@@ -570,12 +627,14 @@ public class jScope
                     public void run()
                     {
                         setName("Print Dialog Thread");
-                        //                   displayPageFormatAttributes(1, pageFormat);
-                        //                 pageFormat = prnJob.defaultPage(pageFormat);
-                        if (prnJob.printDialog())
-                            PrintAllWaves();
-                            //                 prnJob.validatePage(pageFormat);
-                            //                   displayPageFormatAttributes(2, pageFormat);
+                        PrintService svc = PrintServiceLookup.lookupDefaultPrintService();
+                        printerSelection = ServiceUI.printDialog(
+                            null, 100, 100, printersServices, svc, null, attrs);
+                        if ( printerSelection != null)
+                        {
+                            prnJob = printerSelection.createPrintJob();
+                            PrintAllWaves(attrs);
+                        }
                     }
                 };
                 print_cnf.start();
@@ -595,9 +654,9 @@ public class jScope
                         public void run()
                         {
                             setName("Page  Dialog Thread");
-                            pageFormat = prnJob.pageDialog(pageFormat);
+                            //pageFormat = prnJob.pageDialog(pageFormat);
                             //prnJob.validatePage(pageFormat);
-//                   displayPageFormatAttributes(pageFormat);
+                            //displayPageFormatAttributes(pageFormat);
                         }
                     };
                     page_cnf.start();
@@ -616,7 +675,7 @@ public class jScope
                     public void run()
                     {
                         setName("Print All Thread");
-                        PrintAllWaves();
+                        PrintAllWaves(attrs);
                     }
                 };
                 print_page.start();
@@ -993,7 +1052,41 @@ public class jScope
         panel.add(pan);
         panel.add(copy);
         panel.add(shot_l);
+
+
+        panel.add(decShot = new BasicArrowButton(BasicArrowButton.WEST));
         panel.add(shot_t);
+        panel.add(incShot = new BasicArrowButton(BasicArrowButton.EAST));
+
+        decShot.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
+                {
+                    incShotValue--;
+                    SetMainShot();
+                    UpdateAllWaves();
+                }
+            }
+        }
+        );
+
+        incShot.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
+                {
+                    incShotValue++;
+                    SetMainShot();
+                    UpdateAllWaves();
+                }
+            }
+        }
+        );
+
+
         panel.add(apply_b);
         panel.add(new JLabel(" Signal: "));
 
@@ -1182,6 +1275,8 @@ public class jScope
         return null;
     }
 
+
+
     public void InitProperties()
     {
         String f_name = System.getProperty("user.home") + File.separator +
@@ -1205,7 +1300,6 @@ public class jScope
             }
             else
             {
-
                 f_name = System.getProperty("user.home") + File.separator +
                     "jScope" + File.separator;
                 File jScopeUserDir = new File(f_name);
@@ -1236,6 +1330,27 @@ public class jScope
                 {
                     System.out.println("Not found jScope.properties file");
                 }
+             }
+
+             propertiesFilePath = new String(f_name);
+
+             f_name = System.getProperty("user.home") + File.separator +
+                     "jScope" + File.separator + "jScope_servers.conf";
+
+            if( ! (new File(f_name)).exists() )
+            {
+
+                InputStream pis = getClass().getClassLoader().
+                    getResourceAsStream("jScope_servers.conf");
+                if (pis != null)
+                {
+                    FileOutputStream fos = new FileOutputStream(f_name);
+                    byte b[] = new byte[1024];
+                    for (int len = pis.read(b); len > 0; len = pis.read(b))
+                        fos.write(b, 0, len);
+                    fos.close();
+                    pis.close();
+                }
             }
         }
 
@@ -1247,7 +1362,6 @@ public class jScope
         {
             System.out.println(e);
         }
-        propertiesFilePath = f_name;
     }
 
     private void crateConfigDir()
@@ -1422,14 +1536,18 @@ public class jScope
 
         if (srv_item == null || !SetDataServer(srv_item))
         {
-            if (server_ip_list != null && default_server_idx >= 0 &&
-                default_server_idx < server_ip_list.length)
+            srv_item = wave_panel.DataServerFromClient();
+            if (srv_item == null || !SetDataServer(srv_item))
             {
-                srv_item = server_ip_list[default_server_idx];
-                SetDataServer(srv_item);
+                if (server_ip_list != null && default_server_idx >= 0 &&
+                    default_server_idx < server_ip_list.length)
+                {
+                    srv_item = server_ip_list[default_server_idx];
+                    SetDataServer(srv_item);
+                }
+                else
+                    setDataServerLabel();
             }
-            else
-                setDataServerLabel();
         }
     }
 
@@ -1511,7 +1629,10 @@ public class jScope
 
     public void SetMainShot()
     {
-        wave_panel.SetMainShot(shot_t.getText());
+        if(incShotValue != 0)
+            wave_panel.SetMainShot("data(" + shot_t.getText() + ") + "+ incShotValue);
+        else
+            wave_panel.SetMainShot(shot_t.getText());
     }
 
     public void UpdateAllWaves()
@@ -1772,6 +1893,8 @@ public class jScope
 
         try
         {
+
+
             wave_panel.SetDataServer(new_srv_item, this);
 
             wave_panel.SetCacheState(new_srv_item.enable_cache);
@@ -1795,11 +1918,13 @@ public class jScope
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "alert",
+            JOptionPane.showMessageDialog(null, e.getMessage(), "alert SetDataServer",
                                           JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
+
+
 
     private void updateServerMenu()
     {
@@ -1854,23 +1979,28 @@ public class jScope
         }
         catch (IOException e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "alert",
+            JOptionPane.showMessageDialog(null, e.getMessage(), "alert UpdateDefaultValues",
                                           JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    protected void PrintAllWaves()
+    protected void PrintAllWaves(PrintRequestAttributeSet attrs)
     {
         try
         {
             this.SetStatusLabel("Executing print");
-            wave_panel.PrintAllWaves(prnJob, pageFormat);
+            wave_panel.PrintAllWaves(prnJob, attrs);
             SetStatusLabel("End print operation");
         }
         catch (PrinterException er)
         {
             JOptionPane.showMessageDialog(null, "Error on print operation",
-                                          "alert", JOptionPane.ERROR_MESSAGE);
+                                          "alert PrintAllWaves", JOptionPane.ERROR_MESSAGE);
+        }
+        catch (PrintException er)
+        {
+            JOptionPane.showMessageDialog(null, "Error on print operation",
+                                          "alert PrintAllWaves", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1887,9 +2017,12 @@ public class jScope
                 executing_update = false;
                 if (event_id == WaveContainerEvent.KILL_UPDATE)
                 {
-                    JOptionPane.showMessageDialog(this, e.info,
-                                                  "alert",
-                                                  JOptionPane.ERROR_MESSAGE);
+/*
+                            JOptionPane.showMessageDialog(this, e.info,
+                                "alert processWaveContainerEvent",
+                                JOptionPane.ERROR_MESSAGE);
+*/
+                    System.out.println(" processWaveContainerEvent " +  e.info);
                     SetStatusLabel(" Aborted ");
                 }
                 else
@@ -1959,7 +2092,7 @@ public class jScope
 
             JOptionPane.showMessageDialog(this,
                                           e.info,
-                                          "alert",
+                                          "alert processConnectionEvent",
                                           JOptionPane.ERROR_MESSAGE);
 
             SetDataServer(new DataServerItem("Not Connected", null, null,
@@ -2013,7 +2146,7 @@ public class jScope
                 //wave_panel.StartUpdate();
 
             if (e.name.equals(print_event))
-                wave_panel.StartPrint(prnJob, pageFormat);
+                wave_panel.StartPrint(prnJob, attrs);
         }
     }
 
@@ -2066,6 +2199,8 @@ public class jScope
 
         if (ob == apply_b || ob == shot_t)
         {
+            incShotValue = 0;
+
             if (executing_update)
             {
                 if (ob == apply_b)
@@ -2388,7 +2523,7 @@ public class jScope
         }
         catch (IOException ev)
         {
-            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert",
+            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert itemStateChanged",
                                           JOptionPane.ERROR_MESSAGE);
         }
 
@@ -2474,6 +2609,7 @@ public class jScope
     private void Reset()
     {
         config_file = null;
+        incShotValue = 0;
         SetWindowTitle("");
         wave_panel.Reset();
     }
@@ -2482,6 +2618,8 @@ public class jScope
     {
         if (config_file == null)
             return;
+
+        incShotValue = 0;
 
         try
         {
@@ -2492,7 +2630,7 @@ public class jScope
         catch (IOException e)
         {
             Reset();
-            JOptionPane.showMessageDialog(this, e.getMessage(), "alert",
+            JOptionPane.showMessageDialog(this, e.getMessage(), "alert LoadConfiguration",
                                           JOptionPane.ERROR_MESSAGE);
         }
         save_i.setEnabled(true);
@@ -2512,9 +2650,10 @@ public class jScope
             validate();
             DataServerItem dsi = wave_panel.GetServerItem();
             dsi = server_diag.addServerIp(dsi);
-
+/*
+remove 28/06/2005
             wave_panel.SetServerItem(dsi);
-
+*/
             SetDataServer(dsi);
 
           //SetFastNetworkState(wave_panel.GetFastNetworkState());
@@ -2524,7 +2663,7 @@ public class jScope
         {
             Reset();
             JOptionPane.showMessageDialog(this, e.getMessage(),
-                                          "alert", JOptionPane.ERROR_MESSAGE);
+                                          "alert LoadConfiguration", JOptionPane.ERROR_MESSAGE);
         }
         SetWindowTitle("");
         System.gc();
@@ -2956,7 +3095,7 @@ class WindowDialog
         }
         catch (IOException ev)
         {
-            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert",
+            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert actionPerformed",
                                           JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -3319,7 +3458,7 @@ class ServerDialog
         {
             JOptionPane.showMessageDialog(null,
                                           "Undefine data server class for " +
-                                          dsi.name, "alert",
+                                          dsi.name, "alert addServerIp",
                                           JOptionPane.ERROR_MESSAGE);
         }
 

@@ -814,6 +814,11 @@ public class MdsDataProvider
                     dos.writeFloat(desc.float_data[i]);
                 out_byte = dosb.toByteArray();
                 return out_byte;
+            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised
+                for(int i = 0; i < desc.short_data.length; i++)
+                    dos.writeShort(desc.short_data[i]);
+                out_byte = dosb.toByteArray();
+                return out_byte;
             case Descriptor.DTYPE_LONG:
                 for (int i = 0; i < desc.int_data.length; i++)
                     dos.writeInt(desc.int_data[i]);

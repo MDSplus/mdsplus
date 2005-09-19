@@ -2,7 +2,7 @@
 import java.awt.AWTEvent;
 import java.awt.Event;
 
-public class WaveformEvent extends AWTEvent 
+public class WaveformEvent extends AWTEvent
 {
     static final int POINT_UPDATE         = AWTEvent.RESERVED_ID_MAX + 1;
     static final int MEASURE_UPDATE       = AWTEvent.RESERVED_ID_MAX + 2;
@@ -16,7 +16,7 @@ public class WaveformEvent extends AWTEvent
     static final int START_UPDATE         = AWTEvent.RESERVED_ID_MAX + 10;
     static final int END_UPDATE           = AWTEvent.RESERVED_ID_MAX + 11;
     static final int CACHE_DATA           = AWTEvent.RESERVED_ID_MAX + 12;
-    
+
     int    frame_type;
     int    signal_idx;
     int    pixel_value;
@@ -43,29 +43,29 @@ public class WaveformEvent extends AWTEvent
     float  data_value = Float.NaN;
     boolean is_mb2 = false;
 
-    public WaveformEvent (Object source, int event_id, String status_info) 
+    public WaveformEvent (Object source, int event_id, String status_info)
     {
         super(source, event_id);
         this.status_info = status_info;
     }
 
-    public WaveformEvent (Object source, int event_id) 
+    public WaveformEvent (Object source, int event_id)
     {
         super(source, event_id);
     }
 
 
-    public WaveformEvent (Object source, String status_info) 
+    public WaveformEvent (Object source, String status_info)
     {
         super(source, STATUS_INFO);
         this.status_info = status_info;
     }
-    
-    public WaveformEvent (Object source, int event_id, 
+
+    public WaveformEvent (Object source, int event_id,
                           double point_x, double point_y,
                           double delta_x, double delta_y,
                           int pixel_value,
-                          int signal_idx) 
+                          int signal_idx)
     {
         super(source, event_id);
         this.signal_idx = signal_idx;
@@ -79,16 +79,16 @@ public class WaveformEvent extends AWTEvent
 
     public void setPointValue(float val){point_value = val;}
     public float getPointValue(){return point_value;}
-    
+
     public void setFrameType(int frame_type){this.frame_type = frame_type;}
-    
 
 
-    public WaveformEvent (Object source, 
+
+    public WaveformEvent (Object source,
                             String name,
-                            int pixels_x[], int start_pixel_x, 
+                            int pixels_x[], int start_pixel_x,
                             int pixels_y[], int start_pixel_y,
-                            int pixels_signal[], float frames_time[]) 
+                            int pixels_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
         this.name = name;
@@ -101,11 +101,11 @@ public class WaveformEvent extends AWTEvent
     }
 
 
-    public WaveformEvent (Object source, 
+    public WaveformEvent (Object source,
                             String name,
-                            float values_x[], int start_pixel_x, 
+                            float values_x[], int start_pixel_x,
                             float values_y[], int start_pixel_y,
-                            float values_signal[], float frames_time[]) 
+                            float values_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
         this.name = name;
@@ -122,7 +122,7 @@ public class WaveformEvent extends AWTEvent
     {
 	    this.is_mb2 = is_mb2;
     }
-    
+
     public void setPixelsLine(int p_line[])
     {
         pixels_line = p_line;
@@ -133,54 +133,54 @@ public class WaveformEvent extends AWTEvent
         values_line = v_line;
     }
 
-    
+
     public void setXValue(float x_value)
     {
         this.x_value = x_value;
     }
-    
+
     public void setTimeValue(float time_value)
     {
         this.time_value = time_value;
     }
-    
+
     public void setDataValue(float data_value)
     {
         this.data_value = data_value;
     }
-    
+
     private String SetStrSize(String s, int size)
     {
 	    StringBuffer sb = new StringBuffer(size);
-	
+
 	    sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
 
     	if(sb.length() < size)
 	    {
 	        for(int i = sb.length(); i < size; i++)
 		    sb.append(" ");
-	    }	
+	    }
 	    return (new String(sb));
     }
 
-    
+
     public String toString()
     {
         String s = null;
 	    int event_id = getID();
 	    Waveform w = (Waveform)getSource();
-	    	 	     
+
 	    switch(event_id)
 	    {
     	    case WaveformEvent.MEASURE_UPDATE:
 	            double dx_f;
-	         
+
 	            if(Math.abs(delta_x) < 1.e-20)
 	                dx_f = 1.e-20;
 	            else
 	                dx_f = Math.abs(delta_x);
-	         
-                s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+
+                s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", "
 				        + Waveform.ConvertToString(point_y, false) + "; dx "
 				        + Waveform.ConvertToString(delta_x, false) + "; dy "
 				        + Waveform.ConvertToString(delta_y, false) + "; 1/dx "
@@ -206,38 +206,38 @@ public class WaveformEvent extends AWTEvent
 	                        else
 	                            if(!df.equals(nan_f))
 	                                xt_string = ", Data = "+ Waveform.ConvertToString(data_value, false);
-	                        
-//required to view exact values 
+
+//required to view exact values
 //remove conversion to exponential form
-/*                  
-                        if(xt_string == null)                               
-	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+/*
+                        if(xt_string == null)
+	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", "
 				                + Waveform.ConvertToString(point_y, false) + "]", 30);
-				        else 
-	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", " 
+				        else
+	                        s = SetStrSize("[" + Waveform.ConvertToString(point_x, false) + ", "
 				                + Waveform.ConvertToString(point_y, false) + xt_string + "]", 50);
 */
-                        if(xt_string == null)                               
-	                        s = SetStrSize("[" + new Float(point_x) + ", " 
+                        if(xt_string == null)
+	                        s = SetStrSize("[" + new Float(point_x) + ", "
 				                + new Float(point_y) + "]", 30);
-				        else 
-	                        s = SetStrSize("[" + new Float(point_x) + ", " 
+				        else
+	                        s = SetStrSize("[" + new Float(point_x) + ", "
 				                + new Float(point_y) + xt_string + "]", 50);
-		            } else 
-		                if(frame_type == FrameData.BITMAP_IMAGE_32)
+		            } else
+		                if(frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16)
 		                {
-	                        s = SetStrSize("[" + ((int)point_x) + ", " 
-				                       + ((int)point_y) + " : " 
-				                       + "(" + new Float(point_value)+ ")" 
+	                        s = SetStrSize("[" + ((int)point_x) + ", "
+				                       + ((int)point_y) + " : "
+				                       + "(" + new Float(point_value)+ ")"
 				                       + " : " + delta_x + "]", 50);
 				        }
 				        else
 				        {
-	                        s = SetStrSize("[" + ((int)point_x) + ", " 
-				                       + ((int)point_y) + " : " 
-				                       + "(" + ((pixel_value >> 16) & 0xff) + "," 
-				                       + ((pixel_value >> 8) & 0xff) + "," 
-				                       + (pixel_value & 0xff) + ")" 
+	                        s = SetStrSize("[" + ((int)point_x) + ", "
+				                       + ((int)point_y) + " : "
+				                       + "(" + ((pixel_value >> 16) & 0xff) + ","
+				                       + ((pixel_value >> 8) & 0xff) + ","
+				                       + (pixel_value & 0xff) + ")"
 				                       + " : " + delta_x + "]", 50);
 				        }
 		        }

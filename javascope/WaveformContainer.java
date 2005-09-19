@@ -942,6 +942,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	                curr_height = height - pos;
 	            g.setClip(0, 0, curr_width, curr_height);
 	            w = GetWavePanel(k);
+
 	            if(w != null)
 	            {
 	                int print_mode = Waveform.PRINT;

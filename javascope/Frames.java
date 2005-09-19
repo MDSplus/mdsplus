@@ -89,7 +89,7 @@ class Frames extends Canvas
 
     public int getFrameType(int i)
     {
-        if(i < getNumFrame())
+        if(i > 0 && i < getNumFrame())
             return frame_type[i];
         else
             return 0;
@@ -179,15 +179,41 @@ class Frames extends Canvas
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
 
+/*
                     int n_pix = d.width*d.height;
                     int buf_out[] = new int[n_pix];
                     ByteArrayInputStream b = new ByteArrayInputStream(buf);
                     DataInputStream din = new DataInputStream(b);
                     for(int j = 0; j < n_pix; j++)
-                       buf_out[j] = (int)din.readLong();
+                       buf_out[j] = din.readUnsignedShort();
+*/
 
+                   int n_pix = d.width*d.height;
+                   float buf_out[] = new float[n_pix];
+                   ByteArrayInputStream b = new ByteArrayInputStream(buf);
+                   DataInputStream din = new DataInputStream(b);
+
+                   float max = Short.MIN_VALUE;
+                   float min = Short.MAX_VALUE;
+                   for(int j = 0; j < n_pix; j++)
+                   {
+                      buf_out[j] = din.readUnsignedShort();
+                      if(buf_out[j] > max) max = buf_out[j];
+                      if(buf_out[j] < min) min = buf_out[j];
+                   }
+                   frame_values.addElement(buf_out);
+                   int buf_outl[] = new int[n_pix];
+                   for(int j = 0; j < n_pix; j++)
+                   {
+                      buf_outl[j] = (int)(255 * (buf_out[j] - min)/(max - min));
+                   }
+
+                    AddBITMAPImage(buf_outl, d, t[i]);
+
+/*
                     frame_Bvalues.addElement(buf_out);
                     AddBITMAPImage(buf_out, d, t[i]);
+*/
                 }
                 break;
                 case FrameData.BITMAP_IMAGE_32 :
@@ -448,7 +474,7 @@ class Frames extends Canvas
 
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
-/*
+
        Image img = (Image)frame.elementAt(idx);
        if(img_w == -1 && img_h == -1)
        {
@@ -465,7 +491,7 @@ class Frames extends Canvas
             return null;
        }
        return pixel_array;
-*/
+/*
        if (idx >= frame_Bvalues.size()) return null;
        byte values[] = (byte[])frame_Bvalues.elementAt(idx);
        Image img = (Image)frame.elementAt(idx);
@@ -482,7 +508,7 @@ class Frames extends Canvas
                pixel_array[k++] = values[iy * img_width + ix];
 
         return pixel_array;
-
+*/
     }
 
     protected float[] getValueArray(int idx, int x, int y, int img_w, int img_h)
