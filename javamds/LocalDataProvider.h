@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironmentSpecific
  * Method:    Update
  * Signature: (Ljava/lang/String;J)V
  */
-JNIEXPORT void JNICALL Java_LocalDataProvider_Update
+JNIEXPORT void JNICALL Java_LocalDataProvider_UpdateNative
   (JNIEnv *, jobject, jstring, jlong);
 
 /*

@@ -247,7 +247,7 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, float xmin, float xmax, int n_points)
         {
-            resample = true;
+          resample = true;
             this.in_y = in_y;
             this.xmin = xmin;
             this.xmax = xmax;
@@ -258,7 +258,7 @@ public class MdsDataProvider
         public SimpleWaveData(String in_y, String in_x, float xmin, float xmax,
                               int n_points)
         {
-            resample = true;
+           resample = true;
             this.in_y = in_y;
             this.in_x = in_x;
             this.xmin = xmin;
@@ -1039,7 +1039,7 @@ public class MdsDataProvider
 
     public float[] GetFloatArray(String in) throws IOException
     {
-        RealArray realArray = GetRealArray(in);
+      RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getFloatArray();
@@ -1047,7 +1047,7 @@ public class MdsDataProvider
 
     public double[] GetDoubleArray(String in) throws IOException
     {
-        RealArray realArray = GetRealArray(in);
+       RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getDoubleArray();
