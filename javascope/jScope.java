@@ -30,7 +30,7 @@ public class jScope
     UpdateEventListener, ConnectionListener
 {
 
-    static final String VERSION = "jScope (version 7.3.5)";
+    static final String VERSION = "jScope (version 7.3.6)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -174,6 +174,26 @@ public class jScope
                             "<invalid>"));
         System.out.println(
             "+----------------------------------------------------------+");
+    }
+
+
+    class FileFilter implements FilenameFilter
+    {
+        String fname = null;
+
+        FileFilter(String fname)
+        {
+            this.fname = fname;
+        }
+
+        public boolean accept(File dir, String name)
+         {
+             if(name.indexOf(fname) == 0)
+                 return true;
+             else
+                 return false;
+         }
+
     }
 
     class PubVarDialog
@@ -1064,9 +1084,12 @@ public class jScope
             {
                 if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
                 {
-                    incShotValue--;
-                    SetMainShot();
-                    UpdateAllWaves();
+                    if(!executing_update)
+                    {
+                        incShotValue--;
+                        ArrowsIncDecShot();
+                        UpdateAllWaves();
+                    }
                 }
             }
         }
@@ -1078,9 +1101,12 @@ public class jScope
             {
                 if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
                 {
-                    incShotValue++;
-                    SetMainShot();
-                    UpdateAllWaves();
+                    if(!executing_update)
+                    {
+                        incShotValue++;
+                        ArrowsIncDecShot();
+                        UpdateAllWaves();
+                    }
                 }
             }
         }
@@ -1627,12 +1653,31 @@ public class jScope
         wave_panel.SetModifiedState(true);
     }
 
+
+    public void ArrowsIncDecShot()
+    {
+        int idx;
+        String sh =  shot_t.getText();
+
+           if ( (idx = sh.lastIndexOf("+")) > 1 ||
+               (idx = sh.lastIndexOf("-")) > 1)
+           {
+               sh = sh.substring(0, idx);
+               sh = sh.trim();
+           }
+
+           if (incShotValue != 0)
+               shot_t.setText(sh + (incShotValue > 0 ? " + " : " - ") +
+                              Math.abs(incShotValue));
+           else
+               shot_t.setText(sh);
+
+
+    }
+
     public void SetMainShot()
     {
-        if(incShotValue != 0)
-            wave_panel.SetMainShot("data(" + shot_t.getText() + ") + "+ incShotValue);
-        else
-            wave_panel.SetMainShot(shot_t.getText());
+        wave_panel.SetMainShot(shot_t.getText());
     }
 
     public void UpdateAllWaves()
@@ -1678,10 +1723,58 @@ public class jScope
         return modified;
     }
 
+    private void creaHistoryFile(File f)
+    {
+
+        int idx = 0, maxIdx = 0;
+        int maxHistory = 2;
+
+        String config_file_history = (String) js_prop.getProperty("jScope.config_file_history_length");
+        try
+        {
+            maxHistory = Integer.parseInt(config_file_history);
+        }
+        catch (Exception exc){};
+
+
+        File pf = f.getParentFile();
+        String list[] = pf.list(new FileFilter(f.getName()));
+
+        for(int i = 0; i < list.length; i++)
+        {
+            StringTokenizer st = new StringTokenizer(list[i], ";");
+            try
+            {
+                String s = st.nextToken();
+                s = st.nextToken();
+                if (s != null)
+                {
+                    idx = Integer.parseInt(s);
+                    if (idx > maxIdx)
+                        maxIdx = idx;
+                }
+            } catch (Exception exc){};
+        }
+
+        maxIdx++;
+
+        String ppp = f.getAbsolutePath();
+        if( maxIdx  > maxHistory)
+        {
+            File fd = new File(f.getAbsolutePath() + ";" + (maxIdx - maxHistory));
+            fd.delete();
+        }
+
+        File fr = new File(f.getAbsolutePath() + ";" + maxIdx);
+
+        f.renameTo(fr);
+
+    }
+
     public void SaveConfiguration(String conf_file)
     {
         PrintWriter out;
-        File f;
+        File ftmp, fok;
 
         if (conf_file == null || conf_file.length() == 0)
             return;
@@ -1692,20 +1785,24 @@ public class jScope
         save_i.setEnabled(true);
         use_last_i.setEnabled(true);
 
-        f = new File(conf_file);
-        if (f.exists())
-            f.delete();
+        fok = new File(conf_file);
+        ftmp = new File(conf_file + "_tmp");
+
 
         try
         {
-            out = new PrintWriter(new FileWriter(f));
+            out = new PrintWriter(new FileWriter(ftmp));
             ToFile(out);
             out.close();
+            if (fok.exists())
+                 creaHistoryFile(fok);
+            ftmp.renameTo(fok);
         }
         catch (IOException e)
         {
             System.out.println("Errore : " + e);
         }
+        ftmp.delete();
     }
 
     private int saveWarning()
@@ -2199,6 +2296,8 @@ public class jScope
 
         if (ob == apply_b || ob == shot_t)
         {
+            String sh =  shot_t.getText();
+
             incShotValue = 0;
 
             if (executing_update)
