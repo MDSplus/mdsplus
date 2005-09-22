@@ -262,7 +262,6 @@ public class MdsDataProvider
                     "), shape(_jscope_" + v_idx + "))";
                 var_idx++;
             }
-            //int shape[] = GetNumDimensions(in_y);
             int shape[] = GetNumDimensions(expr);
 
             if (error != null)
@@ -685,11 +684,17 @@ public class MdsDataProvider
         if (!CheckOpen())
             return null;
 
-        String in = "DIM_OF(" + in_frame + ")";
+        String in;
+
+        in = "DIM_OF(" + in_frame + ", 2)";
         time = GetFloatArray(in);
         if (time == null)
-            return null;
-
+        {
+            in = "DIM_OF(" + in_frame + ")";
+            time = GetFloatArray(in);
+            if (time == null)
+                return null;
+        }
         in = "eshape(data(" + in_frame + "))";
         shape = GetIntArray(in);
         if (shape == null)
