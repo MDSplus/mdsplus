@@ -1620,8 +1620,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable7.setNumCols(48);
     deviceTable7.setNumRows(1);
     deviceTable7.setIdentifier("");
-    deviceTable7.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable7.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable7.setRowNames(null);
     deviceField34.setOffsetNid(1227);
     deviceField34.setLabelString("End Time(s): ");
@@ -1639,8 +1639,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
     deviceTable11.setRowNames(null);
-    deviceTable11.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable11.setIdentifier("");
     deviceTable11.setNumRows(1);
     deviceTable11.setNumCols(48);
@@ -1659,8 +1659,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice6.setUpdateIdentifier("");
     deviceChoice6.setIdentifier("");
     deviceTable13.setRowNames(null);
-    deviceTable13.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable13.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "16<NL>5<NL>4<NL>3<NL>2<NL>1<NL>"});
     deviceTable13.setIdentifier("");
     deviceTable13.setNumRows(1);
     deviceTable13.setNumCols(48);
@@ -1670,8 +1670,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField37.setLabelString("Start Time(s): ");
     deviceField37.setIdentifier("");
     deviceTable8.setRowNames(null);
-    deviceTable8.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable8.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable8.setIdentifier("");
     deviceTable8.setNumRows(1);
     deviceTable8.setNumCols(48);
@@ -1685,8 +1685,8 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel45.setLayout(borderLayout6);
     jPanel417.setLayout(borderLayout7);
     deviceTable15.setRowNames(null);
-    deviceTable15.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable15.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable15.setIdentifier("");
     deviceTable15.setNumRows(1);
     deviceTable15.setNumCols(48);
@@ -1710,8 +1710,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField39.setLabelString("Start Time(s): ");
     deviceField39.setIdentifier("");
     deviceTable9.setRowNames(null);
-    deviceTable9.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable9.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable9.setIdentifier("");
     deviceTable9.setNumRows(1);
     deviceTable9.setNumCols(48);
@@ -1725,8 +1725,8 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel419.setLayout(gridLayout13);
     jPanel4110.setLayout(borderLayout8);
     deviceTable18.setRowNames(null);
-    deviceTable18.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable18.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable18.setIdentifier("");
     deviceTable18.setNumRows(1);
     deviceTable18.setNumCols(48);
@@ -1744,8 +1744,8 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField310.setLabelString("End Time(s): ");
     deviceField310.setOffsetNid(1257);
     deviceTable16.setRowNames(null);
-    deviceTable16.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1"});
+    deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
     deviceTable16.setIdentifier("");
     deviceTable16.setNumRows(1);
     deviceTable16.setNumCols(48);
@@ -1887,10 +1887,10 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField42.setIdentifier("");
         jPanel55.setLayout(borderLayout9);
         deviceTable22.setDisplayRowNumber(true);
-        deviceTable22.setRowNames(new String[] {"0", "1", "-2", "-1"});
+        deviceTable22.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable22.setBinary(false);
-        deviceTable22.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5",
-        "-4", "-3", "-2", "-1"});
+        deviceTable22.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable22.setIdentifier("");
         deviceTable22.setNumRows(4);
         deviceTable22.setNumCols(48);
@@ -1910,10 +1910,10 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField45.setOffsetNid(1277);
         jPanel57.setLayout(borderLayout10);
         deviceTable25.setDisplayRowNumber(true);
-        deviceTable25.setRowNames(new String[] {"0", "1", "-2", "-1"});
+        deviceTable25.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable25.setBinary(false);
-        deviceTable25.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5",
-        "-4", "-3", "-2", "-1"});
+        deviceTable25.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable25.setIdentifier("");
         deviceTable25.setNumRows(4);
         deviceTable25.setNumCols(48);
@@ -1924,10 +1924,10 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField46.setNumCols(5);
         deviceField46.setIdentifier("");
         deviceTable26.setDisplayRowNumber(true);
-        deviceTable26.setRowNames(new String[] {"0", "1", "-2", "-1"});
+        deviceTable26.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable26.setBinary(false);
-        deviceTable26.setColumnNames(new String[] {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "-24", "-23", "-22", "-21", "-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8", "-7", "-6", "-5",
-        "-4", "-3", "-2", "-1"});
+        deviceTable26.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable26.setIdentifier("");
         deviceTable26.setNumRows(4);
         deviceTable26.setNumCols(48);
