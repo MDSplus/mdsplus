@@ -293,6 +293,7 @@ Attualmente non implementati perchè non necessari
 			 */
 			if( _curr_end_idx <=  _curr_start_idx)
 			{
+
 				DevLogErr(_nid, "End idx / time must be greater then Start idx/time"); 
 				abort();
 			}
