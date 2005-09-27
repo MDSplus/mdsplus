@@ -52,9 +52,15 @@ write(*, 'RFXControl init');
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
 
 	MdsDisconnect();
-    _cmd = 'MdsConnect("'//_vme_ip//'")';
+    _status = 0;
+    _cmd = '_status = MdsConnect("'//_vme_ip//'")';
     execute(_cmd);
 
+    if(_status == 0)
+    {
+	DevLogErr(_nid, 'Cannot connect to VME');
+	abort();
+    }
 
 	_frequency = if_error(data(DevNodeRef(_nid, _N_FREQUENCY)), -1);
 	if(_frequency <= 0)
@@ -66,7 +72,11 @@ write(*, 'RFXControl init');
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackPeriod', float(_period));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 	_sys_duration = if_error(data(DevNodeRef(_nid, _N_SYS_DURAT)), -1);
 	if(_sys_duration <= 0)
@@ -79,8 +89,11 @@ write(*, 'RFXControl init');
 
 
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackSystemDuration', float(_sys_duration));
-
-	write(*, 'SET');
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 	_contr_duration = if_error(data(DevNodeRef(_nid, _N_CONTR_DURAT)), -1);
 	if(_contr_duration <= 0)
@@ -96,8 +109,11 @@ write(*, 'RFXControl init');
 
 	write(*, 'Control duration: ', _contr_duration);
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackControlDuration', float(_contr_duration));
-
-write(*, 'LEGGO TRIG1');
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_trig1_time = if_error(data(DevNodeRef(_nid, _N_TRIG1_TIME)), _INVALID);
 	if(_trig1_time == _INVALID)
 	{
@@ -120,9 +136,18 @@ write(*, _trig1_time);
 
 	write(*, 'Trigger 1 time: ', _trig1_time);
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackTrig1Time', float(_trig1_time));
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	write(*, 'Trigger 2 time: ', _trig2_time);
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackTrig2Time', float(_trig2_time));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 
 	_control_idx = if_error(data(DevNodeRef(_nid, _N_INIT_CONTROL)), -1);
@@ -135,7 +160,11 @@ write(*, _trig1_time);
 
 	write(*, 'Init Control: ', _control_idx);
 	_status = MdsValue('Feedback->setIntVariable($1, $2)', 'feedbackInitControl', long(_control_idx));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_start_time = if_error(data(DevNodeRef(_nid, _N_PRE_TIME)), _INVALID);
 	if(_start_time == _INVALID)
 	{
@@ -144,7 +173,11 @@ write(*, _trig1_time);
 	}
  	write(*, 'Start sampling time: ', _start_time);
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackPreTriggerSamples', long( - _start_time * _frequency));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 	_end_time = if_error(data(DevNodeRef(_nid, _N_POST_TIME)), _INVALID);
 	if(_end_time == _INVALID)
@@ -160,7 +193,11 @@ write(*, _trig1_time);
 
 	write(*, 'End sampling time: ', _end_time);
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackPostTriggerSamples', long(_end_time * _frequency));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 
 	_control_idx = if_error(data(DevNodeRef(_nid, _N_TRIG1_CONTROL)), -1);
@@ -171,7 +208,11 @@ write(*, _trig1_time);
 	}
 	write(*, 'Trig1 Control: ', _control_idx);
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackTrig1Control', long(_control_idx));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_control_idx = if_error(data(DevNodeRef(_nid, _N_TRIG2_CONTROL)), -1);
 	if(_control_idx < 0 || _control_idx > _MAX_CONTROLS)
 	{
@@ -184,13 +225,22 @@ write(*, _trig1_time);
 
 	write(*, 'Trig2 Control: ', _control_idx);
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackTrig2Control', long(_control_idx));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 	_data_valid = 1;
 
 	_in_calibration = if_error(data(DevNodeRef(_nid, _N_IN_CALIB)), _data_valid = 0);
 /*	write(*, 'Calibration: ', _calibration);*/
 	_status = MdsValue('support->setInputCalibration($1, $2)', float(_in_calibration), 192);
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	
 	_out_calibration = if_error(data(DevNodeRef(_nid, _N_OUT_CALIB)), _data_valid = 0);
 /*	write(*, 'Calibration: ', _calibration);*/
@@ -203,6 +253,11 @@ write(*, _trig1_time);
 	
 
 	_status = MdsValue('support->setOutputCalibration($1, $2)', float(_out_calibration), 96);
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 
 
 	_zero_start = if_error(data(DevNodeRef(_nid, _N_ZERO_START)), _INVALID);
@@ -216,6 +271,11 @@ write(*, _trig1_time);
 
 	write(*, 'Zero Start: ', _zero_start);
 	_status = MdsValue('variables->setFloatVariable("feedbackAutozeroStart", $1)', float(_zero_start));
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_zero_end = if_error(data(DevNodeRef(_nid, _N_ZERO_END)), _INVALID);
 	if(_zero_end == _INVALID)
 	{
@@ -223,6 +283,11 @@ write(*, _trig1_time);
 		abort();
 	}
 	_status = MdsValue('variables->setFloatVariable("feedbackAutozeroEnd", $1)', float(_zero_end));
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	write(*, 'Zero End: ', _zero_end);
 
 
@@ -233,7 +298,11 @@ write(*, _trig1_time);
 		abort();
 	}
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackRampDownTrigger', long(_ramp_trigger));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_ramp_slope = if_error(data(DevNodeRef(_nid, _N_RAMP_SLOPE)), _INVALID);
 	if(_ramp_slope == _INVALID)
 	{
@@ -241,10 +310,18 @@ write(*, _trig1_time);
 		abort();
 	}
 	_status = MdsValue('variables->setFloatVariable($1, $2)', 'feedbackRampDownSlope', float(_ramp_slope));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
     DevNodeCvt(_nid, _N_FEEDFORWARD, ['DISABLED', 'ENABLED'], [0,1], _feedforward = 0);
 	_status = MdsValue('variables->setIntVariable($1, $2)', 'feedbackFeedForward', long(_feedforward));
-
+      if(_status == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	
     for(_par = 0; _par < _NUM_PARAMETERS; _par++)
 	{
@@ -270,7 +347,12 @@ write(*, _trig1_time);
 		    }
 		    else
 			_status = MdsValue('variables->setFloatVariable($1, 0.)', 'feedback'//_par_name//'Length');
-		}
+      	    if(_status == *)
+      	    {
+	    		DevLogErr(_nid, 'Cannot communicate to VME');
+	    		abort();
+    			}
+		    }
 	}
 
 
@@ -278,7 +360,6 @@ write(*, _trig1_time);
 	write(*, _routine_name);
 	_status = MdsValue('eda3->stop'// _routine_name // '()');
 	_status = MdsValue('eda3->start'// _routine_name // '()');
-
     MdsDisconnect();
     return (1);
 }
