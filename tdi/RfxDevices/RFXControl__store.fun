@@ -169,7 +169,7 @@ write(*, _c);
 
 
 	_num_user_signals = MdsValue('Feedback->getNumUserSignals()');
-      if(_num_user_signals == *)
+      if(size(_num_user_signals) == 0)
       {
 	    	DevLogErr(_nid, 'Cannot communicate to VME');
 	    	abort();
