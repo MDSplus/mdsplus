@@ -123,7 +123,7 @@ function dsql, $
                a140, a141, a142, a143, a144, a145, a146, a147, a148, a149, $
                a150, a151, a152, a153, a154, a155, a156, a157, a158, a159, $
                date=date, quiet=quiet, status=status, count=count, $
-               error=error, debug=debug, _extra=ex
+               error=error, debug=debug, nan=nan, _extra=ex
 
 query = lquery
 status = 1
@@ -209,8 +209,12 @@ arg = 0
 for i = num_inputs+1, n_params()-1 do begin
   expr = expr +','+'_a'+string(i, format='(I3.3)')
 endfor
-if (keyword_set(date)) then $
+if (keyword_set(date) and keyword_set(nan)) then $
+  expr = expr + ",'/NaN', '/date')" $   
+else if (keyword_set(date)) then $
   expr = expr + ",'/date')" $
+else if (keyword_set(nan)) then $
+  expr = expr + ",'/NaN', *)" $
 else $
   expr = expr + ")"
 if (debug) then $
