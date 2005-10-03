@@ -42,7 +42,7 @@ public fun RFXControl__init(as_is _nid, optional _method)
 
  
 	private _MAX_CONTROLS = 12;
-	private _NUM_PARAMETERS = 235;
+	private _NUM_PARAMETERS = 236;
 
 
     private _INVALID = 10E20;
@@ -339,6 +339,9 @@ write(*, _trig1_time);
 			    DevLogErr(_nid, 'Invalid value for parameter '// _par);
 			    abort();
 			}
+			
+			
+			/*write(*, _par_name, _par_value, _par);*/
 			
 			if(size(_par_value) > 1)
 				_status = MdsValue('variables->setFloatArray($1, $2, $3)', 'feedback'//_par_name, float(_par_value), size(_par_value));

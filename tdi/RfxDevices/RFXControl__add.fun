@@ -613,7 +613,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR235_NAME', 'TEXT', "RotPertRiseTime4", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR235_VAL', 'NUMERIC', 0,*, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR236_NAME', 'TEXT', "Decoupling", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR236_VAL', 'NUMERIC', diagonal(zero(96)+1), *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR236_VAL', 'NUMERIC', diagonal(zero(192)+1.), *, _nid);
 
 
 
