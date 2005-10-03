@@ -68,7 +68,10 @@ function replace_input, qry, idx, val, debug=debug
       if (debug) then $
         print, "replace_input - string ("+ans+")"
   endif else begin
-      ans = strmid(qry, 0, idx-1)+STRING(val)+strmid(qry, idx, strlen(qry)-idx)
+      if (not finite(val, /NAN)) then $
+        ans = strmid(qry, 0, idx-1)+STRING(val)+strmid(qry, idx, strlen(qry)-idx) $
+      else $
+        ans = strmid(qry, 0, idx-1)+' NULL '+strmid(qry, idx, strlen(qry)-idx)
       ans=ans(0)
       if (debug) then $
         print, "replace_input - number ("+ans+")"
