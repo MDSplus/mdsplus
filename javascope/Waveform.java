@@ -1278,6 +1278,9 @@ public class Waveform
       grid.setLabels(sigTitle, orizLabel, vertLabel);
     }
 
+    if(waveform_signal != null)
+        grid.setXaxisHMS(waveform_signal.isLongX());
+
     if (!copy_selected || print_mode != NO_PRINT) {
       if (reversed && print_mode == NO_PRINT) {
         g.setColor(Color.black);
@@ -1410,6 +1413,8 @@ public class Waveform
         we.setXValue(s.getXData());
         we.setDataValue(s.getDataValue());
         we.setIsMB2(is_mb2);
+        if(s.isLongX())
+            we.setDateVale(s.x_long[0]);
 
         dispatchWaveformEvent(we);
       }

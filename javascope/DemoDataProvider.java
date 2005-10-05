@@ -36,7 +36,8 @@ class DemoDataProvider implements DataProvider
         }
 
         public double[] GetXDoubleData(){return null;}
-       public float[] GetXData()   throws IOException
+        public long[] GetXLongData(){return null;}
+        public float[] GetXData()   throws IOException
         {
             return GetFloatArray(in_x);
         }

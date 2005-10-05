@@ -247,7 +247,7 @@ public class WaveInterface
 
         this.dp = dp;
         if (dp == null)
-            full_flag = true;
+        full_flag = true;
         experiment = null;
         shots = null;
         in_xmin = in_xmax = in_ymin = in_ymax = in_title = null;
@@ -1236,6 +1236,7 @@ public class WaveInterface
         float curr_data[] = null, curr_x[] = null, up_err[] = null,
             low_err[] = null;
         double curr_x_double[] = null;
+        long   curr_x_long[] = null;
         int x_samples = 0, min_len;
         long sh = 0;
         WaveData wd;
@@ -1326,6 +1327,7 @@ public class WaveInterface
         float curr_data[] = null, curr_x[] = null, curr_y[] = null, up_err[] = null,
             low_err[] = null;
         double curr_x_double[] = null;
+        long   curr_x_long[] = null;
         int x_samples = 0, min_len;
         WaveData wd = null;
         int dimension;
@@ -1409,8 +1411,12 @@ public class WaveInterface
                 curr_x_double = wd.GetXDoubleData();
                 if (curr_x_double == null || curr_x_double.length <= 1)
                     curr_x = wd.GetXData();
+                if (curr_x == null || curr_x.length <= 1)
+                    curr_x_long = wd.GetXLongData();
+
                 if ( (curr_x == null || curr_x.length <= 1) &&
-                    (curr_x_double == null || curr_x_double.length <= 1))
+                    (curr_x_double == null || curr_x_double.length <= 1) &&
+                    (curr_x_long == null || curr_x_long.length <= 1) )
                     curr_data = null;
             }
         }
@@ -1478,17 +1484,26 @@ public class WaveInterface
                 }
                 else
                 {
-                    curr_x = wd.GetXData();
-                    if (curr_x != null && ! (full_flag || dimension > 1))
-                        x_samples = curr_x.length;
-                    if (curr_x == null)
-                        curr_data = null;
+
+                    curr_x_long = wd.GetXLongData();
+                    if (curr_x_long != null && ! (full_flag || dimension > 1))
+                        x_samples = curr_x_long.length;
+
+                     if (curr_x_long == null)
+                     {
+                        curr_x = wd.GetXData();
+                        if (curr_x != null && ! (full_flag || dimension > 1))
+                            x_samples = curr_x.length;
+                        if (curr_x == null)
+                             curr_data = null;
+                     }
                 }
             }
         }
-        if ( ( (curr_x == null || curr_x.length == 0) &&
-              (curr_x_double == null || curr_x_double.length == 0)) ||
-            curr_data == null || curr_data.length == 0)
+        if ( ( (curr_x == null        || curr_x.length <= 1) &&
+               (curr_x_long == null   || curr_x_long.length <=1 ) &&
+               (curr_x_double == null || curr_x_double.length <=1 )) ||
+               (curr_data == null     || curr_data.length <=1 ) )
         {
             curr_error = dp.ErrorString();
             return null;
@@ -1510,19 +1525,30 @@ public class WaveInterface
         {
             curr_y = wd.GetYData();
             if (curr_x == null)
-                out_signal = new Signal(curr_data, curr_y, curr_x_double,
-                                        Signal.TYPE_2D);
+            {
+                if (curr_x_double != null)
+                    out_signal = new Signal(curr_data, curr_y, curr_x_double,
+                                            Signal.TYPE_2D);
+                else
+                    out_signal = new Signal(curr_data, curr_y, curr_x_long,
+                                            Signal.TYPE_2D);
+            }
             else
                 out_signal = new Signal(curr_data, curr_y, curr_x,
                                         Signal.TYPE_2D);
+
             out_signal.setMode2D( (int) mode2D[curr_wave]);
         }
         else
         {
             if (curr_x == null)
-                out_signal = new Signal(curr_x_double, curr_data, min_len);
+                if(curr_x_double != null)
+                    out_signal = new Signal(curr_x_double, curr_data, min_len);
+                else
+                    out_signal = new Signal(curr_x_long, curr_data, min_len);
             else
                 out_signal = new Signal(curr_x, curr_data, min_len);
+
             out_signal.setMode1D( (int) mode1D[curr_wave]);
         }
 

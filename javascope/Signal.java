@@ -103,6 +103,8 @@ public class Signal
      */
     protected double x_double[] = null;
 
+    protected long   x_long[]   = null;
+
     /**
      * Two dimensional data vector
      */
@@ -307,6 +309,14 @@ public class Signal
         CheckIncreasingX();
     }
 
+    public Signal(long _x[], float _y[], int _n_points)
+    {
+        error = asym_error = false;
+        setAxis(_x, _y, _n_points);
+        CheckIncreasingX();
+    }
+
+
     /**
      * Costructs and initialize a Signal with x and y array.
      *
@@ -458,12 +468,16 @@ public class Signal
         {
             if (s.x_double != null)
                 x_double = new double[n_points];
+            if (s.x_long != null)
+                x_long = new long[n_points];
             x = new float[n_points];
             y = new float[n_points];
             for (i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
             {
                 if (s.x_double != null)
                     x_double[i] = s.x_double[i];
+                if (s.x_long != null)
+                    x_long[i] = s.x_long[i];
                 x[i] = s.x[i];
                 y[i] = s.y[i];
             }
@@ -518,6 +532,8 @@ public class Signal
         n_points = s.n_points / step;
         if (s.x_double != null)
             x_double = new double[n_points];
+        if (s.x_long != null)
+            x_long = new long[n_points];
         x = new float[n_points];
         y = new float[n_points];
         if (error)
@@ -528,6 +544,8 @@ public class Signal
         {
             if (s.x_double != null)
                 x_double[i] = s.x_double[i * step];
+            if (s.x_long != null)
+                x_long[i] = s.x_long[i * step];
             x[i] = s.x[i * step];
             y[i] = s.y[i * step];
             if (error)
@@ -578,6 +596,8 @@ public class Signal
             low_error = new float[n_points];
         if (s.x_double != null)
             x_double = new double[n_points];
+        if (s.x_long != null)
+            x_long = new long[n_points];
         x = new float[n_points];
         y = new float[n_points];
         increasing_x = s.increasing_x;
@@ -585,6 +605,8 @@ public class Signal
         {
             if (s.x_double != null)
                 x_double[i] = s.x_double[i];
+            if (s.x_long != null)
+                x_long[i] = s.x_long[i];
             x[i] = s.x[i];
             y[i] = s.y[i];
             if (error)
@@ -643,6 +665,39 @@ public class Signal
                 setXData(x_data[0]);
         }
     }
+
+
+    public Signal(float data[], float x_data[], long time[], int type)
+    {
+
+        error = asym_error = false;
+        if (x_data != null && x_data.length > 1)
+        {
+            this.data = data;
+            this.x_data = x_data;
+            this.time = new float[time.length];
+            for (int i = 0; i < time.length; i++)
+                this.time[i] = (float) ( time[i] - time[0] );
+            this.mode2D = mode2D;
+            this.mode1D = mode1D;
+            this.type = TYPE_2D;
+            setAxis(this.time, data, x_data);
+        }
+        else
+        {
+            int min_len;
+            if (time.length > data.length)
+                min_len = data.length;
+            else
+                min_len = time.length;
+
+            setAxis(time, data, min_len);
+            CheckIncreasingX();
+            if (x_data != null && x_data.length == 1)
+                setXData(x_data[0]);
+        }
+    }
+
 
     public Signal(float data[], float x_data[], double time[], int type)
     {
@@ -1302,6 +1357,7 @@ public class Signal
         increasing_x = true;
     }
 
+/*
     float prev_offset = 0.0F, prev_gain = 1.0F;
     boolean first_calib = true;
     float origin_y[];
@@ -1334,11 +1390,11 @@ public class Signal
             }
         }
     }
-
+*/
     void setAxis(float time[], float data[], float x_data[])
     {
         int i;
-        evaluateCalib();
+//      evaluateCalib();
         time_max = time_min = time[0];
         data_max = data_min = data[0];
         x_data_max = x_data_min = x_data[0];
@@ -1374,7 +1430,7 @@ public class Signal
     {
         int i;
 
-        evaluateCalib();
+ //       evaluateCalib();
         ymax = ymin = y[0];
         xmax = xmin = x[0];
         for (i = 0; i < n_points; i++)
@@ -1389,7 +1445,6 @@ public class Signal
                 xmax = x[i];
             if (xmin > x[i])
                 xmin = x[i];
-
         }
 
         saved_xmin = curr_xmin = xmin;
@@ -1442,6 +1497,28 @@ public class Signal
             n_points = x_double.length;
         setAxis();
     }
+
+    public void setAxis(long _x[], float _y[], int _n_points)
+    {
+        if (_x == null && _y == null)
+            return;
+
+        x_long = _x;
+        y = _y;
+
+        x = new float[x_long.length];
+        for (int i = 0; i < x_long.length; i++)
+            x[i] = (float) ( x_long[i] - x_long[0] );
+
+        nans = new int[100];
+        n_points = _n_points;
+        if (y.length < n_points)
+            n_points = y.length;
+        if (x_long.length < n_points)
+            n_points = x_long.length;
+        setAxis();
+    }
+
 
     /**
      * Add a simmetric error bar.
@@ -2040,6 +2117,11 @@ public class Signal
     public boolean isDoubleX()
     {
         return x_double != null;
+    }
+
+    public boolean isLongX()
+    {
+        return x_long != null;
     }
 
     public final static int SIMPLE      = 0;

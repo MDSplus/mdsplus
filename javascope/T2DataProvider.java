@@ -253,6 +253,7 @@ class T2DataProvider
         * @exception java.io.IOException
         */
        public double[] GetXDoubleData(){return null;}
+       public long[] GetXLongData(){return null;}
         public float[] GetXData()   {return x;}
 
         /**

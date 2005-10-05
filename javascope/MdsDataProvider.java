@@ -394,6 +394,22 @@ public class MdsDataProvider
             }
         }
 
+        public long[] GetXLongData()
+        {
+            try
+            {
+                if (currXData == null)
+                    currXData = GetXRealData();
+                if (!currXData.isLong())
+                    return null;
+                return currXData.getLongArray();
+            }
+            catch (Exception exc)
+            {
+                return null;
+            }
+        }
+
         public float[] GetXData()
         {
             try
@@ -407,6 +423,7 @@ public class MdsDataProvider
                 return null;
             }
         }
+
 
         RealArray GetXRealData() throws IOException
         {
@@ -1041,9 +1058,6 @@ public class MdsDataProvider
 
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-        //in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";
-        //var_idx++;
-
         RealArray out = null;
 
         ConnectionEvent e = new ConnectionEvent(this, 1, 0);
@@ -1060,9 +1074,6 @@ public class MdsDataProvider
                 break;
             case Descriptor.DTYPE_DOUBLE:
                 out = new RealArray(desc.double_data);
-                /*out = new float[desc.double_data.length];
-                          for(int i = 0; i < desc.double_data.length; i++)
-                 out[i] = (float)desc.double_data[i];*/
                 break;
             case Descriptor.DTYPE_LONG:
             {
@@ -1079,6 +1090,12 @@ public class MdsDataProvider
                 for (int i = 0; i < desc.byte_data.length; i++)
                     outF[i] = (float) desc.byte_data[i];
                 out = new RealArray(outF);
+            }
+            break;
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+            {
+               out = new RealArray(desc.long_data);
             }
             break;
             case Descriptor.DTYPE_CSTRING:
@@ -1123,6 +1140,9 @@ public class MdsDataProvider
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+                return desc.long_data;
             case Descriptor.DTYPE_LONG:
                 out_data = new long[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
@@ -1481,29 +1501,47 @@ public class MdsDataProvider
 
     static class RealArray
     {
-        double doubleArray[];
-        float floatArray[];
+        double doubleArray[] = null;
+        float floatArray[] = null;
+        long  longArray[] = null;
         boolean isDouble;
+        boolean isLong;
 
         RealArray(float[] floatArray)
         {
             this.floatArray = floatArray;
             isDouble = false;
+            isLong = false;
         }
 
         RealArray(double[] doubleArray)
         {
             this.doubleArray = doubleArray;
             isDouble = true;
-        }
+            isLong = false;
+       }
+
+       RealArray(long[] longArray)
+       {
+           this.longArray = longArray;
+           isDouble = false;
+           isLong = true;
+      }
 
         boolean isDouble()
         {
             return isDouble;
         }
 
+        boolean isLong()
+        {
+            return isLong;
+        }
+
         float[] getFloatArray()
         {
+            if(isLong) return null;
+
             if (isDouble && floatArray == null && doubleArray != null)
             {
                 floatArray = new float[doubleArray.length];
@@ -1515,6 +1553,8 @@ public class MdsDataProvider
 
         double[] getDoubleArray()
         {
+            if(isLong) return null;
+
             if (!isDouble && floatArray != null && doubleArray == null)
             {
                 doubleArray = new double[floatArray.length];
@@ -1523,6 +1563,13 @@ public class MdsDataProvider
             }
             return doubleArray;
         }
+
+        long[] getLongArray()
+        {
+            if(isDouble) return null;
+            return longArray;
+        }
+
     }
 
 }

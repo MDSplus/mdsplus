@@ -321,8 +321,8 @@ class Frames extends Canvas
         if(!vertical_flip && !horizontal_flip)
             return;
 
-        int img_size = d.height*d.width;
-        byte tmp[] = new byte[img_size * num_byte_pixel];
+        int img_size = d.height*d.width * num_byte_pixel;
+        byte tmp[] = new byte[img_size];
         int i, j , k , l, ofs;
 
         int h = vertical_flip ? d.height - 1: 0;
@@ -331,8 +331,8 @@ class Frames extends Canvas
         for(j = 0; j < d.width; j++)
             for(k = 0; k < d.height; k++)
                 for(l = 0; l < num_byte_pixel; l++)
-                    tmp[(Math.abs(h - k) * d.width) +  Math.abs(w - j) + l] =
-                    buf[(k * d.width) + j + l];
+                    tmp[ ( (Math.abs(h - k) * d.width) +  Math.abs(w - j) ) * num_byte_pixel  + l] =
+                    buf[((k * d.width) + j ) * num_byte_pixel + l];
         System.arraycopy(tmp, 0, buf, 0, img_size);
     }
 

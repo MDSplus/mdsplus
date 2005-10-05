@@ -95,6 +95,7 @@ class JetDataProvider implements DataProvider
         }
 
         public double[] GetXDoubleData(){return null;}
+        public long[] GetXLongData(){return null;}
         public float[] GetXData()   throws IOException
         {
             if(in_x != null)

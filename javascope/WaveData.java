@@ -44,6 +44,15 @@ interface WaveData
     public double[] GetXDoubleData()   throws IOException;
 
     /**
+     * Get X array, in long format.
+     *
+     * @return The returned X values coded as a long array,
+     * or null if the Data provider does not support long values for X axis
+     * @exception java.io.IOException
+     */
+    public long[] GetXLongData()   throws IOException;
+
+    /**
      * Get Y data description (only for bidimensional signals)
      *
      * @return The Y data specification coded as a float array.

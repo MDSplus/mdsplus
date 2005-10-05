@@ -30,7 +30,7 @@ public class jScope
     UpdateEventListener, ConnectionListener
 {
 
-    static final String VERSION = "jScope (version 7.3.6)";
+    static final String VERSION = "jScope (version 7.3.7)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
