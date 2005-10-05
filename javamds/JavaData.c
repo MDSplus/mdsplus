@@ -681,7 +681,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = sizeof(long);
+		    array_d->length = sizeof(_int64);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -693,7 +693,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = 2*sizeof(long);
+		    array_d->length = 2*sizeof(_int64);
 		    array_d->arsize = array_d->length * length/2;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);

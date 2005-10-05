@@ -121,9 +121,10 @@ JNIEXPORT jint JNICALL Java_Database_open
   jobject jname;
   int is_editable, is_readonly, shot;
 static char buf[1000];
- 
-/* //printf("Parte Open\n");*/
 
+/* 
+printf("Parte Open\n");
+*/
 
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
@@ -148,12 +149,15 @@ static char buf[1000];
   (*env)->ReleaseStringUTFChars(env, jname, name);
   //printf("APERTO: %s\n", MdsGetMsg(status));
  }
- /*  //printf("Aperto\n");*/
-
+/*
+  printf("Aperto\n");
+*/
 /*//report(MdsGetMsg(status));*/
 //sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
     RaiseException(env, MdsGetMsg(status), status);/*//MdsGetMsg(status));*/
+
+  
   return 0;
 
 }
@@ -275,9 +279,10 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   status = TreeGetRecord(nid, &xd);
 
-   /*printf("\nletti %d bytes\n", xd.l_length);
-
+  /*
+ printf("\nletti %d bytes\n", xd.l_length);
 */
+
 
  /* status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
 
@@ -300,9 +305,9 @@ printf(out_xd.pointer->pointer);*/
   if(!xd.l_length || !xd.pointer)
 
     return NULL;
-
-/*printf("Parte DescripToObject\n");*/
-
+/*
+printf("Parte DescripToObject\n");
+*/
   ris = DescripToObject(env, xd.pointer);
   MdsFree1Dx(&xd, NULL);
 
@@ -460,12 +465,14 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   conglomerate_nids = 0;
 
+
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
       RaiseException(env, MdsGetMsg(status), status);
       return NULL;
    }
+
   name[name_len] = 0;
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
@@ -480,6 +487,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[5].z = nci_flags & NciM_COMPRESS_ON_PUT;
   args[6].z = nci_flags & NciM_NO_WRITE_MODEL;
   args[7].z = nci_flags & NciM_NO_WRITE_SHOT;
+
 
   if(time_inserted[0] || time_inserted[1])
   {
@@ -500,6 +508,8 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[17].l = (*env)->NewStringUTF(env, path);
   args[18].i = conglomerate_nids;
   args[19].i = conglomerate_elt;
+
+
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
