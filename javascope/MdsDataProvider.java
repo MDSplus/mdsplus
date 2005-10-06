@@ -705,7 +705,7 @@ public class MdsDataProvider
 
         in = "DIM_OF(" + in_frame + ", 2)";
         time = GetFloatArray(in);
-        if (time == null)
+        if (time == null || ((time.length >= 2 ) && (time[1] == 1.0)))
         {
             in = "DIM_OF(" + in_frame + ")";
             time = GetFloatArray(in);

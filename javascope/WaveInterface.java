@@ -1118,7 +1118,7 @@ public class WaveInterface
         }
         catch (Throwable e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
             frames = null;
             curr_error = " Load Frames error " + e;
         }
