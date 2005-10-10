@@ -153,7 +153,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                     {
                                         action = (Action)enqueued_actions.elementAt(i);
                                         try {
-                                            mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+                                            //mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+                                            mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
                                         }catch(Exception exc) {}
                                     }
                                 }
@@ -180,7 +181,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }
         try {
            // mds_server.dispatchAction(tree, shot, action.getNid(), action.getTimestamp());
-            mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+ //           mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+            mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
         }catch(Exception exc) {processAborted(action);}
     }
 
@@ -363,8 +365,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             {
                 curr_action = (Action)action_list.nextElement();
                 try {
-                    mds_server.dispatchAction(ActionServer.this.tree, shot,
-                        curr_action.getNid(), curr_action.getNid());
+                   // mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getNid(), curr_action.getNid());
+                     mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getName(), curr_action.getNid());
                     enqueued_actions.addElement(curr_action);
                 }catch(Exception exc) {}
             }

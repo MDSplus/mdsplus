@@ -74,7 +74,7 @@ public class ServerShowDialog extends JDialog {
 // document uses the attributes.
 //    doc.setCharacterAttributes(0, doc.getLength() + 1, attrs, false);
     try {
-      doc.insertString(doc.getLength(), serverClass + " " + Address + "\n", attrs );
+      doc.insertString(doc.getLength(), serverClass + "\t\t" + Address + "\n", attrs );
     } catch(Exception exc){}
   }
 

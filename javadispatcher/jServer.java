@@ -35,23 +35,25 @@ public class jServer extends MdsIp {
 //static inner class ActionDescriptor is used to keep action-related information
   static class ActionDescriptor
   {
-    NidData nid;
+    //NidData nid;
     InetAddress address;
     int port;
     int id;
     String tree;
+    String name;
     int shot;
-    ActionDescriptor(NidData nid, InetAddress address, int port, int id,
+    ActionDescriptor(String name, InetAddress address, int port, int id,
                      String tree, int shot)
     {
-      this.nid = nid;
+      this.name = name;
       this.address = address;
       this.port = port;
       this.id = id;
       this.tree = tree;
       this.shot = shot;
     }
-    final NidData getNid(){return nid;}
+    //final NidData getNid(){return nid;}
+    final String getName() {return name;}
     final InetAddress getAddress(){return address;}
     final int getPort() {return port;}
     final int getId() {return id;}
@@ -111,7 +113,7 @@ public class jServer extends MdsIp {
         while(true)
         {
           currAction = actionQueue.nextAction();
-          NidData nid = currAction.getNid();
+          //NidData nid = currAction.getNid();
           String message = "" + currAction.getId() + " " + SrvJobSTARTING + " 1 0";
           writeAnswer(currAction.getAddress(), currAction.getPort(), message);
           ActionMaker currMaker;
@@ -150,7 +152,7 @@ public class jServer extends MdsIp {
           }
 
           public void run() {
-               int status = doSimpleAction(action.getNid(), action.getTree(),
+               int status = doSimpleAction(action.getName(), action.getTree(),
                                           action.getShot());
               if (!aborted) {
                   retStatus = status;
@@ -230,13 +232,14 @@ public class jServer extends MdsIp {
             dis = new DataInputStream(new ByteArrayInputStream(messages[7].
                 body));
             int shot = dis.readInt();
-            dis = new DataInputStream(new ByteArrayInputStream(messages[8].
-                body));
-            int nid = dis.readInt();
+            //dis = new DataInputStream(new ByteArrayInputStream(messages[8].
+            //    body));
+            //int nid = dis.readInt();
+            String name = new String(messages[8].body);
 
           //  System.out.println("SrvAction " + id + " " + tree + " " + shot +
           //                     " " + nid);
-            actionQueue.enqueueAction(new ActionDescriptor(new NidData(nid), address, port, id,
+            actionQueue.enqueueAction(new ActionDescriptor(name, address, port, id,
                 tree, shot));
             break;
 
@@ -372,10 +375,9 @@ public class jServer extends MdsIp {
   String lastTree = null;
   int lastShot;
 //Execute the action. Return the action status.
-  int doSimpleAction(NidData nid,  String tree, int shot)
+  int doSimpleAction(String name,  String tree, int shot)
   {
     int status;
-    String name = "";
     try {
       if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot)
       {
@@ -386,6 +388,11 @@ public class jServer extends MdsIp {
         lastTree = tree;
         lastShot = shot;
       }
+      NidData nid;
+      try {
+      	nid = mdsTree.resolve(new PathData(name), 0);
+      }catch(Exception exc){System.err.println("Cannot Find Node "+ name); return 0;}
+      
       doingNid = nid.getInt();
       try {
         Data.evaluate("DevSetDoingNid(" + doingNid + ")");
@@ -394,7 +401,7 @@ public class jServer extends MdsIp {
         name = mdsTree.getInfo(nid, 0).getFullPath();
       }
       catch (Exception exc) {
-        System.err.println("Cannot resolve action name");
+        System.err.println("Cannot resolve action name " + nid.getInt());
         name = "";
       }
 

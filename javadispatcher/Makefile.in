@@ -12,7 +12,7 @@ ActionServer.java       MdsIp.java              MdsServerListener.java  Server.j
 Balancer.java           MdsMonitor.java         MonitorEvent.java       ServerEvent.java \
 MdsMonitorEvent.java    MonitorListener.java    ServerListener.java \
 InfoServer.java         MdsServer.java          NetworkEvent.java       jDispatchMonitor.java	jServer.java \
-KillServer.java
+KillServer.java		ServerShowDialog.java
 
 
 CLASSES = $(SOURCES:.java=.class)

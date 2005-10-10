@@ -146,7 +146,7 @@ class MdsMonitorEvent extends MdsServerEvent
                 out.append(" Action " + on_off + " node "+ node_path );
                 break;
             case MonitorDispatched :
-                out.append(" Dispatching node "+ node_path + " to " + server);
+                out.append(" Dispatching node "+ node_path + "("+nid+")"+" to " + server);
                 break;
             case MonitorDoing      :
                 out.append(" Doing "+ node_path + " in " + tree + " shot " + shot + " on "+server);

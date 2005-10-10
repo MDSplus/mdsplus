@@ -684,7 +684,6 @@ class jDispatcher
                         dos.writeInt (servers.size());
                         for(int i = 0; i < servers.size(); i++)
                         {
-                            System.out.println("Send server info " + i);
                             Server currServer = (Server)servers.elementAt(i);
                             String serverClass = currServer.getServerClass();
                             String address = "";

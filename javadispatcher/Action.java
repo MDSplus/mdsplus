@@ -51,7 +51,7 @@ class Action
             } catch(Exception e) {server = ""; }
             switch(dispatch_status) {
                 case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +
-                    name + " to " + server); break;
+                    name + "(" + nid+")"  +  " to " + server); break;
                  case DOING : System.out.println(""+new Date() + " " +server +
                         " is beginning action " + name); break;
                  case DONE :

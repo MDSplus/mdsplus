@@ -294,12 +294,13 @@ class MdsServer extends MdsConnection
         return reply;
     }
 
-    public Descriptor dispatchAction(String tree, int shot, int nid, int id) throws IOException
+    public Descriptor dispatchAction(String tree, int shot, String name, int id) throws IOException
     {
         Vector args = new Vector();
         args.add(new Descriptor(null, tree));
         args.add(new Descriptor(null, new int[]{shot}));
-        args.add(new Descriptor( null, new int[]{nid}));
+        //args.add(new Descriptor( null, new int[]{nid}));
+        args.add(new Descriptor( null, name));
         Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
