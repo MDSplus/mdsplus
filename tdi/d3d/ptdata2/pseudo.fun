@@ -1,8 +1,61 @@
-/* Written to handle pseudo-pointnames through MDSplus - 200408   SF
-      MSEP added to MDSplus.  Removed.                 - 20040914 SF
-      Added _iavtype to getalldat_camac call.          - 20040930 SF
-*/
+/*
+Name:  
+	PSEUDO 
 
+Purpose: 
+	
+	Retrieve time history DIII-D data from pseudo-pointnames through MDSplus
+
+Calling Sequence:
+
+	Y = MDSVALUE (' PSEUDO(  IN _pointname, 
+      	                         OPTIONAL IN      _shot, 
+                                 OPTIONAL OUT     _error  ) ')
+
+Input Parameters: 
+
+	POINTNAME 	:  string	- pointname requested from the pseudo-pointname FORTRAN library.
+	SHOT		:  long		- shot number from which to retrieve pseudo-pointname.  
+                    			  if not specified, defaults to current DIII-D shot.
+
+Outputs:
+
+	Y	: data from the requested pseudo-pointname.
+	ERROR   : long -  PTDATA error code.
+
+Restrictions:
+
+	PSEUDO retrieves pseudo-pointname data from the FORTRAN shared library libidl_ga.  This TDI routine 
+	is currently only supported on the DIII-D MDSplus server, atlas.gat.com.  Users must mdsconnect 
+	to atlas.gat.com to retrieve pseudo-pointname data through TDI.  
+
+Procedure:
+
+	PSEUDO is a TDI function used to retrieve DIII-D pseudo-pointnames.  Users need to specify the 
+	pointname and shot number.  The routine call the FORTRAN shared library libidl_ga to calculate 
+	the pseudo-pointname.
+
+Retrieving time dimension from requested PTDATA pointname: 
+
+	PSEUDO returns the data from DIII-D pseuo-pointanames by default.  To retrieve the time dimension 
+	from the pseudo-pointname, an additional call needs to be made after calling PSEUDO.  
+
+	For example:
+
+		Y = MDSVALUE(' PSEUDO(MSEP13,111203)   ')
+		X = MDSVALUE(' DIM_OF(__pseduo_signal) ')
+
+	The results from the PSEUDO call are stored in a public TDI variable (denoted by the double underscore 
+	before the variable name __pseudo_signal).  The routine builds an MDSplus signal out of the data 
+	retrieved from the pseudo-pointname.  So, a typical MDSplus call for the first dimension will return 
+	the desired time array.
+
+Required Software: Currently, only supported by the DIII-D MDSPlus server, atlas.gat.com. 
+
+Author:  Sean Flanagan
+
+Updated: 2005-10-10
+*/
 FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
    
         _err = 0;

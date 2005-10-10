@@ -1,3 +1,92 @@
+/*
+
+Name: 
+	PTDATA2
+
+Purpose: 
+
+	Retrieve time history DIII-D data from PTDATA through MDSplus
+
+Calling Sequence: 
+
+	Y = MDSVALUE ( 'PTDATA2(  IN _pointname, 
+                                  OPTIONAL IN      _shot, 
+                                  OPTIONAL IN      _ical, 
+                                  OPTIONAL OUT     _error, 
+                                  OPTIONAL IN      _double  ) ')
+
+Input Parameters: 
+
+	POINTNAME 	:  string - pointname requested from PTDATA.
+	SHOT		:  long	  - shot number from which to retrieve PTDATA.  
+                                    if not specified, defaults to current DIII-D shot
+	
+ICAL: 	Sets the PTDATA ICAL value, which affects the units of the data returned:
+ 		0 = return data in digitizer counts.
+ 		1 = return data in physics units (DEFAULT VALUE)
+ 		2 = return data in volts input to the digitizer.
+ 		3 = return the voltage at the integrator output.
+ 		4 = returns the integrated signal in v-sec
+ 		10-19 are the same as 0-9 except for the baseline algorithm
+ 		20= returns data in the original integer format as provided by ptdata.
+	
+DOUBLE:  If set, double precision pointnames will be returned as type double.
+         If not set, double precision pointnames are returned in single precision.
+
+Outputs:
+
+	Y	: Data from the requested PTDATA pointname.
+	ERROR   : long - PTDATA error code
+
+Side Effects:  
+
+	PTDATA2 stores several output arrays as public TDI variables, including pointname data, 
+        time, and header arrays.  As a result, large pointnames (ex. frostgrat2) may take up a 
+        significant amount of memory on smaller hosts until the MDSplus session, or connection, 
+        is closed.   
+
+Procedure:
+
+	PTDATA2 is a TDI function used to retrieve DIII-D PTDATA pointnames.  Users need to specify 
+        the pointname and shot number.  The routine handles an optional ICAL calibration argument.  
+        PTDATA2 replaces the PTDATA TDI function, which is no longer maintained.
+
+
+Retrieving time dimension from requested PTDATA pointname: 
+
+	PTDATA2 returns the data from DIII-D PTDATA pointanames by default.  To retrieve the time 
+        dimension from the pointname, an additional call needs to be made after calling PTDATA2.  
+
+        For example:
+
+		Y = MDSVALUE(' PTDATA2(IP,111203) ')
+		X = MDSVALUE(' DIM_OF(__ptdata_signal) ')
+
+	The results from the PTDATA2 call are stored in a public TDI variable (denoted by the double 
+        underscore before the variable name __ptdata_signal).  The routine builds an MDSplyus signal 
+        out of the data retrieved from PTDATA.  So, a typical MDSplus call for the first dimension 
+        will return the desired time array.
+
+Related TDI functions:
+
+	PSEUDO.fun
+	PTCHAR2.fun
+	PTDATA_LIBRARY.fun
+	PTHEAD2.fun
+	PTHEAD2_ASCII.fun
+	PTHEAD2_IFIX.fun
+	PTHEAD2_REAL32.fun
+	PTHEAD2_SIZE.fun
+	PTNPTS2.fun
+
+Required Software:  MDSplus Client Software, PTDATA FORTRAN Library 
+
+Author:  Sean Flanagan
+
+Updated: 2005-10-10
+
+*/
+
 FUN PUBLIC PTDATA2(IN _pointname, OPTIONAL IN _shot, OPTIONAL IN _ical, OPTIONAL OUT _error, OPTIONAL IN _double) {
 
    private fun c(in _i,_idx){

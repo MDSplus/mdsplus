@@ -1,3 +1,42 @@
+/*
+Name: 
+	PTHEAD2_ASCII
+
+Purpose:  
+
+	Retrieve the ASCII header data from a PTDATA pointname through MDSplus as a string
+
+Calling Sequence: 
+
+	ASCII = MDSVALUE (' PTHEAD2_ASCII(  IN _pointname, 
+                                            OPTIONAL IN      _shot, 
+                                            OPTIONAL OUT     _error  ) ')
+
+Input Parameters: 
+
+	POINTNAME 	:  string	- pointname requested from PTDATA.
+	SHOT		:  long	 	- shot number from which to retrieve PTDATA pointname.  
+                   			  if not specified, defaults to current DIII-D shot
+
+Outputs:
+
+	ASCII	: string - ascii header from the requested ptdata pointname
+	ERROR 	: long   - PTDATA error code 
+
+Procedure:
+
+	PTHEAD2_ASCII is a TDI routine which retrieves the ASCII header from a requested PTDATA pointname.  
+	The return values is a single string.  Since the PTDATA library returns the ASCII header as an array 
+	of integers, PTHEAD2_ASCII translates the entire header into a single string.  If users wish to 
+	retrieve the integer array, and tranaslate to ascii using their own method, see PTHEAD2.fun.  
+
+Required Software: MDSplus Client Software, PTDATA FORTRAN Library 
+
+Author:  Sean Flanagan
+
+Updated: 2005-10-10
+*/
+
 FUN PUBLIC PTHEAD2_ASCII(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
 {
 
