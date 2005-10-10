@@ -128,6 +128,7 @@ class MdsMonitorEvent extends MdsServerEvent
         return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+";status="+ret_status+"]");
     }
 
+ 
     public synchronized String getMonitorString()
     {
         StringBuffer out = new StringBuffer();
