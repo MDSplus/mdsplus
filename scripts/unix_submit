@@ -26,8 +26,17 @@ fi
 if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then 
     LOG="$MDS_LOGS/$FILE.$2.log"
     CUMULATIVE_LOG="$MDS_LOGS/$FILE.log"
-    touch ${LOG}.lock
-    if [ "$3" = "PRE"]; then exit 0; fi
+    if [ -e ${LOG}.lock ]
+    then
+       if [ "$3" = "PRE" ]; then exit 0; fi
+    elif [ "$3" = "PRE" ]
+    then
+       touch ${LOG}.lock
+       exit 0;
+    else
+      lockfile "$LOG.lock"
+    fi
+    touch $MDS_LOGS/pid/`hostname`-$$ 2>/dev/null
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
     echo `date`: Job $1 beginning on `hostname` >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
@@ -36,6 +45,7 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     cat $LOG >> $CUMULATIVE_LOG
     rm -f $LOG
     rm -f "$LOG.lock"
+    rm -f $MDS_LOGS/pid/`hostname`-$$ 
 else
   echo "Directory MDS_LOGS ($MDS_LOGS) must exist and be writeable"
 fi
