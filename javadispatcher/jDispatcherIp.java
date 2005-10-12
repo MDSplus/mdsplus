@@ -249,7 +249,7 @@ class jDispatcherIp
             boolean useJavaServer;
             try {
                 useJavaServer = properties.getProperty("jDispatcher.server_" + i +
-                ".useJavaServer").equals("true");
+                ".use_jserver").equals("true");
             }catch(Exception exc){useJavaServer = true;}
             Server server = new ActionServer("", server_ip.trim(),
                                              server_class.trim(),
