@@ -829,7 +829,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     {
         if(mon_srv == null)
             throw(new IOException("Can't connect to null address"));
-        mds_server = new MdsServer(mon_srv);
+        mds_server = new MdsServer(mon_srv, true);
         mds_server.addMdsServerListener(jDispatchMonitor.this);
         mds_server.addConnectionListener(jDispatchMonitor.this);
         Descriptor reply = mds_server.monitorCheckin();
@@ -852,7 +852,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     {
         if(dispatcher == null)
         {
-            dispatcher = new MdsServer(MdsHelper.getDispatcher());
+            dispatcher = new MdsServer(MdsHelper.getDispatcher(), true);
             dispatcher.addConnectionListener(jDispatchMonitor.this);
         }
         Descriptor reply = dispatcher.dispatchDirectCommand(command+" "+me.nid);

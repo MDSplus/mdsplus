@@ -40,6 +40,9 @@ class MdsServer extends MdsConnection
     transient Vector server_event_listener = new Vector();
     transient Vector curr_listen_sock = new Vector();
 
+    boolean useJavaServer = true;
+
+
     byte [] self_address;
 
     class ReceiveServerMessage extends Thread
@@ -143,9 +146,10 @@ class MdsServer extends MdsConnection
         }
     }
 
-    public MdsServer(String server) throws IOException
+    public MdsServer(String server, boolean useJavaServer) throws IOException
     {
         super(server);
+        this.useJavaServer = useJavaServer;
         self_address = InetAddress.getLocalHost().getAddress();
 
         if(ConnectToMds(false) == 0)
@@ -299,8 +303,10 @@ class MdsServer extends MdsConnection
         Vector args = new Vector();
         args.add(new Descriptor(null, tree));
         args.add(new Descriptor(null, new int[]{shot}));
-        //args.add(new Descriptor( null, new int[]{nid}));
-        args.add(new Descriptor( null, name));
+        if(useJavaServer)
+            args.add(new Descriptor( null, name));
+        else
+            args.add(new Descriptor( null, new int[]{id}));
         Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
@@ -396,7 +402,7 @@ class MdsServer extends MdsConnection
         MdsServer ms = null;
         try
         {
-            ms = new MdsServer("150.178.3.47:8001");
+            ms = new MdsServer("150.178.3.47:8001", true);
 
             Descriptor reply = ms.monitorCheckin();
 

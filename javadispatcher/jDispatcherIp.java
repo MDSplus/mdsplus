@@ -246,9 +246,14 @@ class jDispatcherIp
             String server_subtree = properties.getProperty(
                 "jDispatcher.server_" +
                 i + ".subtree");
+            boolean useJavaServer;
+            try {
+                useJavaServer = properties.getProperty("jDispatcher.server_" + i +
+                ".useJavaServer").equals("true");
+            }catch(Exception exc){useJavaServer = true;}
             Server server = new ActionServer("", server_ip.trim(),
                                              server_class.trim(),
-                                             server_subtree);
+                                             server_subtree, useJavaServer);
             servers.addElement(server);
             dispatcher.addServer(server);
             i++;
