@@ -1,0 +1,10 @@
+THIS IS THE OLD SET OF PTDATA TDI FUNCTIONS
+Written by Jeff Schachter
+Deprecated
+
+
+Replaced by PTDATA2 by Sean Flanagan
+
+If you manage to get the old libMdsD3DShr stuff to compile,
+then you might want to revisit these old routines.  Otherwise
+just use ptdata2 to get data from PTDATA.
