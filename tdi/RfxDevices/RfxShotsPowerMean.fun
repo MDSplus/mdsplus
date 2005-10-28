@@ -3,10 +3,10 @@ public fun RfxShotsPowerMean(in _shots)
 	_numShot = size(_shots);
 	_potMax=[];
 	_enerMax=[];
-	_error = 0;
 	for(_i = 0; _i < _numShot; _i++)
 	{
-	
+		_error = 0;
+
 		_status = tcl("set tree rfx/shot="//_shots[_i]);
 		if(_status & 1)
 		{
