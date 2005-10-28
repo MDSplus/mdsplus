@@ -12,8 +12,8 @@ public fun RfxShotsPowerMax(in _shots)
 		if(_status & 1)
 		{
 			_vmt = execute('resample(\\dequ::vmvt001_vd2va, -0.1, 0.3, 2e-4)');
-			_vmt001 = if_error( _vmt == "bad resample signal in" ? 0 : 1, _vmt, 0);
-			_it     = if_error( _it = execute('resample(\\a::it, -0.1, 0.3, 2e-4)'), _it, 0);
+			_vmt001 = if_error( _vmt == "bad resample signal in" ? 0 : 1, _vmt);
+			_it     = if_error( execute('resample(\\a::it, -0.1, 0.3, 2e-4)'), 0);
 			_p = (_vmt001 * _it) / (40e6);
 			_potMax = [_potMax, maxval( _p)];
 		}

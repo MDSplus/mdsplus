@@ -11,14 +11,18 @@ public fun RfxShotsPowerMean(in _shots)
 		if(_status & 1)
 		{
 			_vmt001 = execute('\\dequ::vmvt001_vd2va');
+			_maxVal = if_error( maxval( _vmt001), _error = 1);
+			if(_error == 1)
+			{
+				_potMax = [_potMax, 0];
+				continue;
+			}
 			_it     = if_error( _it = execute('\\a::it'), _it, 0);
 
-             _maxVal = maxval( _vmt001);
-			
 			_maxIdxs = ( data( _vmt001 ) > (_maxVal - 5) ); 
 			_timeMax = sum( dim_of(_vmt001) * _maxIdxs ) / sum(_maxIdxs);
 			_vmt = resample(_vmt001, _timeMax, 0.1, 2e-4);
-			_vmt001 = if_error( _vmt == "bad resample signal in" ? 0 : 1, _vmt, _error = 1);
+			_vmt001 = if_error( _vmt == "bad resample signal in" ? 0 : 1, _vmt);
 			
 			if( ! _error)
 			{
@@ -27,9 +31,9 @@ public fun RfxShotsPowerMean(in _shots)
 				_firstTime = sum(dim_of(_vmt001) * _limIdxs);
 			
 				_vmt001 = resample(_vmt001,   _firstTime , _firstTime + 0.08 , 2e-4);
-				_vmt001 = if_error( _vmt001 == "bad resample signal in" ? 0 : 1, _vmt001, 0);
+				_vmt001 = if_error( _vmt001 == "bad resample signal in" ? 0 : 1, _vmt001);
 				_it     = resample( _it,   _firstTime , _firstTime + 0.08 , 2e-4);
-				_it     = if_error( _it == "bad resample signal in" ? 0 : 1, _it, 0);
+				_it     = if_error( _it == "bad resample signal in" ? 0 : 1, _it);
 			
 				_p = (_vmt001 * _it) / (40e6);
 				_potMax = [_potMax, mean( _p)];
