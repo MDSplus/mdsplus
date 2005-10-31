@@ -311,7 +311,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField5.setOffsetNid(41);
     jPanel6.setLayout(borderLayout6);
     deviceChannel2.setLabelString("On");
-    deviceChannel2.setOffsetNid(5);
+    deviceChannel2.setOffsetNid(24);
     deviceChannel2.setUpdateIdentifier("");
     deviceChannel2.setShowVal("");
     jLabel2.setText("Perturbation:");
@@ -349,7 +349,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField8.setOffsetNid(60);
     jPanel10.setLayout(borderLayout9);
     deviceChannel3.setLabelString("On");
-    deviceChannel3.setOffsetNid(5);
+    deviceChannel3.setOffsetNid(43);
     deviceChannel3.setUpdateIdentifier("");
     deviceChannel3.setShowVal("");
     jLabel3.setText("Perturbation:");
@@ -387,7 +387,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField11.setOffsetNid(79);
     jPanel14.setLayout(borderLayout12);
     deviceChannel4.setLabelString("On");
-    deviceChannel4.setOffsetNid(5);
+    deviceChannel4.setOffsetNid(62);
     deviceChannel4.setUpdateIdentifier("");
     deviceChannel4.setShowVal("");
     jLabel4.setText("Perturbation:");
@@ -425,7 +425,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField14.setOffsetNid(98);
     jPanel18.setLayout(borderLayout15);
     deviceChannel5.setLabelString("On");
-    deviceChannel5.setOffsetNid(5);
+    deviceChannel5.setOffsetNid(81);
     deviceChannel5.setUpdateIdentifier("");
     deviceChannel5.setShowVal("");
     jLabel5.setText("Perturbation:");
@@ -463,7 +463,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField17.setOffsetNid(117);
     jPanel112.setLayout(borderLayout18);
     deviceChannel6.setLabelString("On");
-    deviceChannel6.setOffsetNid(5);
+    deviceChannel6.setOffsetNid(100);
     deviceChannel6.setUpdateIdentifier("");
     deviceChannel6.setShowVal("");
     jLabel6.setText("Perturbation:");
@@ -501,7 +501,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField110.setOffsetNid(136);
     jPanel116.setLayout(borderLayout111);
     deviceChannel7.setLabelString("On");
-    deviceChannel7.setOffsetNid(5);
+    deviceChannel7.setOffsetNid(119);
     deviceChannel7.setUpdateIdentifier("");
     deviceChannel7.setShowVal("");
     jLabel7.setText("Perturbation:");
@@ -539,7 +539,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField113.setOffsetNid(155);
     jPanel1110.setLayout(borderLayout114);
     deviceChannel8.setLabelString("On");
-    deviceChannel8.setOffsetNid(5);
+    deviceChannel8.setOffsetNid(138);
     deviceChannel8.setUpdateIdentifier("");
     deviceChannel8.setShowVal("");
     jLabel8.setText("Perturbation:");
@@ -577,7 +577,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField116.setOffsetNid(174);
     jPanel1114.setLayout(borderLayout117);
     deviceChannel9.setLabelString("On");
-    deviceChannel9.setOffsetNid(5);
+    deviceChannel9.setOffsetNid(157);
     deviceChannel9.setUpdateIdentifier("");
     deviceChannel9.setShowVal("");
     jLabel9.setText("Perturbation:");
@@ -615,7 +615,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField119.setOffsetNid(193);
     jPanel1118.setLayout(borderLayout1110);
     deviceChannel10.setLabelString("On");
-    deviceChannel10.setOffsetNid(5);
+    deviceChannel10.setOffsetNid(176);
     deviceChannel10.setUpdateIdentifier("");
     deviceChannel10.setShowVal("");
     jLabel10.setText("Perturbation:");
@@ -653,7 +653,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField1118.setOffsetNid(212);
     jPanel111110.setLayout(borderLayout1119);
     deviceChannel13.setLabelString("On");
-    deviceChannel13.setOffsetNid(5);
+    deviceChannel13.setOffsetNid(195);
     deviceChannel13.setUpdateIdentifier("");
     deviceChannel13.setShowVal("");
     jLabel13.setText("Perturbation:");
@@ -691,7 +691,7 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField11111.setOffsetNid(231);
     jPanel111114.setLayout(borderLayout11112);
     deviceChannel14.setLabelString("On");
-    deviceChannel14.setOffsetNid(5);
+    deviceChannel14.setOffsetNid(214);
     deviceChannel14.setUpdateIdentifier("");
     deviceChannel14.setShowVal("");
     jLabel14.setText("Perturbation:");

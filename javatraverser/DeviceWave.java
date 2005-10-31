@@ -699,7 +699,46 @@ public class DeviceWave extends DeviceComponent
         }
     }
 
-
+    protected Object getFullData()
+    {
+        Vector res = new Vector();
+        res.add(new Float(minX));
+        res.add(new Float(maxX));
+        res.add(new Float(minY));
+        res.add(new Float(maxY));
+        res.add(waveX);
+        res.add(waveY);
+        return res;
+    }
+    protected void dataChanged(int offsetNid, Object data)
+    {
+        if(offsetNid != getOffsetNid())
+            return;
+        Vector inVect;
+        try {
+            inVect = (Vector)data;
+        }catch(Exception exc)
+        {
+            System.err.println("Internal error: wrong data passed to DeviceWave.dataChanged");
+            return;
+        }
+        minX = ((Float)inVect.elementAt(0)).floatValue();
+        maxX = ((Float)inVect.elementAt(1)).floatValue();
+        minY = ((Float)inVect.elementAt(2)).floatValue();
+        maxY = ((Float)inVect.elementAt(3)).floatValue();
+        float [] currX = (float [])inVect.elementAt(4);
+        float [] currY = (float [])inVect.elementAt(5);
+        try {
+            waveX = new float[currX.length];
+            waveY = new float[currY.length];
+            for(int i = 0; i < currX.length; i++)
+            {
+                waveX[i] = currX[i];
+                waveY[i] = currY[i];
+            }
+        }catch(Exception exc){}
+        displayData(null, true);
+    }
 
     public static void main(String args[])
     {

@@ -145,6 +145,12 @@ public abstract class DeviceComponent extends JPanel
     protected abstract void displayData(Data data, boolean is_on);
     protected abstract Data getData();
     protected abstract boolean getState();
+    //Copy-Paste management
+    protected Object copyData() {return null;}
+    protected void pasteData(Object objData){}
+
+
+
     public void postConfigure(){}
     void postApply(){}
     protected boolean supportsState(){return false;}
@@ -172,6 +178,10 @@ public abstract class DeviceComponent extends JPanel
     protected void dataChanged(int offsetNid, Object data){}
     protected void stateChanged(int offsetNid, boolean state){}
     protected boolean isDataChanged() {return true;}
+
+    //Get an object incuding all related info (will be data except for DeviceWaveform
+    protected Object getFullData(){return getData();}
+
 }
 
 
