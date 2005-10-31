@@ -563,7 +563,7 @@ STATIC_CONSTANT DESCRIPTOR(zero, "\0");
         }
 
         /* see if the 2nd to last argument is "/NaN" */
-        if (status & 1) {
+        if ((status & 1) && (narg > 2)) {
           int ss = TdiData(list[narg-2], &dq_text MDS_END_ARG);
           if (ss) {
 	    if (dq_text.length == 4)
@@ -571,8 +571,8 @@ STATIC_CONSTANT DESCRIPTOR(zero, "\0");
             else
 	      NaN = 0;
 	    StrFree1Dx( &dq_text);
-          } else date = 0;
-        }
+          } else NaN = 0;
+        } else NaN = 0;
 
  
 	if (status & 1) status = SQL_DYNAMIC(
