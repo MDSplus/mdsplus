@@ -320,7 +320,8 @@ public fun K3115__init(as_is _nid, optional _method)
 				else
 				{
 					/* _tensioni = _new_voltages; */
-					_tensioni = _new_voltages[*:(size(_tmp)-2)];
+					/*_tensioni = _new_voltages[*:(size(_tmp)-2)];  Cesare 3-11-2005 _tmp non definito*/
+					_tensioni = _new_voltages[*: 1022];
 					_tensioni = [_tensioni, 0];
 				}
 

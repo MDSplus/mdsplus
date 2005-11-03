@@ -132,11 +132,13 @@ public fun SXC__init(as_is _nid, optional _method)
 
 		_expr = "SxcHWInit(0, $, $, $, $, $, $)";  
 	
-	    _errors = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
+	        _errors = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
 
 		
 		_expr = "SxcHwStartAcq(0, $, $, $, $)" ;  
-		MdsValue(_expr, _chan_id, _errors, _reduction, _trig_mode, 0);
+		_errors = MdsValue(_expr, _chan_id, _errors, _reduction, _trig_mode, 0);
+		
+		write(*, _errors);
 		
 		MdsDisconnect();
 		

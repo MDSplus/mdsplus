@@ -63,7 +63,7 @@ public fun BOLO__store(as_is _nid, optional _method)
 
 
 	_start_idx = 0;
-	_end_idx = int(_freq * _acq_duration);
+	_end_idx = int(_freq * _acq_duration) - 1;
 
 
 	_cmd = 'MdsConnect("'//_ip_addr//'")';

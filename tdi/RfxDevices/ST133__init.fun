@@ -34,20 +34,20 @@ public fun ST133__init(as_is _nid, optional _method)
 
 	_status = 1;
 
-    _shot_num = $SHOT;
+	_shot_num = $SHOT;
 
 	write(*, "_shot_num ", _shot_num);
 
 	_ip_address = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), "");
 	if(_ip_address == "")
 	{
-    	DevLogErr(_nid, "Invalid Crate IP specification");
+		DevLogErr(_nid, "Invalid Crate IP specification");
  		abort();
 	}
 
 	_status = MdsConnect(_ip_address);
 
-write(*, "_status ", _status);
+	write(*, "_status ", _status);
 
         if( _status != 0 )
 	{

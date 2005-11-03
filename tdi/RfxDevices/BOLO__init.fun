@@ -150,7 +150,7 @@ write(*, "TEST 1");
 	   }
 
 	   _expr = "BoloHwStartAcq($,$,$,$)" ;  
-	   MdsValue(_expr, _chan_id, _errors, _reduction, _trig_mode, 0);
+	   _errors = MdsValue(_expr, _chan_id, _errors, _reduction, _trig_mode, 0);
 
 	   MdsDisconnect();
 
