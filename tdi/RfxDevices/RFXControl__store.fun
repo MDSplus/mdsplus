@@ -71,7 +71,6 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	    DevLogErr(_nid, 'Cannot communicate to VME');
 	    abort();
     	}
-
 	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
       if(_n_pretrigger == *)
       {
@@ -85,7 +84,6 @@ public fun RFXControl__store(as_is _nid, optional _method)
 
  	/* Build signal dimension */
 	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
-
 /*	_dim = MdsValue('Feedback->getTimebase:dsc()'); */
 
 	/* Read number of signals */
@@ -118,6 +116,7 @@ write(*, _c);
 	for(_c = 0; _c < _num_dac_out; _c++)
 	{
 write(*, _c);
+
 			_sig_nid =  DevHead(_nid) + _N_DAC_OUT_1  + _c;
 			_data = MdsValue( 'Feedback->getDacSignal:dsc($1, $2)', _c/32, mod(_c, 32));
       		if(size(_data) == 0)

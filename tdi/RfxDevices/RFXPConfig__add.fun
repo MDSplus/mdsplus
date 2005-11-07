@@ -1,6 +1,6 @@
 public fun RFXPConfig__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPConfig', 22, _nidout);
+    DevAddStart(_path, 'RFXPConfig', 25, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':BV_FEEDBACK', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':IP_FEEDBACK', 'TEXT', *, *, _nid);
@@ -22,6 +22,9 @@ public fun RFXPConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':R_TRANSFER', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':MAX_I_MAG', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':PTCB_VOLTAGE', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RA', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RB', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RF', 'NUMERIC', *, *, _nid);
     DevAddEnd();
 }
 
