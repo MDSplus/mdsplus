@@ -217,7 +217,7 @@ public fun RFXGClock__init(as_is _nid, optional _method)
 
 
 
-	_period = 1/_frequency;
+	_period = 1./_frequency;
     _curr_period = 1E-6;
     _clock_source = 0;
     while(_curr_period * 65534 < _period)
