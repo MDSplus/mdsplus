@@ -29,10 +29,10 @@ public fun NI5122__store(as_is _nid, optional _method)
 
 
 /* Read data from a digitizer */
+   _chgain = [0d0,0d0];
+   _choffset = [0d0,0d0];
     private _samplerate = 0d0;
     private _recordlen = 0u;
-    private _chgain = 0d0;
-    private _choffset = 0d0;
 
     IF_ERROR(ni5122->NiScope_SampleRate(VAL(_id), REF(_samplerate)),(DevLogErr(_nid, "Error while SampleRate"); abort();));
     IF_ERROR(ni5122->NiScope_ActualRecordLength(VAL(_id), REF(_recordlen)),(DevLogErr(_nid,"Error while ActualRecordLength"); abort();));
@@ -43,33 +43,33 @@ public fun NI5122__store(as_is _nid, optional _method)
     _timerate = 1.0/_samplerate;
    private _dim = make_dim(make_window(0, _samnum - 1, 0.0), make_slope(make_with_units(_timerate,'s')));
 
-   _binarydata = zero(_recordlen,0L);
    /* Raw data -> signal */
 
 
     if (_channel eq 0)
     {
-write(*,"0 test");
+write(*,"0 test recordlen:  ", _recordlen);
+   _binarydata = zero(_recordlen,0W);
     IF_ERROR(ni5122->NiScope_Store(VAL(_id),"0", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
-    _signal = compile('build_signal(build_with_units(((`_chgain)*$VALUE+(`_choffset)),"V"), (`_binarydata), (`_dim))');
+    _signal = compile('build_signal(build_with_units(((`_chgain[0])*$VALUE+(`_choffset[0])),"V"), (`_binarydata), (`_dim))');
     TreeShr->TreePutRecord(VAL(DevHead(_nid) + _N_FOO_0), XD(_signal), VAL(0));
     }
     else if(_channel eq 1)
     {
 write(*,"1 test"); 
-    IF_ERROR(ni5122->NiScope_Store(VAL(_id), "1", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
-    _signal = compile('build_signal(build_with_units(((`_chgain)*$VALUE+(`_choffset)),"V"), (`_binarydata), (`_dim))');
+   _binarydata = zero(_recordlen,0W);
+     IF_ERROR(ni5122->NiScope_Store(VAL(_id), "1", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
+    _signal = compile('build_signal(build_with_units(((`_chgain[0])*$VALUE+(`_choffset[0])),"V"), (`_binarydata), (`_dim))');
     TreeShr->TreePutRecord(VAL(DevHead(_nid) + _N_FOO_0+9), XD(_signal), VAL(0));
     }
     else if(_channel eq 2)
     {
 write(*,"0,1 test");
-    IF_ERROR(ni5122->NiScope_Store(VAL(_id),"0", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
-    _signal = compile('build_signal(build_with_units(((`_chgain)*$VALUE+(`_choffset)),"V"), (`_binarydata), (`_dim))');
+   _binarydata = zero(_recordlen * 2,0W);
+    IF_ERROR(ni5122->NiScope_Store(VAL(_id),"0,1", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
+   _signal = compile('build_signal(build_with_units(((`_chgain[0])*$VALUE+(`_choffset[0])),"V"), (`_binarydata[0:(_recordlen-1)]), (`_dim))');
     TreeShr->TreePutRecord(VAL(DevHead(_nid) + _N_FOO_0), XD(_signal), VAL(0));
-write(*,"0,1 test2");
-    IF_ERROR(ni5122->NiScope_Store(VAL(_id), "1", REF(_binarydata), REF(_chgain), REF(_choffset)),(DevLogErr(_nid, "Error while reading digitizer configuration"); abort();));
-    _signal = compile('build_signal(build_with_units(((`_chgain)*$VALUE+(`_choffset)),"V"), (`_binarydata), (`_dim))');
+    _signal = compile('build_signal(build_with_units(((`_chgain[1])*$VALUE+(`_choffset[1])),"V"), (`_binarydata[(_recordlen:*)]), (`_dim))');
     TreeShr->TreePutRecord(VAL(DevHead(_nid) + _N_FOO_0+9), XD(_signal), VAL(0));
     }
     else write(*,'NiScope_Store error at TDI fun');
