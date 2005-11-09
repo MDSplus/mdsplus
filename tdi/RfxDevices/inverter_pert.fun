@@ -16,20 +16,19 @@ OPTIONAL _wform)
     _pert = [0,0];
  
  
-     if(_mode == 2)
-   	_pert = [_pert, triangle(_end - _start_pert, _dt, _freq, _amp)];
-    else
-    {
-	if(_mode == 3)
-  	    _pert = [_pert, square_wave(_end - _start_pert, _dt, _freq, _amp)];
-  	else 
-	{
-	    if(_mode == 4)
-    	        _pert = [_pert, sawtooth(_end - _start_pert, _dt, _freq, _amp)];
-	    else		
-    	        _pert = [_pert, _amp * cos(6.28 * _freq * (0 : (_end - _start_pert) : _dt) + _phase)];
-	}
-    }
+     switch(_mode)
+     {
+     	case (1) _pert = [_pert, _amp * cos(6.28 * _freq * (0 : (_end - _start_pert) : _dt) + _phase)]; break;
+	case (2) _pert = [_pert, triangle(_end - _start_pert, _dt, _freq, _amp)]; break;
+	case (3) _pert = [_pert, square_wave(_end - _start_pert, _dt, _freq, _amp)]; break;
+	case (4) _pert = [_pert, sawtooth(_end - _start_pert, _dt, _freq, _amp)]; break;
+	case (5) _pert = [_pert, sawtooth1(_end - _start_pert, _dt, _freq, _amp)]; break;
+	case (6) _pert = [_pert, sawtooth(_end - _start_pert, _dt, _freq, _amp) + _amp]; break;
+	case (7) _pert = [_pert, sawtooth1(_end - _start_pert, _dt, _freq, _amp) + _amp]; break;
+	case (8) _pert = [_pert, sawtooth(_end - _start_pert, _dt, _freq, _amp) - _amp]; break;
+	case (9) _pert = [_pert, sawtooth1(_end - _start_pert, _dt, _freq, _amp) - _amp]; break;
+     }
+ 
 
     _pert_base = [_start, _start_pert];
     _pert_base = [_pert_base,(_start_pert : _end : _dt)];

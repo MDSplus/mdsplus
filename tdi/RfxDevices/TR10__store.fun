@@ -63,7 +63,7 @@ write(*, 'TR10 STORE');
 
 	if(_remote)
 	{
-	
+	write(*, 'TR10 START STORE');
 
 		_handle = MdsValue('TR10HWStartStore(0, $, $)', _board_id, _pts);
 		if(_handle == -1)
@@ -74,7 +74,6 @@ write(*, 'TR10 STORE');
 	}
 	else
 	{
-write(*, 'TR10 START STORE');
 		_handle = TR10HWStartStore(_nid, _board_id, _pts);
 		if(_handle == -1)
 		{
@@ -98,9 +97,9 @@ write(*, 'TR10 START STORE');
 	/* Read data */
 			if(_remote)
 			{
-				_data = MdsValue('TR10HWReadChan($, $, $, $, $)', _handle, (_i + 1), _start_idx, _end_idx, _pts);	
+				_data = MdsValue('TR10HWReadChan($, $, $, $, $)', _handle, (_i + 1), _start_idx, _end_idx, _pts );	
 
-		        }
+			}
 			else
 			{
 			write(*, 'TR10 READ DATA');
@@ -126,8 +125,8 @@ write(*, 'TR10 START STORE');
 
 			_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
 
-
 			_status = DevPutSignal(_sig_nid, 0, 10/32768., word(_data), 0, _end_idx - _start_idx - 1, _dim);
+
 
 			if(! _status)
 			{

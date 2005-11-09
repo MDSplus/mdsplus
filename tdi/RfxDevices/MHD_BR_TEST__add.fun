@@ -1,7 +1,7 @@
 public fun MHD_BR_TEST__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'MHD_BR_TEST', 42, _nidout);
+    DevAddStart(_path, 'MHD_BR_TEST', 43, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 
 
@@ -24,5 +24,8 @@ public fun MHD_BR_TEST__add(in _path, out _nidout)
 
 
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55, 'EM_SERVER', getnci(_path, 'fullpath'), _nid);
+
+    DevAddNode(_path // ':POINT_ELAB','NUMERIC', 15, *, _nid);
+
     DevAddEnd();
 }

@@ -1,7 +1,7 @@
 public fun MHD_BR_TEST__init(as_is _nid, optional _method)
 {
 
-    private _K_CONG_NODES = 41;
+    private _K_CONG_NODES = 42;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
 
