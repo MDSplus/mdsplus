@@ -8,7 +8,7 @@ unexport CLASSPATH
 #
 # mitdevices needs tree to be working for TdiCompile to function properly
 #
-export src_dir=$(CURDIR)/..
+export src_dir=..
 export MDSPLUS_DIR=$(src_dir)
 
 export MDS_PATH=$(MDSPLUS_DIR)/tdi 
