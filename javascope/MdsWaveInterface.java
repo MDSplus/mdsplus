@@ -782,6 +782,7 @@ class MdsWaveInterface extends WaveInterface
 	            {
 		          // WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);
                            WaveInterface.WriteLine(out,prompt + "mode_1D"+"_"+exp_n+"_"+sht_n+": ",""+ mode1DCodeToString(mode1D[exp + sht]));
+                           WaveInterface.WriteLine(out,prompt + "mode_2D"+"_"+exp_n+"_"+sht_n+": ",""+ mode2DCodeToString(mode2D[exp + sht]));
 		           WaveInterface.WriteLine(out,prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
 		           WaveInterface.WriteLine(out,prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
 		           WaveInterface.WriteLine(out,prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
@@ -808,6 +809,30 @@ class MdsWaveInterface extends WaveInterface
         if (mode.equals("Step")  )  return Signal.MODE_STEP;
         return 0;
     }
+
+
+    public String mode2DCodeToString(int code)
+    {
+        switch(code)
+        {
+            case Signal.MODE_YTIME   : return "y & time";
+            case Signal.MODE_XY      : return "x & y";
+            case Signal.MODE_YX      : return "y & x";
+            case Signal.MODE_IMAGE   : return "Image";
+         }
+        return "";
+    }
+
+    public int mode2DStringToCode(String mode)
+    {
+        if (mode.equals("y & time"))  return Signal.MODE_YTIME;
+        if (mode.equals("x & y"))     return Signal.MODE_XY;
+        if (mode.equals("y & x"))     return Signal.MODE_YX;
+        if (mode.equals("Image"))     return Signal.MODE_IMAGE;
+        return 0;
+    }
+
+
 
     public void FromFile(Properties pr, String prompt) throws IOException
     {
@@ -1100,6 +1125,13 @@ class MdsWaveInterface extends WaveInterface
                     {
                         mode1D[expr_idx + s] = mode1DStringToCode( (String) prop);
                     }
+
+                    prop = pr.getProperty(prompt+".mode_2D_"+idx+"_"+s);
+                    if(prop != null)
+                    {
+                        mode2D[expr_idx + s] = mode2DStringToCode( (String) prop);
+                    }
+
 
                     prop = pr.getProperty(prompt+".color_"+idx+"_"+s);
                     if(prop != null)
