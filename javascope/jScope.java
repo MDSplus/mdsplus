@@ -1562,7 +1562,7 @@ public class jScope
 
         if (srv_item == null || !SetDataServer(srv_item))
         {
-            srv_item = wave_panel.DataServerFromClient();
+            srv_item = wave_panel.DataServerFromClient(srv_item);
             if (srv_item == null || !SetDataServer(srv_item))
             {
                 if (server_ip_list != null && default_server_idx >= 0 &&

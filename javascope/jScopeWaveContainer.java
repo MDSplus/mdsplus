@@ -915,7 +915,7 @@ remove 28/06/2005
         this.print_event = AddRemoveEvent(l, this.print_event, print_event);
     }
 
-    public DataServerItem DataServerFromClient()
+    public DataServerItem DataServerFromClient( DataServerItem dataServerIn)
     {
         int c = 0;
         boolean found = false;
@@ -930,6 +930,18 @@ remove 28/06/2005
 
             String f_name = System.getProperty("user.home") + File.separator +
                      "jScope" + File.separator + "jScope_servers.conf";
+
+            if( dataServerIn != null && !dataServerIn.class_name.equals("MdsDataProvider") )
+                 return null;
+
+            if(dataServerIn != null)
+            {
+               InetAddress dsiInet =   InetAddress.getByName(dataServerIn.argument);
+               String disIpAdddress = dsiInet.getHostAddress();
+               clientMask = localIpAdddress.substring(0, localIpAdddress.lastIndexOf(".")) + ".*";
+               if( !checkIpMask(disIpAdddress, clientMask) )
+                   return dataServerIn;
+            }
 
             if ( (new File(f_name)).exists() )
             {
@@ -946,6 +958,7 @@ remove 28/06/2005
                     if(clientMask == null)
                         break;
 
+/*
                     StringTokenizer tokenLocalIp = new StringTokenizer(localIpAdddress, ".");
                     StringTokenizer clientMaskIp = new StringTokenizer(clientMask, ".");
 
@@ -964,17 +977,45 @@ remove 28/06/2005
                         found = false;
                         break;
                     }
-
-                    if(found)
+*/
+                    if( checkIpMask(localIpAdddress, clientMask) )
                     {
                         out = buildDataServerItem(srvFromClientProp, prompt);
                     }
+
                 }
             }
         }
         catch (Exception exc) {out = null;}
         return out;
     }
+
+    private boolean checkIpMask(String ip, String Mask)
+    {
+
+        boolean found = false;
+
+        StringTokenizer tokenLocalIp = new StringTokenizer(ip, ".");
+        StringTokenizer clientMaskIp = new StringTokenizer(Mask, ".");
+
+        if(tokenLocalIp.countTokens() != clientMaskIp.countTokens())
+            return false;
+
+        while(tokenLocalIp.hasMoreElements() && clientMaskIp.hasMoreTokens())
+        {
+            String tl = tokenLocalIp.nextToken();
+            String tm = clientMaskIp.nextToken();
+            if(tl.equals(tm) || tm.equals("*") )
+            {
+               found = true;
+               continue;
+            }
+            found = false;
+            break;
+        }
+        return found;
+    }
+
 
     public DataServerItem buildDataServerItem(Properties pr, String prompt)
     {
@@ -1059,7 +1100,7 @@ remove 28/06/2005
 
 
         server_item = buildDataServerItem(pr, prompt);
-        DataServerItem server_item_conf = DataServerFromClient();
+        DataServerItem server_item_conf = DataServerFromClient(server_item);
         if(server_item_conf != null)
         {
 /*
