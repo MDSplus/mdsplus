@@ -505,6 +505,10 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceField deviceField58 = new DeviceField();
     JPanel jPanel67 = new JPanel();
     DeviceField deviceField59 = new DeviceField();
+    JPanel jPanel68 = new JPanel();
+    DeviceField deviceField60 = new DeviceField();
+    JPanel jPanel69 = new JPanel();
+    DeviceField deviceField61 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -1458,31 +1462,34 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField9.setLabelString("Sys duration: ");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("sys_duration");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
-        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"});
+        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL"
+        });
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12});
+    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
     deviceChoice3.setOffsetNid(8);
     deviceChoice3.setLabelString("Trig2 control: ");
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
-        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"});
+        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL"
+        });
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(6);
     deviceChoice1.setLabelString("Init control: ");
     deviceChoice1.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
-        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"});
+        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL"
+        });
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField13.setOffsetNid(20);
@@ -1966,7 +1973,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField47.setOffsetNid(1287);
         jPanel60.setLayout(gridLayout14);
         gridLayout14.setColumns(1);
-        gridLayout14.setRows(3);
+        gridLayout14.setRows(4);
         deviceField50.setOffsetNid(1311);
         deviceField50.setLabelString("Start Time (s)");
         deviceField50.setIdentifier("");
@@ -1982,32 +1989,40 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField51.setOffsetNid(1309);
         deviceField51.setLabelString("Kd: ");
         deviceField51.setIdentifier("");
-        deviceField54.setOffsetNid(1319);
+        deviceField54.setOffsetNid(1321);
         deviceField54.setLabelString("Ki: ");
         deviceField54.setIdentifier("");
-        deviceField55.setOffsetNid(1323);
+        deviceField55.setOffsetNid(1325);
         deviceField55.setLabelString("Start Time (s)");
         deviceField55.setIdentifier("");
         jPanel64.setLayout(gridLayout15);
-        deviceField410.setOffsetNid(1325);
+        deviceField410.setOffsetNid(1327);
         deviceField410.setLabelString("End Time (s):");
         deviceField410.setIdentifier("");
         gridLayout15.setColumns(1);
-        gridLayout15.setRows(3);
-        deviceField56.setOffsetNid(1321);
+        gridLayout15.setRows(4);
+        deviceField56.setOffsetNid(1323);
         deviceField56.setLabelString("Kd: ");
         deviceField56.setIdentifier("");
-        deviceField57.setOffsetNid(1317);
+        deviceField57.setOffsetNid(1319);
         deviceField57.setLabelString("Kp: ");
         deviceField57.setIdentifier("");
-        deviceField58.setOffsetNid(1315);
-        deviceField58.setLabelString("Reference Wave: ");
+        deviceField58.setOffsetNid(1317);
+        deviceField58.setLabelString("Reference Wave Y: ");
         deviceField58.setNumCols(40);
         deviceField58.setIdentifier("");
-        deviceField59.setOffsetNid(1327);
-        deviceField59.setLabelString("Refwerence Wave: ");
+        deviceField59.setOffsetNid(1331);
+        deviceField59.setLabelString("Reference Wave Y: ");
         deviceField59.setNumCols(40);
         deviceField59.setIdentifier("");
+        deviceField60.setOffsetNid(1315);
+        deviceField60.setLabelString("Reference Wave X: ");
+        deviceField60.setNumCols(40);
+        deviceField60.setIdentifier("");
+        deviceField61.setOffsetNid(1329);
+        deviceField61.setLabelString("Reference Wave X: ");
+        deviceField61.setNumCols(40);
+        deviceField61.setIdentifier("");
         jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -2359,6 +2374,8 @@ public class RFXControlSetup extends DeviceSetup {
         jPanel62.add(deviceField51, null);
         jPanel60.add(jPanel66, null);
         jPanel66.add(deviceField58, null);
+        jPanel60.add(jPanel68, null);
+        jPanel68.add(deviceField60, null);
         jTabbedPane1.add(jPanel64,   "F Control: PID Parameters");
         jPanel65.add(deviceField55, null);
         jPanel65.add(deviceField410, null);
@@ -2369,6 +2386,8 @@ public class RFXControlSetup extends DeviceSetup {
         jPanel63.add(deviceField56, null);
     jPanel64.add(jPanel67, null);
     jPanel67.add(deviceField59, null);
+        jPanel64.add(jPanel69, null);
+        jPanel69.add(deviceField61, null);
         jScrollPane11.getViewport().add(jPanel59, null);
         jPanel59.add(deviceTable26, BorderLayout.CENTER);
         jPanel59.add(jPanel510, BorderLayout.NORTH);
