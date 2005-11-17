@@ -483,6 +483,15 @@ public class RFXControlSetup extends DeviceSetup {
     JPanel jPanel510 = new JPanel();
     BorderLayout borderLayout11 = new BorderLayout();
     DeviceField deviceField47 = new DeviceField();
+    JPanel jPanel60 = new JPanel();
+    GridLayout gridLayout14 = new GridLayout();
+    JPanel jPanel61 = new JPanel();
+    JPanel jPanel62 = new JPanel();
+    DeviceField deviceField49 = new DeviceField();
+    DeviceField deviceField50 = new DeviceField();
+    DeviceField deviceField51 = new DeviceField();
+    DeviceField deviceField52 = new DeviceField();
+    DeviceField deviceField53 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -1942,6 +1951,24 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField47.setNumCols(5);
         deviceField47.setLabelString("End time: ");
         deviceField47.setOffsetNid(1287);
+        jPanel60.setLayout(gridLayout14);
+        gridLayout14.setColumns(1);
+        gridLayout14.setRows(2);
+        deviceField50.setOffsetNid(1087);
+        deviceField50.setLabelString("Start Time (s)");
+        deviceField50.setIdentifier("");
+        deviceField49.setOffsetNid(1089);
+        deviceField49.setLabelString("End Time (s):");
+        deviceField49.setIdentifier("");
+        deviceField53.setOffsetNid(1081);
+        deviceField53.setLabelString("Kp: ");
+        deviceField53.setIdentifier("");
+        deviceField52.setOffsetNid(1083);
+        deviceField52.setLabelString("Ki: ");
+        deviceField52.setIdentifier("");
+        deviceField51.setOffsetNid(1085);
+        deviceField51.setLabelString("Kd: ");
+        deviceField51.setIdentifier("");
         jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -2283,6 +2310,14 @@ public class RFXControlSetup extends DeviceSetup {
         jPanel58.add(deviceField46, null);
         jPanel58.add(deviceField45, null);
         jTabbedPane1.add(jScrollPane11,    "Virtual Shell: Input Config. 3");
+        jTabbedPane1.add(jPanel60,   "Toroidal control: PID parameters");
+        jPanel60.add(jPanel61, null);
+        jPanel61.add(deviceField50, null);
+        jPanel61.add(deviceField49, null);
+        jPanel60.add(jPanel62, null);
+        jPanel62.add(deviceField53, null);
+        jPanel62.add(deviceField52, null);
+        jPanel62.add(deviceField51, null);
         jScrollPane11.getViewport().add(jPanel59, null);
         jPanel59.add(deviceTable26, BorderLayout.CENTER);
         jPanel59.add(jPanel510, BorderLayout.NORTH);
