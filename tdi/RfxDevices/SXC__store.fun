@@ -64,7 +64,7 @@ write(*, "SXC init");
 
 
 	_start_idx = 0;
-	_end_idx = _acq_duration * _freq;
+	_end_idx = _acq_duration * _freq - 1;
 
 	_cmd = 'MdsConnect("'//_ip_addr//'")';
 	_status = execute(_cmd);
@@ -104,7 +104,7 @@ write(*, "SXC init");
   							_expr = "vt10GetData("//_m//","//_c//","//_end_idx//","//_reduction//")" ;  
    							_data = MdsValue(_expr);
 
-							_dim = make_dim(make_window(_start_idx, _end_idx-1, _trig), make_range(*,*,float(1./_freq)));
+							_dim = make_dim(make_window(_start_idx, _end_idx, _trig), make_range(*,*,float(1./_freq)));
 
 
 write(*, size(_data), size(data(_dim)));

@@ -252,8 +252,5 @@ public class DeviceChoice extends DeviceComponent
     }
 
 
-
-
-
 }
 

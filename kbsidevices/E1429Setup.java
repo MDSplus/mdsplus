@@ -1,5 +1,7 @@
 /*
 		A basic implementation of the DeviceSetup class.
+                Korea Basic Science Institute(KBSI)
+                Version 1.0
 */
 
 import java.awt.*;
@@ -89,7 +91,7 @@ public class E1429Setup extends DeviceSetup
                 contentPane.add(jPanel, c);
 
                 jPanel = new JPanel();
-                jPanel.setBorder(new TitledBorder("Sampling"));
+                jPanel.setBorder(new TitledBorder("   ##Samples Max :262,144 ,   ##Pre-trig : 0 ~ 65,535  ,  ##Delay : 0 ~ 65534T(T=0.05us), 65540T ~ 655,350T(in steps of 10T) "));
 		sampleNum.setNumCols(4);
 		sampleNum.setOffsetNid(NID_SAMPLE_NUM);
 		sampleNum.setLabelString("# of Samples:");

@@ -121,7 +121,11 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 
 #define SameSign(x, y) (((x)>0 && (y)>0)||((x)<0 && (y)<0))
 
+#define maximum(x,y) ((x) > (y) ? (x) : (y))
 
+#define ConvertCoord(x,y,rp,thp) \
+   1+ (*rp = sqrt(x*x + y*y)) * 0 + \
+      (*thp = atan2(y,x)) * 0 
 /* Private Routines */
 static double BessJ0(double x);
 static double BessJ1(double x);

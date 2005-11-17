@@ -82,6 +82,9 @@ write(*, "CAMERA store");
 		DevLogErr(_nid, "Missing frame rate");
 		abort();
 		}
+		
+		wait(1.0);
+
 
 		_sock = TCPOpenConnection(_ip, _port, _ASCII_MODE, 10000, _sw=0);
 		if(_sock == 0)
@@ -90,7 +93,7 @@ write(*, "CAMERA store");
 			abort();
 		}
 
-		if((_err_msg = TCPSendCommand( _sock, "CAMERA_STORE") ) != "")
+		if((_err_msg = TCPSendCommand( _sock, "CAMERA_STORE "//_name) ) != "")
 		{
 			DevLogErr(_nid, "Error during send  CAMERA_STORE command "//_err_msg);
 			TCPCloseConnection(_sock);  
@@ -108,6 +111,8 @@ write(*,_y_pixel);
 		{
 			DevLogErr(_nid, "No image read for CAMERA"); 
 		} else {
+		
+			_trig_time = _trig_time + 1./_frame_rate;
 			_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), make_range(*,*,(1./_frame_rate)) );
 			_frames_img = set_range(_y_pixel, _x_pixel, _n_frames, _img);
 write(*,shape(_frames_img));			
@@ -121,6 +126,8 @@ write(*,_video);
 				DevLogErr(_nid, 'Error writing data in pulse file');
 			}
 		}
+
+		wait(1.0);
 
 		TCPCloseConnection(_sock);
 

@@ -59,14 +59,17 @@ write(*,"WE7000 init");
 	}
 
 */
+	write(*, "Controller ",  _controller_ip);
+	write(*, "Station    ",  _station_ip);
+	
+
 	_error = we7000->WE7000ConfigTrigClock(_controller_ip, _station_ip, val(_bustrig1), val(_bustrig2), val(_polarity), val(_busclock), val(_arm));
 	if(_error)
 	{
 	        _msg = repeat(" ", 1024);
-			we7000->WE7000GetErrorMsg(ref(_msg));
-
+		we7000->WE7000GetErrorMsg(ref(_msg));
 	    	DevLogErr(_nid, _msg);
- 			abort();
+		abort();
 	}
 
 

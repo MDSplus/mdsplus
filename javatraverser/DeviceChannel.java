@@ -3,8 +3,16 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 public class DeviceChannel extends DeviceComponent
 {
+    //Keep copied data for channel components: indexed by the offset between this nid and the component nid
+    static Hashtable componentHash = new Hashtable();
+
+
     public String labelString = null;
     public boolean borderVisible = false;
     public boolean inSameLine = false;
@@ -17,10 +25,35 @@ public class DeviceChannel extends DeviceComponent
     public boolean showState = true;
     private boolean initial_state;
     private boolean reportingChange = false;
-
+    private JPopupMenu copyPastePopup;
 
     protected boolean initializing = false;
     protected JPanel componentsPanel;
+
+    public void copy()
+    {
+        buildComponentList();
+        for(int i = 0; i < device_components.size(); i++)
+        {
+            DeviceComponent currComponent = (DeviceComponent)device_components.elementAt(i);
+            int intOffset = currComponent.getOffsetNid() - getOffsetNid();
+            componentHash.put(new Integer(intOffset), currComponent.getFullData());
+        }
+    }
+
+    public void paste()
+    {
+        buildComponentList();
+        for(int i = 0; i < device_components.size(); i++)
+        {
+           DeviceComponent currComponent = (DeviceComponent)device_components.elementAt(i);
+           int intOffset = currComponent.getOffsetNid() - getOffsetNid();
+           Object currData = componentHash.get(new Integer(intOffset));
+           if(currData != null)
+               currComponent.dataChanged(currComponent.getOffsetNid(), currData);
+       }
+    }
+
 
     public void setShowVal(String showVal)
     {
@@ -103,6 +136,40 @@ public class DeviceChannel extends DeviceComponent
         add(checkB = new JCheckBox(), "North");
         checkB.setText(labelString);
         add(componentsPanel, "Center");
+
+        copyPastePopup = new JPopupMenu();
+        JMenuItem copyI = new JMenuItem("Copy");
+        copyI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                copy();
+            }
+        });
+        copyPastePopup.add(copyI);
+        JMenuItem pasteI = new JMenuItem("Paste");
+        pasteI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                paste();
+            }
+        });
+        copyPastePopup.add(pasteI);
+        copyPastePopup.pack();
+        copyPastePopup.setInvoker(this);
+        addMouseListener(new MouseAdapter()
+        {
+            public void mousePressed(MouseEvent e)
+            {
+                if ( (e.getModifiers() & Event.META_MASK) != 0)
+                {
+                     copyPastePopup.setInvoker(DeviceChannel.this);
+                     copyPastePopup.show(DeviceChannel.this, e.getX(), e.getY());
+                }
+            }
+});
+
         initializing = false;
     }
     protected void initializeData(Data data, boolean is_on)

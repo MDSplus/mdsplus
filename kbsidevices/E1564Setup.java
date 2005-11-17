@@ -1,5 +1,7 @@
 /*
 		A basic implementation of the DeviceSetup class.
+                Korea Basic Science Institute(KBSI)
+                Version 1.0
 */
 
 import java.awt.*;
@@ -78,7 +80,7 @@ public class E1564Setup extends DeviceSetup
                 contentPane.add(jPanel, c);
 
                 jPanel = new JPanel();
-                jPanel.setBorder(new TitledBorder("Sampling"));
+                jPanel.setBorder(new TitledBorder("# Sampling Max : 2,096,151(16M-4CH) , # Pre- Trigger : sample count -1 , # Period (4ch): 800kSample/s"));
 		sampleNum.setNumCols(4);
 		sampleNum.setOffsetNid(6);
 		sampleNum.setLabelString("# of Samples:");

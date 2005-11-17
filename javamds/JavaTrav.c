@@ -121,9 +121,10 @@ JNIEXPORT jint JNICALL Java_Database_open
   jobject jname;
   int is_editable, is_readonly, shot;
 static char buf[1000];
- 
-/* //printf("Parte Open\n");*/
 
+/* 
+printf("Parte Open\n");
+*/
 
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
@@ -148,12 +149,15 @@ static char buf[1000];
   (*env)->ReleaseStringUTFChars(env, jname, name);
   //printf("APERTO: %s\n", MdsGetMsg(status));
  }
- /*  //printf("Aperto\n");*/
-
+/*
+  printf("Aperto\n");
+*/
 /*//report(MdsGetMsg(status));*/
 //sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
     RaiseException(env, MdsGetMsg(status), status);/*//MdsGetMsg(status));*/
+
+  
   return 0;
 
 }
@@ -275,9 +279,10 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   status = TreeGetRecord(nid, &xd);
 
-   /*printf("\nletti %d bytes\n", xd.l_length);
-
+  /*
+ printf("\nletti %d bytes\n", xd.l_length);
 */
+
 
  /* status = TdiDecompile(&xd, &out_xd MDS_END_ARG);
 
@@ -300,9 +305,9 @@ printf(out_xd.pointer->pointer);*/
   if(!xd.l_length || !xd.pointer)
 
     return NULL;
-
-/*printf("Parte DescripToObject\n");*/
-
+/*
+printf("Parte DescripToObject\n");
+*/
   ris = DescripToObject(env, xd.pointer);
   MdsFree1Dx(&xd, NULL);
 
@@ -430,11 +435,11 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
   jmethodID constr;
-  jvalue args[20];
+  jvalue args[21];
   static  int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len, conglomerate_nids,
     owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, 
-	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len;
-  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512], original_part_name[512];
+	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len, path_len;
+  static  char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512], original_part_name[512], path[512];
   unsigned short asctime_len;
   struct descriptor time_dsc = {256, DTYPE_T, CLASS_S, time_str};
 
@@ -450,6 +455,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
    {16, NciNODE_NAME, name, &name_len},
    {511, NciFULLPATH, fullpath, &fullpath_len},
    {511, NciMINPATH, minpath, &minpath_len},
+   {511, NciPATH, path, &path_len},
   {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
   {4, NciCONGLOMERATE_ELT, &conglomerate_elt, &conglomerate_elt_len}, 
    {NciEND_OF_LIST, 0, 0, 0}};
@@ -459,17 +465,20 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   conglomerate_nids = 0;
 
+
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
       RaiseException(env, MdsGetMsg(status), status);
       return NULL;
    }
+
   name[name_len] = 0;
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
+  path[path_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
   args[0].z = !(nci_flags & NciM_STATE);
   args[1].z = !(nci_flags & NciM_PARENT_STATE);
   args[2].z = nci_flags & NciM_SETUP_INFORMATION;
@@ -478,6 +487,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[5].z = nci_flags & NciM_COMPRESS_ON_PUT;
   args[6].z = nci_flags & NciM_NO_WRITE_MODEL;
   args[7].z = nci_flags & NciM_NO_WRITE_SHOT;
+
 
   if(time_inserted[0] || time_inserted[1])
   {
@@ -495,8 +505,11 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[14].l = (*env)->NewStringUTF(env, name);
   args[15].l = (*env)->NewStringUTF(env, fullpath);
   args[16].l = (*env)->NewStringUTF(env, minpath);
-  args[17].i = conglomerate_nids;
-  args[18].i = conglomerate_elt;
+  args[17].l = (*env)->NewStringUTF(env, path);
+  args[18].i = conglomerate_nids;
+  args[19].i = conglomerate_elt;
+
+
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 

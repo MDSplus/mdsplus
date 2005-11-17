@@ -66,15 +66,16 @@ write(*, 'RESET');  */
 
 write(*, '----> ', _events);
 
+
 /* Set clock functions */
 	if(_ext_clock)
 	{
-	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(1)));
+	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(0)));
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_TIMING_HIGHWAY);
 	}
 	else
 	{
-	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(0)), val(byte(1)));
+	        _status = DIO2->DIO2_TH_SetTimingHighway(val(_handle), val(byte(1)), val(byte(1)));
 		_clock_source = byte(_DIO2_CLOCK_SOURCE_INTERNAL);
 	}
 

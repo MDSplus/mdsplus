@@ -296,7 +296,7 @@ efficiently.
 typedef struct
 {
   unsigned char rfa[6] PACK;
-}         RFA PACK;
+}         RFA;
 
 #ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
@@ -313,7 +313,7 @@ typedef struct record_header
   unsigned  short rlength PACK;
   int       node_number PACK;
   RFA       rfa PACK;
-}         RECORD_HEADER PACK;
+}         RECORD_HEADER;
 
 
 #if defined(__hpux)
@@ -544,7 +544,7 @@ to databases
 #define TREE_PATH_DELIM  ":"
 #elif defined(_MSC_VER)
 #define TREE_PATH_SUFFIX "_path"
-#define TREE_PATH_DELIM  "\\"
+#define TREE_PATH_DELIM  "/"
 #else
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_PATH_DELIM  "/"

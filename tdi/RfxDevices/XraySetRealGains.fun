@@ -1,6 +1,5 @@
 public fun XraySetRealGains()  
 {
-
 	_chMapping = XrayChMapping();
 
 	_path = "\\DSXT_RAW::XRAY.CHANNEL_0";
@@ -13,14 +12,15 @@ public fun XraySetRealGains()
 		_trImp = _path//TEXT(_c, 1)//":TR_IMPEDANCE";
 		_trImpPath = build_path(_trImp);
 
-		_gainCal = "\\DSXT::PAR_L"//TEXT(_c, 1)//":CALIBRATION";
-		_gainCalPath = build_path(_gainCal);
-
-
 		_id = TomoChanId( _c, 0, _chMapping);
+		_amp_id = TomoAmpId(_id);
+
+		_gainCal = "\\DSXT::PAR_AMP_"//trim(adjustl(text(_amp_id)))//":CALIBRATION";
+		_gainCalPath = build_path(_gainCal);
+		
+		write(*, _gainCal);
 
 		_ampType = TomoAmpType(_id);
-
 
 		_gainR = XrayRealGain(_gainImpPath, _trImpPath, _ampType,  _gainCalPath);
 
@@ -42,15 +42,15 @@ public fun XraySetRealGains()
 		_trImp = _path//TEXT(_c, 2)//":TR_IMPEDANCE";
 		_trImpPath = build_path(_trImp);
 
+		_id = TomoChanId( _c, 0, _chMapping);
+		_amp_id = TomoAmpId(_id);
 
-		_gainCal = "\\DSXT::PAR_L"//TEXT(_c, 2)//":CALIBRATION";
+		_gainCal = "\\DSXT::PAR_AMP_"//trim(adjustl(text(_amp_id)))//":CALIBRATION";
 		_gainCalPath = build_path(_gainCal);
 
-
-		_id = TomoChanId( _c, 0, _chMapping );
+write(*, _gainCal);
 
 		_ampType = TomoAmpType(_id);
-
 
 		_gainR = XrayRealGain(_gainImpPath, _trImpPath, _ampType,  _gainCalPath);
 
@@ -60,7 +60,6 @@ public fun XraySetRealGains()
 		_gainAcqRealNid = getnci(_gainAcqRealPath, 'NID_NUMBER');
 
 		 TreeShr->TreePutRecord(val(_gainAcqRealNid),xd(_gainR),val(0));
-
 	}
 
 }

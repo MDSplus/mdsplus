@@ -4,12 +4,9 @@ public fun VX4244__setup(as_is _nid, optional _method)
    private _N_ID = 2;
    private _N_SAMPLE_PERIOD = 5;   /* sample rate    */
    private _N_SAMPLE_NUM = 8;        /* sample length count */
-   private _N_TRIG_SOURCE = 11;     /* Trigger 방법 선택 */
-   private _N_INPUT_RANGE = 19;      /* range 에 채널 선택 옵션을 하나 더 추가 해준다. 리턴 값은 7 */
-/*  delay 는 vx4244와 e1429 의 의미는 틀리며 vx4244에서는 장비에 setting 하여 장비적인 delay가 아니라 데이타 획득에서의 delay로 알고있다. */
+   private _N_TRIG_SOURCE = 11;     /* Default Trigger */
+   private _N_INPUT_RANGE = 19;      
 /*  AI channel select    Group 1  */
-/*  var("string",value) 형식으로 표현하는 것은 Array형식은 TDI에서는 허용되지 않기 때문이다.그래서 아래와 같이 
-    var(trim("_chonoff"//adjustl(_i)),value(공식)) 으로 표현했다. */
     
    _id = if_error(data(DevNodeRef(_nid, _N_ID)),(DevLogErr(_nid, "Driver is not initialized!"); abort();));
     
@@ -86,9 +83,9 @@ public fun VX4244__setup(as_is _nid, optional _method)
    for(_i=0; _i<4; _i++)
    {
       _count = if_error(data(DevNodeRef(_nid, _N_SAMPLE_NUM+_i*39)),(DevLogErr(_nid, 'Missing #, Sample number of GP'//text(_i,1)),1024));
-      if_error(Tkvx4244_32->tkvx4244_confDataCollectCount (VAL(_id), _count,  VAL(_i==0), VAL(_i==1), VAL(_i==2), VAL(_i==3), VAL(0)),
+      if_error(Tkvx4244_32->tkvx4244_confDataCollectCount (VAL(_id), VAL(_count),  VAL(_i==0), VAL(_i==1), VAL(_i==2), VAL(_i==3), VAL(0)),
         (DevLogErr(_nid, "Error in Sampling Count"); abort();));
-   }
+    }
 
 /* Trigger Setting */
    if_error(Tkvx4244_32->tkvx4244_confArmSrcMemZero (VAL(_id),VAL(1), VAL(1), VAL(1), VAL(1), VAL(1), VAL(0), VAL(2)),(DevLogErr(_nid, "Error in Arm Source"); abort();));
@@ -126,7 +123,7 @@ public fun VX4244__setup(as_is _nid, optional _method)
       _trigger3= ISHFT(_trigger3,-1);
    }
    if_error(Tkvx4244_32->tkvx4244_confGpFourTrigSrcLogic (VAL(_id), VAL(_trig12),VAL(_trig0), VAL(_trig1), VAL(_trig2), VAL(_trig3), VAL(_trig4), VAL(_trig5), VAL(_trig6), VAL(_trig7), VAL(_trig8), VAL(_trig9), VAL(_trig10), VAL(_trig11)),(DevLogErr(_nid, "Error in Trigger Setting GP3"); abort();));
-      
-    TreeClose();
+
+   TreeClose();
    return (1);
 }

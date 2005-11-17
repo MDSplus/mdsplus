@@ -34,11 +34,8 @@ public fun TRCH__init(as_is _nid, optional _method)
     if(_ext_clock)
     {
         _clk = if_error(DevNodeRef(_nid, _N_CLOCK_SOURCE), (DevLogErr(_nid, "Cannot resolve clock"); abort();));
-	/*	_clock_val = execute('`_clk');*/
-	write(*, 'CACCONA');
-		_clock_val = evaluate(_clk);
-		write(*, _clock_val);
-		_clk = 0;
+	_clock_val = execute('`_clk');
+	_clk = 0;
     }
     else
     {

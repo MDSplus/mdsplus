@@ -8,8 +8,10 @@ public interface RemoteTree extends Remote {
     boolean isOpen() throws RemoteException;
     boolean isEditable() throws RemoteException;
     boolean isReadonly() throws RemoteException;
+    boolean isRealtime() throws RemoteException;
     void setEditable(boolean editable)throws RemoteException;
     void setReadonly(boolean readonly)throws RemoteException;
+    void setRealtime(boolean realtime)throws RemoteException;
    /* Low level MDS database management routines, will be  masked by the Node class*/
     public int open() throws RemoteException, DatabaseException;
     public void write(int ctx) throws RemoteException, DatabaseException;
@@ -41,11 +43,10 @@ public interface RemoteTree extends Remote {
     public NidData [] getWild(int usage_mask, int ctx) throws RemoteException, DatabaseException;
     public int create(int shot) throws RemoteException, DatabaseException;
     public String dataToString(Data data)throws RemoteException;
-    public Data dataFromExpr(String expr)throws RemoteException; 
-    public int getCurrentShot() throws RemoteException; 
-    public int getCurrentShot(String experiment)throws RemoteException; 
-    public void setCurrentShot(int shot)throws RemoteException; 
-    public void setCurrentShot(String experiment, int shot)throws RemoteException; 
-  }  
-    
-    
+    public Data dataFromExpr(String expr)throws RemoteException;
+    public int getCurrentShot() throws RemoteException;
+    public int getCurrentShot(String experiment)throws RemoteException;
+    public void setCurrentShot(int shot)throws RemoteException;
+    public void setCurrentShot(String experiment, int shot)throws RemoteException;
+  }
+

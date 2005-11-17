@@ -128,8 +128,8 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
     {
       return  NULL;
     }
-/*printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
-*/
+//printf("DescripToObject dtype = %d class = %d\n", desc->dtype, desc->class);
+
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer);
   switch(desc->class) {
@@ -234,6 +234,15 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		  args[0].l = (*env)->NewStringUTF(env, buf);
 		  free(buf);
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+
+		case DTYPE_MISSING: 
+			cls = (*env)->FindClass(env, "IntArray");
+			constr = (*env)->GetStaticMethodID(env, cls, "getData", "([IZ)LData;");
+			jints = (*env)->NewIntArray(env, 0);
+			args[0].l = jints;
+			args[1].z = 0;
+			if(is_ca) MdsFree1Dx(&ca_xd, 0);
+			return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
         default: 
 		  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
@@ -672,7 +681,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = sizeof(long);
+		    array_d->length = sizeof(_int64);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -684,7 +693,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = 2*sizeof(long);
+		    array_d->length = 2*sizeof(_int64);
 		    array_d->arsize = array_d->length * length/2;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);

@@ -205,7 +205,8 @@ public class DeviceField
       return;
     try
     {
-      textF.setText( (String) data);
+        String textData = Tree.dataToString((Data)data);
+        textF.setText(textData);
     }
     catch (Exception exc)
     {}

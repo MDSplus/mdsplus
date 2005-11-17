@@ -13,6 +13,8 @@ public class DeviceTable extends DeviceComponent
 //    int preferredHeight = 100;
     int numRows = 3;
     int numCols = 3;
+    int currRow = -1;
+    int currCol = -1;
     String columnNames[] = new String[0];
     String rowNames[] = new String[0];
     boolean state = true;
@@ -80,6 +82,8 @@ public class DeviceTable extends DeviceComponent
     public void setRowNames(String [] rowNames)
     {
         this.rowNames = rowNames;
+        if(rowNames != null && rowNames.length > 0)
+          displayRowNumber = true;
         redisplay();
     }
 
@@ -266,8 +270,14 @@ public class DeviceTable extends DeviceComponent
 
     void propagateToRow(int row, int col)
     {
+      if(row == -1 || col == -1)
+      {
+          row = currRow;
+          col = currCol;
+      }
+      if(row == -1 || col == -1)
+          return;
       if(displayRowNumber) col--;
-      if(row == -1 || col == -1) return;
       try
       {
         for (int i = 0; i < numCols; i++)
@@ -278,11 +288,17 @@ public class DeviceTable extends DeviceComponent
 
     void propagateToCol(int row, int col)
     {
+      if(row == -1 || col == -1)
+      {
+          row = currRow;
+          col = currCol;
+      }
+      if(row == -1 || col == -1)
+          return;
       if(displayRowNumber) col--;
-      if(row == -1 || col == -1) return;
       try
       {
-        for (int i = 0; i < numCols; i++)
+        for (int i = 0; i < numRows; i++)
           items[col  + i * numCols] = items[row*numCols + col];
       }catch(Exception exc){}
       table.repaint();
@@ -304,6 +320,7 @@ public class DeviceTable extends DeviceComponent
             else
                 decompiled = Tree.dataToString(subtree.evaluateData(data, 0));
       }catch(Exception exc){System.err.println(exc); decompiled = null;}
+
         items = new String[numCols * numRows];
         int idx = 0;
         for(int i = 0; i < items.length; i++)
@@ -322,6 +339,8 @@ public class DeviceTable extends DeviceComponent
                     items[idx]+=",";
             }
         }
+
+
         label.setText(labelString);
 
 
@@ -428,6 +447,10 @@ public class DeviceTable extends DeviceComponent
                 {
                   boolean isOn = ((Boolean)value).booleanValue();
                   items[itemIdx] = (isOn)?"1":"0";
+                  currRow = row;
+                  currCol = col;
+
+
                 }
                 else
                   items[itemIdx] = (String)value;

@@ -48,6 +48,7 @@ typedef int ssize_t;
 typedef int mode_t;
 typedef int socklen_t;
 typedef void *pthread_mutex_t;
+#define MSG_DONTWAIT 0
 #else
 #ifndef SOCKET_ERROR
 #define SOCKET_ERROR -1

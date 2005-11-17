@@ -53,7 +53,7 @@ install:
 		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
-	ln -sf libRoam@SHARETYPE@ @libdir@/libRoam_@GLOBUS_FLAVOR@SHARETYPE@
+	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@/libRoam@SHARETYPE@
 	chmod 755 @libdir@/libRoam@SHARETYPE@
 	$(INSTALL) -m 755  @MAKEBINDIR@roam_check_access @bindir@
         ifdef modules

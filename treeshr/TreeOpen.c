@@ -1323,6 +1323,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
         {
           free(info->treenam);
           free(info);
+		  status = TreeFAILURE;
         }
       }
     }

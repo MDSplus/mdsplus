@@ -30,7 +30,7 @@ GLOBUS_LOCATION=$RPM_BUILD_ROOT/usr/local/fusiongrid
 GPT_LOCATION=$RPM_BUILD_ROOT/usr/local/fusiongrid
 export GLOBUS_LOCATION
 export GPT_LOCATION
-$GPT_LOCATION/sbin/gpt-build --disable-version-checking --installdir=$GLOBUS_LOCATION $MAKEKIT_DIR/myproxy*.tar.gz gcc32
+$GPT_LOCATION/sbin/gpt-build --disable-version-checking --installdir=$GLOBUS_LOCATION mdsplus/rpm/myproxy*.tar.gz gcc32
 $GPT_LOCATION/sbin/gpt-postinstall --force
 LD_LIBRARY_PATH=$RPM_BUILD_ROOT/usr/local/fusiongrid/lib
 export LD_LIBRARY_PATH
@@ -42,7 +42,7 @@ make
 cd ..
 
 %install
-cp $MAKEKIT_DIR/fglogin $RPM_BUILD_ROOT/usr/local/fusiongrid/bin
+cp mdsplus/rpm/fglogin $RPM_BUILD_ROOT/usr/local/fusiongrid/bin
 cd mdsplus
 make install
 tar czf $RPM_BUILD_ROOT/usr/local/fusiongrid/setup/grid-security.tgz --exclude='*hostcert*' --exclude='*hostkey*' /etc/grid-security

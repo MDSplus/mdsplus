@@ -1,5 +1,7 @@
 /*
 		A basic implementation of the DeviceSetup class.
+                Korea Basic Science Institute(KBSI)
+                Version 1.0
 */
 import java.awt.*;
 import java.awt.event.*;
@@ -12,32 +14,15 @@ import javax.swing.event.*;
 
 
 public class VX4244Setup extends DeviceSetup
-{       //TDI Source of vx4244__add.fun 의 addnode 의 Count number 이다. 0 부터 시작한다.
+{
         static final int NID_ADDRESS = 1;
         static final int NID_SAMPLE_PERIOD = 5;
         static final int NID_SAMPLE_DELAY = 6;
-//        static final int NID_SAMPLE_SOURCE = 7;
         static final int NID_SAMPLE_NUM = 8;
-//        static final int NID_SAMPLE_NUMPRE = 9;
         static final int NID_TRIG_SOURCE = 11;
-//        static final int NID_TRIG_SLOPE = 12;
         static final int NID_INPUT_RANGE = 19;
-//        static final int NID_INPUT_PORT = 20;
 
-/*        static final int NID_TRIG_SOURCE_External = 12;
-        static final int NID_TRIG_SOURCE_Immediate = 13;
-        static final int NID_TRIG_SOURCE_VXIcmd = 14;
-        static final int NID_TRIG_SOURCE_Threshold = 15;
-        static final int NID_TRIG_SOURCE_TTL0 = 16;
-        static final int NID_TRIG_SOURCE_TTL1 = 17;
-        static final int NID_TRIG_SOURCE_TTL2 = 18;
-        static final int NID_TRIG_SOURCE_TTL3 = 19 ;
-        static final int NID_TRIG_SOURCE_TTL4 = 20 ;
-        static final int NID_TRIG_SOURCE_TTL5 = 21 ;
-        static final int NID_TRIG_SOURCE_TTL6 = 22;
-        static final int NID_TRIG_SOURCE_TTL7 = 23;
-        static final int NID_TRIG_SOURCE_Logic = 24;
-*/
+
 
         public VX4244Setup(Frame parent)
 	{
@@ -91,7 +76,7 @@ public class VX4244Setup extends DeviceSetup
               trigString[12]= "Logic AND-0 OR-1";
                trigbits.setLabelString("Trig Source");
               trigbits.setCheckString(trigString);
-              trigbits.setOffsetNid(NID_TRIG_SOURCE+(39*j)); // 처리 해야할곳
+              trigbits.setOffsetNid(NID_TRIG_SOURCE+(39*j));
               jTrigPanel.add(trigbits);
               jTabbedPane.addTab( "Trig Group #"+(j+1), jTrigPanel);
             }
@@ -100,7 +85,7 @@ public class VX4244Setup extends DeviceSetup
                {   // Group 1 = 1-4 channel setting
                    jPanel = new JPanel();
                    jPanel.setLayout(new GridLayout(10,1));
-                   jPanel.setBorder(new TitledBorder("Input Group"+(j+1)));
+                   jPanel.setBorder(new TitledBorder("Group"+(j+1)+", #Sample Max : 262,144/Group" ));
                    rangetext = new JLabel();
                    rangetext.setText("                                     Range");
                    jPanel.add(rangetext);
@@ -122,7 +107,7 @@ public class VX4244Setup extends DeviceSetup
                       ch[i].setChoiceItems(tempString);
                       ch[i].setChoiceIntValues(range);
                       ch[i].setLabelString("AI " + ((i+1)+(4*j)));
-                      ch[i].setOffsetNid(NID_INPUT_RANGE + (6*i+39*j));//RANGE를 Count 를 해보면 이런 계산이 나온다.
+                      ch[i].setOffsetNid(NID_INPUT_RANGE + (6*i+39*j));
                       jPanel.add(ch[i]);
                    }
                    //sample length setting part
@@ -161,7 +146,7 @@ public class VX4244Setup extends DeviceSetup
                 }
                 c.gridy=1;
                 contentPane.add(jTabbedPane, c);
-                //contentPane에 dispatch와 ok,cancel,apply 등의 버튼을 추가하기위한 소스
+
                 c.gridy=2;
                 contentPane.add(dispatch, c);
                {
@@ -171,7 +156,7 @@ public class VX4244Setup extends DeviceSetup
                       tempString[2] = "STORE";
                       deviceButtons.setMethods(tempString);
                       c.gridy=3;
-                      contentPane.add(deviceButtons,c);//jTraverse에서 deviceButtons을 가져와서 추가한다.?
+                      contentPane.add(deviceButtons,c);
                 }
               this.setSize(new Dimension(800, 800));
 	     }

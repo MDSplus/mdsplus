@@ -71,7 +71,7 @@ write(*, "XRAY init");
 
 
 	_start_idx = 0;
-	_end_idx = _acq_duration * _freq;
+	_end_idx = _acq_duration * _freq - 1;
 
 	_cmd = 'MdsConnect("'//_ip_addr_0//'")';
 	_status = execute(_cmd);

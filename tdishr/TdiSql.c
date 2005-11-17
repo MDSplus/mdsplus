@@ -74,6 +74,16 @@ STATIC_CONSTANT int	HUGE_L = 0x7fffffff;
 STATIC_CONSTANT short	HUGE_W = 0x7fff;
 STATIC_CONSTANT char	HUGE_B = 0x7f;
 
+/*
+STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fbfffff;
+STATIC_CONSTANT unsigned long long nan_d_bits = 0xffffffff7ff7ffff;
+*/
+STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fc00000;
+STATIC_CONSTANT unsigned long long nan_d_bits = 0x7ff8000000000000;
+
+static double d_null = 0;
+static float  f_null = 0;
+
 STATIC_CONSTANT const char *default_date = "Jan 01 1970 12:00:00:000AM";
 static DESCRIPTOR(ddate, "dd-mmm-yyyy hh:mm:ss.cc");
 static int	width = 0, head = 2;
@@ -148,6 +158,7 @@ return status;
 }
 
 static int date=0;
+static int NaN=0;
 
 static struct ans_buf {
 	void *vptr;
@@ -336,12 +347,12 @@ int 	rblob;
 					AppendAnswer(j, buf, len, dtype);
 					break;
 				case SYBFLT8:
-					if (ind) {buf = (char *)&HUGE_D;bufs[j].len = 8;}
+					if (ind) {buf = (NaN)?(char *)&nan_d_bits:(char *)&HUGE_D;bufs[j].len = 8;}
 					dtype = DTYPE_FT;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
 				case SYBREAL:
-					if (ind) {buf = (char *)&HUGE_F;bufs[j].len = 4;}
+					if (ind) {buf = (NaN)?(char *)&nan_f_bits:(char *)&HUGE_F;bufs[j].len = 4;}
 					dtype = DTYPE_FS;
 					AppendAnswer(j, buf, bufs[j].len, dtype);
 					break;
@@ -375,7 +386,7 @@ int 	rblob;
 #ifdef VMS
 						quadword big_time;
 						struct dsc$descriptor_s date_dsc = {22, DSC$K_DTYPE_T, DSC$K_CLASS_S, (char *)ddate};
-						len=sizeof(HUGE_D);
+						len=sizeof(d_null);
 						dtype = DTYPE_FT;
 						ddate[20] = '.';
 						ddate[3] = ddate[0];
@@ -385,7 +396,7 @@ int 	rblob;
 						ddate[5] = __toupper(ddate[2]);
 						ddate[2] = '-';
 						ddate[6] = '-';
-						if (status < 0) {buf = (char *)&HUGE_D; break;}
+						if (status < 0) {buf = (char *)&d_null; break;}
 						status = sys$bintim(&date_dsc, &big_time);
 						if(status&1) {
 							double t1;
@@ -396,15 +407,15 @@ int 	rblob;
 							buf = (char *)&d_ans;
 						}
 						else
-							buf = (char *)&HUGE_D;
+							buf = (char *)&d_null;
 						break;
 #else
 						STATIC_CONSTANT char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
 						STATIC_CONSTANT int day[] = {0,31,59,90,120,151,181,212,243,273,304,334};
 						char	mon[4], *moptr, ampm[3];
-						len=sizeof(HUGE_D);
+						len=sizeof(d_null);
 						dtype = DTYPE_FT;
-						if (status < 0) {buf = (char *)&HUGE_D; break;}
+						if (status < 0) {buf = (char *)&d_null; break;}
 						ddate[status] = '\0';
 						if (type == SYBDATETIME)
 							sscanf(ddate, "%3s %2d %4d %2d:%2d:%2d:%3d%2s",
@@ -563,12 +574,26 @@ STATIC_CONSTANT DESCRIPTOR(zero, "\0");
           } else date = 0;
         }
 
+        /* see if the 2nd to last argument is "/NaN" */
+        if ((status & 1) && (narg > 2)) {
+          int ss = TdiData(list[narg-2], &dq_text MDS_END_ARG);
+          if (ss) {
+	    if (dq_text.length == 4)
+	      NaN = (strncmp("/NaN", dq_text.pointer, 4) == 0);
+            else
+	      NaN = 0;
+	    StrFree1Dx( &dq_text);
+          } else NaN = 0;
+        } else NaN = 0;
+
+ 
 	if (status & 1) status = SQL_DYNAMIC(
 		Gets,	/*routine to fill markers	*/
 		Puts,	/*routine to store selctions	*/
 		dtext.pointer,		/*text string descriptor	*/
 		&user_args,	/*value passed to GETS and PUTS	*/
 		&rows);		/*output, number of rows	*/
+
 	StrFree1Dx(&dtext);
 	if (status & 1) {
 	  status = MdsCopyDxXd(&drows, out_ptr);

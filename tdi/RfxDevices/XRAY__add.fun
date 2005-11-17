@@ -1,7 +1,7 @@
 public fun XRAY__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'XRAY', 714, _nidout);
+    DevAddStart(_path, 'XRAY', 715, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT',    *,     *, _nid);
     DevAddNode(_path // ':IP_ADDR_0',   'TEXT',    *,     *, _nid);
     DevAddNode(_path // ':IP_ADDR_1',   'TEXT',    *,     *, _nid);
@@ -41,7 +41,8 @@ public fun XRAY__add(in _path, out _nidout)
         DevAddNode(_cn// ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
     }
 
-    DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 50,'TOMO_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION1', 'PULSE_PREPARATION', 'INIT_1', 50,'TOMO_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION2', 'PULSE_PREPARATION', 'INIT_2', 50,'TOMO_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'TOMO_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 

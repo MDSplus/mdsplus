@@ -1,4 +1,5 @@
 import java.util.*;
+import java.text.*;
 
 class MdsMonitorEvent extends MdsServerEvent
 {
@@ -24,6 +25,7 @@ class MdsMonitorEvent extends MdsServerEvent
     Date   date;
     String date_st;
     String error_message;
+    long execution_time; //msec
 
     public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
     {
@@ -126,11 +128,16 @@ class MdsMonitorEvent extends MdsServerEvent
         return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+";status="+ret_status+"]");
     }
 
+ 
     public synchronized String getMonitorString()
     {
         StringBuffer out = new StringBuffer();
 
-        out.append(date_st+", ");
+        if(mode == MonitorDone)
+          out.append("["+ msecToString(execution_time) +"] "+date_st+", ");
+        else
+          out.append(date_st+", ");
+
         switch(mode)
         {
             case MonitorBuildBegin :
@@ -140,7 +147,7 @@ class MdsMonitorEvent extends MdsServerEvent
                 out.append(" Action " + on_off + " node "+ node_path );
                 break;
             case MonitorDispatched :
-                out.append(" Dispatching node "+ node_path + " to " + server);
+                out.append(" Dispatching node "+ node_path + "("+nid+")"+" to " + server);
                 break;
             case MonitorDoing      :
                 out.append(" Doing "+ node_path + " in " + tree + " shot " + shot + " on "+server);
@@ -153,6 +160,19 @@ class MdsMonitorEvent extends MdsServerEvent
                 break;
         }
         return out.toString().trim();
+    }
+
+    private String msecToString(long msec)
+    {
+      int min = (int)(msec/60000.);
+      msec -= min * 60000;
+      int sec = (int)(msec / 1000.);
+      msec -= sec * 1000;
+
+      DecimalFormat df = new DecimalFormat("#00");
+      DecimalFormat df1 = new DecimalFormat("#000");
+
+      return df.format(min)+"."+df.format(sec)+"."+df1.format(msec);
     }
 
 }

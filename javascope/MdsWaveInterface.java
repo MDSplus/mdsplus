@@ -729,7 +729,7 @@ class MdsWaveInterface extends WaveInterface
 	        WaveInterface.WriteLine(out,prompt + "update_limits: "   , ""+cin_upd_limits);
 
 	        if(show_legend) {
-	            WaveInterface.WriteLine(out,prompt + "legend: "           , "("+legend_x+","+legend_y+")");
+	            WaveInterface.WriteLine(out,prompt + "legend: "      , "("+legend_x+","+legend_y+")");
 	        }
 	    } else {
 	       WaveInterface.WriteLine(out,prompt + "is_image: "          , ""+is_image);
@@ -757,11 +757,11 @@ class MdsWaveInterface extends WaveInterface
 	   WaveInterface.WriteLine(out,prompt + "ymax: "            , cin_ymax);
 	   WaveInterface.WriteLine(out,prompt + "xmin: "            , cin_xmin);
 	   WaveInterface.WriteLine(out,prompt + "xmax: "            , cin_xmax);
-        if(is_image)
-        {
+           if(is_image)
+           {
 	       WaveInterface.WriteLine(out,prompt + "time_min: "            , cin_timemin);
 	       WaveInterface.WriteLine(out,prompt + "time_max: "            , cin_timemax);
-        }
+           }
 	   WaveInterface.WriteLine(out,prompt + "title: "           , cin_title);
 	   WaveInterface.WriteLine(out,prompt + "global_defaults: " , ""+defaults);
 
@@ -780,7 +780,9 @@ class MdsWaveInterface extends WaveInterface
 
 	            for(sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
 	            {
-		           WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);
+		          // WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);
+                           WaveInterface.WriteLine(out,prompt + "mode_1D"+"_"+exp_n+"_"+sht_n+": ",""+ mode1DCodeToString(mode1D[exp + sht]));
+                           WaveInterface.WriteLine(out,prompt + "mode_2D"+"_"+exp_n+"_"+sht_n+": ",""+ mode2DCodeToString(mode2D[exp + sht]));
 		           WaveInterface.WriteLine(out,prompt + "color"      +"_"+exp_n+"_"+sht_n+": ",""+colors_idx[exp + sht]);
 		           WaveInterface.WriteLine(out,prompt + "marker"     +"_"+exp_n+"_"+sht_n+": ",""+markers[exp + sht]);
 		           WaveInterface.WriteLine(out,prompt + "step_marker"+"_"+exp_n+"_"+sht_n+": ",""+markers_step[exp + sht]);
@@ -788,6 +790,48 @@ class MdsWaveInterface extends WaveInterface
 	        }
 	    }
     }
+
+    public String mode1DCodeToString(int code)
+    {
+        switch(code)
+        {
+            case Signal.MODE_LINE   : return "Line";
+            case Signal.MODE_NOLINE : return "Noline";
+            case Signal.MODE_STEP   : return "Step";
+        }
+        return "";
+    }
+
+    public int mode1DStringToCode(String mode)
+    {
+        if (mode.equals("Line")  )  return Signal.MODE_LINE;
+        if (mode.equals("Noline"))  return Signal.MODE_NOLINE;
+        if (mode.equals("Step")  )  return Signal.MODE_STEP;
+        return 0;
+    }
+
+
+    public String mode2DCodeToString(int code)
+    {
+        switch(code)
+        {
+            case Signal.MODE_YTIME   : return "y & time";
+            case Signal.MODE_XY      : return "x & y";
+            case Signal.MODE_YX      : return "y & x";
+            case Signal.MODE_IMAGE   : return "Image";
+         }
+        return "";
+    }
+
+    public int mode2DStringToCode(String mode)
+    {
+        if (mode.equals("y & time"))  return Signal.MODE_YTIME;
+        if (mode.equals("x & y"))     return Signal.MODE_XY;
+        if (mode.equals("y & x"))     return Signal.MODE_YX;
+        if (mode.equals("Image"))     return Signal.MODE_IMAGE;
+        return 0;
+    }
+
 
 
     public void FromFile(Properties pr, String prompt) throws IOException
@@ -1069,14 +1113,28 @@ class MdsWaveInterface extends WaveInterface
                 {
                     expr_idx = (idx - 1)*num_shot - 1;
 
-		            prop = pr.getProperty(prompt+".interpolate_"+idx+"_"+s);
-		            if(prop != null)
+/*
+                    prop = pr.getProperty(prompt+".interpolate_"+idx+"_"+s);
+                    if(prop != null)
                     {
                         interpolates[expr_idx + s] = new Boolean(prop).booleanValue();
                     }
+*/
+                    prop = pr.getProperty(prompt+".mode_1D_"+idx+"_"+s);
+                    if(prop != null)
+                    {
+                        mode1D[expr_idx + s] = mode1DStringToCode( (String) prop);
+                    }
 
-		            prop = pr.getProperty(prompt+".color_"+idx+"_"+s);
-		            if(prop != null)
+                    prop = pr.getProperty(prompt+".mode_2D_"+idx+"_"+s);
+                    if(prop != null)
+                    {
+                        mode2D[expr_idx + s] = mode2DStringToCode( (String) prop);
+                    }
+
+
+                    prop = pr.getProperty(prompt+".color_"+idx+"_"+s);
+                    if(prop != null)
                     {
                         try
                         {

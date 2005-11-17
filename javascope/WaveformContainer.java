@@ -239,10 +239,16 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 			                AllSameXScaleAutoY(w);
                     UpdatePoints(x, y, (Waveform)e.getSource());
                 }
+                /*
                 if(!w.IsImage() && show_measure)
-                    e = new WaveformEvent(e.getSource(), WaveformEvent.MEASURE_UPDATE,
-                                        e.point_x, e.point_y, e.delta_x, e.delta_y,
-                                        0, e.signal_idx);
+                {
+                    e = new WaveformEvent(e.getSource(),
+                                          WaveformEvent.MEASURE_UPDATE,
+                                          e.point_x, e.point_y, e.delta_x,
+                                          e.delta_y,
+                                          0, e.signal_idx);
+                }
+                */
            break;
            case WaveformEvent.POINT_IMAGE_UPDATE:
            break;
@@ -942,6 +948,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	                curr_height = height - pos;
 	            g.setClip(0, 0, curr_width, curr_height);
 	            w = GetWavePanel(k);
+
 	            if(w != null)
 	            {
 	                int print_mode = Waveform.PRINT;

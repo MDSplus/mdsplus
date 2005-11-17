@@ -1,6 +1,5 @@
 public fun RFXControl__store(as_is _nid, optional _method)
 {
-
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_VME_IP = 2;
@@ -21,30 +20,42 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_ZERO = 17;
     private _N_MAPPING_ID = 18;
     private _N_MAPPING = 19;
-    private _N_N_ADC_IN = 16;
-    private _N_N_DAC_OUT = 17;
-    private _N_N_USER = 17;
-    private _N_N_NET_IN = 18;
-    private _N_N_NET_OUT = 19;
-	private _N_RAMP_SLOPE = 20;
-	private _N_RAMP_TRIGGER = 21;
-	private _N_FEEDFORWARD = 22;
+    private _N_RAMP_SLOPE = 20;
+    private _N_RAMP_TRIGGER = 21;
+    private _N_FEEDFORWARD = 22;
     private _N_ROUTINE_NAME = 23;
-	private _N_N_ADC_IN = 24;
-	private _N_N_DAC_OUT = 25;
-	private _N_N_NET_IN = 26;
-	private _N_N_NET_OUT = 27;
-	private _N_N_MODES = 28;
+    private _N_N_ADC_IN = 24;
+    private _N_N_DAC_OUT = 25;
+    private _N_N_MODES = 27;
+    private _N_MODEL_1 = 28;
+    private _N_MODEL_2 = 29;
 	
-	private _N_ADC_IN_1 = 30;
-	private _N_DAC_OUT_1 = 222;
-	private _N_USER_1 = 1174;
-	private _N_MODES_1 = 446;
+    private _N_ADC_IN_1 = 31;
+    private _N_DAC_OUT_1 = 223;
+/*    private _N_USER_1 = 1226; */
+    private _N_USER_1 = 1306;
+    private _N_MODES_1 = 447;
+
+
+    private _N_PAR1_NAME = 832;
+    private _N_PAR1_VALUE = 833; 
+
+ 
+	private _MAX_CONTROLS = 8;
+/*	private _NUM_PARAMETERS = 195;*/
+	private _NUM_PARAMETERS = 235;
 
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
-    _cmd = 'MdsConnect("'//_vme_ip//'")';
+    _status = 0;	
+    _cmd = '_status = MdsConnect("'//_vme_ip//'")';
     execute(_cmd);
+    if(_status == 0)
+    {
+	  DevLogErr(_nid, 'Cannot connect to VME');
+	  abort();
+    }
+
 	_trigger = data(DevNodeRef(_nid, _N_TRIG1_TIME));
 	_frequency = data(DevNodeRef(_nid, _N_FREQUENCY));
 	if(_frequency <= 0)
@@ -55,24 +66,31 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	write(*, 'Frequency: ', _frequency);
 	_period = 1. / _frequency;
 	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0,0))');
+      if(_n_samples == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
 	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
+      if(_n_pretrigger == *)
+      {
+	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    abort();
+    	}
+
 	write(*, 'Num recorded samples = ', _n_samples);
 	_n_samples--;
     _clock = make_range(*,*, _period);
 
  	/* Build signal dimension */
-/*	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);*/
-	_dim = MdsValue('Feedback->getTimebase:dsc()');
+	_dim = make_dim(make_window(0, _n_samples, _trigger - _n_pretrigger * _period), _clock);
+/*	_dim = MdsValue('Feedback->getTimebase:dsc()'); */
 
 	/* Read number of signals */
 	_num_adc_in = data(DevNodeRef(_nid, _N_N_ADC_IN));
 	write(*, 'Num ADC in: ', _num_adc_in);
 	_num_dac_out = data(DevNodeRef(_nid, _N_N_DAC_OUT));
 	write(*, 'Num DAC out: ', _num_dac_out);
-	_num_net_in = data(DevNodeRef(_nid, _N_N_NET_IN));
-	write(*, 'Num NET in: ', _num_net_in);
-	_num_net_out = data(DevNodeRef(_nid, _N_N_NET_OUT));
-	write(*, 'Num NET out: ', _num_net_out);
 	_num_modes = data(DevNodeRef(_nid, _N_N_MODES));
 	write(*, 'Num MODES: ', _num_modes);
 
@@ -81,6 +99,12 @@ public fun RFXControl__store(as_is _nid, optional _method)
 write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_ADC_IN_1  + _c;
 			_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
+      		if(size(_data) == 0)
+      		{
+	    			DevLogErr(_nid, 'Cannot communicate to VME');
+	    			abort();
+    			}
+
 			_status = DevPutSignal(_sig_nid, 0, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
@@ -92,9 +116,14 @@ write(*, _c);
 	for(_c = 0; _c < _num_dac_out; _c++)
 	{
 write(*, _c);
+
 			_sig_nid =  DevHead(_nid) + _N_DAC_OUT_1  + _c;
 			_data = MdsValue( 'Feedback->getDacSignal:dsc($1, $2)', _c/32, mod(_c, 32));
-
+      		if(size(_data) == 0)
+      		{
+	    			DevLogErr(_nid, 'Cannot communicate to VME');
+	    			abort();
+    			}
 			if(size(_data) <= 2)
 			{
 				DevLogErr(_nid, 'VME not triggered' // _status);
@@ -111,6 +140,11 @@ write(*, _c);
 	for(_c = 0; _c < _num_modes; _c++)
 	{
 		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 1)', _c);
+      	if(size(_data) == 0)
+      	{
+	    		DevLogErr(_nid, 'Cannot communicate to VME');
+	    		abort();
+    		}
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 		if(! _status)
@@ -119,6 +153,11 @@ write(*, _c);
 
 		}
 		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 0)', _c);
+      	if(size(_data) == 0)
+      	{
+	    		DevLogErr(_nid, 'Cannot communicate to VME');
+	    		abort();
+    		}
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c + 1;
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 		if(! _status)
@@ -129,6 +168,11 @@ write(*, _c);
 
 
 	_num_user_signals = MdsValue('Feedback->getNumUserSignals()');
+      if(size(_num_user_signals) == 0)
+      {
+	    	DevLogErr(_nid, 'Cannot communicate to VME');
+	    	abort();
+    	}
 	write(*, 'Num User Signals: ', _num_user_signals);
 	if(_c > 256) _c = 256;
 	for(_c = 0; _c < _num_user_signals; _c++)
@@ -136,6 +180,11 @@ write(*, _c);
 write(*, _c);
 			_sig_nid =  DevHead(_nid) + _N_USER_1  + _c;
 			_data = MdsValue('Feedback->getUserSignal:dsc($1)', _c);
+      		if(size(_data) == 0)
+      		{
+	    			DevLogErr(_nid, 'Cannot communicate to VME');
+	    			abort();
+    			}
 			_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 			if(! _status)
 			{
@@ -148,6 +197,11 @@ write(*, _c);
 
 /* NET_IN and NET_OUT not yet implemented */ 
 	_zero = MdsValue('Feedback->getRfxZero:dsc()');
+      if(size(_zero) == 0)
+      {
+		DevLogErr(_nid, 'Cannot communicate to VME');
+	    	abort();
+    	}
 	_status = DevPut(_nid, _N_ZERO, _zero);
 	if(! _status)
 	{

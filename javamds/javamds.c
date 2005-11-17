@@ -314,7 +314,7 @@ static void *MdsGetArray(char *in, int *out_dim, int is_float, int is_byte, int 
 
 
 /* Implementation of the native methods for LocalProvider class in jScope */
-JNIEXPORT void JNICALL Java_LocalDataProvider_Update(JNIEnv *env, jobject obj, jstring exp, jlong shot)
+JNIEXPORT void JNICALL Java_LocalDataProvider_UpdateNative(JNIEnv *env, jobject obj, jstring exp, jlong shot)
 {
     const char *exp_char;
     error_message[0] = 0;
@@ -350,7 +350,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     int dim;
     float *out_ptr;
-    
+
 	out_ptr = MdsGetArray((char *)in_char, &dim, 1, 0, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
@@ -394,7 +394,8 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
 
 
    in_char = (*env)->GetStringUTFChars(env, in, 0);
-     out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 0);
+
+   out_ptr = MdsGetArray((char *)in_char, &dim, 0, 0, 0);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
     if(error_message[0]) /*Return a dummy vector without elements*/
     {

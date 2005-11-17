@@ -52,7 +52,11 @@ public class RFXPoloidalSetup extends DeviceSetup {
   JPanel jPanel14 = new JPanel();
   DeviceField deviceField13 = new DeviceField();
   DeviceField deviceField14 = new DeviceField();
-  public RFXPoloidalSetup() {
+    JPanel jPanel15 = new JPanel();
+    DeviceField deviceField15 = new DeviceField();
+    DeviceField deviceField16 = new DeviceField();
+    DeviceField deviceField17 = new DeviceField();
+    public RFXPoloidalSetup() {
     try {
       jbInit();
     }
@@ -73,7 +77,7 @@ public class RFXPoloidalSetup extends DeviceSetup {
     this.getContentPane().setLayout(borderLayout1);
     jPanel1.setLayout(gridLayout1);
     gridLayout1.setColumns(1);
-    gridLayout1.setRows(3);
+    gridLayout1.setRows(4);
     deviceField1.setOffsetNid(1);
     deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment:");
@@ -152,17 +156,33 @@ public class RFXPoloidalSetup extends DeviceSetup {
     deviceField14.setLabelString("PV Connection:");
     deviceField14.setIdentifier("");
     deviceField14.setEditable(false);
-    this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
+        deviceField17.setOffsetNid(22);
+        deviceField17.setIdentifier("");
+        deviceField17.setNumCols(5);
+        deviceField17.setLabelString("RA (Ohm):");
+        deviceField16.setOffsetNid(23);
+        deviceField16.setIdentifier("");
+        deviceField16.setNumCols(5);
+        deviceField16.setLabelString("RB (Ohm):");
+        deviceField15.setOffsetNid(24);
+        deviceField15.setIdentifier("");
+        deviceField15.setNumCols(5);
+        deviceField15.setLabelString("RF (Ohm):");
+        this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField1, null);
-    jPanel1.add(jPanel5, null);
+        jPanel1.add(jPanel5, null);
     jPanel5.add(deviceField3, null);
     jPanel5.add(deviceField2, null);
     jPanel1.add(jPanel4, null);
     jPanel4.add(deviceField5, null);
     jPanel4.add(deviceField4, null);
-    this.getContentPane().add(jPanel2, BorderLayout.CENTER);
+        jPanel1.add(jPanel15);
+        jPanel15.add(deviceField17);
+        jPanel15.add(deviceField16);
+        jPanel15.add(deviceField15);
+        this.getContentPane().add(jPanel2, BorderLayout.CENTER);
     jPanel2.add(jPanel6, null);
     jPanel6.add(jPanel9, BorderLayout.NORTH);
     jPanel9.add(deviceField6, null);
@@ -181,6 +201,6 @@ public class RFXPoloidalSetup extends DeviceSetup {
     jPanel7.add(jPanel14,  BorderLayout.CENTER);
     jPanel14.add(deviceField14, null);
     jPanel14.add(deviceField13, null);
-  }
+    }
 
 }

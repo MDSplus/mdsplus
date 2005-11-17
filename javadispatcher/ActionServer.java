@@ -18,20 +18,26 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         active = false; //True if the server is ready to participate to the CURRENT shot
     javax.swing.Timer timer;
     static final int RECONNECT_TIME = 5;
+    boolean useJavaServer = true;
 
+    public ActionServer(String tree, String ip_address, String server_class, boolean useJavaServer)
+    {
+      this (tree, ip_address,  server_class, null, useJavaServer);
+    }
     public ActionServer(String tree, String ip_address, String server_class)
     {
-      this (tree, ip_address,  server_class, null);
+      this (tree, ip_address,  server_class, null, true);
     }
 
-    public ActionServer(String tree, String ip_address, String server_class, String subtree)
+    public ActionServer(String tree, String ip_address, String server_class, String subtree, boolean useJavaServer)
     {
         this.tree = tree;
         this.server_class = server_class;
         this.ip_address = ip_address;
         this.subtree = subtree;
+        this.useJavaServer = useJavaServer;
         try {
-            mds_server = new MdsServer(ip_address);
+            mds_server = new MdsServer(ip_address, useJavaServer);
             mds_server.addMdsServerListener(this);
             mds_server.addConnectionListener(this);
             ready = active = true;
@@ -89,6 +95,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     public void setTree(String tree) {this.tree = tree; }
    // public boolean isActive() {return mds_server != null; }
     public boolean isActive() {return ready && active; }
+    public String getAddress(){return ip_address;}
     public boolean isReady() {if(ready) active = true; return ready;}
     public void processConnectionEvent(ConnectionEvent e)
     {
@@ -109,7 +116,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                         synchronized(ActionServer.this)
                         {
                             try {
-                                mds_server = new MdsServer(ip_address);
+                                mds_server = new MdsServer(ip_address, useJavaServer);
                                 mds_server.addMdsServerListener(ActionServer.this);
                                 mds_server.addConnectionListener(ActionServer.this);
                                 mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
@@ -152,7 +159,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                     {
                                         action = (Action)enqueued_actions.elementAt(i);
                                         try {
-                                            mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+                                            //mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+                                            mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
                                         }catch(Exception exc) {}
                                     }
                                 }
@@ -178,10 +186,11 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             enqueued_actions.addElement(action);
         }
         try {
-           // mds_server.dispatchAction(tree, shot, action.getNid(), action.getTimestamp());
-            mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+  //           mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+            mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
         }catch(Exception exc) {processAborted(action);}
     }
+
 
 
     public synchronized void processMdsServerEvent(MdsServerEvent e)
@@ -362,8 +371,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             {
                 curr_action = (Action)action_list.nextElement();
                 try {
-                    mds_server.dispatchAction(ActionServer.this.tree, shot,
-                        curr_action.getNid(), curr_action.getNid());
+                   // mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getNid(), curr_action.getNid());
+                     mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getName(), curr_action.getNid());
                     enqueued_actions.addElement(curr_action);
                 }catch(Exception exc) {}
             }
@@ -380,7 +389,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
           {
             try {
               sleep(2000);
-              mds_server = new MdsServer(ip_address);
+              mds_server = new MdsServer(ip_address, useJavaServer);
               mds_server.addMdsServerListener(ActionServer.this);
               mds_server.addConnectionListener(ActionServer.this);
               System.out.println("Reconnected to to server " + ip_address + " server class " + server_class);

@@ -20,6 +20,7 @@ SOURCES = boxsmooth.c \
 	  filter.c \
 	  complex.c \
 	  butterworth.c \
+	  bessel.c \
 	  fir.c \
 	  iir.c \
 	  MdsFilter.c

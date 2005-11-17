@@ -133,7 +133,7 @@ public class jTraverser extends JFrame implements ActionListener
 
 	tree = new Tree(this);
 	if(exp_name != null)
-	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), false, false);
+	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), false, false, false);
 	else
 	    setTitle("jTraverser - no tree open");
 	getContentPane().add(tree);

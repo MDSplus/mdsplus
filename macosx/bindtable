@@ -22,5 +22,5 @@
 0x12400000 libMdsSql.dylib
 0x12500000 libIdlSql.dylib
 0x12600000 libhdf5tdi.dylib
-
+0x12700000 libJavaMds.jnilib
 

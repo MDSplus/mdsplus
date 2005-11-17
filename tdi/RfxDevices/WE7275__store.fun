@@ -266,7 +266,7 @@ write(*, "offset ", FT_FLOAT(_vOffset[0]));
 write(*, "gain ", FT_FLOAT(_vResolution[0]));
 
 				_dataSig = _data[_pre_trigger + _start_idx: _pre_trigger + _end_idx: *];
-				_status = DevPutSignal(_sig_nid, 0, _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
+				_status = DevPutSignal(_sig_nid, _vOffset[0] / _vResolution[0], _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
 
 				if(! _status)
 				{

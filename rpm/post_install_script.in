@@ -35,6 +35,22 @@ if [ -r $MDSPLUS_DIR/GLOBUS_LICENSE ]
 then
   product=FusionGrid
   echo "GLOBUS_LOCATION $MDSPLUS_DIR" >> $MDSPLUS_DIR/etc/envsyms
+  GLOBUS_LOCATION=$MDSPLUS_DIR
+  GPT_LOCATION=$MDSPLUS_DIR
+  export GPT_LOCATION
+  export GLOBUS_LOCATION
+  if ( test "$RPM_INSTALL_PREFIX" != "")
+  then
+    $GPT_LOCATION/sbin/gpt-postinstall --force
+    echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo ". $MDSPLUS_DIR/setup.sh" >> $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo "$MDSPLUS_DIR/sbin/globus-gatekeeper -conf $MDSPLUS_DIR/etc/globus-gatekeeper.conf" >> $MDSPLUS_DIR/sbin/gsigatekeeper
+    chmod a+x $MDSPLUS_DIR/sbin/gsigatekeeper
+    echo "!/bin/sh" > $MDSPLUS_DIR/sbin/gsiftp
+    echo ". $MDSPLUS_DIR/setup.sh" >> $MDSPLUS_DIR/sbin/gsiftp
+    echo "$MDSPLUS_DIR/sbin/globus-gridftp-server -i" >> $MDSPLUS_DIR/sbin/gsiftp
+    chmod a+x $MDSPLUS_DIR/sbin/gsiftp 
+  fi
   if [ ! -r $MDSPLUS_DIR/local/envsyms ]
   then
     echo "include $MDSPLUS_DIR/local/roam.env" > $MDSPLUS_DIR/local/envsyms
@@ -42,16 +58,11 @@ then
   fi
   if [ ! -r $MDSPLUS_DIR/local/roam.env ]
   then
-    GLOBUS_LOCATIOON=$MDSPLUS_DIR
-    GPT_LOCATION=$MDSPLUS_DIR
-    export GPT_LOCATION
-    export GLOBUS_LOCATION
-    $GPT_LOCATION/sbin/gpt-postinstall --force 
     echo "ROAM_SERVER roam.fusiongrid.org" > $MDSPLUS_DIR/local/roam.env
     echo "ROAM_SITE_RESOURCE MYSITE" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIPS_RESOURCE MYDATA" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_GRIDFTP_RESOURCE MYSITE-GRIDFTP" >> $MDSPLUS_DIR/local/roam.env
-    echo "ROAM_JOBCONTROL_RESOURCE MYSITE-JOBS" >> $MDSPLUS_DIR/local/roam.env
+    echo "ROAM_JOBMANAGER_RESOURCE MYSITE-JOBS" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_GRIDFTP_GUEST_ACCOUNT nobody" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIP_RESOURCE MYSITE-MDSIP" >> $MDSPLUS_DIR/local/roam.env
     echo "ROAM_MDSIP_GUEST_ACCOUNT" >> $MDSPLUS_DIR/local/roam.env

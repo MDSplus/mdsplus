@@ -18,9 +18,7 @@ public class TreeNode extends JLabel
     public static void setSelectedNode(Node sel)
     {
 	    selected = sel;
-
-
-    }
+   }
 
 	public static void copyToClipboard()
 	{
@@ -28,21 +26,9 @@ public class TreeNode extends JLabel
                 Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
                 String []tags = selected.getTags();
                 StringSelection content;
-                if(tags != null && tags.length > 0)
-                {
-                  String expName = jTraverser.getExperimentName();
-                  if(expName != null && !expName.trim().equals(""))
-                    content = new StringSelection("\\\\"+expName+"::"+tags[0]);
-                  else
-                    content = new StringSelection(tags[0]);
-                  cb.setContents(content, null);
-                }
-                else
-                {
-                  String fullPath = selected.getInfo().getFullPath();
-                  content = new StringSelection(fullPath);
-                  cb.setContents(content, null);
-                }
+                String path = selected.getInfo().getPath();
+                content = new StringSelection(path);
+                cb.setContents(content, null);
 	    }catch(Exception exc){System.err.println("Cannot copy fullPath to Clipboard");}
 	}
     public static void copy()
@@ -80,6 +66,22 @@ public class TreeNode extends JLabel
 	    setBorder(BorderFactory.createLineBorder(Color.white, 1));
 	    //setText(node.getName().trim() + "                                   ");
 	    //setForeground(Color.black);
+
+    String tags[] = node.getTags();
+    if(tags.length > 0)
+    {
+        String tagsStr = "";
+        for(int i = 0; i < tags.length; i++)
+        {
+            tagsStr += tags[i];
+            if(i < tags.length - 1)
+                tagsStr += "\n";
+        }
+        setToolTipText(tagsStr);
+    }
+
+
+
     }
 
     public void paint(Graphics g)

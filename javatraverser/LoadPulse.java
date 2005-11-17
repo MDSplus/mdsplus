@@ -76,7 +76,23 @@ public class LoadPulse
                     if(nidsSignal == null) nidsSignal = new NidData[0];
                     NidData[] nidsStruct = tree.getWild( NodeInfo.USAGE_STRUCTURE, 0);
                     if(nidsStruct == null) nidsStruct = new NidData[0];
-                    NidData nids[] = new NidData[nidsNumeric.length + nidsText.length + nidsSignal.length + nidsStruct.length];
+
+ ////Get also data from subtree root
+
+                    int addedLen;
+                    try {
+                        tree.getData(currNid, 0);
+                        addedLen = 1;
+                    }catch(Exception exc){addedLen = 0;}
+
+                     NidData nids[] = new NidData[nidsNumeric.length + nidsText.length +
+                        nidsSignal.length + nidsStruct.length + addedLen];
+
+                    if(addedLen > 0)
+                        nids[nidsNumeric.length + nidsText.length +
+                        nidsSignal.length + nidsStruct.length] = currNid;
+///////////////////////
+
                     int j = 0;
                     for (int i = 0; i < nidsNumeric.length; i++)
                         nids[j++] = nidsNumeric[i];
@@ -134,7 +150,7 @@ public class LoadPulse
                 {
                     NidData currNid = tree.resolve(new PathData(currNode.getPath()), 0);
 
-                    if(currNode.isNoWriteModel()) System.out.println("NO WRITE MODEL!!");
+                    //if(currNode.isNoWriteModel()) System.out.println("NO WRITE MODEL!!" + currNode.getPath());
 
                     if(currNode.getDecompiled() != null && !currNode.isNoWriteModel())
                     {

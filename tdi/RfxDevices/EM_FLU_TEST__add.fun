@@ -1,7 +1,7 @@
 public fun EM_FLU_TEST__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'EM_FLU_TEST', 85, _nidout);
+    DevAddStart(_path, 'EM_FLU_TEST', 87, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 
 	DevAddNode(_path // '.POLOIDAL', 'STRUCTURE', *, *, _nid);
@@ -48,5 +48,8 @@ public fun EM_FLU_TEST__add(in _path, out _nidout)
 
 
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 55, 'EM_SERVER', getnci(_path, 'fullpath'), _nid);
+
+    DevAddNode(_path // ':POINT_ELAB', 'NUMERIC', 15, *, _nid);
+ 
     DevAddEnd();
 }

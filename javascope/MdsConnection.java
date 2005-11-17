@@ -258,6 +258,7 @@ public class MdsConnection
 		            out.long_data = message.ToUIntArray();
 		        break;
               */
+                    case Descriptor.DTYPE_ULONGLONG:
 	            case Descriptor.DTYPE_LONGLONG:
 		            out.long_data = message.ToLongArray();
 		        break;

@@ -159,6 +159,7 @@ static void ResetWave(Widget w)
   static DESCRIPTOR_DIMENSION(dimension,&window,0);
   int count = Count(w);
   int i;
+  int NeedToFreeAxis=1;
   end_idx = count - 1;
   dimension.axis = (struct descriptor *)XmdsNidOptionMenuGetXd(XtNameToWidget(Top(w),"*clock"));
   if (!dimension.axis)
@@ -176,6 +177,12 @@ static void ResetWave(Widget w)
   {
     static int ext_clock_nid;
     static DESCRIPTOR_NID(ext_clock,&ext_clock_nid);
+
+    /* free the one allocated by XmdsNidOptionMenuGetXd */
+    MdsFree1Dx((struct descriptor_xd *)dimension.axis,0);
+    XtFree((char *)dimension.axis);
+    NeedToFreeAxis = 0;
+
     XtVaGetValues(XtNameToWidget(Top(w),"*ext_clock"),XmNuserData, &ext_clock_nid, NULL);
     dimension.axis = &ext_clock;
   }
@@ -286,7 +293,7 @@ static void ResetWave(Widget w)
   }
   else
     XmdsComplain(w,"Trigger and clock must be resolvable before drawing can be enabled");
-  if (dimension.axis)
+  if (dimension.axis && NeedToFreeAxis)
   {
     MdsFree1Dx((struct descriptor_xd *)dimension.axis,0);
     XtFree((char *)dimension.axis);

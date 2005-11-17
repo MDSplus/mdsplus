@@ -37,7 +37,7 @@ STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
 STATIC_THREADSAFE HANDLE external_thread = 0;
 STATIC_THREADSAFE HANDLE external_event = 0;
 STATIC_THREADSAFE HANDLE thread_alive_event = 0;
-#define MAX_ACTIVE_EVENTS 50000   /* Maximum number events concurrently dealt with by processes */
+#define MAX_ACTIVE_EVENTS 20000   /* Maximum number events concurrently dealt with by processes */
 
 STATIC_THREADSAFE int external_shutdown = 0;
 STATIC_THREADSAFE int external_count = 0;          /* remote event pendings count */
@@ -655,7 +655,7 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 
 
 #define MAX_EVENTNAME_LEN 64 	 /* Maximum number of characters in event name */
-#define MAX_ACTIVE_EVENTS 50000   /* Maximum number events concurrently dealt with by processes */
+#define MAX_ACTIVE_EVENTS 20000   /* Maximum number events concurrently dealt with by processes */
 #define MAX_EVENTNAMES 	  1000   /* Maximum number of different event names */
 
 #define MAX_DATA_LEN 64		 /* Maximum number of bytes to be broadcasted by events */

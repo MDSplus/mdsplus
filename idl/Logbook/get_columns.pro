@@ -1,5 +1,5 @@
 
-FUNCTION GET_COLUMNS, table, columns, types, lengths, scales, tables, MATCH=match, QUIET=quiet, STATUS=status
+FUNCTION GET_COLUMNS, table, columns, types, lengths, scales, tables, MATCH=match, QUIET=quiet, STATUS=status, SORTED=sorted, CASE_INSENSITIVE=case_insensitive
 ;+
 ; NAME:		GET_COLUMNS.PRO
 ; PURPOSE:	Get column names of an Rdb table.
@@ -12,6 +12,9 @@ FUNCTION GET_COLUMNS, table, columns, types, lengths, scales, tables, MATCH=matc
 ;	MATCH=match a string to be matched using wildcards.
 ;		Use % for any string, _ for any one character.
 ;		Sybase is case-sensitive.
+;       /SORTED - if present sort the output alphabetically
+;                 /CASE_INSENSITIVE - if present, and /SORTED is
+;                                     present sort is done case insensitively.
 ;	/QUIET to suppress error messages.
 ;	STATUS=status to get error code.
 ; OPTIONAL OUTPUT PARAMETERS:
@@ -51,5 +54,11 @@ IF n_elements(quiet) eq 0 then quiet = 0
 	z = z + " ORDER BY o.name, ABS(c.offset)"
 	n = DSQL(z, tables, columns, types, lengths, scales,$
 		QUIET=quiet, STATUS=status)
+        if (keyword_set(sorted)) ne 0 then $
+          if (keyword_set(case_insensitive)) then $
+            columns = columns(sort(strupcase(columns))) $
+          else $
+            columns = columns(sort(columns))
+
 RETURN, n
 END

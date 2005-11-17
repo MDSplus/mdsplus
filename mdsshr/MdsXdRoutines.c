@@ -26,7 +26,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32
 #define LibVM_TAIL_LARGE     128
-#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
+#define align(bytes,size) ((((unsigned long)(bytes) + (size) - 1)/(size)) * (size))
 #define compression_threshold 128
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 

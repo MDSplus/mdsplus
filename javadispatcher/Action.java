@@ -24,10 +24,9 @@ class Action
         this.on = on;
         dispatch_status = NOT_DISPATCHED;
         status = 0;
-
     }
 
-   // public int getTimestamp() {return timestamp; }
+  //public int getTimestamp() {return timestamp; }
     public synchronized void setTimestamp(int timestamp) {this.timestamp = timestamp; }
     public synchronized ActionData getAction() {return action; }
     public synchronized int getNid() {return nid; }
@@ -52,7 +51,7 @@ class Action
             } catch(Exception e) {server = ""; }
             switch(dispatch_status) {
                 case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +
-                    name + " to " + server); break;
+                    name + "(" + nid+")"  +  " to " + server); break;
                  case DOING : System.out.println(""+new Date() + " " +server +
                         " is beginning action " + name); break;
                  case DONE :
@@ -67,5 +66,4 @@ class Action
         }
     }
     public synchronized String toString() {return name; }
-
 }

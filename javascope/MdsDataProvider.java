@@ -73,24 +73,7 @@ public class MdsDataProvider
                 {
                     all_times[i] = d.readFloat();
                 }
-                //header_size = 13 + 4 * n_frame;
                 header_size = 16 + 4 * n_frame;
-                /*
-                                 for(i = 0; i < n_frame; i++)
-                                 {
-                    t = d.readFloat();
-                    if(t > time_max)
-                        break;
-                    if(t > time_min)
-                    {
-                        f_time.addElement(new Float(t));
-                        if(st_idx == -1) st_idx = i;
-                    }
-                                 }
-                                 end_idx = i;
-                                 for(i = 0; i < f_time.size(); i++)
-                    all_times[i] = ((Float)f_time.elementAt(i)).floatValue();
-                 */
 
                 switch (pixel_size)
                 {
@@ -106,7 +89,6 @@ public class MdsDataProvider
                 }
             }
             else
-
             {
                 String mframe_error = ErrorString();
 
@@ -247,7 +229,7 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, float xmin, float xmax, int n_points)
         {
-            resample = true;
+          resample = true;
             this.in_y = in_y;
             this.xmin = xmin;
             this.xmax = xmax;
@@ -258,7 +240,7 @@ public class MdsDataProvider
         public SimpleWaveData(String in_y, String in_x, float xmin, float xmax,
                               int n_points)
         {
-            resample = true;
+           resample = true;
             this.in_y = in_y;
             this.in_x = in_x;
             this.xmin = xmin;
@@ -280,7 +262,6 @@ public class MdsDataProvider
                     "), shape(_jscope_" + v_idx + "))";
                 var_idx++;
             }
-            //int shape[] = GetNumDimensions(in_y);
             int shape[] = GetNumDimensions(expr);
 
             if (error != null)
@@ -413,6 +394,22 @@ public class MdsDataProvider
             }
         }
 
+        public long[] GetXLongData()
+        {
+            try
+            {
+                if (currXData == null)
+                    currXData = GetXRealData();
+                if (!currXData.isLong())
+                    return null;
+                return currXData.getLongArray();
+            }
+            catch (Exception exc)
+            {
+                return null;
+            }
+        }
+
         public float[] GetXData()
         {
             try
@@ -426,6 +423,7 @@ public class MdsDataProvider
                 return null;
             }
         }
+
 
         RealArray GetXRealData() throws IOException
         {
@@ -703,12 +701,17 @@ public class MdsDataProvider
         if (!CheckOpen())
             return null;
 
-        String in = "DIM_OF(" + in_frame + ")";
-        System.out.println(in);
-        time = GetFloatArray(in);
-        if (time == null)
-            return null;
+        String in;
 
+        in = "DIM_OF(" + in_frame + ", 2)";
+        time = GetFloatArray(in);
+        if (time == null || ((time.length >= 2 ) && (time[1] == 1.0)))
+        {
+            in = "DIM_OF(" + in_frame + ")";
+            time = GetFloatArray(in);
+            if (time == null)
+                return null;
+        }
         in = "eshape(data(" + in_frame + "))";
         shape = GetIntArray(in);
         if (shape == null)
@@ -736,7 +739,6 @@ public class MdsDataProvider
             {
                 throw (new IOException("The evaluated signal is not an image"));
             }
-
         }
 
         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -813,6 +815,11 @@ public class MdsDataProvider
             case Descriptor.DTYPE_FLOAT:
                 for (int i = 0; i < desc.float_data.length; i++)
                     dos.writeFloat(desc.float_data[i]);
+                out_byte = dosb.toByteArray();
+                return out_byte;
+            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised
+                for(int i = 0; i < desc.short_data.length; i++)
+                    dos.writeShort(desc.short_data[i]);
                 out_byte = dosb.toByteArray();
                 return out_byte;
             case Descriptor.DTYPE_LONG:
@@ -1035,7 +1042,7 @@ public class MdsDataProvider
 
     public float[] GetFloatArray(String in) throws IOException
     {
-        RealArray realArray = GetRealArray(in);
+      RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getFloatArray();
@@ -1043,7 +1050,7 @@ public class MdsDataProvider
 
     public double[] GetDoubleArray(String in) throws IOException
     {
-        RealArray realArray = GetRealArray(in);
+       RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getDoubleArray();
@@ -1051,9 +1058,6 @@ public class MdsDataProvider
 
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-        //in = "( _jscope_"+var_idx+" = ("+in+"), fs_float(_jscope_"+var_idx+"))";
-        //var_idx++;
-
         RealArray out = null;
 
         ConnectionEvent e = new ConnectionEvent(this, 1, 0);
@@ -1070,9 +1074,6 @@ public class MdsDataProvider
                 break;
             case Descriptor.DTYPE_DOUBLE:
                 out = new RealArray(desc.double_data);
-                /*out = new float[desc.double_data.length];
-                          for(int i = 0; i < desc.double_data.length; i++)
-                 out[i] = (float)desc.double_data[i];*/
                 break;
             case Descriptor.DTYPE_LONG:
             {
@@ -1089,6 +1090,12 @@ public class MdsDataProvider
                 for (int i = 0; i < desc.byte_data.length; i++)
                     outF[i] = (float) desc.byte_data[i];
                 out = new RealArray(outF);
+            }
+            break;
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+            {
+               out = new RealArray(desc.long_data);
             }
             break;
             case Descriptor.DTYPE_CSTRING:
@@ -1133,6 +1140,9 @@ public class MdsDataProvider
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+                return desc.long_data;
             case Descriptor.DTYPE_LONG:
                 out_data = new long[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
@@ -1193,15 +1203,17 @@ public class MdsDataProvider
 
     public synchronized void Dispose()
     {
-        if (connected)
+
+       if (is_tunneling && ssh_tunneling != null)
+       {
+           ssh_tunneling.Dispose();
+       }
+
+       if (connected)
         {
             connected = false;
             mds.DisconnectFromMds();
 
-            if (is_tunneling && ssh_tunneling != null)
-            {
-                ssh_tunneling.Dispose();
-            }
             ConnectionEvent ce = new ConnectionEvent(this,
                 ConnectionEvent.
                 LOST_CONNECTION,
@@ -1418,7 +1430,7 @@ public class MdsDataProvider
             catch (Throwable exc)
             {
                 if (exc instanceof NoClassDefFoundError)
-                    JOptionPane.showMessageDialog(f, "The MindTerm.jar library is required for ssh tunneling.You can download it from \nhttp://www.appgate.com/mindterm/download.php",
+                    JOptionPane.showMessageDialog(f, "The MindTerm.jar library is required for ssh tunneling.You can download it from \nhttp://www.appgate.com/mindterm/download.php\n"+exc,
                                                   "alert",
                                                   JOptionPane.ERROR_MESSAGE);
                 return DataProvider.LOGIN_ERROR;
@@ -1489,29 +1501,47 @@ public class MdsDataProvider
 
     static class RealArray
     {
-        double doubleArray[];
-        float floatArray[];
+        double doubleArray[] = null;
+        float floatArray[] = null;
+        long  longArray[] = null;
         boolean isDouble;
+        boolean isLong;
 
         RealArray(float[] floatArray)
         {
             this.floatArray = floatArray;
             isDouble = false;
+            isLong = false;
         }
 
         RealArray(double[] doubleArray)
         {
             this.doubleArray = doubleArray;
             isDouble = true;
-        }
+            isLong = false;
+       }
+
+       RealArray(long[] longArray)
+       {
+           this.longArray = longArray;
+           isDouble = false;
+           isLong = true;
+      }
 
         boolean isDouble()
         {
             return isDouble;
         }
 
+        boolean isLong()
+        {
+            return isLong;
+        }
+
         float[] getFloatArray()
         {
+            if(isLong) return null;
+
             if (isDouble && floatArray == null && doubleArray != null)
             {
                 floatArray = new float[doubleArray.length];
@@ -1523,6 +1553,8 @@ public class MdsDataProvider
 
         double[] getDoubleArray()
         {
+            if(isLong) return null;
+
             if (!isDouble && floatArray != null && doubleArray == null)
             {
                 doubleArray = new double[floatArray.length];
@@ -1531,6 +1563,13 @@ public class MdsDataProvider
             }
             return doubleArray;
         }
+
+        long[] getLongArray()
+        {
+            if(isDouble) return null;
+            return longArray;
+        }
+
     }
 
 }

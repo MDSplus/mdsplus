@@ -93,6 +93,7 @@ class ASCIIDataProvider implements DataProvider
         }
 
         public double[] GetXDoubleData(){return null;}
+        public long[] GetXLongData(){return null;}
         public float[] GetXData()   throws IOException
         {
             if(file_x == null)
