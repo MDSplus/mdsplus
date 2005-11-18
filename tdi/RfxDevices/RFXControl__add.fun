@@ -626,9 +626,9 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR240_VAL', 'NUMERIC', 0. ,*, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR241_NAME', 'TEXT', "BtControlEnd", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR241_VAL', 'NUMERIC', 0. ,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR242_NAME', 'TEXT', "BtReferenceX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR242_NAME', 'TEXT', "BtControlReferenceX", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR242_VAL', 'NUMERIC', 0. ,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR243_NAME', 'TEXT', "BtReferenceY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR243_NAME', 'TEXT', "BtControlReferenceY", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR243_VAL', 'NUMERIC', 0. ,*, _nid);
 
     DevAddNode(_path // '.PARAMETERS:PAR244_NAME', 'TEXT', "FControlKp", *, _nid);
@@ -641,9 +641,9 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR247_VAL', 'NUMERIC', 0. ,*, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR248_NAME', 'TEXT', "FControlEnd", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR248_VAL', 'NUMERIC', 0. ,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR249_NAME', 'TEXT', "FReferenceX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR249_NAME', 'TEXT', "FControlReferenceX", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR249_VAL', 'NUMERIC', 0. ,*, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR250_NAME', 'TEXT', "FReferenceY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR250_NAME', 'TEXT', "FControlReferenceY", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR250_VAL', 'NUMERIC', 0. ,*, _nid);
 
 
