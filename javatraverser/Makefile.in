@@ -78,6 +78,7 @@ BOLOSetup.java\
 XRAYSetup.java\
 SXCSetup.java\
 RFXAxiControlSetup.java\
+RFXAxiToroidalControlSetup.java\
 TOMOSetupSetup.java
 
 SOURCES = ActionData.java\
