@@ -22,10 +22,10 @@ public abstract class Data implements Serializable
         {
             library_loaded = true;
             try {
-              System.loadLibrary("MdsShr");
-              System.loadLibrary("MdsIpShr");
-              System.loadLibrary("TreeShr");
-              System.loadLibrary("TdiShr");
+//              System.loadLibrary("MdsShr");
+//              System.loadLibrary("MdsIpShr");
+//              System.loadLibrary("TreeShr");
+//              System.loadLibrary("TdiShr");
               System.loadLibrary("JavaMds");
 	        }catch(Throwable e)
                 {
