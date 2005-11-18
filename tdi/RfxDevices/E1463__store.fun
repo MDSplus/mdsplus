@@ -56,12 +56,19 @@ public fun E1463__store(as_is _nid, optional _method)
     _dim2 = make_dim(make_window(0, _pts - 1, 0),  make_range(*,*,1));
 
     
-    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
+    write(*, "Inizio READ BACK GROUND");	
+
+    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));
+    
     if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
-    _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
+	wait(0.1);
+	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));	
+
+/*
     if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
     _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
+*/
+    write(*, "Fine READ BACK GROUND");	
 
     _back_nid = DevHead(_nid) + _N_BACK;
     _signal = compile('build_signal((`_line), $VALUE, (`_dim2))');
