@@ -54,8 +54,8 @@ public class RFXAxiToroidalControlSetup extends DeviceSetup
       deviceWave2.setUpdateExpression("");
       this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
       this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
-      jTabbedPane1.add(deviceWave1, "deviceWave1");
-      jTabbedPane1.add(deviceWave2, "deviceWave2");
+      jTabbedPane1.add(deviceWave1,  "Wall Bt");
+      jTabbedPane1.add(deviceWave2,  "F");
       this.getContentPane().add(jPanel1, BorderLayout.NORTH);
       jPanel1.add(deviceField1, null);
     }
