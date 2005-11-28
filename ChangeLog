@@ -1,5 +1,983 @@
-Version 1.7-5
+Version 1.7-6
 
+
+2005-11-23 03:54  manduchi
+
+	* tdi/RfxDevices/: ISIS_TT_DTM.fun, ISIS_TT_ETM.fun,
+	ISIS_TT_TAM.fun:
+	
+	Post elaboration ISIS temperature signals
+
+2005-11-18 15:12  burruss
+
+	* tdi/d3d/ptdata/pthead_real32.fun:
+	
+	Skip first two header elements to match behavior of old ptdata.
+
+2005-11-18 14:49  burruss
+
+	* tdi/d3d/ptdata/: pthead_int16.fun, pthead_int32.fun:
+	
+	Changed header return value so that first two elements are skipped
+	(to match the behavior of old ptdata).
+
+2005-11-18 14:18  jas
+
+	* tdi/RfxDevices/DIO2__dw_setup.fun:
+	
+	fun to call the java setup
+
+2005-11-18 09:35  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Fix node names
+
+2005-11-18 09:16  manduchi
+
+	* tdi/RfxDevices/E1463__store.fun:
+	
+	fix
+
+2005-11-18 04:28  manduchi
+
+	* javatraverser/RFXAxiToroidalControlSetup.java:
+	
+	Change tab names
+
+2005-11-18 04:27  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	RFXAxiToroidalControl device setup added
+
+2005-11-18 04:23  manduchi
+
+	* tdi/RfxDevices/RFXAxiToroidalControl__add.fun:
+	
+	Waveform setup for toroidal axisymmetric control
+
+2005-11-18 04:22  manduchi
+
+	* javatraverser/RFXAxiToroidalControlSetup.java:
+	
+	Waveforms set-up for toroidal axisymmetric control
+
+2005-11-18 03:42  manduchi
+
+	* tdi/RfxDevices/sawtooth1.fun:
+	
+	More sawtooth fun
+
+2005-11-18 03:39  manduchi
+
+	* javatraverser/: Data.java, Database.java:
+	
+	Link only to JavaMds
+
+2005-11-17 12:39  garnier
+
+	* ChangeLog, MakeOptions.OSF1, configure, configure.in,
+	mdsplus.sln, Setup/Setup.vdproj,
+	html/documentation/beginners/index.xml,
+	html/documentation/reference/f.shtml,
+	html/documentation/tutorial/LetsStart.htm, html/links/index.shtml,
+	idl/dsql.pro, idl/Logbook/get_columns.pro, idlsql/idlsql.vcproj,
+	javadispatcher/Action.java, javadispatcher/ActionServer.java,
+	javadispatcher/KillServer.java, javadispatcher/Makefile.in,
+	javadispatcher/MdsMonitorEvent.java, javadispatcher/MdsServer.java,
+	javadispatcher/MdsServerEvent.java,
+	javadispatcher/ServerShowDialog.java,
+	javadispatcher/jDispatchMonitor.java,
+	javadispatcher/jDispatcher.java,
+	javadispatcher/jDispatcher.properties,
+	javadispatcher/jDispatcherIp.java, javadispatcher/jServer.java,
+	javadispatcher/javadispatcher.mak,
+	javadispatcher/javadispatcher.vcproj, javamds/JavaData.c,
+	javamds/JavaTrav.c, javamds/LocalDataProvider.h, javamds/javamds.c,
+	javamds/javamds.def, javascope/ASCIIDataProvider.java,
+	javascope/DemoDataProvider.java, javascope/Frames.java,
+	javascope/Grid.java, javascope/JetDataProvider.java,
+	javascope/LocalDataProvider.java,
+	javascope/LocalRealtimeDataProvider.java,
+	javascope/MdsConnection.java, javascope/MdsDataProvider.java,
+	javascope/MdsMessage.java, javascope/MdsWaveInterface.java,
+	javascope/MultiWavePopup.java, javascope/MultiWaveform.java,
+	javascope/ProfileDialog.java, javascope/SetupDataDialog.java,
+	javascope/Signal.java, javascope/SshTunneling.java,
+	javascope/T2DataProvider.java, javascope/TwuWaveData.java,
+	javascope/WaveData.java, javascope/WaveInterface.java,
+	javascope/WavePopup.java, javascope/Waveform.java,
+	javascope/WaveformContainer.java, javascope/WaveformEvent.java,
+	javascope/WaveformMetrics.java, javascope/jScope.java,
+	javascope/jScopeMultiWave.java, javascope/jScopeWaveContainer.java,
+	javascope/jScopeWavePopup.java, javascope/javascope.mak,
+	javatraverser/Data.java, javatraverser/Database.java,
+	javatraverser/DeviceBeansManifest.mf,
+	javatraverser/DeviceChannel.java, javatraverser/DeviceChoice.java,
+	javatraverser/DeviceComponent.java, javatraverser/DeviceField.java,
+	javatraverser/DeviceTable.java, javatraverser/DeviceWave.java,
+	javatraverser/DeviceWaveBeanInfo.java,
+	javatraverser/DeviceWaveDisplay.java,
+	javatraverser/DeviceWaveDisplayBeanInfo.java,
+	javatraverser/DeviceWaveDisplayCustomizer.java,
+	javatraverser/Devicebeans.jar, javatraverser/ISIS_GAINSetup.java,
+	javatraverser/LoadPulse.java, javatraverser/MCUSetup.java,
+	javatraverser/MHD_BR_TESTSetup.java, javatraverser/Makefile.in,
+	javatraverser/Node.java, javatraverser/NodeInfo.java,
+	javatraverser/RFXControlSetup.java,
+	javatraverser/RFXInverterSetupSetup.java,
+	javatraverser/RFXPCSetupSetup.java,
+	javatraverser/RFXPoloidalSetup.java,
+	javatraverser/RFXTimesSetup.java, javatraverser/RemoteTree.java,
+	javatraverser/ST133Setup.java, javatraverser/SXCSetup.java,
+	javatraverser/Tree.java, javatraverser/TreeNode.java,
+	javatraverser/TreeServer.java, javatraverser/WE7116Setup.java,
+	javatraverser/jTraverser.java, javatraverser/javatraverser.mak,
+	kbsidevices/E1429Setup.java, kbsidevices/E1564Setup.java,
+	kbsidevices/NI5122Setup.java, kbsidevices/VX4244Setup.java,
+	kbsidevices/VXI8340Setup.java, kbsidevices/hpe1429.c,
+	kbsidevices/hpe1564.c, kbsidevices/ni5122.c, kbsidevices/ni5122.h,
+	kbsidevices/nidaq.c, kbsidevices/tkvx4244.c, macosx/bindtable,
+	mdslib/Makefile.in, mdsmisc/Makefile.in, mdsmisc/bessel.c,
+	mdsmisc/bessel.h, mdsshr/MdsEvents.c, mdsshr/MdsXdRoutines.c,
+	mdsshr/librtl.c, mdssql/mdssql.vcproj, mdstcpip/mdsip.sav,
+	mdstcpip/mdsip_socket_io.c, mdstcpip/mdsip_u.c,
+	mitdevices/DC1394.uil, mitdevices/Makefile.in, mitdevices/b5910a.c,
+	mitdevices/dc1394_support.c, mitdevices/reboot_dtaq_satelite,
+	php/logbook.php, roam/Makefile.in, roam/roam_check_access.c,
+	rpm/fusiongrid-makekit, rpm/fusiongrid.spec,
+	rpm/globus-gatekeeper.xinetd, rpm/globus-gridftp.xinetd,
+	rpm/post_install_script.in, scripts/unix_submit,
+	servershr/ServerSendMessage.c, tcl/tcl_show_data.c,
+	tdi/SetDatabase.fun, tdi/filter.fun, tdi/KbsiDevices/.project,
+	tdi/KbsiDevices/NI5122__add.fun, tdi/KbsiDevices/NI5122__arm.fun,
+	tdi/KbsiDevices/NI5122__close.fun,
+	tdi/KbsiDevices/NI5122__error.fun,
+	tdi/KbsiDevices/NI5122__init.fun, tdi/KbsiDevices/NI5122__open.fun,
+	tdi/KbsiDevices/NI5122__setup.fun,
+	tdi/KbsiDevices/NI5122__status.fun,
+	tdi/KbsiDevices/NI5122__store.fun,
+	tdi/KbsiDevices/VX4244__setup.fun,
+	tdi/KbsiDevices/VX4244__store.fun,
+	tdi/KbsiDevices/VXI8340__add.fun,
+	tdi/KbsiDevices/VXI8340__close.fun,
+	tdi/KbsiDevices/VXI8340__open.fun,
+	tdi/KbsiDevices/VXI8340__setup.fun, tdi/MitDevices/dc1394__add.fun,
+	tdi/MitDevices/dc1394__init.fun, tdi/MitDevices/dc1394__store.fun,
+	tdi/MitDevices/dt196__reboot.fun, tdi/MitDevices/dt216__reboot.fun,
+	tdi/RfxDevices/BOLO__init.fun, tdi/RfxDevices/BOLO__store.fun,
+	tdi/RfxDevices/BoloChMapping.fun,
+	tdi/RfxDevices/BoloHwStartAcq.fun, tdi/RfxDevices/CADH__init.fun,
+	tdi/RfxDevices/CADH__store.fun, tdi/RfxDevices/CAMERA__arm.fun,
+	tdi/RfxDevices/CAMERA__init.fun, tdi/RfxDevices/CAMERA__store.fun,
+	tdi/RfxDevices/CCDGetChannel.fun,
+	tdi/RfxDevices/DIO2EncoderHWInit.fun,
+	tdi/RfxDevices/EM_FLU_TEST__add.fun,
+	tdi/RfxDevices/EM_FLU_TEST__report.fun,
+	tdi/RfxDevices/FramesInterleave.fun,
+	tdi/RfxDevices/ISIS_GAIN__add.fun,
+	tdi/RfxDevices/ISIS_GAIN__init.fun, tdi/RfxDevices/K3115__init.fun,
+	tdi/RfxDevices/MHD_BR_TEST__add.fun,
+	tdi/RfxDevices/MHD_BR_TEST__init.fun,
+	tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun,
+	tdi/RfxDevices/RFXControl__store.fun,
+	tdi/RfxDevices/RFXDClock__init.fun,
+	tdi/RfxDevices/RFXGClock__init.fun,
+	tdi/RfxDevices/RFXInverterSetup__add.fun,
+	tdi/RfxDevices/RFXPCSetup__add.fun,
+	tdi/RfxDevices/RFXPConfig__add.fun,
+	tdi/RfxDevices/RFXPoloidal__add.fun,
+	tdi/RfxDevices/RfxShotsEnergy.fun,
+	tdi/RfxDevices/RfxShotsPowerMax.fun,
+	tdi/RfxDevices/RfxShotsPowerMean.fun,
+	tdi/RfxDevices/ST133HeaderParam.fun,
+	tdi/RfxDevices/ST133ReadData.fun,
+	tdi/RfxDevices/ST133ReadHeader.fun, tdi/RfxDevices/ST133__add.fun,
+	tdi/RfxDevices/ST133__init.fun, tdi/RfxDevices/ST133__store.fun,
+	tdi/RfxDevices/SXC__init.fun, tdi/RfxDevices/SXC__setAmpType.fun,
+	tdi/RfxDevices/SXC__store.fun, tdi/RfxDevices/StopStartVmeSch.fun,
+	tdi/RfxDevices/SxcChMapping.fun, tdi/RfxDevices/SxcHwStartAcq.fun,
+	tdi/RfxDevices/SxcSetRealGains.fun,
+	tdi/RfxDevices/TR10HWConfig.fun, tdi/RfxDevices/TR10HWInit.fun,
+	tdi/RfxDevices/TR10HWReadChan.fun, tdi/RfxDevices/TR10__config.fun,
+	tdi/RfxDevices/TR10__init.fun, tdi/RfxDevices/TR10__store.fun,
+	tdi/RfxDevices/TRCF__init.fun, tdi/RfxDevices/TRCF__store.fun,
+	tdi/RfxDevices/TRCH__init.fun, tdi/RfxDevices/TRCH__store.fun,
+	tdi/RfxDevices/TimingGetEventTime.fun,
+	tdi/RfxDevices/TimingGetEvents.fun,
+	tdi/RfxDevices/WE7000__init.fun, tdi/RfxDevices/WE7116__init.fun,
+	tdi/RfxDevices/WE7116__store.fun, tdi/RfxDevices/WE7275__store.fun,
+	tdi/RfxDevices/XRAY_TREE.fun, tdi/RfxDevices/XRAY__add.fun,
+	tdi/RfxDevices/XRAY__init.fun, tdi/RfxDevices/XRAY__setAmpType.fun,
+	tdi/RfxDevices/XRAY__store.fun, tdi/RfxDevices/XrayChMapping.fun,
+	tdi/RfxDevices/XrayHwStartAcq.fun,
+	tdi/RfxDevices/XraySetRealGains.fun,
+	tdi/RfxDevices/inverter_pert.fun, tdi/RfxDevices/inverter_wave.fun,
+	tdi/RfxDevices/sawtooth.fun, tdi/RfxDevices/square_wave.fun,
+	tdi/RfxDevices/triangle.fun, tdi/d3d/cerprof.fun,
+	tdi/d3d/cerrotsign.fun, tdi/d3d/d3d_phase_table.fun,
+	tdi/d3d/d3ddispatch.fun, tdi/d3d/damphase.fun, tdi/d3d/density.fun,
+	tdi/d3d/eceprof.fun, tdi/d3d/echpwrc.fun, tdi/d3d/efittree.fun,
+	tdi/d3d/enbi.fun, tdi/d3d/findatree.fun, tdi/d3d/findcer.fun,
+	tdi/d3d/findefit.fun, tdi/d3d/findefitnew.fun,
+	tdi/d3d/findshot.fun, tdi/d3d/findsig.fun,
+	tdi/d3d/findsig_clean.fun, tdi/d3d/findsigtag.fun,
+	tdi/d3d/findts.fun, tdi/d3d/fixbase.fun, tdi/d3d/getdia.fun,
+	tdi/d3d/getgas.fun, tdi/d3d/jetconnect.fun, tdi/d3d/jetdata.fun,
+	tdi/d3d/loaddata.fun, tdi/d3d/mdssig.fun, tdi/d3d/multiphase.fun,
+	tdi/d3d/nebar.fun, tdi/d3d/parse_idens.fun, tdi/d3d/ppf.fun,
+	tdi/d3d/ptcomments.fun, tdi/d3d/ptdata.fun,
+	tdi/d3d/ptdata_error.fun, tdi/d3d/pthead_ascii.fun,
+	tdi/d3d/pthead_ifix.fun, tdi/d3d/pthead_int16.fun,
+	tdi/d3d/pthead_int32.fun, tdi/d3d/pthead_real32.fun,
+	tdi/d3d/pthead_rfix.fun, tdi/d3d/pthead_size.fun,
+	tdi/d3d/ptnpts.fun, tdi/d3d/ptunits.fun,
+	tdi/d3d/qcs_evt_subscribe.fun, tdi/d3d/qcs_evt_wc_nowait.fun,
+	tdi/d3d/read_ufile.fun, tdi/d3d/read_ufscalars.fun,
+	tdi/d3d/remove_run_string.fun, tdi/d3d/setevent.fun,
+	tdi/d3d/tdiflux.fun, tdi/d3d/teceprof.fun, tdi/d3d/tr_install.fun,
+	tdi/d3d/transp_error.fun, tdi/d3d/transp_status.fun,
+	tdi/d3d/tree_from_tag.fun, tdi/d3d/tsslice.fun,
+	tdi/d3d/nimrod/nimrod_db.fun, tdi/d3d/nimrod/nimrod_phys_db.fun,
+	tdi/d3d/nimrod/nimrod_phys_db2.fun,
+	tdi/d3d/nimrod/nimrod_phys_db3.fun,
+	tdi/d3d/nimrod/nimrod_slice.fun, tdi/d3d/ptdata/ptcomments.fun,
+	tdi/d3d/ptdata/ptdata.fun, tdi/d3d/ptdata/ptdata_error.fun,
+	tdi/d3d/ptdata/pthead_ascii.fun, tdi/d3d/ptdata/pthead_ifix.fun,
+	tdi/d3d/ptdata/pthead_int16.fun, tdi/d3d/ptdata/pthead_int32.fun,
+	tdi/d3d/ptdata/pthead_real32.fun, tdi/d3d/ptdata/pthead_rfix.fun,
+	tdi/d3d/ptdata/pthead_size.fun, tdi/d3d/ptdata/ptnpts.fun,
+	tdi/d3d/ptdata/ptunits.fun, tdi/d3d/ptdata2/README.TXT,
+	tdi/d3d/ptdata2/pseudo.fun, tdi/d3d/ptdata2/ptchar2.fun,
+	tdi/d3d/ptdata2/ptdata2.fun, tdi/d3d/ptdata2/ptdata_library.fun,
+	tdi/d3d/ptdata2/pthead2.fun, tdi/d3d/ptdata2/pthead2_ascii.fun,
+	tdi/d3d/ptdata2/pthead2_ifix.fun,
+	tdi/d3d/ptdata2/pthead2_real32.fun,
+	tdi/d3d/ptdata2/pthead2_size.fun, tdi/d3d/ptdata_historic/README,
+	tdi/d3d/ptdata_historic/ptcomments_historic.fun,
+	tdi/d3d/ptdata_historic/ptdata_error_historic.fun,
+	tdi/d3d/ptdata_historic/ptdata_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_ascii_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_ifix_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_int16_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_int32_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_real32_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_rfix_historic.fun,
+	tdi/d3d/ptdata_historic/pthead_size_historic.fun,
+	tdi/d3d/ptdata_historic/ptnpts_historic.fun,
+	tdi/d3d/ptdata_historic/ptunits_historic.fun,
+	tdi/d3d/ptdata_historic/ptwritecomments_historic.fun,
+	tdi/math/sign_of.fun, tdi/roam/check_access.fun, tdishr/TdiSql.c,
+	treeshr/TreeCreatePulseFile.c, treeshr/TreeOpen.c,
+	treeshr/treeshr.vcproj, treeshr/treeshrp.h,
+	xmdsshr/XmdsNidOptionMenu.c:
+	
+	Fixed java bug exposed by 10.4.3 and resynced branch to trunk
+
+2005-11-17 08:06  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun,
+	tdi/RfxDevices/RFXControl__store.fun,
+	javatraverser/RFXControlSetup.java:
+	
+	More referenve wave
+
+2005-11-17 07:32  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	Added toroidal control
+
+2005-11-17 07:32  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Added toroidal control parameter setup
+
+2005-11-17 04:40  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Added PID parameters for Bt and F control
+
+2005-11-16 14:29  garnier
+
+	* macosx/Makefile, matlab/mdsipmex.c:
+	
+	small changes to MacOS X branch
+
+2005-11-16 09:56  manduchi
+
+	* javascope/: jScope.java, jScopeWaveContainer.java:
+	
+	Fix
+
+2005-11-16 04:11  manduchi
+
+	* javascope/MdsWaveInterface.java:
+	
+	Fix Signal 2D
+
+2005-11-11 14:50  burruss
+
+	* tdi/d3d/parse_idens.fun:
+	
+	dunno but we think this does something with the impdens branch data
+	arrays
+
+2005-11-11 08:46  manduchi
+
+	* tdi/filter.fun:
+	
+	Handle double arrays
+
+2005-11-09 12:04  manduchi
+
+	* tdi/RfxDevices/: BoloChMapping.fun, MHD_BR_TEST__add.fun,
+	MHD_BR_TEST__init.fun, TR10__store.fun, XrayChMapping.fun,
+	inverter_pert.fun:
+	
+	more waveforms added
+
+2005-11-09 11:45  manduchi
+
+	* javatraverser/: Devicebeans.jar, RFXInverterSetupSetup.java:
+	
+	More options added
+
+2005-11-09 03:49  shseo
+
+	* kbsidevices/ni5122.c:
+	
+	Enhance the error reporting function. If a digitizer warns an
+	error, the error message is printed in the mdsip server log file.
+
+2005-11-09 03:26  shseo
+
+	* tdi/KbsiDevices/NI5122__store.fun:
+	
+	The previous version stored the 16 bits data into 4 bytes integer
+	variable.  The current version stores it into 2 bytes short
+	variable to reduce the file size and the writing time.
+
+2005-11-09 03:22  shseo
+
+	* tdi/KbsiDevices/NI5122__status.fun:
+	
+	the digitizer status is reported by "ni5122.c" instead of
+	"NI5122__status.fun"
+
+2005-11-08 03:05  manduchi
+
+	* tdi/RfxDevices/RFXGClock__init.fun:
+	
+	Fix frequency readout
+
+2005-11-07 11:02  manduchi
+
+	* javatraverser/RFXPoloidalSetup.java:
+	
+	Fields added
+
+2005-11-07 10:57  manduchi
+
+	* tdi/RfxDevices/: RFXControl__store.fun, RFXPConfig__add.fun,
+	RFXPoloidal__add.fun:
+	
+	Minor fixes
+
+2005-11-07 04:25  manduchi
+
+	* tdi/RfxDevices/TR10HWReadChan.fun:
+	
+	Set _status as optional parameter
+
+2005-11-04 03:52  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Changed names in RFXTimesSetup
+
+2005-11-03 11:19  manduchi
+
+	* tdi/RfxDevices/: BOLO__init.fun, BOLO__store.fun,
+	BoloChMapping.fun, BoloHwStartAcq.fun, EM_FLU_TEST__add.fun,
+	EM_FLU_TEST__report.fun, K3115__init.fun, ST133__init.fun,
+	SXC__init.fun, SXC__store.fun, SxcChMapping.fun, SxcHwStartAcq.fun,
+	XRAY_TREE.fun, XRAY__add.fun, XRAY__init.fun, XRAY__store.fun,
+	XrayChMapping.fun, XrayHwStartAcq.fun:
+	
+	Fix
+
+2005-10-31 14:41  jas
+
+	* tdishr/TdiSql.c:
+	
+	fix NaN missing error
+
+2005-10-31 09:01  manduchi
+
+	* javatraverser/: DeviceChannel.java, DeviceChoice.java,
+	DeviceComponent.java, DeviceField.java, DeviceWave.java,
+	RFXInverterSetupSetup.java:
+	
+	Allow Copy/Paste in DeviceChannel
+
+2005-10-28 10:16  manduchi
+
+	* tdi/RfxDevices/RfxShotsPowerMean.fun:
+	
+	Fix
+
+2005-10-28 10:12  manduchi
+
+	* tdi/RfxDevices/: RfxShotsEnergy.fun, RfxShotsPowerMax.fun,
+	RfxShotsPowerMean.fun:
+	
+	Fix
+
+2005-10-28 09:35  manduchi
+
+	* tdi/RfxDevices/RfxShotsPowerMean.fun:
+	
+	Evaluate rfx plasma mean power for a list of shots
+
+2005-10-28 09:33  manduchi
+
+	* tdi/RfxDevices/RfxShotsPowerMax.fun:
+	
+	Evaluate rfx plasma max power for a list of shots
+
+2005-10-28 09:32  manduchi
+
+	* tdi/RfxDevices/RfxShotsEnergy.fun:
+	
+	Evaluate rfx plasma energy for a list of shots
+
+2005-10-26 18:20  burruss
+
+	* tdi/d3d/find/: findatree.fun, findcer.fun, findefit.fun,
+	findefitnew.fun, findshot.fun, findsig.fun, findsig_clean.fun,
+	findsigtag.fun, findts.fun:
+	
+	moved up a level
+
+2005-10-26 18:18  burruss
+
+	* tdi/d3d/ptdata_historic/: ptcomments_historic.fun,
+	ptdata_error_historic.fun, pthead_ascii_historic.fun,
+	pthead_ifix_historic.fun, pthead_int16_historic.fun,
+	pthead_int32_historic.fun, pthead_real32_historic.fun,
+	pthead_rfix_historic.fun, pthead_size_historic.fun,
+	ptnpts_historic.fun, ptunits_historic.fun,
+	ptwritecomments_historic.fun:
+	
+	These are the original ptdata TDI funs used in the libMdsD3D way of
+	reading PTDATA data.  If in the future someone manages to build
+	libMdsD3D, then you might look in to reusing these codes. 
+	Otherwise, just use the new ptdata2 functions to get PTDATA data.
+
+2005-10-26 18:11  burruss
+
+	* tdi/d3d/ptdata2/ptnpts2.fun:
+	
+	sean says to remove this
+
+2005-10-25 20:30  burruss
+
+	* tdi/d3d/d3d_phase_table.fun:
+	
+	this is the d3d phase table, just rename and replace the template
+	phase table to use
+
+2005-10-25 20:24  burruss
+
+	* tdi/d3d/: fixbase.fun, getdia.fun, getgas.fun, mdssig.fun,
+	qcs_evt_subscribe.fun, qcs_evt_wc_nowait.fun, read_ufile.fun,
+	read_ufscalars.fun, setevent.fun:
+	
+	not sure what any of these old tdi funs really do
+
+2005-10-25 20:23  burruss
+
+	* tdi/d3d/remove_run_string.fun:
+	
+	Fix the run string from PPPL by removing the run_ part and leaving
+	only the shot number
+
+2005-10-25 20:22  burruss
+
+	* tdi/d3d/nebar.fun:
+	
+	Returns line averaged density on timebase from CO2 intereferometer
+
+2005-10-25 20:22  burruss
+
+	* tdi/d3d/tr_install.fun:
+	
+	this fun will be used to install entire TRANSP trees remotely, thus
+	improving performance when writing TRANSP outputs to MDSplus
+
+2005-10-25 20:20  burruss
+
+	* tdi/d3d/: jetconnect.fun, jetdata.fun:
+	
+	not sure but probably used with mdsplus/jet bridge
+
+2005-10-25 20:19  burruss
+
+	* tdi/d3d/ptdata_historic/ptdata.fun:
+	
+	renamed file to avoid confusion
+
+2005-10-25 20:19  burruss
+
+	* tdi/d3d/ptdata_historic/ptdata_historic.fun:
+	
+	this version of ptdata calls libMdsD3D
+
+2005-10-25 20:18  burruss
+
+	* tdi/d3d/ptdata_historic/ptdata.fun:
+	
+	the original ptdata.fun
+
+2005-10-25 20:13  burruss
+
+	* tdi/d3d/: findatree.fun, findcer.fun, findefit.fun,
+	findefitnew.fun, findshot.fun, findsig.fun, findsig_clean.fun,
+	findsigtag.fun, findts.fun:
+	
+	moved these back up a level
+
+2005-10-25 20:11  burruss
+
+	* tdi/d3d/multiphase.fun:
+	
+	used to do multiphases
+
+2005-10-25 20:10  burruss
+
+	* tdi/d3d/map_to_rho.fun:
+	
+	sean says we don't need this any more
+
+2005-10-25 20:07  burruss
+
+	* tdi/d3d/: findatree.fun, findcer.fun, findefit.fun,
+	findefitnew.fun:
+	
+	moved to find dir
+
+2005-10-25 20:04  burruss
+
+	* tdi/d3d/find/: findatree.fun, findcer.fun, findefit.fun,
+	findefitnew.fun, findshot.fun, findsig.fun, findsig_clean.fun,
+	findsigtag.fun, findts.fun:
+	
+	various find funs, not sure why we need so many
+
+2005-10-25 19:22  burruss
+
+	* tdi/d3d/nimrod/: nimrod_db.fun, nimrod_phys_db.fun,
+	nimrod_phys_db2.fun, nimrod_phys_db3.fun, nimrod_slice.fun:
+	
+	the various nimrod funs are part of the nimrod/mdsplus
+	implementation
+
+2005-10-25 19:11  burruss
+
+	* tdi/d3d/ppf.fun:
+	
+	not sure but probably part of jet/mdsplus bridge
+
+2005-10-25 19:10  burruss
+
+	* tdi/d3d/loaddata.fun:
+	
+	load level data loading jobs to other hosts
+
+2005-10-25 19:08  burruss
+
+	* tdi/math/sign_of.fun:
+	
+	returns the sign of the number, e.g. 0, 1, or -1
+
+2005-10-25 18:55  burruss
+
+	* tdi/d3d/findefit.fun:
+	
+	This function determines whether a pointname passed to FINDSIG is a
+	special EFIT pointname.
+
+2005-10-25 18:54  burruss
+
+	* tdi/d3d/tree_from_tag.fun:
+	
+	not sure about this one, but comments say it returns the treename
+	contained in a tag \tree::node
+
+2005-10-25 18:53  burruss
+
+	* tdi/d3d/tsslice.fun:
+	
+	This function returns the Thomson Scattering density or temperature
+	from the chord nearest to the supplied arg
+
+2005-10-25 18:52  burruss
+
+	* tdi/d3d/tdiflux.fun:
+	
+	more map to rho stuff
+
+2005-10-25 18:51  burruss
+
+	* tdi/d3d/transp_error.fun:
+	
+	this fun is called when transp terminates with an error
+
+2005-10-25 18:51  burruss
+
+	* tdi/d3d/transp_status.fun:
+	
+	this fun is called by the transp spplication server when transp
+	completes
+
+2005-10-25 18:50  burruss
+
+	* tdi/d3d/cerprof.fun:
+	
+	cer profile fun
+
+2005-10-25 18:49  burruss
+
+	* tdi/d3d/map_to_rho.fun:
+	
+	this fun does the rho map stuff
+
+2005-10-24 18:27  burruss
+
+	* tdi/d3d/findefitnew.fun:
+	
+	This function determines whether a pointname passed to FINDSIG is a
+	special EFIT pointname.  Not sure about this b/c the fun name does
+	not match the file name
+
+2005-10-24 18:25  burruss
+
+	* tdi/d3d/efittree.fun:
+	
+	not sure about this one, but it appears to return EFIT tree names
+
+2005-10-24 18:23  burruss
+
+	* tdi/d3d/findcer.fun:
+	
+	This function determines whether a pointname passed to FINDSIG is a
+	special CER signal.
+
+2005-10-24 18:22  burruss
+
+	* tdi/d3d/findatree.fun:
+	
+	queries a database for pointname to tree mapping
+
+2005-10-24 18:20  burruss
+
+	* tdi/d3d/teceprof.fun:
+	
+	assembles TECE temperature profile
+
+2005-10-24 18:20  burruss
+
+	* tdi/d3d/echpwrc.fun:
+	
+	unknown mystery function, apparently for ECH data
+
+2005-10-24 18:17  burruss
+
+	* tdi/d3d/enbi.fun:
+	
+	sums/calculates enbi
+
+2005-10-24 18:16  burruss
+
+	* tdi/d3d/density.fun:
+	
+	tries to return path of some data in d3d efit trees
+
+2005-10-24 18:14  burruss
+
+	* tdi/d3d/d3ddispatch.fun:
+	
+	wrapper for dispatching that prevents phases from previous shots
+	from impacting current shot
+
+2005-10-24 18:13  burruss
+
+	* tdi/d3d/cerrotsign.fun:
+	
+	This function determines the rotation sign correction for each
+	chord
+
+2005-10-24 18:12  burruss
+
+	* tdi/d3d/damphase.fun:
+	
+	post monitoring information to DAM
+
+2005-10-24 18:12  burruss
+
+	* tdi/d3d/eceprof.fun:
+	
+	assembles the ECE temperature profile
+
+2005-10-12 11:59  manduchi
+
+	* javadispatcher/jDispatcherIp.java:
+	
+	Name of the property: use_jserver
+
+2005-10-12 11:58  manduchi
+
+	* javadispatcher/: ActionServer.java, MdsServer.java,
+	jDispatchMonitor.java, jDispatcherIp.java:
+	
+	Maintain compatibility with old mdsplus (mdsip) server
+
+2005-10-11 11:47  twf
+
+	* scripts/unix_submit:
+	
+	Record hostname-pid of jobs
+
+2005-10-10 18:20  burruss
+
+	* tdi/d3d/ptdata2/: README.TXT, pseudo.fun, pthead2.fun,
+	pthead2_ascii.fun:
+	
+	added comments
+
+2005-10-10 18:17  burruss
+
+	* tdi/d3d/ptdata2/ptdata2.fun:
+	
+	added comments
+
+2005-10-10 18:11  burruss
+
+	* tdi/d3d/ptdata/: ptcomments.fun, ptdata.fun, ptdata_error.fun,
+	pthead_ascii.fun, pthead_ifix.fun, pthead_int16.fun,
+	pthead_int32.fun, pthead_real32.fun, pthead_rfix.fun,
+	pthead_size.fun, ptnpts.fun, ptunits.fun:
+	
+	replaced old ptdata funs with new funs written by Sean
+	Flanagan--these are wrappers to ptdata2
+
+2005-10-10 16:54  burruss
+
+	* tdi/d3d/ptdata2/: pseudo.fun, ptchar2.fun, ptdata2.fun,
+	ptdata_library.fun, pthead2.fun, pthead2_ascii.fun,
+	pthead2_ifix.fun, pthead2_real32.fun, pthead2_size.fun,
+	ptnpts2.fun:
+	
+	these TDI funs are by Sean Flanagan--they are used for the new
+	ptdata2 way of getting data from PTDATA
+
+2005-10-10 16:54  burruss
+
+	* tdi/d3d/ptdata/: ptcomments.fun, ptdata.fun, ptdata_error.fun,
+	pthead_ascii.fun, pthead_ifix.fun, pthead_int16.fun,
+	pthead_int32.fun, pthead_real32.fun, pthead_rfix.fun,
+	pthead_size.fun, ptnpts.fun, ptunits.fun:
+	
+	moved from other dir
+
+2005-10-10 16:53  burruss
+
+	* tdi/d3d/: ptcomments.fun, ptdata.fun, ptdata_error.fun,
+	pthead_ascii.fun, pthead_ifix.fun, pthead_int16.fun,
+	pthead_int32.fun, pthead_real32.fun, pthead_rfix.fun,
+	pthead_size.fun, ptnpts.fun, ptunits.fun:
+	
+	moved to subdirs ptdata and ptdata2
+
+2005-10-10 10:52  manduchi
+
+	* javadispatcher/: ActionServer.java, MdsMonitorEvent.java,
+	jServer.java:
+	
+	Fix
+
+2005-10-10 10:44  manduchi
+
+	* javadispatcher/: Action.java, ActionServer.java, Makefile.in,
+	MdsMonitorEvent.java, MdsServer.java, ServerShowDialog.java,
+	jDispatcher.java, jServer.java:
+	
+	Fix NID for subtrees
+
+2005-10-07 15:01  twf
+
+	* html/documentation/tutorial/LetsStart.htm:
+	
+	Fix typo
+
+2005-10-06 13:30  manduchi
+
+	* javascope/: MdsDataProvider.java, WaveInterface.java:
+	
+	Fix farmes time base
+
+2005-10-05 09:52  manduchi
+
+	* javascope/: ASCIIDataProvider.java, DemoDataProvider.java,
+	Frames.java, Grid.java, JetDataProvider.java, MdsConnection.java,
+	MdsDataProvider.java, MdsMessage.java, Signal.java,
+	T2DataProvider.java, TwuWaveData.java, WaveData.java,
+	WaveInterface.java, Waveform.java, WaveformContainer.java,
+	WaveformEvent.java, jScope.java:
+	
+	Fix image 16/32 bits per pixel flip operation and dates in waveform
+
+2005-10-05 08:48  manduchi
+
+	* javamds/: JavaData.c, JavaTrav.c:
+	
+	Fix quadword data management
+
+2005-10-03 16:24  jas
+
+	* idl/dsql.pro:
+	
+	make NaNs = NULL for argument substitution (insert and update)
+
+2005-10-03 12:46  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun:
+	
+	Proper decouling matrix CVS
+	-------------------------------------------------------------------
+	---
+
+2005-09-29 14:59  jas
+
+	* tdishr/TdiSql.c, idl/dsql.pro:
+	
+	add support for NaN on null floating columns
+
+2005-09-29 06:54  manduchi
+
+	* tdi/RfxDevices/RFXControl__store.fun:
+	
+	er signals
+
+2005-09-28 15:30  jas
+
+	* idl/Logbook/get_columns.pro:
+	
+	add optional sorting to get_columns.pro
+
+2005-09-27 12:45  manduchi
+
+	* tdi/RfxDevices/: RFXControl__init.fun, RFXControl__store.fun:
+	
+	Handle communication errors
+
+2005-09-27 11:39  manduchi
+
+	* tdi/RfxDevices/: ISIS_GAIN__init.fun, WE7000__init.fun,
+	WE7116__init.fun, WE7116__store.fun, WE7275__store.fun:
+	
+	Fix
+
+2005-09-26 10:24  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Use physics N
+
+2005-09-23 08:52  manduchi
+
+	* tdi/RfxDevices/ISIS_GAIN__init.fun:
+	
+	Add init action for ISIS front end gain cards
+
+2005-09-22 10:13  manduchi
+
+	* javascope/MdsDataProvider.java:
+	
+	Fix to manage H-1NF image format
+
+2005-09-21 11:53  manduchi
+
+	* javascope/: Frames.java, MdsDataProvider.java, jScope.java:
+	
+	Mod increment shot
+
+2005-09-20 08:07  manduchi
+
+	* javascope/LocalDataProvider.java, javascope/MdsDataProvider.java,
+	javamds/LocalDataProvider.h, javamds/javamds.c,
+	javamds/javamds.def:
+	
+	Fixed Memory Leak in LocalDataProvider
+
+2005-09-20 05:03  manduchi
+
+	* javatraverser/ISIS_GAINSetup.java:
+	
+	Setup for ISIS gain device
+
+2005-09-19 12:08  manduchi
+
+	* javascope/: Frames.java, MdsDataProvider.java,
+	MdsWaveInterface.java, ProfileDialog.java, SetupDataDialog.java,
+	WaveInterface.java, Waveform.java, WaveformContainer.java,
+	WaveformEvent.java, jScope.java, jScopeMultiWave.java,
+	jScopeWaveContainer.java, jScopeWavePopup.java:
+	
+	Fix 16 bit pixel image visualization and print setup
+
+2005-09-19 10:22  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Inserted decoupling matrix
+
+2005-09-14 10:52  twf
+
+	* html/documentation/beginners/index.xml:
+	
+	fix advanced features reference
+
+2005-09-14 10:51  manduchi
+
+	* javatraverser/: Devicebeans.jar, RFXControlSetup.java:
+	
+	New controls
+
+2005-09-14 10:50  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun:
+	
+	New Controls
+
+2005-09-07 11:15  twf
+
+	* php/logbook.php:
+	
+	Fix url for cmod shot and run information
+
+2005-08-30 13:50  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.7-5
 
 2005-08-29 00:36  manduchi
 
