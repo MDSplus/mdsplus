@@ -31,7 +31,10 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
             try
             {
                 JSObject window=JSObject.getWindow(this);
-                window.eval("var MdsEventDataString='" + (new String(ab)).trim() + "';");
+                try {
+		    window.eval("var MdsEventDataString='" + (new String(ab)).trim() + "';");
+		} catch (JSException e) {
+		}
                 window.eval("var MdsEventData = new Array(12);");
                 for (int i=0;i<12;i++)
 		    window.eval("MdsEventData[" + i + "]="+ab[i]+";");
