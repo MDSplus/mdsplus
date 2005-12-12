@@ -29,7 +29,6 @@ public class Waveform
       "Magenta", "Orange", "Pink",
       "Red", "Yellow"};
 
- // private ColorMap colorMap = new ColorMap();
 
   public static boolean zoom_on_mb1 = true;
 
@@ -348,17 +347,6 @@ public class Waveform
     return wm;
   }
 
-/*
-  public ColorMap getColorMap()
-  {
-    return colorMap;
-  }
-
-  public void setColorMap(ColorMap colorMap)
-  {
-    this.colorMap = colorMap;
-  }
-*/
 
   static public String[] getColorsName() {
     colors_changed = false;
@@ -1367,9 +1355,9 @@ public class Waveform
                                frames.GetFrameTime(), 0,
                                frames.getPixel(frames.GetFrameIdx(), p.x, p.y),
                                0);
+
         if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16 ) {
           we.setPointValue(frames.getPointValue(frames.GetFrameIdx(), p.x, p.y));
-
         }
         we.setFrameType(frame_type);
 
@@ -1427,6 +1415,7 @@ public class Waveform
       Dimension d = getWaveSize();
       Point p = frames.getFramePoint(new Point(end_x, end_y), d);
       int frame_type = frames.getFrameType(frames.GetFrameIdx());
+
 
       if (frame_type == FrameData.BITMAP_IMAGE_32 ||
           frame_type == FrameData.BITMAP_IMAGE_16 ) {
@@ -1664,7 +1653,8 @@ public class Waveform
     }
 
     if (! (mode == MODE_PAN && dragging && waveform_signal != null) ||is_image) {
-      g.drawImage(off_image, 0, 0, this);
+      if(off_image != null)
+          g.drawImage(off_image, 0, 0, this);
     }
     g.translate(i.right, i.top);
 
@@ -1862,14 +1852,15 @@ public class Waveform
     }
 
     Dimension dim = frames.getFrameSize(frame_idx, getWaveSize());
+    int type = frames.frame_type[frame_idx];
 
-    DrawImage(g, img, dim);
+    DrawImage(g, img, dim, type);
 
     return true;
 
   }
 
-  protected void DrawImage(Graphics g, Object img, Dimension dim) {
+  protected void DrawImage(Graphics g, Object img, Dimension dim, int type) {
 
     Rectangle r = frames.GetZoomRect();
     Graphics2D g2 = (Graphics2D)g;
@@ -1878,7 +1869,8 @@ public class Waveform
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
-    if ( !(img instanceof RenderedImage) ) {
+    if ( type != FrameData.JAI_IMAGE )
+    {
       if (r == null) {
         g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
       }
@@ -1898,7 +1890,7 @@ public class Waveform
     else {
       g2.clearRect(0, 0, dim.width, dim.height);
       g2.drawRenderedImage( (RenderedImage) img,
-                             new AffineTransform(1f, 0f, 0f, 1f, 0F,0F));
+                             new AffineTransform(1f, 0f, 0f, 1f, 0F, 0F));
     }
   }
 
@@ -2420,6 +2412,26 @@ public class Waveform
       }
     }
   }
+
+  public void setColorMap(ColorMap cm)
+  {
+      frames.setColorMap(cm);
+      not_drawn = true;
+      repaint();
+  }
+
+  public ColorMap getColorMap()
+  {
+      return frames.getColorMap();
+  }
+
+  public void applyColorModel(ColorMap cm)
+  {
+     frames.applyColorModel(cm);
+     not_drawn = true;
+     repaint();
+  }
+
 
   public synchronized void addWaveformListener(WaveformListener l) {
     if (l == null) {

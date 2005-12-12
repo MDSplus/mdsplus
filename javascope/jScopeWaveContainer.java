@@ -938,7 +938,8 @@ remove 28/06/2005
             {
                InetAddress dsiInet =   InetAddress.getByName(dataServerIn.argument);
                String disIpAdddress = dsiInet.getHostAddress();
-               clientMask = localIpAdddress.substring(0, localIpAdddress.lastIndexOf(".")) + ".*";
+               StringTokenizer st = new StringTokenizer(localIpAdddress, ".");
+               clientMask = st.nextToken() + "." + st.nextToken() + ".*.*";
                if( !checkIpMask(disIpAdddress, clientMask) )
                    return dataServerIn;
             }
@@ -1075,7 +1076,7 @@ remove 28/06/2005
         return server_item;
     }
 
-    public void FromFile(Properties pr, String prompt, int colorMap[]) throws
+    public void FromFile(Properties pr, String prompt, int colorMapping[], ColorMapDialog cmd) throws
         IOException
     {
         String prop;
@@ -1222,8 +1223,8 @@ remove 28/06/2005
             {
                 w = (jScopeMultiWave) getGridComponent(k);
                 ( (MdsWaveInterface) w.wi).FromFile(pr,
-                    "Scope.plot_" + (r + 1) + "_" + (c + 1));
-                ( (MdsWaveInterface) w.wi).mapColorIndex(colorMap);
+                    "Scope.plot_" + (r + 1) + "_" + (c + 1) , cmd);
+                ( (MdsWaveInterface) w.wi).mapColorIndex(colorMapping);
                 k++;
             }
         }

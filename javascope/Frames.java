@@ -7,7 +7,6 @@ import java.util.*;
 class Frames extends Canvas
 {
     static final int ROI = 20;
-    Vector frame_Bvalues = new Vector();
     Vector frame_values = new Vector();
     Vector frame = new Vector();
     Vector frame_time = new Vector();
@@ -17,8 +16,8 @@ class Frames extends Canvas
     MediaTracker tracker;
     Dimension d;
 
-    ColorModel c_model = null;
-  //private ColorMap colorMap = null;
+//    ColorModel c_model = null;
+    private ColorMap colorMap = new ColorMap();
 
     protected boolean aspect_ratio = true;
     protected int curr_grab_frame = -1;
@@ -105,12 +104,32 @@ class Frames extends Canvas
         return FrameData.JAI_IMAGE;
     }
 
-/*
+
     public void setColorMap(ColorMap colorMap)
     {
+      if(colorMap == null) return;
       this.colorMap = colorMap;
+      applyColorModel(colorMap);
     }
-*/
+
+    public ColorMap getColorMap()
+    {
+      return colorMap;
+    }
+
+    public int getPixelSize(int idx)
+    {
+        if(getNumFrame() == 0) return 8;
+        switch(frame_type[idx])
+        {
+            case FrameData.BITMAP_IMAGE_8 : return 8;
+            case FrameData.BITMAP_IMAGE_16 : return 16;
+            case FrameData.BITMAP_IMAGE_32 : return 16;
+            default: return 8;
+        }
+    }
+
+/**************************
     public void CreateColorModel(int mode)
     {
         int pixel_size;
@@ -121,24 +140,19 @@ class Frames extends Canvas
             case FrameData.BITMAP_IMAGE_32 : pixel_size = 16; break;
             default: return;
         }
-//        if(colorMap == null)
+        if(colorMap == null)
         {
             byte rgb[] = new byte[256], b = 0;
             for (int i = 0; i < 256; i++, b++)
                 rgb[i] = b;
             c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);
         }
-/*
         else
         {
-           c_model = new IndexColorModel(pixel_size, 256,
-                                         colorMap.getRedIntValues(),
-                                         colorMap.getGreenIntValues(),
-                                         colorMap.getBlueIntValues());
+           c_model = colorMap.getIndexColorModel(pixel_size);
         }
-*/
     }
-
+**********************************/
 
 
     protected void finalize()
@@ -155,13 +169,13 @@ class Frames extends Canvas
         int n_frames = fd.GetNumFrames();
         float t[] = fd.GetFrameTimes();
         byte[] buf;
-
-        if(frame_Bvalues.size() != 0)
-            frame_Bvalues.removeAllElements();
+        ColorModel colorModel;
 
         frame_type = new int[n_frames];
 
+/*
         CreateColorModel(fd.GetFrameType());
+*/
         for(int i = 0; i < n_frames; i++)
         {
             buf = fd.GetFrameAt(i);
@@ -171,11 +185,12 @@ class Frames extends Canvas
             {
                 case FrameData.BITMAP_IMAGE_8  :
                     FlipFrame(buf, fd.GetFrameDimension(), 1);
-                    frame_Bvalues.addElement(buf);
-                    AddBITMAPImage(buf, fd.GetFrameDimension(), t[i]);
+                    colorModel = colorMap.getIndexColorModel(8);
+                    AddBITMAPImage(buf, colorModel, fd.GetFrameDimension(), t[i]);
                 break;
                 case FrameData.BITMAP_IMAGE_16 :
                 {
+                    colorModel = colorMap.getIndexColorModel(16);
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
 
@@ -188,6 +203,20 @@ class Frames extends Canvas
                        buf_out[j] = din.readUnsignedShort();
 */
 
+                  int n_pix = d.width * d.height;
+                  short buf_out[] = new short[n_pix];
+                  float values[] = new float[n_pix];
+                  ByteArrayInputStream b = new ByteArrayInputStream(buf);
+                  DataInputStream din = new DataInputStream(b);
+
+                  for (int j = 0; j < n_pix; j++)
+                  {
+                      buf_out[j] = din.readShort();
+                      values[j] = 0xffff & buf_out[j];
+                  }
+                  frame_values.addElement(values);
+                  AddBITMAPImage(buf_out, colorModel, d, t[i]);
+/********************************
                    int n_pix = d.width*d.height;
                    float buf_out[] = new float[n_pix];
                    ByteArrayInputStream b = new ByteArrayInputStream(buf);
@@ -208,12 +237,13 @@ class Frames extends Canvas
                      buf_outl[j] = (int)(255 * (buf_out[j] - min)/(max - min));
                    }
 
-                    AddBITMAPImage(buf_outl, d, t[i]);
-
+                   AddBITMAPImage(buf_outl, d, t[i]);
+************************************/
                 }
                 break;
                 case FrameData.BITMAP_IMAGE_32 :
                 {
+                    colorModel = colorMap.getIndexColorModel(16);
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 4);
 
@@ -230,13 +260,13 @@ class Frames extends Canvas
                        if(buf_out[j] < min) min = buf_out[j];
                     }
                     frame_values.addElement(buf_out);
-                    int buf_out1[] = new int[n_pix];
+                    short buf_out1[] = new short[n_pix];
                     for(int j = 0; j < n_pix; j++)
                     {
-                       buf_out1[j] = (int)(255 * (buf_out[j] - min)/(max - min));
+                       buf_out1[j] = (short)(255 * (buf_out[j] - min)/(max - min));
                     }
 
-                    AddBITMAPImage(buf_out1, d, t[i]);
+                    AddBITMAPImage(buf_out1, colorModel, d, t[i]);
                 }
                 break;
                 case FrameData.AWT_IMAGE :
@@ -249,29 +279,77 @@ class Frames extends Canvas
         }
     }
 
-    public boolean AddBITMAPImage(byte[] buf, Dimension d, float t)
+    public void applyColorModel(ColorMap colorMap)
+    {
+        if(colorMap == null) return;
+
+        BufferedImage img = null;
+        Vector newFrame = new Vector();
+        ColorModel colorModel;
+
+        for(int i = 0; i < frame.size(); i++)
+        {
+            colorModel = colorMap.getIndexColorModel(getPixelSize(i));
+            img = (BufferedImage)frame.elementAt(i);
+            img = new BufferedImage(colorModel, img.getRaster(), false, null);
+            newFrame.add(img);
+        }
+        frame.removeAllElements();
+        frame = newFrame;
+    }
+
+    public boolean AddBITMAPImage(byte[] buf, ColorModel colorModel, Dimension d, float t)
     {
         Image img;
         MemoryImageSource source;
         if(buf == null || d == null) return false;
-
+/*
         source = new MemoryImageSource(d.width, d.height, c_model, buf, 0, d.width);
         img = createImage(source);
-/*
+
         DataBufferByte db = new DataBufferByte(buf, buf.length);
         SinglePixelPackedSampleModel  sm = new SinglePixelPackedSampleModel(DataBuffer.TYPE_BYTE, d.width, d.height, new int[]{8,0,0});
         img = new BufferedImage(c_model, Raster.createWritableRaster(sm, db, new Point(0,0)), false, null);
 */
+        DataBuffer db = new DataBufferByte(buf, buf.length);
+        WritableRaster raster = Raster.createInterleavedRaster(db,
+                    d.width,  d.height, d.width, 1, new int[]{0}, null);
+        img = new BufferedImage(colorModel, raster, false, null);
+
+
         return AddFrame(img, t);
     }
 
-    public boolean AddBITMAPImage(int[] buf, Dimension d, float t)
+
+    public boolean AddBITMAPImage(short[] buf, ColorModel colorModel, Dimension d, float t)
     {
         Image img;
         MemoryImageSource source;
         if(buf == null || d == null) return false;
-        source = new MemoryImageSource(d.width, d.height, c_model, buf, 0, d.width);
+
+        DataBuffer db = new DataBufferUShort(buf, buf.length);
+        WritableRaster raster = Raster.createInterleavedRaster(db,
+                    d.width,  d.height, d.width, 1, new int[]{0}, null);
+        img = new BufferedImage(colorModel, raster, false, null);
+
+        return AddFrame(img, t);
+    }
+
+
+    public boolean AddBITMAPImage(int[] buf,  ColorModel colorModel, Dimension d, float t)
+    {
+        Image img;
+        MemoryImageSource source;
+        if(buf == null || d == null) return false;
+        /*
+        source = new MemoryImageSource(d.width, d.height, colorModel, buf, 0, d.width);
         img = createImage(source);
+        */
+        DataBuffer db = new DataBufferInt(buf, buf.length);
+        WritableRaster raster = Raster.createInterleavedRaster(db,
+                   d.width,  d.height, d.width, 1, new int[]{0}, null);
+        img = new BufferedImage(colorModel, raster, false, null);
+
         return AddFrame(img, t);
     }
 
@@ -397,13 +475,7 @@ class Frames extends Canvas
             byte b_img[];
             Image img;
 
-            if(c_model == null)
-            {
-                byte rgb[] = new byte[256];
-                for(int i = 0; i < 256; i++)
-                    rgb[i] = (byte)i;
-                c_model = new IndexColorModel(pixel_size, 256, rgb, rgb, rgb);
-            }
+            ColorModel colorModel = colorMap.getIndexColorModel(pixel_size);
 
             for(int i = 0; i < n_frame; i++)
             {
@@ -415,7 +487,7 @@ class Frames extends Canvas
                 b_img = new byte[img_size];
                 d.readFully(b_img);
 
-                source = new MemoryImageSource(width, height, c_model, b_img, 0, width);
+                source = new MemoryImageSource(width, height, colorModel, b_img, 0, width);
                 img = createImage(source);
                 AddFrame(img, f_time[i]);
             }
@@ -459,6 +531,7 @@ class Frames extends Canvas
         return true;
     }
 
+
     public void WaitLoadFrame() throws InterruptedException
     {
         tracker.waitForID(0);
@@ -487,24 +560,6 @@ class Frames extends Canvas
             return null;
        }
        return pixel_array;
-/*
-       if (idx >= frame_Bvalues.size()) return null;
-       byte values[] = (byte[])frame_Bvalues.elementAt(idx);
-       Image img = (Image)frame.elementAt(idx);
-
-       if(img_w == -1 && img_h == -1)
-       {
-            img_width = img_w = img.getWidth(this);
-            img_height = img_h = img.getHeight(this);
-       }
-       int pixel_array[] = new int[img_w * img_h];
-       int k = 0;
-       for(int iy = y; iy < y+img_h; iy++)
-           for(int ix = x; ix < x+img_w; ix++)
-               pixel_array[k++] = values[iy * img_width + ix];
-
-        return pixel_array;
-*/
     }
 
     protected float[] getValueArray(int idx, int x, int y, int img_w, int img_h)

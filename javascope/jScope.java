@@ -30,7 +30,7 @@ public class jScope
     UpdateEventListener, ConnectionListener
 {
 
-    static final String VERSION = "jScope (version 7.3.7)";
+    static final String VERSION = "jScope (version 7.3.8)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -76,6 +76,7 @@ public class jScope
     private JTextField info_text, net_text;
     private WindowDialog win_diag;
     public ColorDialog color_dialog;
+    public ColorMapDialog colorMapDialog;
     public FontSelection font_dialog;
     jScopeWaveContainer wave_panel;
     SetupDefaults setup_default;
@@ -555,6 +556,8 @@ public class jScope
         font_dialog   = new FontSelection(this, "Waveform Font Selection");
         setup_default = new SetupDefaults(this, "Default Setup", def_values);
         color_dialog  = new ColorDialog(this, "Color Configuration Dialog");
+        colorMapDialog = new ColorMapDialog(this, js_prop.getProperty("jScope.color_palette_file"));
+
         pub_var_diag  = new PubVarDialog(this);
 
         getContentPane().setLayout(new BorderLayout());
@@ -1029,7 +1032,7 @@ public class jScope
                              setup_default.getReversed());
 
         wave_panel.setPopupMenu(new jScopeWavePopup(setup_dialog,
-            new ProfileDialog(null, null)));
+            new ProfileDialog(null, null), colorMapDialog ));
 
         getContentPane().add("Center", wave_panel);
 
@@ -1363,8 +1366,8 @@ public class jScope
              f_name = System.getProperty("user.home") + File.separator +
                      "jScope" + File.separator + "jScope_servers.conf";
 
-            if( ! (new File(f_name)).exists() )
-            {
+             if( ! (new File(f_name)).exists() )
+             {
 
                 InputStream pis = getClass().getClassLoader().
                     getResourceAsStream("jScope_servers.conf");
@@ -2696,7 +2699,7 @@ public class jScope
             font_dialog.fromFile(pr, "Scope.font");
             color_dialog.FromFile(pr, "Scope.color_");
             pub_var_diag.fromFile(pr, "Scope.public_variable_");
-            wave_panel.FromFile(pr, "Scope", color_dialog.getColorMapIndex());
+            wave_panel.FromFile(pr, "Scope", color_dialog.getColorMapIndex(), colorMapDialog);
         }
         catch (Exception e)
         {

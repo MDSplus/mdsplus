@@ -84,6 +84,9 @@ public class WaveInterface
     static SignalCache sc = null;
     static boolean brief_error = true;
 
+    ColorMap colorMap = new ColorMap();
+
+
     public WaveInterface()
     {
         CreateWaveInterface(null, null);
@@ -302,6 +305,17 @@ public class WaveInterface
                 }
         }
     }
+
+    public void setColorMap(ColorMap colorMap)
+    {
+        this.colorMap = colorMap;
+    }
+
+    public ColorMap getColorMap()
+    {
+        return colorMap;
+    }
+
 
     public void ShowLegend(boolean state)
     {
@@ -1072,7 +1086,7 @@ public class WaveInterface
         else
         {
             frames = new Frames();
-            //           frames.setColorMap(wave.getColorMap());
+            frames.setColorMap(colorMap);
         }
     }
 
@@ -1083,6 +1097,9 @@ public class WaveInterface
         curr_error = null;
         byte buf[];
         WaveformEvent we;
+        int mode = this.wave.GetMode();
+
+        this.wave.SetMode(Waveform.MODE_WAIT);
 
         if (in_y[0] == null)
         {
@@ -1115,10 +1132,14 @@ public class WaveInterface
             else
                 curr_error = dp.ErrorString();
             frames.WaitLoadFrame();
+
+            this.wave.SetMode(mode);
+
         }
         catch (Throwable e)
         {
             //e.printStackTrace();
+            this.wave.SetMode(mode);
             frames = null;
             curr_error = " Load Frames error " + e;
         }
@@ -1174,59 +1195,76 @@ public class WaveInterface
         IOException
     {
         Signal out_signal = null;
+        int mode = this.wave.GetMode();
 
-        if (in_y[curr_wave] == null)
+        try
         {
-            curr_error = "Missing Y value";
-            return null;
-        }
+            this.wave.SetMode(Waveform.MODE_WAIT);
 
-        if (cache_enabled && full_flag && !is_async_update)
-        {
-            out_signal = GetSignalFromCache(curr_wave, xmin, xmax);
-        }
-
-        if (out_signal == null)
-        {
-            synchronized (dp)
+            if (in_y[curr_wave] == null)
             {
-                out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+                curr_error = "Missing Y value";
+                return null;
             }
 
-            if (! (full_flag ||
-                   wave_signals == null ||
-                   wave_signals.length <= curr_wave ||
-                   wave_signals[curr_wave] == null))
+            if (cache_enabled && full_flag && !is_async_update)
             {
-                // In this case GetSignal is called only
-                // to inflate the signal and therefore
-                // limits must not be changed
-                return out_signal;
+                out_signal = GetSignalFromCache(curr_wave, xmin, xmax);
             }
 
-        }
+            if (out_signal == null)
+            {
+                synchronized (dp)
+                {
+                    out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+                }
 
-        if (out_signal != null)
+                if (! (full_flag ||
+                       wave_signals == null ||
+                       wave_signals.length <= curr_wave ||
+                       wave_signals[curr_wave] == null))
+                {
+                    // In this case GetSignal is called only
+                    // to inflate the signal and therefore
+                    // limits must not be changed
+                    return out_signal;
+                }
+
+            }
+
+            if (out_signal != null)
+            {
+                if (xmin > xmax)
+                    xmin = xmax;
+                if (ymin > ymax)
+                    ymin = ymax;
+
+                if (xmin != -HUGE)
+                    out_signal.setXmin(xmin,
+                                       Signal.AT_CREATION | Signal.FIXED_LIMIT);
+                if (xmax != HUGE)
+                    out_signal.setXmax(xmax,
+                                       Signal.AT_CREATION | Signal.FIXED_LIMIT);
+
+                if (in_ymax != null && (in_ymax.trim()).length() != 0 &&
+                    in_upd_limits)
+                    out_signal.setYmax(ymax,
+                                       Signal.AT_CREATION | Signal.FIXED_LIMIT);
+
+                if (in_ymin != null && (in_ymin.trim()).length() != 0 &&
+                    in_upd_limits)
+                    out_signal.setYmin(ymin,
+                                       Signal.AT_CREATION | Signal.FIXED_LIMIT);
+
+                out_signal.setFullLoad(full_flag);
+            }
+            this.wave.SetMode(mode);
+       }
+        catch(IOException exc)
         {
-            if(xmin > xmax) xmin = xmax;
-            if(ymin > ymax) ymin = ymax;
-
-            if (xmin != -HUGE)
-                out_signal.setXmin(xmin, Signal.AT_CREATION | Signal.FIXED_LIMIT);
-            if (xmax != HUGE)
-                out_signal.setXmax(xmax, Signal.AT_CREATION | Signal.FIXED_LIMIT);
-
-            if (in_ymax != null && (in_ymax.trim()).length() != 0 &&
-                in_upd_limits)
-                out_signal.setYmax(ymax, Signal.AT_CREATION | Signal.FIXED_LIMIT);
-
-            if (in_ymin != null && (in_ymin.trim()).length() != 0 &&
-                in_upd_limits)
-                out_signal.setYmin(ymin, Signal.AT_CREATION | Signal.FIXED_LIMIT);
-
-            out_signal.setFullLoad(full_flag);
+            this.wave.SetMode(mode);
+            throw(exc);
         }
-
         return out_signal;
     }
 
@@ -1714,7 +1752,6 @@ public class WaveInterface
             w.dispatchWaveformEvent(we);
         }
     }
-
 }
 
 class ContinuousUpdater

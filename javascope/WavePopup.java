@@ -32,7 +32,7 @@ public class WavePopup
 
     private Waveform profile_source = null;
     ProfileDialog profDialog;
-//    ColorMapDialog colorMapDialog = null;
+    ColorMapDialog colorMapDialog = null;
 
     public WavePopup()
     {
@@ -401,8 +401,8 @@ public class WavePopup
             }
         }
         );
-/*
-        colorMap = new JMenuItem("Colors Map Table");
+
+        colorMap = new JMenuItem("Color Palette");
         colorMap.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -411,7 +411,7 @@ public class WavePopup
             }
         }
         );
-*/
+
 
     }
 
@@ -483,7 +483,7 @@ public class WavePopup
                 add(remove_panel);
             }
             add(colorList);
- //         add(colorMap);
+            add(colorMap);
             add(playFrame);
             add(set_point);
             add(sep2);
@@ -595,17 +595,29 @@ public class WavePopup
 
     }
 
-/*
+    public void setColorMapDialog(ColorMapDialog colorMapDialog)
+    {
+        this.colorMapDialog = colorMapDialog;
+    }
+
+
     public void ShowColorMapDialog(Waveform wave)
     {
+        /*
         if (colorMapDialog != null && colorMapDialog.isVisible())
             colorMapDialog.dispose();
-        colorMapDialog = new ColorMapDialog(null, wave.getColorMap());
-        colorMapDialog.pack();
-        colorMapDialog.setSize(300, 300);
+        colorMapDialog = new ColorMapDialog(null, wave);
+        */
+        if (colorMapDialog == null )
+        {
+            colorMapDialog = new ColorMapDialog(null, null);
+        }
+        else
+            colorMapDialog.setWave(wave);
+        colorMapDialog.setLocationRelativeTo(wave);
         colorMapDialog.show();
     }
-*/
+
 
     public void ShowProfileDialog(Waveform wave)
     {
@@ -614,11 +626,12 @@ public class WavePopup
             //profDialog = new ProfileDialog(null, wave);
         profDialog.setWaveSource(wave);
         profDialog.pack();
-        profDialog.setSize(200, 300);
+        profDialog.setSize(200, 250);
         if (profile_source != null)
             profile_source.setSendProfile(false);
         wave.setSendProfile(true);
         profile_source = wave;
+        profDialog.setLocationRelativeTo(wave);
         profDialog.show();
         wave.sendProfileEvent();
     }

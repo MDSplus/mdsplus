@@ -225,7 +225,7 @@ class MdsMessage extends Object
         int c_type = 0;
         int idx = 0;
 
-        //ReadBuf(header_b, dis);
+//        ReadBuf(header_b, dis);
 
 /*
         if(dis.read(header_b) == -1)

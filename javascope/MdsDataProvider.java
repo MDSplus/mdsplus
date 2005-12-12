@@ -703,21 +703,24 @@ public class MdsDataProvider
 
         String in;
 
-        in = "DIM_OF(" + in_frame + ", 2)";
+        in = "DIM_OF( _jScope_img = " + in_frame + ", 2)";
         time = GetFloatArray(in);
         if (time == null || ((time.length >= 2 ) && (time[1] == 1.0)))
         {
-            in = "DIM_OF(" + in_frame + ")";
+            //in = "DIM_OF(" + in_frame + ")";
+            in = "DIM_OF( _jScope_img )";
             time = GetFloatArray(in);
             if (time == null)
                 return null;
         }
-        in = "eshape(data(" + in_frame + "))";
+//      in = "eshape(data(" + in_frame + "))";
+        in = "eshape(data( _jScope_img ))";
         shape = GetIntArray(in);
         if (shape == null)
             return null;
 
-        in = in_frame;
+        //in = in_frame;
+        in = "_jScope_img";
         img_buf = GetByteArray(in);
         if (img_buf == null)
             return null;

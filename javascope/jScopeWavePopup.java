@@ -19,9 +19,11 @@ class jScopeWavePopup
     protected JSeparator sep1, sep3;
 
     public jScopeWavePopup(SetupDataDialog setup_dialog,
-                           ProfileDialog profDialog)
+                           ProfileDialog profDialog,
+                           ColorMapDialog colorMapDialog)
     {
         super(null, profDialog);
+        this.setColorMapDialog(colorMapDialog);
         setup.setText("Setup data source...");
         this.setup_dialog = setup_dialog;
 

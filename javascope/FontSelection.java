@@ -11,7 +11,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 {
     JLabel fontLabel, sizeLabel, styleLabel, testLabel;
     JRadioButton  application_i, waveform_i;
-    
+
     JButton ok, cancel, apply;
     FontPanel fontC;
     JComboBox fonts, sizes, styles;
@@ -27,7 +27,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 
     public FontSelection(Frame dw, String title) {
         super(dw, title, true);
-        
+
 	    main_scope = (jScope)dw;
 
         getContentPane().setLayout( new BorderLayout(5, 5) );
@@ -39,7 +39,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         JPanel sizeAndStylePanel = new JPanel();
         JPanel buttonPanel = new JPanel();
         JPanel fontSelectionPanel = new JPanel();
-        
+
 
         topPanel.setLayout( new BorderLayout(5, 5));
         fontPanel.setLayout( new GridLayout( 2, 1 ) );
@@ -77,8 +77,8 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         stylePanel.add(styleLabel);
 
         GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        envfonts = gEnv.getAvailableFontFamilyNames();       
-        
+        envfonts = gEnv.getAvailableFontFamilyNames();
+
         ButtonGroup   font_selection = new ButtonGroup();
         application_i = new JRadioButton("Application");
         fontSelectionPanel.add(application_i);
@@ -86,17 +86,17 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         fontSelectionPanel.add(waveform_i);
         font_selection.add(application_i);
         font_selection.add(waveform_i);
-        
-        
+
+
         fonts = new JComboBox(envfonts);
-               
+
         fonts.addItemListener(this);
         fontchoice = envfonts[0];
         fontPanel.add(fonts);
 
-        size_l = new String[]{ "10", "12", "14", "16", "18"};
+        size_l = new String[]{ "10", "12", "14", "16", "18", "20", "22", "24", "26", "28" };
         sizes = new JComboBox(size_l);
-        
+
         sizes.addItemListener(this);
         sizePanel.add(sizes);
 
@@ -115,32 +115,32 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         getContentPane().add( BorderLayout.CENTER, fontC);
 
 	      ok = new JButton("Ok");
-	      ok.addActionListener(this);	
+	      ok.addActionListener(this);
           buttonPanel.add(ok);
 
           apply = new JButton("Apply");
-	      apply.addActionListener(this);	
+	      apply.addActionListener(this);
           buttonPanel.add(apply);
 
 	      cancel = new JButton("Cancel");
-	      cancel.addActionListener(this);	
+	      cancel.addActionListener(this);
           buttonPanel.add(cancel);
           getContentPane().add( BorderLayout.SOUTH, buttonPanel);
 	      pack();
-	      
-	      GetPropertiesValue();	            
+
+	      GetPropertiesValue();
     }
-    
+
     private void setFontChoice()
     {
         fonts.removeItemListener(this);
         styles.removeItemListener(this);
         sizes.removeItemListener(this);
-        
+
         fonts.setSelectedItem(fontchoice);
         styles.setSelectedIndex(stChoice);
         sizes.setSelectedItem(siChoice);
-        
+
         fonts.addItemListener(this);
         styles.addItemListener(this);
         sizes.addItemListener(this);
@@ -151,42 +151,42 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         Properties js_prop = main_scope.js_prop;
         String prop;
         int i = 0, len;
-       
+
         if(js_prop == null) return;
-        
-        if((prop = (String)js_prop.getProperty("jScope.font.application")) != null) 
+
+        if((prop = (String)js_prop.getProperty("jScope.font.application")) != null)
 	    {
 	         main_scope.SetApplicationFonts(StringToFont(prop));
 	    }
 
-        
-        
+
+
         prop = (String)js_prop.getProperty("jScope.font");
-        
-        if(prop == null) 
+
+        if(prop == null)
             font = StringToFont(getFont().toString());
         else
 	        font = StringToFont(prop);
-	    
+
 	    if(font != null) {
 	        setFontChoice();
 	        fontC.changeFont(font);
-	    }	    
-    }     
+	    }
+    }
 
-    
+
     public Font StringToFont(String f)
     {
         String s;
         String style;
         int pos, i;
-        
+
         if(f.indexOf("java.awt.Font[") == -1)
             return null;
 
         if(jScope.is_debug)
             System.out.println("Font desiderato " + f);
-        
+
         fontchoice = f.substring(f.indexOf("family=") + 7, pos = f.indexOf(",name="));
         pos++;//Index on the string after comma before style
         style = f.substring(f.indexOf("style=", pos)+6, pos = f.indexOf(",size", pos));
@@ -199,7 +199,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             stChoice = i;
         siChoice = f.substring(f.indexOf("size=")+5, f.indexOf("]", pos));
         Font font = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
-                
+
         //Check if selected font can be displayed
         //on the current patform
         if(!fontC.isFontAvailable(font))
@@ -210,37 +210,37 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             siChoice = "12";
             font = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
         }
-        
+
         if(jScope.is_debug)
             System.out.println("Font ottenuto " + font);
-            
+
         return font;
     }
 
     public void fromFile(Properties pr, String prompt) throws IOException
     {
     	String prop;
-    
+
 
 	    if((prop = pr.getProperty(prompt)) != null) {
 	         font = StringToFont(prop);
 	    }
-	    
+
 	    if(font != null) {
 	        setFontChoice();
 	        fontC.changeFont(font);
-	    }	    
+	    }
     }
 
-    
+
     public void toFile(PrintWriter out, String prompt)
     {
         if(font != null)
-	        out.println(prompt +": " + font.toString());		
+	        out.println(prompt +": " + font.toString());
 	    out.println("");
     }
-    
-    
+
+
     public Font GetFont()
     {
             fontchoice = (String)fonts.getSelectedItem();
@@ -250,7 +250,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             int size = newSize.intValue();
             Font f = new Font(fontchoice, stChoice, size);
             f = StringToFont(f.toString());
-            
+
             return f;
     }
 
@@ -262,13 +262,13 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
         Object list = e.getSource();
         fontC.changeFont(GetFont());
     }
-    
-    public void actionPerformed(ActionEvent e) 
+
+    public void actionPerformed(ActionEvent e)
     {
 
 	    Object ob = e.getSource();
 	    int i;
-    
+
 	    if (ob == ok || ob == apply)
 	    {
 	        if(waveform_i.isSelected())
@@ -278,7 +278,7 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
                 main_scope.RepaintAllWaves();
                 main_scope.setChange(true);
             }
-            
+
 	        if(application_i.isSelected())
 	        {
                 main_scope.SetApplicationFonts(GetFont());
@@ -286,13 +286,13 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
             }
             if(ob == ok)
 		        setVisible(false);
-        }  
+        }
 
 	    if (ob == cancel)
 	    {
 	        setVisible(false);
 	    }
-    }  
+    }
 }
 
 
@@ -300,15 +300,15 @@ class FontPanel extends JPanel {
 
     Font thisFont;
 
-    public FontPanel(){ 
+    public FontPanel(){
         thisFont = new Font("Arial", Font.PLAIN, 10);
     }
-    
+
     public Dimension getPreferredSize()
     {
         return new Dimension(100, 50);
     }
-    
+
     //Check if the font is visible on
     //this platform
     public boolean isFontAvailable(Font font)
@@ -319,7 +319,7 @@ class FontPanel extends JPanel {
         height = fm.getHeight();
         return (height > 9 && height < 100);
     }
-    
+
     public void changeFont(Font font){
         thisFont = font;
         repaint();
