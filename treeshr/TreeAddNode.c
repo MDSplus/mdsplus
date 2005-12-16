@@ -744,6 +744,11 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 	(*dblist)->modified = 0;
         TreeCallHook(WriteTree, info_ptr,0);
       }
+      else
+      {
+	(*dblist)->modified = 0;
+        status = TreeFAILURE;
+      }
     }
   }
   return status;
