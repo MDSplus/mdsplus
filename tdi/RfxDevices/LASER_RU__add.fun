@@ -1,7 +1,9 @@
 public fun LASER_RU__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'LASER_RU', 60, _nidout);
+    DevAddStart(_path, 'LASER_RU', 62, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT', *, *, _nid);
+	DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
+    DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':RS232_PORT',  'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_MODE',   'TEXT', *, *, _nid);
     DevAddNode(_path // ':NUM_SHOTS',   'NUMERIC', 0, *, _nid);
