@@ -79,7 +79,10 @@ XRAYSetup.java\
 SXCSetup.java\
 RFXAxiControlSetup.java\
 RFXAxiToroidalControlSetup.java\
-TOMOSetupSetup.java
+TOMOSetupSetup.java\
+TSEdgeCCDSetup.java\
+LASER_RUSetup.java\
+GEN_GAINSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
