@@ -1,4 +1,4 @@
-public fun FLU_GAIN__setAdc(as_is _nid, optional _method)
+public fun GEN_GAIN__setAdc(as_is _nid, optional _method)
 {
 
    private _K_CONG_NODES = 83;
@@ -9,10 +9,10 @@ public fun FLU_GAIN__setAdc(as_is _nid, optional _method)
    private _K_NUM_CHANNEL = 16;
    private _K_NODES_PER_CHANNEL = 5;
    private _N_CHANNEL_1 = 3;
-   private _N_CHAN_LIN_NAME   =  1;
-   private _N_CHAN_LIN_CALIB  =  2;
-   private _N_CHAN_LIN_INPUT  =  3;
-   private _N_CHAN_LIN_OUTPUT =  4;
+   private _N_CHAN_NAME   =  1;
+   private _N_CHAN_CALIB  =  2;
+   private _N_CHAN_INPUT  =  3;
+   private _N_CHAN_OUTPUT =  4;
 
    private _INVALID = -1;
 
@@ -22,6 +22,7 @@ public fun FLU_GAIN__setAdc(as_is _nid, optional _method)
 	    DevLogErr(_nid, "Missing Acquisition device module path"); 
 	    abort();
    }
+   
  
    
 	for(_i = 1; _i <= _K_NUM_CHANNEL; _i++)
@@ -34,9 +35,8 @@ public fun FLU_GAIN__setAdc(as_is _nid, optional _method)
 		else
 			_path = _adc // '.CHANNEL_' // TEXT(_i, 2) //':DATA';
 
+
 		DevPut(_nid, _head_channel + _N_CHAN_OUTPUT, build_path(_path));
-			_nid1 = DevHead(_nid) +  _head_channel + _N_CHAN_OUTPUT;
-			TreeShr->TreePutRecord(val(_nid1),val(0),val(0));
 	}
 
 
