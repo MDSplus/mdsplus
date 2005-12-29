@@ -139,8 +139,8 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(515);
-    this.setHeight(515);
+    this.setWidth(700);
+    this.setHeight(250);
     this.setDeviceType("BUILD_VERSION");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("Build new RFX experiment version ");
@@ -189,7 +189,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceField4.setTextOnly(true);
     deviceField4.setOffsetNid(5);
     deviceField6.setOffsetNid(7);
-    deviceField6.setTextOnly(true);
+    deviceField6.setTextOnly(false);
     deviceField6.setLabelString("Programs:");
     deviceField6.setNumCols(50);
     deviceField6.setIdentifier("");
@@ -212,7 +212,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel2.setShowVal("");
     deviceChannel2.setLayout(borderLayout4);
     deviceField8.setOffsetNid(11);
-    deviceField8.setTextOnly(true);
+    deviceField8.setTextOnly(false);
     deviceField8.setLabelString("Programs:");
     deviceField8.setNumCols(50);
     deviceField8.setIdentifier("");
@@ -240,7 +240,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel3.setShowVal("");
     deviceChannel3.setLayout(borderLayout5);
     deviceField11.setOffsetNid(15);
-    deviceField11.setTextOnly(true);
+    deviceField11.setTextOnly(false);
     deviceField11.setLabelString("Programs:");
     deviceField11.setNumCols(50);
     deviceField11.setIdentifier("");
@@ -268,7 +268,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel4.setShowVal("");
     deviceChannel4.setLayout(borderLayout6);
     deviceField14.setOffsetNid(19);
-    deviceField14.setTextOnly(true);
+    deviceField14.setTextOnly(false);
     deviceField14.setLabelString("Programs:");
     deviceField14.setNumCols(50);
     deviceField14.setIdentifier("");
@@ -296,7 +296,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel5.setShowVal("");
     deviceChannel5.setLayout(borderLayout7);
     deviceField17.setOffsetNid(23);
-    deviceField17.setTextOnly(true);
+    deviceField17.setTextOnly(false);
     deviceField17.setLabelString("Programs:");
     deviceField17.setNumCols(50);
     deviceField17.setIdentifier("");
@@ -319,7 +319,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel6.setShowVal("");
     deviceChannel6.setLayout(borderLayout8);
     deviceField110.setOffsetNid(27);
-    deviceField110.setTextOnly(true);
+    deviceField110.setTextOnly(false);
     deviceField110.setLabelString("Programs:");
     deviceField110.setNumCols(50);
     deviceField110.setIdentifier("");
@@ -347,7 +347,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel7.setShowVal("");
     deviceChannel7.setLayout(borderLayout9);
     deviceField113.setOffsetNid(31);
-    deviceField113.setTextOnly(true);
+    deviceField113.setTextOnly(false);
     deviceField113.setLabelString("Programs:");
     deviceField113.setNumCols(50);
     deviceField113.setIdentifier("");
@@ -374,7 +374,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     deviceChannel8.setShowVal("");
     deviceChannel8.setLayout(borderLayout10);
     deviceField116.setOffsetNid(35);
-    deviceField116.setTextOnly(true);
+    deviceField116.setTextOnly(false);
     deviceField116.setLabelString("Programs:");
     deviceField116.setNumCols(50);
     deviceField116.setIdentifier("");
