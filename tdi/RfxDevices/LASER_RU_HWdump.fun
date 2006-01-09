@@ -2,7 +2,7 @@ public fun LASER_RU_HWdump(in _port)
 {
     private _K_NUM_BITS = 5;
     
-	private _RS232_XONXOFF = 0;
+    private _RS232_XONXOFF = 0;
     private _RS232_CTSDSR  = 1;
 
     private _TRIG_INTERNAL  = 0;
@@ -18,7 +18,7 @@ public fun LASER_RU_HWdump(in _port)
 	}
 
     _cmnd =  "dterm 13";
-	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);
@@ -26,7 +26,7 @@ public fun LASER_RU_HWdump(in _port)
 
 
     _cmnd =  "dtime1 2 2 2 2";
-	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);
@@ -34,14 +34,14 @@ public fun LASER_RU_HWdump(in _port)
 
 
     _cmnd =  "use1";
-	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);
 	}
 
     _cmnd =  "dump 0";
-	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);
@@ -49,7 +49,7 @@ public fun LASER_RU_HWdump(in _port)
 
 
     _cmnd =  "charge 0";
-	if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+	if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);

@@ -23,7 +23,7 @@ public fun LASER_RU_HWreset(in _port, in _bit_states)
 
    /* Set CR as command terminator */
 	_cmnd =  "dterm 13";
-    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+    if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		return(0);
@@ -40,7 +40,7 @@ public fun LASER_RU_HWreset(in _port, in _bit_states)
 		else
 			_cmnd =  "off "//_bit;
 
-		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+		if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 		{
 			RS232Close(_hComm);
 			return(0);
@@ -53,7 +53,7 @@ public fun LASER_RU_HWreset(in _port, in _bit_states)
     for( _i = 0; _i < _K_NUM_DATA; _i++)
 	{
 		_cmnd = "adc "//_i;
-		_val = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+		_val = LASER_RUSendCommand(_hComm,  _cmnd);
 		if( _val < 0 )
 		{
 			RS232Close(_hComm);
@@ -63,7 +63,7 @@ public fun LASER_RU_HWreset(in _port, in _bit_states)
     }
 
 	_cmnd = "hip";
-	_retvalue = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+	_retvalue = LASER_RUSendCommand(_hComm,  _cmnd);
 	if(_retvalue < 0)
 	{
 		RS232Close(_hComm);
@@ -74,28 +74,28 @@ public fun LASER_RU_HWreset(in _port, in _bit_states)
 	{
 /* Dump sequence */
 		_cmnd =  "dtime1 2 2 2 2";
-		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+		if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 		{
 			RS232Close(_hComm);
 			return(0);
 		}
 
 		_cmnd =  "use1";
-		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+		if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 		{
 			RS232Close(_hComm);
 			return(0);
 		}
 
 		_cmnd =  "dump 0";
-		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+		if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 		{
 			RS232Close(_hComm);
 			return(0);
 		}
 
 		_cmnd =  "charge 0";
-		if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+		if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 		{
 			RS232Close(_hComm);
 			return(0);

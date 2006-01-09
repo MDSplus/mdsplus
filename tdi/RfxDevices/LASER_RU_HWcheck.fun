@@ -20,13 +20,13 @@ public fun LASER_RU_HWcheck(in  _port)
 
    /* Set CR as command terminator */
 	_cmnd =  "dterm 13";
-    if( LASER_RUSendCommand(_hComm, _nid,  _cmnd) < 0 )
+    if( LASER_RUSendCommand(_hComm,  _cmnd) < 0 )
 	{
 		RS232Close(_hComm);
 		abort();
 	}
 	_cmnd = "hip";
-	_retvalue = LASER_RUSendCommand(_hComm, _nid,  _cmnd);
+	_retvalue = LASER_RUSendCommand(_hComm,  _cmnd);
 	if(_retvalue < 0)
 	{
 		RS232Close(_hComm);
