@@ -245,13 +245,14 @@ class jScopeWaveContainer
         try
         {
             String t = dp.GetString(title);
-            if (dp.ErrorString() == null || dp.ErrorString().length() == 0)
+            String err = dp.ErrorString();
+            if (err == null || err.length() == 0)
                 return t;
             else
                 return "< evaluation error >";
 
         }
-        catch (IOException exc)
+        catch (Exception exc)
         {
             return "";
         }
@@ -848,9 +849,9 @@ remove 28/06/2005
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
             RepaintAllWave();
-            throw (new Exception("UpdateAllWaves " + e));
+            //throw (new Exception("UpdateAllWaves " + e));
         }
     }
 

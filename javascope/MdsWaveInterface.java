@@ -277,6 +277,8 @@ class MdsWaveInterface
 
         error = null;
 
+/*
+Fix bug : shot expression must be always evaluated.
         if (c_shot_str != null)
         {
             if (previous_shot.equals(c_shot_str) && !previous_shot.equals("0"))
@@ -289,7 +291,7 @@ class MdsWaveInterface
                 return;
             previous_shot = "not defined";
         }
-
+*/
         if (UseDefaultShot())
         {
 

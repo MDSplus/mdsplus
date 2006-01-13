@@ -273,6 +273,8 @@ public class WaveformMetrics
             ;
         yEt = i;
 
+        if(yEt == 0) return;
+
         int p = 0;
         int h = 0;
         int w = 0;
@@ -331,6 +333,7 @@ public class WaveformMetrics
         }
 
         yPix0 = yPix1;
+
         yPix1 = 2 * YPixel(s.x_data[yEt - 1]) - yPix1;
         h = yPix0 - yPix1;
 

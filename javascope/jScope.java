@@ -2146,7 +2146,11 @@ public class jScope
                         {
                             setPublicVariables(pub_var_diag.getPublicVar());
                             SetMainShot();
+                            /*
                             wave_panel.Refresh(w, we.status_info);
+                            */
+                            w.RefreshOnEvent();
+                            //??????*******
                         }
                         break;
                     case WaveformEvent.MEASURE_UPDATE:
@@ -2243,7 +2247,7 @@ public class jScope
             {
                SwingUtilities.invokeLater(new Runnable() {public void run() {UpdateAllWaves();}});
             }
-                //wave_panel.StartUpdate();
+            //wave_panel.StartUpdate();
 
             if (e.name.equals(print_event))
                 wave_panel.StartPrint(prnJob, attrs);
