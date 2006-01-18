@@ -1,6 +1,6 @@
 public fun LASER_RU__trigger(as_is _nid, optional _method)
 {
-	private _K_CONG_NODES = 62;
+    private _K_CONG_NODES = 62;
 
 	private _N_COMMENT = 1;
 	
@@ -63,7 +63,7 @@ public fun LASER_RU__trigger(as_is _nid, optional _method)
     
 
 	_error = 0;
-  
+
     _port = if_error(data(DevNodeRef(_nid, _N_RS232_PORT)), _error = 1);
     if( _error )
     {
@@ -84,16 +84,16 @@ public fun LASER_RU__trigger(as_is _nid, optional _method)
 	}
 
 
+
  	/*  Decode trigger mode parameter */
 
 	DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL',  'EXTERNAL',  'AUTOMATIC', 'MANUAL'], [0, 1, 2, 3], _trig_mode = 0);
-
 
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-		_status = MdsValue('LASER_RU_HWtrigger($,$,$,$,$,$,$,$,$)',  _port,  _trig_mode);		
+		_status = MdsValue('LASER_RU_HWtrigger($,$)',  _port, _trig_mode);		
 		MdsDisconnect();
 		if(_status == 0)
 		{
@@ -107,7 +107,6 @@ public fun LASER_RU__trigger(as_is _nid, optional _method)
 		if(_status == 0)
 			abort();
 	} 
-
 
 
 	return (1);

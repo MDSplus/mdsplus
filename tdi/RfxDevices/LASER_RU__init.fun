@@ -90,7 +90,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
 	/*  Get OSC parameter */
 
-   _osc_par = if_error(DevNodeRef(_nid, _N_OSC_PAR), _error = 1);
+   _osc_par = if_error(data(DevNodeRef(_nid, _N_OSC_PAR)), _error = 1);
 	if( _error || _osc_par > 4095)
 	{
 	        DevLogErr(_nid, "Invalid voltage oscillator value");
@@ -101,21 +101,21 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
     _amp_par = [];
 
-    _amp_par = [_amp_par, if_error(DevNodeRef(_nid, _N_AMP_PAR_1), _error = 1)];
+    _amp_par = [_amp_par, if_error(data(DevNodeRef(_nid, _N_AMP_PAR_1)), _error = 1)];
 	if( _error || _amp_par[0] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid amplifier parameter 1 value");
 			abort();
   	}
 
-    _amp_par = [_amp_par, if_error(DevNodeRef(_nid, _N_AMP_PAR_2), _error = 1)];
+    _amp_par = [_amp_par, if_error(data(DevNodeRef(_nid, _N_AMP_PAR_2)), _error = 1)];
 	if( _error || _amp_par[1] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid amplifier parameter 2 value");
 			abort();
   	}
 
-    _amp_par = [_amp_par, if_error(DevNodeRef(_nid, _N_AMP_PAR_3), _error = 1)];
+    _amp_par = [_amp_par, if_error(data(DevNodeRef(_nid, _N_AMP_PAR_3)), _error = 1)];
 	if( _error || _amp_par[2] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid amplifier parameter 3 value");
@@ -126,21 +126,21 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
 	_pbal_par = [];
 
-    _pbal_par = [_pbal_par, if_error(DevNodeRef(_nid, _N_PBAL_PAR_1), _error = 1)];
+    _pbal_par = [_pbal_par, if_error(data(DevNodeRef(_nid, _N_PBAL_PAR_1)), _error = 1)];
 	if( _error || _pbal_par[0] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid balance parameter 1 value");
 			abort();
   	}
 
-    _pbal_par = [_pbal_par, if_error(DevNodeRef(_nid, _N_PBAL_PAR_2), _error = 1)];
+    _pbal_par = [_pbal_par, if_error(data(DevNodeRef(_nid, _N_PBAL_PAR_2)), _error = 1)];
 	if( _error || _pbal_par[1] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid balance parameter 2 value");
 			abort();
   	}
 
-    _pbal_par = [_pbal_par, if_error(DevNodeRef(_nid, _N_PBAL_PAR_3), _error = 1)];
+    _pbal_par = [_pbal_par, if_error(data(DevNodeRef(_nid, _N_PBAL_PAR_3)), _error = 1)];
 	if( _error || _pbal_par[2] > 4095)
 	{
 	        DevLogErr(_nid, "Invalid balance parameter 3 value");
@@ -188,7 +188,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
 	/* Get delay fire */
 
-    _delay_fire = if_error(DevNodeRef(_nid, _N_DELAY_FIRE), _error = 1);
+    _delay_fire = if_error(data(DevNodeRef(_nid, _N_DELAY_FIRE)), _error = 1);
 	if( _error )
 	{
 	        DevLogErr(_nid, "Invalid delay fire value");
@@ -213,6 +213,10 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 				DevLogErr(_nid, "Invalid df1m parameter 2 value");
 				abort();
   		}
+	}
+	else
+	{
+		_df1m_par = [0, 0];
 	}
 
 	/* Get status digital output lines*/

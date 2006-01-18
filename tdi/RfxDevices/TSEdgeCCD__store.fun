@@ -68,7 +68,7 @@ write(*, "TSEdgeCCD__store");
 	{
 		_data = zero(300 / 1 * 578 / 1, 0W);
 
-		_status = TSEdgeCCD->TSEdgeCCD_readData(val(_interface_id), val(50), val(1), val(300), val(578), val(1), val(1), ref(_data));
+		_status = TSEdgeCCD->TSEdgeCCD_ReadData(val(_interface_id), val(50), val(1), val(300), val(578), val(1), val(1), ref(_data));
 		if(_status == 0)
 		{
 		    _msg = TSEdgeCCDError();

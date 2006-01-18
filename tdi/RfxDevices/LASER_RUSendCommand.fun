@@ -1,7 +1,6 @@
 public fun LASER_RUSendCommand(in _hComm, in _cmnd)
 {
 	_outValue = 0;
-	write(*, _cmnd);  
 	_error = RS232Lib->LaserRUSendCommand(val(_hComm), _cmnd, ref(_outValue) );
 	if(_error <= 0)
 	{

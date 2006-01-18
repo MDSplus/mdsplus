@@ -11,15 +11,15 @@ public fun LASER_RU_HWinit(in _port, in _trig_mode, in _osc_par, in _amp_par,  i
     private _TRIG_AUTOMATIC = 3;
     private _TRIG_MANUAL    = 4;
 
-write(*, "LASER_RU_HWinit", _port,  _trig_mode,  _osc_par,  _amp_par,   _pbal_par,  _dtime1_par, _delay_fire, _df1m_par,  _bit_states);
+write(*, "LASER_RU_HWinit ", _port,  _trig_mode,  _osc_par,  _amp_par,   _pbal_par,  _dtime1_par, _delay_fire, _df1m_par,  _bit_states);
  
+
     _hComm = RS232Open(_port, "baud=1200 parity=N data=8 stop=1", 0, _RS232_XONXOFF, 13);
 	if( _hComm == 0 )
 	{
     	write(*, "Cannot open RS232 port : "//RS232GetError() );
 		return(0);
 	}
-
 
 
     /* Set CR as command terminator */
@@ -29,6 +29,8 @@ write(*, "LASER_RU_HWinit", _port,  _trig_mode,  _osc_par,  _amp_par,   _pbal_pa
 		RS232Close(_hComm);
 		return(0);
 	}
+
+
 
 /* Set sistem in interlock mode */
 /********************************************************************
@@ -183,7 +185,6 @@ write(*, "LASER_RU_HWinit", _port,  _trig_mode,  _osc_par,  _amp_par,   _pbal_pa
 		RS232Close(_hComm);
 		return(0); 
 	}
-
 
 	if (_trig_mode != _TRIG_MANUAL)
 	{   
