@@ -243,8 +243,16 @@ public class WaveformEvent
                                 Waveform.ConvertToString(x_value, false);
                         else
                         if (!tf.equals(nan_f))
-                            xt_string = ", T = " +
-                                Waveform.ConvertToString(time_value, false);
+                            if(showXasDate)
+                            {
+                                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date date = new Date();
+                                date.setTime(dateValue + (long)time_value);
+                                xt_string = ", T = " + format.format(date).toString();
+                                showXasDate = false;
+                            }
+                            else
+                                xt_string = ", T = " + Waveform.ConvertToString(time_value, false);
                         else
                         if (!df.equals(nan_f))
                             xt_string = ", Data = " +

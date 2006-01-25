@@ -260,16 +260,16 @@ public class WaveformMetrics
         g2.setColor(Color.white);
         g2.fillRect(0, 0, d.width - 1, d.height - 1);
 
-        for (i = 0; i < s.time.length - 2 && s.time[i] < xmin; i++)
+        for (i = 0; i < s.time.length  && s.time[i] < xmin; i++)
             ;
         xSt = i;
-        for (; i < s.time.length - 2 && s.time[i] < xmax; i++)
+        for (; i < s.time.length  && s.time[i] < xmax; i++)
             ;
         xEt = i;
-        for (i = 0; i < s.x_data.length - 2 && s.x_data[i] < ymin; i++)
+        for (i = 0; i < s.x_data.length  && s.x_data[i] < ymin; i++)
             ;
         ySt = i;
-        for (; i < s.x_data.length - 2 && s.x_data[i] < ymax; i++)
+        for (; i < s.x_data.length  && s.x_data[i] < ymax; i++)
             ;
         yEt = i;
 
@@ -284,16 +284,58 @@ public class WaveformMetrics
         int xPix1;
         int pix;
 
-        yPix1 = (YPixel(s.x_data[ySt + 1]) + YPixel(s.x_data[ySt])) / 2;
-        yPix1 = 2 * YPixel(s.x_data[ySt]) - yPix1;
-
-        for (int y = ySt; y < yEt - 1; y++)
+        try
         {
-            yPix0 = yPix1;
-            yPix1 = (YPixel(s.x_data[y + 1]) + YPixel(s.x_data[y])) / 2;
-            h = yPix0 - yPix1;
+            yPix1 = (YPixel(s.x_data[ySt + 1]) + YPixel(s.x_data[ySt])) / 2;
+            yPix1 = 2 * YPixel(s.x_data[ySt]) - yPix1;
 
-            p = y * s.time.length + xSt;
+            for (int y = ySt; y < yEt - 1; y++)
+            {
+                yPix0 = yPix1;
+                yPix1 = (YPixel(s.x_data[y + 1]) + YPixel(s.x_data[y])) / 2;
+                h = yPix0 - yPix1;
+
+                p = y * s.time.length + xSt;
+
+                xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt + 1])) / 2;
+                xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
+
+                for (int x = xSt; x < xEt - 1 && p < s.data.length; x++)
+                {
+                    xPix0 = xPix1;
+                    xPix1 = (XPixel(s.time[x + 1]) + XPixel(s.time[x])) / 2;
+                    w = xPix1 - xPix0;
+
+                    pix = (int) (255 * (s.data[p++] - s.data_min) /
+                                 (s.data_max - s.data_min));
+
+                    pix = (pix > 255) ? 255 : pix;
+                    pix = (pix < 0) ? 0 : pix;
+
+                    drawRectagle(g2, xPix0, yPix1, w, h, pix);
+                }
+
+                if (p < s.data.length)
+                {
+                    xPix0 = xPix1;
+                    w = 2 * (XPixel(s.time[xEt - 1]) - xPix1);
+
+                    pix = (int) (255 * (s.data[p] - s.data_min) /
+                                 (s.data_max - s.data_min));
+
+                    pix = (pix > 255) ? 255 : pix;
+                    pix = (pix < 0) ? 0 : pix;
+
+                    drawRectagle(g2, xPix0, yPix1, w, h, pix);
+                }
+                else
+                    break;
+            }
+
+            yPix0 = yPix1;
+
+            yPix1 = 2 * YPixel(s.x_data[yEt - 1]) - yPix1;
+            h = yPix0 - yPix1;
 
             xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt + 1])) / 2;
             xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
@@ -304,14 +346,8 @@ public class WaveformMetrics
                 xPix1 = (XPixel(s.time[x + 1]) + XPixel(s.time[x])) / 2;
                 w = xPix1 - xPix0;
 
-
                 pix = (int) (255 * (s.data[p++] - s.data_min) /
                              (s.data_max - s.data_min));
-
-
-                pix = (pix > 255) ? 255 : pix;
-                pix = (pix < 0) ? 0 : pix;
-
                 drawRectagle(g2, xPix0, yPix1, w, h, pix);
             }
 
@@ -319,46 +355,12 @@ public class WaveformMetrics
             {
                 xPix0 = xPix1;
                 w = 2 * (XPixel(s.time[xEt - 1]) - xPix1);
-
                 pix = (int) (255 * (s.data[p] - s.data_min) /
                              (s.data_max - s.data_min));
-
-                pix = (pix > 255) ? 255 : pix;
-                pix = (pix < 0) ? 0 : pix;
-
                 drawRectagle(g2, xPix0, yPix1, w, h, pix);
             }
-            else
-                break;
         }
-
-        yPix0 = yPix1;
-
-        yPix1 = 2 * YPixel(s.x_data[yEt - 1]) - yPix1;
-        h = yPix0 - yPix1;
-
-        xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt + 1])) / 2;
-        xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
-
-        for (int x = xSt; x < xEt - 1 && p < s.data.length; x++)
-        {
-            xPix0 = xPix1;
-            xPix1 = (XPixel(s.time[x + 1]) + XPixel(s.time[x])) / 2;
-            w = xPix1 - xPix0;
-
-            pix = (int) (255 * (s.data[p++] - s.data_min) /
-                         (s.data_max - s.data_min));
-            drawRectagle(g2, xPix0, yPix1, w, h, pix);
-        }
-
-        if (p < s.data.length)
-        {
-            xPix0 = xPix1;
-            w = 2 * (XPixel(s.time[xEt - 1]) - xPix1);
-            pix = (int) (255 * (s.data[p] - s.data_min) /
-                         (s.data_max - s.data_min));
-            drawRectagle(g2, xPix0, yPix1, w, h, pix);
-        }
+        catch(Exception exc) {};
     }
 
     public Vector ToPolygonsDoubleX(Signal sig, Dimension d)

@@ -1,5 +1,7 @@
 /* $Id$ */
 import java.awt.Color;
+import java.text.*;
+import java.util.*;
 
 /**
  * The Signal class encapsulates a description of a
@@ -481,13 +483,29 @@ public class Signal
                 x[i] = s.x[i];
                 y[i] = s.y[i];
             }
-
         }
-
+        else
+        {
+            if (s.x_long != null)
+            {
+               x_long = new long[n_points];
+               for (i = 0; i < n_points; i++)
+               {
+                   x_long[i] = s.x_long[i];
+               }
+            }
+        }
         saved_ymax = ymax = s.ymax;
         saved_ymin = ymin = s.ymin;
         saved_xmin = curr_xmin = xmin = s.xmin;
         saved_xmax = curr_xmax = xmax = s.xmax;
+
+        time_max = s.time_max;
+        time_min = s.time_min;
+        x_data_max = s.x_data_max;
+        x_data_min = s.x_data_min;
+        data_max = s.data_max;
+        data_min = s.data_min;
 
         if (xmax <= xmin)
             saved_xmax = xmax = xmin + 1E-6;
@@ -510,6 +528,9 @@ public class Signal
         ylabel = s.ylabel;
         zlabel = s.zlabel;
         title = s.title;
+
+
+
     }
 
     /**
@@ -675,6 +696,7 @@ public class Signal
         {
             this.data = data;
             this.x_data = x_data;
+            this.x_long = time;
             this.time = new float[time.length];
             for (int i = 0; i < time.length; i++)
                 this.time[i] = (float) ( time[i] - time[0] );
@@ -804,6 +826,23 @@ public class Signal
     public void setFullLoad(boolean full_load)
     {
         this.full_load = full_load;
+    }
+
+    static String toStringTime(long time)
+    {
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        df.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        Date date = new Date();
+        date.setTime(time);
+        return df.format(date).toString();
+    }
+
+    public String getStringTime()
+    {
+        if( this.isLongX() )
+            return toStringTime( (long) curr_time_xy_plot);
+        else
+            return ""+curr_time_xy_plot;
     }
 
     public float getTime()
@@ -2121,7 +2160,11 @@ public class Signal
 
     public boolean isLongX()
     {
-        return x_long != null;
+        if(type == TYPE_1D || type == TYPE_2D && ( mode2D == Signal.MODE_YTIME ||
+                                                   mode2D == Signal.MODE_IMAGE ) )
+            return x_long != null;
+        else
+            return false;
     }
 
     public final static int SIMPLE      = 0;

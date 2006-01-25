@@ -18,6 +18,8 @@ import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
 import java.awt.datatransfer.*;
 import java.awt.image.*;
+import java.awt.geom.*;
+
 
 import javax.swing.plaf.basic.BasicArrowButton;
 
@@ -27,7 +29,7 @@ public class jScope
     extends JFrame
     implements ActionListener, ItemListener,
     WindowListener, WaveContainerListener,
-    UpdateEventListener, ConnectionListener
+    UpdateEventListener, ConnectionListener, Printable
 {
 
     static final String VERSION = "jScope (version 7.3.8)";
@@ -153,6 +155,48 @@ public class jScope
         });
 
     }
+
+
+    public int print(Graphics g, PageFormat pf, int pageIndex) throws
+    PrinterException
+{
+/*
+    int st_x = 0, st_y = 0;
+    double height = pf.getImageableHeight();
+    double width  = pf.getImageableWidth();
+*/
+    Graphics2D g2 = (Graphics2D) g;
+
+//        jScope.displayPageFormatAttributes(4,pf);
+
+    if (pageIndex == 0)
+    {
+        g2.translate(pf.getImageableX(), pf.getImageableY());
+
+        RepaintManager currentManager = RepaintManager.currentManager(this);
+        currentManager.setDoubleBufferingEnabled(false);
+        g2.scale(72.0/600, 72.0/600);
+//        Dimension d = this.getSize();
+//        this.setSize((int)(d.width*600.0/72.0), (int)(d.height*600.0/72.0));
+//        this.printAll(g2);
+
+        g2.translate(pf.getImageableWidth() / 2, pf.getImageableHeight() / 2);
+        g2.translate( pf.getWidth() / 2, pf.getHeight() / 2);
+
+        g.drawOval(0,0,100,100);
+        g.drawOval(0,0,200,200);
+        g.drawOval(0,0,300,300);
+        g.drawOval(0,0,400,400);
+        g.drawOval(0,0,500,500);
+        g.drawOval(0,0,600,600);
+
+        currentManager.setDoubleBufferingEnabled(true);
+
+        return Printable.PAGE_EXISTS;
+    }
+    else
+        return Printable.NO_SUCH_PAGE;
+}
 
     static public void displayPageFormatAttributes(int idx,
         PageFormat myPageFormat)
@@ -655,8 +699,28 @@ public class jScope
                             null, 100, 100, printersServices, svc, null, attrs);
                         if ( printerSelection != null)
                         {
+                            System.out.println(  printerSelection.getName() + " |||| "
+                                               + printerSelection.getSupportedDocFlavors() + " |||| "
+                                               + printerSelection.hashCode());
+
+
                             prnJob = printerSelection.createPrintJob();
+
                             PrintAllWaves(attrs);
+
+                            /*
+                            try
+                            {
+                                DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
+                                Doc doc = new SimpleDoc(jScope.this, flavor, null);
+                                prnJob.print(doc, attrs);
+                            }
+                            catch(Exception exc)
+                            {
+                                System.out.println(exc);
+                            }
+                            */
+
                         }
                     }
                 };
@@ -2186,7 +2250,6 @@ public class jScope
                 break;
         }
     }
-
     public void processConnectionEvent(ConnectionEvent e)
     {
         progress_bar.setString("");
@@ -3708,4 +3771,10 @@ class ServerDialog
             }
         }
     }
+
+
+
+
+
+
 }

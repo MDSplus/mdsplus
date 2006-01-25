@@ -599,7 +599,14 @@ public class MultiWaveform
         if (this.signals.size() != 0)
             this.signals.removeAllElements();
         for (i = 0; i < signals.length; i++)
+        {
+            /*
+            if(signals[i].getType() == Signal.TYPE_2D &&
+               signals[i].getMode2D() == Signal.MODE_IMAGE)
+                 hasSignalImage = true;
+            */
             this.signals.addElement(signals[i]);
+        }
         MultiWaveform.this.Update();
     }
 
@@ -633,6 +640,7 @@ public class MultiWaveform
         {
             if ( (Signal) signals.elementAt(i) == null)
                 continue;
+            ( (Signal) signals.elementAt(i)).Autoscale();
             if (waveform_signal.getXmax() <
                 ( (Signal) signals.elementAt(i)).getXmax())
                 waveform_signal.setXmax( ( (Signal) signals.elementAt(i)).
@@ -752,12 +760,14 @@ public class MultiWaveform
                         Waveform.ConvertToString(sign.getXData(), false) + " ]";
                     break;
                 case Signal.MODE_XY:
-                    lab = lab + " [X-Y T = " +
-                        Waveform.ConvertToString(sign.getTime(), false) + " ]";
+                    lab = lab + " [X-Y T = " +  sign.getStringTime() +
+                        //Waveform.ConvertToString(sign.getTime(), false) +
+                        " ]";
                     break;
                 case Signal.MODE_YX:
-                    lab = lab + " [Y-X T = " +
-                        Waveform.ConvertToString(sign.getTime(), false) + " ]";
+                    lab = lab + " [Y-X T = " +  sign.getStringTime() +
+                       // Waveform.ConvertToString(sign.getTime(), false)
+                       " ]";
                     break;
             }
         }

@@ -442,7 +442,12 @@ remove 28/06/2005
         if (pageIndex == 0)
         {
             g2.translate(pf.getImageableX(), pf.getImageableY());
-
+/*
+            double scale = (72.0/600.);
+            height /= scale;
+            width /= scale;
+            g2.scale(scale, scale);
+*/
             PrintAll(g2, st_x,
                      st_y,
                      (int) height,

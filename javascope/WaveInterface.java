@@ -1204,6 +1204,7 @@ public class WaveInterface
             if (in_y[curr_wave] == null)
             {
                 curr_error = "Missing Y value";
+                this.wave.SetMode(mode);
                 return null;
             }
 
@@ -1227,6 +1228,7 @@ public class WaveInterface
                     // In this case GetSignal is called only
                     // to inflate the signal and therefore
                     // limits must not be changed
+                    this.wave.SetMode(mode);
                     return out_signal;
                 }
 
