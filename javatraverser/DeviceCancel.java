@@ -6,6 +6,6 @@ public class DeviceCancel extends DeviceControl
     }
     protected void doOperation(DeviceSetup deviceSetup)
     {
-        deviceSetup.dispose();
+        deviceSetup.cancel();
     }
 }

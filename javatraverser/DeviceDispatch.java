@@ -126,7 +126,7 @@ public class DeviceDispatch extends DeviceComponent
         dialog.pack();
         dialog.repaint();
         dialog.setLocation(FrameRepository.frame.getLocationOnScreen());
-        dialog.show();
+        dialog.setVisible(true);
 
      }
     protected void displayData(Data data, boolean is_on){}

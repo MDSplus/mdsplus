@@ -40,6 +40,11 @@ public abstract class DeviceComponent extends JPanel
     public String getUpdateIdentifier() {return updateIdentifier; }
 
 
+    public void configure(int baseNid, boolean readOnly)
+    {
+        configure(baseNid);
+    }
+
     public void configure(int baseNid)
     {
         this.baseNid = baseNid;
@@ -128,7 +133,7 @@ public abstract class DeviceComponent extends JPanel
        /* if(curr_container != null)
         {
             ((Window)curr_container).pack();
-            ((Window)curr_container).show();
+            ((Window)curr_container).setVisible(true);
         }*/
     }
 
@@ -177,7 +182,28 @@ public abstract class DeviceComponent extends JPanel
 
     protected void dataChanged(int offsetNid, Object data){}
     protected void stateChanged(int offsetNid, boolean state){}
-    protected boolean isDataChanged() {return true;}
+    protected boolean isDataChanged()
+    {
+        return true;
+    }
+    protected boolean isChanged()
+    {
+        try
+        {
+            String initDecompiled = Tree.dataToString(init_data);
+            String currDecompiled = Tree.dataToString(curr_data);
+            System.out.println("Comparing " + initDecompiled + "  " + currDecompiled);
+            return! (initDecompiled.equals(currDecompiled));
+        }
+        catch (Exception exc)
+        {
+            return false;
+        }
+    }
+    protected boolean isStateChanged()
+    {
+        return !(init_on == curr_on);
+    }
 
     //Get an object incuding all related info (will be data except for DeviceWaveform
     protected Object getFullData(){return getData();}

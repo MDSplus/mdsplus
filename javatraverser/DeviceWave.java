@@ -740,6 +740,7 @@ public class DeviceWave extends DeviceComponent
         displayData(null, true);
     }
 
+
     public static void main(String args[])
     {
         DeviceWave dw = new DeviceWave();

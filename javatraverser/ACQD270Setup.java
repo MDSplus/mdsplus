@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class ACQD270Setup extends DeviceSetup
 {
-	public ACQD270Setup(Frame parent)
+	public ACQD270Setup(JFrame parent)
 	{
  	  super(parent);
           initComponents();
@@ -1612,7 +1612,7 @@ public class ACQD270Setup extends DeviceSetup
 
 	public ACQD270Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public ACQD270Setup(String sTitle)

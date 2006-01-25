@@ -5,10 +5,11 @@
 import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 public class DIO2Setup extends DeviceSetup
 {
-	public DIO2Setup(Frame parent)
+	public DIO2Setup(JFrame parent)
 	{
 		super(parent);
 
@@ -1696,7 +1697,7 @@ public class DIO2Setup extends DeviceSetup
 
 	public DIO2Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public DIO2Setup(String sTitle)

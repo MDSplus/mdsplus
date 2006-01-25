@@ -6,7 +6,7 @@ public abstract class DeviceControl extends JButton
 {
     DeviceSetup deviceSetup = null;
     protected String [] checkExpressions, checkMessages;
-    
+
     DeviceControl()
     {
         addActionListener(new ActionListener() {
@@ -18,7 +18,7 @@ public abstract class DeviceControl extends JButton
             }
         });
     }
-    
+
     protected void discoverDevice()
     {
         Container curr_container;
@@ -28,9 +28,11 @@ public abstract class DeviceControl extends JButton
             curr_component = curr_container;
         }while ((curr_container != null) && !(curr_container instanceof DeviceSetup));
         if(curr_container != null)
-            deviceSetup = (DeviceSetup)curr_container;
+        {
+            deviceSetup = (DeviceSetup) curr_container;
+         }
     }
-    
+
     public void setCheckExpressions(String [] checkExpressions)
     {
         this.checkExpressions = checkExpressions;
@@ -46,8 +48,9 @@ public abstract class DeviceControl extends JButton
         if(deviceSetup != null && checkExpressions != null && checkMessages != null)
             deviceSetup.check(checkExpressions, checkMessages);
     }
-    
-    
+
+    void setReadOnly(boolean readOnly){}
+
     protected abstract void doOperation(DeviceSetup deviceSetup);
 }
-                
+

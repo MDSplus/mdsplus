@@ -5,10 +5,11 @@
 import java.awt.*;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
+import javax.swing.*;
 
 public class MPBDecoderSetup extends DeviceSetup
 {
-	public MPBDecoderSetup(Frame parent)
+	public MPBDecoderSetup(JFrame parent)
 	{
 		super(parent);
 
@@ -714,7 +715,7 @@ public class MPBDecoderSetup extends DeviceSetup
 
 	public MPBDecoderSetup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public MPBDecoderSetup(String sTitle)

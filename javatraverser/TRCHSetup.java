@@ -6,10 +6,11 @@ import java.awt.*;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.*;
 
 public class TRCHSetup extends DeviceSetup
 {
-	public TRCHSetup(Frame parent)
+	public TRCHSetup(JFrame parent)
 	{
 		super(parent);
 
@@ -306,7 +307,7 @@ public class TRCHSetup extends DeviceSetup
 
 	public TRCHSetup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public TRCHSetup(String sTitle)

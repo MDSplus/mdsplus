@@ -7,10 +7,11 @@ import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 public class TR10Setup extends DeviceSetup
 {
-	public TR10Setup(Frame parent)
+	public TR10Setup(JFrame parent)
 	{
 		super(parent);
 
@@ -614,7 +615,7 @@ public class TR10Setup extends DeviceSetup
 
 	public TR10Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public TR10Setup(String sTitle)

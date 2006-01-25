@@ -4,14 +4,14 @@ public class DeviceButtons extends JPanel
 {
     protected DeviceControl apply, ok;
     public String methods[];
-    
+
     public void setMethods(String methods[])
     {
         this.methods = methods;
     }
-    
+
     public String [] getMethods() { return methods; }
-   
+
     public DeviceButtons()
     {
         add(ok = new DeviceOk());
@@ -28,7 +28,7 @@ public class DeviceButtons extends JPanel
     {
         return apply.getCheckExpressions();
     }
-    
+
     public void setCheckMessages(String []checkMessages)
     {
         apply.setCheckMessages(checkMessages);
@@ -38,8 +38,6 @@ public class DeviceButtons extends JPanel
     {
         return apply.getCheckMessages();
     }
-    
-        
 }
 
-       
+

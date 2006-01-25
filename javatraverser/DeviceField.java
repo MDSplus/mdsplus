@@ -121,6 +121,9 @@ public class DeviceField
     initializing = false;
   }
 
+
+
+
   protected void initializeData(Data data, boolean is_on)
   {
     initializing = true;
@@ -143,7 +146,9 @@ public class DeviceField
       gc = new GridBagConstraints();
       gc.anchor = GridBagConstraints.WEST;
       gc.gridx = gc.gridy = 0;
-      gc.gridwidth = gc.gridheight = 1;
+     // gc.gridwidth = gc.gridheight = 1;
+      gc.gridwidth = 1;
+      gc.gridheight = 1;
       gc.weightx = gc.weighty = 1.;
       gc.fill = GridBagConstraints.NONE;
       gridbag.setConstraints(jp, gc);
@@ -172,6 +177,7 @@ public class DeviceField
     {
       gc.gridx++;
       gc.anchor = GridBagConstraints.EAST;
+      gc.gridwidth = 1;
       gridbag.setConstraints(textF, gc);
     }
 
@@ -361,9 +367,35 @@ public class DeviceField
   protected boolean isDataChanged()
   {
     if (displayEvaluated && initialField != null)
-      return! (textF.getSize().equals(initialField));
+      return! (textF.getText().equals(initialField));
     else
       return true;
   }
+  protected boolean isChanged()
+  {
+      if (displayEvaluated)
+          return false;
+      return super.isChanged();
+  }
 
+  public void print(Graphics g)
+  {
+      Font prevLabelFont = null;
+      Font prevTextFont = null;
+      if(label != null)
+      {
+          prevLabelFont = label.getFont();
+          label.setFont(new Font("Serif", Font.BOLD, 10));
+      }
+      if(textF != null)
+      {
+          prevTextFont = textF.getFont();
+          textF.setFont(new Font("Serif", Font.BOLD, 10));
+      }
+      super.print(g);
+      if(label != null)
+          label.setFont(prevLabelFont);
+      if(textF != null)
+          textF.setFont(prevTextFont);
+  }
 }

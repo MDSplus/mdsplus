@@ -54,6 +54,21 @@ public class DeviceChannel extends DeviceComponent
        }
     }
 
+    public void propagate()
+    {
+        copy();
+        Container parent = getParent();
+        Component components[] = parent.getComponents();
+        for(int i = 0; i < components.length; i++)
+        {
+            if(components[i] instanceof DeviceChannel && components[i] != this)
+            {
+                ((DeviceChannel)components[i]).paste();
+            }
+
+        }
+     }
+
 
     public void setShowVal(String showVal)
     {
@@ -156,6 +171,15 @@ public class DeviceChannel extends DeviceComponent
             }
         });
         copyPastePopup.add(pasteI);
+        JMenuItem propagateI = new JMenuItem("Propagate");
+        propagateI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                propagate();
+            }
+        });
+        copyPastePopup.add(propagateI);
         copyPastePopup.pack();
         copyPastePopup.setInvoker(this);
         addMouseListener(new MouseAdapter()

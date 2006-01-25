@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class ACQD265Setup extends DeviceSetup
 {
-	public ACQD265Setup(Frame parent)
+	public ACQD265Setup(JFrame parent)
 	{
  	  super(parent);
           initComponents();
@@ -1603,7 +1603,7 @@ public class ACQD265Setup extends DeviceSetup
 
 	public ACQD265Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public ACQD265Setup(String sTitle)

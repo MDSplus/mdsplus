@@ -201,7 +201,7 @@ public void actionPerformed(ActionEvent e)
 	    display_data.setNode(tree.getCurrentNode());
 	    display_data_d.pack();
 	    //display_data_d.setLocation(new Point(50,50));
-	    display_data_d.show();
+	    display_data_d.setVisible(true);
     }
     if(source == (Object)display_nci_b)
     {
@@ -214,7 +214,7 @@ public void actionPerformed(ActionEvent e)
         display_nci.setNode(tree.getCurrentNode());
         display_nci_d.pack();
         display_nci_d.setLocation(new Point(50,50));
-        display_nci_d.show();
+        display_nci_d.setVisible(true);
     }
     if(source == (Object)display_tags_b)
     {
@@ -227,7 +227,7 @@ public void actionPerformed(ActionEvent e)
         display_tags.setNode(tree.getCurrentNode());
         display_tags_d.pack();
         display_tags_d.setLocation(new Point(50,50));
-        display_tags_d.show();
+        display_tags_d.setVisible(true);
     }
     if(source == (Object)modify_data_b)
     {
@@ -240,7 +240,7 @@ public void actionPerformed(ActionEvent e)
 	    modify_data.setNode(tree.getCurrentNode());
 	    modify_data_d.pack();
 	    modify_data_d.setLocation(new Point(50,50));
-	    modify_data_d.show();
+	    modify_data_d.setVisible(true);
     }
     if(source == (Object)set_default_b)
     {

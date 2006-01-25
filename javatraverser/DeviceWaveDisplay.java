@@ -65,5 +65,9 @@ public class DeviceWaveDisplay extends DeviceComponent
     {
     }
 
+    public void print(Graphics g)
+    {
+        wave.paintComponent(g);
+    }
 }
 

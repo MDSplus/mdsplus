@@ -283,7 +283,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_exp.addKeyListener(this);
 	    open_dialog.pack();
 	    open_dialog.setLocation(curr_origin);
-	    open_dialog.show();
+	    open_dialog.setVisible(true);
 	}
 	else
 	{
@@ -657,7 +657,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 				            node_properties[idx].getPropertyEditorClass(), curr_node);
 			                curr_dialog.pack();
 			                curr_dialog.setLocation(curr_origin);
-			                curr_dialog.show();
+			                curr_dialog.setVisible(true);
 			            }
 		            }
 		            });
@@ -761,13 +761,13 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        });
 
 	        add_node_dialog.pack();
-	        add_node_dialog.show();
+	        add_node_dialog.setVisible(true);
 	    }
 	    add_node_name.setText("");
 	    add_node_tag.setText("");
 	    add_node_dialog.setTitle("Add to: "+ curr_node.getFullPath());
 	    add_node_dialog.setLocation(curr_origin);
-	    add_node_dialog.show();
+	    add_node_dialog.setVisible(true);
     }
     public void addSubtree()
     {
@@ -806,11 +806,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        jp.add(jp1, "South");
 	        add_subtree_dialog.getContentPane().add(jp);
 	        add_subtree_dialog.pack();
-	        add_subtree_dialog.show();
+	        add_subtree_dialog.setVisible(true);
 	    }
 	    add_subtree_dialog.setTitle("Add Subtree to: "+ curr_node.getFullPath());
 	    add_subtree_dialog.setLocation(curr_origin);
-	    add_subtree_dialog.show();
+	    add_subtree_dialog.setVisible(true);
     }
 
 
@@ -865,7 +865,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    add_device_type.setText("");
 	    add_device_dialog.setTitle("Add device to: "+ curr_node.getFullPath());
 	    add_device_dialog.setLocation(curr_origin);
-	    add_device_dialog.show();
+	    add_device_dialog.setVisible(true);
     }
 
 
@@ -1125,7 +1125,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        }
 	    });
 	    modify_tags_dialog.pack();
-	    modify_tags_dialog.show();
+	    modify_tags_dialog.setVisible(true);
 	}
 	modify_tags_dialog.setTitle("Modify tags of " + curr_node.getFullPath());
 	modify_tags_list.setModel(curr_taglist_model);
@@ -1186,7 +1186,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        }
 	    });
 	    rename_dialog.pack();
-	    rename_dialog.show();
+	    rename_dialog.setVisible(true);
 	}
 	rename_dialog.setTitle("Rename node " + curr_node.getFullPath());
 	rename_dialog.setLocation(curr_origin);

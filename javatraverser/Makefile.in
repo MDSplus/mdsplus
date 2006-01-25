@@ -196,7 +196,16 @@ jTraverser.java\
 DecompileTree.java\
 CompileTree.java \
 LoadPulse.java \
-OAM01Setup.java 
+OAM01Setup.java \
+RFXPolControlSetup.java \
+RFXAxiControlSetup \
+RFXTorControlSetup \
+RFXAxiToroidalControlSetup \
+ParameterSetting.java \
+TestParameterSetting.java \
+Convert.java
+
+
 
 GIFS = DeviceApply.gif \
        DeviceChoice.gif \

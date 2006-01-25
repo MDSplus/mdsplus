@@ -1204,14 +1204,14 @@ class RFXTimingSetup extends DeviceSetup
             recordedDialog.getContentPane().add(scroll, "Center");
             JButton closeB = new JButton("Close");
             closeB.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {recordedDialog.hide();}
+                public void actionPerformed(ActionEvent e) {recordedDialog.setVisible(false);}
             });
             JPanel jp = new JPanel();
             jp.add(closeB);
             recordedDialog.getContentPane().add(jp, "South");
             recordedDialog.pack();
        }
-       recordedDialog.show();
+       recordedDialog.setVisible(true);
        eventTable.repaint();
     }
 

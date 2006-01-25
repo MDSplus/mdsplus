@@ -167,17 +167,23 @@ public class Node
             {
                 try
                 {
-                    String deviceClassName = model.getString()+"Setup";
-                    Class deviceClass = Class.forName(deviceClassName);
-                    DeviceSetup ds = (DeviceSetup)deviceClass.newInstance();
-                    Dimension prevDim = ds.getSize();
-                    ds.addDataChangeListener(hierarchy);
-                    ds.configure(experiment, nid.getInt());
-                    if(ds.getContentPane().getLayout() != null)
-                        ds.pack();
-                    ds.setLocation(hierarchy.getMousePosition());
-                    ds.setSize(prevDim);
-                    ds.show();
+                    DeviceSetup ds = DeviceSetup.getDevice(nid.getInt());
+                    if(ds == null)
+                    {
+                        String deviceClassName = model.getString() + "Setup";
+                        Class deviceClass = Class.forName(deviceClassName);
+                        ds = (DeviceSetup) deviceClass.newInstance();
+                        Dimension prevDim = ds.getSize();
+                        ds.addDataChangeListener(hierarchy);
+                        ds.configure(experiment, nid.getInt());
+                        if (ds.getContentPane().getLayout() != null)
+                            ds.pack();
+                        ds.setLocation(hierarchy.getMousePosition());
+                        ds.setSize(prevDim);
+                        ds.setVisible(true);
+                    }
+                    else
+                        ds.setVisible(true);
                     return;
                 }catch(Exception e)
                 {

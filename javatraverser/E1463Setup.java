@@ -3,10 +3,11 @@
 */
 
 import java.awt.*;
+import javax.swing.*;
 
 public class E1463Setup extends DeviceSetup
 {
-	public E1463Setup(Frame parent)
+	public E1463Setup(JFrame parent)
 	{
 		super(parent);
 
@@ -112,7 +113,7 @@ public class E1463Setup extends DeviceSetup
 
 	public E1463Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public E1463Setup(String sTitle)

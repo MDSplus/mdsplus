@@ -48,22 +48,49 @@ public class LoadPulse
     {
 
         Vector nodesV = new Vector();
-        if (args.length != 2)
+        int outShot = -1;
+        if (args.length < 2)
         {
-            System.out.println("Usage: java LoadPulse <experiment> <shot>");
+            System.out.println(
+                "Usage: java LoadPulse <experiment> <input shot> [<output shot>]");
             System.exit(0);
         }
-        try
+        if (args.length == 3)
         {
-            Database tree = new Database(args[0], Integer.parseInt(args[1]));
+            try
+            {
+                outShot = Integer.parseInt(args[2]);
+            }
+            catch (Exception exc)
+            {
+                outShot = -1;
+            }
+            int shot = Integer.parseInt(args[1]);
+            LoadPulse lp = new LoadPulse();
+            try {
+                lp.load(args[0], shot, outShot);
+            }catch(Exception exc)
+            {
+                System.err.println(exc);
+            }
+        }
+    }
+
+    void load(String experiment, int shot, int outShot) throws Exception
+    {
+
+        Vector nodesV = new Vector();
+             Database tree = new Database(experiment, shot);
             tree.open();
-            BufferedReader br = new BufferedReader(new FileReader(confFileName));
+            BufferedReader br = new BufferedReader(new FileReader(
+                confFileName));
             String basePath;
             String currPath = "";
             NidData defNid = tree.getDefault(0);
+            try {
             while ( (basePath = br.readLine()) != null)
             {
-               NidData currNid;
+                NidData currNid;
                 try
                 {
                     currNid = tree.resolve(new PathData(basePath), 0);
@@ -107,7 +134,8 @@ public class LoadPulse
 
                     for (int i = 0; i < nids.length; i++)
                     {
-                        NodeInfo currInfo = tree.getInfo(nids[i], 0);
+                        System.out.println(nids[i].getInt());
+                       NodeInfo currInfo = tree.getInfo(nids[i], 0);
                         currPath = currInfo.getFullPath();
                         System.out.println(currPath);
                         try
@@ -140,7 +168,7 @@ public class LoadPulse
             }
             tree.close(0);
             br.close();
-            tree = new Database(args[0], -1);
+            tree = new Database(experiment, outShot);
             tree.open();
             for (int i = 0; i < nodesV.size(); i++)
             {

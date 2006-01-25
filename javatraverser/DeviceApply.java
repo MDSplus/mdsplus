@@ -4,10 +4,14 @@ public class DeviceApply extends DeviceControl
     {
         setText("Apply");
     }
+    void setReadOnly(boolean readOnly)
+    {
+           setEnabled(!readOnly);
+    }
     protected void doOperation(DeviceSetup deviceSetup)
     {
         check();
         deviceSetup.apply();
     }
-    
+
 }

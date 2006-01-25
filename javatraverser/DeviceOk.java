@@ -4,10 +4,15 @@ public class DeviceOk extends DeviceControl
     {
         setText("Ok");
     }
+    void setReadOnly(boolean readOnly)
+    {
+           setEnabled(!readOnly);
+    }
     protected void doOperation(DeviceSetup deviceSetup)
     {
         check();
         deviceSetup.apply();
-        deviceSetup.dispose();
+        deviceSetup.cancel();
     }
+
 }

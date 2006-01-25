@@ -3,10 +3,11 @@
 */
 
 import java.awt.*;
+import javax.swing.*;
 
 public class L5613Setup extends DeviceSetup
 {
-	public L5613Setup(Frame parent)
+	public L5613Setup(JFrame parent)
 	{
 		super(parent);
 
@@ -100,7 +101,7 @@ public class L5613Setup extends DeviceSetup
 
 	public L5613Setup()
 	{
-		this((Frame)null);
+		this((JFrame)null);
 	}
 
 	public L5613Setup(String sTitle)
