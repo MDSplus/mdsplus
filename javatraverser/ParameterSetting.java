@@ -1752,7 +1752,13 @@ public class ParameterSetting
             LoadPulse loadP = new LoadPulse();
             loadP.load("rfx", shot, -1);
             rfx.open();
-            checkConfig();
+	    Convert conv = new Convert("\\mhd_ac::control.parameters:par236_val", "normalised_gain_0.01.txt");
+	    conv.convertMatrix();
+ 	    conv = new Convert("\\mhd_bc::control.parameters:par236_val", "normalised_gain_0.01.txt");
+	    conv.convertMatrix();
+           String configMsg = checkConfig();
+	    if(configMsg != null)
+	    	JOptionPane.showMessageDialog(this, configMsg, "Configuration error", JOptionPane.WARNING_MESSAGE);
         }
         catch (Exception exc)
         {

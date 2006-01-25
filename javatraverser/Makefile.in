@@ -82,7 +82,8 @@ RFXAxiToroidalControlSetup.java\
 TOMOSetupSetup.java\
 TSEdgeCCDSetup.java\
 LASER_RUSetup.java\
-GEN_GAINSetup.java
+GEN_GAINSetup.java\
+EDAM_CPCISetupSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\
@@ -198,9 +199,10 @@ CompileTree.java \
 LoadPulse.java \
 OAM01Setup.java \
 RFXPolControlSetup.java \
-RFXAxiControlSetup \
-RFXTorControlSetup \
-RFXAxiToroidalControlSetup \
+RFXAxiControlSetup.java \
+RFXTorControlSetup.java \
+RFXAxiToroidalControlSetup.java \
+RFXMHDSetup.java \
 ParameterSetting.java \
 TestParameterSetting.java \
 Convert.java

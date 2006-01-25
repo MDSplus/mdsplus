@@ -3,10 +3,22 @@ import java.util.*;
 
 class Convert
 {
+    String path, fileName;
+    public Convert(String path, String fileName)
+    {
+    	this.path = path;
+	this.fileName = fileName;
+    }
+    
+    
     public static void main(String args[])
     {
-    	String path = args[0];
-	String fileName = args[1];
+    	Convert conv = new Convert(args[0], args[1]);
+    	conv.convertMatrix();
+    }
+    
+    public void convertMatrix()
+    {
 	System.out.println(path);
     	Database rfx = new Database("rfx", -1);
 	try {
