@@ -55,7 +55,7 @@ public class LoadPulse
                 "Usage: java LoadPulse <experiment> <input shot> [<output shot>]");
             System.exit(0);
         }
-        if (args.length == 3)
+        if (args.length >=2 )
         {
             try
             {
@@ -78,7 +78,7 @@ public class LoadPulse
 
     void load(String experiment, int shot, int outShot) throws Exception
     {
-
+    	System.out.println("LOAD PULSE");
         Vector nodesV = new Vector();
              Database tree = new Database(experiment, shot);
             tree.open();
