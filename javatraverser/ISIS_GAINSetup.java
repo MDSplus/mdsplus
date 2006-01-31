@@ -680,7 +680,7 @@ public class ISIS_GAINSetup extends DeviceSetup {
     deviceChannel13.setOffsetNid(70);
     deviceChannel13.setLabelString("07");
     deviceChannel13.setLayout(flowLayout117);
-    deviceField111113.setOffsetNid(5);
+    deviceField111113.setOffsetNid(71);
     deviceField111113.setTextOnly(true);
     deviceField111113.setNumCols(15);
     deviceField111113.setIdentifier("");
