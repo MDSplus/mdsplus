@@ -443,7 +443,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111114.setConvert(true);
     deviceChoice111114.setOffsetNid(207);
     deviceChoice111114.setLabelString(" ");
-    deviceChoice111114.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111114.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111114.setUpdateIdentifier("");
     deviceChoice111114.setIdentifier("");
     jPanel7.setLayout(gridLayout4);
@@ -543,7 +543,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111117.setConvert(true);
     deviceChoice1111117.setOffsetNid(195);
     deviceChoice1111117.setLabelString(" ");
-    deviceChoice1111117.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111117.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111117.setUpdateIdentifier("");
     deviceChoice1111117.setIdentifier("");
     deviceChoice1111118.setLabelString("  ");
@@ -585,7 +585,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111110.setConvert(true);
     deviceChoice11111110.setOffsetNid(183);
     deviceChoice11111110.setLabelString(" ");
-    deviceChoice11111110.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111110.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111110.setUpdateIdentifier("");
     deviceChoice11111110.setIdentifier("");
     deviceChoice11111111.setLabelString("  ");
@@ -627,7 +627,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111113.setConvert(true);
     deviceChoice11111113.setOffsetNid(171);
     deviceChoice11111113.setLabelString(" ");
-    deviceChoice11111113.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111113.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111113.setUpdateIdentifier("");
     deviceChoice11111113.setIdentifier("");
     deviceChoice11111114.setLabelString("  ");
@@ -669,7 +669,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111116.setConvert(true);
     deviceChoice11111116.setOffsetNid(159);
     deviceChoice11111116.setLabelString(" ");
-    deviceChoice11111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111116.setUpdateIdentifier("");
     deviceChoice11111116.setIdentifier("");
     deviceChoice11111117.setLabelString("  ");
@@ -711,7 +711,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111119.setConvert(true);
     deviceChoice11111119.setOffsetNid(147);
     deviceChoice11111119.setLabelString(" ");
-    deviceChoice11111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111119.setUpdateIdentifier("");
     deviceChoice11111119.setIdentifier("");
     deviceChoice111111110.setLabelString("  ");
@@ -753,7 +753,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111112.setConvert(true);
     deviceChoice111111112.setOffsetNid(135);
     deviceChoice111111112.setLabelString(" ");
-    deviceChoice111111112.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111112.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111112.setUpdateIdentifier("");
     deviceChoice111111112.setIdentifier("");
     deviceChoice111111113.setLabelString("  ");
@@ -795,7 +795,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111115.setConvert(true);
     deviceChoice111111115.setOffsetNid(123);
     deviceChoice111111115.setLabelString(" ");
-    deviceChoice111111115.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111115.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111115.setUpdateIdentifier("");
     deviceChoice111111115.setIdentifier("");
     deviceChoice111111116.setLabelString("  ");
@@ -837,7 +837,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111118.setConvert(true);
     deviceChoice111111118.setOffsetNid(111);
     deviceChoice111111118.setLabelString(" ");
-    deviceChoice111111118.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111118.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111118.setUpdateIdentifier("");
     deviceChoice111111118.setIdentifier("");
     deviceChoice111111119.setLabelString("  ");
@@ -879,7 +879,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111111.setConvert(true);
     deviceChoice1111111111.setOffsetNid(99);
     deviceChoice1111111111.setLabelString(" ");
-    deviceChoice1111111111.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111111.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111111.setUpdateIdentifier("");
     deviceChoice1111111111.setIdentifier("");
     deviceChoice1111111112.setLabelString("  ");
@@ -921,7 +921,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111114.setConvert(true);
     deviceChoice1111111114.setOffsetNid(87);
     deviceChoice1111111114.setLabelString(" ");
-    deviceChoice1111111114.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111114.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111114.setUpdateIdentifier("");
     deviceChoice1111111114.setIdentifier("");
     deviceChoice1111111115.setLabelString("  ");
@@ -945,7 +945,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice16.setChoiceIntValues(new int[] {(int)0,(int)20,(int)40,(int)80,(int)200,(int)400,(int)800,(int)2000,(int)4000,(int)8000,(int)20000,(int)40000});
     deviceChoice16.setChoiceFloatValues(null);
     deviceChoice16.setConvert(true);
-    deviceChoice16.setOffsetNid(63);
+    deviceChoice16.setOffsetNid(74);
     deviceChoice16.setLabelString(" ");
     deviceChoice16.setChoiceItems(new String[] {"OFF", "20 Hz", "40 Hz", "80 Hz", "200 Hz", "400 Hz", "800 Hz", "2 kHz", "4 kHz", "8 kHz", "20 kHz", "40 kHz"});
     deviceChoice16.setUpdateIdentifier("");
@@ -963,7 +963,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111117.setConvert(true);
     deviceChoice1111111117.setOffsetNid(75);
     deviceChoice1111111117.setLabelString(" ");
-    deviceChoice1111111117.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111117.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111117.setUpdateIdentifier("");
     deviceChoice1111111117.setIdentifier("");
     deviceChoice1111111118.setLabelString("  ");
@@ -1005,7 +1005,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111110.setConvert(true);
     deviceChoice11111111110.setOffsetNid(63);
     deviceChoice11111111110.setLabelString(" ");
-    deviceChoice11111111110.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111110.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111110.setUpdateIdentifier("");
     deviceChoice11111111110.setIdentifier("");
     deviceChoice11111111111.setLabelString("  ");
@@ -1047,7 +1047,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111113.setConvert(true);
     deviceChoice11111111113.setOffsetNid(51);
     deviceChoice11111111113.setLabelString(" ");
-    deviceChoice11111111113.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111113.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111113.setUpdateIdentifier("");
     deviceChoice11111111113.setIdentifier("");
     deviceChoice11111111114.setLabelString("  ");
@@ -1089,7 +1089,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111116.setConvert(true);
     deviceChoice11111111116.setOffsetNid(39);
     deviceChoice11111111116.setLabelString(" ");
-    deviceChoice11111111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111116.setUpdateIdentifier("");
     deviceChoice11111111116.setIdentifier("");
     deviceChoice11111111117.setLabelString("  ");
@@ -1131,7 +1131,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111119.setConvert(true);
     deviceChoice11111111119.setOffsetNid(27);
     deviceChoice11111111119.setLabelString(" ");
-    deviceChoice11111111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111119.setUpdateIdentifier("");
     deviceChoice11111111119.setIdentifier("");
     deviceChoice111.setIdentifier("");
@@ -1144,7 +1144,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111.setChoiceIntValues(new int[] {(int)0,(int)20,(int)40,(int)80,(int)200,(int)400,(int)800,(int)2000,(int)4000,(int)8000,(int)20000,(int)40000});
     deviceChoice111116.setIdentifier("");
     deviceChoice111116.setUpdateIdentifier("");
-    deviceChoice111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111116.setLabelString(" ");
     deviceChoice111116.setOffsetNid(207);
     deviceChoice111116.setConvert(true);
@@ -1377,7 +1377,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111124.setConvert(true);
     deviceChoice111111124.setOffsetNid(159);
     deviceChoice111111124.setLabelString(" ");
-    deviceChoice111111124.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111124.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111124.setUpdateIdentifier("");
     deviceChoice111111124.setIdentifier("");
     deviceChannel11114.setInSameLine(true);
@@ -1390,7 +1390,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111125.setConvert(true);
     deviceChoice1111111125.setOffsetNid(123);
     deviceChoice1111111125.setLabelString(" ");
-    deviceChoice1111111125.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111125.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111125.setUpdateIdentifier("");
     deviceChoice1111111125.setIdentifier("");
     deviceField111118.setOffsetNid(189);
@@ -1405,7 +1405,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111125.setConvert(true);
     deviceChoice111111125.setOffsetNid(171);
     deviceChoice111111125.setLabelString(" ");
-    deviceChoice111111125.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111125.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111125.setUpdateIdentifier("");
     deviceChoice111111125.setIdentifier("");
     flowLayout113.setVgap(0);
@@ -1438,7 +1438,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111126.setConvert(true);
     deviceChoice111111126.setOffsetNid(147);
     deviceChoice111111126.setLabelString(" ");
-    deviceChoice111111126.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111126.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111126.setUpdateIdentifier("");
     deviceChoice111111126.setIdentifier("");
     deviceField111111126.setOffsetNid(165);
@@ -1449,7 +1449,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111124.setConvert(true);
     deviceChoice11111111124.setOffsetNid(75);
     deviceChoice11111111124.setLabelString(" ");
-    deviceChoice11111111124.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111124.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111124.setUpdateIdentifier("");
     deviceChoice11111111124.setIdentifier("");
     deviceChoice117.setChoiceIntValues(new int[] {(int)0,(int)20,(int)40,(int)80,(int)200,(int)400,(int)800,(int)2000,(int)4000,(int)8000,(int)20000,(int)40000});
@@ -1481,7 +1481,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111126.setConvert(true);
     deviceChoice1111111126.setOffsetNid(111);
     deviceChoice1111111126.setLabelString(" ");
-    deviceChoice1111111126.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111126.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111126.setUpdateIdentifier("");
     deviceChoice1111111126.setIdentifier("");
     deviceChoice111111111112.setChoiceIntValues(new int[] {(int)0,(int)400,(int)4000,(int)40000,(int)100000});
@@ -1489,7 +1489,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111111112.setConvert(true);
     deviceChoice111111111112.setOffsetNid(39);
     deviceChoice111111111112.setLabelString(" ");
-    deviceChoice111111111112.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111111112.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111111112.setUpdateIdentifier("");
     deviceChoice111111111112.setIdentifier("");
     deviceChannel11116.setInSameLine(true);
@@ -1562,7 +1562,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111128.setConvert(true);
     deviceChoice111111128.setOffsetNid(183);
     deviceChoice111111128.setLabelString(" ");
-    deviceChoice111111128.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111128.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111128.setUpdateIdentifier("");
     deviceChoice111111128.setIdentifier("");
     deviceField1111111121.setOffsetNid(93);
@@ -1595,7 +1595,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111111116.setConvert(true);
     deviceChoice111111111116.setOffsetNid(51);
     deviceChoice111111111116.setLabelString(" ");
-    deviceChoice111111111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111111116.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111111116.setUpdateIdentifier("");
     deviceChoice111111111116.setIdentifier("");
     deviceChoice1111111127.setChoiceIntValues(null);
@@ -1705,7 +1705,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice1111111128.setConvert(true);
     deviceChoice1111111128.setOffsetNid(135);
     deviceChoice1111111128.setLabelString(" ");
-    deviceChoice1111111128.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice1111111128.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice1111111128.setUpdateIdentifier("");
     deviceChoice1111111128.setIdentifier("");
     deviceChannel11123.setInSameLine(true);
@@ -1722,7 +1722,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111123.setConvert(true);
     deviceChoice11111123.setOffsetNid(195);
     deviceChoice11111123.setLabelString(" ");
-    deviceChoice11111123.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111123.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111123.setUpdateIdentifier("");
     deviceChoice11111123.setIdentifier("");
     deviceChoice11111111127.setChoiceIntValues(new int[] {(int)0,(int)400,(int)4000,(int)40000,(int)100000});
@@ -1730,7 +1730,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111127.setConvert(true);
     deviceChoice11111111127.setOffsetNid(99);
     deviceChoice11111111127.setLabelString(" ");
-    deviceChoice11111111127.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111127.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111127.setUpdateIdentifier("");
     deviceChoice11111111127.setIdentifier("");
     deviceChoice111118.setChoiceIntValues(null);
@@ -1752,7 +1752,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111111118.setConvert(true);
     deviceChoice111111111118.setOffsetNid(27);
     deviceChoice111111111118.setLabelString(" ");
-    deviceChoice111111111118.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111111118.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111111118.setUpdateIdentifier("");
     deviceChoice111111111118.setIdentifier("");
     jPanel112111.setLayout(flowLayout11118);
@@ -1773,7 +1773,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice11111111129.setConvert(true);
     deviceChoice11111111129.setOffsetNid(87);
     deviceChoice11111111129.setLabelString(" ");
-    deviceChoice11111111129.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice11111111129.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice11111111129.setUpdateIdentifier("");
     deviceChoice11111111129.setIdentifier("");
     deviceChoice121.setChoiceIntValues(new int[] {(int)0,(int)20,(int)40,(int)80,(int)200,(int)400,(int)800,(int)2000,(int)4000,(int)8000,(int)20000,(int)40000});
@@ -1794,7 +1794,7 @@ public class WE7275Setup extends DeviceSetup {
     deviceChoice111111111119.setConvert(true);
     deviceChoice111111111119.setOffsetNid(63);
     deviceChoice111111111119.setLabelString(" ");
-    deviceChoice111111111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kNz", "40 kHz", "100 kHz"});
+    deviceChoice111111111119.setChoiceItems(new String[] {"OFF", "400 Hz", "4 kHz", "40 kHz", "100 kHz"});
     deviceChoice111111111119.setUpdateIdentifier("");
     deviceChoice111111111119.setIdentifier("");
     deviceChoice11111124.setChoiceIntValues(null);
