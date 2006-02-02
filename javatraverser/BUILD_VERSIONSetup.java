@@ -211,7 +211,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout11.setRows(2);
     jPanel21.setLayout(gridLayout11);
     deviceChannel2.setLabelString("");
-    deviceChannel2.setOffsetNid(8);
+    deviceChannel2.setOffsetNid(9);
     deviceChannel2.setInSameLine(true);
     deviceChannel2.setUpdateIdentifier("");
     deviceChannel2.setShowVal("");
@@ -232,7 +232,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout12.setRows(2);
     jPanel22.setLayout(gridLayout12);
     deviceChannel3.setLabelString("");
-    deviceChannel3.setOffsetNid(12);
+    deviceChannel3.setOffsetNid(14);
     deviceChannel3.setInSameLine(true);
     deviceChannel3.setUpdateIdentifier("");
     deviceChannel3.setShowVal("");
@@ -253,7 +253,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout13.setRows(2);
     jPanel23.setLayout(gridLayout13);
     deviceChannel4.setLabelString("");
-    deviceChannel4.setOffsetNid(16);
+    deviceChannel4.setOffsetNid(19);
     deviceChannel4.setInSameLine(true);
     deviceChannel4.setUpdateIdentifier("");
     deviceChannel4.setShowVal("");
@@ -274,7 +274,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout14.setRows(2);
     jPanel24.setLayout(gridLayout14);
     deviceChannel5.setLabelString("");
-    deviceChannel5.setOffsetNid(20);
+    deviceChannel5.setOffsetNid(24);
     deviceChannel5.setInSameLine(true);
     deviceChannel5.setUpdateIdentifier("");
     deviceChannel5.setShowVal("");
@@ -290,7 +290,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout15.setRows(2);
     jPanel25.setLayout(gridLayout15);
     deviceChannel6.setLabelString("");
-    deviceChannel6.setOffsetNid(24);
+    deviceChannel6.setOffsetNid(29);
     deviceChannel6.setInSameLine(true);
     deviceChannel6.setUpdateIdentifier("");
     deviceChannel6.setShowVal("");
@@ -311,7 +311,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout16.setRows(2);
     jPanel26.setLayout(gridLayout16);
     deviceChannel7.setLabelString("");
-    deviceChannel7.setOffsetNid(28);
+    deviceChannel7.setOffsetNid(34);
     deviceChannel7.setInSameLine(true);
     deviceChannel7.setUpdateIdentifier("");
     deviceChannel7.setShowVal("");
@@ -331,7 +331,7 @@ public class BUILD_VERSIONSetup extends DeviceSetup {
     gridLayout17.setRows(2);
     jPanel27.setLayout(gridLayout17);
     deviceChannel8.setLabelString("");
-    deviceChannel8.setOffsetNid(32);
+    deviceChannel8.setOffsetNid(39);
     deviceChannel8.setInSameLine(true);
     deviceChannel8.setUpdateIdentifier("");
     deviceChannel8.setShowVal("");
