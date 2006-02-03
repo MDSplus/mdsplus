@@ -1,17 +1,8 @@
-public fun ndims(as_is _sigin)
-{
+public fun ndims(in _sigxxx) {
 /* ndims(signal) returns number of dimensions defined in signal structure
    ndims(array) returns rank of array
-   ndims(scalar) returns 0
+  ndims(scalar) returns 0
 */
-  _iterations=0;
-  _sig = _sigin;
-  while ( (execute("class(`_sig)") == 194) && (execute("kind(`_sig)") <> 195) && _iterations < 50)
-  { _sig = execute("`value_of(_sig)");
-    _iterations++;
-  }
-  if (execute("kind(`_sig)") == 195)
-    return(execute("ndesc(`_sig)")-2);
-  else
-    return(execute("rank(`_sig)"));
+for (_n=0;if_error(if_error(dim_of(_sigxxx,_n),'xyzzy') == 'xyzzy',0) == 0; _n++);
+return(_n);
 }
