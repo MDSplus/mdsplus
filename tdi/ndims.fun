@@ -3,6 +3,6 @@ public fun ndims(in _sigxxx) {
    ndims(array) returns rank of array
   ndims(scalar) returns 0
 */
-for (_n=0;if_error(if_error(dim_of(_sigxxx,_n),'xyzzy') == 'xyzzy',0) == 0; _n++);
+for (_n=0;if_error(if_error((dim_of(_sigxxx,_n),1),'xyzzy') == 'xyzzy',0) == 0; _n++);
 return(_n);
 }
