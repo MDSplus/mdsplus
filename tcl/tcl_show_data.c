@@ -216,11 +216,11 @@ static int CvtPathT(struct descriptor *in_dsc_ptr,int depth)
     dstr = TclDtypeString(in_dsc_ptr->dscB_dtype);
     str_concat(&out_str,&spaces,dstr,ident,0);
     TclTextOut(out_str.dscA_pointer);
-    free(ident);
     ldepth = depth + 4;
     str_free1_dx(&spaces);
     str_dupl_char(&spaces,ldepth,' ');
-    sts = TreeFindNode(in_dsc_ptr->dscA_pointer,&lnid);
+    sts = TreeFindNode(ident,&lnid);
+    free(ident);
     if (sts & 1)
        {
         sts = TreeGetRecord(lnid,&lxd);
