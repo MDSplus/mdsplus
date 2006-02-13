@@ -159,42 +159,65 @@ write("HWINIT: ", _status);
 			{
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
 					['EVENT', 'RISING EDGE', 'FALLING EDGE', 'SOFTWARE'], [0,1,2,3], _trig_mode = 3);
-				if(_trig_mode == 0) /* If event triger */
+				if(_trig_mode == 0) /* If event trigger */
 				{
 					_ev_name =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_EVENT)), '');
-					if(_ev_name != '')
-						_event =  TimingDecodeEvent(_ev_name);
-					else
-						_event = 0;
-write(*, "------> Event code ", _event);
-
-					if(_event == 0)
+					if(size(_ev_name) > 1)
 					{
-    					DevLogErr(_nid, "Invalid event for pulse channel " // (_c + 1));
- 						abort();
-					}
-
-					_event_time = TimingGetEventTime(_ev_name);
-
-write(*, "------> Event time ", _event_time);
-
-					if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
-					{
-/* If event time cannot be reconstructed (i.e. RFXTiming device is missing) rely on trigger time */
+					 	_event = [];
+					  	for(_i = 0; _i < size(_ev_name); _i++)
+						{
+							_curr_event = TimingDecodeEvent(_ev_name[_i]);
+							if(_curr_event == 0)
+							{
+    								DevLogErr(_nid, "Invalid event for pulse channel " // (_c + 1));
+ 								abort();
+							}
+							_event = [_event, _curr_event];
+						}
 						_event_time = if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER)), _INVALID);
 						if(_event_time == _INVALID)
 						{
-    						DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
+    							DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
  							abort();
 						}
+
 					}
 					else
 					{
- 	    					DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
-					}
+						if(_ev_name != '')
+							_event =  TimingDecodeEvent(_ev_name);
+						else
+							_event = 0;
+write(*, "------> Event code ", _event);
 
+						if(_event == 0)
+						{
+    							DevLogErr(_nid, "Invalid event for pulse channel " // (_c + 1));
+ 							abort();
+						}
+
+						_event_time = TimingGetEventTime(_ev_name);
+
+write(*, "------> Event time ", _event_time);
+
+						if(_event_time == HUGE(0.) || _event_time == -HUGE(0.))
+						{
+/* If event time cannot be reconstructed (i.e. RFXTiming device is missing) rely on trigger time */
+							_event_time = if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER)), _INVALID);
+							if(_event_time == _INVALID)
+							{
+    								DevLogErr(_nid, "Cannot associate a time to event "// _ev_name // " in channel " // (_c + 1));
+ 								abort();
+							}
+						}
+						else
+						{
+ 	    						DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER, _event_time);
+						}
+					}
 				}
-				else
+				else /*Not event trigger */
 					_event = 0;
 
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_CYCLIC,

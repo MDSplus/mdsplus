@@ -113,15 +113,18 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 /* Set event if trigger mode == event */
 	if(_trig_mode == 0)
 	{
-		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_channel + 1)), val(byte(_event)),
-			val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
-		if(_status != 0)
+		for(_i = 0; _i < size(_event); _i++)
 		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
-			else
-				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
-			return(0);
+			_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(2 * _channel + 1)), val(byte(_event[_i])),
+				val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
+			if(_status != 0)
+			{
+				if(_nid != 0)
+					DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
+				else
+					write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
+				return(0);
+			}
 		}
 	}
 	
