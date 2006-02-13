@@ -1078,15 +1078,8 @@ public class ParameterSetting
             nids[19] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
                                                   0);
 
-            saveConfig(13);
-            saveConfig(14);
-            saveConfig(15);
-            saveConfig(16);
-            saveConfig(17);
-            saveConfig(18);
-            saveConfig(19);
-
-        }
+            saveConfig();
+       }
         catch (Exception exc)
         {
             System.err.println("Error opening device");
@@ -1097,6 +1090,18 @@ public class ParameterSetting
             setTitle("RFX Parameters -- RT --    shot: " + getShot());
         else
             setTitle("RFX Parameters  shot: " + getShot());
+    }
+
+    void saveConfig()
+    {
+        saveConfig(13);
+        saveConfig(14);
+        saveConfig(15);
+        saveConfig(16);
+        saveConfig(17);
+        saveConfig(18);
+        saveConfig(19);
+
     }
 
     void handleDeviceClosed(int idx, boolean isChanged)
@@ -1326,7 +1331,10 @@ public class ParameterSetting
                     {
                         String newMsg = checkConfig();
                         if (newMsg != null)
+                        {
                             configWd.setText(newMsg);
+                            saveConfig();
+                        }
                         else
                         {
                             configWd.dispose();
@@ -1766,6 +1774,7 @@ public class ParameterSetting
                                           "Error loading pulse " + shotStr);
             System.err.println(exc);
         }
+        saveConfig();
     }
 
     int getShot()

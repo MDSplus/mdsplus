@@ -1462,34 +1462,34 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField9.setLabelString("Sys duration: ");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("sys_duration");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Virtual Shell DFLU"});
+        "Closer VS", "Closer VS+Rot.Pert."});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
+    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
     deviceChoice3.setOffsetNid(8);
     deviceChoice3.setLabelString("Trig2 control: ");
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Virtual Shell DFLU"});
+        "Closer VS", "Closer VS+Rot.Pert."});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(6);
     deviceChoice1.setLabelString("Init control: ");
     deviceChoice1.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Virtual Shell DFLU"});
+        "Closer VS", "Closer VS+Rot.Pert."});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField13.setOffsetNid(20);
