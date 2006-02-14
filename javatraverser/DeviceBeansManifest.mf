@@ -30,4 +30,7 @@ Name: DeviceSlider.class
 Java-Bean: True
 
 
+Name: DeviceLabel.class
+Java-Bean: True
+
 
