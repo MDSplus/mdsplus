@@ -1147,6 +1147,7 @@ public class ParameterSetting
     void loadSetup()
     {
 
+        chooser.rescanCurrentDirectory();
         int returnVal = chooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -1178,6 +1179,7 @@ public class ParameterSetting
 
     void saveSetup()
     {
+        chooser.rescanCurrentDirectory();
         int returnVal = chooser.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
