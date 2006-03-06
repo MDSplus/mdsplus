@@ -192,7 +192,7 @@ public abstract class DeviceComponent extends JPanel
         {
             String initDecompiled = Tree.dataToString(init_data);
             String currDecompiled = Tree.dataToString(curr_data);
-            System.out.println("Comparing " + initDecompiled + "  " + currDecompiled);
+            //System.out.println("Comparing " + initDecompiled + "  " + currDecompiled);
             return! (initDecompiled.equals(currDecompiled));
         }
         catch (Exception exc)

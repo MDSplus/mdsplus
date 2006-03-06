@@ -305,13 +305,13 @@ public class RFXMHDSetup extends DeviceSetup {
     gridLayout8.setHgap(0);
     gridLayout8.setRows(2);
     gridLayout8.setVgap(-2);
-    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)4,(int)9,(int)10,(int)11,(int)12});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)4,(int)9,(int)10,(int)11,(int)12,(int)15,(int)16});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
-    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "MODE CONTROL", "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"
-        });
+    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "MODE CONTROL", "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)",
+        "Closer VS", "Closer VS+Rot.Pert."});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
         deviceTable7.setOffsetNid(1229);

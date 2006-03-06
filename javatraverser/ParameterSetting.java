@@ -12,7 +12,23 @@ import java.awt.print.Printable;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.text.*;
+import javax.swing.filechooser.*;
 
+/*
+Le tabelle di configurazione rfxConfigHash e rfxConfigOnHash sono aggiornate in:
+     - init()
+     - modifica singola form config
+     - uscita dal PAS
+
+ Il check della configurazione e' eseguito in:
+    - uscita dal PAS
+    - Caricamento di un impulso
+
+ Quando viene caricata una configurazione salvata si esegue il confronto tra la configurazione salvata
+ e l'experiment model attuale.
+
+
+*/
 public class ParameterSetting
     extends JFrame implements Printable
 {
@@ -62,8 +78,12 @@ public class ParameterSetting
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
-    Hashtable configHash = new Hashtable();
-    Hashtable configOnHash = new Hashtable();
+    Hashtable rfxConfigHash = new Hashtable();
+    Hashtable rfxConfigOnHash = new Hashtable();
+    Hashtable currConfigHash = new Hashtable();
+    Hashtable currConfigOnHash = new Hashtable();
+    Hashtable currSetupHash = new Hashtable();
+    Hashtable currSetupOnHash = new Hashtable();
 
     JTextField maxPMATF, maxPVATF, maxPVAT8F, maxTFATF, maxTCCHF, maxTCACF;
     int maxPMAT, maxPVAT, maxPVAT8, maxTFAT, maxTCCH, maxTCAC;
@@ -71,6 +91,7 @@ public class ParameterSetting
 
     WarningDialog checkedWd, configWd, limitsWd;
 
+    JFileChooser chooser = new JFileChooser();
 
     ParameterSetting()
     {
@@ -121,6 +142,29 @@ public class ParameterSetting
                 }
             });
             fileMenu.add(loadItem);
+        }
+        else
+        {
+            JMenuItem saveItem = new JMenuItem("Save Configuration");
+            saveItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    saveSetup();
+                }
+            });
+            fileMenu.add(saveItem);
+            JMenuItem loadItem = new JMenuItem("Load Configuration");
+            loadItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    loadSetup();
+                }
+            });
+            fileMenu.add(loadItem);
+
+
         }
         menuBar.add(fileMenu);
 
@@ -596,6 +640,8 @@ public class ParameterSetting
         if (!isRt)
         {
             getContentPane().add(setupJp, "Center");
+            chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+            chooser.setFileFilter(new RfxFileFilter());
             return;
         }
 
@@ -1094,15 +1140,88 @@ public class ParameterSetting
 
     void saveConfig()
     {
-        saveConfig(13);
-        saveConfig(14);
-        saveConfig(15);
-        saveConfig(16);
-        saveConfig(17);
-        saveConfig(18);
-        saveConfig(19);
-
+        for(int i = 13; i < 20; i++)
+            saveConfig(i, rfxConfigHash, rfxConfigOnHash);
     }
+
+    void loadSetup()
+    {
+
+        int returnVal = chooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            readSetupFromFile(chooser.getSelectedFile().getName());
+            applySetup();
+            String errMsg = checkConfig(currConfigHash, currConfigOnHash);
+            if(errMsg != null)
+            {
+                JOptionPane.showMessageDialog(this, errMsg, "Configuration error",
+                                              JOptionPane.WARNING_MESSAGE);
+
+            }
+        }
+    }
+
+    static class RfxFileFilter extends javax.swing.filechooser.FileFilter
+    {
+        public boolean accept(File f)
+        {
+            if(f.isDirectory()) return true;
+            return f.getName().endsWith(".rfx");
+        }
+        public String getDescription()
+        {
+            return "Saved configurations for RFX";
+        }
+    }
+
+
+    void saveSetup()
+    {
+        int returnVal = chooser.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            for (int i = 0; i < 13; i++)
+                saveConfig(i, currSetupHash, currSetupOnHash);
+            for (int i = 13; i < 20; i++)
+                saveConfig(i, currConfigHash, currConfigOnHash);
+            writeSetupToFile(chooser.getSelectedFile().getName());
+        }
+    }
+
+    void writeSetupToFile(String fileName)
+    {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName));
+            oos.writeObject(currSetupHash);
+            oos.writeObject(currSetupOnHash);
+            oos.writeObject(currConfigHash);
+            oos.writeObject(currConfigOnHash);
+            oos.close();
+        }catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot save configuration: " + exc, "Write error",
+                                           JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    void readSetupFromFile(String fileName)
+    {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
+            currSetupHash = (Hashtable)ois.readObject();
+            currSetupOnHash = (Hashtable)ois.readObject();
+            currConfigHash = (Hashtable)ois.readObject();
+            currConfigOnHash = (Hashtable)ois.readObject();
+            ois.close();
+        }catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot load configuration: " + exc, "Read error",
+                                           JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
 
     void handleDeviceClosed(int idx, boolean isChanged)
     {
@@ -1118,7 +1237,7 @@ public class ParameterSetting
             }
             else // Config devices
             {
-                saveConfig(idx);
+                saveConfig(idx, rfxConfigHash, rfxConfigOnHash);
             }
         }
         else
@@ -1279,6 +1398,7 @@ public class ParameterSetting
                                                 {
                                                     checkedWd.dispose();
                                                     proceedeConfig();
+                                                    saveConfig();
                                                 }
                                             }
                                         });
@@ -1286,7 +1406,10 @@ public class ParameterSetting
                                         checkedWd.setVisible(true);
                                     }
                                     else
+                                    {
                                         proceedeConfig();
+                                        saveConfig();
+                                    }
                                 }
                                 else
                                     setReadOnly(true);
@@ -1321,7 +1444,7 @@ public class ParameterSetting
 
         void proceedeConfig()
         {
-            String configMsg = checkConfig();
+            String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
             if (configMsg != null)
             {
                 configWd = new WarningDialog(ParameterSetting.this, configMsg);
@@ -1329,12 +1452,11 @@ public class ParameterSetting
                 {
                     public void actionPerformed(ActionEvent e)
                     {
-                        String newMsg = checkConfig();
+                        String newMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
                         if (newMsg != null)
                         {
                             configWd.setText(newMsg);
-                            saveConfig();
-                        }
+                         }
                         else
                         {
                             configWd.dispose();
@@ -1509,12 +1631,49 @@ public class ParameterSetting
         }
     }
 
-    void saveConfig(int idx)
+
+    void applySetup()
+    {
+        Enumeration pathNames = currSetupHash.keys();
+        String currPath = "", currDecompiled = "", savedDecompiled = "";
+        while(pathNames.hasMoreElements())
+        {
+            try {
+                currPath = (String)pathNames.nextElement();
+                NidData currNid = rfx.resolve(new PathData(currPath), 0);
+                currDecompiled = (String)currSetupHash.get(currPath);
+                try {
+                    savedDecompiled  = (rfx.getData(currNid, 0)).toString();
+                }catch(Exception exc){savedDecompiled = "";}
+
+                if(!currDecompiled.equals(savedDecompiled))
+                {
+                    Data currData = Data.fromExpr(currDecompiled);
+                    System.out.println(currDecompiled);
+                    System.out.println(savedDecompiled+"\n");
+                    rfx.putData(currNid, currData, 0);
+                }
+
+                Boolean currBool = (Boolean)currSetupOnHash.get(currPath);
+                rfx.setOn(currNid, currBool.booleanValue(), 0);
+            }catch(Exception exc)
+            {
+                System.err.println("Error applying configuration: " + exc + currPath + "  " + currDecompiled + "  " + savedDecompiled);
+            }
+        }
+    }
+
+
+
+
+    void saveConfig(int idx, Hashtable configHash, Hashtable configOnHash)
     {
         try
         {
+            NidData baseNid = rfx.getDefault(0);
             rfx.setDefault(nids[idx], 0);
             NidData[] deviceNids = rfx.getWild(NodeInfo.USAGE_NUMERIC, 0);
+            rfx.setDefault(baseNid, 0);
             if (deviceNids != null)
             {
                 for (int i = 0; i < deviceNids.length; i++)
@@ -1522,7 +1681,7 @@ public class ParameterSetting
                     String currDec;
                     try
                     {
-                        currDec = (rfx.evaluateData(deviceNids[i], 0)).toString();
+                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         configHash.put(rfx.getInfo(deviceNids[i], 0).
                                        getFullPath(), currDec);
                     }
@@ -1533,7 +1692,9 @@ public class ParameterSetting
                                      new Boolean(rfx.isOn(deviceNids[i], 0)));
                 }
             }
+            rfx.setDefault(nids[idx], 0);
             deviceNids = rfx.getWild(NodeInfo.USAGE_TEXT, 0);
+            rfx.setDefault(baseNid, 0);
             if (deviceNids != null)
             {
                 for (int i = 0; i < deviceNids.length; i++)
@@ -1541,7 +1702,28 @@ public class ParameterSetting
                     String currDec;
                     try
                     {
-                        currDec = (rfx.evaluateData(deviceNids[i], 0)).toString();
+                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
+                        configHash.put(rfx.getInfo(deviceNids[i], 0).
+                                       getFullPath(), currDec);
+                    }
+                    catch (Exception exc)
+                    {}
+                    configOnHash.put(rfx.getInfo(deviceNids[i], 0).
+                                     getFullPath(),
+                                     new Boolean(rfx.isOn(deviceNids[i], 0)));
+                }
+            }
+            rfx.setDefault(nids[idx], 0);
+            deviceNids = rfx.getWild(NodeInfo.USAGE_SIGNAL, 0);
+            rfx.setDefault(baseNid, 0);
+            if (deviceNids != null)
+            {
+                for (int i = 0; i < deviceNids.length; i++)
+                {
+                    String currDec;
+                    try
+                    {
+                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         configHash.put(rfx.getInfo(deviceNids[i], 0).
                                        getFullPath(), currDec);
                     }
@@ -1559,12 +1741,14 @@ public class ParameterSetting
         }
     }
 
-    boolean checkDeviceConfig(NidData deviceRoot)
+    NidData checkDeviceConfig(NidData deviceRoot, Hashtable configHash, Hashtable configOnHash)
     {
         try
         {
+            NidData baseNid = rfx.getDefault(0);
             rfx.setDefault(deviceRoot, 0);
             NidData[] deviceNids = rfx.getWild(NodeInfo.USAGE_NUMERIC, 0);
+            rfx.setDefault(baseNid, 0);
             if (deviceNids != null)
             {
                 for (int i = 0; i < deviceNids.length; i++)
@@ -1572,7 +1756,7 @@ public class ParameterSetting
                     String currDec, savedDec;
                     try
                     {
-                        currDec = (rfx.evaluateData(deviceNids[i], 0)).toString();
+                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                     }
                     catch (Exception exc)
                     {
@@ -1584,16 +1768,18 @@ public class ParameterSetting
                         (savedDec != null && currDec == null) ||
                         ( (savedDec != null && currDec != null) &&
                          !savedDec.equals(currDec)))
-                        return false;
+                        return deviceNids[i];
 
                     boolean on = rfx.isOn(deviceNids[i], 0);
                     boolean savedOn = ( (Boolean) configOnHash.get(rfx.getInfo(
                         deviceNids[i], 0).getFullPath())).booleanValue();
                     if (on != savedOn)
-                        return false;
+                        return deviceNids[i];
                 }
             }
+            rfx.setDefault(deviceRoot, 0);
             deviceNids = rfx.getWild(NodeInfo.USAGE_TEXT, 0);
+            rfx.setDefault(baseNid, 0);
             if (deviceNids != null)
             {
                 for (int i = 0; i < deviceNids.length; i++)
@@ -1602,7 +1788,7 @@ public class ParameterSetting
                     String currDec, savedDec;
                     try
                     {
-                        currDec = (rfx.evaluateData(deviceNids[i], 0)).toString();
+                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                     }
                     catch (Exception exc)
                     {
@@ -1614,52 +1800,81 @@ public class ParameterSetting
                         (savedDec != null && currDec == null) ||
                         ( (savedDec != null && currDec != null) &&
                          !savedDec.equals(currDec)))
-                        return false;
+                        return deviceNids[i];
                     boolean on = rfx.isOn(deviceNids[i], 0);
                     boolean savedOn = ( (Boolean) configOnHash.get(rfx.getInfo(
                         deviceNids[i], 0).getFullPath())).booleanValue();
                     if (on != savedOn)
-                        return false;
+                        return deviceNids[i];
                 }
             }
-            return true;
+            return null;
         }
         catch (Exception exc)
         {
             System.err.println("Error comparing configurations: " + exc);
-            return false;
+            return null;
         }
     }
 
-    String checkConfig()
+    String checkConfig(Hashtable configHash, Hashtable configOnHash)
     {
-        if (!checkDeviceConfig(mopRoot))
+        NidData errNid;
+        String errPath = "";
+        if ((errNid = checkDeviceConfig(mopRoot, configHash, configOnHash))!= null)
         {
-            return  "Discrepanza nella configurazione MOP";
+            try {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }catch(Exception exc){errPath = "";}
+            return  "Discrepanza nella configurazione MOP: "+ errPath;
         }
-        if (!checkDeviceConfig(ansaldoConfigRoot))
+        if ((errNid = checkDeviceConfig(ansaldoConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione Ansaldo";
+            try {
+               errPath = rfx.getInfo(errNid, 0).getFullPath();
+           }catch(Exception exc){errPath = "";}
+           return "Discrepanza nella configurazione Ansaldo: "+ errPath;
         }
-        if (!checkDeviceConfig(unitsConfigRoot))
+        if ((errNid = checkDeviceConfig(unitsConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione unita' A e B";
+            try
+            {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }
+            catch (Exception exc)
+            {
+                errPath = "";
+            }
+
+            return "Discrepanza nella configurazione unita' A e B: "+ errPath;
         }
-        if (!checkDeviceConfig(poloidalConfigRoot))
+        if ((errNid = checkDeviceConfig(poloidalConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione Poloidale";
+            try {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }catch(Exception exc){errPath = "";}
+            return "Discrepanza nella configurazione Poloidale: "+ errPath;
         }
-        if (!checkDeviceConfig(toroidalConfigRoot))
+        if ((errNid = checkDeviceConfig(toroidalConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione Toroidale";
+            try {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }catch(Exception exc){errPath = "";}
+            return "Discrepanza nella configurazione Toroidale: "+ errPath;
         }
-        if (!checkDeviceConfig(mhdConfigRoot))
+        if ((errNid = checkDeviceConfig(mhdConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione Sonde a sSella";
+            try {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }catch(Exception exc){errPath = "";}
+            return "Discrepanza nella configurazione Sonde a Sella: "+errPath;
         }
-        if (!checkDeviceConfig(viConfigRoot))
+        if ((errNid = checkDeviceConfig(viConfigRoot, configHash, configOnHash))!= null)
         {
-            return "Discrepanza nella configurazione del Vuoto";
+            try {
+                errPath = rfx.getInfo(errNid, 0).getFullPath();
+            }catch(Exception exc){errPath = "";}
+            return "Discrepanza nella configurazione del Vuoto: "+ errPath;
         }
         return null;
     }
@@ -1764,7 +1979,7 @@ public class ParameterSetting
 	    conv.convertMatrix();
  	    conv = new Convert("\\mhd_bc::control.parameters:par236_val", "normalised_gain_0.01.txt");
 	    conv.convertMatrix();
-           String configMsg = checkConfig();
+        String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
 	    if(configMsg != null)
 	    	JOptionPane.showMessageDialog(this, configMsg, "Configuration error", JOptionPane.WARNING_MESSAGE);
         }
@@ -1774,7 +1989,6 @@ public class ParameterSetting
                                           "Error loading pulse " + shotStr);
             System.err.println(exc);
         }
-        saveConfig();
     }
 
     int getShot()
