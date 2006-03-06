@@ -1151,7 +1151,7 @@ public class ParameterSetting
         int returnVal = chooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
-            readSetupFromFile(chooser.getSelectedFile().getName());
+            readSetupFromFile(chooser.getSelectedFile().getPath());
             applySetup();
             String errMsg = checkConfig(currConfigHash, currConfigOnHash);
             if(errMsg != null)
@@ -1187,7 +1187,7 @@ public class ParameterSetting
                 saveConfig(i, currSetupHash, currSetupOnHash);
             for (int i = 13; i < 20; i++)
                 saveConfig(i, currConfigHash, currConfigOnHash);
-            writeSetupToFile(chooser.getSelectedFile().getName());
+            writeSetupToFile(chooser.getSelectedFile().getPath());
         }
     }
 
