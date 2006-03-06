@@ -114,9 +114,23 @@ class jDispatcherIp
             }
             else if (first_part.equals("SET")) {
                 String second_part = st.nextToken();
-                if (second_part.equals("TREE")) {
-                    currTreeName = st.nextToken();
-                    dispatcher.setTree(currTreeName);
+                if (second_part.equals("TREE"))
+                {
+                    if(!st.hasMoreTokens())
+                    {
+                        currTreeName = st.nextToken();
+                        dispatcher.setTree(currTreeName);
+                    }
+                    else
+                    {
+                        try {
+                            int shot = Integer.parseInt(st.nextToken());
+                            dispatcher.setTree(currTreeName, shot);
+                        }catch(Exception exc)
+                        {
+                            System.err.println("Wrong shot number in SET TREE command");
+                        }
+                    }
                 }
                 else if (second_part.equals("CURRENT")) {
                     String third_part = st.nextToken();

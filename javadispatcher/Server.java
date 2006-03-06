@@ -51,7 +51,9 @@ Abstracts Server functionality
     * true if server can participate to the next shot
     */
 
-    public void setTree(String tree);
+   public void setTree(String tree);
+
+   public void setTree(String tree, int shot);
 
 
 }

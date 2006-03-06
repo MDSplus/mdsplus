@@ -3,6 +3,7 @@ import java.util.*;
 class InfoServer implements Server
 {
     String tree;
+    int shot = -1;
     Database model_database;
 
     public InfoServer() {tree = null; }
@@ -17,7 +18,16 @@ class InfoServer implements Server
     public boolean abortAction(Action action) {return false; }
 
 
-    public void setTree(String tree) {this.tree = tree; }
+    public void setTree(String tree)
+    {
+        this.tree = tree;
+    }
+
+    public void setTree(String tree, int shot)
+    {
+        this.tree = tree;
+        this.shot = shot;
+    }
     public void beginSequence(int shot)
     {
       System.out.println("InfoServer: beginSequence...");
@@ -48,7 +58,7 @@ class InfoServer implements Server
         if(model_database == null)
         {
             try {
-                model_database = new Database(tree, -1);
+                model_database = new Database(tree, shot);
                 model_database.open();
             }catch(Exception exc){return null; }
         }

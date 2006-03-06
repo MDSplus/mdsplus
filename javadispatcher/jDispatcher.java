@@ -135,6 +135,14 @@ class jDispatcher
             ( (Server) server_list.nextElement()).setTree(tree);
     }
 
+    public void setTree(String tree, int shot)
+    {
+        this.tree = tree;
+        Enumeration server_list = servers.elements();
+        while (server_list.hasMoreElements())
+            ( (Server) server_list.nextElement()).setTree(tree, shot);
+    }
+
     public synchronized void collectDispatchInformation()
     /**
          request actions to each server and insert them into hashtables
