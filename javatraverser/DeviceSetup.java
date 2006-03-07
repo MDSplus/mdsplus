@@ -29,6 +29,8 @@ public class DeviceSetup
     Vector deviceCloseListenerV = new Vector();
     boolean readOnly = false;
 
+    static Vector openDevicesV = new Vector();
+
     public int getWidth()
     {
         return super.getWidth();
@@ -119,12 +121,14 @@ public class DeviceSetup
         setTitle(deviceTitle);
 //        getContentPane().setLayout(new BorderLayout());
         DeviceSetupBeanInfo.beanDeviceType = deviceType;
+        openDevicesV.addElement(this);
 
     }
 
     public DeviceSetup(JFrame f)
     {
         this(f, false);
+        openDevicesV.addElement(this);
     }
 
     public DeviceSetup(JFrame f, boolean readOnly)
@@ -525,6 +529,7 @@ public class DeviceSetup
             System.out.println("DATA CHANGED");
         else
             System.out.println("DATA NOT CHANGED");
+        openDevicesV.removeElement(this);
         dispose();
         for (int i = 0; i < deviceCloseListenerV.size(); i++)
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
@@ -565,6 +570,13 @@ public class DeviceSetup
     {
         if (buttons != null)
             buttons.add(button);
+    }
+
+
+    static void closeOpenDevices()
+    {
+        for(int i = 0; i < openDevicesV.size(); i++)
+            ((DeviceSetup)openDevicesV.elementAt(i)).cancel();
     }
 }
 

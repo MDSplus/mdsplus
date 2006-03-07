@@ -232,7 +232,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 
 	}
 
-
+    DeviceSetup.closeOpenDevices();
 	frame.pack();
 	repaint();
     }

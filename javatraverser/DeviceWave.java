@@ -114,7 +114,7 @@ public class DeviceWave extends DeviceComponent
     {
         savedWaveX = null;
         waveEditor = new WaveformEditor();
-        nf.setMaximumFractionDigits(3);
+        nf.setMaximumFractionDigits(4);
         nf.setGroupingUsed(false);
         waveEditor.setPreferredSize(new Dimension(300, prefHeight));
         waveEditor.addWaveformEditorListener(new WaveformEditorListener()
