@@ -50,6 +50,7 @@
 #define GLOBUS_HAVE_DIRENT_TYPE 1
 #define GLOBUS_HAVE_DIRENT_RECLEN 1
 
+#define HAVE_GETNAMEINFO 1
 
 /* Define to 1 if you have the `ctime' function. */
 #define HAVE_CTIME 1
