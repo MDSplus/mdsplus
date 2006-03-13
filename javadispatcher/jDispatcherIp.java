@@ -125,9 +125,10 @@ class jDispatcherIp
 		    
 			if(st.hasMoreTokens())
 		        {
-			    int shot = Integer.parseInt(st.nextToken());
+			    shot = Integer.parseInt(st.nextToken());
+			    setCurrentShot(shot);
 			    dispatcher.setTree(currTreeName, shot);
-			    System.err.println("Set experiment tree e shot");
+			    System.err.println("Set experiment tree e shot " + shot);
 			} else {
 			    dispatcher.setTree(currTreeName);
 			    System.err.println("Set experiment tree");

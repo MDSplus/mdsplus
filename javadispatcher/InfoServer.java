@@ -43,7 +43,7 @@ class InfoServer implements Server
         if(model_database != null)
         try {
             model_database.close(0);
-        }catch(Exception exc) {System.out.println("Error closing " + tree + " shot " + shot);}
+        }catch(Exception exc) {System.out.println("Error closing " + tree + " shot " + shot + "\n" + exc);}
     }
 
     public synchronized Action[] collectActions()
