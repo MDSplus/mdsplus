@@ -115,7 +115,7 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	{
 		for(_i = 0; _i < size(_event); _i++)
 		{
-			_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(2 * _channel + 1)), val(byte(_event[_i])),
+			_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(2 * _channel + 1 + _i)), val(byte(_event[_i])),
 				val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
 			if(_status != 0)
 			{
