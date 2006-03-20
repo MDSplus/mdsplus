@@ -655,7 +655,7 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel57.add(deviceTable28,  BorderLayout.SOUTH);
         jTabbedPane1.add(jScrollPane11,    "Virtual Shell: Input Config. 3");
         jScrollPane11.getViewport().add(jPanel59, null);
-        jPanel59.add(deviceTable26, BorderLayout.CENTER);
+        jPanel59.add(deviceTable26,  BorderLayout.CENTER);
         jPanel59.add(jPanel510, BorderLayout.NORTH);
         jPanel510.add(deviceField48, null);
         jPanel510.add(deviceField47, null);

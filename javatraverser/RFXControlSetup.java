@@ -512,6 +512,7 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceTable deviceTable27 = new DeviceTable();
     DeviceTable deviceTable28 = new DeviceTable();
   DeviceTable deviceTable29 = new DeviceTable();
+  DeviceTable deviceTable210 = new DeviceTable();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -1963,7 +1964,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceTable26.setIdentifier("");
         deviceTable26.setNumRows(4);
         deviceTable26.setNumCols(48);
-        deviceTable26.setLabelString("Mode Gains");
+        deviceTable26.setLabelString("Mode Gains (Module)");
         deviceTable26.setOffsetNid(1289);
         jPanel59.setLayout(borderLayout11);
         deviceField48.setOffsetNid(1285);
@@ -2056,6 +2057,16 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable29.setBinary(false);
     deviceTable29.setRowNames(new String[] {"0", "1", "2", "3"});
     deviceTable29.setDisplayRowNumber(true);
+    deviceTable210.setOffsetNid(1291);
+    deviceTable210.setLabelString("Mode Gains (Phase, Rad)");
+    deviceTable210.setNumCols(48);
+    deviceTable210.setNumRows(4);
+    deviceTable210.setIdentifier("");
+    deviceTable210.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+    deviceTable210.setBinary(false);
+    deviceTable210.setRowNames(new String[] {"0", "1", "2", "3"});
+    deviceTable210.setDisplayRowNumber(true);
     jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -2427,6 +2438,7 @@ public class RFXControlSetup extends DeviceSetup {
         jPanel59.add(jPanel510, BorderLayout.NORTH);
         jPanel510.add(deviceField48, null);
         jPanel510.add(deviceField47, null);
+    jPanel59.add(deviceTable210,  BorderLayout.SOUTH);
         jScrollPane9.getViewport().add(jPanel55, null);
         jPanel55.add(deviceTable22, BorderLayout.CENTER);
         jPanel55.add(jPanel56,  BorderLayout.NORTH);
