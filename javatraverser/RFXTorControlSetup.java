@@ -346,12 +346,12 @@ public class RFXTorControlSetup extends DeviceSetup {
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)8,(int)4,(int)9,(int)13,(int)14});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)8,(int)4,(int)9,(int)13,(int)14,(int)15});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
-    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "LOCK CONTROL", "MODE CONTROL", "MODE CONTROL+ROT.PERT.", "Bt CONTROL", "F CONTROL"});
+    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "LOCK CONTROL", "MODE CONTROL", "MODE CONTROL+ROT.PERT.", "Bt CONTROL", "F CONTROL", "Closer VS"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     jPanel410.setLayout(borderLayout4);
