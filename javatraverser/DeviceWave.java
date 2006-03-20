@@ -10,7 +10,7 @@ import java.text.*;
 public class DeviceWave extends DeviceComponent
 {
     static final int MAX_POINTS = 50;
-    static final double MIN_STEP = 1E-4;
+    static final double MIN_STEP = 1E-5;
 
 
     public boolean maxXVisible = false;

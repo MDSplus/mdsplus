@@ -153,6 +153,9 @@ public class RFXMHDSetup extends DeviceSetup {
     DeviceField deviceField47 = new DeviceField();
     JPanel jPanel10 = new JPanel();
     DeviceField deviceField1 = new DeviceField();
+    DeviceTable deviceTable27 = new DeviceTable();
+    DeviceTable deviceTable28 = new DeviceTable();
+    DeviceTable deviceTable29 = new DeviceTable();
   public RFXMHDSetup() {
     try {
       jbInit();
@@ -502,7 +505,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable22.setIdentifier("");
         deviceTable22.setNumRows(4);
         deviceTable22.setNumCols(48);
-        deviceTable22.setLabelString("Mode Gains");
+        deviceTable22.setLabelString("Mode Gains (Module)");
         deviceTable22.setOffsetNid(1269);
         deviceField44.setOffsetNid(1265);
         deviceField44.setLabelString("Start time: ");
@@ -525,7 +528,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable25.setIdentifier("");
         deviceTable25.setNumRows(4);
         deviceTable25.setNumCols(48);
-        deviceTable25.setLabelString("Mode Gains");
+        deviceTable25.setLabelString("Mode Gains (Module)");
         deviceTable25.setOffsetNid(1279);
         deviceField46.setOffsetNid(1275);
         deviceField46.setLabelString("Start time: ");
@@ -539,7 +542,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable26.setIdentifier("");
         deviceTable26.setNumRows(4);
         deviceTable26.setNumCols(48);
-        deviceTable26.setLabelString("Mode Gains");
+        deviceTable26.setLabelString("Mode Gains (Module)");
         deviceTable26.setOffsetNid(1289);
         jPanel59.setLayout(borderLayout11);
         deviceField48.setOffsetNid(1285);
@@ -555,7 +558,37 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceField1.setLabelString("Comment: ");
         deviceField1.setNumCols(30);
         deviceField1.setIdentifier("");
-    this.getContentPane().add(jPanel9,  BorderLayout.NORTH);
+    deviceTable27.setOffsetNid(1271);
+        deviceTable27.setLabelString("Mode Gains (Phase, Rad)");
+        deviceTable27.setNumCols(48);
+        deviceTable27.setNumRows(4);
+        deviceTable27.setIdentifier("");
+        deviceTable27.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable27.setBinary(false);
+        deviceTable27.setRowNames(new String[] {"0", "1", "2", "3"});
+        deviceTable27.setDisplayRowNumber(true);
+        deviceTable28.setOffsetNid(1281);
+        deviceTable28.setLabelString("Mode Gains (Phase, Rad)");
+        deviceTable28.setNumCols(48);
+        deviceTable28.setNumRows(4);
+        deviceTable28.setIdentifier("");
+        deviceTable28.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable28.setBinary(false);
+        deviceTable28.setRowNames(new String[] {"0", "1", "2", "3"});
+        deviceTable28.setDisplayRowNumber(true);
+        deviceTable29.setOffsetNid(1291);
+        deviceTable29.setLabelString("Mode Gains (Phase, Rad)");
+        deviceTable29.setNumCols(48);
+        deviceTable29.setNumRows(4);
+        deviceTable29.setIdentifier("");
+        deviceTable29.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable29.setBinary(false);
+        deviceTable29.setRowNames(new String[] {"0", "1", "2", "3"});
+        deviceTable29.setDisplayRowNumber(true);
+        this.getContentPane().add(jPanel9,  BorderLayout.NORTH);
     jPanel9.add(jPanel40, BorderLayout.CENTER);
     jPanel40.add(jPanel10, null);
         jPanel10.add(deviceField1, null);
@@ -619,17 +652,20 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel57.add(jPanel58, BorderLayout.NORTH);
         jPanel58.add(deviceField46, null);
         jPanel58.add(deviceField45, null);
+        jPanel57.add(deviceTable28,  BorderLayout.SOUTH);
         jTabbedPane1.add(jScrollPane11,    "Virtual Shell: Input Config. 3");
         jScrollPane11.getViewport().add(jPanel59, null);
         jPanel59.add(deviceTable26, BorderLayout.CENTER);
         jPanel59.add(jPanel510, BorderLayout.NORTH);
         jPanel510.add(deviceField48, null);
         jPanel510.add(deviceField47, null);
+        jPanel59.add(deviceTable29,  BorderLayout.SOUTH);
         jScrollPane9.getViewport().add(jPanel55, null);
         jPanel55.add(deviceTable22, BorderLayout.CENTER);
         jPanel55.add(jPanel56, BorderLayout.NORTH);
         jPanel56.add(deviceField44, null);
         jPanel56.add(deviceField43, null);
+        jPanel55.add(deviceTable27,  BorderLayout.SOUTH);
         jScrollPane15.getViewport().add(jPanel54, null);
         jPanel54.add(deviceTable21, null);
         jPanel54.add(deviceTable24, null);
