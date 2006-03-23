@@ -1560,6 +1560,10 @@ public class Waveform
     paint(g, d, NO_PRINT);
   }
 
+
+
+
+
   synchronized public void paint(Graphics g, Dimension d, int print_mode) {
     execute_print = (print_mode != NO_PRINT);
     Insets i = this.getInsets();
