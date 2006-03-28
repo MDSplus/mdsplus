@@ -56,6 +56,25 @@ public fun WE7275__store(as_is _nid, optional _method)
 
 write(*, "WE7275__store");
 
+
+    private _all_ch_off = 1;
+	
+    for(_i = 0; _i < _num_chans; _i++)
+    {
+		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
+        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+        { 
+			_all_ch_off = 0;
+		}
+	}
+	
+	if( _all_ch_off )
+	{
+		write(*, "All chennels OFF");
+		return(1);
+	}
+	
+	
 	_error = 0;
 
 	_slot_num = if_error(data(DevNodeRef(_nid, _N_SLOT)), -1);

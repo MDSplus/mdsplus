@@ -336,14 +336,19 @@ Attualmente non implementati perchè non necessari
     }
 
 
-
+	if( size(_state_a) == 0 )
+	{
+	    write(*, "All channels OFF");
+		return(1);
+	}
+	
 
 	if(_rec_length > _K_CHAN_MEM)
 	{
 		DevLogErr(_nid, "WARNING : Max memory for channel must be less than 4M");
 		_rec_length = _K_CHAN_MEM;
 	} else {
-	        _rec_length = _rec_length + 1;
+		_rec_length = _rec_length + 1;
 	}
 
 	DevPut(_nid,  _N_REC_LENGTH, long(_rec_length));
