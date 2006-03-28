@@ -135,7 +135,7 @@ write(*, "WE7275__init");
 	}
 
 	if(_clock_mode == 3 || _clock_mode == 4)
-	{
+	{	
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE);
 		_clock_val = if_error( execute('`_clk'), (_error = 1) );
 		if(_error == 1)
@@ -323,6 +323,13 @@ write(*, '-- idx ', _curr_start_idx);
 		DevNodeCvt(_nid, _head_channel + _N_CHAN_AAF, [0, 20, 40, 80, 200, 400, 800, 2000, 4000, 8000, 20e3, 40e3], [0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], _aaf=0);
 		_aaf_a   = [_aaf_a, _aaf];
     }
+
+
+	if( sum( _state_a ) == 0 )
+	{
+	    write(*, "All channels OFF");
+		return(1);
+	}
 
 
 	if(_rec_length > _K_CHAN_MEM)
