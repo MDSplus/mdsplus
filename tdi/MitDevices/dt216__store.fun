@@ -38,7 +38,6 @@ public fun dt216__store(as_is _nid, optional _method)
    See if digitizer is done digitizing
   ************************************/
 
-  if (MdsValue('Dt200IsAcq216($)', _board)) {
     _tries=0;
     while(_tries++ < 60) {
       _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
@@ -49,7 +48,6 @@ public fun dt216__store(as_is _nid, optional _method)
       }
     }
     write (*, "It took "//_tries//" seconds to post process");
-  }
 
   _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
   if (_state != "ACQ32:0 ST_STOP") {
@@ -119,23 +117,13 @@ public fun dt216__store(as_is _nid, optional _method)
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
 
-/*
-      write(*, "MdsValue('Dt200ReadChannel("//_board//","//_chan+1//","//_lbound-_first_idx//","//_ubound-_first_idx//","//_inc//",_filter_coefs)')");
-
-*/
       write(*, "Read channel "//_chan+1);
       tcl("init timer");
       _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
       tcl("show timer");
-/*
-      write(*, "Read the data "//size(_data));
-*/
       if (_inc > 1) {
         _slope = IF_ERROR(SLOPE_OF(_clk), 0);
         if (_slope != 0) {
-/*
-          write (*, "building new dim with "//_slope);
-*/
           _start = (begin_of(_clk) != $missing) ? begin_of(_clk)+(_slope*_inc)/2. : $missing;
           _dim = make_dim(make_window(_lbound/_inc, _ubound/_inc, _trigger), make_range( _start,  *, _slope*_inc));
         } else {
@@ -144,10 +132,6 @@ public fun dt216__store(as_is _nid, optional _method)
       } else {
         _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
       }
-/*
-      WRITE(*, "About to write channel "//_chan+1);
-      write (*, size(_data));
-*/
       DevPutSignalNoBounds(_chan_nid,_offset, _coeff, _data, _dim);
       tcl("show timer");
     }

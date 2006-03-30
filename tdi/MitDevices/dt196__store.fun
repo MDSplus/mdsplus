@@ -39,7 +39,6 @@ public fun dt196__store(as_is _nid, optional _method)
    See if digitizer is done digitizing
   ************************************/
 
-  if (MdsValue('Dt200IsAcq216($)', _board)) {
     _tries=0;
     while(_tries++ < 60) {
       _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
@@ -50,7 +49,6 @@ public fun dt196__store(as_is _nid, optional _method)
       }
     }
     write (*, "It took "//_tries//" seconds to post process");
-  }
 
   _state = MdsValue('Dt200WriteMaster($, "getState")', _board);
   if (_state != "ACQ32:0 ST_STOP") {

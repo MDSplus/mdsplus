@@ -21,9 +21,6 @@ public fun Dt200GetVoltCoef(in _board)
   _numstr2 = extract(0, _vidx, _numstr2);
   _end = if_error(execute('float('//_numstr2//')'), 10.0);
   _coef = (_end - _start)/(2^16-1);
-  if (Dt200IsAcq216(_board)) {
-    _coef = _coef * -1.0;
-  }
   return(_coef);
 }
 
