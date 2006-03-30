@@ -246,22 +246,25 @@ end
 ;
 ; Widget based !
 ;
-function CreateNewDBFile, file, dbname
+function CreateNewDBFile,  file, name, mdshost, dbhost, dbname, username, password
   b = widget_base(title="New Database Definition", /column)
   r = widget_base(b, row=6)
   l = widget_label(r, value="MDS Host (blank for local)")
-  mds_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance')
+  mds_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance', value=mdshost)
   l = widget_label(r, value="Database server Name")
-  db_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance')
+  db_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance', value=dbhost)
   l = widget_label(r, value="Database Name")
   if (n_elements(dbname) eq 0) then dbname = ''
-  db_name_w = widget_text(r, xsize=20, value=dbname,/editable,/all_events, event_func='TabAdvance')
+  db_name_w = widget_text(r, xsize=20, /editable,/all_events, event_func='TabAdvance', value=dbname)
   l = widget_label(r, value="Database USERNAME")
-  username_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance')
+  username_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance', value=username)
   l = widget_label(r, value="Database Password")
-  password1_w = widget_text(r, xsize=20, uvalue='', /all_events, event_pro='pwd_event',/editable)
+  pass = ''
+  for i=1, strlen(password) do $
+    pass=pass+'*'
+  password1_w = widget_text(r, xsize=20, uvalue=password, /all_events, event_pro='pwd_event',/editable, value=pass)
   l = widget_label(r, value="Re-ennter Password")
-  password2_w = widget_text(r, xsize=20, uvalue='', /all_events, event_pro='pwd_event', /editable)
+  password2_w = widget_text(r, xsize=20, uvalue=password, /all_events, event_pro='pwd_event', /editable, value=pass)
   r = widget_base(b, /row)
   bu = widget_button(r, value='Ok')
   bu = widget_button(r, value='Reset')
@@ -269,8 +272,8 @@ function CreateNewDBFile, file, dbname
   bu = widget_button(r, value='Cancel')
   ctx = {mds_host_w:mds_host_w, db_host_w:db_host_w, db_name_w:db_name_w, username_w:username_w, $
   		 password1_w:password1_w, password2_w:password2_w, $
-  		 mds_host:'', db_host:'', db_name:'', username:'', $
-  		 password1:'', password2:'', status:0}
+  		 mds_host:mdshost, db_host:dbhost, db_name:dbname, username:username, $
+  		 password1:password, password2:password, status:0}
   ptr = PTR_NEW(ctx)
   widget_control, b, /realize, set_uvalue=ptr
   XManager, 'CreateDBFile', b
@@ -301,6 +304,31 @@ function CreateNewDBFile, file, dbname
   endif else $
     return, 0
 end
+
+function ReadDBInfo, file, name, mdshost, dbhost, dbname, username, password
+  OPENR,lun,file,/get_lun, error = err
+  if (err ne 0) then return, 0
+  catch, err
+  if (err ne 0) then begin
+      catch, /cancel
+      Message, "Error reading database definition file "+file+'.  SetDatabase, name, /reset to redefine', /quiet
+      return, 0
+  endif
+  mdshost=''
+  dbhost=''
+  dbname=''
+  username=''
+  password=''
+  readf, lun, mdshost
+  readf, lun, dbhost
+  readf, lun, dbname
+  readf, lun, username
+  readf, lun, password
+  close, lun
+  free_lun, lun
+  return , 1
+end
+
 ;
 ;  DBInfo
 ;
@@ -319,55 +347,62 @@ end
 ; is created and the procedure recurses.
 ;
 function DBInfo, name, mdshost, dbhost, dbname, username, password, reset=reset, file=file
-        if n_elements(file) eq 0 then begin
-            case !version.os of
-                'Win32'	: envar = 'userprofile'
-                'vms'		: envar = 'sys$login'
-                else		: envar = 'HOME'
-            endcase
-            path = getenv(envar)
-            if (strlen(path) eq 0) then begin
-                message, 'Missing environent variable '+envar+'.  Please define it and try again'
-                return, 0
-            endif
-            file = path+'/'+strtrim(name,2)+'.sybase_login'
-        endif
-	if (keyword_set(reset)) then begin
-		if (CreateNewDBFile(file, name)) then $
-			return, dbinfo(name, mdshost, dbhost, dbname, username, password) $
-	    else $
-	    	return, 0
-	endif
+  using_dfile=0
+  if n_elements(file) eq 0 then begin
+      dfile = ''
+      case !version.os of
+          'Win32'	: begin
+              envar = 'userprofile'
+              dpath = 'C:\program files\mdsplus\'
+          end
+          'vms'		: begin
+              envar = 'sys$login' 
+              dpath = 'sys$manager:
+          end
+          else		: begin
+              envar = 'HOME' 
+              dpath = '/etc/sybase/'
+          end
+      endcase
+      path = getenv(envar)
+      if (strlen(path) ne 0) then begin
+          file=path+'/'+strtrim(name,2)+'.sybase_login'
+          lfile = path+'/'+strlowcase(strtrim(name,2))+'.sybase_login'
+      endif else begin
+          file=''
+          lfile=''
+      endelse
 
-	mdshost=''
-	dbhost = ''
-	dbname = ''
-	username=''
-	password=''
-	OPENR,lun,file,/get_lun, error = err
-	if (err ne 0) then begin
-		if (CreateNewDBFile(file, name)) then begin
-			status = dbinfo(name, mdshost, dbhost, dbname, username, password)
-			return, status
-		endif else $
-	    	return, 0
-	endif
+      dfile = dpath+strlowcase(strtrim(name,2))+'.sybase_login'
+  endif
+  status = 0
+  if (strlen(file) gt 0) then begin
+      status = ReadDBInfo(file,name, mdshost, dbhost, dbname, username, password )
+  end
 
-    catch, err
-    if (err ne 0) then begin
-    	Message, "Error reading database definition file "+file+'.  SetDatabase, name, /reset to redefine'
-    	return, 0
-    endif
-	readf, lun, mdshost
-	readf, lun, dbhost
-	readf, lun, dbname
-	readf, lun, username
-	readf, lun, password
-	close, lun
-	free_lun, lun
-	return, 1
+  if (not status) then $
+    if (strlen(lfile) gt 0) then begin
+      status = ReadDBInfo(lfile,name, mdshost, dbhost, dbname, username, password )
+  endif
+
+ if (not status) then $
+    if (strlen(dfile) gt 0) then begin
+      status = ReadDBInfo(dfile,name, mdshost, dbhost, dbname, username, password )
+      if (status) then begin
+          spawn, 'whoami', username
+          username = username[0]
+      endif
+  endif
+  if (keyword_set(reset) or (not status)) then begin
+      if (CreateNewDBFile(lfile, name, mdshost, dbhost, dbname, username, password)) then $
+        return, dbinfo(name, mdshost, dbhost, dbname, username, password) $
+      else $
+        return, 0
+  endif
+  return, status
+  
 end
-
+    
 pro MDSDbDisconnect
    defsysv,'!MDSDB_SOCKET',exists=old_sock
    if (not old_sock) then begin
