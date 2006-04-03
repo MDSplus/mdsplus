@@ -15,8 +15,18 @@ public fun E1463__store(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
-    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
+    _error = 0;
+    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)), _error = 1);
+    if( _error )
+    {
+	DevLogErr(_nid, "Missing GPIB Address"); 
+      abort();
+    }
+
+
+
     _id = GPIBGetId(_address);
+    write("GPIB ID : ", _id);
     if(_id == 0)
     {
 	DevLogErr(_nid, "Invalid GPIB Address");
@@ -31,58 +41,151 @@ public fun E1463__store(as_is _nid, optional _method)
 	_synch_clock = execute('`_synch_clk');
 	if(_status == 0)
 	{
-		DevLogErr(_nid, "No synch source defined"); 
+		DevLogErr(_nid, "No synch source defined");
+		GPIBClean(_id);  
 		abort();
 	}
-	_synch_time = if_error(data(slope_of(_synch_clock)),(DevLogErr(_nid, "No valid synch source defined"); abort();)); 
+	_synch_time = if_error(data(slope_of(_synch_clock)), _error = 1);
+      if( _error )
+      {
+	  DevLogErr(_nid, "No valid synch source defined"); 
+	  GPIBClean(_id);  
+        abort();
+      } 
     }
     else
-	_synch_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)),(DevLogErr(_nid, "No exposure time defined"); abort();));
+    {
+	_synch_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)), _error = 1);
+      if( _error )
+      {
+      	DevLogErr(_nid, "No exposure time defined"); 
+   	      GPIBClean(_id);  
+		abort();
+	}
+    }
 
-    _trig_mode = if_error(data(DevNodeRef(_nid, _N_TRIG_MODE)),(DevLogErr(_nid, "Missing trigger mode"); abort();));
+    _trig_mode = if_error(data(DevNodeRef(_nid, _N_TRIG_MODE)), _error = 1);
+    if( _error )
+    {
+    	DevLogErr(_nid, "Missing trigger mode"); 
+   	GPIBClean(_id);  
+      abort();
+    }
+
     if(_trig_mode == 'EXTERNAL')
-    	_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)),(DevLogErr(_nid, "Missing external trigger"); abort();));
-    else
+    {
+    	_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _error = 1);
+    	if( _error )
+    	{
+		DevLogErr(_nid, "Missing external trigger"); 
+	   	GPIBClean(_id);  
+		abort();
+	}
+    } else
 	_trig_time = 0;
 
     _pts = GPIBQuery(_id, '#PTS', 5);
     if(_pts == 0)
     {
 	DevLogErr(_nid, "Cannot make GPIB query for PTS");
+	GPIBClean(_id); 
 	abort();
     }
-    _n_scans =  if_error(data(DevNodeRef(_nid, _N_N_SCANS)),(DevLogErr(_nid, "Missing number of scans"); abort();));
+
+    _n_scans =  if_error(data(DevNodeRef(_nid, _N_N_SCANS)), _error = 1);
+    if( _error )
+    {
+    	DevLogErr(_nid, "Missing number of scans"); 
+	GPIBClean(_id); 
+	abort();
+    }
+
     _dim1 = make_dim(make_window(0, _n_scans - 1, _trig_time), make_range(*,*,_synch_time));
     _dim2 = make_dim(make_window(0, _pts - 1, 0),  make_range(*,*,1));
 
     
-    write(*, "Inizio READ BACK GROUND");	
 
-    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));
-    
-    if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-	wait(0.1);
-	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));	
+    write(*, 'Start background');
+    _command = 'BDSINT 1,1,' // trim(adjustl(_pts));    
+/*
+  La prima volta per alcuni oma genera un timeout durante
+  la lettura se si ripete l'operazione il sistema funziona
+*/
+     if_error(_error = !GPIBWrite(_id, _command), _error = 1);
+     if( _error )
+     {
+	 DevLogErr(_nid, "Error in GPIB Write"); 
+  	 GPIBClean(_id); 
+	 abort();
+     } 
+wait(0.3);
+    _line = if_error(GPIBReadShorts(_id, _pts), _error = 1); 
+     if( _error )
+     {
+	 DevLogErr(_nid, "Error in GPIB Write"); 
+  	 GPIBClean(_id); 
+	 abort();
+     } 
+wait(0.3);
 
 /*
-    if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-    _line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();)); 
-*/
-    write(*, "Fine READ BACK GROUND");	
+  Alcuni OMA richiedono un tempo di attesa tra la richiesta
+  e la lettura dei dati
+*/ 
+     if_error(_error = !GPIBWrite(_id, _command), _error = 1);
+     if( _error )
+     {
+	 DevLogErr(_nid, "Error in GPIB Write"); 
+  	 GPIBClean(_id); 
+	 abort();
+     } 
+
+
+wait(0.3);
+    _line = if_error(GPIBReadShorts(_id, _pts), _error = 1); 
+     if( _error )
+     {
+	 DevLogErr(_nid, "Error in GPIB Read"); 
+  	 GPIBClean(_id); 
+	 abort();
+     } 
+
+    write(*, 'End background');
 
     _back_nid = DevHead(_nid) + _N_BACK;
     _signal = compile('build_signal((`_line), $VALUE, (`_dim2))');
     TreeShr->TreePutRecord(val(_back_nid),xd(_signal),val(0));
     _lines = [];
+
     write(*, 'Start readout');
     for(_i = 1; _i < (_n_scans + 1); _i++)
     {
 	_command = 'BDSINT ' // trim(adjustl(_i)) // ',1,' // trim(adjustl(_pts));
-   	if_error(GPIBWrite(_id, _command),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-wait(0.1);
-   	_line = if_error(GPIBReadShorts(_id, _pts), (DevLogErr(_nid, "Error in GPIB Read"); abort();));
+   	if_error(GPIBWrite(_id, _command), _error = 1); 
+      if( _error )
+      {
+	 DevLogErr(_nid, "Error in GPIB Write"); 
+  	 GPIBClean(_id); 
+	 abort();
+      } 
+
+wait(0.3);
+
+   	_line = if_error(GPIBReadShorts(_id, _pts), _error = 1);
+      if( _error )
+      {
+	 DevLogErr(_nid, "Error in GPIB Read"); 
+  	 GPIBClean(_id); 
+	 abort();
+      } 
+
+
 	_lines = [_lines, _line];
     }
+
+    GPIBClean(_id); 
+    
+
     write(*, 'End readout');
     _data_nid = DevHead(_nid) + _N_DATA;
     _signal = compile('build_signal((`_lines), $VALUE, (`_dim2), (`_dim1))');

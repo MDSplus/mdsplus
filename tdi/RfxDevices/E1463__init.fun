@@ -15,8 +15,14 @@ public fun E1463__init(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
+   _error = 0;
 
-    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
+    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "Missing GPIB Address"); 
+	abort();
+    }
 
     _command1 = 'MSK 3; NS; DT ';
     _head_temp = data(DevNodeRef(_nid, _N_HEAD_TEMP));
@@ -27,8 +33,16 @@ public fun E1463__init(as_is _nid, optional _method)
 	abort();
     }
     _command1 = _command1 // trim(adjustl(_head_temp)) // '; FREQ 50';
-write(*, _command1);
-    _scan_mask = if_error(data(DevNodeRef(_nid, _N_SCAN_MASK)),(DevLogErr(_nid, "The scan mask is missing"); abort();));
+
+    _scan_mask = if_error(data(DevNodeRef(_nid, _N_SCAN_MASK)), _error = 1);
+    if(_error)
+    {
+	DevLogErr(_nid, "The scan mask is missing"); 
+	abort();
+    }
+
+
+
     _size = size(_scan_mask);
     _scans = _size / 3;
     _command2 = 'SS;';
@@ -76,22 +90,61 @@ write(*, _command1);
 	_command2 = _command2 // 'FA ' //trim(adjustl(1024 - _curr + 1)) // ';';
 
     _command2 = _command2 // 'ES';
-write(*, _command2);
-    _exp_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)),(DevLogErr(_nid, "Exposure time is missing"); abort();));
+    _exp_time = if_error(data(DevNodeRef(_nid, _N_EXP_TIME)), _error = 1);
+    if( _error )
+    {
+	DevLogErr(_nid, "Exposure time is missing"); 
+	abort();
+    }
     _command3 = 'MSK 0;ET ' // trim(adjustl(float(_exp_time)));
-write(*, _command3);
 
-    if_error(GPIBInit(), (DevLogErr(_nid, "Cannot initialize GPIB"); abort();));    
+    if_error(GPIBInit(), _error = 1);
+    if( _error )
+    {
+	DevLogErr(_nid, "Cannot initialize GPIB"); 
+	abort();
+    }    
     _id = GPIBGetId(_address);
+
+    write("GPIB ID : ", _id);
     if(_id == 0)
     {
 	DevLogErr(_nid, "Cannot initialize GPIB"); 
 	abort();
     }
-    if_error(GPIBWriteW(_id, _command1), (DevLogErr(_nid, "Error in GPIB communication"); abort();));    
-    if_error(GPIBWriteW(_id, _command2), (DevLogErr(_nid, "Error in GPIB communication"); abort();));    
-    if_error(GPIBWrite(_id, _command3), (DevLogErr(_nid, "Error in GPIB communication"); abort();));    
-    
 
+ write(*, _command1);
+    if_error(_error = !GPIBWriteW(_id, _command1), _error = 1);
+    if(_error) 
+    {
+       	GPIBClean(_id);
+		DevLogErr(_nid, "Error in GPIB communication"); 
+      	abort();
+   }
+
+wait(1);
+write(*, _command2);
+
+    if_error(_error = !GPIBWriteW(_id, _command2), _error = 1);
+    if(_error) 
+    {
+      	GPIBClean(_id);
+		DevLogErr(_nid, "Error in GPIB communication"); 
+      	abort();
+    }
+
+wait(1);
+write(*, _command3);
+ 
+    if_error(_error = !GPIBWrite(_id, _command3), _error = 1);
+    if(_error) 
+    {
+      	GPIBClean(_id);
+		DevLogErr(_nid, "Error in GPIB communication"); 
+      	abort();
+    }
+
+    GPIBClean(_id);
+        
     return (1);
 }
