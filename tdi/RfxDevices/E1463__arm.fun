@@ -15,11 +15,24 @@ public fun E1463__arm(as_is _nid, optional _method)
     private _N_DATA = 12;
     private _N_BACK = 13;
 
-    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)),(DevLogErr(_nid, "Missing GPIB Address"); abort();));
+    _status = 0;	
+    _address = if_error(data(DevNodeRef(_nid, _N_ADDRESS)), _status = 1);
+    if( _status )
+    {	
+	DevLogErr(_nid, "Missing GPIB Address"); 
+	abort();
+    }
+
     _command1 = 'MSK 3;';
     DevNodeCvt(_nid, _N_SYNCH_MODE, ['NORMAL', 'LINE', 'EXTERNAL'], ['NS', 'LS', 'XS'], _synch_mode = 'LS');
     _command1 = _command1 // _synch_mode;
-    _n_scans = if_error(data(DevNodeRef(_nid, _N_N_SCANS)),(DevLogErr(_nid, "The number of scan lines is not defined"); abort();));
+    _n_scans = if_error(data(DevNodeRef(_nid, _N_N_SCANS)), _status = 1);
+    if( _status )
+    {	
+	DevLogErr(_nid, "The number of scan lines is not defined"); 
+	abort();
+    }
+
     _command1 = _command1 // ';J ' // trim(adjustl(_n_scans));
     DevNodeCvt(_nid, _N_FRAME_1, ['NORMAL', 'BACKGROUND'], ['2', '1'], _mem_def = '1');
     _command1 = _command1 // ';MEM ' // _mem_def;
@@ -29,6 +42,7 @@ public fun E1463__arm(as_is _nid, optional _method)
     write(*, _command1);
     write(*, _command2);
     _id = GPIBGetId(_address);
+    write("GPIB ID : ", _id);
     if(_id == 0)
     {
 	DevLogErr(_nid, "Cannot initialize GPIB");
@@ -39,13 +53,34 @@ public fun E1463__arm(as_is _nid, optional _method)
     {
 	_command3 = 'MSK 3;MEM 1;J 1;DA 8; RUN';
 	write(*, _command3);
-    	if_error(GPIBWriteW(_id, _command3),(DevLogErr(_nid, "Error in GPIB Write"); abort();));
+    	if_error(_error = !GPIBWriteW(_id, _command3), _status = 1);
+      if( _status )
+      {	
+	   DevLogErr(_nid, "Error in GPIB Write"); 
+   	   GPIBClean(_id);
+	   abort();
+      }
 	wait(1); 
     }
 
-    if_error(GPIBWriteW(_id, _command1),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
-    if_error(GPIBWrite(_id, _command2),(DevLogErr(_nid, "Error in GPIB Write"); abort();)); 
+    if_error(_error = !GPIBWriteW(_id, _command1), _status = 1);
+    if( _status )
+    {	
+	   DevLogErr(_nid, "Error in GPIB Write"); 
+   	   GPIBClean(_id);
+	   abort();
+    }
 
+    if_error(_error = !GPIBWrite(_id, _command2), _status = 1);
+    if( _status )
+    {	
+	   DevLogErr(_nid, "Error in GPIB Write"); 
+   	   GPIBClean(_id);
+	   abort();
+    }
+
+
+    GPIBClean(_id);
 
     return (1);
 }
