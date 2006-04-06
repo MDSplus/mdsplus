@@ -27,6 +27,7 @@ public class DeviceSetup
 
     static Hashtable activeNidHash = new Hashtable();
     Vector deviceCloseListenerV = new Vector();
+    Vector deviceUpdateListenerV = new Vector();
     boolean readOnly = false;
 
     static Vector openDevicesV = new Vector();
@@ -353,8 +354,14 @@ public class DeviceSetup
         }
         catch (Exception exc)
         {}
-    }
+        for (int i = 0; i < deviceUpdateListenerV.size(); i++)
+        {
+            if(isChanged())
+                ( (DeviceUpdateListener) deviceUpdateListenerV.elementAt(i)).
+                    deviceUpdated();
+        }
 
+    }
     public void reset()
     {
         for (int i = 0; i < num_components; i++)
@@ -559,6 +566,10 @@ public class DeviceSetup
     void addDeviceCloseListener(DeviceCloseListener listener)
     {
         deviceCloseListenerV.addElement(listener);
+    }
+    void addDeviceUpdateListener(DeviceUpdateListener listener)
+    {
+        deviceUpdateListenerV.addElement(listener);
     }
 
     public static void main(String args[])

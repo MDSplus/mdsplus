@@ -26,7 +26,7 @@ Le tabelle di configurazione rfxConfigHash e rfxConfigOnHash sono aggiornate in:
 
  Quando viene caricata una configurazione salvata si esegue il confronto tra la configurazione salvata
  e l'experiment model attuale.
-
+La configurazione viene salvata solamente alla partenza e quando viene modificato un device di config
 
 */
 public class ParameterSetting
@@ -131,7 +131,7 @@ public class ParameterSetting
             }
         });
         fileMenu.add(printItem);
-        if (isRt)
+        if(!isRt)
         {
             JMenuItem loadItem = new JMenuItem("Load pulse");
             loadItem.addActionListener(new ActionListener()
@@ -142,9 +142,6 @@ public class ParameterSetting
                 }
             });
             fileMenu.add(loadItem);
-        }
-        else
-        {
             JMenuItem saveItem = new JMenuItem("Save Configuration");
             saveItem.addActionListener(new ActionListener()
             {
@@ -154,7 +151,7 @@ public class ParameterSetting
                 }
             });
             fileMenu.add(saveItem);
-            JMenuItem loadItem = new JMenuItem("Load Configuration");
+            loadItem = new JMenuItem("Load Configuration");
             loadItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -202,11 +199,11 @@ public class ParameterSetting
                     device.addButton(printB);
                     device.pack();
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(0, isChanged);
+                            handleDeviceClosed(0, true);
                         }
                     });
                 }
@@ -241,11 +238,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(1, isChanged);
+                            handleDeviceClosed(1, true);
                         }
                     });
                 }
@@ -274,11 +271,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(2, isChanged);
+                            handleDeviceClosed(2, true);
                         }
                     });
                 }
@@ -307,11 +304,11 @@ public class ParameterSetting
                     PrintButton printB = new PrintButton(3);
                     device.addButton(printB);
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(3, isChanged);
+                            handleDeviceClosed(3, true);
                         }
                     });
                 }
@@ -341,11 +338,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(4, isChanged);
+                            handleDeviceClosed(4, true);
                         }
                     });
                 }
@@ -378,11 +375,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(5, isChanged);
+                            handleDeviceClosed(5, true);
                         }
                     });
                 }
@@ -411,11 +408,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(6, isChanged);
+                            handleDeviceClosed(6, true);
                         }
                     });
                 }
@@ -444,11 +441,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(7, isChanged);
+                            handleDeviceClosed(7, true);
                         }
                     });
                 }
@@ -477,14 +474,14 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(8, isChanged);
+                            handleDeviceClosed(8, true);
                         }
                     });
-                }
+               }
                 else
                     device.setVisible(true);
                 if (states[8] == UNCHECKED)
@@ -510,11 +507,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(9, isChanged);
+                            handleDeviceClosed(9, true);
                         }
                     });
                 }
@@ -543,11 +540,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(10, isChanged);
+                            handleDeviceClosed(10, true);
                         }
                     });
                 }
@@ -581,11 +578,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(11, isChanged);
+                            handleDeviceClosed(11, true);
                         }
                     });
                 }
@@ -619,11 +616,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(12, isChanged);
+                            handleDeviceClosed(12, true);
                         }
                     });
                 }
@@ -667,11 +664,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(13, isChanged);
+                            handleDeviceClosed(13, true);
                         }
                     });
                 }
@@ -699,11 +696,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(14, isChanged);
+                            handleDeviceClosed(14, true);
                         }
                     });
                 }
@@ -731,11 +728,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(15, isChanged);
+                            handleDeviceClosed(15, true);
                         }
                     });
                 }
@@ -767,11 +764,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(16, isChanged);
+                            handleDeviceClosed(16, true);
                         }
                     });
                 }
@@ -799,11 +796,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(17, isChanged);
+                            handleDeviceClosed(17, true);
                         }
                     });
                 }
@@ -831,11 +828,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(18, isChanged);
+                            handleDeviceClosed(18, true);
                         }
                     });
                 }
@@ -863,11 +860,11 @@ public class ParameterSetting
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    device.addDeviceUpdateListener(new DeviceUpdateListener()
                     {
-                        public void deviceClosed(boolean isChanged)
+                        public void deviceUpdated()
                         {
-                            handleDeviceClosed(19, isChanged);
+                            handleDeviceClosed(19, true);
                         }
                     });
                 }
@@ -1267,6 +1264,27 @@ public class ParameterSetting
         }
     }
 
+
+    void signalConfigWarning(String message)
+    {
+        if (rtDos != null)
+        {
+            try
+            {
+                rtDos.writeInt(-1);
+                rtDos.writeUTF(message);
+            }
+            catch (Exception exc)
+            {
+                rtDos = null;
+                handleNotRt();
+            }
+        }
+
+
+    }
+
+
     void handleNotRt()
     {
         try
@@ -1322,17 +1340,29 @@ public class ParameterSetting
                         {
                             //The index of the changed forms are passed
                             currIdx = dis.readInt();
-                            System.out.println("RECEIVED UNCHECK " + currIdx);
-
-                            states[currIdx] = UNCHECKED;
-                            SwingUtilities.invokeAndWait(new Runnable()
+                            if(currIdx >= 0)
                             {
-                                public void run()
+                                System.out.println("RECEIVED UNCHECK " +
+                                    currIdx);
+
+                                states[currIdx] = UNCHECKED;
+                                SwingUtilities.invokeAndWait(new Runnable()
                                 {
-                                    System.out.println("ADESSO METTO ROSSO");
-                                    buttons[currIdx].setForeground(Color.red);
-                                }
-                            });
+                                    public void run()
+                                    {
+                                        System.out.println("ADESSO METTO ROSSO");
+                                        buttons[currIdx].setForeground(Color.
+                                            red);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                String message = dis.readUTF();
+                                JOptionPane.showMessageDialog(ParameterSetting.this, message,
+                                                               "Configuration error",
+                                                               JOptionPane.WARNING_MESSAGE);
+                            }
                         }
                     }
                     catch (Exception exc)
@@ -1399,8 +1429,9 @@ public class ParameterSetting
                                                 if (allChecked())
                                                 {
                                                     checkedWd.dispose();
-                                                    proceedeConfig();
-                                                    saveConfig();
+                                                    //proceedeConfig();
+                                                    //saveConfig();
+                                                    proceedeLimits();
                                                 }
                                             }
                                         });
@@ -1409,8 +1440,9 @@ public class ParameterSetting
                                     }
                                     else
                                     {
-                                        proceedeConfig();
-                                        saveConfig();
+                                        //proceedeConfig();
+                                        //saveConfig();
+                                        proceedeLimits();
                                     }
                                 }
                                 else
@@ -1518,6 +1550,7 @@ public class ParameterSetting
 
     void setReadOnly(boolean readOnly)
     {
+        System.out.println("SET READ ONLY ");
         this.readOnly = readOnly;
         for (int i = 0; i < nids.length; i++)
         {
@@ -1950,10 +1983,10 @@ public class ParameterSetting
                 float maxCurr = 0;
                 for (int i = 0; i < pmWave.length; i++)
                 {
-                    if (maxCurr < pmWave[i])
+                    if (maxCurr > pmWave[i])
                         maxCurr = pmWave[i];
                 }
-                if (maxCurr > maxTCAC)
+                if (Math.abs(maxCurr) > Math.abs(maxTCAC))
                 {
                     return "Corrente Inverter toroidale sopra i limiti";
                 }
@@ -1977,14 +2010,17 @@ public class ParameterSetting
             LoadPulse loadP = new LoadPulse();
             loadP.load("rfx", shot, -1);
             rfx.open();
-	    Convert conv = new Convert("\\mhd_ac::control.parameters:par236_val", "normalised_gain_0.01.txt");
-	    conv.convertMatrix();
- 	    conv = new Convert("\\mhd_bc::control.parameters:par236_val", "normalised_gain_0.01.txt");
-	    conv.convertMatrix();
-        String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
-	    if(configMsg != null)
-	    	JOptionPane.showMessageDialog(this, configMsg, "Configuration error", JOptionPane.WARNING_MESSAGE);
-        }
+            Convert conv = new Convert(
+                "\\mhd_ac::control.parameters:par236_val",
+                "normalised_gain_0.01.txt");
+            conv.convertMatrix();
+            conv = new Convert("\\mhd_bc::control.parameters:par236_val",
+                               "normalised_gain_0.01.txt");
+            conv.convertMatrix();
+            String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
+            if (configMsg != null)
+                signalConfigWarning(configMsg);
+         }
         catch (Exception exc)
         {
             JOptionPane.showMessageDialog(this,
