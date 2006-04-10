@@ -6,7 +6,7 @@ public fun RfxTempPolTor(in _sonda, in _ora)
 	_secondi  = compile(element(2, ':',_ora));
 
     _t = ( _ore * 60 * 60 + _minuti * 60 + _secondi ) * 1000qu; 
-    _pol = [22.5, 67.5, 112.5, 157.5, 202.5, 277.5, 292.5, 337.5];
+    _pol = [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5];
 
 	_mat = [];
 	_tor = [];
