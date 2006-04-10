@@ -11,13 +11,14 @@ public fun RfxTempPolTor(in _sonda, in _ora)
 	_mat = [];
 	_tor = [];
 
-	for(_j = 0; _j <= 8; _j++)
+	for(_j = 1; _j <= 8; _j++)
 	{
  	    _row = [];
 			
 		_tagPre = TEXT(_j, 1);
-
-
+/*
+		    write(*, "--------------", _pol[_j - 1]);
+*/
 		for( _i = 1; _i <= 72; _i++)
 		{
 	
@@ -26,6 +27,9 @@ public fun RfxTempPolTor(in _sonda, in _ora)
 			else
 				_tag = "\\"//_sonda//TEXT(_i, 2)//_tagPre;
 		
+/*		
+		    write(*, _tag);
+*/		
 			_error = 0;
 		    _time =	if_error( dim_of(build_path(_tag)), _error = 1);
 			
