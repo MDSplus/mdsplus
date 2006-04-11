@@ -113,7 +113,6 @@ public class DeviceSetup
         setTitle(deviceTitle);
 //        getContentPane().setLayout(new BorderLayout());
         DeviceSetupBeanInfo.beanDeviceType = deviceType;
-
     }
 
     public DeviceSetup()
@@ -137,6 +136,12 @@ public class DeviceSetup
         super(f);
         this.readOnly = readOnly;
         setTitle(deviceTitle);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e)
+            {
+                cancel();
+            }
+        });
     }
 
     public void configure(RemoteTree subtree, int baseNid)
