@@ -146,7 +146,7 @@ public class DeviceDispatch extends DeviceComponent
     }
 
 
-
+    public void apply(int currBaseNid){}
 
     class DispatchComboEditor implements ComboBoxEditor
     {

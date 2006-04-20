@@ -367,6 +367,40 @@ public class DeviceSetup
         }
 
     }
+    public void apply(int currBaseNid)
+    {
+        NidData oldNid = null;
+        try
+        {
+            oldNid = subtree.getDefault(Tree.context);
+            subtree.setDefault(new NidData(currBaseNid), Tree.context);
+        }
+        catch (Exception exc)
+        {}
+
+        for (int i = 0; i < num_components; i++)
+        {
+            try
+            {
+                ( (DeviceComponent) device_components.elementAt(i)).apply(currBaseNid);
+            }
+            catch (Exception exc)
+            {
+                JOptionPane.showMessageDialog(this, exc.toString(),
+                                              "Error writing data at offset nid " +
+                                              ( (DeviceComponent)
+                                               device_components.elementAt(i)).
+                                              getOffsetNid(),
+                                              JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        try
+        {
+            subtree.setDefault(oldNid, Tree.context);
+        }
+        catch (Exception exc)
+        {}
+    }
     public void reset()
     {
         for (int i = 0; i < num_components; i++)

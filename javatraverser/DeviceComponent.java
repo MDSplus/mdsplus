@@ -122,6 +122,40 @@ public abstract class DeviceComponent extends JPanel
         }
     }
 
+    public void apply(int currBaseNid) throws Exception
+    {
+        NidData currNidData = new NidData(currBaseNid+offsetNid);
+        if(!enabled) return;
+        if(mode == DATA)
+        {
+            curr_data = getData();
+            if(editable)// && isDataChanged())
+            {
+                try {
+                subtree.putData(currNidData, curr_data, Tree.context);
+                } catch(Exception e)
+                {
+                    System.out.println("Error writing device data: " + e);
+                    System.out.println(curr_data);
+                    throw e;
+                }
+            }
+        }
+        if(mode != DISPATCH && supportsState())
+        {
+            curr_on = getState();
+            try {
+                subtree.setOn(currNidData, curr_on, Tree.context);
+            }catch(Exception e)
+            {
+                System.out.println("Error writing device state: " + e);
+            }
+        }
+    }
+
+
+
+
     protected void redisplay()
     {
         Container curr_container;
