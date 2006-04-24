@@ -32,6 +32,7 @@
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#include <config.h>
 #ifdef SYBASE
 #ifdef __VMS
 #include <dvidef.h>	/*for line width*/
@@ -79,7 +80,7 @@ STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fbfffff;
 STATIC_CONSTANT unsigned long long nan_d_bits = 0xffffffff7ff7ffff;
 */
 STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fc00000;
-STATIC_CONSTANT unsigned long long nan_d_bits = 0x7ff8000000000000;
+STATIC_CONSTANT unsigned _int64 nan_d_bits = 0x7ff8000000000000;
 
 static double d_null = 0;
 static float  f_null = 0;
