@@ -458,7 +458,7 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
   int i;
   int status;
   int phase;
-  int first_g,last_g,first_c,last_c;
+  int first_g,last_g=0,first_c,last_c;
   DESCRIPTOR_LONG(phase_d,0);
   STATIC_CONSTANT DESCRIPTOR(phase_lookup,"PHASE_NUMBER_LOOKUP($)");
   struct descriptor phasenam_d = {0, DTYPE_T, CLASS_S, 0};
