@@ -272,30 +272,20 @@ object
                     XmNy = 383;
                     };
                 };
-            user_defined procedure XmdsCreateExprField 
-                {
-                arguments
-                    {
-                    XmNx = 306;
-                    XmNy = 107;
-                    XmNcolumns = 20;
-                    XmNmarginHeight = 1;
-                    XmNmarginWidth = 1;
-                    XmdsNnid = DEVICE_NID;
-                    XmdsNnidOffset = JOERGER_TR16$N_POST_TRIG;
-                    XmNheight = 28;
-                    };
-                };
-            XmLabelGadget 
+            user_defined procedure XmdsCreateNidOptionMenu
                 {
                 arguments
                     {
                     XmNx = 269;
-                    XmNy = 108;
+                    XmNy = 103;
                     XmNlabelString = 
                     compound_string("PTS:");
-                    XmNheight = 22;
-                    };
+
+                    XmdsNlabelStrings = post_trigs;
+                    XmdsNvalueStrings = post_trigs;
+                    XmdsNnid = DEVICE_NID;
+                    XmdsNnidOffset = JOERGER_TR16$N_POST_TRIG;
+                     };
                 };
             XmScrolledWindow 
                 {
@@ -666,13 +656,28 @@ value
 
 value
     gains: string_table(
-        compound_string(" 1"),
-        
-        compound_string(" 2"),
-        
-        compound_string(" 4"),
-        
+        compound_string(" 1"),        
+        compound_string(" 2"),        
+        compound_string(" 4"),        
         compound_string(" 8"));
+    post_trigs: string_table(
+        compound_string(""),        
+        compound_string("     32"),        
+        compound_string("     64"),        
+        compound_string("    128"),        
+        compound_string("    256"),        
+        compound_string("    512"),        
+        compound_string("   1024"),        
+        compound_string("   2048"),        
+        compound_string("   4096"),        
+        compound_string("   8192"),        
+        compound_string("  16384"),        
+        compound_string("  32768"),        
+        compound_string("  65536"),        
+        compound_string(" 131072"),        
+        compound_string(" 262144"),        
+        compound_string(" 524288"),        
+        compound_string("1048576"));
 
 end module;
 
