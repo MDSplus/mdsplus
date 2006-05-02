@@ -64,7 +64,7 @@ int dimension;
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
-    for(current = 0;(table[current].value != value)&&(current < dimension);current++)
+    for(current = 0;(current < dimension) && (table[current].value != value);current++)
 	;
     if (current == dimension) return LibKEYNOTFOU;
     else *code_ptr = table[current].code;
