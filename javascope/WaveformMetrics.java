@@ -24,7 +24,7 @@ public class WaveformMetrics
 
     int horizontal_offset, vertical_offset;
 
-    static IndexColorModel cm = null;
+//    static IndexColorModel cm = null;
     static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100;
 
     public WaveformMetrics(double _xmax, double _xmin,
@@ -239,37 +239,36 @@ public class WaveformMetrics
         return new IndexColorModel(8, 256, rgb, rgb, rgb);
     }
 
-    private void drawRectagle(Graphics g, int x, int y, int w, int h, int cIdx)
+    private void drawRectagle(Graphics g, IndexColorModel cm, int x, int y, int w, int h, int cIdx)
     {
         g.setColor(new Color(cm.getRed(cIdx), cm.getGreen(cIdx),
                              cm.getBlue(cIdx), cm.getAlpha(cIdx)));
         g.fillRect(x, y, w, h);
     }
 
-    public void ToImage(Signal s, Image img, Dimension d)
+    public void ToImage(Signal s, Image img, Dimension d, ColorMap colorMap)
     {
         int i, j;
         int xSt, xEt, ySt, yEt;
         Graphics2D g2 = (Graphics2D) img.getGraphics();
 
-        if (cm == null)
-            cm = getColorModel();
-
+        IndexColorModel cm = colorMap.getIndexColorModel(8);
         ComputeFactors(d);
 
         g2.setColor(Color.white);
         g2.fillRect(0, 0, d.width - 1, d.height - 1);
 
-        for (i = 0; i < s.time.length  && s.time[i] < xmin; i++)
+        for (i = 0; i < s.x2D.length  && s.x2D[i] < xmin; i++)
             ;
         xSt = i;
-        for (; i < s.time.length  && s.time[i] < xmax; i++)
+        for (i = 0 ; i < s.x2D.length  && s.x2D[i] < xmax; i++)
             ;
         xEt = i;
-        for (i = 0; i < s.x_data.length  && s.x_data[i] < ymin; i++)
+
+        for (i = 0; i < s.y2D.length  && s.y2D[i] < ymin; i++)
             ;
         ySt = i;
-        for (; i < s.x_data.length  && s.x_data[i] < ymax; i++)
+        for (i = 0 ; i < s.y2D.length  && s.y2D[i] < ymax; i++);
             ;
         yEt = i;
 
@@ -286,78 +285,65 @@ public class WaveformMetrics
 
         try
         {
-            yPix1 = (YPixel(s.x_data[ySt + 1]) + YPixel(s.x_data[ySt])) / 2;
-            yPix1 = 2 * YPixel(s.x_data[ySt]) - yPix1;
+            yPix1 = (YPixel(s.y2D[ySt + 1]) + YPixel(s.y2D[ySt])) / 2;
+            yPix1 = 2 * YPixel(s.y2D[ySt]) -  yPix1;
+            float currMax = s.z2D_min, currMin = s.z2D_max;
 
-            for (int y = ySt; y < yEt - 1; y++)
+            for (int y = ySt; y < yEt; y++)
+            {
+                p = y * s.x2D.length + xSt;
+                for (int x = xSt; x < xEt && p < s.z2D.length; x++)
+                {
+                    if( s.z2D[p] > currMax ) currMax = s.z2D[p];
+                    if( s.z2D[p] < currMin ) currMin = s.z2D[p];
+                    p++;
+                }
+            }
+
+            for (int y = ySt; y < yEt; y++)
             {
                 yPix0 = yPix1;
-                yPix1 = (YPixel(s.x_data[y + 1]) + YPixel(s.x_data[y])) / 2;
-                h = yPix0 - yPix1;
+                try
+                {
+                    yPix1 = (YPixel(s.y2D[y + 1]) + YPixel(s.y2D[y])) / 2;
+                    h = Math.abs(yPix0 - yPix1) + 2;
+                }
+                catch(Exception e)
+                {
+                    yPix1 = 2 * YPixel(s.y2D[yEt - 1]) - yPix1;
+                    h = Math.abs(yPix0 - yPix1) + 2;
+                }
 
-                p = y * s.time.length + xSt;
+                p = y * s.x2D.length + xSt;
 
-                xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt + 1])) / 2;
-                xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
+                xPix1 = (XPixel(s.x2D[xSt]) + XPixel(s.x2D[xSt + 1])) / 2;
+                xPix1 = 2 * XPixel(s.x2D[xSt]) - xPix1;
 
-                for (int x = xSt; x < xEt - 1 && p < s.data.length; x++)
+                for (int x = xSt; x < xEt && p < s.z2D.length; x++)
                 {
                     xPix0 = xPix1;
-                    xPix1 = (XPixel(s.time[x + 1]) + XPixel(s.time[x])) / 2;
-                    w = xPix1 - xPix0;
+                    try
+                    {
+                        xPix1 = (XPixel(s.x2D[x + 1]) + XPixel(s.x2D[x])) / 2;
+                        w = Math.abs(xPix1 - xPix0);
+                    }
+                    catch(Exception e)
+                    {
+                        w = 2 * (XPixel(s.x2D[xEt - 1]) - xPix1);
+                    }
 
-                    pix = (int) (255 * (s.data[p++] - s.data_min) /
-                                 (s.data_max - s.data_min));
+/*
+                    pix = (int) (255 * (s.z2D[p++] - s.z2D_min) /
+                                       (s.z2D_max - s.z2D_min));
+*/
+                    pix = (int) (255 * (s.z2D[p++] - currMin) /
+                                       (currMax - currMin));
 
                     pix = (pix > 255) ? 255 : pix;
                     pix = (pix < 0) ? 0 : pix;
 
-                    drawRectagle(g2, xPix0, yPix1, w, h, pix);
+                    drawRectagle(g2, cm,  xPix0, yPix1, w, h, pix);
                 }
-
-                if (p < s.data.length)
-                {
-                    xPix0 = xPix1;
-                    w = 2 * (XPixel(s.time[xEt - 1]) - xPix1);
-
-                    pix = (int) (255 * (s.data[p] - s.data_min) /
-                                 (s.data_max - s.data_min));
-
-                    pix = (pix > 255) ? 255 : pix;
-                    pix = (pix < 0) ? 0 : pix;
-
-                    drawRectagle(g2, xPix0, yPix1, w, h, pix);
-                }
-                else
-                    break;
-            }
-
-            yPix0 = yPix1;
-
-            yPix1 = 2 * YPixel(s.x_data[yEt - 1]) - yPix1;
-            h = yPix0 - yPix1;
-
-            xPix1 = (XPixel(s.time[xSt]) + XPixel(s.time[xSt + 1])) / 2;
-            xPix1 = 2 * XPixel(s.time[xSt]) - xPix1;
-
-            for (int x = xSt; x < xEt - 1 && p < s.data.length; x++)
-            {
-                xPix0 = xPix1;
-                xPix1 = (XPixel(s.time[x + 1]) + XPixel(s.time[x])) / 2;
-                w = xPix1 - xPix0;
-
-                pix = (int) (255 * (s.data[p++] - s.data_min) /
-                             (s.data_max - s.data_min));
-                drawRectagle(g2, xPix0, yPix1, w, h, pix);
-            }
-
-            if (p < s.data.length)
-            {
-                xPix0 = xPix1;
-                w = 2 * (XPixel(s.time[xEt - 1]) - xPix1);
-                pix = (int) (255 * (s.data[p] - s.data_min) /
-                             (s.data_max - s.data_min));
-                drawRectagle(g2, xPix0, yPix1, w, h, pix);
             }
         }
         catch(Exception exc) {};

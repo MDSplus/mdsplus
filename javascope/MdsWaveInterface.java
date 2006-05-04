@@ -697,7 +697,7 @@ Fix bug : shot expression must be always evaluated.
             markers_step[i] = 1;
             colors_idx[i] = i % Waveform.colors.length;
             interpolates[i] = true;
-            mode2D[i] = Signal.MODE_YTIME;
+            mode2D[i] = Signal.MODE_XZ;
             mode1D[i] = Signal.MODE_LINE;
         }
     }
@@ -800,10 +800,12 @@ Fix bug : shot expression must be always evaluated.
                                     "" + horizontal_flip);
             WaveInterface.WriteLine(out, prompt + "vertical_flip: ",
                                     "" + vertical_flip);
-            WaveInterface.WriteLine(out, prompt + "palette: ",
-                                    "" + colorMap.name);
 
         }
+
+        if(colorMap != null)
+            WaveInterface.WriteLine(out, prompt + "palette: ",
+                                "" + colorMap.name);
 
         WaveInterface.WriteLine(out, prompt + "experiment: ", cexperiment);
         WaveInterface.WriteLine(out, prompt + "event: ", cin_upd_event);
@@ -914,12 +916,14 @@ Fix bug : shot expression must be always evaluated.
     {
         switch (code)
         {
-            case Signal.MODE_YTIME:
-                return "y & time";
-            case Signal.MODE_XY:
-                return "x & y";
+            case Signal.MODE_XZ:
+                return "xz(y)";
+            case Signal.MODE_YZ:
+                return "yz(x)";
+            /*
             case Signal.MODE_YX:
                 return "y & x";
+            */
             case Signal.MODE_IMAGE:
                 return "Image";
         }
@@ -928,12 +932,14 @@ Fix bug : shot expression must be always evaluated.
 
     public int mode2DStringToCode(String mode)
     {
-        if (mode.equals("y & time"))
-            return Signal.MODE_YTIME;
-        if (mode.equals("x & y"))
-            return Signal.MODE_XY;
-        if (mode.equals("y & x"))
+        if (mode.equals("xz(y)"))
+            return Signal.MODE_XZ;
+        if (mode.equals("yz(x)"))
+            return Signal.MODE_YZ;
+        /*
+        if (mode.equals("yz(x)"))
             return Signal.MODE_YX;
+        */
         if (mode.equals("Image"))
             return Signal.MODE_IMAGE;
         return 0;

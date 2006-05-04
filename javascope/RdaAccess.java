@@ -13,15 +13,15 @@ public class RdaAccess implements DataAccess
     JetDataProvider jp = null;
     String encoded_credentials;
     int    login_status = DataProvider.LOGIN_CANCEL;
-    
-    class SignalInfo 
+
+    class SignalInfo
     {
         String signal;
         int    mode;
         int    type;
         float  value = Float.NaN;
     }
-    
+
     public static void main(String args[])
     {
         RdaAccess access = new RdaAccess();
@@ -31,28 +31,28 @@ public class RdaAccess implements DataAccess
         {
         float x [] = access.getX(url);
         float y [] = access.getY(url);
- 
+
         for(int i = 0; i < x.length; i++)
             System.out.println(x[i] + "  " +y[i]);
-           
+
         System.out.println("Num. points: "+y.length);
         } catch (Exception e){}
     }
-    
+
     public boolean supports(String url)
     {
         StringTokenizer st = new StringTokenizer(url, ":");
         if(st.countTokens() < 2) return false;
         return st.nextToken().equals("rda");
     }
-    
+
     public void setProvider(String url) throws IOException
     {
         String protocol = url.substring(0, url.indexOf(":"));
         String context = url.substring(url.indexOf(":")+3);
         String addr = context.substring(0, context.indexOf("/"));
         signal = context.substring(addr.length()+1, context.length());
-     
+
         if(addr == null) return;
         if(ip_addr == null || !ip_addr.equals(addr))
         {
@@ -60,8 +60,8 @@ public class RdaAccess implements DataAccess
                 jp = new JetDataProvider();
             jp.setEvaluateUrl(true);
             jp.setUrlSource("http://"+addr+"/");
-            
-            if( ( encoded_credentials == null && login_status != DataProvider.LOGIN_OK) || 
+
+            if( ( encoded_credentials == null && login_status != DataProvider.LOGIN_OK) ||
                 ( ip_addr != null && !ip_addr.equals(addr)) )
             {
                 encoded_credentials = new String();
@@ -70,16 +70,16 @@ public class RdaAccess implements DataAccess
                     ip_addr = addr;
                 else
                     ip_addr = null;
-            } 
-            else 
+            }
+            else
             {
                 if(!jp.CheckPasswd(encoded_credentials))
                     throw(new IOException("Invalid autentication"));
                 ip_addr = addr;
-            }    
+            }
         }
     }
-    
+
     public String getShot()
     {
         return shot_str;
@@ -125,58 +125,58 @@ public class RdaAccess implements DataAccess
         System.out.println(signal);
         return jp.GetWaveData(signal).GetYData();
     }
-    
+
     public float [] getData(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         return jp.GetWaveData(signal).GetFloatData();
     }
-    
+
     private SignalInfo parseSignal(String s)
     {
         SignalInfo sig_info = new SignalInfo();
         int idx;
-        
+
         if((idx = s.indexOf("[")) != -1)
         {
             sig_info.type = Signal.TYPE_2D;
             sig_info.signal = s.substring(idx);
             String code = s.substring(idx, s.length()).toUpperCase();
-            if(code.indexOf("XY") != -1 || code.indexOf("T=") != -1)
-                sig_info.mode = Signal.MODE_YX;
+            if(code.indexOf("Y-Z") != -1 || code.indexOf("X=") != -1)
+                sig_info.mode = Signal.MODE_YZ;
             else
-                if(code.indexOf("YT") != -1 || code.indexOf("X=") != -1)
-                    sig_info.mode = Signal.MODE_YTIME;
+                if(code.indexOf("X-Z") != -1 || code.indexOf("Y=") != -1)
+                    sig_info.mode = Signal.MODE_XZ;
             if((idx = code.indexOf("=")) != -1)
             {
                 String v = code.substring(idx, code.indexOf("]"));
                 sig_info.value = Float.valueOf(v).floatValue();
             }
-            
+
         } else {
             sig_info.signal = s;
             sig_info.type = Signal.TYPE_1D;
         }
-        
+
         return sig_info;
     }
-    
-    
+
+
     public Signal getSignal(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         SignalInfo sig_info = parseSignal(signal);
         Signal s = null;
-        
+
         if(sig_info.type == Signal.TYPE_1D)
         {
             WaveData wd = jp.GetWaveData(sig_info.signal);
             float data[] = wd.GetFloatData();
             float x[] = wd.GetXData();
             float y[] = wd.GetYData();
-            
+
             if(x == null || data == null)
                 return null;
 
@@ -184,14 +184,14 @@ public class RdaAccess implements DataAccess
                 s = new Signal(x, data);
             else
                 if(y.length > 1)
-                    s = new Signal(data, y, x, Signal.MODE_YTIME, Float.NaN);
+                    s = new Signal(data, y, x, Signal.MODE_XZ, Float.NaN);
                 else
                 {
                     s = new Signal(x, data);
-                    s.setXData(y[0]);
+                    s.setYinXZplot(y[0]);
                 }
         }
-        
+
         if(sig_info.type == Signal.TYPE_2D)
         {
 
@@ -199,24 +199,24 @@ public class RdaAccess implements DataAccess
             float data[] = wd.GetFloatData();
             float x[] = wd.GetXData();
             float y[] = wd.GetYData();
-            
+
             if(y == null || data == null || x == null)
                 return null;
-            
+
             if(y.length > 1)
-                s = new Signal(data, y, x, sig_info.mode, sig_info.value); 
+                s = new Signal(data, y, x, sig_info.mode, sig_info.value);
             else
             {
                 s = new Signal(x, data);
-                s.setXData(y[0]);
+                s.setYinXZplot(y[0]);
             }
-        }        
-        
+        }
+
         return s;
     }
-    
+
     public String getError()
-    {   
+    {
         if(jp == null)
             return("Cannot create JetDataProvider");
         return jp.ErrorString();
@@ -226,4 +226,4 @@ public class RdaAccess implements DataAccess
     public void close(){}
     public FrameData getFrameData(String url){return null;}
 }
-        
+

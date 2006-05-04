@@ -246,7 +246,7 @@ public class MultiWaveform
             {
                 p = legend_point;
             }
-            DrawLegend(g, p, print_mode, VERTICAL);
+            drawLegend(g, p, print_mode, VERTICAL);
         }
 
         if (fixed_legend && show_legend ||
@@ -254,9 +254,9 @@ public class MultiWaveform
         {
             g.setClip(0, 0, d.width, d.height);
             if (legend_mode == LEGEND_BOTTOM && bottom_size != 0)
-                DrawLegend(g, new Point(0, dim.height), print_mode, HORIZONTAL);
+                drawLegend(g, new Point(0, dim.height), print_mode, HORIZONTAL);
             if (legend_mode == LEGEND_RIGHT && right_size != 0)
-                DrawLegend(g, new Point(dim.width, 0), print_mode, VERTICAL);
+                drawLegend(g, new Point(dim.width, 0), print_mode, VERTICAL);
         }
     }
 
@@ -636,11 +636,11 @@ public class MultiWaveform
 
         //????
         //for(i = 1; i <  signals.size(); i++)
-        for (i = 0; i < signals.size(); i++)
+        for (i = 1; i < signals.size(); i++)
         {
             if ( (Signal) signals.elementAt(i) == null)
                 continue;
-            ( (Signal) signals.elementAt(i)).Autoscale();
+//         ( (Signal) signals.elementAt(i)).Autoscale();
             if (waveform_signal.getXmax() <
                 ( (Signal) signals.elementAt(i)).getXmax())
                 waveform_signal.setXmax( ( (Signal) signals.elementAt(i)).
@@ -755,20 +755,22 @@ public class MultiWaveform
         {
             switch (sign.getMode2D())
             {
-                case Signal.MODE_YTIME:
-                    lab = lab + " [Y-TIME X = " +
-                        Waveform.ConvertToString(sign.getXData(), false) + " ]";
+                case Signal.MODE_XZ:
+                    lab = lab + " [X-Z Y = " +
+                        Waveform.ConvertToString(sign.getYinXZplot(), false) + " ]";
                     break;
-                case Signal.MODE_XY:
-                    lab = lab + " [X-Y T = " +  sign.getStringTime() +
+                case Signal.MODE_YZ:
+                    lab = lab + " [Y-Z X = " +  sign.getStringOfXinYZplot() +
                         //Waveform.ConvertToString(sign.getTime(), false) +
                         " ]";
                     break;
+/*
                 case Signal.MODE_YX:
                     lab = lab + " [Y-X T = " +  sign.getStringTime() +
                        // Waveform.ConvertToString(sign.getTime(), false)
                        " ]";
                     break;
+*/
             }
         }
         return lab;
@@ -792,7 +794,7 @@ public class MultiWaveform
             return colors[sign.getColorIdx() % colors.length];
     }
 
-    protected void DrawLegend(Graphics g, Point p, int print_mode,
+    protected void drawLegend(Graphics g, Point p, int print_mode,
                               int orientation)
     {
         Dimension d = getSize();
@@ -841,12 +843,12 @@ public class MultiWaveform
 
             pts[0].x = px + 2 * marker_width;
             pts[0].y = py - marker_width / 2;
-            DrawMarkers(g, pts, 1, GetMarker(i), 1, -1);
+            drawMarkers(g, pts, 1, GetMarker(i), 1, -1);
 
             if ( (GetMarker(i) == Signal.NONE) &&
                 ( (print_mode & PRINT_BW) == PRINT_BW))
             {
-                DrawMarkers(g, pts, 1, curr_marker + 1, 1, -1);
+                drawMarkers(g, pts, 1, curr_marker + 1, 1, -1);
                 curr_marker = (curr_marker + 1) % (Signal.markerList.length - 1);
             }
 
@@ -860,12 +862,12 @@ public class MultiWaveform
         g.setColor(prev_col);
     }
 
-    protected void DrawSignal(Graphics g)
+    protected void drawSignal(Graphics g)
     {
-        DrawSignal(g, getSize(), Waveform.NO_PRINT);
+        drawSignal(g, getSize(), Waveform.NO_PRINT);
     }
 
-    protected void DrawSignal(Graphics g, Dimension d, int print_mode)
+    protected void drawSignal(Graphics g, Dimension d, int print_mode)
     {
         int num_marker = Signal.markerList.length - 1;
         int i, j, x[], y[];
@@ -923,14 +925,22 @@ public class MultiWaveform
             }
             else
             {
-                if (s.getType() == Signal.TYPE_2D &&
-                    s.getMode2D() == Signal.MODE_IMAGE)
+                if ( s.getType() == Signal.TYPE_2D &&
+                    (s.getMode2D() == Signal.MODE_IMAGE || s.getMode2D() == Signal.MODE_CONTOUR) )
                 {
                     if (! (mode == MODE_PAN && dragging))
                     {
-                        Image img = this.createImage(d.width, d.height);
-                        wm.ToImage(s, img, d);
-                        g.drawImage(img, 0, 0, d.width, d.height, this);
+                        switch (s.getMode2D())
+                        {
+                            case Signal.MODE_IMAGE:
+                                Image img = this.createImage(d.width, d.height);
+                                wm.ToImage(s, img, d, colorMap);
+                                g.drawImage(img, 0, 0, d.width, d.height, this);
+                                break;
+                            case Signal.MODE_CONTOUR:
+                                drawSignalContour(s, g, d);
+                                break;
+                        }
                     }
                 }
                 else
@@ -957,9 +967,9 @@ public class MultiWaveform
                 s.getMode2D() != Signal.MODE_IMAGE)
 
                 //DrawMarkers(g, segments, s.getMarker(), marker_step);
-                DrawMarkers(g, segments, s);
+                drawMarkers(g, segments, s);
             if (s.error)
-                DrawError(g, d, s);
+                drawError(s, g, d);
         }
 
         if ( (print_mode & PRINT_BW) == PRINT_BW)
@@ -973,7 +983,7 @@ public class MultiWaveform
                 segments = wm.ToPolygons(s, d);
                 marker_step = (int) ( ( (s.n_points > 1000) ? 100 :
                                        s.n_points / 10.) + 0.5);
-                DrawMarkers(g, segments, curr_marker + 1, marker_step,
+                drawMarkers(g, segments, curr_marker + 1, marker_step,
                             s.getMode1D());
                 curr_marker = (curr_marker + 1) % num_marker;
             }
@@ -981,18 +991,21 @@ public class MultiWaveform
         segments = null;
     }
 
-    protected void DrawMarkers(Graphics g, Vector segments, Signal s)
+    protected void drawMarkers(Graphics g, Vector segments, Signal s)
     {
-        DrawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
+        drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
     }
 
-    protected void DrawMarkers(Graphics g, Vector segments, int mark_type,
+    protected void drawMarkers(Graphics g, Vector segments, int mark_type,
                                int step, int mode)
     {
-        int num_points, num_segments = segments.size();
+        int num_points, num_segments = 0;
         int i;
         Point points[];
         Polygon curr_polygon;
+
+        if(segments != null)
+            num_segments = segments.size();
 
         for (i = num_points = 0; i < num_segments; i++)
             num_points += ( (Polygon) segments.elementAt(i)).npoints;
@@ -1013,7 +1026,7 @@ public class MultiWaveform
             }
         }
 
-        super.DrawMarkers(g, points, num_points, mark_type, 1, mode);
+        super.drawMarkers(g, points, num_points, mark_type, 1, mode);
 
     }
 
@@ -1047,10 +1060,11 @@ public class MultiWaveform
 
             curr_idx = curr_signal.FindClosestIdx(curr_x, curr_y);
             if (curr_signal.getType() == Signal.TYPE_2D &&
-                curr_signal.getMode2D() == Signal.MODE_IMAGE)
+                ( curr_signal.getMode2D() == Signal.MODE_IMAGE ||  curr_signal.getMode2D() == Signal.MODE_CONTOUR ))
             {
-                curr_dist = (curr_signal.time[curr_idx] - curr_x) *
-                    (curr_signal.time[curr_idx] - curr_x);
+                if(curr_idx > 0 && curr_idx < curr_signal.x2D.length)
+                    curr_dist = (curr_signal.x2D[curr_idx] - curr_x) *
+                               (curr_signal.x2D[curr_idx] - curr_x);
             }
             else
             {
@@ -1097,11 +1111,9 @@ public class MultiWaveform
                 s = (Signal) signals.elementAt(i);
                 if (s == null)
                     continue;
-                if (s.getType() == Signal.TYPE_2D &&
-                    (s.getMode2D() == Signal.MODE_XY ||
-                     s.getMode2D() == Signal.MODE_YX))
+                if ( s.getType() == Signal.TYPE_2D && s.getMode2D() == Signal.MODE_YZ )
                 {
-                    s.showXY(s.getMode2D(), (float) curr_x);
+                    s.showYZ(s.getMode2D(), (float) curr_x);
                     not_drawn = true;
                 }
 
@@ -1172,11 +1184,22 @@ public class MultiWaveform
                 {
                     if (s.getType() == Signal.TYPE_2D)
                     {
-                        if (mode == Signal.MODE_YTIME &&
-                            s.getMode2D() == Signal.MODE_YX)
+                        switch(mode)
+                        {
+                            case Signal.MODE_XZ      : s.setMode2D(mode, (float) wave_point_y); break;
+                            case Signal.MODE_YZ      : s.setMode2D(mode, (float) wave_point_x); break;
+                            case Signal.MODE_IMAGE   : s.setMode2D(mode, (float) wave_point_x); break;
+                            case Signal.MODE_CONTOUR : s.setMode2D(mode, (float) wave_point_x); break;
+                        }
+                        sendUpdateEvent();
+                        Autoscale();
+                        /*
+                        if (mode == Signal.MODE_XZ &&
+                            s.getMode2D() == Signal.MODE_YZ)
                             s.setMode2D(mode, (float) wave_point_y);
                         else
                             s.setMode2D(mode, (float) wave_point_x);
+                        */
                     }
                 }
             }

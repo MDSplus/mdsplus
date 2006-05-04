@@ -88,7 +88,8 @@ public class WaveformEvent
 
     public void setDateVale(long date)
     {
-        dateValue = date;
+        long dayMilliSeconds = 24 * 60 * 60 * 1000;
+        dateValue = date - (date % dayMilliSeconds );
         showXasDate = true;
     }
 
@@ -183,6 +184,7 @@ public class WaveformEvent
         String s = null;
         int event_id = getID();
         Waveform w = (Waveform) getSource();
+        SimpleTimeZone stz = new SimpleTimeZone(60*60*1000, "GMT");
 
         switch (event_id)
         {
@@ -198,6 +200,8 @@ public class WaveformEvent
                 {
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     DateFormat format1 = new SimpleDateFormat("HHH:mm:ss");
+                    format.setTimeZone(stz);
+                    format1.setTimeZone(stz);
                     Date date = new Date();
                     date.setTime(dateValue + (long)point_x);
                     Date date1 = new Date();
@@ -239,23 +243,24 @@ public class WaveformEvent
                         Float nan_f = new Float(Float.NaN);
                         String xt_string = null;
                         if (!xf.equals(nan_f))
-                            xt_string = ", X = " +
+                            xt_string = ", Y = " +
                                 Waveform.ConvertToString(x_value, false);
                         else
                         if (!tf.equals(nan_f))
                             if(showXasDate)
                             {
                                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                format.setTimeZone(stz);
                                 Date date = new Date();
                                 date.setTime(dateValue + (long)time_value);
                                 xt_string = ", T = " + format.format(date).toString();
                                 showXasDate = false;
                             }
                             else
-                                xt_string = ", T = " + Waveform.ConvertToString(time_value, false);
+                                xt_string = ", X = " + Waveform.ConvertToString(time_value, false);
                         else
                         if (!df.equals(nan_f))
-                            xt_string = ", Data = " +
+                            xt_string = ", Z = " +
                                 Waveform.ConvertToString(data_value, false);
 
 
@@ -264,7 +269,8 @@ public class WaveformEvent
                         if(showXasDate)
                         {
                             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            Date date = new Date();
+                            format.setTimeZone(stz);
+                             Date date = new Date();
                             date.setTime(dateValue + (long)point_x);
                             x_string = format.format(date).toString();
                             string_size = 35;

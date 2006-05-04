@@ -21,7 +21,7 @@ public class WavePopup
         resetScales, resetAllScales, playFrame, remove_panel,
         set_point, undo_zoom, maximize, cb_copy, profile_dialog, colorMap;
     protected JMenu markerList, colorList, markerStep, mode_2d, mode_1d;
-    protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_y_x, plot_image;
+    protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_contour, plot_image;
     protected JRadioButtonMenuItem plot_line, plot_no_line, plot_step;
 
     protected ButtonGroup markerList_bg, colorList_bg, markerStep_bg,
@@ -180,28 +180,43 @@ public class WavePopup
 
         mode_2d_bg = new ButtonGroup();
         mode_2d = new JMenu("signal 2D");
-        mode_2d.add(plot_y_time = new JRadioButtonMenuItem("Plot y & time"));
+        mode_2d.add(plot_y_time = new JRadioButtonMenuItem("Plot xz(y)"));
         mode_2d_bg.add(plot_y_time);
         plot_y_time.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
             {
                 if (e.getStateChange() == ItemEvent.SELECTED)
-                    SetMode2D(Signal.MODE_YTIME);
+                    SetMode2D(Signal.MODE_XZ);
             }
         });
 
-        mode_2d.add(plot_x_y = new JRadioButtonMenuItem("Plot x & y"));
+        mode_2d.add(plot_x_y = new JRadioButtonMenuItem("Plot yz(x)"));
         mode_2d_bg.add(plot_x_y);
         plot_x_y.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
             {
                 if (e.getStateChange() == ItemEvent.SELECTED)
-                    SetMode2D(Signal.MODE_XY);
+                    SetMode2D(Signal.MODE_YZ);
             }
         });
 
+
+        mode_2d.add(plot_contour = new JRadioButtonMenuItem("Plot Contour"));
+        mode_2d_bg.add(plot_contour);
+        plot_contour.addItemListener(new ItemListener()
+        {
+          public void itemStateChanged(ItemEvent e)
+          {
+            if (e.getStateChange() == ItemEvent.SELECTED)
+            {
+              SetMode2D(Signal.MODE_CONTOUR);
+            }
+          }
+        });
+
+/*
         mode_2d.add(plot_y_x = new JRadioButtonMenuItem("Plot y & x"));
         mode_2d_bg.add(plot_y_x);
         plot_y_x.addItemListener(new ItemListener()
@@ -209,11 +224,11 @@ public class WavePopup
             public void itemStateChanged(ItemEvent e)
             {
                 if (e.getStateChange() == ItemEvent.SELECTED)
-                    SetMode2D(Signal.MODE_YX);
+                    SetMode2D(Signal.MODE_YZ);
 //                wave.Update();
             }
         });
-
+*/
         mode_2d.add(plot_image = new JRadioButtonMenuItem("Plot Image"));
         mode_2d_bg.add(plot_image);
         plot_image.addItemListener(new ItemListener()
@@ -531,17 +546,23 @@ public class WavePopup
                 {
                     if (wave.getSignalType() == Signal.TYPE_2D)
                     {
+                        add(colorMap);
                         add(mode_2d);
                         switch (wave.getSignalMode())
                         {
-                            case Signal.MODE_YTIME:
+                            case Signal.MODE_XZ:
                                 mode_2d_bg.setSelected(plot_y_time.getModel(), true);
                                 break;
-                            case Signal.MODE_XY:
+                            case Signal.MODE_YZ:
                                 mode_2d_bg.setSelected(plot_x_y.getModel(), true);
                                 break;
+                                /*
                             case Signal.MODE_YX:
                                 mode_2d_bg.setSelected(plot_y_x.getModel(), true);
+                                break;
+                                */
+                            case Signal.MODE_CONTOUR:
+                                mode_2d_bg.setSelected(plot_contour.getModel(), true);
                                 break;
                             case Signal.MODE_IMAGE:
                                 mode_2d_bg.setSelected(plot_image.getModel(), true);

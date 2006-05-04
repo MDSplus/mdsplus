@@ -172,7 +172,7 @@ public class ColorMapDialog
         {
             public void actionPerformed(ActionEvent e)
             {
-                if (ColorMapDialog.this.wave.IsImage())
+//                if (ColorMapDialog.this.wave.IsImage())
                 {
                     ColorMap cm = (ColorMap) cmComboBox.getSelectedItem();
                     ColorMapDialog.this.wave.setColorMap(cm);
@@ -229,7 +229,7 @@ public class ColorMapDialog
         {
             public void actionPerformed(ActionEvent e)
             {
-                if (ColorMapDialog.this.wave.IsImage())
+//                if (ColorMapDialog.this.wave.IsImage())
                 {
                     ColorMapDialog.this.wave.setColorMap(colorMap);
                     ColorMapDialog.this.setVisible(false);

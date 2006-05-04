@@ -593,7 +593,7 @@ public class WaveInterface
 
                 new_interpolates[k] = true;
                 new_evaluated[k] = false;
-                new_mode2D[k] = Signal.MODE_YTIME;
+                new_mode2D[k] = Signal.MODE_XZ;
                 new_mode1D[k] = Signal.MODE_LINE;
                 if (shots != null && shots.length != 0 && num_shot > 0)
                     new_shots[k] = shots[j];

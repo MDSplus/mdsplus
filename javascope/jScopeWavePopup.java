@@ -178,17 +178,17 @@ class jScopeWavePopup
 
     protected void SetMode1D(int mode)
     {
-        super.SetMode1D(mode);
         jScopeMultiWave w = (jScopeMultiWave) wave;
         w.wi.mode1D[w.GetSelectedSignal()] = mode;
+        super.SetMode1D(mode);
     }
 
     protected void SetMode2D(int mode)
     {
-        super.SetMode2D(mode);
         jScopeMultiWave w = (jScopeMultiWave) wave;
         w.wi.mode2D[w.GetSelectedSignal()] = mode;
-        w.Refresh();
+        super.SetMode2D(mode);
+//        w.Refresh();
     }
 
     public void SetDeselectPoint(Waveform w)

@@ -909,6 +909,11 @@ public class MdsDataProvider
         if (in == null || in.length() == 0)
             return;
 
+        if(in.indexOf("pulseSetVer") != 0)
+        {
+            open = false;
+        }
+
         Properties pr = new Properties();
         pr.load(new ByteArrayInputStream(in.getBytes()));
         String def_node = ( (String) pr.getProperty("__default_node"));
@@ -931,7 +936,6 @@ public class MdsDataProvider
             return;
         }
         SetEnvironmentSpecific(in, default_node);
-
     }
 
     void SetEnvironmentSpecific(String in, String defaultNode)

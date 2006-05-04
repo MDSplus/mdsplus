@@ -239,8 +239,7 @@ import javax.swing.event.*;
    }
 
 
-   class SList extends JPanel implements ItemListener,
-                                         TextListener
+   class SList extends JPanel implements ItemListener
    {
     private JList            sig_list;
     private DefaultListModel list_model = new DefaultListModel();
@@ -340,6 +339,23 @@ import javax.swing.event.*;
 	    c.fill =  GridBagConstraints.NONE;
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    marker_step_t = new JTextField(3);
+            marker_step_t.addFocusListener(new FocusAdapter()
+            {
+                public void focusLost(FocusEvent e)
+                {
+                    if(getSignalSelect() != -1)
+                    {
+                            try {
+                                ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
+                            } catch (NumberFormatException ex) {
+                                marker_step_t.setText("1");
+                            }
+                     }
+                }
+            }
+            );
+
+
 	    gridbag.setConstraints(marker_step_t, c);
 	    p.add(marker_step_t);
 
@@ -387,6 +403,8 @@ import javax.swing.event.*;
 	    mode1D.setEnabled(state);
 	    mode2D.setEnabled(state);
 	    color.setEnabled(state);
+            if( getSignalSelect() == -1 )
+                marker_step_t.setEditable(false);
       }
 
       public int getNumShot()
@@ -451,7 +469,7 @@ import javax.swing.event.*;
 
      private void setMarkerTextState(int marker_idx)
      {
-	    if(marker_idx > 0 && marker_idx < 5)
+	    if(marker_idx > 0 && marker_idx < 5 )
 	        marker_step_t.setEditable(true);
 	    else {
 	        marker_step_t.setText("1");
@@ -598,8 +616,8 @@ import javax.swing.event.*;
 		        ws.label         = wi.in_label[i];
 		        ws.x_expr        = wi.in_x[i];
 		        ws.y_expr        = wi.in_y[i];
-		        ws.up_err	     = wi.in_up_err[i];
-		        ws.low_err	     = wi.in_low_err[i];
+		        ws.up_err	 = wi.in_up_err[i];
+		        ws.low_err	 = wi.in_low_err[i];
 		        ws.interpolate   = wi.interpolates[i];
 		        ws.mode2D        = wi.mode2D[i];
 		        ws.mode1D        = wi.mode1D[i];
@@ -864,7 +882,7 @@ import javax.swing.event.*;
 	        }
       }
 
-
+/*
       public void textValueChanged(TextEvent e)
       {
 	    Object ob = e.getSource();
@@ -878,7 +896,7 @@ import javax.swing.event.*;
 		    }
     	 }
       }
-
+*/
 
       public void itemStateChanged(ItemEvent e)
       {
@@ -1412,74 +1430,73 @@ import javax.swing.event.*;
 
    public void putWindowSetup(MdsWaveInterface wi)
    {
-	boolean def_flag;
+       boolean def_flag;
 
-	if(wi == null) {
-	    eraseForm();
-	    return;
-	}
+       if (wi == null)
+       {
+           eraseForm();
+           return;
+       }
 
+       if (wi.is_image)
+           wi.defaults = wi.defaults & ~ ( (1 << MdsWaveInterface.B_y_max) +
+                                          (1 << MdsWaveInterface.B_y_min));
 
-    if(wi.is_image)
-        wi.defaults = wi.defaults &  ~( (1 << MdsWaveInterface.B_y_max) +
-                                                (1 << MdsWaveInterface.B_y_min));
+       setImageDialog(wi.is_image);
 
-    setImageDialog(wi.is_image);
+       this.wi.colorMap = wi.colorMap;
 
-	this.wi.cexperiment     = wi.cexperiment;
-	this.wi.cin_shot        = wi.cin_shot;
+       this.wi.cexperiment = wi.cexperiment;
+       this.wi.cin_shot = wi.cin_shot;
 
-	this.wi.cin_upd_event   = wi.cin_upd_event;
+       this.wi.cin_upd_event = wi.cin_upd_event;
 
-	this.wi.in_upd_event    = wi.in_upd_event;
+       this.wi.in_upd_event = wi.in_upd_event;
 
-	this.wi.last_upd_event  = wi.last_upd_event;
-	this.wi.cin_def_node    = wi.cin_def_node;
-    this.wi.cin_xmax        = wi.cin_xmax;
-	this.wi.cin_xmin        = wi.cin_xmin;
-	this.wi.cin_ymax        = wi.cin_ymax;
-	this.wi.cin_ymin        = wi.cin_ymin;
-	this.wi.cin_upd_limits  = wi.cin_upd_limits;
+       this.wi.last_upd_event = wi.last_upd_event;
+       this.wi.cin_def_node = wi.cin_def_node;
+       this.wi.cin_xmax = wi.cin_xmax;
+       this.wi.cin_xmin = wi.cin_xmin;
+       this.wi.cin_ymax = wi.cin_ymax;
+       this.wi.cin_ymin = wi.cin_ymin;
+       this.wi.cin_upd_limits = wi.cin_upd_limits;
 
-	this.wi.cin_timemin        = wi.cin_timemin;
-	this.wi.cin_timemax        = wi.cin_timemax;
+       this.wi.cin_timemin = wi.cin_timemin;
+       this.wi.cin_timemax = wi.cin_timemax;
 
-	this.wi.cin_title       = wi.cin_title;
-	this.wi.cin_xlabel      = wi.cin_xlabel;
-	this.wi.cin_ylabel      = wi.cin_ylabel;
-	this.wi.legend_x        = wi.legend_x;
-	this.wi.legend_y        = wi.legend_y;
-    this.wi.show_legend     = wi.show_legend;
-    this.wi.reversed        = wi.reversed;
-    image_b.setSelected(wi.is_image);
-    keep_ratio_b.setSelected(wi.keep_ratio);
-    horizontal_flip_b.setSelected(wi.horizontal_flip);
-    vertical_flip_b.setSelected(wi.vertical_flip);
+       this.wi.cin_title = wi.cin_title;
+       this.wi.cin_xlabel = wi.cin_xlabel;
+       this.wi.cin_ylabel = wi.cin_ylabel;
+       this.wi.legend_x = wi.legend_x;
+       this.wi.legend_y = wi.legend_y;
+       this.wi.show_legend = wi.show_legend;
+       this.wi.reversed = wi.reversed;
+       image_b.setSelected(wi.is_image);
+       keep_ratio_b.setSelected(wi.keep_ratio);
+       horizontal_flip_b.setSelected(wi.horizontal_flip);
+       vertical_flip_b.setSelected(wi.vertical_flip);
 
-
-	setDefaultFlags(wi.defaults);
-	PutDefaultValues();
-
+       setDefaultFlags(wi.defaults);
+       PutDefaultValues();
 
 //    if(!wi.is_image)
 //    {
-        signal_label.setText("");
-        x_expr.setText("");
-        y_expr.setText("");
-	    x_log.setSelected(wi.x_log);
-	    y_log.setSelected(wi.y_log);
-	    //upd_limits.setSelected(wi.cin_upd_limits);
+       signal_label.setText("");
+       x_expr.setText("");
+       y_expr.setText("");
+       x_log.setSelected(wi.x_log);
+       y_log.setSelected(wi.y_log);
+       //upd_limits.setSelected(wi.cin_upd_limits);
 //	}
 //	else {
- //       x_expr.setText("");
- //      if(wi.in_label != null && wi.in_label[0].trim().length() > 0)
- //           signal_label.setText(wi.in_label[0]);
- //       if(wi.in_y != null && wi.in_y[0].trim().length() > 0)
- //           y_expr.setText(wi.in_y[0]);
+       //       x_expr.setText("");
+       //      if(wi.in_label != null && wi.in_label[0].trim().length() > 0)
+       //           signal_label.setText(wi.in_label[0]);
+       //       if(wi.in_y != null && wi.in_y[0].trim().length() > 0)
+       //           y_expr.setText(wi.in_y[0]);
 //	}
 
-
-    signalList.init(wi);
+       signalList.init(wi);
    }
 
   private void setImageDialog(boolean state)
@@ -1623,23 +1640,23 @@ import javax.swing.event.*;
 	}
 
 	if(!main_scope.equalsString(x_label.getText(), wave_wi.cin_xlabel))   return true;
-	if(x_log.isSelected() != wave_wi.x_log)				                  return true;
-	if(upd_limits.isSelected() != wave_wi.cin_upd_limits)		          return true;
+	if(x_log.isSelected() != wave_wi.x_log)				      return true;
+	if(upd_limits.isSelected() != wave_wi.cin_upd_limits)		      return true;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
-	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;
-	if(y_log.isSelected() != wave_wi.y_log)				                      return true;
-    if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))          return true;
-    if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;
-    if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;
-	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))   return true;
+        if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;
+	if(y_log.isSelected() != wave_wi.y_log)				            return true;
+        if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))            return true;
+        if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;
+        if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;
+	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))     return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;
 	if(image_b.isSelected() != wave_wi.is_image)				                  return true;
 	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;
-	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				      return true;
+	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				  return true;
 
-    for(int i = 0 ; i < wave_wi.num_waves; i++)
+        for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
 	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))        return true;
@@ -1687,7 +1704,6 @@ import javax.swing.event.*;
 	  if(!upd_limits_b.isSelected() && (upd_limits.isSelected() != wi.cin_upd_limits))
 	    wi.cin_upd_limits  = upd_limits.isSelected();
 
-
       if(!y_max_b.isSelected() && !main_scope.equalsString(y_max.getText(),   wi.cin_ymax))
 	    wi.cin_ymax      = y_max.getText();
       if(!y_min_b.isSelected() && !main_scope.equalsString(y_min.getText(),   wi.cin_ymin))
@@ -1711,10 +1727,10 @@ import javax.swing.event.*;
 
  	  if(num_signal == 0)
  	  {
-          if(wave.wi != null)
-            wave.wi.Erase();
-	      return 1;
-      }
+               if(wave.wi != null)
+                   wave.wi.Erase();
+               return 1;
+          }
 
 	  wi.modified = isChanged(s);
 	  main_scope.setChange(wi.modified);
@@ -1726,8 +1742,8 @@ import javax.swing.event.*;
 	  if(!wi.modified)
 	  {
 		wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
-        if(wi.is_image)
-            return 0;
+                if(wi.is_image)
+                    return 0;
 
 		for(int i = 0; i < wave.wi.num_waves; i++)
 		{
@@ -2019,7 +2035,7 @@ import javax.swing.event.*;
 	            text.setText("");
 	    }
 	    if(obj instanceof JCheckBox)
-        {
+            {
             JCheckBox  check = (JCheckBox)obj;
             if(state)
             {
@@ -2063,12 +2079,11 @@ import javax.swing.event.*;
 
    private void  DefaultButtonChange(Object ob)
    {
-
 	boolean def_flag;
 
 	if(ob == title_b)
 	    defaultButtonOperation(title, def_flag = title_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
-    if(ob == shot_b)
+        if(ob == shot_b)
 	    putShotValue(shot_b.isSelected());
 	if(ob == experiment_b)
 	    defaultButtonOperation(experiment, def_flag = experiment_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));

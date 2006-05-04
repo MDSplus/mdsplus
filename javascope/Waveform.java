@@ -136,6 +136,8 @@ public class Waveform
   public float ly_max = Float.MAX_VALUE;
   public float ly_min = Float.MIN_VALUE;
 
+  protected ColorMap colorMap = new ColorMap();
+
   class ZoomRegion {
     double start_xs;
     double end_xs;
@@ -456,6 +458,8 @@ public class Waveform
     if (waveform_signal != null) {
       if (waveform_signal.getType() == Signal.TYPE_2D) {
         waveform_signal.setMode2D(mode);
+        Autoscale();
+        sendUpdateEvent();
       }
       else
       if (waveform_signal.getType() == Signal.TYPE_1D) {
@@ -701,7 +705,18 @@ public class Waveform
             }
           }
 
-          if (mode == MODE_POINT) {
+          if (mode == MODE_POINT)
+          {
+              Signal s = GetSignal();
+              if (is_mb2 &&
+                  s.getType() == Signal.TYPE_2D &&
+                  s.getMode2D() == Signal.MODE_CONTOUR)
+              {
+                s.addContourLevel(s.getZValue());
+                not_drawn = true;
+                repaint();
+              }
+
             if (is_image && frames != null) {
               //  if(!frames.contain(new Point(start_x, start_y), d))
               //      return;
@@ -1233,14 +1248,16 @@ public class Waveform
               //orizLabel = waveform_signal.getXlabel();
               vertLabel = waveform_signal.getZlabel();
               break;
-            case Signal.MODE_XY:
+            case Signal.MODE_YZ:
               orizLabel = vertLabel;
               vertLabel = waveform_signal.getZlabel();
               break;
+/*
             case Signal.MODE_YX:
               orizLabel = waveform_signal.getZlabel();
               // vertLabel = waveform_signal.getYlabel();
               break;
+*/
           }
         }
       }
@@ -1294,11 +1311,11 @@ public class Waveform
                                  wm.YPixel(MaxYSignal(), d) + 1);
 
       if (print_mode == NO_PRINT) {
-        g.clipRect(curr_display_limits.width, 0,
+         g.clipRect(curr_display_limits.width, 0,
                    d.width - curr_display_limits.width,
                    d.height - curr_display_limits.height);
       }
-      DrawSignal(g, d, print_mode);
+      drawSignal(g, d, print_mode);
     }
 
     if(print_mode == PRINT && mode == MODE_POINT)
@@ -1321,8 +1338,6 @@ public class Waveform
          g.setColor(prev_color);
        }
     }
-
-
 
     if (!is_min_size) {
       grid.paint(g, d, this, wm);
@@ -1398,13 +1413,13 @@ public class Waveform
         we = new WaveformEvent(this, event_id, curr_x, curr_y, dx, dy, 0,
                                GetSelectedSignal());
         Signal s = GetSignal();
-        we.setTimeValue(s.getTime());
-        we.setXValue(s.getXData());
-        we.setDataValue(s.getDataValue());
+        we.setTimeValue(s.getXinYZplot());
+        we.setXValue(s.getYinXZplot());
+        we.setDataValue(s.getZValue());
         we.setIsMB2(is_mb2);
         //if(s.isLongX())
         if(s.x_long != null)
-            we.setDateVale(s.x_long[0]);
+            we.setDateVale(s.x_long[0] );
 
         dispatchWaveformEvent(we);
       }
@@ -1538,7 +1553,7 @@ public class Waveform
       g.setColor(Color.black);
       g.clipRect(wave_b_box.x, wave_b_box.y, wave_b_box.width,
                  wave_b_box.height);
-      DrawSignal(g);
+      drawSignal(g);
     }
   }
 
@@ -1718,12 +1733,30 @@ public class Waveform
       return null;
     }
 
-    if (s.getType() == Signal.TYPE_2D && s.getMode2D() == Signal.MODE_IMAGE) {
-      wave_point_x = s.getClosestX(curr_x);
-      wave_point_y = s.getClosestY(curr_y);
-      Point p = new Point(wm.XPixel(wave_point_x, d), wm.YPixel(wave_point_y, d));
-      return p;
+    if (s.getType() == Signal.TYPE_2D)
+    {
+        Point p;
+
+        switch (s.getMode2D())
+        {
+            case Signal.MODE_IMAGE:
+                wave_point_x = s.getClosestX(curr_x);
+                wave_point_y = s.getClosestY(curr_y);
+                d = getWaveSize();
+                p = new Point(wm.XPixel(wave_point_x, d),
+                              wm.YPixel(wave_point_y, d));
+                return p;
+            case Signal.MODE_CONTOUR:
+                wave_point_x = curr_x;
+                wave_point_y = curr_y;
+                s.surfaceValue(wave_point_x, wave_point_y);
+                d = getWaveSize();
+                p = new Point(wm.XPixel(wave_point_x, d),
+                              wm.YPixel(wave_point_y, d));
+                return p;
+        }
     }
+
 
     int idx = s.FindClosestIdx(curr_x, curr_y);
     if (curr_x > s.getCurrentXmax() || curr_x < s.getCurrentXmin() ||
@@ -1900,11 +1933,55 @@ public class Waveform
     }
   }
 
-  protected void DrawSignal(Graphics g) {
-    DrawSignal(g, getWaveSize(), NO_PRINT);
+
+  protected void drawSignalContour(Signal s, Graphics g, Dimension d)
+  {
+    Vector cs = s.contourSignals;
+    Vector ls = s.contourLevelValues;
+    int numLevel = cs.size();
+    Vector cOnLevel;
+    float level;
+
+    for (int l = 0; l < numLevel; l++)
+    {
+      cOnLevel = (Vector) cs.elementAt(l);
+      level = ( (Float) ls.elementAt(l)).floatValue();
+      g.setColor(colorMap.getColor(level, s.z2D_min, s.z2D_max));
+      drawContourLevel(cOnLevel, g, d);
+    }
   }
 
-  protected void DrawSignal(Graphics g, Dimension d, int print_mode) {
+  public void drawContourLevel(Vector cOnLevel, Graphics g, Dimension d)
+  {
+    Vector c;
+    Point2D.Float p;
+    wm.ComputeFactors(d);
+    for (int i = 0; i < cOnLevel.size(); i++)
+    {
+      c = (Vector) cOnLevel.elementAt(i);
+      int cx[] = new int[c.size()];
+      int cy[] = new int[c.size()];
+      for (int j = 0; j < c.size(); j++)
+      {
+        p = (Point2D.Float) c.elementAt(j);
+        cx[j] = wm.XPixel(p.x);
+        cy[j] = wm.YPixel(p.y);
+      }
+      g.drawPolyline(cx, cy, c.size());
+    }
+  }
+
+  protected void drawSignal(Graphics g)
+  {
+    drawSignal(g, getWaveSize(), NO_PRINT);
+  }
+
+  protected void drawSignal(Graphics g, Dimension d, int print_mode) {
+    drawSignal(waveform_signal, g, d);
+  }
+
+/***********************************************************************
+  protected void drawSignal(Signal s, Graphics g, Dimension d) {
     Shape prev_clip = g.getClip();
     DrawWave(d);
 
@@ -1923,14 +2000,79 @@ public class Waveform
       DrawMarkers(g, points, num_points, waveform_signal.getMarker(),
                   waveform_signal.getMarkerStep(),
                   waveform_signal.getMode1D());
-      /* ???????????????????/
-         if(waveform_signal.error)
-          DrawError(off_graphics, d, waveform_signal);
-       */
+      // ???????????????????/
+      //   if(waveform_signal.error)
+      //    DrawError(off_graphics, d, waveform_signal);
+      //
       //g.setClip(prev_clip);
 
     }
   }
+****************************************************************/
+
+  protected void drawSignal(Signal s, Graphics g, Dimension d)
+  {
+
+    if (s.getType() == Signal.TYPE_2D)
+    {
+        switch (s.getMode2D())
+        {
+            case Signal.MODE_IMAGE:
+                if (! (mode == MODE_PAN && dragging))
+                {
+                    Image img = this.createImage(d.width, d.height);
+                    wm.ToImage(s, img, d, colorMap);
+                    g.drawImage(img, 0, 0, d.width, d.height, this);
+                }
+                return;
+            case Signal.MODE_CONTOUR:
+                if (! (mode == MODE_PAN && dragging))
+                {
+                    drawSignalContour(s, g, d);
+                }
+                return;
+        }
+
+    }
+    drawWave(s, g, d);
+    drawMarkers(s, g, d);
+    drawError(s, g, d);
+  }
+
+  void drawWave(Signal s, Graphics g, Dimension d)
+  {
+    Vector segments = wm.ToPolygons(s, d);
+    Polygon curr_polygon;
+
+    if (s.getColor() != null)
+    {
+      g.setColor(s.getColor());
+    }
+    else
+    {
+      g.setColor(colors[s.getColorIdx() % colors.length]);
+
+    }
+    for (int k = 0; k < segments.size(); k++)
+    {
+      curr_polygon = (Polygon) segments.elementAt(k);
+      if (s.getInterpolate())
+      {
+        g.drawPolyline(curr_polygon.xpoints, curr_polygon.ypoints,
+                       curr_polygon.npoints);
+      }
+    }
+  }
+
+  protected void drawMarkers(Signal s, Graphics g, Dimension d)
+  {
+    if (s.getMarker() != Signal.NONE)
+    {
+      Vector segments = wm.ToPolygons(s, d);
+      drawMarkers(g, segments, s.getMarker(), s.getMarkerStep(), s.getMode1D());
+    }
+  }
+
 
   protected void setFixedLimits() {
     setXlimits(lx_min, lx_max);
@@ -1995,7 +2137,9 @@ public class Waveform
 
   protected void HandlePaste() {}
 
-  protected void DrawMarkers(Graphics g, Point pnt[], int n_pnt, int marker,
+
+
+  protected void drawMarkers(Graphics g, Point pnt[], int n_pnt, int marker,
                              int step, int mode) {
     for (int i = 0; i < n_pnt; i += step) {
       if (mode == Signal.MODE_STEP && i % 2 == 1) {
@@ -2036,7 +2180,95 @@ public class Waveform
 
   }
 
-  void DrawError(Graphics g, Dimension d, Signal sig) {
+
+protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
+                           int mode)
+{
+  Polygon currPolygon;
+  int pntX[];
+  int pntY[];
+
+  for (int k = 0; k < segments.size(); k++)
+  {
+    currPolygon = (Polygon) segments.elementAt(k);
+    pntX = currPolygon.xpoints;
+    pntY = currPolygon.ypoints;
+    for (int i = 0; i < currPolygon.npoints; i += step)
+    {
+      if (mode == Signal.MODE_STEP && i % 2 == 1)
+      {
+        continue;
+      }
+
+      switch (marker)
+      {
+        case Signal.CIRCLE:
+          g.drawOval(pntX[i] - marker_width / 2,
+                     pntY[i] - marker_width / 2, marker_width, marker_width);
+          break;
+        case Signal.SQUARE:
+          g.drawRect(pntX[i] - marker_width / 2,
+                     pntY[i] - marker_width / 2, marker_width, marker_width);
+          break;
+        case Signal.TRIANGLE:
+          g.drawLine(pntX[i] - marker_width / 2,
+                     pntY[i] + marker_width / 2, pntX[i],
+                     pntY[i] - marker_width / 2);
+          g.drawLine(pntX[i] + marker_width / 2,
+                     pntY[i] + marker_width / 2, pntX[i],
+                     pntY[i] - marker_width / 2);
+          g.drawLine(pntX[i] - marker_width / 2,
+                     pntY[i] + marker_width / 2, pntX[i] + marker_width / 2,
+                     pntY[i] + marker_width / 2);
+          break;
+        case Signal.CROSS:
+          g.drawLine(pntX[i], pntY[i] - marker_width / 2,
+                     pntX[i], pntY[i] + marker_width / 2);
+          g.drawLine(pntX[i] - marker_width / 2, pntY[i],
+                     pntX[i] + marker_width / 2, pntY[i]);
+          break;
+        case Signal.POINT:
+          g.fillRect(pntX[i] - 1, pntY[i] - 1, 3, 3);
+          break;
+      }
+    }
+  }
+}
+
+
+
+    void drawError(Signal sig, Graphics g, Dimension d)
+    {
+      if (!sig.error)
+      {
+        return;
+      }
+
+      int up, low, x, y;
+      float up_error[] = sig.getUpError();
+      float low_error[] = sig.getLowError();
+
+      for (int i = 0; i < sig.n_points; i++)
+      {
+        up = wm.YPixel(up_error[i] + sig.y[i], d);
+        if (!sig.asym_error)
+        {
+          low = wm.YPixel(sig.y[i] - up_error[i], d);
+        }
+        else
+        {
+          low = wm.YPixel(sig.y[i] - low_error[i], d);
+        }
+        x = wm.XPixel(sig.x[i], d);
+
+        g.drawLine(x, up, x, low);
+        g.drawLine(x - 2, up, x + 2, up);
+        g.drawLine(x - 2, low, x + 2, low);
+      }
+    }
+/*
+  void drawError(Signal sig, Graphics g, Dimension d)
+  {
     int up, low, x, y;
     float up_error[] = sig.getUpError();
     float low_error[] = sig.getLowError();
@@ -2057,6 +2289,7 @@ public class Waveform
       g.drawLine(x - 2, low, x + 2, low);
     }
   }
+*/
 
   public void UpdatePoint(double curr_x)
   {
@@ -2085,9 +2318,9 @@ public class Waveform
       }
 
           if(waveform_signal.getType() == Signal.TYPE_2D &&
-            (waveform_signal.getMode2D() ==  Signal.MODE_XY || waveform_signal.getMode2D() ==  Signal.MODE_YX))
+            waveform_signal.getMode2D() ==  Signal.MODE_YZ)
           {
-              waveform_signal.showXY(waveform_signal.getMode2D(), (float)curr_x);
+              waveform_signal.showYZ(waveform_signal.getMode2D(), (float)curr_x);
               not_drawn = true;
           }
           // else
@@ -2421,7 +2654,9 @@ public class Waveform
 
   public void setColorMap(ColorMap cm)
   {
-      frames.setColorMap(cm);
+      this.colorMap = cm;
+      if(frames != null)
+          frames.setColorMap(cm);
       not_drawn = true;
       repaint();
   }
@@ -2433,7 +2668,15 @@ public class Waveform
 
   public void applyColorModel(ColorMap cm)
   {
-     frames.applyColorModel(cm);
+     if(cm == null) return;
+     if(frames != null)
+     {
+         frames.applyColorModel(cm);
+     }
+     else
+     {
+         this.colorMap = cm;
+     }
      not_drawn = true;
      repaint();
   }
