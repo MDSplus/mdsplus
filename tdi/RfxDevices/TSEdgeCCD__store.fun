@@ -52,17 +52,25 @@ write(*, "TSEdgeCCD__store");
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-		_cmd = 'TSEdgeCCDReadData('//_interface_id//', 50, 1, 300, 578, 1, 1)';
-	    _data = MdsValue(_cmd);
-		if( size(_data) == 1 )
+		_status = execute(_cmd);
+		if( _status != 0 )
 		{
-			_msg = MdsValue('TSEdgeCCDError()');
-			DevLogErr(_nid, "Error in readData operation : "//_msg);
+			_cmd = 'TSEdgeCCDReadData('//_interface_id//', 50, 1, 300, 578, 1, 1)';
+			_data = MdsValue(_cmd);
+			if( size(_data) == 1 )
+			{
+				_msg = MdsValue('TSEdgeCCDError()');
+				DevLogErr(_nid, "Error in readData operation : "//_msg);
+				MdsDisconnect();
+				abort();
+			}
 			MdsDisconnect();
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
-		MdsDisconnect();
 	}
 	else
 	{
@@ -76,11 +84,11 @@ write(*, "TSEdgeCCD__store");
 			abort();
 		}
 	}
-
+/*
 	write(*, _data[0..10]);
+*/
 
-
-    _remove_line = 2;
+    _remove_line = 0;
 
     _data_sig = _data[ 300 * _remove_line : 300 * 288 ];
 

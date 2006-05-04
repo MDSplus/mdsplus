@@ -336,7 +336,7 @@ Attualmente non implementati perchè non necessari
     }
 
 
-	if( size(_state_a) == 0 )
+	if( sum( _state_a ) == 0 )
 	{
 	    write(*, "All channels OFF");
 		return(1);

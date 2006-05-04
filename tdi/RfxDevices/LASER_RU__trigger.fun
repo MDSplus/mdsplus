@@ -61,6 +61,7 @@ public fun LASER_RU__trigger(as_is _nid, optional _method)
 
 	private _N_DATA = 59;
     
+	write(*, "LASER_RU__trigger");
 
 	_error = 0;
 
@@ -92,14 +93,23 @@ public fun LASER_RU__trigger(as_is _nid, optional _method)
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-		_status = MdsValue('LASER_RU_HWtrigger($,$)',  _port, _trig_mode);		
-		MdsDisconnect();
-		if(_status == 0)
+		_status = execute(_cmd);
+		if( _status != 0 )
 		{
-			DevLogErr(_nid, "Error Initializing ruby Laser");
+			_status = MdsValue('LASER_RU_HWtrigger($,$)',  _port,  _trig_mode);		
+			MdsDisconnect();
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error trigger ruby Laser");
+				abort();
+			}
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
+
 	}
 	else
 	{

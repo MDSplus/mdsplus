@@ -11,7 +11,7 @@ public fun K3115__init(as_is _nid, optional _method)
 
 
 
-    	private __NODES_PER_CHANNEL = 7;
+	private __NODES_PER_CHANNEL = 7;
 	private __CHANNEL_1 = 8;
 	private __RANGE = 1;
 	private __RANGE_POL = 2;
@@ -61,6 +61,9 @@ public fun K3115__init(as_is _nid, optional _method)
 	DevNodeCvt(_nid, __CLOCK_MODE, ['INTERNAL', 'EXTERNAL'], [_INTERNAL, _EXTERNAL], _clock_mode = _INTERNAL);
 /*	write(*, "Clock Mode: ", (_clock_mode == _INTERNAL ? "INTERNAL" : "EXTERNAL")); */
 
+
+	write(*, "OK 1");
+
 	if(_clock_mode == _EXTERNAL)
 	{
 		_status = 1;
@@ -83,6 +86,7 @@ public fun K3115__init(as_is _nid, optional _method)
 		{
 			_clock_end = _MDS$K_FHUGE;
 		}
+		write(*, "OK 2");
 	}
 	else
 	{
@@ -106,6 +110,8 @@ public fun K3115__init(as_is _nid, optional _method)
 
 	DevCamChk(_camac_name, CamPiow(_camac_name, 2, 9, _zero = 0, 16), 1, 1);
 
+	write(*, "OK 3");
+
 	if(_wave_mode == _CYCLIC)
 	{
 		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 26, _dummy=0, 16), 1, 1);
@@ -115,14 +121,15 @@ public fun K3115__init(as_is _nid, optional _method)
 		DevCamChk(_camac_name, CamPiow(_camac_name, 0, 24, _dummy=0, 16), 1, 1);
 	}
 
-
+	write(*, "OK 4");	
 
 	_max_end_time = _clock_start + 1023 * _clock_delta;
 /*	write(*, "Max end time: ", _max_end_time); */
 
 	for(_n_chan = 0; _n_chan < 6; _n_chan++)
 	{
-		if(DevIsOn(DevNodeRef(_nid, __CHANNEL_1 + (_n_chan * __NODES_PER_CHANNEL))))
+		write(*, "CHAN ", _n_chan);		
+		if( DevIsOn(DevNodeRef(_nid, __CHANNEL_1 + (_n_chan * __NODES_PER_CHANNEL))) )
 		{
 		/*	write(*, "Channel ", _n_chan + 1, " is ON"); */
 			DevNodeCvt(_nid, __CHANNEL_1 + __RANGE + (_n_chan * __NODES_PER_CHANNEL), [20, 10, 5], [20, 10, 5], _range = 20);
@@ -274,7 +281,6 @@ public fun K3115__init(as_is _nid, optional _method)
 				{
 					_end_time = _max_end_time;
 				}
-			/*	write(*, "Channel ", _n_chan + 1, " end time: ", _end_time);	 */
 
 				_sgn = make_signal(_new_voltages, , _times);
 				_rsgn = resample(_sgn, _clock_start, _end_time, _clock_delta);
@@ -294,12 +300,6 @@ public fun K3115__init(as_is _nid, optional _method)
 				DevPut(_nid, __CHANNEL_1 + __OUTPUT + (_n_chan * __NODES_PER_CHANNEL), _rsgn_new);
 				_fifo = word((4095. / _range) * _new_rsgn);
 
-			/*
-				DevPut(_nid, __CHANNEL_1 + __OUTPUT + (_n_chan * __NODES_PER_CHANNEL), _rsgn);
-				_fifo = word((4095. / _range) * data(_rsgn));
-			
-				write(*, "TIMES", dim_of(_rsgn));
-			*/
 			}
 			else
 			{
@@ -319,8 +319,6 @@ public fun K3115__init(as_is _nid, optional _method)
 				}
 				else
 				{
-					/* _tensioni = _new_voltages; */
-					/*_tensioni = _new_voltages[*:(size(_tmp)-2)];  Cesare 3-11-2005 _tmp non definito*/
 					_tensioni = _new_voltages[*: 1022];
 					_tensioni = [_tensioni, 0];
 				}
@@ -335,6 +333,7 @@ public fun K3115__init(as_is _nid, optional _method)
 		}
 		else
 		{
+		    write(*, "OFF CHAN ", _n_chan);
 			/* write(*, "Channel ", _n_chan + 1, " is OFF"); */
 			_fifo = word(zero(1024, 0));
 		}
@@ -345,11 +344,15 @@ public fun K3115__init(as_is _nid, optional _method)
 */
 
 		DevCamChk(_camac_name, CamQStopw(_camac_name, _n_chan, 16, size(_fifo), _fifo, 16), 1, 1);
+
+		write(*, "OK CHAN ", _n_chan);
 	}
 		
 
 
 	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 25, _dummy=0, 16), 1, 1);
+
+	write(*, "OK 5");
 
 	return(1);
 }

@@ -45,24 +45,33 @@ write(*, "TSEdgeCCD__init");
     _trig_arm = if_error(data(DevNodeRef(_nid, _N_TRIG_LASER)), _error = 1);
     if(_error )
     {
-    	  DevLogErr(_nid, "Cannot resolve laser trigger ");
- 	  abort();
+		DevLogErr(_nid, "Cannot resolve laser trigger ");
+		abort();
     }
 
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-        _cmd = 'TSEdgeCCD->TSEdgeCCD_init(val('//_interface_id//'))';
-	    _status = MdsValue(_cmd);
-		if(_status == 0)
+		_status = execute(_cmd);
+		if( _status != 0 )
 		{
-			_msg = MdsValue('TSEdgeCCDError()');
-			DevLogErr(_nid, "Error Initializing "//_msg);
+			_cmd = 'TSEdgeCCD->TSEdgeCCD_init(val('//_interface_id//'))';
+			_status = MdsValue(_cmd);
+			if(_status == 0)
+			{
+				_msg = MdsValue('TSEdgeCCDError()');
+				DevLogErr(_nid, "Error Initializing "//_msg);
+				MdsDisconnect();
+				abort();
+			}
 			MdsDisconnect();
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
-		MdsDisconnect();
+
 	}
 	else
 	{

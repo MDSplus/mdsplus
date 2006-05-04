@@ -52,17 +52,26 @@ write(*, "TSEdgeCCD__trigger");
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-        _cmd = 'TSEdgeCCD->TSEdgeCCD_trigger(val('//_interface_id//'))';
-	    _status = MdsValue(_cmd);
-		if(_status == 0)
+		_status = execute(_cmd);
+		if( _status != 0 )
 		{
-			_msg = MdsValue('TSEdgeCCDError()');
-			DevLogErr(_nid, "Error in trigger operation :  "//_msg);
+			_cmd = 'TSEdgeCCD->TSEdgeCCD_trigger(val('//_interface_id//'))';
+			_status = MdsValue(_cmd);
+			if(_status == 0)
+			{
+				_msg = MdsValue('TSEdgeCCDError()');
+				DevLogErr(_nid, "Error in trigger operation :  "//_msg);
+				MdsDisconnect();
+				abort();
+			}
 			MdsDisconnect();
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
-		MdsDisconnect();
+
 	}
 	else
 	{

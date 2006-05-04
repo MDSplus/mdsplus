@@ -41,6 +41,12 @@ public fun K3115__reset(as_is _nid, optional _method)
 
 	_camac_name = data(DevNodeRef(_nid, __CAMAC_NAME));
 
+	for(_n_chan = 0; _n_chan < 6; _n_chan++)
+	{
+		_fifo = word(zero(1024, 0));
+		DevCamChk(_camac_name, CamQStopw(_camac_name, _n_chan, 16, size(_fifo), _fifo, 16), 1, 1);
+	}
+
 	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 9, _zero = 0, 16), 1, 1);
 	DevCamChk(_camac_name, CamPiow(_camac_name, 2, 9, _zero = 0, 16), 1, 1); 
 	return(1);

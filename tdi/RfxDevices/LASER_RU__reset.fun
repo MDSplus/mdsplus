@@ -97,14 +97,25 @@ public fun LASER_RU__reset(as_is _nid, optional _method)
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-		_data = MdsValue('LASER_RU_HWreset($,$)',  _port,  _bit_states);		
-		MdsDisconnect();
-		if(_data == 0)
+		_status = execute(_cmd);
+		if( _status != 0)
 		{
-			DevLogErr(_nid, "Error Initializing ruby Laser");
+			_data = MdsValue('LASER_RU_HWreset($,$)',  _port,  _bit_states);		
+			MdsDisconnect();
+			write(*,   _data);
+		
+			if( size( _data )  == 1)
+			{
+				DevLogErr(_nid, "Error Initializing ruby Laser");
+				abort();
+			}
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
+
 	}
 	else
 	{
@@ -113,11 +124,7 @@ public fun LASER_RU__reset(as_is _nid, optional _method)
 			_data();
 	} 
 
-
-
 	DevPut(_nid, _N_DATA, _data);
-
-	RS232Close(_hComm);
 
 	return (1);
 

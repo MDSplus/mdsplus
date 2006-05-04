@@ -84,9 +84,12 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	}
 
 
+
  	/*  Decode trigger mode parameter */
 
 	DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL',  'EXTERNAL',  'AUTOMATIC', 'MANUAL'], [0, 1, 2, 3], _trig_mode = 0);
+
+
 
 	/*  Get OSC parameter */
 
@@ -96,6 +99,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	        DevLogErr(_nid, "Invalid voltage oscillator value");
 			abort();
   	}
+
 
     /*  Get amplifier parameter 1 2 3 */
 
@@ -122,6 +126,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 			abort();
   	}
 
+
 	/*  Get pbal  parameter 1 2 3 */
 
 	_pbal_par = [];
@@ -132,6 +137,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	        DevLogErr(_nid, "Invalid balance parameter 1 value");
 			abort();
   	}
+
 
     _pbal_par = [_pbal_par, if_error(data(DevNodeRef(_nid, _N_PBAL_PAR_2)), _error = 1)];
 	if( _error || _pbal_par[1] > 4095)
@@ -151,12 +157,14 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 
 	_dtime1_par = [];
 
+
     _dtime1_par = [ _dtime1_par, if_error(DevNodeRef(_nid, _N_DTIME1_PAR_1), _error = 1)];
 	if( _error )
 	{
 	        DevLogErr(_nid, "Invalid delay time parameter 1 value");
 			abort();
   	}
+
 
     _dtime1_par = [ _dtime1_par, if_error(DevNodeRef(_nid, _N_DTIME1_PAR_2), _error = 1)];
 	if( _error )
@@ -165,12 +173,14 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 			abort();
   	}
 
+
     _dtime1_par = [ _dtime1_par, if_error(DevNodeRef(_nid, _N_DTIME1_PAR_3), _error = 1)];
 	if( _error )
 	{
 	        DevLogErr(_nid, "Invalid delay time parameter 3 value");
 			abort();
   	}
+
 
     _dtime1_par = [ _dtime1_par, if_error(DevNodeRef(_nid, _N_DTIME1_PAR_4), _error = 1)];
 	if( _error )
@@ -179,12 +189,14 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 			abort();
   	}
 
+
     _dtime1_par = [ _dtime1_par, if_error(DevNodeRef(_nid, _N_DTIME1_PAR_5), _error = 1)];
 	if( _error )
 	{
 	        DevLogErr(_nid, "Invalid delay time parameter 5 value");
 			abort();
   	}
+
 
 	/* Get delay fire */
 
@@ -194,6 +206,7 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	        DevLogErr(_nid, "Invalid delay fire value");
 			abort();
   	}
+
 
 	_df1m_par = [];
 
@@ -229,15 +242,26 @@ public fun LASER_RU__init(as_is _nid, optional _method)
     }
 
 
+
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-		_status = MdsValue('LASER_RU_HWinit($,$,$,$,$,$,$,$,$)',  _port,  _trig_mode,  _osc_par,  _amp_par, _pbal_par, _dtime1_par, _delay_fire, _df1m_par,  _bit_states);		
-		MdsDisconnect();
-		if(_status == 0)
+		_status = execute(_cmd);
+		if( _status != 0 )
 		{
-			DevLogErr(_nid, "Error Initializing ruby Laser");
+			write(*,  _port,  _trig_mode,  _osc_par,  _amp_par, _pbal_par, _dtime1_par, _delay_fire, _df1m_par,  _bit_states);
+		
+			_status = MdsValue('LASER_RU_HWinit($,$,$,$,$,$,$,$,$)',  _port,  _trig_mode,  _osc_par,  _amp_par, _pbal_par, _dtime1_par, _delay_fire, _df1m_par,  _bit_states);		
+			MdsDisconnect();
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error Initializing ruby Laser");
+				abort();
+			}
+		}
+		else
+		{
+			DevLogErr(_nid, "Cannot connect to mdsip server "//_ip_addr);
 			abort();
 		}
 	}
