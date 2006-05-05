@@ -1,3 +1,17 @@
+/*
+
+    RfxRunsMaxTemp.fun
+
+        la funzione restituisce il valore massimo di temperatura misurato
+		dalle sonde prescelte per il rang di run desiderato:
+		
+        I parametri da passare sono :
+
+        _sonda : tipo di sonda da utilizzare TA, TF, TS o TB
+        _runs  :  array con i runs di cui si vuole avere il valore massimo 
+				  di temperatura ( es [1010:1020])
+                   
+*/
 public fun RfxRunsMaxTemp(in _sonda, in _runs)
 {
 	_numRun = size(_runs);

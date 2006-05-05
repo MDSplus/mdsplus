@@ -1,3 +1,21 @@
+/*      
+
+    RfxMaxTemperature.fun
+
+	la funzione restituisce il segnale che ha per ascissa
+	la posizione toroidale della sonda di temperatura e per 
+	ordinata il valore massimo della temperatura nel dato run 
+	per una data posizione poloidale.
+	I parametri da passare sono :
+	
+	_sonda : tipo di sonda da utilizzare TA, TF, TS o TB
+	_pol : posizione poloidale valore tra 1 e 8 
+	       che individua le seguenti posizioni poloidali
+			
+		   [22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5]
+
+*/
+
 public fun RfxMaxTemperature(in _sonda, in _pol)
 {	
 	_x = [];

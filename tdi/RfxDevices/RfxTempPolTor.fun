@@ -1,3 +1,16 @@
+/*
+
+    RfxTempPolTor.fun
+
+        la funzione restituisce un segnale bidimensionale che ha
+		per ascissa la posizione toroidale ordinata la sua posizione 
+		poloidale e ha per valore il valore di temperatura della 
+		sonda alla data ora.
+
+        _sonda : tipo di sonda da utilizzare TA, TF, TS o TB
+        _ora : espressa nella forma hh:mm:ss
+
+*/
 public fun RfxTempPolTor(in _sonda, in _ora)
 {
 

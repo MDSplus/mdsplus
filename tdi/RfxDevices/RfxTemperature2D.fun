@@ -1,3 +1,18 @@
+/*
+
+    RfxTemperature2D.fun
+
+        la funzione restituisce un segnale bidimensionale che ha 
+		per ascissa il tempo per ordinata la sua posizione toroidale 
+		e ha per valore il valore medio o massimo misurato dalle sonde 
+		posizionate poloidalmente nella data posizione toroidale.
+		
+        _sonda : tipo di sonda da utilizzare TA, TF, TS o TB
+        _mode : MAX o MEAN
+
+*/
+
+
 public fun RfxTemperature2D(in _sonda, in _mode)
 {
 	_mat = [];
