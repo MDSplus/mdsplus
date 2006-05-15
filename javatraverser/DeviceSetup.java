@@ -403,8 +403,27 @@ public class DeviceSetup
     }
     public void reset()
     {
+        NidData oldNid = null;
+        try
+        {
+            oldNid = subtree.getDefault(Tree.context);
+            subtree.setDefault(new NidData(baseNid), Tree.context);
+        }
+        catch (Exception exc)
+        {
+            System.out.println(exc);
+        }
         for (int i = 0; i < num_components; i++)
             ( (DeviceComponent) device_components.elementAt(i)).reset();
+
+        try
+        {
+            subtree.setDefault(oldNid, Tree.context);
+        }
+        catch (Exception exc)
+        {
+            System.out.println("Error in Configure: " + exc);
+        }
     }
 
     public void addDataChangeListener(DataChangeListener listener)
