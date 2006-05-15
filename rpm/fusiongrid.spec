@@ -18,13 +18,15 @@ requires: openmotif
 Main libraries and programs to get MDSplus and Globus operational
 
 %prep
-cvs -q -d :pserver:anonymous@cvs.globus.org:/home/globdev/CVS/globus-packages co packaging
+GLOBUS_VERSION=globus_4_0_2
+export GLOBUS_VERSION
+cvs -q -d :pserver:anonymous@cvs.globus.org:/home/globdev/CVS/globus-packages co -r $GLOBUS_VERSION packaging
 cvs -q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co mdsplus
 
 %build
 cd packaging
-./make-packages.pl --bundles=globus-gram,globus-gridftp --install=$RPM_BUILD_ROOT/usr/local/fusiongrid --deps --anonymous --flavor=gcc32
-./make-packages.pl --packages=globus_xio --install=$RPM_BUILD_ROOT/usr/local/fusiongrid --deps --anonymous --flavor=gcc32pthr
+./make-packages.pl --bundles=globus-gram,globus-gridftp --install=$RPM_BUILD_ROOT/usr/local/fusiongrid --deps --anonymous --flavor=gcc32  --gt2-tag $GLOBUS_VERSION --gt3-tag $GLOBUS_VERSION gt4-tag $GLOBUS_VERSION
+./make-packages.pl --packages=globus_xio --install=$RPM_BUILD_ROOT/usr/local/fusiongrid --deps --anonymous --flavor=gcc32pthr --gt2-tag $GLOBUS_VERSION --gt3-tag $GLOBUS_VERSION --gt4-tag $GLOBUS_VERSION
 cd ..
 GLOBUS_LOCATION=$RPM_BUILD_ROOT/usr/local/fusiongrid
 GPT_LOCATION=$RPM_BUILD_ROOT/usr/local/fusiongrid
