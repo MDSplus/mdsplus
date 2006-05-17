@@ -13,13 +13,17 @@ import java.util.*;
 public class LoadPulse
 {
     static final String confFileName = "LoadPulse.conf";
+    Database tree;
+    int numPMUnits = 0;
+
 
     static class NodeDescriptor
     {
         String path;
         String decompiled;
         boolean on, parentOn, noWriteModel;
-        NodeDescriptor(String path, String decompiled, boolean on, boolean parentOn, boolean noWriteModel)
+        NodeDescriptor(String path, String decompiled, boolean on,
+                       boolean parentOn, boolean noWriteModel)
         {
             this.path = path;
             this.decompiled = decompiled;
@@ -38,11 +42,21 @@ public class LoadPulse
             return decompiled;
         }
 
-        boolean isOn(){return on;}
-        boolean isParentOn(){return parentOn;}
-        boolean isNoWriteModel(){return noWriteModel;}
-    }
+        boolean isOn()
+        {
+            return on;
+        }
 
+        boolean isParentOn()
+        {
+            return parentOn;
+        }
+
+        boolean isNoWriteModel()
+        {
+            return noWriteModel;
+        }
+    }
 
     public static void main(String args[])
     {
@@ -55,7 +69,7 @@ public class LoadPulse
                 "Usage: java LoadPulse <experiment> <input shot> [<output shot>]");
             System.exit(0);
         }
-        if (args.length >=2 )
+        if (args.length >= 2)
         {
             try
             {
@@ -67,9 +81,11 @@ public class LoadPulse
             }
             int shot = Integer.parseInt(args[1]);
             LoadPulse lp = new LoadPulse();
-            try {
+            try
+            {
                 lp.load(args[0], shot, outShot);
-            }catch(Exception exc)
+            }
+            catch (Exception exc)
             {
                 System.err.println(exc);
             }
@@ -78,96 +94,10 @@ public class LoadPulse
 
     void load(String experiment, int shot, int outShot) throws Exception
     {
-    	System.out.println("LOAD PULSE");
-        Vector nodesV = new Vector();
-             Database tree = new Database(experiment, shot);
-            tree.open();
-            BufferedReader br = new BufferedReader(new FileReader(
-                confFileName));
-            String basePath;
-            String currPath = "";
-            NidData defNid = tree.getDefault(0);
-            try {
-            while ( (basePath = br.readLine()) != null)
-            {
-                NidData currNid;
-                try
-                {
-                    currNid = tree.resolve(new PathData(basePath), 0);
-                    tree.setDefault(currNid, 0);
-                    NidData[] nidsNumeric = tree.getWild( NodeInfo.USAGE_NUMERIC, 0);
-                    if(nidsNumeric == null) nidsNumeric = new NidData[0];
-                    NidData[] nidsText = tree.getWild( NodeInfo.USAGE_TEXT, 0);
-                    if(nidsText == null) nidsText = new NidData[0];
-                    NidData[] nidsSignal = tree.getWild( NodeInfo.USAGE_SIGNAL, 0);
-                    if(nidsSignal == null) nidsSignal = new NidData[0];
-                    NidData[] nidsStruct = tree.getWild( NodeInfo.USAGE_STRUCTURE, 0);
-                    if(nidsStruct == null) nidsStruct = new NidData[0];
-
- ////Get also data from subtree root
-
-                    int addedLen;
-                    try {
-                        tree.getData(currNid, 0);
-                        addedLen = 1;
-                    }catch(Exception exc){addedLen = 0;}
-
-                     NidData nids[] = new NidData[nidsNumeric.length + nidsText.length +
-                        nidsSignal.length + nidsStruct.length + addedLen];
-
-                    if(addedLen > 0)
-                        nids[nidsNumeric.length + nidsText.length +
-                        nidsSignal.length + nidsStruct.length] = currNid;
-///////////////////////
-
-                    int j = 0;
-                    for (int i = 0; i < nidsNumeric.length; i++)
-                        nids[j++] = nidsNumeric[i];
-                    for (int i = 0; i < nidsText.length; i++)
-                        nids[j++] = nidsText[i];
-                    for (int i = 0; i < nidsSignal.length; i++)
-                        nids[j++] = nidsSignal[i];
-                    for (int i = 0; i < nidsStruct.length; i++)
-                        nids[j++] = nidsStruct[i];
-
-                    tree.setDefault(defNid, 0);
-
-                    for (int i = 0; i < nids.length; i++)
-                    {
-                        System.out.println(nids[i].getInt());
-                       NodeInfo currInfo = tree.getInfo(nids[i], 0);
-                        currPath = currInfo.getFullPath();
-                        System.out.println(currPath);
-                        try
-                        {
-                            Data currData = tree.getData(nids[i], 0);
-                            if (currData != null)
-                            {
-                                String currDecompiled = currData.toString();
-                                nodesV.addElement(new NodeDescriptor(currPath,
-                                    currDecompiled, currInfo.isOn(), currInfo.isParentOn(),
-                                    currInfo.isNoWriteModel()||currInfo.isWriteOnce()));
-                            }
-                            else
-                                nodesV.addElement(new NodeDescriptor(currPath,
-                                    null, currInfo.isOn(), currInfo.isParentOn(),
-                                    currInfo.isNoWriteModel()||currInfo.isWriteOnce()));
-                        }
-                        catch (Exception exc)
-                        {
-                            nodesV.addElement(new NodeDescriptor(currPath,
-                                    null, currInfo.isOn(), currInfo.isParentOn(),
-                                    currInfo.isNoWriteModel()||currInfo.isWriteOnce()));
-                        }
-                    }
-                }
-                catch (Exception exc)
-                {
-                    System.err.println("Error reading " + currPath + ": " + exc);
-                }
-            }
-            tree.close(0);
-            br.close();
+        System.out.println("LOAD PULSE");
+        Vector nodesV = getNodes(experiment, shot);
+        try
+        {
             tree = new Database(experiment, outShot);
             tree.open();
             for (int i = 0; i < nodesV.size(); i++)
@@ -176,22 +106,24 @@ public class LoadPulse
 
                 try
                 {
-                    NidData currNid = tree.resolve(new PathData(currNode.getPath()), 0);
+                    NidData currNid = tree.resolve(new PathData(currNode.
+                        getPath()), 0);
 
                     //if(currNode.isNoWriteModel()) System.out.println("NO WRITE MODEL!!" + currNode.getPath());
 
-                    if(currNode.getDecompiled() != null && !currNode.isNoWriteModel())
+                    if (currNode.getDecompiled() != null &&
+                        !currNode.isNoWriteModel())
                     {
-                         Data currData = Data.fromExpr(currNode.getDecompiled());
+                        Data currData = Data.fromExpr(currNode.getDecompiled());
                         tree.putData(currNid, currData, 0);
                     }
-                    if(currNode.isOn() && currNode.isParentOn())
-                       tree.setOn(currNid, true, 0);
-                    else if(currNode.isParentOn())
+                    if (currNode.isOn() && currNode.isParentOn())
+                        tree.setOn(currNid, true, 0);
+                    else if (currNode.isParentOn())
                     {
                         tree.setOn(currNid, false, 0);
                     }
-               }
+                }
                 catch (Exception exc)
                 {
                     System.err.println("Error writing " + currNode.getPath() +
@@ -205,4 +137,154 @@ public class LoadPulse
             System.err.println("FATAL ERROR: " + exc);
         }
     }
+
+    Vector getNodes(String experiment, int shot) throws Exception
+    {
+        Vector nodesV = new Vector();
+        tree = new Database(experiment, shot);
+        tree.open();
+        BufferedReader br = new BufferedReader(new FileReader(
+            confFileName));
+        String basePath;
+        String currPath = "";
+        NidData defNid = tree.getDefault(0);
+        while ( (basePath = br.readLine()) != null)
+        {
+            NidData currNid;
+            try
+            {
+                currNid = tree.resolve(new PathData(basePath), 0);
+                tree.setDefault(currNid, 0);
+                NidData[] nidsNumeric = tree.getWild(NodeInfo.USAGE_NUMERIC, 0);
+                if (nidsNumeric == null) nidsNumeric = new NidData[0];
+                NidData[] nidsText = tree.getWild(NodeInfo.USAGE_TEXT, 0);
+                if (nidsText == null) nidsText = new NidData[0];
+                NidData[] nidsSignal = tree.getWild(NodeInfo.USAGE_SIGNAL, 0);
+                if (nidsSignal == null) nidsSignal = new NidData[0];
+                NidData[] nidsStruct = tree.getWild(NodeInfo.USAGE_STRUCTURE, 0);
+                if (nidsStruct == null) nidsStruct = new NidData[0];
+
+                ////Get also data from subtree root
+
+                int addedLen;
+                try
+                {
+                    tree.getData(currNid, 0);
+                    addedLen = 1;
+                }
+                catch (Exception exc)
+                {
+                    addedLen = 0;
+                }
+
+                NidData nids[] = new NidData[nidsNumeric.length +
+                    nidsText.length +
+                    nidsSignal.length + nidsStruct.length + addedLen];
+
+                if (addedLen > 0)
+                    nids[nidsNumeric.length + nidsText.length +
+                        nidsSignal.length + nidsStruct.length] = currNid;
+                ///////////////////////
+
+                int j = 0;
+                for (int i = 0; i < nidsNumeric.length; i++)
+                    nids[j++] = nidsNumeric[i];
+                for (int i = 0; i < nidsText.length; i++)
+                    nids[j++] = nidsText[i];
+                for (int i = 0; i < nidsSignal.length; i++)
+                    nids[j++] = nidsSignal[i];
+                for (int i = 0; i < nidsStruct.length; i++)
+                    nids[j++] = nidsStruct[i];
+
+                tree.setDefault(defNid, 0);
+
+                for (int i = 0; i < nids.length; i++)
+                {
+                    System.out.println(nids[i].getInt());
+                    NodeInfo currInfo = tree.getInfo(nids[i], 0);
+                    currPath = currInfo.getFullPath();
+                    System.out.println(currPath);
+                    try
+                    {
+                        Data currData = tree.getData(nids[i], 0);
+                        if (currData != null)
+                        {
+                            String currDecompiled = currData.toString();
+                            nodesV.addElement(new NodeDescriptor(currPath,
+                                currDecompiled, currInfo.isOn(),
+                                currInfo.isParentOn(),
+                                currInfo.isNoWriteModel() ||
+                                currInfo.isWriteOnce()));
+                        }
+                        else
+                            nodesV.addElement(new NodeDescriptor(currPath,
+                                null, currInfo.isOn(), currInfo.isParentOn(),
+                                currInfo.isNoWriteModel() ||
+                                currInfo.isWriteOnce()));
+                    }
+                    catch (Exception exc)
+                    {
+                        nodesV.addElement(new NodeDescriptor(currPath,
+                            null, currInfo.isOn(), currInfo.isParentOn(),
+                            currInfo.isNoWriteModel() || currInfo.isWriteOnce()));
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                System.err.println("Error reading " + currPath + ": " + exc);
+            }
+        }
+        numPMUnits = countPMUnits();
+        tree.close(0);
+        br.close();
+        return nodesV;
+    }
+
+    void getSetup(String experiment, int shot, Hashtable setupHash, Hashtable setupOnHash) throws Exception
+    {
+        Vector nodesV = getNodes(experiment, shot);
+        int i;
+        NodeDescriptor currNode;
+        for (i = 0; i < nodesV.size(); i++)
+        {
+            currNode = (NodeDescriptor) nodesV.elementAt(i);
+            String decompiled = currNode.getDecompiled();
+            if(decompiled != null)
+                try
+                {
+                    setupHash.put(currNode.getPath(), currNode.getDecompiled());
+                    setupOnHash.put(currNode.getPath(),
+                                    new Boolean(currNode.isOn()));
+                }
+                catch (Exception exc)
+                {
+                    System.err.println(
+                        "Internal error in LoadPulse.getSetup(): " + exc);
+                }
+        }
+     }
+
+     int countPMUnits()
+     {
+         try
+         {
+             NidData rootNid = tree.resolve(new PathData("\\PM_SETUP"), 0);
+             NidData unitsNid = new NidData(rootNid.getInt() + 5);
+             Data unitsData = tree.evaluateData(unitsNid, 0);
+             String units = unitsData.toString();
+             StringTokenizer st = new StringTokenizer(units, " ,\"");
+             return st.countTokens();
+         }
+         catch (Exception exc)
+         {
+             System.err.println("Error getting num enabled PM: " + exc);
+             return 0;
+         }
+     }
+
+     int getPMUnits()
+     {
+         return numPMUnits;
+     }
 }

@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.print.*;
@@ -72,6 +73,9 @@ public class ParameterSetting
     NidData nids[] = new NidData[NUM_DEVICES];
     NidData mhdBcNid;
     DeviceSetup devices[] = new DeviceSetup[NUM_DEVICES];
+    JMenuItem applyToModelItem;
+    JMenuItem revertModelItem;
+
 
     String rtIp;
     Socket rtSock;
@@ -79,10 +83,15 @@ public class ParameterSetting
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
-    Hashtable rfxConfigHash = new Hashtable();
+ /*   Hashtable rfxConfigHash = new Hashtable();
     Hashtable rfxConfigOnHash = new Hashtable();
     Hashtable currConfigHash = new Hashtable();
     Hashtable currConfigOnHash = new Hashtable();
+*/
+
+    Hashtable mapSetupHash = new Hashtable();
+    Hashtable modelSetupHash = new Hashtable();
+    Hashtable modelSetupOnHash = new Hashtable();
     Hashtable currSetupHash = new Hashtable();
     Hashtable currSetupOnHash = new Hashtable();
 
@@ -94,7 +103,7 @@ public class ParameterSetting
 
     boolean isOnline;
     JComboBox modeC;
-    int shot = -1;
+    int shot = 100;
 
     int []
         pm_mask = new int[]{25,26,1},
@@ -111,35 +120,12 @@ public class ParameterSetting
         chopper_mask = new int[]{32,33},
         inverter_mask = new int[]{34,35,36,37,41,42,43,44};
 
-    JCheckBox
-        poloidalCB,
-        axiCB,
-        pcCB,
-        pmCB,
-        toroidalCB,
-        chopperCB,
-        feedForwardCB,
-        inverterCB,
-        tfCB,
-        bfCB,
-        mhdCB,
-        viCB,
-        timesPmCB,
-        timesPcCB,
-        timesPvCB,
-        timesPpCB,
-        timesPrCB,
-        timesPtsoCB,
-        timesPtcbCB,
-        timesPtctCB,
-        timesGasCB,
-        timesTfCB,
-        timesIsCB,
-        timesChopperCB,
-        timesInverterCB;
-    JDialog saveSetupD = null;
-
     JFileChooser chooser = new JFileChooser();
+
+    SelectSetup saveSelected = null, loadSelected = null;
+    DecouplingDialog decouplingD;
+
+
 
     ParameterSetting()
     {
@@ -181,7 +167,7 @@ public class ParameterSetting
         fileMenu.add(printItem);
         if(!isRt)
         {
-            JMenuItem loadItem = new JMenuItem("Load pulse");
+            JMenuItem loadItem = new JMenuItem("Load pulse...");
             loadItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -195,11 +181,11 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    saveSetup();
+                    saveSelectedSetup();
                 }
             });
             fileMenu.add(saveItem);
-            loadItem = new JMenuItem("Load Configuration");
+            loadItem = new JMenuItem("Load Configuration...");
             loadItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -209,6 +195,39 @@ public class ParameterSetting
             });
             fileMenu.add(loadItem);
 
+            applyToModelItem = new JMenuItem("Apply To Model");
+            applyToModelItem.addActionListener(new ActionListener()
+           {
+               public void actionPerformed(ActionEvent e)
+               {
+                   if(JOptionPane.showConfirmDialog(ParameterSetting.this, "Transfer current configuration to the experiment model?",
+                      "Confirmation request", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                      applyToModel();
+               }
+           });
+           fileMenu.add(applyToModelItem);
+
+           revertModelItem = new JMenuItem("Revert To Previous Model");
+           revertModelItem.addActionListener(new ActionListener()
+           {
+              public void actionPerformed(ActionEvent e)
+              {
+                  if(JOptionPane.showConfirmDialog(ParameterSetting.this, "Revert to the last experiment model?",
+                     "Confirmation request", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                     revertModel();
+              }
+          });
+          revertModelItem.setEnabled(false);
+          fileMenu.add(revertModelItem);
+
+          JMenuItem decouplingItem = new JMenuItem("Set MHD Decoupling...");
+          decouplingItem.addActionListener(new ActionListener() {
+              public void actionPerformed(ActionEvent e)
+              {
+                  setDecoupling();
+              }
+           });
+           fileMenu.add(decouplingItem);
 
         }
         menuBar.add(fileMenu);
@@ -232,39 +251,26 @@ public class ParameterSetting
 
         if(!isRt)
         {
-            jp.add(new JLabel("Mode: "));
-            modeC = new JComboBox(new String[]{"Online", "Offline"});
+            jp.add(new JLabel("Working shot: "));
+            modeC = new JComboBox(new String[]{"100","101","102","103","104","105","106","107","108","109"});
+            modeC.setSelectedIndex(0);
             modeC.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e)
                 {
                     int idx = modeC.getSelectedIndex();
-                    if(idx == 0) //Online
-                    {
-                        if(shot != -1)
-                        {
-                            try {
-                                rfx.close(0);
-                                rfx = new Database("rfx", -1);
-                                rfx.open();
-                            }catch(Exception exc){System.err.println("Error opening RFX model: " + exc);}
-                            shot = -1;
-                        }
+                    try {
+                        rfx.close(0);
+                        rfx = new Database("rfx", 100+idx);
+                        rfx.open();
+                        shot = 100 + idx;
                     }
-                    else //Offline
+                    catch(Exception exc)
                     {
-                        if(shot == -1)
-                        {
-                            try {
-                                rfx.close(0);
-                                rfx = new Database("rfx", 100);
-                                rfx.open();
-                            }catch(Exception exc){System.err.println("Error opening RFX model: " + exc);}
-                            shot = 100;
-                        }
+                        System.err.println("Error opening working RFX pulse: " + exc);
+                        System.exit(0);
                     }
-                }
+                 }
             });
-            modeC.setSelectedIndex(0);
             jp.add(modeC);
         }
 
@@ -1166,7 +1172,10 @@ public class ParameterSetting
     {
         try
         {
-            rfx = new Database("RFX", -1);
+            if(isRt)
+                rfx = new Database("RFX", -1);
+            else
+                rfx = new Database("RFX", 100);
             rfx.open();
         }
         catch (Exception exc)
@@ -1213,13 +1222,13 @@ public class ParameterSetting
             nids[19] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
                                                   0);
 
-            saveConfig();
        }
         catch (Exception exc)
         {
             System.err.println("Error opening device");
             System.exit(0);
         }
+        saveSetup(currSetupHash, currSetupOnHash);
 
         if (isRt)
             setTitle("RFX Parameters -- RT --    shot: " + getShot());
@@ -1227,10 +1236,10 @@ public class ParameterSetting
             setTitle("RFX Parameters  shot: " + getShot());
     }
 
-    void saveConfig()
+    void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
     {
-        for(int i = 13; i < 20; i++)
-            saveConfig(i, rfxConfigHash, rfxConfigOnHash);
+        for(int i = 0; i < 13; i++)
+            saveSetup(i, setupHash, setupOnHash);
     }
 
     void loadSetup()
@@ -1241,14 +1250,7 @@ public class ParameterSetting
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             readSetupFromFile(chooser.getSelectedFile().getPath());
-            applySetup();
-           /* String errMsg = checkConfig(currConfigHash, currConfigOnHash);
-            if(errMsg != null)
-            {
-                JOptionPane.showMessageDialog(this, errMsg, "Configuration error",
-                                              JOptionPane.WARNING_MESSAGE);
-
-            }*/
+            loadSelectedSetup();
         }
     }
 
@@ -1265,94 +1267,248 @@ public class ParameterSetting
         }
     }
 
-
-
-    void saveSetup()
+//Class SelectSetup defines the check boxes for selective load and save
+    class SelectSetup extends JDialog
     {
-        if (saveSetupD == null)
+        JCheckBox
+            poloidalCB,
+            axiCB,
+            pcCB,
+            pmCB,
+            toroidalCB,
+            chopperCB,
+            feedForwardCB,
+            inverterCB,
+            tfCB,
+            bfCB,
+            mhdCB,
+            viCB,
+            timesPmCB,
+            timesPcCB,
+            timesPvCB,
+            timesPpCB,
+            timesPrCB,
+            timesPtsoCB,
+            timesPtcbCB,
+            timesPtctCB,
+            timesGasCB,
+            timesTfCB,
+            timesIsCB,
+            timesChopperCB,
+            timesInverterCB;
+        JCheckBox []checkBoxes = new JCheckBox[12];
+        JCheckBox []timeCheckBoxes = new JCheckBox[13];
+
+        SelectSetup(ActionListener actionListener)
         {
-            saveSetupD = new JDialog(this, "Component Selection");
+            super(ParameterSetting.this, "Select components");
             JPanel jp1 = new JPanel();
             jp1.setLayout(new GridLayout(1, 2));
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(13, 1));
-            jp.add(poloidalCB = new JCheckBox("Poloidal"));
-            jp.add(axiCB = new JCheckBox("Axisymmetric contr."));
-            jp.add(pcCB = new JCheckBox("PC"));
-            jp.add(pmCB = new JCheckBox("PM"));
-            jp.add(toroidalCB = new JCheckBox("Toroidal"));
-            jp.add(chopperCB = new JCheckBox("Chopper"));
-            jp.add(feedForwardCB = new JCheckBox("Feed Forward"));
-            jp.add(inverterCB = new JCheckBox("Inverter"));
-            jp.add(tfCB = new JCheckBox("TF"));
-            jp.add(bfCB = new JCheckBox("B & F"));
-            jp.add(mhdCB = new JCheckBox("MHD"));
-            jp.add(viCB = new JCheckBox("VI"));
+            jp.add(checkBoxes[0] = poloidalCB = new JCheckBox("Poloidal", true));
+            jp.add(checkBoxes[1] = axiCB = new JCheckBox("Axisymmetric contr.", true));
+            jp.add(checkBoxes[2] = pcCB = new JCheckBox("PC", true));
+            jp.add(checkBoxes[3] = pmCB = new JCheckBox("PM", true));
+            jp.add(checkBoxes[4] = toroidalCB = new JCheckBox("Toroidal", true));
+            jp.add(checkBoxes[5] = chopperCB = new JCheckBox("Chopper", true));
+            jp.add(checkBoxes[6] = feedForwardCB = new JCheckBox("Feed Forward", true));
+            jp.add(checkBoxes[7] = inverterCB = new JCheckBox("Inverter", true));
+            jp.add(checkBoxes[8] = tfCB = new JCheckBox("TF", true));
+            jp.add(checkBoxes[9] = bfCB = new JCheckBox("B & F", true));
+            jp.add(checkBoxes[10] = mhdCB = new JCheckBox("MHD", true));
+            jp.add(checkBoxes[11] = viCB = new JCheckBox("VI", true));
             jp1.add(jp);
 
             jp = new JPanel();
             jp.setLayout(new GridLayout(13, 1));
-            jp.add(timesPmCB = new JCheckBox("Times: PM"));
-            jp.add(timesPcCB = new JCheckBox("Times: PC"));
-            jp.add(timesPvCB = new JCheckBox("Times: PV"));
-            jp.add(timesPpCB = new JCheckBox("Times: PP"));
-            jp.add(timesPrCB = new JCheckBox("Times: PR"));
-            jp.add(timesPtsoCB = new JCheckBox("Times: PTSO"));
-            jp.add(timesPtcbCB = new JCheckBox("Times: PTCB"));
-            jp.add(timesPtctCB = new JCheckBox("Times: PTCT"));
-            jp.add(timesGasCB = new JCheckBox("Times: Gas"));
-            jp.add(timesTfCB = new JCheckBox("Times: TF"));
-            jp.add(timesIsCB = new JCheckBox("Times: IS"));
-            jp.add(timesChopperCB = new JCheckBox("Times: Chopper"));
-            jp.add(timesInverterCB = new JCheckBox("Times: Inverter"));
+            jp.add(timeCheckBoxes[0] = timesPmCB = new JCheckBox("Times: PM", true));
+            jp.add(timeCheckBoxes[1] = timesPcCB = new JCheckBox("Times: PC", true));
+            jp.add(timeCheckBoxes[2] = timesPvCB = new JCheckBox("Times: PV", true));
+            jp.add(timeCheckBoxes[3] = timesPpCB = new JCheckBox("Times: PP", true));
+            jp.add(timeCheckBoxes[4] = timesPrCB = new JCheckBox("Times: PR", true));
+            jp.add(timeCheckBoxes[5] = timesPtsoCB = new JCheckBox("Times: PTSO", true));
+            jp.add(timeCheckBoxes[6] = timesPtcbCB = new JCheckBox("Times: PTCB", true));
+            jp.add(timeCheckBoxes[7] = timesPtctCB = new JCheckBox("Times: PTCT", true));
+            jp.add(timeCheckBoxes[8] = timesGasCB = new JCheckBox("Times: Gas", true));
+            jp.add(timeCheckBoxes[9] = timesTfCB = new JCheckBox("Times: TF", true));
+            jp.add(timeCheckBoxes[10] = timesIsCB = new JCheckBox("Times: IS", true));
+            jp.add(timeCheckBoxes[11] = timesChopperCB = new JCheckBox("Times: Chopper", true));
+            jp.add(timeCheckBoxes[12] = timesInverterCB = new JCheckBox("Times: Inverter", true));
 
             jp1.add(jp);
 
-            saveSetupD.add(jp1, "Center");
+            getContentPane().add(jp1, "Center");
             jp = new JPanel();
             JButton saveB = new JButton("Save");
-            saveB.addActionListener(new ActionListener()
+            saveB.addActionListener(actionListener);
+            jp.add(saveB);
+            JButton cancelB = new JButton("Cancel");
+            cancelB.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    saveSetup(new boolean[]
-                              {
-                              poloidalCB.isSelected(),
-                              axiCB.isSelected(),
-                              pcCB.isSelected(),
-                              pmCB.isSelected(),
-                              toroidalCB.isSelected(),
-                              chopperCB.isSelected(),
-                              feedForwardCB.isSelected(),
-                              inverterCB.isSelected(),
-                              tfCB.isSelected(),
-                              bfCB.isSelected(),
-                              mhdCB.isSelected(),
-                              viCB.isSelected()},
-                              new boolean[]
-                              {
-                              timesPmCB.isSelected(),
-                              timesPcCB.isSelected(),
-                              timesPvCB.isSelected(),
-                              timesPpCB.isSelected(),
-                              timesPrCB.isSelected(),
-                              timesPtsoCB.isSelected(),
-                              timesPtcbCB.isSelected(),
-                              timesPtctCB.isSelected(),
-                              timesGasCB.isSelected(),
-                              timesTfCB.isSelected(),
-                              timesIsCB.isSelected(),
-                              timesChopperCB.isSelected(),
-                              timesInverterCB.isSelected()});
-                    saveSetupD.setVisible(false);
-
+                    setVisible(false);
                 }
             });
-            jp.add(saveB);
-            saveSetupD.add(jp, "South");
-            saveSetupD.pack();
+            jp.add(cancelB);
+            getContentPane().add(jp, "South");
+            pack();
         }
-        saveSetupD.setVisible(true);
+
+
+        boolean []getSelectedDevices()
+        {
+            return new boolean[]
+                  {
+                  poloidalCB.isSelected(),
+                  axiCB.isSelected(),
+                  pcCB.isSelected(),
+                  pmCB.isSelected(),
+                  toroidalCB.isSelected(),
+                  chopperCB.isSelected(),
+                  feedForwardCB.isSelected(),
+                  inverterCB.isSelected(),
+                  tfCB.isSelected(),
+                  bfCB.isSelected(),
+                  mhdCB.isSelected(),
+                  viCB.isSelected()};
+        }
+
+        boolean []getSelectedTimes()
+        {
+                 return  new boolean[]
+                  {
+                  timesPmCB.isSelected(),
+                  timesPcCB.isSelected(),
+                  timesPvCB.isSelected(),
+                  timesPpCB.isSelected(),
+                  timesPrCB.isSelected(),
+                  timesPtsoCB.isSelected(),
+                  timesPtcbCB.isSelected(),
+                  timesPtctCB.isSelected(),
+                  timesGasCB.isSelected(),
+                  timesTfCB.isSelected(),
+                  timesIsCB.isSelected(),
+                  timesChopperCB.isSelected(),
+                  timesInverterCB.isSelected()};
+        }
+
+
+        void setEnabledDevices(Hashtable setupHash)
+        {
+            for(int i = 0; i < 12; i++)
+            {
+                checkBoxes[i].setSelected(false);
+                checkBoxes[i].setEnabled(false);
+            }
+            Enumeration pathNames = setupHash.keys();
+            while(pathNames.hasMoreElements())
+            {
+                Integer currInt = (Integer)mapSetupHash.get(pathNames.nextElement());
+                if(currInt != null)
+                {
+                    int idx = currInt.intValue();
+                    if(idx > 0)
+                    {
+                        checkBoxes[idx-1].setEnabled(true);
+                        checkBoxes[idx-1].setSelected(true);
+                    }
+                }
+            }
+        }
+
+        void setEnabledTimes(Hashtable setupHash)
+        {
+            for(int i = 0; i < 13; i++)
+            {
+                timeCheckBoxes[i].setSelected(false);
+                timeCheckBoxes[i].setEnabled(false);
+            }
+            int nids[] = new int[setupHash.size()];
+            Enumeration pathNames = setupHash.keys();
+            int idx = 0;
+            while(pathNames.hasMoreElements())
+            {
+                String currPath = (String)pathNames.nextElement();
+                 try {
+                    NidData currNid = rfx.resolve(new PathData(currPath), 0);
+                    nids[idx] = currNid.getInt();
+                    idx++;
+                }catch(Exception exc)
+                {
+                    System.err.println("Internal error in setEnabledTimes: " + exc);
+                }
+            }
+            enable(nids, pm_mask, 0);
+            enable(nids, pc_mask, 1);
+            enable(nids, pv_mask, 2);
+            enable(nids, pp_mask, 3);
+            enable(nids, pr_mask, 4);
+            enable(nids, ptso_mask, 5);
+            enable(nids, ptcb_mask, 6);
+            enable(nids, ptct_mask, 7);
+            enable(nids, gas_mask, 8);
+            enable(nids, tf_mask, 9);
+            enable(nids, is_mask, 10);
+            enable(nids, chopper_mask, 11);
+            enable(nids, inverter_mask, 12);
+
+        }
+        void enable(int [] nids, int [] mask, int idx)
+        {
+            int baseNid = ParameterSetting.this.nids[0].getInt();
+            for(int i = 0; i < mask.length; i++)
+            {
+                for(int j = 0; j < nids.length; j++)
+                {
+                    if(nids[j] - baseNid == mask[i])
+                    {
+                        timeCheckBoxes[idx].setEnabled(true);
+                        timeCheckBoxes[idx].setSelected(true);
+                    }
+                }
+            }
+        }
+    } //End class SelectSetup
+
+
+    void saveSelectedSetup()
+    {
+        if(saveSelected == null)
+        {
+            saveSelected = new SelectSetup(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    boolean[] selectedDevices = saveSelected.getSelectedDevices();
+                    boolean[] selectedTimes = saveSelected.getSelectedTimes();
+                    saveSetup(selectedDevices, selectedTimes);
+                    saveSelected.setVisible(false);
+                }
+            });
+        }
+        saveSelected.setVisible(true);
+    }
+
+    void loadSelectedSetup()
+    {
+        if(loadSelected == null)
+        {
+            loadSelected = new SelectSetup(new ActionListener()
+            {
+               public void actionPerformed(ActionEvent e)
+               {
+                   boolean[] selectedDevices = loadSelected.getSelectedDevices();
+                   boolean[] selectedTimes = loadSelected.getSelectedTimes();
+                   applySetup(currSetupHash, currSetupOnHash, selectedDevices, selectedTimes);
+                   loadSelected.setVisible(false);
+               }
+           });
+       }
+       loadSelected.setEnabledDevices(currSetupHash);
+       loadSelected.setEnabledTimes(currSetupHash);
+       loadSelected.setVisible(true);
     }
 
 
@@ -1362,27 +1518,31 @@ public class ParameterSetting
         int returnVal = chooser.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
+            currSetupHash = new Hashtable();
+            currSetupOnHash = new Hashtable();
             for (int i = 1; i < 13; i++)
-                if(select[i-1]) saveConfig(i, currSetupHash, currSetupOnHash);
+                if(select[i-1]) saveSetup(i, currSetupHash, currSetupOnHash);
 
             //Timing components
-            if(timeSelect[0]) saveConfig(0, pm_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[1]) saveConfig(0, pc_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[2]) saveConfig(0, pv_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[3]) saveConfig(0, pp_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[4]) saveConfig(0, pr_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[5]) saveConfig(0, ptso_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[6]) saveConfig(0, ptcb_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[7]) saveConfig(0, ptct_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[8]) saveConfig(0, gas_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[9]) saveConfig(0, tf_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[10]) saveConfig(0, is_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[11]) saveConfig(0, chopper_mask, currSetupHash, currSetupOnHash);
-            if(timeSelect[12]) saveConfig(0, inverter_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[0]) saveSetup(0, pm_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[1]) saveSetup(0, pc_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[2]) saveSetup(0, pv_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[3]) saveSetup(0, pp_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[4]) saveSetup(0, pr_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[5]) saveSetup(0, ptso_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[6]) saveSetup(0, ptcb_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[7]) saveSetup(0, ptct_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[8]) saveSetup(0, gas_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[9]) saveSetup(0, tf_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[10]) saveSetup(0, is_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[11]) saveSetup(0, chopper_mask, currSetupHash, currSetupOnHash);
+            if(timeSelect[12]) saveSetup(0, inverter_mask, currSetupHash, currSetupOnHash);
 
             writeSetupToFile(chooser.getSelectedFile().getPath());
         }
     }
+
+
 
     void writeSetupToFile(String fileName)
     {
@@ -1390,8 +1550,6 @@ public class ParameterSetting
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName));
             oos.writeObject(currSetupHash);
             oos.writeObject(currSetupOnHash);
-            oos.writeObject(currConfigHash);
-            oos.writeObject(currConfigOnHash);
             oos.close();
         }catch(Exception exc)
         {
@@ -1406,8 +1564,6 @@ public class ParameterSetting
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
             currSetupHash = (Hashtable)ois.readObject();
             currSetupOnHash = (Hashtable)ois.readObject();
-            currConfigHash = (Hashtable)ois.readObject();
-            currConfigOnHash = (Hashtable)ois.readObject();
             ois.close();
         }catch(Exception exc)
         {
@@ -1430,18 +1586,14 @@ public class ParameterSetting
                     buttons[idx].setForeground(Color.black);
                 }
             }
-            else // Config devices
-            {
-                saveConfig(idx, rfxConfigHash, rfxConfigOnHash);
-            }
         }
         else
         {
-            if (isChanged && shot == -1)
+/*            if (isChanged && shot == -1)
             {
                 setUncheckedRt(idx);
             }
-        }
+*/        }
     }
 
     void setUncheckedRt(int idx)
@@ -1626,7 +1778,6 @@ public class ParameterSetting
                                                 {
                                                     checkedWd.dispose();
                                                     //proceedeConfig();
-                                                    //saveConfig();
                                                     proceedeLimits();
                                                 }
                                             }
@@ -1637,12 +1788,14 @@ public class ParameterSetting
                                     else
                                     {
                                         //proceedeConfig();
-                                        //saveConfig();
                                         proceedeLimits();
                                     }
                                 }
                                 else
-                                    setReadOnly(true);
+                                {
+                                    applyToModelItem.setEnabled(false);
+                                    revertModelItem.setEnabled(false);
+                                }
                             }
                             if (phaseIdx == ENTER_INIT)
                             {
@@ -1651,7 +1804,9 @@ public class ParameterSetting
                                     setReadOnly(false);
                                     setTitle("RFX Parameters     shot: " +
                                              getShot());
-                                }
+                                    applyToModelItem.setEnabled(true);
+                                    revertModelItem.setEnabled(true);
+                               }
                                 else
                                 {
                                     setTitle("RFX Parameters -- RT --  shot: " +
@@ -1672,34 +1827,6 @@ public class ParameterSetting
             }
         }
 
-        void proceedeConfig()
-        {
-            String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
-            if (configMsg != null)
-            {
-                configWd = new WarningDialog(ParameterSetting.this, configMsg);
-                configWd.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        String newMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
-                        if (newMsg != null)
-                        {
-                            configWd.setText(newMsg);
-                         }
-                        else
-                        {
-                            configWd.dispose();
-                            proceedeLimits();
-                        }
-                    }
-                });
-                configWd.pack();
-                configWd.setVisible(true);
-            }
-            else
-                proceedeLimits();
-        }
 
         void proceedeLimits()
         {
@@ -1733,7 +1860,7 @@ public class ParameterSetting
 
             JOptionPane.showConfirmDialog(
                 ParameterSetting.this,
-                "Transitare dal PAS?",
+                "Transitare dal PAS (Corrente Magnetizzante: " + getMagnetizingCurrent()+" A)?",
                 "Acknowledgement request",
                 JOptionPane.YES_OPTION);
                     try {
@@ -1863,41 +1990,166 @@ public class ParameterSetting
     }
 
 
-    void applySetup()
+    void applySetup(Hashtable setupHash, Hashtable setupOnHash)
     {
-        Enumeration pathNames = currSetupHash.keys();
+        Enumeration pathNames = setupHash.keys();
         String currPath = "", currDecompiled = "", savedDecompiled = "";
         while(pathNames.hasMoreElements())
         {
             try {
                 currPath = (String)pathNames.nextElement();
                 NidData currNid = rfx.resolve(new PathData(currPath), 0);
-                currDecompiled = (String)currSetupHash.get(currPath);
+                currDecompiled = (String)setupHash.get(currPath);
+
+
+
                 try {
                     savedDecompiled  = (rfx.getData(currNid, 0)).toString();
                 }catch(Exception exc){savedDecompiled = "";}
 
-                if(!currDecompiled.equals(savedDecompiled))
+
+            if(!currDecompiled.equals(savedDecompiled))
                 {
                     Data currData = Data.fromExpr(currDecompiled);
-                    System.out.println(currDecompiled);
-                    System.out.println(savedDecompiled+"\n");
                     rfx.putData(currNid, currData, 0);
                 }
-
-                Boolean currBool = (Boolean)currSetupOnHash.get(currPath);
-                rfx.setOn(currNid, currBool.booleanValue(), 0);
             }catch(Exception exc)
             {
                 System.err.println("Error applying configuration: " + exc + currPath + "  " + currDecompiled + "  " + savedDecompiled);
             }
         }
+        pathNames = setupOnHash.keys();
+        while (pathNames.hasMoreElements())
+        {
+            try
+            {
+                currPath = (String) pathNames.nextElement();
+                NidData currNid = rfx.resolve(new PathData(currPath), 0);
+                Boolean currBool = (Boolean) setupOnHash.get(currPath);
+                rfx.setOn(currNid, currBool.booleanValue(), 0);
+            }
+            catch (Exception exc)
+            {
+                System.err.println("Error applying configuration: " + exc +
+                                   currPath + "  " + currDecompiled + "  " +
+                                   savedDecompiled);
+            }
+        }
+    }
+    void applySetup(Hashtable setupHash, Hashtable setupOnHash, boolean []deviceSelect, boolean []timeSelect)
+    {
+        Enumeration pathNames = setupHash.keys();
+        String currPath = "", currDecompiled = "", savedDecompiled = "";
+        while(pathNames.hasMoreElements())
+        {
+            try {
+                currPath = (String)pathNames.nextElement();
+                Integer idxObj = (Integer)mapSetupHash.get(currPath);
+                if(idxObj == null)
+                    continue;
+                int idx = idxObj.intValue();
+                if(idx == 0 || idx >= 13 || !deviceSelect[idx-1])
+                    continue;
+
+
+                NidData currNid = rfx.resolve(new PathData(currPath), 0);
+                currDecompiled = (String)setupHash.get(currPath);
+
+                try {
+                    savedDecompiled  = (rfx.getData(currNid, 0)).toString();
+                }catch(Exception exc){savedDecompiled = "";}
+
+
+                if(!currDecompiled.equals(savedDecompiled))
+                {
+                    Data currData = Data.fromExpr(currDecompiled);
+                    rfx.putData(currNid, currData, 0);
+                }
+            }catch(Exception exc)
+            {
+                System.err.println("Error applying configuration: " + exc + currPath + "  " + currDecompiled + "  " + savedDecompiled);
+            }
+        }
+        pathNames = setupOnHash.keys();
+        while (pathNames.hasMoreElements())
+        {
+            try
+            {
+                currPath = (String) pathNames.nextElement();
+                Integer idxObj = (Integer)mapSetupHash.get(currPath);
+                if(idxObj == null)
+                    continue;
+                int idx = idxObj.intValue();
+                if(idx == 0 || idx >= 13 || !deviceSelect[idx-1])
+                    continue;
+
+                NidData currNid = rfx.resolve(new PathData(currPath), 0);
+                Boolean currBool = (Boolean) setupOnHash.get(currPath);
+                rfx.setOn(currNid, currBool.booleanValue(), 0);
+            }
+            catch (Exception exc)
+            {
+                System.err.println("Error applying configuration: " + exc +
+                                   currPath + "  " + currDecompiled + "  " +
+                                   savedDecompiled);
+            }
+        }
+
+        //Timing components
+        if (timeSelect[0]) applySetup(0, pm_mask, setupHash, setupOnHash);
+        if (timeSelect[1]) applySetup(0, pc_mask, setupHash, setupOnHash);
+        if (timeSelect[2]) applySetup(0, pv_mask, setupHash, setupOnHash);
+        if (timeSelect[3]) applySetup(0, pp_mask, setupHash, setupOnHash);
+        if (timeSelect[4]) applySetup(0, pr_mask, setupHash, setupOnHash);
+        if (timeSelect[5]) applySetup(0, ptso_mask, setupHash,
+                                     setupOnHash);
+        if (timeSelect[6]) applySetup(0, ptcb_mask, setupHash,
+                                     setupOnHash);
+        if (timeSelect[7]) applySetup(0, ptct_mask, setupHash,
+                                     setupOnHash);
+        if (timeSelect[8]) saveSetup(0, gas_mask, setupHash,
+                                     setupOnHash);
+        if (timeSelect[9]) applySetup(0, tf_mask, setupHash, setupOnHash);
+        if (timeSelect[10]) applySetup(0, is_mask, setupHash,
+                                      setupOnHash);
+        if (timeSelect[11]) applySetup(0, chopper_mask, setupHash,
+                                      setupOnHash);
+        if (timeSelect[12]) applySetup(0, inverter_mask, setupHash,
+                                      setupOnHash);
+
+
+
     }
 
+    void applySetup(int idx, int nidOffsets[], Hashtable setupHash, Hashtable setupOnHash)
+      {
+          try
+          {
+              for (int nidIdx = 0; nidIdx < nidOffsets.length; nidIdx++)
+              {
+                  NidData currNid = new NidData(nids[idx].getInt() +
+                                                nidOffsets[nidIdx]);
+                  String fullPath = rfx.getInfo(currNid, 0).getFullPath();
+                  String currDecompiled = (String) setupHash.get(fullPath);
+                  if (currDecompiled != null)
+                  {
+                      Data currData = Data.fromExpr(currDecompiled);
+                      rfx.putData(currNid, currData, 0);
+                  }
+                  Boolean isOn = (Boolean) setupOnHash.get(fullPath);
+                  if (isOn != null)
+                  {
+                      rfx.setOn(currNid, isOn.booleanValue(), 0);
+                  }
+              }
+          }
+          catch (Exception exc1)
+          {
+              System.err.println("Error applying setup for nid array: " + exc1);
+          }
+      }
 
-
-
-    void saveConfig(int idx, Hashtable configHash, Hashtable configOnHash)
+    void saveSetup(int idx, Hashtable configHash, Hashtable configOnHash)
     {
         try
         {
@@ -1913,8 +2165,11 @@ public class ParameterSetting
                     try
                     {
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
-                        configHash.put(rfx.getInfo(deviceNids[i], 0).
-                                       getFullPath(), currDec);
+                        String fullPath = rfx.getInfo(deviceNids[i], 0).getFullPath();
+
+
+                        mapSetupHash.put(fullPath, new Integer(idx));
+                        configHash.put(fullPath, currDec);
                     }
                     catch (Exception exc)
                     {}
@@ -1934,8 +2189,9 @@ public class ParameterSetting
                     try
                     {
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
-                        configHash.put(rfx.getInfo(deviceNids[i], 0).
-                                       getFullPath(), currDec);
+                        String fullPath = rfx.getInfo(deviceNids[i], 0).getFullPath();
+                        mapSetupHash.put(fullPath, new Integer(idx));
+                        configHash.put(fullPath, currDec);
                     }
                     catch (Exception exc)
                     {}
@@ -1955,8 +2211,9 @@ public class ParameterSetting
                     try
                     {
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
-                        configHash.put(rfx.getInfo(deviceNids[i], 0).
-                                       getFullPath(), currDec);
+                        String fullPath = rfx.getInfo(deviceNids[i], 0).getFullPath();
+                        mapSetupHash.put(fullPath, new Integer(idx));
+                        configHash.put(fullPath, currDec);
                     }
                     catch (Exception exc)
                     {}
@@ -1971,7 +2228,7 @@ public class ParameterSetting
             System.err.println("Error getting device nids: " + exc1);
         }
     }
-    void saveConfig(int idx, int nidOffsets[], Hashtable configHash, Hashtable configOnHash)
+    void saveSetup(int idx, int nidOffsets[], Hashtable configHash, Hashtable configOnHash)
     {
         try
         {
@@ -1980,16 +2237,15 @@ public class ParameterSetting
                 NidData currNid = new NidData(nids[idx].getInt() +
                                               nidOffsets[nidIdx]);
                 String currDec;
+                String fullPath = rfx.getInfo(currNid, 0).getFullPath();
                 try
                 {
                     currDec = (rfx.getData(currNid, 0)).toString();
-                    configHash.put(rfx.getInfo(currNid, 0).
-                                   getFullPath(), currDec);
+                    configHash.put(fullPath, currDec);
                 }
                 catch (Exception exc)
                 {}
-                configOnHash.put(rfx.getInfo(currNid, 0).
-                                 getFullPath(),
+                configOnHash.put(fullPath,
                                  new Boolean(rfx.isOn(currNid, 0)));
             }
         }
@@ -2075,67 +2331,6 @@ public class ParameterSetting
         }
     }
 
-    String checkConfig(Hashtable configHash, Hashtable configOnHash)
-    {
-        NidData errNid;
-        String errPath = "";
-        if ((errNid = checkDeviceConfig(mopRoot, configHash, configOnHash))!= null)
-        {
-            try {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }catch(Exception exc){errPath = "";}
-            return  "Discrepanza nella configurazione MOP: "+ errPath;
-        }
-        if ((errNid = checkDeviceConfig(ansaldoConfigRoot, configHash, configOnHash))!= null)
-        {
-            try {
-               errPath = rfx.getInfo(errNid, 0).getFullPath();
-           }catch(Exception exc){errPath = "";}
-           return "Discrepanza nella configurazione Ansaldo: "+ errPath;
-        }
-        if ((errNid = checkDeviceConfig(unitsConfigRoot, configHash, configOnHash))!= null)
-        {
-            try
-            {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }
-            catch (Exception exc)
-            {
-                errPath = "";
-            }
-
-            return "Discrepanza nella configurazione unita' A e B: "+ errPath;
-        }
-        if ((errNid = checkDeviceConfig(poloidalConfigRoot, configHash, configOnHash))!= null)
-        {
-            try {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }catch(Exception exc){errPath = "";}
-            return "Discrepanza nella configurazione Poloidale: "+ errPath;
-        }
-        if ((errNid = checkDeviceConfig(toroidalConfigRoot, configHash, configOnHash))!= null)
-        {
-            try {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }catch(Exception exc){errPath = "";}
-            return "Discrepanza nella configurazione Toroidale: "+ errPath;
-        }
-        if ((errNid = checkDeviceConfig(mhdConfigRoot, configHash, configOnHash))!= null)
-        {
-            try {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }catch(Exception exc){errPath = "";}
-            return "Discrepanza nella configurazione Sonde a Sella: "+errPath;
-        }
-        if ((errNid = checkDeviceConfig(viConfigRoot, configHash, configOnHash))!= null)
-        {
-            try {
-                errPath = rfx.getInfo(errNid, 0).getFullPath();
-            }catch(Exception exc){errPath = "";}
-            return "Discrepanza nella configurazione del Vuoto: "+ errPath;
-        }
-        return null;
-    }
 
     String  checkLimits()
     {
@@ -2224,41 +2419,94 @@ public class ParameterSetting
 
     void loadPulse()
     {
+        int currShot = 0;
+        int prevPMUnits;
         String shotStr = JOptionPane.showInputDialog(this, "Shot number: ",
             "Enter shot", JOptionPane.INFORMATION_MESSAGE);
         try
         {
-            int currShot = Integer.parseInt(shotStr);
-            rfx.close(0);
-            LoadPulse loadP = new LoadPulse();
-            loadP.load("rfx", currShot, shot);
-            Convert conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val",
-                "mutua.txt");
-            conv.convertMatrix();
-            conv = new Convert("\\mhd_bc::control.parameters:par236_val",
-                               "mutua.txt");
-            conv.convertMatrix();
-            rfx = new Database("rfx", shot);
-            rfx.open();
-            String configMsg = checkConfig(rfxConfigHash, rfxConfigOnHash);
-            if (configMsg != null)
-                signalConfigWarning(configMsg);
-         }
-        catch (Exception exc)
+             currShot = Integer.parseInt(shotStr);
+             LoadPulse loadP = new LoadPulse();
+             currSetupHash = new Hashtable();
+             currSetupOnHash = new Hashtable();
+             loadP.getSetup("rfx", currShot, currSetupHash, currSetupOnHash);
+             prevPMUnits = loadP.getPMUnits();
+             loadSelectedSetup();
+             int currPMUnits = countPMUnits();
+             if(currPMUnits != prevPMUnits)
+                 JOptionPane.showMessageDialog(ParameterSetting.this, "The number of enabled PM units in loaded shot " + currShot +
+                                               " is " + prevPMUnits + " which is different from the previous number (" + currPMUnits+")  of enabled PM units in the working shot",
+                "PM units discrepance", JOptionPane.WARNING_MESSAGE);
+        }catch(Exception exc)
         {
-            JOptionPane.showMessageDialog(this,
-                                          "Error loading pulse " + shotStr);
-            System.err.println(exc);
+            JOptionPane.showMessageDialog(ParameterSetting.this, "Error loading pulse " + currShot + ": " + exc,
+                "Error loading pulse", JOptionPane.WARNING_MESSAGE);
         }
     }
+
+
+    class DecouplingDialog extends JDialog
+    {
+        JComboBox decouplingC;
+        DecouplingDialog()
+        {
+            super(ParameterSetting.this, "Select MHD decoupling");
+            JPanel jp = new JPanel();
+            decouplingC = new JComboBox(new String[]{"Diagonal", "Complete"});
+            decouplingC.setSelectedIndex(0);
+            jp.add(new JLabel("Decoupling: "));
+            jp.add(decouplingC);
+            getContentPane().add(jp, "Center");
+            jp = new JPanel();
+            JButton okB = new JButton("Ok");
+            okB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setDecoupling(decouplingC.getSelectedIndex() == 0);
+                    setVisible(false);
+                }
+            });
+            jp.add(okB);
+            JButton cancelB = new JButton("Cancel");
+            cancelB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setVisible(false);
+                }
+            });
+            jp.add(cancelB);
+            getContentPane().add(jp, "South");
+            pack();
+        }
+    } //End class DecouplingDialog
+
+
+    void setDecoupling()
+    {
+        if(decouplingD == null)
+             decouplingD = new DecouplingDialog();
+         decouplingD.setVisible(true);
+    }
+
+
+    void setDecoupling(boolean isDiagonal)
+    {
+            Convert conv = new Convert(
+                "\\mhd_ac::control.parameters:par236_val",
+                isDiagonal?"diagonal":"mutua.txt");
+            conv.convertMatrix();
+            conv = new Convert("\\mhd_bc::control.parameters:par236_val",
+                               isDiagonal?"diagonal":"mutua.txt");
+            conv.convertMatrix();
+    }
+
 
     int getShot()
     {
         try
         {
-            int shot = rfx.getCurrentShot("rfx");
-            return shot + 1;
+            int currShot = rfx.getCurrentShot("rfx");
+            return currShot + 1;
         }
         catch (Exception exc)
         {
@@ -2291,7 +2539,142 @@ public class ParameterSetting
         }
     }//End class WarningDialog
 
+    boolean[]compareSetup(Hashtable currSetupHash, Hashtable currSetupOnHash,
+                          Hashtable modelSetupHash, Hashtable modelSetupOnHash,
+                          Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
+    {
+        boolean changed[] = new boolean[]{false,false,false,false,false,false,false,false,false,false,false,false,false};
+        Enumeration pathNames = currSetupHash.keys();
+        while(pathNames.hasMoreElements())
+        {
+            String currPath = (String)pathNames.nextElement();
+            String currDecompiled = (String)currSetupHash.get(currPath);
+            String modelDecompiled = (String)modelSetupHash.get(currPath);
+            if(currDecompiled == null) currDecompiled = "";
+            if(modelDecompiled == null) modelDecompiled = "";
+            if(!currDecompiled.equals(modelDecompiled))
+            {
+                try {
+                    int idx = ( (Integer) (mapSetupHash.get(currPath))).intValue();
+                    changed[idx] = true;
+                    modifiedSetupHash.put(currPath, currDecompiled);
+                }catch(Exception exc)
+                {
+                    System.err.println(
+                        "Internal error in compareSetup: mapping not found: "+exc);
+                    System.exit(0);
+                }
+            }
+            try {
+                boolean currOn = ( (Boolean) currSetupOnHash.get(currPath)).booleanValue();
+                boolean modelOn = ( (Boolean) modelSetupOnHash.get(currPath)).booleanValue();
+                if(currOn != modelOn)
+                {
+                    int idx = ( (Integer) (mapSetupHash.get(currPath))).intValue();
+                    changed[idx] = true;
+                    modifiedSetupOnHash.put(currPath, new Boolean(currOn));
+                }
+            }catch(Exception exc)
+                {
+                    System.err.println(
+                        "Internal error in compareSetup: mapping not found");
+                    System.exit(0);
+                }
+         }
+        return changed;
+    }
 
+    void revertModel()
+    {
+        try {
+            rfx.close(0);
+            rfx = new Database("RFX", -1);
+            rfx.open();
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot open model");
+            return;
+        }
+        applySetup(modelSetupHash, modelSetupOnHash);
+        try {
+            rfx.close(0);
+            rfx = new Database("RFX", shot);
+            rfx.open();
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot open working shot");
+            return;
+        }
+    }
+
+
+    void applyToModel()
+    {
+        //Read Setup from working Shot
+        saveSetup(currSetupHash, currSetupOnHash);
+        try {
+            rfx.close(0);
+            rfx = new Database("RFX", -1);
+            rfx.open();
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot open model");
+            return;
+        }
+        saveSetup(modelSetupHash, modelSetupOnHash);
+        revertModelItem.setEnabled(true);
+
+        Hashtable modifiedSetupHash = new Hashtable();
+        Hashtable modifiedSetupOnHash = new Hashtable();
+        boolean[] changed = compareSetup(currSetupHash, currSetupOnHash, modelSetupHash, modelSetupOnHash,
+                                         modifiedSetupHash, modifiedSetupOnHash);
+        for(int i = 0; i < 13; i++)
+            if(changed[i]) setUncheckedRt(i);
+
+        applySetup(modifiedSetupHash, modifiedSetupOnHash);
+        try {
+            rfx.close(0);
+            rfx = new Database("RFX", shot);
+            rfx.open();
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot open working shot");
+            return;
+        }
+    }
+
+    int countPMUnits()
+    {
+        NidData unitsNid = new NidData(nids[4].getInt() + 5);
+        try {
+            Data unitsData = rfx.evaluateData(unitsNid, 0);
+            String units = unitsData.toString();
+            StringTokenizer st = new StringTokenizer(units, " ,\"");
+            return st.countTokens();
+        }catch(Exception exc)
+        {
+            System.err.println("Error getting num enabled PM: " + exc);
+            return 0;
+        }
+    }
+
+    float getMagnetizingCurrent()
+    {
+        NidData waveNid = new NidData(nids[4].getInt() + 8);
+        try {
+            Data waveData = rfx.evaluateData(waveNid, 0);
+            float[] wave = waveData.getFloatArray();
+            float maxCurr = wave[0];
+            for(int i = 0; i < wave.length; i++)
+                if(maxCurr < wave[i])
+                    maxCurr = wave[i];
+            return maxCurr * countPMUnits();
+        }catch(Exception exc)
+        {
+            System.err.println("Error getting Magnetizing current: " + exc);
+            return 0;
+        }
+    }
 
 
     public static void main(String args[])
