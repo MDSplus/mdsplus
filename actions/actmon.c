@@ -490,7 +490,7 @@ static int FindServer(char *name, ServerList **srv)
   int idx;
   char *cptr;
   int len;
-  int match;
+  int match=1;
   for (prev=NULL,idx=1,ptr=Servers; 
        ptr && (match = strcasecmp(ptr->server, name)) < 0; 
        prev=ptr,ptr = ptr->next, idx++);
