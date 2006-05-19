@@ -249,6 +249,9 @@ end
 function CreateNewDBFile,  file, name, mdshost, dbhost, dbname, username, password
   b = widget_base(title="New Database Definition", /column)
   r = widget_base(b, row=6)
+  mdshost=''
+  dbhost=''
+  username=getenv('LOGNAME')
   l = widget_label(r, value="MDS Host (blank for local)")
   mds_host_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance', value=mdshost)
   l = widget_label(r, value="Database server Name")
@@ -259,7 +262,7 @@ function CreateNewDBFile,  file, name, mdshost, dbhost, dbname, username, passwo
   l = widget_label(r, value="Database USERNAME")
   username_w = widget_text(r, xsize=20,/editable, /all_events, event_func='TabAdvance', value=username)
   l = widget_label(r, value="Database Password")
-  pass = ''
+  password = ''
   for i=1, strlen(password) do $
     pass=pass+'*'
   password1_w = widget_text(r, xsize=20, uvalue=password, /all_events, event_pro='pwd_event',/editable, value=pass)
