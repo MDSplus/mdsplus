@@ -15,7 +15,8 @@ public class LoadPulse
     static final String confFileName = "LoadPulse.conf";
     Database tree;
     int numPMUnits = 0;
-
+    String PCconnection = "";
+    float rTransfer = 0;
 
     static class NodeDescriptor
     {
@@ -236,6 +237,8 @@ public class LoadPulse
             }
         }
         numPMUnits = countPMUnits();
+        evaluatePCConnection();
+        evaluateRTransfer();
         tree.close(0);
         br.close();
         return nodesV;
@@ -282,6 +285,40 @@ public class LoadPulse
              return 0;
          }
      }
+
+     void evaluatePCConnection()
+     {
+         try
+         {
+             NidData rootNid = tree.resolve(new PathData("\\PC_SETUP"), 0);
+             NidData connectionNid = new NidData(rootNid.getInt() + 2);
+             Data connectionData = tree.evaluateData(connectionNid, 0);
+             PCconnection = connectionData.getString();
+         }
+         catch (Exception exc)
+         {
+             System.err.println("Error getting PC connection: " + exc);
+         }
+     }
+
+     void evaluateRTransfer()
+     {
+         try
+         {
+             NidData rootNid = tree.resolve(new PathData("\\P_CONFIG"), 0);
+             NidData rTransferNid = new NidData(rootNid.getInt() + 20);
+             Data rTransferData = tree.evaluateData(rTransferNid, 0);
+             rTransfer = rTransferData.getFloat();
+         }
+         catch (Exception exc)
+         {
+             System.err.println("Error getting R transfer: " + exc);
+         }
+     }
+
+
+     String getPCConnection(){return PCconnection;}
+     float getRTransfer(){return rTransfer;}
 
      int getPMUnits()
      {

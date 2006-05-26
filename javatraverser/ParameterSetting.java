@@ -2421,6 +2421,8 @@ public class ParameterSetting
     {
         int currShot = 0;
         int prevPMUnits;
+        float prevRTransfer;
+        String prevPCConnection;
         String shotStr = JOptionPane.showInputDialog(this, "Shot number: ",
             "Enter shot", JOptionPane.INFORMATION_MESSAGE);
         try
@@ -2431,13 +2433,26 @@ public class ParameterSetting
              currSetupOnHash = new Hashtable();
              loadP.getSetup("rfx", currShot, currSetupHash, currSetupOnHash);
              prevPMUnits = loadP.getPMUnits();
+             prevRTransfer = loadP.getRTransfer();
+             prevPCConnection = loadP.getPCConnection();
              loadSelectedSetup();
              int currPMUnits = countPMUnits();
              if(currPMUnits != prevPMUnits)
                  JOptionPane.showMessageDialog(ParameterSetting.this, "The number of enabled PM units in loaded shot " + currShot +
                                                " is " + prevPMUnits + " which is different from the previous number (" + currPMUnits+")  of enabled PM units in the working shot",
-                "PM units discrepance", JOptionPane.WARNING_MESSAGE);
-        }catch(Exception exc)
+                "Configuration discrepance", JOptionPane.WARNING_MESSAGE);
+            float rTransfer = getRTransfer();
+            if(rTransfer != prevRTransfer)
+               JOptionPane.showMessageDialog(ParameterSetting.this, "Transfer Resistance in loaded shot " + currShot +
+                                             " is " + prevRTransfer + " which is different from the previous value (" + rTransfer+")  in the working shot",
+              "Configuration discrepance", JOptionPane.WARNING_MESSAGE);
+            String pcConnection = getPCConnection();
+            if(!pcConnection.equals(prevPCConnection))
+               JOptionPane.showMessageDialog(ParameterSetting.this, "PCAT connection in loaded shot " + currShot +
+                                             " is " + prevPCConnection + " which is different from the previous value (" + pcConnection+")  in the working shot",
+              "Configuration discrepance", JOptionPane.WARNING_MESSAGE);
+
+       }catch(Exception exc)
         {
             JOptionPane.showMessageDialog(ParameterSetting.this, "Error loading pulse " + currShot + ": " + exc,
                 "Error loading pulse", JOptionPane.WARNING_MESSAGE);
@@ -2654,6 +2669,33 @@ public class ParameterSetting
         }catch(Exception exc)
         {
             System.err.println("Error getting num enabled PM: " + exc);
+            return 0;
+        }
+    }
+    String getPCConnection()
+    {
+        NidData unitsNid = new NidData(nids[3].getInt() + 2);
+        try {
+            Data configData = rfx.evaluateData(unitsNid, 0);
+            return configData.getString();
+        }catch(Exception exc)
+        {
+            System.err.println("Error getting PC connection: " + exc);
+            return "";
+        }
+    }
+    float getRTransfer()
+    {
+        NidData unitsNid = new NidData(nids[16].getInt() + 20);
+        try {
+            Data configData = rfx.evaluateData(unitsNid, 0);
+
+            System.out.println(configData.getFloat());
+
+            return configData.getFloat();
+        }catch(Exception exc)
+        {
+            System.err.println("Error getting R transfer: " + exc);
             return 0;
         }
     }
