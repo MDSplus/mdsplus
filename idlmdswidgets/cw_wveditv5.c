@@ -650,6 +650,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct *cb)
       memcpy(&cb->x[point],&thirty_two_k,4);
       memcpy(&cb->y[point],&thirty_two_k,4);
     }
+    if (spline_points < cb->count) {
     if (spline_points > 2)
     {
       if (xincreasing)
@@ -752,6 +753,7 @@ static void Fit(Widget w, int stub, XmdsWavedrawFitCBStruct *cb)
             cb->x[i] = interp(spline_y[1],spline_x[1],spline_y[2],spline_x[2],cb->y[i]);
         }
       }
+    }
     }
   }
   XtFree((String)spline_x);
