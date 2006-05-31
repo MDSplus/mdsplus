@@ -75,6 +75,8 @@ public class ParameterSetting
     DeviceSetup devices[] = new DeviceSetup[NUM_DEVICES];
     JMenuItem applyToModelItem;
     JMenuItem revertModelItem;
+    JMenuItem compareItem;
+    JDialog changedD;
 
 
     String rtIp;
@@ -129,19 +131,24 @@ public class ParameterSetting
 
     ParameterSetting()
     {
-        this(true, null);
+        this(true, false, null);
     }
 
     ParameterSetting(String rtIp)
     {
-        this(false, rtIp);
+        this(false, false, rtIp);
+    }
+    ParameterSetting(String rtIp, String online)
+    {
+        this(false, online.equals("online"),  rtIp);
     }
 
-    ParameterSetting(boolean isRt, String rtIp)
+    ParameterSetting(boolean isRt, boolean isOnline, String rtIp)
     {
         this.isRt = isRt;
         if (isRt)
             readOnly = true;
+        this.isOnline = isOnline;
         if (isRt)
         {
             setTitle("RFX Parameters -- RT    ");
@@ -220,6 +227,18 @@ public class ParameterSetting
           revertModelItem.setEnabled(false);
           fileMenu.add(revertModelItem);
 
+          compareItem = new JMenuItem("Compare Shots ...");
+          compareItem.addActionListener(new ActionListener()
+          {
+             public void actionPerformed(ActionEvent e)
+             {
+                     compareShots();
+             }
+         });
+         fileMenu.add(compareItem);
+
+
+
           JMenuItem decouplingItem = new JMenuItem("Set MHD Decoupling...");
           decouplingItem.addActionListener(new ActionListener() {
               public void actionPerformed(ActionEvent e)
@@ -252,7 +271,19 @@ public class ParameterSetting
         if(!isRt)
         {
             jp.add(new JLabel("Working shot: "));
-            modeC = new JComboBox(new String[]{"100","101","102","103","104","105","106","107","108","109"});
+            if(isOnline)
+            {
+                modeC = new JComboBox(new String[]
+                                      {"100"});
+                shot = 100;
+            }
+            else
+            {
+                modeC = new JComboBox(new String[]
+                                      {"101", "102", "103", "104", "105", "106",
+                                      "107", "108", "109"});
+                shot = 101;
+            }
             modeC.setSelectedIndex(0);
             modeC.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e)
@@ -1168,21 +1199,8 @@ public class ParameterSetting
         }
     }
 
-    void init()
+    void updateDeviceNids()
     {
-        try
-        {
-            if(isRt)
-                rfx = new Database("RFX", -1);
-            else
-                rfx = new Database("RFX", 100);
-            rfx.open();
-        }
-        catch (Exception exc)
-        {
-            System.err.println("Cannot open RFX");
-            System.exit(0);
-        }
         try
         {
             nids[0] = timesRoot = rfx.resolve(new PathData("\\RFX_TIMES"), 0);
@@ -1222,12 +1240,30 @@ public class ParameterSetting
             nids[19] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
                                                   0);
 
-       }
+        }
         catch (Exception exc)
         {
             System.err.println("Error opening device");
             System.exit(0);
         }
+    }
+
+    void init()
+    {
+        try
+        {
+            if(isRt)
+                rfx = new Database("RFX", -1);
+            else
+                rfx = new Database("RFX", 100);
+            rfx.open();
+        }
+        catch (Exception exc)
+        {
+            System.err.println("Cannot open RFX");
+            System.exit(0);
+        }
+        updateDeviceNids();
         saveSetup(currSetupHash, currSetupOnHash);
 
         if (isRt)
@@ -1239,6 +1275,11 @@ public class ParameterSetting
     void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
     {
         for(int i = 0; i < 13; i++)
+            saveSetup(i, setupHash, setupOnHash);
+    }
+    void saveSetupAndConfig(Hashtable setupHash, Hashtable setupOnHash)
+    {
+        for(int i = 0; i < 20; i++)
             saveSetup(i, setupHash, setupOnHash);
     }
 
@@ -2166,8 +2207,6 @@ public class ParameterSetting
                     {
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).getFullPath();
-
-
                         mapSetupHash.put(fullPath, new Integer(idx));
                         configHash.put(fullPath, currDec);
                     }
@@ -2558,7 +2597,8 @@ public class ParameterSetting
                           Hashtable modelSetupHash, Hashtable modelSetupOnHash,
                           Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
     {
-        boolean changed[] = new boolean[]{false,false,false,false,false,false,false,false,false,false,false,false,false};
+        boolean changed[] = new boolean[]{false,false,false,false,false,false,false,false,false,false,false,false,false,
+        false,false,false,false,false,false,false};
         Enumeration pathNames = currSetupHash.keys();
         while(pathNames.hasMoreElements())
         {
@@ -2576,7 +2616,7 @@ public class ParameterSetting
                 }catch(Exception exc)
                 {
                     System.err.println(
-                        "Internal error in compareSetup: mapping not found: "+exc);
+                        "Internal error in compareSetup: mapping not found: "+currPath);
                     System.exit(0);
                 }
             }
@@ -2592,7 +2632,7 @@ public class ParameterSetting
             }catch(Exception exc)
                 {
                     System.err.println(
-                        "Internal error in compareSetup: mapping not found");
+                        "Internal error in compareSetup: mapping not found "+ currPath);
                     System.exit(0);
                 }
          }
@@ -2658,6 +2698,220 @@ public class ParameterSetting
         }
     }
 
+
+    void compareShots()
+    {
+        String shotsStr = JOptionPane.showInputDialog(this, "Shots", "");
+        try {
+            StringTokenizer st = new StringTokenizer(shotsStr, " ,");
+            int shot1 = Integer.parseInt(st.nextToken());
+            int shot2 = Integer.parseInt(st.nextToken());
+            compareShots(shot1, shot2);
+        }catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Incorrect shot numbers", "", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
+
+    void compareShots(int shot1, int shot2)
+    {
+        Hashtable setup1Hash = new Hashtable(), setup1OnHash = new Hashtable(),
+            setup2Hash = new Hashtable(), setup2OnHash = new Hashtable(),
+            diffSetupHash = new Hashtable(), diffSetupOnHash = new Hashtable();
+        try
+        {
+            rfx.close(0);
+            rfx = new Database("RFX", shot1);
+            rfx.open();
+        }
+        catch (Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot1,
+                                          "Error opening tree",
+                                          JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        updateDeviceNids();
+        saveSetupAndConfig(setup1Hash, setup1OnHash);
+        try
+        {
+            rfx.close(0);
+            rfx = new Database("RFX", shot2);
+            rfx.open();
+        }
+        catch (Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot2,
+                                          "Error opening tree",
+                                          JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        updateDeviceNids();
+        saveSetupAndConfig(setup2Hash, setup2OnHash);
+        try
+        {
+            rfx.close(0);
+            rfx = new Database("RFX", shot);
+            rfx.open();
+        }
+        catch (Exception exc)
+        {
+            System.err.println("Cannot open working shot");
+            return;
+        }
+        updateDeviceNids();
+        boolean changed[] = compareSetup(setup1Hash, setup1OnHash,
+                                         setup2Hash, setup2OnHash,
+                                         diffSetupHash, diffSetupOnHash);
+        int numChanged = 0;
+        for (int i = 0; i < changed.length; i++)
+            if (changed[i]) numChanged++;
+
+        if (numChanged > 0)
+        {
+            changedD = new JDialog(this, "Changed Devices");
+            JPanel jp = new JPanel();
+            jp.setLayout(new GridLayout(numChanged, 1));
+            for (int i = 0; i < changed.length; i++)
+            {
+                if (changed[i])
+                {
+                    JPanel jp1 = new JPanel();
+                    jp1.add(new JLabel(titles[i]));
+                    jp1.add(new DiffButton(shot1, i));
+                    jp1.add(new DiffButton(shot2, i));
+                    jp.add(jp1);
+                }
+            }
+            changedD.getContentPane().add(jp, "Center");
+            jp = new JPanel();
+            JButton cancelB = new JButton("Close");
+            cancelB.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    changedD.dispose();
+                }
+            });
+            jp.add(cancelB);
+            changedD.getContentPane().add(jp, "South");
+            changedD.pack();
+            changedD.setVisible(true);
+        }
+        else //No changes
+            JOptionPane.showMessageDialog(this, "No differences found", "", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    DeviceSetup createDevice(int idx)
+    {
+        switch(idx) {
+            case 0: return  new RFXTimesSetup();
+            case 1: return  new RFXPolControlSetup();
+            case 2:
+                return new RFXAxiControlSetup();
+            case 3:
+                return new RFXPCSetupSetup();
+            case 4:
+                return new RFXPMSetupSetup();
+            case 5:
+                return new RFXTorControlSetup();
+            case 6:
+                return new RFXChopperSetupSetup();
+            case 7:
+                return new RFXFeedforwardSetupSetup();
+            case 8:
+                return new RFXInverterSetupSetup();
+            case 9:
+                return new RFXTFSetupSetup();
+            case 10:
+                return new RFXAxiToroidalControlSetup();
+            case 11:
+                return new RFXMHDSetup();
+            case 12:
+                return new RFXVISetupSetup();
+            case 13:
+                return new RFXMOPSetup();
+            case 14:
+                return new RFXANSALDOSetup();
+            case 15:
+                return new RFXABUnitsSetup();
+            case 16:
+                return new RFXPoloidalSetup();
+            case 17:
+                return new RFXToroidalSetup();
+            case 18:
+                return new RFXPRConfigSetup();
+            case 19:
+                return new RFXVIConfigSetup();
+        }
+        return null;
+    }
+
+
+    class DiffButton extends JButton
+    {
+        int actShot;
+        int idx;
+        DiffButton(int actShot, int idx)
+        {
+            super("" + actShot);
+            this.actShot = actShot;
+            this.idx = idx;
+            addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    try
+                    {
+                        rfx.close(0);
+                        rfx = new Database("RFX", DiffButton.this.actShot);
+                        rfx.open();
+                    }
+                    catch (Exception exc)
+                    {
+                        JOptionPane.showMessageDialog(ParameterSetting.this,
+                            "Cannot open pulse " + DiffButton.this.actShot,
+                            "Error opening tree",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    updateDeviceNids();
+                    try {
+                        DeviceSetup currDevice = (DeviceSetup) createDevice(DiffButton.this.idx);
+                        currDevice.configure(rfx,
+                                             nids[DiffButton.this.idx].getInt());
+                        currDevice.setReadOnly(true);
+                        currDevice.setTitle(currDevice.getTitle() + "  Shot: " +
+                                            DiffButton.this.actShot);
+                        currDevice.setVisible(true);
+                    }catch(Exception exc)
+                    {
+                        System.err.println("Error creating device: " + exc);
+                    }
+                    try
+                    {
+                        rfx.close(0);
+                        rfx = new Database("RFX", shot);
+                        rfx.open();
+                    }
+                    catch (Exception exc)
+                    {
+                        JOptionPane.showMessageDialog(ParameterSetting.this,
+                            "Cannot open pulse " + shot,
+                            "Error opening tree",
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    updateDeviceNids();
+                }
+            });
+        }
+    }//End inner class DiffButton
+
+
+
     int countPMUnits()
     {
         NidData unitsNid = new NidData(nids[4].getInt() + 5);
@@ -2722,7 +2976,9 @@ public class ParameterSetting
     public static void main(String args[])
     {
         ParameterSetting parameterS;
-        if (args.length > 0)
+        if(args.length > 1)
+            parameterS = new ParameterSetting(args[0], args[1]);
+        else if (args.length > 0)
             parameterS = new ParameterSetting(args[0]);
         else
             parameterS = new ParameterSetting();
