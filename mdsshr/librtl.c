@@ -8,7 +8,9 @@
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
+#ifdef HAVE_GETTIMEOFDAY
 #include <sys/types.h>
+#endif
 #endif
 #include <time.h>
 #include <string.h>
@@ -1643,7 +1645,7 @@ time_t LibCvtTim(int *time_in,double *t)
     *t = t_out;
   return(bintim);
 }
-  
+#ifdef xxxxxx  
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
   char *time_str;
@@ -1678,6 +1680,54 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   if (len) *len = slen;
   return 1;
 }
+#else
+#include <sys/time.h>
+int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
+{
+  char *time_str;
+  char time_out[23];
+  unsigned short slen=sizeof(time_out);
+  time_t bintim = LibCvtTim(time_in,0);
+  _int64 chunks;
+  _int64 *time_q=(_int64 *)time_in;
+  _int64 seconds;
+  struct timeval tv;
+  struct timezone tz;
+  tzset();
+#ifdef HAVE_GETTIMEOFDAY
+  gettimeofday(&tv,&tz);
+  bintim = (*time_q-0x7c95674beb4000)/10000000+tz.tz_minuteswest*60-(daylight * 3600);
+#endif
+  chunks = *time_q % 10000000;
+  time_str = ctime(&bintim);
+  time_out[0]  = time_str[8];
+  time_out[1]  = time_str[9];
+  time_out[2]  = '-';
+  time_out[3]  = time_str[4];
+  time_out[4]  = (char)(time_str[5] & 0xdf);
+  time_out[5]  = (char)(time_str[6] & 0xdf);
+  time_out[6]  = '-';
+  time_out[7]  = time_str[20];
+  time_out[8]  = time_str[21];
+  time_out[9]  = time_str[22];
+  time_out[10] = time_str[23];
+  time_out[11] = ' ';
+  time_out[12] = time_str[11];
+  time_out[13] = time_str[12];
+  time_out[14] = time_str[13];
+  time_out[15] = time_str[14];
+  time_out[16] = time_str[15];
+  time_out[17] = time_str[16];
+  time_out[18] = time_str[17];
+  time_out[19] = time_str[18];
+  time_out[20] = '.';
+  time_out[21] = '0' + chunks/1000000;
+  time_out[22] = '0' + (chunks % 1000000)/100000;
+  StrCopyR(str,&slen,time_out);
+  if (len) *len = slen;
+  return 1;
+}
+#endif
 
 int LibGetDvi(int *code, void *dummy1, struct descriptor *device, int *ans, struct descriptor *ans_string, int *len)
 {
