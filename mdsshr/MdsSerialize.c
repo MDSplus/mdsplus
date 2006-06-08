@@ -88,7 +88,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
               i,j,
               size_out,
               size_in;
-  if (in_ptr)
+  if (in_ptr && (in_ptr[0] || in_ptr[1] || in_ptr[2] || in_ptr[3]))
     switch (class())
     {
      case CLASS_S:
