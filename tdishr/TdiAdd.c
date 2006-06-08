@@ -29,9 +29,7 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 ------------------------------------------------------------------------------*/
 
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include <mdstypes.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
@@ -275,10 +273,6 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
   return 1;
 }
 
-#if SIZEOF__INT64 != 8
-typedef long long _int64;
-#endif
-
 STATIC_CONSTANT int zero[]={0,0};
 
 #ifdef __VAX
@@ -297,7 +291,7 @@ extern int emul();
 
 STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
 {
-  *(_int64 *)out = *(_int64 *)m1 * *(_int64 *)m2 + *(_int64 *)add;
+  *(_int64 *)out = (_int64)*m1 * (_int64)*m2 + (_int64)*add;
   return 1;
 }
 #endif
@@ -305,6 +299,12 @@ STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
 
 int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 {
+  _int64 *arg1=(_int64 *)in1;
+  _int64 *arg2=(_int64 *)in2;
+  *((_int64 *)out)=*arg1 * *arg2;
+  return;
+  /*
+  
   int tmp[3] = {0,0,0};
   int in1l[2];
   int in2l[2];
@@ -331,6 +331,7 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
     tmp[1] += in1l[0];
   swapquad(&tmp[0])
   memcpy(out,tmp,8);
+  */
   return 1;
 }
 
@@ -454,6 +455,12 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
 
 int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
+  _int64u *arg1=(_int64u *)a;
+  _int64u *arg2=(_int64u *)b;
+  _int64u *out=(_int64u *)ans;
+  *out=*arg1 + *arg2;
+  return (*out && 0x800000000000000) != 0;
+  /*
   int i;
   int carry=0;
   unsigned int la[2];
@@ -472,6 +479,7 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
   }
   swapquad(ans);
   return !carry;
+  */
 }
 
 int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
