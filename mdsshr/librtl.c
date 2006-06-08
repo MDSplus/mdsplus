@@ -1688,17 +1688,19 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   char time_out[23];
   unsigned short slen=sizeof(time_out);
   time_t bintim = LibCvtTim(time_in,0);
-  _int64 chunks;
+  _int64 chunks=0;
   _int64 *time_q=(_int64 *)time_in;
   _int64 seconds;
   struct timeval tv;
   struct timezone tz;
   tzset();
+  if (time_in != NULL) {
 #ifdef HAVE_GETTIMEOFDAY
-  gettimeofday(&tv,&tz);
-  bintim = (*time_q-0x7c95674beb4000)/10000000+tz.tz_minuteswest*60-(daylight * 3600);
+    gettimeofday(&tv,&tz);
+    bintim = (*time_q-0x7c95674beb4000)/10000000+tz.tz_minuteswest*60-(daylight * 3600);
 #endif
-  chunks = *time_q % 10000000;
+    chunks = *time_q % 10000000;
+  }
   time_str = ctime(&bintim);
   time_out[0]  = time_str[8];
   time_out[1]  = time_str[9];
