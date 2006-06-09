@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# Change group of file to that of the container directory
+# Change mode to allow user and group read,write and other read
+chgrp $1 --reference=`dirname $1`
+chmod 0664 $1
