@@ -572,6 +572,7 @@ public class DeviceSetup
             ds.configure(tree, nid.getInt());
             if (ds.getContentPane().getLayout() != null)
                 ds.pack();
+
             ds.setLocation(x, y);
             ds.setVisible(true);
         }

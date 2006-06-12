@@ -178,7 +178,7 @@ public class RFXMHDSetup extends DeviceSetup {
     titledBorder6 = new TitledBorder(border5,"Output 3");
     border6 = BorderFactory.createLineBorder(Color.black,1);
     titledBorder7 = new TitledBorder(border6,"Output 4");
-    this.setWidth(736);
+    this.setWidth(500);
     this.setHeight(736);
     this.setDeviceType("RFXControl");
     this.setDeviceProvider("");

@@ -97,8 +97,10 @@ public class ParameterSetting
     Hashtable currSetupHash = new Hashtable();
     Hashtable currSetupOnHash = new Hashtable();
 
-    JTextField maxPMATF, maxPVATF, maxPVAT8F, maxTFATF, maxTCCHF, maxTCACF;
-    int maxPMAT, maxPVAT, maxPVAT8, maxTFAT, maxTCCH, maxTCAC;
+    JTextField maxPMATF, maxPCATParallelF, maxPCATSeriesF, maxTFATF, maxTCCHF,
+        maxTCACF, maxPMVoltageF, maxFillVoltageF, maxPuffVoltageF;
+    int maxPMAT, maxPCATParallel, maxPCATSeries, maxTFAT, maxTCCH, maxTCAC,
+        maxPMVoltage, maxFillVoltage, maxPuffVoltage;
     JTextArea messageArea;
 
     WarningDialog checkedWd, configWd, limitsWd;
@@ -124,7 +126,7 @@ public class ParameterSetting
 
     JFileChooser chooser = new JFileChooser();
 
-    SelectSetup saveSelected = null, loadSelected = null;
+    SelectSetup saveSelected = null, loadSelected = null, applyModelSelected = null;
     DecouplingDialog decouplingD;
 
 
@@ -213,6 +215,7 @@ public class ParameterSetting
                }
            });
            fileMenu.add(applyToModelItem);
+           applyToModelItem.setEnabled(isOnline);
 
            revertModelItem = new JMenuItem("Revert To Previous Model");
            revertModelItem.addActionListener(new ActionListener()
@@ -289,11 +292,12 @@ public class ParameterSetting
                 public void actionPerformed(ActionEvent e)
                 {
                     int idx = modeC.getSelectedIndex();
+                    int baseShot = ((ParameterSetting.this.isOnline)?100:101);
                     try {
                         rfx.close(0);
-                        rfx = new Database("rfx", 100+idx);
+                        rfx = new Database("rfx", baseShot + idx);
                         rfx.open();
-                        shot = 100 + idx;
+                        shot = baseShot + idx;
                     }
                     catch(Exception exc)
                     {
@@ -344,7 +348,7 @@ public class ParameterSetting
         JPanel jp1 = new JPanel();
         jp1.setBorder(new TitledBorder("Poloidal"));
         jp1.setLayout(new GridLayout(6, 1));
-        buttons[1] = poloidalControlB = new JButton("Poloidal Control");
+        buttons[1] = poloidalControlB = new JButton("EDA1");
         poloidalControlB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -481,7 +485,7 @@ public class ParameterSetting
         jp1 = new JPanel();
         jp1.setBorder(new TitledBorder("Toroidal"));
         jp1.setLayout(new GridLayout(6, 1));
-        buttons[5] = toroidalControlB = new JButton("Toroidal Control");
+        buttons[5] = toroidalControlB = new JButton("EDA3");
         toroidalControlB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -1008,18 +1012,18 @@ public class ParameterSetting
         limitsJp.setLayout(new BorderLayout());
         JPanel limitsListJp = new JPanel();
 
-        limitsListJp.setLayout(new GridLayout(6, 1));
+        limitsListJp.setLayout(new GridLayout(9, 1));
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. PMAT per unita' (A): "));
         jp.add(maxPMATF = new JTextField("" + maxPMAT, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. PVAT bobine F1-F7 (A): "));
-        jp.add(maxPVATF = new JTextField("" + maxPVAT, 10));
+        jp.add(maxPCATParallelF = new JTextField("" + maxPCATParallel, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. PVAT bobina F8 (A): "));
-        jp.add(maxPVAT8F = new JTextField("" + maxPVAT8, 10));
+        jp.add(maxPCATSeriesF = new JTextField("" + maxPCATSeries, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. TFAT per unita' (A): "));
@@ -1032,6 +1036,18 @@ public class ParameterSetting
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. Inverter toroidale (A): "));
         jp.add(maxTCACF = new JTextField("" + maxTCAC, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Tensione di picco Max. avvolgimento magnetizzante: "));
+        jp.add(maxPMVoltageF = new JTextField("" + maxPMVoltage, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Tensione Max. Valvole Filling (V): "));
+        jp.add(maxFillVoltageF = new JTextField("" + maxFillVoltage, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Tensione Max. Valvole Puffing (V): "));
+        jp.add(maxPuffVoltageF = new JTextField("" + maxPuffVoltage, 10));
         limitsListJp.add(jp);
         getLimits();
 
@@ -1093,29 +1109,38 @@ public class ParameterSetting
         {
             BufferedReader br = new BufferedReader(new FileReader("rt_limits"));
             maxPMAT = Integer.parseInt(br.readLine());
-            maxPVAT = Integer.parseInt(br.readLine());
-            maxPVAT8 = Integer.parseInt(br.readLine());
+            maxPCATParallel = Integer.parseInt(br.readLine());
+            maxPCATSeries = Integer.parseInt(br.readLine());
             maxTFAT = Integer.parseInt(br.readLine());
             maxTCCH = Integer.parseInt(br.readLine());
             maxTCAC = Integer.parseInt(br.readLine());
+            maxPMVoltage = Integer.parseInt(br.readLine());
+            maxFillVoltage = Integer.parseInt(br.readLine());
+            maxPuffVoltage = Integer.parseInt(br.readLine());
             br.close();
         }
         catch (Exception exc)
         {
             System.out.println(exc);
             maxPMAT = 12500;
-            maxPVAT = 2000;
-            maxPVAT8 = 2500;
+            maxPCATParallel = 1500;
+            maxPCATSeries = 3000;
             maxTFAT = 6000;
             maxTCCH = 2000;
             maxTCAC = 2500;
+            maxPMVoltage = 35000;
+            maxFillVoltage = 120;
+            maxPuffVoltage = 120;
         }
         maxPMATF.setText("" + maxPMAT);
-        maxPVATF.setText("" + maxPVAT);
-        maxPVAT8F.setText("" + maxPVAT8);
+        maxPCATParallelF.setText("" + maxPCATParallel);
+        maxPCATSeriesF.setText("" + maxPCATSeries);
         maxTFATF.setText("" + maxTFAT);
         maxTCCHF.setText("" + maxTCCH);
         maxTCACF.setText("" + maxTCAC);
+        maxPMVoltageF.setText("" + maxPMVoltage);
+        maxFillVoltageF.setText("" + maxFillVoltage);
+        maxPuffVoltageF.setText("" + maxPuffVoltage);
     }
 
     void saveLimits()
@@ -1123,11 +1148,14 @@ public class ParameterSetting
         try
         {
             maxPMAT = Integer.parseInt(maxPMATF.getText());
-            maxPVAT = Integer.parseInt(maxPVATF.getText());
-            maxPVAT8 = Integer.parseInt(maxPVAT8F.getText());
+            maxPCATParallel = Integer.parseInt(maxPCATParallelF.getText());
+            maxPCATSeries = Integer.parseInt(maxPCATSeriesF.getText());
             maxTFAT = Integer.parseInt(maxTFATF.getText());
             maxTCCH = Integer.parseInt(maxTCCHF.getText());
             maxTCAC = Integer.parseInt(maxTCACF.getText());
+            maxPMVoltage = Integer.parseInt(maxPMVoltageF.getText());
+            maxFillVoltage = Integer.parseInt(maxFillVoltageF.getText());
+            maxPuffVoltage = Integer.parseInt(maxPuffVoltageF.getText());
         }
         catch (Exception exc)
         {
@@ -1140,15 +1168,21 @@ public class ParameterSetting
             BufferedWriter bw = new BufferedWriter(new FileWriter("rt_limits"));
             bw.write("" + maxPMAT);
             bw.newLine();
-            bw.write("" + maxPVAT);
+            bw.write("" + maxPCATParallel);
             bw.newLine();
-            bw.write("" + maxPVAT8);
+            bw.write("" + maxPCATSeries);
             bw.newLine();
             bw.write("" + maxTFAT);
             bw.newLine();
             bw.write("" + maxTCCH);
             bw.newLine();
             bw.write("" + maxTCAC);
+            bw.newLine();
+            bw.write("" + maxPMVoltage);
+            bw.newLine();
+            bw.write("" + maxFillVoltage);
+            bw.newLine();
+            bw.write("" + maxPuffVoltage);
             bw.newLine();
             bw.close();
         }
@@ -1255,7 +1289,7 @@ public class ParameterSetting
             if(isRt)
                 rfx = new Database("RFX", -1);
             else
-                rfx = new Database("RFX", 100);
+                rfx = new Database("RFX", ((isOnline)?100:101));
             rfx.open();
         }
         catch (Exception exc)
@@ -1269,7 +1303,7 @@ public class ParameterSetting
         if (isRt)
             setTitle("RFX Parameters -- RT --    shot: " + getShot());
         else
-            setTitle("RFX Parameters  shot: " + getShot());
+            setTitle("RFX Parameters  shot: " + shot);
     }
 
     void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
@@ -1285,12 +1319,15 @@ public class ParameterSetting
 
     void loadSetup()
     {
-
         chooser.rescanCurrentDirectory();
+        chooser.setApproveButtonText("Load");
         int returnVal = chooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
-            readSetupFromFile(chooser.getSelectedFile().getPath());
+            String filePath = chooser.getSelectedFile().getPath();
+            if(!filePath.toLowerCase().endsWith(".rfx"))
+                filePath += ".rfx";
+            readSetupFromFile(filePath);
             loadSelectedSetup();
         }
     }
@@ -1347,11 +1384,11 @@ public class ParameterSetting
             jp1.setLayout(new GridLayout(1, 2));
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(13, 1));
-            jp.add(checkBoxes[0] = poloidalCB = new JCheckBox("Poloidal", true));
+            jp.add(checkBoxes[0] = poloidalCB = new JCheckBox("EDA1", true));
             jp.add(checkBoxes[1] = axiCB = new JCheckBox("Axisymmetric contr.", true));
             jp.add(checkBoxes[2] = pcCB = new JCheckBox("PC", true));
             jp.add(checkBoxes[3] = pmCB = new JCheckBox("PM", true));
-            jp.add(checkBoxes[4] = toroidalCB = new JCheckBox("Toroidal", true));
+            jp.add(checkBoxes[4] = toroidalCB = new JCheckBox("EDA3", true));
             jp.add(checkBoxes[5] = chopperCB = new JCheckBox("Chopper", true));
             jp.add(checkBoxes[6] = feedForwardCB = new JCheckBox("Feed Forward", true));
             jp.add(checkBoxes[7] = inverterCB = new JCheckBox("Inverter", true));
@@ -1556,6 +1593,7 @@ public class ParameterSetting
     void saveSetup(boolean select[], boolean timeSelect[])
     {
         chooser.rescanCurrentDirectory();
+        chooser.setApproveButtonText("Save");
         int returnVal = chooser.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -1579,8 +1617,32 @@ public class ParameterSetting
             if(timeSelect[11]) saveSetup(0, chopper_mask, currSetupHash, currSetupOnHash);
             if(timeSelect[12]) saveSetup(0, inverter_mask, currSetupHash, currSetupOnHash);
 
-            writeSetupToFile(chooser.getSelectedFile().getPath());
+            String filePath = chooser.getSelectedFile().getPath();
+            if(!filePath.toLowerCase().endsWith(".rfx"))
+               filePath += ".rfx";
+           writeSetupToFile(filePath);
         }
+    }
+
+    void getSetupForModel(Hashtable setupHash, Hashtable setupOnHash, boolean select[], boolean timeSelect[])
+    {
+             for (int i = 1; i < 13; i++)
+                if(select[i-1]) saveSetup(i, setupHash, setupOnHash);
+
+            //Timing components
+            if(timeSelect[0]) saveSetup(0, pm_mask, setupHash, setupOnHash);
+            if(timeSelect[1]) saveSetup(0, pc_mask, setupHash, setupOnHash);
+            if(timeSelect[2]) saveSetup(0, pv_mask, setupHash, setupOnHash);
+            if(timeSelect[3]) saveSetup(0, pp_mask, setupHash, setupOnHash);
+            if(timeSelect[4]) saveSetup(0, pr_mask, setupHash, setupOnHash);
+            if(timeSelect[5]) saveSetup(0, ptso_mask, setupHash, setupOnHash);
+            if(timeSelect[6]) saveSetup(0, ptcb_mask, setupHash, setupOnHash);
+            if(timeSelect[7]) saveSetup(0, ptct_mask, setupHash, setupOnHash);
+            if(timeSelect[8]) saveSetup(0, gas_mask, setupHash, setupOnHash);
+            if(timeSelect[9]) saveSetup(0, tf_mask, setupHash, setupOnHash);
+            if(timeSelect[10]) saveSetup(0, is_mask, setupHash, setupOnHash);
+            if(timeSelect[11]) saveSetup(0, chopper_mask, setupHash, setupOnHash);
+            if(timeSelect[12]) saveSetup(0, inverter_mask, setupHash, setupOnHash);
     }
 
 
@@ -2387,6 +2449,10 @@ public class ParameterSetting
             {
                 return "Corrente Magnetizzante sopra i limiti";
             }
+            int numPMUnits = countPMUnits();
+            float rTransfer = (rfx.evaluateData(new PathData("\\P_CONFIG:LOAD_RESIST"), 0)).getFloat();
+            if(maxCurr * numPMUnits * rTransfer > maxPMVoltage)
+                return "Tensione di picco avvolgimento magnetizzante sopra i limiti";
         }
         catch (Exception exc)
         {
@@ -2453,6 +2519,75 @@ public class ParameterSetting
         {
             System.err.println("Cannot read max Inverter current: " + exc);
         }
+        try {
+            String pcConfig =  (rfx.evaluateData(new PathData(
+                    "\\PC_SETUP:CONFIG"), 0)).
+                    getString();
+            float maxVolt = 0;
+            float[] pcWave = (rfx.evaluateData(new PathData("\\PC_SETUP:WAVE"), 0)).getFloatArray();
+            for (int i = 0; i < pcWave.length; i++)
+            {
+                if (maxVolt > pcWave[i])
+                    maxVolt = pcWave[i];
+            }
+            if (pcConfig.trim().toUpperCase().equals("PARALLEL"))
+            {
+                if (Math.abs(maxVolt) > Math.abs(maxPCATParallel))
+                {
+                    return "Tensione PCAT in configurazione parallela sopra i limiti";
+                }
+            }
+            else
+            {
+               if (Math.abs(maxVolt) > Math.abs(maxPCATSeries))
+               {
+                   return "Tensione PCAT in configurazione serie sopra i limiti";
+               }
+           }
+       }
+       catch (Exception exc)
+       {
+           System.err.println("Cannot read max PCAT voltage: " + exc);
+       }
+
+       try
+       {
+           float[] currWave = (rfx.evaluateData(new PathData(
+               "\\VI_SETUP:FILL_WAVE"), 0)).getFloatArray();
+           float maxVolt = 0;
+           for (int i = 0; i < currWave.length; i++)
+           {
+               if (maxVolt < currWave[i])
+                   maxVolt = currWave[i];
+           }
+           if (maxVolt > maxFillVoltage)
+           {
+               return "Tensione Valvole Filling sopra i limiti";
+           }
+       }
+       catch (Exception exc)
+       {
+           System.err.println("Cannot read max Filling voltage: " + exc);
+       }
+       try
+       {
+           float[] currWave = (rfx.evaluateData(new PathData(
+               "\\VI_SETUP:PUFF_WAVE"), 0)).getFloatArray();
+           float maxVolt = 0;
+           for (int i = 0; i < currWave.length; i++)
+           {
+               if (maxVolt < currWave[i])
+                   maxVolt = currWave[i];
+           }
+           if (maxVolt > maxPuffVoltage)
+           {
+               return "Tensione Valvole Filling sopra i limiti";
+           }
+       }
+       catch (Exception exc)
+       {
+           System.err.println("Cannot read max Puffing voltage: " + exc);
+       }
         return null;
     }
 
@@ -2464,6 +2599,7 @@ public class ParameterSetting
         String prevPCConnection;
         String shotStr = JOptionPane.showInputDialog(this, "Shot number: ",
             "Enter shot", JOptionPane.INFORMATION_MESSAGE);
+        if(shotStr == null || shotStr.trim().equals("")) return;
         try
         {
              currShot = Integer.parseInt(shotStr);
@@ -2665,8 +2801,28 @@ public class ParameterSetting
 
     void applyToModel()
     {
-        //Read Setup from working Shot
-        saveSetup(currSetupHash, currSetupOnHash);
+
+        if (applyModelSelected == null)
+        {
+            applyModelSelected = new SelectSetup(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    boolean[] selectedDevices = applyModelSelected.getSelectedDevices();
+                    boolean[] selectedTimes = applyModelSelected.getSelectedTimes();
+                    Hashtable applyHash = new Hashtable();
+                    Hashtable applyOnHash = new Hashtable();
+                    getSetupForModel(applyHash, applyOnHash, selectedDevices, selectedTimes);
+                    applyToModel(applyHash, applyOnHash);
+                    applyModelSelected.setVisible(false);
+                }
+            });
+        }
+        applyModelSelected.setVisible(true);
+     }
+
+     void applyToModel(Hashtable applyHash, Hashtable applyOnHash)
+     {
         try {
             rfx.close(0);
             rfx = new Database("RFX", -1);
@@ -2681,7 +2837,7 @@ public class ParameterSetting
 
         Hashtable modifiedSetupHash = new Hashtable();
         Hashtable modifiedSetupOnHash = new Hashtable();
-        boolean[] changed = compareSetup(currSetupHash, currSetupOnHash, modelSetupHash, modelSetupOnHash,
+        boolean[] changed = compareSetup(applyHash, applyOnHash, modelSetupHash, modelSetupOnHash,
                                          modifiedSetupHash, modifiedSetupOnHash);
         for(int i = 0; i < 13; i++)
             if(changed[i]) setUncheckedRt(i);
@@ -2717,6 +2873,8 @@ public class ParameterSetting
 
     void compareShots(int shot1, int shot2)
     {
+        Cursor prevCursor = getCursor();
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Hashtable setup1Hash = new Hashtable(), setup1OnHash = new Hashtable(),
             setup2Hash = new Hashtable(), setup2OnHash = new Hashtable(),
             diffSetupHash = new Hashtable(), diffSetupOnHash = new Hashtable();
@@ -2728,9 +2886,11 @@ public class ParameterSetting
         }
         catch (Exception exc)
         {
+            setCursor(prevCursor);
             JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot1,
                                           "Error opening tree",
                                           JOptionPane.WARNING_MESSAGE);
+
             return;
         }
         updateDeviceNids();
@@ -2743,6 +2903,7 @@ public class ParameterSetting
         }
         catch (Exception exc)
         {
+            setCursor(prevCursor);
             JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot2,
                                           "Error opening tree",
                                           JOptionPane.WARNING_MESSAGE);
@@ -2758,6 +2919,7 @@ public class ParameterSetting
         }
         catch (Exception exc)
         {
+            setCursor(prevCursor);
             System.err.println("Cannot open working shot");
             return;
         }
@@ -2801,7 +2963,11 @@ public class ParameterSetting
             changedD.setVisible(true);
         }
         else //No changes
-            JOptionPane.showMessageDialog(this, "No differences found", "", JOptionPane.INFORMATION_MESSAGE);
+        {
+            JOptionPane.showMessageDialog(this, "No differences found", "",
+                                          JOptionPane.INFORMATION_MESSAGE);
+        }
+        setCursor(prevCursor);
     }
 
     DeviceSetup createDevice(int idx)
