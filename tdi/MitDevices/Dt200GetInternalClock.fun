@@ -11,6 +11,7 @@ public fun Dt200GetInternalClock(in _board)
     abort();
   }
   _numstr=extract(23, len(_ans)-22, _ans);
+  _numstr=extract(0, index(_numstr, ' '), _numstr);
   _ans = if_error(execute(_numstr), 0);
   return(_ans);
 }
