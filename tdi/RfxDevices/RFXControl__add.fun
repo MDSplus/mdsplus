@@ -1,7 +1,8 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-    DevAddStart(_path, 'RFXControl', 1586, _nidout);
+/*    DevAddStart(_path, 'RFXControl', 1586, _nidout); */
+    DevAddStart(_path, 'RFXControl', 1682, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -558,15 +559,15 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR211_NAME', 'TEXT', "ModeControl3M1M0", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR211_VAL', 'NUMERIC', 0, *, _nid);
 
-    DevAddNode(_path // '.PARAMETERS:PAR212_NAME', 'TEXT', "ModeControl4Start", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR212_VAL', 'NUMERIC', -1, *,_nid);
-    DevAddNode(_path // '.PARAMETERS:PAR213_NAME', 'TEXT', "ModeControl4End", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR213_VAL', 'NUMERIC', -1, *,_nid);
-    DevAddNode(_path // '.PARAMETERS:PAR214_NAME', 'TEXT', "ModeControl4KMod", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR212_NAME', 'TEXT', "ModeControl1IntGain", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR212_VAL', 'NUMERIC', zero(48), *,_nid);
+    DevAddNode(_path // '.PARAMETERS:PAR213_NAME', 'TEXT', "ModeControl2IntGain", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR213_VAL', 'NUMERIC', zero(48), *,_nid);
+    DevAddNode(_path // '.PARAMETERS:PAR214_NAME', 'TEXT', "ModeControl3IntGain", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR214_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControl4KPhs", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControlSpare1", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR215_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControl4M1M0", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControlSpare2", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR216_VAL', 'NUMERIC', 0, *, _nid);
 
     DevAddNode(_path // '.PARAMETERS:PAR217_NAME', 'TEXT', "ModeControlInput1Start", *, _nid);
@@ -646,8 +647,109 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR250_NAME', 'TEXT', "FControlReferenceY", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR250_VAL', 'NUMERIC', 0. ,*, _nid);
 
+/* More rotating perturbation info */
 
+    DevAddNode(_path // '.PARAMETERS:PAR251_NAME', 'TEXT', "RotPertRelPhase1", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR251_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR252_NAME', 'TEXT', "RotPertRelPhase2", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR252_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR253_NAME', 'TEXT', "RotPertRelPhase3", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR253_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR254_NAME', 'TEXT', "RotPertRelPhase4", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR254_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR255_NAME', 'TEXT', "RotPertThreshold1", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR255_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR256_NAME', 'TEXT', "RotPertThreshold2", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR256_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR257_NAME', 'TEXT', "RotPertThreshold3", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR257_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR258_NAME', 'TEXT', "RotPertThreshold4", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR258_VAL', 'NUMERIC', 0., *, _nid);
+	
 
+    DevAddNode(_path // '.PARAMETERS:PAR259_NAME', 'TEXT', "RotPertN5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR259_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR260_NAME', 'TEXT', "RotPertM5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR260_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR261_NAME', 'TEXT', "RotPertAmplitude5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR261_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR262_NAME', 'TEXT', "RotPertStart5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR262_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR263_NAME', 'TEXT', "RotPertEnd5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR263_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR264_NAME', 'TEXT', "RotPertAngVel5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR264_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR265_NAME', 'TEXT', "RotPertPhase5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR265_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR266_NAME', 'TEXT', "RotPertRiseTime5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR266_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR267_NAME', 'TEXT', "RotPertRelPhase5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR267_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR268_NAME', 'TEXT', "RotPertThreshold5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR268_VAL', 'NUMERIC', 0., *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR269_NAME', 'TEXT', "RotPertN6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR269_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR270_NAME', 'TEXT', "RotPertM6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR270_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR271_NAME', 'TEXT', "RotPertAmplitude6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR271_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR272_NAME', 'TEXT', "RotPertStart6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR272_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR273_NAME', 'TEXT', "RotPertEnd6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR273_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR274_NAME', 'TEXT', "RotPertAngVel6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR274_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR275_NAME', 'TEXT', "RotPertPhase6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR275_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR276_NAME', 'TEXT', "RotPertRiseTime6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR276_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR277_NAME', 'TEXT', "RotPertRelPhase6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR277_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR278_NAME', 'TEXT', "RotPertThreshold6", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR278_VAL', 'NUMERIC', 0., *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR279_NAME', 'TEXT', "RotPertN7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR279_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR280_NAME', 'TEXT', "RotPertM7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR280_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR281_NAME', 'TEXT', "RotPertAmplitude7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR281_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR282_NAME', 'TEXT', "RotPertStart7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR282_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR283_NAME', 'TEXT', "RotPertEnd7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR283_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR284_NAME', 'TEXT', "RotPertAngVel7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR284_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR285_NAME', 'TEXT', "RotPertPhase7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR285_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR286_NAME', 'TEXT', "RotPertRiseTime7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR286_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR287_NAME', 'TEXT', "RotPertRelPhase7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR287_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR288_NAME', 'TEXT', "RotPertThreshold7", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR288_VAL', 'NUMERIC', 0., *, _nid);
+
+    DevAddNode(_path // '.PARAMETERS:PAR289_NAME', 'TEXT', "RotPertN8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR289_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR290_NAME', 'TEXT', "RotPertM8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR290_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR291_NAME', 'TEXT', "RotPertAmplitude8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR291_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR292_NAME', 'TEXT', "RotPertStart8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR292_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR293_NAME', 'TEXT', "RotPertEnd8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR293_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR294_NAME', 'TEXT', "RotPertAngVel8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR294_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR295_NAME', 'TEXT', "RotPertPhase8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR295_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR296_NAME', 'TEXT', "RotPertRiseTime8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR296_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR297_NAME', 'TEXT', "RotPertRelPhase8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR297_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR298_NAME', 'TEXT', "RotPertThreshold8", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR298_VAL', 'NUMERIC', 0., *, _nid);
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
 
