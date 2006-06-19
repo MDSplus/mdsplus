@@ -1,6 +1,30 @@
 Version 1.8-0
 
 
+2006-06-19 10:28  twf
+
+	* Setup/Setup.vdproj, include/release.h:
+	
+	Add new directories include html, html-old, php and all of tdi...
+
+2006-06-19 10:26  twf
+
+	* mdsshr/librtl.c, tdishr/TdiSql.c:
+	
+	Fix compile errors for windows
+
+2006-06-19 10:25  twf
+
+	* idlmdsevent/idlmdsevent.vcproj, idlsql/idlsql.vcproj:
+	
+	Changed to support IDL 6.3
+
+2006-06-19 10:16  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.8-0
+
 2006-06-19 09:54  manduchi
 
 	* javascope/: ColorMapDialog.java, CompositeWaveDisplay.java,
