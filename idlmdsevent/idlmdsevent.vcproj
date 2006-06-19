@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl.lib"
 				OutputFile="$(OutDir)/idlmdsevent.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
