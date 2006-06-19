@@ -18,7 +18,7 @@
 	The SQL string sElEcT is a blob write. 
 	Ken Klare, LANL P-4	(c)1991,1992
 */
-#include <config.h>
+#include <mdstypes.h>
 #if SIZEOF__INT64 != 8
 typedef unsigned long long _int64u;
 #endif

@@ -1681,7 +1681,9 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   return 1;
 }
 #else
+#ifndef HAVE_WINDOWS_H
 #include <sys/time.h>
+#endif
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
   char *time_str;
@@ -1690,13 +1692,12 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   time_t bintim = LibCvtTim(time_in,0);
   _int64 chunks=0;
   _int64 *time_q=(_int64 *)time_in;
-  _int64 seconds;
-  _int64 tmp;
-  struct timeval tv;
-  struct timezone tz;
   tzset();
   if (time_in != NULL) {
 #ifdef HAVE_GETTIMEOFDAY
+    _int64 tmp;
+    struct timeval tv;
+	struct timezone tz;
     gettimeofday(&tv,&tz);
     tmp = (*time_q-0x7c95674beb4000)/10000000+tz.tz_minuteswest*60-(daylight * 3600);
     bintim=(tmp < 0) ? (time_t)0 : (time_t)tmp;
@@ -1725,8 +1726,8 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   time_out[18] = time_str[17];
   time_out[19] = time_str[18];
   time_out[20] = '.';
-  time_out[21] = '0' + chunks/1000000;
-  time_out[22] = '0' + (chunks % 1000000)/100000;
+  time_out[21] = '0' + (char)(chunks/1000000);
+  time_out[22] = '0' + (char)((chunks % 1000000)/100000);
   StrCopyR(str,&slen,time_out);
   if (len) *len = slen;
   return 1;
@@ -2535,7 +2536,7 @@ STATIC_ROUTINE char *GetTdiLogical(char *name)
   {
     ans = strncpy(malloc(ans_d.length+1),ans_d.pointer,ans_d.length);
     ans[ans_d.length]=0;
-    MdsFree1Dx(&ans_d,NULL);
+    MdsFree1Dx((struct descriptor_xd *)&ans_d,NULL);
   }
   else
     ans = 0;
