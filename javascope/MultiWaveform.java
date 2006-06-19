@@ -583,6 +583,16 @@ public class MultiWaveform
         }
     }
 
+    public void liveUpdate()
+    {
+        if (!is_image)
+        {
+            waveform_signal = waveform_signal;
+        }
+        Update();
+    }
+
+
     public void Update(Frames frames)
     {
         this.frames = frames;
@@ -948,7 +958,7 @@ public class MultiWaveform
                     segments = wm.ToPolygons(s, d);
                     Polygon curr_polygon;
 
-                    if (s.getInterpolate() || mode == MODE_PAN && dragging)
+                    if (segments != null && ( s.getInterpolate() || mode == MODE_PAN && dragging) )
                         for (int k = 0; k < segments.size(); k++)
                         {
                             curr_polygon = (Polygon) segments.elementAt(k);
@@ -1055,7 +1065,7 @@ public class MultiWaveform
         for (curr_point_sig_idx = i = 0; i < signals.size(); i++)
         {
             curr_signal = (Signal) signals.elementAt(i);
-            if (curr_signal == null || !GetSignalState(i))
+            if (curr_signal == null ||  curr_signal.y == null || !GetSignalState(i))
                 continue;
 
             curr_idx = curr_signal.FindClosestIdx(curr_x, curr_y);
@@ -1116,6 +1126,12 @@ public class MultiWaveform
                     s.showYZ(s.getMode2D(), (float) curr_x);
                     not_drawn = true;
                 }
+                if ( s.getType() == Signal.TYPE_2D && s.getMode2D() == Signal.MODE_PROFILE )
+                {
+                    s.showProfile(s.getMode2D(), (float) curr_x);
+                    not_drawn = true;
+                }
+
 
             }
         }
@@ -1438,19 +1454,4 @@ public class MultiWaveform
         super.SetMode(mod);
     }
 
-    class SymContainer
-        extends java.awt.event.ContainerAdapter
-    {
-        public void componentAdded(java.awt.event.ContainerEvent event)
-        {
-            Object object = event.getSource();
-            if (object == MultiWaveform.this)
-                MultiWaveform_ComponentAdded(event);
-        }
-    }
-
-    void MultiWaveform_ComponentAdded(java.awt.event.ContainerEvent event)
-    {
-        // to do: code goes here.
-    }
 }

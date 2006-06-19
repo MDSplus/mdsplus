@@ -490,7 +490,7 @@ public class jScope
 
     public void showAboutScreen()
     {
-        aboutScreen.show();
+        aboutScreen.setVisible(true);
     }
 
     /**
@@ -780,7 +780,7 @@ public class jScope
             {
                 PropertiesEditor pe = new PropertiesEditor(jScope.this,
                     propertiesFilePath);
-                pe.show();
+                pe.setVisible(true);
             }
         });
         edit_m.add(properties_i);
@@ -1078,7 +1078,7 @@ public class jScope
         {
             public void actionPerformed(ActionEvent e)
             {
-                help_dialog.show();
+                help_dialog.setVisible(true);
             }
         }
         );
@@ -2852,7 +2852,7 @@ remove 28/06/2005
             LoadConfiguration();
         }
         SetWindowTitle("");
-        show();
+        setVisible(true);
     }
 
     /**********************
@@ -3214,7 +3214,7 @@ class WindowDialog
             this.in_row[i] = in_row[i];
 
         setLocationRelativeTo(parent);
-        show();
+        setVisible(true);
 
         return changed;
     }
@@ -3573,7 +3573,7 @@ class ServerDialog
         if (found_dsi != null)
             server_list.setSelectedValue(found_dsi, true);
         setLocationRelativeTo(dw);
-        show();
+        setVisible(true);
     }
 
     private void resetAll()

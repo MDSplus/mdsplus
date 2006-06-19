@@ -707,24 +707,26 @@ public class Waveform
 
           if (mode == MODE_POINT)
           {
-              Signal s = GetSignal();
-              if (is_mb2 &&
-                  s.getType() == Signal.TYPE_2D &&
-                  s.getMode2D() == Signal.MODE_CONTOUR)
-              {
-                s.addContourLevel(s.getZValue());
-                not_drawn = true;
+              if (is_image && frames != null) {
+                //  if(!frames.contain(new Point(start_x, start_y), d))
+                //      return;
+
+                not_drawn = false;
                 repaint();
               }
-
-            if (is_image && frames != null) {
-              //  if(!frames.contain(new Point(start_x, start_y), d))
-              //      return;
-
-              not_drawn = false;
-              repaint();
-            }
-            sendUpdateEvent();
+              else
+              {
+                  Signal s = GetSignal();
+                  if (is_mb2 &&
+                      s.getType() == Signal.TYPE_2D &&
+                      s.getMode2D() == Signal.MODE_CONTOUR)
+                  {
+                      s.addContourLevel(s.getZValue());
+                      not_drawn = true;
+                      repaint();
+                  }
+              }
+              sendUpdateEvent();
           }
           else {
             end_x = end_y = 0;
@@ -1037,6 +1039,11 @@ public class Waveform
     repaint();
   }
 
+  public void liveUpdate() {
+      Update();
+  }
+
+
   public void UpdateSignal(Signal s) { //Same as Update, except for grid and metrics
     waveform_signal = s;
     curr_rect = null;
@@ -1203,7 +1210,7 @@ public class Waveform
     }
   }
 
-  protected void PaintSignal(Graphics g, Dimension dim, int print_mode) {
+  synchronized protected void PaintSignal(Graphics g, Dimension dim, int print_mode) {
     Dimension d;
     String orizLabel = x_label;
     String vertLabel = y_label;
@@ -1729,7 +1736,7 @@ public class Waveform
   protected Point FindPoint(Signal s, double curr_x, double curr_y,  Dimension d) {
     double x = 0.0, y = 0.0;
 
-    if (s == null) {
+    if (s == null || s.x == null || s.y == null) {
       return null;
     }
 
@@ -1754,6 +1761,9 @@ public class Waveform
                 p = new Point(wm.XPixel(wave_point_x, d),
                               wm.YPixel(wave_point_y, d));
                 return p;
+            case Signal.MODE_PROFILE:
+                break;
+
         }
     }
 
@@ -2073,8 +2083,17 @@ public class Waveform
     }
   }
 
+  public void setFixedLimits(float xmin, float xmax, float ymin, float ymax)
+  {
+    lx_max = xmax;
+    lx_min = xmin;
+    ly_max = ymax;
+    ly_min = ymin;
+    setFixedLimits();
+  }
 
-  protected void setFixedLimits() {
+
+  public void setFixedLimits() {
     setXlimits(lx_min, lx_max);
     setYlimits(ly_min, ly_max);
     change_limits = true;

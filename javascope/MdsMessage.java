@@ -261,7 +261,7 @@ class MdsMessage extends Object
         c_type = header_b[idx++];
         ndims = header_b[idx++];
 
-/*
+
         System.out.println("msglen " + msglen);
         System.out.println("status " + status);
         System.out.println("length " + length);
@@ -271,7 +271,7 @@ class MdsMessage extends Object
         System.out.println("dtype " + dtype);
         System.out.println("c_type " + c_type);
         System.out.println("ndims " + ndims);
-*/
+
 
         if(swap)
         {

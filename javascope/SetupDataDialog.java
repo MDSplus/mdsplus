@@ -1245,7 +1245,7 @@ import javax.swing.event.*;
       jScope.jScopeSetUI(expand_expr);
 	  expand_expr.pack();
       pack();
-      show();
+      setVisible(true);
    }
 
 
@@ -1969,7 +1969,7 @@ import javax.swing.event.*;
                 */
 	            signalList.updateError();
 	            error_w.setLocationRelativeTo(this);
-	            error_w.show();
+	            error_w.setVisible(true);
 	        }
       }
 
@@ -1978,7 +1978,7 @@ import javax.swing.event.*;
 	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
 	        expand_expr.setSize(600,400);
 	        expand_expr.setLocationRelativeTo(this);
-	        expand_expr.show();
+	        expand_expr.setVisible(true);
       }
    }
 

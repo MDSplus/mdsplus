@@ -424,7 +424,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
         wave = w;
         initialize();
         setLocationRelativeTo(wave.getParent());
-        show();
+        setVisible(true);
    }
 
 

@@ -22,7 +22,9 @@ public class Signal
     static final int MODE_YZ = 1;
     static final int MODE_CONTOUR = 2;
     static final int MODE_IMAGE = 3;
-    static final int MODE_ONDINE = 3;
+    static final int MODE_ONDINE = 4;
+    static final int MODE_PROFILE = 5;
+
 
     static final int MODE_LINE = 0;
     static final int MODE_NOLINE = 2;
@@ -113,19 +115,16 @@ public class Signal
     /**
      * Two dimensional z vector
      */
-//    protected float data[];
     protected float z2D[];
 
     /**
      * Two dimensional x vector
      */
-//    protected float time[];
     protected float x2D[];
 
     /**
      * Two dimensional y vector
      */
-//    protected float x_data[];
     protected float y2D[];
 
     /**
@@ -184,7 +183,7 @@ public class Signal
     /**
      * number of signal point
      */
-    protected int n_points;
+    protected int n_points = 0;
 
     /**
      * index of NaN in x,y  vector
@@ -458,6 +457,21 @@ public class Signal
     }
 
     /**
+     * Costructs a zero Signal with name.
+     */
+    public Signal(String name)
+    {
+        error = asym_error = false;
+        n_points = 0;
+        this.name = name;
+        saved_xmin = curr_xmax = xmin = 0;
+        saved_xmax = curr_xmin = xmax = 1;
+        saved_ymin = ymin = -1e-6;
+        saved_ymax = ymax = 1e-6;
+        increasing_x = true;
+    }
+
+    /**
      * Costructs a Signal equal to argument Signal
      *
      * @param s a Signal
@@ -486,7 +500,7 @@ public class Signal
                 x_long = new long[n_points];
             x = new float[n_points];
             y = new float[n_points];
-            for (i = 0, ymax = ymin = s.y[0]; i < n_points; i++)
+            for (i = 0; i < n_points; i++)
             {
                 if (s.x_double != null)
                     x_double[i] = s.x_double[i];
@@ -506,7 +520,24 @@ public class Signal
                    x_long[i] = s.x_long[i];
                }
             }
+            if(s.x != null)
+            {
+                x = new float[n_points];
+                for (i = 0; i < n_points; i++)
+                {
+                    x[i] = s.x[i];
+                }
+            }
+            if(s.y != null)
+            {
+                y = new float[n_points];
+                for (i = 0; i < n_points; i++)
+                {
+                    y[i] = s.y[i];
+                }
+            }
         }
+
         saved_ymax = ymax = s.ymax;
         saved_ymin = ymin = s.ymin;
         saved_xmin = curr_xmin = xmin = s.xmin;
@@ -891,7 +922,13 @@ public class Signal
 
     public int getNumPoints()
     {
+        if(x != null)
+            return x.length;
+        else
+            return 0;
+/*
         return n_points;
+*/
     }
 
     public void setXinYZplot(float curr_x_yz_plot)
@@ -933,6 +970,61 @@ public class Signal
         return Float.NaN;
     }
 
+    public void showProfile(int mode, float t)
+    {
+        int i;
+        int vectIdx;
+
+        if (curr_x_yz_plot == t && mode == this.mode2D)
+            return;
+
+        prev_idx = 0;
+        curr_xmax = xmax = x2D_max;
+        curr_xmin = xmin = x2D_min;
+        ymax = y2D_max;
+        ymin = y2D_min;
+
+
+        for(i = 0, vectIdx = 0; i < z2D_points; i += 2)
+        {
+            if(z2D[i] >= t)
+                break;
+            vectIdx += z2D[i+1];
+        }
+
+        curr_x_yz_plot = z2D[i];
+        curr_x_yz_idx = i;
+        n_points = (int)z2D[i+1];
+
+        x = new float[n_points];
+        y = new float[n_points];
+        System.arraycopy(x2D, vectIdx, x, 0, n_points);
+        System.arraycopy(y2D, vectIdx, y, 0, n_points);
+        this.setAxis(x, y, n_points);
+    }
+
+    public void incShowProfile()
+    {
+        if (type == TYPE_2D && mode2D == Signal.MODE_PROFILE)
+        {
+            int idx = curr_x_yz_idx;
+            idx = (idx + 2) % z2D_points;
+            showProfile( mode2D, z2D[idx]);
+        }
+    }
+
+    public void decShowProfile()
+    {
+        if (type == TYPE_2D && mode2D == Signal.MODE_PROFILE)
+        {
+            int idx = curr_x_yz_idx;
+            if( (idx = (idx - 2)) < 0)
+               idx =  z2D_points - 2;
+            showProfile( mode2D, z2D[idx]);
+        }
+    }
+
+
     public void showYZ(int mode, float t)
     {
         if (curr_x_yz_plot == t && mode == this.mode2D)
@@ -940,6 +1032,7 @@ public class Signal
         int i = getArrayIndex(x2D, t);
         showYZ(mode, i);
     }
+
 
     public void showYZ(int mode, int idx)
     {
@@ -1014,6 +1107,9 @@ public class Signal
                 case Signal.MODE_YZ:
                     incShowYZ();
                     break;
+                case Signal.MODE_PROFILE :
+                    incShowProfile();
+                    break;
             }
         }
     }
@@ -1029,6 +1125,9 @@ public class Signal
                     break;
                 case Signal.MODE_YZ:
                     decShowYZ();
+                    break;
+                case Signal.MODE_PROFILE :
+                    decShowProfile();
                     break;
             }
         }
@@ -1158,6 +1257,12 @@ public class Signal
             case MODE_CONTOUR:
                 setMode2D(mode, 0);
                 break;
+            case MODE_PROFILE:
+                float v1 = z2D[0];
+                if (!Float.isNaN(curr_x_yz_plot))
+                    v1 = curr_x_yz_plot;
+                setMode2D(mode, v1);
+                break;
         }
     }
 
@@ -1175,12 +1280,10 @@ public class Signal
         switch (mode)
         {
             case MODE_IMAGE:
-
                 saved_ymin = ymin = y2D_min;
                 saved_ymax = ymax = y2D_max;
                 saved_xmin = xmin = x2D_min;
                 saved_xmax = xmax = x2D_max;
-
                 break;
             case MODE_XZ:
                 showXZ(value);
@@ -1190,8 +1293,12 @@ public class Signal
                 showYZ(mode, value);
                 break;
             case MODE_CONTOUR:
-              initContour();
-              break;
+                initContour();
+                break;
+            case MODE_PROFILE:
+                prev_idx = 0;
+                showProfile(mode, value);
+                break;
         }
         this.mode2D = mode;
     }
@@ -1290,6 +1397,12 @@ public class Signal
             }
         setMarker(0);
     }
+
+    public void setType(int type)
+    {
+        this.type = type;
+    }
+
 
     /**
      * Set marker step.
@@ -1533,12 +1646,16 @@ public class Signal
 */
     void setAxis(float x2D[], float z2D[], float y2D[])
     {
-        int i;
-//      evaluateCalib();
         x2D_max = x2D_min = x2D[0];
         z2D_max = z2D_min = z2D[0];
         y2D_max = y2D_min = y2D[0];
-        for (i = 0; i < x2D.length; i++)
+        setAxis(x2D, z2D, y2D, 0, 0, 0);
+    }
+
+    void setAxis(float x2D[], float z2D[], float y2D[], int xIdx, int zIdx, int yIdx)
+    {
+        int i;
+        for (i = xIdx; i < x2D.length; i++)
         {
             if (x2D[i] > x2D_max)
                 x2D_max = x2D[i];
@@ -1546,7 +1663,7 @@ public class Signal
                 x2D_min = x2D[i];
         }
 
-        for (i = 0; i < z2D.length; i++)
+        for (i = yIdx; i < z2D.length; i++)
         {
             if (z2D[i] > z2D_max)
                 z2D_max = z2D[i];
@@ -1554,7 +1671,7 @@ public class Signal
                 z2D_min = z2D[i];
         }
 
-        for (i = 0; i < y2D.length; i++)
+        for (i = zIdx; i < y2D.length; i++)
         {
             if (y2D[i] > y2D_max)
                 y2D_max = y2D[i];
@@ -1570,7 +1687,6 @@ public class Signal
     {
         int i;
 
- //     evaluateCalib();
         ymax = ymin = y[0];
         xmax = xmin = x[0];
         for (i = 0; i < n_points; i++)
@@ -2116,6 +2232,8 @@ public class Signal
         if (x_double != null)
             return FindClosestIdxDouble(curr_x, curr_y);
 
+        if(x == null) return prev_idx;
+
         double min_dist, curr_dist;
         int min_idx;
         int i = 0;
@@ -2384,7 +2502,6 @@ public class Signal
       {
         for (int j = 0; j < y2D.length; j++)
         {
-//          zOut[i][j] = z2D[i * y2D.length + j];
           zOut[i][j] = z2D[j * x2D.length + i];
         }
       }
@@ -2565,4 +2682,117 @@ public class Signal
       return pIdx;
     }
 
+     private static final int INC_SIZE = 1000;
+
+    public void appendValues(float x[], float y[])
+    {
+
+        if( x == null || y == null) return;
+
+        if(type == TYPE_1D)
+        {
+            if(x.length == 1 && y.length > 1 )
+            {
+                float lastXVal = this.x[this.y.length - 1];
+                float xNew[] = new float[y.length];
+                for( int i = 0; i < y.length; i++ )
+                {
+                    xNew[i] = lastXVal =  lastXVal + x[0];
+                }
+                x = xNew;
+            }
+            this.x = appendArray(this.x, n_points, x, INC_SIZE);
+            this.y = appendArray(this.y, n_points, y, INC_SIZE);
+
+            n_points += x.length;
+            if(xmax < this.x[n_points - 1])
+               xmax = 2*xmax;
+        }
+    }
+
+
+
+    private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
+    {
+        if(arr1 == null) return arr2.clone();
+        if(arr2 == null) return arr1.clone();
+        float val[];
+        if(arr1.length < sizeUsed + arr2.length)
+        {
+            val = new float[arr1.length + arr2.length + incSize];
+            System.arraycopy(arr1, 0, val, 0, sizeUsed);
+        }
+        else
+            val = arr1;
+        System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
+        return val;
+    }
+
+    private int x2D_points = 0;
+    private int y2D_points = 0;
+    private int z2D_points = 0;
+
+
+    public void appendValues(float x[], float y[], int numPoints[], float time[])
+    {
+        if(type != TYPE_2D || x.length != y.length || time == null || numPoints == null) return;
+
+        int numProfile = 0 ;
+
+        int xIdx, zIdx, yIdx;
+
+        xIdx = (x2D == null) ? 0 : x2D_points;
+        yIdx = (y2D == null) ? 0 : y2D_points;
+        zIdx = (z2D == null) ? 0 : z2D_points;
+
+        this.x2D = appendArray(this.x2D, x2D_points, x, INC_SIZE);
+        x2D_points += x.length;
+        this.y2D = appendArray(this.y2D, y2D_points, y, INC_SIZE);
+        y2D_points += y.length;
+
+        if(numPoints.length == time.length)
+        {
+            numProfile = time.length * 2 ;
+        }
+        else if(numPoints.length > time.length)
+        {
+            numProfile = numPoints.length * 2 ;
+        }
+        else if(numPoints.length < time.length)
+        {
+            numProfile = time.length * 2 ;
+        }
+
+        float t[] = new float[ numProfile ];
+
+        for(int i = 0, j = 0; i < numProfile; i += 2)
+        {
+            t[i]     = (time.length == 1) ? time[0] : time[j];
+            t[i + 1] = (numPoints.length == 1) ? numPoints[0] : numPoints[j];
+            j++;
+        }
+        this.z2D = appendArray(this.z2D, z2D_points, t, INC_SIZE);
+        z2D_points += t.length;
+
+        setAxis( x2D,  z2D,  y2D, xIdx, zIdx, yIdx);
+        curr_x_yz_plot = t[t.length - 2];
+
+    }
+
+    public void resetSignalData()
+    {
+        n_points = 0;
+        x2D_points = 0;
+        y2D_points = 0;
+        z2D_points = 0;
+        this.x = null;
+        this.y = null;
+        this.x_double = null;
+        this.x_long = null;
+        this.x2D = null;
+        this.y2D = null;
+        this.z2D = null;
+        this.low_error = null;
+        this.up_error = null;
+    }
 }

@@ -236,7 +236,7 @@ class JetDataProvider implements DataProvider
 	       inquiry_dialog.setLocation(screenSize.width/2 - inquiry_dialog.getSize().width/2,
 				                      screenSize.height/2 - inquiry_dialog.getSize().height/2);
 		}
-        inquiry_dialog.show();
+        inquiry_dialog.setVisible(true);
         return login_status;
     }
 

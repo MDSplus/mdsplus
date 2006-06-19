@@ -157,7 +157,7 @@ public class SshTunneling
                                        screenSize.height / 2 -
                                        inquiry_dialog.getSize().height / 2);
         }
-        inquiry_dialog.show();
+        inquiry_dialog.setVisible(true);
         return login_status;
     }
 

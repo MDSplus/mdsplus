@@ -216,19 +216,6 @@ public class WavePopup
           }
         });
 
-/*
-        mode_2d.add(plot_y_x = new JRadioButtonMenuItem("Plot y & x"));
-        mode_2d_bg.add(plot_y_x);
-        plot_y_x.addItemListener(new ItemListener()
-        {
-            public void itemStateChanged(ItemEvent e)
-            {
-                if (e.getStateChange() == ItemEvent.SELECTED)
-                    SetMode2D(Signal.MODE_YZ);
-//                wave.Update();
-            }
-        });
-*/
         mode_2d.add(plot_image = new JRadioButtonMenuItem("Plot Image"));
         mode_2d_bg.add(plot_image);
         plot_image.addItemListener(new ItemListener()
@@ -548,6 +535,7 @@ public class WavePopup
                     {
                         add(colorMap);
                         add(mode_2d);
+                        mode_2d.setEnabled(wave.getSignalMode() != Signal.MODE_PROFILE);
                         switch (wave.getSignalMode())
                         {
                             case Signal.MODE_XZ:
@@ -556,11 +544,6 @@ public class WavePopup
                             case Signal.MODE_YZ:
                                 mode_2d_bg.setSelected(plot_x_y.getModel(), true);
                                 break;
-                                /*
-                            case Signal.MODE_YX:
-                                mode_2d_bg.setSelected(plot_y_x.getModel(), true);
-                                break;
-                                */
                             case Signal.MODE_CONTOUR:
                                 mode_2d_bg.setSelected(plot_contour.getModel(), true);
                                 break;
@@ -636,7 +619,7 @@ public class WavePopup
         else
             colorMapDialog.setWave(wave);
         colorMapDialog.setLocationRelativeTo(wave);
-        colorMapDialog.show();
+        colorMapDialog.setVisible(true);
     }
 
 
@@ -653,7 +636,7 @@ public class WavePopup
         wave.setSendProfile(true);
         profile_source = wave;
         profDialog.setLocationRelativeTo(wave);
-        profDialog.show();
+        profDialog.setVisible(true);
         wave.sendProfileEvent();
     }
 

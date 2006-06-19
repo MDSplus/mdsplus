@@ -386,7 +386,7 @@ remove 28/06/2005
                                                   JOptionPane.ERROR_MESSAGE);
                 }
             }
-            browse_sig.show();
+            browse_sig.setVisible(true);
         }
         else
         {

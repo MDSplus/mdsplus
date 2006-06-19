@@ -302,6 +302,6 @@ public class WaveformEditor
         frame.setSize(400, 300);
         frame.getContentPane().add(we);
         frame.pack();
-        frame.show();
+        frame.setVisible(true);
     }
 }

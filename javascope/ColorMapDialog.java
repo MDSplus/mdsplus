@@ -68,6 +68,9 @@ public class ColorMapDialog
     ColorMapDialog(Frame f, String colorPaletteFile)
     {
         super(f, "Color Palette");
+
+        if(colorPaletteFile == null)
+            colorPaletteFile = "colors1.tbl";
         readColorPalette(colorPaletteFile);
 
         /*
