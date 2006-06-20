@@ -33,7 +33,9 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_ADC_IN_1 = 31;
     private _N_DAC_OUT_1 = 223;
 /*    private _N_USER_1 = 1226; */
-    private _N_USER_1 = 1334;
+/*    private _N_USER_1 = 1334;*/
+    private _N_USER_1 = 1430;
+
     private _N_MODES_1 = 447;
 
 
