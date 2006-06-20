@@ -2714,8 +2714,8 @@ public class Signal
 
     private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
     {
-        if(arr1 == null) return arr2.clone();
-        if(arr2 == null) return arr1.clone();
+        if(arr1 == null) return (float [])arr2.clone();
+        if(arr2 == null) return (float [])arr1.clone();
         float val[];
         if(arr1.length < sizeUsed + arr2.length)
         {
