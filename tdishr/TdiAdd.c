@@ -459,7 +459,7 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
   _int64u *arg2=(_int64u *)b;
   _int64u *out=(_int64u *)ans;
   *out=*arg1 + *arg2;
-  return (*out && 0x800000000000000) != 0;
+  return (*out && 0x800000000000000LLU) != 0;
   /*
   int i;
   int carry=0;
