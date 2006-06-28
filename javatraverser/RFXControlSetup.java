@@ -1660,7 +1660,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable15.setNumRows(1);
     deviceTable15.setNumCols(48);
     deviceTable15.setLabelString("Integral Gain:");
-    deviceTable15.setOffsetNid(1257);
+    deviceTable15.setOffsetNid(1259);
     deviceField38.setIdentifier("");
     deviceField38.setLabelString("End Time(s): ");
     deviceField38.setOffsetNid(1247);
