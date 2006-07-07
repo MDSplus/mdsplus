@@ -184,7 +184,7 @@ public class WaveformEvent
         String s = null;
         int event_id = getID();
         Waveform w = (Waveform) getSource();
-        SimpleTimeZone stz = new SimpleTimeZone(60*60*1000, "GMT");
+        SimpleTimeZone stz = new SimpleTimeZone(0, "GMT");
 
         switch (event_id)
         {

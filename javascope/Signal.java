@@ -756,7 +756,8 @@ public class Signal
                 date.setTime(x2D[0]);
                 s = df.format(date).toString();
                 date = df1.parse(s + " 00:00:00");
-                t0 = date.getTime();
+                t0 = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+				
             }
             catch (Exception exc)
             {
@@ -1776,17 +1777,15 @@ public class Signal
             date.setTime(x_long[0]);
             s = df.format(date).toString();
             date = df1.parse(s+" 00:00:00");
-            t0 = date.getTime();
+            t0 = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
         }
         catch (Exception exc)
         {
             t0 = x_long[0];
         }
 
-        System.out.println("DATA "+ s +" x_long[0] " + x_long[0] + " t0 " + t0 + " dif " + (x_long[0] - t0) );
-
 /*
-        long t0 = x_long[0] - ( (24 * 60 * 60 * 1000) - (x_long[0] % (24 * 60 * 60 * 1000)) );
+        System.out.println("DATA "+ s +" x_long[0] " + x_long[0] + " t0 " + t0 + " dif " + (x_long[0] - t0) );
 */
         for (int i = 0; i < x_long.length; i++)
             x[i] = (float) ( x_long[i] -  t0 );

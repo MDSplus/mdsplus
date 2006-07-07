@@ -96,7 +96,7 @@ install:
 @MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
 	mkdir docs
 	cp @MAKEJAVADIR@classes/docs/* docs
-	$(JAR) c0f $@ *.class *.html docs
+	$(JAR) c0f $@ *.class *.html colors1.tbl docs
 	rm -R -f docs
 
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
