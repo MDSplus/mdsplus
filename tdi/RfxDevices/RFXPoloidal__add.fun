@@ -1,6 +1,6 @@
 public fun RFXPoloidal__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPoloidal', 25, _nidout);
+    DevAddStart(_path, 'RFXPoloidal', 37, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':LOAD_INDUCT', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RESIST', 'NUMERIC', *, *, _nid);
@@ -25,6 +25,20 @@ public fun RFXPoloidal__add(in _path, out _nidout)
     DevAddNode(_path // ':LOAD_RA', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RB', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RF', 'NUMERIC', *, *, _nid);
+
+    DevAddNode(_path // ':R_TRANSFER2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RA2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RB2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RF2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_TRANSFER3', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RA3', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RB3', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RF3', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_TRANSFER4', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RA4', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RB4', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':LOAD_RF4', 'NUMERIC', *, *, _nid);
+
     DevAddEnd();
 }
 
