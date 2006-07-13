@@ -100,7 +100,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 	
 	_value = 0.0;
 
-	for(_i = 0; _i < 6 && (_tree_status & 1); _i++)
+	for(_i = 0; _i < size(_g_param) && (_tree_status & 1); _i++)
 	{
 
 		if ( _remote )
@@ -137,7 +137,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 	for(_pellet = 1; _pellet <= 8 && ( _tree_status & 1 ); _pellet++)
 	{
 
-		for(_i = 0; _i < 14 && (_tree_status & 1); _i++)
+		for(_i = 0; _i < size(_p_param) && (_tree_status & 1); _i++)
 		{
 
 			_param = trim(_p_param[_i])//TEXT(_pellet, 1);

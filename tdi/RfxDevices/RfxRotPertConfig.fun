@@ -2,6 +2,27 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 {
 	
 	
+	private fun rotRelative(in _val)
+	{
+		_out = "ERR";
+		
+		switch(_val)
+		{
+			case(0)
+				_out = "ABS.";
+			break;
+			
+			case(1)
+				_out = "Rel. Bt";
+			break;
+
+			case(2)
+				_out = "Rel. Br";
+			break;
+		}
+		return ( _out ) ;
+	};
+	
 	private fun phaseModuleSignal(in _type, in _ts, in _te, in _tr, in _amp, in _freq, in _fase)
 	{
 		
@@ -101,16 +122,28 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 			switch( _idx )
 			{
 				case (1)
-					return ( "Rot Pert 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL"))) );
-				break;
+					return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR251_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR255_VAL"))) );
+				break;			
 				case (2)
-					return ( "Rot Pert 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) );
+					return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR252_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR256_VAL"))) );
 				break;
 				case (3)
-					return ( "Rot Pert 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) );
+					return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR253_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR257_VAL"))) );
 				break;
 				case (4)
-					return ( "Rot Pert 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) );
+					return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR254_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR258_VAL"))) );
+				break;
+				case (5)
+					return ( "R P 5  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR259_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR260_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR264_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR267_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR268_VAL"))) );
+				break;			
+				case (6)
+					return ( "R P 6  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR269_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR270_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR274_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR277_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR278_VAL"))) );
+				break;
+				case (7)
+					return ( "R P 7  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR279_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR280_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR284_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR287_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR288_VAL"))) );
+				break;
+				case (8)
+					return ( "R P 8  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR289_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR290_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR294_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR297_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR298_VAL"))) );
 				break;
 			}
 		}
@@ -184,6 +217,64 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
 				break;
+				case (5)
+
+					_ts = if_error( execute(_path//".PARAMETERS:PAR262_VAL"), 0);
+					_te = if_error( execute(_path//".PARAMETERS:PAR263_VAL"), 0);
+					_tr = if_error( execute(_path//".PARAMETERS:PAR266_VAL"), 0);
+					_amp = if_error( execute(_path//".PARAMETERS:PAR261_VAL"), 0);
+					_freq = if_error( execute(_path//".PARAMETERS:PAR264_VAL"), 0);
+					_fase = if_error( execute(_path//".PARAMETERS:PAR265_VAL"), 0);
+
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+
+                   if(size(data( _out )) == 1) _out =  _zeroSig;  
+				   return( _out );
+				break;
+				case (6)
+
+					_ts = if_error( execute(_path//".PARAMETERS:PAR272_VAL"), 0);
+					_te = if_error( execute(_path//".PARAMETERS:PAR273_VAL"), 0);
+					_tr = if_error( execute(_path//".PARAMETERS:PAR276_VAL"), 0);
+					_amp = if_error( execute(_path//".PARAMETERS:PAR271_VAL"), 0);
+					_freq = if_error( execute(_path//".PARAMETERS:PAR274_VAL"), 0);
+					_fase = if_error( execute(_path//".PARAMETERS:PAR275_VAL"), 0);
+
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+
+                   if(size(data( _out )) == 1) _out =  _zeroSig;  
+				   return( _out );
+				break;
+				case (7)
+
+					_ts = if_error( execute(_path//".PARAMETERS:PAR282_VAL"), 0);
+					_te = if_error( execute(_path//".PARAMETERS:PAR283_VAL"), 0);
+					_tr = if_error( execute(_path//".PARAMETERS:PAR286_VAL"), 0);
+					_amp = if_error( execute(_path//".PARAMETERS:PAR281_VAL"), 0);
+					_freq = if_error( execute(_path//".PARAMETERS:PAR284_VAL"), 0);
+					_fase = if_error( execute(_path//".PARAMETERS:PAR285_VAL"), 0);
+
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+
+                   if(size(data( _out )) == 1) _out =  _zeroSig;  
+				   return( _out );
+				break;
+				case (8)
+
+					_ts = if_error( execute(_path//".PARAMETERS:PAR292_VAL"), 0);
+					_te = if_error( execute(_path//".PARAMETERS:PAR293_VAL"), 0);
+					_tr = if_error( execute(_path//".PARAMETERS:PAR296_VAL"), 0);
+					_amp = if_error( execute(_path//".PARAMETERS:PAR291_VAL"), 0);
+					_freq = if_error( execute(_path//".PARAMETERS:PAR294_VAL"), 0);
+					_fase = if_error( execute(_path//".PARAMETERS:PAR295_VAL"), 0);
+
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+
+                   if(size(data( _out )) == 1) _out =  _zeroSig;  
+				   return( _out );
+				break;
+
+
 			}
 		}
 		else
