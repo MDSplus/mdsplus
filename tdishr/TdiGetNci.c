@@ -60,6 +60,7 @@ STATIC_CONSTANT struct item {
 	unsigned short	item_length;
 }	table[] = {
 {"BROTHER",		0,			0,			NciBROTHER,		DTYPE_NID,4},
+{"CACHED",		NciM_CACHED, 	        NciM_CACHED,    	NciGET_FLAGS,		DTYPE_BU,	1},
 {"CHILD",		0,			0,			NciCHILD,		DTYPE_NID,4},
 {"CHILDREN_NIDS",	0,			NciNUMBER_OF_CHILDREN,NciCHILDREN_NIDS,	DTYPE_NID,0},
 {"CLASS",		0,			0,			NciCLASS,		DTYPE_BU,	1},
@@ -107,6 +108,7 @@ STATIC_CONSTANT struct item {
 {"RECORD",		0,			0,			RECORDIDX,		DTYPE_L,	0},
 {"RFA",			0,			0,			NciRFA,		DTYPE_Q,	8},
 {"RLENGTH",		0,			0,			NciRLENGTH,		DTYPE_L,	4},
+{"SEGMENTED",		NciM_SEGMENTED,         NciM_SEGMENTED,    	NciGET_FLAGS,		DTYPE_BU,	1},
 {"SETUP_INFORMATION",	NciM_SETUP_INFORMATION,NciM_SETUP_INFORMATION,NciGET_FLAGS,		DTYPE_BU,	1},
 {"STATE",		NciM_STATE,		NciM_STATE,		NciGET_FLAGS,		DTYPE_BU,	1},
 {"STATUS",		0,			0,			NciSTATUS,		DTYPE_LU,	4},
@@ -127,6 +129,7 @@ STATIC_CONSTANT struct item {
 {"USAGE_TASK",		0xff,		TreeUSAGE_TASK,		NciUSAGE,		DTYPE_BU,	1},
 {"USAGE_TEXT",		0xff,		TreeUSAGE_TEXT,		NciUSAGE,		DTYPE_BU,	1},
 {"USAGE_WINDOW",	0xff,		TreeUSAGE_WINDOW,		NciUSAGE,		DTYPE_BU,	1},
+{"VERSIONS",		NciM_VERSIONS, 	        NciM_VERSIONS,    	NciGET_FLAGS,		DTYPE_BU,	1},
 {"WRITE_ONCE",		NciM_WRITE_ONCE,	NciM_WRITE_ONCE,	NciGET_FLAGS,		DTYPE_BU,	1},
 };
 #define siztab sizeof(struct item)

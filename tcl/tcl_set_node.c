@@ -89,6 +89,15 @@ int TclSetNode()
                   clear_flags |= NciM_WRITE_ONCE;
                   break;
                }
+            switch (cli_present("CACHED"))
+               {
+                case CLI_STS_PRESENT:
+                  set_flags |= NciM_CACHED;
+                  break;
+                case CLI_STS_NEGATED:
+                  clear_flags |= NciM_CACHED;
+                  break;
+               }
             switch (cli_present("COMPRESS_ON_PUT"))
                {
                 case CLI_STS_PRESENT:

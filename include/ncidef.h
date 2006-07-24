@@ -16,9 +16,9 @@
 #define   NciM_STATE	           0x00000001
 #define   NciM_PARENT_STATE        0x00000002
 #define   NciM_ESSENTIAL           0x00000004
-#define   NciM_SPARE_1             0x00000008
-#define   NciM_SPARE_2             0x00000010
-#define   NciM_SPARE_3             0x00000020
+#define   NciM_CACHED              0x00000008
+#define   NciM_VERSIONS            0x00000010
+#define   NciM_SEGMENTED           0x00000020
 #define   NciM_SETUP_INFORMATION   0x00000040
 #define   NciM_WRITE_ONCE          0x00000080
 #define   NciM_COMPRESSIBLE        0x00000100

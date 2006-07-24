@@ -238,6 +238,7 @@ Define syntax set_node
         qualifier ON												       ! 53 
         qualifier OFF												       ! 53 
 	qualifier WRITE_ONCE											       ! 53 
+	qualifier CACHED											       ! 53 
         qualifier COMPRESS_ON_PUT										       ! 53 
         qualifier DO_NOT_COMPRESS										       ! 53 
 	qualifier SHOT_WRITE											       ! 55 

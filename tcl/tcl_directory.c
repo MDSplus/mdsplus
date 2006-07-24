@@ -79,7 +79,7 @@ int   TclDirectory()
     char  textLine[128];
     static char  fmtTotal[] = "Total of %d node%s.";
     static char  fmtGrandTotal[] = "Grand total of %d node%s.";
-    static char fmtStates[] = "      Status: %s,parent is %s, usage %s%s%s";
+    static char  fmtStates[] = "      Status: %s,parent is %s, usage %s%s%s%s";
     static char  fmtTime[] = "      Data inserted: %s    Owner: %s";
     static char  fmtDescriptor[] = "      Dtype: %-20s  Class: %-18s  Length: %d bytes";
     static char  fmtConglom1[] = "      Model element: %d";
@@ -249,7 +249,8 @@ int   TclDirectory()
                             p,
                             (nciFlags & NciM_WRITE_ONCE) ?
                                 (dataLen?",readonly":",write-once") : "",
-                            (nciFlags & NciM_ESSENTIAL) ? ",essential":"");
+                            (nciFlags & NciM_ESSENTIAL) ? ",essential":"",
+                            (nciFlags & NciM_CACHED) ? ",cached" : "");
                         TclTextOut(textLine);
 
                         if (nciFlags & NciM_NO_WRITE_MODEL)
