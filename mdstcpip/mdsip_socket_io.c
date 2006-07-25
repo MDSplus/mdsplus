@@ -107,7 +107,7 @@ void SetFD(SOCKET sock) {}
 void ClearFD(SOCKET sock) {}
 
 #else
-//#include <signal.h>
+/* #include <signal.h> */
 #ifndef WIN32
 #include <pthread.h>
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
