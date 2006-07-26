@@ -120,8 +120,11 @@ static int Apply(Widget w)
 
 static void Reset(Widget w)
 {
+  int status;
   Widget list_w = XtNameToWidget(XtParent(w),"*interpreters");
   static struct descriptor_d cli = {0, DTYPE_T, CLASS_D, 0};
+  static DESCRIPTOR(initial, "_I=0");
+  static DESCRIPTOR(clis, "(clis()[_I++]//\"\\0\")");
   int nid;
   String selections;
   String selection;
@@ -130,8 +133,8 @@ static void Reset(Widget w)
   XtVaGetValues(list_w, XmNuserData, &nid, NULL);
   XmListDeselectAllItems(list_w);
   XmListDeleteAllItems(list_w);
-  TdiExecute("_I=0",&cli MDS_END_ARG);
-  while (TdiExecute("(clis()[_I++]//\"\\0\")", &cli MDS_END_ARG)&1 && cli.length > 0 && strlen(cli.pointer) > 0)
+  TdiExecute(&initial,&cli MDS_END_ARG);
+  while (status=TdiExecute(&clis, &cli MDS_END_ARG)&1 && cli.length > 0 && strlen(cli.pointer) > 0)
   {
     XmString item;
     item = XmStringCreateSimple(cli.pointer);
