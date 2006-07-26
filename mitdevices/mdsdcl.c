@@ -38,7 +38,7 @@ int mdsdcl___execute(struct descriptor_s *niddsc_ptr, InExecuteStruct *setup)
   return status;
 }
 
-int mdsdcl__setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
+int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 { 
   static String uids[] = {"MDSDCL.uid"};
   static int nid;
