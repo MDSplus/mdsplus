@@ -179,7 +179,7 @@ public fun IPC901__store(as_is _nid, optional _method)
 	DevCamChk(_name, CamQstopw(_name, 0, 0, _hard_samples, _acq_data=0, 24), 1, *);
 
 	DevNodeCvt(_nid, _N_STORE_FLAG, ["YES", "NO"],[1,0], _to_be_stored = 0);
-	_clock = make_range(*,*,1./ _period);
+	_clock = make_range(*,*,_period);
 	_dim = make_dim(make_window(0, _num_samples - 1, _trigger_time), _clock);
 	
 	if(_acq_mode)														/*MEASURE mode */

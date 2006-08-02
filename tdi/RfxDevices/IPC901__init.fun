@@ -159,11 +159,9 @@ public fun IPC901__init(as_is _nid, optional _method)
 
 	/* Get and write calibration for channel 1 */
 		_correction = if_error(data(DevNodeRef(_nid, _N_CORRECTION_1 + _chan)), _INVALID);
-		if(_correction == _INVALID)  /*If no correction array written on the model */
+		if( size( _correction )  == 1 &&  _correction == _INVALID)  /*If no correction array written on the model */
 		{
-			_calibration = data(0W:1023W);
-
-			
+			_calibration = data(0W:1023W);			
 		}
 		else
 		{
