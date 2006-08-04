@@ -310,6 +310,9 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
 /*   /\* fill the frames with zeros *\/ */
 /*   memset((void *)Cameras[cam].frames, 0, width*height*max_frames); */
 
+  /* fill the frames with zeros */
+  memset((void *)Cameras[cam].frames, 0, width*height*max_frames);
+
 /*    if (dc1394_set_trigger_on_off(Cameras[cam].handle, Cameras[cam].camera.node, */
 /* 				0) != DC1394_SUCCESS) */
 /*     { */
