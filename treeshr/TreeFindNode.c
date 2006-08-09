@@ -54,9 +54,9 @@ int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
 #define do_action(x) {ctx++,ParseAction(ctx,&tree,&treelen,tokencnt,tokenptr,(x));}
 #define compare(node)      Compare(node->name,12,search->string,search->len)
 #define compare_wild(node) CompareWild(node->name,12,search->string,search->len)
-#define FirstChild(node) (node->member ? member_of(node) : child_of(node))
-#define FirstChildOfParent(node) (node->parent ? child_of(parent_of(node)) : child_of(node))
-#define SiblingOf(node) (node->brother ? brother_of(node) : ((node->parent && IsMember(node)) ? child_of(parent_of(node)) : 0))
+#define FirstChild(node) (member_of(node) ? member_of(node) : child_of(node))
+#define FirstChildOfParent(node) (parent_of(node) ? child_of(parent_of(node)) : child_of(node))
+#define SiblingOf(node) (brother_of(node) ? brother_of(node) : ((parent_of(node) && IsMember(node)) ? child_of(parent_of(node)) : 0))
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define match_usage \
 ( (ctx[ctx->level+1].type != EOL) || \
@@ -257,13 +257,13 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, 
     {
       if (search->node == 0)
       {
-        if (node->child)
+        if (child_of(node))
         {
           search->stop = node;
           node = child_of(node);
         }
       }
-      else if (node->brother)
+      else if (brother_of(node))
       {
         node = brother_of(node);
       }
@@ -275,12 +275,12 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, 
         {
           if (looking_for_child)
           {
-            if (node->child)
+            if (child_of(node))
             {
               node = child_of(node);
               break;
             }
-            else if (node->brother)
+            else if (brother_of(node))
               node = brother_of(node);
             else
             {
@@ -290,7 +290,7 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, 
           }
           else
           {
-            if (node->brother)
+            if (brother_of(node))
             {
               looking_for_child = 1;
               node = brother_of(node);
@@ -419,7 +419,7 @@ STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mle
 STATIC_ROUTINE int IsMember(NODE *node)
 {
   NODE *n = 0;
-  if (node->parent)
+  if (parent_of(node))
     for(n=member_of(parent_of(node));n && n != node;n=brother_of(n));
   return n == node;
 }

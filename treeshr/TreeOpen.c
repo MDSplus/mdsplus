@@ -63,7 +63,7 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap);
 static int ReadTree(TREE_INFO *info, int edit_flag);
 static int GetVmForTree(TREE_INFO *info,int nomap);
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int remote);
-static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop);
+static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtreetop);
 
 void *DBID = NULL;
 
@@ -511,7 +511,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
             }
      else
        {
-  SubtreeNodeConnect(parent, info->node);
+  SubtreeNodeConnect(dblist, parent, info->node);
   for (iptr = dblist->tree_info; iptr->next_info; iptr = iptr->next_info);
   iptr->next_info = info;
        }
@@ -1034,7 +1034,7 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
     ************************************************/
 
     if (status & 1)
-    {
+    {  
       info->blockid = TreeBLOCKID;
       info->header = (TREE_HEADER *) info->section_addr[0];
       FixupHeader(info->header);
@@ -1069,7 +1069,7 @@ static int GetVmForTree(TREE_INFO *info,int nomap)
 }
 
 
-static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
+static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtreetop)
 {
   NODE     *grandparent = parent_of(parent);
 
@@ -1083,7 +1083,7 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
 
   if (child_of(grandparent) == parent)
   {
-    link_it(grandparent->child,subtreetop, grandparent);
+    link_it2(dblist, grandparent, child, subtreetop, grandparent);
   }
   else
   {
@@ -1091,14 +1091,14 @@ static void SubtreeNodeConnect(NODE *parent, NODE *subtreetop)
     for (bro = child_of(grandparent); brother_of(bro) && (brother_of(bro) != parent); bro = brother_of(bro));
     if (brother_of(bro))
     {
-      link_it(bro->brother, subtreetop, bro);
+      link_it2(dblist, bro, brother, subtreetop, bro);
     }
   }
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-  link_it(subtreetop->parent, grandparent, subtreetop);
-  if (parent->brother)
+  link_it2(dblist, subtreetop, parent, grandparent, subtreetop);
+  if (brother_of(parent))
   {
-    link_it(subtreetop->brother, brother_of(parent), subtreetop);
+    link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
   }
   return;
 }

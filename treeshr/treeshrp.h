@@ -1,7 +1,7 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
 
-/************* Data structures internal to TREESHR ***********/
+/************ Data structures internal to TREESHR ***********/
 
 #include <stdio.h>
 
@@ -139,6 +139,8 @@ typedef struct nid
 }         NID;
 #endif
 
+#define MAX_SUBTREES 256 /* since there are only 8 bits of tree number in a nid */
+
 /******************************************
 Two macros are provided for converting from
 a NID to a node address or from a node
@@ -194,7 +196,6 @@ nid_to_tree_nidx(pino, nid, info, nidx)
       nidx = info ? nid->node : 0; \
     }
 
-
 /********************************************
    NODE
 
@@ -203,6 +204,8 @@ nid_to_tree_nidx(pino, nid, info, nidx)
 *********************************************/
 
 typedef char NODE_NAME[12];
+
+
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -216,6 +219,25 @@ typedef struct node
 {
   NODE_NAME name;
   int       parent;
+  union {
+    struct {
+      int       member;
+      int       brother;
+      int       child;
+    };
+    struct {
+      struct big_node_linkage *big_linkage PACK;
+    };
+  } ;
+  unsigned char usage;
+  unsigned short conglomerate_elt PACK;
+  char      fill;
+  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
+}         NODE;
+typedef struct offset_node
+{
+  NODE_NAME name;
+  int       parent;
   int       member;
   int       brother;
   int       child;
@@ -223,22 +245,91 @@ typedef struct node
   unsigned short conglomerate_elt PACK;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
-}         NODE;
+}        OFFSET_NODE;
+
+typedef struct linkag_enode
+{
+  NODE_NAME name;
+  int       parent;
+  struct big_node_linkage *big_linkage PACK;
+  unsigned char usage;
+  unsigned short conglomerate_elt PACK;
+  char      fill;
+  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
+}         LINKAGE_NODE;
 #ifdef EMPTY_NODE
 static NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}}; 
 #endif
+
+/********************************************
+   BIG_NODE_LINKAGE
+
+Nodes generally contain byte offsets to the set 
+of adjacent nodes (child, member, brother, parent).
+When a subtree is mapped, there is a chance that 
+it will be placed in memory at an adress that is 
+too far away to be represented by a 32 bit offset.
+if this is the case, the the parent pointer of the 
+node is set to -1, it is followed in the node 
+structure by a pointer to an array of these 
+BIG_NODE_LINAGEs which contain the addresses 
+(NOT OFFSETS) of the related nodes.To dereference a 
+node, if its parent is -1, we search through this 
+table to find the corresponding entry 
+(there will not be many of them), and use the 
+pointer instead of the offset.
+*********************************************/
+typedef struct big_node_linkage {
+  NODE *node;
+  NODE *parent;
+  NODE *child;
+  NODE *member;
+  NODE *brother;
+} BIG_NODE_LINKAGE;
 
 /*****************************************************
  Macros to perform integer arithmetic of node pointers
  and linkages and end up with node pointers
  *****************************************************/
 
+/* if pointers are more than 32 bits then node offsets can be 
+   more than 32 bits */
+#if SIZEOF_INT_P == 8
+#define parent_of(a)\
+  (((a)->parent == -1) ? (a)->big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
+#define member_of(a)\
+  (((a)->parent == -1) ? (a)->big_linkage->member : (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0))
+#define child_of(a)\
+  (((a)->parent == -1) ? (a)->big_linkage->child : (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0))
+#define brother_of(a)\
+  (((a)->parent == -1) ? (a)->big_linkage->brother : (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0))
+#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
+#define link_it2(dblist,nodeptr,field,a,b)  \
+  if (((char *)(a) - (char *)(b)) >= 2^32) {\
+    int i; \
+    if (nodeptr->parent != -1) {\
+      for (i=0;  (i<(2*MAX_SUBTREES)) && (dblist->big_node_linkage[i].node !=0); i++);\
+      dblist->big_node_linkage[i].node = nodeptr;\
+      dblist->big_node_linkage[i].parent = parent_of(nodeptr);\
+      dblist->big_node_linkage[i].child = child_of(nodeptr);\
+      dblist->big_node_linkage[i].member = member_of(nodeptr);\
+      dblist->big_node_linkage[i].brother = brother_of(nodeptr);\
+      nodeptr->parent = -1;\
+      nodeptr->big_linkage=dblist->big_node_linkage+i;\
+    }\
+    nodeptr->big_linkage->field=(a);\
+  } else {\
+    nodeptr->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->field = swapint((char *)&nodeptr->field);\
+  }
+#else
 #define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
 #define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0)
 #define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0)
 #define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0)
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
-
+#define link_it2(dblist,node,field,a,b)  \
+node->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->field = swapint((char *)&node->field)
+#endif
 
 /********************************************
    TAG_INFO
@@ -499,6 +590,7 @@ typedef struct tree_info
   struct tree_info *next_info;	/* Pointer to next tree info block                  */
 }         TREE_INFO;
 
+
 /********************************************
    PINO_DATABASE
 
@@ -523,11 +615,19 @@ typedef struct pino_database
   unsigned  remote:1; /* Flag indicating tree is on remote system */
 
   void      *remote_ctx; /* Pointer to remote system context */
-
   struct pino_database *next;	/* Link to next database in open list */
 
 
   int	    stack_size;
+  BIG_NODE_LINKAGE big_node_linkage[2*MAX_SUBTREES];  /* We need at most 2 of these
+							 per subtree.  The subtree is 
+							 either a first child in which
+							 case we need to fix up its parent
+							 and the node itself's brother offsets,
+							 or it is a middle (or end) child and 
+							 we need to fix up its previous sibling 
+							 and the node itself's parent, and brother
+							 pointers. */
 }         PINO_DATABASE;
 
 /****************************
