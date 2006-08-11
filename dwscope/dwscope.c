@@ -28,7 +28,8 @@ $ dwcope [-default setup]
 
 
 ------------------------------------------------------------------------------*/
-
+#include <mdstypes.h>
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -648,11 +649,11 @@ static void /*XtCallbackProc*/Autoscale(Widget w, String type, XmAnyCallbackStru
   switch (type[0])
   {
     case 'y':
-      XtVaSetValues(PendingWave->w, XmdsNyMin, 0, XmdsNyMax, 0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNyMin, (_pointer_int)0, XmdsNyMax, (_pointer_int)0, NULL); break;
     case 'x':
-      XtVaSetValues(PendingWave->w, XmdsNxMin, 0, XmdsNxMax, 0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNxMin, (_pointer_int)0, XmdsNxMax, (_pointer_int)0, NULL); break;
     case 'b':
-      XtVaSetValues(PendingWave->w, XmdsNxMin, 0, XmdsNxMax, 0, XmdsNyMin, 0, XmdsNyMax, 0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNxMin, (_pointer_int)0, XmdsNxMax, (_pointer_int)0, XmdsNyMin, (_pointer_int)0, XmdsNyMax, (_pointer_int)0, NULL); break;
     case 'Y':
       for (c = 0; c < MaxCols; c++)
         for (r = 0; r < MaxRows; r++)
