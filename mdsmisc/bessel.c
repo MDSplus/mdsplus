@@ -116,6 +116,7 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 #include "bessel.h"
 #include "filter.h"
 
+#define maximum(a,b)    ((a)>(b)) ? (a) : (b)
 #define STEP_ROOT	1E-1
 #define TOLERANCE	1E-8
 
