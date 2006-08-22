@@ -109,6 +109,9 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 
 ------------------------------------------------------------------------------*/
 
+#define maximum(a,b) (((a)>(b))?(a):(b))
+
+
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -116,7 +119,6 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 #include "bessel.h"
 #include "filter.h"
 
-#define maximum(a,b)    ((a)>(b)) ? (a) : (b)
 #define STEP_ROOT	1E-1
 #define TOLERANCE	1E-8
 
@@ -130,7 +132,31 @@ static double BessJ1(double x);
 static double FindRoot(int n, double *x);
 static double Bisection(int n, double x1, double x2, double y1, double y2);
 static complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain);
+Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
 
+static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
+{
+    float r, th;
+
+    r = sqrt(x * x + y * y);
+    if(r > 1)
+	return 0;
+    if(r < 1E-8)
+	th = 1;
+    else
+    {	
+	if(x <= 0)
+	    th = PI - asin(y/r);
+	else
+	    if(y >= 0)
+		th = asin(y/r);
+	    else
+		th = 2 * PI + asin(y/r);
+    }
+    *out_r = r;
+    *out_theta = th;
+    return 1;
+}
 
 double BessJ0(double x)
 { 
@@ -618,7 +644,7 @@ static complex *FindBessPoles(double Wp, double Ws, double ap, double as, double
     return BessCRoots(n, gain);
 }	   
 
-
+/*
 double BessPol(float x, float y, float *parameters)
 {
     float t, r, th, res, is_cosine;
@@ -676,3 +702,4 @@ double BesselTotalPower(double *a, int l_max)
     return result;
 }
     
+*/
