@@ -105,3 +105,6 @@ MdsClassString
 MdsDtypeString
 LibDeleteVmZone
 MdsRelease
+LockMdsShrMutex
+UnlockMdsShrMutex
+
