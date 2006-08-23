@@ -16,6 +16,12 @@ class Action
     static final int DONE = 4;
     static final int ABORTED = 5;
 
+    static final int ServerNOT_DISPATCHED = 0xfe18008;
+    static final int ServerINVALID_DEPENDENCY = 0xfe18012;
+    static final int ServerCANT_HAPPEN = 0xfe1801a;
+
+
+
     public Action(ActionData action, int nid, String name, boolean on)
     {
         this.action = action;

@@ -129,7 +129,10 @@ Ensures action dispatching to servers, keeping load balancing.
             }
             Action action = max_loaded.popAction();
             if(action != null)
+            {
+                System.out.println("ACTION BALANCING: action " + action.getName()+" transferred between two equivalent servers");
                 min_loaded.pushAction(action);
+            }
         }
     }
 

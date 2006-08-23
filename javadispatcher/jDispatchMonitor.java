@@ -151,7 +151,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
 
     MdsServer mds_server = null;
-    MdsServer dispatcher = null;
+    MdsConnection dispatcher = null;
 
     JDesktopPane desktop = null;
     JLabel total_actions_l, dispatched_l,    doing_l, done_l,
@@ -829,11 +829,12 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     {
         if(mon_srv == null)
             throw(new IOException("Can't connect to null address"));
-        mds_server = new MdsServer(mon_srv, true);
+        mds_server = new MdsServer(mon_srv, true, -1);
         mds_server.addMdsServerListener(jDispatchMonitor.this);
         mds_server.addConnectionListener(jDispatchMonitor.this);
         Descriptor reply = mds_server.monitorCheckin();
         setWindowTitle();
+        dispatcher = null;
     }
 
     private void abortAction(MdsMonitorEvent me) throws IOException
@@ -845,14 +846,28 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     private void redispatch(MdsMonitorEvent me) throws IOException
     {
         if(me.mode == MdsMonitorEvent.MonitorDone)
-            doCommand("DISPATCH", me);
+            doCommand("REDISPATCH", me);
     }
+
 
     private void doCommand(String command, MdsMonitorEvent me) throws IOException
     {
         if(dispatcher == null)
         {
-            dispatcher = new MdsServer(MdsHelper.getDispatcher(), true);
+            if (monitor_server == null)return;
+            StringTokenizer st = new StringTokenizer(monitor_server, ":");
+            dispatcher = new MdsConnection(st.nextToken()+":"+MdsHelper.getDispatcherPort());
+            dispatcher.ConnectToMds(false);
+        }
+        Descriptor reply = dispatcher.MdsValue(command +" "+me.nid);
+    }
+
+
+ /*   private void doCommand(String command, MdsMonitorEvent me) throws IOException
+    {
+        if(dispatcher == null)
+        {
+            dispatcher = new MdsServer(MdsHelper.getDispatcher(), true, -1);
             dispatcher.addConnectionListener(jDispatchMonitor.this);
         }
         Descriptor reply = dispatcher.dispatchDirectCommand(command+" "+me.nid);
@@ -869,7 +884,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 done_count--;
          }
     }
-
+*/
     private void setWindowTitle()
     {
         if(mds_server != null && mds_server.connected)
@@ -893,7 +908,37 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     }
 
+    class UpdateHandler implements Runnable
+    {
+        JList list;
+        int idx;
+        UpdateHandler(JList list, int idx)
+        {
+            this.list = list;
+            this.idx = idx;
+        }
+
+        public void run()
+        {
+            curr_list = list;
+            item_idx = idx;
+
+            if (auto_scroll && show_phase == -1) {
+                if (item_idx == -1)
+                    item_idx = curr_list.getModel().getSize() - 1;
+                curr_list.ensureIndexIsVisible(item_idx);
+            }
+            list.repaint();
+        }
+
+    }
+
     private  void showUpdateAction(JList list, int idx)
+    {
+        SwingUtilities.invokeLater(new UpdateHandler(list, idx));
+    }
+
+/*    private  void showUpdateAction(JList list, int idx)
     {
         curr_list = list;
         item_idx = idx;
@@ -905,7 +950,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             curr_list.ensureIndexIsVisible(item_idx);
         }
     }
-
+*/
     private void counter(MdsMonitorEvent me)
     {
         switch(me.mode)
@@ -987,17 +1032,17 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             else
             {
                 String phase_st = MdsHelper.toPhaseName(me.phase);
-                if(me.phase == -1)
+/*                if(me.phase == -1)
                 {
                     JOptionPane.showMessageDialog(null,
-                        "Can't resolve phase index to name.\n" +
+                        "Can't resolve phase index ("+idx+") to name.\n" +
                         "Check  jDispatcher.properties file\n"+
                         "on server and client side",
                         "Abort",
                         JOptionPane.ERROR_MESSAGE);
                         System.exit(1);
                 }
-                boolean new_phase = addPhaseItem(me.phase, phase_st);
+ */               boolean new_phase = addPhaseItem(me.phase, phase_st);
                 executing_list.removeAllElements();
                 phase_l.setText("Phase: "+phase_st);
                 curr_phase = me.phase;
@@ -1154,14 +1199,14 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 SwingUtilities.invokeLater(alert);
                 setWindowTitle();
                 mds_server = null;
-                try
+ /*               try
                 {
                     if(dispatcher != null);
                         dispatcher.shutdown();
                     dispatcher = null;
                 } catch (Exception exc) {dispatcher = null;}
                     return;
-            }
+*/            }
         }
         if(e.getSource() == dispatcher)
         {

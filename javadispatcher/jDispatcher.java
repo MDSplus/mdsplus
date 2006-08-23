@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 import java.net.*;
+
 class jDispatcher
     implements ServerListener
 {
@@ -12,6 +13,9 @@ class jDispatcher
     static final int MONITOR_DISPATCHED = 5;
     static final int MONITOR_DOING = 6;
     static final int MONITOR_DONE = 7;
+
+
+    static final int TdiUNKNOWN_VAR = 0xfd380f2;
 
     boolean doing_phase = false;
 
@@ -42,6 +46,14 @@ class jDispatcher
          Contains the sequence numbers of the current phase
      */
 
+    Hashtable nidDependencies = new Hashtable();
+    /**
+             Indexed by nid. For each nid, a vector of potentially dependent actions is defined.
+             Note that the hierarchy of ActionData does not override equals and hashCode, and therefore
+             two actions are equal only if ther refer to the same instance.
+             This kind of dependency is NOT restricted to the current phase.
+     */
+
     static class PhaseDescriptor
     /**
          PhaseDescriptor carries all the data structures required by each phase
@@ -62,10 +74,17 @@ class jDispatcher
                  Note that the hierarchy of ActionData does not override equals and hashCode, and therefore
                  two actions are equal only if ther refer to the same instance.
          */
+
+
         Vector immediate_actions = new Vector();
         /**
                  List of conditional actions with no dependency. These actions will be started immediately
                  at the beginning of the phase
+         */
+
+        Hashtable all_actions = new Hashtable();
+        /**
+         A complete list of actions for that phase, indexed by their nid
          */
 
         PhaseDescriptor(String phase_name)
@@ -74,11 +93,21 @@ class jDispatcher
         }
     }
 
+    public jDispatcher()
+    {
+        try {
+            jbInit();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     protected PhaseDescriptor curr_phase; //selects the current phase data structures
 
     Hashtable phases = new Hashtable();
     /**
-         Indexed by phase name. Associates dispatch data structures with each phase.
+     Indexed by phase name. Associates dispatch data structures with each phase.
      */
 
     Hashtable actions = new Hashtable();
@@ -117,6 +146,7 @@ class jDispatcher
         phases.clear();
         dep_dispatched.removeAllElements();
         seq_dispatched.removeAllElements();
+        nidDependencies.clear();
         timestamp++;
     }
 
@@ -208,37 +238,51 @@ class jDispatcher
                 curr_phase = new PhaseDescriptor(phase_name);
                 phases.put(phase_name, curr_phase);
             }
+            curr_phase.all_actions.put(new Integer(action.getNid()), action);
+            boolean isSequenceNumber = true;
             if (dispatch.getType() == DispatchData.SCHED_SEQ) {
-                int seq_number;
-                try {
-                    seq_number = getInt(dispatch.getWhen());
-                }
-                catch (Exception exc) {
-                    System.out.println(
-                        "Warning: expression used for sequence number");
-                    return;
-                }
-                Integer seq_obj = new Integer(seq_number);
-                if (curr_phase.seq_actions.containsKey(seq_obj)) {
-                    ( (Vector) curr_phase.seq_actions.get(seq_obj)).addElement(
-                        action);
-                }
-                else { //it is the first time such a sequence number is referenced
-                    Vector curr_vector = new Vector();
-                    curr_vector.add(action);
-                    curr_phase.seq_actions.put(seq_obj, curr_vector);
-                    int size = curr_phase.seq_numbers.size();
-                    if (seq_number >= size) {
-                        for (int i = size; i < seq_number; i++)
-                            curr_phase.seq_numbers.addElement(new Integer( -1));
-                        curr_phase.seq_numbers.addElement(seq_obj);
+                int seq_number = 0;
+                if(dispatch.getWhen() instanceof NidData)
+                    isSequenceNumber = false;
+                else
+                {
+                    try {
+                        seq_number = dispatch.getWhen().getInt();
                     }
-                    else {
-                        if ( ( (Integer) curr_phase.seq_numbers.elementAt(
-                            seq_number)).intValue() == -1) {
-                            curr_phase.seq_numbers.removeElementAt(seq_number);
-                            curr_phase.seq_numbers.insertElementAt(seq_obj,
-                                seq_number);
+                    catch (Exception exc) {
+                        isSequenceNumber = false;
+//System.out.println("Warning: expression used for sequence number");
+                    }
+                }
+                if(!isSequenceNumber)
+                    dispatch.descs[2] =  traverseSeqExpression(action.getAction(), dispatch.getWhen());
+
+                if (isSequenceNumber) {
+                    Integer seq_obj = new Integer(seq_number);
+                    if (curr_phase.seq_actions.containsKey(seq_obj)) {
+                        ( (Vector) curr_phase.seq_actions.get(seq_obj)).
+                            addElement(
+                                action);
+                    }
+                    else { //it is the first time such a sequence number is referenced
+                        Vector curr_vector = new Vector();
+                        curr_vector.add(action);
+                        curr_phase.seq_actions.put(seq_obj, curr_vector);
+                        int size = curr_phase.seq_numbers.size();
+                        if (seq_number >= size) {
+                            for (int i = size; i < seq_number; i++)
+                                curr_phase.seq_numbers.addElement(new Integer( -
+                                    1));
+                            curr_phase.seq_numbers.addElement(seq_obj);
+                        }
+                        else {
+                            if ( ( (Integer) curr_phase.seq_numbers.elementAt(
+                                seq_number)).intValue() == -1) {
+                                curr_phase.seq_numbers.removeElementAt(
+                                    seq_number);
+                                curr_phase.seq_numbers.insertElementAt(seq_obj,
+                                    seq_number);
+                            }
                         }
                     }
                 }
@@ -283,6 +327,7 @@ class jDispatcher
                 }
                 if (dispatch.getType() == DispatchData.SCHED_COND)
                     traverseDispatch(action_data, dispatch.getWhen(), currPhase);
+
             }
         }
     }
@@ -319,21 +364,53 @@ class jDispatcher
         }
     }
 
-    protected int getInt(Data data)
-    /**
-        Returns an integer without evaluating expressions. This method will be overridden by
-        derived classes to achieve TDI expression evaluation ofr non pure Java dispatchers
-     */
+    protected Data traverseSeqExpression(ActionData action_data, Data seq)
     {
-        try {
-            return data.getInt();
+        Action action = (Action) actions.get(action_data);
+        if (action == null) {
+            System.err.println(
+                "Internal error in traverseSeqExpression: no action for action_data");
+            return null;
         }
-        catch (Exception exc) {
-            System.out.println(
-                "Error: expressions not supported for sequence numbers");
-            return 0;
+        Database tree = InfoServer.getDatabase();
+        if (seq == null)
+            return null;
+        if (seq instanceof PathData || seq instanceof NidData) {
+            int nid;
+            try {
+
+                if (seq instanceof PathData)
+                    nid = ( (NidData) tree.resolve( (PathData) seq, 0)).getInt();
+                else
+                    nid = seq.getInt();
+                Vector actVect = (Vector) nidDependencies.get(new Integer(nid));
+                if (actVect == null) {
+                    actVect = new Vector();
+                    nidDependencies.put(new Integer(nid), actVect);
+                }
+                actVect.addElement(action);
+                String expr = "PUBLIC _ACTION_" + Integer.toHexString(nid) +
+                    " = COMPILE('$_UNDEFINED')";
+                try {
+                    tree.evaluateData(Data.fromExpr(expr), 0);
+                }
+                catch (Exception exc) {} //Will always generate an exception since the variable is undefined
+                return new IdentData("_ACTION_" + Integer.toHexString(nid));
+            }
+            catch (Exception exc) {
+                System.err.println(
+                    "Error in resolving path names in sequential action: " + exc);
+                return null;
+            }
         }
+        if (seq instanceof CompoundData) {
+            Data[] descs = ( (CompoundData) seq).getDescs();
+            for (int i = 0; i < descs.length; i++)
+                descs[i] = traverseSeqExpression(action_data, descs[i]);
+        }
+        return seq;
     }
+
 
     public synchronized void addMonitorListener(MonitorListener monitor)
     {
@@ -463,7 +540,7 @@ class jDispatcher
 
     public synchronized void actionStarting(ServerEvent event)
     /**
-         called by a server to notify that the action is starting being executed.
+     called by a server to notify that the action is starting being executed.
          Simply reports the fact
      */
     {
@@ -476,7 +553,7 @@ class jDispatcher
 
     public synchronized void actionAborted(ServerEvent event)
     /**
-         called by a server to notify that the action is starting being executed.
+     called by a server to notify that the action is starting being executed.
          Simply reports the fact
      */
     {
@@ -518,8 +595,9 @@ class jDispatcher
         //remove action from dispatched
         if (!seq_dispatched.removeElement(action))
             dep_dispatched.removeElement(action); //The action belongs only to one of the two
+        if(!action.isManual())
+        {
             //check dependent actions
-        try {
             Enumeration depend_actions = ( (Vector) curr_phase.dependencies.get(
                 action.getAction())).elements();
             while (depend_actions.hasMoreElements()) {
@@ -533,10 +611,52 @@ class jDispatcher
                     balancer.enqueueAction(curr_action);
                 }
             }
-        }
-        catch (Exception exc) {
-            System.err.println(
-                "Internal error: action not stored in depend_actions hashtable");
+            //Handle now possible dependencies based on sequence expression
+            Vector depVect = (Vector) nidDependencies.get(new Integer(action.
+                getNid()));
+            if (depVect != null && depVect.size() > 0) {
+                Database tree = InfoServer.getDatabase();
+                String doneExpr = "PUBLIC _ACTION_" +
+                    Integer.toHexString(action.getNid()) + " = " +
+                    action.getStatus();
+                try {
+                    tree.evaluateData(Data.fromExpr(doneExpr), 0);
+                }
+                catch (Exception exc) {
+                    System.err.println(
+                        "Error setting completion TDI variable: " + exc);
+                }
+
+                for (int i = 0; i < depVect.size(); i++) {
+                    Action currAction = (Action) depVect.elementAt(i);
+                    try {
+                        Data retData = tree.evaluateData( ( (DispatchData)
+                            currAction.getAction().
+                            getDispatch()).getWhen(), 0);
+                        int retStatus = retData.getInt();
+                        if ( (retStatus & 0x00000001) != 0) { //Condition satisfied
+                            dep_dispatched.addElement(currAction);
+                            currAction.setStatus(Action.DISPATCHED, 0, verbose);
+                            fireMonitorEvent(currAction, MONITOR_DISPATCHED);
+                            balancer.enqueueAction(currAction);
+                        }
+                        else { //The action is removed from dep_dispatched since it has not to be executed
+                            action.setStatus(Action.ABORTED,
+                                             Action.ServerNOT_DISPATCHED,
+                                             verbose);
+                            fireMonitorEvent(action, MONITOR_DONE);
+                        }
+                    }
+                    catch (Exception exc) {
+                        /*     if (exc instanceof DatabaseException && ((DatabaseException)exc).getStatus() == TdiUNKNOWN_VAR) {
+                                 currAction.setStatus(Action.ABORTED,
+                         Action.ServerINVALID_DEPENDENCY,
+                                                  verbose);
+                                 fireMonitorEvent(currAction, MONITOR_DONE);
+                          }*/
+                    }
+                }
+            }
         }
         if (seq_dispatched.isEmpty()) { //No more sequential actions for this sequence number
             if (curr_seq_numbers.hasMoreElements()) { //Still further sequence numbers
@@ -561,6 +681,20 @@ class jDispatcher
             else {
                 if (dep_dispatched.isEmpty()) { //No more actions at all for this phase
                     doing_phase = false;
+    //Report those (dependent) actions which have not been dispatched
+                    Enumeration allActionsEn = curr_phase.all_actions.elements();
+                    while(allActionsEn.hasMoreElements())
+                    {
+                        Action currAction = (Action) allActionsEn.nextElement();
+                        int currDispatchStatus = currAction.getDispatchStatus();
+                        if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE)
+                        {
+                            action.setStatus(Action.ABORTED,
+                                             Action.ServerCANT_HAPPEN,
+                                             verbose);
+                            fireMonitorEvent(action, MONITOR_DONE);
+                        }
+                    }
                     notify();
                 }
             }
@@ -579,6 +713,8 @@ class jDispatcher
             int modifier = ( (ConditionData) when).getModifier();
             Action action = (Action) actions.get( ( (ConditionData) when).
                                                  getArgument());
+           if(action == null) //Action not present, maybe not enabled
+               return false;
             int dispatch_status = action.getDispatchStatus();
             int status = action.getStatus();
             if (dispatch_status != Action.DONE)
@@ -653,6 +789,25 @@ class jDispatcher
         }
     }
 
+
+    public void redispatchAction(int nid)
+    {
+        if(doing_phase) //Redispatch not allowed during sequence
+            return;
+        Action action = (Action)curr_phase.all_actions.get(new Integer(nid));
+        if(action == null)
+        {
+            System.err.println("Redispatched a non existent action");
+            return;
+        }
+        dep_dispatched.addElement(action);
+        action.setStatus(Action.DISPATCHED, 0, verbose);
+        action.setManual(true);
+        fireMonitorEvent(action, MONITOR_DISPATCHED);
+        balancer.enqueueAction(action);
+     }
+
+
     public void setDefaultServer(Server server)
     {
         balancer.setDefaultServer(server);
@@ -660,13 +815,14 @@ class jDispatcher
 
     public void startInfoServer(int port)
     {
-         System.out.println("Start info server on port " + port );
+        System.out.println("Start info server on port " + port);
         (new jDispatcherInfo(port)).start();
     }
 
     //Inner classes jDispatcherInfo and jDispatcherInfoHandler are used to handle
     //request for information
-    class jDispatcherInfoHandler extends Thread
+    class jDispatcherInfoHandler
+        extends Thread
     {
         DataInputStream dis;
         DataOutputStream dos;
@@ -675,28 +831,27 @@ class jDispatcher
             try {
                 dis = new DataInputStream(sock.getInputStream());
                 dos = new DataOutputStream(sock.getOutputStream());
-             }catch(Exception exc)
-             {
-                 dis= null;
-                 dos = null;
-             }
+            }
+            catch (Exception exc) {
+                dis = null;
+                dos = null;
+            }
         }
+
         public void run()
         {
             try {
-                while(true)
-                {
-                    String command  =  dis.readUTF();
-                    if(command.toLowerCase().equals("servers"))
-                    {
-                        dos.writeInt (servers.size());
-                        for(int i = 0; i < servers.size(); i++)
-                        {
-                            Server currServer = (Server)servers.elementAt(i);
+                while (true) {
+                    String command = dis.readUTF();
+                    if (command.toLowerCase().equals("servers")) {
+                        dos.writeInt(servers.size());
+                        for (int i = 0; i < servers.size(); i++) {
+                            Server currServer = (Server) servers.elementAt(i);
                             String serverClass = currServer.getServerClass();
                             String address = "";
-                            if(currServer instanceof ActionServer)
-                                address = ((ActionServer)currServer).getAddress();
+                            if (currServer instanceof ActionServer)
+                                address = ( (ActionServer) currServer).
+                                    getAddress();
                             boolean isActive = currServer.isActive();
                             dos.writeUTF(serverClass);
                             dos.writeUTF(address);
@@ -705,19 +860,23 @@ class jDispatcher
                         }
                     }
                 }
-            }catch(Exception exc){}
+            }
+            catch (Exception exc) {}
         }
     }
-    class jDispatcherInfo extends Thread
+
+    class jDispatcherInfo
+        extends Thread
     {
         ServerSocket serverSock;
         jDispatcherInfo(int port)
         {
             try {
                 serverSock = new ServerSocket(port);
-            }catch(Exception exc)
-            {
-                System.err.println("Error starting jDispatcher info server: " + exc);
+            }
+            catch (Exception exc) {
+                System.err.println("Error starting jDispatcher info server: " +
+                                   exc);
                 serverSock = null;
             }
         }
@@ -734,7 +893,6 @@ class jDispatcher
             catch (Exception exc) {}
         }
     }
-
 
     public static void main(String args[])
     {
@@ -761,6 +919,10 @@ class jDispatcher
         dispatcher.waitPhase();
         dispatcher.endSequence(2);
         System.exit(0);
+    }
+
+    private void jbInit() throws Exception
+    {
     }
 
 }

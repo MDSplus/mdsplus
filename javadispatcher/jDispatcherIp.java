@@ -31,7 +31,8 @@ class jDispatcherIp
 
         //Handle direct commands: ABORT and DISPATCH
         if (compositeCommand.toUpperCase().startsWith("ABORT") ||
-            compositeCommand.toUpperCase().startsWith("DISPATCH") )
+            compositeCommand.toUpperCase().startsWith("DISPATCH") ||
+            compositeCommand.toUpperCase().startsWith("REDISPATCH"))
             command = compositeCommand;
         else {
             try {
@@ -75,12 +76,11 @@ class jDispatcherIp
     }
 
     protected int doCommand(String command) {
-        System.out.println("Comando Test " + command);
+        System.out.println("Command: " + command);
 
         StringTokenizer st = new StringTokenizer(command, "/ ");
         try {
             String first_part = st.nextToken();
-            System.out.println("Comando Test first_part" + first_part);
             if (first_part.equals("DISPATCH")) {
                 String second_part = st.nextToken();
                 if (second_part.equals("BUILD"))
@@ -94,8 +94,7 @@ class jDispatcherIp
                     int nid;
                     try {
                         nid = Integer.parseInt(second_part);
-                       System.out.println("Comando Test nid" + nid);
-                    }
+                     }
                     catch (Exception ex) {
                         throw new Exception("Invalid command");
                     }
@@ -122,24 +121,22 @@ class jDispatcherIp
 		    }
 
 		    try {
-		    
+
 			if(st.hasMoreTokens())
 		        {
 			    shot = Integer.parseInt(st.nextToken());
 			    setCurrentShot(shot);
 			    dispatcher.setTree(currTreeName, shot);
-			    System.err.println("Set experiment tree e shot " + shot);
 			} else {
 			    dispatcher.setTree(currTreeName);
-			    System.err.println("Set experiment tree");
 			}
 
-		     }  
+		     }
 		     catch(Exception exc)
 		     {
 			System.err.println("Wrong shot number in SET TREE command\n" + exc);
 		     }
-                    
+
                 }
                 else if (second_part.equals("CURRENT")) {
                     String third_part = st.nextToken();
@@ -161,6 +158,17 @@ class jDispatcherIp
                     throw new Exception("Invalid command");
                 }
                 dispatcher.abortAction(nid);
+            }
+            else if (first_part.equals("REDISPATCH")) {
+                String second_part = st.nextToken();
+                int nid;
+                try {
+                    nid = Integer.parseInt(second_part);
+                }
+                catch (Exception ex) {
+                    throw new Exception("Invalid command");
+                }
+                dispatcher.redispatchAction(nid);
             }
             else if (first_part.equals("GET")) {
                 String second_part = st.nextToken();
@@ -274,9 +282,15 @@ class jDispatcherIp
                 useJavaServer = properties.getProperty("jDispatcher.server_" + i +
                 ".use_jserver").equals("true");
             }catch(Exception exc){useJavaServer = true;}
+            int watchdogPort;
+            try {
+                watchdogPort = Integer.parseInt(properties.getProperty("jDispatcher.server_" + i +
+                ".watchdog_port"));
+            }catch(Exception exc){watchdogPort = -1;}
+
             Server server = new ActionServer("", server_ip.trim(),
                                              server_class.trim(),
-                                             server_subtree, useJavaServer);
+                                             server_subtree, useJavaServer, watchdogPort);
             servers.addElement(server);
             dispatcher.addServer(server);
             i++;

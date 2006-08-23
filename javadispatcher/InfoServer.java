@@ -4,7 +4,7 @@ class InfoServer implements Server
 {
     String tree;
     int shot = -1;
-    Database model_database;
+    static Database model_database;
 
     public InfoServer() {tree = null; }
     public InfoServer(String tree) {this.tree = tree; }
@@ -17,7 +17,7 @@ class InfoServer implements Server
     public void abort(boolean flush){}
     public boolean abortAction(Action action) {return false; }
 
-
+    public static Database getDatabase() {return model_database;}
     public void setTree(String tree)
     {
         this.tree = tree;
@@ -125,6 +125,16 @@ class InfoServer implements Server
                 return data;
             else
                 return action_d;
+        }
+        if(data instanceof DispatchData)
+        {
+            DispatchData dispData = (DispatchData)data;
+            dispData.descs[0] = traverseAction(dispData.descs[0], action_table);
+            dispData.descs[1] = traverseAction(dispData.descs[1], action_table);
+            if(dispData.getType() != DispatchData.SCHED_SEQ)
+                dispData.descs[2] = traverseAction(dispData.descs[2], action_table);
+            dispData.descs[3] = traverseAction(dispData.descs[3], action_table);
+            return data;
         }
         if(data instanceof CompoundData)
         {

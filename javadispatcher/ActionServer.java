@@ -19,25 +19,28 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     javax.swing.Timer timer;
     static final int RECONNECT_TIME = 5;
     boolean useJavaServer = true;
+    int watchdogPort = -1;
 
-    public ActionServer(String tree, String ip_address, String server_class, boolean useJavaServer)
+    public ActionServer(String tree, String ip_address, String server_class, boolean useJavaServer, int watchdogPort)
     {
-      this (tree, ip_address,  server_class, null, useJavaServer);
+      this (tree, ip_address,  server_class, null, useJavaServer, watchdogPort);
     }
     public ActionServer(String tree, String ip_address, String server_class)
     {
-      this (tree, ip_address,  server_class, null, true);
+      this (tree, ip_address,  server_class, null, true, -1);
     }
 
-    public ActionServer(String tree, String ip_address, String server_class, String subtree, boolean useJavaServer)
+    public ActionServer(String tree, String ip_address, String server_class, String subtree,
+                        boolean useJavaServer, int watchdogPort)
     {
         this.tree = tree;
         this.server_class = server_class;
         this.ip_address = ip_address;
         this.subtree = subtree;
         this.useJavaServer = useJavaServer;
+        this.watchdogPort = watchdogPort;
         try {
-            mds_server = new MdsServer(ip_address, useJavaServer);
+            mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
             mds_server.addMdsServerListener(this);
             mds_server.addConnectionListener(this);
             ready = active = true;
@@ -121,7 +124,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                         synchronized(ActionServer.this)
                         {
                             try {
-                                mds_server = new MdsServer(ip_address, useJavaServer);
+                                mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
                                 mds_server.addMdsServerListener(ActionServer.this);
                                 mds_server.addConnectionListener(ActionServer.this);
                                 mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
@@ -234,6 +237,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 break;
             case MdsServerEvent.SrvJobFINISHED :
                 timer.stop();
+
+                System.out.println("JOBID: " + e.getJobid());
+
                 if(e.getJobid() == 0) return; //SrvJobFINISHED messages are generated also by SrvCreatePulse and SrvClose
                 Action done_action = (Action)doing_actions.remove(new Integer(e.getJobid()));
                 if(done_action == null)
@@ -317,7 +323,6 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     public void beginSequence(int shot)
     {
         this.shot = shot;
-        System.out.println("ActionServer.createPulse " + subtree);
         if(mds_server == null || subtree == null || subtree.trim().equals("")) return;
         try {
             mds_server.createPulse(subtree, shot);
@@ -352,35 +357,11 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         if((doing_actions.get(new Integer(action.getNid())) == null) && enqueued_actions.indexOf(action) == -1)
             return false;
         int queue_len = 0;
-        synchronized(enqueued_actions)
-        {
-            int size = enqueued_actions.size();
-            Vector removed_actions = new Vector();
-            Action curr_action;
-            while((curr_action = popAction()) != null)
-            {
-                removed_actions.addElement(curr_action);
-                queue_len++;
+        synchronized (enqueued_actions) {
+            try {
+                mds_server.abort(false); //now we are sure that no other action gets aborted
             }
-            int abort_idx = removed_actions.indexOf(action);
-            if(abort_idx != -1) //the action was waiting
-                removed_actions.removeElementAt(abort_idx);
-            else //the action was executing, most likely option
-            {
-                try{
-                    mds_server.abort(false); //now we are sure that no other action gets aborted
-                } catch(Exception exc){}
-            }
-            Enumeration action_list = removed_actions.elements();
-            while(action_list.hasMoreElements())
-            {
-                curr_action = (Action)action_list.nextElement();
-                try {
-                   // mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getNid(), curr_action.getNid());
-                     mds_server.dispatchAction(ActionServer.this.tree, shot, curr_action.getName(), curr_action.getNid());
-                    enqueued_actions.addElement(curr_action);
-                }catch(Exception exc) {}
-            }
+            catch (Exception exc) {}
         }
         return true;
     }
@@ -394,7 +375,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
           {
             try {
               sleep(2000);
-              mds_server = new MdsServer(ip_address, useJavaServer);
+              mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
               mds_server.addMdsServerListener(ActionServer.this);
               mds_server.addConnectionListener(ActionServer.this);
               System.out.println("Reconnected to to server " + ip_address + " server class " + server_class);

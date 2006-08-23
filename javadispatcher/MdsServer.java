@@ -16,6 +16,7 @@ class MdsServer extends MdsConnection
     static final int SrvShow        =8;           /**** Request current status of server ***/
     static final int SrvStop        =9;           /**** Stop server ***/
     static final int SrvRemoveLast  =10;         /**** Remove last item in queue if action pending ***/
+    static final int SrvWatchdogPort = 11;        /****Watchdog port ***/
 
     static final int SrvJobBEFORE_NOTIFY =1;
     static final int SrvJobAFTER_NOTIFY  =2;
@@ -23,6 +24,10 @@ class MdsServer extends MdsConnection
     static final int ServerABORT    = 0xfe18032;
 
     static final short START_PORT = 8800;
+
+    static final int WATCHDOG_PERIOD = 5000;
+    static final int WATCHDOG_TIMEOUT = 20000;
+
 
     /**
     * Server socket on which server messages
@@ -44,6 +49,7 @@ class MdsServer extends MdsConnection
 
 
     byte [] self_address;
+    int watchdogPort = -1;
 
     class ReceiveServerMessage extends Thread
     {
@@ -146,10 +152,11 @@ class MdsServer extends MdsConnection
         }
     }
 
-    public MdsServer(String server, boolean useJavaServer) throws IOException
+    public MdsServer(String server, boolean useJavaServer, int watchdogPort) throws IOException
     {
         super(server);
         this.useJavaServer = useJavaServer;
+        this.watchdogPort = watchdogPort;
         self_address = InetAddress.getLocalHost().getAddress();
 
         if(ConnectToMds(false) == 0)
@@ -310,6 +317,17 @@ class MdsServer extends MdsConnection
         Descriptor reply = sendMessage(id, SrvAction, true, args, true);
         return reply;
     }
+
+    public Descriptor setWatchdogPort(int port) throws IOException
+    {
+        Vector args = new Vector();
+        args.add(new Descriptor(null, new int[]{port}));
+        Descriptor reply = sendMessage(0, SrvWatchdogPort, true, args, true);
+        return reply;
+    }
+
+
+
     public Descriptor dispatchDirectCommand(String command) throws IOException
     {
         Descriptor reply = MdsValue(command);
@@ -397,12 +415,93 @@ class MdsServer extends MdsConnection
         }
     }
 
+
+    //Connection to mdsip server: if it is a Java action server the watchdog port is sent just after the connection
+    public synchronized int ConnectToMds(boolean use_compression)
+    {
+        int status = super.ConnectToMds(use_compression);
+        if(watchdogPort > 0 && status != 0) //Connection succeeded and watchdog defined
+        {
+            try {
+                setWatchdogPort(watchdogPort);
+            }catch(Exception exc)
+            {
+                System.err.println("Error setting watchdog port: " + exc);
+            }
+            startWatchdog(host, watchdogPort);
+        }
+        return status;
+    }
+
+    void startWatchdog(String host, int port)
+    {
+        (new WatchdogHandler(host, port)).start();
+    }
+
+    //Class watchdogHandler handles watchdog management
+    class WatchdogHandler extends Thread
+    {
+        DataInputStream dis;
+        DataOutputStream dos;
+        Socket watchdogSock;
+        WatchdogHandler(String host, int port)
+        {
+            try{
+                watchdogSock = new Socket(host, port);
+                dis = new DataInputStream(watchdogSock.getInputStream());
+                dos = new DataOutputStream(watchdogSock.getOutputStream());
+            }catch(Exception exc)
+            {
+                System.err.println("Error starting Watchdog: " + exc);
+            }
+        }
+        public void run()
+        {
+            Timer timer;
+            try {
+                while (true) {
+                    timer = new Timer();
+                    timer.schedule(new TimerTask()
+                    {
+                        public void run()
+                        {
+                            System.out.println("Detected server TIMEOUT");
+                            try {
+                                sock.close();
+                            }
+                            catch (Exception exc) {}
+                            try {
+                                watchdogSock.close();
+                            }
+                            catch (Exception exc) {}
+                            try {
+                                read_sock.close();
+                            }
+                            catch (Exception exc) {}
+                            try {
+                                rcv_sock.close();
+                            }
+                            catch (Exception exc) {}
+                        }
+                    }, WATCHDOG_TIMEOUT);
+                    dos.writeInt(1);
+                    dos.flush();
+                    dis.readInt();
+                    timer.cancel();
+                    Thread.currentThread().sleep(WATCHDOG_PERIOD);
+                }
+            }catch(Exception exc){}
+        }
+    }//End class WatchdogHandler
+
+
+
     static void main(String arg[])
     {
         MdsServer ms = null;
         try
         {
-            ms = new MdsServer("150.178.3.47:8001", true);
+            ms = new MdsServer("150.178.3.47:8001", true, -1);
 
             Descriptor reply = ms.monitorCheckin();
 

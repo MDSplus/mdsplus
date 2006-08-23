@@ -4,6 +4,7 @@ class MdsHelper
 {
     static Hashtable name_to_id = new Hashtable(), id_to_name = new Hashtable();
     static String dispatcher_ip = null;
+    static int dispatcherPort = 0;
     static {
         Properties properties = new Properties();
         try {
@@ -20,6 +21,7 @@ class MdsHelper
                 i++;
             }
             dispatcher_ip = properties.getProperty("jDispatcher.dispatcher_ip");
+            dispatcherPort = Integer.parseInt(properties.getProperty("jDispatcher.port"));
         }catch(Exception exc)
         {
             System.err.println("Cannot open phases.properties");
@@ -46,5 +48,9 @@ class MdsHelper
     public static String getDispatcher()
     {
         return dispatcher_ip;
+    }
+    public static int getDispatcherPort()
+    {
+        return dispatcherPort;
     }
 }
