@@ -783,6 +783,8 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status)
   return (*status & 1) ? msg : 0;
 }
 #endif
+#else
+Message *GetMdsMsgOOB(SOCKET sock,int *status){return 0;}
 #endif
 
 #if defined(GLOBUS)
