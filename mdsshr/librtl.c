@@ -1388,8 +1388,10 @@ int StrCopyDx(struct descriptor *out, struct descriptor *in)
   {
     int outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
     int inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
-    memcpy(out->pointer, in->pointer, outlength > inlength ?
-	   inlength : outlength);
+    int len=outlength > inlength ? inlength : outlength;
+    char *p1,*p2;
+    int i;
+    for (i=0,p1=out->pointer,p2=in->pointer;i<len;i++) *p1++=*p2++;
     if (outlength > inlength)
       memset(out->pointer+inlength, 32, outlength - inlength);
   }
@@ -1588,8 +1590,12 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
     tmp = strptime(asc_time, "%x %X", &tm);
-    if (tmp != asc_time)
+    if (tmp != asc_time) {
+      time_t t=time(0);
+      struct tm *tm_p=localtime(&t);
       tim = mktime(&tm);
+      tim += tm_p->tm_gmtoff;
+    }
     else
       tim = 0;
 #else
