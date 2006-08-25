@@ -110,9 +110,16 @@ struct TdiCatStruct	*cptr;
 			ASSUMES array-descriptor sized readable.
 			*****************************************/
 			if (aptr->length == cptr->digits) {
-			struct descriptor_a	arr = *aptr;
-				aptr->dtype = cptr->out_dtype;
-				status = TdiConvert(&arr, aptr MDS_END_ARG);
+			  if (aptr->class == CLASS_A) {
+			    struct descriptor_a	arr = *aptr;
+			    aptr->dtype = cptr->out_dtype;
+			    status = TdiConvert(&arr, aptr MDS_END_ARG);
+			  }
+			  else {
+			    struct descriptor d = *(struct descriptor *)aptr;
+			    aptr->dtype = cptr->out_dtype;
+			    status = TdiConvert(&d, aptr MDS_END_ARG);
+			  }
 			}
 
 			/**************************

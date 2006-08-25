@@ -167,23 +167,23 @@ struct descriptor  {
                                       0,DSC_K_DTYPE_T,DSC_K_CLASS_D,0 }
 #ifdef vms
 #define is_cdescr(d)  ((d) &&		\
+            ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S && \
-            ((struct descriptor *)(d))->dscW_length<=1024)
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S
 #define is_ddescr(d)  ((d) &&		\
+            ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
-            ((struct descriptor *)(d))->dscW_length<=1024)
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D
 #else
 #define ALIGN_MASK(x)  (sizeof(x) - 1)
 #define is_cdescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
+            ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S && \
-            ((struct descriptor *)(d))->dscW_length<=1024)
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S
 #define is_ddescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
+            ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D && \
-            ((struct descriptor *)(d))->dscW_length<=1024)
+            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D
 #endif
 #define dsc_descriptor  descriptor
 
