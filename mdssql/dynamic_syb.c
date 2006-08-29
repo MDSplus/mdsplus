@@ -143,52 +143,50 @@ int	Login_Sybase(char *host, char *user, char *pass)
  if (dbproc)
     Logout_Sybase();
 
-  if (loginrec) {
-    dbloginfree(loginrec);
-    loginrec = 0;
-  }
-  if (dbinit() == FAIL) Fatal("Login_Sybase: Can't init DB-library\n");
-  dbmsghandle(Msg_Handler);
-  dberrhandle(Err_Handler);
-  loginrec = dblogin();
+ if (loginrec) {
+   dbloginfree(loginrec);
+   loginrec = 0;
+ }
+ if (dbinit() == FAIL) Fatal("Login_Sybase: Can't init DB-library\n");
+ dbmsghandle(Msg_Handler);
+ dberrhandle(Err_Handler);
+ loginrec = dblogin();
 #ifdef Win32
-  if (user == 0) {
-	  DBSETLSECURE(loginrec);
-  } else {
+ if (user == 0) {
+   DBSETLSECURE(loginrec);
+ } else {
 #endif
-	DBSETLUSER(loginrec, user);
-	DBSETLPWD(loginrec, pass);
+   DBSETLUSER(loginrec, user);
+   DBSETLPWD(loginrec, pass);
 #ifdef Win32
-  }
+ }
 #endif
-  DBSETLAPP(loginrec, "MdsSql");
-  /*//  DBSETLPACKET(loginrec, 8192);
+ DBSETLAPP(loginrec, "MdsSql");
+ /*//  DBSETLPACKET(loginrec, 8192);
  // DBSETOPT(dbproc, DBBUFFER, "0") ;
  */
-  dbclropt(dbproc, DBBUFFER, "0") ;
-
 
 #ifdef RETRY_CONNECTS
 #ifdef  __VMS
 extern void decc$sleep();
 #define Sleep decc$sleep()
 #endif
-  for (try = 0; ((dbproc==0) && (try < 10)); try++) {
-     DBMSGTEXT[0] = 0;
-     dbproc = dbopen(loginrec, host);
-     if (!dbproc) {
-        Sleep(100);
-     }
-  }
+ for (try = 0; ((dbproc==0) && (try < 10)); try++) {
+   DBMSGTEXT[0] = 0;
+   dbproc = dbopen(loginrec, host);
+   if (!dbproc) {
+     Sleep(100);
+   }
+ }
 #else
-     DBMSGTEXT[0] = 0;
-     dbproc = dbopen(loginrec, host);
+ DBMSGTEXT[0] = 0;
+ dbproc = dbopen(loginrec, host);
 #endif
-  if (!dbproc) return 0;
-     siz = dbgetpacket ( dbproc );
-	   dbclropt(dbproc, DBBUFFER, "0") ;
-
-  return SUCCEED;
+ if (!dbproc) return 0;
+ siz = dbgetpacket ( dbproc );
+ dbclropt(dbproc, DBBUFFER, "0") ;
+ 
+ return SUCCEED;
 }
 /*------------------------------DYNAMIC--------------------------------------*/
 int	SQL_DYNAMIC(USER_GETS, USER_PUTS, ptext, user_args, prows)
