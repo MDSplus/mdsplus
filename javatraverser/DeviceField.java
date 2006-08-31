@@ -184,7 +184,7 @@ public class DeviceField
     displayData(data, is_on);
     setEnabled(is_on);
 
-    textF.addKeyListener(new KeyAdapter()
+/*    textF.addKeyListener(new KeyAdapter()
     {
       public void keyTyped(KeyEvent e)
       {
@@ -193,6 +193,29 @@ public class DeviceField
         reportingChange = false;
       }
     });
+*/    textF.getDocument().addDocumentListener(new DocumentListener()
+    {
+      public void changedUpdate(DocumentEvent e)
+      {
+        reportingChange = true;
+        reportDataChanged(textF.getText());
+        reportingChange = false;
+      }
+
+      public void insertUpdate(DocumentEvent e)
+      {
+          reportingChange = true;
+          reportDataChanged(textF.getText());
+          reportingChange = false;
+      }
+
+      public void removeUpdate(DocumentEvent e)
+      {
+          reportingChange = true;
+          reportDataChanged(textF.getText());
+          reportingChange = false;
+      }
+  });
 
     textF.setEnabled(editable);
     textF.setEditable(editable);
@@ -211,7 +234,11 @@ public class DeviceField
       return;
     try
     {
-        String textData = Tree.dataToString((Data)data);
+        String textData;
+       if(data instanceof Data)
+          textData = Tree.dataToString((Data)data);
+        else
+          textData = (String)data;
         textF.setText(textData);
     }
     catch (Exception exc)

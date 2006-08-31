@@ -102,7 +102,8 @@ public class DeviceChoice extends DeviceComponent
       if(reportingChange || this.offsetNid != offsetNid)
         return;
       try {
-        comboB.setSelectedIndex( ( (Integer) data).intValue());
+          if(data instanceof Integer)
+              comboB.setSelectedIndex( ( (Integer) data).intValue());
       }catch(Exception exc){System.err.println("DeviceChoice.dataChanged: " + exc);}
     }
 
