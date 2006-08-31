@@ -220,7 +220,7 @@ int LibWait(float *secs)
   return 1;
 }
 
-unsigned int LibCallg(void **arglist, FARPROC *routine)
+void *LibCallg(void **arglist, FARPROC *routine)
 {
   int a_idx;
 
@@ -650,7 +650,7 @@ char *TranslateLogical(char *name)
 */
 	return env;
 }
-unsigned int LibCallg(void **arglist, unsigned int (*routine)())
+void *LibCallg(void **arglist, void * (*routine)())
 {
   switch (*(long *)arglist & 0xff)
   {

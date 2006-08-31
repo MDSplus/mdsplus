@@ -28,7 +28,7 @@
 #else
 
 extern int LibAddx();
-extern unsigned int LibCallg();
+extern void  *LibCallg();
 extern int LibConvertDateString();
 extern int LibCreateVmZone();
 extern int LibEmul();
