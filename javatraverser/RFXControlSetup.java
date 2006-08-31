@@ -627,7 +627,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable5.setNumCols(5);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");
-    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Par5"});
+    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Min_PVAT_Vder"});
         deviceTable5.setRowNames(null);
     deviceTable5.setPreferredHeight(20);
     deviceField111118.setIdentifier("");
