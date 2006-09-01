@@ -368,7 +368,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR124_NAME', 'TEXT', "RotPertPhase4", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR124_VAL', 'NUMERIC', 0., *, _nid);
 
-/* Mode Control */
+/* Virtual Shell PID */
 
     DevAddNode(_path // '.PARAMETERS:PAR125_NAME', 'TEXT', "ModeControlKp", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR125_VAL', 'NUMERIC', zero(192), *, _nid);
@@ -378,7 +378,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR127_VAL', 'NUMERIC', zero(192), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR128_NAME', 'TEXT', "ModeControlExcluded", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR128_VAL', 'NUMERIC', zero(192, 0), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR129_NAME', 'TEXT', "K5", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR129_NAME', 'TEXT', "ModeControlM1N0ReExcluded", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR129_VAL', 'NUMERIC', 0., *, _nid);
 
 /* Simulink Parameters */
@@ -545,7 +545,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR204_VAL', 'NUMERIC',zero(48), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR205_NAME', 'TEXT', "ModeControl2KPhs", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR205_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR206_NAME', 'TEXT', "ModeControlDerivativeCutOff", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR206_NAME', 'TEXT', "ModeControl2M1M0", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR206_VAL', 'NUMERIC', 100., *, _nid);
 
     DevAddNode(_path // '.PARAMETERS:PAR207_NAME', 'TEXT', "ModeControl3Start", *, _nid);
@@ -556,7 +556,7 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR209_VAL', 'NUMERIC',zero(48), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR210_NAME', 'TEXT', "ModeControl3KPhs", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR210_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR211_NAME', 'TEXT', "ModeControlMeasureRadius", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR211_NAME', 'TEXT', "ModeControl3M1M0", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR211_VAL', 'NUMERIC', 0.507, *, _nid);
 
     DevAddNode(_path // '.PARAMETERS:PAR212_NAME', 'TEXT', "ModeControl1IntGain", *, _nid);
@@ -565,9 +565,9 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR213_VAL', 'NUMERIC', zero(48), *,_nid);
     DevAddNode(_path // '.PARAMETERS:PAR214_NAME', 'TEXT', "ModeControl3IntGain", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR214_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControlSpare1", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR215_VAL', 'NUMERIC',zero(48), *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControlSpare2", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControlDerivativeCutOff", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR215_VAL', 'NUMERIC',0, *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControlMeasureRadius", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR216_VAL', 'NUMERIC', 0, *, _nid);
 
     DevAddNode(_path // '.PARAMETERS:PAR217_NAME', 'TEXT', "ModeControlInput1Start", *, _nid);

@@ -30,10 +30,13 @@ public class RFXMHDSetup extends DeviceSetup {
   GridLayout gridLayout8 = new GridLayout();
   JPanel jPanel10 = new JPanel();
   DeviceField deviceField1 = new DeviceField();
+  JPanel jPanel30 = new JPanel();
+  JPanel jPanel29 = new JPanel();
+  JPanel jPanel28 = new JPanel();
   DeviceChoice deviceChoice2 = new DeviceChoice();
   JPanel jPanel27 = new JPanel();
-  DeviceChoice deviceChoice3 = new DeviceChoice();
-  DeviceChoice deviceChoice1 = new DeviceChoice();
+  JPanel jPanel26 = new JPanel();
+  JPanel jPanel25 = new JPanel();
   BorderLayout borderLayout3 = new BorderLayout();
     JPanel jPanel31 = new JPanel();
     DeviceTable deviceTable1 = new DeviceTable();
@@ -48,7 +51,6 @@ public class RFXMHDSetup extends DeviceSetup {
   JPanel jPanel42 = new JPanel();
   DeviceChoice deviceChoice5 = new DeviceChoice();
   JPanel jPanel44 = new JPanel();
-  DeviceTable deviceTable11 = new DeviceTable();
   DeviceField deviceField35 = new DeviceField();
   JScrollPane jScrollPane14 = new JScrollPane();
   JPanel jPanel415 = new JPanel();
@@ -115,7 +117,6 @@ public class RFXMHDSetup extends DeviceSetup {
     DeviceTable deviceTable27 = new DeviceTable();
     DeviceTable deviceTable28 = new DeviceTable();
   DeviceTable deviceTable210 = new DeviceTable();
-    DeviceTable deviceTable16 = new DeviceTable();
     DeviceTable deviceTable18 = new DeviceTable();
   DeviceTable deviceTable19 = new DeviceTable();
     JPanel jPanel43 = new JPanel();
@@ -211,6 +212,15 @@ public class RFXMHDSetup extends DeviceSetup {
     DeviceField deviceField2118 = new DeviceField();
     DeviceField deviceField312 = new DeviceField();
     DeviceField deviceField229 = new DeviceField();
+    DeviceField deviceField70 = new DeviceField();
+    DeviceTable deviceTable11 = new DeviceTable();
+    DeviceTable deviceTable16 = new DeviceTable();
+    DeviceTable deviceTable110 = new DeviceTable();
+    DeviceTable deviceTable111 = new DeviceTable();
+    DeviceTable deviceTable112 = new DeviceTable();
+    DeviceField deviceField73 = new DeviceField();
+    DeviceField deviceField76 = new DeviceField();
+  DeviceChoice deviceChoice16 = new DeviceChoice();
   public RFXMHDSetup() {
     try {
       jbInit();
@@ -250,12 +260,12 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel40.setLayout(gridLayout8);
     gridLayout8.setColumns(1);
     gridLayout8.setHgap(0);
-    gridLayout8.setRows(2);
+    gridLayout8.setRows(3);
     gridLayout8.setVgap(-2);
     deviceField1.setOffsetNid(1);
     deviceField1.setTextOnly(true);
     deviceField1.setLabelString("Comment: ");
-    deviceField1.setNumCols(30);
+    deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
     deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
     deviceChoice2.setChoiceFloatValues(null);
@@ -267,26 +277,6 @@ public class RFXMHDSetup extends DeviceSetup {
         "Closer VS", "Closer VS+Rot.Pert."});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
-    deviceChoice3.setChoiceFloatValues(null);
-    deviceChoice3.setConvert(true);
-    deviceChoice3.setOffsetNid(8);
-    deviceChoice3.setLabelString("Trig2 control: ");
-    deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
-        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Closer VS", "Closer VS+Rot.Pert."});
-    deviceChoice3.setUpdateIdentifier("");
-    deviceChoice3.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
-    deviceChoice1.setChoiceFloatValues(null);
-    deviceChoice1.setConvert(true);
-    deviceChoice1.setOffsetNid(6);
-    deviceChoice1.setLabelString("Init control: ");
-    deviceChoice1.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
-        "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Closer VS", "Closer VS+Rot.Pert."});
-    deviceChoice1.setUpdateIdentifier("");
-    deviceChoice1.setIdentifier("");
         jPanel31.setLayout(gridLayout7);
         deviceTable1.setOffsetNid(4);
         deviceTable1.setLabelString("Input calibration");
@@ -317,9 +307,10 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable7.setRowNames(null);
     deviceField34.setOffsetNid(1227);
     deviceField34.setLabelString("End Time(s): ");
+        deviceField34.setNumCols(5);
     deviceField34.setIdentifier("");
     gridLayout10.setColumns(1);
-    gridLayout10.setRows(3);
+    gridLayout10.setRows(4);
     jPanel47.setLayout(gridLayout10);
     jPanel42.setLayout(borderLayout5);
     deviceChoice5.setChoiceIntValues(new int[] {(int)0,(int)1});
@@ -330,16 +321,9 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceChoice5.setChoiceItems(new String[] {"M1->M1", "M0->M0"});
     deviceChoice5.setUpdateIdentifier("");
     deviceChoice5.setIdentifier("");
-    deviceTable11.setRowNames(null);
-    deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
-        "8", "7", "6", "5", "4", "3", "2", "1"});
-    deviceTable11.setIdentifier("");
-    deviceTable11.setNumRows(1);
-    deviceTable11.setNumCols(48);
-    deviceTable11.setLabelString("Integral Gain:");
-    deviceTable11.setOffsetNid(1255);
     deviceField35.setOffsetNid(1225);
     deviceField35.setLabelString("Start Time(s): ");
+        deviceField35.setNumCols(5);
     deviceField35.setIdentifier("");
     jPanel415.setLayout(gridLayout11);
     deviceChoice6.setChoiceIntValues(new int[] {(int)0,(int)1});
@@ -360,6 +344,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable13.setOffsetNid(1257);
     deviceField37.setOffsetNid(1235);
     deviceField37.setLabelString("Start Time(s): ");
+        deviceField37.setNumCols(5);
     deviceField37.setIdentifier("");
     deviceTable8.setRowNames(null);
     deviceTable8.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
@@ -371,8 +356,9 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable8.setOffsetNid(1239);
     deviceField36.setIdentifier("");
     deviceField36.setLabelString("End Time(s): ");
+        deviceField36.setNumCols(5);
     deviceField36.setOffsetNid(1237);
-    gridLayout11.setRows(3);
+    gridLayout11.setRows(4);
     gridLayout11.setColumns(1);
     jPanel45.setLayout(borderLayout6);
     jPanel417.setLayout(borderLayout7);
@@ -383,12 +369,13 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable15.setNumRows(1);
     deviceTable15.setNumCols(48);
     deviceTable15.setLabelString("Integral Gain:");
-    deviceTable15.setOffsetNid(1257);
+    deviceTable15.setOffsetNid(1259);
     deviceField38.setIdentifier("");
     deviceField38.setLabelString("End Time(s): ");
+        deviceField38.setNumCols(5);
     deviceField38.setOffsetNid(1247);
     jPanel416.setLayout(gridLayout12);
-    gridLayout12.setRows(3);
+    gridLayout12.setRows(4);
     gridLayout12.setColumns(1);
     deviceChoice7.setChoiceIntValues(new int[] {(int)0,(int)1});
     deviceChoice7.setChoiceFloatValues(null);
@@ -400,6 +387,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceChoice7.setIdentifier("");
     deviceField39.setOffsetNid(1245);
     deviceField39.setLabelString("Start Time(s): ");
+        deviceField39.setNumCols(5);
     deviceField39.setIdentifier("");
     deviceTable9.setRowNames(null);
     deviceTable9.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
@@ -523,24 +511,16 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable210.setBinary(false);
     deviceTable210.setRowNames(new String[] {"0", "1", "2", "3"});
     deviceTable210.setDisplayRowNumber(true);
-        deviceTable16.setOffsetNid(1231);
-        deviceTable16.setLabelString("Gain Phase (Rad):");
-        deviceTable16.setNumCols(48);
-        deviceTable16.setNumRows(1);
-        deviceTable16.setIdentifier("");
-        deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
-        "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable16.setRowNames(null);
-        deviceTable18.setOffsetNid(1241);
-        deviceTable18.setLabelString("Gain Phase (Rad):");
+        deviceTable18.setOffsetNid(1283);
+        deviceTable18.setLabelString("Derivative Gain:");
         deviceTable18.setNumCols(48);
         deviceTable18.setNumRows(1);
         deviceTable18.setIdentifier("");
         deviceTable18.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
         "8", "7", "6", "5", "4", "3", "2", "16<NL>5<NL>4<NL>3<NL>2<NL>1<NL>"});
         deviceTable18.setRowNames(null);
-        deviceTable19.setOffsetNid(1251);
-    deviceTable19.setLabelString("Gain Phase (Rad):");
+        deviceTable19.setOffsetNid(1293);
+    deviceTable19.setLabelString("Derivative Gain:");
     deviceTable19.setNumCols(48);
     deviceTable19.setNumRows(1);
     deviceTable19.setIdentifier("");
@@ -903,17 +883,80 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceChoice15.setUpdateIdentifier("");
         deviceChoice15.setIdentifier("");
         deviceField69.setOffsetNid(1427);
-        deviceField69.setLabelString("Threshold:");
+        deviceField69.setLabelString("Treshold:");
         deviceField69.setNumCols(4);
         deviceField69.setIdentifier("");
+        deviceField70.setOffsetNid(1263);
+        deviceField70.setLabelString("Br measure radius (m): ");
+        deviceField70.setNumCols(5);
+        deviceField70.setIdentifier("");
+        deviceTable11.setRowNames(null);
+        deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable11.setIdentifier("");
+        deviceTable11.setNumRows(1);
+        deviceTable11.setNumCols(48);
+        deviceTable11.setLabelString("Integral Gain:");
+        deviceTable11.setOffsetNid(1255);
+        deviceTable16.setOffsetNid(1273);
+        deviceTable16.setLabelString("Derivative Gain:");
+        deviceTable16.setNumCols(48);
+        deviceTable16.setNumRows(1);
+        deviceTable16.setIdentifier("");
+        deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable16.setRowNames(null);
+        deviceTable110.setRowNames(null);
+        deviceTable110.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable110.setIdentifier("");
+        deviceTable110.setNumRows(1);
+        deviceTable110.setNumCols(48);
+        deviceTable110.setLabelString("Gain Phase (Rad):");
+        deviceTable110.setOffsetNid(1231);
+        deviceTable111.setRowNames(null);
+        deviceTable111.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "16<NL>5<NL>4<NL>3<NL>2<NL>1<NL>"});
+        deviceTable111.setIdentifier("");
+        deviceTable111.setNumRows(1);
+        deviceTable111.setNumCols(48);
+        deviceTable111.setLabelString("Gain Phase (Rad):");
+        deviceTable111.setOffsetNid(1241);
+        deviceTable112.setRowNames(null);
+        deviceTable112.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
+        "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable112.setIdentifier("");
+        deviceTable112.setNumRows(1);
+        deviceTable112.setNumCols(48);
+        deviceTable112.setLabelString("Gain Phase (Rad):");
+        deviceTable112.setOffsetNid(1251);
+        deviceField73.setOffsetNid(1261);
+        deviceField73.setLabelString("Derivative Cutoff freq (Hz):");
+        deviceField73.setNumCols(5);
+        deviceField73.setIdentifier("");
+        deviceField76.setIdentifier("");
+        deviceField76.setLabelString("Br measure radius (m):");
+        deviceField76.setNumCols(5);
+        deviceField76.setOffsetNid(1263);
+        deviceChoice16.setChoiceIntValues(new int[] {(int)0,(int)1});
+    deviceChoice16.setChoiceFloatValues(null);
+    deviceChoice16.setConvert(true);
+    deviceChoice16.setOffsetNid(1089);
+    deviceChoice16.setLabelString("M1 N0 Cosine Component:");
+    deviceChoice16.setChoiceItems(new String[] {"Included", "Excluded"});
+    deviceChoice16.setUpdateIdentifier("");
+    deviceChoice16.setIdentifier("");
     this.getContentPane().add(jPanel9,  BorderLayout.NORTH);
     jPanel9.add(jPanel40, BorderLayout.CENTER);
     jPanel40.add(jPanel10, null);
     jPanel10.add(deviceField1, null);
+    jPanel40.add(jPanel25, null);
+    jPanel40.add(jPanel26, null);
     jPanel40.add(jPanel27, null);
-    jPanel27.add(deviceChoice1, null);
     jPanel27.add(deviceChoice2, null);
-    jPanel27.add(deviceChoice3, null);
+    jPanel40.add(jPanel28, null);
+    jPanel40.add(jPanel29, null);
+    jPanel40.add(jPanel30, null);
     this.getContentPane().add(jPanel33,  BorderLayout.CENTER);
     jPanel33.add(jTabbedPane1,  BorderLayout.CENTER);
     jTabbedPane1.add(jScrollPane4,  "Rot. Perturbation");
@@ -1008,14 +1051,17 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel7.add(deviceField69, null);
         jTabbedPane1.add(jScrollPane5,   "Mode Control 1");
     jScrollPane5.getViewport().add(jPanel42, null);
-    jPanel44.add(deviceField35, null);
+    jPanel44.add(deviceField76, null);
+        jPanel44.add(deviceField73, null);
+        jPanel44.add(deviceField35, null);
     jPanel44.add(deviceField34, null);
     jPanel44.add(deviceChoice5, null);
     jPanel42.add(jPanel47, BorderLayout.CENTER);
     jPanel42.add(jPanel44, BorderLayout.NORTH);
     jPanel47.add(deviceTable7, null);
+        jPanel47.add(deviceTable110, null);
         jPanel47.add(deviceTable16, null);
-    jPanel47.add(deviceTable11, null);
+        jPanel47.add(deviceTable11, null);
     jTabbedPane1.add(jScrollPane14,  "Mode Control 2");
     jTabbedPane1.add(jScrollPane7,  "Mode Control 3");
         jTabbedPane1.add(jScrollPane15,   "Virtual Shell: PID Parameters");
@@ -1037,6 +1083,8 @@ public class RFXMHDSetup extends DeviceSetup {
         jScrollPane9.getViewport().add(jPanel55, null);
         jPanel55.add(deviceTable22, BorderLayout.CENTER);
         jPanel55.add(jPanel56,  BorderLayout.NORTH);
+        jPanel56.add(deviceChoice16, null);
+    jPanel56.add(deviceField70, null);
         jPanel56.add(deviceField44, null);
         jPanel56.add(deviceField43, null);
         jPanel55.add(deviceTable27, BorderLayout.SOUTH);
@@ -1046,20 +1094,22 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel54.add(deviceTable23, null);
     jScrollPane7.getViewport().add(jPanel417, null);
     jPanel416.add(deviceTable9, null);
+        jPanel416.add(deviceTable112, null);
     jPanel416.add(deviceTable19, null);
     jPanel416.add(deviceTable15, null);
     jPanel417.add(jPanel418, BorderLayout.NORTH);
     jPanel417.add(jPanel416, BorderLayout.CENTER);
-    jPanel418.add(deviceField39, null);
+        jPanel418.add(deviceField39, null);
     jPanel418.add(deviceField38, null);
     jPanel418.add(deviceChoice7, null);
     jScrollPane14.getViewport().add(jPanel45, null);
     jPanel415.add(deviceTable8, null);
+        jPanel415.add(deviceTable111, null);
         jPanel415.add(deviceTable18, null);
     jPanel415.add(deviceTable13, null);
     jPanel45.add(jPanel46, BorderLayout.NORTH);
     jPanel45.add(jPanel415, BorderLayout.CENTER);
-    jPanel46.add(deviceField37, null);
+        jPanel46.add(deviceField37, null);
     jPanel46.add(deviceField36, null);
     jPanel46.add(deviceChoice6, null);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);

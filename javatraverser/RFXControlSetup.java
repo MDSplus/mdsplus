@@ -566,6 +566,7 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceTable deviceTable112 = new DeviceTable();
     DeviceField deviceField73 = new DeviceField();
     DeviceField deviceField76 = new DeviceField();
+  DeviceChoice deviceChoice16 = new DeviceChoice();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -2322,7 +2323,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField69.setLabelString("Treshold:");
         deviceField69.setNumCols(4);
         deviceField69.setIdentifier("");
-        deviceField70.setOffsetNid(1253);
+        deviceField70.setOffsetNid(1263);
         deviceField70.setLabelString("Br measure radius (m): ");
         deviceField70.setNumCols(5);
         deviceField70.setIdentifier("");
@@ -2366,15 +2367,23 @@ public class RFXControlSetup extends DeviceSetup {
         deviceTable112.setNumCols(48);
         deviceTable112.setLabelString("Gain Phase (Rad):");
         deviceTable112.setOffsetNid(1251);
-        deviceField73.setOffsetNid(1243);
+        deviceField73.setOffsetNid(1261);
         deviceField73.setLabelString("Derivative Cutoff freq (Hz):");
         deviceField73.setNumCols(5);
         deviceField73.setIdentifier("");
         deviceField76.setIdentifier("");
         deviceField76.setLabelString("Br measure radius (m):");
         deviceField76.setNumCols(5);
-        deviceField76.setOffsetNid(1253);
-        jPanel414.add(deviceField420, null);
+        deviceField76.setOffsetNid(1263);
+        deviceChoice16.setChoiceIntValues(new int[] {(int)0,(int)1});
+    deviceChoice16.setChoiceFloatValues(null);
+    deviceChoice16.setConvert(true);
+    deviceChoice16.setOffsetNid(1089);
+    deviceChoice16.setLabelString("M1 N0 Cosine Component:");
+    deviceChoice16.setChoiceItems(new String[] {"Included", "Excluded"});
+    deviceChoice16.setUpdateIdentifier("");
+    deviceChoice16.setIdentifier("");
+    jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
     jPanel414.add(deviceField318, null);
@@ -2806,7 +2815,8 @@ public class RFXControlSetup extends DeviceSetup {
         jScrollPane9.getViewport().add(jPanel55, null);
         jPanel55.add(deviceTable22, BorderLayout.CENTER);
         jPanel55.add(jPanel56,  BorderLayout.NORTH);
-        jPanel56.add(deviceField70, null);
+        jPanel56.add(deviceChoice16, null);
+    jPanel56.add(deviceField70, null);
         jPanel56.add(deviceField44, null);
         jPanel56.add(deviceField43, null);
         jPanel55.add(deviceTable27, BorderLayout.SOUTH);
