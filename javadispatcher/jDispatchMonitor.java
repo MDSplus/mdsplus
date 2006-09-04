@@ -420,18 +420,19 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             System.out.println("Cannot open properties file");
             System.exit(0);
         }
-        int error_port = 0;
+        int error_port = -1;
         try {
             error_port = Integer.parseInt(properties.getProperty("jDispatcher.error_port"));
         }
         catch(Exception exc)
         {
-            System.out.println("Cannot read error port");
-            System.exit(0);
+            //System.out.println("Cannot read error port");
         }
-        error_mgr = new ErrorMgr(error_port);
-        error_mgr.start();
-
+        if(error_port > 0)
+        {
+            error_mgr = new ErrorMgr(error_port);
+            error_mgr.start();
+        }
         info_port = 0;
         try {
             info_port = Integer.parseInt(properties.getProperty("jDispatcher.info_port"));

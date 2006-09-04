@@ -28,7 +28,7 @@ Ensures action dispatching to servers, keeping load balancing.
         server_vect.addElement(server);
         server.addServerListener(this);
     }
-    public void enqueueAction(Action action)
+    public boolean enqueueAction(Action action)
     {
         String server_class;
         try{
@@ -37,25 +37,24 @@ Ensures action dispatching to servers, keeping load balancing.
         catch(Exception exc)
         {
             if(default_server != null)
+            {
                 default_server.pushAction(action);
-            return;
+                return true;
+            }
+            return false;
         }
 
 
-  /*      Vector server_vect = (Vector)servers.get(server_class);
-        if(server_vect == null)
-        {
-            if(default_server != null)
-                default_server.pushAction(action);
-            return;
-        }*/
         Vector server_vect = new Vector();
         Vector all_server_vect = (Vector)servers.get(server_class);
          if(all_server_vect == null)
          {
              if(default_server != null)
+             {
                  default_server.pushAction(action);
-             return;
+             }
+             else
+                 return false;
          }
          else
           {
@@ -67,8 +66,11 @@ Ensures action dispatching to servers, keeping load balancing.
           }
           if (server_vect.size() == 0) {
             if (default_server != null)
-              default_server.pushAction(action);
-            return;
+            {
+                default_server.pushAction(action);
+            }
+            else
+                return false;
           }
      /////////////////////////////
 
@@ -82,7 +84,7 @@ Ensures action dispatching to servers, keeping load balancing.
             if(curr_load == 0 && curr_server.isActive())
             {
                 curr_server.pushAction(action);
-                return;
+                return true;
             }
             if(curr_load < min_load && curr_server.isActive())
             {
@@ -97,6 +99,7 @@ Ensures action dispatching to servers, keeping load balancing.
         else
         //all servers inactive (no mdsip connection): send action to either server, it will be aborted
             ((ActionServer)server_vect.elementAt(0)).pushAction(action);
+        return true;
     }
 
     public void actionStarting(ServerEvent event){}

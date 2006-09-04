@@ -451,6 +451,12 @@ class jDispatcher
         }
     }
 
+    void discardAction(Action action)
+    {
+        action.setStatus(Action.ABORTED, 0, verbose);
+        reportDone(action);
+    }
+
     public synchronized boolean startPhase(String phase_name)
     {
         doing_phase = false;
@@ -471,7 +477,8 @@ class jDispatcher
                     dep_dispatched.addElement(action);
                     action.setStatus(Action.DISPATCHED, 0, verbose);
                     fireMonitorEvent(action, MONITOR_DISPATCHED);
-                    balancer.enqueueAction(action);
+                    if(!balancer.enqueueAction(action))
+                        discardAction(action);
                 }
             }
 
@@ -496,7 +503,8 @@ class jDispatcher
                     seq_dispatched.addElement(action);
                     action.setStatus(Action.DISPATCHED, 0, verbose);
                     fireMonitorEvent(action, MONITOR_DISPATCHED);
-                    balancer.enqueueAction(action);
+                    if(!balancer.enqueueAction(action))
+                        discardAction(action);
 
                 }
             }
@@ -515,7 +523,8 @@ class jDispatcher
         action.setStatus(Action.DISPATCHED, 0, verbose);
         action.setManual(true);
         fireMonitorEvent(action, MONITOR_DISPATCHED);
-        balancer.enqueueAction(action);
+        if(!balancer.enqueueAction(action))
+            discardAction(action);
         return true;
     }
 
@@ -584,10 +593,7 @@ class jDispatcher
 
         action.setStatus(Action.DONE, event.getStatus(), verbose);
         fireMonitorEvent(action, MONITOR_DONE);
-        if (!action.isManual())
-            reportDone(action);
-        else
-            action.setManual(false);
+        reportDone(action);
     }
 
     protected void reportDone(Action action)
@@ -608,7 +614,8 @@ class jDispatcher
                     dep_dispatched.addElement(curr_action);
                     curr_action.setStatus(Action.DISPATCHED, 0, verbose);
                     fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
-                    balancer.enqueueAction(curr_action);
+                    if(!balancer.enqueueAction(curr_action))
+                        discardAction(action);
                 }
             }
             //Handle now possible dependencies based on sequence expression
@@ -638,7 +645,8 @@ class jDispatcher
                             dep_dispatched.addElement(currAction);
                             currAction.setStatus(Action.DISPATCHED, 0, verbose);
                             fireMonitorEvent(currAction, MONITOR_DISPATCHED);
-                            balancer.enqueueAction(currAction);
+                            if(!balancer.enqueueAction(currAction))
+                                discardAction(action);
                         }
                         else { //The action is removed from dep_dispatched since it has not to be executed
                             action.setStatus(Action.ABORTED,
@@ -674,7 +682,8 @@ class jDispatcher
                     seq_dispatched.addElement(curr_action);
                     curr_action.setStatus(Action.DISPATCHED, 0, verbose); //Spostata da cesare
                     fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
-                    balancer.enqueueAction(curr_action);
+                    if(!balancer.enqueueAction(curr_action))
+                        discardAction(action);
 //                    curr_action.setStatus(Action.DISPATCHED, 0, verbose);
                 }
             }
@@ -804,7 +813,8 @@ class jDispatcher
         action.setStatus(Action.DISPATCHED, 0, verbose);
         action.setManual(true);
         fireMonitorEvent(action, MONITOR_DISPATCHED);
-        balancer.enqueueAction(action);
+        if(!balancer.enqueueAction(action))
+            discardAction(action);
      }
 
 
