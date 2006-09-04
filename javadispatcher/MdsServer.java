@@ -482,6 +482,8 @@ class MdsServer extends MdsConnection
                                 rcv_sock.close();
                             }
                             catch (Exception exc) {}
+                            ConnectionEvent ce = new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
+                            dispatchConnectionEvent(ce);
                         }
                     }, WATCHDOG_TIMEOUT);
                     dos.writeInt(1);
