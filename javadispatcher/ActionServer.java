@@ -115,6 +115,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     mds_server.shutdown();
                     mds_server = null;
                 }
+                else
+                    return; //Already processed
             }catch(Exception exc)
             {
                 System.err.println("Error shutting down socket");
