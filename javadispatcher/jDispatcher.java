@@ -420,7 +420,6 @@ class jDispatcher
     protected synchronized void fireMonitorEvent(Action action, int mode)
     {
         String server;
-
         MonitorEvent event = new MonitorEvent(this, tree, shot,
                                               (curr_phase == null) ? "NONE" :
                                               curr_phase.phase_name, action);
@@ -449,7 +448,7 @@ class jDispatcher
                     break;
             }
         }
-    }
+   }
 
     void discardAction(Action action)
     {
@@ -560,7 +559,7 @@ class jDispatcher
 
     }
 
-    public synchronized void actionAborted(ServerEvent event)
+    public /*synchronized*/ void actionAborted(ServerEvent event)
     /**
      called by a server to notify that the action is starting being executed.
          Simply reports the fact
@@ -568,9 +567,14 @@ class jDispatcher
     {
 //        if(event.getTimestamp() != timestamp) //outdated message
 //            return;
+
+System.out.println("ACTION ABORTED 1");
         event.getAction().setStatus(Action.ABORTED, 0, verbose);
+System.out.println("ACTION ABORTED 2");
         fireMonitorEvent(event.getAction(), MONITOR_DONE);
+System.out.println("ACTION ABORTED 3");
         reportDone(event.getAction());
+System.out.println("FINE ACTION ABORTED");
     }
 
     public synchronized void actionFinished(ServerEvent event)

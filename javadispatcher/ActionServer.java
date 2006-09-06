@@ -126,7 +126,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 {
                     public void actionPerformed(ActionEvent e)
                     {
-                        synchronized(ActionServer.this)
+                        //synchronized(ActionServer.this)
                         {
                             try {
                                 mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
@@ -141,7 +141,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                               ready = active = false;
                               startServerPoll();
                             }
-                            if(doing_actions.size() > 0)
+                           if(doing_actions.size() > 0)
                             {
                                 Enumeration doing_list = doing_actions.elements();
                                 while(doing_list.hasMoreElements())
@@ -151,7 +151,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             Action action;
                             if(mds_server == null)
                             {
-                                synchronized(enqueued_actions)
+                                //synchronized(enqueued_actions)
                                 {
                                     if(enqueued_actions.size() > 0)
                                     {
@@ -166,7 +166,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             else
                             {
                               ready = active = true;
-                                synchronized(enqueued_actions)
+                               //synchronized(enqueued_actions)
                                 {
                                     for(int i = 0; i < enqueued_actions.size(); i++)
                                     {
@@ -290,14 +290,15 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
-    protected /*synchronized*/ void processAborted(Action action)
+    protected /*synchronized */void processAborted(Action action)
     {
+    
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
             ServerListener listener = (ServerListener)listeners.nextElement();
             listener.actionAborted(new ServerEvent(this, action));
-            notify();
+            //notify();
         }
     }
 

@@ -209,31 +209,33 @@ class MdsServer extends MdsConnection
             return out.strdata;
     }
 
-    public synchronized void shutdown() throws IOException
+    public  void shutdown() 
     {
-        if(server_event_listener.size() != 0)
+    
+        if(server_event_listener != null && server_event_listener.size() != 0)
         {
             server_event_listener.removeAllElements();
         }
-        if(rcv_sock != null)
-            rcv_sock.close();
-        if(read_sock != null)
-            read_sock.close();
-        if(curr_listen_sock.size() != 0)
-        {
-            for(int i = 0; i < curr_listen_sock.size(); i++)
+	try {
+            if(rcv_sock != null)
+                rcv_sock.close();
+            if(read_sock != null)
+                read_sock.close();
+            if(curr_listen_sock.size() != 0)
+            {
+            	for(int i = 0; i < curr_listen_sock.size(); i++)
                 ((Socket)curr_listen_sock.elementAt(i)).close();
-            curr_listen_sock.removeAllElements();
-        }
+            	curr_listen_sock.removeAllElements();
+            }
+	}catch(Exception exc){}
 
-        DisconnectFromMds();
-   }
+
+        QuitFromMds();
+  }
 
    protected void finalize()
    {
-        try{
             shutdown();
-        } catch (IOException ex){}
    }
 
 
@@ -247,6 +249,8 @@ class MdsServer extends MdsConnection
         String cmd = new String("ServerQAction");
         //int flags = before_notify?SrvJobBEFORE_NOTIFY:0;
         int flags = before_notify?SrvJobBEFORE_NOTIFY:SrvJobAFTER_NOTIFY;
+
+//System.out.println("PARTE SEND MESSAGE");
 
         if(args == null)
             args = new Vector();
@@ -270,6 +274,7 @@ class MdsServer extends MdsConnection
             out = MdsValue(cmd, args);
         else
             out = MdsValueStraight(cmd, args);
+//System.out.println("FINISCE SEND MESSAGE");
 
         if(out.error != null)
             throw(new IOException(out.error));
@@ -405,7 +410,7 @@ class MdsServer extends MdsConnection
 
     protected void dispatchMdsServerEvent(MdsServerEvent e)
     {
-        synchronized(server_event_listener)
+        //synchronized(server_event_listener)
         {
             for(int i = 0; i < server_event_listener.size(); i++)
             {
