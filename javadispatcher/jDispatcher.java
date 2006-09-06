@@ -702,7 +702,7 @@ System.out.println("FINE ACTION ABORTED");
                         int currDispatchStatus = currAction.getDispatchStatus();
                         if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE)
                         {
-                            action.setStatus(Action.ABORTED,
+                            currAction.setStatus(Action.ABORTED,
                                              Action.ServerCANT_HAPPEN,
                                              verbose);
                             fireMonitorEvent(action, MONITOR_DONE);
