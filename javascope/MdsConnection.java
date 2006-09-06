@@ -87,7 +87,6 @@ public class MdsConnection
                         PMdsEvent.SetEventid(curr_message.body[12]);
                         PMdsEvent.start();
 	                } else {
-                        //System.out.println("Ricevuto messaggio");
 	                    pending_count--;
 
 	                    synchronized (this)
@@ -106,19 +105,33 @@ public class MdsConnection
 	        {
                    synchronized(this)
                     {
+		    
 		      killed = true;
-                      notify();
+                      notifyAll();
                     }
 	            if(connected)
 	            {
 	                message = null;
 	                connected = false;
-	                ConnectionEvent ce = new ConnectionEvent(MdsConnection.this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
-	                MdsConnection.this.dispatchConnectionEvent(ce);
-	                MdsConnection.this.NotifyMessage();
+	                //ConnectionEvent ce = new ConnectionEvent(MdsConnection.this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
+			(new Thread() {
+				public void run()
+				{
+				    ConnectionEvent ce = new ConnectionEvent(MdsConnection.this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
+				    dispatchConnectionEvent(ce);}
+				}).start();
+				
+
+	                //MdsConnection.this.dispatchConnectionEvent(ce);
+	                //MdsConnection.this.NotifyMessage();
 	            }
 	        }
 	    }
+
+
+
+
+
 
             public synchronized void waitExited()
             {
@@ -131,10 +144,11 @@ public class MdsConnection
 
 	    public synchronized MdsMessage GetMessage()
 	    {
-	       while(message == null)
+	       while(!killed && message == null)
 	        try {
 	                wait();
 	        }catch(InterruptedException exc){}
+	   if(killed) return null;
            MdsMessage msg = message;
            message = null;
 	       return msg;
@@ -223,6 +237,7 @@ public class MdsConnection
 	    int i;
 
             //wait();//!!!!!!!!!!
+	    
             MdsMessage message = receiveThread.GetMessage();
 
 	        if(message == null || message.length == 0)
@@ -314,9 +329,14 @@ public class MdsConnection
             }
             pending_count++;
             if(wait)
+	    {
                 out = getAnswer();
+		if(out == null)
+		    out = new Descriptor("Could not get IO for "+provider);
+	    }
             else
                 out = new Descriptor();
+		
         }
         catch(IOException e)
         {
@@ -358,7 +378,7 @@ public class MdsConnection
 	    return out;
     }
 
-    public synchronized int DisconnectFromMds()
+    public  int DisconnectFromMds()
     {
 	    try {
             if(connection_listener.size() > 0)
@@ -376,6 +396,23 @@ public class MdsConnection
 	        }
 
 	    return 1;
+    }
+
+    public  void QuitFromMds()
+    {
+	    try {
+            if(connection_listener.size() > 0)
+                connection_listener.removeAllElements();
+	        dos.close();
+            dis.close();
+
+            connected = false;
+	    }
+	    catch(IOException e)
+	        {
+	            error.concat("Could not get IO for "+provider + e);
+	        }
+
     }
 
     public synchronized int ConnectToMds(boolean use_compression)

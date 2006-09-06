@@ -296,8 +296,7 @@ public class ColorMapDialog
             }
             else
             {
-                InputStream pis = getClass().getClassLoader().
-                    getResourceAsStream("colors1.tbl");
+                InputStream pis = getClass().getClassLoader().getResourceAsStream("colors1.tbl");
                 dis = new DataInputStream(pis);
             }
 
@@ -319,6 +318,7 @@ public class ColorMapDialog
         }
         catch(Exception exc)
         {
+            System.out.println("Color map exception : " + exc);
             nameColorTables = new String[0];
             colorTables = new byte[0];
         }
