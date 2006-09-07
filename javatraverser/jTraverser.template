@@ -2,9 +2,25 @@
 #!
 #! display MDSplus javascope
 #
+if ( uname -p | grep 64 > /dev/null )
+then
+  java=`which java`
+  while ( file $java | grep -i symbolic > /dev/null )
+  do
+    java=`ls -l $java | cut -d ' ' -f 12`
+  done
+  if ( file $java | grep 64 > /dev/null )
+  then
+    lib=lib64
+  else
+    lib=lib32
+  fi
+else
+  lib=lib
+fi
 env \
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/lib \
-SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/lib \
-DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/lib \
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
+SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
+DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 CLASSPATH=$MDSPLUS_DIR/java/classes/jTraverser.jar:$MDSPLUS_DIR/java/classes/jScope.jar \
-java -Xss5M jTraverser $1 $2 $3 $4 $5 $6 $7
+$java -Xss5M jTraverser $1 $2 $3 $4 $5 $6 $7
