@@ -2,9 +2,9 @@
 #!
 #! display MDSplus javascope
 #
+java=`which java`
 if ( uname -p | grep 64 > /dev/null )
 then
-  java=`which java`
   while ( file $java | grep -i symbolic > /dev/null )
   do
     java=`ls -l $java | cut -d ' ' -f 12`
