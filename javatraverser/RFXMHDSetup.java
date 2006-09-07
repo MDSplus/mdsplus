@@ -267,14 +267,14 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Closer VS", "Closer VS+Rot.Pert."});
+        "Closer VS", "Closer VS+Rot.Pert.", "Mode Control with Shell Comp."});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
         jPanel31.setLayout(gridLayout7);
