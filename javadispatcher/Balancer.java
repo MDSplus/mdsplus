@@ -19,11 +19,11 @@ Ensures action dispatching to servers, keeping load balancing.
 
     public synchronized void addServer(Server server)
     {
-        Vector server_vect = (Vector)servers.get(server.getServerClass());
+        Vector server_vect = (Vector)servers.get(server.getServerClass().toUpperCase());
         if(server_vect == null)
         {
             server_vect = new Vector();
-            servers.put(server.getServerClass(), server_vect);
+            servers.put(server.getServerClass().toUpperCase(), server_vect);
         }
         server_vect.addElement(server);
         server.addServerListener(this);
@@ -46,31 +46,32 @@ Ensures action dispatching to servers, keeping load balancing.
 
 
         Vector server_vect = new Vector();
-        Vector all_server_vect = (Vector)servers.get(server_class);
+        Vector all_server_vect = (Vector)servers.get(server_class.toUpperCase());
          if(all_server_vect == null)
          {
              if(default_server != null)
              {
                  default_server.pushAction(action);
+                 return true;
              }
              else
                  return false;
          }
          else
           {
-            for (int i = 0; i < all_server_vect.size(); i++) {
-              Server curr_server = (Server) all_server_vect.elementAt(i);
-              if (curr_server.isReady())
-                server_vect.addElement(all_server_vect.elementAt(i));
-            }
-          }
-          if (server_vect.size() == 0) {
-            if (default_server != null)
-            {
-                default_server.pushAction(action);
-            }
-            else
-                return false;
+              for (int i = 0; i < all_server_vect.size(); i++) {
+                  Server curr_server = (Server) all_server_vect.elementAt(i);
+                  if (curr_server.isReady())
+                      server_vect.addElement(all_server_vect.elementAt(i));
+              }
+              if (server_vect.size() == 0) {
+                  if (default_server != null) {
+                      default_server.pushAction(action);
+                      return true;
+                  }
+                  else
+                      return false;
+              }
           }
      /////////////////////////////
 
@@ -110,7 +111,7 @@ Ensures action dispatching to servers, keeping load balancing.
         try{
             server = ((DispatchData)event.getAction().getAction().getDispatch()).getIdent().getString();
         }catch(Exception exc) {return; }
-        Vector server_vect = (Vector)servers.get(server);
+        Vector server_vect = (Vector)servers.get(server.toUpperCase());
         if(server_vect == null) //it is the default server
             return;
         if(!isBalanced(server_vect))

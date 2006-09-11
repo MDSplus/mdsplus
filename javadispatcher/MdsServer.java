@@ -97,8 +97,8 @@ class MdsServer extends MdsConnection
 
                             if(msg_len > 10000)
                             {
-                                System.err.println("VALORE ASSURDO msg_len: " + msg_len);
-                                System.err.println("per messaggio: " + head);
+                                System.err.println("WRONG MESSAGE LENGTH msg_len: " + msg_len);
+                                System.err.println("for message: " + head);
                                 msg_len = 0;
                             }
 	                    if(msg_len > 0)
@@ -209,9 +209,9 @@ class MdsServer extends MdsConnection
             return out.strdata;
     }
 
-    public  void shutdown() 
+    public  void shutdown()
     {
-    
+
         if(server_event_listener != null && server_event_listener.size() != 0)
         {
             server_event_listener.removeAllElements();

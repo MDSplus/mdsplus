@@ -568,13 +568,9 @@ class jDispatcher
 //        if(event.getTimestamp() != timestamp) //outdated message
 //            return;
 
-System.out.println("ACTION ABORTED 1");
         event.getAction().setStatus(Action.ABORTED, 0, verbose);
-System.out.println("ACTION ABORTED 2");
         fireMonitorEvent(event.getAction(), MONITOR_DONE);
-System.out.println("ACTION ABORTED 3");
         reportDone(event.getAction());
-System.out.println("FINE ACTION ABORTED");
     }
 
     public synchronized void actionFinished(ServerEvent event)
@@ -708,7 +704,10 @@ System.out.println("FINE ACTION ABORTED");
                             fireMonitorEvent(action, MONITOR_DONE);
                         }
                     }
-                    notify();
+                    synchronized(this)
+                    {
+                        notify();
+                    }
                 }
             }
         }

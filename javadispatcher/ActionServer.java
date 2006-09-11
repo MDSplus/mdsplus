@@ -139,13 +139,14 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             {
                               mds_server = null;
                               ready = active = false;
+                              //enqueued_actions.removeAllElements();
                               startServerPoll();
                             }
                            if(doing_actions.size() > 0)
                             {
                                 Enumeration doing_list = doing_actions.elements();
                                 while(doing_list.hasMoreElements())
-                                    processAborted((Action)doing_list.nextElement()); //in any case aborts action currently being executed
+                                    processAbortedNoSynch((Action)doing_list.nextElement()); //in any case aborts action currently being executed
                                 doing_actions.clear();
                             }
                             Action action;
@@ -155,9 +156,10 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                                 {
                                     if(enqueued_actions.size() > 0)
                                     {
-                                        while(enqueued_actions.size() > 0 && (action = (Action)enqueued_actions.elementAt(0)) != null)
+                                        while(enqueued_actions.size() > 0)
                                         {
-                                            processAborted(action);
+                                            if((action = (Action)enqueued_actions.elementAt(0)) != null)
+                                                processAbortedNoSynch(action);
                                             enqueued_actions.removeElementAt(0);
                                         }
                                     }
@@ -195,13 +197,18 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
     public void pushAction(Action action)
     {
+
         synchronized (enqueued_actions){
             enqueued_actions.addElement(action);
         }
         try {
   //           mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
             mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
-        }catch(Exception exc) {processAborted(action);}
+        }catch(Exception exc)
+        {
+            enqueued_actions.removeElement(action);
+            processAborted(action);
+        }
     }
 
 
@@ -290,16 +297,20 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
-    protected /*synchronized */void processAborted(Action action)
+    protected void processAbortedNoSynch(Action action)
     {
-    
+
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
             ServerListener listener = (ServerListener)listeners.nextElement();
             listener.actionAborted(new ServerEvent(this, action));
-            //notify();
         }
+    }
+    protected synchronized void processAborted(Action action)
+    {
+        processAbortedNoSynch(action);
+        notify();
     }
 
 
