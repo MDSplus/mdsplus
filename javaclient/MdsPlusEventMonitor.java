@@ -2,10 +2,12 @@
 /* Originally compiled from Reloader.java */
 package MdsPlus;
 
-import netscape.javascript.*;
+//import netscape.javascript.*;
 import MdsPlus.MdsPlusEvent;
 import MdsPlus.MdsPlusEvents;
 import java.lang.String;
+import java.lang.reflect.*;
+import java.awt.Component;
 import java.applet.Applet;
 import java.applet.AppletContext;
 import java.io.PrintStream;
@@ -18,7 +20,9 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
     private String m_eventName;
     private MdsPlusEvent m_event;
     private String m_jscript;
+    private String m_jscript_function;
     private boolean m_started;
+    public static final long serialVersionUID=1L;
 
     public MdsPlusEventMonitor()
     {
@@ -26,28 +30,50 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
 
     public void EventAction(Object object, byte ab[])
     {
-        if (m_started)
-        {
-            try
-            {
-                JSObject window=JSObject.getWindow(this);
-                try {
-		    window.eval("var MdsEventDataString='" + (new String(ab)).trim() + "';");
-		} catch (JSException e) {
+        if (m_started) {
+            if (m_jscript_function != null) {
+		String js;
+		js = "javascript: " + m_jscript_function + "('" + (new String(ab)).trim() + "',new Array(";
+		for (int i=0;i<11;i++) js +=  "" + ab[i]+",";
+                js += "" + ab[11] + "));";
+	    	try
+		    {
+			getAppletContext().showDocument(new URL(js));
+	    	    }
+	            catch (java.net.MalformedURLException e)
+	    	    {
+			System.out.println(e);
+	    	    }
+	    }
+	    else {
+		try {
+		    String js;
+		    js = "var MdsEventDataString='" + (new String(ab)).trim() + "'; " +
+			"var MdsEventData = new Array(12); ";
+		    for (int i=0;i<12;i++)
+			js += "MdsEventData[" + i + "]="+ab[i]+"; ";
+		    js += m_jscript;
+		    Object a[] = new Object[1];
+		    Object jswin = null;
+		    Method getw = null, eval = null;
+		    Class c = Class.forName("netscape.javascript.JSObject");
+		    Method ms[] = c.getMethods();
+		    for (int i = 0; i < ms.length; i++) {
+			if (ms[i].getName().compareTo("eval") == 0)
+			    eval = ms[i];
+			if (ms[i].getName().compareTo("getWindow") == 0)
+			    getw = ms[i];
+		    }
+		    a[0] = this;
+		    jswin = getw.invoke(c, a);
+		    a[0] = js;
+		    eval.invoke(jswin,a);
 		}
-                window.eval("var MdsEventData = new Array(12);");
-                for (int i=0;i<12;i++)
-		    window.eval("MdsEventData[" + i + "]="+ab[i]+";");
-                window.eval(m_jscript);
-            }
-            catch (JSException e)
-            {
-                if (e.getWrappedException()==null)
+		catch (Exception e) {
 		    System.out.println(e);
-		else
-		    System.out.println(e.getWrappedException());
-            }
-        }
+		}
+	    }
+	}
     }
 
     public void destroy()
@@ -70,6 +96,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
     public void init()
     {
         System.out.println("I am in init");
+        Component c;
         m_started = false;
         usePageParams();
         try
@@ -104,6 +131,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
         if (m_eventName == null)
             m_eventName = "LOGBOOK_EVENT";
         m_jscript = getParameter("jscript");
+        m_jscript_function = getParameter("jscript_function");
         try
         {
             m_eventPort = Integer.parseInt(getParameter("eventPort"));

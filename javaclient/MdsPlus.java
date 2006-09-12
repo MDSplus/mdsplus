@@ -19,12 +19,12 @@ public class MdsPlus extends Object implements Runnable
 {
 	private Socket s;
 	private byte message_id;
-	private Hashtable m_usersHash = null;
-	private Hashtable m_eventHash = null;
+	private Hashtable<Object, Object> m_usersHash = null;
+	private Hashtable<String, MdsPlusEvent> m_eventHash = null;
 	private Thread thread = null;
 	private byte m_eventNextId=0;
 
-	private static Hashtable m_connectionHash = new Hashtable();
+	private static Hashtable<String, MdsPlus> m_connectionHash = new Hashtable<String, MdsPlus>();
 	
 	private static final byte MAX_BYTE=127;
 	private static final MdsPlusDescriptor EVENT_REQUEST = new MdsPlusDescriptor("---EVENTAST---REQUEST---");
@@ -106,8 +106,8 @@ public class MdsPlus extends Object implements Runnable
 		if (s != null)
 			s.close();
 		s = null;
-		m_eventHash = new Hashtable();
-		m_usersHash = new Hashtable();
+		m_eventHash = new Hashtable<String, MdsPlusEvent>();
+		m_usersHash = new Hashtable<Object, Object>();
 		m_eventNextId = 0;
 		} catch(Exception e){};
 	}
@@ -115,7 +115,7 @@ public class MdsPlus extends Object implements Runnable
 	public void connect(String host, int port) throws UnknownHostException,IOException,MdsPlusException
 	{
 		s = new Socket(host,port);
-		m_usersHash = new Hashtable();
+		m_usersHash = new Hashtable<Object, Object>();
 		SendMsg((byte)0,(byte)0,new MdsPlusDescriptor(USER));
 		MdsPlusDescriptor ans = GetMsg();
 		if ((ans.status & 1) == 0)
@@ -376,7 +376,7 @@ public class MdsPlus extends Object implements Runnable
 		{
 			ev.m_mds = (Object)mds;
 			if (mds.m_eventHash == null)
-				mds.m_eventHash = new Hashtable(13,0.5f);
+				mds.m_eventHash = new Hashtable<String,MdsPlusEvent>(13,0.5f);
 			event_id = mds.m_eventNextId;
 			if (mds.m_eventNextId == MAX_BYTE)
 				mds.m_eventNextId = 0;
