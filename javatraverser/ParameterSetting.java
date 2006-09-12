@@ -1976,8 +1976,8 @@ public class ParameterSetting
                                 else
                                 {
                                     applyToModelItem.setEnabled(false);
-                                    if (isOnline)
-                                        applyToModelB.setEnabled(false);
+                                    /*if (isOnline)
+                                        applyToModelB.setEnabled(false);*/
                                     revertModelItem.setEnabled(false);
                                 }
                             }
@@ -3260,14 +3260,9 @@ public class ParameterSetting
     void applyTimes()
     {
         int nid = timesRoot.getInt();
-        DeviceSetup device = DeviceSetup.getDevice(nid);
-        if (device == null)
-        {
-            devices[0] = device = new RFXTimesSetup();
-            device.configure(rfx, nid);
-            if (ParameterSetting.this.readOnly)
-                device.setReadOnly(true);
-        }
+
+        DeviceSetup device = new RFXTimesSetup();
+        device.configure(rfx, nid);
         device.check();
     }
 

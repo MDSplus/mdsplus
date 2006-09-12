@@ -4,7 +4,6 @@ import org.xml.sax.helpers.*;
 import org.w3c.dom.*;
 import java.util.*;
 
-
 public class CompileTree extends Thread
 {
     Database tree;
@@ -128,7 +127,7 @@ public class CompileTree extends Thread
         for (int i = 0; i < unresolvedNidV.size(); i++) {
           Data data = null;
           try {
-	  
+
 	  //System.out.println((String) unresolvedExprV.elementAt(i));
 	    tree.setDefault((NidData) unresolvedNidV.elementAt(i), 0);
             data = Data.fromExpr( (String) unresolvedExprV.elementAt(i));
@@ -180,7 +179,7 @@ public class CompileTree extends Thread
                     Data data = null;
                   /*  try {
 		    System.out.println(dataStr);
-		    
+
                         data = Data.fromExpr(dataStr);
                     }catch(Exception exc)*/
                     {
