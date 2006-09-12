@@ -2772,8 +2772,12 @@ public class ParameterSetting
         {
             super(ParameterSetting.this, "Select MHD decoupling");
             JPanel jp = new JPanel();
-            decouplingC = new JComboBox(new String[]
-                                        {"Diagonal", "Complete"});
+            String []matrixNames = getMatrixFiles();
+            String[] allMatrixNames = new String[matrixNames.length + 1];
+            allMatrixNames[0] = "diagonal";
+            for(int i = 0; i < matrixNames.length; i++)
+                allMatrixNames[i+1] = matrixNames[i].substring(0, matrixNames[i].length() - 4);
+            decouplingC = new JComboBox(allMatrixNames);
             decouplingC.setSelectedIndex(0);
             jp.add(new JLabel("Decoupling: "));
             jp.add(decouplingC);
@@ -2784,7 +2788,7 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    setDecoupling(decouplingC.getSelectedIndex() == 0);
+                    setDecoupling((String)decouplingC.getSelectedItem());
                     setVisible(false);
                 }
             });
@@ -2810,16 +2814,28 @@ public class ParameterSetting
         decouplingD.setVisible(true);
     }
 
-    void setDecoupling(boolean isDiagonal)
+    void setDecoupling(String decouplingName)
     {
-        Convert conv = new Convert(
-            "\\mhd_ac::control.parameters:par236_val",
-            isDiagonal ? "diagonal" : "mutua.txt");
-        conv.convertMatrix();
-        conv = new Convert("\\mhd_bc::control.parameters:par236_val",
-                           isDiagonal ? "diagonal" : "mutua.txt");
-        conv.convertMatrix();
-    }
+        Convert conv;
+        if (decouplingName.equals("diagonal"))
+        {
+            conv = new Convert(
+                "\\mhd_ac::control.parameters:par236_val", "diagonal");
+            conv.convertMatrix();
+            conv = new Convert(
+                "\\mhd_bc::control.parameters:par236_val", "diagonal");
+            conv.convertMatrix();
+        }
+        else
+        {
+            conv = new Convert(
+                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat");
+            conv.convertMatrix();
+            conv = new Convert(
+                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat");
+            conv.convertMatrix();
+        }
+     }
 
     int getShot()
     {
@@ -3326,6 +3342,20 @@ public class ParameterSetting
             System.err.println("Error getting Magnetizing current: " + exc);
             return 0;
         }
+    }
+
+    String[] getMatrixFiles()
+    {
+        try
+        {
+            File currDir = new File(".");
+            return  currDir.list(new FilenameFilter() {
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".dat");
+                }
+            });
+        }catch(Exception exc){return new String[0];}
     }
 
 
