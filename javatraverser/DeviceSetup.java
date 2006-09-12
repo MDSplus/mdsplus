@@ -481,6 +481,12 @@ public class DeviceSetup
             Data.evaluate(varExpr.toString());
     }
 
+    public void check()
+    {
+        if(buttons != null)
+            buttons.check();
+    }
+
     public int check(String expressions[], String[] messages)
     {
         if (expressions == null || messages == null)return 0;

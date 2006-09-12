@@ -12,6 +12,7 @@ public class DeviceButtons extends JPanel
 
     public String [] getMethods() { return methods; }
 
+
     public DeviceButtons()
     {
         add(ok = new DeviceOk());
@@ -19,6 +20,12 @@ public class DeviceButtons extends JPanel
         add(new DeviceReset());
         add(new DeviceCancel());
     }
+
+    public void check()
+    {
+        apply.check();
+    }
+
     public void setCheckExpressions(String []checkExpressions)
     {
         apply.setCheckExpressions(checkExpressions);

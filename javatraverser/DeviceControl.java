@@ -45,6 +45,8 @@ public abstract class DeviceControl extends JButton
     public String [] getCheckMessages() {return checkMessages; }
     protected void check()
     {
+        if(deviceSetup == null)
+            discoverDevice();
         if(deviceSetup != null && checkExpressions != null && checkMessages != null)
             deviceSetup.check(checkExpressions, checkMessages);
     }
