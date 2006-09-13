@@ -82,6 +82,7 @@ public class ParameterSetting
     String rtIp;
     Socket rtSock;
     DataOutputStream rtDos;
+    int[] modifiedNidsForRt;
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
@@ -838,6 +839,8 @@ public class ParameterSetting
                 {
                     devices[13] = device = new RFXMOPSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(13);
                     device.addButton(printB);
                     device.pack();
@@ -870,6 +873,8 @@ public class ParameterSetting
                 {
                     devices[14] = device = new RFXANSALDOSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(14);
                     device.addButton(printB);
                     device.pack();
@@ -902,6 +907,8 @@ public class ParameterSetting
                 {
                     devices[15] = device = new RFXABUnitsSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(15);
                     device.addButton(printB);
                     device.pack();
@@ -938,6 +945,8 @@ public class ParameterSetting
                 {
                     devices[16] = device = new RFXPoloidalSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(16);
                     device.addButton(printB);
                     device.pack();
@@ -970,6 +979,8 @@ public class ParameterSetting
                 {
                     devices[17] = device = new RFXToroidalSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(17);
                     device.addButton(printB);
                     device.pack();
@@ -1002,6 +1013,8 @@ public class ParameterSetting
                 {
                     devices[18] = device = new RFXPRConfigSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(18);
                     device.addButton(printB);
                     device.pack();
@@ -1034,6 +1047,8 @@ public class ParameterSetting
                 {
                     devices[19] = device = new RFXVIConfigSetup();
                     device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
                     PrintButton printB = new PrintButton(19);
                     device.addButton(printB);
                     device.pack();
@@ -1769,15 +1784,7 @@ public class ParameterSetting
                 }
             }
         }
-        else
-        {
-            /*            if (isChanged && shot == -1)
-                        {
-                            setUncheckedRt(idx);
-                        }
-             */
-        }
-    }
+     }
 
     void setUncheckedRt(int idx)
     {
@@ -1884,13 +1891,13 @@ public class ParameterSetting
                                     }
                                 });
                             }
-                            else
+                            else //Going to receive the list of modified nids
                             {
-                                String message = dis.readUTF();
-                                JOptionPane.showMessageDialog(ParameterSetting.this,
-                                    message,
-                                    "Configuration error",
-                                    JOptionPane.WARNING_MESSAGE);
+                                int numModifiedNids = dis.readInt();
+                                modifiedNidsForRt = new int[numModifiedNids];
+                                for(int i = 0; i < numModifiedNids; i++)
+                                    modifiedNidsForRt[i] = dis.readInt();
+
                             }
                         }
                     }
@@ -2311,7 +2318,7 @@ public class ParameterSetting
                                       setupOnHash);
         if (timeSelect[7]) applySetup(0, ptct_mask, setupHash,
                                       setupOnHash);
-        if (timeSelect[8]) saveSetup(0, gas_mask, setupHash,
+        if (timeSelect[8]) applySetup(0, gas_mask, setupHash,
                                      setupOnHash);
         if (timeSelect[9]) applySetup(0, tf_mask, setupHash, setupOnHash);
         if (timeSelect[10]) applySetup(0, is_mask, setupHash,
@@ -2820,19 +2827,19 @@ public class ParameterSetting
         if (decouplingName.equals("diagonal"))
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", "diagonal");
+                "\\mhd_ac::control.parameters:par236_val", "diagonal", shot);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", "diagonal");
+                "\\mhd_bc::control.parameters:par236_val", "diagonal", shot);
             conv.convertMatrix();
         }
         else
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat");
+                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat", shot);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat");
+                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat", shot);
             conv.convertMatrix();
         }
      }
@@ -2979,31 +2986,6 @@ public class ParameterSetting
         applyToModel(applyHash, applyOnHash);
     }
 
-    /*    void applyToModel()
-        {
-
-            if (applyModelSelected == null)
-            {
-                applyModelSelected = new SelectSetup(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-     boolean[] selectedDevices = applyModelSelected.getSelectedDevices();
-     boolean[] selectedTimes = applyModelSelected.getSelectedTimes();
-                        Hashtable applyHash = new Hashtable();
-                        Hashtable applyOnHash = new Hashtable();
-     getSetupForModel(applyHash, applyOnHash, selectedDevices, selectedTimes);
-                        applyToModel(applyHash, applyOnHash);
-                        applyModelSelected.setVisible(false);
-                    }
-                });
-            }
-            applyModelSelected.setVisible(true);
-         }
-     */
-
-
-
 
     void applyToModel(Hashtable applyHash, Hashtable applyOnHash)
     {
@@ -3026,9 +3008,12 @@ public class ParameterSetting
         boolean[] changed = compareSetup(applyHash, applyOnHash, modelSetupHash,
                                          modelSetupOnHash,
                                          modifiedSetupHash, modifiedSetupOnHash);
-        for (int i = 0; i < 13; i++)
-            if (changed[i]) setUncheckedRt(i);
-
+        if(isOnline)
+        {
+            for (int i = 0; i < 13; i++)
+                if (changed[i]) setUncheckedRt(i);
+        }
+        notifyChangedRt(modifiedSetupHash, modifiedSetupOnHash);
         applySetup(modifiedSetupHash, modifiedSetupOnHash);
         applyTimes();
 
@@ -3356,6 +3341,54 @@ public class ParameterSetting
                 }
             });
         }catch(Exception exc){return new String[0];}
+    }
+
+    void notifyChangedRt(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
+    {
+        Vector nidsV = new Vector();
+        Enumeration changedPaths = modifiedSetupHash.keys();
+        String currName = "";
+        while(changedPaths.hasMoreElements())
+        {
+            try {
+                currName = (String)changedPaths.nextElement();
+                NidData currNidData =  rfx.resolve(new PathData(currName), 0);
+                nidsV.addElement(new Integer(currNidData.getInt()));
+            }catch(Exception exc)
+            {
+                System.err.println("Cannot resolve " + currName + ": " + exc);
+            }
+        }
+        changedPaths = modifiedSetupOnHash.keys();
+        while(changedPaths.hasMoreElements())
+        {
+            try {
+                currName = (String)changedPaths.nextElement();
+                NidData currNidData =  rfx.resolve(new PathData(currName), 0);
+                nidsV.addElement(new Integer(currNidData.getInt()));
+            }catch(Exception exc)
+            {
+                System.err.println("Cannot resolve " + currName + ": " + exc);
+            }
+        }
+        //Protocol: -1, followed by the number of chenged nids and the nids
+        if (rtDos != null && nidsV.size() > 0)
+        {
+            try
+            {
+                rtDos.writeInt(-1);
+                rtDos.writeInt(nidsV.size());
+                for(int i = 0; i < nidsV.size(); i++)
+                    rtDos.writeInt(((Integer)nidsV.elementAt(i)).intValue());
+                rtDos.flush();
+            }
+            catch (Exception exc)
+            {
+                rtDos = null;
+                handleNotRt();
+            }
+        }
+
     }
 
 

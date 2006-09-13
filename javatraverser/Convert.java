@@ -4,23 +4,31 @@ import java.util.*;
 class Convert
 {
     String path, fileName;
+    int shotNum = -1;
     public Convert(String path, String fileName)
     {
-    	this.path = path;
-	this.fileName = fileName;
+        this.path = path;
+        this.fileName = fileName;
     }
-    
-    
+
+    public Convert(String path, String fileName, int shotNum)
+    {
+        this.path = path;
+        this.fileName = fileName;
+        this.shotNum = shotNum;
+    }
+
+
     public static void main(String args[])
     {
     	Convert conv = new Convert(args[0], args[1]);
     	conv.convertMatrix();
     }
-    
+
     public void convertMatrix()
     {
 	System.out.println(path);
-    	Database rfx = new Database("rfx", -1);
+    	Database rfx = new Database("rfx", shotNum);
 	float [] data = new float[192*192];
 	if(fileName.equalsIgnoreCase("diagonal"))
 	{
@@ -47,7 +55,7 @@ class Convert
 		    for(int j = 0; j < 192; j++)
 		    	data[192*i+j] = Float.parseFloat(st.nextToken());
 	    	}
-	    }catch(Exception exc){System.err.println(exc);} 	
+	    }catch(Exception exc){System.err.println(exc);}
 	 }
 	 try {
 	    rfx.open();
@@ -55,7 +63,7 @@ class Convert
 	    FloatArray array = new FloatArray(data);
 	    rfx.putData(nid, array, 0);
 	    rfx.close(0);
-	 }catch(Exception exc){System.err.println(exc);} 
+	 }catch(Exception exc){System.err.println(exc);}
     }
- }   
-	
+ }
+
