@@ -2827,19 +2827,19 @@ public class ParameterSetting
         if (decouplingName.equals("diagonal"))
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", "diagonal", shot);
+                "\\mhd_ac::control.parameters:par236_val", "diagonal", -1);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", "diagonal", shot);
+                "\\mhd_bc::control.parameters:par236_val", "diagonal", -1);
             conv.convertMatrix();
         }
         else
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat", shot);
+                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat", -1);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat", shot);
+                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat", -1);
             conv.convertMatrix();
         }
      }
