@@ -8,7 +8,8 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <treeshr_hooks.h>
-#ifndef _WIN32
+#include <ncidef.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 
@@ -69,18 +70,14 @@ typedef struct nci
   unsigned char nci_fill;
 }         NCI;
 
-#define PACK
-#if defined(__hpux)
-#pragma HP_ALIGN NOPADDING PUSH
-#elif defined(_AIX)
-#pragma options align=packed
-#elif defined(__sgi) || defined(__sun) || defined(__osf__) 
-#pragma pack(1)
-#elif defined(_WINDOWS)
-#pragma pack(push,enter_include,1)
-#elif defined(__linux__) || defined(__APPLE__)
-#undef  PACK
-#define PACK __attribute__ ((packed))
+#if defined(__GNUC__) || defined(__APPLE)
+#define PACK_ATTR __attribute__ ((__packed__))
+#define PACK_START 
+#define PACK_STOP
+#else
+#define PACK_ATTR
+#define PACK_START #pragma pack(1)
+#define PACK_STOP   #pragma pack(4)
 #endif
 
 #if defined(WORDS_BIGENDIAN)
@@ -205,7 +202,7 @@ nid_to_tree_nidx(pino, nid, info, nidx)
 
 typedef char NODE_NAME[12];
 
-
+PACK_START
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -214,7 +211,6 @@ typedef char NODE_NAME[12];
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
-
 typedef struct node
 {
   NODE_NAME name;
@@ -226,11 +222,11 @@ typedef struct node
       int       child;
     };
     struct {
-      struct big_node_linkage *big_linkage PACK;
+      struct big_node_linkage *big_linkage PACK_ATTR;
     };
   } ;
   unsigned char usage;
-  unsigned short conglomerate_elt PACK;
+  unsigned short conglomerate_elt PACK_ATTR;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }         NODE;
@@ -242,7 +238,7 @@ typedef struct offset_node
   int       brother;
   int       child;
   unsigned char usage;
-  unsigned short conglomerate_elt PACK;
+  unsigned short conglomerate_elt PACK_ATTR;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }        OFFSET_NODE;
@@ -251,9 +247,9 @@ typedef struct linkag_enode
 {
   NODE_NAME name;
   int       parent;
-  struct big_node_linkage *big_linkage PACK;
+  struct big_node_linkage *big_linkage PACK_ATTR;
   unsigned char usage;
-  unsigned short conglomerate_elt PACK;
+  unsigned short conglomerate_elt PACK_ATTR;
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }         LINKAGE_NODE;
@@ -386,8 +382,8 @@ efficiently.
 ************************************/
 typedef struct
 {
-  unsigned char rfa[6] PACK;
-}         RFA PACK;
+  unsigned char rfa[6] PACK_ATTR;
+}         RFA PACK_ATTR;
 
 #ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
@@ -401,23 +397,12 @@ VFC portion of file.
 ***************************************/
 typedef struct record_header
 {
-  unsigned  short rlength PACK;
-  int       node_number PACK;
-  RFA       rfa PACK;
-}         RECORD_HEADER PACK;
+  unsigned  short rlength PACK_ATTR;
+  int       node_number PACK_ATTR;
+  RFA       rfa PACK_ATTR;
+}         RECORD_HEADER PACK_ATTR;
 
-
-#if defined(__hpux)
-#pragma HP_ALIGN POP
-#elif defined(_AIX)
-#pragma options align=power
-#elif defined(__sgi) || defined(__osf__)
-#pragma pack(0)
-#elif defined(__sun)
-#pragma pack(4)
-#elif defined(_WINDOWS)
-#pragma pack(pop,enter_include)
-#endif
+PACK_STOP
 
 
 

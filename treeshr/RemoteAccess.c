@@ -1212,6 +1212,7 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
 STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
+  int ret_i;
   int info[] = {0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
@@ -1226,8 +1227,9 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
     int dims[7];
     void *dptr;
     void *msg = 0;
-    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret, &dptr, &msg) & 1)
+    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg) & 1)
     {
+      ret = (ssize_t)ret_i;
       if (ret)
         memcpy(buff,dptr, ret);
     }
