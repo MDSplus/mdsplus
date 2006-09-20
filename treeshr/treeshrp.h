@@ -4,7 +4,7 @@
 /************ Data structures internal to TREESHR ***********/
 
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <treeshr_hooks.h>
