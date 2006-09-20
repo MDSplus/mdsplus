@@ -72,6 +72,7 @@ clean:
 	@ $(RM) cts_commands.c
 	@ $(RM) @MAKEBINDIR@mdscts
 	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)

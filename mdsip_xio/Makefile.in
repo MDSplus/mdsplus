@@ -151,7 +151,7 @@ install:
 	$(LD) -o $@ @LINKSHARED@ $(CLIENT_OBJECTS) $(LDFLAGS)
 
 @MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
-	$(CC) -o $@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr
+	$(CC) -o $@ @CC_LDFLAGS@ $(SERVER_OBJECTS) $(LDFLAGS) -L$(top_srcdir)/lib -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr
 
 makefile-header:  
 	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header
@@ -160,7 +160,7 @@ makefile-header:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
-	$(CC) -o $@ $(CFLAGS) t.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ t.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
 @MAKEBINDIR@mdsipd : mdsipd
 	cp mdsipd @MAKEBINDIR@mdsipd

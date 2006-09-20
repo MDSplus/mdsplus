@@ -119,7 +119,7 @@ install:
 @MAKELIBDIR@xmdsuil.wmd : $(WMD_RULE)
 
 @MAKEBINDIR@wmdcreate : wmldbcreate-xmdsshr.c UilConst.h
-	$(CC) -o $@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS)
+	$(CC) -o $@ @CC_LDFLAGS@ -DMDS_EXTENSION $(CFLAGS) wmldbcreate-xmdsshr.c $(MOTIF_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS)
 
 UilConst.h : xmdsuil.wml 
 	$(WML) 

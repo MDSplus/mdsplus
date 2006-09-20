@@ -48,7 +48,7 @@ install:
 	@RANLIB@ $@
 
 @MAKEBINDIR@tdic : tdic.c
-	$(CC) -o $@ tdic.c $(CFLAGS) $(TDIC_LIBS)
+	$(CC) -o $@ @CC_LDFLAGS@ tdic.c $(CFLAGS) $(TDIC_LIBS)
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@

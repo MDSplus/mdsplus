@@ -43,7 +43,7 @@ install:
 
 
 @MAKEBINDIR@gen_device : $(EXE_OBJECTS)
-	$(CC) -o $@ $(EXE_OBJECTS) $(EXE_LIBS)
+	$(CC) -o $@ @CC_LDFLAGS@ $(EXE_OBJECTS) $(EXE_LIBS)
 
 gen_device.tab.c : gen_device.y
 	yacc -d -p gen_device -b gen_device gen_device.y

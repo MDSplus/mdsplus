@@ -29,7 +29,7 @@ clean :
 	@ $(RM) @MAKEBINDIR@tditest
 
 @MAKEBINDIR@tditest : $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(CFLAGS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
+	$(CC) -o $@ $(OBJECTS) $(CFLAGS) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@

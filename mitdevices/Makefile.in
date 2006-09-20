@@ -224,6 +224,7 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@
 	@ $(RM)	@MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 	@ $(RM) @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@reboot_dtaq_satelite
 
 install:
 	for uid in $(UIDS) ; do\

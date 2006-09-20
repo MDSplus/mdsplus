@@ -33,4 +33,4 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@wfevent : $(OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(OBJECTS)  -L@MAKESHLIBDIR@ -lMdsShr $(LIBS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(OBJECTS)  -L@MAKESHLIBDIR@ -lMdsShr $(LIBS)

@@ -52,7 +52,7 @@ install:
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@dwscope : dwscope.o dwscopesubs.o evaluate_local.o
-	$(CC) -o $@ $(CFLAGS) dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS)
                         
 @MAKEBINDIR@ScopePrinters : ScopePrinters
 	cp ScopePrinters $@
@@ -64,14 +64,14 @@ install:
 	cp dwscope_setup.ps $@
 
 @MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o
-	$(CC) -o $@ $(CFLAGS) dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
               -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -L@MAKESHLIBDIR@ -lMdsIpShr $(MLIBS) @LIBM@ -L@MAKESHLIBDIR@ @MEMCHKLIB@
 
 @MAKEUIDDIR@dwscope.uid : dwscope.uil
 	$(UIL) -o $@ dwscope.uil
 
 @MAKEBINDIR@dwpad : dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o
-	$(CC) -o $@ $(CFLAGS) dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS) -L@MAKESHLIBDIR@ @MEMCHKLIB@
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ dwpad.o dwscopesubs.o XmdsWidgetCallbacks.o $(MLIBS) -L@MAKESHLIBDIR@ @MEMCHKLIB@
 
 XmdsWidgetCallbacks.o: ../xmdsshr/XmdsWidgetCallbacks.c
 	$(CC) -c $(CFLAGS) -D_NO_XDS -o $@ ../xmdsshr/XmdsWidgetCallbacks.c
