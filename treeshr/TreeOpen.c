@@ -745,7 +745,7 @@ static char *GetFname(char *tree, int shot)
     status = LibFindImageSymbol(&image,&routine,&TdiExecute);
   }
   if (status & 1)
-    status = LibCallg(arglist,TdiExecute);
+    status = (int)LibCallg(arglist,TdiExecute);
   if (status & 1)
   {
     ans = strncpy(malloc(fname.length+2),fname.pointer,fname.length);

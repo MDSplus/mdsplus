@@ -501,7 +501,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
     arglist[2] = &statdsc;
     arglist[3] = MdsEND_ARG;
     DBID = dbid;
-    status = LibCallg(arglist,addr);
+    status = (int)LibCallg(arglist,addr);
     DBID = old_dbid;
     if (status & 1)
     {
