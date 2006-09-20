@@ -383,7 +383,7 @@ efficiently.
 typedef struct
 {
   unsigned char rfa[6] PACK_ATTR;
-}         RFA PACK_ATTR;
+}         RFA; 
 
 #ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
@@ -400,7 +400,7 @@ typedef struct record_header
   unsigned  short rlength PACK_ATTR;
   int       node_number PACK_ATTR;
   RFA       rfa PACK_ATTR;
-}         RECORD_HEADER PACK_ATTR;
+}         RECORD_HEADER;
 
 PACK_STOP
 
