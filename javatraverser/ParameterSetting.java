@@ -189,7 +189,7 @@ public class ParameterSetting
         {
             setTitle("RFX Parameters");
             this.rtIp = rtIp;
-            handleNotRt();
+            if(isOnline) handleNotRt();
         }
         handleScheduler();
         JMenuBar menuBar = new JMenuBar();
