@@ -430,11 +430,19 @@ public class DeviceField
   {
       if(highlighted)
       {
-          if (label != null) label.setForeground(Color.red);
+          if (label != null)
+          {
+              label.setEnabled(true);
+              label.setForeground(Color.red);
+          }
       }
       else
       {
-         if (label != null) label.setForeground(Color.black);
+         if (label != null)
+        {
+            label.setForeground(Color.black);
+            label.setEnabled(getState());
+        }
      }
      super.setHighlight(highlighted);
   }
