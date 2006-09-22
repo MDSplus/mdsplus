@@ -739,6 +739,18 @@ public class DeviceWave extends DeviceComponent
         }catch(Exception exc){}
         displayData(null, true);
     }
+    public void setHighlight(boolean highlighted)
+    {
+        if(highlighted)
+        {
+            waveEditor.SetColors(new Color[]{Color.red}, new String[]{"Red"});
+        }
+        else
+        {
+            waveEditor.SetColors(new Color[]{Color.black}, new String[]{"Black"});
+       }
+       super.setHighlight(highlighted);
+    }
 
 
     public static void main(String args[])

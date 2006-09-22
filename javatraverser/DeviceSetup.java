@@ -1,11 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
-import java.awt.print.*;
 import java.awt.event.*;
-import javax.print.*;
-import javax.print.attribute.*;
-import java.awt.geom.*;
 
 public class DeviceSetup
     extends JDialog
@@ -637,10 +633,6 @@ public class DeviceSetup
         deviceUpdateListenerV.addElement(listener);
     }
 
-    public static void main(String args[])
-    {
-        DeviceSetup.activateDeviceSetup("T2Control", "T2", -1, "\\T2", 100, 100);
-    }
 
     void addButton(JButton button)
     {
@@ -648,11 +640,32 @@ public class DeviceSetup
             buttons.add(button);
     }
 
+    void setHighlight(boolean isHighlighted, int [] nids)
+    {
+        DeviceComponent currDevComponent;
+        for(int i = 0; i < device_components.size(); i++)
+        {
+            currDevComponent = (DeviceComponent)device_components.elementAt(i);
+            int nid = currDevComponent.getBaseNid() + currDevComponent.getOffsetNid();
+            int j;
+            for(j = 0; j < nids.length; j++)
+                if(nids[j] == nid) break;
+            if(j < nids.length)
+                currDevComponent.setHighlight(isHighlighted);
+        }
+
+    }
+
+
 
     static void closeOpenDevices()
     {
         for(int i = 0; i < openDevicesV.size(); i++)
             ((DeviceSetup)openDevicesV.elementAt(i)).cancel();
+    }
+    public static void main(String args[])
+    {
+        DeviceSetup.activateDeviceSetup("T2Control", "T2", -1, "\\T2", 100, 100);
     }
 }
 

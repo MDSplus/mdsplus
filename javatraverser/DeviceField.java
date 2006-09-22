@@ -425,4 +425,18 @@ public class DeviceField
       if(textF != null)
           textF.setFont(prevTextFont);
   }
+
+  public void setHighlight(boolean highlighted)
+  {
+      if(highlighted)
+      {
+          if (label != null) label.setForeground(Color.red);
+      }
+      else
+      {
+         if (label != null) label.setForeground(Color.black);
+     }
+     super.setHighlight(highlighted);
+  }
+
 }

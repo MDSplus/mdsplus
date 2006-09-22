@@ -34,6 +34,7 @@ public class ParameterSetting
     extends JFrame implements Printable
 {
     static final int NUM_DEVICES = 20;
+    static final int NUM_SETUP = 13;
     boolean isRt = false;
     boolean readOnly = false;
     JButton timesB, poloidalControlB, axiSetupB, pcSetupB, pmSetupB,
@@ -68,7 +69,7 @@ public class ParameterSetting
         CHECKED, CHECKED,
         CHECKED, CHECKED, CHECKED, CHECKED, CHECKED, CHECKED, CHECKED, CHECKED,
         CHECKED, CHECKED};
-    int currPrintDeviceIdx;
+    int currPrintDeviceIdx, currPrintLoadPulse;
     JTabbedPane tabbedP;
 
     NidData nids[] = new NidData[NUM_DEVICES];
@@ -82,7 +83,8 @@ public class ParameterSetting
     String rtIp;
     Socket rtSock;
     DataOutputStream rtDos;
-    int[] modifiedNidsForRt;
+    int[] modifiedNids;
+    int currLoadShot;
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
@@ -106,6 +108,7 @@ public class ParameterSetting
 
     WarningDialog checkedWd, configWd, limitsWd;
 
+    boolean doingShot = false;
     boolean isOnline;
     JComboBox modeC;
     int shot = 100;
@@ -260,7 +263,7 @@ public class ParameterSetting
             revertModelItem.setEnabled(false);
             fileMenu.add(revertModelItem);
 
-            compareItem = new JMenuItem("Compare Shots ...");
+            compareItem = new JMenuItem("Compare to Shot ...");
             compareItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -370,7 +373,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[0] == UNCHECKED)
+                {
                     states[0] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp.add(timesB);
@@ -426,7 +433,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[1] == UNCHECKED)
+                {
                     states[1] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(poloidalControlB);
@@ -459,7 +470,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[2] == UNCHECKED)
+                {
                     states[2] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(axiSetupB);
@@ -492,7 +507,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[3] == UNCHECKED)
+                {
                     states[3] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(pcSetupB);
@@ -526,7 +545,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[4] == UNCHECKED)
+                {
                     states[4] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp.add(jp1);
@@ -563,7 +586,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[5] == UNCHECKED)
+                {
                     states[5] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(toroidalControlB);
@@ -596,7 +623,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[6] == UNCHECKED)
+                {
                     states[6] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(chopperSetupB);
@@ -629,7 +660,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[7] == UNCHECKED)
+                {
                     states[7] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(ffSetupB);
@@ -662,7 +697,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[8] == UNCHECKED)
+                {
                     states[8] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(inverterSetupB);
@@ -695,7 +734,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[9] == UNCHECKED)
+                {
                     states[9] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(tfSetupB);
@@ -727,8 +770,12 @@ public class ParameterSetting
                 }
                 else
                     device.setVisible(true);
-                if (states[10] == UNCHECKED)
+                 if (states[10] == UNCHECKED)
+                {
                     states[10] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(bfControlB);
@@ -769,7 +816,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[11] == UNCHECKED)
+                {
                     states[11] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(mhdControlB);
@@ -807,7 +858,11 @@ public class ParameterSetting
                 else
                     device.setVisible(true);
                 if (states[12] == UNCHECKED)
+                {
                     states[12] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
             }
         });
         jp1.add(viSetupB);
@@ -1350,9 +1405,27 @@ public class ParameterSetting
         try
         {
             if (isRt)
+            {
                 rfx = new Database("RFX", -1);
+                rfx.open();
+            }
             else
-                rfx = new Database("RFX", ( (isOnline) ? 100 : 101));
+            {
+                if(isOnline)
+                {
+                    rfx = new Database("RFX", -1);
+                    rfx.open();
+                    rfx.create(100);
+                    rfx.close(0);
+                    rfx = new Database("RFX", 100);
+                    rfx.open();
+                }
+                else
+                {
+                    rfx = new Database("RFX", 101);
+                    rfx.open();
+                }
+            }
             rfx.open();
         }
         catch (Exception exc)
@@ -1656,6 +1729,16 @@ public class ParameterSetting
                     applySetup(currSetupHash, currSetupOnHash, selectedDevices,
                                selectedTimes);
                     loadSelected.setVisible(false);
+
+                    if (JOptionPane.showConfirmDialog(ParameterSetting.this,
+                        "Stampare la scheda di caricamento impulso?",
+                        "Caricamento impulso", JOptionPane.YES_NO_OPTION) ==
+                        JOptionPane.YES_OPTION)
+                    {
+                        try {
+                            printLoadPulse(currLoadShot);
+                        }catch(Exception exc){System.err.println("Error printing form: " + exc);}
+                    }
                 }
             });
         }
@@ -1775,13 +1858,16 @@ public class ParameterSetting
     {
         if (isRt)
         {
-            if (idx < 13) //Setup devices
+            if (idx < NUM_SETUP) //Setup devices
             {
                 if (states[idx] == CHECKING)
                 {
                     states[idx] = CHECKED;
                     buttons[idx].setForeground(Color.black);
                 }
+
+                if(modifiedNids != null && modifiedNids.length > 0)
+                    devices[idx].setHighlight(false, modifiedNids);
             }
         }
      }
@@ -1798,26 +1884,12 @@ public class ParameterSetting
             {
                 rtDos = null;
                 handleNotRt();
+                //Trye to resend message
+                try {
+                    rtDos.writeInt(idx);
+                }catch(Exception exc1){}
             }
         }
-    }
-
-    void signalConfigWarning(String message)
-    {
-        if (rtDos != null)
-        {
-            try
-            {
-                rtDos.writeInt( -1);
-                rtDos.writeUTF(message);
-            }
-            catch (Exception exc)
-            {
-                rtDos = null;
-                handleNotRt();
-            }
-        }
-
     }
 
     void handleNotRt()
@@ -1894,9 +1966,9 @@ public class ParameterSetting
                             else //Going to receive the list of modified nids
                             {
                                 int numModifiedNids = dis.readInt();
-                                modifiedNidsForRt = new int[numModifiedNids];
+                                modifiedNids = new int[numModifiedNids];
                                 for(int i = 0; i < numModifiedNids; i++)
-                                    modifiedNidsForRt[i] = dis.readInt();
+                                    modifiedNids[i] = dis.readInt();
 
                             }
                         }
@@ -1914,7 +1986,7 @@ public class ParameterSetting
         }
     } // End class RtHandler
 
-    static final int LEAVE_PAS = 1, ENTER_INIT = 2, ENTER_PAS = 3;
+    static final int ENTER_PAS = 1, LEAVE_PAS = 2, ENTER_PRE = 3, LEAVE_SECONDARY = 4;
     void handleScheduler()
     {
         (new SchedulerHandler()).start();
@@ -1947,64 +2019,77 @@ public class ParameterSetting
                         {
                             //The index of the changed forms are passed
                             int phaseIdx = dis.readInt();
-                            if (phaseIdx == LEAVE_PAS)
+                            switch (phaseIdx)
                             {
-                                if (isRt)
+                                case LEAVE_PAS:
                                 {
-                                    if (!allChecked())
+                                    if (isRt)
                                     {
-                                        checkedWd = new WarningDialog(
-                                            ParameterSetting.this,
-                                            "Una o piu' form di impostazione non sono state verificate");
-                                        checkedWd.addActionListener(new
-                                            ActionListener()
+                                        if (!allChecked())
                                         {
-                                            public void actionPerformed(
-                                                ActionEvent
-                                                e)
+                                            checkedWd = new WarningDialog(
+                                                ParameterSetting.this,
+                                                "Una o piu' form di impostazione non sono state verificate");
+                                            checkedWd.addActionListener(new
+                                                ActionListener()
                                             {
-                                                if (allChecked())
+                                                public void actionPerformed(
+                                                    ActionEvent
+                                                    e)
                                                 {
-                                                    checkedWd.dispose();
-                                                    //proceedeConfig();
-                                                    proceedeLimits();
+                                                    if (allChecked())
+                                                    {
+                                                        checkedWd.dispose();
+                                                        //proceedeConfig();
+                                                        proceedeLimits();
+                                                    }
                                                 }
-                                            }
-                                        });
-                                        checkedWd.pack();
-                                        checkedWd.setVisible(true);
+                                            });
+                                            checkedWd.pack();
+                                            checkedWd.setVisible(true);
+                                        }
+                                        else
+                                        {
+                                            //proceedeConfig();
+                                            proceedeLimits();
+                                        }
                                     }
                                     else
                                     {
-                                        //proceedeConfig();
-                                        proceedeLimits();
+                                        applyToModelItem.setEnabled(false);
+                                        if (isOnline)
+                                            applyToModelB.setEnabled(false);
+                                        revertModelItem.setEnabled(false);
                                     }
+                                    break;
                                 }
-                                else
-                                {
-                                    applyToModelItem.setEnabled(false);
-                                    /*if (isOnline)
-                                        applyToModelB.setEnabled(false);*/
-                                    revertModelItem.setEnabled(false);
-                                }
-                            }
-                            if (phaseIdx == ENTER_INIT && phaseIdx == ENTER_PAS)
-                            {
-                                if (!isRt)
-                                {
-                                    setReadOnly(false);
-                                    setTitle("RFX Parameters     shot: " +
-                                             getShot());
-                                    applyToModelItem.setEnabled(true);
-                                    if (isOnline)
-                                        applyToModelB.setEnabled(true);
-                                    revertModelItem.setEnabled(true);
-                                }
-                                else
-                                {
-                                    setTitle("RFX Parameters -- RT --  shot: " +
-                                             getShot());
-                                }
+                                case ENTER_PRE:
+                                    doingShot = true;
+                                case ENTER_PAS:
+                                    if (!isRt)
+                                    {
+                                        applyToModelItem.setEnabled(true);
+                                        if (isOnline)
+                                            applyToModelB.setEnabled(true);
+                                        revertModelItem.setEnabled(true);
+                                        setTitle("RFX Parameters     shot: " +
+                                                 getShot());
+                                    }
+                                    else
+                                        setTitle(
+                                            "RFX Parameters -- RT --  shot: " +
+                                            getShot());
+
+                                    break;
+                                case LEAVE_SECONDARY:
+                                    doingShot = false;
+                                    if (!isRt)
+                                        setTitle("RFX Parameters     shot: " +
+                                                 getShot());
+                                    else
+                                        setTitle(
+                                            "RFX Parameters -- RT --  shot: " +
+                                            getShot());
                             }
                         }
                     }
@@ -2115,13 +2200,26 @@ public class ParameterSetting
             Font titleFont = new Font("Serif", Font.BOLD, 30);
             g2.setFont(titleFont);
             FontMetrics titleFontMetrics = g2.getFontMetrics();
-            int titleWidth = titleFontMetrics.stringWidth(titles[
-                currPrintDeviceIdx]);
-            int titleHeight = titleFontMetrics.getHeight();
 
-            g2.drawString(titles[currPrintDeviceIdx],
-                          (int) width / 2 - titleWidth / 2, titleHeight);
+            int titleWidth, titleHeight;
+            if(currPrintDeviceIdx > 0)
+            {
+                titleWidth = titleFontMetrics.stringWidth(titles[
+                                                              currPrintDeviceIdx]);
+                titleHeight = titleFontMetrics.getHeight();
 
+                g2.drawString(titles[currPrintDeviceIdx],
+                              (int) width / 2 - titleWidth / 2, titleHeight);
+            }
+            else //Scheda ripetizione impulso
+            {
+                titleWidth = titleFontMetrics.stringWidth("Ripetizione Impulso");
+                titleHeight = titleFontMetrics.getHeight();
+
+                g2.drawString("Ripetizione Impulso",
+                              (int) width / 2 - titleWidth / 2, titleHeight);
+
+            }
             Font infoFont = new Font("Serif", Font.BOLD, 20);
             g2.setFont(infoFont);
             FontMetrics infoFontMetrics = g2.getFontMetrics();
@@ -2131,7 +2229,8 @@ public class ParameterSetting
                           new SimpleDateFormat("dd/MM/yyy").format(new Date()) +
                           "          Impulso: " + getShot(),
                           0, 2 * titleHeight + 10);
-            if (currPrintDeviceIdx < 13)
+
+/*            if (currPrintDeviceIdx < 13)
             {
                 g2.drawString("RT: ",
                               0, 2 * titleHeight + 20 + infoHeight);
@@ -2139,14 +2238,26 @@ public class ParameterSetting
                 g2.drawLine(rtWidth, 2 * titleHeight + 20 + infoHeight,
                             rtWidth + 150, 2 * titleHeight + 20 + infoHeight);
             }
-            g2.setFont(prevFont);
+*/
 
-            g2.translate(0, 2 * titleHeight + 30 + infoHeight);
+            if(currPrintDeviceIdx >= 0)
+            {
 
-            g2.scale( ( (double) width) / devices[currPrintDeviceIdx].getWidth(),
-                     ( (double) (height - (2 * titleHeight + 30 + infoHeight)) /
-                      devices[currPrintDeviceIdx].getHeight()));
-            devices[currPrintDeviceIdx].printAll(g2);
+                g2.setFont(prevFont);
+
+                g2.translate(0, 2 * titleHeight + 30 + infoHeight);
+
+                g2.scale( ( (double) width) / devices[currPrintDeviceIdx].getWidth(),
+                         ( (double) (height - (2 * titleHeight + 30 + infoHeight)) /
+                          devices[currPrintDeviceIdx].getHeight()));
+                devices[currPrintDeviceIdx].printAll(g2);
+            }
+            else //Scheda ripetizione impulso
+            {
+                g2.drawString("Configurazione caricata dall'impulso " + currPrintLoadPulse,
+                              0, 3 * titleHeight + 10);
+
+            }
             return Printable.PAGE_EXISTS;
         }
         else
@@ -2156,6 +2267,16 @@ public class ParameterSetting
     void print(int idx) throws PrinterException, PrintException
     {
         currPrintDeviceIdx = idx;
+        DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
+        Doc doc = new SimpleDoc(this, flavor, null);
+        DocPrintJob prnJob = printService.createPrintJob();
+        prnJob.print(doc, null);
+    }
+
+    void printLoadPulse(int shot) throws PrinterException, PrintException
+    {
+        currPrintDeviceIdx = -1;
+        currPrintLoadPulse = shot;
         DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
         Doc doc = new SimpleDoc(this, flavor, null);
         DocPrintJob prnJob = printService.createPrintJob();
@@ -2377,8 +2498,11 @@ public class ParameterSetting
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        mapSetupHash.put(fullPath, new Integer(idx));
-                        configHash.put(fullPath, currDec);
+                        if(!fullPath.endsWith(":PAR236_VAL")) //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                        {
+                            mapSetupHash.put(fullPath, new Integer(idx));
+                            configHash.put(fullPath, currDec);
+                        }
                     }
                     catch (Exception exc)
                     {}
@@ -2400,8 +2524,11 @@ public class ParameterSetting
                         currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        mapSetupHash.put(fullPath, new Integer(idx));
-                        configHash.put(fullPath, currDec);
+                        if(!fullPath.endsWith(":PAR236_VAL")) //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                        {
+                            mapSetupHash.put(fullPath, new Integer(idx));
+                            configHash.put(fullPath, currDec);
+                        }
                     }
                     catch (Exception exc)
                     {}
@@ -2720,7 +2847,7 @@ public class ParameterSetting
         if (shotStr == null || shotStr.trim().equals(""))return;
         try
         {
-            currShot = Integer.parseInt(shotStr);
+            currLoadShot = currShot = Integer.parseInt(shotStr);
             LoadPulse loadP = new LoadPulse();
             currSetupHash = new Hashtable();
             currSetupOnHash = new Hashtable();
@@ -2761,6 +2888,7 @@ public class ParameterSetting
                                               JOptionPane.WARNING_MESSAGE);
 
         }
+
         catch (Exception exc)
         {
             JOptionPane.showMessageDialog(ParameterSetting.this,
@@ -2769,11 +2897,11 @@ public class ParameterSetting
                                           "Error loading pulse",
                                           JOptionPane.WARNING_MESSAGE);
         }
-    }
+        }
 
-    class DecouplingDialog
-        extends JDialog
-    {
+            class DecouplingDialog
+            extends JDialog
+        {
         JComboBox decouplingC;
         DecouplingDialog()
         {
@@ -2849,7 +2977,10 @@ public class ParameterSetting
         try
         {
             int currShot = rfx.getCurrentShot("rfx");
-            return currShot + 1;
+            if(doingShot)
+                return currShot;
+            else
+                return currShot + 1;
         }
         catch (Exception exc)
         {
@@ -2884,6 +3015,7 @@ public class ParameterSetting
             label.setText(text);
         }
     } //End class WarningDialog
+
 
     boolean[] compareSetup(Hashtable currSetupHash, Hashtable currSetupOnHash,
                            Hashtable modelSetupHash, Hashtable modelSetupOnHash,
@@ -2943,6 +3075,19 @@ public class ParameterSetting
         }
         return changed;
     }
+
+
+    void reportDiffToModifiedNids(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
+    {
+        Vector nidsV = getModifiedNidsV(modifiedSetupHash,
+                                        modifiedSetupOnHash);
+        modifiedNids = new int[nidsV.size()];
+        for (int i = 0; i < modifiedNids.length; i++)
+            modifiedNids[i] = ( (Integer) nidsV.elementAt(i)).
+                intValue();
+    }
+
+
 
     void revertModel()
     {
@@ -3010,7 +3155,7 @@ public class ParameterSetting
                                          modifiedSetupHash, modifiedSetupOnHash);
         if(isOnline)
         {
-            for (int i = 0; i < 13; i++)
+            for (int i = 0; i < NUM_SETUP; i++)
                 if (changed[i]) setUncheckedRt(i);
         }
         notifyChangedRt(modifiedSetupHash, modifiedSetupOnHash);
@@ -3032,13 +3177,12 @@ public class ParameterSetting
 
     void compareShots()
     {
-        String shotsStr = JOptionPane.showInputDialog(this, "Shots", "");
+        String shotsStr = JOptionPane.showInputDialog(this, "Shot", "");
         try
         {
             StringTokenizer st = new StringTokenizer(shotsStr, " ,");
             int shot1 = Integer.parseInt(st.nextToken());
-            int shot2 = Integer.parseInt(st.nextToken());
-            compareShots(shot1, shot2);
+            compareShots(shot1);
         }
         catch (Exception exc)
         {
@@ -3047,13 +3191,16 @@ public class ParameterSetting
         }
     }
 
-    void compareShots(int shot1, int shot2)
+    void compareShots(int shot1)
     {
         Cursor prevCursor = getCursor();
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Hashtable setup1Hash = new Hashtable(), setup1OnHash = new Hashtable(),
             setup2Hash = new Hashtable(), setup2OnHash = new Hashtable(),
             diffSetupHash = new Hashtable(), diffSetupOnHash = new Hashtable();
+
+        updateDeviceNids();
+        saveSetupAndConfig(setup1Hash, setup1OnHash);
         try
         {
             rfx.close(0);
@@ -3064,23 +3211,6 @@ public class ParameterSetting
         {
             setCursor(prevCursor);
             JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot1,
-                                          "Error opening tree",
-                                          JOptionPane.WARNING_MESSAGE);
-
-            return;
-        }
-        updateDeviceNids();
-        saveSetupAndConfig(setup1Hash, setup1OnHash);
-        try
-        {
-            rfx.close(0);
-            rfx = new Database("RFX", shot2);
-            rfx.open();
-        }
-        catch (Exception exc)
-        {
-            setCursor(prevCursor);
-            JOptionPane.showMessageDialog(this, "Cannot open pulse " + shot2,
                                           "Error opening tree",
                                           JOptionPane.WARNING_MESSAGE);
             return;
@@ -3109,6 +3239,8 @@ public class ParameterSetting
 
         if (numChanged > 0)
         {
+
+            reportDiffToModifiedNids(diffSetupHash, diffSetupOnHash);
             changedD = new JDialog(this, "Changed Devices");
             JPanel jp = new JPanel();
             jp.setLayout(new GridLayout(numChanged, 1));
@@ -3118,8 +3250,8 @@ public class ParameterSetting
                 {
                     JPanel jp1 = new JPanel();
                     jp1.add(new JLabel(titles[i]));
+                    jp1.add(new DiffButton(shot, i));
                     jp1.add(new DiffButton(shot1, i));
-                    jp1.add(new DiffButton(shot2, i));
                     jp.add(jp1);
                 }
             }
@@ -3232,6 +3364,8 @@ public class ParameterSetting
                         currDevice.setReadOnly(true);
                         currDevice.setTitle(currDevice.getTitle() + "  Shot: " +
                                             DiffButton.this.actShot);
+
+                        currDevice.setHighlight(true, modifiedNids);
                         currDevice.setVisible(true);
                     }
                     catch (Exception exc)
@@ -3265,6 +3399,10 @@ public class ParameterSetting
         DeviceSetup device = new RFXTimesSetup();
         device.configure(rfx, nid);
         device.check();
+        if (ParameterSetting.this.readOnly)
+            device.setReadOnly(true);
+        PrintButton printB = new PrintButton(0);
+        device.addButton(printB);
     }
 
 
@@ -3343,7 +3481,7 @@ public class ParameterSetting
         }catch(Exception exc){return new String[0];}
     }
 
-    void notifyChangedRt(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
+    Vector getModifiedNidsV(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
     {
         Vector nidsV = new Vector();
         Enumeration changedPaths = modifiedSetupHash.keys();
@@ -3371,6 +3509,12 @@ public class ParameterSetting
                 System.err.println("Cannot resolve " + currName + ": " + exc);
             }
         }
+        return nidsV;
+    }
+
+    void notifyChangedRt(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
+    {
+        Vector nidsV = getModifiedNidsV(modifiedSetupHash, modifiedSetupOnHash);
         //Protocol: -1, followed by the number of chenged nids and the nids
         if (rtDos != null && nidsV.size() > 0)
         {

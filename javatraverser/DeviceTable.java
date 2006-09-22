@@ -651,7 +651,18 @@ public class DeviceTable extends DeviceComponent
         }
         return(roundCount == 0 && squareCount == 0 && braceCount == 0);
     }
-
+    public void setHighlight(boolean highlighted)
+    {
+        if(highlighted)
+        {
+            if (label != null) label.setForeground(Color.red);
+        }
+        else
+        {
+           if (label != null) label.setForeground(Color.black);
+       }
+       super.setHighlight(highlighted);
+    }
 
 }
 

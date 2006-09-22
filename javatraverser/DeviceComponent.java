@@ -14,6 +14,7 @@ public abstract class DeviceComponent extends JPanel
     protected String identifier;
     protected String updateIdentifier;
     protected boolean editable = true;
+    protected boolean isHighlighted = false;
     private boolean is_initialized = false;
     private boolean enabled = true;
 
@@ -241,6 +242,21 @@ public abstract class DeviceComponent extends JPanel
 
     //Get an object incuding all related info (will be data except for DeviceWaveform
     protected Object getFullData(){return getData();}
+
+    public void setHighlight(boolean isHighlighted)
+    {
+        this.isHighlighted = isHighlighted;
+        Component currParent, currGrandparent = this;
+        do {
+            currParent = currGrandparent;
+            currGrandparent = currParent.getParent();
+            if(currGrandparent instanceof JTabbedPane)
+            {
+                int idx = ((JTabbedPane)currGrandparent).indexOfComponent(currParent);
+                ((JTabbedPane)currGrandparent).setForegroundAt(idx, isHighlighted?Color.red:Color.black);
+            }
+        }while(!(currGrandparent instanceof DeviceSetup));
+    }
 
 }
 
