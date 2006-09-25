@@ -7,7 +7,7 @@
 #define g_float_exp(val) ((*(int *)val >> 4) & 0x7ff)
 #define g_float_sign(val) ((*(int *)val >> 15) &0x1)
 #define IsRoprandG(val) ((g_float_exp(val) == 0) && (g_float_sign(val) == 1))
-#define t_float_exp(val) ((((int *)val)[1] >> 20) & 0x7ff)
+#define t_float_exp(val) (((*(_int64 *)val) >> 52) & 0x7ff)
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
 #define IsRoprand(dtype,val) ((dtype == DTYPE_F) ? IsRoprandF(val) : \
