@@ -42,6 +42,9 @@ extern void FlipHeader(MsgHdr *header);
 #include <sys/ioctl.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
+#ifdef _XOPEN_SOURCE_EXTENDED
+#include <arpa/inet.h>
+#endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>

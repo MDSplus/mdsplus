@@ -102,7 +102,9 @@ typedef void *pthread_mutex_t;
 #define MDS_IO_O_WRONLY 0x00000001
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
-
+#ifndef MSG_DONTWAIT
+#define MSG_DONTWAIT 0
+#endif
 extern char *MdsDescrToCstring();
 extern void MdsFree();
 extern void SetSocketOptions();

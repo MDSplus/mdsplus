@@ -1594,7 +1594,9 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
       time_t t=time(0);
       struct tm *tm_p=localtime(&t);
       tim = mktime(&tm);
+#ifndef __hpux
       tim += tm_p->tm_gmtoff;
+#endif
     }
     else
       tim = 0;

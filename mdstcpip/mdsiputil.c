@@ -37,11 +37,6 @@ extern int CloseSocket(SOCKET s);
 extern SOCKET MConnect(char *host, unsigned short port);
 extern void FlushSocket(SOCKET sock);
 
-#if defined( _UCX) || defined(_WIN32)
-#else
-extern int inet_addr();
-#endif
-
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif

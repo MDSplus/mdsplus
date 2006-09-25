@@ -71,7 +71,11 @@
 #endif
 #include <sys/time.h>
 #endif
+#ifdef _XOPEN_SOURCE_EXTENDED
+#include <arpa/inet.h>      
+#else
 #include <netinet/in.h>
+#endif
 #include <sys/socket.h>
 #ifndef HAVE_VXWORKS_H
 #include <netdb.h>
