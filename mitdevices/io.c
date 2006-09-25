@@ -225,7 +225,8 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
   short *region;
   struct READ_LOCALBUF_DESCR buffer_def;
   int rc;
-  int idx, cidx, sam;
+  int idx, cidx;
+  float sam;
     
   /*
   printf("Starting DMARead3 start = %d end = %d linc = %d\n", *start, *end, linc);
@@ -267,7 +268,7 @@ int DMARead3(short *buffer, const char *fname, int *start, int *end, int *inc, f
     }
   if (*num_coeffs > 1) {
     for (idx = 0; idx < (*end - *start + 1)/ *inc; idx ++) {
-      sam = 0;
+      sam = 0.;
       /*      printf("."); */ 
       for (cidx=0; cidx < *num_coeffs; cidx++) {
         int iidx = MIN(MAX(idx * *inc + cidx-*num_coeffs/2, 0), *end-1);
