@@ -68,6 +68,7 @@
 #define NciDTYPE_STR             38
 #define NciUSAGE_STR             39
 #define NciCLASS_STR             40
+#define NciVERSION               41
 typedef struct nci_itm
 {
 	short int buffer_length;
