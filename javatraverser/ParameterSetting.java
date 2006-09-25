@@ -52,7 +52,8 @@ public class ParameterSetting
         tfSetupRoot, bfControlRoot,
         mhdControlRoot, viSetupRoot, mopRoot, ansaldoConfigRoot,
         unitsConfigRoot,
-        poloidalConfigRoot, toroidalConfigRoot, mhdConfigRoot, viConfigRoot;
+        poloidalConfigRoot, toroidalConfigRoot, mhdConfigRoot, viConfigRoot,
+        pvSetupRoot; //Usato solo per la configurazione PV
     String[] titles =
         {
         "TIMES SETUP", "POLOIDAL CONTROL", "AXISYMMETRIC SETUP", "PC SETUP",
@@ -176,6 +177,12 @@ public class ParameterSetting
 
     ParameterSetting(boolean isRt, boolean isOnline, String rtIp)
     {
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e)
+            {
+                System.exit(0);
+            }
+        });
         this.isRt = isRt;
         if (isRt)
             readOnly = true;
@@ -268,7 +275,8 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    compareShots();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run(){compareShots();}});
                 }
             });
             fileMenu.add(compareItem);
@@ -1136,11 +1144,11 @@ public class ParameterSetting
         jp.add(maxPMATF = new JTextField("" + maxPMAT, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
-        jp.add(new JLabel("Corrente Max. PVAT bobine F1-F7 (A): "));
+        jp.add(new JLabel("Tensione Max. PCAT in Parallelo: "));
         jp.add(maxPCATParallelF = new JTextField("" + maxPCATParallel, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
-        jp.add(new JLabel("Corrente Max. PVAT bobina F8 (A): "));
+        jp.add(new JLabel("Tensione Max. PCAT in serie: "));
         jp.add(maxPCATSeriesF = new JTextField("" + maxPCATSeries, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
@@ -1390,7 +1398,9 @@ public class ParameterSetting
             nids[18] = mhdConfigRoot = rfx.resolve(new PathData("\\PR_CONFIG"),
                 0);
             nids[19] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
-                                                  0);
+                                              0);
+            pvSetupRoot = rfx.resolve(new PathData("\\PV_SETUP"),
+                                               0);
 
         }
         catch (Exception exc)
@@ -2495,11 +2505,13 @@ public class ParameterSetting
                     String currDec;
                     try
                     {
-                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        if(!fullPath.endsWith(":PAR236_VAL")) //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+
+                        if(!fullPath.endsWith(":PAR236_VAL") &&  //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                            (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
                         {
+                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             mapSetupHash.put(fullPath, new Integer(idx));
                             configHash.put(fullPath, currDec);
                         }
@@ -2521,11 +2533,12 @@ public class ParameterSetting
                     String currDec;
                     try
                     {
-                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        if(!fullPath.endsWith(":PAR236_VAL")) //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                        if (!fullPath.endsWith(":PAR236_VAL") && //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                              (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
                         {
+                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             mapSetupHash.put(fullPath, new Integer(idx));
                             configHash.put(fullPath, currDec);
                         }
@@ -2547,11 +2560,15 @@ public class ParameterSetting
                     String currDec;
                     try
                     {
-                        currDec = (rfx.getData(deviceNids[i], 0)).toString();
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        mapSetupHash.put(fullPath, new Integer(idx));
-                        configHash.put(fullPath, currDec);
+                         if(!fullPath.endsWith(":PAR236_VAL") &&  //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                                (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
+                         {
+                             currDec = (rfx.getData(deviceNids[i], 0)).toString();
+                             mapSetupHash.put(fullPath, new Integer(idx));
+                             configHash.put(fullPath, currDec);
+                         }
                     }
                     catch (Exception exc)
                     {}
@@ -2770,7 +2787,7 @@ public class ParameterSetting
                                                0)).getFloatArray();
             for (int i = 0; i < pcWave.length; i++)
             {
-                if (maxVolt > pcWave[i])
+                if (maxVolt < pcWave[i])
                     maxVolt = pcWave[i];
             }
             if (pcConfig.trim().toUpperCase().equals("PARALLEL"))
@@ -2842,6 +2859,7 @@ public class ParameterSetting
         int prevPMUnits;
         float prevRTransfer;
         String prevPCConnection;
+        String prevPVConnection;
         String shotStr = JOptionPane.showInputDialog(this, "Shot number: ",
             "Enter shot", JOptionPane.INFORMATION_MESSAGE);
         if (shotStr == null || shotStr.trim().equals(""))return;
@@ -2855,6 +2873,7 @@ public class ParameterSetting
             prevPMUnits = loadP.getPMUnits();
             prevRTransfer = loadP.getRTransfer();
             prevPCConnection = loadP.getPCConnection();
+            prevPVConnection = loadP.getPVConnection();
             loadSelectedSetup();
             int currPMUnits = countPMUnits();
             if (currPMUnits != prevPMUnits)
@@ -2886,6 +2905,17 @@ public class ParameterSetting
                                               ")  in the working shot",
                                               "Configuration discrepance",
                                               JOptionPane.WARNING_MESSAGE);
+            String pvConnection = getPVConnection();
+            if (!pvConnection.equals(prevPVConnection))
+                JOptionPane.showMessageDialog(ParameterSetting.this,
+                                              "PVAT connection in loaded shot " +
+                                              currShot +
+                                              " is " + prevPVConnection +
+                    " which is different from the previous value (" +
+                                              pvConnection +
+                                              ")  in the working shot",
+                                              "Configuration discrepance",
+                                              JOptionPane.WARNING_MESSAGE);
 
         }
 
@@ -2908,10 +2938,11 @@ public class ParameterSetting
             super(ParameterSetting.this, "Select MHD decoupling");
             JPanel jp = new JPanel();
             String []matrixNames = getMatrixFiles();
-            String[] allMatrixNames = new String[matrixNames.length + 1];
+            String[] allMatrixNames = new String[matrixNames.length + 2];
             allMatrixNames[0] = "diagonal";
             for(int i = 0; i < matrixNames.length; i++)
                 allMatrixNames[i+1] = matrixNames[i].substring(0, matrixNames[i].length() - 4);
+            allMatrixNames[matrixNames.length + 1] = "From Shot...";
             decouplingC = new JComboBox(allMatrixNames);
             decouplingC.setSelectedIndex(0);
             jp.add(new JLabel("Decoupling: "));
@@ -2961,6 +2992,20 @@ public class ParameterSetting
                 "\\mhd_bc::control.parameters:par236_val", "diagonal", -1);
             conv.convertMatrix();
         }
+        else if(decouplingName.equals("From Shot..."))
+        {
+            String shotStr = JOptionPane.showInputDialog(ParameterSetting.this, "Shot number: ");
+            try {
+                int shotNum = Integer.parseInt(shotStr);
+                importDecouplingFrom(shotNum);
+            }catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(ParameterSetting.this, "Error loading Decoupling Matrix", "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
+
+        }
         else
         {
             conv = new Convert(
@@ -2970,6 +3015,7 @@ public class ParameterSetting
                 "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat", -1);
             conv.convertMatrix();
         }
+        decouplingD.setVisible(false);
      }
 
     int getShot()
@@ -3423,13 +3469,25 @@ public class ParameterSetting
     }
     String getPCConnection()
     {
-        NidData unitsNid = new NidData(nids[3].getInt() + 2);
+        NidData configNid = new NidData(nids[3].getInt() + 2);
         try {
-            Data configData = rfx.evaluateData(unitsNid, 0);
+            Data configData = rfx.evaluateData(configNid, 0);
             return configData.getString();
         }catch(Exception exc)
         {
             System.err.println("Error getting PC connection: " + exc);
+            return "";
+        }
+    }
+    String getPVConnection()
+    {
+        NidData configNid = new NidData(pvSetupRoot.getInt() + 2);
+        try {
+            Data configData = rfx.evaluateData(configNid, 0);
+            return configData.getString();
+        }catch(Exception exc)
+        {
+            System.err.println("Error getting PV connection: " + exc);
             return "";
         }
     }
@@ -3534,6 +3592,63 @@ public class ParameterSetting
         }
 
     }
+
+    void importDecouplingFrom(int inShot)
+    {
+        Data decouplingData;
+        if(inShot == shot)
+            return;
+
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", inShot);
+            rfx.open();
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + inShot, "Error opening shot",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            NidData decNid = rfx.resolve(new PathData(
+                    "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+            decouplingData = rfx.getData(decNid, 0);
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + inShot, "Error reading data",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", shot);
+            rfx.open();
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + inShot, "Error opening shot",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            NidData decNid1 = rfx.resolve(new PathData(
+                    "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+            NidData decNid2 = rfx.resolve(new PathData(
+                    "\\MHD_BC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+            rfx.putData(decNid1, decouplingData, 0);
+            rfx.putData(decNid2, decouplingData, 0);
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + inShot, "Error reading data",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+    }
+
 
 
     public static void main(String args[])

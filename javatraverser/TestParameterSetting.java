@@ -9,7 +9,7 @@ class TestParameterSetting
     int slPort = 4002;
     DataInputStream rtDis;
     DataOutputStream rtDos, slDos;
-    static final int LEAVE_PAS = 1, ENTER_INIT = 2;
+    static final int ENTER_PAS = 1, LEAVE_PAS = 2, ENTER_PRE = 3, LEAVE_SECONDARY = 4;
 
     TestParameterSetting(String rtIp, String slIp)
     {
@@ -41,13 +41,13 @@ class TestParameterSetting
             }
         });
         jp.add(leavePasB);
-        JButton enterInitB = new JButton("Enter Init");
+        JButton enterInitB = new JButton("Enter Pre");
         enterInitB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 try {
-                    slDos.writeInt(ENTER_INIT);
-                    rtDos.writeInt(ENTER_INIT);
+                    slDos.writeInt(ENTER_PRE);
+                    rtDos.writeInt(ENTER_PRE);
                 }catch(Exception exc)
                 {
                     System.err.println("Cannot communicate with sl or rt: " + exc);

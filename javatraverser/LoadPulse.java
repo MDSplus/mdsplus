@@ -16,6 +16,7 @@ public class LoadPulse
     Database tree;
     int numPMUnits = 0;
     String PCconnection = "";
+    String PVconnection = "";
     float rTransfer = 0;
 
     static class NodeDescriptor
@@ -238,6 +239,7 @@ public class LoadPulse
         }
         numPMUnits = countPMUnits();
         evaluatePCConnection();
+        evaluatePVConnection();
         evaluateRTransfer();
         tree.close(0);
         br.close();
@@ -301,6 +303,21 @@ public class LoadPulse
          }
      }
 
+     void evaluatePVConnection()
+     {
+         try
+         {
+             NidData rootNid = tree.resolve(new PathData("\\PV_SETUP"), 0);
+             NidData connectionNid = new NidData(rootNid.getInt() + 2);
+             Data connectionData = tree.evaluateData(connectionNid, 0);
+             PVconnection = connectionData.getString();
+         }
+         catch (Exception exc)
+         {
+             System.err.println("Error getting PV connection: " + exc);
+         }
+     }
+
      void evaluateRTransfer()
      {
          try
@@ -318,6 +335,7 @@ public class LoadPulse
 
 
      String getPCConnection(){return PCconnection;}
+     String getPVConnection(){return PVconnection;}
      float getRTransfer(){return rTransfer;}
 
      int getPMUnits()

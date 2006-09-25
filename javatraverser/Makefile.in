@@ -83,7 +83,9 @@ TOMOSetupSetup.java\
 TSEdgeCCDSetup.java\
 LASER_RUSetup.java\
 GEN_GAINSetup.java\
-EDAM_CPCISetupSetup.java
+EDAM_CPCISetupSetup.java\
+FEGroupSetup.java\
+ISIS_GAINSetup.java
 
 SOURCES = ActionData.java\
 ActionEditor.java\

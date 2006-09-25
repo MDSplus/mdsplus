@@ -26,7 +26,7 @@ public class RFXPMSetupSetup extends DeviceSetup {
   DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
   DeviceChoice deviceChoice1 = new DeviceChoice();
-  DeviceField deviceField5 = new DeviceField();
+  //DeviceField deviceField5 = new DeviceField();
   public RFXPMSetupSetup() {
     try {
       jbInit();
@@ -87,15 +87,17 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
+    /*
     deviceField5.setOffsetNid(13);
     deviceField5.setLabelString("PTCB Voltage");
     deviceField5.setNumCols(4);
     deviceField5.setIdentifier("");
+    */
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel2, null);
     jPanel2.add(deviceField1, null);
-    jPanel2.add(deviceField5, null);
+    //jPanel2.add(deviceField5, null);
     jPanel1.add(jPanel4, null);
     jPanel4.add(deviceField3, null);
     jPanel4.add(deviceField2, null);
