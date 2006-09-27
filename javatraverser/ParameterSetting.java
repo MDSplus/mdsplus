@@ -86,6 +86,8 @@ public class ParameterSetting
     DataOutputStream rtDos;
     int[] modifiedNids;
     int currLoadShot;
+    Cursor prevCursor = getCursor();
+
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 
@@ -198,7 +200,8 @@ public class ParameterSetting
             this.rtIp = rtIp;
             if(isOnline) handleNotRt();
         }
-        handleScheduler();
+        if(isRt || isOnline)
+            handleScheduler();
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem printItem = new JMenuItem("Print Setup");
@@ -275,6 +278,7 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run(){compareShots();}});
                 }
@@ -337,6 +341,10 @@ public class ParameterSetting
                                     101);
                     try
                     {
+                        rfx.close(0);
+                        rfx  = new Database("rfx", -1);
+                        rfx.open();
+                        rfx.create(baseShot+idx);
                         rfx.close(0);
                         rfx = new Database("rfx", baseShot + idx);
                         rfx.open();
@@ -1432,6 +1440,10 @@ public class ParameterSetting
                 }
                 else
                 {
+                    rfx = new Database("RFX", -1);
+                    rfx.open();
+                    rfx.create(100);
+                    rfx.close(0);
                     rfx = new Database("RFX", 101);
                     rfx.open();
                 }
@@ -1740,14 +1752,19 @@ public class ParameterSetting
                                selectedTimes);
                     loadSelected.setVisible(false);
 
-                    if (JOptionPane.showConfirmDialog(ParameterSetting.this,
-                        "Stampare la scheda di caricamento impulso?",
-                        "Caricamento impulso", JOptionPane.YES_NO_OPTION) ==
-                        JOptionPane.YES_OPTION)
+                    if(isOnline)
                     {
-                        try {
-                            printLoadPulse(currLoadShot);
-                        }catch(Exception exc){System.err.println("Error printing form: " + exc);}
+                        if (JOptionPane.showConfirmDialog(ParameterSetting.this,
+                                                          "Stampare la scheda di caricamento impulso?",
+                                                          "Caricamento impulso",
+                                                          JOptionPane.YES_NO_OPTION) ==
+                            JOptionPane.YES_OPTION) {
+                            try {
+                                printLoadPulse(currLoadShot);
+                            } catch (Exception exc) {
+                                System.err.println("Error printing form: " + exc);
+                            }
+                        }
                     }
                 }
             });
@@ -2285,12 +2302,14 @@ public class ParameterSetting
 
     void printLoadPulse(int shot) throws PrinterException, PrintException
     {
+        int prevPrintDeviceIdx = currPrintDeviceIdx;
         currPrintDeviceIdx = -1;
         currPrintLoadPulse = shot;
         DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
         Doc doc = new SimpleDoc(this, flavor, null);
         DocPrintJob prnJob = printService.createPrintJob();
         prnJob.print(doc, null);
+        currPrintDeviceIdx = prevPrintDeviceIdx;
     }
 
     class PrintButton
@@ -3049,6 +3068,7 @@ public class ParameterSetting
             jp.add(retryB);
             getContentPane().add(jp, "South");
             setLocation(new Point(frame.getWidth() / 2, frame.getHeight() / 2));
+            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         }
 
         void addActionListener(ActionListener al)
@@ -3092,9 +3112,9 @@ public class ParameterSetting
                 catch (Exception exc)
                 {
                     System.err.println(
-                        "Internal error in compareSetup: mapping not found: " +
+                        "Warning : mapping not found in compareSetup for " +
                         currPath);
-                    System.exit(0);
+                    //System.exit(0);
                 }
             }
             try
@@ -3114,9 +3134,9 @@ public class ParameterSetting
             catch (Exception exc)
             {
                 System.err.println(
-                    "Internal error in compareSetup: mapping not found " +
+                    "Warning : mapping not found in compareSetup for " +
                     currPath);
-                System.exit(0);
+                //System.exit(0);
             }
         }
         return changed;
@@ -3239,8 +3259,6 @@ public class ParameterSetting
 
     void compareShots(int shot1)
     {
-        Cursor prevCursor = getCursor();
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
         Hashtable setup1Hash = new Hashtable(), setup1OnHash = new Hashtable(),
             setup2Hash = new Hashtable(), setup2OnHash = new Hashtable(),
             diffSetupHash = new Hashtable(), diffSetupOnHash = new Hashtable();
@@ -3297,7 +3315,7 @@ public class ParameterSetting
                     JPanel jp1 = new JPanel();
                     jp1.add(new JLabel(titles[i]));
                     jp1.add(new DiffButton(shot, i));
-                    jp1.add(new DiffButton(shot1, i));
+                    jp1.add(new DiffButton(shot1, i, false));
                     jp.add(jp1);
                 }
             }
@@ -3377,9 +3395,15 @@ public class ParameterSetting
     {
         int actShot;
         int idx;
+        boolean highlightDiff = false;
         DiffButton(int actShot, int idx)
         {
+            this(actShot, idx, true);
+        }
+        DiffButton(int actShot, int idx, boolean highlightDiff)
+        {
             super("" + actShot);
+            this.highlightDiff = highlightDiff;
             this.actShot = actShot;
             this.idx = idx;
             addActionListener(new ActionListener()
@@ -3411,7 +3435,8 @@ public class ParameterSetting
                         currDevice.setTitle(currDevice.getTitle() + "  Shot: " +
                                             DiffButton.this.actShot);
 
-                        currDevice.setHighlight(true, modifiedNids);
+                        if(DiffButton.this.highlightDiff)
+                            currDevice.setHighlight(true, modifiedNids);
                         currDevice.setVisible(true);
                     }
                     catch (Exception exc)
