@@ -1773,10 +1773,11 @@ public class ParameterSetting
                     loadSelected.setVisible(false);
 
                     if (isOnline) {
+                        String decouplingName = getDecouplingName(currLoadShot);
+                        if(decouplingName == null) decouplingName = "Unknown";
                         if (JOptionPane.showConfirmDialog(ParameterSetting.this,
                                 "Caricare MHD Decoupling da shot " + currLoadShot +
-                                " ("
-                                + getDecouplingName(currLoadShot) + ")?",
+                                " ("+decouplingName + ")?",
                                 "Decoupling", JOptionPane.YES_NO_OPTION)
                             == JOptionPane.YES_OPTION) {
                             copyDecoupling(currLoadShot, shot);
