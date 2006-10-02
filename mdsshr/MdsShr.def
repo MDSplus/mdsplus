@@ -3,6 +3,7 @@ EXPORTS
 ;
 index
 LibCallg
+LibConvertDateString
 LibCreateVmZone
 LibEstablish
 LibEmul

@@ -202,7 +202,11 @@ nid_to_tree_nidx(pino, nid, info, nidx)
 
 typedef char NODE_NAME[12];
 
+#ifdef HAVE_WINDOWS_H
+#pragma pack(1)
+#else
 PACK_START
+#endif
 /*********************************************
  Linkages to other nodes via parent, brother,
  member and child node links are expressed in
@@ -406,7 +410,11 @@ typedef struct record_header
   RFA       rfa PACK_ATTR;
 }         RECORD_HEADER;
 
+#ifdef HAVE_WINDOWS_H
+#pragma pack(4)
+#else
 PACK_STOP
+#endif
 
 
 
@@ -698,8 +706,7 @@ extern int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
-#ifdef _WIN32
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+#ifdef HAVE_WINDOWS_H
 typedef int mode_t;
 typedef int ssize_t;
 #endif

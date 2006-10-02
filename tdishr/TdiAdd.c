@@ -302,7 +302,7 @@ int TdiMultiplyQuadword(int *in1, int *in2, int *out)
   _int64 *arg1=(_int64 *)in1;
   _int64 *arg2=(_int64 *)in2;
   *((_int64 *)out)=*arg1 * *arg2;
-  return;
+  return 1;
   /*
   
   int tmp[3] = {0,0,0};
