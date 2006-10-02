@@ -219,13 +219,19 @@ define type SET_TYPE
         keyword NODE,syntax=set_node
         keyword SERVER,syntax=set_server									       ! 83 
 	keyword TREE,syntax=set_tree
+        keyword VIEW,syntax=set_view
+	keyword VERSIONS,syntax=set_versions
 Define syntax set_current											       ! 53 
 	Routine TclSetCurrent											       ! 53
         parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
         parameter p2,label=experiment,prompt="Experiment",value(required)					       ! 53 
         parameter p3,label=shot											       ! 107
         qualifier increment											       ! 74 
-        disallow shot and increment										       ! 74 
+        disallow shot and increment
+Define syntax set_view
+        Routine TclSetView
+        parameter p1,prompt="What",value(required,type=SET_TYPE)
+        parameter p2,LABEL=DATE,prompt="Date",value(required) 
 Define syntax set_default
 	Routine TclSetDefault
         parameter p1,prompt="What",value(required,type=SET_TYPE)
@@ -262,7 +268,11 @@ Define syntax set_tree
         parameter p1,prompt="What",value(required,type=SET_TYPE)
 	parameter p2, LABEL=FILE,Prompt="File",value(required)
 	qualifier shotid,default,nonnegatable,value(default="-1")						       ! 93 
-        qualifier readonly											       ! 65 
+        qualifier readonly											       ! 65
+define syntax set_versions
+	Routine TclSetVersions
+	qualifier MODEL
+        qualifier SHOT 
 define verb SETEVENT												       ! 53 
 	Routine TclSetEvent											       ! 53
 	parameter p1,label=EVENT,prompt="Event",value(required)							       ! 53 
@@ -275,6 +285,7 @@ define type show_TYPE
 	keyword DEFAULT,syntax=show_default
         keyword SERVER,syntax=show_server									       ! 83 
 	keyword VERSION,syntax=show_version
+        keyword VERSIONS,syntax=show_versions
 Define syntax show_current											       ! 53 
 	Routine TclShowCurrent										       ! 53
         parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
@@ -297,6 +308,9 @@ define syntax show_server											       ! 83
         qualifier full												       ! 102
 define syntax show_version
 	Routine TclShowVersion
+	parameter p1,prompt="What",value(required,type=show_TYPE)
+define syntax show_versions
+	Routine TclShowVersions
 	parameter p1,prompt="What",value(required,type=show_TYPE)
 define verb start												       ! 92 
         parameter p1,prompt="What",value(required,type=start_TYPE)						       ! 92 

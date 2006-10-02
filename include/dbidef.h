@@ -19,6 +19,8 @@
 #define DbiMAX_OPEN		7	/* Maximum number of tree allowed open at one time */
 #define DbiDEFAULT	        8       /* NID of default node */
 #define DbiOPEN_READONLY      9       /* True if tree has been opened readonly */
+#define DbiVERSIONS_IN_MODEL 10 /* True if using versioning in model */
+#define DbiVERSIONS_IN_PULSE 11 /* True if using versioning in pulse files */
 
 typedef struct dbi_itm
 {

@@ -28,14 +28,14 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #endif
 
 #define read_nci \
- if (need_nci)\
+ if (nci_version != version)\
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
     status = TreeCallHook(GetNci,info,nid_in);\
     if (status && !(status & 1)) break;\
     if (info->reopen) TreeCloseFiles(info);\
-    status = TreeGetNciW(info, node_number, &nci);\
-    need_nci = 0;\
+    status = TreeGetNciW(info, node_number, &nci,version);\
+    if (status & 1) nci_version = version;\
     if (!(status & 1)) break;\
  }
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
@@ -62,7 +62,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   NCI_ITM  *itm;
   NCI       nci;
   NODE     *node;
-  int       need_nci = 1;
+  int       nci_version = -1;
   NID       out_nid;
   int       i;
   NODE     *cng_node;
@@ -72,6 +72,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   int       count = 0;
   NID      *out_nids;
   NID      *end_nids;
+  unsigned int version=0;
   NODE     *saved_node;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
@@ -86,6 +87,11 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  node = saved_node;
 	  switch (itm->code)
 	  {
+          case NciVERSION:
+	    break_on_no_node;
+	    set_retlen(0);
+	    version=*(unsigned int *)itm->pointer;
+	    break;
 	  case NciDEPTH:
 		  break_on_no_node;
 		  set_retlen(sizeof(depth));
@@ -664,7 +670,7 @@ int _TreeIsOn(void *dbid, int nid)
 
 
 
-int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
+int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 {
 	int       status = TreeNORMAL;
 
@@ -686,12 +692,37 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci)
 		  status = TreeLockNci(info,1,node_num);
 		  if (status & 1)
 		  {
-        char nci_bytes[42];
+		    char nci_bytes[42];
+                    int n_version=0;
+                    _int64 viewDate;
 		    MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
 		    status = MDS_IO_READ(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
                       TreeSUCCESS : TreeFAILURE;
                     if (status == TreeSUCCESS)
                       TreeSerializeNciIn(nci_bytes,nci);
+                    TreeGetViewDate(&viewDate);
+                    if (viewDate > 0) {
+                      while (status & 1 && nci->time_inserted > viewDate) {
+                        if (nci->flags & NciM_VERSIONS) {
+                          status = TreeGetVersionNci(info,nci,nci);
+                        }
+                        else {
+                          status = TreeFAILURE;
+			}
+		      }
+		      if (!(status & 1)) {
+			memset(nci,0,sizeof(NCI));
+			status = TreeSUCCESS;
+		      }
+		    }
+                    while (status & 1 && version > n_version) {
+                      if (nci->flags & NciM_VERSIONS) {
+			status = TreeGetVersionNci(info,nci,nci);
+			n_version++;
+                      }
+                      else 
+                        status = TreeFAILURE;
+		    }
                     TreeUnLockNci(info,1,node_num);
 		  }
 		}

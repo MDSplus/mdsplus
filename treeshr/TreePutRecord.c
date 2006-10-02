@@ -67,11 +67,12 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
 static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
 static int FixupPath();
-static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
+static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr,NCI *previous_nci);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
 static int compress_utility;
 static char nid_reference;
 static char path_reference;
+static NCI TemplateNci;
 
 static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr);
 
@@ -110,7 +111,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   if (info_ptr)
   {
     int       stv;
-    NCI       local_nci;
+    NCI       local_nci,old_nci;
+    _int64    saved_viewdate;
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
@@ -120,13 +122,19 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
       open_status = 1;
+    TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    TreeSetViewDate(&saved_viewdate);
+    memcpy(&old_nci,&local_nci,sizeof(local_nci));
     if (status & 1)
     {
       if (utility_update)
       {
-	length = local_nci.length = 0;
-	local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
+        bitassign(dblist->setup_info,TemplateNci.flags,NciM_SETUP_INFORMATION);
+        local_nci.owner_identifier = TemplateNci.owner_identifier;
+        local_nci.time_inserted= TemplateNci.time_inserted;
+	//	length = local_nci.length = 0;
+	//local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
       }
       else
       {
@@ -181,9 +189,12 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       {
 	NCI      *nci = info_ptr->data_file->asy_nci->nci;
 	*nci = local_nci;
+        if (nci->length != 0 && ((shot_open && info_ptr->header->versions_in_pulse) ||
+                                 (!shot_open && info_ptr->header->versions_in_model)))
+	   bitassign(1,nci->flags,NciM_VERSIONS); 
 	if (!utility_update)
 	{
-	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK) ? 0 : 
+	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK || (nci->flags & NciM_VERSIONS)) ? 0 : 
                         nci->DATA_INFO.DATA_LOCATION.record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
@@ -202,7 +213,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data,FixupNid,&tree,FixupPath,0,
             (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) && !(nci->flags & NciM_DO_NOT_COMPRESS),
             &compressible,&nci->length,&nci->DATA_INFO.DATA_LOCATION.record_length,&nci->dtype,&nci->class,
-            sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
+            (nci->flags & NciM_VERSIONS) ? 0 : sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
           bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
           bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
           bitassign(compressible,nci->flags,NciM_COMPRESSIBLE);
@@ -212,7 +223,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	  status = CheckUsage(dblist, nid_ptr, nci);
 	if (status & 1)
 	{
-	  if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK)
+	  if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK && !(nci->flags & NciM_VERSIONS))
 	  {
 	    bitassign_c(0,nci->flags2,NciM_ERROR_ON_PUT);
 	    status = TreePutNci(info_ptr, nidx, nci, 1);
@@ -222,8 +233,9 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	    if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
+		(nci->flags & NciM_VERSIONS) ||
 		(nci->flags2 & NciM_ERROR_ON_PUT))
-	      status = PutDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
+	      status = PutDatafile(info_ptr, nidx, nci, info_ptr->data_file->data,&old_nci);
 	    else
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
 	  }
@@ -391,10 +403,10 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 }
 #define BUFFERED_IO
 #ifdef BUFFERED_IO
-static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
+static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr, NCI *old_nci_ptr)
 {
   int       status = TreeNORMAL;
-  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  int       bytes_to_put = data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
   int       blen = bytes_to_put + (bytes_to_put + DATAF_C_MAX_RECORD_SIZE + 1)/(DATAF_C_MAX_RECORD_SIZE + 2)*sizeof(RECORD_HEADER);
   static    int nonvms_compatible=-1;
   char      *buffer;
@@ -463,6 +475,13 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
       bitassign(1,nci_ptr->flags2,NciM_ERROR_ON_PUT);
       nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
       nci_ptr->length = 0;
+    }
+    if (nci_ptr->flags & NciM_VERSIONS) {
+      char nci_bytes[42];
+      _int64 old_nci_offset;
+      TreeSerializeNciOut(old_nci_ptr,nci_bytes);
+      old_nci_offset =  MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
+      status = (MDS_IO_WRITE(info->data_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
     }
     TreePutNci(info, nodenum, nci_ptr, 1);
     TreeUnLockDatafile(info, 0, 0);
@@ -574,6 +593,11 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
 	NIDs converted to PATHs for TREE$COPY_TO_RECORD.
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
+int TreeSetTemplateNci(NCI *nci)
+{
+  TemplateNci = *nci;
+  return TreeSUCCESS;
+}
 
 int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {

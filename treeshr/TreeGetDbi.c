@@ -99,6 +99,29 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       }
       break;
 
+     case DbiVERSIONS_IN_MODEL:
+       CheckOpen(db);
+       {
+         int value=db->tree_info->header->versions_in_model;
+         memset(lst->pointer,0,lst->buffer_length);
+         memcpy(lst->pointer,&value,min(lst->buffer_length,sizeof(int)));
+         if (lst->return_length_address)
+           *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+         break;
+       }
+
+     case DbiVERSIONS_IN_PULSE:
+       CheckOpen(db);
+       {
+         int value=db->tree_info->header->versions_in_pulse;
+         memset(lst->pointer,0,lst->buffer_length);
+         memcpy(lst->pointer,&value,min(lst->buffer_length,sizeof(int)));
+         if (lst->return_length_address)
+           *lst->return_length_address = min(lst->buffer_length, sizeof(int));
+         break;
+       }
+
+
      default:
       status = TreeILLEGAL_ITEM;
 

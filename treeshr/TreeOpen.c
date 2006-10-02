@@ -538,7 +538,7 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
     for (i = 0; i < info->header->externals; i++)
     {
       NODE     *external_node = info->node + swapint((char *)&info->external[i]);
-      char *subtree = strncpy(malloc(sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
+      char *subtree = strncpy(memset(malloc(sizeof(NODE_NAME)+1),0,sizeof(NODE_NAME)+1),external_node->name,sizeof(NODE_NAME));
       char *blank = strchr(subtree,32);
       subtree[sizeof(NODE_NAME)] = '\0';
       if (blank) *blank = 0;
@@ -760,6 +760,14 @@ static char *GetFname(char *tree, int shot)
   return(ans);
 }
 
+static void str_shift(char *in,int num)
+{
+  char *p1=in,*p2=in+num;
+  while (*p2 != 0)
+    *p1++=*p2++;
+  *p1=0;
+}
+
 char *MaskReplace(char *path_in,char *tree,int shot)
 {
   char *path = strcpy(malloc(strlen(path_in)+1),path_in);
@@ -777,16 +785,16 @@ char *MaskReplace(char *path_in,char *tree,int shot)
     char *tmp,*tmp2;
     switch (tilde[1])
     {
-    case 'a':  tilde[0]=ShotMask[11]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'b':  tilde[0]=ShotMask[10]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'c':  tilde[0]=ShotMask[9]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'd':  tilde[0]=ShotMask[8]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'e':  tilde[0]=ShotMask[7]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'f':  tilde[0]=ShotMask[6]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'g':  tilde[0]=ShotMask[5]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'h':  tilde[0]=ShotMask[4]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'i':  tilde[0]=ShotMask[3]; strcpy(&tilde[1],&tilde[2]); break;
-    case 'j':  tilde[0]=ShotMask[2]; strcpy(&tilde[1],&tilde[2]); break;
+    case 'a':  tilde[0]=ShotMask[11]; str_shift(&tilde[1],1); break;
+    case 'b':  tilde[0]=ShotMask[10]; str_shift(&tilde[1],1); break;
+    case 'c':  tilde[0]=ShotMask[9];  str_shift(&tilde[1],1); break;
+    case 'd':  tilde[0]=ShotMask[8];  str_shift(&tilde[1],1); break;
+    case 'e':  tilde[0]=ShotMask[7];  str_shift(&tilde[1],1); break;
+    case 'f':  tilde[0]=ShotMask[6];  str_shift(&tilde[1],1); break;
+    case 'g':  tilde[0]=ShotMask[5];  str_shift(&tilde[1],1); break;
+    case 'h':  tilde[0]=ShotMask[4];  str_shift(&tilde[1],1); break;
+    case 'i':  tilde[0]=ShotMask[3];  str_shift(&tilde[1],1); break;
+    case 'j':  tilde[0]=ShotMask[2];  str_shift(&tilde[1],1); break;
     case 'n':  fname = GetFname(tree,shot);
       if ((strlen(tilde+2) > 1) || ((strlen(tilde+2) == 1) && (tilde[2] != '\\')))
       {
@@ -984,6 +992,7 @@ void FixupHeader(TREE_HEADER *hdr)
   char flags = ((char *)hdr)[1];
   hdr->sort_children = (flags & 1) != 0;
   hdr->sort_members = (flags & 2) != 0;
+  hdr->versions = (flags & 4) != 0;
   SwapBytesInt((char *)&hdr->free);
   SwapBytesInt((char *)&hdr->tags);
   SwapBytesInt((char *)&hdr->externals);

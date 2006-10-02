@@ -24,6 +24,7 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 
+static _int64 ViewDate = -1;
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 static int GetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
@@ -78,7 +79,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
       status = 1;
     if (status & 1)
     {
-      status = TreeGetNciW(info, nidx, &nci);
+      status = TreeGetNciW(info, nidx, &nci,0);
       if (status & 1)
       {
 	if (nci.length)
@@ -360,3 +361,39 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
   return status;
 }
 
+int TreeSetViewDate(_int64 *date)
+{
+  ViewDate=*date;
+  return TreeSUCCESS;
+}
+
+_int64 TreeGetViewDate(_int64 *date)
+{
+  *date= ViewDate;
+  return TreeSUCCESS;
+}
+
+int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
+{
+  char nci_bytes[42];
+  int status;
+  if (!info->data_file)
+    status = OpenDatafileR(info);
+  else
+    status = 1;
+  if (status & 1) {
+    _int64 rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
+    rfa_l+=((nci->DATA_INFO.DATA_LOCATION.record_length == (DATAF_C_MAX_RECORD_SIZE + 2)) ? (DATAF_C_MAX_RECORD_SIZE + 2) : 
+       (nci->DATA_INFO.DATA_LOCATION.record_length % (DATAF_C_MAX_RECORD_SIZE + 2)));
+    rfa_l+=sizeof(RECORD_HEADER);
+    status = TreeLockDatafile(info,1,rfa_l);
+    MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+    status = (MDS_IO_READ(info->data_file->get,(void *)nci_bytes,42) == 42) ? TreeSUCCESS : TreeFAILURE;
+    TreeUnLockDatafile(info,1,rfa_l);
+    if (status & 1) {
+      TreeSerializeNciIn(nci_bytes,v_nci);
+    }
+  }
+  return status;
+}  
+  

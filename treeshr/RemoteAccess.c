@@ -29,6 +29,7 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ncidef.h>
+#include <dbidef.h>
 #include <config.h>
 #ifndef O_BINARY
 #define O_BINARY 0x0
@@ -719,6 +720,21 @@ STATIC_ROUTINE int SetNciItmRemote(PINO_DATABASE *dblist, int nid, int code, int
   return status;
 }
 
+STATIC_ROUTINE int SetDbiItmRemote(PINO_DATABASE *dblist, int code, int value)
+{
+  struct descrip ans = empty_ans;
+  char exp[512];
+  int status;
+  sprintf(exp,"TreeSetDbiItm(%d,%d)",code,value);
+  status = MdsValue0(dblist->tree_info->channel,exp,&ans);
+  if (ans.ptr)
+  {
+    status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
+    MdsIpFree(ans.ptr);
+  }
+  return status;
+}
+
 int SetNciRemote(PINO_DATABASE *dblist, int nid, NCI_ITM *nci_itm)
 {
   int status = 1;
@@ -731,6 +747,26 @@ int SetNciRemote(PINO_DATABASE *dblist, int nid, NCI_ITM *nci_itm)
       case NciCLEAR_FLAGS:
       case NciSET_FLAGS: 
         status = SetNciItmRemote(dblist, nid, (int)itm_ptr->code, *(int *)itm_ptr->pointer);
+	break;
+      default:
+	status = TreeILLEGAL_ITEM;
+	break;
+    }
+  }
+  return status;
+}
+
+int SetDbiRemote(PINO_DATABASE *dblist, DBI_ITM *dbi_itm)
+{
+  int status = 1;
+  DBI_ITM *itm_ptr;
+  for (itm_ptr = dbi_itm; itm_ptr->code != DbiEND_OF_LIST && status & 1; itm_ptr++)
+  {
+    switch (itm_ptr->code)
+    {
+      case DbiVERSIONS_IN_MODEL:
+      case DbiVERSIONS_IN_PULSE:
+        status = SetDbiItmRemote(dblist,(int)itm_ptr->code, *(int *)itm_ptr->pointer);
 	break;
       default:
 	status = TreeILLEGAL_ITEM;

@@ -70,25 +70,17 @@ static char  *MdsDatime(	/* Return: ptr to date+time string	*/
 	 ****************************************************************/
 int   TclDirectory()
    {
-    int   k;
     unsigned int   usage;
     char  *p;
-    char  *pathnam;
-    char  *reference;
     char  *tagnam;
     char  textLine[128];
     static char  fmtTotal[] = "Total of %d node%s.";
     static char  fmtGrandTotal[] = "Grand total of %d node%s.";
-    static char  fmtStates[] = "      Status: %s,parent is %s, usage %s%s%s%s";
-    static char  fmtTime[] = "      Data inserted: %s    Owner: %s";
-    static char  fmtDescriptor[] = "      Dtype: %-20s  Class: %-18s  Length: %d bytes";
-    static char  fmtConglom1[] = "      Model element: %d";
-    static char  fmtConglom2[] = "      Original element name: %s%s";
     static DYNAMIC_DESCRIPTOR(dsc_nodnam);
     static DYNAMIC_DESCRIPTOR(dsc_nodeList);
     static DYNAMIC_DESCRIPTOR(dsc_outline);
+    char  *pathnam;
 
-    static char partC[64+1];
     int nid;
     int status;
     void  *ctx = 0;
@@ -97,34 +89,11 @@ int   TclDirectory()
     int   grand_found = 0;
     int   first_tag;
     int   full;
-    static int   nciFlags;
     static int   nodnamLen;
-    static int   retlen;
-    static int   time[2];
-    static unsigned int   owner;
-    static char class;
-    static char dtype;
-    static int   dataLen;
-    static unsigned short conglomerate_elt;
-    static int   head_nid;
-    static int   partlen;
-    static NCI_ITM full_list[] = {
-          {4,NciGET_FLAGS,&nciFlags,0}
-         ,{8,NciTIME_INSERTED,time,0}
-         ,{4,NciOWNER_ID,&owner,0}
-         ,{1,NciCLASS,&class,0}
-         ,{1,NciDTYPE,&dtype,0}
-         ,{4,NciLENGTH,&dataLen,0}
-         ,{2,NciCONGLOMERATE_ELT,&conglomerate_elt,0}
-         ,{0,NciEND_OF_LIST,0,0}
-         };
 
-    static NCI_ITM cong_list[] = {
-          {4,NciCONGLOMERATE_NIDS,&head_nid,&retlen}
-         ,{64,NciORIGINAL_PART_NAME,partC,&partlen}
-         ,{0,NciEND_OF_LIST,0,0}
-         };
+    static int   retlen;
     int last_parent_nid = -1;
+    int version;
     static int parent_nid;
     static char nodnamC[12+1];
     static int relationship;
@@ -141,21 +110,6 @@ int   TclDirectory()
     static DYNAMIC_DESCRIPTOR(dsc_allUsage);
     static DYNAMIC_DESCRIPTOR(dsc_usageStr);
     int usageMask = -1;
-    static char *usages[] = { "any",
-                            "structure",
-                            "action",
-                            "device",
-                            "dispatch",
-                            "numeric",
-                            "signal",
-                            "task",
-                            "text",
-                            "window",
-                            "axis",
-                            "subtree",
-                            "compound data",
-                            "unknown"};
-#define MAX_USAGES   (sizeof(usages)/sizeof(usages[0]))
 
 
     parent_nid = 0;
@@ -236,102 +190,8 @@ int   TclDirectory()
                        }
                     TclTextOut(dsc_outline.dscA_pointer);
                     str_free1_dx(&dsc_outline);
-
-                    status = TreeGetNci(nid,full_list);
-                    if (status & 1)
-                       {
-                        k = (nodeUsage<MAX_USAGES) ?
-                                         nodeUsage : (MAX_USAGES-1);
-                        p = usages[k];
-                        sprintf(textLine,fmtStates,
-                            (nciFlags & NciM_STATE) ? "off" : "on",
-                            (nciFlags & NciM_PARENT_STATE) ? "off" : "on",
-                            p,
-                            (nciFlags & NciM_WRITE_ONCE) ?
-                                (dataLen?",readonly":",write-once") : "",
-                            (nciFlags & NciM_ESSENTIAL) ? ",essential":"",
-                            (nciFlags & NciM_CACHED) ? ",cached" : "");
-                        TclTextOut(textLine);
-
-                        if (nciFlags & NciM_NO_WRITE_MODEL)
-                            TclTextOut("      not writeable in model");
-                        if (nciFlags & NciM_NO_WRITE_SHOT)
-                            TclTextOut("      not writeable in pulse file");
-                        if (nodeUsage == TreeUSAGE_SUBTREE)
-                           {
-                            sprintf(textLine,
-                               "      subtree %sincluded in pulse file.",
-                               (nciFlags & NciM_INCLUDE_IN_PULSE)?"":"NOT");
-                            TclTextOut(textLine);
-                           }
-
-                        if (nciFlags & NciM_COMPRESSIBLE)
-                           {
-                            str_copy_dx(&dsc_outline,"compressible");
-                            if (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS))
-                                 str_append(&dsc_outline,",");
-                           }
-                        if (nciFlags & NciM_COMPRESS_ON_PUT)
-                           {
-                            str_append(&dsc_outline,"compress on put");
-                            if (nciFlags & NciM_DO_NOT_COMPRESS)
-                                str_append(&dsc_outline,",");
-                           }
-                        if (nciFlags & NciM_DO_NOT_COMPRESS)
-                            str_append(&dsc_outline,"do not compress");
-                        if (dsc_outline.dscW_length)
-                           {
-                            str_prefix(&dsc_outline,"      ");
-                            TclTextOut(dsc_outline.dscA_pointer);
-                            str_free1_dx(&dsc_outline);
-                           }
-
-                        switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE))
-                           {
-                            case NciM_PATH_REFERENCE:
-                                reference = " (paths only)";  break;
-                            case NciM_NID_REFERENCE:
-                                reference = " (node ids only)";  break;
-                            case NciM_PATH_REFERENCE | NciM_NID_REFERENCE:
-                                reference = " (paths and node ids)";  break;
-                            default:
-                                reference = 0;  break;
-                           }
-                        if (reference)
-                           {
-                            str_concat(&dsc_outline,
-                              "      contains node references",reference,0);
-                            TclTextOut(dsc_outline.dscA_pointer);
-                           }
-
-                        sprintf(textLine,fmtTime,
-                            MdsDatime(time),MdsOwner(owner));
-                        TclTextOut(textLine);
-                        if (dataLen)
-                           {
-                            sprintf(textLine,fmtDescriptor,
-                                MdsDtypeString((int)dtype),
-                                MdsClassString((int)class),dataLen);
-                            TclTextOut(textLine);
-                           }
-                        else
-                            TclTextOut("      There is no data stored for this node");
-                        if (conglomerate_elt != 0)
-                           {
-                            sprintf(textLine,fmtConglom1,conglomerate_elt);
-                            TclTextOut(textLine);
-
-                            TreeGetNci(nid,cong_list);
-                            if (partlen)
-                               {
-                                pathnam = TreeGetPath(head_nid);
-                                partC[partlen] = 0;
-                                sprintf(textLine,fmtConglom2,pathnam,partC);
-                                TclTextOut(textLine);
-                                TreeFree(pathnam);
-                               }
-                           }
-                       }
+                    version=0;
+                    while(doFull(nid,nodeUsage,version++)&1);
 #ifdef vms
                     else
                       lib$signal(status,0);
@@ -393,3 +253,161 @@ int   TclDirectory()
 
     return ((status == TreeNMN) || (status == TreeNNF)) ? 1 : status;
    }
+
+
+int doFull(nid,nodeUsage,version) 
+{
+  static char  fmtConglom2[] = "      Original element name: %s%s";
+  char  *pathnam;
+  static int   time[2];
+  static char partC[64+1];
+   static int   retlen;
+  static int   head_nid;
+  static int   partlen;
+  static NCI_ITM cong_list[] = {
+    {4,NciCONGLOMERATE_NIDS,&head_nid,&retlen}
+    ,{64,NciORIGINAL_PART_NAME,partC,&partlen}
+    ,{0,NciEND_OF_LIST,0,0}
+  };
+  char  *reference;
+  static DYNAMIC_DESCRIPTOR(dsc_outline);
+  static char  fmtStates[] = "      Status: %s,parent is %s, usage %s%s%s%s";
+  static char  fmtTime[] = "      Data inserted: %s    Owner: %s";
+  static char  fmtDescriptor[] = "      Dtype: %-20s  Class: %-18s  Length: %d bytes";
+  static char  fmtConglom1[] = "      Model element: %d";
+  int   k;
+  char *p;
+  char  textLine[128];
+  static char *usages[] = { "any",
+                            "structure",
+                            "action",
+                            "device",
+                            "dispatch",
+                            "numeric",
+                            "signal",
+                            "task",
+                            "text",
+                            "window",
+                            "axis",
+                            "subtree",
+                            "compound data",
+                            "unknown"};
+#define MAX_USAGES   (sizeof(usages)/sizeof(usages[0]))
+  static int   nciFlags;
+  static unsigned int   owner;
+  static char class;
+  static char dtype;
+  static int   dataLen;
+  static unsigned short conglomerate_elt;
+  static vers;
+  static NCI_ITM full_list[] = {
+    {4,NciVERSION,&vers,0}
+    ,{4,NciGET_FLAGS,&nciFlags,0}
+    ,{8,NciTIME_INSERTED,time,0}
+    ,{4,NciOWNER_ID,&owner,0}
+    ,{1,NciCLASS,&class,0}
+    ,{1,NciDTYPE,&dtype,0}
+    ,{4,NciLENGTH,&dataLen,0}
+    ,{2,NciCONGLOMERATE_ELT,&conglomerate_elt,0}
+    ,{0,NciEND_OF_LIST,0,0}
+  };
+  int status;
+  vers=version;
+  status = TreeGetNci(nid,full_list);
+  if (status & 1)
+    {
+      if (version == 0) {
+	k = (nodeUsage<MAX_USAGES) ?
+	  nodeUsage : (MAX_USAGES-1);
+	p = usages[k];
+	sprintf(textLine,fmtStates,
+		(nciFlags & NciM_STATE) ? "off" : "on",
+		(nciFlags & NciM_PARENT_STATE) ? "off" : "on",
+		p,
+		(nciFlags & NciM_WRITE_ONCE) ?
+		(dataLen?",readonly":",write-once") : "",
+		(nciFlags & NciM_ESSENTIAL) ? ",essential":"",
+		(nciFlags & NciM_CACHED) ? ",cached" : "");
+	TclTextOut(textLine);
+      
+	if (nciFlags & NciM_NO_WRITE_MODEL)
+	  TclTextOut("      not writeable in model");
+	if (nciFlags & NciM_NO_WRITE_SHOT)
+	  TclTextOut("      not writeable in pulse file");
+	if (nodeUsage == TreeUSAGE_SUBTREE)
+	{
+	  sprintf(textLine,
+		  "      subtree %sincluded in pulse file.",
+		  (nciFlags & NciM_INCLUDE_IN_PULSE)?"":"NOT");
+	  TclTextOut(textLine);
+	}
+      
+	if (nciFlags & NciM_COMPRESSIBLE)
+	{
+	  str_copy_dx(&dsc_outline,"compressible");
+	  if (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS))
+	    str_append(&dsc_outline,",");
+	}
+	if (nciFlags & NciM_COMPRESS_ON_PUT)
+	{
+	  str_append(&dsc_outline,"compress on put");
+	  if (nciFlags & NciM_DO_NOT_COMPRESS)
+	    str_append(&dsc_outline,",");
+	}
+	if (nciFlags & NciM_DO_NOT_COMPRESS)
+	  str_append(&dsc_outline,"do not compress");
+	if (dsc_outline.dscW_length)
+	{
+	  str_prefix(&dsc_outline,"      ");
+	  TclTextOut(dsc_outline.dscA_pointer);
+	  str_free1_dx(&dsc_outline);
+	}
+      
+	switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE)) {
+	case NciM_PATH_REFERENCE:
+	  reference = " (paths only)";  break;
+	case NciM_NID_REFERENCE:
+	  reference = " (node ids only)";  break;
+	case NciM_PATH_REFERENCE | NciM_NID_REFERENCE:
+	  reference = " (paths and node ids)";  break;
+	default:
+	  reference = 0;  break;
+	}
+	if (reference)
+	{
+	  str_concat(&dsc_outline,
+		     "      contains node references",reference,0);
+	  TclTextOut(dsc_outline.dscA_pointer);
+	}
+      }
+      else
+	TclTextOut("");
+      sprintf(textLine,fmtTime,MdsDatime(time),MdsOwner(owner));
+      TclTextOut(textLine);
+      if (dataLen)
+	{
+	  sprintf(textLine,fmtDescriptor,
+		  MdsDtypeString((int)dtype),
+		  MdsClassString((int)class),dataLen);
+	  TclTextOut(textLine);
+	}
+      else
+	TclTextOut("      There is no data stored for this node");
+      if (conglomerate_elt != 0)
+	{
+	  sprintf(textLine,fmtConglom1,conglomerate_elt);
+	  TclTextOut(textLine);
+	  
+	  TreeGetNci(nid,cong_list);
+	  if (partlen)
+	    {
+	      pathnam = TreeGetPath(head_nid);
+	      partC[partlen] = 0;
+	      sprintf(textLine,fmtConglom2,pathnam,partC);
+	      TclTextOut(textLine);
+	      TreeFree(pathnam);
+	    }
+	}
+    }
+  return status;
+}

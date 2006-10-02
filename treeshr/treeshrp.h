@@ -361,11 +361,15 @@ typedef struct tree_header
 #ifdef _AIX
   unsigned sort_children:1;
   unsigned sort_members:1;
-  unsigned :6;
+  unsigned versions_in_model:1;
+  unsigned versions_in_pulse:1;
+  unsigned :4;
 #else
   unsigned  char sort_children:1;	/* Sort children flag */
   unsigned  char sort_members:1;	/* Sort members  flag */
-  unsigned  char : 6;
+  unsigned  char versions_in_model:1;
+  unsigned  char versions_in_pulse:1;
+  unsigned  char : 4;
 #endif
   char      fill1[6];
   int       free;	/* First node in free node list (connected by PARENT/CHILD indexes */
@@ -670,7 +674,7 @@ extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 extern int TreeCloseFiles(TREE_INFO *info);
 extern int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes);
 extern int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr);
-extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci);
+extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci,unsigned int version);
 extern int TreeGetNciLw(TREE_INFO *info, int node_number, NCI *nci);
 extern int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort);
 extern int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort);
@@ -695,6 +699,7 @@ extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef _WIN32
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 typedef int mode_t;
 typedef int ssize_t;
 #endif

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
+#include <ncidef.h>
 #include "treeshrp.h"
 
 extern void *DBID;
@@ -46,19 +47,42 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
               {
                 EMPTYXD(xd);
                 EMPTYXD(mtxd);
-                NCI nci;
-                TreeGetNciW(info1, i, &nci);
-                TreePutNci(info2, i, &nci, 1);
-                lstatus = _TreeGetRecord(dbid1, i, &xd);
-                if (lstatus & 1)
-                  lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
-                else if (lstatus == TreeBADRECORD || lstatus == TreeINVDFFCLASS)
-		{
-                  fprintf(stderr,"TreeBADRECORD, Clearing nid %d\n",i);
-                  lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&mtxd, compress ? 2 : 1);
+                int first=1;
+                struct nci_list {
+		  NCI nci;
+		  struct nci_list *next;
+		} *list = memset(malloc(sizeof(struct nci_list)),0,sizeof(struct nci_list));
+                TreeGetNciW(info1, i, &list->nci,0);
+                while (list->nci.flags & NciM_VERSIONS) {
+		  struct nci_list *old_list=list;
+                  list = malloc(sizeof(struct nci_list));
+                  list->next=old_list;
+                  TreeGetVersionNci(info1,&old_list->nci,&list->nci);
                 }
-                MdsFree1Dx(&xd,NULL);
-                
+                while (list) {
+                  _int64 now=-1;
+                  struct nci_list *old_list=list;
+		  TreeSetViewDate(&list->nci.time_inserted);
+		  if (first) {
+                    static NCI empty_nci;
+		    TreePutNci(info2, i, &empty_nci, 1);
+                    first=0;
+                  }
+		  lstatus = _TreeGetRecord(dbid1, i, &xd);
+                  TreeSetViewDate(&now);
+		  if (lstatus & 1) {
+                    TreeSetTemplateNci(&list->nci);
+		    lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&xd, compress ? 2 : 1);
+		  }
+		  else if (lstatus == TreeBADRECORD || lstatus == TreeINVDFFCLASS)
+		    {
+		      fprintf(stderr,"TreeBADRECORD, Clearing nid %d\n",i);
+		      lstatus = _TreePutRecord(dbid2, i, (struct descriptor *)&mtxd, compress ? 2 : 1);
+		    }
+		  MdsFree1Dx(&xd,NULL);
+                  list = list->next;
+                  free(old_list);
+		}
               }
               from_c = strcpy(malloc(strlen(info1->filespec)+20),info1->filespec);
               strcpy(from_c+strlen(info1->filespec)-4,"characteristics#");
