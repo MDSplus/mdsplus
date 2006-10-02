@@ -33,6 +33,7 @@ La configurazione viene salvata solamente alla partenza e quando viene modificat
 public class ParameterSetting
     extends JFrame implements Printable
 {
+    static final String DECOUPLING_BASE_DIR = "/usr/local/rfx/data_acquisition/real_time/decoupling/";
     static final int NUM_DEVICES = 20;
     static final int NUM_SETUP = 13;
     boolean isRt = false;
@@ -87,6 +88,10 @@ public class ParameterSetting
     int[] modifiedNids;
     int currLoadShot;
     Cursor prevCursor = getCursor();
+
+    String decouplingNames[];
+    int decouplingKeys[];
+
 
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
@@ -202,6 +207,10 @@ public class ParameterSetting
         }
         if(isRt || isOnline)
             handleScheduler();
+
+        if(!isRt)
+            prepareDecouplingInfo();
+
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem printItem = new JMenuItem("Print Setup");
@@ -294,6 +303,15 @@ public class ParameterSetting
                 }
             });
             fileMenu.add(decouplingItem);
+            JMenuItem decouplingInfoItem = new JMenuItem("Get MHD Decoupling Info...");
+            decouplingInfoItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    showDecouplingInfo();
+                }
+            });
+            fileMenu.add(decouplingInfoItem);
 
         }
         menuBar.add(fileMenu);
@@ -1235,6 +1253,7 @@ public class ParameterSetting
         tabbedP.add(limitsJp, "Limits");
         tabbedP.add(messageJp, "Messages");
         getContentPane().add(tabbedP, "Center");
+
     }
 
     void getLimits()
@@ -1537,6 +1556,7 @@ public class ParameterSetting
             timesChopperCB,
             timesInverterCB;
         JCheckBox[] checkBoxes = new JCheckBox[12];
+        JCheckBox mhdDecoupingCheckBox;
         JCheckBox[] timeCheckBoxes = new JCheckBox[13];
 
         SelectSetup(ActionListener actionListener)
@@ -1752,8 +1772,16 @@ public class ParameterSetting
                                selectedTimes);
                     loadSelected.setVisible(false);
 
-                    if(isOnline)
-                    {
+                    if (isOnline) {
+                        if (JOptionPane.showConfirmDialog(ParameterSetting.this,
+                                "Caricare MHD Decoupling da shot " + currLoadShot +
+                                " ("
+                                + getDecouplingName(currLoadShot) + ")?",
+                                "Decoupling", JOptionPane.YES_NO_OPTION)
+                            == JOptionPane.YES_OPTION) {
+                            copyDecoupling(currLoadShot, shot);
+                        }
+
                         if (JOptionPane.showConfirmDialog(ParameterSetting.this,
                                                           "Stampare la scheda di caricamento impulso?",
                                                           "Caricamento impulso",
@@ -2229,7 +2257,7 @@ public class ParameterSetting
             FontMetrics titleFontMetrics = g2.getFontMetrics();
 
             int titleWidth, titleHeight;
-            if(currPrintDeviceIdx > 0)
+            if(currPrintDeviceIdx >= 0)
             {
                 titleWidth = titleFontMetrics.stringWidth(titles[
                                                               currPrintDeviceIdx]);
@@ -2936,6 +2964,8 @@ public class ParameterSetting
                                               "Configuration discrepance",
                                               JOptionPane.WARNING_MESSAGE);
 
+
+
         }
 
         catch (Exception exc)
@@ -2957,11 +2987,10 @@ public class ParameterSetting
             super(ParameterSetting.this, "Select MHD decoupling");
             JPanel jp = new JPanel();
             String []matrixNames = getMatrixFiles();
-            String[] allMatrixNames = new String[matrixNames.length + 2];
-            allMatrixNames[0] = "diagonal";
+            String[] allMatrixNames = new String[matrixNames.length + 1];
             for(int i = 0; i < matrixNames.length; i++)
-                allMatrixNames[i+1] = matrixNames[i].substring(0, matrixNames[i].length() - 4);
-            allMatrixNames[matrixNames.length + 1] = "From Shot...";
+                allMatrixNames[i] = matrixNames[i].substring(0, matrixNames[i].length() - 4);
+            allMatrixNames[matrixNames.length] = "From Shot...";
             decouplingC = new JComboBox(allMatrixNames);
             decouplingC.setSelectedIndex(0);
             jp.add(new JLabel("Decoupling: "));
@@ -3016,7 +3045,7 @@ public class ParameterSetting
             String shotStr = JOptionPane.showInputDialog(ParameterSetting.this, "Shot number: ");
             try {
                 int shotNum = Integer.parseInt(shotStr);
-                importDecouplingFrom(shotNum);
+                copyDecoupling(shotNum, shot);
             }catch(Exception exc)
             {
                 JOptionPane.showMessageDialog(ParameterSetting.this, "Error loading Decoupling Matrix", "Error",
@@ -3239,6 +3268,7 @@ public class ParameterSetting
             System.err.println("Cannot open working shot");
             return;
         }
+        copyDecoupling(100, -1);
     }
 
     void compareShots()
@@ -3554,7 +3584,7 @@ public class ParameterSetting
     {
         try
         {
-            File currDir = new File(".");
+            File currDir = new File("/usr/local/rfx/data_acquisition/real_time/decoupling");
             return  currDir.list(new FilenameFilter() {
                 public boolean accept(File dir, String name)
                 {
@@ -3563,6 +3593,7 @@ public class ParameterSetting
             });
         }catch(Exception exc){return new String[0];}
     }
+
 
     Vector getModifiedNidsV(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
     {
@@ -3618,20 +3649,20 @@ public class ParameterSetting
 
     }
 
-    void importDecouplingFrom(int inShot)
+    void copyDecoupling(int fromShot, int toShot)
     {
         Data decouplingData;
-        if(inShot == shot)
+        if(fromShot == toShot)
             return;
 
         try {
             rfx.close(0);
-            rfx = new Database("rfx", inShot);
+            rfx = new Database("rfx", fromShot);
             rfx.open();
         }
         catch(Exception exc)
         {
-            JOptionPane.showMessageDialog(this, "Cannot open shot " + inShot, "Error opening shot",
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + fromShot, "Error opening shot",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -3642,18 +3673,18 @@ public class ParameterSetting
         }
         catch(Exception exc)
         {
-            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + inShot, "Error reading data",
+            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + fromShot, "Error reading data",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             rfx.close(0);
-            rfx = new Database("rfx", shot);
+            rfx = new Database("rfx", toShot);
             rfx.open();
         }
         catch(Exception exc)
         {
-            JOptionPane.showMessageDialog(this, "Cannot open shot " + inShot, "Error opening shot",
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + toShot, "Error opening shot",
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -3667,14 +3698,108 @@ public class ParameterSetting
         }
         catch(Exception exc)
         {
-            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + inShot, "Error reading data",
+            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + toShot, "Error reading data",
                     JOptionPane.WARNING_MESSAGE);
             return;
+        }
+        if(toShot != shot)
+        {
+            try {
+                rfx.close(0);
+                rfx = new Database("rfx", shot);
+                rfx.open();
+            }
+            catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(this, "Cannot open shot " + shot, "Error opening shot",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         }
 
     }
 
 
+    void prepareDecouplingInfo() {
+        String []fileNames;
+        try {
+            File currDir = new File("/usr/local/rfx/data_acquisition/real_time/decoupling");
+            fileNames = currDir.list(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".key");
+                }
+            });
+        } catch (Exception exc) {
+            return;
+        }
+        decouplingKeys = new int[fileNames.length];
+        decouplingNames = new String[fileNames.length];
+        for(int i = 0; i < fileNames.length; i++)
+        {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(DECOUPLING_BASE_DIR+fileNames[i]));
+                String keyStr = br.readLine();
+                decouplingKeys[i] = Integer.parseInt(keyStr);
+                decouplingNames[i] = fileNames[i].substring(0, fileNames[i].length() - 4);
+            }catch(Exception exc)
+            {
+                System.err.println(exc);
+            }
+        }
+    }
+
+    String getDecouplingName(int inShot)
+    {
+        String outName = null;
+        try {
+            if(inShot != shot)
+            {
+                rfx.close(0);
+                rfx = new Database("rfx", inShot);
+                rfx.open();
+            }
+            NidData decNid = rfx.resolve(new PathData(
+                    "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+            Data decouplingData = rfx.getData(decNid, 0);
+            Data evaluatedDecouplingData = rfx.evaluateData(decouplingData, 0);
+            float[] decouplingValues = ((ArrayData) evaluatedDecouplingData).getFloatArray();
+            int key = Convert.getKey(decouplingValues);
+            for (int i = 0; i < decouplingKeys.length; i++) {
+                if (decouplingKeys[i] == key) {
+                    outName = decouplingNames[i];
+                    break;
+                }
+            }
+            if (inShot != shot) {
+                rfx.close(0);
+                rfx = new Database("rfx", shot);
+                rfx.open();
+            }
+        } catch (Exception exc) {
+            System.err.println(exc);
+            outName = null;
+        }
+        return outName;
+    }
+
+
+    void showDecouplingInfo()
+    {
+        String shotStr = JOptionPane.showInputDialog(ParameterSetting.this, "Shot: ");
+        try {
+            int inShot = Integer.parseInt(shotStr);
+            String decouplingName = getDecouplingName(inShot);
+            if(decouplingName != null)
+                JOptionPane.showMessageDialog(ParameterSetting.this, "Decoupling for shot " + inShot + ": "
+                        +decouplingName, "Decoupling", JOptionPane.INFORMATION_MESSAGE);
+            else
+                JOptionPane.showMessageDialog(ParameterSetting.this, "Unknown decoupling matrix", "Decoupling", JOptionPane.INFORMATION_MESSAGE);
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(ParameterSetting.this, "Unknown decoupling matrix", "Decoupling", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
 
     public static void main(String args[])
     {
