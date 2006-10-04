@@ -1585,16 +1585,44 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY-SEC_PER_DAY;
   }
   else {
-#ifndef HAVE_WINDOWS_H
 #ifndef HAVE_VXWORKS_H
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
+#ifdef HAVE_WINDOWS_H
+    unsigned int day,year,hour,minute,second;
+	char month[4];
+	char *months[]={"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+	if (sscanf(asc_time,"%u-%3s-%u %u:%u:%u", &day, &month, 
+		&year, &hour, &minute, &second) < 6) {
+			return 0;
+		}
+	_strupr(month);
+	for (tm.tm_mon=0;tm.tm_mon<12;tm.tm_mon++) {
+		if (strcmp(month,months[tm.tm_mon])==0) {
+			break;	
+		}
+	}
+	if ((tm.tm_mon==12) || (day <1) || (day > 31) ||
+		(year < 1900) || (year > 2200) ||
+		(hour > 23) || (minute > 59) || (second > 59)) return 0;
+	tm.tm_mday=day;
+	tm.tm_year=year-1900;
+	tm.tm_hour=hour;
+	tm.tm_min=minute;
+	tm.tm_sec=second;
+#else
     tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
+#endif
     if (tmp) {
       time_t t=time(0);
       struct tm *tm_p=localtime(&t);
-      tim = mktime(&tm) + 1;
-#ifndef __hpux
+      tim = mktime(&tm);
+	  if ((int)tim == -1) return 0;
+	  tim++;
+#if defined(HAVE_WINDOWS_H)
+	  _tzset();
+	  tim -= _timezone;
+#elif !defined(__hpux) && !defined(HAVE_WINDOWS_H)
       tim += tm_p->tm_gmtoff;
 #endif
     }
@@ -1602,10 +1630,6 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
       tim = 0;
 #else
     tim = 0; /*It is vxWorks */
-#endif
-#else /* it is windows */
-    tim = 0;
-    printf("Only today, tomorrow, and yesterday available on windows\n");
 #endif
   }
   if (tim > 0) {
