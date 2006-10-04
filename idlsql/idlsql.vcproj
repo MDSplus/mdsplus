@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl32.lib &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
+				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl.lib &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
 				OutputFile="$(OutDir)/idlsql.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
