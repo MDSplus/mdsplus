@@ -459,27 +459,11 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
   _int64u *arg2=(_int64u *)b;
   _int64u *out=(_int64u *)ans;
   *out=*arg1 + *arg2;
+#if defined(_MSC_VER) && _MSC_VER <= 1300
+  return (*out && 0x800000000000000Ui64) != 0;
+#else
   return (*out && 0x800000000000000ULL) != 0;
-  /*
-  int i;
-  int carry=0;
-  unsigned int la[2];
-  unsigned int lb[2];
-  la[0] = a[0];
-  la[1] = a[1];
-  lb[0] = b[0];
-  lb[1] = b[1];
-  swapquad(la);
-  swapquad(lb);
-  for (i=0; i<2; i++) {
-    unsigned int _a = la[i];
-    unsigned int _b = lb[i];
-    ans[i] = _a + _b + carry;
-    carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
-  }
-  swapquad(ans);
-  return !carry;
-  */
+#endif
 }
 
 int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)

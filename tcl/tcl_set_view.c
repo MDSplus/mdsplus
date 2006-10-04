@@ -26,7 +26,8 @@ int TclSetView()
     _int64 viewDate=-1;
     static DYNAMIC_DESCRIPTOR(dsc_viewdate_string);
     cli_get_value("DATE",&dsc_viewdate_string);
-    if (strcasecmp(dsc_viewdate_string.dscA_pointer,"now")==0) {
+	StrUpcase(&dsc_viewdate_string,&dsc_viewdate_string);
+    if (strcmp(dsc_viewdate_string.dscA_pointer,"NOW")==0) {
       status = TreeSetViewDate(&viewDate);
     }
     else if ((status = LibConvertDateString(dsc_viewdate_string.dscA_pointer,&viewDate)) & 1) {

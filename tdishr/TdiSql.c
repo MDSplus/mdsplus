@@ -85,8 +85,13 @@ STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fbfffff;
 STATIC_CONSTANT unsigned long long nan_d_bits = 0xffffffff7ff7ffff;
 */
 STATIC_CONSTANT  unsigned int nan_f_bits =  0x7fc00000;
+
+#if defined(_MSC_VER) && _MSC_VER <= 1300
+STATIC_CONSTANT _int64u nan_d_bits = 0x7ff8000000000000Ui64;
+#else
 STATIC_CONSTANT _int64u nan_d_bits = 0x7ff8000000000000ULL;
- 
+#endif
+
 static double d_null = 0;
 static float  f_null = 0;
 
