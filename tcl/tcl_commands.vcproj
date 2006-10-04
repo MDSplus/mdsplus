@@ -128,6 +128,13 @@
 		</Configuration>
 	</Configurations>
 	<Files>
+		<Filter
+			Name="Release"
+			Filter="">
+			<File
+				RelativePath="..\include\release.h">
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\tcl_add_node.c">
 		</File>
@@ -228,7 +235,13 @@ cdu &lt; &quot;$(InputPath)&quot;
 			RelativePath=".\tcl_set_tree.c">
 		</File>
 		<File
+			RelativePath="tcl_set_view.c">
+		</File>
+		<File
 			RelativePath=".\tcl_setevent.c">
+		</File>
+		<File
+			RelativePath="tcl_setshow_versions.c">
 		</File>
 		<File
 			RelativePath=".\tcl_show_current.c">

@@ -196,6 +196,9 @@
 			RelativePath=".\TreeSerializeNci.c">
 		</File>
 		<File
+			RelativePath="TreeSetDbi.c">
+		</File>
+		<File
 			RelativePath=".\TreeSetDefault.c">
 		</File>
 		<File
