@@ -48,7 +48,7 @@ public fun IPC901__store(as_is _nid, optional _method)
  		abort();
 	}
 
-    DevNodeCvt(_nid, _N_TRIG_MODE, ["INTERNAL", "EXTERNAL"],[0,1], _int_trigger = _INVALID);
+    DevNodeCvt(_nid, _N_TRIG_MODE, ["INTERNAL", "EXTERNAL"],[1,0], _int_trigger = _INVALID);
 	if(_int_trigger == _INVALID)
 	{
     	DevLogErr(_nid, "Invalid Trigger mode specification");
