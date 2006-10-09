@@ -3733,6 +3733,8 @@ public class ParameterSetting
         } catch (Exception exc) {
             return;
         }
+        if(fileNames == null)
+            fileNames = new String[0];
         decouplingKeys = new int[fileNames.length];
         decouplingNames = new String[fileNames.length];
         for(int i = 0; i < fileNames.length; i++)
