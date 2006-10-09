@@ -993,7 +993,6 @@ public class RFXToroidalSetup extends DeviceSetup {
         deviceField76.setLabelString("Br measure radius (m):");
         deviceField76.setNumCols(5);
         deviceField76.setOffsetNid(1263);
-    deviceField7.setEditable(true);
         jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
