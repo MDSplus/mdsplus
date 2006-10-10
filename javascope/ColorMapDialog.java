@@ -318,7 +318,7 @@ public class ColorMapDialog
         }
         catch(Exception exc)
         {
-            System.out.println("Color map exception : " + exc);
+            //System.out.println("Color map exception : " + exc);
             nameColorTables = new String[0];
             colorTables = new byte[0];
         }
