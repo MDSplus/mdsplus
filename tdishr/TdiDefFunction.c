@@ -18,15 +18,14 @@
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiIntrinsic();
-
+#define MdsEND_ARG_64 (void *)-1
 #ifndef va_count
-#define  va_count(narg) \
-if (first != MdsEND_ARG) \
+#define  va_count(narg) if (first != MdsEND_ARG && first != MdsEND_ARG_64) \
 { va_start(incrmtr, first); \
   struct descriptor *arg = va_arg(incrmtr, struct descriptor *); \
   for (narg=1; (narg < 256) && \
                (arg != MdsEND_ARG) && \
-               (arg != (void *)-1); \
+               (arg != MdsEND_ARG_64); \
                narg++,arg=va_arg(incrmtr, struct descriptor *)); \
 } else narg=0
 	
