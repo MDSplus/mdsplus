@@ -948,7 +948,7 @@ public class jScope
         network_m = new JMenu("Network");
         mb.add(network_m);
 
-        fast_network_i = new JCheckBoxMenuItem("Fast network access", false);
+        fast_network_i = new JCheckBoxMenuItem("Faster, sub-sampled, access", false);
         fast_network_i.setEnabled(false);
         network_m.add(fast_network_i);
         fast_network_i.addItemListener(this);
