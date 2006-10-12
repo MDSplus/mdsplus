@@ -1,5 +1,4 @@
 import java.util.*;
-import javax.swing.*;
 import java.awt.event.*;
 
 class ActionServer implements Server, MdsServerListener, ConnectionListener
@@ -16,7 +15,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     int shot;
     boolean ready = false, //True if the server is ready to participate to the NEXT shot
         active = false; //True if the server is ready to participate to the CURRENT shot
-    javax.swing.Timer timer;
+    Timer timer = new Timer();
     static final int RECONNECT_TIME = 5;
     boolean useJavaServer = true;
     int watchdogPort = -1;
@@ -52,48 +51,6 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
           ready = active = false;
           startServerPoll();
         }
-        timer = new javax.swing.Timer(0, new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                synchronized(ActionServer.this)
-                {
-                    timer.stop();
-                    if(doing_actions.size() != 1) return; //handle only the usual case with 1 doing action
-                    int queue_len = 0;
-                    int size = enqueued_actions.size();
-                    Vector removed_actions = new Vector();
-                    Action curr_action;
-                    /* Not needed when using jServer
-                    while((curr_action = popAction()) != null)
-                    {
-                        removed_actions.addElement(curr_action);
-                        queue_len++;
-                    }
-                    if(queue_len == size)
-                    {
-                        doing_actions.clear();
-                        try {
-                            mds_server.abort(false); //now we are sure that no other action gets aborted
-                        } catch(Exception exc){}
-                    }
-                    Enumeration action_list = removed_actions.elements();
-                    while(action_list.hasMoreElements())
-                    {
-                        Action action = (Action)action_list.nextElement();
-                        try {
-                            mds_server.dispatchAction(ActionServer.this.tree, shot, action.getNid(), action.getNid());
-                            enqueued_actions.addElement(action);
-                        }catch(Exception exc) {}
-                    }
-*/
-                   try {
-                     mds_server.abort(false); //now we are sure that no other action gets aborted
-                   }
-                   catch (Exception exc) {}
-
-                }
-            }});
-            timer.setRepeats(false);
     }
     public void setTree(String tree) {this.tree = tree; }
     public void setTree(String tree, int shot)
@@ -112,8 +69,8 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             try {
                 if(mds_server != null)
                 {
-                    mds_server.shutdown();
                     mds_server = null;
+                    mds_server.shutdown();
                 }
                 else
                     return; //Already processed
@@ -122,70 +79,69 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 System.err.println("Error shutting down socket");
             }
             System.out.println("Detected server crash");
-            javax.swing.Timer conn_timer = new javax.swing.Timer(RECONNECT_TIME * 1000, new ActionListener()
+            java.util.Timer conn_timer = new java.util.Timer();
+            conn_timer.schedule(new TimerTask()
+            {
+                public void run()
                 {
-                    public void actionPerformed(ActionEvent e)
+                    //synchronized(ActionServer.this)
                     {
-                        //synchronized(ActionServer.this)
-                        {
-                            try {
-                                mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
-                                mds_server.addMdsServerListener(ActionServer.this);
-                                mds_server.addConnectionListener(ActionServer.this);
-                                mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
-                                System.out.println("Restarting server");
-                                Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
-                            }catch(Exception exc)
+                        try {
+                            mds_server = new MdsServer(ip_address,
+                                useJavaServer, watchdogPort);
+                            mds_server.addMdsServerListener(ActionServer.this);
+                            mds_server.addConnectionListener(ActionServer.this);
+                            mds_server.dispatchCommand("TCL",
+                                "SET TREE " + tree + "/SHOT=" + shot);
+                            System.out.println("Restarting server");
+                            Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
+                        }
+                        catch (Exception exc) {
+                            mds_server = null;
+                            ready = active = false;
+                            //enqueued_actions.removeAllElements();
+                            startServerPoll();
+                        }
+                        if (doing_actions.size() > 0) {
+                            Enumeration doing_list = doing_actions.elements();
+                            while (doing_list.hasMoreElements())
+                                processAbortedNoSynch( (Action) doing_list.
+                                    nextElement()); //in any case aborts action currently being executed
+                            doing_actions.clear();
+                        }
+                        Action action;
+                        if (mds_server == null) {
+                            //synchronized(enqueued_actions)
                             {
-                              mds_server = null;
-                              ready = active = false;
-                              //enqueued_actions.removeAllElements();
-                              startServerPoll();
-                            }
-                           if(doing_actions.size() > 0)
-                            {
-                                Enumeration doing_list = doing_actions.elements();
-                                while(doing_list.hasMoreElements())
-                                    processAbortedNoSynch((Action)doing_list.nextElement()); //in any case aborts action currently being executed
-                                doing_actions.clear();
-                            }
-                            Action action;
-                            if(mds_server == null)
-                            {
-                                //synchronized(enqueued_actions)
-                                {
-                                    if(enqueued_actions.size() > 0)
-                                    {
-                                        while(enqueued_actions.size() > 0)
-                                        {
-                                            if((action = (Action)enqueued_actions.elementAt(0)) != null)
-                                                processAbortedNoSynch(action);
-                                            enqueued_actions.removeElementAt(0);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                              ready = active = true;
-                               //synchronized(enqueued_actions)
-                                {
-                                    for(int i = 0; i < enqueued_actions.size(); i++)
-                                    {
-                                        action = (Action)enqueued_actions.elementAt(i);
-                                        try {
-                                            //mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
-                                            mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
-                                        }catch(Exception exc) {}
+                                if (enqueued_actions.size() > 0) {
+                                    while (enqueued_actions.size() > 0) {
+                                        if ( (action = (Action)
+                                              enqueued_actions.elementAt(0)) != null)
+                                            processAbortedNoSynch(action);
+                                        enqueued_actions.removeElementAt(0);
                                     }
                                 }
                             }
                         }
-                    }});
-                    conn_timer.setRepeats(false);
-                    conn_timer.setInitialDelay(RECONNECT_TIME * 1000);
-                    conn_timer.start();
-
+                        else {
+                            ready = active = true;
+                            //synchronized(enqueued_actions)
+                            {
+                                for (int i = 0; i < enqueued_actions.size(); i++) {
+                                    action = (Action) enqueued_actions.
+                                        elementAt(i);
+                                    try {
+                                        //mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
+                                        mds_server.dispatchAction(tree, shot,
+                                            action.getName(), action.getNid());
+                                    }
+                                    catch (Exception exc) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }, RECONNECT_TIME * 1000);
         }
     }
 
@@ -241,14 +197,32 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 }catch(Exception exc){}
                 if(timeout > 0)
                 {
-                    timer.setInitialDelay(timeout * 1000);
-                    timer.start();
+                    timer = new Timer();
+                    timer.schedule( new TimerTask() {
+                      public void run()
+                      {
+                          synchronized (ActionServer.this) {
+                              if (doing_actions.size() != 1)return; //handle only the usual case with 1 doing action
+                              int queue_len = 0;
+                              int size = enqueued_actions.size();
+                              Vector removed_actions = new Vector();
+                              Action curr_action;
+                              try {
+                                  mds_server.abort(false); //now we are sure that no other action gets aborted
+                              }
+                              catch (Exception exc) {}
+
+                          }
+                      }
+                  }, timeout * 1000);
                 }
 
 
                 break;
             case MdsServerEvent.SrvJobFINISHED :
-                timer.stop();
+                try {
+                    timer.cancel();
+                }catch(Exception exc){}
 
                 System.out.println("JOBID: " + e.getJobid());
 
@@ -265,7 +239,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 }
                 break;
             case MdsServerEvent.SrvJobABORTED :
-                timer.stop();
+                try {
+                    timer.cancel();
+                }catch(Exception exc){}
                 Action aborted_action = (Action)doing_actions.remove(new Integer(e.getJobid()));
                 if(aborted_action == null)
                 {
@@ -369,7 +345,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }catch(Exception exc){}
     }
 
-    public synchronized boolean abortAction(Action action)
+    public /*synchronized*/ boolean abortAction(Action action)
     {
         if((doing_actions.get(new Integer(action.getNid())) == null) && enqueued_actions.indexOf(action) == -1)
             return false;
