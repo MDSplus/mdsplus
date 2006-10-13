@@ -17,6 +17,7 @@
 extern "C" {
 #endif
 
+#ifndef MDSLIB_NO_PROTOS
 SOCKET MdsConnect(char *host);
 int descr (int *dtype, void *data, int *dim1, ...);
 int MdsOpen(char *tree, int* shot);
@@ -26,7 +27,7 @@ int MdsValue(char *expression, ...);
 int MdsPut(char *node, char *expression, ...); 
 SOCKET MdsSetSocket( SOCKET *socket );
 void MdsDisconnect();
-
+#endif
 #ifdef __cplusplus
 } // extern "C"
 #endif
