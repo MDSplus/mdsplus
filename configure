@@ -3009,7 +3009,7 @@ GROFF_MAN_FLAGS="-t -man -Tascii"
 GROFF=groff
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
-UILCMD="uid"
+UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 
