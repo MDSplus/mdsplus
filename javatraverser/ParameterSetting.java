@@ -2120,7 +2120,7 @@ public class ParameterSetting
                                     break;
                                 }
                                 case ENTER_PRE:
-                                    doingShot = true;
+                                    //doingShot = true;
                                 case ENTER_PAS:
                                     if (!isRt)
                                     {
