@@ -2121,6 +2121,7 @@ public class ParameterSetting
                                 }
                                 case ENTER_PRE:
                                     doingShot = true;
+                                    break;
                                 case ENTER_PAS:
                                     if (!isRt)
                                     {
@@ -2258,6 +2259,7 @@ public class ParameterSetting
             FontMetrics titleFontMetrics = g2.getFontMetrics();
 
             int titleWidth, titleHeight;
+System.out.println("Printing title...");
             if(currPrintDeviceIdx >= 0)
             {
                 titleWidth = titleFontMetrics.stringWidth(titles[
@@ -2280,6 +2282,7 @@ public class ParameterSetting
             g2.setFont(infoFont);
             FontMetrics infoFontMetrics = g2.getFontMetrics();
 
+System.out.println("Printing Date...");
             int infoHeight = infoFontMetrics.getHeight();
             g2.drawString("Data: " +
                           new SimpleDateFormat("dd/MM/yyy").format(new Date()) +
@@ -2306,6 +2309,8 @@ public class ParameterSetting
                 g2.scale( ( (double) width) / devices[currPrintDeviceIdx].getWidth(),
                          ( (double) (height - (2 * titleHeight + 30 + infoHeight)) /
                           devices[currPrintDeviceIdx].getHeight()));
+System.out.println("Printing Device...");
+
                 devices[currPrintDeviceIdx].printAll(g2);
             }
             else //Scheda ripetizione impulso
@@ -2314,6 +2319,9 @@ public class ParameterSetting
                               0, 3 * titleHeight + 10);
 
             }
+System.out.println("Print Done");
+
+
             return Printable.PAGE_EXISTS;
         }
         else
