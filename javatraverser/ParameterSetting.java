@@ -386,7 +386,8 @@ public class ParameterSetting
             {
                 int nid = timesRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[0] == null)
                 {
                     devices[0] = device = new RFXTimesSetup();
                     device.configure(rfx, nid);
@@ -445,7 +446,8 @@ public class ParameterSetting
             {
                 int nid = poloidalControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[1] == null)
                 {
                     devices[1] = device = new RFXPolControlSetup();
                     device.configure(rfx, nid);
@@ -482,7 +484,8 @@ public class ParameterSetting
             {
                 int nid = axiSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[2] == null)
                 {
                     devices[2] = device = new RFXAxiControlSetup();
                     device.configure(rfx, nid);
@@ -519,7 +522,8 @@ public class ParameterSetting
             {
                 int nid = pcSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[3] == null)
                 {
                     devices[3] = device = new RFXPCSetupSetup();
                     device.configure(rfx, nid);
@@ -557,7 +561,8 @@ public class ParameterSetting
             {
                 int nid = pmSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[4] == null)
                 {
                     devices[4] = device = new RFXPMSetupSetup();
                     device.configure(rfx, nid);
@@ -598,7 +603,8 @@ public class ParameterSetting
             {
                 int nid = toroidalControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[5] == null)
                 {
                     devices[5] = device = new RFXTorControlSetup();
                     device.configure(rfx, nid);
@@ -635,7 +641,8 @@ public class ParameterSetting
             {
                 int nid = chopperSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[6] == null)
                 {
                     devices[6] = device = new RFXChopperSetupSetup();
                     device.configure(rfx, nid);
@@ -672,7 +679,8 @@ public class ParameterSetting
             {
                 int nid = ffSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[7] == null)
                 {
                     devices[7] = device = new RFXFeedforwardSetupSetup();
                     device.configure(rfx, nid);
@@ -709,7 +717,8 @@ public class ParameterSetting
             {
                 int nid = inverterSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[8] == null)
                 {
                     devices[8] = device = new RFXInverterSetupSetup();
                     device.configure(rfx, nid);
@@ -746,7 +755,8 @@ public class ParameterSetting
             {
                 int nid = tfSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[9] == null)
                 {
                     devices[9] = device = new RFXTFSetupSetup();
                     device.configure(rfx, nid);
@@ -783,7 +793,8 @@ public class ParameterSetting
             {
                 int nid = bfControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[10] == null)
                 {
                     devices[10] = device = new RFXAxiToroidalControlSetup();
                     device.configure(rfx, nid);
@@ -825,7 +836,8 @@ public class ParameterSetting
             {
                 int nid = mhdControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[11] == null)
                 {
                     devices[11] = device = new RFXMHDSetup();
                     device.configure(rfx, nid);
@@ -870,7 +882,8 @@ public class ParameterSetting
             {
                 int nid = viSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[12] == null)
                 {
                     devices[12] = device = new RFXVISetupSetup();
                     device.configure(rfx, nid);
@@ -924,7 +937,8 @@ public class ParameterSetting
             {
                 int nid = mopRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[13] == null)
                 {
                     devices[13] = device = new RFXMOPSetup();
                     device.configure(rfx, nid);
@@ -958,7 +972,8 @@ public class ParameterSetting
             {
                 int nid = ansaldoConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[14] == null)
                 {
                     devices[14] = device = new RFXANSALDOSetup();
                     device.configure(rfx, nid);
@@ -992,7 +1007,8 @@ public class ParameterSetting
             {
                 int nid = unitsConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[15] == null)
                 {
                     devices[15] = device = new RFXABUnitsSetup();
                     device.configure(rfx, nid);
@@ -1030,7 +1046,8 @@ public class ParameterSetting
             {
                 int nid = poloidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[16] == null)
                 {
                     devices[16] = device = new RFXPoloidalSetup();
                     device.configure(rfx, nid);
@@ -1064,7 +1081,8 @@ public class ParameterSetting
             {
                 int nid = toroidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[17] == null)
                 {
                     devices[17] = device = new RFXToroidalSetup();
                     device.configure(rfx, nid);
@@ -1098,7 +1116,8 @@ public class ParameterSetting
             {
                 int nid = mhdConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[18] == null)
                 {
                     devices[18] = device = new RFXPRConfigSetup();
                     device.configure(rfx, nid);
@@ -1132,7 +1151,8 @@ public class ParameterSetting
             {
                 int nid = viConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
+                //if (device == null)
+                if (devices[19] == null)
                 {
                     devices[19] = device = new RFXVIConfigSetup();
                     device.configure(rfx, nid);
@@ -2281,7 +2301,7 @@ System.out.println("Printing title...");
             g2.setFont(infoFont);
             FontMetrics infoFontMetrics = g2.getFontMetrics();
 
-System.out.println("Printing Date...");
+System.out.println("Printing Date..." + currPrintDeviceIdx);
             int infoHeight = infoFontMetrics.getHeight();
             g2.drawString("Data: " +
                           new SimpleDateFormat("dd/MM/yyy").format(new Date()) +
