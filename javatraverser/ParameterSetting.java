@@ -92,6 +92,7 @@ public class ParameterSetting
     String decouplingNames[];
     int decouplingKeys[];
 
+    FileWriter logFile = null;
 
 
     PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
@@ -218,6 +219,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Print Setup");
                 printSetup();
             }
         });
@@ -261,7 +263,12 @@ public class ParameterSetting
                         "Transfer current configuration to the experiment model?",
                         "Confirmation request", JOptionPane.YES_NO_OPTION) ==
                         JOptionPane.YES_OPTION)
+                    {
+                        log("Apply to Model");
                         applyToModel();
+                    }
+                    else
+                        log("Apply to Model aborted");
                 }
             });
             fileMenu.add(applyToModelItem);
@@ -276,7 +283,12 @@ public class ParameterSetting
                         "Revert to the last experiment model?",
                         "Confirmation request", JOptionPane.YES_NO_OPTION) ==
                         JOptionPane.YES_OPTION)
+                    {
+                        log("Revert to last experiment model");
                         revertModel();
+                    }
+                    else
+                        log("Revert to last experiment model aborted");
                 }
             });
             revertModelItem.setEnabled(false);
@@ -308,6 +320,7 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    log("Show decoupling info");
                     showDecouplingInfo();
                 }
             });
@@ -321,6 +334,9 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                try {
+                    logFile.close();
+                }catch(Exception exc){}
                 System.exit(0);
             }
         });
@@ -384,6 +400,8 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Times Setup open");
+
                 int nid = timesRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -444,6 +462,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("EDA1 Setup open");
                 int nid = poloidalControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -482,6 +501,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Axi Setup open");
                 int nid = axiSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -520,6 +540,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("PC Setup open");
                 int nid = pcSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -559,6 +580,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("PM Setup open");
                 int nid = pmSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -601,6 +623,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("EDA3 Setup open");
                 int nid = toroidalControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -639,6 +662,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Chopper Setup open");
                 int nid = chopperSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -677,6 +701,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Feedforward Setup open");
                 int nid = ffSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -715,6 +740,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Inverter Setup open");
                 int nid = inverterSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -753,6 +779,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("TF Setup open");
                 int nid = tfSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -791,6 +818,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("B&F Setup open");
                 int nid = bfControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -834,6 +862,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("MHD Control Setup open");
                 int nid = mhdControlRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -880,7 +909,8 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
-                int nid = viSetupRoot.getInt();
+                log("VI Setup open");
+               int nid = viSetupRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
                 //if (devices[12] == null)
@@ -935,6 +965,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("MOP Setup open");
                 int nid = mopRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -970,6 +1001,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Ansaldo Setup open");
                 int nid = ansaldoConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -1005,6 +1037,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Units Setup open");
                 int nid = unitsConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -1044,7 +1077,8 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
-                int nid = poloidalConfigRoot.getInt();
+                log("Poloidal Config Setup open");
+               int nid = poloidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
                 //if (devices[16] == null)
@@ -1079,6 +1113,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("Toroidal config Setup open");
                 int nid = toroidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -1114,6 +1149,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("MHD Config Setup open");
                 int nid = mhdConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -1149,6 +1185,7 @@ public class ParameterSetting
         {
             public void actionPerformed(ActionEvent e)
             {
+                log("VI Config Setup open");
                 int nid = viConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
@@ -1518,7 +1555,7 @@ public class ParameterSetting
     void loadSetup()
     {
         chooser.rescanCurrentDirectory();
-        chooser.setApproveButtonText("Load");
+        chooser.setApproveButtonText("Load Configuration");
         int returnVal = chooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -1768,6 +1805,7 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    log("Save Configuration");
                     boolean[] selectedDevices = saveSelected.getSelectedDevices();
                     boolean[] selectedTimes = saveSelected.getSelectedTimes();
                     saveSetup(selectedDevices, selectedTimes);
@@ -1786,6 +1824,7 @@ public class ParameterSetting
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    log("Load Pulse");
                     boolean[] selectedDevices = loadSelected.getSelectedDevices();
                     boolean[] selectedTimes = loadSelected.getSelectedTimes();
                     applySetup(currSetupHash, currSetupOnHash, selectedDevices,
@@ -1932,6 +1971,7 @@ public class ParameterSetting
 
     void handleDeviceClosed(int idx, boolean isChanged)
     {
+        log("Device " + idx + " Closed");
         if (isRt)
         {
             if (idx < NUM_SETUP) //Setup devices
@@ -2383,6 +2423,7 @@ System.out.println("Print Done");
         {
             try
             {
+                log("Print device "+idx);
                 ParameterSetting.this.print(idx);
             }
             catch (Exception exc)
@@ -2941,6 +2982,7 @@ System.out.println("Print Done");
         try
         {
             currLoadShot = currShot = Integer.parseInt(shotStr);
+            log("Load Pulse " + shotStr);
             LoadPulse loadP = new LoadPulse();
             currSetupHash = new Hashtable();
             currSetupOnHash = new Hashtable();
@@ -3030,6 +3072,7 @@ System.out.println("Print Done");
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    log("Set Decoupling");
                     setDecoupling((String)decouplingC.getSelectedItem());
                     setVisible(false);
                 }
@@ -3040,6 +3083,7 @@ System.out.println("Print Done");
             {
                 public void actionPerformed(ActionEvent e)
                 {
+                    log("Set decoupling aborted");
                     setVisible(false);
                 }
             });
@@ -3306,6 +3350,7 @@ System.out.println("Print Done");
         {
             StringTokenizer st = new StringTokenizer(shotsStr, " ,");
             int shot1 = Integer.parseInt(st.nextToken());
+            log("Compare to shot " + shot1);
             compareShots(shot1);
         }
         catch (Exception exc)
@@ -3485,6 +3530,7 @@ System.out.println("Print Done");
                     updateDeviceNids();
                     try
                     {
+                        log("Show difference in device " + DiffButton.this.idx);
                         DeviceSetup currDevice = (DeviceSetup) createDevice(
                             DiffButton.this.idx);
                         currDevice.configure(rfx,
@@ -3830,6 +3876,27 @@ System.out.println("Print Done");
             JOptionPane.showMessageDialog(ParameterSetting.this, "Unknown decoupling matrix", "Decoupling", JOptionPane.INFORMATION_MESSAGE);
         }
     }
+
+    void log(String message)
+    {
+        if(isRt || !isOnline) return;
+        if(logFile == null)
+        {
+            try
+            {
+                logFile = new FileWriter("ParameterSetting.log");
+            }
+            catch (Exception exc)
+            {
+                System.out.println("Cannot open Log file: " + exc);
+                return;
+            }
+        }
+        try {
+            logFile.write("" + new Date() + "\t" + message + "\n");
+        }catch(Exception exc){System.err.println("Error writing to log file: " + exc);}
+    }
+
 
     public static void main(String args[])
     {
