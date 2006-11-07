@@ -448,8 +448,7 @@ static int SingleIo(
 	int		highwayType, status;
 
 	if( MSGLVL(FUNCTION_NAME) )
-		printf( "SingleIo()-->>\n" );
-
+		printf( "\033[01;31mSingleIo(F=%d)-->\033[0m", F );
 	sprintf(tmp, "GK%c%d", Key.scsi_port, Key.scsi_address);
 	if( (status = QueryHighwayType( tmp )) == SUCCESS ) {
 		highwayType = NUMERIC(tmp[5]);				// extract type
@@ -512,6 +511,12 @@ static int SingleIo(
 				status = FAILURE;
 				break;
 		} // end of switch()
+		if( MSGLVL(FUNCTION_NAME) )  // show data, if there is some
+		if (Data) {
+		  if (Mem==16) printf( "\033[01;31mSingleIo(F=%d)-->>%d\033[0m\n", F, *(short *) Data ); else
+		  printf( "\033[01;31mSingleIo(F=%d)-->>%d\033[0m\n", F, *(int *) Data );
+		}
+
 	} // end of if()
 
 //printf("SingleIo(iosb)::->> bytecount= %d\n", iosb->bytcnt);	// [2002.12.13]
@@ -535,8 +540,7 @@ static int MultiIo(
 	int		highwayType, mode, status;
 
 	if( MSGLVL(FUNCTION_NAME) )
-		printf( "MultiIo()-->>\n" );
-
+		printf( "\033[01;31mMultiIo(F=%d, count=%d)-->>\033[0m\n", F, Count );
 	sprintf(tmp, "GK%c%d", Key.scsi_port, Key.scsi_address);
 
 	if( (status = QueryHighwayType( tmp )) == SUCCESS ) {
@@ -612,7 +616,10 @@ static int MultiIo(
 		} // end of switch()
 	} // end of if()
 
-//printf("MultiIo(iosb)::->> bytecount= %d\n", iosb->bytcnt);	// [2002.12.13]
+    if( MSGLVL(DETAILS) ) {
+	  if (!iosb) printf("MultiIo null iosb ptr"); else
+     printf("MultiIo(iosb)::->> bytecount= %d\n", iosb->bytcnt);  // [2002.12.13]
+	}
 	return status;
 }
 
@@ -891,12 +898,18 @@ static int Jorway73ADoIo(
 
 
 Jorway73ADoIo_Exit:
-	if( MSGLVL(DETAILS) ) {
-		printf( "%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status );
-		printf( "%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x      );
-		printf( "%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q      );
+	if( MSGLVL(FUNCTION_NAME+1) ) {
+	  // This is only rough - depends on the nature of the "overloaded" vars
+	  	  printf("scsi_mode opcode=%d, dmode=%d, modes[dmode]=%d, [1]=%d, [3]=%d, [5]=%d [7]=%d\n", cmd[0], dmode, modes[dmode], cmd[1], cmd[3], cmd[5], cmd[7]);
+
+	  if (!iosb) {printf("Jorway73ADoIo_Exit: Null pointer to iosb\n"); } else 
+		{
+		  printf( "%s(): iosb->status [0x%x]\n", J_ROUTINE_NAME, iosb->status );
+		  printf( "%s(): iosb->x      [0x%x]\n", J_ROUTINE_NAME, iosb->x      );
+		  printf( "%s(): iosb->q      [0x%x]\n", J_ROUTINE_NAME, iosb->q      );
 
 //printf( "%s(): iosb->bytcnt [%d]\n", J_ROUTINE_NAME, iosb->bytcnt);	// [2002.12.11]
+		}
 	}
 
 
