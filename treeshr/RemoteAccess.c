@@ -1216,8 +1216,8 @@ STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
     int nbytes;
     void *dptr;
     void *msg = 0;
-    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1) && (nbytes == sizeof(ret)))
-      memcpy(&ret,dptr, sizeof(ret));
+    if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1) && (nbytes == sizeof(int)))
+      ret = (ssize_t)*(int *)dptr;
     if (msg)
       free(msg);
   }
