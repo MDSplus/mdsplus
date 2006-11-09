@@ -33,10 +33,10 @@ c
 
 
 c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
-      status = MdsConnect('gemini.gat.com')
+c      status = MdsConnect('gemini.gat.com')
 
       dsc = descr(IDTYPE_FLOAT,result,0)
-      status = MdsValue('1.'//CHAR(0),dsc,0,1)
+      status = MdsValue('1.'//CHAR(0),dsc,0,size)
       write (6,*) 'MdsValue("1.") : ',result,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,30,0)
@@ -63,22 +63,22 @@ c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
      >   "        LENGTH: ",size
 
       dsc = descr(IDTYPE_LONG,42042,0)
-      status = MdsPut('NUMERIC'//CHAR(0),'$',dsc,0)
-      write (6,*) 'MdsPut("NUMERIC",$,42042): ',status 
+      status = MdsPut('NUMERIC'//CHAR(0),'$'//char(0),dsc,0)
+      write (6,*) 'MdsPut("NUMERIC","$",42042): ',status 
 
       dsc = descr(IDTYPE_LONG,iresult,0)
-      status = MdsValue('NUMERIC'//CHAR(0),dsc,0,1)
+      status = MdsValue('NUMERIC'//CHAR(0),dsc,0,size)
       write (6,*) 'MdsValue("NUMERIC"): ',iresult,status
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
-      status = MdsPut('NUMERIC'//CHAR(0),'$',dsc,0)
+      status = MdsPut('NUMERIC'//CHAR(0),'$'//char(0),dsc,0)
       write (6,*) 'MdsPut("NUMERIC","$",array) : ',status
       do i=1,20
          resultarr(i) = 0.
       enddo
 
       dsc = descr(IDTYPE_FLOAT,array2d,nx,ny,0)
-      status = MdsPut('NUMERIC'//CHAR(0),'$',dsc,0)
+      status = MdsPut('NUMERIC'//CHAR(0),'$'//char(0),dsc,0)
       write (6,*) 'MdsPut("NUMERIC",$,array2d) : ',status
 
       dsc = descr(IDTYPE_FLOAT,array2dx,nx,ny,0)
