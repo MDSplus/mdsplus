@@ -3113,6 +3113,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 	   MAKELIBDIR="\$(top_srcdir)/lib64/"
            MAKESHLIBDIR="\$(top_srcdir)/lib64/"
            MAKEUIDDIR="\$(top_srcdir)/uid64/"
+	   MAKEBINDIR="\$(top_srcdir)/bin64/"
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
