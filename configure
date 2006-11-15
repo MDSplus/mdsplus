@@ -3109,6 +3109,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 	   FFLAGS="$FFLAGS -m64";
            FORLD="g77 -m64";
            UILCMD=uil
+	   MAKELIBDIR="\$(top_srcdir)/lib64/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib64/"
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
