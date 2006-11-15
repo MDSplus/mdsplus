@@ -27,7 +27,6 @@ cd mdsplus
 JDKDIR=/opt/jdk1.5.0_08/
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
 make
-mv bin bin32
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR
 make clean
 make
