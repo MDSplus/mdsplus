@@ -2999,6 +2999,7 @@ FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
 
 : ${uiddir=$exec_prefix/uid}
 
+MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 MAKEBINDIR="\$(top_srcdir)/bin/"
 MAKELIBDIR="\$(top_srcdir)/lib/"
@@ -3111,6 +3112,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            UILCMD=uil
 	   MAKELIBDIR="\$(top_srcdir)/lib64/"
            MAKESHLIBDIR="\$(top_srcdir)/lib64/"
+           MAKEUIDDIR="\$(top_srcdir)/uid64/"
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
@@ -4265,7 +4267,6 @@ echo "$as_me:$LINENO: result: $mdsplus_ok" >&5
 echo "${ECHO_T}$mdsplus_ok" >&6
 
 
-MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKEETCDIR="\$(top_srcdir)/etc/"
 MAKEJAVADIR="\$(top_srcdir)/java/"
 
