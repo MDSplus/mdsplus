@@ -3120,6 +3120,10 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 	   FFLAGS="$FFLAGS -m32";
            FORLD="g77 -m32";
            UILCMD=uil32
+           MAKELIBDIR="\$(top_srcdir)/lib32/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
+           MAKEUIDDIR="\$(top_srcdir)/uid32/"
+           MAKEBINDIR="\$(top_srcdir)/bin32/"
          fi
        fi
        CAMSHR="camshr";
