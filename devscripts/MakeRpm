@@ -5,6 +5,7 @@ then
   SPEC="${1}"
 else
   SPEC="rpm"
+fi
 tag=`devscripts/GetRelease`
 version=`devscripts/GetRelease version $tag`
 release=`devscripts/GetRelease release $tag`
