@@ -1,5 +1,10 @@
 #!/bin/sh
 #
+if [ -v $1 ]
+then
+  SPEC="${1}"
+else
+  SPEC="rpm"
 tag=`devscripts/GetRelease`
 version=`devscripts/GetRelease version $tag`
 release=`devscripts/GetRelease release $tag`
@@ -29,7 +34,7 @@ echo "s+#ENABLEGLOBUS#+$enableglobus+g" >> tmp.sed
 echo "s/#VERSION#/$version/g" >> tmp.sed
 echo "s/#RELEASE#/$release/g" >> tmp.sed
 cat tmp.sed
-sed -f tmp.sed mdsplus$globuskit-$version/rpm/rpm.spec > rpm.spec 
+sed -f tmp.sed mdsplus${globuskit}-${version}/rpm/${SPEC}.spec > rpm.spec 
 rpmbuild -ba rpm.spec
 cd ..
 rm -Rf mdskit$globuskit
