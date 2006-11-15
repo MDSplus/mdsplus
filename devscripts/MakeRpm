@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-if [ -v $1 ]
+if [ -z $1 ]
 then
-  SPEC="${1}"
-else
   SPEC="rpm"
+else
+  SPEC="${1}"
 fi
 tag=`devscripts/GetRelease`
 version=`devscripts/GetRelease version $tag`
