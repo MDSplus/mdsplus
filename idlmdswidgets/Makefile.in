@@ -48,7 +48,7 @@ install:
 
 
 @MAKELIBDIR@libIdlMdsWidgets@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS)  -L/usr/X11R6/lib/ -lMrm $(LIBS) -lXmdsShr
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS)  $(X_LIBS) $(MOTIF_LIBS) $(LIBS) -lXmdsShr
 
 @MAKELIBDIR@libIdlMdsWidgets.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
