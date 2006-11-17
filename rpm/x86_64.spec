@@ -25,9 +25,9 @@ cvs -q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co mdsplus
 %build
 cd mdsplus
 JDKDIR=/opt/jdk1.5.0_08/
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=bin32 --libdir=lib32 --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
 make
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=bin64 --libdir=lib64 --enable-nodebug --with-jdk=$JDKDIR
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug --with-jdk=$JDKDIR
 find . -name '*.o' -exec rm -f {} \;
 make
 cd ..
@@ -77,13 +77,6 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/uid
 /usr/local/mdsplus/uid32
 /usr/local/mdsplus/uid64
-/usr/local/mdsplus/GLOBUS_LICENSE
-/usr/local/mdsplus/libexec
-/usr/local/mdsplus/sbin
-/usr/local/mdsplus/setup
-/usr/local/mdsplus/share
-/usr/local/mdsplus/test
-/usr/local/mdsplus/var
 %dir /usr/local/mdsplus/local/tdi
 
 %changelog
