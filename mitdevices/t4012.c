@@ -376,8 +376,10 @@ static int AccessTraq(InStoreStruct *setup, int data,int memsize,void *arglist,i
   piomem(17,0,&data,memsize);
   for (try = 0;(try < 30) && (!(CamQ(0)&1)) && (status &1);try++) 
   {
-    if (arglist && !called)
-      called = 1 | LibCallg(arglist,routine);
+    if (arglist && !called) {
+      called = 1;
+      LibCallg(arglist,routine);
+    }
     else
       DevWait((float).001);
     piomem(17,0,&data,memsize);
