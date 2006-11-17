@@ -25,9 +25,9 @@ cvs -q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co mdsplus
 %build
 cd mdsplus
 JDKDIR=/opt/jdk1.5.0_08/
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=bin32 --libdir=lib32 --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
 make
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=bin64 --libdir=lib64 --enable-nodebug --with-jdk=$JDKDIR
 find . -name '*.o' -exec rm -f {} \;
 make
 cd ..
