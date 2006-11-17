@@ -15,7 +15,7 @@ X_PRE_LIBS=@X_PRE_LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
-MATH_LIBS=-L$(top_srcdir)/lib -lMdsMath
+MATH_LIBS=-L@MAKESHLIBDIR@ -lMdsMath
 LIBDC1394_LIBS=-L@LIBDC1394@libdc1394/.libs/ -ldc1394_control -lraw1394
 LIBDC1394_INCS=-I@LIBDC1394@
 UIDS = \
@@ -647,7 +647,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	cp reboot_dtaq_satelite @MAKEBINDIR@reboot_dtaq_satelite
 
 @MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L$(top_srcdir)/lib -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS) $(MATH_LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKESHLIBDIR@ -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS) $(MATH_LIBS)
 	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
 @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
