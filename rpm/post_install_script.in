@@ -22,6 +22,17 @@ do
   echo -n "Enter the installation directory [$MDSPLUS_DIR]: "
   read MDSPLUS_DIR
 done
+if [ -d /etc/ld.so.conf.d ]
+then
+  if [ -d $MDSPLUS_DIR/lib64 ]
+  then
+    echo $MDSPLUS_DIR/lib64 > /etc/ld.so.conf.d/mdsplus.conf
+    echo $MDSPLUS_DIR/lib32 >> /etc/ld.so.conf.d/mdsplus.conf
+  else
+    echo $MDSPLUS_DIR/lib > /etc/ld.so.conf.d/mdsplus.conf
+  fi
+  ldconfig
+fi
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir
 if [ -r $MDSPLUS_DIR/setup/grid-security.tgz ]
 then
