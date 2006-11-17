@@ -124,4 +124,5 @@ CompositeWaveDisplay.class: 	$(SOURCES)
 
 docs: $(DOCS) 
 	cp $(DOCS) @MAKEJAVADIR@classes/docs
+	chmod -R a+r,u+rw @MAKEJAVADIR@classes/docs
 	
