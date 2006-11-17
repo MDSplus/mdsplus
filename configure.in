@@ -276,6 +276,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        then
          if ( echo $target | grep 64 > /dev/null )
          then
+           SYB64="64"
            CFLAGS="$CFLAGS -m64";
            LD="ld -m elf_x86_64 --oformat elf64-x86-64 --no-warn-mismatch"
 	   FFLAGS="$FFLAGS -m64";
@@ -286,6 +287,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib64/"
            MAKEUIDDIR="\$(top_srcdir)/uid64/"
 	   MAKEBINDIR="\$(top_srcdir)/bin64/"
+           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava -L$jdk_dir/jre/lib/amd64/native_threads -lhpi";
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
@@ -297,6 +299,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib32/"
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
          fi
 	 CC_LDFLAGS="$CFLAGS"
        fi
@@ -315,7 +318,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
        jni_inc_dir="$jdk_dir/include";
        jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
@@ -673,10 +675,10 @@ fi
 dnl Check for Sybase
 AC_MSG_CHECKING(for SYBASE open/client)
 : ${SYBASE=/usr/local/sybase}
-if test -r "$SYBASE/lib/libsybdb.a" 
+if test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
 then 
         SYBASE_INC="-I$SYBASE/include -DSYBASE"
-        SYBASE_LIB="-L$SYBASE/lib $LD_LDARC -lsybdb $LD_LDSHARE"
+        SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
 	SYBASE="SYBASE"
         AC_MSG_RESULT(have sybase open/client)
 else
