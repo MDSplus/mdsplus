@@ -28,7 +28,7 @@ JDKDIR=/opt/jdk1.5.0_08/
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR --target=i686-linux
 make
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --with-jdk=$JDKDIR
-make clean
+find . -name '*.o' -exec rm -f {} \;
 make
 cd ..
 
