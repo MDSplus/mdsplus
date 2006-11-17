@@ -101,7 +101,7 @@ cts_commands.c:	cts_commands.ocld
 	$(LD)  -o $@ @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lCamShr $(LIBS)
 
 @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
-	$(CC) -g -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \
+	$(CC) -g $(CFLAGS) -nostartfiles -shared -W1,-soname,lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) \
 		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr -lc
 	if [ ! -d @MAKESHLIBDIR@ ] ; then \
 		mkdir @MAKESHLIBDIR@; \
