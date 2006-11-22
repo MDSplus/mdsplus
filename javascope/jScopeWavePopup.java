@@ -167,14 +167,14 @@ class jScopeWavePopup
             ( (jScopeMultiWave) wave).GetLegendYPosition());
     }
 
-    /*
-        protected void SetInterpolate(boolean state)
-        {
-            super.SetInterpolate(state);
-         jScopeMultiWave w = (jScopeMultiWave)wave;
-            w.wi.interpolates[w.GetSelectedSignal()] = state;
-        }
-     */
+
+    protected void SetInterpolate(boolean state)
+    {
+        super.SetInterpolate(state);
+        jScopeMultiWave w = (jScopeMultiWave)wave;
+        w.wi.interpolates[w.GetSelectedSignal()] = state;
+    }
+
 
     protected void SetMode1D(int mode)
     {

@@ -583,13 +583,21 @@ public class MultiWaveform
         }
     }
 
-    public void liveUpdate()
+    public void appendUpdate()
     {
-        if (!is_image)
+        Signal s;
+        for(int i = 0; i < signals.size(); i++)
         {
-            waveform_signal = waveform_signal;
+            s = (Signal)signals.elementAt(i);
+            if( s.fullPaint() )
+            {
+                //System.out.println(s.name + "UPDATE");
+                Update();
+                return;
+            }
         }
-        Update();
+        //System.out.println("APPEND UPDATE");
+        this.appendPaint(getGraphics(), getSize());
     }
 
 
@@ -955,7 +963,7 @@ public class MultiWaveform
                 }
                 else
                 {
-                    segments = wm.ToPolygons(s, d);
+                    segments = wm.ToPolygons(s, d, appendDrawMode);
                     Polygon curr_polygon;
 
                     if (segments != null && ( s.getInterpolate() || mode == MODE_PAN && dragging) )
@@ -990,7 +998,7 @@ public class MultiWaveform
                 s = (Signal) signals.elementAt(i);
                 if (s == null)
                     continue;
-                segments = wm.ToPolygons(s, d);
+                segments = wm.ToPolygons(s, d, appendDrawMode);
                 marker_step = (int) ( ( (s.n_points > 1000) ? 100 :
                                        s.n_points / 10.) + 0.5);
                 drawMarkers(g, segments, curr_marker + 1, marker_step,
@@ -1049,8 +1057,8 @@ public class MultiWaveform
                               boolean is_first)
     {
         Signal curr_signal;
-        int curr_idx, i, min_idx = 0;
-        double curr_dist = 0, min_dist = Double.MAX_VALUE;
+        int curr_idx = -1, i, img_idx = -1, min_idx = 0;
+        double curr_dist = 0, img_dist = Double.MAX_VALUE,  min_dist = Double.MAX_VALUE;
 
         if (signals == null || signals.size() == 0)
             return null;
@@ -1065,29 +1073,57 @@ public class MultiWaveform
         for (curr_point_sig_idx = i = 0; i < signals.size(); i++)
         {
             curr_signal = (Signal) signals.elementAt(i);
-            if (curr_signal == null ||  curr_signal.y == null || !GetSignalState(i))
+            if (curr_signal == null || !GetSignalState(i))
                 continue;
 
             curr_idx = curr_signal.FindClosestIdx(curr_x, curr_y);
             if (curr_signal.getType() == Signal.TYPE_2D &&
                 ( curr_signal.getMode2D() == Signal.MODE_IMAGE ||  curr_signal.getMode2D() == Signal.MODE_CONTOUR ))
             {
-                if(curr_idx > 0 && curr_idx < curr_signal.x2D.length)
-                    curr_dist = (curr_signal.x2D[curr_idx] - curr_x) *
-                               (curr_signal.x2D[curr_idx] - curr_x);
+                int inc = (int)(curr_signal.x2D.length / 10.) + 1;
+                inc = (curr_idx + inc > curr_signal.x2D.length) ? curr_signal.x2D.length - curr_idx - 1 : inc;
+                if(curr_idx >= 0 && curr_idx < curr_signal.x2D.length)
+                    img_dist = (curr_signal.x2D[curr_idx] - curr_signal.x2D[curr_idx + inc]) *
+                               (curr_signal.x2D[curr_idx] - curr_signal.x2D[curr_idx + inc]);
+                    img_idx = i;
             }
             else
             {
-                curr_dist = (curr_signal.y[curr_idx] - curr_y) *
-                    (curr_signal.y[curr_idx] - curr_y);
-            }
-            if (i == 0 || curr_dist < min_dist)
-            {
-                min_dist = curr_dist;
-                min_idx = curr_idx;
-                curr_point_sig_idx = i;
+                if (curr_signal.y != null)
+                    curr_dist = (curr_signal.y[curr_idx] - curr_y) *
+                        (curr_signal.y[curr_idx] - curr_y);
+
+                if (i == 0 || curr_dist < min_dist)
+                {
+                    min_dist = curr_dist;
+                    min_idx = curr_idx;
+                    curr_point_sig_idx = i;
+                }
+                //System.out.println("cx "+curr_x+"cy "+curr_y+" dist "+curr_dist + " img dist "+ img_dist);
             }
         }
+
+        try
+        {
+            if (img_idx != -1)
+            {
+                 if(curr_idx != -1)
+                 {
+                     curr_signal = (Signal) signals.elementAt(curr_point_sig_idx);
+                     if (min_dist >
+                         10 * (curr_signal.y[0] - curr_signal.y[1]) *
+                         (curr_signal.y[0] - curr_signal.y[1]))
+                     {
+                         curr_point_sig_idx = img_idx;
+                     }
+                 }
+                 else
+                     curr_point_sig_idx = img_idx;
+
+
+            }
+        }catch(Exception exc){}
+
         setPointSignalIndex(curr_point_sig_idx);
         curr_signal = (Signal) signals.elementAt(curr_point_sig_idx);
 
@@ -1106,7 +1142,6 @@ public class MultiWaveform
 
     public synchronized void UpdatePoint(double curr_x, double curr_y)
     {
-
         if (!is_image)
         {
             // if(wm == null) { System.out.println("wm == null"); return;}
@@ -1131,8 +1166,6 @@ public class MultiWaveform
                     s.showProfile(s.getMode2D(), (float) curr_x);
                     not_drawn = true;
                 }
-
-
             }
         }
         super.UpdatePoint(curr_x, curr_y);
@@ -1148,6 +1181,39 @@ public class MultiWaveform
         return (Signal) signals.elementAt(curr_point_sig_idx);
     }
 
+
+    public int getSignalMode1D(int idx)
+    {
+        int mode = -1;
+        if (idx >= 0 && idx < signals.size())
+        {
+            Signal s = (Signal) signals.elementAt(idx);
+            mode = ( (Signal) signals.elementAt(idx)).getMode1D();
+        }
+        return mode;
+    }
+
+    public int getSignalMode2D(int idx)
+    {
+        int mode = -1;
+        if (idx >= 0 && idx < signals.size())
+        {
+            Signal s = (Signal) signals.elementAt(idx);
+            mode = ( (Signal) signals.elementAt(idx)).getMode2D();
+        }
+        return mode;
+    }
+
+    public int getSignalMode1D()
+    {
+        return getSignalMode1D(curr_point_sig_idx);
+    }
+
+    public int getSignalMode2D()
+    {
+        return getSignalMode2D(curr_point_sig_idx);
+    }
+/*
     public int getSignalMode(int idx)
     {
         int mode = -1;
@@ -1168,7 +1234,7 @@ public class MultiWaveform
     {
         return getSignalMode(curr_point_sig_idx);
     }
-
+*/
     public int getSignalType(int idx)
     {
         int type = -1;

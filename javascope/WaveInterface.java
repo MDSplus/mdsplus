@@ -811,6 +811,26 @@ public class WaveInterface
             return 0;
         }
 
+        //Compute title
+        if (in_title != null && (in_title.trim()).length() != 0)
+        {
+            title = dp.GetString(in_title);
+            if (title == null)
+            {
+                error = dp.ErrorString();
+                return 0;
+            }
+        }
+        /*
+              else
+              {
+            try{
+                title = dp.GetWaveData(in_y[0]).GetTitle();
+            }catch(Exception exc) {title = null;}
+              }
+         */
+
+
         //compute limits
         if (in_xmin != null &&
             (in_xmin.trim()).length() != 0 &&
@@ -895,24 +915,8 @@ public class WaveInterface
                 timemin = -HUGE;
         }
 
-        //Compute title, x label, y_label
-        if (in_title != null && (in_title.trim()).length() != 0)
-        {
-            title = dp.GetString(in_title);
-            if (title == null)
-            {
-                error = dp.ErrorString();
-                return 0;
-            }
-        }
-        /*
-              else
-              {
-            try{
-                title = dp.GetWaveData(in_y[0]).GetTitle();
-            }catch(Exception exc) {title = null;}
-              }
-         */
+        //Compute x label, y_label
+
         if (in_xlabel != null && (in_xlabel.trim()).length() != 0)
         {
             xlabel = dp.GetString(in_xlabel);

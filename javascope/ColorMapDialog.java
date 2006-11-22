@@ -70,13 +70,14 @@ public class ColorMapDialog
         super(f, "Color Palette");
 
         if(colorPaletteFile == null)
-            colorPaletteFile = "colors1.tbl";
-        readColorPalette(colorPaletteFile);
+          colorPaletteFile = System.getProperty("user.home") + File.separator +
+                             "jScope" + File.separator + "colors1.tbl";
+       readColorPalette(colorPaletteFile);
 
         /*
             colorMap = wave.getColorMap();
             this.wave = wave;
-         */
+        */
 
         getContentPane().setLayout(new GridLayout(2, 1));
         /*
@@ -289,6 +290,7 @@ public class ColorMapDialog
 
         try
         {
+/*
             if (cmap != null)
             {
                 FileInputStream bin = new FileInputStream(new File(cmap));
@@ -298,6 +300,17 @@ public class ColorMapDialog
             {
                 InputStream pis = getClass().getClassLoader().getResourceAsStream("colors1.tbl");
                 dis = new DataInputStream(pis);
+            }
+*/
+            try
+            {
+              FileInputStream bin = new FileInputStream(new File(cmap));
+              dis = new DataInputStream(bin);
+            }
+            catch (IOException exc)
+            {
+              InputStream pis = getClass().getClassLoader().getResourceAsStream("colors1.tbl");
+              dis = new DataInputStream(pis);
             }
 
             byte nColorTables = dis.readByte();

@@ -18,17 +18,17 @@ public class Signal
     static final int TYPE_1D = 0;
     static final int TYPE_2D = 1;
 
-    static final int MODE_XZ = 0;
-    static final int MODE_YZ = 1;
+    static final int MODE_XZ      = 0;
+    static final int MODE_YZ      = 1;
     static final int MODE_CONTOUR = 2;
-    static final int MODE_IMAGE = 3;
-    static final int MODE_ONDINE = 4;
+    static final int MODE_IMAGE   = 3;
+    static final int MODE_ONDINE  = 4;
     static final int MODE_PROFILE = 5;
 
 
-    static final int MODE_LINE = 0;
+    static final int MODE_LINE   = 0;
     static final int MODE_NOLINE = 2;
-    static final int MODE_STEP = 3;
+    static final int MODE_STEP   = 3;
 
     static final int DEFAULT_CONTOUR_LEVEL = 20;
     static final int FUSO = 0;
@@ -538,10 +538,16 @@ public class Signal
             }
         }
 
-        saved_ymax = ymax = s.ymax;
-        saved_ymin = ymin = s.ymin;
-        saved_xmin = curr_xmin = xmin = s.xmin;
-        saved_xmax = curr_xmax = xmax = s.xmax;
+        saved_ymax = s.saved_ymax;
+        ymax = s.ymax;
+        saved_ymin = s.saved_ymin;
+        ymin = s.ymin;
+        saved_xmin = s.saved_xmin;
+        curr_xmin = s.curr_xmin;
+        xmin = s.xmin;
+        saved_xmax = s.saved_xmax;
+        curr_xmax = s.curr_xmax;
+        xmax = s.xmax;
         fix_xmin = s.fix_xmin;
         fix_xmax = s.fix_xmax;
         fix_ymin = s.fix_ymin;
@@ -576,6 +582,7 @@ public class Signal
         ylabel = s.ylabel;
         zlabel = s.zlabel;
         title = s.title;
+        startIndexToUpdate = s.startIndexToUpdate;
     }
 
     /**
@@ -752,12 +759,14 @@ public class Signal
                 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 df.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
                 df1.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
+                Calendar ca = new GregorianCalendar(new SimpleTimeZone(FUSO, "GMT"));
+
                 java.util.Date date = new java.util.Date();
                 date.setTime(x2D[0]);
                 s = df.format(date).toString();
                 date = df1.parse(s + " 00:00:00");
-                t0 = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
-				
+                t0 = date.getTime() +  date.getTimezoneOffset() * 60 * 1000;
+
             }
             catch (Exception exc)
             {
@@ -766,6 +775,7 @@ public class Signal
 
             for (int i = 0; i < x2D.length; i++)
                 this.x2D[i] = (float) ( x2D[i] - t0 );
+
             this.mode2D = mode2D;
             this.mode1D = mode1D;
             this.type = TYPE_2D;
@@ -980,10 +990,15 @@ public class Signal
             return;
 
         prev_idx = 0;
-        curr_xmax = xmax = x2D_max;
-        curr_xmin = xmin = x2D_min;
-        ymax = y2D_max;
-        ymin = y2D_min;
+
+        if(!fix_xmin)
+            saved_xmin = curr_xmin = xmin = x2D_min;
+        if(!fix_xmax)
+            saved_xmax = curr_xmax = xmax = x2D_max;
+        if(!fix_ymin)
+            saved_ymin = ymin = y2D_min;
+        if(!fix_ymax)
+            saved_ymax = ymax = y2D_max;
 
 
         for(i = 0, vectIdx = 0; i < z2D_points; i += 2)
@@ -1001,7 +1016,7 @@ public class Signal
         y = new float[n_points];
         System.arraycopy(x2D, vectIdx, x, 0, n_points);
         System.arraycopy(y2D, vectIdx, y, 0, n_points);
-        this.setAxis(x, y, n_points);
+        nans = new int[100];
     }
 
     public void incShowProfile()
@@ -1259,10 +1274,13 @@ public class Signal
                 setMode2D(mode, 0);
                 break;
             case MODE_PROFILE:
-                float v1 = z2D[0];
-                if (!Float.isNaN(curr_x_yz_plot))
-                    v1 = curr_x_yz_plot;
-                setMode2D(mode, v1);
+                if(z2D != null && z2D.length > 0)
+                {
+                    float v1 = z2D[0];
+                    if (!Float.isNaN(curr_x_yz_plot))
+                        v1 = curr_x_yz_plot;
+                    setMode2D(mode, v1);
+                }
                 break;
         }
     }
@@ -1773,11 +1791,22 @@ public class Signal
             DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             df.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
             df1.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
+            Calendar ca = new GregorianCalendar(new SimpleTimeZone(FUSO, "GMT"));
+
             java.util.Date date = new java.util.Date();
             date.setTime(x_long[0]);
+
+            System.out.println();
+
             s = df.format(date).toString();
             date = df1.parse(s+" 00:00:00");
-            t0 = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+            /*
+            long tmp =  ca.get(Calendar.ZONE_OFFSET);
+            long tmp1 = ca.get(Calendar.DST_OFFSET);
+            long tmp2 = Calendar.getInstance().get(Calendar.ZONE_OFFSET);
+            long tmp3 = Calendar.getInstance().get(Calendar.DST_OFFSET);
+            */
+            t0 = date.getTime() +  date.getTimezoneOffset() * 60 * 1000;
         }
         catch (Exception exc)
         {
@@ -1787,8 +1816,14 @@ public class Signal
 /*
         System.out.println("DATA "+ s +" x_long[0] " + x_long[0] + " t0 " + t0 + " dif " + (x_long[0] - t0) );
 */
+        java.util.Date date1 = new java.util.Date();
+        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (int i = 0; i < x_long.length; i++)
-            x[i] = (float) ( x_long[i] -  t0 );
+        {
+            x[i] = (float) (x_long[i] - t0);
+//            date1.setTime((long)x[i]);
+//            System.out.println(" " + x[i] + " " + df1.format(date1));
+        }
 
         nans = new int[100];
         n_points = _n_points;
@@ -1907,9 +1942,20 @@ public class Signal
     public void setXlimits(float xmin, float xmax)
     {
         if (xmax != Float.MAX_VALUE)
+        {
             this.xmax = saved_xmax = xmax;
+            this.fix_xmax = true;
+        }
+        else
+            this.fix_xmax = false;
         if (xmin != Float.MIN_VALUE)
+        {
             this.xmin = saved_xmin = xmin;
+            this.fix_xmin = true;
+        }
+        else
+            this.fix_xmin = false;
+
     }
 
     /**
@@ -1921,9 +1967,21 @@ public class Signal
     public void setYlimits(float ymin, float ymax)
     {
         if (ymax != Float.MAX_VALUE)
+        {
             this.ymax = saved_ymax = ymax;
+            this.fix_ymax = true;
+        }
+        else
+            this.fix_ymax = false;
+
         if (ymin != Float.MIN_VALUE)
+        {
             this.ymin = saved_ymin = ymin;
+            this.fix_ymin = true;
+        }
+        else
+            this.fix_ymin = false;
+
     }
 
     /**
@@ -1967,6 +2025,8 @@ public class Signal
             return;
         }
 
+        if(x == null) return;
+
         int i;
         for (i = 0, xmin = xmax = x[0]; i < n_points; i++)
         {
@@ -1990,6 +2050,9 @@ public class Signal
             ymin = this.y2D_min;
             return;
         }
+
+        if(y == null) return;
+
         int i;
         for (ymin = ymax = y[0], i = 0; i < n_points; i++)
         {
@@ -2020,6 +2083,8 @@ public class Signal
             ymax = this.y2D_max;
             return;
         }
+
+        if(x == null || y == null) return;
 
         ymin = Float.POSITIVE_INFINITY;
         ymax = Float.NEGATIVE_INFINITY;
@@ -2420,6 +2485,7 @@ public class Signal
     boolean fix_ymin = false;
     boolean fix_ymax = false;
 
+
     public void setXmin(double xmin, int mode)
     {
         this.xmin = xmin;
@@ -2449,7 +2515,8 @@ public class Signal
 
     }
 
-    public void setYmax(double ymax, int mode)
+
+     public void setYmax(double ymax, int mode)
     {
         this.ymax = ymax;
         if ( (mode & AT_CREATION) != 0)
@@ -2457,6 +2524,7 @@ public class Signal
         if ( (mode & FIXED_LIMIT) != 0)
             fix_ymax = true;
     }
+
 
     public double getXmin() {return xmin;}
     public double getXmax() {return xmax;}
@@ -2681,7 +2749,39 @@ public class Signal
       return pIdx;
     }
 
-     private static final int INC_SIZE = 1000;
+    private static final int DEFAULT_INC_SIZE = 10000;
+    private int              updSignalSizeInc;
+    public int               startIndexToUpdate = 0;
+    public boolean           needFullUpdate = true;
+
+    public boolean fullPaint()
+    {
+        if( type == Signal.TYPE_2D ) return true;
+        if( startIndexToUpdate == 0 && x != null && x.length > 0 ) return true;
+        if( needFullUpdate )
+        {
+            needFullUpdate = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void setUpdSignalSizeInc(int updSignalSizeInc)
+    {
+        if(updSignalSizeInc <= 0) updSignalSizeInc = DEFAULT_INC_SIZE;
+        this.updSignalSizeInc = updSignalSizeInc;
+    }
+
+    public int getUpdSignalSizeInc()
+    {
+        return updSignalSizeInc;
+    }
+
+    public void setStartIndexToUpdate()
+    {
+        if(this.x != null)
+            startIndexToUpdate = n_points;
+    }
 
     public void appendValues(float x[], float y[])
     {
@@ -2700,12 +2800,16 @@ public class Signal
                 }
                 x = xNew;
             }
-            this.x = appendArray(this.x, n_points, x, INC_SIZE);
-            this.y = appendArray(this.y, n_points, y, INC_SIZE);
+
+            this.x = appendArray(this.x, n_points, x, updSignalSizeInc);
+            this.y = appendArray(this.y, n_points, y, updSignalSizeInc);
 
             n_points += x.length;
             if(xmax < this.x[n_points - 1])
-               xmax = 2*xmax;
+            {
+                xmax = 2 * xmax;
+                needFullUpdate = true;
+            }
         }
     }
 
@@ -2713,11 +2817,17 @@ public class Signal
 
     private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
     {
+/*
+        if(arr1 == null) return (float[])arr2;
+        if(arr2 == null) return (float[])arr1;
+*/
         if(arr1 == null) return (float [])arr2.clone();
         if(arr2 == null) return (float [])arr1.clone();
+
         float val[];
         if(arr1.length < sizeUsed + arr2.length)
         {
+//          System.out.println("REALLOC form "+ arr1.length +" to "+ (arr1.length + arr2.length + incSize));
             val = new float[arr1.length + arr2.length + incSize];
             System.arraycopy(arr1, 0, val, 0, sizeUsed);
         }
@@ -2731,7 +2841,6 @@ public class Signal
     private int y2D_points = 0;
     private int z2D_points = 0;
 
-
     public void appendValues(float x[], float y[], int numPoints[], float time[])
     {
         if(type != TYPE_2D || x.length != y.length || time == null || numPoints == null) return;
@@ -2744,10 +2853,6 @@ public class Signal
         yIdx = (y2D == null) ? 0 : y2D_points;
         zIdx = (z2D == null) ? 0 : z2D_points;
 
-        this.x2D = appendArray(this.x2D, x2D_points, x, INC_SIZE);
-        x2D_points += x.length;
-        this.y2D = appendArray(this.y2D, y2D_points, y, INC_SIZE);
-        y2D_points += y.length;
 
         if(numPoints.length == time.length)
         {
@@ -2770,10 +2875,22 @@ public class Signal
             t[i + 1] = (numPoints.length == 1) ? numPoints[0] : numPoints[j];
             j++;
         }
-        this.z2D = appendArray(this.z2D, z2D_points, t, INC_SIZE);
+
+        this.x2D = appendArray(this.x2D, x2D_points, x, updSignalSizeInc);
+        x2D_points += x.length;
+        this.y2D = appendArray(this.y2D, y2D_points, y, updSignalSizeInc);
+        y2D_points += y.length;
+        this.z2D = appendArray(this.z2D, z2D_points, t, updSignalSizeInc);
         z2D_points += t.length;
 
+
         setAxis( x2D,  z2D,  y2D, xIdx, zIdx, yIdx);
+
+        if(xmin > x2D_min) xmin = x2D_min;
+        if(ymin > y2D_min) ymin = y2D_min;
+        if(xmax < x2D_max) xmax = x2D_max;
+        if(ymax < y2D_max) ymax = y2D_max;
+
         curr_x_yz_plot = t[t.length - 2];
 
     }
@@ -2793,5 +2910,6 @@ public class Signal
         this.z2D = null;
         this.low_error = null;
         this.up_error = null;
+        startIndexToUpdate = 0;
     }
 }

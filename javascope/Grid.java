@@ -383,6 +383,8 @@ public class Grid
                         Date date = new Date();
                         date.setTime(datel);
                         curr_string = df.format(date).toString();
+                        System.out.println(" "+ datel +" "+i+" "+curr_string);
+
 
 
                         if( i < x_dim - 1 )
@@ -403,9 +405,7 @@ public class Grid
                                     {
                                         Color c = g.getColor();
                                         g.setColor(Color.BLUE);
-                                        curr_dim = wm.XPixel( (double)
-                                            timeMillis,
-                                            d);
+                                        curr_dim = wm.XPixel( (double) timeMillis, d);
                                         if (curr_dim >= label_width)
                                             g.drawLine(curr_dim, 0, curr_dim,
                                                 d.height - label_height);

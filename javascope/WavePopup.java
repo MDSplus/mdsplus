@@ -513,10 +513,12 @@ public class WavePopup
             if (wave.mode == Waveform.MODE_POINT ||
                 wave.GetShowSignalCount() == 1)
             {
-                if (wave.getSignalType() == Signal.TYPE_1D)
+                if (wave.getSignalType() == Signal.TYPE_1D ||
+                    (wave.getSignalType() == Signal.TYPE_2D &&
+                    (wave.getSignalMode2D() == Signal.MODE_XZ || wave.getSignalMode2D() == Signal.MODE_YZ ) ) )
                 {
                     add(mode_1d);
-                    switch (wave.getSignalMode())
+                    switch (wave.getSignalMode1D())
                     {
                         case Signal.MODE_LINE:
                             mode_1d_bg.setSelected(plot_line.getModel(), true);
@@ -529,30 +531,27 @@ public class WavePopup
                             break;
                     }
                 }
-                else
+                if (wave.getSignalType() == Signal.TYPE_2D)
                 {
-                    if (wave.getSignalType() == Signal.TYPE_2D)
+                    add(colorMap);
+                    add(mode_2d);
+                    mode_2d.setEnabled(wave.getSignalMode2D() != Signal.MODE_PROFILE);
+                    switch (wave.getSignalMode2D())
                     {
-                        add(colorMap);
-                        add(mode_2d);
-                        mode_2d.setEnabled(wave.getSignalMode() != Signal.MODE_PROFILE);
-                        switch (wave.getSignalMode())
-                        {
-                            case Signal.MODE_XZ:
-                                mode_2d_bg.setSelected(plot_y_time.getModel(), true);
-                                break;
-                            case Signal.MODE_YZ:
-                                mode_2d_bg.setSelected(plot_x_y.getModel(), true);
-                                break;
-                            case Signal.MODE_CONTOUR:
-                                mode_2d_bg.setSelected(plot_contour.getModel(), true);
-                                break;
-                            case Signal.MODE_IMAGE:
-                                mode_2d_bg.setSelected(plot_image.getModel(), true);
-                                break;
-                        }
-                        plot_image.setEnabled(!wave.IsShowSigImage());
+                        case Signal.MODE_XZ:
+                            mode_2d_bg.setSelected(plot_y_time.getModel(), true);
+                            break;
+                        case Signal.MODE_YZ:
+                            mode_2d_bg.setSelected(plot_x_y.getModel(), true);
+                            break;
+                        case Signal.MODE_CONTOUR:
+                            mode_2d_bg.setSelected(plot_contour.getModel(), true);
+                            break;
+                        case Signal.MODE_IMAGE:
+                            mode_2d_bg.setSelected(plot_image.getModel(), true);
+                            break;
                     }
+                    plot_image.setEnabled(!wave.IsShowSigImage());
                 }
             }
 
@@ -746,12 +745,12 @@ public class WavePopup
 
     protected void SetMode1D(int mode)
     {
-        wave.setSignalMode(mode);
+        wave.setSignalMode1D(mode);
     }
 
     protected void SetMode2D(int mode)
     {
-        wave.setSignalMode(mode);
+        wave.setSignalMode2D(mode);
     }
 
     protected void SetMarker(int idx)

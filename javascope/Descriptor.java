@@ -216,6 +216,7 @@ class Descriptor
 
     public static void main(String arg[])
     {
+/*
         float f[] = new float[100];
         Descriptor dsc = new Descriptor();
 
@@ -230,5 +231,6 @@ class Descriptor
         System.out.println("  "+b.length);
         b = dataToByteArray(new Double(100));
         System.out.println("  "+b.length);
+*/
     }
 }

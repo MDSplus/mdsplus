@@ -13,17 +13,21 @@ public class MdsAccess implements DataAccess
     String error = null;
     String encoded_credentials = null;
 
-    
+
     public static void main(String args[])
     {
         MdsAccess access = new MdsAccess();
-        String url = "mds:://150.178.3.80/a/14000/\\emra_it";
+//        String url = "mds:://150.178.3.80/a/14000/\\emra_it";
+          String url1 = "mds://150.178.34.39/a/19321/\\emra_it";
+//          String url = "mds://150.178.34.39/RFX/19321/\\DSTC::VIS_VIDEO_0";
+       String  url = "mds://150.178.34.39/rfx/19321/FramesInterleave(\\dstc::vis_video_1)";
         boolean supports = access.supports(url);
         try
         {
-            Signal s = access.getSignal(url);
-            s = access.getSignal(url);
-            //float x [] = access.getX(url);
+//            Signal s = access.getSignal(url);
+            FrameData fd = access.getFrameData(url);
+            //s = access.getSignal(url);
+            float x [] = access.getX(url);
             //float y [] = access.getY(url);
          }
         catch (IOException e) {}
@@ -35,7 +39,7 @@ public class MdsAccess implements DataAccess
         if(st.countTokens() < 2) return false;
         return st.nextToken().equals("mds");
     }
-    
+
     public void setProvider(String url) throws IOException
     {
         StringTokenizer st1 = new StringTokenizer(url, ":");
@@ -69,7 +73,7 @@ public class MdsAccess implements DataAccess
         }
         signal = st2.nextToken();
     }
-    
+
     public String getShot()
     {
         return shot_str;
@@ -97,29 +101,29 @@ public class MdsAccess implements DataAccess
         np = null;
         ip_addr = null;
     }
-    
+
     public float [] getX(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray("DIM_OF("+signal+")");
     }
-    
+
     public float [] getY(String url) throws IOException
     {
         setProvider(url);
         if(signal == null) return null;
         return np.GetFloatArray(signal);
     }
-    
+
     public Signal getSignal(String url) throws IOException
     {
         Signal s = null;
         error = null;
-        
+
         float y[] = getY(url);
         float x[] = getX(url);
-                
+
         if(x == null || y == null)
         {
             error = np.ErrorString();
@@ -128,21 +132,21 @@ public class MdsAccess implements DataAccess
         s = new Signal(x, y);
         return s;
     }
- 
+
     public FrameData getFrameData(String url) throws IOException
     {
         setProvider(url);
         return np.GetFrameData(signal, null, (float)-1E8, (float)1E8);
     }
- 
+
     public void setPassword(String encoded_credentials)
     {
         this.encoded_credentials = encoded_credentials;
     }
-    
-    
+
+
     public String getError()
-    {   
+    {
         if(np == null)
            return("Cannot create MdsDataProvider");
         if(error != null)
@@ -150,4 +154,4 @@ public class MdsAccess implements DataAccess
         return np.ErrorString();
     }
 }
-        
+

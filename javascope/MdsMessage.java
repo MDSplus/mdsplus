@@ -14,7 +14,7 @@ class MdsMessage extends Object
     public    static final byte   COMPRESSED           = (byte)0x20;
     public    static final byte   BIG_ENDIAN_MASK      = (byte)0x80;
     public    static final byte   SWAP_ENDIAN_ON_SERVER_MASK = (byte)0x40;
-    public    static final byte   JAVA_CLIENT = 3 | BIG_ENDIAN_MASK | SWAP_ENDIAN_ON_SERVER_MASK;
+    public    static final byte   JAVA_CLIENT = (byte)( (byte)3 | BIG_ENDIAN_MASK | SWAP_ENDIAN_ON_SERVER_MASK);
     public    static final String EVENTASTREQUEST = "---EVENTAST---REQUEST---";
     public    static final String EVENTCANREQUEST = "---EVENTCAN---REQUEST---";
 

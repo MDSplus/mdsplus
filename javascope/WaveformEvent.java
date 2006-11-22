@@ -184,7 +184,6 @@ public class WaveformEvent
         String s = null;
         int event_id = getID();
         Waveform w = (Waveform) getSource();
-        SimpleTimeZone stz = new SimpleTimeZone(0, "GMT");
 
         switch (event_id)
         {
@@ -200,8 +199,8 @@ public class WaveformEvent
                 {
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     DateFormat format1 = new SimpleDateFormat("HHH:mm:ss");
-                    format.setTimeZone(stz);
-                    format1.setTimeZone(stz);
+                    format.setTimeZone(new SimpleTimeZone(0, "GMT") );
+                    format1.setTimeZone(new SimpleTimeZone(0, "GMT"));
                     Date date = new Date();
                     date.setTime(dateValue + (long)point_x);
                     Date date1 = new Date();
@@ -250,7 +249,7 @@ public class WaveformEvent
                             if(showXasDate)
                             {
                                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                format.setTimeZone(stz);
+                                format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                                 Date date = new Date();
                                 date.setTime(dateValue + (long)time_value);
                                 xt_string = ", T = " + format.format(date).toString();
@@ -269,8 +268,8 @@ public class WaveformEvent
                         if(showXasDate)
                         {
                             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                            format.setTimeZone(stz);
-                             Date date = new Date();
+                            format.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                            Date date = new Date();
                             date.setTime(dateValue + (long)point_x);
                             x_string = format.format(date).toString();
                             string_size = 35;

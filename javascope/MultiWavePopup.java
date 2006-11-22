@@ -200,12 +200,12 @@ public class MultiWavePopup
         super.SetMenu();
     }
 
-    /*
-        protected void SetInterpolate(boolean state)
-        {
-            wave.SetInterpolate(wave.GetSelectedSignal(), state);
-        }
-     */
+
+    protected void SetInterpolate(boolean state)
+    {
+        wave.SetInterpolate(wave.GetSelectedSignal(), state);
+    }
+
     protected void SetMode2D(int mode)
     {
         wave.setSignalMode(wave.GetSelectedSignal(), mode);

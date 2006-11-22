@@ -337,7 +337,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
             wave.lx_min = convertToFloat(x_min.getText(), true);
             wave.ly_max = convertToFloat(y_max.getText(), false);
             wave.ly_min = convertToFloat(y_min.getText(), true);
-	        wave.setFixedLimits();
+            wave.setFixedLimits();
         }
 
 

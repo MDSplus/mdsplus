@@ -383,14 +383,25 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	    }
     }
 
-    synchronized public void liveUpdateWaveforms()
+    synchronized public void appendUpdateWaveforms()
     {
         Waveform w;
         for(int i = 0; i < getGridComponentCount(); i++)
         {
             w = GetWavePanel(i);
             if(w != null )
-                  w.liveUpdate();
+                  w.appendUpdate();
+        }
+    }
+
+    synchronized public void updateWaveforms()
+    {
+        Waveform w;
+        for(int i = 0; i < getGridComponentCount(); i++)
+        {
+            w = GetWavePanel(i);
+            if(w != null )
+                  w.Update();
         }
     }
 

@@ -19,7 +19,7 @@ import javax.swing.event.*;
    private JLabel	    lab;
    private SError	    error_w;
    private jScope	    main_scope;
-   private ExpandExp    expand_expr;
+   private ExpandExp        expand_expr;
    private SList	    signalList;
    private jScopeMultiWave    wave;
    public  MdsWaveInterface   wi;
