@@ -814,7 +814,7 @@ public class RowColumnContainer extends JComponent
         }
         add(c, row, col);
 
-        split_pos = new Point(row, col);
+        split_pos = new Point(col, row);
         update();
         return idx-1;
     }

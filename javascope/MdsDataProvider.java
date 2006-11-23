@@ -508,7 +508,8 @@ public class MdsDataProvider
                 var_idx++;
             }
 
-            String out = GetDefaultTitle(expr);
+            //String out = GetDefaultTitle(expr);
+            String out = GetStringValue(expr);
 
             if (out == null)
                 _jscope_set = false;
@@ -534,7 +535,8 @@ public class MdsDataProvider
                     var_idx++;
                 }
 
-                out = GetDefaultXLabel(expr);
+//                out = GetDefaultXLabel(expr);
+                out = GetStringValue(expr);
                 //return GetDefaultXLabel(in_y);
             }
             else
@@ -551,7 +553,8 @@ public class MdsDataProvider
                                  }
                                  return GetDefaultYLabel(expr);
                  */
-                out = GetDefaultYLabel("Units(" + in_x + ")");
+                //out = GetDefaultYLabel("Units(" + in_x + ")");
+                out = GetStringValue("Units(" + in_x + ")");
             }
 
             if (out == null)
@@ -572,7 +575,9 @@ public class MdsDataProvider
                     "), Units(_jscope_" + v_idx + "))";
                 var_idx++;
             }
-            String out = GetDefaultYLabel(expr);
+            //String out = GetDefaultYLabel(expr);
+            String out = GetStringValue(expr);
+
 
             if (out == null)
                 _jscope_set = false;
@@ -594,7 +599,8 @@ public class MdsDataProvider
                 var_idx++;
             }
 
-            String out = GetDefaultZLabel(expr);
+            //String out = GetDefaultZLabel(expr);
+            String out = GetStringValue(expr);
             if (out == null)
                 _jscope_set = false;
 
@@ -1451,6 +1457,21 @@ public class MdsDataProvider
         return true;
     }
 
+    protected String GetStringValue(String expr) throws IOException
+    {
+        String out = GetString(expr);
+        if (out == null || out.length() == 0 || error != null)
+        {
+            error = null;
+            return null;
+        }
+        if(out.indexOf(0) > 0 )
+          out = out.substring(0, out.indexOf(0));
+
+        return out;
+    }
+
+/*
     protected String GetDefaultTitle(String in_y) throws IOException
     {
         //String out = GetString("help_of("+in_y+")");
@@ -1460,6 +1481,8 @@ public class MdsDataProvider
             error = null;
             return null;
         }
+        out = out.substring(0, out.indexOf(0));
+
         return out;
     }
 
@@ -1499,7 +1522,7 @@ public class MdsDataProvider
         }
         return out;
     }
-
+*/
     protected int[] GetNumDimensions(String in_y) throws IOException
     {
         return GetIntArray(in_y);

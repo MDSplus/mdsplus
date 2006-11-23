@@ -315,7 +315,7 @@ class AsdexDataProvider extends MdsDataProvider
                 var_idx++;
             }
 
-            String out = GetDefaultTitle(expr);
+            String out = GetStringValue(expr);
 
             if (out == null)
                 _jscope_set = false;
@@ -341,7 +341,7 @@ class AsdexDataProvider extends MdsDataProvider
                     var_idx++;
                 }
 
-                out = GetDefaultXLabel(expr);
+                out = GetStringValue(expr);
                 //return GetDefaultXLabel(in_y);
             }
             else
@@ -358,7 +358,7 @@ class AsdexDataProvider extends MdsDataProvider
                                  }
                                  return GetDefaultYLabel(expr);
                  */
-                out = GetDefaultYLabel("Units(" + in_x + ")");
+                out = GetStringValue("Units(" + in_x + ")");
             }
 
             if (out == null)
@@ -379,7 +379,7 @@ class AsdexDataProvider extends MdsDataProvider
                     "), Units(_jscope_" + v_idx + "))";
                 var_idx++;
             }
-            String out = GetDefaultYLabel(expr);
+            String out = GetStringValue(expr);
 
             if (out == null)
                 _jscope_set = false;
@@ -401,7 +401,7 @@ class AsdexDataProvider extends MdsDataProvider
                 var_idx++;
             }
 
-            String out = GetDefaultZLabel(expr);
+            String out = GetStringValue(expr);
             if (out == null)
                 _jscope_set = false;
 

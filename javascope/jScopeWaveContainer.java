@@ -362,7 +362,7 @@ remove 28/06/2005
 
                 WaveContainerEvent wce = new WaveContainerEvent(this,
                     WaveContainerEvent.END_UPDATE,
-                    "Wave row " + p.x + " column " + p.y + " is updated");
+                    "Wave column " + p.x + " row " + p.y + " is updated");
                 jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
                 break;
         }
@@ -1630,7 +1630,7 @@ remove 28/06/2005
 
         WaveContainerEvent wce = new WaveContainerEvent(this,
             WaveContainerEvent.START_UPDATE,
-            label + " wave row " + p.x + " column " + p.y);
+            label + " wave column " + p.x + " row " + p.y);
         jScopeWaveContainer.this.dispatchWaveContainerEvent(wce);
 
         //If is added a signal to the waveform only signal added
