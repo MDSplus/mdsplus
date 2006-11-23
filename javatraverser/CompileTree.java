@@ -158,6 +158,7 @@ public class CompileTree extends Thread
     {
         String type = node.getNodeName();
         String name = node.getAttribute("NAME");
+        if(name.length() > 12) name = name.substring(0,11);
         String state = node.getAttribute("STATE");
         String usageStr = node.getAttribute("USAGE");
         NidData nid = null;
