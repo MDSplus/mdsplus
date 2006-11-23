@@ -338,7 +338,7 @@ System.out.println("Livello " + level);
                       //superiore devo cercare un punto sul
                       //bordo laterale CASE_A devo partire dal primo
                       //punto a differenza del caso generico in cui
-                      //devo partire dal punto successivo al segmento in cui è
+                      //devo partire dal punto successivo al segmento in cui e'
                       //stato individuato il punto di uscita della curva di livello
                       //in esame, valgono considerazioni analoghe per gli altri casi.
                       if (!found)
