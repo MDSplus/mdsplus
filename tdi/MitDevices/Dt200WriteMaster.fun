@@ -1,10 +1,6 @@
 public fun Dt200WriteMaster(in _board, in _str, optional in _rsh)
 {
-  if (_board < 10) {
-  _brd = char(_board+ichar('0'));
-  } else {
-  _brd = char(_board/10+ichar('0'))//char(_board mod 10+ichar('0'));
-  }
+  _brd = trim(adjustl(_board));
   if (present(_rsh)) {
     _devname = "/dev/acq200/acq200."//_brd//".rsh";
   } else {
