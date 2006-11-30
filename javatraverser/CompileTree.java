@@ -158,7 +158,6 @@ public class CompileTree extends Thread
     {
         String type = node.getNodeName();
         String name = node.getAttribute("NAME");
-        if(name.length() > 12) name = name.substring(0,11);
         String state = node.getAttribute("STATE");
         String usageStr = node.getAttribute("USAGE");
         NidData nid = null;
@@ -235,6 +234,7 @@ public class CompileTree extends Thread
             if(type.equals("node"))
             {
                 try  {
+                    if(name.length() > 12) name = name.substring(0,11);
                     nid = tree.addNode("."+name, NodeInfo.USAGE_STRUCTURE, 0);
                     if(usageStr != null && usageStr.equals("SUBTREE"))
                         tree.setSubtree(nid, 0);
@@ -258,6 +258,7 @@ public class CompileTree extends Thread
                 if(usageStr.equals("AXIS")) usage = NodeInfo.USAGE_AXIS;
                 if(usageStr.equals("DISPATCH")) usage = NodeInfo.USAGE_DISPATCH;
                 try {
+                    if(name.length() > 12) name = name.substring(0,11);
                     nid = tree.addNode(":"+name, usage, 0);
                     tree.setDefault(nid, 0);
                     success = true;

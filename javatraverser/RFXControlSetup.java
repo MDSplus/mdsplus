@@ -567,6 +567,15 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceField deviceField73 = new DeviceField();
     DeviceField deviceField76 = new DeviceField();
   DeviceChoice deviceChoice16 = new DeviceChoice();
+    JPanel jPanel610 = new JPanel();
+    JPanel jPanel611 = new JPanel();
+    JPanel jPanel612 = new JPanel();
+    DeviceField deviceField4114 = new DeviceField();
+    GridLayout gridLayout16 = new GridLayout();
+    DeviceField deviceField512 = new DeviceField();
+    JPanel jPanel613 = new JPanel();
+    DeviceField deviceField514 = new DeviceField();
+    DeviceField deviceField610 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -592,7 +601,7 @@ public class RFXControlSetup extends DeviceSetup {
     this.setWidth(900);
     this.setHeight(700);
     this.setDeviceType("RFXControl");
-    this.setDeviceProvider("");
+    this.setDeviceProvider("localhost");
     this.setDeviceTitle("RFX Control Setup");
     this.getContentPane().setLayout(borderLayout1);
     jPanel9.setLayout(borderLayout3);
@@ -2383,7 +2392,24 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice16.setChoiceItems(new String[] {"Included", "Excluded"});
     deviceChoice16.setUpdateIdentifier("");
     deviceChoice16.setIdentifier("");
-    jPanel414.add(deviceField420, null);
+    jPanel610.setLayout(gridLayout16);
+        deviceField4114.setOffsetNid(1431);
+        deviceField4114.setLabelString("End Time (s):");
+        deviceField4114.setIdentifier("");
+        gridLayout16.setColumns(1);
+        gridLayout16.setRows(3);
+        deviceField512.setOffsetNid(1435);
+        deviceField512.setLabelString("Reference Wave Y: ");
+        deviceField512.setNumCols(40);
+        deviceField512.setIdentifier("");
+        deviceField514.setOffsetNid(1429);
+        deviceField514.setLabelString("Start Time (s)");
+        deviceField514.setIdentifier("");
+        deviceField610.setOffsetNid(1433);
+        deviceField610.setLabelString("Reference Wave X: ");
+        deviceField610.setNumCols(40);
+        deviceField610.setIdentifier("");
+        jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
     jPanel414.add(deviceField318, null);
@@ -2806,6 +2832,14 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel67.add(deviceField59, null);
         jPanel64.add(jPanel69, null);
         jPanel69.add(deviceField61, null);
+        jTabbedPane1.add(jPanel610,   "Q Control");
+        jPanel611.add(deviceField514, null);
+        jPanel611.add(deviceField4114, null);
+        jPanel610.add(jPanel611, null);
+        jPanel610.add(jPanel613, null);
+        jPanel613.add(deviceField512, null);
+        jPanel610.add(jPanel612, null);
+        jPanel612.add(deviceField610, null);
         jScrollPane11.getViewport().add(jPanel59, null);
         jPanel59.add(deviceTable26, BorderLayout.CENTER);
         jPanel59.add(jPanel510, BorderLayout.NORTH);
