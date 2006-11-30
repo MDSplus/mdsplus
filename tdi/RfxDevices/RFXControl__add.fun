@@ -1,7 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-/*    DevAddStart(_path, 'RFXControl', 1586, _nidout); */
+/*   DevAddStart(_path, 'RFXControl', 1690, _nidout);*/
     DevAddStart(_path, 'RFXControl', 1682, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
@@ -750,8 +750,17 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR297_VAL', 'NUMERIC', 0., *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR298_NAME', 'TEXT', "RotPertThreshold8", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR298_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR299_NAME', 'TEXT', "QControlStart", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR299_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR300_NAME', 'TEXT', "QControlEnd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR300_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR301_NAME', 'TEXT', "QControlWaveX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR301_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR302_NAME', 'TEXT', "QControlWaveY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR302_VAL', 'NUMERIC', 0., *, _nid);
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
+
 
 /* User signals */
     for (_c = 1; _c <= 9; _c++)
