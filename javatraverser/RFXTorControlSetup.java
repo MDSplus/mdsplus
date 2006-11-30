@@ -250,6 +250,15 @@ public class RFXTorControlSetup extends DeviceSetup {
     DeviceTable deviceTable112 = new DeviceTable();
     DeviceField deviceField73 = new DeviceField();
     DeviceField deviceField76 = new DeviceField();
+  DeviceField deviceField4114 = new DeviceField();
+  JPanel jPanel613 = new JPanel();
+  DeviceField deviceField512 = new DeviceField();
+  GridLayout gridLayout16 = new GridLayout();
+  JPanel jPanel612 = new JPanel();
+  DeviceField deviceField514 = new DeviceField();
+  JPanel jPanel611 = new JPanel();
+  DeviceField deviceField610 = new DeviceField();
+  JPanel jPanel610 = new JPanel();
   public RFXTorControlSetup() {
     try {
       jbInit();
@@ -296,14 +305,15 @@ public class RFXTorControlSetup extends DeviceSetup {
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL",
-        "Closer VS", "Closer VS+Rot.Pert.", "Mode Control with Shell comp.", "Open Loop F Control"});
+        "Closer VS", "Closer VS+Rot.Pert.", "Mode Control with Shell comp.", "Open Loop F Control", "Open Loop Q Control"
+        });
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
         jPanel31.setLayout(gridLayout7);
@@ -993,6 +1003,23 @@ public class RFXTorControlSetup extends DeviceSetup {
         deviceField76.setLabelString("Br measure radius (m):");
         deviceField76.setNumCols(5);
         deviceField76.setOffsetNid(1263);
+    deviceField4114.setOffsetNid(1431);
+    deviceField4114.setLabelString("End Time (s):");
+    deviceField4114.setIdentifier("");
+    deviceField512.setOffsetNid(1435);
+    deviceField512.setLabelString("Reference Wave Y: ");
+    deviceField512.setNumCols(40);
+    deviceField512.setIdentifier("");
+    gridLayout16.setColumns(1);
+    gridLayout16.setRows(3);
+    deviceField514.setOffsetNid(1429);
+    deviceField514.setLabelString("Start Time (s)");
+    deviceField514.setIdentifier("");
+    deviceField610.setOffsetNid(1433);
+    deviceField610.setLabelString("Reference Wave X: ");
+    deviceField610.setNumCols(40);
+    deviceField610.setIdentifier("");
+    jPanel610.setLayout(gridLayout16);
     jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -1156,6 +1183,14 @@ public class RFXTorControlSetup extends DeviceSetup {
     jPanel67.add(deviceField59, null);
         jPanel64.add(jPanel69, null);
         jPanel69.add(deviceField61, null);
+    jTabbedPane1.add(jPanel610,   "Q Control");
+    jPanel611.add(deviceField514, null);
+    jPanel611.add(deviceField4114, null);
+    jPanel610.add(jPanel613, null);
+    jPanel613.add(deviceField512, null);
+    jPanel610.add(jPanel612, null);
+    jPanel612.add(deviceField610, null);
+    jPanel610.add(jPanel611, null);
     jScrollPane7.getViewport().add(jPanel417, null);
     jPanel416.add(deviceTable9, null);
         jPanel416.add(deviceTable112, null);
