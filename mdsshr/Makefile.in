@@ -27,7 +27,8 @@ SOURCES = \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
 	MdsMalloc.c \
-	mds_dsc_string.c
+	mds_dsc_string.c \
+	MdsFloatToTime.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsShr.exports
