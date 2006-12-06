@@ -1,30 +1,48 @@
-Welcome to the MDSplus CVS Distribution. The MDSplus system was first designed
-to provide data acquisition services for the C-Mod experiment at MIT, the RFX
-experiment in Padova, Italy and the ZTH experiment at the Los Alamos National
-Laboratory. Development of MDSplus began in 1987 by the initial development
-team of:
+Prototype MDSplus python based expression evaluator
 
-Tom Fredian - MIT
-Josh Stillerman - MIT
-Giulio Flor - Padova
-Gabriele Manduchi - Padova
-Ken Klare - LANL
+This package is a prototype replacement for the C implementation of the MDSplus
+expression evaluator currently found in libTdiShr. The intent is to maintain
+compatibility with the existing MDSplus data structures including those which
+represent compiled TDI expressions. There will be a python class representation
+of all of the MDSplus data types currently supported today. Eventually this
+package will include a tdi compiler which will compile the tdi language into
+a python class representation. A library with entry points such as TdiCompile,
+TdiExecute and TdiData which will call into Python will eventually be provided.
 
-The system was first developed for the OpenVMS platform. In the mid 1990's a
-client access package was developed which allowed users on unix and windows
-systems to access MDSplus data via a server on OpenVMS. In the 1998 an porting
-effort was begun to port the entirety of MDSplus to the unix and windows
-platforms. The porting team consisted of:
+To INSTALL this package simply execute the following command while in this
+directory using an account with suitable privileges to install the package into
+your Python distribution:
 
-Tom Fredian - MIT
-Josh Stillerman - MIT
-Tom Gibney - PPPL
-Jeff Schachter - GA
-Bill Meyers - LLNL
+$ python setup.py install
 
-Also beginning in 1997 several java class libraries and applications have been
-developed to access the MDSplus system. Most of this work has been done by
-Gabriele Manduchi and his colleagues in Padua.
+Prerequisits:
 
-As more and more sites install and utilize the MDSplus system it is hoped that
-the number of contributors to this package will grow.
+You must have MDSplus installed in /usr/local/mdsplus.
+You will need to install the numpy Python package if it is not currently
+installed on your system. To test if numpy is installed simply:
+
+$ python
+>>> from numpy import *
+
+Once you have this package installed you can try a few operations which are
+currently implemented:
+
+$ python
+>>> from MDSplus import *
+>>> TreeOpen('tree-name',shot)
+>>> noderef=TreeFindNode('node-path')
+>>> print noderef
+>>> print noderef.evaluate()
+>>> sig=TreeFindNode('a-signal').evaluate()
+>>> print sig
+>>> print dim_of(sig)
+>>> print value_of(sig)
+Now for a really complicated one:
+>>> sig=build_signal(compile_function('add',42,compile_function('$value')),
+                   compile_function('build_range',0,1000),None)
+>>> print sig
+>>> print value_of(sig)
+>>> print data(sig)
+
+Only a very few of the functions are actually implemented. This is currently simply
+a proof of principle.
