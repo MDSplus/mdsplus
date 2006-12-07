@@ -173,6 +173,10 @@ SOURCE=.\TreeSerializeNci.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\TreeSetDbi.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\TreeSetDefault.c
 # End Source File
 # Begin Source File
