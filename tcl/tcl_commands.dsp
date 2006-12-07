@@ -222,7 +222,15 @@ SOURCE=.\tcl_set_tree.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcl_set_view.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\tcl_setevent.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\tcl_setshow_versions.c
 # End Source File
 # Begin Source File
 
