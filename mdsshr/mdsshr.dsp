@@ -145,6 +145,10 @@ SOURCE=.\MdsEvents.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\MdsFloatToTime.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\MdsGet1DxA.c
 # End Source File
 # Begin Source File
