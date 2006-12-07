@@ -18,6 +18,7 @@ extern int TdiData(), TdiEvaluate();
 #define EXPORT __declspec(dllexport)
 #endif
 
+extern int TdiDecompile();
 
 static void printDecompiled(struct descriptor *inD)
 {
