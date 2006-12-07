@@ -21,8 +21,9 @@ extern int TdiIntrinsic();
 #define MdsEND_ARG_64 (void *)-1
 #ifndef va_count
 #define  va_count(narg) if (first != MdsEND_ARG && first != MdsEND_ARG_64) \
-{ va_start(incrmtr, first); \
-  struct descriptor *arg = va_arg(incrmtr, struct descriptor *); \
+{ struct descriptor *arg;\
+  va_start(incrmtr, first); \
+  arg = va_arg(incrmtr, struct descriptor *); \
   for (narg=1; (narg < 256) && \
                (arg != MdsEND_ARG) && \
                (arg != MdsEND_ARG_64); \
