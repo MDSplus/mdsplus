@@ -451,11 +451,11 @@ int putSegmentInternal(int nid, int idx, char *dim, char *data)
 
 
 #ifdef HAVE_WINDOWS_H
-void cacheReset(){}
+EXPORT void cacheReset(){}
 #else
 
 //For Linux only: remove all persistent semaphores
-void cacheReset()
+EXPORT void cacheReset()
 {
     char buf[256];
     int i;

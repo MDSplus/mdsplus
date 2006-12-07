@@ -248,9 +248,9 @@ bool Cache::inQueue(int nid, int idx, int mode)
 
 int Cache::flush() 
 {
-	char *data, *shape, *dim;
-	int dataSize, shapeSize, dimSize;
-	int status, errStatus = 1, currDataSize;
+	char *data;
+	int dataSize;
+	int status, errStatus = 1;
 	NidChain *currChainNid, *prevChainNid;
 	currChainNid = chainHead;
 	while(currChainNid)	

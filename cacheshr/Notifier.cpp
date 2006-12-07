@@ -1,11 +1,9 @@
 #include "Notifier.h"
 
 #ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#include <stdio.h>
+#include "Notifier.h"
+
 #define NUM_HANDLES 10000
-static int nids[NUM_HANDLES];
-static HANDLE handles[NUM_HANDLES];
 
 extern "C" void handleEvents(ThreadInfo *info)
 {
@@ -63,7 +61,7 @@ void Notifier::initialize(int nid, void (*callback)(int))
 
 void Notifier::notify()
 {
-    pulseEvent(info.handle);
+    PulseEvent(info.handle);
 }
 
 void Notifier::dispose()

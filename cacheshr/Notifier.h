@@ -3,6 +3,7 @@
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <stdio.h>
+#include <process.h>
 #define NUM_HANDLES 10000
 static int nids[NUM_HANDLES];
 static HANDLE handles[NUM_HANDLES];
@@ -19,6 +20,7 @@ struct ThreadInfo
 class Notifier
 {
 	ThreadInfo info;
+	HANDLE getHandle(int nid);
 
 public:
 	void initialize(int nid, void (*callback)(int));
