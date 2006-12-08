@@ -303,6 +303,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
          fi
 	 CC_LDFLAGS="$CFLAGS"
+       else
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        fi
        CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";

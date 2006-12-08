@@ -2592,6 +2592,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+
 # Check whether --enable-nodebug or --disable-nodebug was given.
 if test "${enable_nodebug+set}" = set; then
   enableval="$enable_nodebug"
@@ -2839,7 +2840,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2842:" \
+echo "$as_me:2843:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3131,6 +3132,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
          fi
 	 CC_LDFLAGS="$CFLAGS"
+       else
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        fi
        CAMSHR="camshr";
        FFLAGS="$FFLAGS -fpic -Wno-globals -fno-backslash";
