@@ -324,13 +324,22 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 		segment->getShape((void **)&shape, &shapeSize);
 		//Check Shape
 		if(bounds[0] != shape[0])
+		{
+			lock.unlock();
 			return BAD_TYPE;
+		}
 		if(bounds[2] < shape[2] - 1 || bounds[2] > shape[2])
+		{
+			lock.unlock();
 			return BAD_SHAPE;
+		}
 		for(int i = 0; i < shape[2] - 1; i++)
 		{
 			if(bounds[4 + i] != shape[4 + i])
-			return BAD_SHAPE;
+			{
+				lock.unlock();
+				return BAD_SHAPE;
+			}
 		}
 		int currSegmentSize = segment->getCurrDataSize();
 		segment->getData((void **)&segmentData, &segmentSize);
