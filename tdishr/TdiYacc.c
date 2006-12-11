@@ -40,13 +40,14 @@
 	NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 */
 #include <STATICdef.h>
-#include "tdithreadsafe.h"
 #include <stdio.h>
 #include <string.h>
+#include "tdithreadsafe.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
+
 #include <libroutines.h>
 #include <strroutines.h>
 #include <tdimessages.h>

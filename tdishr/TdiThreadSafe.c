@@ -1,4 +1,6 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
 

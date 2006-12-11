@@ -6,6 +6,8 @@
 */
 #define TdiFUNCTION_DEF
 #include <mdstypes.h>
+#ifndef HAVE_VXWORKS_H
+#endif
 #include <config.h>
 struct	TdiFunctionStruct {
 	char	*name;		/*string to compile/decompile	*/

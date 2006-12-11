@@ -1,4 +1,8 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#else
+#define NULL 0
+#endif
 #include <STATICdef.h>
 #include "mdsshrthreadsafe.h"
 
