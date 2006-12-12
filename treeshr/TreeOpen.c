@@ -1,4 +1,6 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
@@ -992,7 +994,7 @@ void FixupHeader(TREE_HEADER *hdr)
   char flags = ((char *)hdr)[1];
   hdr->sort_children = (flags & 1) != 0;
   hdr->sort_members = (flags & 2) != 0;
-  hdr->versions = (flags & 4) != 0;
+  hdr->version = (flags & 4) != 0;
   SwapBytesInt((char *)&hdr->free);
   SwapBytesInt((char *)&hdr->tags);
   SwapBytesInt((char *)&hdr->externals);
@@ -1092,7 +1094,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
 
   if (child_of(grandparent) == parent)
   {
-    link_it2(dblist, grandparent, child, subtreetop, grandparent);
+    link_it2(dblist, grandparent, INFO.TREE_INFO.child, subtreetop, grandparent);
   }
   else
   {
@@ -1100,14 +1102,14 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
     for (bro = child_of(grandparent); brother_of(bro) && (brother_of(bro) != parent); bro = brother_of(bro));
     if (brother_of(bro))
     {
-      link_it2(dblist, bro, brother, subtreetop, bro);
+      link_it2(dblist, bro, INFO.TREE_INFO.brother, subtreetop, bro);
     }
   }
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
   link_it2(dblist, subtreetop, parent, grandparent, subtreetop);
   if (brother_of(parent))
   {
-    link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
+    link_it2(dblist, subtreetop, INFO.TREE_INFO.brother, brother_of(parent), subtreetop);
   }
   return;
 }
@@ -1310,10 +1312,10 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
             status = TreeExpandNodes(*dblist, 0, 0);
             strncpy(info->node->name,"TOP         ",sizeof(info->node->name));
             info->node->parent = 0;
-            info->node->child = 0;
-            info->node->member = 0;
+            info->node->INFO.TREE_INFO.child = 0;
+            info->node->INFO.TREE_INFO.member = 0;
             info->node->usage = TreeUSAGE_SUBTREE;
-            (info->node + 1)->child = 0;
+            (info->node + 1)->INFO.TREE_INFO.child = 0;
             bitassign(1,info->edit->nci->flags,NciM_INCLUDE_IN_PULSE);
             info->tags = malloc(512);
             info->edit->tags_pages = 1;

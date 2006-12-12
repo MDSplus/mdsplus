@@ -1,4 +1,6 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #ifdef _WIN32
 #include <io.h>
 #endif

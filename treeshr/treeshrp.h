@@ -224,11 +224,11 @@ typedef struct node
       int       member;
       int       brother;
       int       child;
-    };
+    } TREE_INFO;
     struct {
       struct big_node_linkage *big_linkage PACK_ATTR;
-    };
-  } ;
+    } LINK_INFO;
+  }INFO ;
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
   char      fill;
@@ -298,11 +298,11 @@ typedef struct big_node_linkage {
 #define parent_of(a)\
   (((a)->parent == -1) ? (a)->big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
 #define member_of(a)\
-  (((a)->parent == -1) ? (a)->big_linkage->member : (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0))
+  (((a)->parent == -1) ? (a)->big_linkage->member : (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0))
 #define child_of(a)\
-  (((a)->parent == -1) ? (a)->big_linkage->child : (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0))
+  (((a)->INFO.TREE_INFO.parent == -1) ? (a)->big_linkage->INFO.LINK_INFO.child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
 #define brother_of(a)\
-  (((a)->parent == -1) ? (a)->big_linkage->brother : (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0))
+  (((a)->INFO.TREE_INFO.parent == -1) ? (a)->big_linkage->INFO.LINK_INFO.brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 #define link_it2(dblist,nodeptr,field,a,b)  \
   if (((char *)(a) - (char *)(b)) >= 2^32) {\
@@ -323,9 +323,9 @@ typedef struct big_node_linkage {
   }
 #else
 #define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
-#define member_of(a)  (NODE *)((a)->member  ? (char *)(a) + swapint((char *)&((a)->member))  : 0)
-#define child_of(a)   (NODE *)((a)->child   ? (char *)(a) + swapint((char *)&((a)->child))   : 0)
-#define brother_of(a) (NODE *)((a)->brother ? (char *)(a) + swapint((char *)&((a)->brother)) : 0)
+#define member_of(a)  (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0)
+#define child_of(a)   (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0)
+#define brother_of(a) (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0)
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 #define link_it2(dblist,node,field,a,b)  \
 node->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->field = swapint((char *)&node->field)

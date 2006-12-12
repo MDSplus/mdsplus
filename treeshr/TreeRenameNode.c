@@ -28,8 +28,9 @@
   This routine modifies the name of an existing node in a tree.  It does NOT
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
-
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -126,31 +127,31 @@ int       _TreeRenameNode(void *dbid, int nid, char *newname)
 *************************************************/
   pptr = parent_of(oldnode_ptr);
   if (child_of(pptr) == oldnode_ptr)
-    if (oldnode_ptr->brother)
-      {link_it(pptr->child,brother_of(oldnode_ptr), pptr);}
+    if (oldnode_ptr->INFO.TREE_INFO.brother)
+      {link_it(pptr->INFO.TREE_INFO.child,brother_of(oldnode_ptr), pptr);}
     else
-      pptr->child = 0;
+      pptr->INFO.TREE_INFO.child = 0;
   else
   {
     for (nptr = child_of(pptr); nptr && (brother_of(nptr) != oldnode_ptr); nptr = brother_of(nptr));
     if (nptr)
-      if (oldnode_ptr->brother)
-        {link_it(nptr->brother,brother_of(oldnode_ptr), nptr);}
+      if (oldnode_ptr->INFO.TREE_INFO.brother)
+        {link_it(nptr->INFO.TREE_INFO.brother,brother_of(oldnode_ptr), nptr);}
       else
-	nptr->brother = 0;
+	nptr->INFO.TREE_INFO.brother = 0;
     else if (member_of(pptr) == oldnode_ptr)
-      if (oldnode_ptr->brother)
-        {link_it(pptr->member,brother_of(oldnode_ptr), pptr);}
+      if (oldnode_ptr->INFO.TREE_INFO.brother)
+        {link_it(pptr->INFO.TREE_INFO.member,brother_of(oldnode_ptr), pptr);}
       else
-	pptr->member = 0;
+	pptr->INFO.TREE_INFO.member = 0;
     else
     {
       for (nptr = member_of(pptr); nptr && (brother_of(nptr) != oldnode_ptr); nptr = brother_of(nptr));
       if (nptr)
-	if (oldnode_ptr->brother)
-          {link_it(nptr->brother,brother_of(oldnode_ptr), nptr);}
+	if (oldnode_ptr->INFO.TREE_INFO.brother)
+          {link_it(nptr->INFO.TREE_INFO.brother,brother_of(oldnode_ptr), nptr);}
 	else
-	  nptr->brother = 0;
+	  nptr->INFO.TREE_INFO.brother = 0;
       else
       {
         status = TreeINVTREE;

@@ -31,7 +31,9 @@
 
 
 +-----------------------------------------------------------------------------*/
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -480,9 +482,9 @@ int _TreeTurnOn(void *dbid, int nid_in)
     if (!(nci.flags & NciM_PARENT_STATE))
     {
       nid_to_node(dblist, nid, node);
-      if (node->child)
+      if (node->INFO.TREE_INFO.child)
 	status = SetParentState(dblist, child_of(node), 0);
-      if (node->member)
+      if (node->INFO.TREE_INFO.member)
 	status = SetParentState(dblist, member_of(node), 0);
     }
     else
@@ -557,9 +559,9 @@ int _TreeTurnOff(void *dbid, int nid_in)
     if (!(nci.flags & NciM_PARENT_STATE))
     {
       nid_to_node(dblist, nid, node);
-      if (node->child)
+      if (node->INFO.TREE_INFO.child)
 	status = SetParentState(dblist, child_of(node), 1);
-      if (node->member)
+      if (node->INFO.TREE_INFO.member)
 	status = SetParentState(dblist, member_of(node), 1);
     }
   }
@@ -612,9 +614,9 @@ int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state)
   for (lnode = node; lnode && (status & 1); lnode = brother_of(lnode))
   {
     status = SetNodeParentState(db, lnode, &nci, state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->child))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.child))
       status = SetParentState(db, child_of(lnode), state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->member))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.member))
       status = SetParentState(db, member_of(lnode), state);
   }
   return status;

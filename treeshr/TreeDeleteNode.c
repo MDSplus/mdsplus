@@ -210,52 +210,52 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
     if (child_of(parent) == node)
     {
       found = 1;
-      if (node->brother)
+      if (node->INFO.TREE_INFO.brother)
       {
-        link_it(parent->child,brother_of(node),parent);
+        link_it(parent->INFO.TREE_INFO.child,brother_of(node),parent);
       }
       else
-	parent->child = 0;
+	parent->INFO.TREE_INFO.child = 0;
     }
-    else if (parent->child)
+    else if (parent->INFO.TREE_INFO.child)
     {
       NODE     *bro;
-      for (bro = child_of(parent); bro->brother && (brother_of(bro) != node); bro = brother_of(bro));
+      for (bro = child_of(parent); bro->INFO.TREE_INFO.brother && (brother_of(bro) != node); bro = brother_of(bro));
       if (brother_of(bro) == node)
       {
 	found = 1;
-	if (node->brother)
+	if (node->INFO.TREE_INFO.brother)
 	{
-          link_it(bro->brother,brother_of(node),bro);
+          link_it(bro->INFO.TREE_INFO.brother,brother_of(node),bro);
         }
 	else
-	  bro->brother = 0;
+	  bro->INFO.TREE_INFO.brother = 0;
       }
     }
     if (!found)
     {
       if (member_of(parent) == node)
       {
-	if (node->brother)
+	if (node->INFO.TREE_INFO.brother)
 	{
-	  link_it(parent->member,brother_of(node), parent);
+	  link_it(parent->INFO.TREE_INFO.member,brother_of(node), parent);
         }
 	else
-	  parent->member = 0;
+	  parent->INFO.TREE_INFO.member = 0;
       }
-      else if (parent->member)
+      else if (parent->INFO.TREE_INFO.member)
       {
 	NODE     *bro;
-	for (bro = member_of(parent); bro->brother && (brother_of(bro) != node); bro = brother_of(bro));
+	for (bro = member_of(parent); bro->INFO.TREE_INFO.brother && (brother_of(bro) != node); bro = brother_of(bro));
 	if (brother_of(bro) == node)
 	{
 	  found = 1;
-	  if (node->brother)
+	  if (node->INFO.TREE_INFO.brother)
 	  {
-	    link_it(bro->brother,brother_of(node), bro);
+	    link_it(bro->INFO.TREE_INFO.brother,brother_of(node), bro);
           }
 	  else
-	    bro->brother = 0;
+	    bro->INFO.TREE_INFO.brother = 0;
 	}
       }
     }
@@ -270,29 +270,29 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
       memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
     memcpy(node->name,"deleted node",sizeof(node->name));
     LoadShort(zero,&node->conglomerate_elt);
-    node->member = 0;
-    node->brother = 0;
+    node->INFO.TREE_INFO.member = 0;
+    node->INFO.TREE_INFO.brother = 0;
     node->usage = 0;
     if (prevnode)
     {
       int tmp;
       link_it(prevnode->parent, node, prevnode);
       tmp = -swapint((char *)&prevnode->parent);
-      node->child = swapint((char *)&tmp);
+      node->INFO.TREE_INFO.child = swapint((char *)&tmp);
     }
     else
     {
       int tmp;
       link_it(tmp,node, dblist->tree_info->node);
       dblist->tree_info->header->free = swapint((char *)&tmp);
-      node->child = 0;
+      node->INFO.TREE_INFO.child = 0;
     }
     if (firstempty)
     {
       int tmp;
       link_it(node->parent, firstempty, node);
       tmp = -swapint((char *)&node->parent);
-      firstempty->child = swapint((char *)&tmp);
+      firstempty->INFO.TREE_INFO.child = swapint((char *)&tmp);
     }
     else
       node->parent = 0;

@@ -142,7 +142,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
           for (i=strlen(node_name);i<sizeof(new_ptr->name);i++)
 	    new_ptr->name[i]=' ';
           free(node_name);
-	  new_ptr->child = 0;
+	  new_ptr->INFO.TREE_INFO.child = 0;
 	  LoadShort(idx,&new_ptr->conglomerate_elt);
 	  if (node_type == BROTHER_TYPE_NOWILD)
 	  {
@@ -194,10 +194,10 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
   NODE *tmp_ptr;
   status = TreeNORMAL;                                                                        /* Assume success */
   link_it(child_ptr->parent,parent_ptr,child_ptr);                          /* fill in the parent pointer */
-  child_ptr->brother = 0;                                                     /* Assume it will be only child */
-  if (parent_ptr->child == 0)                                                 /* If first child */
+  child_ptr->INFO.TREE_INFO.brother = 0;                                                     /* Assume it will be only child */
+  if (parent_ptr->INFO.TREE_INFO.child == 0)                                                 /* If first child */
   {
-    link_it(parent_ptr->child,child_ptr,parent_ptr);                        /*   hook it up */
+    link_it(parent_ptr->INFO.TREE_INFO.child,child_ptr,parent_ptr);                        /*   hook it up */
   }
   else                                                                               /* else */
   {
@@ -208,25 +208,25 @@ int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort)
           pre_ptr = tmp_ptr,tmp_ptr = brother_of(tmp_ptr));
       if (pre_ptr == 0)                                                               /*   if this will be first child */
       {
-        link_it(child_ptr->brother,child_of(parent_ptr),child_ptr);          /*     make bro old first child */
-        link_it(parent_ptr->child,child_ptr,parent_ptr);                     /*     make it first child  */
+        link_it(child_ptr->INFO.TREE_INFO.brother,child_of(parent_ptr),child_ptr);          /*     make bro old first child */
+        link_it(parent_ptr->INFO.TREE_INFO.child,child_ptr,parent_ptr);                     /*     make it first child  */
       }
       else                                                                            /*   else */
       {
-        if (pre_ptr->brother == 0)                                             /*     if it will be last child */
-          child_ptr->brother = 0;                                              /*       it has no brother */
+        if (pre_ptr->INFO.TREE_INFO.brother == 0)                                             /*     if it will be last child */
+          child_ptr->INFO.TREE_INFO.brother = 0;                                              /*       it has no brother */
         else                                                                          /*     else */
 	{
-          link_it(child_ptr->brother,brother_of(pre_ptr),child_ptr);         /*       its bro is the previous's bro */
+          link_it(child_ptr->INFO.TREE_INFO.brother,brother_of(pre_ptr),child_ptr);         /*       its bro is the previous's bro */
         }
-        link_it(pre_ptr->brother,child_ptr,pre_ptr);                         /*     the previous's bro is this one */
+        link_it(pre_ptr->INFO.TREE_INFO.brother,child_ptr,pre_ptr);                         /*     the previous's bro is this one */
       }
     }
     else
     {
-      for(tmp_ptr = child_of(parent_ptr);tmp_ptr->brother;                    /*    Find last child */
+      for(tmp_ptr = child_of(parent_ptr);tmp_ptr->INFO.TREE_INFO.brother;                    /*    Find last child */
           tmp_ptr = brother_of(tmp_ptr));
-      link_it(tmp_ptr->brother,child_ptr,tmp_ptr);                           /*   make this child its brother */
+      link_it(tmp_ptr->INFO.TREE_INFO.brother,child_ptr,tmp_ptr);                           /*   make this child its brother */
     }
   }
   return status;                                                                     /* return the status */
@@ -243,10 +243,10 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
 */
       status = TreeNORMAL;                                                     /* Assume success */
       link_it(member_ptr->parent,parent_ptr,member_ptr);                        /* fill in the parent pointer */
-      member_ptr->brother = 0;                                                    /* Assume it will be only member*/
-      if (parent_ptr->member == 0)                                                /* If first member*/
+      member_ptr->INFO.TREE_INFO.brother = 0;                                                    /* Assume it will be only member*/
+      if (parent_ptr->INFO.TREE_INFO.member == 0)                                                /* If first member*/
       {
-        link_it(parent_ptr->member,member_ptr,parent_ptr);                      /*   hook it up */
+        link_it(parent_ptr->INFO.TREE_INFO.member,member_ptr,parent_ptr);                      /*   hook it up */
       }
       else                                                                               /* else */
       {
@@ -257,25 +257,25 @@ int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort)
             pre_ptr = tmp_ptr, tmp_ptr = brother_of(tmp_ptr));
          if (pre_ptr == 0)                                                               /*   if this will be first child */
          {
-           link_it(member_ptr->brother,member_of(parent_ptr),member_ptr);       /*     make bro old first child */
-           link_it(parent_ptr->member,member_ptr,parent_ptr);                   /*     make it first child  */
+           link_it(member_ptr->INFO.TREE_INFO.brother,member_of(parent_ptr),member_ptr);       /*     make bro old first child */
+           link_it(parent_ptr->INFO.TREE_INFO.member,member_ptr,parent_ptr);                   /*     make it first child  */
          }
          else                                                                            /*   else */
          {
-           if (pre_ptr->brother == 0)                                             /*     if it will be last child */
-             member_ptr->brother = 0;                                             /*       it has no brother */
+           if (pre_ptr->INFO.TREE_INFO.brother == 0)                                             /*     if it will be last child */
+             member_ptr->INFO.TREE_INFO.brother = 0;                                             /*       it has no brother */
            else                                                                          /*     else */
 	   {
-             link_it(member_ptr->brother,brother_of(pre_ptr),member_ptr);       /*       its bro is the previous's bro */
+             link_it(member_ptr->INFO.TREE_INFO.brother,brother_of(pre_ptr),member_ptr);       /*       its bro is the previous's bro */
            }
-           link_it(pre_ptr->brother,member_ptr,pre_ptr);                        /*     the previous's bro is this one */
+           link_it(pre_ptr->INFO.TREE_INFO.brother,member_ptr,pre_ptr);                        /*     the previous's bro is this one */
          }
         }
         else
         {
          for(tmp_ptr = member_of(parent_ptr);                                            /*    Find last member */
-            tmp_ptr->brother;tmp_ptr = brother_of(tmp_ptr));
-         link_it(tmp_ptr->brother,member_ptr,tmp_ptr);                          /*   make this child its brother */
+            tmp_ptr->INFO.TREE_INFO.brother;tmp_ptr = brother_of(tmp_ptr));
+         link_it(tmp_ptr->INFO.TREE_INFO.brother,member_ptr,tmp_ptr);                          /*   make this child its brother */
         }
       }
       return status;                                                                     /* return the status */
@@ -312,7 +312,7 @@ STATIC_ROUTINE int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, 
     if (node_ptr->parent)
     {
       header_ptr->free += swapint((char *)&node_ptr->parent);
-      (parent_of(node_ptr))->child = 0;
+      (parent_of(node_ptr))->INFO.TREE_INFO.child = 0;
     }
     else
       header_ptr->free = -1;
@@ -357,7 +357,7 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
     int offset1=sizeof(NODE)*1;
     int offset2=sizeof(NODE)*2;
     link_it(empty_node.parent,offset2,offset1);
-    link_it(empty_node.child,offset1,offset2);
+    link_it(empty_node.INFO.TREE_INFO.child,offset1,offset2);
     empty_node_array = (NODE *) malloc(empty_node_size);
     if (empty_node_array == NULL) return 0;
     empty_nci_array = (NCI *) malloc(empty_nci_size);
@@ -456,7 +456,7 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
   {
     header_ptr->free = header_ptr->nodes * sizeof(NODE);
     node_ptr = (NODE *) ((char *) info_ptr->node + header_ptr->free);
-    node_ptr->child = 0;
+    node_ptr->INFO.TREE_INFO.child = 0;
   }
   else
   {
@@ -465,7 +465,7 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
 	 node_ptr->parent; node_ptr = parent_of(node_ptr));
     link_it(node_ptr->parent,(info_ptr->node + header_ptr->nodes),node_ptr);
     tmp = -swapint((char *)&node_ptr->parent);
-    (info_ptr->node + header_ptr->nodes)->child = swapint((char *)&tmp);
+    (info_ptr->node + header_ptr->nodes)->INFO.TREE_INFO.child = swapint((char *)&tmp);
   }
   header_ptr->nodes += EXTEND_NODES;
   return status;
@@ -518,7 +518,7 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
 #define set_parent(nod_ptr, new_par_ptr) \
     (nod_ptr)->parent = (char *)new_par_ptr - (char *)nod_ptr
 #define set_child(nod_ptr, new_child_ptr) \
-    (nod_ptr)->child = (char *)new_child_ptr - (char *)nod_ptr
+    (nod_ptr)->INFO.TREE_INFO.child = (char *)new_child_ptr - (char *)nod_ptr
 
 int _TreeStartConglomerate(void *dbid, int size)
 {
@@ -582,7 +582,7 @@ int _TreeStartConglomerate(void *dbid, int size)
 ****************************************************/
   if (status & 1)
   {
-    if (starting_node_ptr->child != 0)
+    if (starting_node_ptr->INFO.TREE_INFO.child != 0)
     {
       if (parent_of(this_node_ptr))
       {
@@ -594,7 +594,7 @@ int _TreeStartConglomerate(void *dbid, int size)
       set_parent(this_node_ptr, (NODE *) ((char *) info_ptr->node + header_ptr->free));
       set_child((NODE *) ((char *) info_ptr->node + header_ptr->free), this_node_ptr);
       header_ptr->free = (char *) starting_node_ptr - (char *) info_ptr->node;
-      starting_node_ptr->child = 0;
+      starting_node_ptr->INFO.TREE_INFO.child = 0;
     }
     info_ptr->edit->conglomerate_index = 0;
     info_ptr->edit->conglomerate_size = size;
@@ -780,7 +780,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr)
 		  if (node_ptr->parent)
 		  {
 			  *free_ptr += swapint((char *)&node_ptr->parent);
-			  (parent_of(node_ptr))->child = 0;
+			  (parent_of(node_ptr))->INFO.TREE_INFO.child = 0;
 		  }
 		  else
 			  *free_ptr = -1;
@@ -791,7 +791,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr)
 		  NODE *c = child_of(node_ptr);
 		  if (p)
 		  {
-			  link_it(p->child,c,p);
+			  link_it(p->INFO.TREE_INFO.child,c,p);
 		  }
 		  if (c)
 		  {
@@ -852,9 +852,9 @@ int _TreeSetSubtree(void *dbid, int nid)
     return TreeNOEDIT;
 
   nid_to_node(dblist, nid_ptr, node_ptr);
-  if (node_ptr->child != 0)
+  if (node_ptr->INFO.TREE_INFO.child != 0)
     return TreeNOTCHILDLESS;
-  if (node_ptr->member != 0)
+  if (node_ptr->INFO.TREE_INFO.member != 0)
     return TreeNOTMEMBERLESS;
   if (!(TreeIsChild(node_ptr) & 1))
     return TreeNOTSON;

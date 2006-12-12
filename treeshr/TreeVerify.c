@@ -81,19 +81,19 @@ static int countnodes(NODE *node)
       printf("Too many nodes found - exceeds total nodes %d\n", maxnodes);
       return 0;
     }
-    if (node->member)
+    if (node->INFO.TREE_INFO.member)
     {
       if (parent_of(member_of(node)) != node)
 	printf("Bad node linkage\n");
       countnodes(member_of(node));
     }
-    if (node->child)
+    if (node->INFO.TREE_INFO.child)
     {
       if (parent_of(child_of(node)) != node)
 	printf("Bad node linkage\n");
       countnodes(child_of(node));
     }
-    if (node->brother)
+    if (node->INFO.TREE_INFO.brother)
     {
       if (parent_of(brother_of(node)) != parent_of(node))
 	printf("Bad node linkage\n");

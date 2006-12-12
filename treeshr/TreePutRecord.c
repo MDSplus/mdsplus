@@ -27,7 +27,9 @@
 
 
 +-----------------------------------------------------------------------------*/
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdstypes.h>
@@ -48,7 +50,11 @@
 #include <windows.h>
 #include <io.h>
 #else
+#ifdef HAVE_VXWORKS_H
+#include <time.h>
+#else
 #include <sys/time.h>
+#endif
 #endif
 
 #ifdef HAVE_VXWORKS_H

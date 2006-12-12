@@ -1,12 +1,11 @@
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #include <STATICdef.h>
 #ifdef linux
 #define _LARGEFILE_SOURCE
 #define _FILE_OFFSET_BITS 64
 #define __USE_FILE_OFFSET64
-#endif
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
 #endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
@@ -30,7 +29,6 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <dbidef.h>
-#include <config.h>
 #ifndef O_BINARY
 #define O_BINARY 0x0
 #endif
