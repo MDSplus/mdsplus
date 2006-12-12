@@ -25,7 +25,6 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-
 static _int64 ViewDate = -1;
 static int OpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);

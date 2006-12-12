@@ -33,6 +33,7 @@
 #define O_BINARY 0x0
 #endif
 
+
 #ifndef O_RANDOM
 #define O_RANDOM 0x0
 #endif

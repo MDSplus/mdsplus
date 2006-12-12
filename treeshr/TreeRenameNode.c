@@ -28,6 +28,7 @@
   This routine modifies the name of an existing node in a tree.  It does NOT
   move the node from its location in the tree.
 +-----------------------------------------------------------------------------*/
+
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif

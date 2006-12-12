@@ -21,6 +21,7 @@
 #define O_RANDOM 0
 #endif
 
+
 extern int StrFree1Dx();
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

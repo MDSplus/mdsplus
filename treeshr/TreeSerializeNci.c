@@ -37,6 +37,7 @@ void TreeSerializeNciOut(NCI *in, char *out)
   }
 }
 
+
 void TreeSerializeNciIn(char *in, NCI *out)
 {
   char *ptr = in;

@@ -35,6 +35,7 @@ int TreeDeleteNodeInitialize(NID *nid,int *count,reset)
 #include <treeshr.h>
 #include "treeshrp.h"
 
+
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void *DBID;

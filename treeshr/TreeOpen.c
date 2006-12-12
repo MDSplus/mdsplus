@@ -36,7 +36,6 @@ extern char *index(char *str,char c);
 #endif
 #include "treeshrp.h"
 
-
 #ifdef __toupper
 #undef __toupper
 #endif
