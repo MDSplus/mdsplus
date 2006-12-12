@@ -233,29 +233,7 @@ typedef struct node
   char      fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
 }         NODE;
-typedef struct offset_node
-{
-  NODE_NAME name;
-  int       parent;
-  int       member;
-  int       brother;
-  int       child;
-  unsigned char usage;
-  unsigned short conglomerate_elt PACK_ATTR;
-  char      fill;
-  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
-}        OFFSET_NODE;
 
-typedef struct linkag_enode
-{
-  NODE_NAME name;
-  int       parent;
-  struct big_node_linkage *big_linkage PACK_ATTR;
-  unsigned char usage;
-  unsigned short conglomerate_elt PACK_ATTR;
-  char      fill;
-  unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
-}         LINKAGE_NODE;
 #ifdef EMPTY_NODE
 static NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}}; 
 #endif
@@ -295,13 +273,13 @@ typedef struct big_node_linkage {
    more than 32 bits */
 #if SIZEOF_INT_P == 8
 #define parent_of(a)\
-  (((a)->parent == -1) ? (a)->big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
+  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
 #define member_of(a)\
-  (((a)->parent == -1) ? (a)->big_linkage->member : (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0))
+  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->member : (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0))
 #define child_of(a)\
-  (((a)->INFO.TREE_INFO.parent == -1) ? (a)->big_linkage->INFO.LINK_INFO.child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
+  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
 #define brother_of(a)\
-  (((a)->INFO.TREE_INFO.parent == -1) ? (a)->big_linkage->INFO.LINK_INFO.brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
+  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 #define link_it2(dblist,nodeptr,field,a,b)  \
   if (((char *)(a) - (char *)(b)) >= 2^32) {\
@@ -314,11 +292,28 @@ typedef struct big_node_linkage {
       dblist->big_node_linkage[i].member = member_of(nodeptr);\
       dblist->big_node_linkage[i].brother = brother_of(nodeptr);\
       nodeptr->parent = -1;\
-      nodeptr->big_linkage=dblist->big_node_linkage+i;\
+      nodeptr->INFO.LINK_INFO.big_linkage=dblist->big_node_linkage+i;\
     }\
-    nodeptr->big_linkage->field=(a);\
+    nodeptr->INFO.LINK_INFO.big_linkage->field=(a);\
   } else {\
-    nodeptr->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->field = swapint((char *)&nodeptr->field);\
+    nodeptr->INFO.LINK_INFO.big_linkage->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->INFO.LINK_INFO.big_linkage->field = swapint((char *)&nodeptr->INFO.LINK_INFO.big_linkage->field);\
+  }
+#define link_parent(dblist,nodeptr,a,b)  \
+  if (((char *)(a) - (char *)(b)) >= 2^32) {\
+    int i; \
+    if (nodeptr->parent != -1) {\
+      for (i=0;  (i<(2*MAX_SUBTREES)) && (dblist->big_node_linkage[i].node !=0); i++);\
+      dblist->big_node_linkage[i].node = nodeptr;\
+      dblist->big_node_linkage[i].parent = parent_of(nodeptr);\
+      dblist->big_node_linkage[i].child = child_of(nodeptr);\
+      dblist->big_node_linkage[i].member = member_of(nodeptr);\
+      dblist->big_node_linkage[i].brother = brother_of(nodeptr);\
+      nodeptr->parent = -1;\
+      nodeptr->INFO.LINK_INFO.big_linkage=dblist->big_node_linkage+i;\
+    }\
+    nodeptr->INFO.LINK_INFO.big_linkage->parent=(a);\
+  } else {\
+    nodeptr->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->parent = swapint((char *)&nodeptr->parent);\
   }
 #else
 #define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)

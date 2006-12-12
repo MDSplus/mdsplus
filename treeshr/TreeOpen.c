@@ -1093,7 +1093,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
 
   if (child_of(grandparent) == parent)
   {
-    link_it2(dblist, grandparent, INFO.TREE_INFO.child, subtreetop, grandparent);
+    link_it2(dblist, grandparent, child, subtreetop, grandparent);
   }
   else
   {
@@ -1101,14 +1101,14 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
     for (bro = child_of(grandparent); brother_of(bro) && (brother_of(bro) != parent); bro = brother_of(bro));
     if (brother_of(bro))
     {
-      link_it2(dblist, bro, INFO.TREE_INFO.brother, subtreetop, bro);
+      link_it2(dblist, bro, brother, subtreetop, bro);
     }
   }
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-  link_it2(dblist, subtreetop, parent, grandparent, subtreetop);
+  link_parent(dblist, subtreetop, grandparent, subtreetop);
   if (brother_of(parent))
   {
-    link_it2(dblist, subtreetop, INFO.TREE_INFO.brother, brother_of(parent), subtreetop);
+    link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
   }
   return;
 }
