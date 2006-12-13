@@ -323,6 +323,8 @@ typedef struct big_node_linkage {
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 #define link_it2(dblist,node,field,a,b)  \
 node->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->field = swapint((char *)&node->field)
+#define link_parent(dblist,nodeptr,a,b)  \
+nodeptr->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->parent = swapint((char *)&nodeptr->parent)
 #endif
 
 /********************************************
