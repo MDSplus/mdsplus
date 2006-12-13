@@ -317,14 +317,21 @@ typedef struct big_node_linkage {
   }
 #else
 #define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
+
 #define member_of(a)  (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0)
+
 #define child_of(a)   (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0)
+
 #define brother_of(a) (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0)
+
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
+
 #define link_it2(dblist,node,field,a,b)  \
-node->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->field = swapint((char *)&node->field)
-#define link_parent(dblist,nodeptr,a,b)  \
-nodeptr->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->parent = swapint((char *)&nodeptr->parent)
+node->INFO.TREE_INFO.field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->INFO.TREE_INFO.field = swapint((char *)&node->INFO.TREE_INFO.field)
+
+#define link_parent(dblist,node,a,b)  \
+node->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->parent = swapint((char *)&node->parent)
+
 #endif
 
 /********************************************
