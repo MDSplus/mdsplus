@@ -823,20 +823,20 @@ STATIC_ROUTINE void TimerExpired(int par)
   semGive(sem);
 }
 
-/*STATIC_ROUTINE void sleep(unsigned int secs)
+int LibWait(float *secs)
 {
   if((sem = semBCreate(SEM_Q_FIFO, SEM_EMPTY)) == NULL)
     return;
   if((wd = wdCreate()) == NULL)
     return;
 
-  wdStart(wd, sysClkRateGet() * secs, (FUNCPTR)TimerExpired, 0);
+  wdStart(wd, sysClkRateGet() * *secs, (FUNCPTR)TimerExpired, 0);
   semTake(sem, WAIT_FOREVER);
   wdDelete(wd);
   semDelete(sem);
 }
-*/
-#endif
+
+#else
 
 
 int LibWait(float *secs)
@@ -846,11 +846,10 @@ int LibWait(float *secs)
   ts.tv_nsec = (unsigned int)((*secs - (unsigned int)*secs)*1E9);
   nanosleep(&ts, 0);
 
-  /*sleep((unsigned int)*secs);*/
   return 1;
 }
 
-
+#endif
 
 #endif
 
@@ -1728,7 +1727,9 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   time_t bintim = LibCvtTim(time_in,0);
   _int64 chunks=0;
   _int64 *time_q=(_int64 *)time_in;
+#ifndef HAVE_VXWORKS_H
   tzset();
+#endif
   if (time_in != NULL) {
 #ifdef HAVE_GETTIMEOFDAY
     _int64 tmp;
