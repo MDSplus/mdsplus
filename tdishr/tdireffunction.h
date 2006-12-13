@@ -8,7 +8,11 @@
 #include <mdstypes.h>
 #ifndef HAVE_VXWORKS_H
 #endif
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#else //VXWORKS
+#define _pointer_int int*
+#endif
 struct	TdiFunctionStruct {
 	char	*name;		/*string to compile/decompile	*/
 	int	(*f1)();	/*routine to check arguments	*/

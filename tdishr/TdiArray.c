@@ -196,8 +196,15 @@ int	i;
           srand(time(0)+getpid());
           Tdi_RandomSeed = rand();
 #else
+#ifdef HAVE_VXWORKS_H
+          srandom(time(0));
+          Tdi_RandomSeed = random();
+
+#else
           srandom(time(0)+getpid());
           Tdi_RandomSeed = random();
+
+#endif
 #endif
         }
 	N_ELEMENTS(out_ptr, n);

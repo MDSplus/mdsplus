@@ -33,7 +33,9 @@
 #include <tdimessages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#endif
 #ifdef SYBASE
 #ifdef __VMS
 #include <dvidef.h>	/*for line width*/
