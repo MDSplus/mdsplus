@@ -13,7 +13,7 @@
 	Real*8	cscoef(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Cubic spline with "not-a-knot" endpoints, that is, the slopes
 ! at ends make the polynomial piece the same as next interior one.
-	Call DCSDEC(ndata, xdata, fdata, 0, 0, 0, 0, break, cscoef)
+	Call DCSDEC(ndata, xdata, fdata, 0, 0.D0, 0, 0.D0, break, cscoef)
 	End
 !-----------------------------------------------------------------------
 	Subroutine DCSDEC(ndata,xdata,fdata,

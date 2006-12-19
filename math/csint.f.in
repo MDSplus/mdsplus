@@ -14,7 +14,7 @@
 	Real	cscoef(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Cubic spline with "not-a-knot" endpoints, that is, the slopes
 ! at ends make the polynomial piece the same as next interior one.
-	Call CSDEC(ndata, xdata, fdata, 0, 0, 0, 0, break, cscoef)
+	Call CSDEC(ndata, xdata, fdata, 0, 0., 0, 0., break, cscoef)
 	End
 !-----------------------------------------------------------------------
 	Subroutine CSDEC(ndata,xdata,fdata,
