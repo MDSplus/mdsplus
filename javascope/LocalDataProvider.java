@@ -33,10 +33,10 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     static {
         try
         {
-          System.loadLibrary("MdsShr");
-          System.loadLibrary("MdsIpShr");
-          System.loadLibrary("TreeShr");
-          System.loadLibrary("TdiShr");
+//          System.loadLibrary("MdsShr");
+//          System.loadLibrary("MdsIpShr");
+//          System.loadLibrary("TreeShr");
+//          System.loadLibrary("TdiShr");
           System.loadLibrary("JavaMds");
         }
         catch(Throwable e)
