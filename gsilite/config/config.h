@@ -3,10 +3,10 @@
 /* Application specific options */
 
 #define HAVE_GETHOSTBYNAME 1
-#define HAVE_GETHOSTBYNAME_R 1
+/* #define HAVE_GETHOSTBYNAME_R 1 */
 
-/* #undef HAVE_GETHOSTBYADDR */
-#define HAVE_GETHOSTBYADDR_R 1
+#define HAVE_GETHOSTBYADDR 1
+/* #define HAVE_GETHOSTBYADDR_R 1 */
 
 #define HAVE_CTIME 1
 #define HAVE_CTIME_R 1

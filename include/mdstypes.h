@@ -5,12 +5,6 @@
 #include <config.h>
 #endif
 
-/* temporary debugging fix */
-#ifdef __APPLE__
-#include <sys/types.h>
-typedef int64_t _int64;
-typedef u_int64_t _int64u;
-#else
 #ifdef HAVE_VXWORKS_H
 typedef long long _int64;
 typedef unsigned long long _int64u;
@@ -28,8 +22,5 @@ typedef unsigned long long _int64u;
 typedef unsigned _int64 _int64u;
 #endif
 #endif /*vxWorks*/
-#endif /* __APPLE__ */
-
-
 
 #endif
