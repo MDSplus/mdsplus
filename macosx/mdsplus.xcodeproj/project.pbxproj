@@ -1,0 +1,148 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXFileReference section */
+		0862B79E06DD27C600B14B3A /* mdsplus */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mdsplus; path = ..; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0862B79406DD277C00B14B3A = {
+			isa = PBXGroup;
+			children = (
+				0862B79E06DD27C600B14B3A /* mdsplus */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		0862F66506DD292300B14B3A /* Build All */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 089790E90AB3ADAF00130873 /* Build configuration list for PBXLegacyTarget "Build All" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "$(SRCROOT)/..";
+			dependencies = (
+			);
+			name = "Build All";
+			passBuildSettingsInEnvironment = 1;
+			productName = "Build All";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		0862B79806DD277C00B14B3A /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 089790ED0AB3ADAF00130873 /* Build configuration list for PBXProject "mdsplus" */;
+			hasScannedForEncodings = 0;
+			mainGroup = 0862B79406DD277C00B14B3A;
+			projectDirPath = "";
+			targets = (
+				0862F66506DD292300B14B3A /* Build All */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		089790EA0AB3ADAF00130873 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Development;
+		};
+		089790EB0AB3ADAF00130873 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Deployment;
+		};
+		089790EC0AB3ADAF00130873 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = "Build All";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			name = Default;
+		};
+		089790EE0AB3ADAF00130873 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Development;
+		};
+		089790EF0AB3ADAF00130873 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Deployment;
+		};
+		089790F00AB3ADAF00130873 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		089790E90AB3ADAF00130873 /* Build configuration list for PBXLegacyTarget "Build All" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				089790EA0AB3ADAF00130873 /* Development */,
+				089790EB0AB3ADAF00130873 /* Deployment */,
+				089790EC0AB3ADAF00130873 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		089790ED0AB3ADAF00130873 /* Build configuration list for PBXProject "mdsplus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				089790EE0AB3ADAF00130873 /* Development */,
+				089790EF0AB3ADAF00130873 /* Deployment */,
+				089790F00AB3ADAF00130873 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0862B79806DD277C00B14B3A /* Project object */;
+}

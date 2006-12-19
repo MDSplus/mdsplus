@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IFPkgDescriptionDeleteWarning</key>
+	<string>The installer doesn't really delete. </string>
+	<key>IFPkgDescriptionDescription</key>
+	<string>These are a Universal Binary of FreeTDS 0.64RC3 for MacOS X</string>
+	<key>IFPkgDescriptionTitle</key>
+	<string>FreeTDS</string>
+	<key>IFPkgDescriptionVersion</key>
+	<string>0.64RC3</string>
+</dict>
+</plist>
