@@ -993,7 +993,8 @@ void FixupHeader(TREE_HEADER *hdr)
   char flags = ((char *)hdr)[1];
   hdr->sort_children = (flags & 1) != 0;
   hdr->sort_members = (flags & 2) != 0;
-  hdr->version = (flags & 4) != 0;
+  hdr->versions_in_model = (flags & 4) != 0;
+  hdr->versions_in_pulse = (flags & 8) != 0;
   SwapBytesInt((char *)&hdr->free);
   SwapBytesInt((char *)&hdr->tags);
   SwapBytesInt((char *)&hdr->externals);
