@@ -69,7 +69,7 @@ typedef struct nci
   unsigned char nci_fill;
 }         NCI;
 
-#if defined(__GNUC__) || defined(__APPLE)
+#if defined(__GNUC__) || defined(__APPLE__)
 #define PACK_ATTR __attribute__ ((__packed__))
 #define PACK_START 
 #define PACK_STOP

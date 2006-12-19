@@ -1163,21 +1163,6 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
     _int64 pos;
-#ifdef __APPLE__
-    if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
-        LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-        if (FDS[fd-1].socket == -1) {
-            pos = (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence);
-            if ((whence == SEEK_END) && (offset == 0))
-                printf("MDS_IO_LSEEK: EOF at %lld\n",pos);
-        } else
-            pos = io_lseek_remote(fd,offset,whence);
-      UnlockMdsShrMutex(&IOMutex);
-      return pos;
-    }
-    else
-        return -1;
-#else
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
@@ -1194,7 +1179,6 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
   }
   else
     return -1;
-#endif /* __APPLE__ */
 }
 
 STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
