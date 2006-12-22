@@ -36,6 +36,20 @@ void *SharedMemManager::initialize(int size)
 void *SharedMemManager::startAddress;
 
 #else
+#ifdef HAVE_VXWORKS_H
+
+void *SharedMemManager::initialize(int size)
+{
+	this->size = size;
+	if(startAddress) return startAddress; //Already mapped
+
+	startAddress = (void *)malloc(size);
+
+	return startAddress;
+}
+void *SharedMemManager::startAddress;
+
+#else
 void *SharedMemManager::initialize(int size)
 {
 	this->size = size;
@@ -65,6 +79,6 @@ void *SharedMemManager::initialize(int size)
 void *SharedMemManager::startAddress;
 
 
-
+#endif
 #endif
 

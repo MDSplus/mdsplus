@@ -3,6 +3,7 @@
 
 class Segment
 {
+	bool timestamped;
 	long data;
 	int dataSize;
 	long shape;
@@ -19,6 +20,7 @@ class Segment
 public:
 	void initialize()
 	{
+		timestamped = false;
 		shape = 0;
 		start = 0;
 		end = 0;
@@ -111,6 +113,14 @@ public:
 	{
 		*end = (void *)((long)this + this->end);
 		*endSize = this->endSize;
+	}
+	void setTimestamped(bool timestamped)
+	{
+	    this->timestamped = timestamped;
+	}
+	bool isTimestamped()
+	{
+	    return timestamped;
 	}
 
 };

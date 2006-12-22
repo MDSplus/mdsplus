@@ -11,6 +11,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#include <mdstypes.h>
 
 #define NOT_A_NATIVE_TYPE 2
 #define BAD_SHAPE 4
@@ -18,16 +19,17 @@
 #define TRUNCATED 8
 #define BAD_TYPE 10
 
+#define MAX_BOUND_SIZE 512
 
 extern void *getCache();
-extern int putRecord(int nid, char *data, int size, int writeThrough, void *cachePtr);
-extern int getRecord(int nid, char **data, int *size, void *cachePtr);
-extern int putRecordInternal(int nid, char *data, int size);
+extern int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr);
+extern int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr);
+extern int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
 extern int flushTree(void *cachePtr);
 extern void *setCallback(int nid, void (* callback)(int), void *cachePtr);
 extern int clearCallback(int nid, void *callbackDescr, void *cachePtr);
 extern int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
+						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, char timestamped,  
 						int writeThrough, void *cachePtr);
 extern int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 						 int dimSize, int writeThrough, void *cachePtr);
@@ -44,6 +46,31 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiEvaluate();
 extern int TdiDecompile();
+
+
+static struct descriptor *rebuildDataDescr(char dataType, int numSamples, char *data, int dataLen, struct descriptor *descr, 
+	struct descriptor_a *descrA)
+{
+    if(numSamples == 1) //Scalar
+    {
+	descr->dtype = dataType;
+	descr->length = dataLen;
+	descr->class = CLASS_S;
+	descr->pointer = data;
+	return descr;
+    }
+    descrA->class = CLASS_A;
+    descrA->dtype = dataType;
+    descrA->length = dataLen/numSamples;
+    descrA->arsize = dataLen;
+    descrA->pointer = data;
+    return (struct  descriptor *)descrA;
+}
+
+
+
+
+
 
 
 //Pointer to external RTreeGetTimedRecord
@@ -119,30 +146,28 @@ static void *cache;
 //3) number of dimensions 
 //4) total dimension in bytes 
 //The remaining elements are the dimension limits
-static void getDataTypeAndShape(struct descriptor *inData, int **outShape, int *outSize)
+static void getDataTypeAndShape(struct descriptor *inData, int *outShape, int *outSize)
 {
 	int currDim;
 	int *boundsPtr;
 	struct descriptor_a *data;
 	if(inData->class == CLASS_S)
 	{
-		*outShape = (int *)malloc(sizeof(int) * 4);
-		(*outShape)[0] = inData->dtype;
-		(*outShape)[1] = inData->length;
-		(*outShape)[2] = 0;
-		(*outShape)[3] = inData->length;
+		outShape[0] = inData->dtype;
+		outShape[1] = inData->length;
+		outShape[2] = 0;
+		outShape[3] = inData->length;
 		*outSize = 4 * sizeof(int);
 		return;
 	}
 	data = (struct descriptor_a *)inData;
-	*outShape = (int *)malloc(sizeof(int) * (data->dimct + 4));
-	(*outShape)[0] = data->dtype;
-	(*outShape)[1] = data->length;
-	(*outShape)[2] = data->dimct;
-	(*outShape)[3] = data->arsize;
+	outShape[0] = data->dtype;
+	outShape[1] = data->length;
+	outShape[2] = data->dimct;
+	outShape[3] = data->arsize;
 	if(data->dimct == 1)
 	{
-		(*outShape)[4] = data->arsize/data->length;
+		outShape[4] = data->arsize/data->length;
 		*outSize = 5 * sizeof(int);
 		return;
 	}
@@ -150,7 +175,7 @@ static void getDataTypeAndShape(struct descriptor *inData, int **outShape, int *
 	boundsPtr = (int *)((char *)data + sizeof(struct descriptor_a) + sizeof(char *));
 	for(currDim = 0; currDim < data->dimct; currDim++)
 	{
-		(*outShape)[currDim + 4] = boundsPtr[currDim];
+		outShape[currDim + 4] = boundsPtr[currDim];
 	}
 	*outSize = (data->dimct + 4)*sizeof(int);
 }
@@ -166,7 +191,7 @@ EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descripto
 	EMPTYXD(dimSerXd);	
 	struct descriptor_a *startSerA, *endSerA, *dimSerA;
 	struct descriptor_signal *signalD;
-	int *bounds, boundsSize;
+	int bounds[MAX_BOUND_SIZE], boundsSize;
 	
 	DESCRIPTOR_APD(dimsApd, DTYPE_DSC, 0, 0);
 
@@ -190,22 +215,73 @@ EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descripto
 	else //Any other expression
 		MdsSerializeDscOut(dimension, &dimSerXd);
 
-	getDataTypeAndShape((struct descriptor *)initialValue, &bounds, &boundsSize);
+	getDataTypeAndShape((struct descriptor *)initialValue, bounds, &boundsSize);
 	
 	startSerA = (struct descriptor_a *)startSerXd.pointer;
 	endSerA = (struct descriptor_a *)endSerXd.pointer;
 	dimSerA = (struct descriptor_a *)dimSerXd.pointer;
-
 	beginSegment(nid, idx, (char *)startSerA->pointer, startSerA->arsize, (char *)endSerA->pointer, endSerA->arsize, 
 						(char *)dimSerA->pointer, dimSerA->arsize, (char *)bounds, boundsSize, initialValue->pointer,
-						bounds[3], writeThrough, cache);
+						bounds[3], 0, writeThrough, cache);
 	MdsFree1Dx(&startSerXd, 0);
 	MdsFree1Dx(&endSerXd, 0);
 	MdsFree1Dx(&dimSerXd, 0);
-	free((char *)bounds);
 	return 1; 
 
 }
+
+
+EXPORT int RTreeBeginTimestampedSegment(int nid, _int64 start, struct descriptor *dimension, 
+							 struct descriptor_a *initialValue, int idx, int writeThrough)
+{
+	_int64 thisStart;
+	_int64 end = 0;
+	char *dim;
+	int dimSize;
+	struct descriptor startD = {8, DTYPE_QU, CLASS_S, (char *)&thisStart};
+	EMPTYXD(startSerXd);	
+	EMPTYXD(endSerXd);	
+	EMPTYXD(dimSerXd);	
+	struct descriptor_a *startSerA, *endSerA, *dimSerA;
+	struct descriptor_signal *signalD;
+	int bounds[MAX_BOUND_SIZE], boundsSize;
+	
+	DESCRIPTOR_APD(dimsApd, DTYPE_DSC, 0, 0);
+
+
+	if(!cache) cache = getCache();
+//Only native arrays can be defined
+	if(initialValue->class != CLASS_A)
+		return NOT_A_NATIVE_TYPE;
+
+	thisStart = start;
+	MdsSerializeDscOut(&startD, &startSerXd);
+
+
+
+	getDataTypeAndShape((struct descriptor *)initialValue, bounds, &boundsSize);
+
+//bounds[boundSize/4 - 1]is the last dimension
+	dim = calloc(8, bounds[boundsSize/4 - 1]);
+	dimSize = 8 * bounds[boundsSize/4 - 1];
+	
+
+	
+	startSerA = (struct descriptor_a *)startSerXd.pointer;
+	dimSerA = (struct descriptor_a *)dimSerXd.pointer;
+
+	
+
+
+	beginSegment(nid, idx, (char *)startSerA->pointer, startSerA->arsize, (char *)&end,8, 
+						dim, dimSize, (char *)bounds, boundsSize, initialValue->pointer,
+						bounds[3], 1, writeThrough, cache);
+	MdsFree1Dx(&startSerXd, 0);
+	free(dim);
+	return 1; 
+
+}
+
 
 
 EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, 
@@ -247,16 +323,20 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 	return status;
 }
 
-EXPORT int RTreePutSegment(int nid, int idx, struct descriptor *dataD, int segIdx)
+
+
+
+
+EXPORT int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx)
 {
-	int *bounds;
+	int bounds[MAX_BOUND_SIZE];
 	int boundsSize;
 	int status;
 
 	if(!cache) cache = getCache();
 
-	getDataTypeAndShape(dataD, &bounds, &boundsSize);
-	status = appendSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], idx, segIdx, cache);
+	getDataTypeAndShape(dataD, bounds, &boundsSize);
+	status = appendSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx, cache);
 	return status;
 }
 
@@ -334,11 +414,25 @@ EXPORT int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeT
 
 	//Manage Empty descriptor
 	if(descriptor_ptr->class == CLASS_XD && ((struct descriptor_xd *)descriptor_ptr)->l_length == 0)
-		return putRecord(nid, 0, 0, writeThrough, cache);
+		return putRecord(nid, 0, 0, 0, 0, writeThrough, cache);
 
+	if(descriptor_ptr->class = CLASS_S) //Handle scalars
+	{
+	    status = putRecord(nid, descriptor_ptr->dtype, 1, descriptor_ptr->pointer, 
+		descriptor_ptr->length, writeThrough, cache);
+	    return status;
+	}
+	if(descriptor_ptr->class = CLASS_A) //Handle arrays
+	{
+	    arrPtr = (struct descriptor_a *)descriptor_ptr;
+	    status = putRecord(nid, arrPtr->dtype, arrPtr->arsize/arrPtr->length, arrPtr->pointer,
+		arrPtr->arsize, writeThrough, cache);
+	    return status;
+	}
+	
 	MdsSerializeDscOut(descriptor_ptr, &ser_xd);
 	arrPtr = (struct descriptor_a *)ser_xd.pointer;
-	status = putRecord(nid, arrPtr->pointer, arrPtr->arsize, writeThrough, cache);
+	status = putRecord(nid, 0, 0, arrPtr->pointer, arrPtr->arsize, writeThrough, cache);
 	MdsFree1Dx(&ser_xd, 0);
 	return status;
 }
@@ -372,13 +466,18 @@ EXPORT int RTreeGetRecord(int nid, struct descriptor_xd *dsc_ptr)
 	char *data;
 	int dataLen;
 	int status;
+	char dataType;
+	int numSamples;
+	struct descriptor descr;
+	DESCRIPTOR_A(descrA, 0, 0, 0, 0);
+	struct descriptor *retDescr;
 
 //printf("RTreeGetRecord\n");
 	if(!cache) cache = getCache();
 
 
 
-	status = getRecord(nid, &data, &dataLen, cache);
+	status = getRecord(nid, &dataType, &numSamples, &data, &dataLen, cache);
 	if(!(status & 1))
 	{
 		if(treeGetRecord)
@@ -394,21 +493,40 @@ EXPORT int RTreeGetRecord(int nid, struct descriptor_xd *dsc_ptr)
 //printf("STATUS: %d\n", status);
 	}
 	else
-		MdsSerializeDscIn((char *)data, dsc_ptr);
+	{
+		if(dataType)
+		{
+	    		retDescr = rebuildDataDescr(dataType, numSamples, data, dataLen, &descr, (struct descriptor_a *)&descrA);
+			MdsCopyDxXd(retDescr, dsc_ptr);
+		}
+		else
+			MdsSerializeDscIn((char *)data, dsc_ptr);
+	}
 	return status;
 }
 
 
 
-int putRecordInternal(int nid, char *data, int size)
+int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size)
 {
 	int status;
 	EMPTYXD(xd);
+	struct descriptor descr;
+	DESCRIPTOR_A(descrA, 0, 0, 0, 0);
+	struct descriptor *retDescr;
 	if(!treePutRecord) return 0;
-	status = MdsSerializeDscIn((char *)data, &xd);
-	if(status & 1)
+	if(dataType) //If scalar or array
+	{
+	    retDescr = rebuildDataDescr(dataType, numSamples, data, size, &descr, (struct descriptor_a *)&descrA);
+	    status = treePutRecord(nid, retDescr);
+	}
+	else
+	{
+	    status = MdsSerializeDscIn((char *)data, &xd);
+	    if(status & 1)
 		status = treePutRecord(nid, (struct descriptor *)&xd);
-	MdsFree1Dx(&xd, 0);
+	    MdsFree1Dx(&xd, 0);
+	}
 	return status;
 }
 

@@ -24,6 +24,33 @@ public:
 	{
 		SetEvent(eventH);
 	}
+};
+
+#else
+#ifdef HAVE_VXWORKS_H
+#include <vxWorks.h>
+#include <semLib.h>
+class Event
+{
+    SEM_ID semaphore;
+ 
+ public:   
+    Event()
+    {
+	semaphore = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
+    }
+    
+    void wait()
+    {
+    	semTake(semaphore, WAIT_FOREVER);
+    }
+    void signal()
+    {
+    	semGive(semaphore);
+    }
+};
+
+
 #else
 #include <semaphore.h>
 #include <stdio.h>
@@ -52,10 +79,11 @@ class Event
     {
     	sem_post(&semaphore);
     }
-
-#endif
 };
 
+
+#endif
+#endif
 
 
 

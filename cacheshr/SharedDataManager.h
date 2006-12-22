@@ -60,15 +60,15 @@ public:
 
 	int deleteData(int nid);
 	void deleteData(SharedMemNodeData *nodeData);
-	int setData(int nid, char *data, int size); //Write data indexed by nid
-	int getData(int nid, char **data, int *size); //Read data indexed by nid
+	int setData(int nid, char dataType, int numSamples, char *data, int size); //Write data indexed by nid
+	int getData(int nid, char *dataType, int *numSamples, char **data, int *size); //Read data indexed by nid
 	int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize);
+		char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, bool timestamped);
 
 	int isSegmented(int nid, int *segmented);
 	int getNumSegments(int nid, int *numSegments);
 	int updateSegment(int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
-	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize);
+	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
 	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 		int *shapeSize, int *currDataSize);
 	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 

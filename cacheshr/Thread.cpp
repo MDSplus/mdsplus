@@ -1,8 +1,4 @@
 #include "Thread.h"
-#include <stdio.h>
-#ifdef HAVE_WINDOWS_H
-#include <process.h>
-#endif
 
 
 
@@ -14,8 +10,11 @@ void Thread::start(Runnable *rtn)
 	if(threadH == (HANDLE)-1)
 		printf("Error activating thread\n");
 #else
+	taskSpawn(NULL, 20, VX_FP_TASK, 200000, (FUNCPTR)handler, (int)rtn,0,0,0,0,0,0,0,0,0); 
+#ifdef
 	int rc = pthread_create(&thread, NULL,(void *(*)(void *))handler, (void *)rtn); 
 
+#endif
 #endif
 
 }

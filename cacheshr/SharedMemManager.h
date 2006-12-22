@@ -16,6 +16,22 @@ public:
 };
 
 
+#else 
+#ifdef HAVE_VXWORKS_H
+#include <string.h>
+#include <stdlib.h>
+class SharedMemManager
+{
+private:
+	int shmid;
+	int size;
+	
+public:
+	static void *startAddress;
+	void *initialize(int size);
+};
+
+
 #else
 #include <sys/shm.h>
 #include <sys/ipc.h>
@@ -32,5 +48,5 @@ public:
 	void *initialize(int size);
 };
 #endif
-
+#endif
 #endif	

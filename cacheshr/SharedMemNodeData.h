@@ -14,6 +14,8 @@ class SharedMemNodeData
 	public: //To be defined yet
 	    int nid;
 		bool segmented;
+		char dataType;
+		int numSamples;
 		long data;
 		int dataSize;
 		int numSegments;
@@ -31,6 +33,8 @@ class SharedMemNodeData
 	SharedMemNodeData()
 	{
 		nid = -1;
+		dataType = 0;
+		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
 		firstSegment = lastSegment = -(long)this;
@@ -45,6 +49,8 @@ class SharedMemNodeData
 	SharedMemNodeData(int nid)
 	{
 		this->nid = nid;
+		dataType = 0;
+		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
 		firstSegment = lastSegment = (long)this;
@@ -166,7 +172,17 @@ class SharedMemNodeData
 		*dataSize = this->dataSize;
 	}
 	
-	
+
+	void getDataInfo(char *dataType, int *numSamples) 
+	{
+	    *dataType = this->dataType;
+	    *numSamples = this->numSamples;
+	}
+	void setDataInfo(char dataType, int numSamples)
+	{
+	    this->dataType = dataType;
+	    this->numSamples = numSamples;
+	}
 	void setSegmented(bool segmented)
 	{
 		this->segmented = segmented;

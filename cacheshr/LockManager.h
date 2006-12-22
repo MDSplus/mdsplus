@@ -9,6 +9,7 @@
 #define TREE_WRITER_LOCK 5
 #define CACHE_LOCK 6
 
+
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <stdio.h>
@@ -131,6 +132,120 @@ public:
 };
 
 #else
+#ifdef HAVE_VXWORKS_H
+#include <vxWorks.h>
+#include <semLib.h>
+#include <stdio.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#define MAX_SEMAPHORES 10
+
+class LockManager
+{
+    	static SEM_ID *semaphores;
+	int thisId;
+	
+public:
+	LockManager(){initialize(0);}
+	LockManager(int id)
+	{
+		initialize(id);
+	}
+	
+	bool initialize(int id)  //Return true if the mutex did not exist before and has been created
+	{
+	    if(!semaphores)
+		semaphores = (SEM_ID *)calloc(MAX_SEMAPHORES, sizeof(SEM_ID));
+	    if(id >= MAX_SEMAPHORES)
+	    {
+		printf("Fatal error: id too large in LockManager\n");
+		exit(0); //Fatal error
+	    }
+	    thisId = id;
+	    if(!semaphores[id]) //First time the semaphore has been created
+	    {
+		semaphores[thisId] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+		if(semaphores[thisId] == NULL)
+	    	{
+			printf("Fatal error: cannot create binary semaphore in LockManager\n");
+			exit(0); //Fatal error
+	    	}
+		return true;
+	    }
+	    return false;
+	}
+
+
+	void lock()
+    	{
+    		semTake(semaphores[thisId], WAIT_FOREVER);
+    	}
+
+	 
+
+	void unlock()
+	{
+    		semGive(semaphores[thisId]);
+	}
+	
+
+};
+
+/*
+class LockManager
+{
+    	sem_t *semaphore;
+	
+public:
+	LockManager(){initialize(0);}
+	LockManager(int id)
+	{
+		initialize(id);
+	}
+	
+	bool initialize(int id)  //Return true if the mutex did not exist before and has been created
+	{
+		char buf[256];
+		int oflag = O_CREAT | O_EXCL;
+		mode_t mode = 0666;
+		sprintf(buf, "/mdscachex%d", id);
+		
+		semaphore = sem_open(buf, oflag);
+		if(semaphore == (void *)ERROR)
+		{
+		    semaphore = sem_open(buf, 0);
+		    if(semaphore == (void *)ERROR)
+		    {
+		    	perror("Cannot create Semaphore!\n");
+			exit(0); //Fatal error
+		    }
+		    return false;
+		}
+		sem_post(semaphore);
+		return true;
+	}
+
+
+	void lock()
+    	{
+    		sem_wait(semaphore);
+    	}
+
+	 
+
+	void unlock()
+	{
+    		sem_post(semaphore);
+	}
+	
+
+};
+
+*/
+
+#else
 #include <semaphore.h>
 #include <stdio.h>
 #include <errno.h>
@@ -188,6 +303,6 @@ public:
 };
 
 
-
+#endif
 #endif
 #endif

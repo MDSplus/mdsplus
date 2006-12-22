@@ -30,6 +30,39 @@ public:
 };
 
 #else
+#ifdef HAVE_VXWORKS_H
+#include <vxWorks.h>
+#include <semLib.h>
+#include <taskLib.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+struct ThreadInfo
+{
+	SEM_ID semaphore;
+	void (*callback)(int);
+	int nid;
+	char killed;
+};
+
+
+class Notifier
+{
+	ThreadInfo info;
+
+public:
+	
+
+	void initialize(int nid, void (*callback)(int));
+	void notify();
+	bool isMulticast() {return false;}
+	void dispose();
+};
+
+
+
+#else
+
 
 #include <stdio.h>
 #include <semaphore.h>
@@ -61,6 +94,6 @@ public:
 
 
 
-
+#endif
 #endif
 #endif

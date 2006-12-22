@@ -2,18 +2,18 @@
 //#include "CoherencyManager.h"
 
 extern "C" void *getCache();
-extern "C" int putRecord(int nid, char *data, int size, int writeThrough, void *cachePtr);
-extern "C" int getRecord(int nid, char **data, int *size, void *cachePtr);
-extern "C" int putRecordInternal(int nid, char *data, int size);
+extern "C" int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr);
+extern "C" int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr);
+extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
 extern "C" int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
-						int writeThrough, void *cachePtr);
+						char timestamped, int writeThrough, void *cachePtr);
 extern "C" int handleSegmentInternal(int nid);
 extern "C" int beginSegmentInternal(int nid, int idx, char *start, char *end, char *dim, char *data);
 extern "C" int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 							 int dimSize, int writeThrough, void *cachePtr);
 extern "C" int getNumSegments(int nid, int *numSegments, void *cachePtr);
-extern "C" int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, void *cachePtr);
+extern "C" int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, void *cachePtr);
 extern "C" int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 							  int *shapeSize, int *currDataSize, void *cachePtr);
 extern "C" int isSegmented(int nid, int *segmented, void *cachePtr);
@@ -37,22 +37,22 @@ void *getCache()
 
 
 
-int putRecord(int nid, char *data, int size, int writeThrough, void *cachePtr)
+int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr)
 {
-	return ((Cache *)cachePtr)->putRecord(nid, data, size, writeThrough);
+	return ((Cache *)cachePtr)->putRecord(nid, dataType, numSamples, data, size, writeThrough);
 }
 
-int getRecord(int nid, char **data, int *size, void *cachePtr)
+int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr)
 {
-	return ((Cache *)cachePtr)->getRecord(nid, data, size);
+	return ((Cache *)cachePtr)->getRecord(nid, dataType, numSamples, data, size);
 }
 
 int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
-									int writeThrough, void *cachePtr)
+									char timestamped, int writeThrough, void *cachePtr)
 {
 	return ((Cache *)cachePtr)->beginSegment(nid, idx, start, startSize, end, endSize, dim, dimSize, shape, shapeSize, data, 
-			dataSize, writeThrough);
+			timestamped, dataSize, writeThrough);
 }
 
 int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
@@ -67,9 +67,9 @@ int getNumSegments(int nid, int *numSegments, void *cachePtr)
 	return ((Cache *)cachePtr)->getNumSegments(nid, numSegments);
 }
 
-int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, void *cachePtr)
+int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped, void *cachePtr)
 {
-	return ((Cache *)cachePtr)->getSegmentLimits(nid, idx, start, startSize, end, endSize);
+	return ((Cache *)cachePtr)->getSegmentLimits(nid, idx, start, startSize, end, endSize, timestamped);
 }
 
 int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
@@ -117,9 +117,9 @@ Cache::Cache()
 }
 
 
-int Cache::putRecord(int nid, char *data, int size, int writeThrough)
+int Cache::putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough)
 {
-	int status = dataManager.setData(nid, data, size);
+	int status = dataManager.setData(nid, dataType, numSamples, data, size);
 	if(!(status & 1)) return status;
 	if(writeThrough)
 	{
@@ -147,18 +147,18 @@ int Cache::putRecord(int nid, char *data, int size, int writeThrough)
 
 
 
-int Cache::getRecord(int nid, char **data, int *size)
+int Cache::getRecord(int nid, char *dataType, int *numSamples, char **data, int *size)
 {
-	return dataManager.getData(nid, data, size);
+	return dataManager.getData(nid, dataType, numSamples, data, size);
 }
 
 
 int Cache::beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 									char *dim, int dimSize, char *shape, int shapeSize, char *data, 
-									int dataSize, int writeThrough)
+									int dataSize, char timestamped, int writeThrough)
 {
 	int status = dataManager.beginSegment(nid, idx, start, startSize, end, endSize, dim, dimSize, shape, shapeSize, 
-			data, dataSize);
+			data, dataSize, timestamped);
 
 	
 	if(!(status & 1)) return status;
@@ -215,9 +215,12 @@ int Cache::appendSegmentData(int nid, int *bounds, int boundsSize, char *data,
 }
 
 
-int Cache::getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize)
+int Cache::getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped)
 {
-	return dataManager.getSegmentLimits(nid, idx, start, startSize, end, endSize);
+	int status;
+	bool timestampedBool;
+	status =  dataManager.getSegmentLimits(nid, idx, start, startSize, end, endSize, &timestampedBool);
+	*timestamped = (timestampedBool)?1:0;
 }
 
 
@@ -249,7 +252,8 @@ bool Cache::inQueue(int nid, int idx, int mode)
 int Cache::flush() 
 {
 	char *data;
-	int dataSize;
+	char dataType;
+	int dataSize, numSamples;
 	int status, errStatus = 1;
 	NidChain *currChainNid, *prevChainNid;
 	currChainNid = chainHead;
@@ -257,8 +261,8 @@ int Cache::flush()
 	{
 		switch(currChainNid->mode) {
 			case FLUSH_PUT_RECORD:
-				status = dataManager.getData(currChainNid->nid, &data, &dataSize);
-				if(status &1 )status = putRecordInternal(currChainNid->nid, data, dataSize);
+				status = dataManager.getData(currChainNid->nid,&dataType, &numSamples,  &data, &dataSize);
+				if(status &1 )status = putRecordInternal(currChainNid->nid, dataType, numSamples, data, dataSize);
 				if(!(status & 1))
 				{
 					errStatus = status;

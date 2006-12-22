@@ -1,5 +1,5 @@
 
-extern "C" int putRecordInternal(int nid, char *data);
+extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *data);
 extern "C" int beginSegmentInternal(int nid, int idx, char *start, char *end, char *dim, char *data);
 extern "C" int updateSegmentInternal(int nid, int idx, char *start, char *end);
 extern "C" int putSegmentInternal(int nid, int idx, char *dim, char *data);
@@ -62,6 +62,9 @@ void TreeWriter::addNid(int nid, int idx, char mode)
 void TreeWriter::run()
 {
 	int writeNid, writeIdx, writeMode;
+	char dataType;
+	int numSamples;
+	bool timestamped;
 	while(1)
 	{
 		if(!nidHead)
@@ -83,17 +86,17 @@ void TreeWriter::run()
 
 			switch(writeMode) {
 				case TREEWRITER_PUT_RECORD:
-					status = dataManager->getData(writeNid, &data, &dataSize);
-					if(status &1 )status = putRecordInternal(writeNid, data);
+					status = dataManager->getData(writeNid, &dataType, &numSamples, &data, &dataSize);
+					if(status &1 )status = putRecordInternal(writeNid, dataType, numSamples, data);
 					break;
 				case TREEWRITER_BEGIN_SEGMENT:
-					status = dataManager->getSegmentLimits(writeNid, writeIdx, &start, &startSize, &end, &endSize);
+					status = dataManager->getSegmentLimits(writeNid, writeIdx, &start, &startSize, &end, &endSize, &timestamped);
 					if(status & 1) dataManager->getSegmentData(writeNid, writeIdx, &dim, &dimSize, 
 						&data, &dataSize, &shape, &shapeSize, &currDataSize);
 					if(status & 1) status = beginSegmentInternal(writeNid, writeIdx, start, end, dim, data);
 					break;
 				case TREEWRITER_UPDATE_SEGMENT:
-					status = dataManager->getSegmentLimits(writeNid, writeIdx, &start, &startSize, &end, &endSize);
+					status = dataManager->getSegmentLimits(writeNid, writeIdx, &start, &startSize, &end, &endSize, &timestamped);
 					if(status & 1) status = updateSegmentInternal(writeNid, writeIdx, start, end);
 					break;
 				case TREEWRITER_PUT_SEGMENT:

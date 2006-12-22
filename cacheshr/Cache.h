@@ -27,13 +27,14 @@ class Cache
 
 public:
 	Cache();
-	int putRecord(int nid, char *data, int size, int writeThrough);
-	int getRecord(int nid, char **data, int *size);
+	int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough);
+	int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size);
 	int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, int writeThrough);
+		char *dim, int dimSize, char *shape, int shapeSize, char *data, 
+		int dataSize, char timestamped, int writeThrough);
 	int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, int writeThrough);
 	int getNumSegments(int nid, int *numSegments);
-	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize);
+	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
 	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 		int *shapeSize, int *currDataSize);
 	int isSegmented(int nid, int *segmented);

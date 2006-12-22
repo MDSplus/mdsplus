@@ -18,7 +18,6 @@ SharedMemTree SharedDataManager::sharedTree;
 	{
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
-//		freeSpaceManager.initialize((char *)startAddress + 4 * sizeof(long), size - 4 * sizeof(long));
 		freeSpaceManager.initialize((char *)startAddress + 2 * sizeof(long), size - 2 * sizeof(long));
 		sharedTree.initialize(&freeSpaceManager, &header, &nullNode);
 		//Store address (offset) of tree root in the first longword of the shared memory segment
@@ -26,29 +25,17 @@ SharedMemTree SharedDataManager::sharedTree;
 		//Store address (offset) of the empty (guard) tree node in the second longword of the shared memory segment
 		*(long *)((char *)startAddress +  sizeof(long)) = (long)nullNode - (long)startAddress;
 
-		//Allocate first slot of free nids and srtore its  address (offset) in the third longword of the shared memory segment
-		//freeNids = (LinkedSlot *)freeSpaceManager.allocateShared(sizeof(LinkedSlot));
-		//freeNids->initialize();
-		//*(long *)((char *)startAddress +  2 * sizeof(long)) = (long)freeNids - (long)startAddress;
-		//Highest allocated nid set to zero
-		//*(long *)((char *)startAddress +  3 * sizeof(long)) = 0; 
-		
-
 	}
 	else
 	{
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
 		freeSpaceManager.map((char *)startAddress + 2 * sizeof(long));
-//		freeSpaceManager.map((char *)startAddress + 4 * sizeof(long));
 		header = (void *)(*(long *)startAddress + (long)startAddress);
 		nullNode = (void *)(*(long *)((char *)startAddress + sizeof(long)) + (long)startAddress);
 		sharedTree.map(&freeSpaceManager, header, nullNode);
-		//freeNids = (LinkedSlot *)((char *)startAddress +  2 * sizeof(long));
 	}
 	lock.unlock();
-	freeSpaceManager.print();
-
 }
 
 
@@ -110,7 +97,7 @@ int SharedDataManager::deleteData(int nid)
 
 
 
-int SharedDataManager::setData(int nid, char *data, int size) //Write data indexed by nid
+int SharedDataManager::setData(int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(nid);
@@ -132,13 +119,11 @@ int SharedDataManager::setData(int nid, char *data, int size) //Write data index
 		void *currData = freeSpaceManager.allocateShared(size);
 		memcpy(currData, data, size);
 		nodeData->setData((void *)currData, size);
+		nodeData->setDataInfo(dataType, numSamples);
 		CallbackManager *callback = node->getCallbackManager();
 		if(callback)
 			callback->callCallback();
 		lock.unlock();
-		
-		
-		freeSpaceManager.print();
 		
 		return 1;
 	}
@@ -149,7 +134,7 @@ int SharedDataManager::setData(int nid, char *data, int size) //Write data index
 	}
 }
 	
-int SharedDataManager::getData(int nid, char **data, int *size) //Write data indexed by nid
+int SharedDataManager::getData(int nid, char *dataType, int *numSamples, char **data, int *size) //Write data indexed by nid
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(nid);
@@ -162,6 +147,7 @@ int SharedDataManager::getData(int nid, char **data, int *size) //Write data ind
 			return 0;
 		}
 		nodeData->getData((void **)data, size);
+		nodeData->getDataInfo(dataType, numSamples);
 		lock.unlock();
 		return 1;
 	}
@@ -173,7 +159,7 @@ int SharedDataManager::getData(int nid, char **data, int *size) //Write data ind
 }
 	
 int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize)
+			char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, bool timestamped)
 {
 	Segment *segment;
 	lock.lock();
@@ -246,6 +232,8 @@ int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize
 		currPtr = freeSpaceManager.allocateShared(dataSize);
 		memcpy(currPtr, data, dataSize);
 		segment->setData(currPtr, dataSize);
+
+		segment->setTimestamped(timestamped);
 
 		CallbackManager *callback = node->getCallbackManager();
 		if(callback)
@@ -442,7 +430,8 @@ int SharedDataManager::updateSegment(int nid, int idx, char *start, int startSiz
 	return 0;
 }
 
-int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize)
+int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *startSize, 
+		char **end, int *endSize, bool *timestamped)
 {
 	Segment *segment;
 	lock.lock();
@@ -466,6 +455,7 @@ int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *sta
 		segment->getStart((void **)start, startSize);
 
 		segment->getEnd((void **)end, endSize);
+		*timestamped = segment->isTimestamped();
 
 		lock.unlock();
 		return 1;

@@ -39,4 +39,5 @@ public:
 	void addNid(int nid, int idx, char mode);
 	void run();
 };
+
 #endif
