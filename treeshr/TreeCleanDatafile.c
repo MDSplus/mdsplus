@@ -65,6 +65,9 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
 		  TreeSetViewDate(&list->nci.time_inserted);
 		  if (first) {
                     static NCI empty_nci;
+                    empty_nci.flags=list->nci.flags;
+		    empty_nci.flags2=list->nci.flags2;
+		    empty_nci.time_inserted=list->nci.time_inserted;
 		    TreePutNci(info2, i, &empty_nci, 1);
                     first=0;
                   }
