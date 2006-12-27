@@ -1,4 +1,4 @@
-public fun WE7275__store(as_is _nid, optional _method)
+public fun WE7275_9__store(as_is _nid, optional _method)
 {
 
 
@@ -54,11 +54,11 @@ public fun WE7275__store(as_is _nid, optional _method)
 	private _K_CHAN_MEM = 1024 * 1024 * 4;
 
 
-write(*, "WE7275__store");
+write(*, "WE7275_9__store");
 
 
     private _all_ch_off = 1;
-	_num_chans = 16;
+	_num_chans = 18;
 	
     for(_i = 0; _i < _num_chans; _i++)
     {
@@ -80,7 +80,7 @@ write(*, "WE7275__store");
 
 	_slot_num = if_error(data(DevNodeRef(_nid, _N_SLOT)), -1);
 
-    if(_slot_num <= 0 || _slot_num > 8)
+    if(_slot_num <= 0 || _slot_num > 9)
     {
     	DevLogErr(_nid, "Invalid slot number");
  		abort();

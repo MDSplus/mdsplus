@@ -1,8 +1,9 @@
-public fun WE7000_9__init(as_is _nid, optional _method)
+public fun WE7000_9__arm(as_is _nid, optional _method)
 {
 
+write(*,"WE7000 arm");
 
-    private _K_CONG_NODES = 35;
+    private _K_CONG_NODES = 41;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_CNTRL_IP = 2;
@@ -18,10 +19,9 @@ public fun WE7000_9__init(as_is _nid, optional _method)
 
     private _K_NODES_PER_SLOT = 3;
     private _N_SLOT_1= 12;
-    private _N_TYPE_MODULE = 1;
-    private _N_LINK_MODULE = 2;
+    private _N_SLOT_TYPE_MODULE = 1;
+    private _N_SLOT_LINK_MODULE = 2;
 
-write(*,"WE7000 9 slots init");
 
     _controller_ip = if_error(data(DevNodeRef(_nid, _N_CNTRL_IP)), "");
     if(_controller_ip == "")
@@ -37,37 +37,43 @@ write(*,"WE7000 9 slots init");
  		abort();
     }
 
+
     DevNodeCvt(_nid, _N_BUSTRIG_1, ['SOFTWARE','EXT I/O', 'TRIGIN'], [0,1,2], _bustrig1 = 0);
+
 
     DevNodeCvt(_nid, _N_BUSTRIG_2, ['SOFTWARE','EXT I/O', 'TRIGIN'], [0,1,2], _bustrig2 = 0);
 
+
     DevNodeCvt(_nid, _N_TRIG_SLOPE, ['POSITIVE', 'NEGATIVE'], [0,1], _polarity = 0);
+
 
     DevNodeCvt(_nid, _N_CMN_CLOCK, ['NONE', 'EXT I/O', 'TRIGIN'], [0,1,2], _busclock = 0);
 
+
     DevNodeCvt(_nid, _N_ARM_SOURCE, ['SOFTWARE', 'BUSTRIG1', "BUSTRIG2"], [0,1,2], _arm = 0);
 
-/*
-    _error = we7000->WE7000ConnectController(_controller_ip);
-	if(_error)
-	{
-	        _msg = repeat(" ", 1024);
-			we7000->WE7000GetErrorMsg(ref(_msg));
-	    	DevLogErr(_nid, _msg);
- 			abort();
-	}
-*/
-	write(*, "Controller ",  _controller_ip);
-	write(*, "Station    ",  _station_ip);
-	
 
-	_error = we7000->WE7000ConfigTrigClock(_controller_ip, _station_ip, val(_bustrig1), val(_bustrig2), val(_polarity), val(_busclock), val(_arm));
-	if(_error)
+	if(_arm == 0)
 	{
-	    _msg = repeat(" ", 1024);
-		we7000->WE7000GetErrorMsg(ref(_msg));
-	    DevLogErr(_nid, _msg);
-		abort();
+
+		for(_i = 0; _i < 9; _i++)
+		{
+			_head_slot = _N_SLOT_1 + (_i *  _K_NODES_PER_SLOT);
+
+			if( DevIsOn(DevNodeRef(_nid, _head_slot)) )
+			{ 
+				_link_mod = if_error(data(DevNodeRef(_nid, _head_slot + _N_SLOT_LINK_MODULE)), 0);
+				_error = we7000->WE7000ArmModules(_controller_ip, _station_ip, val(_i+1), val(_link_mod), val(_bustrig1) , val(_bustrig2) );
+				if(_error)
+				{
+					_msg = repeat(" ", 1024);
+					we7000->WE7000GetErrorMsg(ref(_msg));
+	    			DevLogErr(_nid, _msg);
+				}
+
+			}
+
+		}
 	}
 
 
