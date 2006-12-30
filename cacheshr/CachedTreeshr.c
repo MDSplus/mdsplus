@@ -34,13 +34,14 @@ extern int beginSegment(int nid, int idx, char *start, int startSize, char *end,
 extern int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 						 int dimSize, int writeThrough, void *cachePtr);
 extern int getNumSegments(int nid, int *numSegments, void *cachePtr);
-extern int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, void *cachePtr);
+extern int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, void *cachePtr, char *timestamped);
 extern int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, 
-						  int *dataSize,char **shape, int *shapeSize, int *currDataSize, void *cachePtr);
+						  int *dataSize,char **shape, int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr);
 extern int isSegmented(int nid, int *segmented, void *cachePtr);
 extern int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, void *cachePtr);
-
+extern int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr);
 
 extern int TdiCompile();
 extern int TdiData();
@@ -231,7 +232,7 @@ EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descripto
 }
 
 
-EXPORT int RTreeBeginTimestampedSegment(int nid, _int64 start, struct descriptor *dimension, 
+EXPORT int RTreeBeginTimestampedSegment(int nid, _int64 start,  
 							 struct descriptor_a *initialValue, int idx, int writeThrough)
 {
 	_int64 thisStart;
@@ -242,8 +243,7 @@ EXPORT int RTreeBeginTimestampedSegment(int nid, _int64 start, struct descriptor
 	EMPTYXD(startSerXd);	
 	EMPTYXD(endSerXd);	
 	EMPTYXD(dimSerXd);	
-	struct descriptor_a *startSerA, *endSerA, *dimSerA;
-	struct descriptor_signal *signalD;
+	struct descriptor_a *startSerA, *dimSerA;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	
 	DESCRIPTOR_APD(dimsApd, DTYPE_DSC, 0, 0);
@@ -332,11 +332,26 @@ EXPORT int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx)
 	int bounds[MAX_BOUND_SIZE];
 	int boundsSize;
 	int status;
+	_int64 retTimerstamp = 0;
 
 	if(!cache) cache = getCache();
 
 	getDataTypeAndShape(dataD, bounds, &boundsSize);
-	status = appendSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx, cache);
+	status = appendSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  cache);
+	return status;
+}
+
+EXPORT int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 timestamp, int segIdx)
+{
+	int bounds[MAX_BOUND_SIZE];
+	int boundsSize;
+	int status;
+	_int64 retTimerstamp = 0;
+
+	if(!cache) cache = getCache();
+
+	getDataTypeAndShape(dataD, bounds, &boundsSize);
+	status = appendTimestampedSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  &timestamp, cache);
 	return status;
 }
 
@@ -351,17 +366,28 @@ EXPORT int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, stru
 {
 	char *data, *dim;
 	int *shape;
+	char timestamped;
 	int status, dataSize, shapeSize, dimSize, currDataSize;
 	DESCRIPTOR_A_COEFF(arrayD, 0, 0, 0, (unsigned char )256, 0);
 	int *boundsPtr;
 	int currDim;	
+	DESCRIPTOR_A(dimD, 8, DTYPE_OU, 0, 0);
+
 
 	if(!cache) cache = getCache();
-	status = getSegmentData(nid, idx, &dim, &dimSize, &data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, cache);
+	status = getSegmentData(nid, idx, &dim, &dimSize, &data, &dataSize, (char **)&shape, &shapeSize, 
+		&currDataSize, &timestamped, cache);
 	if(!(status & 1)) return status;
 	
-	MdsSerializeDscIn((char *)dim, retDim);
-
+	if(!timestamped)
+		MdsSerializeDscIn((char *)dim, retDim);
+	else
+	{	
+		dimD.arsize = dimSize;
+		dimD.pointer = dim;
+		MdsCopyDxXd((struct descriptor *)&dimD, retDim);
+	}
+	
 	arrayD.dtype = shape[0];
 	arrayD.length = shape[1];
 	arrayD.pointer = data;
@@ -387,13 +413,21 @@ EXPORT int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStar
 {
 	char *start, *end;
 	int startSize, endSize, status;
+	char timestamped;
 
 	if(!cache) cache = getCache();
 
-	status = getSegmentLimits(nid, idx, &start, &startSize, &end, &endSize, cache);
+	status = getSegmentLimits(nid, idx, &start, &startSize, &end, &endSize, &timestamped, cache);
 	if(!(status & 1)) return status;
 	MdsSerializeDscIn((char *)start, retStart);
-	MdsSerializeDscIn((char *)end, retEnd);
+	if(timestamped)
+	{
+		struct descriptor endD = {8, DTYPE_OU, CLASS_S, 0};
+		endD.pointer = end;
+		MdsCopyDxXd(&endD, retEnd);
+	}
+	else
+		MdsSerializeDscIn((char *)end, retEnd);
 	return 1;
 }
 

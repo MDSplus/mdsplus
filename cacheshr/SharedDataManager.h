@@ -70,9 +70,9 @@ public:
 	int updateSegment(int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
 	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
 	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-		int *shapeSize, int *currDataSize);
+		int *shapeSize, int *currDataSize, bool *timestamped);
 	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx);
+										 int dataSize, int idx, int startIdx, bool timestamped, void *timestamp);
 
 	void *setCallback(int nid, void (*callback)(int));   //Associate a callback with the nid
 	int clearCallback(int nid, void *callbackDescr);	 //Remove the callback from the nid

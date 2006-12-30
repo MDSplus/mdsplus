@@ -15,13 +15,15 @@ extern "C" int updateSegment(int nid, int idx, char *start, int startSize, char 
 extern "C" int getNumSegments(int nid, int *numSegments, void *cachePtr);
 extern "C" int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, void *cachePtr);
 extern "C" int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-							  int *shapeSize, int *currDataSize, void *cachePtr);
+							  int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr);
 extern "C" int isSegmented(int nid, int *segmented, void *cachePtr);
 extern "C" int flushTree(void *cachePtr);
 extern "C" void *setCallback(int nid, void (* callback)(int), void *cachePtr);
 extern "C" int clearCallback(int nid, void *callbackDescr, void *cachePtr);
 extern "C" int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, void *cachePtr);
+extern "C" int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr);
 
 static void *cache = 0;
 
@@ -52,7 +54,7 @@ int beginSegment(int nid, int idx, char *start, int startSize, char *end, int en
 									char timestamped, int writeThrough, void *cachePtr)
 {
 	return ((Cache *)cachePtr)->beginSegment(nid, idx, start, startSize, end, endSize, dim, dimSize, shape, shapeSize, data, 
-			timestamped, dataSize, writeThrough);
+			dataSize, timestamped, writeThrough);
 }
 
 int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
@@ -73,9 +75,14 @@ int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end,
 }
 
 int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-				   int *shapeSize, int *currDataSize, void *cachePtr)
+				   int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr)
 {
-	return ((Cache *)cachePtr)->getSegmentData(nid, idx, dim, dimSize, data, dataSize, shape, shapeSize, currDataSize);
+	bool boolTimestamped;
+	int status;
+	status = ((Cache *)cachePtr)->getSegmentData(nid, idx, dim, dimSize, data, dataSize, shape, 
+		shapeSize, currDataSize, &boolTimestamped);
+	*timestamped = (boolTimestamped)?1:0;
+	return status;
 }
 
 int isSegmented(int nid, int *segmented, void *cachePtr)
@@ -103,6 +110,13 @@ int appendSegmentData(int nid, int *bounds, int boundsSize, char *data,
 										 int dataSize, int idx, int startIdx, void *cachePtr)
 {
 	return ((Cache *)cachePtr)->appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, startIdx);
+}
+
+int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr)
+{
+	return ((Cache *)cachePtr)->appendTimestampedSegmentData(nid, bounds, boundsSize, data, dataSize, 
+		idx, timestamp, startIdx);
 }
 
 
@@ -211,7 +225,15 @@ int Cache::getNumSegments(int nid, int *numSegments)
 int Cache::appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx)
 {
-	return dataManager.appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, startIdx);
+	return dataManager.appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, startIdx, false, 0);
+}
+
+
+int Cache::appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, void *timestamp, int startIdx)
+{
+	return dataManager.appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, 
+		startIdx, true, timestamp);
 }
 
 
@@ -221,13 +243,15 @@ int Cache::getSegmentLimits(int nid, int idx, char **start, int *startSize, char
 	bool timestampedBool;
 	status =  dataManager.getSegmentLimits(nid, idx, start, startSize, end, endSize, &timestampedBool);
 	*timestamped = (timestampedBool)?1:0;
+	return 1;
 }
 
 
 int Cache::getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
-						  char **shape, int *shapeSize, int *currDataSize)
+						  char **shape, int *shapeSize, int *currDataSize, bool *timestamped)
 {
-	return dataManager.getSegmentData(nid, idx, dim, dimSize, data, dataSize, shape, shapeSize, currDataSize);
+	return dataManager.getSegmentData(nid, idx, dim, dimSize, data, dataSize, shape, shapeSize, 
+		currDataSize, timestamped);
 }
 
 int Cache::isSegmented(int nid, int *segmented)

@@ -92,7 +92,7 @@ void TreeWriter::run()
 				case TREEWRITER_BEGIN_SEGMENT:
 					status = dataManager->getSegmentLimits(writeNid, writeIdx, &start, &startSize, &end, &endSize, &timestamped);
 					if(status & 1) dataManager->getSegmentData(writeNid, writeIdx, &dim, &dimSize, 
-						&data, &dataSize, &shape, &shapeSize, &currDataSize);
+						&data, &dataSize, &shape, &shapeSize, &currDataSize, &timestamped);
 					if(status & 1) status = beginSegmentInternal(writeNid, writeIdx, start, end, dim, data);
 					break;
 				case TREEWRITER_UPDATE_SEGMENT:
@@ -101,7 +101,7 @@ void TreeWriter::run()
 					break;
 				case TREEWRITER_PUT_SEGMENT:
 					status = dataManager->getSegmentData(writeNid, writeIdx, &dim, &dimSize, 
-						&data, &dataSize, &shape, &shapeSize, &currDataSize);
+						&data, &dataSize, &shape, &shapeSize, &currDataSize, &timestamped);
 					if(status & 1) status = putSegmentInternal(writeNid, writeIdx, dim, data);
 					break;
 			}

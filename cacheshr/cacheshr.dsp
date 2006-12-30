@@ -139,6 +139,26 @@ SOURCE=.\CallbackManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ChannelAddress.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChannelFactory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChannelListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CoherencyManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CommunicationChannel.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Event.h
 # End Source File
 # Begin Source File
@@ -180,6 +200,14 @@ SOURCE=.\SharedMemNodeData.h
 # Begin Source File
 
 SOURCE=.\SharedMemTree.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TCPAddress.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\TCPChannel.h
 # End Source File
 # Begin Source File
 

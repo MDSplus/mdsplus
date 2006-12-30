@@ -288,8 +288,14 @@ int SharedDataManager::getNumSegments(int nid, int *numSegments)
 //The remaining elements are the dimension limits
 
 
+
+
+
+
+
+
 int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx)
+										 int dataSize, int idx, int startIdx, bool timestamped, void *timestamp)
 {
 	int numSegments;
 	int *shape;
@@ -303,7 +309,7 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 	{
 		SharedMemNodeData *nodeData = node->getData();
 		numSegments = nodeData->getNumSegments();
-		if(idx >= numSegments)
+		if(idx >= numSegments || numSegments == 0)
 		{
 			lock.unlock();
 			return BAD_INDEX;
@@ -321,6 +327,15 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			lock.unlock();
 			return BAD_SHAPE;
 		}
+		if(timestamped)
+		{
+			if(bounds[2] != shape[2] - 1) //If timestamped a single data row can be inserted
+			{
+				lock.unlock();
+				return BAD_SHAPE;
+			}
+		}
+
 		for(int i = 0; i < shape[2] - 1; i++)
 		{
 			if(bounds[4 + i] != shape[4 + i])
@@ -343,6 +358,15 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			}
 			memcpy(&segmentData[currSegmentSize], data, dataSize);
 			segment->setCurrDataSize(currSegmentSize + dataSize);
+			if(timestamped)
+			{	
+				void *endPtr;
+				int endSize;
+				segment->appendTimestamp(timestamp);
+				segment->getEnd(&endPtr, &endSize);
+				memcpy(endPtr, timestamp, 8);
+
+			}
 			CallbackManager *callback = node->getCallbackManager();
 			if(callback)
 			callback->callCallback();
@@ -465,7 +489,7 @@ int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *sta
 }
 
 int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
-									  char **shape, int *shapeSize, int *currDataSize)
+									  char **shape, int *shapeSize, int *currDataSize, bool *timestamped)
 {
 	Segment *segment;
 	lock.lock();
@@ -490,6 +514,7 @@ int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize
 		segment->getData((void **)data, dataSize);
 		segment->getShape((void **)shape, shapeSize);
 		*currDataSize = segment->getCurrDataSize();
+		*timestamped = segment->isTimestamped();
 
 		lock.unlock();
 		return 1;

@@ -14,6 +14,7 @@ class Segment
 	int endSize;
 	long dim;
 	int dimSize;
+	int dimOfs;
 	int currDataSize;
 	long nxt;
 
@@ -29,6 +30,7 @@ public:
 		startSize = 0;
 		endSize = 0;
 		dimSize = 0;
+		dimOfs = 0;
 		shapeSize = 0;
 		dataSize = 0;
 		currDataSize = 0;
@@ -53,6 +55,11 @@ public:
 		currDataSize = 0;
 	}
 
+	void appendTimestamp(void *timestamp)
+	{
+		memcpy((char *)((long)this + this->dim+dimOfs), timestamp, 8);
+		dimOfs += 8;
+	}
 	void getData(void **data, int *dataSize)
 	{
 		*data = (void *)((long)this + this->data);

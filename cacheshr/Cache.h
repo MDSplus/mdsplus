@@ -36,10 +36,12 @@ public:
 	int getNumSegments(int nid, int *numSegments);
 	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
 	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-		int *shapeSize, int *currDataSize);
+		int *shapeSize, int *currDataSize, bool *timestamped);
 	int isSegmented(int nid, int *segmented);
 	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx);
+	int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, void *timestamp, int startIdx);
 
 
 	int flush();
