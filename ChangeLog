@@ -1,6 +1,22 @@
 Version 1.8-2
 
 
+2007-01-02 14:24  twf
+
+	* gen_device/Makefile.in, hdf5/Makefile.in, javaclient/Makefile.in,
+	javadispatcher/Makefile.in, javascope/Makefile.in,
+	javatraverser/Makefile.in, manpages/Makefile.in,
+	mdsip_xio/Makefile.in, mdsjet/Makefile.in, mdsmisc/Makefile.in,
+	mdsshr/Makefile.in, mdstcpip/Makefile.in, rpm/Makefile.in:
+	
+	Use mkdirhier in makebindir
+
+2007-01-02 12:32  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.8-2
+
 2007-01-02 11:11  twf
 
 	* ChangeLog:
