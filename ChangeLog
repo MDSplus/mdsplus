@@ -1,5 +1,505 @@
-Version 1.8-1
+Version 1.8-2
 
+
+2007-01-02 11:08  twf
+
+	* tdi/findtree.fun:
+	
+	cmod specific file removed
+
+2007-01-02 10:59  twf
+
+	* treeshr/: TreeCleanDatafile.c, TreePutRecord.c:
+	
+	Save more nci characteristics during clean/compress
+
+2007-01-02 09:35  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Unlock nci if error
+
+2006-12-27 08:04  manduchi
+
+	* tdi/RfxDevices/: OPCBrowseTag.fun, WE7000_9__add.fun,
+	WE7000_9__arm.fun, WE7000_9__init.fun, WE7000__init.fun,
+	WE7116_9__add.fun, WE7116_9__init.fun, WE7116_9__store.fun,
+	WE7275_9__add.fun, WE7275_9__init.fun, WE7275_9__store.fun,
+	WE7275__store.fun:
+	
+	fix and add operation for Yokogawa 9 slot rack device
+
+2006-12-27 07:09  manduchi
+
+	* javatraverser/WE7275_9Setup.java:
+	
+	Setup for Yokogawa 7275 module to use in 9 slot yokogawa rack
+
+2006-12-27 07:08  manduchi
+
+	* javatraverser/WE7116_9Setup.java:
+	
+	Setup for Yokogava  7116 module to use in 9 slot yokogava rack
+
+2006-12-27 07:07  manduchi
+
+	* javatraverser/WE7000_9Setup.java:
+	
+	Setup for Yokogava 9 modules device
+
+2006-12-26 15:01  jas
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	need to set attributes for empty  and non-versioned nodes
+
+2006-12-19 12:01  twf
+
+	* configure.in, idlmdsevent/Makefile.in, idlsql/Makefile.in,
+	javaclient/Makefile.in, mdslibidl/Makefile.in,
+	mitdevices/Makefile.in, remcam/Makefile.in, tcl/Makefile.in,
+	tdic/Makefile.in, configure, idlmdswidgets/Makefile.in:
+	
+	MacOSX update
+
+2006-12-19 11:52  twf
+
+	* mdsip_xio/mdsip_compatible_api.c:
+	
+	Add signal blockin code
+
+2006-12-19 11:43  twf
+
+	* include/mdstypes.h, gsilite/config/config.h,
+	gsilite/config/globus_config.h, gsilite/config/globus_dc.h:
+	
+	Fix for MacOSX
+
+2006-12-19 11:42  twf
+
+	* math/: csint.f.in, dcsint.f:
+	
+	use correct constant types
+
+2006-12-19 11:40  twf
+
+	* idl/: mdsconnect.pro, mdsevent.pro, mdsidlimage.pro:
+	
+	fix for MacOSX
+
+2006-12-19 11:39  twf
+
+	* javascope/LocalDataProvider.java:
+	
+	Do not load libraries brought in by javamds. Fix for MacOSX
+
+2006-12-19 11:37  twf
+
+	* rpm/mdsplus.conf.template:
+	
+	Fix example subtree path
+
+2006-12-19 11:35  twf
+
+	* dwscope/ScopePrinters:
+	
+	use correct awk command
+
+2006-12-19 11:26  twf
+
+	* envsyms.in:
+	
+	Add /usr/X11R6/lib to LIBPATH
+
+2006-12-19 11:10  twf
+
+	* setup.csh, setup.sh:
+	
+	use correct ask command
+
+2006-12-19 11:07  twf
+
+	* macosx/: macosx.xinetd, installer/Makefile,
+	installer/dmg_dsstore, installer/make_dmg,
+	installer/files_resources/Description.plist,
+	installer/files_resources/Info.plist,
+	installer/local_resources/Description.plist,
+	installer/local_resources/Info.plist,
+	installer/logicals_resources/Description.plist,
+	installer/logicals_resources/Info.plist,
+	installer/logicals_resources/postinstall,
+	installer/logicals_resources/postupgrade,
+	installer/metapkg_resources/Description.plist,
+	installer/metapkg_resources/Info.plist,
+	installer/metapkg_resources/MDSplus.info,
+	installer/metapkg_resources/PkgInfo,
+	installer/metapkg_resources/ReadMe.rtf,
+	installer/metapkg_resources/Welcome.rtf,
+	installer/openmotif_resources/Description.plist,
+	installer/openmotif_resources/Info.plist,
+	installer/server_resources/Description.plist,
+	installer/server_resources/Info.plist,
+	installer/server_resources/postinstall,
+	installer/server_resources/postupgrade:
+	
+	MAC update
+
+2006-12-19 10:56  twf
+
+	* macosx/Makefile:
+	
+	Mac update
+
+2006-12-19 10:43  twf
+
+	* macosx/: bindtable, macmake.sh:
+	
+	mac updates
+
+2006-12-19 10:23  twf
+
+	* servershr/ServerFindServers.c:
+	
+	include sys/types
+
+2006-12-19 10:21  twf
+
+	* tdishr/TdiSql.c:
+	
+	fix for mac
+
+2006-12-19 10:15  twf
+
+	* mdssql/dynamic_syb.c:
+	
+	fix for mac
+
+2006-12-19 10:13  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix for mac
+
+2006-12-19 10:08  twf
+
+	* treeshr/TreeOpen.c, mdslib/dtype_test.c:
+	
+	Fix for bigendian
+
+2006-12-19 09:55  twf
+
+	* treeshr/: treeshrp.h, RemoteAccess.c:
+	
+	Fix for mac
+
+2006-12-19 09:53  twf
+
+	* manpages/Makefile.in:
+	
+	use kit supplied mkdirheir
+
+2006-12-13 16:02  jas
+
+	* treeshr/TreeOpen.c:
+	
+	changes for named structures in NODE
+
+2006-12-13 15:57  jas
+
+	* treeshr/treeshrp.h:
+	
+	named struct changes for 32 bit builds
+
+2006-12-13 07:43  manduchi
+
+	* tdishr/: TdiArray.c, TdiSql.c, tdireffunction.h:
+	
+	vxWorks compatibility
+
+2006-12-13 06:26  manduchi
+
+	* mdsshr/librtl.c:
+	
+	vxWorks LibWait implementation
+
+2006-12-13 06:21  manduchi
+
+	* treeshr/: TreeOpen.c, treeshrp.h:
+	
+	Fix last unnamed struct Define link_parent for 32 bit platform
+
+2006-12-12 15:34  jas
+
+	* treeshr/: TreeOpen.c, treeshrp.h:
+	
+	more changes to make node union/struct named
+
+2006-12-12 08:42  manduchi
+
+	* treeshr/: RemoteAccess.c, TreeAddNode.c, TreeDeleteNode.c,
+	TreeGetNci.c, TreeGetRecord.c, TreeOpen.c, TreePutRecord.c,
+	TreeRenameNode.c, TreeSerializeNci.c, TreeSetDbi.c, TreeSetNci.c,
+	TreeVerify.c, treeshrp.h:
+	
+	Avoid unnamed struct - union
+
+2006-12-12 08:37  manduchi
+
+	* treeshr/: RemoteAccess.c, TreeAddNode.c, TreeDeleteNode.c,
+	TreeGetNci.c, TreeGetRecord.c, TreeOpen.c, TreePutRecord.c,
+	TreeRenameNode.c, TreeSerializeNci.c, TreeSetDbi.c, TreeSetNci.c,
+	TreeVerify.c, treeshrp.h:
+	
+	Avoid unnamed struct/union in NODE structure
+
+2006-12-11 11:33  manduchi
+
+	* mdsshr/MdsShrThreadSafe.c, mdsshr/librtl.c, tdishr/TdiArray.c,
+	tdishr/TdiThreadSafe.c, tdishr/TdiYacc.c, tdishr/tdireffunction.h:
+	
+	Make it compile under vxWorks
+
+2006-12-08 14:07  twf
+
+	* configure, configure.in:
+	
+	Fix jvm definition on linux
+
+2006-12-07 05:11  manduchi
+
+	* mdsplus.dsw:
+	
+	Include cacheshr and xtreeshr projects
+
+2006-12-07 04:53  manduchi
+
+	* tdishr/TdiDefFunction.c:
+	
+	Changed macro definition of va_count to let it be compiled in
+	Wiondows
+
+2006-12-07 04:51  manduchi
+
+	* tcl/tcl_commands.dsp:
+	
+	Add new Tcl routines into dsp project file
+
+2006-12-07 04:50  manduchi
+
+	* treeshr/treeshr.dsp:
+	
+	Add TreeSetDbi to treeshr.dsp
+
+2006-12-07 04:49  manduchi
+
+	* mdsshr/: MdsFloatToTime.c, mdsshr.dsp:
+	
+	Add MdsFloatToTime to mdsshr.dsp Set long constant definitions
+	compatible for Linux and Windows
+
+2006-12-06 12:48  manduchi
+
+	* RealTimeTreeshr/: Cache.cpp, Cache.h, CallbackManager.h,
+	ChannelAddress.h, ChannelFactory.cpp, ChannelFactory.h,
+	ChannelListener.h, CoherencyManager.cpp, CoherencyManager.h,
+	CommunicationChannel.cpp, CommunicationChannel.h, DataSlot.h,
+	Event.h, FreeSpaceManager.cpp, FreeSpaceManager.h, LinkedSlot.h,
+	LockManager.h, NotifyClient.h, NotifyServer.cpp, NotifyServer.h,
+	RealTimeTreeshr.c, RealTimeTreeshr.dsw, RealTimeTreeshr.h,
+	RealtimeTreeshr.cpp, RedBlackTree.h, RedBlackTreeNode.h,
+	Runnable.h, Semaphore.h, SharedDataManager.cpp,
+	SharedDataManager.h, SharedMemManager.cpp, SharedMemManager.h,
+	SharedMemNode.h, SharedMemNodeData.h, SharedMemTree.cpp,
+	SharedMemTree.h, TCPAddress.h, TCPChannel.cpp, TCPChannel.h,
+	Thread.cpp, Thread.h, TreeWriter.cpp, TreeWriter.h:
+	
+	The cache management sources are now in cacheshr
+
+2006-12-06 09:57  manduchi
+
+	* configure.in:
+	
+	Restored the previous version, inadvertently changed before
+
+2006-12-06 09:10  manduchi
+
+	* mdsshr/: Makefile.in, MdsFloatToTime.c, MdsShr.def:
+	
+	added MdsFloatToTime, converting float time values into 64 bit
+	integer preserving monotonicity
+
+2006-12-06 09:09  manduchi
+
+	* include/: cacheshr.h, xtreeshr.h:
+	
+	added include files for cacheshr and xtreeshr
+
+2006-11-30 11:57  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXTorControlSetup.java:
+	
+	Added Q Control fields
+
+2006-11-30 11:49  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	Change name
+
+2006-11-30 11:46  manduchi
+
+	* tdi/RfxDevices/: RFXAxiToroidalControl__add.fun,
+	RFXControl__add.fun, RFXControl__init.fun, RFXControl__store.fun:
+	
+	Added Q control
+
+2006-11-30 11:44  manduchi
+
+	* javatraverser/: CompileTree.java, DeviceCustomizer.java,
+	Devicebeans.jar, RFXAxiToroidalControlSetup.java,
+	RFXControlSetup.java:
+	
+	Fixed fix of node name length
+
+2006-11-29 13:49  jas
+
+	* tdi/MitDevices/Dt200WriteMaster.fun:
+	
+	change the way the board string is constructed
+
+2006-11-23 10:26  manduchi
+
+	* javascope/ContourSignal.java:
+	
+	Removed weird character in comment
+
+2006-11-23 10:11  manduchi
+
+	* javascope/: AsdexDataProvider.java, MdsDataProvider.java,
+	RowColumnContainer.java, WaveInterface.java,
+	jScopeWaveContainer.java:
+	
+	Fix update message information and change 1 point signal mamagement
+
+2006-11-23 05:58  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Truncate names with more than 12 chars
+
+2006-11-22 09:56  manduchi
+
+	* javascope/: ColorMapDialog.java, CompositeWaveDisplay.java,
+	Descriptor.java, Grid.java, JetMdsDataProvider.java,
+	MdsAccess.java, MdsMessage.java, MultiWavePopup.java,
+	MultiWaveform.java, SetupDataDialog.java, SetupWaveformParams.java,
+	Signal.java, WaveInterface.java, WavePopup.java, Waveform.java,
+	WaveformContainer.java, WaveformEvent.java, WaveformMetrics.java,
+	jScope.java, jScopeWavePopup.java:
+	
+	Fix
+
+2006-11-17 16:09  twf
+
+	* rpm/post_install_script.in:
+	
+	Add mdsplus.conf to ld.so.conf.d
+
+2006-11-17 14:08  twf
+
+	* configure, configure.in:
+	
+	Fix 64-bit sybase and java libraries
+
+2006-11-17 14:06  twf
+
+	* idlmdswidgets/Makefile.in:
+	
+	Fix on 64-bit
+
+2006-11-17 13:26  twf
+
+	* javascope/Makefile.in:
+	
+	Change protection on the docs
+
+2006-11-17 12:22  twf
+
+	* mitdevices/Makefile.in:
+	
+	Use correct library directory
+
+2006-11-17 12:22  twf
+
+	* mitdevices/t4012.c:
+	
+	Fix compile error
+
+2006-11-17 11:54  twf
+
+	* camshr/Makefile.in:
+	
+	use CFLAGS
+
+2006-11-17 11:23  twf
+
+	* configure, configure.in:
+	
+	fix uiddir
+
+2006-11-17 11:12  twf
+
+	* rpm/x86_64.spec:
+	
+	change libdir and bindir
+
+2006-11-17 11:02  twf
+
+	* rpm/x86_64.spec:
+	
+	change libdir and bindir
+
+2006-11-17 09:44  twf
+
+	* rpm/x86_64.spec:
+	
+	Just remove object files
+
+2006-11-17 09:08  twf
+
+	* configure, configure.in:
+	
+	add 32 or 64 bit flags to CC_LDFLAGS
+
+2006-11-15 13:07  twf
+
+	* mitdevices/Makefile.in:
+	
+	use MAKEBINDIR
+
+2006-11-15 12:39  twf
+
+	* rpm/x86_64.spec:
+	
+	fix mv bin
+
+2006-11-15 12:08  twf
+
+	* devscripts/MakeRpm:
+	
+	Fix syntax error
+
+2006-11-15 11:42  twf
+
+	* devscripts/MakeRpm:
+	
+	Fix syntax error
+
+2006-11-15 11:21  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.8-1
 
 2006-11-15 11:18  twf
 
