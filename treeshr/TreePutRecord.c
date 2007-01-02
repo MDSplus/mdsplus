@@ -245,6 +245,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
 	  }
 	}
+        else
+	  TreeUnLockNci(info_ptr,0,nidx);
       }
     }
   }
