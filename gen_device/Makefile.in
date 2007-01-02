@@ -33,7 +33,7 @@ clean :
 
 install:
 	if [ ! -d @libdir@ ] ; then \
-                mkdirhier @libdir@; \
+                @MAKEBINDIR@mkdirhier @libdir@; \
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libGenDevShr@SHARETYPE@ @libdir@

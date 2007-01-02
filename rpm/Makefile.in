@@ -17,11 +17,11 @@ clean :
 
 install:
 	if [ ! -d $(exec_prefix)/etc/profile.d ] ; then \
-                mkdirhier $(exec_prefix)/etc/profile.d; \
+                @MAKEBINDIR@mkdirhier $(exec_prefix)/etc/profile.d; \
                 chmod -R 755 $(exec_prefix)/etc; \
 	fi;
 	if [ ! -d $(exec_prefix)/rpm ] ; then \
-		mkdirhier $(exec_prefix)/rpm; \
+		@MAKEBINDIR@mkdirhier $(exec_prefix)/rpm; \
 		chmod -R 755 $(exec_prefix)/rpm; \
 	fi;          
 	$(INSTALL) -m 755  envsyms $(exec_prefix)/etc
