@@ -1,6 +1,18 @@
 Version 1.8-2
 
 
+2007-01-04 11:10  twf
+
+	* mdsshr/librtl.c, treeshr/TreePutRecord.c:
+	
+	Fix date conversion to include daylight savings time
+
+2007-01-02 14:28  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.8-2
+
 2007-01-02 14:24  twf
 
 	* gen_device/Makefile.in, hdf5/Makefile.in, javaclient/Makefile.in,
