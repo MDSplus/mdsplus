@@ -173,7 +173,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
          time_t t;
          t = time(NULL);
          tm = localtime(&t);
-         m1 = (unsigned int)t + tm->tm_gmtoff;
+         m1 = (unsigned int)t + tm->tm_gmtoff + daylight * 3600;
        }
 #else
         m1 = (unsigned int)time(NULL) - timezone + daylight * 3600;
