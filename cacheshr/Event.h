@@ -9,9 +9,10 @@
 class Event
 {
 	HANDLE eventH;
-
-public:
-	Event()
+ 
+ public: 
+	Event(){initialize();}
+	void initialize()
 	{
 		eventH = CreateEvent(NULL, FALSE, FALSE, NULL);
 	}
@@ -34,8 +35,9 @@ class Event
 {
     SEM_ID semaphore;
  
- public:   
-    Event()
+ public: 
+	Event(){initialize();}
+    void initialize()
     {
 	semaphore = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
     }
@@ -59,8 +61,9 @@ class Event
 {
     sem_t semaphore;
  
- public:   
-    Event()
+ public: 
+	Event(){initialize();}
+    void initialize()
     {
     	int pshared = 1;
 	unsigned int value = 0;

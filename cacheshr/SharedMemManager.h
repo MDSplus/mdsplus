@@ -11,8 +11,8 @@ private:
 	int size;
 
 public:
-	static void *startAddress;
-	void *initialize(int size);
+	static char *startAddress;
+	char *initialize(int size);
 };
 
 
@@ -27,8 +27,8 @@ private:
 	int size;
 	
 public:
-	static void *startAddress;
-	void *initialize(int size);
+	static char *startAddress;
+	char *initialize(int size);
 };
 
 
@@ -44,8 +44,8 @@ private:
 	int size;
 	
 public:
-	static void *startAddress;
-	void *initialize(int size);
+	static char *startAddress;
+	char *initialize(int size);
 };
 #endif
 #endif

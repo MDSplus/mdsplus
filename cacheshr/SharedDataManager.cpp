@@ -4,7 +4,7 @@
 
 FreeSpaceManager SharedDataManager::freeSpaceManager;
 SharedMemManager SharedDataManager::sharedMemManager;
-void *SharedDataManager::startAddress;
+char *SharedDataManager::startAddress;
 LockManager SharedDataManager::lock;
 SharedMemTree SharedDataManager::sharedTree;
 
@@ -31,8 +31,8 @@ SharedMemTree SharedDataManager::sharedTree;
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
 		freeSpaceManager.map((char *)startAddress + 2 * sizeof(long));
-		header = (void *)(*(long *)startAddress + (long)startAddress);
-		nullNode = (void *)(*(long *)((char *)startAddress + sizeof(long)) + (long)startAddress);
+		header = (char *)(*(long *)startAddress + (long)startAddress);
+		nullNode = (char *)(*(long *)((char *)startAddress + sizeof(long)) + (long)startAddress);
 		sharedTree.map(&freeSpaceManager, header, nullNode);
 	}
 	lock.unlock();
@@ -42,7 +42,7 @@ SharedMemTree SharedDataManager::sharedTree;
 
 void SharedDataManager::deleteData(SharedMemNodeData *nodeData)
 {
-	void *currPtr;
+	char *currPtr;
 	int currSize;
 
 	if(nodeData->isSegmented())
@@ -116,9 +116,9 @@ int SharedDataManager::setData(int nid, char dataType, int numSamples, char *dat
 		deleteData(nodeData);
 
 
-		void *currData = freeSpaceManager.allocateShared(size);
+		char *currData = freeSpaceManager.allocateShared(size);
 		memcpy(currData, data, size);
-		nodeData->setData((void *)currData, size);
+		nodeData->setData((char *)currData, size);
 		nodeData->setDataInfo(dataType, numSamples);
 		CallbackManager *callback = node->getCallbackManager();
 		if(callback)
@@ -146,7 +146,7 @@ int SharedDataManager::getData(int nid, char *dataType, int *numSamples, char **
 			lock.unlock();
 			return 0;
 		}
-		nodeData->getData((void **)data, size);
+		nodeData->getData((char **)data, size);
 		nodeData->getDataInfo(dataType, numSamples);
 		lock.unlock();
 		return 1;
@@ -196,7 +196,7 @@ int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize
 		else
 			segment = nodeData->getSegmentAt(idx);
 
-		void *currPtr;
+		char *currPtr;
 		int currSize;
 		segment->getStart(&currPtr, &currSize);
 		if(currSize > 0)
@@ -295,7 +295,7 @@ int SharedDataManager::getNumSegments(int nid, int *numSegments)
 
 
 int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, bool timestamped, void *timestamp)
+										 int dataSize, int idx, int startIdx, bool timestamped, char *timestamp)
 {
 	int numSegments;
 	int *shape;
@@ -315,7 +315,7 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			return BAD_INDEX;
 		}
 		Segment *segment = nodeData->getSegmentAt(idx);
-		segment->getShape((void **)&shape, &shapeSize);
+		segment->getShape((char **)&shape, &shapeSize);
 		//Check Shape
 		if(bounds[0] != shape[0])
 		{
@@ -345,7 +345,7 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			}
 		}
 		int currSegmentSize = segment->getCurrDataSize();
-		segment->getData((void **)&segmentData, &segmentSize);
+		segment->getData((char **)&segmentData, &segmentSize);
 		if(startIdx < 0)
 		{
 			int leftSize = segmentSize - currSegmentSize;
@@ -360,7 +360,7 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			segment->setCurrDataSize(currSegmentSize + dataSize);
 			if(timestamped)
 			{	
-				void *endPtr;
+				char *endPtr;
 				int endSize;
 				segment->appendTimestamp(timestamp);
 				segment->getEnd(&endPtr, &endSize);
@@ -421,7 +421,7 @@ int SharedDataManager::updateSegment(int nid, int idx, char *start, int startSiz
 		}
 		segment = nodeData->getSegmentAt(idx);
 
-		void *currPtr;
+		char *currPtr;
 		int currSize;
 		segment->getStart(&currPtr, &currSize);
 		if(currSize > 0)
@@ -476,9 +476,9 @@ int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *sta
 		}
 		segment = nodeData->getSegmentAt(idx);
 
-		segment->getStart((void **)start, startSize);
+		segment->getStart((char **)start, startSize);
 
-		segment->getEnd((void **)end, endSize);
+		segment->getEnd((char **)end, endSize);
 		*timestamped = segment->isTimestamped();
 
 		lock.unlock();
@@ -510,9 +510,9 @@ int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize
 		}
 		segment = nodeData->getSegmentAt(idx);
 
-		segment->getDim((void **)dim, dimSize);
-		segment->getData((void **)data, dataSize);
-		segment->getShape((void **)shape, shapeSize);
+		segment->getDim((char **)dim, dimSize);
+		segment->getData((char **)data, dataSize);
+		segment->getShape((char **)shape, shapeSize);
 		*currDataSize = segment->getCurrDataSize();
 		*timestamped = segment->isTimestamped();
 
@@ -548,7 +548,7 @@ void SharedDataManager::callCallback(int nid)
  void *SharedDataManager::setCallback(int nid, void (*callback)(int))
 {
 
-	void *retPtr = NULL;
+	char *retPtr = NULL;
 	int status = 0;
 	lock.lock();
 	SharedMemNode *retNode = sharedTree.find(nid);
@@ -570,11 +570,12 @@ void SharedDataManager::callCallback(int nid)
 		CallbackManager *callbackManager = (CallbackManager *)freeSpaceManager.allocateShared(sizeof(CallbackManager));
 		CallbackManager *prevCallbackManager = retNode->getCallbackManager();
 		if(prevCallbackManager)
-			prevCallbackManager->setPrev(callbackManager);
-		callbackManager->setNext(retNode->getCallbackManager());
+			prevCallbackManager->setPrev((char *)callbackManager);
+		callbackManager->setNext((char *)retNode->getCallbackManager());
 		callbackManager->setPrev(NULL);
 		retNode->setCallbackManager(callbackManager);
 		callbackManager->initialize(nid, callback);
+		setWarm(nid, true);
 		lock.unlock();
 		return callbackManager;
 	}
@@ -585,7 +586,7 @@ void SharedDataManager::callCallback(int nid)
 	}
 }
 
- int SharedDataManager::clearCallback(int nid, void *callbackDescr)
+ int SharedDataManager::clearCallback(int nid, char *callbackDescr)
 {
 	int status = 0;
 	CallbackManager *callbackManager = (CallbackManager *)callbackDescr;
@@ -603,9 +604,9 @@ void SharedDataManager::callCallback(int nid)
 			CallbackManager *next = callbackManager->getNext();
 			CallbackManager *prev = callbackManager->getPrev();
 			if(prev)
-				prev->setNext(next);
+				prev->setNext((char *)next);
 			if(next)
-				next->setPrev(prev);
+				next->setPrev((char *)prev);
 		}
 		freeSpaceManager.freeShared((char *)callbackManager, sizeof(CallbackManager));
 		status = 1;
@@ -635,30 +636,41 @@ SharedMemNodeData *SharedDataManager::getNodeData(int nid, bool create)
 
 
 //Cache coerency methods
-void SharedDataManager::getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp)
+void SharedDataManager::getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
 {
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
-	isOwner = nodeData->isOwner;
-	ownerIdx = nodeData->owner;
-	isWarm = nodeData->isWarm;
-	timestamp = nodeData->ownerTimestamp;
+	if(nodeData)
+		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, isDirty, timestamp);
+
 }
 
-
+	
 void SharedDataManager::getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
-		char * &warmList, int &numWarm)
+		char * &warmList, int &numWarm, char *&readerList, int &numReader)
 {
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
-	isOwner = nodeData->isOwner;
-	ownerIdx = nodeData->owner;
-	isWarm = nodeData->isWarm;
-	timestamp = nodeData->ownerTimestamp;
-	numWarm = nodeData->numWarmNodes;
-	if(numWarm > 0)
-	{
-		warmList = new char[numWarm];
-		memcpy(warmList, nodeData->warmNodes, numWarm);
-	}
+	if(nodeData)
+		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, timestamp, warmList, numWarm, readerList, numReader);
+
+}
+
+	
+void SharedDataManager::addReader(int nid, int readerIdx)
+{
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		nodeData->addReader(readerIdx);
+	lock.unlock();
+}
+
+void  SharedDataManager::addWarm(int nid, int warmIdx)
+{
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		nodeData->addWarm(warmIdx);
+	lock.unlock();
 }
 
 void SharedDataManager::setOwner(int nid, int ownerIdx, int timestamp)
@@ -666,29 +678,18 @@ void SharedDataManager::setOwner(int nid, int ownerIdx, int timestamp)
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
 	if(nodeData)
-	{
-		nodeData->owner = ownerIdx;
-		nodeData->isOwner = false;
-		nodeData->ownerTimestamp = timestamp;
-	}
+		nodeData->setOwner(ownerIdx, timestamp);
 	lock.unlock();
 }
 
-
-void SharedDataManager::setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, 
-										 int timestamp, char *warmList, int numWarm)
+void SharedDataManager::setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
+		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
 	if(nodeData)
-	{
-		nodeData->owner = ownerIdx;
-		nodeData->isOwner = isOwner;
-		nodeData->isWarm = isWarm;
-		nodeData->ownerTimestamp = timestamp;
-		nodeData->numWarmNodes = numWarm;
-		memcpy(nodeData->warmNodes, warmList, numWarm);
-	}
+		nodeData->setCoherencyInfo(isOwner, ownerIdx, isWarm, timestamp,warmNodes, numWarmNodes, 
+			readerNodes, numReaderNodes);
 	lock.unlock();
 }
 
@@ -697,14 +698,80 @@ void SharedDataManager::setWarm(int nid, bool warm)
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
 	if(nodeData)
-	{
-		nodeData->isWarm = warm;
-	}
+		nodeData->setWarm(warm);
 	lock.unlock();
 }
 
 bool SharedDataManager::isWarm(int nid)
 {
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
-	return nodeData->isWarm;
+	if(nodeData)
+		return nodeData->isWarm;
+	return false;
 }
+
+void SharedDataManager::setDirty(int nid, bool isDirty)
+{
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		nodeData->setDirty(isDirty);
+	lock.unlock();
+}
+
+
+Event *SharedDataManager::getDataEvent(int nid)
+{
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		return nodeData->getDataEvent();
+	return NULL;
+}
+
+int SharedDataManager::getSerializedSize(int nid)
+{
+	int size = 0;
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		size =  nodeData->getSerializedSize();
+	lock.unlock();
+	return size;
+}
+
+void SharedDataManager::getSerialized(int nid, char *serialized)
+{
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	if(nodeData)
+		nodeData->getSerialized(serialized);
+	lock.unlock();
+}
+
+void SharedDataManager::setSerializedData(int nid, char *serializedData, int dataLen)
+{
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(nid);
+
+	if(!node) 
+	//No data has been written in the cache yet
+	{
+		SharedMemNodeData nodeData;
+		nodeData.setNid(nid);
+		sharedTree.insert(&nodeData);
+		node = sharedTree.find(nid);
+	}
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		nodeData->free(&freeSpaceManager);
+		nodeData->initialize(serializedData, &freeSpaceManager);
+		CallbackManager *callback = node->getCallbackManager();
+		if(callback)
+			callback->callCallback();
+	}
+	lock.unlock();
+}
+
+
+

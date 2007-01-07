@@ -41,13 +41,13 @@ public:
 	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx);
 	int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, void *timestamp, int startIdx);
+										 int dataSize, int idx, char *timestamp, int startIdx);
 
 
 	int flush();
 
 	void * setCallback(int nid, void (* callback)(int));
-	int clearCallback(int nid, void *callbackManager);	
+	int clearCallback(int nid, char *callbackManager);	
 	void setWarm(int nid, bool warm);
 
 	void startServer();

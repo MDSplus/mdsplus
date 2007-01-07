@@ -14,7 +14,14 @@
 #endif
 #include "Runnable.h"
 
-extern "C" void handler(Runnable *);
+struct  WithArg{
+	Runnable *rtn;
+	void *arg;
+};
+
+
+
+extern  "C" void handlerWithArg(WithArg *);
 
 class Thread
 {
@@ -28,10 +35,9 @@ class Thread
 #endif
 #endif
 public:
-	void start(Runnable *rtn);
-
-	friend void handler(Runnable *rtn);
+	void start(Runnable *rtn, void *arg);
+	friend void handlerWithArg(WithArg *rtn);
 };
 
-#endif
 
+#endif

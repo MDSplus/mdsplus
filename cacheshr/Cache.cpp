@@ -1,81 +1,84 @@
 #include "Cache.h"
-//#include "CoherencyManager.h"
+#include "CoherencyManager.h"
 
-extern "C" void *getCache();
-extern "C" int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr);
-extern "C" int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr);
+extern "C" char *getCache();
+extern "C" int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
+extern "C" int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
 extern "C" int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
-						char timestamped, int writeThrough, void *cachePtr);
+						char timestamped, int writeThrough, char *cachePtr);
 extern "C" int handleSegmentInternal(int nid);
 extern "C" int beginSegmentInternal(int nid, int idx, char *start, char *end, char *dim, char *data);
 extern "C" int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
-							 int dimSize, int writeThrough, void *cachePtr);
-extern "C" int getNumSegments(int nid, int *numSegments, void *cachePtr);
-extern "C" int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, void *cachePtr);
+							 int dimSize, int writeThrough, char *cachePtr);
+extern "C" int getNumSegments(int nid, int *numSegments, char *cachePtr);
+extern "C" int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
 extern "C" int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-							  int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr);
-extern "C" int isSegmented(int nid, int *segmented, void *cachePtr);
-extern "C" int flushTree(void *cachePtr);
+							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
+extern "C" int isSegmented(int nid, int *segmented, char *cachePtr);
+extern "C" int flushTree(char *cachePtr);
 extern "C" void *setCallback(int nid, void (* callback)(int), void *cachePtr);
-extern "C" int clearCallback(int nid, void *callbackDescr, void *cachePtr);
+extern "C" int clearCallback(int nid, char *callbackDescr, void *cachePtr);
 extern "C" int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *cachePtr);
+										 int dataSize, int idx, int startIdx, char *cachePtr);
 extern "C" int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr);
+										 int dataSize, int idx, int startIdx, char *timestamp, char *cachePtr);
 
-static void *cache = 0;
+static char *cache = 0;
 
-void *getCache()
+char *getCache()
 {
 	LockManager lock(CACHE_LOCK);
 	lock.lock();
 	if(!cache)
-		cache = (void *)new Cache();
+	{
+		cache = (char *)new Cache();
+		((Cache *)cache)->startServer();
+	}
 	lock.unlock();
 	return cache;
 }
 
 
 
-int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr)
+int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->putRecord(nid, dataType, numSamples, data, size, writeThrough);
 }
 
-int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr)
+int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->getRecord(nid, dataType, numSamples, data, size);
 }
 
 int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
-									char timestamped, int writeThrough, void *cachePtr)
+									char timestamped, int writeThrough, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->beginSegment(nid, idx, start, startSize, end, endSize, dim, dimSize, shape, shapeSize, data, 
 			dataSize, timestamped, writeThrough);
 }
 
 int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
-				  int writeThrough, void *cachePtr)
+				  int writeThrough, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->updateSegment(nid, idx, start, startSize, end, endSize, dim, dimSize, writeThrough);
 }
 
 
-int getNumSegments(int nid, int *numSegments, void *cachePtr)
+int getNumSegments(int nid, int *numSegments, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->getNumSegments(nid, numSegments);
 }
 
-int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped, void *cachePtr)
+int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->getSegmentLimits(nid, idx, start, startSize, end, endSize, timestamped);
 }
 
 int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-				   int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr)
+				   int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr)
 {
 	bool boolTimestamped;
 	int status;
@@ -85,13 +88,13 @@ int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int 
 	return status;
 }
 
-int isSegmented(int nid, int *segmented, void *cachePtr)
+int isSegmented(int nid, int *segmented, char *cachePtr)
 
 {
 	return ((Cache *)cachePtr)->isSegmented(nid, segmented);
 }
 
-int flushTree(void *cachePtr)
+int flushTree(char *cachePtr)
 {
 	return ((Cache *)cachePtr)->flush();
 }
@@ -101,19 +104,19 @@ void *setCallback(int nid, void (* callback)(int), void *cachePtr)
 	return ((Cache *)cachePtr)->setCallback(nid, callback);
 }
 
-int  clearCallback(int nid, void *callbackDescr, void *cachePtr)
+int  clearCallback(int nid, char *callbackDescr, void *cachePtr)
 {
 	return ((Cache *)cachePtr)->clearCallback(nid, callbackDescr);
 }
 
 int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *cachePtr)
+										 int dataSize, int idx, int startIdx, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, startIdx);
 }
 
 int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr)
+										 int dataSize, int idx, int startIdx, char *timestamp, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->appendTimestampedSegmentData(nid, bounds, boundsSize, data, dataSize, 
 		idx, timestamp, startIdx);
@@ -230,7 +233,7 @@ int Cache::appendSegmentData(int nid, int *bounds, int boundsSize, char *data,
 
 
 int Cache::appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, void *timestamp, int startIdx)
+										 int dataSize, int idx, char *timestamp, int startIdx)
 {
 	return dataManager.appendSegmentData(nid, bounds, boundsSize, data, dataSize, idx, 
 		startIdx, true, timestamp);
@@ -315,7 +318,7 @@ void *Cache::setCallback(int nid, void (* callback)(int))
 }
 
 
-int Cache::clearCallback(int nid, void *callbackDescr)
+int Cache::clearCallback(int nid, char *callbackDescr)
 {
 	return dataManager.clearCallback(nid, callbackDescr);
 }
@@ -324,8 +327,8 @@ int Cache::clearCallback(int nid, void *callbackDescr)
 
 void Cache::startServer()
 {
-	//CoherencyManager *cManager = new CoherencyManager(&dataManager);
-	//cManager->startServer();
+	CoherencyManager *cManager = new CoherencyManager(&dataManager);
+	cManager->startServer();
 }
 
 void Cache::setWarm(int nid, bool warm)

@@ -21,7 +21,7 @@ void TreeWriter::setDataManager(SharedDataManager *dataManager)
 
 void TreeWriter::start()
 {
-	worker.start(this);
+	worker.start(this, 0);
 }
 
 void TreeWriter::addPutRecord(int nid)
@@ -59,7 +59,7 @@ void TreeWriter::addNid(int nid, int idx, char mode)
 	nidEvent.signal();
 }
 
-void TreeWriter::run()
+void TreeWriter::run(void *arg)
 {
 	int writeNid, writeIdx, writeMode;
 	char dataType;

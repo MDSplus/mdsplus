@@ -37,7 +37,7 @@ public:
 	void addUpdateSegment(int nid, int idx);
 	void addPutSegment(int nid, int idx);
 	void addNid(int nid, int idx, char mode);
-	void run();
+	void run(void *arg);
 };
 
 #endif

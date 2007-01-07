@@ -1,7 +1,7 @@
 #include "SharedMemManager.h"
 #include <stdio.h>
 #ifdef HAVE_WINDOWS_H
-void *SharedMemManager::initialize(int size)
+char *SharedMemManager::initialize(int size)
 {
 
 	if(startAddress) return startAddress; //Already mapped
@@ -25,7 +25,7 @@ void *SharedMemManager::initialize(int size)
 			return  NULL;
 	}
 
-	startAddress =  MapViewOfFile(hFile, FILE_MAP_WRITE, 0, 0, 0);
+	startAddress =  (char *)MapViewOfFile(hFile, FILE_MAP_WRITE, 0, 0, 0);
 	if(!startAddress)
 	{
 		DWORD error = GetLastError();
@@ -33,24 +33,24 @@ void *SharedMemManager::initialize(int size)
 	}
 	return startAddress;
 }
-void *SharedMemManager::startAddress;
+char *SharedMemManager::startAddress;
 
 #else
 #ifdef HAVE_VXWORKS_H
 
-void *SharedMemManager::initialize(int size)
+char *SharedMemManager::initialize(int size)
 {
 	this->size = size;
 	if(startAddress) return startAddress; //Already mapped
 
-	startAddress = (void *)malloc(size);
+	startAddress = (char *)malloc(size);
 
 	return startAddress;
 }
-void *SharedMemManager::startAddress;
+char *SharedMemManager::startAddress;
 
 #else
-void *SharedMemManager::initialize(int size)
+char *SharedMemManager::initialize(int size)
 {
 	this->size = size;
 	if(startAddress) return startAddress; //Already mapped
@@ -69,14 +69,14 @@ void *SharedMemManager::initialize(int size)
 	     exit(0); //Fatal error
 	}  
 	startAddress = shmat(shmid, NULL, 0);
-	if(startAddress == (void *)-1)
+	if(startAddress == (char *)-1)
 	{
 	    perror("Cannot attach to shared memory");
 	     exit(0); //Fatal error
 	}  
 	return startAddress;
 }
-void *SharedMemManager::startAddress;
+char *SharedMemManager::startAddress;
 
 
 #endif

@@ -3,6 +3,6 @@
 class Runnable
 {
 public: 
-	virtual void run() = 0;
+	virtual void run(void *arg) = 0;
 };
 #endif

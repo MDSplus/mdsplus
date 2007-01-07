@@ -22,7 +22,9 @@
 #include "SharedMemManager.h"
 #include "SharedMemTree.h"
 #include "CallbackManager.h"
-//#include "DataSlot.h"
+#include "Event.h"
+#include "Thread.h"
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -33,9 +35,6 @@
 #define BAD_TYPE 10
 
 
-
-
-
 #define DEFAULT_SIZE 500000
 
 class SharedDataManager
@@ -44,7 +43,7 @@ private:
 	SharedMemNodeData *getNodeData(int nid, bool create);
 
 public:
-    static void *startAddress; //Initial address of the associetd Memory Zone
+    static char *startAddress; //Initial address of the associetd Memory Zone
 	static int size;		//The size in bytes of the associated Shared Memory Zone
 	static FreeSpaceManager freeSpaceManager; //The manager of free space
 	static SharedMemManager sharedMemManager; //The manager of shared memory allocation
@@ -72,24 +71,32 @@ public:
 	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped);
 	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, bool timestamped, void *timestamp);
+										 int dataSize, int idx, int startIdx, bool timestamped, char *timestamp);
 
 	void *setCallback(int nid, void (*callback)(int));   //Associate a callback with the nid
-	int clearCallback(int nid, void *callbackDescr);	 //Remove the callback from the nid
+	int clearCallback(int nid, char *callbackDescr);	 //Remove the callback from the nid
 	void callCallback(int nid);							 //Call all callbacks associated with the nid
 	void append(int nid, char *data, int size);			 //Append a new data item
 	void *allocateShared(int size) {return freeSpaceManager.allocateShared(size); }
 	void freeShared(char *addr, int size) {freeSpaceManager.freeShared(addr, size); }
 
 //Cache coerency methods
-	void getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp);
+	void getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp);
 	void getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
-		char * &warmList, int &numWarm);
+		char * &warmList, int &numWarm, char *&readerList, int &numReaders);
+	void addReader(int nid, int readerIdx);
+	void addWarm(int nid, int readerIdx);
 	void setOwner(int nid, int ownerIdx, int timestamp);	
-	void setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp, char *warmList, int numWarm);
+	void setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
+		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes);
 	void setWarm(int nid, bool warm);
 	bool isWarm(int nid);
+	void setDirty(int nid, bool isDirty);
+	Event *getDataEvent(int nid);
 
+	int getSerializedSize(int nid);
+	void getSerialized(int nid, char *serialized);
+	void setSerializedData(int nid, char *serializedData, int dataLen);
 };
 
 #endif	

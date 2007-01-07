@@ -77,7 +77,7 @@ FreeSpaceManager::FreeDescriptor *FreeSpaceManager::getDescriptor() //Get a free
 	}
 
 
-	void *FreeSpaceManager::allocateShared(int size) //Find first suitable free space. Return NULL if not found
+	char *FreeSpaceManager::allocateShared(int size) //Find first suitable free space. Return NULL if not found
 	{
 		char *retAddr;
 		FreeDescriptor *currDsc, *prevDsc;

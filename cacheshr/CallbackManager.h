@@ -8,14 +8,14 @@ class CallbackManager
 	Notifier notifier;
 
 public:
-	void setNext(void *nxt)
+	void setNext(char *nxt)
 	{
 		if(nxt == NULL)
 			next = 0;
 		else
 			next = (long)nxt - (long)this;
 	}
-	void setPrev(void *prv)
+	void setPrev(char *prv)
 	{
 		if(prv == NULL)
 			prev = 0;

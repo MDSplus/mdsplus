@@ -55,7 +55,7 @@ public:
 	void releaseDescriptor(FreeDescriptor *dsc);
 	void initialize(char *startAddr, int size);
 	void map(char *startAddress);
-	void *allocateShared(int size); 
+	char *allocateShared(int size); 
 	void freeShared(char *addr, int size);
 	void print();
 };

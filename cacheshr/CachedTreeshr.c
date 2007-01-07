@@ -21,27 +21,27 @@
 
 #define MAX_BOUND_SIZE 512
 
-extern void *getCache();
-extern int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, void *cachePtr);
-extern int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, void *cachePtr);
+extern char *getCache();
+extern int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
+extern int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 extern int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
-extern int flushTree(void *cachePtr);
-extern void *setCallback(int nid, void (* callback)(int), void *cachePtr);
-extern int clearCallback(int nid, void *callbackDescr, void *cachePtr);
+extern int flushTree(char *cachePtr);
+extern char *setCallback(int nid, void (* callback)(int), char *cachePtr);
+extern int clearCallback(int nid, char *callbackDescr, char *cachePtr);
 extern int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
 						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, char timestamped,  
-						int writeThrough, void *cachePtr);
+						int writeThrough, char *cachePtr);
 extern int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
-						 int dimSize, int writeThrough, void *cachePtr);
-extern int getNumSegments(int nid, int *numSegments, void *cachePtr);
-extern int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, void *cachePtr, char *timestamped);
+						 int dimSize, int writeThrough, char *cachePtr);
+extern int getNumSegments(int nid, int *numSegments, char *cachePtr);
+extern int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *cachePtr, char *timestamped);
 extern int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, 
-						  int *dataSize,char **shape, int *shapeSize, int *currDataSize, char *timestamped, void *cachePtr);
-extern int isSegmented(int nid, int *segmented, void *cachePtr);
+						  int *dataSize,char **shape, int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
+extern int isSegmented(int nid, int *segmented, char *cachePtr);
 extern int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *cachePtr);
+										 int dataSize, int idx, int startIdx, char *cachePtr);
 extern int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, void *timestamp, void *cachePtr);
+										 int dataSize, int idx, int startIdx, char *timestamp, char *cachePtr);
 
 extern int TdiCompile();
 extern int TdiData();
@@ -139,7 +139,7 @@ static void printVarContent(char *var)
 
 
 
-static void *cache;
+static char *cache;
 
 //Return Shape and type information. The coding is the following:
 //1) data type
@@ -351,7 +351,7 @@ EXPORT int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 
 	if(!cache) cache = getCache();
 
 	getDataTypeAndShape(dataD, bounds, &boundsSize);
-	status = appendTimestampedSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  &timestamp, cache);
+	status = appendTimestampedSegmentData(nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  (char *)&timestamp, cache);
 	return status;
 }
 
@@ -371,7 +371,7 @@ EXPORT int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, stru
 	DESCRIPTOR_A_COEFF(arrayD, 0, 0, 0, (unsigned char )256, 0);
 	int *boundsPtr;
 	int currDim;	
-	DESCRIPTOR_A(dimD, 8, DTYPE_OU, 0, 0);
+	DESCRIPTOR_A(dimD, 8, DTYPE_QU, 0, 0);
 
 
 	if(!cache) cache = getCache();
@@ -422,7 +422,7 @@ EXPORT int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStar
 	MdsSerializeDscIn((char *)start, retStart);
 	if(timestamped)
 	{
-		struct descriptor endD = {8, DTYPE_OU, CLASS_S, 0};
+		struct descriptor endD = {8, DTYPE_QU, CLASS_S, 0};
 		endD.pointer = end;
 		MdsCopyDxXd(&endD, retEnd);
 	}
@@ -480,13 +480,13 @@ EXPORT int RTreeFlush()
 }
 
 
-EXPORT void *RTreeSetCallback(int nid, void (*callback)(int))
+EXPORT char *RTreeSetCallback(int nid, void (*callback)(int))
 {
 	if(!cache) cache = getCache();
 	return setCallback(nid, callback, cache);
 }
 
-EXPORT int RTreeClearCallback(int nid, void *callbackDescr)
+EXPORT int RTreeClearCallback(int nid, char *callbackDescr)
 {
 	if(!cache) cache = getCache();
 	return clearCallback(nid, callbackDescr, cache);
