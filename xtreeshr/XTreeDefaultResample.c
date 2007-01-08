@@ -14,7 +14,42 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiEvaluate();
 
-EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descriptor *startD, struct descriptor *endD, 
+
+//The default resample handles floating point times
+static void convertTimebaseToFloat(struct descriptor_signal *inSignalD, struct descriptor_xd *outXd)
+{
+	struct descriptor_a *currDim;
+	_int64u *ptr64;
+	double *outDoubles;
+	int numSamples, i;
+	DESCRIPTOR_A(doubleDimD, 8, DTYPE_DOUBLE, 0, 0);
+
+	currDim = (struct descriptor_a *)inSignalD->dimensions[0];
+	if(currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype ==DTYPE_QU)) 
+	{//conversion needed
+		outDoubles = (double *)malloc(currDim->arsize);
+		doubleDimD.pointer = (char *)outDoubles;
+		doubleDimD.arsize = currDim->arsize;
+		ptr64 = (_int64u *)currDim->pointer;
+		numSamples = currDim->arsize / currDim->length;
+		for(i = 0; i < numSamples; i++)
+			MdsTimeToDouble(ptr64[i], &outDoubles[i]);
+		inSignalD->dimensions[0] = (struct descriptor *)&doubleDimD;
+		MdsCopyDxXd((struct descriptor *)inSignalD, outXd);
+		inSignalD->dimensions[0] = (struct descriptor *)currDim;
+		free((char *)outDoubles);
+	}
+	else
+	{
+		MdsCopyDxXd((struct descriptor *)inSignalD, outXd);
+	}
+}
+
+
+
+
+
+EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
 						 struct descriptor *minDeltaD, struct descriptor_xd *outSignalXd)
 {
 	char resampleExpr[64];
@@ -23,12 +58,21 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descri
 	EMPTYXD(minXd);
 	EMPTYXD(maxXd);
 	EMPTYXD(compiledXd);
+	EMPTYXD(signalXd);
 	
 	int status;
 	char toResample = 0;
 	char isLess;
 	int varCount;
+	struct descriptor_signal *signalD;
 //Check whether resampling is needed
+
+
+//This version cannot handle 64 bit time format for timebases
+	convertTimebaseToFloat(inSignalD, &signalXd);
+	signalD = (struct descriptor_signal *)signalXd.pointer;
+
+
 
 	if(minDeltaD)
 		toResample = 1;
@@ -37,9 +81,17 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descri
 		if(startD)
 		{	
 			status = getMinMax(signalD->dimensions[0], 1, &minXd);
-			if(!(status & 1)) return status;
+			if(!(status & 1))
+			{
+				MdsFree1Dx(&signalXd, 0);
+				return status;
+			}
 			status = lessThan(minXd.pointer, startD, &isLess);
-			if(!(status & 1)) return status;
+			if(!(status & 1))
+			{
+				MdsFree1Dx(&signalXd, 0);
+				return status;
+			}
 			if(isLess)
 				toResample = 1;
 			MdsFree1Dx(&minXd, 0);
@@ -47,9 +99,17 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descri
 		if(!toResample && endD)
 		{	
 			status = getMinMax(signalD->dimensions[0], 0, &maxXd);
-			if(!(status & 1)) return status;
+			if(!(status & 1))	
+			{
+				MdsFree1Dx(&signalXd, 0);
+				return status;
+			}
 			status = lessThan(endD, maxXd.pointer, &isLess);
-			if(!(status & 1)) return status;
+			if(!(status & 1))
+			{
+				MdsFree1Dx(&signalXd, 0);
+				return status;
+			}
 			if(isLess)
 				toResample = 1;
 			MdsFree1Dx(&maxXd, 0);
@@ -58,6 +118,7 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descri
 	if(!toResample)
 	{
 		status = MdsCopyDxXd((struct descriptor *)signalD, outSignalXd);
+		MdsFree1Dx(&signalXd, 0);
 		return status;
 	}
 	//No way, need resampling here
@@ -103,7 +164,11 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *signalD, struct descri
 			status = TdiCompile(&resampleExprD, signalD, startD, endD, minDeltaD, &compiledXd MDS_END_ARG);
 			break;
 	}
-	if(!(status & 1)) return status;
+	if(!(status & 1))
+	{
+		MdsFree1Dx(&signalXd, 0);
+		return status;
+	}
 	status = TdiEvaluate(&compiledXd, outSignalXd MDS_END_ARG);
 	MdsFree1Dx(&compiledXd, 0);
 	return status;

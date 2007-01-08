@@ -5,11 +5,15 @@
 #include <mds_stdarg.h>
 #include <mdsshr.h>
 
+#ifdef HAVE_WINDOWS_H
+#define EXPORT __declspec(dllexport)
+#endif
+
 extern int TdiData();
 extern int TdiFloat();
 //Convert a time expression to 64 bit integer 
 
-int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
+EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
 {	
 
 	int status;
@@ -26,7 +30,7 @@ int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
 		return 0;//InvalidTimeFormat
 	}
 
-	if(xd.pointer->dtype == DTYPE_Q && xd.pointer->dtype == DTYPE_QU)
+	if(xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU)
 	{
 		*retTime = *(_int64 *)xd.pointer->pointer;
 		MdsFree1Dx(&xd, 0);
