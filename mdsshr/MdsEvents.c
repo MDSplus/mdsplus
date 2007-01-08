@@ -6,9 +6,8 @@
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
 #include <sys/types.h>
-#if defined(linux)
 #define USE_PIPED_MESSAGING 1
-#endif
+#include <limits.h>
 #endif
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
@@ -910,6 +909,12 @@ STATIC_ROUTINE int attachSharedInfo()
     return 0;
 }
 
+#ifdef USE_PIPED_MESSAGING
+STATIC_ROUTINE void setKeyPath(char *path, int key)
+{
+    sprintf(path,"/tmp/MdsEvent.%d",key);
+}
+#endif
 
 
 
@@ -917,12 +922,14 @@ STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
 {
     struct EventMessage message;
     int status; 
-    LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
 
 #ifdef USE_PIPED_MESSAGING
-    if((status = read(msgId, &message, sizeof(message))) != sizeof(message)) {
+   if((status = read(msgId, &message, sizeof(message))) != sizeof(message)) {
        /* status will be first the size of the message, then 0 for the pipe closing and then -1 */
        /* we can return -1 when it goes to 0 */
+       /* lets not report pipe closing as an error though */
+        if (status == -1)
+           perror("readMessage error");
         status = status ? status : -1 ;
     } else {
 #else /* ! USE_PIPED_MESSAGING */
@@ -937,14 +944,13 @@ STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
 	if(message.length > 0)
 	    memcpy(data, message.data, message.length);
     }
+	/* fprintf(stderr,"Got event %s with message %s\n", event_name, data); */
 #ifndef USE_PIPED_MESSAGING
     else if (errno == EINTR)
       status = EINTR;
     }
 #endif
-    UnlockMdsShrMutex(&msgIdMutex);
-    if (status == -1)
-       perror("readMessage error");
+
     return status;
 }
 
@@ -957,62 +963,52 @@ STATIC_ROUTINE int readMessage(char *event_name, int *data_len, char *data)
 #undef select
 #endif
 
-#ifdef USE_PIPED_MESSAGING
-STATIC_ROUTINE void setKeyPath(char *path, int key)
-{
-    sprintf(path,"/tmp/MdsEvent.%d",key);
-}
-#endif
 
 STATIC_ROUTINE void setHandle()
 {
    pthread_t thread;
-   if(!msgId)
-    {
+   LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
+   if(!msgId) {
 #ifdef USE_PIPED_MESSAGING
-      char keypath[PATH_MAX];
-      mode_t um;
+     char keypath[PATH_MAX];
+     mode_t um;
       
-      LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
-      um = umask(0);
-      setKeyPath(keypath,msgKey);
-      while (mkfifo(keypath,0777) == -1) {
-        if (errno == EEXIST)
-	{
-          msgId = open(keypath, O_WRONLY | O_NONBLOCK);   /* Make sure someone has this fifo open */
-          if (msgId == -1 && errno == ENXIO) break; /* Nope, reuse this one */
-          close(msgId); /* Somebody else, don't use it */
-          setKeyPath(keypath,++msgKey);
-        }
-        else
-	{
- 	   perror("Fatal error with MdsEvent pipes");
-           exit(errno);
-        }
-      }
-      /* don't block on open */
-#ifdef linux
-      msgId = open(keypath, O_RDWR);
-#else
-      msgId = open(keypath, O_RDONLY | O_NONBLOCK);
-      /* block on next read */
-      fcntl(msgId, F_SETFL, 0);
-#endif
-      umask(um);
+     um = umask(0);
+     setKeyPath(keypath,msgKey);
+     while (mkfifo(keypath,0666) == -1) {
+       if (errno == EEXIST) {
+	 msgId = open(keypath, O_WRONLY | O_NONBLOCK);   /* Make sure someone has this fifo open */
+	 if (msgId == -1 && errno == ENXIO) {
+	   struct stat statbuf;
+	   int istat=stat(keypath,&statbuf);
+	   if ((time(NULL) - statbuf.st_atime) > 60)
+	     break; /* Old one, reuse this one */
+	 }
+	 if (msgId == -1 && errno == ENXIO) break; /* Nope, reuse this one */
+	 close(msgId); /* Somebody else, don't use it */
+	 setKeyPath(keypath,++msgKey);
+       }
+       else {
+	 perror("Fatal error with MdsEvent pipes");
+	 exit(errno);
+       }
+     }
+     msgId=-1;
+     umask(um);
 #else 
-	/* get first unused message queue id */
-	while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
-	  if (errno == EEXIST)
-	    msgKey++;
-	  else {
-	    perror("setHandle:msgget fail - check MSGMNI");
-            break;
-	  }
+     /* get first unused message queue id */
+     while((msgId = msgget(msgKey, 0777 | IPC_CREAT | IPC_EXCL)) == -1)
+       if (errno == EEXIST)
+	 msgKey++;
+       else {
+	 perror("setHandle:msgget fail - check MSGMNI");
+	 break;
+       }
 #endif
-	if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
-	    perror("setHandle:pthread_create");
-      UnlockMdsShrMutex(&msgIdMutex);
-    } 
+     if(pthread_create(&thread, pthread_attr_default, handleMessage, 0) !=  0)
+       perror("setHandle:pthread_create");
+   } 
+   UnlockMdsShrMutex(&msgIdMutex);
 }
 
 STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
@@ -1128,13 +1124,12 @@ STATIC_ROUTINE void releaseMessages()
 
 
 #ifdef USE_PIPED_MESSAGING    
-    /* DTG... I don't understand the purpose of the thread_join,
-       but it does crash MacOS X if not initialized */
     if (local_thread) {
         pthread_join(local_thread, &dummy);
         local_thread = 0;
     }
     
+	
     /* I think it is true that when msgId is set so is msgKey */
     close(msgId);
     setKeyPath(keypath,msgKey);
@@ -1256,6 +1251,24 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
     int data_len;
     char data[MAX_DATA_LEN];
     struct AstDescriptor *arg_d;
+
+	    
+
+#ifdef USE_PIPED_MESSAGING
+#if  defined(__APPLE__) || defined(linux)
+	/* this will block.. until the first writer! */
+    while(1) {
+	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
+    { 
+		char keypath[PATH_MAX];
+		setKeyPath(keypath,msgKey);
+		/* this will block.. until the first writer! */
+		msgId = open(keypath, O_RDONLY);
+	}
+	UnlockMdsShrMutex(&msgIdMutex);
+#endif
+#endif
+
     while(1)
     {	
 	if(readMessage(event_name, &data_len, data) != -1)
@@ -1285,7 +1298,9 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
             UnlockMdsShrMutex(&privateMutex);
 	}
 	else
-	    return NULL;
+	    break;
+    }
+    close(msgId);
     }
     return NULL;
 }
