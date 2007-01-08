@@ -2,7 +2,10 @@
 #include <winsock2.h>
 #include <windows.h>
 #else
-#include <socket.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 #endif
 
 
@@ -76,7 +79,11 @@ void TCPServer::run(void *arg)
 	while(true)
 	{
 		int socket = accept(socket, NULL, NULL);
+#ifdef HAVE_WINDOWS_H
 		if(socket == INVALID_SOCKET)
+#else
+		if(socket == -1)
+#endif
 		{   
 			printf("Cannot accept socket \n");
 			return;
@@ -199,9 +206,13 @@ bool TCPChannel::connectReceiver(ChannelAddress *address)
 	memset((char *)&retAddress, 0, addrSize);
 	inAddress.sin_family = AF_INET;
 	inAddress.sin_port = htons(port);
+#ifdef HAVE_WINDOWS_H
 	inAddress.sin_addr.s_addr = ADDR_ANY;
-
 	if(bind(tcpSocket, (SOCKADDR *)&inAddress, addrSize) != 0)
+#else
+	inAddress.sin_addr.s_addr = INADDR_ANY;
+	if(bind(tcpSocket, (struct sockaddr *)&inAddress, addrSize) != 0)
+#endif
 	{   
 		printf("Cannot bind socket at port %d\n", port);
 		return false;

@@ -68,7 +68,7 @@ char *SharedMemManager::initialize(int size)
 	    perror("Cannot create shared memory");
 	     exit(0); //Fatal error
 	}  
-	startAddress = shmat(shmid, NULL, 0);
+	startAddress = (char *)shmat(shmid, NULL, 0);
 	if(startAddress == (char *)-1)
 	{
 	    perror("Cannot attach to shared memory");

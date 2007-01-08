@@ -259,12 +259,13 @@ class SharedMemNodeData
 	void setCoherencyInfo(bool isOwner, int ownerIdx, bool isWarm, int timestamp,
 		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes)
 	{
+		int i;
 		this->owner = isOwner;
 		this->ownerIdx = ownerIdx;
 		this->warm = isWarm;
 		this->ownerTimestamp = timestamp;
 		this->numWarmNodes = numWarmNodes;
-		for(int i = 0; i < numWarmNodes; i++)
+		for(i = 0; i < numWarmNodes; i++)
 			this->warmNodes[i] = warmNodes[i];
 		this->numReaderNodes = numReaderNodes;
 		for(i = 0; i < numReaderNodes; i++)
@@ -275,7 +276,7 @@ class SharedMemNodeData
 	{
 		this->warm = warm;
 	}
-	bool isWarm(int nid)
+	bool isWarm()
 	{
 		return warm;
 	}
@@ -324,7 +325,7 @@ class SharedMemNodeData
 			currOfs += 4;
 			for(int i = 0; i < numSegments; i++)
 			{
-				int currSize = *(int *)serialized[currOfs];
+				int currSize = *(int *)&serialized[currOfs];
 				if(forceConversion)
 					swapBytes((char *)&currSize, 4);
 				currOfs += 4;
@@ -389,7 +390,8 @@ class SharedMemNodeData
 		if(segmented)
 		{
 			Segment *currSegment = getFirstSegment();
-			for(int i = 0; i < numSegments; i++)
+			int i;
+			for(i = 0; i < numSegments; i++)
 			{
 				segments[i] = currSegment;
 				currSegment->free(fsm);
@@ -446,3 +448,4 @@ class SharedMemNodeData
 };
 
 #endif
+

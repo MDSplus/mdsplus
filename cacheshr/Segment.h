@@ -201,7 +201,7 @@ public:
 	void initialize(char *serialized, FreeSpaceManager *fsm)
 	{
 		char *currPtr;
-		boolean forceConversion = ((*(short *)serialized) != 1);
+		bool forceConversion = ((*(short *)serialized) != 1);
 		timestamped = serialized[2]?true:false;
 		if(forceConversion)
 			swapBytes(&serialized[3], 4);

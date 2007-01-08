@@ -575,7 +575,8 @@ void SharedDataManager::callCallback(int nid)
 		callbackManager->setPrev(NULL);
 		retNode->setCallbackManager(callbackManager);
 		callbackManager->initialize(nid, callback);
-		setWarm(nid, true);
+		SharedMemNodeData *nodeData = retNode->getData();
+		nodeData->setWarm(true);
 		lock.unlock();
 		return callbackManager;
 	}
@@ -706,7 +707,7 @@ bool SharedDataManager::isWarm(int nid)
 {
 	SharedMemNodeData *nodeData = getNodeData(nid, true);
 	if(nodeData)
-		return nodeData->isWarm;
+		return nodeData->isWarm();
 	return false;
 }
 

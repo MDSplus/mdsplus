@@ -22,7 +22,7 @@ ChannelFactory::ChannelFactory()
 		FILE *confFile = fopen("realtime_mdsip.hosts", "r");
 		if(!confFile)
 		{
-			printf("Cannot open configuration file\n");
+			//printf("Cannot open configuration file\n");
 			communicationEnabled = false;
 			return;
 		}

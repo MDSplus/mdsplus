@@ -22,7 +22,11 @@ TreeWriter.cpp \
 FreeSpaceManager.cpp \
 SharedDataManager.cpp \
 SharedMemTree.cpp\
-Thread.cpp 
+Thread.cpp \
+ChannelFactory.cpp \
+CoherencyManager.cpp \
+CommunicationChannel.cpp \
+TCPChannel.cpp
 
 OBJECTS = $(SOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 EXPORTS = CacheShr.exports
@@ -83,4 +87,13 @@ SharedMemTree.o: SharedMemTree.cpp SharedMemTree.h
 Thread.o: Thread.cpp Thread.h
 
 Notifier.o: Notifier.cpp Notifier.h
+
+ChannelFactory.o: ChannelFactory.cpp ChannelFactory.h
+
+CoherencyManager.o: CoherencyManager.cpp CoherencyManager.h
+
+CommunicationChannel.o: CommunicationChannel.cpp CommunicationChannel.h
+
+TCPChannel.o: TCPChannel.cpp TCPChannel.h CommunicationChannel.h
+
  

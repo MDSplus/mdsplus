@@ -11,12 +11,13 @@ void Thread::start(Runnable *rtn, void *arg)
 	threadH = (HANDLE)_beginthread((void (__cdecl *)(void *))handlerWithArg, 0, (void *)withArg);
 	if(threadH == (HANDLE)-1)
 		printf("Error activating thread\n");
+#else 
+#ifdef HAVE_VXWORKS_H
+	taskSpawn(NULL, 20, VX_FP_TASK, 200000, (FUNCPTR)handlerWithArg, (int)withArg,0,0,0,0,0,0,0,0,0); 
 #else
-	taskSpawn(NULL, 20, VX_FP_TASK, 200000, (FUNCPTR)handler, (int)rtn,0,0,0,0,0,0,0,0,0); 
-#ifdef
-	int rc = pthread_create(&thread, NULL,(void *(*)(void *))handler, (void *)rtn); 
-
+	int rc = pthread_create(&thread, NULL,(void *(*)(void *))handlerWithArg, (void *)withArg); 
 #endif
+
 #endif
 
 }
