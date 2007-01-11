@@ -7,7 +7,7 @@ if ( uname -p | grep 64 > /dev/null )
 then
   while ( file $java | grep -i symbolic > /dev/null )
   do
-    java=`ls -l $java | cut -d ' ' -f 12`
+    java=`ls -l $java | cut -d ' ' -f 13`
   done
   if ( file $java | grep 64 > /dev/null )
   then
