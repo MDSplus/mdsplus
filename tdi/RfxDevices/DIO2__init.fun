@@ -114,7 +114,7 @@ write("HWINIT: ", _status);
         if(DevIsOn(DevNodeRef(_nid, _N_CHANNEL_0 +(_c *  _K_NODES_PER_CHANNEL))))
         { 
 			_channel_mask = _channel_mask | (1 << _c);
-
+write(*, "working on channel "//_channel_mask);
 			DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_FUNCTION,
 				 ['CLOCK', 'PULSE', 'GCLOCK', 'DCLOCK'], [0,1,2,3], _function = 0);
 
@@ -157,6 +157,7 @@ write("HWINIT: ", _status);
 			}
 			if(_function == 1) /* Pulse */
 			{
+write (*,'    It is a pulse');
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_MODE,
 					['EVENT', 'RISING EDGE', 'FALLING EDGE', 'SOFTWARE'], [0,1,2,3], _trig_mode = 3);
 				if(_trig_mode == 0) /* If event trigger */
@@ -164,6 +165,7 @@ write("HWINIT: ", _status);
 					_ev_name =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_EVENT)), '');
 					if(size(_ev_name) > 1)
 					{
+write(*, "    Multiple events");
 					 	_event = [];
 					  	for(_i = 0; _i < size(_ev_name); _i++)
 						{
@@ -185,6 +187,7 @@ write("HWINIT: ", _status);
 					}
 					else
 					{
+write(*, "    single event");
 						if(_ev_name != '')
 							_event =  TimingDecodeEvent(_ev_name);
 						else
@@ -240,6 +243,11 @@ write(*, "------> Event time ", _event_time);
  					abort();
 				}
 
+write(*, "     got the delay "//_delay//" and the durration "//_duration);
+                                        if (rank(_event) > 0) {
+                                          _event = pack(_event, 1);
+                                        }
+
 				if(_remote != 0)
 				{
 					_cmd = 'MdsConnect("'//_ip_addr//'")';
@@ -257,6 +265,7 @@ write(*, "------> Event time ", _event_time);
 				{
 					_status = DIO2HWSetPulseChan(_nid, _board_id, _c, _trig_mode, _cyclic,
 										_init_level_1, _init_level_2, _delay, _duration, _event);
+write(*, "   did the HWSetPulseChan, status = "//_status);
 					if(_status == 0)
 					abort();
 				}
@@ -268,6 +277,7 @@ write(*, "------> Event time ", _event_time);
 				_trig2_expr = _trig_path // ' + ' // _delay_path // ' + ' // _duration_path;
   	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_1, compile(_trig1_expr));
   	    		DevPut(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER_2, compile(_trig2_expr));
+write(*, "  Should be all done setting up this chan for pulse");
 			}
 			
 			if(_function == 2) /* GClock */
