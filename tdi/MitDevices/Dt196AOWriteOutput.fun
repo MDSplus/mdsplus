@@ -6,6 +6,6 @@ public fun Dt196AOWriteOutput(_board, _chan, _wave)
   MitDevicesIO->FCLOSE(val(_lun));
   _board_ip = getenv('BOARD'//trim(adjustl(_board)));
   write(*, "curl -T "//_filenam//" -u ao: ftp://"//_board_ip//"/AO/"//_filenam);
-  spawn("curl -T /tmp/"//_filenam//" -u ao: ftp://"//_board_ip//"/AO/"//_filenam);
-/*  spawn('rm -f /tmp/'//_filenam);*/
+  spawn("curl -s -T /tmp/"//_filenam//" -u ao: ftp://"//_board_ip//"/AO/"//_filenam);
+  spawn('rm -f /tmp/'//_filenam);
 }

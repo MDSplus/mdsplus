@@ -14,7 +14,7 @@ Public fun dt196ao__add(in _path, out _nidout)
   /* internal clock / clock divider (or int clock freq) */
   DevAddNode(_path//':AO_CLK', 'TEXT', 'DI0', '/noshot_write', _nid);
   DevAddNode(_path//':AO_TRIG', 'TEXT', 'DI3', '/noshot_write', _nid);
-  DevAddNode(_path//':FAWG_DIV', 'NUMERIC', 200000., '/noshot_write', _nid);
+  DevAddNode(_path//':FAWG_DIV', 'NUMERIC', 20, '/noshot_write', _nid);
   DevAddNode(_path//':CYCLE_TYPE', 'TEXT', 'ONCE', '/noshot_write', _nid);
   DevAddNode(_path//':TRIG_TYPE', 'TEXT', 'HARD_TRIG', '/noshot_write', _nid);
   DevAddNode(_path//':MAX_SAMPLES', 'NUMERIC', 16384., '/noshot_write', _nid);
