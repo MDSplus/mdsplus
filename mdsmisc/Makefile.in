@@ -60,6 +60,3 @@ install:
 	mkdir @MAKELIBDIR@
 
 @MAKESHLIBDIR_RULE@
-
-MdsMisc.exports: MdsMisc.def
-	sed -e /LIBRARY/\;/\;/d MdsMisc.def > $@
