@@ -662,7 +662,6 @@ static int va_MdsValue2(char *expression, ...)
     for (i=1;i<=(nargs*2)+1; i++) descnum = va_arg(incrmtr, int *);
     dscAnswer = descrs[*descnum - 1];
     dscAnswer->pointer = va_arg(incrmtr, void *);
-
     /* 
      * Send expression descriptor first.
      * MdsValueRemoteExpression wraps expression with type conversion function.
@@ -1160,9 +1159,9 @@ static int  ___MdsOpen(char *tree, int *shot)
 #endif
 
     length = strlen(tree);
-    d1 = descr(&dtype_cstring,tree,&null,&length);
-    d2 = descr(&dtype_long,shot, &null);
-    d3 = descr(&dtype_long,&answer,&null);
+    d1 = va_descr(&dtype_cstring,tree,&null,&length);
+    d2 = va_descr(&dtype_long,shot, &null);
+    d3 = va_descr(&dtype_long,&answer,&null);
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
     if ((status & 1))
@@ -1235,9 +1234,9 @@ static int  ___MdsClose(char *tree, int *shot)
 #endif
 
     length = strlen(tree);
-    d1 = descr(&dtype_cstring,tree,&null,&length);
-    d2 = descr(&dtype_long,shot, &null);
-    d3 = descr(&dtype_long,&answer,&null);
+    d1 = va_descr(&dtype_cstring,tree,&null,&length);
+    d2 = va_descr(&dtype_long,shot, &null);
+    d3 = va_descr(&dtype_long,&answer,&null);
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
     
@@ -1294,7 +1293,7 @@ static int  ___MdsSetDefault(char *node)
     int length = strlen(node);
     int null = 0;
     int dtype_long = DTYPE_LONG;
-    int d1 = descr(&dtype_long, &answer, &null);
+    int d1 = va_descr(&dtype_long, &answer, &null);
     int status;
     if (node[0] == '\\') strcat(expression,"\\");
     strcat(expression,node);
@@ -1377,7 +1376,7 @@ int descr(int *dtype, void *data, int *dim1, int *dim2, int *dim3, int *dim4, in
   return va_descr(dtype,data,dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
 }
 int descr2(int *dtype, int *dim1, int *dim2, int *dim3, int *dim4, int *dim5, int *dim6, int *dim7, int *dim8, int *dim9) {
-  return va_descr(dtype,dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
+  return va_descr2(dtype,dim1,dim2,dim3,dim4,dim5,dim6,dim7,dim8,dim9);
 }
 #endif
 
