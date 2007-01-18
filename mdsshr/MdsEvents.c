@@ -1255,7 +1255,6 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 	    
 
 #ifdef USE_PIPED_MESSAGING
-#if  defined(__APPLE__) || defined(linux)
 	/* this will block.. until the first writer! */
     while(1) {
 	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
@@ -1266,7 +1265,6 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 		msgId = open(keypath, O_RDONLY);
 	}
 	UnlockMdsShrMutex(&msgIdMutex);
-#endif
 #endif
 
     while(1)
