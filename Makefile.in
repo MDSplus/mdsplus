@@ -24,10 +24,10 @@ PARTS = \
         mdslibidl \
         cdu     \
         mdsdcl  \
-	gen_device \
+	@GEN_DEVICE@ \
 	@CAMSHR@ \
-        remcam \
-        ccl     \
+        @REMCAM@ \
+        @CCL@     \
 	servershr \
         tcl \
         tdic \
@@ -35,7 +35,7 @@ PARTS = \
         mdslib \
         actions \
         math \
-        mitdevices \
+        @MITDEVICES@ \
         wfevent \
         setevent \
         mdsmisc \

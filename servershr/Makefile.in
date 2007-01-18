@@ -50,7 +50,9 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsServerShr.a @libdir@
+        if test "@SHARETYPE@" != ".a" ; then \
+                $(INSTALL) -m 644  @MAKELIBDIR@libMdsServerShr.a @libdir@; \
+        fi;
 
 @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS)
