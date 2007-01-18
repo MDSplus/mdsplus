@@ -103,7 +103,7 @@ c      status = MdsConnect('gemini.gat.com')
       enddo
 
       dsc = descr(IDTYPE_CSTRING,ctest,20,0,20)
-      status = MdsValue('GETNCI("*","NODE_NAME")',dsc,0,size)
+      status = MdsValue('GETNCI("*","NODE_NAME")'//CHAR(0),dsc,0,size)
       write (6,*) "MdsValue(GETNCI(*,NODE_NAME)): ",status,
      >    " LENGTH: ",size
       do i=1,20
