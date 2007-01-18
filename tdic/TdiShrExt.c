@@ -25,7 +25,7 @@ cp libBpdMdsUnix.so /usr/lib/libBpdMdsUnix.so
 ldconfig
 #endif
 
-#ifndef int32
+#if  !defined(int32) && !defined(_AIX)
 #define int32 int
 #endif
 
