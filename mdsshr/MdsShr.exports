@@ -1,5 +1,6 @@
 index
 LibCallg
+LibConvertDateString
 LibCreateVmZone
 LibEstablish
 LibEmul
@@ -97,6 +98,8 @@ MDSprintf
 MDSfprintf
 libgetvm_
 libfreevm_
+libgetvm
+libfreevm
 MdsUsageString
 MdsClassString
 MdsDtypeString
@@ -104,4 +107,4 @@ LibDeleteVmZone
 MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
-
+MdsFloatToTime

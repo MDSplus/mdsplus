@@ -1454,7 +1454,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 #if defined(HAVE_WINDOWS_H)
       _tzset();
       tim -= _timezone;
-#elif !defined(__hpux) && !defined(HAVE_WINDOWS_H)
+#elif !defined(__hpux) && !defined(HAVE_WINDOWS_H) && !defined(_AIX)
       tzset();
       tim += tm_p->tm_gmtoff;
 #endif

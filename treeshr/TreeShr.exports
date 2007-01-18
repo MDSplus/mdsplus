@@ -108,3 +108,6 @@ TreeWriteTree
 _TreeWriteTree
 TreeGetCurrentShotId
 TreeSetCurrentShotId
+TreeSetDbi
+TreeSetDbiItm
+TreeSetViewDate
