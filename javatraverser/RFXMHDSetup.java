@@ -1081,7 +1081,7 @@ public class RFXMHDSetup extends DeviceSetup {
         jPanel70.add(deviceField71, null);
         jPanel70.add(deviceField70, null);
         jPanel70.add(deviceTable20, null);
-    jTabbedPane1.add(jScrollPane4, "jScrollPane4");
+    jTabbedPane1.add(jScrollPane4,  "Rot. Perturbation");
     jScrollPane4.getViewport().add(jPanel5, null);
   }
 
