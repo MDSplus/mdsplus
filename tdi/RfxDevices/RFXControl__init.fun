@@ -235,7 +235,7 @@ write(*, _trig1_time);
 
 	_in_calibration = if_error(data(DevNodeRef(_nid, _N_IN_CALIB)), _data_valid = 0);
 /*	write(*, 'Calibration: ', _calibration);*/
-	_status = MdsValue('support->setInputCalibration($1, $2)', float(_in_calibration), 192);
+	_status = MdsValue('support->setInputCalibration($1, $2)', float(_in_calibration), size(_in_calibration)/2);
       if(_status == *)
       {
 	    DevLogErr(_nid, 'Cannot communicate to VME');
