@@ -304,7 +304,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable13.setIdentifier("");
     deviceTable13.setNumRows(4);
     deviceTable13.setNumCols(48);
-    deviceTable13.setLabelString("Integral Gain:");
+    deviceTable13.setLabelString("Derivative Gain:");
     deviceTable13.setOffsetNid(1247);
     deviceField37.setOffsetNid(1237);
     deviceField37.setLabelString("Start Time(s): ");
@@ -332,7 +332,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable15.setIdentifier("");
     deviceTable15.setNumRows(4);
     deviceTable15.setNumCols(48);
-    deviceTable15.setLabelString("Integral Gain:");
+    deviceTable15.setLabelString("Derivative Gain:");
     deviceTable15.setOffsetNid(1259);
     deviceField38.setIdentifier("");
     deviceField38.setLabelString("End Time(s): ");
@@ -460,7 +460,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable210.setRowNames(new String[] {"0", "1", "2", "3"});
     deviceTable210.setDisplayRowNumber(true);
         deviceTable18.setOffsetNid(1245);
-        deviceTable18.setLabelString("Derivative Gain:");
+        deviceTable18.setLabelString("Inetgral Gain:");
         deviceTable18.setNumCols(48);
         deviceTable18.setNumRows(4);
         deviceTable18.setIdentifier("");
@@ -468,7 +468,7 @@ public class RFXMHDSetup extends DeviceSetup {
         "8", "7", "6", "5", "4", "3", "2", "16<NL>5<NL>4<NL>3<NL>2<NL>1<NL>"});
         deviceTable18.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable19.setOffsetNid(1257);
-    deviceTable19.setLabelString("Derivative Gain:");
+    deviceTable19.setLabelString("Integral Gain:");
     deviceTable19.setNumCols(48);
     deviceTable19.setNumRows(4);
     deviceTable19.setIdentifier("");
@@ -840,10 +840,10 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable11.setIdentifier("");
         deviceTable11.setNumRows(4);
         deviceTable11.setNumCols(48);
-        deviceTable11.setLabelString("Integral Gain:");
+        deviceTable11.setLabelString("Derivative Gain:");
         deviceTable11.setOffsetNid(1235);
         deviceTable16.setOffsetNid(1233);
-        deviceTable16.setLabelString("Derivative Gain:");
+        deviceTable16.setLabelString("Integral Gain:");
         deviceTable16.setNumCols(48);
         deviceTable16.setNumRows(4);
         deviceTable16.setIdentifier("");
