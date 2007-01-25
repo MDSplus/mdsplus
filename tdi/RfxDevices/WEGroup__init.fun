@@ -65,7 +65,7 @@ write(*, _dev_head_nid, _chan_offset);
 */
 		_model_type = model_of(_dev_head_nid);
 
-		if(_model_type == "WE7275")
+		if(_model_type == "WE7275" || _model_type == "WE7275_9")
 		{
 /*
 write(*, "MODEL ", _model_type);
@@ -108,7 +108,7 @@ write(*, "Filter ", DevNodeRef( _dev_head_nid, _chan_offset + _N_WE7275_CHAN_FIL
 		}
 		else
 		{
-			if(_model_type == "WE7116")
+			if(_model_type == "WE7116" || _model_type == "WE7116_9")
 			{
 /*
 write(*, "Model ", _model_type);

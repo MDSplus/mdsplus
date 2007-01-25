@@ -219,6 +219,25 @@ Se scalare una sola acquisizione attualmente non gestito
 
 	_num_chans = _link_mod * _chan_active;
 
+
+	_all_ch_off = 1;
+	
+    	for(_i = 0; _i < _num_chans; _i++)
+    	{
+		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
+        	if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+        	{
+		   _all_ch_off = 0;
+	  	}
+      } 
+
+	if( _all_ch_off )
+	{
+		write(*, "All channels OFF" );
+		return( 1 );
+	}
+
+
     _rec_length = if_error(data(DevNodeRef(_nid, _N_REC_LENGTH)), -1);
     if(_rec_length == -1)
     {
@@ -235,76 +254,81 @@ Se scalare una sola acquisizione attualmente non gestito
 	_pre_trigger = if_error(data(DevNodeRef(_nid, _N_PRE_TRIGGER)), 0);
 
 
-
 	_vResolution = zero(_num_acq, FT_FLOAT(0.0));
 	_vOffset     = zero(_num_acq, FT_FLOAT(0.0));
 
-	_data = zero(_rec_length * _num_acq, 0W);
+	_data = zero( _rec_length * _num_acq, 0W);
 	_b_size = _rec_length * 2;
 
     for(_i = 0; _i < _num_chans; _i++)
     {
 		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
 
-        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
-        { 
-			_end_idx   = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_END_IDX));	
-			_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));
+		_error = 1;	
+		_n_try = 2;
+		_i_try = 0;
+		while( _error  &&  _i_try <= _n_try ) 
+		{
+			_error = 0;
+
+			if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+			{ 
+
+				_end_idx   = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_END_IDX));	
+				_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));
 			
-			_error = 0;	
-
-			_error = we7000->WE7116ReadChData(_controller_ip, _station_ip, val(_slot_num), val(_link_mod), 
-											  val(_i+1), val(_num_acq), ref(_data), val(_b_size),
-											  ref(_vResolution), ref(_vOffset));
-
-			_range = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_RANGE));
-
-			_offset = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_OFFSET));
-
-/*
-			DevNodeCvt(_nid, _head_channel + _N_CHAN_PROBE, [1,10,100,1000], [0,1,2,3], _probe = 0);
-			Attualmente viene sempre impostato probe a 1
-*/
-			_probe = 1;
-
-			if(! _error )
-			{
-	/* Build signal */
-
-				_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock_val);
-
-				_sig_nid =  DevHead(_nid) + _head_channel +  _N_CHAN_DATA;
-/*
-write(*, "Record length ", (_rec_length ) );
-write(*, "Pre trigger ", (_pre_trigger ) );
-write(*, "Indice di partenza ", (_pre_trigger + _start_idx) );
-write(*, "Indice di fine ", (_pre_trigger + _end_idx) );
-*/
-
-write(*, "offset ", FT_FLOAT(_vOffset[0]));
-write(*, "gain ", FT_FLOAT(_vResolution[0]));
-
-
-				_dataSig = _data[_pre_trigger + _start_idx: _pre_trigger + _end_idx: *];
-
-/*
-				_status = DevPutSignal(_sig_nid,  _vOffset[0], _vResolution[0], word(_data), 0, _end_idx - _start_idx - 1, _dim);
-*/
-				_status = DevPutSignal(_sig_nid, _vOffset[0] / _vResolution[0], _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
-
-
-				if(! _status)
+				_error = we7000->WE7116ReadChData(_controller_ip, _station_ip, val(_slot_num), val(_link_mod), 
+												  val(_i+1), val(_num_acq), ref(_data), val(_b_size),
+												  ref(_vResolution), ref(_vOffset));
+				if(! _error )
 				{
-					DevLogErr(_nid, 'Error writing data in pulse file');
-				}
+					_range = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_RANGE));
+					_offset = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_OFFSET));
 
-			}
-			else
-			{
-				_msg = repeat(" ", 1024);
-				we7000->WE7116GetErrorMsg(ref(_msg));
-				DevLogErr(_nid, _msg);
-			}
+		/*
+					DevNodeCvt(_nid, _head_channel + _N_CHAN_PROBE, [1,10,100,1000], [0,1,2,3], _probe = 0);
+					Attualmente viene sempre impostato probe a 1
+		*/
+					_probe = 1;
+
+
+		/* Build signal */
+
+					_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock_val);
+
+					_sig_nid =  DevHead(_nid) + _head_channel +  _N_CHAN_DATA;
+	/*
+	write(*, "Record length ", (_rec_length ) );
+	write(*, "Pre trigger ", (_pre_trigger ) );
+	write(*, "Indice di partenza ", (_pre_trigger + _start_idx) );
+	write(*, "Indice di fine ", (_pre_trigger + _end_idx) );
+	*/
+
+		write(*, "offset ", FT_FLOAT(_vOffset[0]));
+		write(*, "gain ", FT_FLOAT(_vResolution[0]));
+
+
+					_dataSig = _data[_pre_trigger + _start_idx: _pre_trigger + _end_idx: *];
+
+	/*
+					_status = DevPutSignal(_sig_nid,  _vOffset[0], _vResolution[0], word(_data), 0, _end_idx - _start_idx - 1, _dim);
+	*/
+					_status = DevPutSignal(_sig_nid, _vOffset[0] / _vResolution[0], _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
+
+
+					if(! _status)
+					{
+						DevLogErr(_nid, 'Error writing data in pulse file');
+					}
+				}
+				else
+				{
+					_msg = repeat(" ", 1024);
+					we7000->WE7116GetErrorMsg(ref(_msg));
+					DevLogErr(_nid, _msg);
+				}
+			} 	
+			_i_try++;
 		}
 
     }

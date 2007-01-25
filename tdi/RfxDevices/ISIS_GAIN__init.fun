@@ -35,6 +35,8 @@ public fun ISIS_GAIN__init(as_is _nid, optional _method)
 
    _error = 0;
 
+   private _gainCodeToVale = [1, 2, 5, 10];
+
  write(*, "INIT ISIS_GAIN");
 
  	_ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDRESS)), _error = 1);
@@ -78,6 +80,8 @@ public fun ISIS_GAIN__init(as_is _nid, optional _method)
 
 	_dim = TcpClient->RecvData(val(_sock), ref(_data_conf), val(_READ_BUFFER_SIZE));
 
+write(*, "CHECK CARD CNFIGURATION");
+
 	if(_dim == _READ_BUFFER_SIZE)
 	{
 
@@ -99,13 +103,37 @@ public fun ISIS_GAIN__init(as_is _nid, optional _method)
 		abort();
 	}
 
+	TCPCloseConnection(_sock);
+
+
+
+/*
+ * READ GAIN
+ */
+write(*, "READ GAIN");
+
+	_sock = TCPOpenConnection(_ip, _port, _FREE_MODE, 8000, _sw = -1);
+	if(_sock == 0)
+	{
+		DevLogErr(_nid, "Cannot connect to remote instruments"); 
+		abort();
+	}
+
+	_status = TcpClient->SendData(val(_sock), _READ_CODE, val(sizeof(_READ_CODE)));
+
+      wait(0.5);
+
+	_dim = TcpClient->RecvData(val(_sock), ref(_data_conf), val(_READ_BUFFER_SIZE));
+
+	TCPCloseConnection(_sock);
+
+
+
 /*
  * SEND CARD GAINS
  */
 
 write(*, "SEND CARD GAINS");
-
-	TCPCloseConnection(_sock);
 
 	_sock = TCPOpenConnection(_ip, _port, _FREE_MODE, 8000, _sw = -1);
 	if(_sock == 0)
@@ -132,6 +160,8 @@ write(*, "SEND CARD GAINS");
 		{ 
             	if(_card_conf[_i] == 0)
 			{ 
+				write(*, "INFO : Card"//(_i + 1)//" set in remote configuration");
+
 			      _data = [_data, byte(_i + 1)];
 
 			      _data = [_data, 1B];
@@ -146,8 +176,19 @@ write(*, "SEND CARD GAINS");
 			}
 			else
 			{
-				_error = 1;
-				DevLogErr(_nid, "Card"//(_i + 1)//"Not present or set in local configuration");
+				if( _card_conf[_i] == _CARD_IN_LOCAL_CONF )
+				{
+					write(*, "INFO : Card"//(_i + 1)//" set in local configuration");
+
+					DevPut(_nid, _head_CARD + _N_CARD_GAIN_1, _gainCodeToVale[ _data_conf[_i * _BYTE_PER_CARD_R + 2] ] );
+					DevPut(_nid, _head_CARD + _N_CARD_GAIN_2, _gainCodeToVale[ _data_conf[_i * _BYTE_PER_CARD_R + 4] ] );
+				}
+				else
+				{
+					_error = 1;
+					DevLogErr(_nid, "Card"//(_i + 1)//"Not present or set in local configuration");
+				}
+
 			      _data = [_data, byte(_i + 1)];
 				_data = [_data, 1B];
 				_data = [_data, -1B];

@@ -1,7 +1,5 @@
-public fun WE7000_9__init(as_is _nid, optional _method)
+public fun WE7000__init(as_is _nid, optional _method)
 {
-
-
     private _K_CONG_NODES = 35;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
@@ -21,7 +19,7 @@ public fun WE7000_9__init(as_is _nid, optional _method)
     private _N_TYPE_MODULE = 1;
     private _N_LINK_MODULE = 2;
 
-write(*,"WE7000 9 slots init");
+write(*,"WE7000 slots init");
 
     _controller_ip = if_error(data(DevNodeRef(_nid, _N_CNTRL_IP)), "");
     if(_controller_ip == "")

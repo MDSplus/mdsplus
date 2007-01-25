@@ -78,6 +78,7 @@ write(*, "WE7275__init");
 	_mod_type = if_error(data(DevNodeRef(_rack_nid, _rack_field_nid)), "");
 
 
+
     if(_mod_type != "WE7275")
     {
 		_msg = "Invalid rack configuration : module type "//_mod_type//" in slot "//_slot_num;
@@ -137,7 +138,9 @@ write(*, "WE7275__init");
 	if(_clock_mode == 3 || _clock_mode == 4)
 	{	
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE);
+
 		_clock_val = if_error( execute('`_clk'), (_error = 1) );
+
 		if(_error == 1)
 		{
 			DevLogErr(_nid, "Cannot resolve external clock source"); 
@@ -227,7 +230,6 @@ write(*, "Number acq : ", _num_acq);
 	_filter_a		= [];
 	_aaf_a			= [];
 
-
 	_pre_trigger = 0;
 	_rec_length = 0;
     for(_i = 0; _i < _num_chans; _i++)
@@ -236,7 +238,7 @@ write(*, "Number acq : ", _num_acq);
 
         if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
         { 
-			_state_a = [_state_a, 1];
+		_state_a = [_state_a, 1];
 			
         	if(_time_cvt)
         	{
@@ -322,8 +324,13 @@ write(*, '-- idx ', _curr_start_idx);
 
 		DevNodeCvt(_nid, _head_channel + _N_CHAN_AAF, [0, 20, 40, 80, 200, 400, 800, 2000, 4000, 8000, 20e3, 40e3], [0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], _aaf=0);
 		_aaf_a   = [_aaf_a, _aaf];
-    }
+      }
 
+	if( sum( _state_a ) == 0 )
+	{
+		write(*, "All channels OFF" );
+		return( 1 );
+	}
 
 	if( sum( _state_a ) == 0 )
 	{
