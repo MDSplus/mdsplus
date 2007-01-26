@@ -53,7 +53,6 @@ static char *GetFileName(char *experiment,char **ctx)
   char *ans = 0;
   static char pathname[1024];
   static char *path;
-  int fd = -1;
   char *semi = 0;
   char *part;
   if (*ctx == NULL)

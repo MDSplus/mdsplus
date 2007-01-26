@@ -192,8 +192,6 @@ extern void       _TreeDeleteNodeExecute(void *dbid)
 	  (NODE *) ((char *) dblist->tree_info->node + dblist->tree_info->header->free);
 
   TREE_EDIT *edit = dblist->tree_info->edit;
-  static int sizeof_nci = sizeof(NCI);
-  static int sizeof_nodename = sizeof(node->name);
   static int zero = 0;
 /*------------------------------------------------------------------------------
 

@@ -61,7 +61,6 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
 static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editting);
 static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, int *nomap, int *fd, int report);
 static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap);
-static int ReadTree(TREE_INFO *info, int edit_flag);
 static int GetVmForTree(TREE_INFO *info,int nomap);
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int remote);
 static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtreetop);
@@ -314,7 +313,6 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
 
       if (local_info->edit)
       {
-        static int tree_edit_size = sizeof(TREE_EDIT);
         if (local_info->edit->header_pages)
         free(local_info->header);
         if (local_info->edit->node_vm_size)
@@ -449,8 +447,6 @@ static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *su
       char *found;
       char *tmp_list = malloc(strlen(subtree_list)+3);
       char *tmp_tree = malloc(strlen(tree)+3);
-      int llen = strlen(subtree_list);
-      int slen = strlen(tree);
       strcpy(tmp_list,",");
       strcat(tmp_list,subtree_list);
       strcat(tmp_list,",");
@@ -716,8 +712,6 @@ int _TreeSetStackSize(void **dbid, int size)
   if (dblist && dblist->remote) SetStackSizeRemote(dblist,new_size);
   return old_size;
 }
-static char TreeMask[13] = "TREE";
-static char ShotMask[11] = "JIHGFEDCBA";
 
 static char *GetFname(char *tree, int shot)
 {
@@ -977,6 +971,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   return status;
 }
 
+#ifdef WORDS_BIGENDIAN
 static void SwapBytesInt(char *in)
 {
   char tmp = in[0];
@@ -987,7 +982,6 @@ static void SwapBytesInt(char *in)
   in[2] = tmp;
 }
   
-#ifdef WORDS_BIGENDIAN
 void FixupHeader(TREE_HEADER *hdr)
 {
   char flags = ((char *)hdr)[1];
@@ -1188,7 +1182,6 @@ int TreeCloseFiles(TREE_INFO *info)
 
 int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 {
-  PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   TREE_INFO *info;
   char     *tree = malloc(strlen(tree_in)+1);
   int       shot;
@@ -1250,7 +1243,6 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 
 int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
 {
-  PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   TREE_INFO *info;
   char     *tree = malloc(strlen(tree_in)+1);
   int       shot;

@@ -245,8 +245,6 @@ STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct
   
 int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char *logname, int status)
 {
-  char *resnam = 0;
-  char *colon = 0;
   int socket;
   logname[strlen(logname)-2] = '\0';
   socket = RemoteAccessConnect(logname,1);
@@ -478,7 +476,6 @@ char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
   char *exp = (char *)malloc(strlen(inpath)+20);
   char *retans = 0;
   int status;
-  char *tag = 0;
   if (LeadingBackslash(inpath))
     sprintf(exp,"TreeAbsPath(\"\\%s\")",inpath);
   else
@@ -584,7 +581,6 @@ void FindTagEndRemote(void **ctx_inout)
   TAG_SEARCH **ctx = (TAG_SEARCH **)ctx_inout;
   struct descrip ans = empty_ans;
   int status;
-  int first_time = 0;
   if (*ctx != (TAG_SEARCH *)0)
   {
     if ((*ctx)->remote_tag) MdsIpFree((*ctx)->remote_tag);
@@ -1413,7 +1409,6 @@ int MDS_IO_EXISTS(char *filename)
 {
   int status;
   struct stat statbuf;
-  int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
@@ -1463,7 +1458,6 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
 int MDS_IO_REMOVE(char *filename)
 {
   int status;
-  int socket = -1;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
@@ -1517,7 +1511,6 @@ STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filena
 int MDS_IO_RENAME(char *filename_old, char *filename_new)
 {
   int status;
-  int socket = -1;
   char *hostpart_old, *filepart_old, *hostpart_new, *filepart_new;
   char *tmp_old = ParseFile(filename_old,&hostpart_old,&filepart_old);
   char *tmp_new = ParseFile(filename_new,&hostpart_new,&filepart_new);

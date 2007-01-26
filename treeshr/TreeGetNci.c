@@ -624,7 +624,6 @@ char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in)
 {
 	PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
 	NID *def_nid = (NID *)def_nid_in;
-	NID *nid = (NID *)&nid_in;
 	int status;
 	NCI_ITM   itm_lst[] = {{0, NciMINPATH, 0, 0},
 	{0, NciEND_OF_LIST, 0, 0}};

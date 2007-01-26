@@ -62,8 +62,6 @@ int       _TreeRenameNode(void *dbid, int nid, char *newname)
   char *newnode_name = 0;
   SEARCH_TYPE newnode_type;
   int       status;
-  static char blank = ' ';
-  static int name_size = sizeof(oldnode_ptr->name);
   char *upcase_name = malloc(strlen(newname)+1);
   int i;
 /*****************************************************
