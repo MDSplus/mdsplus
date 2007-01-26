@@ -214,6 +214,7 @@ Define syntax rundown_tree											       ! 101
 define verb set
         parameter p1,prompt="What",value(required,type=SET_TYPE)
 define type SET_TYPE
+	keyword ATTRIBUTE,syntax=set_attribute
         keyword CURRENT,syntax=set_current									       ! 53 
 	keyword DEFAULT,syntax=set_default
         keyword NODE,syntax=set_node
@@ -221,6 +222,22 @@ define type SET_TYPE
 	keyword TREE,syntax=set_tree
         keyword VIEW,syntax=set_view
 	keyword VERSIONS,syntax=set_versions
+Define syntax set_attribute												       ! 53 
+	Routine TclSetAttribute
+	parameter p1, prompt="What",value(required,type=SET_TYPE)										       ! 53
+	parameter p2, LABEL=NODE, prompt="Node", value(required)						       ! 53 
+        parameter p3, LABEL=VALUE, prompt="Value", value(required)						       ! 53 
+	qualifier NAME,nonnegatable,value(required)
+        qualifier EXTENDED,syntax=set_attribute_extended									       ! 71 
+Define syntax set_attribute_extended											       ! 71 
+	Routine TclSetAttribute
+	parameter p1, prompt="What",value(required,type=SET_TYPE)									       ! 71
+	parameter p2, LABEL=NODE, prompt="Node", value(required)						       ! 71 
+        qualifier EXTENDED,default										       ! 72 
+	qualifier SYMBOLS											       ! 73 
+        qualifier LF,default											       ! 95 
+        qualifier EOF,value(required)
+	qualifier NAME,nonnegatable,value(required)										       ! 71 
 Define syntax set_current											       ! 53 
 	Routine TclSetCurrent											       ! 53
         parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
@@ -279,6 +296,7 @@ define verb SETEVENT												       ! 53
 define verb show
         parameter p1,prompt="What",value(required,type=show_TYPE)
 define type show_TYPE
+	keyword ATTRIBUTE,syntax=show_attribute
         keyword CURRENT,syntax=show_current									       ! 53 
 	keyword DATA,syntax=show_data										       ! 53 
 	keyword DB,syntax=show_db										       ! 53 
@@ -286,6 +304,11 @@ define type show_TYPE
         keyword SERVER,syntax=show_server									       ! 83 
 	keyword VERSION,syntax=show_version
         keyword VERSIONS,syntax=show_versions
+Define syntax show_attribute
+	Routine TclShowAttribute
+        parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
+        parameter p2,label=node,prompt="Node",value(required)
+	qualifier name,nonnegatable,value(required)					       ! 53 	
 Define syntax show_current											       ! 53 
 	Routine TclShowCurrent										       ! 53
         parameter p1,prompt="What",value(required,type=SET_TYPE)						       ! 53 
