@@ -38,6 +38,7 @@ SOURCES = 			\
 	tcl_set_tree.c	\
         tcl_set_view.c \
 	tcl_setevent.c \
+	tcl_setshow_attribute.c \
 	tcl_setshow_versions.c \
 	tcl_show_current.c	\
 	tcl_show_data.c	\
