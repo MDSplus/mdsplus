@@ -56,11 +56,20 @@ public fun dc1394__init(as_is _nid, optional in _method)
 	case(103) { _width = 1024; _height = 768; break; }
 	case DEFAULT { write(*, "Illegal camera mode "//_mode//" aborting"); abort(); }
   }
-  _width_nid = DevNodeRef(_nid, _DC1394_WIDTH);
-  _height_nid = DevNodeRef(_nid, _DC1394_HEIGHT);
+  _width_nid = DevHead(_nid) + _DC1394_WIDTH;
+  _height_nid = DevHead(_nid) +_DC1394_HEIGHT;
+  if (_debug) {
+	write(*, "mode = "//_mode//" width = "//_width//"  height = "//_height);
+  }
   _status = TreeShr->TreePutRecord(val(_width_nid),xd(_width),val(0));
-  _status = TreeShr->TreePutRecord(val(_height_nid),xd(_height),val(0));
 
+  if (_debug > 0) {
+	write(*, "wrote width status is "//_status);
+  }
+  _status = TreeShr->TreePutRecord(val(_height_nid),xd(_height),val(0));
+  if (_debug > 0) {
+	write(*, "wrote height status is "//_status);
+  }
   _frame_rate = if_error(DevNodeRef(_nid, _DC1394_FRAME_RATE), 30.);
   _frame_rate = _FRAME_RATES[_frame_rate];
 
