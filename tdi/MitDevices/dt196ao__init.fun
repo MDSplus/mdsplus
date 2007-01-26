@@ -40,8 +40,10 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
   _trigger = DevNodeRef(_nid, _DT196AO_DIs+_DI_NUMBERS[_trig_source]);
 
   _fawg_div = if_error(data(DevNodeRef(_nid, _DT196AO_FAWG_DIV)), 20);
+
   
   _slope = slope_of(_clock)*_fawg_div;
+  _fawg_div = _fawg_div*2;
   write(*, 'here I am');
   write(*, '_slope =', _slope);
   _dim = data(build_dim(build_window(0, _max_samples-1, _trigger), * : * : _slope));
@@ -60,7 +62,7 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
   _trig_type = IF_ERROR(DATA(DevNodeRef(_nid , _DT196AO_TRIG_TYPE)), 'HARD_TRIG');
   _cmd = "set.arm.AO.FAWG "//_cycle_type//" "//_trig_type;
   MdsValue('Dt200WriteMaster($, $, 1)', _board, _cmd);
-
+  _dim = cvt(_dim, 1.0);
   for (_chan=0; _chan < 16; _chan++)
   {
     _chan_offset = _chan * _DT196AO_NODES_PER_AO + _DT196AO_AO_CHANS;
@@ -77,7 +79,9 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
       write(*, 'dim');
       write(*, _dim[0:100]);
       _fit = DevNodeRef(_nid,_chan_offset+_DT196AO_AO_FIT);
-      
+
+      _knots_y = cvt(_knots_y, 1.0);
+      _knots_x = cvt(_knots_x, 1.0);
       if(_fit == 'SPLINE') {
         _wave = SplineFit(_knots_x, _knots_y, _dim);
       } else {
