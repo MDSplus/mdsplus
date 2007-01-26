@@ -34,6 +34,9 @@
 #define   NciV_DATA_CONTIGUOUS        2
 #define   NciM_NON_VMS             0x08
 #define   NciV_NON_VMS                3
+#define   NciM_EXTENDED_NCI        0x10
+#define   NciV_EXTENDED_NCI           4
+
 typedef struct nci
 {
   unsigned int  flags;
@@ -69,6 +72,63 @@ typedef struct nci
   unsigned char nci_fill;
 }         NCI;
 
+#define FACILITIES_PER_EA 8
+typedef struct extended_attributes {
+  _int64    next_ea_offset;
+  _int64    facility_offset[FACILITIES_PER_EA];
+  int       facility_length[FACILITIES_PER_EA];
+} EXTENDED_ATTRIBUTES;
+
+#define STANDARD_RECORD_FACILITY  0
+#define SEGMENTED_RECORD_FACILITY 1
+#define NAMED_ATTRIBUTES_FACILITY 2
+
+typedef struct segment_header {
+  char     dtype;
+  char     dimct;
+  int      dims[8];
+  short    length;
+  int      idx;
+  int      next_row;
+  _int64   index_offset;
+  _int64   data_offset;
+  _int64   dim_offset;
+} SEGMENT_HEADER;
+
+typedef struct segment_info {
+  _int64 start;
+  _int64 end;
+  _int64 start_offset;
+  int    start_length;
+  _int64 end_offset;
+  int    end_length;
+  _int64 dimension_offset;
+  int    dimension_length;
+  _int64 data_offset;
+  int    rows;
+} SEGMENT_INFO;
+
+#define SEGMENTS_PER_INDEX 128
+typedef struct segment_index {
+  _int64 previous_offset;
+  int first_idx;
+  SEGMENT_INFO segment[SEGMENTS_PER_INDEX];
+} SEGMENT_INDEX;
+
+#define NAMED_ATTRIBUTES_PER_INDEX 128
+#define NAMED_ATTRIBUTE_NAME_SIZE 64
+typedef struct named_attribute {
+  char name[NAMED_ATTRIBUTE_NAME_SIZE];
+  _int64 offset;
+  int length;
+} NAMED_ATTRIBUTE;
+
+typedef struct named_attributes_index {
+  _int64 previous_offset;
+  NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
+} NAMED_ATTRIBUTES_INDEX;
+
+  
 #if defined(__GNUC__) || defined(__APPLE__)
 #define PACK_ATTR __attribute__ ((__packed__))
 #define PACK_START 

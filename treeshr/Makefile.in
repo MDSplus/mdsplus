@@ -30,6 +30,7 @@ TreeOpen.c \
 TreePutRecord.c \
 TreeRenameNode.c \
 TreeRemoveNodesTags.c\
+TreeSegments.c \
 TreeSerializeNci.c \
 TreeSetDbi.c \
 TreeSetDefault.c \

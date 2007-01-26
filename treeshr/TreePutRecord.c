@@ -70,7 +70,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci);
-static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
+int TreeFixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
 static int FixupPath();
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr,NCI *previous_nci);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
@@ -79,11 +79,49 @@ static char nid_reference;
 static char path_reference;
 static NCI TemplateNci;
 
-static int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc_ptr);
-
 extern int PutRecordRemote();
 
 extern void *DBID;
+
+_int64 TreeTimeInserted() {
+  _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+  _int64 ans;
+#ifndef HAVE_VXWORKS_H
+  tzset();
+#endif
+  
+#ifdef HAVE_GETTIMEOFDAY
+  {
+    struct timeval tv;
+    struct timezone tz;
+    gettimeofday(&tv,&tz);
+    ans=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60)+(daylight * 3600))*10000000+tv.tv_usec*10 + addin;
+  }
+#else
+
+#ifdef USE_TM_GMTOFF      
+  /* this is a suggestion to change all code 
+     for this as timezone is depricated unix
+     annother alternative is to use gettimeofday */
+  { 
+    struct tm *tm;
+    time_t t;
+    t = time(NULL);
+    tm = localtime(&t);
+    ans = (_int64)((unsigned int)t + tm->tm_gmtoff + daylight * 3600) * (_int64)10000000 + addin;
+  }
+#else
+  ans = (_int64)((unsigned int)time(NULL) - timezone + daylight * 3600) * (_int64)10000000 + addin;
+#endif
+#endif
+  return ans;
+}
+
+
+
+
+
+
 int       TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update) {
   return _TreePutRecord(DBID,nid,descriptor_ptr,utility_update);}
 
@@ -97,9 +135,11 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       nidx;
   unsigned int old_record_length;
   static int saved_uic = 0;
-  int       id = 0;
   int       length = 0;
   int       shot_open;
+  EXTENDED_ATTRIBUTES attributes;
+  int extended = 0;
+  _int64 extended_offset;
   compress_utility = utility_update == 2;
 #if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
   if (!saved_uic)
@@ -131,6 +171,15 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci,&local_nci,sizeof(local_nci));
+    if (local_nci.flags2 & NciM_EXTENDED_NCI) {
+      extended_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
+      status = TreeGetExtendedAttributes(info_ptr,extended_offset,&attributes);
+      if (!(status & 1)) {
+	local_nci.flags2 &= ~NciM_EXTENDED_NCI;
+      } else {
+	extended=1;
+      }
+    }
     if (status & 1)
     {
       if (utility_update)
@@ -144,43 +193,10 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       }
       else
       {
-        unsigned int m1;
-        unsigned int m2 = 10000000;
-        _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-        _int64 zero = 0;
-        _int64 temp = 0;
         bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
 	/* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
-#ifndef HAVE_VXWORKS_H
-        tzset();
-#endif
-
-#ifdef HAVE_GETTIMEOFDAY
-	{
-	  struct timeval tv;
-	  struct timezone tz;
-	  gettimeofday(&tv,&tz);
-          local_nci.time_inserted=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60)+(daylight * 3600))*10000000+tv.tv_usec*10 + addin;
-	}
-#else
-
-#ifdef USE_TM_GMTOFF      
-    /* this is a suggestion to change all code 
-       for this as timezone is depricated unix
-       annother alternative is to use gettimeofday */
-       { struct tm *tm;
-         time_t t;
-         t = time(NULL);
-         tm = localtime(&t);
-         m1 = (unsigned int)t + tm->tm_gmtoff + daylight * 3600;
-       }
-#else
-        m1 = (unsigned int)time(NULL) - timezone + daylight * 3600;
-#endif
-	LibEmul(&m1,&m2,&zero,&temp);
-        local_nci.time_inserted = temp + addin;
-#endif
+	local_nci.time_inserted=TreeTimeInserted();
       }
       if (!(open_status & 1))
       {
@@ -216,10 +232,10 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           int data_in_altbuf;
           nid_reference = 0;
           path_reference = 0;
-	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data,FixupNid,&tree,FixupPath,0,
+	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data,TreeFixupNid,&tree,FixupPath,0,
             (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) && !(nci->flags & NciM_DO_NOT_COMPRESS),
             &compressible,&nci->length,&nci->DATA_INFO.DATA_LOCATION.record_length,&nci->dtype,&nci->class,
-            (nci->flags & NciM_VERSIONS) ? 0 : sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
+            (nci->flags & NciM_VERSIONS || extended) ? 0 : sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
           bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
           bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
           bitassign(compressible,nci->flags,NciM_COMPRESSIBLE);
@@ -229,14 +245,26 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	  status = CheckUsage(dblist, nid_ptr, nci);
 	if (status & 1)
 	{
-	  if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK && !(nci->flags & NciM_VERSIONS))
+	  if (nci->flags2 & NciM_DATA_IN_ATT_BLOCK && !(nci->flags & NciM_VERSIONS) && !extended)
 	  {
 	    bitassign_c(0,nci->flags2,NciM_ERROR_ON_PUT);
 	    status = TreePutNci(info_ptr, nidx, nci, 1);
 	  }
 	  else
 	  {
-	    if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
+	    if (extended) {
+	      status = TreePutDsc(info_ptr, nid, descriptor_ptr, &attributes.facility_offset[STANDARD_RECORD_FACILITY],
+			 &attributes.facility_length[STANDARD_RECORD_FACILITY]);
+	      if (status & 1) {
+		attributes.facility_offset[SEGMENTED_RECORD_FACILITY]=-1;
+		attributes.facility_length[SEGMENTED_RECORD_FACILITY]=0;
+		status = TreePutExtendedAttributes(info_ptr,&attributes,&extended_offset);
+	      }
+	      if (status & 1)
+		TreePutNci(info_ptr,nidx,nci,1);
+	      else
+		TreeUnLockNci(info_ptr,0,nidx);
+	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
 		(nci->flags & NciM_VERSIONS) ||
@@ -337,7 +365,7 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
   return status;
 }
 
-static int FixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
+int TreeFixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
 {
   int       status = 0;
   if (nid->tree != *tree)
@@ -442,8 +470,6 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
     while (bytes_to_put && (status & 1))
     {
       int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-      _int64 eof;
-      unsigned short rlength = bytes_this_time + 10;
       bytes_to_put -= bytes_this_time;
       bptr += sizeof(RECORD_HEADER);
       memcpy(bptr,(void *) (((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time);

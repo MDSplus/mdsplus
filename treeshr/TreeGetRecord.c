@@ -26,9 +26,9 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static _int64 ViewDate = -1;
-static int OpenDatafileR(TREE_INFO *info);
+int TreeOpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-static int GetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
+int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
 
 int MdsSerializeDscIn(char *in, struct descriptor_xd *out_dsc_ptr);
 
@@ -75,7 +75,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
     if (info->reopen)
       TreeCloseFiles(info);
     if (!info->data_file)
-      status = OpenDatafileR(info);
+      status = TreeOpenDatafileR(info);
     else
       status = 1;
     if (status & 1)
@@ -97,51 +97,63 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
                          }
 	   case CLASS_S:
 	   case CLASS_XS:
-	    if (status & 1)
-	      if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
-	      {
-                unsigned char dsc_dtype = DTYPE_DSC;
-                int dlen = nci.length - 8;
-                unsigned int ddlen = dlen + sizeof(struct descriptor);
-                status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc,0);
-		dptr = dsc->pointer;
-		dptr->length = dlen;
-		dptr->dtype = nci.dtype;
-		dptr->class = CLASS_S;
-		dptr->pointer = (char *) dptr + sizeof(struct descriptor);
-                memcpy(dptr->pointer,nci.DATA_INFO.DATA_IN_RECORD.data,dptr->length);
-                if (dptr->dtype != DTYPE_T)
-		{
-		  switch (dptr->length)
-		  {
-		  case 2: *(short *)dptr->pointer = swapshort(dptr->pointer); break;
-		  case 4: *(int *)dptr->pointer = swapint(dptr->pointer); break;
-		  case 8: *(_int64 *)dptr->pointer = swapquad(dptr->pointer); break;
-		  }
-  	        }
-	      }
-	      else
-	      {
-                int length = nci.DATA_INFO.DATA_LOCATION.record_length;
-                if (length > 0)
-		{
-                  char *data = malloc(length);
-   		  status = GetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum,nci.flags2);
-                  if (!(status & 1))
-                    status = TreeBADRECORD;
-		  else if (!(nci.flags2 & NciM_NON_VMS) && ((retsize != length) || (nodenum != nidx)))
-		    status = TreeBADRECORD;
-		  else
-		    status = (MdsSerializeDscIn(data,dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
-		  free(data);
-                }
-                else
-                  status = TreeBADRECORD;
-	      }
-	      break;
-	   default:
-	    status = TreeINVDFFCLASS;
-	    break;
+	     if (status & 1) {
+	       if (nci.flags2 & NciM_EXTENDED_NCI) {
+		 EXTENDED_ATTRIBUTES attributes;
+		 status = TreeGetExtendedAttributes(info,RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),&attributes);
+		 if (status & 1 && attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
+		   status = TreeGetDsc(info,attributes.facility_offset[STANDARD_RECORD_FACILITY],
+				       attributes.facility_length[STANDARD_RECORD_FACILITY],dsc);
+		 } else
+		   status = TreeBADRECORD;
+	       }
+	       else {
+		 if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK)
+		   {
+		     unsigned char dsc_dtype = DTYPE_DSC;
+		     int dlen = nci.length - 8;
+		     unsigned int ddlen = dlen + sizeof(struct descriptor);
+		     status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc,0);
+		     dptr = dsc->pointer;
+		     dptr->length = dlen;
+		     dptr->dtype = nci.dtype;
+		     dptr->class = CLASS_S;
+		     dptr->pointer = (char *) dptr + sizeof(struct descriptor);
+		     memcpy(dptr->pointer,nci.DATA_INFO.DATA_IN_RECORD.data,dptr->length);
+		     if (dptr->dtype != DTYPE_T)
+		       {
+			 switch (dptr->length)
+			   {
+			   case 2: *(short *)dptr->pointer = swapshort(dptr->pointer); break;
+			   case 4: *(int *)dptr->pointer = swapint(dptr->pointer); break;
+			   case 8: *(_int64 *)dptr->pointer = swapquad(dptr->pointer); break;
+			   }
+		       }
+		   }
+		 else
+		   {
+		     int length = nci.DATA_INFO.DATA_LOCATION.record_length;
+		     if (length > 0)
+		       {
+			 char *data = malloc(length);
+			 status = TreeGetDatafile(info, nci.DATA_INFO.DATA_LOCATION.rfa,&length,data,&retsize,&nodenum,nci.flags2);
+			 if (!(status & 1))
+			   status = TreeBADRECORD;
+			 else if (!(nci.flags2 & NciM_NON_VMS) && ((retsize != length) || (nodenum != nidx)))
+			   status = TreeBADRECORD;
+			 else
+			   status = (MdsSerializeDscIn(data,dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
+			 free(data);
+		       }
+		     else
+		       status = TreeBADRECORD;
+		   }
+	       }
+	     }
+	       break;
+	     default:
+	       status = TreeINVDFFCLASS;
+	       break;
 	  }
 	}
 	else
@@ -156,11 +168,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   return status;
 }
 
-static int OpenDatafileR(TREE_INFO *info)
+int TreeOpenDatafileR(TREE_INFO *info)
 {
   int       status;
-  static const    DESCRIPTOR(dataf_buffering, "DATAF");
-  static const char *datafile_name = ".DATAFILE";
   DATA_FILE *df_ptr = info->data_file;
   if (df_ptr)
     return 1;
@@ -276,7 +286,7 @@ DATA_FILE *TreeGetVmDatafile()
   return datafile_ptr;
 }
 
-static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum,unsigned char flags)
+int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, char *record, int *retsize,int *nodenum,unsigned char flags)
 {
   int status = 1;
   int buffer_space = *buffer_size;
@@ -294,7 +304,7 @@ static int GetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size,
       status = TreeLockDatafile(info, 1, rfa_l);
       if (status & 1)
       {
-	_int64 offset = MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
+	MDS_IO_LSEEK(info->data_file->get,rfa_l,SEEK_SET);
 	status = (MDS_IO_READ(info->data_file->get,(void *)&hdr,12) == 12) ? TreeSUCCESS : TreeFAILURE;
 	if (status & 1)
 	{
@@ -379,7 +389,7 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
   char nci_bytes[42];
   int status;
   if (!info->data_file)
-    status = OpenDatafileR(info);
+    status = TreeOpenDatafileR(info);
   else
     status = 1;
   if (status & 1) {
