@@ -6,13 +6,8 @@ public fun Dt196Readchannel(in _board, in _channel, in _start, in _end, in _inc,
     Abort();
   }
 
-  if (_board >= 100) {
-    _brd = char(_board/100+ichar('0'))//char(_board/10+ichar('0'))//char(_board mod 10+ichar('0')) ;
-  } else if (_board >= 10) {
-    _brd = char(_board/10+ichar('0'))//char(_board mod 10+ichar('0')) ;
-  } else {
-    _brd = char(_board+ichar('0'));
-  }
+  _brd = trim(adjustl(_board));
+  Dt200WriteMaster(_board, "set.sample_read_start "//_start, 1);
   _chn1 = char(_channel mod 10 +ichar('0'));
   _chn2 = char(_channel /  10 +ichar('0'));
   _devname = "/dev/acq32/acq32."//_brd//"."//_chn2//_chn1;
