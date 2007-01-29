@@ -3775,11 +3775,11 @@ System.out.println("Print Done");
             return;
         }
         try {
-            nid303 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL"), 0);
+            nid303 = rfx.resolve(new PathData("\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL"), 0);
             rfx.putData(nid303, data303, 0);
-            nid304 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR304_VAL"), 0);
+            nid304 = rfx.resolve(new PathData("\\MHD_BR::CONTROL.PARAMETERS:PAR304_VAL"), 0);
             rfx.putData(nid304, data304, 0);
-            nid305 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR305_VAL"), 0);
+            nid305 = rfx.resolve(new PathData("\\MHD_BR::CONTROL.PARAMETERS:PAR305_VAL"), 0);
             rfx.putData(nid305, data305, 0);
          }
         catch(Exception exc)
