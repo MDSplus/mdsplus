@@ -77,8 +77,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 
 	//Get names for (possible) user defined  resample and squish funs
 	status = TreeGetXNci(nid, "ResampleFun", &xd);
-	if(!(status & 1)) return status;
-	if(xd.pointer) //If a user defined fun exists
+	if(status & 1 && xd.pointer) //If a user defined fun exists
 	{
 		nameLen = xd.pointer->length;
 		if(nameLen >= MAX_FUN_NAMELEN) nameLen = MAX_FUN_NAMELEN - 1;
@@ -90,8 +89,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 		resampleFunName[0] = 0;
 
 	status = TreeGetXNci(nid, "SquishFun", &xd);
-	if(!(status & 1)) return status;
-	if(xd.pointer) //If a user defined fun exists
+	if(status & 1 && xd.pointer) //If a user defined fun exists
 	{
 		nameLen = xd.pointer->length;
 		if(nameLen >= MAX_FUN_NAMELEN) nameLen = MAX_FUN_NAMELEN - 1;
