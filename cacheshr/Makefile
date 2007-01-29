@@ -1,6 +1,6 @@
 SHELL=/bin/sh
 CC=gcc
-LD=ld
+LD=g++
 top_srcdir=..
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=/usr/local
