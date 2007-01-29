@@ -885,6 +885,11 @@ public class ParameterSetting
                             //Copy the same configuration to MHD BC
                             //devices[11].apply( mhdControlRoot.getInt());
                             devices[11].apply(mhdBcNid.getInt());
+                            //Copy PAR303_VAL (measure radius), PAR304_VAL (MoNo sine excluded)
+                            //and PAR305_VAL (N limits for sideband correction) into MHD_BR
+                            copyData("\\\\MHD_AC:CONTROL.SIGNALS:PAR303_VAL", "\\\\MHD_BR:CONTROL.SIGNALS:PAR303_VAL");
+                            copyData("\\\\MHD_AC:CONTROL.SIGNALS:PAR304_VAL", "\\\\MHD_BR:CONTROL.SIGNALS:PAR304_VAL");
+                            copyData("\\\\MHD_AC:CONTROL.SIGNALS:PAR305_VAL", "\\\\MHD_BR:CONTROL.SIGNALS:PAR305_VAL");
                         }
                     });
                 }
@@ -3895,6 +3900,19 @@ System.out.println("Print Done");
         try {
             logFile.write("" + new Date() + "\t" + message + "\n");
         }catch(Exception exc){System.err.println("Error writing to log file: " + exc);}
+    }
+
+
+    void copyData(String pathStr1, String pathStr2)
+    {
+        try {
+            PathData path1 = new PathData(pathStr1);
+            PathData path2 = new PathData(pathStr2);
+            NidData nid1 = rfx.resolve(path1, 0);
+            NidData nid2 = rfx.resolve(path2, 0);
+            Data data = rfx.getData(nid1, 0);
+            rfx.putData(nid2, data, 0);
+        }catch(Exception exc) {System.err.println("Error copying" + pathStr1 + " into " + pathStr2 + ": " + exc);}
     }
 
 
