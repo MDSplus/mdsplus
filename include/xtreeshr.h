@@ -25,16 +25,16 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalApd, struct descriptor 
 #define InvalidDimensionInSegments 6
 
 //Temporary -- use CacheShr for segmented stuff for now
-#define TreeGetNumSegments RTreeGetNumSegments
-#define TreeGetSegmentLimits RTreeGetSegmentLimits
-#define TreeGetSegment RTreeGetSegment
+//#define TreeGetNumSegments RTreeGetNumSegments
+//#define TreeGetSegmentLimits RTreeGetSegmentLimits
+//#define TreeGetSegment RTreeGetSegment
 
 
 //Temporary -- to be integrated in treeshr NCI
 //Return an empty descriptor so the default squish and resample are used
-static int TreeGetXNci(int nid, char *nciname, struct descriptor_xd *retValue)
-{
-	static EMPTYXD(emptyXd);
-	MdsCopyDxXd((struct descriptor *)&emptyXd, retValue);
-	return 1;
-}
+//static int TreeGetXNci(int nid, char *nciname, struct descriptor_xd *retValue)
+//{
+//	static EMPTYXD(emptyXd);
+//	MdsCopyDxXd((struct descriptor *)&emptyXd, retValue);
+//	return 1;
+//}
