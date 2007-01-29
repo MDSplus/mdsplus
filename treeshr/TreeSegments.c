@@ -97,6 +97,7 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
       return open_status;
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -107,6 +108,11 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
     }
     else {
       attributes_offset=RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
+      if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
+	attributes.facility_offset[STANDARD_RECORD_FACILITY] = -1;
+	attributes.facility_length[STANDARD_RECORD_FACILITY] = 0;
+	update_attributes=1;
+      }
     }
     /*** See if the node currently has an segment header record. If not, make an empty segment header and flag that
 	 a new one needs to be written.
@@ -1532,6 +1538,7 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
        return open_status;
      TreeGetViewDate(&saved_viewdate);
      status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+     local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
      local_nci.dtype=initialValue->dtype;
      local_nci.class=CLASS_A;
      local_nci.time_inserted=TreeTimeInserted();
@@ -1546,6 +1553,11 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
      }
      else {
        attributes_offset=RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
+       if (attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
+	 attributes.facility_offset[STANDARD_RECORD_FACILITY] = -1;
+	 attributes.facility_length[STANDARD_RECORD_FACILITY] = 0;
+	 update_attributes=1;
+       }
      }
      /*** See if the node currently has an segment header record. If not, make an empty segment header and flag that
 	  a new one needs to be written.
@@ -1729,9 +1741,11 @@ old array is same size.
 	 status=status;
        } else if (data->dtype != segment_header.dtype) {
 	 status = TreeFAILURE;
-       } else if (data->dimct != segment_header.dimct && data->dimct != segment_header.dimct-1) {
+       } else if (!(data->dimct == 1 && segment_header.dimct == 1) && (data->dimct != segment_header.dimct-1)) {
 	 status = TreeFAILURE;
-       } else if (segment_header.dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(segment_header.dimct-1)*sizeof(int)) != 0) {
+       } else if (a_coeff->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(segment_header.dimct-1)*sizeof(int)) != 0) {
+	 status = TreeFAILURE;
+       } else if (a_coeff->dimct == 1 && a_coeff->arsize/a_coeff->length != 1 && segment_header.dims[0] != a_coeff->arsize/a_coeff->length) {
 	 status = TreeFAILURE;
        }
        if (!(status & 1)) {
@@ -1945,5 +1959,38 @@ old array is same size.
      }
      TreeSetViewDate(&now);
    }
+   return status;
+ }
+
+ static EMPTYXD(TREE_START_CONTEXT);
+ static EMPTYXD(TREE_END_CONTEXT);
+ static EMPTYXD(TREE_DELTA_CONTEXT);
+ int TreeSetTimeContext(struct descriptor *start, struct descriptor *end, struct descriptor *delta) {
+   int status = MdsCopyDxXd(start,&TREE_START_CONTEXT);
+   if (status & 1) {
+     status = MdsCopyDxXd(end, &TREE_END_CONTEXT);
+     if (status & 1) {
+       status = MdsCopyDxXd(delta, &TREE_DELTA_CONTEXT);
+     }
+   }
+   return status;
+ }
+
+ int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
+   static int activated=0;
+   static int (*addr)(int, struct descriptor_xd *, struct descriptor_xd *, struct descriptor_xd *, struct descriptor_xd *);
+   int status=42;
+   if (!activated) {
+     static DESCRIPTOR(library,"XTreeShr");
+     static DESCRIPTOR(routine,"XTreeGetTimedRecord");
+     status = LibFindImageSymbol(&library,&routine,&addr);
+     if (status & 1) {
+       activated=1;
+     } else {
+       fprintf(stderr,"Error activating XTreeShr library. Cannot access segmented records.\n");
+       return status;
+     }
+   }
+   status = (*addr)(nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
    return status;
  }
