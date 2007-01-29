@@ -887,9 +887,9 @@ public class ParameterSetting
                             devices[11].apply(mhdBcNid.getInt());
                             //Copy PAR303_VAL (measure radius), PAR304_VAL (MoNo sine excluded)
                             //and PAR305_VAL (N limits for sideband correction) into MHD_BR
-                            copyData("\\MHD_AC:CONTROL.PARAMETERS::PAR303_VAL", "\\MHD_BR:CONTROL.PARAMETERS::PAR303_VAL");
-                            copyData("\\MHD_AC:CONTROL.PARAMETERS::PAR304_VAL", "\\MHD_BR:CONTROL.PARAMETERS::PAR304_VAL");
-                            copyData("\\MHD_AC:CONTROL.PARAMETERS::PAR305_VAL", "\\MHD_BR:CONTROL.PARAMETERS::PAR305_VAL");
+                            copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL");
+                            copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR304_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR304_VAL");
+                            copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR305_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR305_VAL");
                         }
                     });
                 }
