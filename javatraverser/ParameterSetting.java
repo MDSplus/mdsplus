@@ -3346,6 +3346,7 @@ System.out.println("Print Done");
             return;
         }
         copyDecoupling(100, -1);
+        copyMhdBr(100, -1);
     }
 
     void compareShots()
@@ -3723,6 +3724,82 @@ System.out.println("Print Done");
             {
                 rtDos = null;
                 handleNotRt();
+            }
+        }
+
+    }
+
+
+    void copyMhdBr(int fromShot, int toShot)
+    {
+        Data data303, data304, data305;
+        NidData nid303, nid304, nid305;
+        Data decouplingData;
+        if(fromShot == toShot)
+            return;
+
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", fromShot);
+            rfx.open();
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + fromShot, "Error opening shot",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            nid303 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL"), 0);
+            data303 = rfx.getData(nid303, 0);
+            nid304 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR304_VAL"), 0);
+            data304 = rfx.getData(nid304, 0);
+            nid305 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR305_VAL"), 0);
+            data305 = rfx.getData(nid305, 0);
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot read MHD_BR for " + fromShot, "Error reading data",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", toShot);
+            rfx.open();
+        }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot open shot " + toShot, "Error opening shot",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try {
+            nid303 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL"), 0);
+            rfx.putData(nid303, data303, 0);
+            nid304 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR304_VAL"), 0);
+            rfx.putData(nid304, data304, 0);
+            nid305 = rfx.resolve(new PathData("\\MHD_AC::CONTROL.PARAMETERS:PAR305_VAL"), 0);
+            rfx.putData(nid305, data305, 0);
+         }
+        catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(this, "Cannot write MHD_BR for " + toShot, "Error reading data",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if(toShot != shot)
+        {
+            try {
+                rfx.close(0);
+                rfx = new Database("rfx", shot);
+                rfx.open();
+            }
+            catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(this, "Cannot open shot " + shot, "Error opening shot",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
         }
 
