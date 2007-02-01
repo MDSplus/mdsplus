@@ -1257,14 +1257,14 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 #ifdef USE_PIPED_MESSAGING
 	/* this will block.. until the first writer! */
     while(1) {
-	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
+      //	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
     { 
 		char keypath[PATH_MAX];
 		setKeyPath(keypath,msgKey);
 		/* this will block.. until the first writer! */
 		msgId = open(keypath, O_RDONLY);
 	}
-	UnlockMdsShrMutex(&msgIdMutex);
+    //	UnlockMdsShrMutex(&msgIdMutex);
 #endif
 
     while(1)
