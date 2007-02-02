@@ -808,7 +808,7 @@ STATIC_ROUTINE int getSemId()
   return semId;
 }
 
-STATIC_ROUTINE int semSet(int lock)
+int semSet(int lock)
 {
     int status;
 #ifdef HAVE_WINDOWS_H
@@ -859,7 +859,6 @@ STATIC_ROUTINE int semSet(int lock)
     return(status == 0);
 #endif
 }
-
 
 STATIC_ROUTINE int getLock()
 {
@@ -974,25 +973,9 @@ STATIC_ROUTINE void setHandle()
      mode_t um;
       
      um = umask(0);
+     msgKey=getpid();
      setKeyPath(keypath,msgKey);
-     while (mkfifo(keypath,0666) == -1) {
-       if (errno == EEXIST) {
-	 msgId = open(keypath, O_WRONLY | O_NONBLOCK);   /* Make sure someone has this fifo open */
-	 if (msgId == -1 && errno == ENXIO) {
-	   struct stat statbuf;
-	   int istat=stat(keypath,&statbuf);
-	   if ((time(NULL) - statbuf.st_atime) > 60)
-	     break; /* Old one, reuse this one */
-	 }
-	 if (msgId == -1 && errno == ENXIO) break; /* Nope, reuse this one */
-	 close(msgId); /* Somebody else, don't use it */
-	 setKeyPath(keypath,++msgKey);
-       }
-       else {
-	 perror("Fatal error with MdsEvent pipes");
-	 exit(errno);
-       }
-     }
+     mkfifo(keypath,0666);
      msgId=-1;
      umask(um);
 #else 
@@ -1017,6 +1000,7 @@ STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
     int status, msgid;
 #ifdef USE_PIPED_MESSAGING
     char keypath[PATH_MAX];
+    int tries;
 #else
     struct msqid_ds msginfo;
     time_t curr_time;
@@ -1314,7 +1298,6 @@ STATIC_ROUTINE void cleanup(int dummy)
 
     is_exiting = 1;
     if(!shared_info) return;
-
     getLock();
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
@@ -1851,7 +1834,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 
     setHandle();
 
-    /* lock shared memory region */ 
+    /* lock shared memory region */
     getLock();
 
     if(!shared_info)
@@ -1903,7 +1886,6 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 
     shared_name[j].refcount++;
     shared_info[i].nameid = j;
-    
     releaseLock();
     UnlockMdsShrMutex(&sharedMutex);
     
@@ -2057,6 +2039,23 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
     return status;
 }
 
+void RemoveAllDeadQueues() {
+#ifdef USE_PIPED_MESSAGING                                
+  int name_idx,curr_id;
+ loop:
+  for(name_idx = 0; name_idx < MAX_EVENTNAMES; name_idx++) {
+    for(curr_id = shared_name[name_idx].first_id; curr_id != -1;
+	curr_id = shared_info[curr_id].next_id) {
+      if (kill(shared_info[curr_id].msgkey,0) == -1 && errno == ESRCH) {
+	removeDeadMsg(shared_info[curr_id].msgkey);
+	goto loop;
+      }
+    }
+  }
+#endif
+  return;
+}
+
 int MDSEvent(char *evname_in, int data_len, char *data)
 {
   int i, j, name_idx, curr_id, use_local;
@@ -2089,6 +2088,7 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 
     /* Search event name in the event name list */
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
+    RemoveAllDeadQueues();
     for(name_idx = 0; name_idx < MAX_EVENTNAMES && (shared_name[name_idx].refcount == 0 
       || strcmp(shared_name[name_idx].name, evname)); name_idx++);
     if(name_idx < MAX_EVENTNAMES)
@@ -2097,7 +2097,6 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 	  curr_id = shared_info[curr_id].next_id)
 	sendMessage(evname, shared_info[curr_id].msgkey, data_len, data);
     }
-
     releaseLock();
     UnlockMdsShrMutex(&sharedMutex);
   }
