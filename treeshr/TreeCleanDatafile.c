@@ -64,8 +64,8 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
                   struct nci_list *old_list=list;
 		  TreeSetViewDate(&list->nci.time_inserted);
 		  if (first) {
-                    static NCI empty_nci;
-		    TreePutNci(info2, i, &empty_nci, 1);
+		    list->nci.length=0;
+		    TreePutNci(info2, i, &list->nci, 1);
                     first=0;
                   }
 		  if (list->nci.flags2 & NciM_EXTENDED_NCI) {
