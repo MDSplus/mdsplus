@@ -100,5 +100,6 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
       MdsValue('Dt196AOWriteOutput($,$,[0,0])', _board, _chan+1);
     }
   }
+  MdsValue('Dt196AOSendFiles($)', _board);
   return(1);
 }
