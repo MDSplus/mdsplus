@@ -128,7 +128,7 @@ int MdsTimeToDouble(_int64u in64, double *retDouble)
 	if(in64 & 0x8000000000000000LL) //If most significant bit set, it is a positive number
 	{
 		currInt64_1 = in64 & 0x7FFFFFFFFFFFFFFFLL;
-		memcpy(retDouble, currInt64_1, 8);
+		memcpy(retDouble, &currInt64_1, 8);
 		return 1;
 	}
 	//Otherwise need to operate on mantissa and exponent
@@ -142,7 +142,7 @@ int MdsTimeToDouble(_int64u in64, double *retDouble)
 
 	retInt64 |= currInt64_1;
 	retInt64 |= 0x8000000000000000LL;
-	memcpy(retDouble, retInt64, 8);
+	memcpy(retDouble, &retInt64, 8);
 	return 1;
 }
 
