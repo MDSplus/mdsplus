@@ -39,7 +39,7 @@ extern int Tdi3Add();
 extern int CvtConvertFloat();
 
 TdiRefStandard(Tdi1Array)
-array_coeff arr = {sizeof(int),DTYPE_L,CLASS_A,(char *)0,0,0,{0,1,1,1,0},MAXDIM,0};
+array_coeff arr = {1,DTYPE_B,CLASS_A,(char *)0,0,0,{0,1,1,1,0},MAXDIM,0};
 array_int cvt = {sizeof(int),DTYPE_L,CLASS_A,(int *)0,0,0,{0,1,1,0,0},1,0};
 struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 struct descriptor_xd	tmp = EMPTY_XD;
@@ -97,7 +97,7 @@ int				j, ndim=0;
 	*****************************/
 	if (status & 1) {
 		if (arr.class == CLASS_A) {
- 			for (arr.arsize = sizeof(int), j = ndim; --j >= 0;) arr.arsize *= arr.m[j];
+ 			for (arr.arsize = 1, j = ndim; --j >= 0;) arr.arsize *= arr.m[j];
 			status = MdsGet1DxA((struct descriptor_a *)&arr, &length, &dtype, out_ptr);
 		}
 		else	status = MdsGet1DxS(&length, &dtype, out_ptr);
