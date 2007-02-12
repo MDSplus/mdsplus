@@ -68,6 +68,7 @@
 #include <mdsshr.h>
 #include <librtl_messages.h>
 #include <STATICdef.h>
+#include <mdstypes.h>
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -109,7 +110,7 @@ int       MdsCmprs(
   unsigned short *pxus = (unsigned short *)px;
   short     *pxs = (short *)px;
   char     *ppack = pack_dsc_ptr->pointer;
-  int       limit = pack_dsc_ptr->arsize * 8 - 2 * (BITSY + BITSX);
+  _int64u       limit = ((_int64u)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX);
   register int j,
               yy;
   register int i,

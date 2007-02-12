@@ -60,12 +60,12 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 			            struct descriptor_xd *out_xd)
 {
   array_coeff *in_dsc = (array_coeff *) in_ptr;
-  int       new_arsize;
-  int       dsc_size;
+  unsigned int       new_arsize;
+  unsigned int       dsc_size;
   unsigned int new_size;
   int       status;
   int       i;
-  int align_size;
+  unsigned int align_size;
   array_coeff *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
   new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);

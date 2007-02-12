@@ -20,7 +20,7 @@
 #include <STATICdef.h>
 
 struct vmlist { struct vmlist *next;
-                int len;
+                unsigned int len;
                 char pre[20];
                 char vm[1];
               };
@@ -28,18 +28,23 @@ struct vmlist { struct vmlist *next;
 STATIC_THREADSAFE struct vmlist *VM = 0;
 STATIC_THREADSAFE int NumMalloc = 0;
 STATIC_THREADSAFE int NumFree = 0;
-STATIC_THREADSAFE int Allocated = 0;
+STATIC_THREADSAFE unsigned int Allocated = 0;
 STATIC_CONSTANT char PRE[]  = "abcdefghijklmnopqrst";
 STATIC_CONSTANT char POST[] = "tsrqponmlkjihgfedcba";
 
 STATIC_ROUTINE void CheckList();
 
-void *MdsMALLOC(int len)
+void *MdsMALLOC(unsigned int len)
 {
-  struct vmlist *p = malloc(len+sizeof(struct vmlist)+sizeof(POST)-1);
+  size_t length=len+sizeof(struct vmlist)+sizeof(POST)-1;
+  struct vmlist *p = malloc(length);
   if (len <= 0)
   {
     MDSprintf("malloc called with len <= 0\n");
+    raise(SIGUSR1);
+  }
+  if (p == NULL)
+  {
     raise(SIGUSR1);
   }
   p->len = len;
@@ -79,7 +84,7 @@ void MdsFREE(void *ptr)
   pthread_unlock_global_np();
 }
 
-void *MdsREALLOC(void *ptr, int len)
+void *MdsREALLOC(void *ptr, unsigned int len)
 {
   void *newmem = MdsMALLOC(len);
   struct vmlist *n;
@@ -143,7 +148,7 @@ void MdsShowVM(int full)
   pthread_unlock_global_np();
 }    
 
-void *MdsCALLOC(int num, int len)
+void *MdsCALLOC(int num, unsigned int len)
 {
   return memset(MdsMALLOC(num * len),0,num*len);
 }
