@@ -169,6 +169,10 @@ SOURCE=.\TreeRenameNode.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\TreeSegments.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\TreeSerializeNci.c
 # End Source File
 # Begin Source File
