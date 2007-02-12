@@ -230,6 +230,10 @@ SOURCE=.\tcl_setevent.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcl_setshow_attribute.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\tcl_setshow_versions.c
 # End Source File
 # Begin Source File
