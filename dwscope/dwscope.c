@@ -649,23 +649,23 @@ static void /*XtCallbackProc*/Autoscale(Widget w, String type, XmAnyCallbackStru
   switch (type[0])
   {
     case 'y':
-      XtVaSetValues(PendingWave->w, XmdsNyMin, (_pointer_int)0, XmdsNyMax, (_pointer_int)0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL); break;
     case 'x':
-      XtVaSetValues(PendingWave->w, XmdsNxMin, (_pointer_int)0, XmdsNxMax, (_pointer_int)0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNxMin, NULL, XmdsNxMax, NULL, NULL); break;
     case 'b':
-      XtVaSetValues(PendingWave->w, XmdsNxMin, (_pointer_int)0, XmdsNxMax, (_pointer_int)0, XmdsNyMin, (_pointer_int)0, XmdsNyMax, (_pointer_int)0, NULL); break;
+      XtVaSetValues(PendingWave->w, XmdsNxMin, NULL, XmdsNxMax, NULL, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL); break;
     case 'Y':
       for (c = 0; c < MaxCols; c++)
         for (r = 0; r < MaxRows; r++)
-          XtVaSetValues(Wave[c][r].w, XmdsNyMin, 0, XmdsNyMax, 0, NULL); break;
+          XtVaSetValues(Wave[c][r].w, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL); break;
     case 'X':
       for (c = 0; c < MaxCols; c++)
         for (r = 0; r < MaxRows; r++)
-          XtVaSetValues(Wave[c][r].w, XmdsNxMin, 0, XmdsNxMax, 0, NULL); break;
+          XtVaSetValues(Wave[c][r].w, XmdsNxMin, NULL, XmdsNxMax,NULL, NULL); break;
     case 'B':
       for (c = 0; c < MaxCols; c++)
         for (r = 0; r < MaxRows; r++)
-          XtVaSetValues(Wave[c][r].w, XmdsNxMin, 0, XmdsNxMax, 0, XmdsNyMin, 0, XmdsNyMax, 0, NULL); break;
+          XtVaSetValues(Wave[c][r].w, XmdsNxMin, NULL, XmdsNxMax, NULL, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL); break;
     case '0':
       {
         float *xMin;
@@ -714,7 +714,7 @@ static void /*XtCallbackProc*/Autoscale(Widget w, String type, XmAnyCallbackStru
         XtVaGetValues(PendingWave->w, XmdsNxMin, &xMin, XmdsNxMax, &xMax, XmdsNyMin, &yMin, XmdsNyMax, &yMax, NULL);
         for (c = 0; c < MaxCols; c++)
           for (r = 0; r < MaxRows; r++)
-            XtVaSetValues(Wave[c][r].w, XmdsNxMin, xMin, XmdsNxMax, xMax, XmdsNyMin, 0, XmdsNyMax, 0, NULL);
+            XtVaSetValues(Wave[c][r].w, XmdsNxMin, xMin, XmdsNxMax, xMax, XmdsNyMin, NULL, XmdsNyMax, NULL, NULL);
         break;
       }
     case '4':
