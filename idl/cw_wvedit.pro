@@ -840,6 +840,12 @@ FUNCTION cw_wvedit, UVALUE = uval, TITLE = title, ROWS = rows, USER_BUTTONS=ubut
 
 
 ;  ON_ERROR, 2					;return to caller
+;
+; Make sure UIDPATH is OK
+;
+  info = file_info('/usr/local/mdsplus/uid32')  
+  if (info.exists and !version.MEMORY_BITS eq 32) then $
+    setenv,'UIDPATH=/usr/local/mdsplus/uid32/%U'
 
 	; Defaults for keywords
   IF NOT (KEYWORD_SET(uval))  THEN uval = 0
