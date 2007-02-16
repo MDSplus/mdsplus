@@ -26,6 +26,9 @@ MdsCompareXd
 MdsCopyDxXd
 MdsCopyDxXdZ
 MdsDescrToCstring
+MdsFloatToTime
+MdsFloatToDelta
+MdsTimeToFloat
 MdsFree1Dx
 MdsFree
 MdsGet1Dx
@@ -110,5 +113,3 @@ LibDeleteVmZone
 MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
-MdsFloatToTime
-MdsTimeToDouble
