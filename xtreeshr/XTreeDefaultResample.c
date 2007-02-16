@@ -12,208 +12,279 @@ static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char  *les
 static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
 extern int TdiCompile();
 extern int TdiData();
+extern int TdiFloat();
 extern int TdiEvaluate();
+extern int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *converted);
+extern int XTreeConvertToLongDelta(struct descriptor *deltaD, _int64u *converted);
 
-
-//The default resample handles floating point times
-static void convertTimebaseToFloat(struct descriptor_signal *inSignalD, struct descriptor_xd *outXd)
+static void printDecompiled(struct descriptor *inD)
 {
-	struct descriptor_a *currDim;
-	_int64u *ptr64;
-	double *outDoubles;
-	int numSamples, i;
-	DESCRIPTOR_A(doubleDimD, 8, DTYPE_DOUBLE, 0, 0);
+	int status;
+	EMPTYXD(out_xd);
+	char *buf;
 
-	currDim = (struct descriptor_a *)inSignalD->dimensions[0];
-	if(currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype ==DTYPE_QU)) 
-	{//conversion needed
-		outDoubles = (double *)malloc(currDim->arsize);
-		doubleDimD.pointer = (char *)outDoubles;
-		doubleDimD.arsize = currDim->arsize;
-		ptr64 = (_int64u *)currDim->pointer;
-		numSamples = currDim->arsize / currDim->length;
-		for(i = 0; i < numSamples; i++)
-			MdsTimeToDouble(ptr64[i], &outDoubles[i]);
-		inSignalD->dimensions[0] = (struct descriptor *)&doubleDimD;
-		MdsCopyDxXd((struct descriptor *)inSignalD, outXd);
-		inSignalD->dimensions[0] = (struct descriptor *)currDim;
-		free((char *)outDoubles);
-	}
-	else
+	status = TdiDecompile(inD, &out_xd MDS_END_ARG);
+	if(!(status & 1))
 	{
-		MdsCopyDxXd((struct descriptor *)inSignalD, outXd);
+		printf("%s\n", MdsGetMsg(status));
+		return;
 	}
+	buf = malloc(out_xd.pointer->length + 1);
+	memcpy(buf, out_xd.pointer->pointer, out_xd.pointer->length);
+	buf[out_xd.pointer->length] = 0;
+	out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
+	printf("%s\n", buf);
+	free(buf);
+	MdsFree1Dx(&out_xd, 0);
 }
 
 
+
+
+//64 bit time-based resampling function. It is assumed here that the 54 bit representation of time is the count
+//of a given, fixed amount of time, starting from a given time in the past
+//The closest point is selected as representative for a given time
+static void resample(_int64u start, _int64u end, _int64u delta, _int64u *timebase, int timebaseSamples, 
+					int numDims, int *dims, char *data, int dataSize, char *outData, _int64u *outDim, int *retSamples)
+{
+	int i, timebaseIdx, outIdx, itemSize, outSamples;
+	_int64u refTime, delta1, delta2;
+
+	itemSize = dataSize;
+	for(i = 0; i < numDims - 1; i++)
+		itemSize *= dims[i];
+
+
+	if(start < timebase[0])
+		start = timebase[0];
+	if(end > timebase[timebaseSamples - 1])
+		end = timebase[timebaseSamples - 1];
+
+	timebaseIdx = outIdx = outSamples = 0;
+	refTime = start;
+	while(refTime <= end)
+	{
+		while(timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
+			timebaseIdx++;
+		//Select closest sample
+		if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+		{
+			delta1 = timebase[timebaseIdx] - refTime;
+			delta2 = refTime - timebase[timebaseIdx - 1];
+			if(delta2 < delta1)
+				timebaseIdx--;
+		}
+		memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
+		outDim[outSamples] = refTime;
+		outSamples++;
+		if(delta > 0)
+			refTime += delta;
+		else
+		{
+			if(timebaseIdx < timebaseSamples - 1)
+				refTime = timebase[timebaseIdx + 1];
+			else
+				refTime += 1; //Just to pass over end
+		}
+	}
+
+}
+
+
+
+
+//The default resample handles int64 timebases
+//return 0 if the conversion is  not possible
+static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
+{
+	struct descriptor_a *currDim;
+	double *doublePtr;
+	float *floatPtr;
+	_int64u *outPtr;
+	int numSamples, i, status;
+	EMPTYXD(currXd);
+
+
+
+	currDim = (struct descriptor_a *)inSignalD->dimensions[0];
+	//If timebase already using 64 bit int
+	if(currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU))
+	{
+		outPtr = malloc(currDim->arsize);
+		numSamples = currDim->arsize/currDim->length;
+		for(i = 0; i < numSamples; i++)
+			outPtr[i] = ((_int64u *)currDim->pointer)[i];
+		*outSamples = numSamples;
+		return outPtr;
+	}
+
+	status = TdiData(currDim, &currXd MDS_END_ARG);
+	if(status & 1)
+		status = TdiFloat(&currXd, &currXd MDS_END_ARG);
+
+	currDim = (struct descriptor_a *)currXd.pointer;
+	if(!(status & 1) || currDim->class != CLASS_A || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE))
+		//Cannot perform conversion
+	{
+		MdsFree1Dx(&currXd, 0);
+		return 0;
+	}
+	numSamples = currDim->arsize/currDim->length;
+	outPtr = malloc(8 * numSamples);
+	if(currDim->dtype == DTYPE_FLOAT)
+	{
+		floatPtr = (float *)currDim->pointer;
+		for(i = 0; i < numSamples; i++)
+			MdsFloatToTime(floatPtr[i], &outPtr[i]);
+	}
+	else //currDim->dtype == DTYPE_DOUBLE)
+	{
+		doublePtr = (double *)currDim->pointer;
+		for(i = 0; i < numSamples; i++)
+			MdsFloatToTime(doublePtr[i], &outPtr[i]);
+	}
+	*outSamples = numSamples;
+	MdsFree1Dx(&currXd, 0);
+	return outPtr;
+}
 
 
 
 EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
-						 struct descriptor *minDeltaD, struct descriptor_xd *outSignalXd)
+						 struct descriptor *deltaD, struct descriptor_xd *outSignalXd)
 {
 	char resampleExpr[64];
 	struct descriptor resampleExprD = {0, DTYPE_T, CLASS_S, resampleExpr};
+	struct descriptor_a *arrayD;
+	char *shapeExpr = "SHAPE(DATA($1))";
+	struct descriptor shapeExprD = {strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr};
 
-	EMPTYXD(minXd);
-	EMPTYXD(maxXd);
-	EMPTYXD(compiledXd);
-	EMPTYXD(signalXd);
-	
-	int status;
-	char toResample = 0;
-	char isLess;
-	int varCount;
-	struct descriptor_signal *signalD;
-//Check whether resampling is needed
+	_int64u start64, end64, delta64, *timebase64, *outDim;
+	float *timebaseFloat;
+	int *dims;
+	int numDims;
+	int numTimebaseSamples;
+	int outSamples, itemSize;
+	int isFloat = 0;
+	int status, i;
+	char *outData;
+	struct descriptor_a *dataD;
+	EMPTYXD(shapeXd);
 
+	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 256, 0); 
+	DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
+	DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
 
-//This version cannot handle 64 bit time format for timebases
-	convertTimebaseToFloat(inSignalD, &signalXd);
-	signalD = (struct descriptor_signal *)signalXd.pointer;
-
-
-
-	if(minDeltaD)
-		toResample = 1;
-	else
-	{
-		if(startD)
-		{	
-			status = getMinMax(signalD->dimensions[0], 1, &minXd);
-			if(!(status & 1))
-			{
-				MdsFree1Dx(&signalXd, 0);
-				return status;
-			}
-			status = lessThan(minXd.pointer, startD, &isLess);
-			if(!(status & 1))
-			{
-				MdsFree1Dx(&signalXd, 0);
-				return status;
-			}
-			if(isLess)
-				toResample = 1;
-			MdsFree1Dx(&minXd, 0);
-		}
-		if(!toResample && endD)
-		{	
-			status = getMinMax(signalD->dimensions[0], 0, &maxXd);
-			if(!(status & 1))	
-			{
-				MdsFree1Dx(&signalXd, 0);
-				return status;
-			}
-			status = lessThan(endD, maxXd.pointer, &isLess);
-			if(!(status & 1))
-			{
-				MdsFree1Dx(&signalXd, 0);
-				return status;
-			}
-			if(isLess)
-				toResample = 1;
-			MdsFree1Dx(&maxXd, 0);
-		}
-	}
-	if(!toResample)
-	{
-		status = MdsCopyDxXd((struct descriptor *)signalD, outSignalXd);
-		MdsFree1Dx(&signalXd, 0);
-		return status;
-	}
-	//No way, need resampling here
-	varCount = 1;
-
-	sprintf(resampleExpr, "$1[");
 	if(startD)
-		sprintf(&resampleExpr[strlen(resampleExpr)], "($%d):", ++varCount);
-	else
-		sprintf(&resampleExpr[strlen(resampleExpr)], "*:");
+	{
+		if(startD->dtype != DTYPE_Q && startD->dtype != DTYPE_QU)
+			isFloat = 1;
+		status = XTreeConvertToLongTime(startD, &start64);
+		if(!(status & 1))
+			return status;
+	}
 	if(endD)
-		sprintf(&resampleExpr[strlen(resampleExpr)], "($%d):", ++varCount);
-	else
-		sprintf(&resampleExpr[strlen(resampleExpr)], "*:");
-	if(minDeltaD)
-		sprintf(&resampleExpr[strlen(resampleExpr)], "($%d)]", ++varCount);
-	else
-		sprintf(&resampleExpr[strlen(resampleExpr)], "*]");
-
-
-	resampleExprD.length = strlen(resampleExpr);
-	switch(varCount)	{
-		case 1:
-			status = TdiCompile(&resampleExpr, signalD MDS_END_ARG);
-			break;
-		case 2:
-			if(startD)
-				status = TdiCompile(&resampleExprD, signalD, startD, &compiledXd MDS_END_ARG);
-			else if(endD)
-				status = TdiCompile(&resampleExprD, signalD, endD, &compiledXd MDS_END_ARG);
-			else
-				status = TdiCompile(&resampleExprD, signalD, minDeltaD, &compiledXd MDS_END_ARG);
-			break;
-		case 3:
-			if(startD && endD)
-				status = TdiCompile(&resampleExprD, signalD, startD, endD, &compiledXd  MDS_END_ARG);
-			else if(startD && minDeltaD)
-				status = TdiCompile(&resampleExprD, signalD, startD, minDeltaD, &compiledXd MDS_END_ARG);
-			else
-				status = TdiCompile(&resampleExprD, signalD, endD, minDeltaD, &compiledXd MDS_END_ARG);
-			break;
-		case 4:
-			status = TdiCompile(&resampleExprD, signalD, startD, endD, minDeltaD, &compiledXd MDS_END_ARG);
-			break;
-	}
-	if(!(status & 1))
 	{
-		MdsFree1Dx(&signalXd, 0);
-		return status;
+		if(endD->dtype != DTYPE_Q && endD->dtype != DTYPE_QU)
+			isFloat = 1;
+		status = XTreeConvertToLongTime(endD, &end64);
+		if(!(status & 1))
+			return status;
 	}
-	status = TdiEvaluate(&compiledXd, outSignalXd MDS_END_ARG);
-	MdsFree1Dx(&compiledXd, 0);
-	return status;
-}
+	if(deltaD)
+	{
+		if(deltaD->dtype != DTYPE_Q && deltaD->dtype != DTYPE_QU)
+			isFloat = 1;
+		status = XTreeConvertToLongDelta(deltaD, &delta64);
+		if(!(status & 1))
+			return status;
+	}
 
+//This version handles only 64 bit time format
+	if(inSignalD->dimensions[0]->dtype != DTYPE_Q && inSignalD->dimensions[0]->dtype != DTYPE_QU)
+		isFloat = 1;
 
-static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char  *less)
-{
-	char ltExpr[64] = "$1 lt $2";
-	struct descriptor ltExprD = {strlen(ltExpr), DTYPE_T, CLASS_S, ltExpr};
-	int status;
-	EMPTYXD(xd);
+	timebase64 = convertTimebaseToInt64(inSignalD, &numTimebaseSamples);
+	if(!timebase64) return 0; //Cannot convert timebase to 64 bit int
 
-	ltExprD.length = strlen(ltExpr);
-	status = TdiCompile(&ltExprD, in1D, in2D, &xd MDS_END_ARG);
+	if(!startD)
+		start64 = timebase64[0];
+	if(!endD)
+		end64 = timebase64[numTimebaseSamples - 1];
+
+	if(start64 < timebase64[0])
+		start64 = timebase64[0];
+	if(end64 > timebase64[numTimebaseSamples - 1])
+		end64 = timebase64[numTimebaseSamples - 1];
+
+//Get shapes(dimensions) for data
+	dataD = (struct descriptor_a *)inSignalD->data;
+	status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
+	if(!(status & 1)) return status;;
+	status = TdiData(&shapeXd, &shapeXd MDS_END_ARG);
 	if(!(status & 1)) return status;
-	status = TdiData(&xd, &xd MDS_END_ARG);
-	if(!(status & 1))
+	arrayD = (struct descriptor_a *)shapeXd.pointer;
+	numDims = arrayD->arsize/arrayD->length;
+	dims = (int *)arrayD->pointer;
+	//Make sure enough room is allocated
+	if(!deltaD)
+		outSamples = dataD->arsize / dataD->length;
+	else 
+		outSamples = (end64 - start64)/delta64 + 1;
+
+	itemSize = dataD->length;
+	for(i = 0; i < numDims-1; i++)
+		itemSize *= dims[i];
+	outData = malloc(outSamples * itemSize);
+	outDim = malloc(outSamples * 8);
+
+
+	resample(start64, end64, (deltaD)?delta64:0, timebase64, numTimebaseSamples, numDims, dims, 
+		dataD->pointer, dataD->length, outData, outDim, &outSamples);
+
+	//Build array descriptor for out data
+	outDataArray.length = dataD->length;
+	outDataArray.dtype = dataD->dtype;
+	outDataArray.pointer = outData;
+	outDataArray.arsize = itemSize*outSamples;
+	outDataArray.dimct = numDims;
+	for(i = 0; i < numDims-1; i++)
 	{
-		MdsFree1Dx(&xd, 0);
-		return status;
+		outDataArray.m[i] = dims[i];
 	}
-	//Expected return type is BU
-	*less = *xd.pointer->pointer;
-	MdsFree1Dx(&xd, 0);
+	outDataArray.m[numDims - 1] = outSamples;
+
+	//If originally float, convert  dimension to float
+	if(isFloat)
+	{
+		timebaseFloat = (float *)malloc(outSamples * sizeof(float));
+		for(i = 0; i < outSamples; i++)
+			MdsTimeToFloat(outDim[i], &timebaseFloat[i]);
+		outDimArray.length = sizeof(float);
+		outDimArray.arsize = sizeof(float) * outSamples;
+		outDimArray.dtype = DTYPE_FLOAT;
+		outDimArray.pointer = (char *)timebaseFloat;
+	}
+	else
+	{
+		outDimArray.length = 8;
+		outDimArray.arsize = 8 * outSamples;
+		outDimArray.dtype = DTYPE_QU;
+		outDimArray.pointer = (char *)outDim;
+	}
+
+	
+	MdsCopyDxXd(&outSignalD, outSignalXd);
+	free((char *)timebase64);
+	free((char *)outDim);
+	if(isFloat)
+		free((char *)timebaseFloat);
+	free((char *)outData);
+	MdsFree1Dx(&shapeXd, 0);
+	
+
+	
+	
 	return 1;
-}
-
-static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd)
-{
-	char expr[64] = "XXXXXX($1)";
-	struct descriptor exprD = {strlen(expr), DTYPE_T, CLASS_S, expr};
-	int status;
-	EMPTYXD(xd);
-
-	if(isMin)
-		memcpy(expr, "MINVAL", 6);
-	else
-		memcpy(expr, "MAXVAL", 6);
-
-	exprD.length = strlen(expr);
-	status = TdiCompile(&exprD, dimD, &xd MDS_END_ARG);
-	if(!(status & 1)) return status;
-	status = TdiData(&xd, outXd MDS_END_ARG);
-	MdsFree1Dx(&xd, 0);
-	return status;
 }
 

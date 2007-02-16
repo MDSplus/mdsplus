@@ -9,6 +9,13 @@
 
 extern unsigned short OpcExtFunction;
 
+//Temporary
+//#define TreeGetNumSegments RTreeGetNumSegments
+//#define TreeGetSegmentLimits RTreeGetSegmentLimits
+//#define TreeGetSegment RTreeGetSegment
+
+
+
 
 #define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
@@ -19,27 +26,6 @@ extern int TdiData(), TdiEvaluate();
 #endif
 
 extern int TdiDecompile();
-
-static void printDecompiled(struct descriptor *inD)
-{
-	int status;
-	EMPTYXD(out_xd);
-	char *buf;
-
-	status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-	if(!(status & 1))
-	{
-		printf("%s\n", MdsGetMsg(status));
-		return;
-	}
-	buf = malloc(out_xd.pointer->length + 1);
-	memcpy(buf, out_xd.pointer->pointer, out_xd.pointer->length);
-	buf[out_xd.pointer->length] = 0;
-	out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
-	printf("%s\n", buf);
-	free(buf);
-	MdsFree1Dx(&out_xd, 0);
-}
 
 
 
@@ -114,6 +100,9 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	}
 
 	//Get segment limits. If not evaluated to 64 bit int, make the required conversion.
+
+	
+
 	status = TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1))
 		return status;
@@ -165,8 +154,13 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			MdsFree1Dx(&retEndXd, 0);
 			if(!(status & 1)) return status;
 
-			if(currEnd > end) //Last overlapping segment
+			if(currEnd >= end) //Last overlapping segment
 			{
+				if(currStart > end) //all the segment lies outside the specifid range, it ha to be excluded
+				{
+					segmentIdx--;
+					break;
+				}
 				if(currStart < end)
 					lastSegmentTruncated = 1;
 				break;
@@ -202,18 +196,15 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 		if(!(status & 1))
 		{
 			free((char *)signals);
-			if(resampleFunName[0] || minDeltaD)
+			for(i = 0; i < actNumSegments; i++)
 			{
-				for(i = 0; i < actNumSegments; i++)
-				{
-					MdsFree1Dx(&resampledXds[i], 0);
-					MdsFree1Dx(&dataXds[i], 0);
-					MdsFree1Dx(&dimensionXds[i], 0);
-				}
-				free((char *)resampledXds);
-				free((char *)dataXds);
-				free((char *)dimensionXds);
+				MdsFree1Dx(&resampledXds[i], 0);
+				MdsFree1Dx(&dataXds[i], 0);
+				MdsFree1Dx(&dimensionXds[i], 0);
 			}
+			free((char *)resampledXds);
+			free((char *)dataXds);
+			free((char *)dimensionXds);
 			return status;
 		}
 
@@ -258,21 +249,19 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 					minDeltaD, &resampledXds[currSegIdx]);
 		}
 
+		
 		if(!(status & 1))
 		{
 			free((char *)signals);
-			if(resampleFunName[0] || minDeltaD)
+			for(i = 0; i < actNumSegments; i++)
 			{
-				for(i = 0; i < actNumSegments; i++)
-				{
-					MdsFree1Dx(&resampledXds[i], 0);
-					MdsFree1Dx(&dataXds[i], 0);
-					MdsFree1Dx(&dimensionXds[i], 0);
-				}
-				free((char *)resampledXds);
-				free((char *)dataXds);
-				free((char *)dimensionXds);
+				MdsFree1Dx(&resampledXds[i], 0);
+				MdsFree1Dx(&dataXds[i], 0);
+				MdsFree1Dx(&dimensionXds[i], 0);
 			}
+			free((char *)resampledXds);
+			free((char *)dataXds);
+			free((char *)dimensionXds);
 			return status;
 		}
 		if(resampleFunName[0] || minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
