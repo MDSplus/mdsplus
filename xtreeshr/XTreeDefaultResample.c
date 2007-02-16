@@ -177,24 +177,18 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 
 	if(startD)
 	{
-		if(startD->dtype != DTYPE_Q && startD->dtype != DTYPE_QU)
-			isFloat = 1;
 		status = XTreeConvertToLongTime(startD, &start64);
 		if(!(status & 1))
 			return status;
 	}
 	if(endD)
 	{
-		if(endD->dtype != DTYPE_Q && endD->dtype != DTYPE_QU)
-			isFloat = 1;
 		status = XTreeConvertToLongTime(endD, &end64);
 		if(!(status & 1))
 			return status;
 	}
 	if(deltaD)
 	{
-		if(deltaD->dtype != DTYPE_Q && deltaD->dtype != DTYPE_QU)
-			isFloat = 1;
 		status = XTreeConvertToLongDelta(deltaD, &delta64);
 		if(!(status & 1))
 			return status;
