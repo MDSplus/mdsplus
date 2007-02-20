@@ -1207,7 +1207,6 @@ static int PutSegmentHeader(TREE_INFO *info, SEGMENT_HEADER *hdr, _int64 *offset
   LoadQuad(hdr->index_offset,bptr); bptr+=sizeof(_int64);
   LoadQuad(hdr->data_offset,bptr); bptr+=sizeof(_int64);
   LoadQuad(hdr->dim_offset,bptr); bptr+=sizeof(_int64);
-  TreeLockDatafile(info,0,*offset);
   status = (MDS_IO_WRITE(info->data_file->put,buffer,sizeof(buffer)) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
   TreeUnLockDatafile(info,0,loffset);
   return status;
