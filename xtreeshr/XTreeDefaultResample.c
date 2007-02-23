@@ -171,7 +171,7 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 	struct descriptor_a *dataD;
 	EMPTYXD(shapeXd);
 
-	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 256, 0); 
+	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0); 
 	DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
 	DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
 
@@ -268,7 +268,7 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 	}
 
 	
-	MdsCopyDxXd(&outSignalD, outSignalXd);
+	MdsCopyDxXd((struct descriptor *)&outSignalD, outSignalXd);
 	free((char *)timebase64);
 	free((char *)outDim);
 	if(isFloat)
