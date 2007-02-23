@@ -122,8 +122,6 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
       memset(&segment_header,0,sizeof(segment_header));
       attributes.facility_offset[SEGMENTED_RECORD_FACILITY]=-1;
       segment_header.index_offset=-1;
-      segment_header.data_offset=-1;
-      segment_header.dim_offset=-1;
       segment_header.idx = -1;
       update_attributes=1;
     } else if (initialValue->dtype != segment_header.dtype || initialValue->dimct != segment_header.dimct ||
@@ -156,6 +154,8 @@ old array is same size.
       *******/
       add_length=0;
     }
+    segment_header.data_offset=-1;
+    segment_header.dim_offset=-1;
     segment_header.dtype=initialValue->dtype;
     segment_header.dimct=initialValue->dimct;
     segment_header.length=initialValue->length;
@@ -1977,7 +1977,7 @@ old array is same size.
 
  int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
    static int activated=0;
-   static int (*addr)(int, struct descriptor_xd *, struct descriptor_xd *, struct descriptor_xd *, struct descriptor_xd *);
+   static int (*addr)(int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
    int status=42;
    if (!activated) {
      static DESCRIPTOR(library,"XTreeShr");
