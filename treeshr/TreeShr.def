@@ -9,6 +9,8 @@ TreeAddNode
 _TreeAddNode
 TreeAddTag
 _TreeAddTag
+TreeBeginSegment
+_TreeBeginSegment
 TreeCleanDatafile
 _TreeCleanDatafile
 TreeClose
@@ -56,12 +58,20 @@ TreeGetDefaultNid
 _TreeGetDefaultNid
 TreeGetMinimumPath
 _TreeGetMinimumPath
+TreeGetNumSegments
+_TreeGetNumSegments
 TreeGetPath
 _TreeGetPath
 TreeGetRecord
 _TreeGetRecord
+TreeGetSegment
+_TreeGetSegment
+TreeGetSegmentLimits
+_TreeGetSegmentLimits
 TreeGetStackSize
 _TreeGetStackSize
+TreeGetXNci
+_TreeGetXNci
 TreeIsOn
 _TreeIsOn
 TreeIsOpen
@@ -76,6 +86,8 @@ TreeOpenNew
 _TreeOpenNew
 TreePutRecord
 _TreePutRecord
+TreePutSegment
+_TreePutSegment
 TreeQuitTree
 _TreeQuitTree
 TreeRemoveNodesTags
@@ -103,6 +115,8 @@ TreeSetSubtree
 _TreeSetSubtree
 TreeStartConglomerate
 _TreeStartConglomerate
+TreeSetTimeContext
+_TreeSetTimeContext
 TreeSwitchDbid
 TreeTurnOff
 _TreeTurnOff
@@ -118,3 +132,7 @@ TreeSetCurrentShotId
 TreeSetDbi
 TreeSetDbiItm
 TreeSetViewDate
+TreeSetXNci
+_TreeSetXNci
+TreeUpdateSegment
+_TreeUpdateSegment
