@@ -62,32 +62,37 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *timebas
 
 	timebaseIdx = outIdx = outSamples = 0;
 	refTime = start;
-	while(refTime <= end)
+	if(delta)
 	{
-		while(timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
-			timebaseIdx++;
-		//Select closest sample
-		if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+		while(refTime <= end)
 		{
-			delta1 = timebase[timebaseIdx] - refTime;
-			delta2 = refTime - timebase[timebaseIdx - 1];
-			if(delta2 < delta1)
-				timebaseIdx--;
-		}
-		memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
-		outDim[outSamples] = refTime;
-		outSamples++;
-		if(delta > 0)
+			while(timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
+				timebaseIdx++;
+			//Select closest sample
+			if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+			{
+				delta1 = timebase[timebaseIdx] - refTime;
+				delta2 = refTime - timebase[timebaseIdx - 1];
+				if(delta2 < delta1)
+					timebaseIdx--;
+			}
+			memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
+			outDim[outSamples] = refTime;
+			outSamples++;
 			refTime += delta;
-		else
-		{
-			if(timebaseIdx < timebaseSamples - 1)
-				refTime = timebase[timebaseIdx + 1];
-			else
-				refTime += 1; //Just to pass over end
 		}
+		*retSamples = outSamples;
 	}
-
+	else
+	{
+		while(timebase[timebaseIdx] < end)
+		{
+			memcpy(&outData[timebaseIdx * itemSize], &data[timebaseIdx * itemSize], itemSize);
+			outDim[timebaseIdx] = timebase[timebaseIdx];
+			timebaseIdx++;
+		}
+		*retSamples = timebaseIdx;
+	}
 }
 
 

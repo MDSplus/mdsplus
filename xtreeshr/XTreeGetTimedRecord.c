@@ -28,6 +28,29 @@ extern int TdiData(), TdiEvaluate();
 extern int TdiDecompile();
 
 
+static void printDecompiled(struct descriptor *inD)
+{
+	int status;
+	EMPTYXD(out_xd);
+	char *buf;
+	extern int TdiDecompile();
+
+	status = TdiDecompile(inD, &out_xd MDS_END_ARG);
+	if(!(status & 1))
+	{
+		printf("%s\n", MdsGetMsg(status));
+		return;
+	}
+	buf = malloc(out_xd.pointer->length + 1);
+	memcpy(buf, out_xd.pointer->pointer, out_xd.pointer->length);
+	buf[out_xd.pointer->length] = 0;
+	out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
+	printf("%s\n", buf);
+	free(buf);
+	MdsFree1Dx(&out_xd, 0);
+}
+
+
 
 
 
@@ -121,7 +144,8 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			status = XTreeConvertToLongTime(retEndXd.pointer, &currEnd);
 			MdsFree1Dx(&retStartXd, 0);
 			MdsFree1Dx(&retEndXd, 0);
-			if(!(status & 1)) return status;
+			if(!(status & 1)) 
+				return status;
 
 			if(currEnd > start) //First overlapping segment
 			{
@@ -247,7 +271,14 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			if(minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
 				status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD, 
 					minDeltaD, &resampledXds[currSegIdx]);
+			else
+				status = MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
 		}
+
+
+//printDecompiled(resampledXds[currSegIdx].pointer);
+//scanf("%d", &i);
+
 
 		
 		if(!(status & 1))
@@ -264,14 +295,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			free((char *)dimensionXds);
 			return status;
 		}
-		if(resampleFunName[0] || minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
-			signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
-		else
-		{
-			signals[currSegIdx] = (struct descriptor_signal *)malloc(sizeof(currSignalD));
-			memcpy(signals[currSegIdx], (struct descriptor *)&currSignalD, sizeof(currSignalD));
-
-		}
+		signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
 	}
 
 
@@ -299,12 +323,6 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 
 
 //Free stuff
-	for(i = 0; i < actNumSegments; i++)
-	{
-		if(!(resampleFunName[0] || minDeltaD || (i == startIdx && firstSegmentTruncated) || (i == endIdx && lastSegmentTruncated)))
-			free((char *)signals[i]);
-	}
-
 	free((char *)signals);
 	for(i = 0; i < actNumSegments; i++)
 	{
