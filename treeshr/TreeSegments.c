@@ -657,8 +657,8 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	      }
 	    }
 #endif
-	    MdsCopyDxXd((struct descriptor *)&ans,segment);
 	    if (sinfo->dimension_offset != -1 && sinfo->dimension_length==0) {
+	      _int64 *tp;
 	      status = TreeLockDatafile(info_ptr, 1, sinfo->dimension_offset);
 	      dim2.arsize=sinfo->rows * sizeof(_int64);
 	      dim2.pointer=malloc(dim2.arsize);
@@ -669,11 +669,18 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
 		*(_int64)bptr = swapquad(bptr);
 #endif
+              for (tp=(_int64 *)(dim2.pointer+dim2.arsize-dim2.length); (tp >= (_int64 *)dim2.pointer) && (*tp==0);tp--) {
+		ans.m[segment_header.dimct-1]--;
+		dim2.arsize-=sizeof(_int64);
+	      }
+	      ans.arsize=ans.length;
+	      for (i=0;i<ans.dimct; i++) ans.arsize *= ans.m[i];
 	      MdsCopyDxXd((struct descriptor *)&dim2,dim);
 	      free(dim2.pointer);
 	    } else {
 	      TreeGetDsc(info_ptr,sinfo->dimension_offset,sinfo->dimension_length,dim);
 	    }
+	    MdsCopyDxXd((struct descriptor *)&ans,segment);
 	  } else {
 	    status = TreeFAILURE;
 	  }
