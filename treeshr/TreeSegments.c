@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <treeshr.h>
 #include <usagedef.h>
+#include <libroutines.h>
+#include <mdsshr.h>
 #include "treeshrp.h"
 extern void *DBID;
 #ifdef __tolower
@@ -633,7 +637,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	  status = TreeLockDatafile(info_ptr, 1, sinfo->data_offset);
 	  MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->data_offset,SEEK_SET);
 	  status = (MDS_IO_READ(info_ptr->data_file->get,ans.pointer,ans.arsize) == ans.arsize) ? TreeSUCCESS : TreeFAILURE;
-	  TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
+	  status = TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
 	    if (ans.length > 1 && ans.dtype != DTYPE_T && ans.dtype != DTYPE_IDENT && ans.dtype != DTYPE_PATH) {
@@ -653,19 +657,19 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	      }
 	    }
 #endif
-	    MdsCopyDxXd(&ans,segment);
+	    MdsCopyDxXd((struct descriptor *)&ans,segment);
 	    if (sinfo->dimension_offset != -1 && sinfo->dimension_length==0) {
 	      status = TreeLockDatafile(info_ptr, 1, sinfo->dimension_offset);
 	      dim2.arsize=sinfo->rows * sizeof(_int64);
 	      dim2.pointer=malloc(dim2.arsize);
 	      MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->dimension_offset,SEEK_SET);
 	      status = (MDS_IO_READ(info_ptr->data_file->get,dim2.pointer,dim2.arsize) == dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
-	      status = TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
+	      status = TreeUnLockDatafile(info_ptr, 1, sinfo->dimension_offset);
 #ifdef WORDS_BIGENDIAN
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
 		*(_int64)bptr = swapquad(bptr);
 #endif
-	      MdsCopyDxXd(&dim2,dim);
+	      MdsCopyDxXd((struct descriptor *)&dim2,dim);
 	      free(dim2.pointer);
 	    } else {
 	      TreeGetDsc(info_ptr,sinfo->dimension_offset,sinfo->dimension_length,dim);
@@ -953,7 +957,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
       if (i < NAMED_ATTRIBUTES_PER_INDEX)
 	found_index=i;
       else if (index.previous_offset != -1) {
-	int new_offset=index.previous_offset;
+	_int64 new_offset=index.previous_offset;
 	if ((GetNamedAttributesIndex(info_ptr,index.previous_offset,&index)&1)==0) {
 	  break;
 	}
@@ -1127,7 +1131,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	    memcpy(np,p->name,longestattname);
 	    for (i=1;i<longestattname;i++) if (np[i]=='\0') np[i]=' ';
 	  }
-	  MdsCopyDxXd(&name_array,value);
+	  MdsCopyDxXd((struct descriptor *)&name_array,value);
 	  free(names);
 	}
       } else
@@ -1851,6 +1855,7 @@ old array is same size.
    } else {
      *offset=-1;
    }
+   return status;
  }
 
  static int DataCopy(TREE_INFO *info1, TREE_INFO *info2, _int64 offset1, int length, _int64 *offset2) {
