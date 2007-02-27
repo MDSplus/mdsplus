@@ -633,7 +633,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	  status = TreeLockDatafile(info_ptr, 1, sinfo->data_offset);
 	  MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->data_offset,SEEK_SET);
 	  status = (MDS_IO_READ(info_ptr->data_file->get,ans.pointer,ans.arsize) == ans.arsize) ? TreeSUCCESS : TreeFAILURE;
-	  status = TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
+	  TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
 	    if (ans.length > 1 && ans.dtype != DTYPE_T && ans.dtype != DTYPE_IDENT && ans.dtype != DTYPE_PATH) {
