@@ -1497,7 +1497,6 @@ time_t LibCvtTim(int *time_in,double *t)
     tmval = localtime(&time_int);
 #ifdef USE_TM_GMTOFF
     t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff; // - (tmval->tm_isdst ? 3600 : 0);
-    printf("tm_isdst=%d\n",tmval->tm_isdst);
 #else
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
