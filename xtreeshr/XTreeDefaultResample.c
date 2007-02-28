@@ -122,11 +122,24 @@ static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
 		*outSamples = numSamples;
 		return outPtr;
 	}
-
+	//otherwise evaluate it
 	status = TdiData(currDim, &currXd MDS_END_ARG);
 	if(status & 1)
-		status = TdiFloat(&currXd, &currXd MDS_END_ARG);
+	{
+		currDim = (struct descriptor_a *)currXd.pointer;
+		if(currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU))
+		{
+			outPtr = malloc(currDim->arsize);
+			numSamples = currDim->arsize/currDim->length;
+			for(i = 0; i < numSamples; i++)
+				outPtr[i] = ((_int64u *)currDim->pointer)[i];
+			*outSamples = numSamples;
+			MdsFree1Dx(&currXd, 0);
+			return outPtr;
+		}
 
+		status = TdiFloat(&currXd, &currXd MDS_END_ARG);
+	}
 	currDim = (struct descriptor_a *)currXd.pointer;
 	if(!(status & 1) || currDim->class != CLASS_A || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE))
 		//Cannot perform conversion
