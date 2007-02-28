@@ -1496,7 +1496,8 @@ time_t LibCvtTim(int *time_in,double *t)
     time_int = (time_t)time_d;
     tmval = localtime(&time_int);
 #ifdef USE_TM_GMTOFF
-    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
+    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff; // - (tmval->tm_isdst ? 3600 : 0);
+    printf("tm_isdst=%d\n",tmval->tm_isdst);
 #else
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
@@ -1511,42 +1512,6 @@ time_t LibCvtTim(int *time_in,double *t)
     *t = t_out;
   return(bintim);
 }
-#ifdef xxxxxx  
-int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
-{
-  char *time_str;
-  char time_out[23];
-  unsigned short slen=sizeof(time_out);
-  time_t bintim = LibCvtTim(time_in,0);
-  time_str = ctime(&bintim);
-  time_out[0]  = time_str[8];
-  time_out[1]  = time_str[9];
-  time_out[2]  = '-';
-  time_out[3]  = time_str[4];
-  time_out[4]  = (char)(time_str[5] & 0xdf);
-  time_out[5]  = (char)(time_str[6] & 0xdf);
-  time_out[6]  = '-';
-  time_out[7]  = time_str[20];
-  time_out[8]  = time_str[21];
-  time_out[9]  = time_str[22];
-  time_out[10] = time_str[23];
-  time_out[11] = ' ';
-  time_out[12] = time_str[11];
-  time_out[13] = time_str[12];
-  time_out[14] = time_str[13];
-  time_out[15] = time_str[14];
-  time_out[16] = time_str[15];
-  time_out[17] = time_str[16];
-  time_out[18] = time_str[17];
-  time_out[19] = time_str[18];
-  time_out[20] = '.';
-  time_out[21] = '0';
-  time_out[22] = '0';
-  StrCopyR(str,&slen,time_out);
-  if (len) *len = slen;
-  return 1;
-}
-#else
 #ifndef HAVE_WINDOWS_H
 #ifdef HAVE_VXWORKS_H
 #include <time.h>
@@ -1566,7 +1531,7 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   tzset();
 #endif
   if (time_in != NULL) {
-#ifdef HAVE_GETTIMEOFDAY
+#ifdef HAVE_GETTIMEOFDAYx
     _int64 tmp;
     struct timeval tv;
 	struct timezone tz;
@@ -1604,7 +1569,6 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   if (len) *len = slen;
   return 1;
 }
-#endif
 
 int LibGetDvi(int *code, void *dummy1, struct descriptor *device, int *ans, struct descriptor *ans_string, int *len)
 {

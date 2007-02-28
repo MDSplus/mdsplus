@@ -90,16 +90,7 @@ _int64 TreeTimeInserted() {
   tzset();
 #endif
   
-#ifdef HAVE_GETTIMEOFDAY
-  {
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv,&tz);
-    ans=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60)+(daylight * 3600))*10000000+tv.tv_usec*10 + addin;
-  }
-#else
-
-#ifdef USE_TM_GMTOFF      
+#if defined(USE_TM_GMTOFF)
   /* this is a suggestion to change all code 
      for this as timezone is depricated unix
      annother alternative is to use gettimeofday */
@@ -108,11 +99,18 @@ _int64 TreeTimeInserted() {
     time_t t;
     t = time(NULL);
     tm = localtime(&t);
-    ans = (_int64)((unsigned int)t + tm->tm_gmtoff + daylight * 3600) * (_int64)10000000 + addin;
+    ans = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin;
+  }
+
+#elif defined(HAVE_GETTIMEOFDAY)
+  {
+    struct timeval tv;
+    struct timezone tz;
+    gettimeofday(&tv,&tz);
+    ans=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60))*10000000+tv.tv_usec*10 + addin;
   }
 #else
   ans = (_int64)((unsigned int)time(NULL) - timezone + daylight * 3600) * (_int64)10000000 + addin;
-#endif
 #endif
   return ans;
 }
