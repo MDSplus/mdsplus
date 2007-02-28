@@ -85,7 +85,7 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *timebas
 	}
 	else
 	{
-		while(timebase[timebaseIdx] < end)
+		while(timebaseIdx < *retSamples && timebase[timebaseIdx] < end)
 		{
 			memcpy(&outData[timebaseIdx * itemSize], &data[timebaseIdx * itemSize], itemSize);
 			outDim[timebaseIdx] = timebase[timebaseIdx];
