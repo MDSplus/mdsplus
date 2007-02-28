@@ -64,7 +64,6 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 	if(signalsApd->class == CLASS_XD)
 		signalsApd = (struct descriptor_a *)((struct descriptor_xd *)signalsApd)->pointer;
 
-
 	numSignals = signalsApd->arsize / signalsApd->length;
 	if(numSignals == 0)
 	{
@@ -174,6 +173,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 	for(i = 0; i < numSignals; i++)
 	{
 		currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
+
+
 		status = TdiData(currSignalD->dimensions[0], &dimensionsXd[i] MDS_END_ARG);
 		if(!(status & 1)) break;
 		arrayD = (struct descriptor_a *)dimensionsXd[i].pointer;

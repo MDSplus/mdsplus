@@ -268,13 +268,12 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 		}
 		else
 		{
-			if(minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
+//			if(minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
 				status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD, 
 					minDeltaD, &resampledXds[currSegIdx]);
-			else
-				status = MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
+//			else
+//				status = MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
 		}
-
 
 //printDecompiled(resampledXds[currSegIdx].pointer);
 //scanf("%d", &i);
