@@ -102,6 +102,8 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+    local_nci.class = CLASS_R;
+    local_nci.dtype = initialValue->dtype;
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -1550,7 +1552,7 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
      status = TreeGetNciLw(info_ptr, nidx, &local_nci);
      local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
      local_nci.dtype=initialValue->dtype;
-     local_nci.class=CLASS_A;
+     local_nci.class=CLASS_R;
      local_nci.time_inserted=TreeTimeInserted();
      local_nci.owner_identifier=saved_uic;
      /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
