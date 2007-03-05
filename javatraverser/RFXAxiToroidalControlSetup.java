@@ -21,6 +21,7 @@ public class RFXAxiToroidalControlSetup extends DeviceSetup
     DeviceWave deviceWave1 = new DeviceWave();
     DeviceWave deviceWave2 = new DeviceWave();
   DeviceWave deviceWave3 = new DeviceWave();
+  DeviceWave deviceWave4 = new DeviceWave();
     public RFXAxiToroidalControlSetup()
     {
         try
@@ -57,11 +58,16 @@ public class RFXAxiToroidalControlSetup extends DeviceSetup
         deviceWave3.setMinYVisible(true);
         deviceWave3.setIdentifier("");
         deviceWave3.setUpdateExpression("");
-        this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
+        deviceWave4.setUpdateExpression("");
+    deviceWave4.setIdentifier("");
+    deviceWave4.setMinYVisible(true);
+    deviceWave4.setOffsetNid(21);
+    this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
       this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
       jTabbedPane1.add(deviceWave1,  "Wall Bt");
       jTabbedPane1.add(deviceWave2,  "F");
     jTabbedPane1.add(deviceWave3,  "Q");
+    jTabbedPane1.add(deviceWave4,   "Flux");
       this.getContentPane().add(jPanel1, BorderLayout.NORTH);
       jPanel1.add(deviceField1, null);
     }

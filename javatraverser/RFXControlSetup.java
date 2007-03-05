@@ -577,6 +577,19 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceTable deviceTable21 = new DeviceTable();
     JPanel jPanel71 = new JPanel();
     DeviceField deviceField72 = new DeviceField();
+  DeviceField deviceField611 = new DeviceField();
+  JPanel jPanel614 = new JPanel();
+  DeviceField deviceField510 = new DeviceField();
+  JPanel jPanel615 = new JPanel();
+  DeviceField deviceField426 = new DeviceField();
+  DeviceField deviceField511 = new DeviceField();
+  DeviceField deviceField513 = new DeviceField();
+  JPanel jPanel616 = new JPanel();
+  JPanel jPanel617 = new JPanel();
+  JPanel jPanel618 = new JPanel();
+  DeviceField deviceField515 = new DeviceField();
+  GridLayout gridLayout17 = new GridLayout();
+  DeviceField deviceField516 = new DeviceField();
   public RFXControlSetup() {
     try {
       jbInit();
@@ -2399,7 +2412,33 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField72.setLabelString("Derivative Cutoff Frequency (Hz): ");
         deviceField72.setNumCols(5);
         deviceField72.setIdentifier("");
-        jPanel414.add(deviceField420, null);
+        deviceField611.setIdentifier("");
+    deviceField611.setNumCols(40);
+    deviceField611.setLabelString("Reference Wave X: ");
+    deviceField611.setOffsetNid(1455);
+    jPanel614.setLayout(gridLayout17);
+    deviceField510.setOffsetNid(1451);
+    deviceField510.setLabelString("Start Time (s)");
+    deviceField510.setIdentifier("");
+    deviceField426.setOffsetNid(1453);
+    deviceField426.setLabelString("End Time (s):");
+    deviceField426.setIdentifier("");
+    deviceField511.setOffsetNid(1445);
+    deviceField511.setLabelString("Kp: ");
+    deviceField511.setIdentifier("");
+    deviceField513.setOffsetNid(1449);
+    deviceField513.setLabelString("Kd: ");
+    deviceField513.setIdentifier("");
+    deviceField515.setOffsetNid(1447);
+    deviceField515.setLabelString("Ki: ");
+    deviceField515.setIdentifier("");
+    gridLayout17.setColumns(1);
+    gridLayout17.setRows(4);
+    deviceField516.setOffsetNid(1457);
+    deviceField516.setLabelString("Reference Wave Y: ");
+    deviceField516.setNumCols(40);
+    deviceField516.setIdentifier("");
+    jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
     jPanel414.add(deviceField318, null);
@@ -2912,6 +2951,18 @@ public class RFXControlSetup extends DeviceSetup {
         jPanel70.add(deviceField71, null);
         jPanel70.add(deviceField70, null);
         jPanel70.add(deviceTable20, null);
+    jTabbedPane1.add(jPanel614,   "Flux Control - PID Parameters");
+    jPanel616.add(deviceField510, null);
+    jPanel616.add(deviceField426, null);
+    jPanel614.add(jPanel617, null);
+    jPanel614.add(jPanel616, null);
+    jPanel617.add(deviceField511, null);
+    jPanel617.add(deviceField515, null);
+    jPanel617.add(deviceField513, null);
+    jPanel614.add(jPanel615, null);
+    jPanel615.add(deviceField516, null);
+    jPanel614.add(jPanel618, null);
+    jPanel618.add(deviceField611, null);
   }
 
 }

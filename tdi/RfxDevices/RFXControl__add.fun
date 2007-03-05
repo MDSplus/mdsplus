@@ -1,8 +1,8 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-   DevAddStart(_path, 'RFXControl', 1690, _nidout);
-/*    DevAddStart(_path, 'RFXControl', 1682, _nidout); */
+   DevAddStart(_path, 'RFXControl', 1704, _nidout);
+/*   DevAddStart(_path, 'RFXControl', 1690, _nidout);*/
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -788,6 +788,24 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR305_VAL', 'NUMERIC', zero(8, 0), *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR306_NAME', 'TEXT', "BtCutOff", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR306_VAL', 'NUMERIC', 100., *, _nid);
+
+/* Flux control */
+    DevAddNode(_path // '.PARAMETERS:PAR307_NAME', 'TEXT', "FluxControlKp", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR307_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR308_NAME', 'TEXT', "FluxControlKi", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR308_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR309_NAME', 'TEXT', "FluxControlKd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR309_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR310_NAME', 'TEXT', "FluxControlStart", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR310_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR311_NAME', 'TEXT', "FluxControlEnd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR311_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR312_NAME', 'TEXT', "FluxControlReferenceX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR312_VAL', 'NUMERIC', 0. ,*, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR313_NAME', 'TEXT', "FluxControlReferenceY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR313_VAL', 'NUMERIC', 0. ,*, _nid);
+
+
 
 
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
