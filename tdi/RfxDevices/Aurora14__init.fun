@@ -110,10 +110,10 @@ public fun Aurora14__init(as_is _nid, optional _method)
 	    if(_curr_pts > _pts) _pts = long(_curr_pts);
         }
     }
-    _max_chan_samples = _mem_size / 6;
+    _max_chan_samples = _mem_size;
     if(_pts > _max_chan_samples)
     {
-        DevLogErr(_nid, 'Too many samples. Truncated.');
+        DevLogErr(_nid, 'Too many samples ('//_pts//'). Truncated.');
         _pts = _max_chan_samples;
     }
 
