@@ -986,5 +986,6 @@ traverser/Makefile
 treeshr/Makefile 
 wfevent/Makefile 
 xmdsshr/Makefile
+xtreeshr/Makefile
 )
 AC_OUTPUT_COMMANDS(make depend)
