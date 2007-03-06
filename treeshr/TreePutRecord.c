@@ -1,3 +1,4 @@
+
 /*------------------------------------------------------------------------------
 
 		Name: TreePutRecord
@@ -84,41 +85,10 @@ extern int PutRecordRemote();
 extern void *DBID;
 
 _int64 TreeTimeInserted() {
-  _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
   _int64 ans;
-#ifndef HAVE_VXWORKS_H
-  tzset();
-#endif
-  
-#if defined(USE_TM_GMTOFF)
-  /* this is a suggestion to change all code 
-     for this as timezone is depricated unix
-     annother alternative is to use gettimeofday */
-  { 
-    struct tm *tm;
-    time_t t;
-    t = time(NULL);
-    tm = localtime(&t);
-    ans = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin;
-  }
-
-#elif defined(HAVE_GETTIMEOFDAY)
-  {
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv,&tz);
-    ans=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60))*10000000+tv.tv_usec*10 + addin;
-  }
-#else
-  ans = (_int64)((unsigned int)time(NULL) - timezone + daylight * 3600) * (_int64)10000000 + addin;
-#endif
+  LibTimeToVMSTime(0,&ans);
   return ans;
 }
-
-
-
-
-
 
 int       TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update) {
   return _TreePutRecord(DBID,nid,descriptor_ptr,utility_update);}
