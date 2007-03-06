@@ -1478,7 +1478,36 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
   return tim > 0;
 }
   
-    
+int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
+  time_t t;
+  if (time_in == NULL)
+    t=time(0);
+  else
+    t=*time_in;
+  _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+#if defined(USE_TM_GMTOFF)
+  /* this is a suggestion to change all code 
+     for this as timezone is depricated unix
+     annother alternative is to use gettimeofday */
+  { 
+    struct tm *tm;
+    tm = localtime(&t);
+    *time_out = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin;
+  }
+#elif defined(HAVE_GETTIMEOFDAY)
+  {
+    struct timeval tv;
+    struct timezone tz;
+    gettimeofday(&tv,&tz);
+    *time_out=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60))*10000000+tv.tv_usec*10 + addin;
+  }
+#else
+  tzset();
+  *time_out = (_int64)((unsigned int)time(NULL) - timezone + daylight * 3600) * (_int64)10000000 + addin;
+#endif
+  return 1;
+}
+
 time_t LibCvtTim(int *time_in,double *t) 
 {
   double t_out;
