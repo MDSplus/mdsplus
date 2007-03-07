@@ -117,8 +117,8 @@ struct	descriptor_a
 	 * The bounds block has the following format:
 	 *	struct
 	 *	{
-	 *		int	_DSCL_(l);	Lower bound
-	 *		int	_DSCL_(u);	Upper bound
+	 *		unsigned int	_DSCL_(l);	Lower bound
+	 *		unsigned int	_DSCL_(u);	Upper bound
 	 *	} bounds [DIMCT];
 	 *
 	 * (DIMCT represents the value contained in dimct.)
@@ -146,15 +146,15 @@ struct	descriptor_a
 
 #define ARRAY_COEFF(ptr_type, dimct)	struct {	ARRAY_HEAD(ptr_type)	\
 							ptr_type	*_DSCA_(a0);	\
-							int		_DSCL_(m)[dimct];	\
+							unsigned int		_DSCL_(m)[dimct];	\
 					}
 
 #define ARRAY_BOUNDS(ptr_type, dimct)	struct {	ARRAY_HEAD(ptr_type)	\
 							ptr_type	*_DSCA_(a0);	\
-							int		_DSCL_(m)[dimct];	\
+							unsigned int		_DSCL_(m)[dimct];	\
 							struct {			\
-								int	_DSCL_(l);	\
-								int	_DSCL_(u);	\
+								unsigned int	_DSCL_(l);	\
+								unsigned int	_DSCL_(u);	\
 							} bounds[dimct];		\
 						}
 
