@@ -1742,23 +1742,23 @@ old array is same size.
        if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	   ((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
 	 TreeUnLockNci(info_ptr,0,nidx);
-	 return TreeFAILURE;
+	 return TreeNOSEGMENTS;
        }
        /*** See if the node currently has an segment header record. If not, make an empty segment header and flag that
 	    a new one needs to be written.
        ***/
        if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY]==-1) {
-	 status = TreeFAILURE;
+	 status = TreeNOSEGMENTS;
        } else if (((status = GetSegmentHeader(info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header))&1)==0) {
 	 status=status;
        } else if (data->dtype != segment_header.dtype) {
-	 status = TreeFAILURE;
+	 status = TreeINVDTYPE;
        } else if (!(data->dimct == 1 && segment_header.dimct == 1) && (data->dimct != segment_header.dimct-1)) {
-	 status = TreeFAILURE;
+	 status = TreeINVSHAPE;
        } else if (a_coeff->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(segment_header.dimct-1)*sizeof(int)) != 0) {
-	 status = TreeFAILURE;
+	 status = TreeINVSHAPE;
        } else if (a_coeff->dimct == 1 && a_coeff->arsize/a_coeff->length != 1 && segment_header.dims[0] != a_coeff->arsize/a_coeff->length) {
-	 status = TreeFAILURE;
+	 status = TreeINVSHAPE;
        }
        if (!(status & 1)) {
 	 TreeUnLockNci(info_ptr,0,nidx);
@@ -1773,7 +1773,7 @@ old array is same size.
        }
        if (rows_to_insert != 1) {
 	 TreeUnLockNci(info_ptr,0,nidx);
-	 return TreeFAILURE;
+	 return TreeINVSHAPE;
        }
        rows_in_segment = segment_header.dims[segment_header.dimct-1];
        bytes_to_insert=((rows_to_insert > (rows_in_segment - startIdx)) ? (rows_in_segment-startIdx) : rows_to_insert) * bytes_per_row;
@@ -2005,5 +2005,60 @@ old array is same size.
      }
    }
    status = (*addr)(nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
+   return status;
+ }
+
+int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *data);
+
+ int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *data) {
+   return _TreePutRow(DBID, nid, bufsize, timestamp, data);
+ }
+
+
+ int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *data) {
+   int status = _TreePutTimestampedSegment(dbid, nid, timestamp, data);
+   if (status==TreeNOSEGMENTS || status==TreeBUFFEROVF) {
+     status = 1;
+     while (data && data->dtype==DTYPE_DSC) data=(struct descriptor_a *)data->pointer;
+     DESCRIPTOR_A_COEFF(initValue, data->length, data->dtype, 0, 8, 0);
+     if (data) {
+       if (data->class == CLASS_A) {
+         int i,length;
+         initValue.arsize=data->arsize*bufsize;
+         initValue.pointer=initValue.a0=malloc(initValue.arsize);
+         memset(initValue.pointer,0,initValue.arsize);
+         initValue.dimct = data->dimct+1;
+         if (data->dimct == 1) {
+	   initValue.arsize=data->arsize*bufsize;
+           initValue.m[0]=data->arsize/data->length;
+           initValue.m[1]=bufsize;
+         } else {
+	   A_COEFF_TYPE *data_c = (A_COEFF_TYPE *)data;
+           for (i=0;i<data->dimct;i++) {
+             initValue.m[i]=data_c->m[i];
+	   }
+           initValue.m[data->dimct]=bufsize;
+	 }
+       } else if (data->class == CLASS_S || data->class == CLASS_D) {
+         initValue.arsize=data->length*bufsize;
+         initValue.pointer=initValue.a0=malloc(initValue.arsize);
+         memset(initValue.pointer,0,initValue.arsize);
+         initValue.dimct = 1;
+         initValue.m[0]=bufsize;
+       }
+       else {
+	 status = TreeFAILURE;
+       }
+     } else {
+       status = TreeFAILURE;
+     }
+     if (status & 1) {
+       status = _TreeBeginTimestampedSegment(dbid, nid, (struct descriptor_a *)&initValue, -1);
+       free(initValue.pointer);
+       if (status && 1) {
+	 status = _TreePutTimestampedSegment(dbid,nid,timestamp,data);
+       }
+     }
+   }
    return status;
  }
