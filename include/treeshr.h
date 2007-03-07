@@ -198,6 +198,9 @@ extern TreeCANCEL;
 #define TreeLOCK_FAILURE 0xfd18fb2
 #define TreeFILE_NOT_FOUND 0xfd18faa
 #define TreeCANCEL 0xfd18c80
+#define TreeNOSEGMENTS  0xfd18fba
+#define TreeINVDTYPE 0xfd18fc2
+#define TreeINVSHAPE 0xfd18fca
 
 #endif
 
@@ -284,6 +287,9 @@ static struct stsText  treeshr_stsText[] = {
    ,STS_TEXT(TreeLOCK_FAILURE,"Error locking file, perhaps NFSLOCKING not enabled on this system")
    ,STS_TEXT(TreeFILE_NOT_FOUND,"File or Directory Not Found")
    ,STS_TEXT(TreeCANCEL,"User canceled operation")
+    ,STS_TEXT(TreeNOSEGMENTS,"No segments exist in this node")
+    ,STS_TEXT(TreeINVDTYPE,"Invalid datatype for data segment")
+    ,STS_TEXT(TreeINVSHAPE,"Invalid shape for this data segment")
    };
 #endif
 
