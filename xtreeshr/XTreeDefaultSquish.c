@@ -43,6 +43,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 	struct descriptor_xd *shapesXd;
 	struct descriptor_xd *dimensionsXd;
 	struct descriptor_a *arrayD;
+	struct descriptor_a **arraysD;
 	int minNumShapes, maxNumShapes, numShapes;
 	int totSize;
 	int i, j, status, lastDimension;
@@ -200,20 +201,28 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 		for(i = 0; i < numSignals; i++)
 			dimensionsXd[i] = emptyXd;
 
+		arraysD = (struct descriptor_a **)malloc(numSignals * sizeof(char *));
+
 	//Evaluate first dimension for all segments
 		totSize = 0;
 		for(i = 0; i < numSignals; i++)
 		{
 			currSignalD = ((struct descriptor_signal **)signalsApd->pointer)[i];
 
-
-			status = TdiData(currSignalD->dimensions[0], &dimensionsXd[i] MDS_END_ARG);
-			if(!(status & 1)) break;
-			arrayD = (struct descriptor_a *)dimensionsXd[i].pointer;
-			if(!arrayD || arrayD->class != CLASS_A) //Every first dimension must be evaluated to an array
+			if(currSignalD->dimensions[0]->class == CLASS_A) //Data evaluation not needed
 			{
-				status = InvalidDimensionInSegments;
-				break;
+				arraysD[i] = arrayD = currSignalD->dimensions[0];
+			}
+			else
+			{
+				status = TdiData(currSignalD->dimensions[0], &dimensionsXd[i] MDS_END_ARG);
+				if(!(status & 1)) break;
+				arraysD[i] = arrayD = (struct descriptor_a *)dimensionsXd[i].pointer;
+				if(!arrayD || arrayD->class != CLASS_A) //Every first dimension must be evaluated to an array
+				{
+					status = InvalidDimensionInSegments;
+					break;
+				}
 			}
 			totSize += arrayD->arsize;
 		}
@@ -228,15 +237,16 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 
 		
 	//Merge first dimension in outDim array. It is assumed that the first dimension has been evaluaed to a 1D array
-	//	memcpy(&outDimD, currSignalD->dimensions[0], sizeof(struct descriptor_a));
-		memcpy(&outDimD, dimensionsXd[0].pointer, sizeof(struct descriptor_a));
+//		memcpy(&outDimD, dimensionsXd[0].pointer, sizeof(struct descriptor_a));
+		memcpy(&outDimD, arraysD[0], sizeof(struct descriptor_a));
 
 		outDimBuf = malloc(totSize);
 		outDimD.pointer = outDimBuf;
 		outDimD.arsize = totSize;
 		for(i = j = 0; i < numSignals; i++)
 		{
-			arrayD = (struct descriptor_a *)dimensionsXd[i].pointer;
+//			arrayD = (struct descriptor_a *)dimensionsXd[i].pointer;
+			arrayD = arraysD[i];
 			memcpy(&outDimBuf[j], arrayD->pointer, arrayD->arsize);
 			j += arrayD->arsize;
 		}
@@ -351,6 +361,6 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 		free(outDimBuf);
 	}
 	MdsFree1Dx(&setRangeExprXd, 0);
-
+	free((char *)arraysD);
 	return status;
 }
