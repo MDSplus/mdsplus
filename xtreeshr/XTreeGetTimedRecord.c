@@ -292,8 +292,8 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			return status;
 		}
 
-		MdsFree1Dx(&dataXds[currIdx], 0);
-		MdsFree1Dx(&dimensionXds[currIdx], 0);
+		MdsFree1Dx(&dataXds[currSegIdx], 0);
+		MdsFree1Dx(&dimensionXds[currSegIdx], 0);
 		signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
 	}
 
