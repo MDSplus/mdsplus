@@ -268,11 +268,8 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 		}
 		else
 		{
-//			if(minDeltaD || (currIdx == startIdx && firstSegmentTruncated) || (currIdx == endIdx && lastSegmentTruncated))
-				status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD, 
-					minDeltaD, &resampledXds[currSegIdx]);
-//			else
-//				status = MdsCopyDxXd(&currSignalD, &resampledXds[currSegIdx]);
+			status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD, 
+				minDeltaD, &resampledXds[currSegIdx]);
 		}
 
 //printDecompiled(resampledXds[currSegIdx].pointer);
@@ -294,6 +291,9 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			free((char *)dimensionXds);
 			return status;
 		}
+
+		MdsFree1Dx(&dataXds[currIdx], 0);
+		MdsFree1Dx(&dimensionXds[currIdx], 0);
 		signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
 	}
 
@@ -326,8 +326,6 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	for(i = 0; i < actNumSegments; i++)
 	{
 		MdsFree1Dx(&resampledXds[i], 0);
-		MdsFree1Dx(&dataXds[i], 0);
-		MdsFree1Dx(&dimensionXds[i], 0);
 	}
 	free((char *)resampledXds);
 	free((char *)dataXds);
