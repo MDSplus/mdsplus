@@ -197,9 +197,6 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 	char *currDataPtr, *outDataPtr, *currOutDataPtr;
 	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0); 
 
-printf("RANGE RESAMPLE\n");
-
-
 	if(startD)
 	{
 		status = XTreeConvertToLongTime(startD, &start64);
