@@ -231,9 +231,10 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
 {
 	int status = 1;
 	DESCRIPTOR_A(src, 0, 0, 0, 0);
-	struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XS, 0, sizeof(src)}; 
+	struct descriptor_xd xs = {0, DTYPE_DSC, CLASS_XS, 0, sizeof(src)}; 
+	EMPTYXD(xd);
 	struct descriptor t_dsc = {0, DTYPE_T, CLASS_S, 0 };
-        xd.pointer = (struct descriptor *)&src;
+        xs.pointer = (struct descriptor *)&src;
 	if (((type==SYBDATETIME) || (type==SYBDATETIME4)) && !date) type = SYBTEXT;
         src.pointer = bufs[idx].vptr;
         src.arsize = bufs[idx].offset;
@@ -260,13 +261,16 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
 		} else {
 			t_dsc.length = bufs[idx].offset;
 			t_dsc.pointer = bufs[idx].vptr;
-			xd.pointer = &t_dsc;
+			xs.pointer = &t_dsc;
 		}
 					}
 		break;
 	default: status=0;
 	}
-	status = TdiPutIdent(dst, &xd);
+        if (status & 1)
+	  status = TdiPutIdent(dst, &xs);
+	else
+	  status = TdiPutIdent(dst, &xd);
 	free(bufs[idx].vptr);
 	bufs[idx].vptr=0;
 	bufs[idx].size=0;
