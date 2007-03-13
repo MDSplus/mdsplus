@@ -1989,6 +1989,17 @@ old array is same size.
    return status;
  }
 
+ int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end, struct descriptor_xd *delta) {
+   int status = MdsCopyDxXd((struct descriptor *)&TREE_START_CONTEXT,start);
+   if (status & 1) {
+     status = MdsCopyDxXd((struct descriptor *)&TREE_END_CONTEXT, end);
+     if (status & 1) {
+       status = MdsCopyDxXd((struct descriptor *)&TREE_DELTA_CONTEXT, delta);
+     }
+   }
+   return status;
+ }
+
  int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
    static int activated=0;
    static int (*addr)(int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
