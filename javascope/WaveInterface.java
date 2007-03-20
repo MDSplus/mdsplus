@@ -1145,7 +1145,7 @@ public class WaveInterface
             //e.printStackTrace();
             this.wave.SetMode(mode);
             frames = null;
-            curr_error = " Load Frames error " + e;
+            curr_error = " Load Frames error " + e.getMessage();
         }
     }
 

@@ -32,6 +32,8 @@ public class jScopeBrowseUrl extends JDialog
     public jScopeBrowseUrl(JFrame owner)
     {
         super(owner);
+
+
         html = new JEditorPane();
         html.setEditable(false);
         html.addHyperlinkListener(createHyperLinkListener());
@@ -115,6 +117,7 @@ public class jScopeBrowseUrl extends JDialog
     protected void setPage(URL url) throws IOException
     {
         url_con = url.openConnection();
+
 
         url_con.setRequestProperty("User-Agent",u_agent);
 

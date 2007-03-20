@@ -44,14 +44,14 @@ class Descriptor
         this.error = error;
     }
 
-/*
+
     public Descriptor(byte dtype, int dims[], byte byte_data[])
     {
         this.dtype = dtype;
         this.dims = dims;
         this.byte_data = byte_data;
     }
-*/
+
 
     public Descriptor(int dims[], byte byte_data[])
     {
