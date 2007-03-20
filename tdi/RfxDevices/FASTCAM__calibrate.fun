@@ -1,6 +1,6 @@
-public fun FASTCAM__trigger(as_is _nid, optional _method)
+public fun FASTCAM__calibrate(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 28;
+    private _K_CONG_NODES = 27;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_CAMERA_ID = 2;
@@ -29,18 +29,17 @@ public fun FASTCAM__trigger(as_is _nid, optional _method)
     private _N_PIXEL_FRAME = 24;
     private _N_VIDEO = 25;
 
+    private _K_SHADING_OFF		= 0;
+    private _K_SHADING_ON1		= 1;
+    private _K_SHADING_ON2		= 2;
+    private _K_SHADING_ON3		= 3;
+    private _K_SHADING_SAVE		= 4;
+    private _K_SHADING_LOAD		= 5;
 
 	private  _INVALID = -1;
 
-    write(*, 'FASTCAM trigger');
-/*
-    _camera_id = if_error(data(DevNodeRef(_nid, _N_CAMERA_ID)), _INVALID);
-    if(_camera_id == _INVALID)
-    {
-    	DevLogErr(_nid, "Invalid camera ID specification");
- 		abort();
-    }
-*/
+    write(*, 'FASTCAM calibrate');
+
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 
 	if(_remote != 0)
@@ -53,32 +52,36 @@ public fun FASTCAM__trigger(as_is _nid, optional _method)
 		}
 	}
 
-    DevNodeCvt( _nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _ext_trig = 0);
-	if( _ext_trig == 1 )
-	{
- 	    DevLogErr(_nid, "Perform this operation in INTERNAL trigger configuration");
- 		abort();
-	}
-
 
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
+	
 		execute(_cmd);
-	    _status = MdsValue('FastCamHWtrigger()');
+	    _status = MdsValue('FastCamHWcalibrate()');
 		MdsDisconnect();
 		if(_status == 0)
 		{
-			DevLogErr(_nid, "Error triggering FAST CAMERA");
+			DevLogErr(_nid, "Error calibrate FAST CAMERA");
 			abort();
 		}
+	
 	}
+
 	else
 	{
-	    _status = FastCamHWtrigger();
-		if(_status == 0)
+
+	    _status = FastCamHWcalibrate(  _K_SHADING_ON1 );
+		if(_status < 0)
+		{
+			_msg = FastCamErrno( _status );	
+			DevLogErr(_nid, "Error during FAST CAMERA calibration "//_msg);
 			abort();
+		}
+	
+
 	}
+
 
 	return(1);
 }

@@ -1,4 +1,4 @@
-public fun FastCamHWtrigger()
+public fun FastCamHWTrigger()
 {
 	return ( FastCam->FastCamTrigger() );
 }

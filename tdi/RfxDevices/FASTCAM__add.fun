@@ -7,6 +7,7 @@ public fun FASTCAM__add(in _path, out _nidout)
     DevAddNode(_path // ':IP_ADDR',  'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_MODE',	'TEXT', 'INTERNAL', *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE',	'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':CALIBRATE',	'TEXT', 'NONE', *, _nid);
     DevAddNode(_path // ':USE_TIME', 'TEXT', 'TRUE', *, _nid);
     DevAddNode(_path // ':NUM_FRAMES',  'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':START_TIME',  'NUMERIC', 0, *, _nid);
@@ -22,7 +23,6 @@ public fun FASTCAM__add(in _path, out _nidout)
     DevAddNode(_path // ':APERTURE',	'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':F_DISTANCE',	'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':FILTER',      'TEXT', *, *, _nid);
-    DevAddNode(_path // ':SHUTTER',     'TEXT', *, *, _nid);
     DevAddNode(_path // ':TOR_POSITION','TEXT', *, *, _nid);
     DevAddNode(_path // ':POL_POSITION','TEXT', *, *, _nid);
     DevAddNode(_path // ':TARGET_ZONE', 'TEXT', *, *, _nid);
