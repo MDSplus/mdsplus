@@ -407,10 +407,13 @@ public class Grid
                                         Color c = g.getColor();
                                         g.setColor(Color.BLUE);
                                         curr_dim = wm.XPixel( (double) timeMillis, d);
-                                        if (curr_dim >= label_width)
-                                            g.drawLine(curr_dim, 0, curr_dim,
-                                                d.height - label_height);
-                                        g.setColor(c);
+                                            if (curr_dim >= label_width)
+                                            {
+                                              //  g.drawLine(curr_dim, 0, curr_dim,d.height - label_height);                                                                    case IS_DOTTED:
+                                                for (j = 0; j < d.height - label_height; j += 7)
+                                                    g.fillRect(curr_dim, j, 1, 5);
+                                            }
+                                            g.setColor(c);
                                     }
                                 }
                             }
