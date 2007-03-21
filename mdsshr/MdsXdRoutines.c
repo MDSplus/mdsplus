@@ -249,7 +249,7 @@ STATIC_ROUTINE int copy_dx(
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
         if (pi->length == 0)
           MdsFixDscLength((struct descriptor *)pi);
-        align_size = (pi->dtype == DTYPE_T) ? 1 : pi->length;
+        align_size = (pi->dtype == DTYPE_T || pi->length == 0) ? 1 : pi->length;
 	bytes = dscsize + pi->arsize + align_size;
 	if (po)
 	{
