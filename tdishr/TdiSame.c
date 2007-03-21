@@ -40,7 +40,8 @@ int				cmode = -1, j, (*routine)() = fun_ptr->f3;
 	/******************************************
 	Fetch signals and data and data's category.
 	******************************************/
-	status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
+        memset(cats,0,sizeof(cats));
+        status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
 
 	/******************************************
 	Adjust category needed to match data types.
