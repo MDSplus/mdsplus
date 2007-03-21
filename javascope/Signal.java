@@ -99,18 +99,18 @@ public class Signal
     /**
      * y array of signal
      */
-    protected float y[];
+    private float y[];
 
     /**
      * x array of signal
      */
-    protected float x[];
+    private float x[];
     /**
      * x array of signal
      */
-    protected double x_double[] = null;
+    private double x_double[] = null;
 
-    protected long   x_long[]   = null;
+    private long   x_long[]   = null;
 
     /**
      * Two dimensional z vector
@@ -498,7 +498,8 @@ public class Signal
                 x_double = new double[n_points];
             if (s.x_long != null)
                 x_long = new long[n_points];
-            x = new float[n_points];
+            if(s.x != null)
+                x = new float[n_points];
             y = new float[n_points];
             for (i = 0; i < n_points; i++)
             {
@@ -506,7 +507,8 @@ public class Signal
                     x_double[i] = s.x_double[i];
                 if (s.x_long != null)
                     x_long[i] = s.x_long[i];
-                x[i] = s.x[i];
+                if (s.x != null)
+                    x[i] = s.x[i];
                 y[i] = s.y[i];
             }
         }
@@ -583,6 +585,7 @@ public class Signal
         zlabel = s.zlabel;
         title = s.title;
         startIndexToUpdate = s.startIndexToUpdate;
+        setAxis();
     }
 
     /**
@@ -893,6 +896,31 @@ public class Signal
         //if(i == data.length) i--;
         return i;
     }
+    public final boolean hasX()
+    {
+        return x != null || x_double != null;
+    }
+    public final int getLength()
+    {
+        if(x_double != null)
+            return x_double.length;
+        else
+            return x.length;
+    }
+
+    public final double getX(int idx)
+    {
+        if(x_double != null)
+            return x_double[idx];
+        return x[idx];
+    }
+
+    public final double getY(int idx)
+    {
+        return y[idx];
+    }
+
+
 
     public boolean isFullLoad()
     {
@@ -1620,13 +1648,26 @@ public class Signal
      */
     void CheckIncreasingX()
     {
-        for (int i = 1; i < n_points; i++)
-            if (x[i] < x[i - 1])
-            {
-                increasing_x = false;
-                return;
-            }
-        increasing_x = true;
+       increasing_x = true;
+       if(x != null)
+        {
+            for (int i = 1; i < n_points; i++)
+                if (x[i] < x[i - 1])
+                {
+                    increasing_x = false;
+                    return;
+                }
+        }
+        else
+        {
+            for (int i = 1; i < n_points; i++)
+                if (x_double[i] < x_double[i - 1])
+                {
+                    increasing_x = false;
+                    return;
+                }
+        }
+
     }
 
 /*
@@ -1706,22 +1747,42 @@ public class Signal
     {
         int i;
 
-        ymax = ymin = y[0];
-        xmax = xmin = x[0];
-        for (i = 0; i < n_points; i++)
+        if(x != null)
         {
-            if (Float.isNaN(y[i]) && n_nans < 100)
-                nans[n_nans++] = i;
-            if (y[i] > ymax)
-                ymax = y[i];
-            if (ymin > y[i])
-                ymin = y[i];
-            if (x[i] > xmax)
-                xmax = x[i];
-            if (xmin > x[i])
-                xmin = x[i];
+            ymax = ymin = y[0];
+            xmax = xmin = x[0];
+            for (i = 0; i < n_points; i++)
+            {
+                if (Float.isNaN(y[i]) && n_nans < 100)
+                    nans[n_nans++] = i;
+                if (y[i] > ymax)
+                    ymax = y[i];
+                if (ymin > y[i])
+                    ymin = y[i];
+                if (x[i] > xmax)
+                    xmax = x[i];
+                if (xmin > x[i])
+                    xmin = x[i];
+            }
         }
-
+        else
+        {
+            ymax = ymin = y[0];
+            xmax = xmin = x_double[0];
+            for (i = 0; i < n_points; i++)
+            {
+                if (Float.isNaN(y[i]) && n_nans < 100)
+                    nans[n_nans++] = i;
+                if (y[i] > ymax)
+                    ymax = y[i];
+                if (ymin > y[i])
+                    ymin = y[i];
+                if (x_double[i] > xmax)
+                    xmax = x_double[i];
+                if (xmin > x_double[i])
+                    xmin = x_double[i];
+            }
+        }
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;
         saved_ymin = ymin;
@@ -1781,11 +1842,11 @@ public class Signal
         x_long = _x;
         y = _y;
 
-        x = new float[x_long.length];
+        x_double = new double[x_long.length];
 
         long t0;
         String s = "";
-        try
+/*        try
         {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1800,27 +1861,21 @@ public class Signal
 
             s = df.format(date).toString();
             date = df1.parse(s+" 00:00:00");
-            /*
-            long tmp =  ca.get(Calendar.ZONE_OFFSET);
-            long tmp1 = ca.get(Calendar.DST_OFFSET);
-            long tmp2 = Calendar.getInstance().get(Calendar.ZONE_OFFSET);
-            long tmp3 = Calendar.getInstance().get(Calendar.DST_OFFSET);
-            */
             t0 = date.getTime() +  date.getTimezoneOffset() * 60 * 1000;
         }
         catch (Exception exc)
-        {
+*/        {
             t0 = x_long[0];
         }
 
 /*
         System.out.println("DATA "+ s +" x_long[0] " + x_long[0] + " t0 " + t0 + " dif " + (x_long[0] - t0) );
 */
-        java.util.Date date1 = new java.util.Date();
-        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        java.util.Date date1 = new java.util.Date();
+//        DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (int i = 0; i < x_long.length; i++)
         {
-            x[i] = (float) (x_long[i] - t0);
+            x_double[i] = (double) (x_long[i]);
 //            date1.setTime((long)x[i]);
 //            System.out.println(" " + x[i] + " " + df1.format(date1));
         }

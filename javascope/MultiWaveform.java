@@ -931,14 +931,14 @@ public class MultiWaveform
                 num_steps = drag_point;
                 for (j = 0; j < num_steps; j++)
                 {
-                    x[j] = wm.XPixel(s.x[ (int) (step * j)], d);
-                    y[j] = wm.YPixel(s.y[ (int) (step * j)], d);
+                    x[j] = wm.XPixel(s.getX( (int) (step * j)), d);
+                    y[j] = wm.YPixel(s.getY( (int) (step * j)), d);
                     curr_points[j] = new Point(x[j], y[j]);
                 }
                 //if(s.getInterpolate())
                 for (int jj = 0; jj < num_steps - 1; jj++)
-                    if (!Double.isNaN(s.y[ (int) (step * jj)]) &&
-                        !Double.isNaN(s.y[ (int) (step * (jj + 1))]))
+                    if (!Double.isNaN(s.getY( (int) (step * jj))) &&
+                        !Double.isNaN(s.getY( (int) (step * (jj + 1)))))
                         g.drawLine(x[jj], y[jj], x[jj + 1], y[jj + 1]);
             }
             else
@@ -1089,9 +1089,9 @@ public class MultiWaveform
             }
             else
             {
-                if (curr_signal.y != null)
-                    curr_dist = (curr_signal.y[curr_idx] - curr_y) *
-                        (curr_signal.y[curr_idx] - curr_y);
+                if (curr_signal.hasX())
+                    curr_dist = (curr_signal.getY(curr_idx) - curr_y) *
+                        (curr_signal.getY(curr_idx) - curr_y);
 
                 if (i == 0 || curr_dist < min_dist)
                 {
@@ -1111,8 +1111,8 @@ public class MultiWaveform
                  {
                      curr_signal = (Signal) signals.elementAt(curr_point_sig_idx);
                      if (min_dist >
-                         10 * (curr_signal.y[0] - curr_signal.y[1]) *
-                         (curr_signal.y[0] - curr_signal.y[1]))
+                         10 * (curr_signal.getY(0) - curr_signal.getY(1)) *
+                         (curr_signal.getY(0) - curr_signal.getY(1)))
                      {
                          curr_point_sig_idx = img_idx;
                      }
@@ -1429,7 +1429,6 @@ public class MultiWaveform
         }
         waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
         waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
-
         AutoscaleY();
 
         update_timestamp++;
@@ -1474,9 +1473,9 @@ public class MultiWaveform
 
         if (wi != null)
 
-            wi.AsynchUpdate(signals, (float) (start_xs - x_range),
-                            (float) (end_xs + x_range),
-                            (float) orig_xmin, (float) orig_xmax,
+            wi.AsynchUpdate(signals, (double) (start_xs - x_range),
+                            (double) (end_xs + x_range),
+                            (double) orig_xmin, (double) orig_xmax,
                             update_timestamp, mode == MODE_PAN, this);
             //wi.AsynchUpdate(signals, (float) (start_xs),
             //                (float) (end_xs),

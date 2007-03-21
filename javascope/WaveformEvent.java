@@ -86,7 +86,7 @@ public class WaveformEvent
         point_value = val;
     }
 
-    public void setDateVale(long date)
+    public void setDateValue(long date)
     {
         long dayMilliSeconds = 24 * 60 * 60 * 1000;
         dateValue = date - (date % dayMilliSeconds );

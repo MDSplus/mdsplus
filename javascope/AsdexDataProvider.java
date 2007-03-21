@@ -117,7 +117,7 @@ class AsdexDataProvider extends MdsDataProvider
         {
             try
             {
-                float t0 = GetFloat("dscptr(window_of(dim_of(" + expr + ")),2)");
+                double t0 = GetFloat("dscptr(window_of(dim_of(" + expr + ")),2)");
                 int startIdx[] = GetIntArray("begin_of(window_of(dim_of(" +
                                              expr + ")))");
                 int endIdx[] = GetIntArray("end_of(window_of(dim_of(" + expr +

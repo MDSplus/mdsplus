@@ -33,7 +33,7 @@ class T2DataProvider
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }
-    public float   GetFloat(String in){ return new Float(in).floatValue(); }
+    public double   GetFloat(String in){ return new Double(in).doubleValue(); }
     public String  ErrorString() { return errorString; }
     public void    AddUpdateEventListener   (UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -71,16 +71,17 @@ class T2DataProvider
         return new T2WaveData(in_y.toUpperCase(), (in_x != null)?in_x.toUpperCase():in_x);
     }
 
-    public synchronized WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    public synchronized WaveData GetResampledWaveData(String in, double start, double end, int n_points)
     {
         return null;
     }
 
+
     public synchronized WaveData
-    GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
-    {
-        return null;
-    }
+        GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
+        {
+            return null;
+        }
 
     public synchronized void AddConnectionListener(ConnectionListener l)
     {

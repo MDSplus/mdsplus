@@ -352,12 +352,12 @@ public class WaveformMetrics
     public Vector ToPolygonsDoubleX(Signal sig, Dimension d)
     {
         int i, j, curr_num_points, curr_x, start_x, max_points;
-        float max_y, min_y, curr_y;
+        double max_y, min_y, curr_y;
         Vector curr_vect = new Vector(5);
         int xpoints[], ypoints[];
         Polygon curr_polygon = null;
         int pol_idx = 0;
-        min_y = max_y = sig.y[0];
+        min_y = max_y = sig.getY(0);
         xpoints = new int[sig.n_points];
         ypoints = new int[sig.n_points];
         //xpoints = new int[2*sig.n_points];
@@ -371,23 +371,23 @@ public class WaveformMetrics
             double xmax_nolog = Math.pow(10, xmax);
             double xmin_nolog = Math.pow(10, xmin);
 
-            float first_y, last_y;
-            for (i = 0; i < sig.n_points && sig.x_double[i] < xmin_nolog; i++)
+            double first_y, last_y;
+            for (i = 0; i < sig.n_points && sig.getX(i) < xmin_nolog; i++)
                 ;
             if (i > 0)
                 i--;
-            min_y = max_y = sig.y[i];
+            min_y = max_y = sig.getY(i);
             j = i + 1;
-            start_x = XPixel(sig.x_double[i], d);
+            start_x = XPixel(sig.getX(i), d);
 
-            first_y = last_y = sig.y[i];
+            first_y = last_y = sig.getY(i);
             while (j < end_point) //sig.n_points  && sig.x_double[j] < xmax_nolog)
             {
                 for (j = i + 1; j < sig.n_points &&
                      (pol_idx >= sig.n_nans || j != sig.nans[pol_idx]) &&
-                     (curr_x = XPixel(sig.x_double[j], d)) == start_x; j++)
+                     (curr_x = XPixel(sig.getX(j), d)) == start_x; j++)
                 {
-                    last_y = curr_y = sig.y[j];
+                    last_y = curr_y = sig.getY(j);
                     if (curr_y < min_y)
                         min_y = curr_y;
                     if (curr_y > max_y)
@@ -419,7 +419,7 @@ public class WaveformMetrics
                     ypoints[curr_num_points] = YPixel(max_y, d);
                     curr_num_points++;
                 }
-                if (j == sig.n_points || j == end_point || Float.isNaN(sig.y[j])) // || sig.x_double[j] >= xmax_nolog)
+                if (j == sig.n_points || j == end_point || Double.isNaN(sig.getY(j))) // || sig.x_double[j] >= xmax_nolog)
                 {
                     curr_polygon = new Polygon(xpoints, ypoints,
                                                curr_num_points);
@@ -428,16 +428,16 @@ public class WaveformMetrics
                     curr_num_points = 0;
                     if (j < sig.n_points) //need to raise pen
                     {
-                        while (j < sig.n_points && Float.isNaN(sig.y[j]))
+                        while (j < sig.n_points && Double.isNaN(sig.getY(j)))
                             j++;
                     }
                 }
                 if (j < end_point) //sig.n_points)
                 {
-                    start_x = XPixel(sig.x_double[j], d);
-                    max_y = min_y = sig.y[j];
+                    start_x = XPixel(sig.getX(j), d);
+                    max_y = min_y = sig.getY(j);
                     i = j;
-                    if (sig.x_double[j] > xmax)
+                    if (sig.getX(j) > xmax)
                         end_point = j + 1;
                 }
             }
@@ -446,25 +446,25 @@ public class WaveformMetrics
         {
             ComputeFactors(d);
 
-            for (i = 0; i < sig.n_points && sig.x_double[i] < xmin; i++)
+            for (i = 0; i < sig.n_points && sig.getX(i) < xmin; i++)
                 ;
             if (i > 0)
                 i--;
-            min_y = max_y = sig.y[i];
+            min_y = max_y = sig.getY(i);
             j = i + 1;
 
             //GAB testare da qua il problema
 
-            start_x = XPixel(sig.x_double[i]);
-            float first_y, last_y;
+            start_x = XPixel(sig.getX(i));
+            double first_y, last_y;
             while (j < end_point) //sig.n_points && sig.x_double[j] < xmax + dt)
             {
-                first_y = last_y = sig.y[i];
+                first_y = last_y = sig.getY(i);
                 for (j = i + 1; j < sig.n_points && //!Float.isNaN(sig.y[j]) &&
                      (pol_idx >= sig.n_nans || j != sig.nans[pol_idx]) &&
-                     (curr_x = XPixel(sig.x_double[j])) == start_x; j++)
+                     (curr_x = XPixel(sig.getX(j))) == start_x; j++)
                 {
-                    last_y = curr_y = sig.y[j];
+                    last_y = curr_y = sig.getY(j);
                     if (curr_y < min_y)
                         min_y = curr_y;
                     if (curr_y > max_y)
@@ -557,7 +557,7 @@ public class WaveformMetrics
                     ypoints[curr_num_points] = YPixel(max_y);
                     curr_num_points++;
                 }
-                if (j == sig.n_points || j >= end_point || Float.isNaN(sig.y[j])) // || sig.x_double[j] >= xmax)
+                if (j == sig.n_points || j >= end_point || Double.isNaN(sig.getY(j))) // || sig.x_double[j] >= xmax)
                 {
                     curr_polygon = new Polygon(xpoints, ypoints,
                                                curr_num_points);
@@ -572,10 +572,10 @@ public class WaveformMetrics
                 }
                 if (j < end_point) //sig.n_points)
                 {
-                    start_x = XPixel(sig.x_double[j]);
-                    max_y = min_y = sig.y[j];
+                    start_x = XPixel(sig.getX(j));
+                    max_y = min_y = sig.getY(j);
                     i = j;
-                    if (sig.isIncreasingX() && sig.x_double[j] > xmax)
+                    if (sig.isIncreasingX() && sig.getX(j) > xmax)
                         end_point = j + 1;
                 }
             }
@@ -617,15 +617,15 @@ public class WaveformMetrics
                 return ToPolygonsDoubleX(sig, d);
 
             int i, j, curr_num_points, curr_x, start_x, max_points;
-            float max_y, min_y, curr_y;
+            double max_y, min_y, curr_y;
             Vector curr_vect = new Vector(5);
             int xpoints[], ypoints[];
             Polygon curr_polygon = null;
             int pol_idx = 0;
 
-            if (sig.y == null || sig.y.length == 0 )return null;
+            if (!sig.hasX())return null;
 
-            min_y = max_y = sig.y[0];
+            min_y = max_y = sig.getY(0);
             xpoints = new int[sig.n_points];
             ypoints = new int[sig.n_points];
             //xpoints = new int[2*sig.n_points];
@@ -638,21 +638,21 @@ public class WaveformMetrics
                 double xmax_nolog = Math.pow(10, xmax);
                 double xmin_nolog = Math.pow(10, xmin);
 
-                float first_y, last_y;
-                for (i = 0; i < sig.n_points && sig.x[i] < xmin_nolog; i++)
+                double first_y, last_y;
+                for (i = 0; i < sig.n_points && sig.getX(i) < xmin_nolog; i++)
                     ;
                 if (i > 0)
                     i--;
-                min_y = max_y = sig.y[i];
+                min_y = max_y = sig.getY(i);
                 j = i + 1;
-                start_x = XPixel(sig.x[i], d);
+                start_x = XPixel(sig.getX(i), d);
 
-                first_y = last_y = sig.y[i];
+                first_y = last_y = sig.getY(i);
                 while (j < end_point) { //sig.n_points  && sig.x[j] < xmax_nolog)
                     for (j = i + 1; j < sig.n_points &&
                              (pol_idx >= sig.n_nans || j != sig.nans[pol_idx]) &&
-                             (curr_x = XPixel(sig.x[j], d)) == start_x; j++) {
-                        last_y = curr_y = sig.y[j];
+                             (curr_x = XPixel(sig.getX(j), d)) == start_x; j++) {
+                        last_y = curr_y = sig.getY(j);
                         if (curr_y < min_y)
                             min_y = curr_y;
                         if (curr_y > max_y)
@@ -679,20 +679,20 @@ public class WaveformMetrics
                         ypoints[curr_num_points] = YPixel(max_y, d);
                         curr_num_points++;
                     }
-                    if (j == sig.n_points || j == end_point || Float.isNaN(sig.y[j])) { // || sig.x[j] >= xmax_nolog)
+                    if (j == sig.n_points || j == end_point || Double.isNaN(sig.getY(j))) { // || sig.x[j] >= xmax_nolog)
                         curr_polygon = new Polygon(xpoints, ypoints,
                                                    curr_num_points);
                         curr_vect.addElement(curr_polygon);
                         pol_idx++;
                         curr_num_points = 0;
                         if (j < sig.n_points) { //need to raise pen
-                            while (j < sig.n_points && Float.isNaN(sig.y[j]))
+                            while (j < sig.n_points && Double.isNaN(sig.getY(j)))
                                 j++;
                         }
                     }
                     if (j < end_point) { //sig.n_points)
-                        start_x = XPixel(sig.x[j], d);
-                        max_y = min_y = sig.y[j];
+                        start_x = XPixel(sig.getX(j), d);
+                        max_y = min_y = sig.getY(j);
                         i = j;
                         if (sig.x[j] > xmax)
                             end_point = j + 1;

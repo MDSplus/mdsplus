@@ -3,7 +3,7 @@
 // An implementation of "DataProvider" for signals from a TEC Web-Umbrella (TWU) server.
 //
 // The first versions of this class (cvs revisions 1.x) were designed and written
-// by Gabriele Manduchi and with some minor hacks by Jon Krom.   
+// by Gabriele Manduchi and with some minor hacks by Jon Krom.
 // Marco van de Giessen <A.P.M.vandeGiessen@phys.uu.nl> did some major surgery on
 // this class (starting revision line 2.x) mainly in order to ensure that zooming
 // works in more situations. (See also the cvs log.)
@@ -12,7 +12,7 @@
 // No new major revision number was started; has little use in CVS.
 //
 // $Id$
-// 
+//
 // -------------------------------------------------------------------------------------------------
 
 import java.io.*;
@@ -41,7 +41,7 @@ class TwuDataProvider
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }
-    public float   GetFloat(String in){ return new Float(in).floatValue(); }
+    public double   GetFloat(String in){ return new Double(in).doubleValue(); }
     public String  ErrorString() { return error_string; }
     public void    AddUpdateEventListener   (UpdateEventListener l, String event){}
     public void    RemoveUpdateEventListener(UpdateEventListener l, String event){}
@@ -56,39 +56,38 @@ class TwuDataProvider
     //     interface methods for getting *Data objects
     //  ---------------------------------------------------
 
-    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) 
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max)
         throws IOException
     {
         return (new TwuSimpleFrameData(this, in_y, in_x, time_min, time_max));
     }
 
     //  ---------------------------------------------------
-    public synchronized WaveData GetWaveData (String in) 
-    { 
-        return GetWaveData (in, null); 
+    public synchronized WaveData GetWaveData (String in)
+    {
+        return GetWaveData (in, null);
     }
 
-    public synchronized WaveData GetWaveData (String in_y, String in_x) 
+    public synchronized WaveData GetWaveData (String in_y, String in_x)
     {
         TwuWaveData find = FindWaveData (in_y, in_x);
         find.setFullFetch() ;
         return find ;
     }
 
-    public synchronized WaveData GetResampledWaveData(String in, float start, float end, int n_points) 
-    { 
-        return GetResampledWaveData(in, null, start, end, n_points); 
+    public synchronized WaveData GetResampledWaveData(String in, double start, double end, int n_points)
+    {
+        return GetResampledWaveData(in, null, start, end, n_points);
     }
-
     public synchronized WaveData
-    GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points) 
+    GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
     {
         TwuWaveData find = FindWaveData (in_y, in_x);
-        find.setZoom (start, end, n_points);
+        find.setZoom ((float)start, (float)end, n_points);
         return find ;
     }
 
-    public synchronized TwuWaveData FindWaveData (String in_y, String in_x) 
+    public synchronized TwuWaveData FindWaveData (String in_y, String in_x)
     {
         if ( lastWaveData == null  ||  lastWaveData.notEqualsInputSignal (in_y, in_x, shot) )
         {
@@ -100,7 +99,7 @@ class TwuDataProvider
             }
             catch (IOException e)
             {
-                setErrorstring("No Such Signal : " + 
+                setErrorstring("No Such Signal : " +
                                TwuNameServices.GetSignalPath(in_y, shot) );
                 //throw new IOException ("No Such Signal");
             }
@@ -126,13 +125,13 @@ class TwuDataProvider
         WaveData wd   = GetWaveData  (in) ;
         float [] data = null ;
         try
-        {  
-            data = wd.GetFloatData() ; 
+        {
+            data = wd.GetFloatData() ;
         }
-        catch (  IOException e ) 
-        { 
+        catch (  IOException e )
+        {
             resetErrorstring(e.toString());
-            data = null ; 
+            data = null ;
         }
         return data ;
     }
@@ -141,7 +140,7 @@ class TwuDataProvider
     //  Methods for TwuAccess.
     //  ----------------------------------------------------
 
-    public synchronized float[] 
+    public synchronized float[]
     GetFloatArray (String in, boolean is_time) throws IOException
     {
         WaveData wd = GetWaveData(in) ; // TwuAccess wants to get the full signal data .
@@ -150,7 +149,7 @@ class TwuDataProvider
 
     public synchronized String GetSignalProperty (String prop, String in) throws IOException
     {
-        TwuWaveData wd = (TwuWaveData) GetWaveData(in) ;  
+        TwuWaveData wd = (TwuWaveData) GetWaveData(in) ;
         return wd.getTWUProperties().getProperty(prop);
     }
 
@@ -176,7 +175,7 @@ class TwuDataProvider
                     while(st.hasMoreTokens())
                       result[i++] = Integer.parseInt(st.nextToken());
                     return result;
-                } 
+                }
                 catch(Exception e) {}
             }
         }
@@ -192,7 +191,7 @@ class TwuDataProvider
                     {
                         start = Integer.parseInt(st.nextToken());
                         end = Integer.parseInt(st.nextToken());
-                        if(end < start) 
+                        if(end < start)
                           end = start;
                         result = new long[end-start+1];
                         for(int i = 0; i < end-start+1; i++)
@@ -205,7 +204,7 @@ class TwuDataProvider
             else
             {
                 result = new long[1];
-                try 
+                try
                 {
                     result[0] = Long.parseLong(curr_in);
                     return result;
@@ -214,7 +213,7 @@ class TwuDataProvider
             }
         }
         resetErrorstring("Error parsing shot number(s)");
-        
+
         return null;
     }
 
@@ -222,15 +221,15 @@ class TwuDataProvider
     //     connection handling methods ....
     //  -------------------------------------------
 
-    public synchronized void AddConnectionListener(ConnectionListener l) 
+    public synchronized void AddConnectionListener(ConnectionListener l)
     {
-        if (l == null) 
+        if (l == null)
           return;
 
         connection_listener.addElement(l);
     }
 
-    public synchronized void RemoveConnectionListener(ConnectionListener l) 
+    public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
         if (l == null)
           return;
@@ -238,9 +237,9 @@ class TwuDataProvider
         connection_listener.removeElement(l);
     }
 
-    protected void DispatchConnectionEvent(ConnectionEvent e) 
+    protected void DispatchConnectionEvent(ConnectionEvent e)
     {
-        if (connection_listener != null) 
+        if (connection_listener != null)
         {
             for(int i = 0; i < connection_listener.size(); i++)
               ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
@@ -251,7 +250,7 @@ class TwuDataProvider
     //  Constructor, other small stuff ...
     //  -------------------------------------------
 
-    public synchronized void 
+    public synchronized void
     Update(String experiment, long shot)
     {
         this.experiment = experiment;
@@ -265,27 +264,27 @@ class TwuDataProvider
     {
         return experiment;
     }
-    
+
     protected synchronized void
     setErrorstring(String newErrStr)
     {
         if(error_string==null)
           error_string = newErrStr;
     }
-    
+
     protected synchronized void
     resetErrorstring(String newErrStr)
     {
         error_string = newErrStr;
     }
-    
+
 
     public TwuDataProvider()
     {
         super();
     }
 
-    public static String 
+    public static String
     revision()
     {
         return "$Id$";

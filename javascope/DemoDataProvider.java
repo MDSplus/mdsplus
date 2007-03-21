@@ -73,14 +73,15 @@ class DemoDataProvider implements DataProvider
     {
         return new SimpleWaveData(in_y, in_x);
     }
-    public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
     {
         return null;
     }
-    public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
+    public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
     {
         return null;
     }
+
 
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
@@ -106,11 +107,11 @@ class DemoDataProvider implements DataProvider
         error = null;
         return new String(in);
     }
-    public float GetFloat(String in)
+    public double GetFloat(String in)
     {
         error = null;
-        Float f = new Float(in);
-        return f.floatValue();
+        Double f = new Double(in);
+        return f.doubleValue();
     }
 
     public float[] GetFloatArray(String in_x, String in_y, float start, float end)

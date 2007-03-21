@@ -6,7 +6,7 @@ import java.util.*;
 import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
 import javax.swing.*;
-import java.awt.event.*;
+import java.text.*;
 
 public class MdsDataProvider
     implements DataProvider
@@ -25,6 +25,8 @@ public class MdsDataProvider
     boolean is_tunneling = false;
     String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
+    static final long RESAMPLE_TRESHOLD = 1000000000;
+    static final int MAX_PIXELS = 2000;
 
     class SimpleFrameData
         implements FrameData
@@ -208,7 +210,7 @@ public class MdsDataProvider
         implements WaveData
     {
         String in_x, in_y;
-        float xmax, xmin;
+        double xmax, xmin;
         int n_points;
         boolean resample = false;
         boolean _jscope_set = false;
@@ -227,7 +229,7 @@ public class MdsDataProvider
             v_idx = var_idx;
         }
 
-        public SimpleWaveData(String in_y, float xmin, float xmax, int n_points)
+        public SimpleWaveData(String in_y, double xmin, double xmax, int n_points)
         {
           resample = true;
             this.in_y = in_y;
@@ -237,7 +239,7 @@ public class MdsDataProvider
             v_idx = var_idx;
         }
 
-        public SimpleWaveData(String in_y, String in_x, float xmin, float xmax,
+        public SimpleWaveData(String in_y, String in_x, double xmin, double xmax,
                               int n_points)
         {
            resample = true;
@@ -278,12 +280,20 @@ public class MdsDataProvider
             // _jscope_set = true;
             String in_y_expr = "_jscope_" + v_idx;
             String set_tdivar = "";
-            if (!_jscope_set)
+            if (!_jscope_set || resample)
             {
                 _jscope_set = true;
                 set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
                 var_idx++;
             }
+
+
+            if(resample)
+            {
+                setResampleLimits(xmin, xmax);
+            }
+
+/*
 
             if (resample && in_x == null)
             {
@@ -294,23 +304,23 @@ public class MdsDataProvider
                     "), " +
                     "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
 
-                set_tdivar = "_jscope_" + v_idx + " = (" + resampledExpr +
-                    "), ";
-
                 //String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
-                String expr = set_tdivar + "fs_float(_jscope_" + v_idx + ")";
+                String expr = set_tdivar + resampledExpr;
 
                 return GetFloatArray(expr);
             }
             else
-                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
+*/                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
         }
+
+
+
 
         private double[] encodeTimeBase(String expr)
         {
             try
             {
-                float t0 = GetFloat("dscptr(window_of(dim_of(" + expr + ")),2)");
+                double t0 = GetFloat("dscptr(window_of(dim_of(" + expr + ")),2)");
                 int startIdx[] = GetIntArray("begin_of(window_of(dim_of(" +
                                              expr + ")))");
                 int endIdx[] = GetIntArray("end_of(window_of(dim_of(" + expr +
@@ -449,7 +459,7 @@ public class MdsDataProvider
                         "), ";
                     var_idx++;
 
-                    if (resample)
+ /*                   if (resample)
                     {
                         String limits = "FLOAT(" + xmin + "), " + "FLOAT(" +
                             xmax + ")";
@@ -460,7 +470,7 @@ public class MdsDataProvider
                             "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
                     }
                     else
-                    {
+*/                    {
                         //expr = "dim_of("+in_y+")";
                         expr = set_tdivar + "dim_of(" + in_y_expr + ")";
                         tBaseOut = encodeTimeBase(in_y);
@@ -957,9 +967,23 @@ public class MdsDataProvider
         }
     }
 
-    public synchronized float GetFloat(String in) throws IOException
+    public synchronized double GetFloat(String in) throws IOException
     {
         error = null;
+
+        //First check Whether this is a date
+        try {
+            Calendar cal = Calendar.getInstance();
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
+            Date date = df.parse(in);
+            cal.setTime(date);
+            long javaTime = cal.getTime().getTime();
+            return javaTime;
+//            return (double)jScope.convertToSpecificTime(javaTime);
+        }catch(Exception exc){} //If exception occurs this is not a date
+
+
+
         if (NotYetNumber(in))
         {
             if (!CheckOpen())
@@ -1042,14 +1066,14 @@ public class MdsDataProvider
         return new SimpleWaveData(in_y, in_x);
     }
 
-    public WaveData GetResampledWaveData(String in, float start, float end,
+    public WaveData GetResampledWaveData(String in, double start, double end,
                                          int n_points)
     {
         return new SimpleWaveData(in, start, end, n_points);
     }
 
-    public WaveData GetResampledWaveData(String in_y, String in_x, float start,
-                                         float end, int n_points)
+    public WaveData GetResampledWaveData(String in_y, String in_x, double start,
+                                         double end, int n_points)
     {
         return new SimpleWaveData(in_y, in_x, start, end, n_points);
     }
@@ -1160,7 +1184,9 @@ public class MdsDataProvider
             case Descriptor.DTYPE_LONG:
                 out_data = new long[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
+                {
                     out_data[i] = (long) (desc.int_data[i]);
+                }
                 return out_data;
             case Descriptor.DTYPE_FLOAT:
                 out_data = new long[desc.float_data.length];
@@ -1181,7 +1207,28 @@ public class MdsDataProvider
                 error = "Data type code : " + desc.dtype +
                     " not yet supported ";
         }
+
         return null;
+    }
+
+
+    private void setResampleLimits(double min, double max)
+    {
+        String limitsExpr;
+        if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
+        {
+            long maxSpecific = jScope.convertToSpecificTime((long)max);
+            long minSpecific = jScope.convertToSpecificTime((long)min);
+
+            long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
+            limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
+        }
+        else
+        {
+            double dt = (max - min) / MAX_PIXELS;
+            limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
+        }
+        mds.MdsValue(limitsExpr);
     }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
@@ -1555,6 +1602,9 @@ public class MdsDataProvider
        RealArray(long[] longArray)
        {
            this.longArray = longArray;
+           for(int i = 0; i < longArray.length; i++)
+               longArray[i] = jScope.convertFromSpecificTime(longArray[i]);
+
            isDouble = false;
            isLong = true;
       }

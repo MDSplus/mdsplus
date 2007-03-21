@@ -48,22 +48,22 @@ public class WaveInterface
     public String provider;
     public String w_error[];
     public Signal signals[];
-    public float xmax, xmin, ymax, ymin, timemax, timemin;
+    public double xmax, xmin, ymax, ymin, timemax, timemin;
     public String title, xlabel, ylabel, zlabel;
     protected DataProvider dp;
 
 // Used for asynchronous Update
     public boolean asynch_update = true;
     Signal wave_signals[];
-    float wave_xmin, wave_xmax;
+    double wave_xmin, wave_xmax;
     int wave_timestamp;
     AsynchUpdater du;
     ContinuousUpdater cu;
     boolean request_pending;
-    float orig_xmin, orig_xmax;
+    double orig_xmin, orig_xmax;
     protected boolean evaluated[];
 
-    static final float HUGE = (float) 1E8;
+    static final double HUGE = (double) 1E8;
 
     protected boolean is_image = false;
     boolean keep_ratio = true;
@@ -85,6 +85,8 @@ public class WaveInterface
     static boolean brief_error = true;
 
     ColorMap colorMap = new ColorMap();
+
+    boolean handlingTime = false;
 
 
     public WaveInterface()
@@ -1054,8 +1056,8 @@ public class WaveInterface
             {
                 w_error[curr_wave] = null;
                 evaluated[curr_wave] = true;
-//                signals[curr_wave] = GetSignal(curr_wave, (float) - HUGE, (float) HUGE);
-                signals[curr_wave] = GetSignal(curr_wave, (float) xmin, (float) xmax);
+//                signals[curr_wave] = GetSignal(curr_wave, (double) - HUGE, (double) HUGE);
+                signals[curr_wave] = GetSignal(curr_wave, (double) xmin, (double) xmax);
                 if (signals[curr_wave] == null)
                 {
                     w_error[curr_wave] = curr_error;
@@ -1120,7 +1122,7 @@ public class WaveInterface
         {
             we = new WaveformEvent(wave, "Loading single or multi frame image");
             wave.dispatchWaveformEvent(we);
-            FrameData fd = dp.GetFrameData(in_y[0], in_x[0], timemin, timemax);
+            FrameData fd = dp.GetFrameData(in_y[0], in_x[0], (float)timemin, (float)timemax);
             if (fd != null)
             {
                 CreateNewFramesClass(fd.GetFrameType());
@@ -1195,7 +1197,7 @@ public class WaveInterface
         return shot_list;
     }
 
-    private Signal GetSignal(int curr_wave, float xmin, float xmax) throws
+    private Signal GetSignal(int curr_wave, double xmin, double xmax) throws
         IOException
     {
         Signal out_signal = null;
@@ -1221,7 +1223,8 @@ public class WaveInterface
             {
                 synchronized (dp)
                 {
-                    out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+                        out_signal = GetSignalFromProvider(curr_wave, xmin, xmax);
+
                 }
 
                 if (! (full_flag ||
@@ -1274,7 +1277,7 @@ public class WaveInterface
         return out_signal;
     }
 
-    private Signal GetSignalFromCache(int curr_wave, float xmin, float xmax) throws
+    private Signal GetSignalFromCache(int curr_wave, double xmin, double xmax) throws
         IOException
     {
         float curr_data[] = null, curr_x[] = null, up_err[] = null,
@@ -1365,7 +1368,7 @@ public class WaveInterface
         return out_signal;
     }
 
-    private Signal GetSignalFromProvider(int curr_wave, float xmin, float xmax) throws
+    private Signal GetSignalFromProvider(int curr_wave, double xmin, double xmax) throws
         IOException
     {
         float curr_data[] = null, curr_x[] = null, curr_y[] = null, up_err[] = null,
@@ -1462,7 +1465,8 @@ public class WaveInterface
                     (curr_x_double == null || curr_x_double.length <= 1) &&
                     (curr_x_long == null || curr_x_long.length <= 1) )
                     curr_data = null;
-            }
+
+             }
         }
         else // Campo X non definito
         {
@@ -1472,9 +1476,15 @@ public class WaveInterface
                     wd = dp.GetWaveData(in_y[curr_wave]);
             }
             else
-                wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
-                                             Waveform.MAX_POINTS);
-
+            {
+                if(xmin != -HUGE) //If we actually have some limit
+                {
+                    wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
+                                                 Waveform.MAX_POINTS);
+                }
+                else
+                    wd = dp.GetWaveData(in_y[curr_wave]);
+            }
             if (wd == null)
                 curr_data = null;
             else
@@ -1530,6 +1540,8 @@ public class WaveInterface
                 {
 
                     curr_x_long = wd.GetXLongData();
+
+
                     if (curr_x_long != null && ! (full_flag || dimension > 1))
                         x_samples = curr_x_long.length;
 
@@ -1541,6 +1553,17 @@ public class WaveInterface
                         if (curr_x == null)
                              curr_data = null;
                      }
+
+
+                     else
+                         for(int i = 0; i <10; i++)
+                             System.out.println("CACCA"+ curr_x_long[i]);
+
+
+
+
+
+
                 }
             }
         }
@@ -1587,12 +1610,20 @@ public class WaveInterface
         {
             if (curr_x == null)
                 if(curr_x_double != null)
+                {
                     out_signal = new Signal(curr_x_double, curr_data, min_len);
+                    handlingTime = false;
+                }
                 else
+                {
                     out_signal = new Signal(curr_x_long, curr_data, min_len);
+                    handlingTime = true;
+                }
             else
+            {
                 out_signal = new Signal(curr_x, curr_data, min_len);
-
+                handlingTime = false;
+            }
             out_signal.setMode1D( (int) mode1D[curr_wave]);
         }
 
@@ -1660,8 +1691,8 @@ public class WaveInterface
         cu.start();
     }
 
-    void AsynchUpdate(Vector sigs, float xmin, float xmax,
-                      float _orig_xmin, float _orig_xmax,
+    void AsynchUpdate(Vector sigs, double xmin, double xmax,
+                      double _orig_xmin, double _orig_xmax,
                       int timestamp, boolean panning,
                       MultiWaveform w)
     {
@@ -1739,8 +1770,10 @@ public class WaveInterface
             if (is_continuous) //continuous signal update
                 wave_signals[curr_wave] = GetSignal(curr_wave, xmin, xmax); //-HUGE, HUGE);
             else //asyncronous update during zoom
+            {
                 wave_signals[curr_wave] = GetSignal(curr_wave, wave_xmin,
                     wave_xmax);
+            }
         }
         if (needs_update && saved_timestamp == wave_timestamp)
         {

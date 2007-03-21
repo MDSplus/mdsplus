@@ -55,7 +55,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     native public void SetEnvironmentSpecific(String in, String defaultNode);
     native public void UpdateNative(String exp, long s);
     native public String GetString(String in);
-    native public float GetFloat(String in);
+    native public double GetFloat(String in);
 
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {

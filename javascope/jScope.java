@@ -1,4 +1,3 @@
-/* $Id$ */
 import java.io.*;
 import java.net.*;
 import java.awt.List;
@@ -134,6 +133,27 @@ public class jScope
 
     BasicArrowButton incShot, decShot;
     int incShotValue = 0;
+
+    public static final int JAVA_TIME = 1, VMS_TIME = 2;
+    static int timeMode = JAVA_TIME;
+    static int getTimeMode() {return timeMode; }
+
+
+    static long convertFromSpecificTime(long inTime)
+    {
+        if (timeMode == VMS_TIME)
+                return (inTime - 0x7c95674beb4000L) / 10000L;
+        else
+            return inTime;
+    }
+
+    static long convertToSpecificTime(long inTime)
+    {
+        if (timeMode == VMS_TIME)
+                return (inTime*10000L + 0x7c95674beb4000L);
+        else
+            return inTime;
+    }
 
     static public void ShowMessage(Component parentComponent, Object message,
                                    String title, int messageType)
@@ -1599,6 +1619,15 @@ public class jScope
             p.setProperty("http.proxyHost", proxy_host);
             p.setProperty("http.proxyPort", proxy_port);
         }
+
+        String timeConversion = js_prop.getProperty("jScope.time_format");
+        if(timeConversion != null)
+        {
+            if(timeConversion.toUpperCase().equals("VMS"))
+                timeMode = VMS_TIME;
+            //Add here new time formats
+        }
+
     }
 
     private boolean IsIpAddress(String addr)

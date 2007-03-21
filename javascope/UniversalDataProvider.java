@@ -7,7 +7,7 @@ class UniversalDataProvider implements DataProvider
 {
     String error = "Unknown experiment";
     MdsDataProvider rfx;
-    FtuDataProvider ftu; 
+    FtuDataProvider ftu;
     TwuDataProvider twu;
     JetDataProvider jet;
     JetMdsDataProvider jetmds;
@@ -54,10 +54,10 @@ class UniversalDataProvider implements DataProvider
         if(spec.startsWith("asd:"))
             return asd;
         error = "Unknown experiment";
-            
+
         return null;
     }
-    
+
     protected String RemoveExp(String spec)
     {
         if(spec.startsWith("jetmds:"))
@@ -66,7 +66,7 @@ class UniversalDataProvider implements DataProvider
             return spec.substring(3);
         return spec.substring(4);
     }
-    
+
     public WaveData GetWaveData(String in)
     {
         try {
@@ -79,19 +79,19 @@ class UniversalDataProvider implements DataProvider
             return SelectProvider(in_y).GetWaveData(RemoveExp(in_y), in_x);
         }catch(Exception exc) {return null; }
     }
-    public WaveData GetResampledWaveData(String in, float start, float end, int n_points)
+    public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
     {
         return null;
     }
-    public WaveData GetResampledWaveData(String in_y, String in_x, float start, float end, int n_points)
+    public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
     {
         return null;
     }
-    
+
     public void    Dispose()
     {
         if(rfx != null) rfx.Dispose();
-        if(ftu != null) ftu.Dispose(); 
+        if(ftu != null) ftu.Dispose();
         if(twu != null) twu.Dispose();
         if(jet != null) jet.Dispose();
         if(jetmds != null) jetmds.Dispose();
@@ -102,7 +102,7 @@ class UniversalDataProvider implements DataProvider
     public void    SetCompression(boolean state){}
     public boolean SupportsContinuous() { return true; }
     public int     InquireCredentials(JFrame f, DataServerItem server_item)
-    {   
+    {
         if(rfx != null) rfx.InquireCredentials(f, new DataServerItem("java_user_ext"));
         return jet.InquireCredentials(f, server_item);
     }
@@ -110,7 +110,7 @@ class UniversalDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){}
 
-    
+
     public void SetEnvironment(String exp)
     {
         error = null;
@@ -140,20 +140,20 @@ class UniversalDataProvider implements DataProvider
         error = null;
         return new String(in);
     }
-    public float GetFloat(String in)
+    public double GetFloat(String in)
     {
         error = null;
-        Float f = new Float(in); 
-        return f.floatValue();
+        Double f = new Double(in);
+        return f.doubleValue();
     }
-    
-    
+
+
     public long[] GetShots(String in)
     {
         long d[] = new long[1];
         try {
             return rfx.GetShots(in);
-        }catch (Exception exc) 
+        }catch (Exception exc)
         {
             try {
                 StringTokenizer st = new StringTokenizer(in, ":");
@@ -163,7 +163,7 @@ class UniversalDataProvider implements DataProvider
         }
         return d;
     }
-    
+
     public String ErrorString()
     {
         return error;
@@ -187,7 +187,7 @@ class UniversalDataProvider implements DataProvider
         if(jetmds != null) jetmds.RemoveUpdateEventListener(l, event);
         if(ts != null) ts.RemoveUpdateEventListener(l, event);
         if(asd != null) asd.RemoveUpdateEventListener(l, event);
-        
+
     }
     public void    AddConnectionListener(ConnectionListener l)
     {
@@ -208,7 +208,7 @@ class UniversalDataProvider implements DataProvider
         if(jetmds != null) jetmds.RemoveConnectionListener(l);
         if(ts != null) ts.RemoveConnectionListener(l);
         if(asd != null) asd.RemoveConnectionListener(l);
-       
+
     }
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
@@ -216,22 +216,22 @@ class UniversalDataProvider implements DataProvider
         return null;
     }
 
-    
+
     public float[] GetFrameTimes(String in_expr)
     {
         return null;
      }
-    
-    public byte[]  GetAllFrames(String in_frame){return null;} 
-    
+
+    public byte[]  GetAllFrames(String in_frame){return null;}
+
     public byte[] GetFrameAt(String in_expr, int frame_idx)
     {
-        return null; 
+        return null;
     }
-    
+
     public boolean DataPending()
     {
         return false;
     }
-    
- }	    
+
+ }

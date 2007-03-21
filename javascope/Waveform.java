@@ -202,7 +202,15 @@ public class Waveform
     setMouse();
     setKeys();
     SetDefaultColors();
-  }
+        try
+        {
+            jbInit();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
   static String ConvertToString(double f, boolean is_log) {
     double curr_f, curr_f1;
@@ -1213,8 +1221,8 @@ public class Waveform
     }
     else {
       for (i = 0; i < waveform_signal.n_points; i++) {
-        x[i] = wm.XPixel(waveform_signal.isDoubleX()?waveform_signal.x_double[i]:waveform_signal.x[i], d);
-        y[i] = wm.YPixel(waveform_signal.y[i], d);
+        x[i] = wm.XPixel(waveform_signal.getX(i), d);
+        y[i] = wm.YPixel(waveform_signal.getY(i), d);
         points[i] = new Point(x[i], y[i]);
       }
     }
@@ -1278,10 +1286,15 @@ public class Waveform
     if (mode != MODE_PAN || dragging == false) {
       if (waveform_signal != null) {
 
+          //TACON MOSTRUOSO per gestire il fatto che jScope vede solo gli offsets nei times!!!!
         xmax =  MaxXSignal();
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
+
+
+
+
 
         double xrange = xmax - xmin;
         xmax += xrange * horizontal_offset / 200.;
@@ -1319,6 +1332,7 @@ public class Waveform
 
     if (resizing || grid == null || wm == null || change_limits) {
       change_limits = false;
+
       grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode,
                       orizLabel, vertLabel,
                       sigTitle, wave_error, grid_step_x, grid_step_y,
@@ -1471,9 +1485,8 @@ public class Waveform
         we.setXValue(s.getYinXZplot());
         we.setDataValue(s.getZValue());
         we.setIsMB2(is_mb2);
-        //if(s.isLongX())
-        if(s.x_long != null)
-            we.setDateVale(s.x_long[0] );
+        if(s.isLongX())
+            we.setDateValue(0);
 
         dispatchWaveformEvent(we);
       }
@@ -1857,7 +1870,7 @@ public class Waveform
         }
     }
 
-    if ( s.x == null || s.y == null) {
+    if ( !s.hasX())) {
       return null;
     }
 
@@ -1865,50 +1878,49 @@ public class Waveform
     if (curr_x > s.getCurrentXmax() || curr_x < s.getCurrentXmin() ||
         idx == s.getNumPoints() - 1) {
       y = s.y[idx];
-      x = s.isDoubleX()?s.x_double[idx]:s.x[idx];
-      //x = s.x[idx];
+      x = s.getX(idx);
     }
     else if(s.isDoubleX())
     {
       if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
           s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
         double val;
-        boolean increase = s.x_double[idx] < s.x_double[idx + 1];
+        boolean increase = s.getX(idx < s.getX(idx + 1));
 
         if (increase) {
-          val = s.x_double[idx] + (s.x_double[idx + 1] - s.x_double[idx]) / 2;
+          val = s.getX(idx) + s.getX(idx + 1) - s.getX(idx) / 2;
         }
         else {
-          val = s.x_double[idx + 1] + (s.x_double[idx] - s.x_double[idx + 1]) / 2;
+          val = s.getX(idx + 1) + s.getX(idx) - s.getX(idx + 1)) / 2;
 
           //Patch to elaborate strange RFX signal (roprand bar error signal)
         }
-        if (s.x_double[idx] == s.x_double[idx + 1] && !Float.isNaN(s.y[idx + 1])) {
+        if (s.getX(idx) == s.getX(idx + 1) && !Float.isNaN(s.getY(idx + 1))) {
           val += curr_x;
 
         }
         if (curr_x < val) {
-          y = s.y[idx + (increase ? 0 : 1)];
-          x = s.x_double[idx + (increase ? 0 : 1)];
+          y = s.getY(idx + (increase ? 0 : 1));
+          x = s.getX(idx + (increase ? 0 : 1));
         }
         else {
-          y = s.y[idx + (increase ? 1 : 0)];
-          x = s.x_double[idx + (increase ? 1 : 0)];
+          y = s.getY(idx + (increase ? 1 : 0));
+          x = s.getX(idx + (increase ? 1 : 0));
         }
       }
       else {
         x = curr_x;
         try {
           if (s.getMode1D() == Signal.MODE_STEP) {
-            y = s.y[idx];
+            y = s.getY(idx);
           }
           else {
-            y = s.y[idx] + (s.y[idx + 1] - s.y[idx]) * (x - s.x_double[idx]) /
-                (s.x_double[idx + 1] - s.x_double[idx]);
+            y = s.getY(idx) + (s.getY(idx + 1) - s.getY(idx)) * (x - s.getX(idx)) /
+                (s.getY(idx + 1) - s.getX(idx));
           }
         }
         catch (ArrayIndexOutOfBoundsException e) {
-          System.out.println("Excepion on " + getName() + " " + s.x.length +
+          System.out.println("Excepion on " + getName() + " " +
                              " " + idx);
         }
       }
@@ -1918,42 +1930,42 @@ public class Waveform
      if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
          s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
        double val;
-       boolean increase = s.x[idx] < s.x[idx + 1];
+       boolean increase = s.getX(idx) < s.getX(idx + 1);
 
        if (increase) {
-         val = s.x[idx] + (s.x[idx + 1] - s.x[idx]) / 2;
+         val = s.getX(idx) + (s.getX(idx + 1) - s.getX(idx)) / 2;
        }
        else {
-         val = s.x[idx + 1] + (s.x[idx] - s.x[idx + 1]) / 2;
+         val = s.getX(idx + 1) + (s.getX(idx) - s.getX(idx + 1)) / 2;
 
          //Patch to elaborate strange RFX signal (roprand bar error signal)
        }
-       if (s.x[idx] == s.x[idx + 1] && !Float.isNaN(s.y[idx + 1])) {
+       if (s.getX(idx) == s.getX(idx + 1) && !Float.isNaN(s.getY(idx + 1)) {
          val += curr_x;
 
        }
        if (curr_x < val) {
-         y = s.y[idx + (increase ? 0 : 1)];
-         x = s.x[idx + (increase ? 0 : 1)];
+         y = s.getY(idx + (increase ? 0 : 1));
+         x = s.getX(idx + (increase ? 0 : 1));
        }
        else {
-         y = s.y[idx + (increase ? 1 : 0)];
-         x = s.x[idx + (increase ? 1 : 0)];
+         y = s.getY(idx + (increase ? 1 : 0));
+         x = s.getX(idx + (increase ? 1 : 0));
        }
      }
      else {
        x = curr_x;
        try {
          if (s.getMode1D() == Signal.MODE_STEP || s.x[idx + 1] == s.x[idx]) {
-           y = s.y[idx];
+           y = s.getY(idx);
          }
          else {
-           y = s.y[idx] + (s.y[idx + 1] - s.y[idx]) * (x - s.x[idx]) /
-               (s.x[idx + 1] - s.x[idx]);
+           y = s.getY(idx) + (s.getY(idx + 1) - s.getY(idx) * (x - s.getX(idx)) /
+               (s.getX(idx + 1) - s.getX(idx));
          }
        }
        catch (ArrayIndexOutOfBoundsException e) {
-         System.out.println("Excepion on " + getName() + " " + s.x.length +
+         System.out.println("Excepion on " + getName() + " " + s.getLength() +
                             " " + idx);
        }
      }
@@ -2362,16 +2374,16 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
       for (int i = 0; i < sig.n_points; i++)
       {
-        up = wm.YPixel(up_error[i] + sig.y[i], d);
+        up = wm.YPixel(up_error[i] + sig.getY(i), d);
         if (!sig.asym_error)
         {
-          low = wm.YPixel(sig.y[i] - up_error[i], d);
+          low = wm.YPixel(sig.getY(i) - up_error[i], d);
         }
         else
         {
-          low = wm.YPixel(sig.y[i] - low_error[i], d);
+          low = wm.YPixel(sig.getY(i) - low_error[i], d);
         }
-        x = wm.XPixel(sig.x[i], d);
+        x = wm.XPixel(sig.getX(i), d);
 
         g.drawLine(x, up, x, low);
         g.drawLine(x - 2, up, x + 2, up);
@@ -2481,6 +2493,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       undo_zoom.removeElement(r);
 
     }
+
     waveform_signal.setXmin( r.start_xs, Signal.SIMPLE);
     waveform_signal.setXmax( r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
@@ -2538,6 +2551,11 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     if (waveform_signal == null) {
       return;
     }
+
+    System.out.println("SETXMAX@@@@!!!!!");
+
+
+
     waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
     waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
     ReportChanges();
@@ -2833,4 +2851,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   void Waveform_ComponentAdded(java.awt.event.ContainerEvent event) {
     // to do: code goes here.
   }
+
+    private void jbInit() throws Exception
+    {
+    }
 }

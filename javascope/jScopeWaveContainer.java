@@ -1830,17 +1830,17 @@ remove 28/06/2005
                             {
                                 s1 = "";
                                 s2 = "";
-                                if (wi.signals[i] != null && wi.signals[i].x != null)
+                                if (wi.signals[i] != null && wi.signals[i].hasX())
                                 {
                                     for (j = start_idx[k][i];
-                                         j < wi.signals[i].x.length; j++)
+                                         j < wi.signals[i].getLength(); j++)
                                     {
-                                        if (wi.signals[i].x[j] > xmin &&
-                                            wi.signals[i].x[j] < xmax)
+                                        if (wi.signals[i].getX(j) > xmin &&
+                                            wi.signals[i].getX(j) < xmax)
                                         {
                                             more_point[k] = true;
-                                            s1 = "" + wi.signals[i].x[j];
-                                            s2 = "" + wi.signals[i].y[j];
+                                            s1 = "" + wi.signals[i].getX(j);
+                                            s2 = "" + wi.signals[i].getY(j);
                                             start_idx[k][i] = j + 1;
                                             break;
                                         }

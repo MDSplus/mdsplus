@@ -46,6 +46,7 @@ public class Grid
         x_values = new double[50];
         y_values = new double[50];
         this.xmax = xmax;
+
         x_dim = BuildGrid(x_values, IS_X, xmax, ymax, xmin, ymin, xlog, ylog);
         y_dim = BuildGrid(y_values, IS_Y, xmax, ymax, xmin, ymin, xlog, ylog);
     }
