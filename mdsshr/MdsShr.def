@@ -20,6 +20,7 @@ LibResetVmZone
 LibSigToRet
 LibSpawn
 LibSysAscTim
+LibTimeToVMSTime
 LibTraverseTree
 LibWait
 MdsCompareXd
