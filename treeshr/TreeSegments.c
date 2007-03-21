@@ -2027,11 +2027,11 @@ int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct desc
 
 
  int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *data) {
-   int status = _TreePutTimestampedSegment(dbid, nid, timestamp, data);
+  DESCRIPTOR_A_COEFF(initValue, data->length, data->dtype, 0, 8, 0);
+  int status = _TreePutTimestampedSegment(dbid, nid, timestamp, data);
    if (status==TreeNOSEGMENTS || status==TreeBUFFEROVF) {
      status = 1;
      while (data && data->dtype==DTYPE_DSC) data=(struct descriptor_a *)data->pointer;
-     DESCRIPTOR_A_COEFF(initValue, data->length, data->dtype, 0, 8, 0);
      if (data) {
        if (data->class == CLASS_A) {
          int i,length;
