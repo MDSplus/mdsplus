@@ -1,9 +1,39 @@
 FUN PUBLIC JavaResample(in _y, optional in _x, in _xmin, in _xmax)
 {
 
-   private _MAX_POINT = 2000.0;
+   private _MAX_POINT = 2000;
    
    _out = 0;
+
+write(*, 'JavaResample ', _xmin, _xmax);
+
+
+	_dt = ( _xmax - _xmin)/_MAX_POINT;
+	TreeShr->TreeSetTimeContext(descr(_xmin),descr(_xmax), descr(_dt));
+
+write(*, 'JavaResample ', _xmin, _xmax, _dt);
+ 
+	if( present(_x) )
+	{
+		return (make_signal(_y, *,_x));	
+	}
+	else
+	{
+		return (_y);
+	}
+
+
+
+
+
+
+
+
+
+
+/*
+
+
  
 	if( present(_x) )
 	{
@@ -35,5 +65,8 @@ FUN PUBLIC JavaResample(in _y, optional in _x, in _xmin, in _xmax)
 	}
 
         return (_out);
+
+
+*/
 
 };
