@@ -1870,14 +1870,14 @@ public class Waveform
         }
     }
 
-    if ( !s.hasX())) {
+    if ( !s.hasX()) {
       return null;
     }
 
     int idx = s.FindClosestIdx(curr_x, curr_y);
     if (curr_x > s.getCurrentXmax() || curr_x < s.getCurrentXmin() ||
         idx == s.getNumPoints() - 1) {
-      y = s.y[idx];
+      y = s.getY(idx);
       x = s.getX(idx);
     }
     else if(s.isDoubleX())
@@ -1885,17 +1885,17 @@ public class Waveform
       if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
           s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
         double val;
-        boolean increase = s.getX(idx < s.getX(idx + 1));
+        boolean increase = s.getX(idx) < s.getX(idx + 1);
 
         if (increase) {
           val = s.getX(idx) + s.getX(idx + 1) - s.getX(idx) / 2;
         }
         else {
-          val = s.getX(idx + 1) + s.getX(idx) - s.getX(idx + 1)) / 2;
+          val = s.getX(idx + 1) + s.getX(idx) - s.getX(idx + 1) / 2;
 
           //Patch to elaborate strange RFX signal (roprand bar error signal)
         }
-        if (s.getX(idx) == s.getX(idx + 1) && !Float.isNaN(s.getY(idx + 1))) {
+        if (s.getX(idx) == s.getX(idx + 1) && !Double.isNaN(s.getY(idx + 1))) {
           val += curr_x;
 
         }
@@ -1940,7 +1940,7 @@ public class Waveform
 
          //Patch to elaborate strange RFX signal (roprand bar error signal)
        }
-       if (s.getX(idx) == s.getX(idx + 1) && !Float.isNaN(s.getY(idx + 1)) {
+       if (s.getX(idx) == s.getX(idx + 1) && !Double.isNaN(s.getY(idx + 1))) {
          val += curr_x;
 
        }
@@ -1956,12 +1956,12 @@ public class Waveform
      else {
        x = curr_x;
        try {
-         if (s.getMode1D() == Signal.MODE_STEP || s.x[idx + 1] == s.x[idx]) {
+         if (s.getMode1D() == Signal.MODE_STEP || s.getX(idx + 1) == s.getX(idx)) {
            y = s.getY(idx);
          }
          else {
            y = s.getY(idx) + (s.getY(idx + 1) - s.getY(idx) * (x - s.getX(idx)) /
-               (s.getX(idx + 1) - s.getX(idx));
+               (s.getX(idx + 1) - s.getX(idx)));
          }
        }
        catch (ArrayIndexOutOfBoundsException e) {

@@ -1747,6 +1747,7 @@ public class Signal
     {
         int i;
 
+        if(y == null) return;
         if(x != null)
         {
             ymax = ymin = y[0];
