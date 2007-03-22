@@ -175,6 +175,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
                           {0,0,0,0}};
   itmlst[0].pointer=&tree;
   itmlst[1].pointer=&shot;
+  memset(tree,' ',sizeof(tree));
   TreeGetDbi(itmlst);
   for (i=0, cptr = tree;i<12;i++) 
     if (cptr[i] == (char)32) 
