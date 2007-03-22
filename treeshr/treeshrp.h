@@ -763,7 +763,7 @@ extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
 extern void TreeSerializeNciIn(char *in, struct nci *out);
 extern void TreeSerializeNciOut(struct nci *in, char *out);
-extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum);
+extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted);
 extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
 extern int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 where);
 extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 where);
@@ -778,10 +778,11 @@ extern int MDS_IO_CLOSE(int fd);
 extern _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence);
 extern int MDS_IO_WRITE(int fd, void *buff, size_t count);
 extern ssize_t MDS_IO_READ(int fd, void *buff, size_t count);
-extern int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode);
+extern int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode, int *deleted);
 extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
+extern ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *deleted);
 
 
 #endif

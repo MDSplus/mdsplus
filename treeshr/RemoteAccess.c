@@ -875,7 +875,7 @@ int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
 STATIC_THREADSAFE pthread_mutex_t FdsMutex;
 STATIC_THREADSAFE int FdsMutex_initialized = 0;
  
-STATIC_THREADSAFE struct fd_info_struct { int in_use; int socket; int fd; } *FDS = 0;
+STATIC_THREADSAFE struct fd_info_struct { int in_use; int socket; int fd; int enhanced;} *FDS = 0;
 STATIC_THREADSAFE int ALLOCATED_FDS = 0;
 
 STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
@@ -896,7 +896,7 @@ STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
   return tmp;
 }
 
-STATIC_ROUTINE int NewFD(int fd,int socket)
+STATIC_ROUTINE int NewFD(int fd,int socket,int enhanced)
 {
   int idx;
   LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
@@ -906,6 +906,7 @@ STATIC_ROUTINE int NewFD(int fd,int socket)
   FDS[idx].in_use=1;
   FDS[idx].socket=socket;
   FDS[idx].fd = fd;
+  FDS[idx].enhanced = enhanced;
   UnlockMdsShrMutex(&FdsMutex);
   return idx+1;
 }
@@ -921,7 +922,6 @@ int MDS_IO_FD(int fd)
 }
 
 STATIC_THREADSAFE int (*MDS_SEND_ARG)() = 0;
-  
 STATIC_ROUTINE int SendArg(int socket, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 int *dims, char *bytes)
 {
@@ -954,6 +954,7 @@ STATIC_ROUTINE int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *
 #define MDS_IO_EXISTS_K 7
 #define MDS_IO_REMOVE_K 8
 #define MDS_IO_RENAME_K 9
+#define MDS_IO_READ_X_K 10
 
 #define MDS_IO_O_CREAT  0x00000040
 #define MDS_IO_O_TRUNC  0x00000200
@@ -962,7 +963,7 @@ STATIC_ROUTINE int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
 
-STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock)
+STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock, int *enhanced)
 {
   int fd = -1;
   int try_again = 1;
@@ -1003,6 +1004,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
 	int sts;
 	if (((sts=GetAnswerInfoTS(*sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg)) & 1) && (length == sizeof(fd)))
 	  {
+	    *enhanced = sts == 3;
 	    memcpy(&fd,dptr,sizeof(fd));
 	    try_again = 0;
 	  }
@@ -1034,6 +1036,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   int fd;
+  int enhanced=0;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   if (hostpart)
 #ifdef SRB
@@ -1043,7 +1046,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
     } 
     else
 #endif
-    fd = io_open_remote(hostpart,filepart,options,mode,&socket);
+    fd = io_open_remote(hostpart,filepart,options,mode,&socket,&enhanced);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
 #ifndef HAVE_WINDOWS_H
@@ -1064,7 +1067,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   free(tmp);
   UnlockMdsShrMutex(&IOMutex);
   if (fd != -1)
-    fd = NewFD(fd,socket);
+    fd = NewFD(fd,socket,enhanced);
   return fd;
 }
 
@@ -1223,7 +1226,7 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
   }
   return ans; 
 }
-
+ 
 STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
@@ -1256,6 +1259,46 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   return ret;
 }
 
+STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_t count, int *deleted)
+{
+  _int64 ret = -1;
+  int info[] = {0,0,0,0,0};
+  int sock = FDS[fd-1].socket;
+  int status;
+  info[1]=FDS[fd-1].fd;
+  info[4]=count;
+  *(_int64 *)(&info[2]) = offset;
+  info[5]=count;
+#ifdef _big_endian
+  status = info[2];
+  info[2]=info[3];
+  info[3]=status;
+#endif
+  status = SendArg(sock,MDS_IO_READ_X_K,0,0,0,sizeof(info)/sizeof(int),info,0);
+  if (status & 1) {
+    char dtype;
+    short length;
+    char ndims;
+    int dims[7];
+    void *dptr;
+    int ret_i;
+    void *msg = 0;
+    int sts;
+    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &ret_i, &dptr, &msg)) & 1) {
+      if (deleted )
+	*deleted = sts == 3;
+      ret = (ssize_t)ret_i;
+      if (ret)
+	memcpy(buff,dptr, ret);
+    }
+    if (msg)
+      free(msg);
+  }
+  else
+    RemoteAccessDisconnect(sock,1);
+  return ret;
+}
+  
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 {
   ssize_t ans = -1;
@@ -1274,10 +1317,44 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
   }
   return ans; 
 }
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+      pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
+      ans = srbUioRead(FDS[fd-1].fd,buff,count);
+    }
+    else
+#endif
 
-STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
+ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *deleted)
 {
-  ssize_t ret = 0;
+  ssize_t ans = -1;
+  if (count == 0) return 0;
+  if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
+    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+#ifdef SRB
+    if (FDS[fd-1].socket == SRB_SOCKET) {
+      pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
+      ans = srbUioRead(FDS[fd-1].fd,buff,count);
+    }
+    else
+#endif
+    if (FDS[fd-1].socket == -1 || (!FDS[fd-1].enhanced)) {
+      MDS_IO_LOCK(fd, offset, count, 1, deleted);
+      MDS_IO_LSEEK(fd, offset, SEEK_SET);
+      ans = MDS_IO_READ(fd, buff, count);
+      MDS_IO_LOCK(fd, offset, count, 0, deleted);
+    }
+    else {
+      ans = io_read_x_remote(fd,offset,buff,count, deleted);
+    }
+    UnlockMdsShrMutex(&IOMutex);
+  }
+  return ans; 
+}
+
+STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int *deleted)
+{
+  int ret=0;
   int info[] = {0,0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
@@ -1300,8 +1377,12 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
     int dims[7];
     void *dptr;
     void *msg = 0;
-    if (GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg) & 1)
+    int sts;
+    if ((sts = GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &nbytes, &dptr, &msg)) & 1) {
+      if (deleted)
+	*deleted = sts == 3;
       memcpy(&ret,dptr, sizeof(ret));
+    }
     if (msg)
       free(msg);
   }
@@ -1310,7 +1391,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode)
   return ret;
 }
 
-int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in)
+int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
 {
   int status = TreeFAILURE;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
@@ -1360,15 +1441,19 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in)
         status = TreeSUCCESS;
 #else
         struct flock flock_info;
+        struct stat stat;
         flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
         flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
         flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
         flock_info.l_len = (mode == 0) ? 0 : size;
         status = (fcntl(FDS[fd-1].fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+        fstat(FDS[fd-1].fd,&stat);
+        if (deleted)
+	  *deleted = stat.st_nlink <= 0;
 #endif
     }
     else
-      status = io_lock_remote(fd,offset,size,mode_in);
+      status = io_lock_remote(fd,offset,size,mode_in,deleted);
     UnlockMdsShrMutex(&IOMutex);
   }
   return status; 

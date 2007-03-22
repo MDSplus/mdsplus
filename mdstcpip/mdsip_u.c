@@ -67,7 +67,6 @@ typedef void *pthread_mutex_t;
 #else
 #define DEFAULT_HOSTFILE "/etc/mdsip.hosts"
 #endif
-
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
@@ -95,6 +94,7 @@ typedef void *pthread_mutex_t;
 #define MDS_IO_EXISTS_K 7
 #define MDS_IO_REMOVE_K 8
 #define MDS_IO_RENAME_K 9
+#define MDS_IO_READ_X_K 10
 
 #define MDS_IO_O_CREAT  0x00000040
 #define MDS_IO_O_TRUNC  0x00000200
@@ -609,6 +609,7 @@ int main(int argc, char **argv)
   extern fd_set FdActive();
   struct timeval timeout = {1,0};
   int error_count=0;
+  int status;
   fd_set readfds;
   readfds = FdActive();
   while (!shut)
@@ -619,7 +620,34 @@ int main(int argc, char **argv)
       if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
       {
 	int len = sizeof(struct sockaddr_in);
-	(*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len),&sin,0);
+	int sock;
+	double start;
+        int more=2;
+        struct sock_list {
+	  int sock;
+	  struct sockaddr *sin;
+	  struct sock_list *next; } *list=0,*l;
+        while (more) {
+	  status = fcntl(serverSock,F_SETFL,O_NONBLOCK);
+	  sock=accept(serverSock, (struct sockaddr *)&sin, &len);
+	  if (sock == -1 && errno == EAGAIN) {
+	    more = 0;
+	  } else {
+	    l=(struct sock_list *)malloc(sizeof(struct sock_list));
+	    l->sock=sock;
+	    l->sin=memcpy(malloc(len),&sin,len);
+	    l->next=list;
+	    list=l;
+	  }
+	}
+	while(list) {
+	    (*AddClient)(list->sock,list->sin,0);
+	    l=list;
+	    list=l->next;
+	    free(l->sin);
+	    free(l);
+	}
+
       }
       else
       {
@@ -638,7 +666,7 @@ int main(int argc, char **argv)
 	    (*DoMessage)(c->sock);
 	}
       }
-      shut = (ClientList == NULL) && !multi && !IsService;
+      shut = (ClientList == NULL) && !multi && !IsService && mode != 'I';
       readfds = FdActive();
     }
     else
@@ -685,6 +713,32 @@ int main(int argc, char **argv)
   }
 #endif
 }
+
+ static int lock_file(int fd, _int64 offset,  int size, int mode_in, int *deleted) {
+   int status;
+   int mode = mode_in & 0x3;
+   int nowait = mode_in & 0x8;
+#if defined (_WIN32)
+   if (mode > 0)
+     status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
+		(GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
+   else
+     status = UnlockFile((HANDLE)_get_osfhandle(fd),(int)offset, (int)(offset >> 32), size, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+#elif defined (HAVE_VXWORKS_H)
+   status = TreeSUCCESS;
+#else
+   struct stat stat;
+   struct flock flock_info;
+   flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
+   flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
+   flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
+   flock_info.l_len = (mode == 0) ? 0 : size;
+   status = (fcntl(fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+   fstat(fd, &stat);
+   *deleted = stat.st_nlink <= 0;
+#endif
+   return status;
+ }
 
 static int DoMessage(SOCKET sock)
 {
@@ -814,6 +868,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     time_t tim;
     int m_status;
     int user_compression_level;
+    double start;
     SetCloseOnExec(sock);
     pid = getpid();
     m.h.msglen = sizeof(MsgHdr);
@@ -855,7 +910,7 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
       MdsIpFree(m_user);
     if ((ok & 1) && mode == 'I' && pid == getpid())
       return;
-    SetSocketOptions(sock);
+    SetSocketOptions(sock,0);
     SendMdsMsg(sock,&m,0);
     if (NO_SPAWN)
     {
@@ -1196,7 +1251,7 @@ static void ProcessMessage(Client *c, Message *message)
 	  free(cmd);
 	}
 #endif
-        SendResponse(c, 1, (struct descriptor *)&fd_d);
+        SendResponse(c, 3, (struct descriptor *)&fd_d);
 	      break;
       }
     case MDS_IO_CLOSE_K:
@@ -1264,31 +1319,16 @@ static void ProcessMessage(Client *c, Message *message)
         int mode_in = message->h.dims[5];
         int mode = mode_in & 0x3;
         int nowait = mode_in &0x8;
+        int deleted;
         DESCRIPTOR_LONG(ans_d,0);
-        offset = *(_int64 *)&(message->h.dims[2]);
-#if defined (_WIN32)
-        if (mode > 0)
-          status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
-                     (GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
-        else
-          status = UnlockFile((HANDLE)_get_osfhandle(fd),(int)offset, (int)(offset >> 32), size, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
-#elif defined (HAVE_VXWORKS_H)
-        status = TreeSUCCESS;
-#else
-        struct flock flock_info;
 #ifdef _big_endian
-        status = message->h.dims[2];
-        message->h.dims[2] = message->h.dims[3];
-        message->h.dims[3] = status;
+	offset = ((_int64)message->h.dims[2]) << 32 | message->h.dims[3];
+#else
+	offset = ((_int64)message->h.dims[3]) << 32 | message->h.dims[2];
 #endif
-        flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
-        flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
-        flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
-        flock_info.l_len = (mode == 0) ? 0 : size;
-        status = (fcntl(fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
-#endif
+	status = lock_file(fd, offset, size, mode, &deleted);
         ans_d.pointer = (char *)&status;
-        SendResponse(c,1,(struct descriptor *)&ans_d);
+        SendResponse(c,deleted ? 3 : 1,(struct descriptor *)&ans_d);
         break;
       }
     case MDS_IO_EXISTS_K:
@@ -1322,6 +1362,51 @@ static void ProcessMessage(Client *c, Message *message)
 #else
         int status = rename(message->bytes,message->bytes+strlen(message->bytes)+1);
 #endif
+        status_d.pointer = (char *)&status;
+        SendResponse(c, 1, (struct descriptor *)&status_d);
+	break;
+      }
+    case MDS_IO_READ_X_K:
+      {
+        int fd = message->h.dims[1];
+        int tmp;
+        off_t offset;
+        void *buf = malloc(message->h.dims[4]);
+        size_t num = (size_t)message->h.dims[4];
+      	_int64 ans;
+	ssize_t nbytes;
+        struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
+        int deleted;
+#ifdef _big_endian
+        tmp = message->h.dims[2];
+        message->h.dims[2] = message->h.dims[3];
+        message->h.dims[3] = tmp;
+#endif
+        offset = (off_t)*(_int64 *)&message->h.dims[2];
+        
+	lock_file(fd, offset, num, 1, &deleted);
+      	lseek(fd,offset,SEEK_SET);
+      	nbytes = read(fd,buf,num);
+        lock_file(fd, offset, num, 0, &deleted);
+        if (nbytes > 0)
+        {
+          DESCRIPTOR_A(ans_d,1,DTYPE_B,0,0);
+          ans_d.pointer=buf;
+          ans_d.arsize=nbytes;
+          SendResponse(c,deleted ? 3 : 1,(struct descriptor *)&ans_d);
+        }
+        else
+        { 
+	  DESCRIPTOR(ans_d,"");
+          SendResponse(c,deleted ? 3 : 1,(struct descriptor *)&ans_d);
+        }
+        free(buf);
+        break;
+      }
+    default:
+      {
+        DESCRIPTOR_LONG(status_d,0);
+        int status = 0;
         status_d.pointer = (char *)&status;
         SendResponse(c, 1, (struct descriptor *)&status_d);
 	break;
@@ -1367,7 +1452,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
     }
     else
     {
-      Message *m = malloc(sizeof(MsgHdr) + e->info_len);
+      Message *m = memset(malloc(sizeof(MsgHdr) + e->info_len),0,sizeof(MsgHdr) + e->info_len);
       m->h.ndims = 0;
       m->h.client_type = client_type;
       m->h.msglen = sizeof(MsgHdr) + e->info_len;
@@ -1497,7 +1582,7 @@ static void ExecuteMessage(Client *c)
     MdsSetClientAddr(c->addr);
     ResetErrors();
     SetCompressionLevel(c->compression_level);
-    status = LibCallg(&c->nargs, TdiExecute);
+    status = (int)LibCallg(&c->nargs, TdiExecute);
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
     if (!(status & 1)) 
       GetErrorText(status,&ans);
@@ -1559,7 +1644,7 @@ static void SendResponse(Client *c, int status, struct descriptor *d)
     }
     nbytes = num * length;
   }
-  m = malloc(sizeof(MsgHdr) + nbytes);
+  m = memset(malloc(sizeof(MsgHdr) + nbytes),0,sizeof(MsgHdr)+nbytes);
   m->h.msglen = sizeof(MsgHdr) + nbytes;
   m->h.client_type = c->client_type;
   m->h.message_id = c->message_id;

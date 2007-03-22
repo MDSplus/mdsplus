@@ -537,7 +537,7 @@ void SetSocketOptions(SOCKET s, int reuse)
 #ifndef GLOBUS
   STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
-  unsigned long len;
+  size_t len;
   static int debug_winsize=0;
   static int init=1;
   if (init)
@@ -555,12 +555,13 @@ void SetSocketOptions(SOCKET s, int reuse)
   setsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,sizeof(int));
   if (debug_winsize)
   {
-    getsockopt(s, SOL_SOCKET,SO_RCVBUF,(char *)&recvbuf,&len);
+    getsockopt(s, SOL_SOCKET,SO_RCVBUF,(void *)&recvbuf,&len);
     printf("Got a recvbuf of %d\n",recvbuf);
-    getsockopt(s, SOL_SOCKET,SO_SNDBUF,(char *)&sendbuf,&len);
+    getsockopt(s, SOL_SOCKET,SO_SNDBUF,(void *)&sendbuf,&len);
     printf("Got a sendbuf of %d\n",sendbuf);
   }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
+  setsockopt(s, SOL_SOCKET,SO_KEEPALIVE,(void *)&one, sizeof(one));
   if (reuse)
     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&one,sizeof(one));
 #endif
@@ -942,7 +943,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   SOCKET s=-1;
 #ifndef GLOBUS
   struct sockaddr_in sin;
-  unsigned long n = sizeof(sin);
+  size_t n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
   status = sys$assign(&INET, &s, 0, 0);

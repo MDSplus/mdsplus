@@ -910,7 +910,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
   }
   if (fd != -1 && strcmp(type,TREE_TREEFILE_TYPE) == 0 && edit_flag)
   {
-    if (!(MDS_IO_LOCK(fd,1,1,10) & 1))
+    if (!(MDS_IO_LOCK(fd,1,1,10,0) & 1))
     {
       MDS_IO_CLOSE(fd);
       fd = -2;

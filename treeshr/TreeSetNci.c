@@ -215,19 +215,26 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 ******************************************/
   if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
   {
-    if ((info->nci_file == 0) || (info->nci_file->put == 0))
-    status = TreeOpenNciW(info, 0);
-    if (status & 1)
-    {      
-        char nci_bytes[42];
-		status = TreeLockNci(info,0,node_num);
-			if (!(status & 1)) return status;
-		MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
-		status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-        if (status == TreeNORMAL)
-          TreeSerializeNciIn(nci_bytes,nci);
-		if (!(status & 1))
-          TreeUnLockNci(info,0,node_num);
+    int deleted = 1;
+    while (status & 1 && deleted) {
+      if ((info->nci_file == 0) || (info->nci_file->put == 0))
+	status = TreeOpenNciW(info, 0);
+      if (status & 1) {      
+	char nci_bytes[42];
+	status = TreeLockNci(info,0,node_num,&deleted);
+	if (status & 1 && deleted) {
+	  TreeCloseFiles(info);
+	}
+	else {
+	  if (!(status & 1)) return status;
+	  MDS_IO_LSEEK(info->nci_file->put,node_num * sizeof(nci_bytes),SEEK_SET);
+	  status = (MDS_IO_READ(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+	  if (status == TreeNORMAL)
+	    TreeSerializeNciIn(nci_bytes,nci);
+	  if (!(status & 1))
+	    TreeUnLockNci(info,0,node_num);
+	}
+      }
     }
   }
   else
@@ -237,7 +244,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
    the characteristics are just a memory reference
    away.
   *********************************************/
-	status = TreeLockNci(info,0,node_num);
+	status = TreeLockNci(info,0,node_num,0);
 		if (!(status & 1)) return status;
 
     memcpy(nci, info->edit->nci + node_num - info->edit->first_in_mem, sizeof(struct nci));
@@ -398,7 +405,7 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
    Update the NCI record
   ***********************/
 
-    status = TreeLockNci(info, 0, node_num);
+    status = TreeLockNci(info, 0, node_num,0);
     if (status & 1)
     {
       char nci_bytes[42];
@@ -674,13 +681,13 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   return status;
 }
 
-int TreeLockNci(TREE_INFO *info, int readonly, int nodenum)
+int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted)
 {
-  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,readonly ? 1 : 2);
+  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,readonly ? 1 : 2,deleted);
 }
 
 int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
-  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,0);
+  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,0,0);
 }
 

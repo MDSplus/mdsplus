@@ -685,49 +685,48 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	fill in the rab and read the record
 	******************************************/
 
-	if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
-	{
-		if (info->nci_file == NULL)
-			status = OpenNciR(info);
-		if (status & 1)
-		{
-		  status = TreeLockNci(info,1,node_num);
-		  if (status & 1)
-		  {
-		    char nci_bytes[42];
-                    int n_version=0;
-                    _int64 viewDate;
-		    MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
-		    status = MDS_IO_READ(info->nci_file->get,(void *)nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes) ?
-                      TreeSUCCESS : TreeFAILURE;
-                    if (status == TreeSUCCESS)
-                      TreeSerializeNciIn(nci_bytes,nci);
-                    TreeGetViewDate(&viewDate);
-                    if (viewDate > 0) {
-                      while (status & 1 && nci->time_inserted > viewDate) {
-                        if (nci->flags & NciM_VERSIONS) {
-                          status = TreeGetVersionNci(info,nci,nci);
-                        }
-                        else {
-                          status = TreeFAILURE;
-			}
-		      }
-		      if (!(status & 1)) {
-			memset(nci,0,sizeof(NCI));
-			status = TreeSUCCESS;
-		      }
-		    }
-                    while (status & 1 && version > n_version) {
-                      if (nci->flags & NciM_VERSIONS) {
-			status = TreeGetVersionNci(info,nci,nci);
-			n_version++;
-                      }
-                      else 
-                        status = TreeFAILURE;
-		    }
-                    TreeUnLockNci(info,1,node_num);
-		  }
+	if ((info->edit == 0) || (node_num < info->edit->first_in_mem))	{
+	  if (info->nci_file == NULL)
+	    status = OpenNciR(info);
+	  if (status & 1) {
+	    char nci_bytes[42];
+	    int n_version=0;
+	    _int64 viewDate;
+	    int deleted=1;
+	    while (status & 1 && deleted) {
+	      status = MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes, sizeof(nci_bytes),&deleted) ==
+		sizeof(nci_bytes) ? TreeSUCCESS : TreeFAILURE;
+	      if (status & 1 && deleted) {
+		TreeCloseFiles(info);
+		status = OpenNciR(info);
+	      }
+	    }
+	    if (status == TreeSUCCESS)
+	      TreeSerializeNciIn(nci_bytes,nci);
+	    TreeGetViewDate(&viewDate);
+	    if (viewDate > 0) {
+	      while (status & 1 && nci->time_inserted > viewDate) {
+		if (nci->flags & NciM_VERSIONS) {
+		  status = TreeGetVersionNci(info,nci,nci);
 		}
+		else {
+		  status = TreeFAILURE;
+		}
+	      }
+	      if (!(status & 1)) {
+		memset(nci,0,sizeof(NCI));
+		status = TreeSUCCESS;
+	      }
+	    }
+	    while (status & 1 && version > n_version) {
+	      if (nci->flags & NciM_VERSIONS) {
+		status = TreeGetVersionNci(info,nci,nci);
+		n_version++;
+	      }
+	      else 
+		status = TreeFAILURE;
+	    }
+	  }
 	}
 	else
 	{

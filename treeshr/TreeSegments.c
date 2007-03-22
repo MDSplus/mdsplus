@@ -636,10 +636,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	  ans.arsize=ans.length;
 	  for (i=0;i<ans.dimct; i++) ans.arsize *= ans.m[i];
 	  ans.pointer = malloc(ans.arsize);
-	  status = TreeLockDatafile(info_ptr, 1, sinfo->data_offset);
-	  MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->data_offset,SEEK_SET);
-	  status = (MDS_IO_READ(info_ptr->data_file->get,ans.pointer,ans.arsize) == ans.arsize) ? TreeSUCCESS : TreeFAILURE;
-	  status = TreeUnLockDatafile(info_ptr, 1, sinfo->data_offset);
+          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,0) == ans.arsize) ? TreeSUCCESS : TreeFAILURE;
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
 	    if (ans.length > 1 && ans.dtype != DTYPE_T && ans.dtype != DTYPE_IDENT && ans.dtype != DTYPE_PATH) {
@@ -661,12 +658,9 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 #endif
 	    if (sinfo->dimension_offset != -1 && sinfo->dimension_length==0) {
 	      _int64 *tp;
-	      status = TreeLockDatafile(info_ptr, 1, sinfo->dimension_offset);
 	      dim2.arsize=sinfo->rows * sizeof(_int64);
 	      dim2.pointer=malloc(dim2.arsize);
-	      MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->dimension_offset,SEEK_SET);
-	      status = (MDS_IO_READ(info_ptr->data_file->get,dim2.pointer,dim2.arsize) == dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
-	      status = TreeUnLockDatafile(info_ptr, 1, sinfo->dimension_offset);
+	      status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,0) == dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
 #ifdef WORDS_BIGENDIAN
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
 		*(_int64)bptr = swapquad(bptr);
@@ -762,10 +756,7 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
 	  int length =sizeof(_int64) * sinfo->rows;
 	  char *buffer=malloc(length),*bptr;
 	  _int64 timestamp;
-	  TreeLockDatafile(info_ptr,1,sinfo->dimension_offset);
-	  MDS_IO_LSEEK(info_ptr->data_file->get,sinfo->dimension_offset,SEEK_SET);
-	  status = (MDS_IO_READ(info_ptr->data_file->get,buffer,length) == length) ? TreeSUCCESS : TreeFAILURE;
-	  TreeUnLockDatafile(info_ptr,1,sinfo->dimension_offset);
+          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,buffer,length,0) == length) ? TreeSUCCESS : TreeFAILURE;
 	  if (status & 1) {
 	    q_d.pointer=(char *)&timestamp;
 	    timestamp=swapquad(buffer);
@@ -1184,10 +1175,7 @@ int TreePutDsc(TREE_INFO *info, int nid_in, struct descriptor *dsc, _int64 *offs
 int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc) {
   char *buffer = malloc(length);
   int status;
-  status = TreeLockDatafile(info, 1, offset);
-  MDS_IO_LSEEK(info->data_file->get,offset,SEEK_SET);
-  status = (MDS_IO_READ(info->data_file->get,buffer,length) == length) ? TreeSUCCESS : TreeFAILURE;
-  status = TreeUnLockDatafile(info, 1, offset);
+  status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,length,0) == length) ? TreeSUCCESS : TreeFAILURE;
   if (status & 1) {
     status = MdsSerializeDscIn(buffer,dsc);
   }
@@ -1387,10 +1375,7 @@ static int GetSegmentHeader(TREE_INFO *info, _int64 offset,SEGMENT_HEADER *hdr) 
   int i;
   unsigned char buffer[2*sizeof(char)+1*sizeof(short)+10*sizeof(int)+3*sizeof(_int64)],*bptr;
   if (offset > -1) {
-    status = TreeLockDatafile(info, 1, offset);
-    MDS_IO_LSEEK(info->data_file->get,offset,SEEK_SET);
-    status = (MDS_IO_READ(info->data_file->get,buffer,sizeof(buffer)) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(info, 1, offset);
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1413,10 +1398,7 @@ static int GetSegmentIndex(TREE_INFO *info, _int64 offset, SEGMENT_INDEX *idx) {
   int i;
   unsigned char buffer[sizeof(_int64)+sizeof(int)+SEGMENTS_PER_INDEX*(6*sizeof(_int64)+4*sizeof(int))],*bptr;
   if (offset > -1) {
-    status = TreeLockDatafile(info, 1, offset);
-    MDS_IO_LSEEK(info->data_file->get,offset,SEEK_SET);
-    status = (MDS_IO_READ(info->data_file->get,buffer,sizeof(buffer)) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(info, 1, offset);
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1443,10 +1425,7 @@ int TreeGetExtendedAttributes(TREE_INFO *info, _int64 offset, EXTENDED_ATTRIBUTE
   int i;
   unsigned char buffer[sizeof(_int64)+FACILITIES_PER_EA*(sizeof(_int64)+sizeof(int))],*bptr;
   if (offset > -1) {
-    status = TreeLockDatafile(info, 1, offset);
-    MDS_IO_LSEEK(info->data_file->get,offset,SEEK_SET);
-    status = (MDS_IO_READ(info->data_file->get,buffer,sizeof(buffer)) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(info, 1, offset);
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1466,10 +1445,7 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
   int i;
   unsigned char buffer[sizeof(_int64)+NAMED_ATTRIBUTES_PER_INDEX*(sizeof(_int64)+sizeof(int)+NAMED_ATTRIBUTE_NAME_SIZE)],*bptr;
   if (offset > -1) {
-    status = TreeLockDatafile(info, 1, offset);
-    MDS_IO_LSEEK(info->data_file->get,offset,SEEK_SET);
-    status = (MDS_IO_READ(info->data_file->get,buffer,sizeof(buffer)) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
-    TreeUnLockDatafile(info, 1, offset);
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1871,10 +1847,7 @@ old array is same size.
    int status=1;
    if (offset1 != -1) {
      char *data=malloc(length);
-     status = TreeUnLockDatafile(info1, 1, offset1);
-     MDS_IO_LSEEK(info1->data_file->get,offset1,SEEK_SET);
-     status = MDS_IO_READ(info1->data_file->get,data,length) == length;
-     status = TreeUnLockDatafile(info1, 1, offset1);
+     status = MDS_IO_READ_X(info1->data_file->get,offset1,data,length,0) == length;
      if (status) {
        *offset2 = MDS_IO_LSEEK(info2->data_file->put,0,SEEK_END);
        status = MDS_IO_WRITE(info2->data_file->put,data,length) == length;
@@ -1984,17 +1957,6 @@ old array is same size.
      status = MdsCopyDxXd(end, &TREE_END_CONTEXT);
      if (status & 1) {
        status = MdsCopyDxXd(delta, &TREE_DELTA_CONTEXT);
-     }
-   }
-   return status;
- }
-
- int TreeGetTimeContext(struct descriptor_xd *start, struct descriptor_xd *end, struct descriptor_xd *delta) {
-   int status = MdsCopyDxXd((struct descriptor *)&TREE_START_CONTEXT,start);
-   if (status & 1) {
-     status = MdsCopyDxXd((struct descriptor *)&TREE_END_CONTEXT, end);
-     if (status & 1) {
-       status = MdsCopyDxXd((struct descriptor *)&TREE_DELTA_CONTEXT, delta);
      }
    }
    return status;

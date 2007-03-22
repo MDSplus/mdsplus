@@ -265,6 +265,7 @@ static SOCKET ConnectToPort(char *host, char *service)
 #endif
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
+    memset(m,0,sizeof(MsgHdr) + strlen(user_p));
     m->h.client_type = SENDCAPABILITIES;
     m->h.length = strlen(user_p);
     m->h.msglen = sizeof(MsgHdr) + m->h.length;
@@ -528,7 +529,7 @@ int *dims, char *bytes)
       nbytes *= dims[i];
   }
   msglen = sizeof(MsgHdr) + nbytes;
-  m = malloc(msglen);
+  m = memset(malloc(msglen),0,msglen);
   m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.message_id = message_id;

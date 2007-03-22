@@ -131,14 +131,14 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       return status;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
-      open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
-    else
-      open_status = 1;
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci,&local_nci,sizeof(local_nci));
+    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+      open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
+    else
+      open_status = 1;
     if (local_nci.flags2 & NciM_EXTENDED_NCI) {
       extended_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
       status = TreeGetExtendedAttributes(info_ptr,extended_offset,&attributes);
@@ -603,12 +603,12 @@ int TreeSetTemplateNci(NCI *nci)
 
 int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
-  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), readonly ? 1 : 2);
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), readonly ? 1 : 2,0);
 }
 
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
-  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), 0);
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), 0,0);
 }
 #ifdef OLD_LOCK_CODE
 #ifdef _WIN32
