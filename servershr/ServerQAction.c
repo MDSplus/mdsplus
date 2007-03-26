@@ -874,6 +874,7 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
   {
     char reply[60];
     int bytes;
+    memset(reply,0,60);
     sprintf(reply,"%d %d %d %d",job->h.jobid,replyType, status_in, msg ? strlen(msg) : 0);
     bytes = send(sock, reply, 60, 0);
     if (bytes == 60)
