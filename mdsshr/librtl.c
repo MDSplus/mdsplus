@@ -1481,8 +1481,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   time_t t;
   _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-  if (time_in == NULL)
-    t=time(0);
+  t = (time_in == NULL) ? t=time(0) : *time_in;
 // _int64 addin = 0x7c95674beb4000;
 #if defined(USE_TM_GMTOFF)
   /* this is a suggestion to change all code 
