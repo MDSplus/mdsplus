@@ -409,6 +409,7 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
     if (status & 1)
     {
       char nci_bytes[42];
+      memset(nci_bytes,0,sizeof(nci_bytes));
       TreeSerializeNciOut(nci,nci_bytes);
       MDS_IO_LSEEK(info->nci_file->put,sizeof(nci_bytes) * node_num, SEEK_SET);
       status = (MDS_IO_WRITE(info->nci_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
