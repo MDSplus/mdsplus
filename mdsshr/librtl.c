@@ -1483,7 +1483,6 @@ int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
   if (time_in == NULL)
     t=time(0);
-  else
 // _int64 addin = 0x7c95674beb4000;
 #if defined(USE_TM_GMTOFF)
   /* this is a suggestion to change all code 
