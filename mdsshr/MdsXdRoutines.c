@@ -109,7 +109,7 @@ STATIC_ROUTINE int copy_dx(
               size;
   struct descriptor *in_ptr = (struct descriptor *) in_dsc_ptr;
   int align_size;
-  while (in_ptr && in_ptr->dtype == DTYPE_DSC)
+  while (in_ptr && in_ptr->dtype == DTYPE_DSC && in_ptr->class != CLASS_APD)
     in_ptr = (struct descriptor *) in_ptr->pointer;
   if (in_ptr)
     switch (in_ptr->class)

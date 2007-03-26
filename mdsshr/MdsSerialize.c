@@ -795,7 +795,7 @@ STATIC_ROUTINE int Dsc2Rec(struct descriptor *inp, struct descriptor_xd *out_dsc
 STATIC_CONSTANT int PointerToOffset(struct descriptor *dsc_ptr, unsigned int *length)
 {
   int       status = 1;
-  if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A))
+  if ((dsc_ptr->dtype == DTYPE_DSC) && (dsc_ptr->class != CLASS_A) && (dsc_ptr->class != CLASS_APD))
     status = PointerToOffset((struct descriptor *) dsc_ptr->pointer, length);
   if (status & 1)
   {
