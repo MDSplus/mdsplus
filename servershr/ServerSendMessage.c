@@ -719,32 +719,36 @@ static void DoMessage(Client *c, fd_set *fdactive)
 static void RemoveClient(Client *c, fd_set *fdactive)
 {
   Job *j;
+  int client_found=0;
   int found = 1;
-  int sock = c->send_sock;
-  if (c->reply_sock >= 0)
-  {
-    shutdown(c->reply_sock,2);
-    close(c->reply_sock);
-    if (fdactive)
-      FD_CLR(c->reply_sock,fdactive);
-  }
-  if (c->send_sock >= 0)
-  {
-    shutdown(c->send_sock,2);
-    close(c->send_sock);
-  }
+  int sock=-1;
   lock_client_list();
-  if (ClientList == c)
+  if (ClientList == c) {
+    client_found=1;
     ClientList = c->next;
-  else
-  {
+  }  else  {
     Client *cp;
     for (cp = ClientList; cp && cp->next != c; cp=cp->next);
-    if (cp && cp->next == c)
+    if (cp && cp->next == c) {
+      client_found=1;
       cp->next = c->next;
+    }
   }
   unlock_client_list();
-  free(c);
+  if (client_found) {
+    sock=c->send_sock;
+    if (c->reply_sock >= 0) {
+      shutdown(c->reply_sock,2);
+      close(c->reply_sock);
+      if (fdactive)
+	FD_CLR(c->reply_sock,fdactive);
+    }
+    if (c->send_sock >= 0) {
+      shutdown(c->send_sock,2);
+      close(c->send_sock);
+    }
+    free(c);
+  }
   lock_job_list();
   for (j=Jobs;j;j=j->next) if (j->sock == sock) 
      j->marked_for_delete = 1;
