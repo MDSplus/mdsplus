@@ -1553,17 +1553,6 @@ public class WaveInterface
                         if (curr_x == null)
                              curr_data = null;
                      }
-
-
-                     else
-                         for(int i = 0; i <10; i++)
-                             System.out.println("CACCA"+ curr_x_long[i]);
-
-
-
-
-
-
                 }
             }
         }

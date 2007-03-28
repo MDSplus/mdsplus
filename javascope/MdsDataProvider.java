@@ -293,7 +293,7 @@ public class MdsDataProvider
                 setResampleLimits(xmin, xmax);
             }
 
-/*
+
 
             if (resample && in_x == null)
             {
@@ -310,7 +310,7 @@ public class MdsDataProvider
                 return GetFloatArray(expr);
             }
             else
-*/                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
+                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
         }
 
 
@@ -836,7 +836,7 @@ public class MdsDataProvider
                     dos.writeFloat(desc.float_data[i]);
                 out_byte = dosb.toByteArray();
                 return out_byte;
-            case Descriptor.DTYPE_USHORT: 
+            case Descriptor.DTYPE_USHORT:
             case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised
                 for(int i = 0; i < desc.short_data.length; i++)
                     dos.writeShort(desc.short_data[i]);

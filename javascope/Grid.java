@@ -220,6 +220,10 @@ public class Grid
         FontMetrics fm;
         double curr_step;
         String curr_string;
+        boolean displayDate = true;
+        String curr_date_string = null;
+        String prev_date_string = "";
+
         if (reversed)
             g.setColor(Color.white);
         else
@@ -380,44 +384,55 @@ public class Grid
                     {
                         long datel = (long) x_values[i];
                         DateFormat df = new SimpleDateFormat("HH:mm:ss");
-                        df.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                        //df.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         Date date = new Date();
                         date.setTime(datel);
                         curr_string = df.format(date).toString();
-                        System.out.println(" "+ datel +" "+i+" "+curr_string);
 
+                        DateFormat df1 = new SimpleDateFormat("d-MMM-yyyy");
+                        String new_date_string = df1.format(date).toString();
+                        if(i == 0 || !new_date_string.equals(prev_date_string))
+                        {
+                            curr_date_string = prev_date_string =
+                                new_date_string;
+                        }
+                        else
+                            curr_date_string = null;
 
 
                         if( i < x_dim - 1 )
                         {
-                            Calendar ca;
-                            int num_day  = calculateDifference(new Date((long)x_values[i + 1]), new Date((long)x_values[i]));
+                            long num_day  = calculateDifference(new Date((long)x_values[i]), new Date((long)x_values[i+1]));
                             if(num_day != 0)
                             {
-                                ca = new GregorianCalendar(new SimpleTimeZone(0, "GMT"), Locale.ITALY);
 
-                                for(int dd = 0; dd <= num_day; dd++)
+                                Calendar ca = Calendar.getInstance();
+                                ca.setTimeInMillis((long)x_values[i]);
+                                ca.set(ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)+1, 0, 0);
+                                for(int dd = 0; dd < num_day; dd++)
                                 {
-                                    ca.setTimeInMillis((long)x_values[i] + dd*dayMilliSeconds);
-                                    ca.set(Calendar.HOUR_OF_DAY, 0);
-                                    ca.set(Calendar.MINUTE, 0);
-                                    long timeMillis = ca.getTimeInMillis();
+                                   long timeMillis = ca.getTimeInMillis();
                                     if (timeMillis < xmax)
                                     {
                                         Color c = g.getColor();
                                         g.setColor(Color.BLUE);
-                                        curr_dim = wm.XPixel( (double) timeMillis, d);
-                                            if (curr_dim >= label_width)
-                                            {
-                                              //  g.drawLine(curr_dim, 0, curr_dim,d.height - label_height);                                                                    case IS_DOTTED:
-                                                for (j = 0; j < d.height - label_height; j += 7)
-                                                    g.fillRect(curr_dim, j, 1, 5);
-                                            }
-                                            g.setColor(c);
+                                        curr_dim = wm.XPixel( (double)
+                                            timeMillis, d);
+                                        if (curr_dim >= label_width)
+                                        {
+                                            //  g.drawLine(curr_dim, 0, curr_dim,d.height - label_height);                                                                    case IS_DOTTED:
+                                            for (j = 0;
+                                                 j < d.height - label_height;
+                                                 j += 7)
+                                                g.fillRect(curr_dim, j, 1, 5);
+                                        }
+                                        g.setColor(c);
                                     }
+                                    ca.set(ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)+1, 0, 0);
+
                                 }
                             }
-                        }
+                         }
                     }
                     catch (Exception exc)
                     {
@@ -434,6 +449,17 @@ public class Grid
                 {
                     g.drawString(curr_string, curr_dim,
                                  d.height - fm.getHeight() / 10 - label_descent);
+                }
+                if(curr_date_string != null)
+                {
+                    curr_dim = dim - fm.stringWidth(curr_date_string) / 2;
+                    if (curr_dim >= label_width &&
+                        dim + fm.stringWidth(curr_string) / 2 < d.width)
+                    {
+                        g.drawString(curr_date_string, curr_dim,
+                                     d.height - fm.getHeight() - 2*fm.getHeight() / 10 - label_descent);
+                    }
+
                 }
             }
 
@@ -481,8 +507,19 @@ public class Grid
         this.y_label = y_label;
     }
 
-    public int calculateDifference(Date a, Date b)
+    public long calculateDifference(Date a, Date b)
     {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(a);
+        cal1.set(cal1.get(Calendar.YEAR), cal1.get(Calendar.MONTH), cal1.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(b);
+        cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();
+        if(diffMillis < 0) return 0;
+        return 1 + diffMillis/(1000*3600*24);
+
+/*
         int tempDifference = 0;
         int difference = 0;
         Calendar earlier = Calendar.getInstance();
@@ -518,7 +555,7 @@ public class Grid
         }
 
         return difference;
-    }
+*/    }
 
 
 }
