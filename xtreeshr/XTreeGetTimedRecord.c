@@ -15,6 +15,9 @@ extern unsigned short OpcExtFunction;
 //#define TreeGetSegment RTreeGetSegment
 
 
+static int timedAccessFlag = 0;
+
+
 
 
 #define MAX_DIMENSION_SIGNAL 16
@@ -51,7 +54,8 @@ static void printDecompiled(struct descriptor *inD)
 }
 
 
-
+EXPORT void XTreeResetTimedAccessFlag() {timedAccessFlag = 0; }
+EXPORT int XTreeTestTimedAccessFlag() {return timedAccessFlag;}
 
 
 EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD,
@@ -84,6 +88,9 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	struct descriptor_signal **signals;
 
 
+printf("GET TIMED RECORD\n");
+
+	timedAccessFlag = 1;
 	//Get names for (possible) user defined  resample and squish funs
 	status = TreeGetXNci(nid, "ResampleFun", &xd);
 	if(status & 1 && xd.pointer) //If a user defined fun exists

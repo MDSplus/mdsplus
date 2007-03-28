@@ -285,8 +285,6 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 
 
 
-
-
 EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
 						 struct descriptor *deltaD, struct descriptor_xd *outSignalXd)
 {
