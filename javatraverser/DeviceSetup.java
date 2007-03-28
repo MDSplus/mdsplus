@@ -483,6 +483,12 @@ public class DeviceSetup
             buttons.check();
     }
 
+    public void setCancelText(String cancelText)
+    {
+        if(buttons != null)
+            buttons.setCancelText(cancelText);
+    }
+
     public int check(String expressions[], String[] messages)
     {
         if (expressions == null || messages == null)return 0;

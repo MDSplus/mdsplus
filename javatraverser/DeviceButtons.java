@@ -2,7 +2,7 @@ import javax.swing.*;
 
 public class DeviceButtons extends JPanel
 {
-    protected DeviceControl apply, ok;
+    protected DeviceControl apply, ok, cancel;
     public String methods[];
 
     public void setMethods(String methods[])
@@ -18,7 +18,7 @@ public class DeviceButtons extends JPanel
         add(ok = new DeviceOk());
         add(apply = new DeviceApply());
         add(new DeviceReset());
-        add(new DeviceCancel());
+        add(cancel = new DeviceCancel());
     }
 
     public void check()
@@ -45,6 +45,13 @@ public class DeviceButtons extends JPanel
     {
         return apply.getCheckMessages();
     }
+    public void setCancelText(String cancelText)
+    {
+        cancel.setText(cancelText);
+    }
+
+
+
 }
 
 

@@ -34,8 +34,8 @@ public class ParameterSetting
     extends JFrame implements Printable
 {
     static final String DECOUPLING_BASE_DIR = "/usr/local/rfx/data_acquisition/real_time/decoupling/";
-    static final int NUM_DEVICES = 20;
-    static final int NUM_SETUP = 13;
+    static final int NUM_DEVICES = 22;
+    static final int NUM_SETUP = 15;
     boolean isRt = false;
     boolean readOnly = false;
     JButton timesB, poloidalControlB, axiSetupB, pcSetupB, pmSetupB,
@@ -54,7 +54,8 @@ public class ParameterSetting
         mhdControlRoot, viSetupRoot, mopRoot, ansaldoConfigRoot,
         unitsConfigRoot,
         poloidalConfigRoot, toroidalConfigRoot, mhdConfigRoot, viConfigRoot,
-        pvSetupRoot; //Usato solo per la configurazione PV
+        pvSetupRoot, //Usato solo per la configurazione PV
+        pelletSetupRoot, diagTimesSetupRoot;
     String[] titles =
         {
         "TIMES SETUP", "POLOIDAL CONTROL", "AXISYMMETRIC SETUP", "PC SETUP",
@@ -121,6 +122,7 @@ public class ParameterSetting
     boolean isOnline;
     JComboBox modeC;
     int shot = 100;
+
 
     int[]
         pm_mask = new int[]
@@ -413,6 +415,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(0);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
@@ -434,6 +437,53 @@ public class ParameterSetting
             }
         });
         jp.add(timesB);
+
+
+        buttons[14] = viSetupB = new JButton("Diag Times Setup");
+        viSetupB.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                log("Pellet Setup open");
+                int nid = diagTimesSetupRoot.getInt();
+                DeviceSetup device = DeviceSetup.getDevice(nid);
+                if (device == null)
+                //if (devices[12] == null)
+                {
+                    devices[14] = device = new RFXDiagTimesSetup();
+                    device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
+                    PrintButton printB = new PrintButton(14);
+                    device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
+                    device.pack();
+                    //device.setLocation(getMousePosition());
+                    device.setVisible(true);
+                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    {
+                        public void deviceClosed(boolean updated)
+                        {
+                            handleDeviceClosed(14, updated);
+                        }
+                    });
+                }
+                else
+                    device.setVisible(true);
+                if (states[14] == UNCHECKED)
+                {
+                    states[14] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
+            }
+        });
+        jp.add(buttons[14]);
+
+
+
+
+
         if (!isRt && isOnline)
         {
             applyToModelB = new JButton("Apply To Model");
@@ -474,6 +524,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(1);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -513,6 +564,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(2);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -550,7 +602,8 @@ public class ParameterSetting
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
-                    device.pack();
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
+                   device.pack();
                     //device.setLocation(getMousePosition());
                     PrintButton printB = new PrintButton(3);
                     device.addButton(printB);
@@ -592,6 +645,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(4);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -635,6 +689,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(5);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -674,6 +729,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(6);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -713,6 +769,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(7);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -752,6 +809,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(8);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -791,6 +849,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(9);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -830,6 +889,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(10);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -874,6 +934,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(11);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -926,6 +987,7 @@ public class ParameterSetting
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(12);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -942,6 +1004,46 @@ public class ParameterSetting
                 if (states[12] == UNCHECKED)
                 {
                     states[12] = CHECKING;
+                    if(modifiedNids != null && modifiedNids.length > 0)
+                        device.setHighlight(true, modifiedNids);
+                }
+            }
+        });
+        jp1.add(viSetupB);
+        buttons[13] = viSetupB = new JButton("Pellet Setup");
+        viSetupB.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                log("Pellet Setup open");
+                int nid = pelletSetupRoot.getInt();
+                DeviceSetup device = DeviceSetup.getDevice(nid);
+                if (device == null)
+                //if (devices[12] == null)
+                {
+                    devices[13] = device = new PELLETSetup();
+                    device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
+                    PrintButton printB = new PrintButton(13);
+                    device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
+                    device.pack();
+                    //device.setLocation(getMousePosition());
+                    device.setVisible(true);
+                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    {
+                        public void deviceClosed(boolean updated)
+                        {
+                            handleDeviceClosed(13, updated);
+                        }
+                    });
+                }
+                else
+                    device.setVisible(true);
+                if (states[13] == UNCHECKED)
+                {
+                    states[13] = CHECKING;
                     if(modifiedNids != null && modifiedNids.length > 0)
                         device.setHighlight(true, modifiedNids);
                 }
@@ -965,7 +1067,7 @@ public class ParameterSetting
         jp = new JPanel();
         jp.setLayout(new GridLayout(4, 1));
 
-        buttons[13] = mopB = new JButton("MOP");
+        buttons[15] = mopB = new JButton("MOP");
         mopB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -976,84 +1078,13 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[13] == null)
                 {
-                    devices[13] = device = new RFXMOPSetup();
-                    device.configure(rfx, nid);
-                    if (ParameterSetting.this.readOnly)
-                        device.setReadOnly(true);
-                    PrintButton printB = new PrintButton(13);
-                    device.addButton(printB);
-                    device.pack();
-                    //device.setLocation(getMousePosition());
-                    device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
-                    {
-                        public void deviceClosed(boolean updated)
-                        {
-                            handleDeviceClosed(13, updated);
-                        }
-                    });
-                }
-                else
-                    device.setVisible(true);
-                if (states[13] == UNCHECKED)
-                    states[13] = CHECKING;
-            }
-        });
-        jp.add(mopB);
-
-        buttons[14] = ansaldoConfigB = new JButton("Ansaldo Config");
-        ansaldoConfigB.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                log("Ansaldo Setup open");
-                int nid = ansaldoConfigRoot.getInt();
-                DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
-                //if (devices[14] == null)
-                {
-                    devices[14] = device = new RFXANSALDOSetup();
-                    device.configure(rfx, nid);
-                    if (ParameterSetting.this.readOnly)
-                        device.setReadOnly(true);
-                    PrintButton printB = new PrintButton(14);
-                    device.addButton(printB);
-                    device.pack();
-                    //device.setLocation(getMousePosition());
-                    device.setVisible(true);
-                    device.addDeviceCloseListener(new DeviceCloseListener()
-                    {
-                        public void deviceClosed(boolean updated)
-                        {
-                            handleDeviceClosed(14, updated);
-                        }
-                    });
-                }
-                else
-                    device.setVisible(true);
-                if (states[14] == UNCHECKED)
-                    states[14] = CHECKING;
-            }
-        });
-        jp.add(ansaldoConfigB);
-
-        buttons[15] = unitsConfigB = new JButton("Units Config");
-        unitsConfigB.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                log("Units Setup open");
-                int nid = unitsConfigRoot.getInt();
-                DeviceSetup device = DeviceSetup.getDevice(nid);
-                if (device == null)
-                //if (devices[15] == null)
-                {
-                    devices[15] = device = new RFXABUnitsSetup();
+                    devices[15] = device = new RFXMOPSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(15);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -1071,29 +1102,26 @@ public class ParameterSetting
                     states[15] = CHECKING;
             }
         });
-        jp.add(unitsConfigB);
-        configJp.add(jp);
+        jp.add(mopB);
 
-        jp = new JPanel();
-        jp.setLayout(new GridLayout(4, 1));
-
-        buttons[16] = poloidalConfigB = new JButton("Poloidal Config");
-        poloidalConfigB.addActionListener(new ActionListener()
+        buttons[16] = ansaldoConfigB = new JButton("Ansaldo Config");
+        ansaldoConfigB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                log("Poloidal Config Setup open");
-               int nid = poloidalConfigRoot.getInt();
+                log("Ansaldo Setup open");
+                int nid = ansaldoConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
-                //if (devices[16] == null)
+                //if (devices[14] == null)
                 {
-                    devices[16] = device = new RFXPoloidalSetup();
+                    devices[16] = device = new RFXANSALDOSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(16);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -1111,25 +1139,26 @@ public class ParameterSetting
                     states[16] = CHECKING;
             }
         });
-        jp.add(poloidalConfigB);
+        jp.add(ansaldoConfigB);
 
-        buttons[17] = toroidalConfigB = new JButton("Toroidal Config");
-        toroidalConfigB.addActionListener(new ActionListener()
+        buttons[17] = unitsConfigB = new JButton("Units Config");
+        unitsConfigB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                log("Toroidal config Setup open");
-                int nid = toroidalConfigRoot.getInt();
+                log("Units Setup open");
+                int nid = unitsConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
-                //if (devices[17] == null)
+                //if (devices[15] == null)
                 {
-                    devices[17] = device = new RFXToroidalSetup();
+                    devices[17] = device = new RFXABUnitsSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(17);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -1147,25 +1176,30 @@ public class ParameterSetting
                     states[17] = CHECKING;
             }
         });
-        jp.add(toroidalConfigB);
+        jp.add(unitsConfigB);
+        configJp.add(jp);
 
-        buttons[18] = mhdConfigB = new JButton("MHD Config");
-        mhdConfigB.addActionListener(new ActionListener()
+        jp = new JPanel();
+        jp.setLayout(new GridLayout(4, 1));
+
+        buttons[18] = poloidalConfigB = new JButton("Poloidal Config");
+        poloidalConfigB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                log("MHD Config Setup open");
-                int nid = mhdConfigRoot.getInt();
+                log("Poloidal Config Setup open");
+               int nid = poloidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
-                //if (devices[18] == null)
+                //if (devices[16] == null)
                 {
-                    devices[18] = device = new RFXPRConfigSetup();
+                    devices[18] = device = new RFXPoloidalSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(18);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -1183,25 +1217,26 @@ public class ParameterSetting
                     states[18] = CHECKING;
             }
         });
-        jp.add(mhdConfigB);
+        jp.add(poloidalConfigB);
 
-        buttons[19] = viConfigB = new JButton("Vi Config");
-        viConfigB.addActionListener(new ActionListener()
+        buttons[19] = toroidalConfigB = new JButton("Toroidal Config");
+        toroidalConfigB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                log("VI Config Setup open");
-                int nid = viConfigRoot.getInt();
+                log("Toroidal config Setup open");
+                int nid = toroidalConfigRoot.getInt();
                 DeviceSetup device = DeviceSetup.getDevice(nid);
                 if (device == null)
-                //if (devices[19] == null)
+                //if (devices[17] == null)
                 {
-                    devices[19] = device = new RFXVIConfigSetup();
+                    devices[19] = device = new RFXToroidalSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
                     PrintButton printB = new PrintButton(19);
                     device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
                     device.pack();
                     //device.setLocation(getMousePosition());
                     device.setVisible(true);
@@ -1217,6 +1252,80 @@ public class ParameterSetting
                     device.setVisible(true);
                 if (states[19] == UNCHECKED)
                     states[19] = CHECKING;
+            }
+        });
+        jp.add(toroidalConfigB);
+
+        buttons[20] = mhdConfigB = new JButton("MHD Config");
+        mhdConfigB.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                log("MHD Config Setup open");
+                int nid = mhdConfigRoot.getInt();
+                DeviceSetup device = DeviceSetup.getDevice(nid);
+                if (device == null)
+                //if (devices[18] == null)
+                {
+                    devices[20] = device = new RFXPRConfigSetup();
+                    device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
+                    PrintButton printB = new PrintButton(20);
+                    device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
+                    device.pack();
+                    //device.setLocation(getMousePosition());
+                    device.setVisible(true);
+                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    {
+                        public void deviceClosed(boolean updated)
+                        {
+                            handleDeviceClosed(20, updated);
+                        }
+                    });
+                }
+                else
+                    device.setVisible(true);
+                if (states[20] == UNCHECKED)
+                    states[20] = CHECKING;
+            }
+        });
+        jp.add(mhdConfigB);
+
+        buttons[21] = viConfigB = new JButton("Vi Config");
+        viConfigB.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                log("VI Config Setup open");
+                int nid = viConfigRoot.getInt();
+                DeviceSetup device = DeviceSetup.getDevice(nid);
+                if (device == null)
+                //if (devices[19] == null)
+                {
+                    devices[21] = device = new RFXVIConfigSetup();
+                    device.configure(rfx, nid);
+                    if (ParameterSetting.this.readOnly)
+                        device.setReadOnly(true);
+                    PrintButton printB = new PrintButton(21);
+                    device.addButton(printB);
+                    if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
+                    device.pack();
+                    //device.setLocation(getMousePosition());
+                    device.setVisible(true);
+                    device.addDeviceCloseListener(new DeviceCloseListener()
+                    {
+                        public void deviceClosed(boolean updated)
+                        {
+                            handleDeviceClosed(21, updated);
+                        }
+                    });
+                }
+                else
+                    device.setVisible(true);
+                if (states[21] == UNCHECKED)
+                    states[21] = CHECKING;
             }
         });
         jp.add(viConfigB);
@@ -1475,18 +1584,21 @@ public class ParameterSetting
             mhdBcNid = rfx.resolve(new PathData(
                 "\\MHD_BC::CONTROL"), 0);
             nids[12] = viSetupRoot = rfx.resolve(new PathData("\\VI_SETUP"), 0);
-            nids[13] = mopRoot = rfx.resolve(new PathData("\\MOP"), 0);
-            nids[14] = ansaldoConfigRoot = rfx.resolve(new PathData("\\ANSALDO"),
+            nids[13] = pelletSetupRoot = rfx.resolve(new PathData("\\PELLET_SETUP"), 0);
+            nids[14] = diagTimesSetupRoot = rfx.resolve(new PathData("\\DIAG_TIMES_SETUP"), 0);
+            nids[15] = mopRoot = rfx.resolve(new PathData("\\MOP"), 0);
+
+            nids[16] = ansaldoConfigRoot = rfx.resolve(new PathData("\\ANSALDO"),
                 0);
-            nids[15] = unitsConfigRoot = rfx.resolve(new PathData("\\ABUNITS"),
+            nids[17] = unitsConfigRoot = rfx.resolve(new PathData("\\ABUNITS"),
                 0);
-            nids[16] = poloidalConfigRoot = rfx.resolve(new PathData(
+            nids[18] = poloidalConfigRoot = rfx.resolve(new PathData(
                 "\\P_CONFIG"), 0);
-            nids[17] = toroidalConfigRoot = rfx.resolve(new PathData(
+            nids[19] = toroidalConfigRoot = rfx.resolve(new PathData(
                 "\\T_CONFIG"), 0);
-            nids[18] = mhdConfigRoot = rfx.resolve(new PathData("\\PR_CONFIG"),
+            nids[20] = mhdConfigRoot = rfx.resolve(new PathData("\\PR_CONFIG"),
                 0);
-            nids[19] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
+            nids[21] = viConfigRoot = rfx.resolve(new PathData("\\VI_CONFIG"),
                                               0);
             pvSetupRoot = rfx.resolve(new PathData("\\PV_SETUP"),
                                                0);
@@ -1547,13 +1659,13 @@ public class ParameterSetting
 
     void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
     {
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < NUM_SETUP; i++)
             saveSetup(i, setupHash, setupOnHash);
     }
 
     void saveSetupAndConfig(Hashtable setupHash, Hashtable setupOnHash)
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < NUM_DEVICES; i++)
             saveSetup(i, setupHash, setupOnHash);
     }
 
@@ -1604,6 +1716,8 @@ public class ParameterSetting
             bfCB,
             mhdCB,
             viCB,
+            pelletCB,
+            diagTimesCB,
             timesPmCB,
             timesPcCB,
             timesPvCB,
@@ -1617,7 +1731,7 @@ public class ParameterSetting
             timesIsCB,
             timesChopperCB,
             timesInverterCB;
-        JCheckBox[] checkBoxes = new JCheckBox[12];
+        JCheckBox[] checkBoxes = new JCheckBox[NUM_SETUP-1];
         JCheckBox mhdDecoupingCheckBox;
         JCheckBox[] timeCheckBoxes = new JCheckBox[13];
 
@@ -1627,7 +1741,7 @@ public class ParameterSetting
             JPanel jp1 = new JPanel();
             jp1.setLayout(new GridLayout(1, 2));
             JPanel jp = new JPanel();
-            jp.setLayout(new GridLayout(13, 1));
+            jp.setLayout(new GridLayout(NUM_SETUP, 1));
             jp.add(checkBoxes[0] = poloidalCB = new JCheckBox("EDA1", true));
             jp.add(checkBoxes[1] = axiCB = new JCheckBox("Axisymmetric contr.", true));
             jp.add(checkBoxes[2] = pcCB = new JCheckBox("PC", true));
@@ -1640,6 +1754,8 @@ public class ParameterSetting
             jp.add(checkBoxes[9] = bfCB = new JCheckBox("B & F", true));
             jp.add(checkBoxes[10] = mhdCB = new JCheckBox("MHD", true));
             jp.add(checkBoxes[11] = viCB = new JCheckBox("VI", true));
+            jp.add(checkBoxes[12] = pelletCB = new JCheckBox("Pellet", true));
+            jp.add(checkBoxes[13] = diagTimesCB = new JCheckBox("Diag. times", true));
             jp1.add(jp);
 
             jp = new JPanel();
@@ -1698,7 +1814,10 @@ public class ParameterSetting
                 tfCB.isSelected(),
                 bfCB.isSelected(),
                 mhdCB.isSelected(),
-                viCB.isSelected()};
+                viCB.isSelected(),
+                pelletCB.isSelected(),
+                diagTimesCB.isSelected()
+            };
         }
 
         boolean[] getSelectedTimes()
@@ -1722,7 +1841,7 @@ public class ParameterSetting
 
         void setEnabledDevices(Hashtable setupHash)
         {
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < NUM_SETUP-1; i++)
             {
                 checkBoxes[i].setSelected(false);
                 checkBoxes[i].setEnabled(false);
@@ -1876,7 +1995,7 @@ public class ParameterSetting
         {
             currSetupHash = new Hashtable();
             currSetupOnHash = new Hashtable();
-            for (int i = 1; i < 13; i++)
+            for (int i = 1; i < NUM_SETUP; i++)
                 if (select[i - 1]) saveSetup(i, currSetupHash, currSetupOnHash);
 
             //Timing components
@@ -1917,7 +2036,7 @@ public class ParameterSetting
     void getSetupForModel(Hashtable setupHash, Hashtable setupOnHash,
                           boolean select[], boolean timeSelect[])
     {
-        for (int i = 1; i < 13; i++)
+        for (int i = 1; i < NUM_SETUP; i++)
             if (select[i - 1]) saveSetup(i, setupHash, setupOnHash);
 
         //Timing components
@@ -2505,7 +2624,7 @@ System.out.println("Print Done");
                 if (idxObj == null)
                     continue;
                 int idx = idxObj.intValue();
-                if (idx == 0 || idx >= 13 || !deviceSelect[idx - 1])
+                if (idx == 0 || idx >= NUM_SETUP || !deviceSelect[idx - 1])
                     continue;
 
                 NidData currNid = rfx.resolve(new PathData(currPath), 0);
@@ -2543,7 +2662,7 @@ System.out.println("Print Done");
                 if (idxObj == null)
                     continue;
                 int idx = idxObj.intValue();
-                if (idx == 0 || idx >= 13 || !deviceSelect[idx - 1])
+                if (idx == 0 || idx >= NUM_SETUP || !deviceSelect[idx - 1])
                     continue;
 
                 NidData currNid = rfx.resolve(new PathData(currPath), 0);
@@ -3294,10 +3413,10 @@ System.out.println("Print Done");
         Hashtable applyOnHash = new Hashtable();
         boolean allSelectedDevices[] =
             {
-            true, true, true, true, true, true, true, true, true, true, true, true};
+            true, true, true, true, true, true, true, true, true, true, true, true, true, true};
         boolean allSelectedTimes[] =
             {
-            true, true, true, true, true, true, true, true, true, true, true, true, true};
+            true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
         getSetupForModel(applyHash, applyOnHash, allSelectedDevices,
                          allSelectedTimes);
         applyToModel(applyHash, applyOnHash);
@@ -3482,18 +3601,22 @@ System.out.println("Print Done");
             case 12:
                 return new RFXVISetupSetup();
             case 13:
-                return new RFXMOPSetup();
+                return new PELLETSetup();
             case 14:
-                return new RFXANSALDOSetup();
+                return new RFXDiagTimesSetup();
             case 15:
-                return new RFXABUnitsSetup();
+                return new RFXMOPSetup();
             case 16:
-                return new RFXPoloidalSetup();
+                return new RFXANSALDOSetup();
             case 17:
-                return new RFXToroidalSetup();
+                return new RFXABUnitsSetup();
             case 18:
-                return new RFXPRConfigSetup();
+                return new RFXPoloidalSetup();
             case 19:
+                return new RFXToroidalSetup();
+            case 20:
+                return new RFXPRConfigSetup();
+            case 21:
                 return new RFXVIConfigSetup();
         }
         return null;
@@ -3628,7 +3751,7 @@ System.out.println("Print Done");
     }
     float getRTransfer()
     {
-        NidData unitsNid = new NidData(nids[16].getInt() + 20);
+        NidData unitsNid = new NidData(nids[18].getInt() + 20);
         try {
             Data configData = rfx.evaluateData(unitsNid, 0);
 
