@@ -11,6 +11,7 @@ names = case_sensitive
 
 include file "XmdsWidgets.uil";
 
+
 value
     DEVICE_NID :  -1;
     DEVICE$N_NAME :  1;
@@ -25,46 +26,46 @@ value
     DEVICE$N_CLOCK_OUT :  3;
     DEVICE$N_INP_INC :  3;
     DEVICE$N_INP_COEFF :  4;
+    DEVICE$N_INP_VIN :  5;
     DT200_N_x :  0;
     DT200_CONG_NODES :  233;
     DT200_HEAD :  0;
     DT200_NODE :  1;
     DT200_BOARD :  2;
     DT200_COMMENT :  3;
-    DT200_VIN : 4;
-    DT200_DIOS :  9;
+    DT200_DIOS :  8;
     DT200_N_NODES_PER_DIO :  3;
     DT200_DIO_WIRE :  1;
     DT200_DIO_BUS :  2;
-    DT200_DI0 :  9;
-    DT200_DI0_WIRE :  10;
-    DT200_DI0_BUS :  11;
-    DT200_DI1 :  12;
-    DT200_DI1_WIRE :  13;
-    DT200_DI1_BUS :  14;
-    DT200_DI2 :  15;
-    DT200_DI2_WIRE :  16;
-    DT200_DI2_BUS :  17;
-    DT200_DI3 :  18;
-    DT200_DI3_WIRE :  19;
-    DT200_DI3_BUS :  20;
-    DT200_DI4 :  21;
-    DT200_DI4_WIRE :  22;
-    DT200_DI4_BUS :  23;
-    DT200_DI5 :  24;
-    DT200_DI5_WIRE :  25;
-    DT200_DI5_BUS :  26;
-    DT200_CLOCK_SRC :  27;
-    DT200_CLOCK_DIV :  28;
-    DT200_DAQ_MEM :  29;
-    DT200_ACTIVE_CHAN :  30;
-    DT200_TRIG_SRC :  31;
-    DT200_POST_TRIG :  32;
-    DT200_PRE_TRIG :  33;
-    DT200_INPUTS :  34;
-    DT200_N_NODES_PER_INPUT :  5;
-    DT200_INIT_ACTION :  114;
-    DT200_STORE_ACTION :  115;
+    DT200_DI0 :  8;
+    DT200_DI0_WIRE :  9;
+    DT200_DI0_BUS :  10;
+    DT200_DI1 :  11;
+    DT200_DI1_WIRE :  12;
+    DT200_DI1_BUS :  13;
+    DT200_DI2 :  14;
+    DT200_DI2_WIRE :  15;
+    DT200_DI2_BUS :  16;
+    DT200_DI3 :  17;
+    DT200_DI3_WIRE :  18;
+    DT200_DI3_BUS :  19;
+    DT200_DI4 :  20;
+    DT200_DI4_WIRE :  21;
+    DT200_DI4_BUS :  22;
+    DT200_DI5 :  23;
+    DT200_DI5_WIRE :  24;
+    DT200_DI5_BUS :  25;
+    DT200_CLOCK_SRC :  26;
+    DT200_CLOCK_DIV :  27;
+    DT200_DAQ_MEM :  28;
+    DT200_ACTIVE_CHAN :  29;
+    DT200_TRIG_SRC :  30;
+    DT200_POST_TRIG :  31;
+    DT200_PRE_TRIG :  32;
+    DT200_INPUTS :  33;
+    DT200_N_NODES_PER_INPUT :  6;
+    DT200_INIT_ACTION :  129;
+    DT200_STORE_ACTION :  130;
     FILTER_LABEL :  compound_string("Coeffs");
 
 list BaseStyle : arguments {
@@ -396,7 +397,7 @@ object DT216A : XmFormDialog widget {
         XmNdialogTitle = compound_string("Dt216 CALIBRATED CPCI 16 channel Digitizer");
         XmNx = 660;
         XmNy = 240;
-        XmNwidth = 964;
+        XmNwidth = 1000;
         XmNheight = 635;
     };
     controls {
@@ -435,9 +436,6 @@ object DT216A : XmFormDialog widget {
          managed XmLabelGadget labelGadget1;
          managed XmScrolledWindow scrolledWindow1;
          managed user_defined dsExprField85;
-
-         managed user_defined dsNidOptionMenu15 ;
-
          managed XmLabelGadget labelGadget13;
          managed user_defined nidOptionMenu4;
          managed user_defined nidOptionMenu3;
@@ -806,42 +804,6 @@ object dsExprField85 : user_defined procedure XmdsCreateExprField {
     };
 };
 
-object dsNidOptionMenu15 : user_defined procedure XmdsCreateNidOptionMenu {
-    arguments {
-        XmdsNnid = DEVICE_NID;
-        XmdsNvalueStrings = string_table(
-	compound_string("2.5"),
-	compound_string("4"),
-	compound_string("6"),
-	compound_string("10"));
-        XmNlabelString = compound_string("Voltage Range:");
-        XmdsNputOnApply = true;
-        XmdsNnidOffset = DT200_VIN;
-        XmdsNlabelStrings = string_table(
-	compound_string("2.5"),
-	compound_string("4"),
-	compound_string("6"),
-	compound_string("10"));
-
-        XmNtopAttachment = XmATTACH_OPPOSITE_WIDGET;
-        XmNbottomAttachment = XmATTACH_NONE;
-        XmNleftAttachment = XmATTACH_WIDGET;
-        XmNrightAttachment = XmATTACH_NONE;
-        XmNtopWidget = XmLabelGadget labelGadget13;
-        XmNleftWidget = user_defined dsExprField85;
-        XmNtopOffset = 1;
-        XmNbottomOffset = 0;
-        XmNleftOffset = 22;
-        XmNrightOffset = 0;
-
-    };
-    controls {
-    };
-    callbacks {
-    };
-};
-
-
 object scrolledWindow1 : XmScrolledWindow widget {
     arguments {
         XmNscrollingPolicy = XmAUTOMATIC;
@@ -854,7 +816,7 @@ object scrolledWindow1 : XmScrolledWindow widget {
         XmNleftOffset = 22;
         XmNx = 22;
         XmNy = 215;
-        XmNwidth = 560;
+        XmNwidth = 600;
         XmNheight = 345;
     };
     controls {
@@ -866,8 +828,6 @@ object scrolledWindow1 : XmScrolledWindow widget {
 
 object rowColumn34 : XmRowColumn widget {
     arguments {
-        XmNwidth = 473;
-        XmNheight = 547;
     };
     controls {
          managed XmRowColumn rowColumn48;
@@ -895,8 +855,6 @@ object rowColumn48 : XmRowColumn widget {
     arguments {
         XmNorientation = XmHORIZONTAL;
         XmNnumColumns = 5;
-        XmNwidth = 467;
-        XmNheight = 31;
     };
     controls {
          managed user_defined dsOnOffToggleButton24;
@@ -904,6 +862,7 @@ object rowColumn48 : XmRowColumn widget {
          managed user_defined dsExprField87;
          managed user_defined dsExprField88;
          managed user_defined dsXdBoxOnOffButton26;
+         managed user_defined dsNidOptionMenu15 ;
     };
     callbacks {
     };
@@ -984,6 +943,360 @@ object dsXdBoxOnOffButton26 : user_defined procedure XmdsCreateExprField {
     };
 };
 
+object dsNidOptionMenu15 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 0 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu16 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 1 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu17 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 2 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu18 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 3 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu19 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 4 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu20 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 5 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu21 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 6 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu22 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 7 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu23 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 8 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu24 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 9 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu25 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 10 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu26 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 11 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu27 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 12 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu28 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 13 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu29 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 14 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+object dsNidOptionMenu30 : user_defined procedure XmdsCreateNidOptionMenu {
+    arguments {
+        XmdsNnid = DEVICE_NID;
+        XmdsNvalueStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+        XmNlabelString = compound_string(" ");
+        XmdsNputOnApply = true;
+        XmdsNnidOffset = DT200_INPUTS + ( 15 * DT200_N_NODES_PER_INPUT ) + DEVICE$N_INP_VIN;
+        XmdsNlabelStrings = string_table(
+	compound_string("2.5"),
+	compound_string("4"),
+	compound_string("6"),
+	compound_string("10"));
+    };
+    controls {
+    };
+    callbacks {
+    };
+};
+
+
 object rowColumn49 : XmRowColumn widget {
     arguments {
         XmNorientation = XmHORIZONTAL;
@@ -997,6 +1310,7 @@ object rowColumn49 : XmRowColumn widget {
          managed user_defined exprField36;
          managed user_defined exprField37;
          managed user_defined xdBoxOnOffButton11;
+         managed user_defined dsNidOptionMenu16 ;
     };
     callbacks {
     };
@@ -1090,6 +1404,7 @@ object rowColumn50 : XmRowColumn widget {
          managed user_defined exprField39;
          managed user_defined exprField40;
          managed user_defined xdBoxOnOffButton12;
+         managed user_defined dsNidOptionMenu17 ;
     };
     callbacks {
     };
@@ -1183,6 +1498,7 @@ object rowColumn51 : XmRowColumn widget {
          managed user_defined exprField42;
          managed user_defined exprField43;
          managed user_defined xdBoxOnOffButton13;
+         managed user_defined dsNidOptionMenu18 ;
     };
     callbacks {
     };
@@ -1276,6 +1592,7 @@ object rowColumn52 : XmRowColumn widget {
          managed user_defined exprField45;
          managed user_defined exprField46;
          managed user_defined xdBoxOnOffButton14;
+         managed user_defined dsNidOptionMenu19 ;
     };
     callbacks {
     };
@@ -1369,6 +1686,7 @@ object rowColumn53 : XmRowColumn widget {
          managed user_defined exprField48;
          managed user_defined exprField49;
          managed user_defined xdBoxOnOffButton15;
+         managed user_defined dsNidOptionMenu20 ;
     };
     callbacks {
     };
@@ -1462,6 +1780,7 @@ object rowColumn54 : XmRowColumn widget {
          managed user_defined exprField51;
          managed user_defined exprField52;
          managed user_defined xdBoxOnOffButton16;
+         managed user_defined dsNidOptionMenu21 ;
     };
     callbacks {
     };
@@ -1555,6 +1874,7 @@ object rowColumn55 : XmRowColumn widget {
          managed user_defined exprField54;
          managed user_defined exprField55;
          managed user_defined xdBoxOnOffButton17;
+         managed user_defined dsNidOptionMenu22 ;
     };
     callbacks {
     };
@@ -1648,7 +1968,8 @@ object rowColumn56 : XmRowColumn widget {
          managed user_defined exprField57;
          managed user_defined exprField58;
          managed user_defined xdBoxOnOffButton18;
-    };
+         managed user_defined dsNidOptionMenu23 ;
+   };
     callbacks {
     };
 };
@@ -1741,6 +2062,7 @@ object rowColumn57 : XmRowColumn widget {
          managed user_defined exprField60;
          managed user_defined exprField61;
          managed user_defined xdBoxOnOffButton19;
+         managed user_defined dsNidOptionMenu24 ;
     };
     callbacks {
     };
@@ -1834,6 +2156,7 @@ object rowColumn58 : XmRowColumn widget {
          managed user_defined dsExprField90;
          managed user_defined dsExprField91;
          managed user_defined dsXdBoxOnOffButton27;
+         managed user_defined dsNidOptionMenu25 ;
     };
     callbacks {
     };
@@ -1927,6 +2250,7 @@ object rowColumn59 : XmRowColumn widget {
          managed user_defined dsExprField93;
          managed user_defined dsExprField94;
          managed user_defined dsXdBoxOnOffButton28;
+         managed user_defined dsNidOptionMenu26 ;
     };
     callbacks {
     };
@@ -2020,6 +2344,7 @@ object rowColumn60 : XmRowColumn widget {
          managed user_defined dsExprField96;
          managed user_defined dsExprField97;
          managed user_defined dsXdBoxOnOffButton29;
+         managed user_defined dsNidOptionMenu27 ;
     };
     callbacks {
     };
@@ -2113,7 +2438,8 @@ object rowColumn61 : XmRowColumn widget {
          managed user_defined dsExprField99;
          managed user_defined dsExprField100;
          managed user_defined dsXdBoxOnOffButton30;
-    };
+         managed user_defined dsNidOptionMenu28 ;
+   };
     callbacks {
     };
 };
@@ -2206,6 +2532,7 @@ object rowColumn62 : XmRowColumn widget {
          managed user_defined dsExprField102;
          managed user_defined dsExprField103;
          managed user_defined dsXdBoxOnOffButton31;
+         managed user_defined dsNidOptionMenu29 ;
     };
     callbacks {
     };
@@ -2299,6 +2626,7 @@ object rowColumn63 : XmRowColumn widget {
          managed user_defined dsExprField105;
          managed user_defined dsExprField106;
          managed user_defined dsXdBoxOnOffButton32;
+         managed user_defined dsNidOptionMenu30 ;
     };
     callbacks {
     };
@@ -2631,7 +2959,7 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu {
         XmNleftWidget = XmLabel label15;
         XmNtopOffset = 20;
         XmNbottomOffset = 0;
-        XmNleftOffset = -30;
+        XmNleftOffset = 0;
         XmNrightOffset = 0;
         XmNx = 600;
         XmNy = 210;
@@ -2666,7 +2994,7 @@ object nidOptionMenu2 : user_defined procedure XmdsCreateNidOptionMenu {
         XmNleftWidget = XmLabel label17;
         XmNtopOffset = 0;
         XmNbottomOffset = 0;
-        XmNleftOffset = -30;
+        XmNleftOffset = 0;
         XmNrightOffset = 0;
         XmNx = 720;
         XmNy = 210;
@@ -2693,7 +3021,7 @@ object dsExprField264 : user_defined procedure XmdsCreateExprField {
         XmNleftWidget = XmLabel label18;
         XmNtopOffset = 6;
         XmNbottomOffset = 0;
-        XmNleftOffset = -48;
+        XmNleftOffset = -18;
         XmNrightOffset = 0;
         XmNx = 822;
         XmNy = 216;

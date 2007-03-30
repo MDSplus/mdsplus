@@ -5,8 +5,7 @@ public fun DT216a__PART_NAME(as_is _nid, optional in _method)
   ":NODE",
   ":BOARD",
   ":COMMENT",
-  ":VIN",
-  ":RANGES",
+   ":RANGES",
   ":STATUS_CMDS",
   ":BOARD_STATUS",
   ":SEG_LENGTH",
@@ -44,7 +43,8 @@ public fun DT216a__PART_NAME(as_is _nid, optional in _method)
       _cname//':STARTIDX', 
       _cname//':ENDIDX', 
       _cname//':INC', 
-      _cname//':FILTER_COEFS'];
+      _cname//':FILTER_COEFS',
+      _cname//':VIN'];
   } 
   _names = [ _name, _chans[1:*], 
   ":INIT_ACTION",

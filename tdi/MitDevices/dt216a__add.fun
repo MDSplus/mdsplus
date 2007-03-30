@@ -1,11 +1,10 @@
 Public fun dt216a__add(in _path, out _nidout)
 {
-  DevAddStart(_path,'DT216A',116,_nidout, 'MitDevices');
+  DevAddStart(_path,'DT216A',131,_nidout, 'MitDevices');
   DevAddNode(_path//':NODE','TEXT',*,*,_nid);
   DevAddNode(_path//':BOARD','NUMERIC',1,'/noshot_write',_nid);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
-  DevAddNode(_path//':VIN', 'NUMERIC', 10, '/noshot_write', _nid);
-  DevAddNode(_path//':RANGES', 'NUMERIC', *, '/nomodel_write', _nid);
+   DevAddNode(_path//':RANGES', 'NUMERIC', *, '/nomodel_write', _nid);
   DevAddNode(_path//':STATUS_CMDS', 'TEXT', ['cat /proc/cmdline', 'get.d-tacq.release'], '/noshot_write', _nid);
   DevAddNode(_path//':BOARD_STATUS','SIGNAL', *, '/nomodel_write', _nid);
   DevAddNode(_path//':SEG_LENGTH', 'NUMERIC', *, '/noshot_write', _nid);
@@ -38,6 +37,7 @@ Public fun dt216a__add(in _path, out _nidout)
     DevAddNode(_cn//':ENDIDX','NUMERIC',*,'/noshot_write',_nid);
     DevAddNode(_cn//':INC','NUMERIC',*,*,_nid);
     DevAddNode(_cn//':FILTER_COEFS','NUMERIC',*,'/noshot_write',_nid);
+    DevAddNode(_cn//':VIN', 'NUMERIC', 10, '/noshot_write', _nid);
   }
 
   /* and the default actions */
