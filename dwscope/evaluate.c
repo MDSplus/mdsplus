@@ -855,12 +855,12 @@ static long Connect()
 
 static long ConnectEvents()
 {
-  static long sock;
+  static long sock = -1;
   if (!sock) {
-    sock = ConnectToMdsEvents(getenv("MDS_HOST"));
+    char *event_host=getenv("MDS_EVENT_HOST");
+    if (event_host)
+      sock = ConnectToMdsEvents(event_host);
   }
-  if (sock == -1)
-    exit(1);
   return sock;
 }
 
@@ -1050,12 +1050,15 @@ static void  EventReceived(Boolean *received)
 
 void SetupEvent(String event, Boolean *received, int *id)
 {
-  if (*id) {
-    MdsEventCan(ConnectEvents(), *id);
-    *id = 0;
-  }
-  if (strlen(event)) {
-    MdsEventAst(ConnectEvents(), event, EventReceived, received, id);
+  int sock = ConnectEvents();
+  if (sock != -1) {
+    if (*id) {
+      MdsEventCan(sock, *id);
+      *id = 0;
+    }
+    if (strlen(event)) {
+      MdsEventAst(sock, event, EventReceived, received, id);
+    }
   }
 }
 
@@ -1069,7 +1072,9 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
 
 void SetupEventInput(XtAppContext app_context, Widget w)
 {
-  XtAppAddInput(app_context, ConnectEvents(), (XtPointer)XtInputExceptMask, DoEventUpdate, 0);
+  int sock=ConnectEvents();
+  if (sock != -1)
+    XtAppAddInput(app_context, sock, (XtPointer)XtInputExceptMask, DoEventUpdate, 0);
 }
 
 #endif /* __VMS */
