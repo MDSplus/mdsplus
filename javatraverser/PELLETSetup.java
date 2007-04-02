@@ -22,6 +22,7 @@ public class PELLETSetup extends DeviceSetup {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
+        jCheckBox1 = new javax.swing.JCheckBox();
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -42,11 +43,17 @@ public class PELLETSetup extends DeviceSetup {
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
 
-        setDeviceProvider("150.178.3.187");
+        jCheckBox1.setText("jCheckBox1");
+        jCheckBox1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        jCheckBox1.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+        setDeviceProvider("150.178.32.79");
         setDeviceTitle("Pellet Setup");
         setDeviceType("PELLET");
         setHeight(300);
-        setWidth(500);
+        setWidth(550);
+        deviceButtons1.setCheckExpressions(new String[] {"if(_pel_t1_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_1/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_1 /off'); 1;", "if(_pel_t2_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_2/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_2 /off'); 1;", "if(_pel_t3_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_3/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_3 /off'); 1;", "if(_pel_t4_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_4/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_4 /off'); 1;", "if(_pel_t5_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_5/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_5 /off'); 1;", "if(_pel_t6_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_6/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_6 /off'); 1;", "if(_pel_t7_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_7/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_7 /off'); 1;", "if(_pel_t8_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_8/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_8 /off'); 1;"});
+        deviceButtons1.setCheckMessages(new String[] {"state_pt1", "state_pt2", "state_pt3", "state_pt4", "state_pt5", "state_pt6", "state_pt7", "state_pt8"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setLayout(new java.awt.GridLayout(6, 0));
@@ -76,64 +83,72 @@ public class PELLETSetup extends DeviceSetup {
 
         jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Pellet T1:");
+        deviceField3.setIdentifier("pel_t1");
+        deviceField3.setLabelString(" T1:");
         deviceField3.setNumCols(15);
         deviceField3.setOffsetNid(11);
+        deviceField3.setShowState(true);
         jPanel4.add(deviceField3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Pellet T5:");
+        deviceField4.setIdentifier("pel_t5");
+        deviceField4.setLabelString("T5:");
         deviceField4.setNumCols(15);
         deviceField4.setOffsetNid(75);
+        deviceField4.setShowState(true);
         jPanel4.add(deviceField4);
 
         jPanel1.add(jPanel4);
 
         jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Pellet T2:");
+        deviceField5.setIdentifier("pel_t2");
+        deviceField5.setLabelString("T2:");
         deviceField5.setNumCols(15);
         deviceField5.setOffsetNid(27);
+        deviceField5.setShowState(true);
         jPanel5.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Pellet T6:");
+        deviceField6.setIdentifier("pel_t6");
+        deviceField6.setLabelString("T6:");
         deviceField6.setNumCols(15);
         deviceField6.setOffsetNid(91);
+        deviceField6.setShowState(true);
         jPanel5.add(deviceField6);
 
         jPanel1.add(jPanel5);
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Pellet T3:");
+        deviceField7.setIdentifier("pel_t3");
+        deviceField7.setLabelString("T3:");
         deviceField7.setNumCols(15);
         deviceField7.setOffsetNid(43);
+        deviceField7.setShowState(true);
         jPanel6.add(deviceField7);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Pellet T7:");
+        deviceField8.setIdentifier("pel_t7");
+        deviceField8.setLabelString("T7:");
         deviceField8.setNumCols(15);
         deviceField8.setOffsetNid(107);
+        deviceField8.setShowState(true);
         jPanel6.add(deviceField8);
 
         jPanel1.add(jPanel6);
 
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Pellet T4:");
+        deviceField9.setIdentifier("pel_t4");
+        deviceField9.setLabelString("T4:");
         deviceField9.setNumCols(15);
         deviceField9.setOffsetNid(59);
+        deviceField9.setShowState(true);
         jPanel7.add(deviceField9);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Pellet T8:");
+        deviceField10.setIdentifier("pel_t8");
+        deviceField10.setLabelString("T8:");
         deviceField10.setNumCols(15);
         deviceField10.setOffsetNid(123);
+        deviceField10.setShowState(true);
         jPanel7.add(deviceField10);
 
         jPanel1.add(jPanel7);
@@ -156,6 +171,7 @@ public class PELLETSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -164,5 +180,15 @@ public class PELLETSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     // End of variables declaration//GEN-END:variables
+
+
+static public void main(String args[])
+{
+    PELLETSetup ps = new PELLETSetup();
+    ps.pack();
+    ps.setVisible(true);
     
 }
+
+}
+
