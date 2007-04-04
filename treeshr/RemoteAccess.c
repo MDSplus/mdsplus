@@ -1394,6 +1394,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
 int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
 {
   int status = TreeFAILURE;
+  if (deleted) *deleted=0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
