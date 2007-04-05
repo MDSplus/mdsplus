@@ -237,6 +237,7 @@ public class MdsDataProvider
             this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
+            setResampleLimits(xmin, xmax);
         }
 
         public SimpleWaveData(String in_y, String in_x, double xmin, double xmax,
@@ -249,6 +250,7 @@ public class MdsDataProvider
             this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
+            setResampleLimits(xmin, xmax);
         }
 
         public int GetNumDimension() throws IOException
@@ -262,7 +264,7 @@ public class MdsDataProvider
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), shape(_jscope_" + v_idx + "))";
-                var_idx++;
+                var_idx+=2;
             }
             int shape[] = GetNumDimensions(expr);
 
@@ -284,7 +286,7 @@ public class MdsDataProvider
             {
                 _jscope_set = true;
                 set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
-                var_idx++;
+                var_idx+=2;
             }
 
 
@@ -298,11 +300,8 @@ public class MdsDataProvider
             if (resample && in_x == null)
             {
                 String limits = "FLOAT(" + xmin + "), " + "FLOAT(" + xmax + ")";
-                //String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
-                //    "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
-                String resampledExpr = "JavaResample(" + "FLOAT(" + in_y_expr +
-                    "), " +
-                    "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
+                String resampledExpr = "_jscope_" + (v_idx+1) + " = " + "JavaResample(" + "FLOAT(" + in_y_expr +
+                   "), " + "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
 
                 //String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
                 String expr = set_tdivar + resampledExpr;
@@ -446,8 +445,18 @@ public class MdsDataProvider
 
                 if (_jscope_set)
                 {
-                    expr = "dim_of(_jscope_" + v_idx + ")";
-                    tBaseOut = encodeTimeBase("_jscope_" + v_idx);
+                   if(resample && in_x == null)
+                    {
+                        //expr = "dim_of(_jscope_" + (v_idx + 1) + ")";
+                        expr = "JavaDImOf(_jscope_" + v_idx + ", _jscope_"+(v_idx+1)+")";
+          //            tBaseOut = encodeTimeBase("_jscope_" + (v_idx + 1));
+                    }
+                    else
+                   {
+                        expr = "dim_of(_jscope_" + v_idx + ")";
+              //          tBaseOut = encodeTimeBase("_jscope_" + v_idx);
+                    }
+
                     // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
                     // isCoded = true;
                 }
@@ -457,7 +466,7 @@ public class MdsDataProvider
                     String in_y_expr = "_jscope_" + v_idx;
                     String set_tdivar = "( _jscope_" + v_idx + " = (" + in_y +
                         "), ";
-                    var_idx++;
+                    var_idx+=2;
 
  /*                   if (resample)
                     {
@@ -498,7 +507,7 @@ public class MdsDataProvider
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), dim_of(_jscope_" + v_idx + ", 1))";
-                var_idx++;
+                var_idx+=2;
             }
             return GetFloatArray(expr);
 
@@ -515,7 +524,7 @@ public class MdsDataProvider
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), help_of(_jscope_" + v_idx + "))";
-                var_idx++;
+                var_idx+=2;
             }
 
             //String out = GetDefaultTitle(expr);
@@ -542,7 +551,7 @@ public class MdsDataProvider
                     _jscope_set = true;
                     expr = "( _jscope_" + v_idx + " = (" + in_y +
                         "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-                    var_idx++;
+                    var_idx+=2;
                 }
 
 //                out = GetDefaultXLabel(expr);
@@ -583,7 +592,7 @@ public class MdsDataProvider
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), Units(_jscope_" + v_idx + "))";
-                var_idx++;
+                var_idx+=2;
             }
             //String out = GetDefaultYLabel(expr);
             String out = GetStringValue(expr);
@@ -606,7 +615,7 @@ public class MdsDataProvider
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-                var_idx++;
+                var_idx+=2;
             }
 
             //String out = GetDefaultZLabel(expr);
@@ -979,7 +988,6 @@ public class MdsDataProvider
             cal.setTime(date);
             long javaTime = cal.getTime().getTime();
             return javaTime;
-//            return (double)jScope.convertToSpecificTime(javaTime);
         }catch(Exception exc){} //If exception occurs this is not a date
 
 
@@ -1212,7 +1220,7 @@ public class MdsDataProvider
     }
 
 
-    private void setResampleLimits(double min, double max)
+    void setResampleLimits(double min, double max)
     {
         String limitsExpr;
         if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)

@@ -2,6 +2,8 @@
 import javax.swing.JFrame;
 import java.io.IOException;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 public class LocalDataProvider extends MdsDataProvider implements DataProvider
 {
@@ -55,7 +57,26 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     native public void SetEnvironmentSpecific(String in, String defaultNode);
     native public void UpdateNative(String exp, long s);
     native public String GetString(String in);
-    native public double GetFloat(String in);
+    native public double GetFloatNative(String in);
+
+    public synchronized double GetFloat(String in) throws IOException
+    {
+        error = null;
+
+        //First check Whether this is a date
+        try
+        {
+            Calendar cal = Calendar.getInstance();
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
+            Date date = df.parse(in);
+            cal.setTime(date);
+            long javaTime = cal.getTime().getTime();
+            return javaTime;
+        }
+        catch (Exception exc)
+        {} //If exception occurs this is not a date
+        return GetFloatNative(in);
+    }
 
     public synchronized float[] GetFloatArray(String in)  throws IOException
     {
@@ -67,10 +88,14 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     }
     public synchronized RealArray GetRealArray(String in)  throws IOException
     {
-      return new RealArray(GetDoubleArray(in));
+        long longArray[] = GetLongArrayNative(in);
+        if(longArray != null)
+            return new RealArray(longArray);
+        else
+            return new RealArray(GetDoubleArray(in));
     }
 
-
+    native public long []GetLongArrayNative(String in);
     native public float[] GetFloatArrayNative(String in);
     native public double[] GetDoubleArrayNative(String in);
     native public int[]   GetIntArray(String in);
@@ -141,7 +166,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     public boolean SupportsContinuous() {return false; }
     public boolean DataPending() {return  false;}
     public int     InquireCredentials(JFrame f, DataServerItem server_item){return DataProvider.LOGIN_OK;}
-    public boolean SupportsFastNetwork(){return false;}
+    public boolean SupportsFastNetwork(){return true;}
     public void    SetArgument(String arg){};
     public boolean SupportsTunneling(){return false;}
 
@@ -170,4 +195,27 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     native public int registerEvent(String event, int idx);
     native public void unregisterEvent(int evId);
+
+    void setResampleLimits(double min, double max)
+    {
+        String limitsExpr;
+        if (Math.abs(min) > RESAMPLE_TRESHOLD ||
+            Math.abs(max) > RESAMPLE_TRESHOLD)
+        {
+            long maxSpecific = jScope.convertToSpecificTime( (long) max);
+            long minSpecific = jScope.convertToSpecificTime( (long) min);
+
+            long dt = ( (long) maxSpecific - (long) minSpecific) / MAX_PIXELS;
+            limitsExpr = "JavaSetResampleLimits(" + minSpecific + "UQ," +
+                maxSpecific + "UQ," + dt + "UQ)";
+        }
+        else
+        {
+            double dt = (max - min) / MAX_PIXELS;
+            limitsExpr = "JavaSetResampleLimits(" + min + "," + max + "," + dt +
+                ")";
+        }
+        GetFloatNative(limitsExpr);
+    }
+
 }

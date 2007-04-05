@@ -1400,7 +1400,13 @@ public class WaveInterface
         {
             try
             {
-                wd = dp.GetWaveData(in_y[curr_wave]);
+                if(xmin != -HUGE || !full_flag) //If we actually have some limit or resampling enabled
+                {
+                    wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
+                                                 Waveform.MAX_POINTS);
+                }
+                else
+                    wd = dp.GetWaveData(in_y[curr_wave]);
                 dimension = wd.GetNumDimension();
                 if (dimension == 2)
                     zlabel = wd.GetZLabel();
@@ -1477,7 +1483,7 @@ public class WaveInterface
             }
             else
             {
-                if(xmin != -HUGE) //If we actually have some limit
+                if(xmin != -HUGE || !full_flag) //If we actually have some limit
                 {
                     wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
                                                  Waveform.MAX_POINTS);

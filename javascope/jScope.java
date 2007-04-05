@@ -3094,6 +3094,10 @@ remove 28/06/2005
             root.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
+    public boolean isFastNetworkEnabled()
+    {
+        return fast_network_i.getState();
+    }
 }
 
 class WindowDialog
@@ -3719,6 +3723,7 @@ class ServerDialog
         return out;
 
     }
+
 
     public void actionPerformed(ActionEvent event)
     {
