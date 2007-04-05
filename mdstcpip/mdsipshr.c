@@ -79,6 +79,7 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
   unsigned char idx;
   int status = 1;
   struct descrip exparg;
+  struct descrip *ans_arg;
   struct descrip *arg = &exparg;
 #ifdef _USE_VARARGS
   va_start(incrmtr);
@@ -89,6 +90,7 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
 #endif
   for (a_count = 1; arg != NULL; a_count++)
   {
+    ans_arg=arg;
     arg = va_arg(incrmtr, struct descrip *);
   }
 #ifdef _USE_VARARGS
@@ -113,26 +115,26 @@ int MdsValue(SOCKET sock, char *expression, ...)  /**** NOTE: NULL terminated ar
     int numbytes;
     void *dptr;
     void *mem = 0;
-    status = GetAnswerInfoTS(sock, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr, &mem);
-    arg->length = len;
+    status = GetAnswerInfoTS(sock, &ans_arg->dtype, &len, &ans_arg->ndims, ans_arg->dims, &numbytes, &dptr, &mem);
+    ans_arg->length = len;
     if (numbytes)
     {
-      if (arg->dtype == DTYPE_CSTRING)
+      if (ans_arg->dtype == DTYPE_CSTRING)
       {
-        arg->ptr = malloc(numbytes+1);
-        ((char *)arg->ptr)[numbytes] = 0;
+        ans_arg->ptr = malloc(numbytes+1);
+        ((char *)ans_arg->ptr)[numbytes] = 0;
       }
       else if (numbytes > 0)
-        arg->ptr = malloc(numbytes);
+        ans_arg->ptr = malloc(numbytes);
       if (numbytes > 0)
-        memcpy(arg->ptr,dptr,numbytes);
+        memcpy(ans_arg->ptr,dptr,numbytes);
     }
     else
-      arg->ptr = NULL;
+      ans_arg->ptr = NULL;
     if (mem) free(mem);
   }
   else
-    arg->ptr = NULL;
+    ans_arg->ptr = NULL;
   return status;
 }
 
