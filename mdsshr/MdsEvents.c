@@ -1117,7 +1117,8 @@ STATIC_ROUTINE void releaseMessages()
     /* I think it is true that when msgId is set so is msgKey */
     close(msgId);
     setKeyPath(keypath,msgKey);
-    unlink(keypath);
+    if (kill(msgKey,0) == -1 && errno == ESRCH)
+      unlink(keypath);
 
 #else
     pthread_join(local_thread, &dummy);
@@ -1134,7 +1135,8 @@ STATIC_ROUTINE void removeMessage(int key)
 #ifdef USE_PIPED_MESSAGING
     char keypath[PATH_MAX];
     setKeyPath(keypath, key);
-    unlink(keypath);
+    if (kill(key,0) == -1 && errno == ESRCH)
+      unlink(keypath);
 
 #else
 
