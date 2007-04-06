@@ -31,7 +31,7 @@ public class jScope
     UpdateEventListener, ConnectionListener, Printable
 {
 
-    static final String VERSION = "jScope (version 7.4.1)";
+    static final String VERSION = "jScope (version 7.4.2)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -1895,9 +1895,13 @@ public class jScope
                  creaHistoryFile(fok);
             ftmp.renameTo(fok);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             System.out.println("Errore : " + e);
+            JOptionPane.showMessageDialog(this,
+                                          e.getMessage(),
+                                          "alert",
+                                          JOptionPane.ERROR_MESSAGE);
         }
         ftmp.delete();
     }

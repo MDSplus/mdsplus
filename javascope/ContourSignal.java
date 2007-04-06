@@ -128,7 +128,7 @@ public class ContourSignal
     float xc, yc, c1;
 
 
-System.out.println("Livello " + level);
+//System.out.println("Livello " + level);
 
     int xNear[]    = null;
     int yNear[]    = null;
@@ -345,7 +345,7 @@ System.out.println("Livello " + level);
                       {
                         //System.out.println("CASE B NON Trovata int succ CASE A");
                         edgeCase = CASE_D;
-                        rj = x.length - 1;
+                        rj = y.length - 1;
                       }
                       break;
                     case CASE_A:

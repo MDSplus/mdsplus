@@ -492,6 +492,12 @@ public class Signal
         gain = s.gain;
         offset = s.offset;
 
+        cs = s.cs;
+        contourLevels = s.contourLevels;
+        contourSignals = s.contourSignals;
+        contourLevelValues = s.contourLevelValues;
+        
+        
         if ( s.type != this.TYPE_2D )
         {
             if (s.x_double != null)
@@ -516,6 +522,7 @@ public class Signal
         {
             if (s.x_long != null)
             {
+               n_points = s.x_long.length;//??
                x_long = new long[n_points];
                for (i = 0; i < n_points; i++)
                {
@@ -524,6 +531,7 @@ public class Signal
             }
             if(s.x != null)
             {
+                n_points = s.x.length;//??
                 x = new float[n_points];
                 for (i = 0; i < n_points; i++)
                 {
@@ -532,12 +540,14 @@ public class Signal
             }
             if(s.y != null)
             {
+                n_points = s.y.length;//??
                 y = new float[n_points];
                 for (i = 0; i < n_points; i++)
                 {
                     y[i] = s.y[i];
                 }
             }
+            n_points = y.length;//??
         }
 
         saved_ymax = s.saved_ymax;
@@ -573,6 +583,7 @@ public class Signal
         color = s.color;
         interpolate = s.interpolate;
 
+       
         name = s.name;
         type = s.type;
         mode1D = s.mode1D;
@@ -585,7 +596,8 @@ public class Signal
         zlabel = s.zlabel;
         title = s.title;
         startIndexToUpdate = s.startIndexToUpdate;
-        setAxis();
+        if( !(type == this.TYPE_2D && mode2D == Signal.MODE_CONTOUR) )
+            setAxis();
     }
 
     /**
