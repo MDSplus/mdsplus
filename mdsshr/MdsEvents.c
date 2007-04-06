@@ -1017,11 +1017,15 @@ STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
 
 #ifdef USE_PIPED_MESSAGING
     setKeyPath(keypath,key);
-    status = msgid = open(keypath, O_WRONLY | O_NONBLOCK);
+    for (tries=0;tries<5;tries++) {
+      status = msgid = open(keypath, O_WRONLY | O_NONBLOCK);
+      if (status != -1) break;
+      sleep(1);
+    }
     /* opening with O_NONBLOCK will error if its not already open, 
       so this should take care of zombie Msgs, I don't know how to deal with
       stalls. */
-    if (status == -1) {
+    if (status == -1 && kill(msgKey,0) == -1 && errno == ESRCH) {
       removeDeadMsg(key);
       printf("Removed dead message pipe %d, error %d\n", key, errno);
       return 0;
@@ -1244,7 +1248,7 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 	/* this will block.. until the first writer! */
     while(1) {
       //	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
-    { 
+        { 
 		char keypath[PATH_MAX];
 		setKeyPath(keypath,msgKey);
 		/* this will block.. until the first writer! */
@@ -1253,8 +1257,8 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
     //	UnlockMdsShrMutex(&msgIdMutex);
 #endif
 
-    while(1)
-    {	
+      while(1)
+      {	
 	if(readMessage(event_name, &data_len, data) != -1)
 	{
             LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
@@ -1281,10 +1285,12 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 	    }
             UnlockMdsShrMutex(&privateMutex);
 	}
-	else
-	    break;
-    }
-    close(msgId);
+	else {
+	  perror("readMessage failed");
+	  break;
+	}
+      }
+      close(msgId);
     }
     return NULL;
 }
