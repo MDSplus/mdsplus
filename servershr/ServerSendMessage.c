@@ -229,13 +229,15 @@ static void DoCompletionAst(int jobid,int status,char *msg, int removeJob)
   }
   if (j)
   {
+    int has_condition=j->has_condition == HAS_CONDITION;
     if (j->retstatus)
       *j->retstatus = status;
     if (j->ast)
       (*j->ast)(j->astparam,msg);
     if (removeJob && j->jobid != MonJob)
       RemoveJob(j);
-    if (j->has_condition == HAS_CONDITION)
+    /**** If job has a condition, RemoveJob will not remove it. ***/
+    if (has_condition)
     {
       pthread_mutex_lock(&j->mutex);
       j->done = 1;
