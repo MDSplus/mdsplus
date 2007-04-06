@@ -54,22 +54,22 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 	- rmdir/s/q docs
 	mkdir docs
 	copy $(DOCS) docs
-	"C:\Program Files\Java\jdk1.5.0_07\bin\jar.exe" -cf ..\java\classes\jScope.jar *.class *.html docs
+	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\jScope.jar *.class *.html docs
 	- rmdir/s/q docs
 
 ..\java\classes\MindTerm.jar : MindTerm.jar
 	copy MindTerm.jar ..\java\classes\MindTerm.jar
 
 jScope.class : $(SOURCES)
-	"C:\Program Files\Java\jdk1.5.0_07\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
 
 ..\java\classes\jScope.properties : jScope.properties
 	copy jScope.properties ..\java\classes
 
 ..\java\classes\WaveDisplay.jar : $(APPLETSOURCES)
 	del/q *.class
-	"C:\Program Files\Java\jdk1.5.0_07\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(APPLETSOURCES)
-	"C:\Program Files\Java\jdk1.5.0_07\bin\jar.exe" -cf ..\java\classes\WaveDisplay.jar *.class
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar $(APPLETSOURCES)
+	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\WaveDisplay.jar *.class
 	
 CompositeWaveDisplay.class : $(SOURCES)
-	"C:\Program Files\Java\jdk1.5.0_07\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar CompositeWaveDisplay.java	
+	$(JDK_DIR)\bin\javac.exe -classpath .;..\java\classes\MindTerm.jar CompositeWaveDisplay.java	
