@@ -424,27 +424,29 @@ static void unlock_socket_list()
 #endif
 }
 
-static void PushSocket(SocketList *s)
+static void PushSocket(int socket)
 {
   SocketList *oldhead;
   lock_socket_list();
   oldhead=Sockets;
-  Sockets=s;
-  s->next=oldhead;
+  Sockets=malloc(sizeof(SocketList));
+  Sockets->socket=socket;
+  Sockets->next=oldhead;
   unlock_socket_list();
 }
 
-static void PopSocket(SocketList *s_in)
+static void PopSocket(int socket)
 {
   SocketList *p,*s;
   lock_socket_list();
-  for (s=Sockets,p=0;s && s!=s_in; p=s,s=s->next);
+  for (s=Sockets,p=0;s && s->socket != socket; p=s,s=s->next);
   if (s)
   {
     if (p)
       p->next = s->next;
     else
       Sockets = s->next;
+    free(s);
   }
   unlock_socket_list();
 }
@@ -463,9 +465,7 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
   int num_got=0;
   struct sockaddr sin;
   socklen_t n = sizeof(sin);
-  SocketList this_socket = {s,0};
-  PushSocket(&this_socket);
-  this_socket.socket=s;
+  PushSocket(s);
 #ifndef WIN32
   signal(SIGABRT,ABORT);
 #endif
@@ -474,7 +474,7 @@ int SocketRecv(SOCKET s, char *bptr, int num,int oob)
 	  num=num > 256000 ? 256000 : num;
 #endif
     num_got=recv(s,bptr,num,(oob ? MSG_OOB : 0) | MSG_NOSIGNAL);
-  PopSocket(&this_socket);
+  PopSocket(s);
   return num_got;
 #else
   int bytes_to_read = num;
