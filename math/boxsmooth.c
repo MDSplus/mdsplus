@@ -38,7 +38,6 @@ int boxsmooth(int *num, float *in, int *width, float *out)
 
 ------------------------------------------------------------------------------*/
 
-#include <stdio.h>
 #include <string.h>
 
 int boxsmooth(int *num, float *in, int *width, float *out)
@@ -49,7 +48,11 @@ int boxsmooth(int *num, float *in, int *width, float *out)
   int n = *num;
   int *in_int = (int *)in;
   int *out_int = (int *)out;
-
+  if (n <= 0) return 0;
+  if (n < w) {
+    memcpy(out,in,n*sizeof(float));
+    return 1;
+  }
   w += (w % 2) ? 0 : 1;
   memcpy(out,in,w/2*sizeof(float));
   for (i=w/2;i<n-w/2;i++)
@@ -66,7 +69,7 @@ int boxsmooth(int *num, float *in, int *width, float *out)
       }
     }
     if (div > 0)
-      out[i] = (float)total/div;
+      out[i] = total/div;
     else
       out_int[i] = 32768;
   }
