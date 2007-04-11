@@ -30,6 +30,7 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel6 = new javax.swing.JPanel();
         deviceChoice1 = new DeviceChoice();
         deviceField2 = new DeviceField();
+        deviceChoice8 = new DeviceChoice();
         jPanel7 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceField3 = new DeviceField();
@@ -90,6 +91,13 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceField2.setOffsetNid(4);
         jPanel6.add(deviceField2);
 
+        deviceChoice8.setChoiceItems(new String[] {"OFF", "ON", "LOAD"});
+        deviceChoice8.setIdentifier("");
+        deviceChoice8.setLabelString("Calibrate:");
+        deviceChoice8.setOffsetNid(7);
+        deviceChoice8.setUpdateIdentifier("");
+        jPanel6.add(deviceChoice8);
+
         jPanel3.add(jPanel6);
 
         jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
@@ -101,7 +109,7 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceChoice2.setUpdateIdentifier("");
         jPanel7.add(deviceChoice2);
 
-        deviceField3.setIdentifier("");
+        deviceField3.setIdentifier("trigs");
         deviceField3.setLabelString("Trig Source:");
         deviceField3.setNumCols(25);
         deviceField3.setOffsetNid(6);
@@ -112,18 +120,18 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChoice3.setChoiceItems(new String[] {"TRUE", "FALSE"});
-        deviceChoice3.setIdentifier("");
+        deviceChoice3.setIdentifier("useTime");
         deviceChoice3.setLabelString("Use Time:");
         deviceChoice3.setOffsetNid(8);
         deviceChoice3.setUpdateIdentifier("");
         jPanel8.add(deviceChoice3);
 
-        deviceField4.setIdentifier("");
+        deviceField4.setIdentifier("duration");
         deviceField4.setLabelString("Duration:");
         deviceField4.setOffsetNid(11);
         jPanel8.add(deviceField4);
 
-        deviceField5.setIdentifier("");
+        deviceField5.setIdentifier("numFrame");
         deviceField5.setLabelString("N. Frames:");
         deviceField5.setOffsetNid(9);
         jPanel8.add(deviceField5);
@@ -238,9 +246,9 @@ public class FASTCAMSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        deviceButtons1.setCheckExpressions(new String[] {" FastCamResToFrate(_vRes, _hRes) >= _frameRate"});
-        deviceButtons1.setCheckMessages(new String[] {"invalid frame rate for the desired resolution VxH"});
-        deviceButtons1.setMethods(new String[] {"init", "store", "trigger"});
+        deviceButtons1.setCheckExpressions(new String[] {"FastCamTriggerCheck(_useTime, _trigs, _duration, _numFrame, _frameRate)", " FastCamResToFrate(_vRes, _hRes) >= _frameRate"});
+        deviceButtons1.setCheckMessages(new String[] {"Trigger sequence overlaps frame acquisition", "invalid frame rate for the desired resolution"});
+        deviceButtons1.setMethods(new String[] {"init", "trigger", "store", "calibrate"});
         jPanel2.add(deviceButtons1);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
@@ -268,6 +276,7 @@ public class FASTCAMSetup extends DeviceSetup {
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
     private DeviceChoice deviceChoice7;
+    private DeviceChoice deviceChoice8;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
