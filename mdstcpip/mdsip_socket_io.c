@@ -400,13 +400,9 @@ static void lock_socket_list()
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-#endif
   }
-#ifdef HAVE_WINDOWS_H
   pthread_mutex_lock(&socket_mutex);
-#endif
 }
 
 static void unlock_socket_list()
@@ -415,13 +411,9 @@ static void unlock_socket_list()
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
-#endif
   }
-#ifdef HAVE_WINDOWS_H
   pthread_mutex_unlock(&socket_mutex);
-#endif
 }
 
 static void PushSocket(int socket)
