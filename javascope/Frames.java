@@ -198,14 +198,13 @@ class Frames extends Canvas
                     colorModel = colorMap.getIndexColorModel(16);
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
-                                       
-                    
+                                      
                   int n_pix = d.width * d.height;
                   short buf_out[] = new short[n_pix];
                   float values[] = new float[n_pix];
                   ByteArrayInputStream b = new ByteArrayInputStream(buf);
                   DataInputStream din = new DataInputStream(b);
-                  
+            
                     if(right)
                     {    
                         if(colorMap.bitClip)
@@ -241,6 +240,7 @@ class Frames extends Canvas
                   
                     frame_values.addElement(values);
                     AddBITMAPImage(buf_out, colorModel, d, t[i]);
+
                 }
                 break;
                 case FrameData.BITMAP_IMAGE_32 :
@@ -319,22 +319,27 @@ class Frames extends Canvas
                     d.width,  d.height, d.width, 1, new int[]{0}, null);
         img = new BufferedImage(colorModel, raster, false, null);
 
-
         return AddFrame(img, t);
     }
 
 
     public boolean AddBITMAPImage(short[] buf, ColorModel colorModel, Dimension d, float t)
     {
-        Image img;
+        BufferedImage img;
         MemoryImageSource source;
         if(buf == null || d == null) return false;
 
         DataBuffer db = new DataBufferUShort(buf, buf.length);
         WritableRaster raster = Raster.createInterleavedRaster(db,
                     d.width,  d.height, d.width, 1, new int[]{0}, null);
+        
         img = new BufferedImage(colorModel, raster, false, null);
 
+        /*
+        img = new BufferedImage(d.width, d.height, BufferedImage.TYPE_USHORT_GRAY);
+        img.setData(raster);
+        */
+        
         return AddFrame(img, t);
     }
 

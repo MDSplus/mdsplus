@@ -205,7 +205,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
                                                   e.values_x, e.start_pixel_x,
                                                   e.values_y, e.start_pixel_y,
                                                   e.values_signal, e.frames_time);
-                        if(e.pixels_line != null)
+                        if(e.values_line != null)
                             updateProfileLine(e.values_line);
                         else
                             removeProfileLine();
