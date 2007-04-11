@@ -18,6 +18,8 @@ public class ColorMapDialog
     JButton ok, apply, cancel;
     JSlider shiftSlider;
     JCheckBox bitClip;
+    JPanel bitOptionPanel;
+    boolean is16BitImage = false;
 //WaveformEditor weR, weG, weB;
     Waveform wave = null;
 
@@ -82,7 +84,6 @@ public class ColorMapDialog
             this.wave = wave;
         */
 
-        getContentPane().setLayout(new GridLayout(4, 1));
         /*
             WaveformEditor.SetHorizontalOffset(10);
             WaveformEditor.SetVerticalOffset(25);
@@ -130,6 +131,8 @@ public class ColorMapDialog
             );
          */
 
+        getContentPane().setLayout(new GridLayout(3, 1));
+
         JPanel pan1 = new JPanel();
 //        pan1.setLayout(new GridLayout(2, 1));
 
@@ -170,12 +173,12 @@ public class ColorMapDialog
        if(colorMap == null)
             colorMap = new ColorMap();
        cp = new ColorPalette(colorMap.colors);
-       this.getContentPane().add(cp);
+       getContentPane().add(cp);
        pan1.add(pan2);
        
-       JPanel pan3 = new JPanel();
-       pan3.setBorder(BorderFactory.createTitledBorder("16 bit  Option"));
-       pan3.add(shiftSlider = new JSlider(-8, 8, 0) );
+       bitOptionPanel = new JPanel();
+       bitOptionPanel.setBorder(BorderFactory.createTitledBorder("16 bit  Option"));
+       bitOptionPanel.add(shiftSlider = new JSlider(-8, 8, 0) );
        shiftSlider.setName("Bit Offset");
        shiftSlider.setMajorTickSpacing(1);
        shiftSlider.setPaintTicks(true);
@@ -192,7 +195,7 @@ public class ColorMapDialog
         }
         );
 
-       pan3.add(bitClip = new JCheckBox("Bit Clip"));
+       bitOptionPanel.add(bitClip = new JCheckBox("Bit Clip"));
        bitClip.addChangeListener( new ChangeListener()
         {
             public void stateChanged(ChangeEvent e)
@@ -211,8 +214,11 @@ public class ColorMapDialog
 //                if (ColorMapDialog.this.wave.IsImage())
                 {
                     ColorMap cm = (ColorMap) cmComboBox.getSelectedItem();
-                    cm.bitClip = bitClip.isSelected();
-                    cm.bitShift = shiftSlider.getValue();
+                    if(is16BitImage)
+                    {
+                        cm.bitClip = bitClip.isSelected();
+                        cm.bitShift = shiftSlider.getValue();
+                    }
                     ColorMapDialog.this.wave.setColorMap(cm);
                     ColorMapDialog.this.setVisible(false);
                 }
@@ -271,8 +277,11 @@ public class ColorMapDialog
                 {
                     ColorMapDialog.this.wave.setColorMap(colorMap);
                     ColorMapDialog.this.setVisible(false);
-                    bitClip.setSelected(colorMap.bitClip);
-                    shiftSlider.setValue(colorMap.bitShift);
+                    if(is16BitImage)
+                    {
+                        bitClip.setSelected(colorMap.bitClip);
+                        shiftSlider.setValue(colorMap.bitShift);
+                    }
 
                 }
             }
@@ -280,11 +289,11 @@ public class ColorMapDialog
         );
 
         getContentPane().add(pan1);
-        getContentPane().add(pan3);
+//        getContentPane().add(bitOptionPanel);
         getContentPane().add(pan4);
               
         pack();
-        setSize(300, 350);
+        setSize(330, 350);
     }
 
     public ColorMap getColorMap(String name)
@@ -303,8 +312,27 @@ public class ColorMapDialog
         this.wave = wave;
         colorMap = wave.getColorMap();
         cmComboBox.setSelectedItem(colorMap);
-        shiftSlider.setValue(colorMap.bitShift);
-        bitClip.setSelected(colorMap.bitClip);
+        
+        if( wave.frames.frame_type[wave.frames.GetFrameIdx()] == FrameData.BITMAP_IMAGE_16 )
+        {
+            if(!is16BitImage)
+            {
+                getContentPane().setLayout(new GridLayout(4, 1));
+                getContentPane().add(bitOptionPanel, 2);
+                setSize(330, 350);
+
+            }
+            is16BitImage = true;
+            shiftSlider.setValue(colorMap.bitShift);
+            bitClip.setSelected(colorMap.bitClip);
+        } 
+        else
+        {
+            is16BitImage = false;
+            getContentPane().remove(bitOptionPanel);
+            getContentPane().setLayout(new GridLayout(3, 1));
+            setSize(330, 250);
+        }
     }
 
     public void addColorMapListener(ActionListener l)
