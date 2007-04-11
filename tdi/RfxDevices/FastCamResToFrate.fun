@@ -25,6 +25,8 @@ public fun FastCamResToFRate(in _Vres, in _Hres)
 	_j = FastCamCheckHres( _Hres );
 	if( _j < 0 )  return ( -1 );
 	
+
+	write(*, "Resolution "//trim(adjustl(_Vres))//" x "//trim(adjustl(_Hres))//" Max frame rate "//trim(adjustl(_fRateTable[ _i, _j ])));
 	return ( _fRateTable[ _i, _j ] );
 
 }

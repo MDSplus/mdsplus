@@ -1,6 +1,6 @@
 public fun FASTCAM__store(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 26;
+    private _K_CONG_NODES = 28;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_CAMERA_ID = 2;
@@ -61,26 +61,25 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 	if( _ext_trig )
 	{
-		_trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
-		if(_trig == _INVALID)
+		_trigs = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), []);
+		_num_trig = esize(_trigs);
+		if( _num_trig == 0 )
 		{
     		DevLogErr(_nid, "Cannot resolve trigger ");
  			abort();
 		}
+		if(_num_trig == -1)
+		{
+			_num_trig = 1;
+			_trigs =  [0];
+		}
 	}
 	else
-		_trig = 0;
-
-
-	_num_trig = if_error( esize(_trig), 1);
-	if( _num_trig < 0 )
-	{ 
+	{
 		_num_trig = 1;
-		_trigs = [_trig];
+		_trigs =  [0];
 	}
-	else
-		_trigs = _trig;
-
+ 
     _num_frames = if_error( data(DevNodeRef(_nid, _N_NUM_FRAMES)), _INVALID);
     if(_num_frames == _INVALID)
     {
@@ -125,69 +124,84 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 	_imgs = [];
 	_ranges = [];
-	_frameToRead = _num_frames;
 	_maxFramesSingleRead = int ( (1024 * 1024) / (_v_res * _h_res) );
 
 	_startFrame = 0;
 
+	_numTotFrame = 0;
+
 	for( _nTr = 0; _nTr < _num_trig; _nTr++)
 	{
-
+		_frameToRead = _num_frames;
 		while( _frameToRead > 0 )
 		{
 
 			_nFramesSingleRead = (_maxFramesSingleRead < _frameToRead ) ? _maxFramesSingleRead : _frameToRead;
 
-
-			write(*, "Tot"//_frameToRead//"Frame to read "// _nFramesSingleRead//" start "//_startFrame);
-
+/*
+			write(*, "Tot "//_frameToRead//" Frame to read "// _nFramesSingleRead//" start "//_startFrame);
+*/
 
 			if(_remote != 0)
-				_data = MdsValue('FastCamHWReadFrame($, $, $)', _startFrame,  _nFramesSingleRead, _v_res, _h_res);
+				_data = MdsValue('FastCamHWReadFrame($, $, $, $)', _startFrame,  _nFramesSingleRead, _v_res, _h_res);
 			else
 				_data = FastCamHWReadFrame( _startFrame, _nFramesSingleRead, _v_res, _h_res);
 			
 			if( esize( _data ) < 0)
-			{
-				if(_remote != 0)
-					_msg = MdsValue('FastCamErrno($)', _data);
-				else
-					_msg = FastCamErrno( _data );
-				
-				DevLogErr(_nid, "Error reading FAST CAMERA "//_msg);
+				break;
 
-				abort();
-
-			}
-
-
-			for( _nFr = _startFrame - 1; _nFr < _startFrame + _nFramesSingleRead; _nFr++)
+			for( _nFr = _startFrame; _nFr < _startFrame + _nFramesSingleRead; _nFr++)
 				_ranges = [ _ranges, _trigs[_nTr] + ( 1./_frame_rate ) * _nFr ];
 
 			_imgs = [ _imgs, _data ];
 			
 			_frameToRead -= _nFramesSingleRead;	
-			_startFrame += _nFramesSingleRead;
-
+			_startFrame  += _nFramesSingleRead;
 		}
 	}
 
 
-	_n_frames = _num_frames * _num_trig;
+	if(_remote != 0)
+		MdsValue('FastCamHWClose()');
+	else
+		_msg = FastCamHWClose();
+
+	_n_frames = _startFrame;
+
+	write(*, "test ", _n_frames, _num_frames * _num_trig);
+
 	_y_pixel = _v_res;
 	_x_pixel = _h_res;
 
-	_dim = make_dim(make_window(0, _n_frames - 1, _trigs[0]), make_range(*,*,(1./_frame_rate)) );
+	_imgs = WORD(( _imgs >> 6 ) & 0x3FF);
+
+	_dim = make_dim(make_window(0, _n_frames - 1, _trigs[0]), _ranges );
 
 	_video = compile('build_signal(($VALUE), set_range(`_y_pixel, `_x_pixel, `_n_frames, `_imgs), (`_dim))');
-
 
 	_video_nid =  DevHead(_nid) + _N_VIDEO;
 	_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
 	if( !(_status & 1) )
 	{
+		if( _remote != 0 )
+			MdsDisconnect();
 		DevLogErr(_nid, 'Error writing data in pulse file');
 		abort();
+	}
+
+
+	if(	_n_frames != _num_frames * _num_trig )
+	{
+		if(_remote != 0)
+		{
+			_msg = MdsValue('FastCamErrno($)', _data);
+			MdsDisconnect();
+		}
+		else
+			_msg = FastCamErrno( _data );
+		
+		DevLogErr(_nid, "Error reading FAST CAMERA "//_msg);
+		Abort();
 	}
 
 	if( _remote != 0 )

@@ -1,6 +1,6 @@
 public fun FASTCAM__init(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 26;
+    private _K_CONG_NODES = 28;
     private _N_HEAD = 0;
     private _N_COMMENT = 1;
     private _N_CAMERA_ID = 2;
@@ -66,20 +66,21 @@ public fun FASTCAM__init(as_is _nid, optional _method)
 
 	if( _ext_trig )
 	{
-		_trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
-		if(_trig == _INVALID)
+		_trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), []);
+		_num_trig = esize(_trig);
+
+		if( _num_trig == 0 )
 		{
     		DevLogErr(_nid, "Cannot resolve trigger ");
  			abort();
 		}
 	}
 	else
+	{
+		_num_trig = 1;
 		_trig =  0;
-
-
-	_num_trig = if_error( esize(_trig), 1);
-	if( _num_trig < 0 ) _num_trig = 1;
-
+	}
+ 
     _v_res = if_error( data(DevNodeRef(_nid, _N_V_RES)), _INVALID);
 	if( _v_res == _INVALID || FastCamCheckVres( _v_res ) ==  _INVALID )
 	{
@@ -141,9 +142,7 @@ public fun FASTCAM__init(as_is _nid, optional _method)
 		}
 	}
 
-
     DevNodeCvt(_nid, _N_CALIBRATE, ['OFF', 'ON', 'LOAD'], [0,1,5] ,  _calibrate = 0 );
-
 
 	if(_remote != 0)
 	{

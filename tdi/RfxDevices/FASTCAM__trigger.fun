@@ -57,7 +57,9 @@ public fun FASTCAM__trigger(as_is _nid, optional _method)
 	if( _ext_trig == 1 )
 	{
  	    DevLogErr(_nid, "Perform this operation in INTERNAL trigger configuration");
- 		abort();
+/*
+		abort();
+*/
 	}
 
 
