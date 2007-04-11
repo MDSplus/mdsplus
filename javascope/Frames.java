@@ -2,6 +2,7 @@
 import java.awt.*;
 import java.io.*;
 import java.awt.image.*;
+import java.awt.color.*;
 import java.util.*;
 
 class Frames extends Canvas
@@ -16,7 +17,7 @@ class Frames extends Canvas
     MediaTracker tracker;
     Dimension d;
 
-//    ColorModel c_model = null;
+//  ColorModel c_model = null;
     private ColorMap colorMap = new ColorMap();
 
     protected boolean aspect_ratio = true;
@@ -35,6 +36,7 @@ class Frames extends Canvas
     protected boolean vertical_flip = false;
     protected int color_idx;
     protected int[] frame_type;
+    
 
     Frames()
     {
@@ -170,12 +172,15 @@ class Frames extends Canvas
         float t[] = fd.GetFrameTimes();
         byte[] buf;
         ColorModel colorModel;
-
+        boolean right = false;
+        
         frame_type = new int[n_frames];
 
-/*
-        CreateColorModel(fd.GetFrameType());
-*/
+        if(colorMap.bitShift < 0)
+            right = true;
+        
+        int bitShift = Math.abs(colorMap.bitShift);
+
         for(int i = 0; i < n_frames; i++)
         {
             buf = fd.GetFrameAt(i);
@@ -193,52 +198,49 @@ class Frames extends Canvas
                     colorModel = colorMap.getIndexColorModel(16);
                     Dimension d = fd.GetFrameDimension();
                     FlipFrame(buf, d, 2);
-
-/*
-                    int n_pix = d.width*d.height;
-                    int buf_out[] = new int[n_pix];
-                    ByteArrayInputStream b = new ByteArrayInputStream(buf);
-                    DataInputStream din = new DataInputStream(b);
-                    for(int j = 0; j < n_pix; j++)
-                       buf_out[j] = din.readUnsignedShort();
-*/
-
+                                       
+                    
                   int n_pix = d.width * d.height;
                   short buf_out[] = new short[n_pix];
                   float values[] = new float[n_pix];
                   ByteArrayInputStream b = new ByteArrayInputStream(buf);
                   DataInputStream din = new DataInputStream(b);
-
-                  for (int j = 0; j < n_pix; j++)
-                  {
-                      buf_out[j] = din.readShort();
-                      values[j] = 0xffff & buf_out[j];
-                  }
-                  frame_values.addElement(values);
-                  AddBITMAPImage(buf_out, colorModel, d, t[i]);
-/********************************
-                   int n_pix = d.width*d.height;
-                   float buf_out[] = new float[n_pix];
-                   ByteArrayInputStream b = new ByteArrayInputStream(buf);
-                   DataInputStream din = new DataInputStream(b);
-
-                   float max = Short.MIN_VALUE;
-                   float min = Short.MAX_VALUE;
-                   for(int j = 0; j < n_pix; j++)
-                   {
-                      buf_out[j] = din.readUnsignedShort();
-                      if(buf_out[j] > max) max = buf_out[j];
-                      if(buf_out[j] < min) min = buf_out[j];
-                   }
-                   frame_values.addElement(buf_out);
-                   int buf_outl[] = new int[n_pix];
-                   for(int j = 0; j < n_pix; j++)
-                   {
-                     buf_outl[j] = (int)(255 * (buf_out[j] - min)/(max - min));
-                   }
-
-                   AddBITMAPImage(buf_outl, d, t[i]);
-************************************/
+                  
+                    if(right)
+                    {    
+                        if(colorMap.bitClip)
+                            for (int j = 0; j < n_pix; j++)
+                            {
+                                values[j] = 0xffff & din.readShort();
+                                int val = ( (int)values[j] >> bitShift );
+                                buf_out[j] = (short)(val > 255 ? 255 : val);
+                            }
+                        else
+                            for (int j = 0; j < n_pix; j++)
+                            {
+                                values[j] = 0xffff & din.readShort();
+                                buf_out[j] = (short)((int)values[j] >> bitShift );
+                            }
+                    }
+                    else
+                    {
+                        if(colorMap.bitClip)
+                            for (int j = 0; j < n_pix; j++)
+                            {
+                                values[j] = 0xffff & din.readShort();
+                                int val = ( (int)values[j] << bitShift );
+                                buf_out[j] = (short)(val > 255 ? 255 : val);
+                            }
+                        else
+                            for (int j = 0; j < n_pix; j++)
+                            {
+                                values[j] = 0xffff & din.readShort();
+                                buf_out[j] = (short)((int)values[j] << bitShift );
+                            }
+                    }                        
+                  
+                    frame_values.addElement(values);
+                    AddBITMAPImage(buf_out, colorModel, d, t[i]);
                 }
                 break;
                 case FrameData.BITMAP_IMAGE_32 :
@@ -287,6 +289,7 @@ class Frames extends Canvas
         Vector newFrame = new Vector();
         ColorModel colorModel;
 
+               
         for(int i = 0; i < frame.size(); i++)
         {
             colorModel = colorMap.getIndexColorModel(getPixelSize(i));
@@ -353,7 +356,56 @@ class Frames extends Canvas
         return AddFrame(img, t);
     }
 
+    public void shiftImagePixel(int bitShift, boolean bitClip)
+    {
+        BufferedImage bi;
+        float values[] = null; 
+        boolean right = false;
+                        
+        if(bitShift < 0)
+            right = true;
+        
+          bitShift = Math.abs(bitShift);
 
+          for( int i = 0; i < frame.size() ; i++)
+          {
+                bi = (BufferedImage)frame.elementAt(i);
+                values = (float[])frame_values.elementAt(i);
+                WritableRaster wr = bi.getRaster();
+                DataBuffer db = wr.getDataBuffer();
+                int numBank = db.getNumBanks();
+                int n_pix = db.getSize();
+                
+                if(right)
+                {    
+                    if(bitClip)
+                        for (int j = 0; j < n_pix; j++)
+                        {
+                            int val = ( (int)values[j] >> bitShift );
+                            db.setElem(j, val > 255 ? 255 : val);
+                        }
+                    else
+                        for (int j = 0; j < n_pix; j++)
+                            db.setElem(j, ((int)values[j] >> bitShift ));
+                }
+                else
+                {
+                    if(bitClip)
+                        for (int j = 0; j < n_pix; j++)
+                        {
+                            int val = ( (int)values[j] << bitShift );
+                            db.setElem(j, val > 255 ? 255 : val);
+                        }
+                    else
+                        for (int j = 0; j < n_pix; j++)
+                            db.setElem(j, ((int)values[j] << bitShift ));
+                    
+                }                        
+          }
+    }
+
+   
+    
     public boolean AddAWTImage(byte[] buf, float t)
     {
         Image img;
@@ -476,7 +528,7 @@ class Frames extends Canvas
             Image img;
 
             ColorModel colorModel = colorMap.getIndexColorModel(pixel_size);
-
+ 
             for(int i = 0; i < n_frame; i++)
             {
                 if(f_time[i] < timemin || f_time[i] > timemax)

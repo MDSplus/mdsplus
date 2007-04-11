@@ -137,6 +137,8 @@ public class Waveform
   public float ly_min = Float.MIN_VALUE;
 
   protected ColorMap colorMap = new ColorMap();
+  
+
 
   class ZoomRegion {
     double start_xs;
@@ -2791,6 +2793,17 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       repaint();
   }
 
+  public void setFrameBitShift(int bitShift, boolean bitClip)
+  {
+      if(frames != null)
+      {
+          ((Frames)frames).shiftImagePixel(bitShift, bitClip);
+          not_drawn = true;
+          repaint();
+      }
+  }
+
+  
   public ColorMap getColorMap()
   {
       return frames.getColorMap();
