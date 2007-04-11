@@ -1962,7 +1962,7 @@ public class Waveform
            y = s.getY(idx);
          }
          else {
-           y = s.getY(idx) + (s.getY(idx + 1) - s.getY(idx) * (x - s.getX(idx)) /
+           y = s.getY(idx) + ((s.getY(idx + 1) - s.getY(idx)) * (x - s.getX(idx)) /
                (s.getX(idx + 1) - s.getX(idx)));
          }
        }
