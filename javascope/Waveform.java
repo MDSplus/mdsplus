@@ -1289,11 +1289,12 @@ public class Waveform
       if (waveform_signal != null) {
 
           //TACON MOSTRUOSO per gestire il fatto che jScope vede solo gli offsets nei times!!!!
+          
         xmax =  MaxXSignal();
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
-
+            
 
 
 

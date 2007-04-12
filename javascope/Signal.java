@@ -547,7 +547,7 @@ public class Signal
                     y[i] = s.y[i];
                 }
             }
-            n_points = y.length;//??
+//            n_points = y.length;//??
         }
 
         saved_ymax = s.saved_ymax;
@@ -596,8 +596,11 @@ public class Signal
         zlabel = s.zlabel;
         title = s.title;
         startIndexToUpdate = s.startIndexToUpdate;
+        /*
+         *???????????????????????
         if( !(type == this.TYPE_2D && mode2D == Signal.MODE_CONTOUR) )
             setAxis();
+         */
     }
 
     /**
@@ -757,8 +760,8 @@ public class Signal
 
     public Signal(float z2D[], float y2D[], long x2D[], int type)
     {
-
         error = asym_error = false;
+                
         if (y2D != null && y2D.length > 1)
         {
             this.z2D = z2D;
@@ -2633,12 +2636,15 @@ public class Signal
     public float[][] getZ2D()
     {
       float zOut[][] = new float[x2D.length][y2D.length];
-
+      int k;
+      
       for (int i = 0; i < x2D.length; i++)
       {
         for (int j = 0; j < y2D.length; j++)
         {
-          zOut[i][j] = z2D[j * x2D.length + i];
+          k =  j * x2D.length + i;   
+          if(k < z2D.length )
+            zOut[i][j] = z2D[k];
         }
       }
       return zOut;
