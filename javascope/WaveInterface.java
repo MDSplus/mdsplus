@@ -1400,7 +1400,8 @@ public class WaveInterface
         {
             try
             {
-                if(xmin != -HUGE || !full_flag) //If we actually have some limit or resampling enabled
+//                if(xmin != -HUGE || !full_flag) //If we actually have some limit or resampling enabled
+                if(!full_flag) //If we actually have some limit or resampling enabled
                 {
                     wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
                                                  Waveform.MAX_POINTS);
@@ -1476,14 +1477,16 @@ public class WaveInterface
         }
         else // Campo X non definito
         {
-            if (full_flag || dimension > 1)
+//            if (full_flag || dimension > 1)
+            if (dimension > 1)
             {
                 if (wd == null)
                     wd = dp.GetWaveData(in_y[curr_wave]);
             }
             else
             {
-                if(xmin != -HUGE || !full_flag) //If we actually have some limit
+//                if(xmin != -HUGE || !full_flag) //If we actually have some limit
+                    if(!full_flag) //If we actually have some limit
                 {
                     wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
                                                  Waveform.MAX_POINTS);
