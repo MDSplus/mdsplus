@@ -45,6 +45,23 @@ STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destinati
 STATIC_THREADSAFE unsigned int threadID;
 STATIC_CONSTANT int zero = 0;
 
+STATIC_ROUTINE void ReconnectToServer(int idx) {
+  int status;
+  STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+    routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+  STATIC_THREADSAFE int (*rtn)() = 0;
+  if (idx >= num_receive_servers || receive_servers[idx] == 0) return;
+  status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    receive_sockets[idx] = (*rtn) (receive_servers[idx]);
+    if(receive_sockets[idx] == -1) {
+      printf("\nError connecting to %s", receive_servers[idx]);
+      perror("ConnectToMds");
+      receive_sockets[idx] = 0;
+    }
+  }
+}
+
 struct event_struct { char *eventnam;
                       void (*astadr)(void *,int,char *);
                       void *astprm;
@@ -453,6 +470,7 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 		newRemoteId(eventid);
 		for(i = 0; i < num_receive_servers; i++)
 		{
+		  if (receive_sockets[i] == 0) ReconnectToServer(i);
 			if(receive_sockets[i])
 			{ 
 				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
@@ -741,6 +759,23 @@ STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event source
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 
 
+
+STATIC_ROUTINE void ReconnectToServer(int idx) {
+  int status;
+  STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
+    routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
+  STATIC_THREADSAFE int (*rtn)() = 0;
+  if (idx >= num_receive_servers || receive_servers[idx] == 0) return;
+  status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    receive_sockets[idx] = (*rtn) (receive_servers[idx]);
+    if(receive_sockets[idx] == -1) {
+      printf("\nError connecting to %s", receive_servers[idx]);
+      perror("ConnectToMds");
+      receive_sockets[idx] = 0;
+    }
+  }
+}
 
 /************* OS dependent part ******************/
 
@@ -1588,6 +1623,7 @@ STATIC_ROUTINE int searchOpenServer(char *server)
 STATIC_THREADSAFE pthread_mutex_t initMutex;
 STATIC_THREADSAFE int             initMutex_initialized = 0;
 
+
 STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 {
     STATIC_THREADSAFE int receive_initialized;
@@ -1704,6 +1740,7 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 	newRemoteId(eventid);
 	for(i = 0; i < num_receive_servers; i++)
 	{
+	  if (receive_sockets[i]==0) ReconnectToServer(i);
 	    if(receive_sockets[i])
 	    { 
 		status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
