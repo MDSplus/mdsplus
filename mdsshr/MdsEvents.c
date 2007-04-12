@@ -1321,7 +1321,6 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
             UnlockMdsShrMutex(&privateMutex);
 	}
 	else {
-	  perror("readMessage failed");
 	  break;
 	}
       }
