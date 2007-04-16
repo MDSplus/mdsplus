@@ -619,35 +619,8 @@ int main(int argc, char **argv)
       error_count=0;
       if ((serverSock != -1) && FD_ISSET(serverSock, &readfds))
       {
-	int len = sizeof(struct sockaddr_in);
-	int sock;
-	double start;
-        int more=2;
-        struct sock_list {
-	  int sock;
-	  struct sockaddr *sin;
-	  struct sock_list *next; } *list=0,*l;
-        while (more) {
-	  status = fcntl(serverSock,F_SETFL,O_NONBLOCK);
-	  sock=accept(serverSock, (struct sockaddr *)&sin, &len);
-	  if (sock == -1 && errno == EAGAIN) {
-	    more = 0;
-	  } else {
-	    l=(struct sock_list *)malloc(sizeof(struct sock_list));
-	    l->sock=sock;
-	    l->sin=memcpy(malloc(len),&sin,len);
-	    l->next=list;
-	    list=l;
-	  }
-	}
-	while(list) {
-	    (*AddClient)(list->sock,list->sin,0);
-	    l=list;
-	    list=l->next;
-	    free(l->sin);
-	    free(l);
-	}
-
+		int len = sizeof(struct sockaddr_in);
+		(*AddClient)(accept(serverSock, (struct sockaddr *)&sin, &len), &sin, 0);
       }
       else
       {
@@ -1814,7 +1787,6 @@ static void lock_client_list()
     client_mutex_initialized = 1;
     pthread_mutex_init(&client_mutex, pthread_mutexattr_default);
   }
-
   pthread_mutex_lock(&client_mutex);
 }
 
@@ -1841,7 +1813,6 @@ static void lock_ast()
     ast_mutex_initialized = 1;
     pthread_mutex_init(&ast_mutex, pthread_mutexattr_default);
   }
-
   pthread_mutex_lock(&ast_mutex);
 }
 
@@ -1851,10 +1822,15 @@ static void unlock_ast()
   if(!ast_mutex_initialized)
   {
     ast_mutex_initialized = 1;
+#ifndef HAVE_WINDOWS_H
+
     pthread_mutex_init(&ast_mutex, pthread_mutexattr_default);
+#endif
   }
 
+#ifndef HAVE_WINDOWS_H
   pthread_mutex_unlock(&ast_mutex);
+#endif
 }
 
 static int CreateMdsPort(short port, int multi_in)
