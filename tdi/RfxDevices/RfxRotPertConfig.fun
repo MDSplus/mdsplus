@@ -27,6 +27,9 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 	{
 		
 		_segno = 1.0;
+		
+		_fase = mod( _fase, 2 * $pi);
+		
 		if( _freq < 0 )
 		{
 		   _freq = -_freq;
@@ -40,16 +43,13 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 
 		if( _type == "MODULE" )
 		{						
-			_out = if_error( make_signal( [0, 0, _amp, _amp, 0, 0] , , [\RFX::T_START_PR, _ts, _ts + _tr, _te, _te, \RFX::T_STOP_PR] ), _zeroSig );
+			_out = if_error( make_signal( [0, 0, _amp, _amp, 0, 0] , , [ fs_float(\RFX::T_START_PR), _ts, _ts + _tr, _te, _te, fs_float(\RFX::T_STOP_PR) ] ), _zeroSig );
 			
 		}
 		else
 		{
-		
-
-			_x = [\RFX::T_START_PR, _ts];
-			_y = [0.0, _fase];
-			_t = _ts;
+			_x = [_ts];
+			_y = [_fase];
 			
 			if(_freq != 0.0)
 			{
@@ -57,37 +57,26 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 			}
 			else
 			{
-				_out = if_error( make_signal( [0, 0, _fase, _fase, 0, 0] , , [\RFX::T_START_PR, _ts, _ts, _te, _te, \RFX::T_STOP_PR] ), _zeroSig );
+				_out = if_error( make_signal( [0, 0, _fase, _fase, 0, 0] , , [fs_float(\RFX::T_START_PR), _ts, _ts, _te, _te, fs_float(\RFX::T_STOP_PR)] ), _zeroSig );
 				return (_out);
 			}
 			
-		
-			while(_t <= _te)
+			_t = _ts + _period;
+	
+			while(_t < _te)
 			{
-				if( ( _t + _period  ) <= _te )
-				{
-					_x = [ _x, _t + _segno * _period , _t + _period ];
-					_y = [ _y, 2 * $pi, 0];
-				}
-				else
-				{
-					if( _segno )
-					{
-						_x = [ _x, _te , _te];
-						_y = [ _y, 2*$pi * ((_te - _t)/(_period )), 0];
-					}
-					else
-					{
-						_x = [ _x,  _t  , _te, _te];
-						_y = [ _y, 2*$pi, 2*$pi * ( 1 - _te * _freq + _t * _freq), 0];
-					}
-				
-				}
+				_x = [ _x, _t , _t  ];
+				_y = [ _y,  _segno * 2 * $pi, (1 - _segno) * 2 * $pi];
 				_t += _period;
 			}
-			_x = [_x, \RFX::T_STOP_PR];
-			_y = [_y, 0.0];
-
+			_t -= _period;
+			_x = [ _x, _te];
+			
+			if( _segno )
+				_y = [ _y, 2 * $pi * ((_te - _t)/( _period )), 0];
+			else
+				_y = [ _y, - 2 * $pi * ((_te - _t)/( _period )) + 2*$pi, 0];
+			
 			_out = if_error( make_signal( _y , , _x ), _zeroSig );						
 		}
 		
@@ -113,6 +102,11 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 
 	_mode = execute(_path//":TRIG1_CONTR");
 
+	if( $shot < 19359 && $shot > 1000 && _idx > 4 )
+	{
+		write(*, _idx);
+		_idx = _idx + 1000;
+	}
 
     if ( _type == "TITLE" )
 	{
@@ -122,16 +116,28 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 			switch( _idx )
 			{
 				case (1)
-					return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR251_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR255_VAL"))) );
+					if($shot < 19359 && $shot > 1000)
+						return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL"))) );
+					else
+						return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR251_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR255_VAL"))) );
 				break;			
 				case (2)
-					return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR252_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR256_VAL"))) );
+					if($shot < 19359 && $shot > 1000)
+						return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) );
+					else
+						return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR252_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR256_VAL"))) );
 				break;
 				case (3)
-					return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR253_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR257_VAL"))) );
+					if($shot < 19359 && $shot > 1000)
+						return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL")))  );
+					else
+						return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR253_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR257_VAL"))) );
 				break;
 				case (4)
-					return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR254_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR258_VAL"))) );
+					if($shot < 19359 && $shot > 1000)				
+						return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL")))  );
+					else
+						return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR254_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR258_VAL"))) );
 				break;
 				case (5)
 					return ( "R P 5  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR259_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR260_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR264_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR267_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR268_VAL"))) );
@@ -145,6 +151,9 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 				case (8)
 					return ( "R P 8  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR289_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR290_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR294_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR297_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR298_VAL"))) );
 				break;
+				
+				case default 
+					return("Segnale definito dallo shot 19359");
 			}
 		}
 		else
@@ -274,6 +283,8 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 				   return( _out );
 				break;
 
+				case default 
+					return ( _zeroSig );	
 
 			}
 		}

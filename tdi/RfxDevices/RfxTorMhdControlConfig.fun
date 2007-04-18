@@ -21,6 +21,9 @@ public fun RfxTorMhdControlConfig( in _system )
 	
 	switch( _modeName )
 	{
+		case ("OFFESET CORRECTION");
+			return (_modeName);
+	
 		case ("ROT.PERTURBATION")
 			return("ROTATING PERTURBATION");
 		break;
@@ -73,8 +76,9 @@ public fun RfxTorMhdControlConfig( in _system )
 		case ("Closer VS + Rot.Pert.")
 			return( _modeName );
 		break;
+		
+		case default return( _modeName );
 
 	}
-	return("SCONOSCIUTA");
 
 }

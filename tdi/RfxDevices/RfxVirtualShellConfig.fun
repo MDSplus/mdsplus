@@ -67,9 +67,9 @@ public fun RfxVirtualShellConfig(in _system, in _type, in _ModePhasePID, in _idx
 			{
 				case (1)
 				   if(_ModePhasePID == "MODE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR219_VAL")),,  [0..47], [0..4]) , _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR219_VAL")),,  [0..47], [0..3]) , _zeroSig );
 				   if(_ModePhasePID == "PHASE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR220_VAL")),,  [0..47], [0..4]), _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR220_VAL")),,  [0..47], [0..3]), _zeroSig );
 				   
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -77,9 +77,9 @@ public fun RfxVirtualShellConfig(in _system, in _type, in _ModePhasePID, in _idx
 
 				case (2)
 				   if(_ModePhasePID == "MODE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR224_VAL")),,  [0..47], [0..4]), _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR224_VAL")),,  [0..47], [0..3]), _zeroSig );
 				   if(_ModePhasePID == "PHASE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR225_VAL")),,  [0..47], [0..4]), _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR225_VAL")),,  [0..47], [0..3]), _zeroSig );
 				   
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -87,9 +87,9 @@ public fun RfxVirtualShellConfig(in _system, in _type, in _ModePhasePID, in _idx
 
 				case (3)
 				   if(_ModePhasePID == "MODE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR229_VAL")),,  [0..47], [0..4]), _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR229_VAL")),,  [0..47], [0..3]), _zeroSig );
 				   if(_ModePhasePID == "PHASE")
-						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR230_VAL")),,  [0..47], [0..4]), _zeroSig );
+						_out = if_error( make_signal(set_range(48, 4, execute(_path//".PARAMETERS:PAR230_VAL")),,  [0..47], [0..3]), _zeroSig );
 				   
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
