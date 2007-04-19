@@ -603,7 +603,11 @@ int putSegmentInternal(int nid, int idx, char *dim, char *data)
 
 
 #ifdef HAVE_WINDOWS_H
-EXPORT void cacheReset(){}
+EXPORT void cacheReset()
+{
+	if(!cache) cache = getCache();
+
+}
 #else
 
 //For Linux only: remove all persistent semaphores
@@ -611,12 +615,13 @@ EXPORT void cacheReset()
 {
     char buf[256];
     int i;
-    for(i = 0; i < 10; i++)
+   for(i = 0; i < 10; i++)
     {
 	sprintf(buf, "/mdscachex%d", i);
 	sem_unlink(buf);
     }
-}
+	if(!cache) cache = getCache();
+ }
 
 
 #endif

@@ -235,10 +235,11 @@ bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char t
 	int socket = ((TCPAddress *)addr)->socket;
 
 	if(socket == -1) //Not connected yet
-		connectSender(addr);
-	if(socket == -1) //Still unsuccesful
-		return false;
-
+	{
+		if(!connectSender(addr))
+			return false; //Still unsuccesful
+		socket = ((TCPAddress *)addr)->socket;
+	}
 	int convLen = fromNative(bufLen);
 	send(socket, &type, 1, 0);
 	send(socket, &thisIdx, 1, 0);

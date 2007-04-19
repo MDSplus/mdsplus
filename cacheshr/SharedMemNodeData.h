@@ -366,22 +366,6 @@ class SharedMemNodeData
 	}
 
 
-	int getSerializedSize()
-	{
-		if(!segmented)
-			return 2 + 1 + 1 + 4 + dataSize;
-		else
-		{
-			int totSize = 2 + 1 + 4  + 4 * numSegments;
-			for(int i = 0; i < numSegments; i++)
-			{
-				Segment *currSegment = getSegmentAt(i);
-				totSize += currSegment->getSerializedSize();
-			}
-			return totSize;
-		}
-	}
-
 
 
 	void free(FreeSpaceManager *fsm)
@@ -441,6 +425,22 @@ class SharedMemNodeData
 			getData(&currPtr, &dataSize);
 			*(int *)&serialized[8] = dataSize;
 			memcpy(&serialized[12], currPtr, dataSize);
+		}
+	}
+
+	int getSerializedSize()
+	{
+		if(!segmented)
+			return 12 + dataSize;
+		else
+		{
+			int totSize = 2 + 1 + 4  + 4 * numSegments;
+			for(int i = 0; i < numSegments; i++)
+			{
+				Segment *currSegment = getSegmentAt(i);
+				totSize += currSegment->getSerializedSize();
+			}
+			return totSize;
 		}
 	}
 
