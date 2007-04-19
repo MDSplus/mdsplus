@@ -106,14 +106,15 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 void CoherencyManager::handleRequestDataMsg(int nid, ChannelAddress *senderAddr, int senderIdx)
 {
 
-	char *serialized;
 	int serializedSize;
 	
 	serializedSize = dataManager->getSerializedSize(nid);
-	serialized = new char[serializedSize];
-	dataManager->getSerialized(nid, serialized);
+	char *serialized = new char[4+serializedSize];
+	*(int *)serialized = channel->fromNative(nid);
+	dataManager->getSerialized(nid, &serialized[4]);
 	dataManager->addReader(nid, senderIdx);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
+
 	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
 	delete [] serialized;
 }
