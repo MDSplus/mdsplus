@@ -23,19 +23,9 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 		return ( _out ) ;
 	};
 	
-	private fun phaseModuleSignal(in _type, in _ts, in _te, in _tr, in _amp, in _freq, in _fase)
+	private fun phaseModuleSignal(in _type, in _ts, in _te, in _tr, in _amp, in _freq, in _fase, in _vmeFreq)
 	{
-		
-		_segno = 1.0;
-		
-		_fase = mod( _fase, 2 * $pi);
-		
-		if( _freq < 0 )
-		{
-		   _freq = -_freq;
-		   _segno = 0.0;
-		}
-		
+
 		write(*, _ts, _te, _tr, _amp, _freq, _fase);
 		
 		if(  _ts + _tr > _te ) _tr = _te - _ts;
@@ -48,36 +38,10 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 		}
 		else
 		{
-			_x = [_ts];
-			_y = [_fase];
+			_x = [ _ts : _te : 1./_vmeFreq ];
+			_y = mod( 2 * $pi * _freq * _x + _fase, 2 * $pi ) + ( _freq > 0 ? -1 : 1 ) * $pi; 
+			_out = if_error( make_signal( _y , , _x ), _zeroSig );
 			
-			if(_freq != 0.0)
-			{
-				_period = 1./_freq;
-			}
-			else
-			{
-				_out = if_error( make_signal( [0, 0, _fase, _fase, 0, 0] , , [fs_float(\RFX::T_START_PR), _ts, _ts, _te, _te, fs_float(\RFX::T_STOP_PR)] ), _zeroSig );
-				return (_out);
-			}
-			
-			_t = _ts + _period;
-	
-			while(_t < _te)
-			{
-				_x = [ _x, _t , _t  ];
-				_y = [ _y,  _segno * 2 * $pi, (1 - _segno) * 2 * $pi];
-				_t += _period;
-			}
-			_t -= _period;
-			_x = [ _x, _te];
-			
-			if( _segno )
-				_y = [ _y, 2 * $pi * ((_te - _t)/( _period )), 0];
-			else
-				_y = [ _y, - 2 * $pi * ((_te - _t)/( _period )) + 2*$pi, 0];
-			
-			_out = if_error( make_signal( _y , , _x ), _zeroSig );						
 		}
 		
 		return ( _out );
@@ -98,7 +62,6 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 			_path = "\\MHD_BC::CONTROL";
 		break;
 	}
-
 
 	_mode = execute(_path//":TRIG1_CONTR");
 
@@ -167,6 +130,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 	{
 		_zeroSig = make_signal([0.,0],,[-1., 1.]);
 
+		_vmeFreq = if_error( execute("\\"//_system//"::VME_FREQUENCY"), 0);
 
 	    _modeName = RfxControlNameToIdx( _mode );
 		if( _modeName ==  "ROT.PERTURBATION" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VS+ROT.PERT.(FEEDBACK)" || _modeName == "VS+ROT.PERT.(FEEDFORW)" || _modeName ==  "Closer VS + Rot.Pert.")
@@ -181,7 +145,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR102_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR103_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                     if(size(data( _out )) == 1) _out =  _zeroSig;  
 				    return( _out );
@@ -194,7 +158,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR109_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR110_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 								
                     if(size(data( _out )) == 1) _out =  _zeroSig;  
 				    return( _out );
@@ -207,7 +171,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR116_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR117_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                     if(size(data( _out )) == 1) _out =  _zeroSig;  
   				    return( _out );
@@ -221,7 +185,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR123_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR124_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -235,7 +199,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR264_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR265_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -249,7 +213,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR274_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR275_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -263,7 +227,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR284_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR285_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
@@ -277,7 +241,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 					_freq = if_error( execute(_path//".PARAMETERS:PAR294_VAL"), 0);
 					_fase = if_error( execute(_path//".PARAMETERS:PAR295_VAL"), 0);
 
-					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase);
+					_out = phaseModuleSignal(_type, _ts, _te, _tr, _amp, _freq, _fase, _vmeFreq);
 
                    if(size(data( _out )) == 1) _out =  _zeroSig;  
 				   return( _out );
