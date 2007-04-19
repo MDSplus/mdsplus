@@ -3,6 +3,7 @@
 
 #include "SharedDataManager.h"
 #include "TreeWriter.h"
+#include "Coherencymanager.h"
 
 #define FLUSH_PUT_RECORD 1
 #define FLUSH_BEGIN_SEGMENT 2
@@ -22,7 +23,7 @@ class Cache
 	SharedDataManager dataManager;
 	TreeWriter treeWriter;
 	NidChain *chainHead, *chainTail;
-
+	CoherencyManager *cManager;
 	bool inQueue(int nid, int idx, int mode);
 
 public:

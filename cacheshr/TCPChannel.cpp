@@ -78,17 +78,17 @@ void TCPServer::run(void *arg)
 {
 	while(true)
 	{
-		int socket = accept(socket, NULL, NULL);
+		int newSocket = accept(socket, NULL, NULL);
 #ifdef HAVE_WINDOWS_H
 		if(socket == INVALID_SOCKET)
 #else
-		if(socket == -1)
+		if(newSocket == -1)
 #endif
 		{   
 			printf("Cannot accept socket \n");
 			return;
 		}
-		TCPHandler *tcpHandler = new TCPHandler(channel, socket);
+		TCPHandler *tcpHandler = new TCPHandler(channel, newSocket);
 		thread.start((Runnable *)tcpHandler, 0);
 	}
 }

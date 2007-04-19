@@ -159,6 +159,7 @@ int Cache::putRecord(int nid, char dataType, int numSamples, char *data, int siz
 				chainHead = newNid;
 		}
 	}
+	cManager->checkWrite(nid);
 	return 1;
 }
 
@@ -166,6 +167,7 @@ int Cache::putRecord(int nid, char dataType, int numSamples, char *data, int siz
 
 int Cache::getRecord(int nid, char *dataType, int *numSamples, char **data, int *size)
 {
+	cManager->checkRead(nid);
 	return dataManager.getData(nid, dataType, numSamples, data, size);
 }
 
@@ -327,7 +329,7 @@ int Cache::clearCallback(int nid, char *callbackDescr)
 
 void Cache::startServer()
 {
-	CoherencyManager *cManager = new CoherencyManager(&dataManager);
+	cManager = new CoherencyManager(&dataManager);
 	cManager->startServer();
 }
 
