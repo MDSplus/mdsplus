@@ -113,7 +113,8 @@ void CoherencyManager::handleRequestDataMsg(int nid, ChannelAddress *senderAddr,
 	serialized = new char[serializedSize];
 	dataManager->getSerialized(nid, serialized);
 	dataManager->addReader(nid, senderIdx);
-	channel->sendMessage(senderAddr, serialized, serializedSize, DATA_TYPE);
+	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
+	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
 	delete [] serialized;
 }
 
@@ -143,7 +144,8 @@ void CoherencyManager::handleOwnershipMsg(int nid, int timestamp, char ownerIdx,
 	if(isWarm)
 	{
 		int msgNid = channel->fromNative(nid);
-		channel->sendMessage(addr, (char *)&msgNid, 4, OWNERSHIP_WARM_ACK_TYPE);
+		ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
+		channel->sendMessage(retAddr, (char *)&msgNid, 4, OWNERSHIP_WARM_ACK_TYPE);
 	}
 	else
 		dataManager->setDirty(nid, true);
@@ -183,7 +185,8 @@ void CoherencyManager::handleOwnershipWarmMessage(int nid, ChannelAddress *sende
 	int serializedSize = dataManager->getSerializedSize(nid);
 	char *serialized = new char[serializedSize];
 	dataManager->getSerialized(nid, serialized);
-	channel->sendMessage(senderAddr, serialized, serializedSize, DATA_TYPE);
+	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
+	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
 	delete[] serialized;
 }
 
