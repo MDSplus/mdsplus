@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#define DEBUG
 
 CoherencyManager::CoherencyManager(SharedDataManager *dataManager)
 {
@@ -108,6 +108,9 @@ void CoherencyManager::handleRequestDataMsg(int nid, ChannelAddress *senderAddr,
 
 	int serializedSize;
 	
+#ifdef DEBUG
+	printf("DATA REQUEST message. nid: %d\n", nid);
+#endif
 	serializedSize = dataManager->getSerializedSize(nid);
 	char *serialized = new char[4+serializedSize];
 	*(int *)serialized = channel->fromNative(nid);
@@ -131,10 +134,17 @@ void CoherencyManager::handleOwnershipMsg(int nid, int timestamp, char ownerIdx,
 	int prevTimestamp;
 	dataManager->getCoherencyInfo(nid, isOwner, prevOwnerIdx, isWarm, isDirty, prevTimestamp);
 
+#ifdef DEBUG
+	printf("OWNERSHIP message. nid: %d, timestamp: %d ownerIdx: %d\n", nid, timestamp, ownerIdx);
+#endif
+
 	if((timestamp < prevTimestamp )|| //It is an outdated message
 		((timestamp == prevTimestamp) && ownerIdx < prevOwnerIdx)) //It is a concurrent write, but the sender has lowe priority
 
 	{
+#ifdef DEBUG
+	printf("Outdated ownership message\n");
+#endif
 		return;
 	}
 
@@ -156,6 +166,10 @@ void CoherencyManager::handleOwnershipMsg(int nid, int timestamp, char ownerIdx,
 void CoherencyManager::handleDataMsg(int nid, char *serializedData, int dataLen, 
 									 ChannelAddress *senderAddr, int senderIdx)
 {
+#ifdef DEBUG
+	printf("DATA message. nid: %d dataLen: %d\n", nid, dataLen);
+#endif
+
 	dataManager->setSerializedData(nid, serializedData, dataLen);
 	Event *dataEvent = dataManager->getDataEvent(nid);
 	if(dataEvent)
@@ -169,6 +183,9 @@ void CoherencyManager::handleDataMsg(int nid, char *serializedData, int dataLen,
 
 void CoherencyManager::handleDirtyMsg(int nid, ChannelAddress *senderAddr, int senderIdx)
 {
+#ifdef DEBUG
+	printf("DIRTY message. nid: %d \n", nid);
+#endif
 	dataManager->setDirty(nid, true);
 }
 
@@ -179,6 +196,10 @@ void CoherencyManager::handleOwnershipWarmMessage(int nid, ChannelAddress *sende
 	bool isWarm;
 	bool isDirty;
 	int timestamp;
+
+#ifdef DEBUG
+	printf("WARM OWNERSHIP message. nid: %d\n", nid);
+#endif
 
 	dataManager->getCoherencyInfo(nid, isOwner, ownerIdx, isWarm, isDirty, timestamp);
 	if(!isOwner) return;

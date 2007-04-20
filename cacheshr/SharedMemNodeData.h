@@ -254,6 +254,7 @@ class SharedMemNodeData
 	{
 		this->ownerIdx = ownerIdx;
 		this->ownerTimestamp = timestamp;
+		this->owner = false;
 	}
 
 	void setCoherencyInfo(bool isOwner, int ownerIdx, bool isWarm, int timestamp,
