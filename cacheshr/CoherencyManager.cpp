@@ -115,7 +115,7 @@ void CoherencyManager::handleRequestDataMsg(int nid, ChannelAddress *senderAddr,
 	dataManager->addReader(nid, senderIdx);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
 
-	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
+	channel->sendMessage(retAddr, serialized, serializedSize + 4, DATA_TYPE);
 	delete [] serialized;
 }
 

@@ -370,7 +370,6 @@ class SharedMemNodeData
 
 
 
-
 	void free(FreeSpaceManager *fsm)
 	{
 		Segment **segments = new Segment *[numSegments];
