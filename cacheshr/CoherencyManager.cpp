@@ -205,8 +205,9 @@ void CoherencyManager::handleOwnershipWarmMessage(int nid, ChannelAddress *sende
 	if(!isOwner) return;
 	dataManager->addWarm(nid, senderIdx);
 	int serializedSize = dataManager->getSerializedSize(nid);
-	char *serialized = new char[serializedSize];
-	dataManager->getSerialized(nid, serialized);
+	char *serialized = new char[4+serializedSize];
+	*(int *)serialized = channel->fromNative(nid);
+	dataManager->getSerialized(nid, &serialized[4]);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
 	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
 	delete[] serialized;
