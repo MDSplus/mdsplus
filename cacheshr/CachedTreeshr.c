@@ -450,13 +450,13 @@ EXPORT int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeT
 	if(descriptor_ptr->class == CLASS_XD && ((struct descriptor_xd *)descriptor_ptr)->l_length == 0)
 		return putRecord(nid, 0, 0, 0, 0, writeThrough, cache);
 
-	if(descriptor_ptr->class = CLASS_S) //Handle scalars
+	if(descriptor_ptr->class == CLASS_S) //Handle scalars
 	{
 	    status = putRecord(nid, descriptor_ptr->dtype, 1, descriptor_ptr->pointer, 
 		descriptor_ptr->length, writeThrough, cache);
 	    return status;
 	}
-	if(descriptor_ptr->class = CLASS_A) //Handle arrays
+	if(descriptor_ptr->class == CLASS_A) //Handle arrays
 	{
 	    arrPtr = (struct descriptor_a *)descriptor_ptr;
 	    status = putRecord(nid, arrPtr->dtype, arrPtr->arsize/arrPtr->length, arrPtr->pointer,
@@ -517,7 +517,7 @@ EXPORT int RTreeGetRecord(int nid, struct descriptor_xd *dsc_ptr)
 
 
 	status = getRecord(nid, &dataType, &numSamples, &data, &dataLen, cache);
-	if(!(status & 1))
+	if(!(status & 1) || dataLen == 0)
 	{
 		if(treeGetRecord)
 		{
