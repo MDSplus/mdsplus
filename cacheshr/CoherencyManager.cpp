@@ -267,7 +267,7 @@ void CoherencyManager::checkWrite(int nid)
 		{
 			channel->sendMessage(addresses[i], outBuf, 2 * sizeof(int)+1, OWNERSHIP_TYPE);
 		}
-		dataManager->setCoherencyInfo(nid, true, -1, false, timestamp, NULL, 0, NULL, 0);
+		dataManager->setCoherencyInfo(nid, true, -1, isWarm, timestamp, NULL, 0, NULL, 0);
 	}
 		
 	else if(numWarm > 0 || numReader > 0) //It is owner, send last data slot to all warm nodes and dirty message to all current readers
