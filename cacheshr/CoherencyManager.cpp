@@ -277,7 +277,7 @@ void CoherencyManager::checkWrite(int nid)
 		{
 			int serializedSize = dataManager->getSerializedSize(nid);
 			char *serialized = new char[serializedSize+4];
-			*(int *)serialized + channel->fromNative(nid);
+			*(int *)serialized = channel->fromNative(nid);
 			dataManager->getSerialized(nid, &serialized[4]);
 			
 			for(int i = 0; i < numWarm; i++)
