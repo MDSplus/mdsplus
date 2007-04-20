@@ -289,7 +289,10 @@ class SharedMemNodeData
 	Event *getDataEvent()
 	{
 		if(!eventActive)
+		{
 			dataEvent.initialize();
+			eventActive = true;
+		}
 		return &dataEvent;
 	}
 
