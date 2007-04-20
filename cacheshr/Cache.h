@@ -3,7 +3,7 @@
 
 #include "SharedDataManager.h"
 #include "TreeWriter.h"
-#include "Coherencymanager.h"
+#include "CoherencyManager.h"
 
 #define FLUSH_PUT_RECORD 1
 #define FLUSH_BEGIN_SEGMENT 2

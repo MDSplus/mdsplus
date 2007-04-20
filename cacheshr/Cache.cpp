@@ -1,5 +1,4 @@
 #include "Cache.h"
-#include "CoherencyManager.h"
 
 extern "C" char *getCache();
 extern "C" int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
