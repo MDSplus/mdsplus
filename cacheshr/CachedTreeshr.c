@@ -42,7 +42,7 @@ extern int appendSegmentData(int nid, int *bounds, int boundsSize, char *data,
 										 int dataSize, int idx, int startIdx, char *cachePtr);
 extern int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, char *timestamp, char *cachePtr);
-
+extern int setWarm(int nid, int warm, char *cachePtr);
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiEvaluate();
@@ -492,6 +492,11 @@ EXPORT int RTreeClearCallback(int nid, char *callbackDescr)
 	return clearCallback(nid, callbackDescr, cache);
 }
 
+EXPORT int RTreeSetWarm(int nid, int warm)
+{
+	if(!cache) cache = getCache();
+	return setWarm(nid, warm, cache);
+}
 
 
 

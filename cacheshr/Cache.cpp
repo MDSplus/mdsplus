@@ -24,6 +24,7 @@ extern "C" int appendSegmentData(int nid, int *bounds, int boundsSize, char *dat
 										 int dataSize, int idx, int startIdx, char *cachePtr);
 extern "C" int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, char *timestamp, char *cachePtr);
+extern "C" int setWarm(int nid, int warm, char *cachePtr);
 
 static char *cache = 0;
 
@@ -122,7 +123,11 @@ int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *dat
 		idx, timestamp, startIdx);
 }
 
-
+int setWarm(int nid, int warm, char *cachePtr)
+{
+	((Cache *)cachePtr)->setWarm(nid, warm);
+	return 1;
+}
 
 ////////////////Cache Methods
 
