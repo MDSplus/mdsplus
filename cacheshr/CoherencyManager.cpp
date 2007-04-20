@@ -209,7 +209,7 @@ void CoherencyManager::handleOwnershipWarmMessage(int nid, ChannelAddress *sende
 	*(int *)serialized = channel->fromNative(nid);
 	dataManager->getSerialized(nid, &serialized[4]);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
-	channel->sendMessage(retAddr, serialized, serializedSize, DATA_TYPE);
+	channel->sendMessage(retAddr, serialized, serializedSize+4, DATA_TYPE);
 	delete[] serialized;
 }
 
@@ -276,13 +276,14 @@ void CoherencyManager::checkWrite(int nid)
 		if(numWarm > 0)
 		{
 			int serializedSize = dataManager->getSerializedSize(nid);
-			char *serialized = new char[serializedSize];
-			dataManager->getSerialized(nid, serialized);
+			char *serialized = new char[serializedSize+4];
+			*(int *)serialized + channel->fromNative(nid);
+			dataManager->getSerialized(nid, &serialized[4]);
 			
 			for(int i = 0; i < numWarm; i++)
 			{
 				ChannelAddress *currAddr = chanFactory.getAddress(warmList[i]);
-				channel->sendMessage(currAddr, serialized, serializedSize, DATA_TYPE);
+				channel->sendMessage(currAddr, serialized, serializedSize+4, DATA_TYPE);
 			}
 		}
 		for(int i = 0; i < numReader; i++)
