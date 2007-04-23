@@ -17,8 +17,13 @@ void UDPServer::run(void *arg)
 
 	while(true)
 	{
+#ifdef HAVE_WINDOWS_H
 		if((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0, 
 			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
+#else
+		if((recBytes = recvfrom(socket, (char *)recBuf, MAX_MSG_LEN, 0, 
+			(struct sockaddr *)&clientAddr, (socklen_t *)&addrSize)) < 0)
+#endif
     	{
 			printf("Error receiving UDP messages\n");
         }
@@ -82,7 +87,7 @@ bool UDPChannel::connectReceiver(ChannelAddress *address)
 #ifdef HAVE_WINDOWS_H
 	if(bind(udpSocket, (SOCKADDR *)&((IPAddress *)address)->sin, sizeof(((IPAddress *)address)->sin)) != 0)
 #else
-	if(bind(udpSocket, (struct sockaddr *)&((IPAddress *)address)->sin, sizeof((IPAddress *)address)->sin)) != 0)
+	if(bind(udpSocket, (struct sockaddr *)&((IPAddress *)address)->sin, sizeof(((IPAddress *)address)->sin)) != 0)
 #endif
 	{   
 		printf("Cannot bind socket at port %d\n", port);
