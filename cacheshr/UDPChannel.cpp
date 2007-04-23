@@ -107,10 +107,28 @@ bool UDPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char t
 	outBuf[0] = type;
 	outBuf[1] = thisIdx;
 	memcpy(&outBuf[2], buf, bufLen);
+	IPAddress *ciccio = (IPAddress *)addr;
     if(sendto(socket, outBuf, (bufLen+2 < MAX_MSG_LEN)?(bufLen + 2):MAX_MSG_LEN, 0, 
 		(struct sockaddr *)&((IPAddress *)addr)->sin, sizeof(((IPAddress *)addr)->sin))==-1)
     {
 		printf("Error sending UDP message!\n");
+#ifdef HAVE_WINDOWS_H2
+		int error = WSAGetLastError();
+		switch(error)
+		{
+			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
+			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
+			case WSAEADDRINUSE: printf("WSAEADDRINUSE\n"); break;
+			case WSAEINTR : printf("WSAEINTR\n"); break;
+			case WSAEINPROGRESS: printf("WSAEINPROGRESS\n"); break;
+			case WSAEALREADY: printf("WSAEALREADY\n"); break;
+			case WSAEADDRNOTAVAIL: printf("WSAEADDRNOTAVAIL\n"); break;
+			case WSAEAFNOSUPPORT: printf("WSAEAFNOSUPPORT\n"); break;
+			case WSAECONNREFUSED : printf("WSAECONNREFUSED\n"); break;
+			case WSAEFAULT : printf("WSAEFAULT\n"); break;
+			default: printf("BOH\n");
+		}
+#endif
 		return false;
     }
 	delete [] outBuf;

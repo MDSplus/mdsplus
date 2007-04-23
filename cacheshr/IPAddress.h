@@ -34,7 +34,6 @@ class IPAddress:public ChannelAddress
 		}
 
 #endif
-		struct sockaddr_in sin;
 		memset((char *)&sin, 0, sizeof(sin));
 		sin.sin_family = AF_INET;
 		struct hostent *hp = NULL;
