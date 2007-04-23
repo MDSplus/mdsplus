@@ -27,7 +27,6 @@ public:
 class UDPChannel:public CommunicationChannel
 {
 	int udpSocket;
-	static bool initialized;
 	Thread thread;
 
 

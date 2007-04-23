@@ -1,7 +1,6 @@
 
 
 #include "TCPChannel.h"
-bool TCPChannel::initialized;
 
 
 
@@ -88,19 +87,6 @@ void TCPServer::run(void *arg)
 
 TCPChannel::TCPChannel(int idx):CommunicationChannel(idx)
 {
-#ifdef HAVE_WINDOWS_H
-
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1,1);
-
-	if(!initialized)
-	{
-		initialized = true;
-		WSAStartup(wVersionRequested,&wsaData);
-	}
-
-#endif
 }
 
 bool TCPChannel::connectSender(ChannelAddress *addr)

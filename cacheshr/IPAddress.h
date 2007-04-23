@@ -21,6 +21,19 @@ class IPAddress:public ChannelAddress
 
 	void buildAddress()
 	{
+#ifdef HAVE_WINDOWS_H
+
+		WSADATA wsaData;
+		WORD wVersionRequested;
+		wVersionRequested = MAKEWORD(1,1);
+
+		if(!initialized)
+		{
+			initialized = true;
+			WSAStartup(wVersionRequested,&wsaData);
+		}
+
+#endif
 		struct sockaddr_in sin;
 		memset((char *)&sin, 0, sizeof(sin));
 		sin.sin_family = AF_INET;
@@ -37,6 +50,7 @@ class IPAddress:public ChannelAddress
 	}
 
 public:	
+	static bool initialized;
 	int socket;
 	int port;
 	struct sockaddr_in sin;

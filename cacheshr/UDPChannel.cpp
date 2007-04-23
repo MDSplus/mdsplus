@@ -1,5 +1,5 @@
 #include "UDPChannel.h"
-bool UDPChannel::initialized;
+bool IPAddress::initialized;
 
 
 void UDPServer::run(void *arg)
@@ -39,19 +39,6 @@ void UDPServer::run(void *arg)
 
 UDPChannel::UDPChannel(int idx):CommunicationChannel(idx)
 {
-#ifdef HAVE_WINDOWS_H
-
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1,1);
-
-	if(!initialized)
-	{
-		initialized = true;
-		WSAStartup(wVersionRequested,&wsaData);
-	}
-
-#endif
 }
 
 
@@ -73,6 +60,11 @@ bool UDPChannel::connectSender(ChannelAddress *addr)
 
 bool UDPChannel::connectReceiver(ChannelAddress *address)
 {
+    struct sockaddr_in serverAddr;
+//    serverAddr.sin_len = sizeof(serverAddr);
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(((IPAddress *)address)->port);
+    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	char *ipAddress = ((IPAddress *)address)->ipAddress;
 	int port = ((IPAddress *)address)->port;
 
@@ -85,9 +77,9 @@ bool UDPChannel::connectReceiver(ChannelAddress *address)
 	}
 
 #ifdef HAVE_WINDOWS_H
-	if(bind(udpSocket, (SOCKADDR *)&((IPAddress *)address)->sin, sizeof(((IPAddress *)address)->sin)) != 0)
+	if(bind(udpSocket, (SOCKADDR *)&serverAddr, sizeof(((IPAddress *)address)->sin)) != 0)
 #else
-	if(bind(udpSocket, (struct sockaddr *)&((IPAddress *)address)->sin, sizeof(((IPAddress *)address)->sin)) != 0)
+	if(bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(((IPAddress *)address)->sin)) != 0)
 #endif
 	{   
 		printf("Cannot bind socket at port %d\n", port);

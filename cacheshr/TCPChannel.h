@@ -38,7 +38,6 @@ public:
 class TCPChannel:public CommunicationChannel
 {
 	int tcpSocket;
-	static bool initialized;
 	Thread thread;
 
 
