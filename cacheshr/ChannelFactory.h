@@ -1,10 +1,9 @@
 #ifndef CHANNEL_FACTORY_H
 #define CHANNEL_FACTORY_H
 
-#include "CommunicationChannel.h"
 #include "TCPChannel.h"
-#include "ChannelAddress.h"
-#include "TCPAddress.h"
+#include "UDPChannel.h"
+
 
 class ChannelFactory
 {

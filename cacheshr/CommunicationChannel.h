@@ -10,17 +10,6 @@
 #define MAX_LISTENERS 64
 #define MAX_TYPES 8
 
-/*
-struct HandlerArgs
-{
-	ChannelAddress *addr;
-	char *buf;
-	int bufLen;
-	char type;
-	int senderIdx;
-	ChannelListener *chanListener;
-};
-*/
 
 class CommunicationChannel
 {
@@ -39,10 +28,8 @@ public:
 	virtual bool connectSender(ChannelAddress *addr) = 0;
 	virtual bool connectReceiver(ChannelAddress *addr) = 0;
 	virtual bool sendMessage(ChannelAddress *addr, char *buf, int bufLen, char type) = 0;
-	virtual char *receiveMessage(ChannelAddress *addr, int *retLen, char *retType) = 0;
 	void attachListener(ChannelListener *listener, char type);
 	virtual unsigned int fromNative(int n) = 0;
 	virtual int toNative(unsigned int l) = 0;
-	void run(void *arg);
 };
 #endif

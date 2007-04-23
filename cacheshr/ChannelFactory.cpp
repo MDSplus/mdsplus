@@ -35,7 +35,7 @@ ChannelFactory::ChannelFactory()
 		{
 			char currIp[512];
 			sscanf(line, "%s", currIp);
-			currAddr = addresses[addrIdx++] = new TCPAddress(currIp, TCP_PORT);
+			currAddr = addresses[addrIdx++] = new IPAddress(currIp, TCP_PORT);
 			if(strcmp(thisIp, currIp))
 			{
 				otherAddresses[otherAddrIdx++] = currAddr;
@@ -80,6 +80,7 @@ ChannelAddress **ChannelFactory::getOtherAddresses(int &numAddresses)
 CommunicationChannel *ChannelFactory::getChannel()
 {
 	if(!communicationEnabled) return 0;
-	return new TCPChannel(thisIdx);
+//	return new TCPChannel(thisIdx);
+	return new UDPChannel(thisIdx);
 }
 

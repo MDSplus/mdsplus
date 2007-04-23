@@ -1,12 +1,3 @@
-#ifdef HAVE_WINDOWS_H
-#include <winsock2.h>
-#include <windows.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#endif
 
 
 #include "TCPChannel.h"
@@ -37,7 +28,7 @@ void TCPHandler::run(void *arg)
 {
 //TCP Message protocol: type (1 byte), length (4 bytes), message (length bytes) 
 
-	TCPAddress addr;
+	IPAddress addr;
 	addr.socket = socket;
 	char senderIdx;
 	while(true)
@@ -114,51 +105,15 @@ TCPChannel::TCPChannel(int idx):CommunicationChannel(idx)
 
 bool TCPChannel::connectSender(ChannelAddress *addr)
 {
-	TCPAddress *tcpAddr = (TCPAddress *)addr;
+	IPAddress *tcpAddr = (IPAddress *)addr;
 	tcpAddr->socket= socket(AF_INET, SOCK_STREAM, 0);
 #ifdef HAVE_WINDOWS_H
 	if (tcpAddr->socket == INVALID_SOCKET) return false;
 #else
 	if (tcpAddr->socket == -1) return false;
 #endif
-/*	struct hostent *hp = NULL;
-	hp = gethostbyname(tcpAddr->ipAddress);
-	if (hp == NULL)
-	{
-		int addr = inet_addr(tcpAddr->ipAddress);
-		if (addr != 0xffffffff)
-    		hp = gethostbyaddr((const char *) &addr, (int) sizeof(addr), AF_INET);
-	}
-	
-	
-	struct sockaddr_in sin;
-	sin.sin_port = tcpAddr->port;
-	sin.sin_family = AF_INET;
-
-	int intAddr = inet_addr(tcpAddr->ipAddress);
-	memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
-*/
-
-	struct sockaddr_in sin;
-	memset((char *)&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-	struct hostent *hp = NULL;
-	hp = gethostbyname(tcpAddr->ipAddress);
-	if (hp == NULL)
-	{
-		int addr = inet_addr(tcpAddr->ipAddress);
-		if (addr != 0xffffffff)
-    		hp = gethostbyaddr((const char *) &addr, (int) sizeof(addr), AF_INET);
-	}
-	memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
-    //sin.sin_addr.s_addr = inet_addr( tcpAddr->ipAddress );
-    sin.sin_port = htons( tcpAddr->port );
-
-
-
-
 	printf("CONNETING TO %s port %d\n", tcpAddr->ipAddress, tcpAddr->port);
-	if(connect(tcpAddr->socket, (struct sockaddr *)&sin, sizeof(sin)))
+	if(connect(tcpAddr->socket, (struct sockaddr *)&tcpAddr->sin, sizeof(tcpAddr->sin)))
 	{
 #ifdef HAVE_WINDOWS_H
 		int error = WSAGetLastError();
@@ -191,8 +146,8 @@ bool TCPChannel::connectSender(ChannelAddress *addr)
 
 bool TCPChannel::connectReceiver(ChannelAddress *address)
 {
-	char *ipAddress = ((TCPAddress *)address)->ipAddress;
-	int port = ((TCPAddress *)address)->port;
+	char *ipAddress = ((IPAddress *)address)->ipAddress;
+	int port = ((IPAddress *)address)->port;
 
 
 	int addrSize = sizeof(struct sockaddr_in), retAddrSize = 0;
@@ -207,7 +162,7 @@ bool TCPChannel::connectReceiver(ChannelAddress *address)
 	inAddress.sin_family = AF_INET;
 	inAddress.sin_port = htons(port);
 #ifdef HAVE_WINDOWS_H
-	inAddress.sin_addr.s_addr = ADDR_ANY;
+	inAddress.sin_addr.s_addr = INADDR_ANY;
 	if(bind(tcpSocket, (SOCKADDR *)&inAddress, addrSize) != 0)
 #else
 	inAddress.sin_addr.s_addr = INADDR_ANY;
@@ -232,13 +187,13 @@ bool TCPChannel::connectReceiver(ChannelAddress *address)
 
 bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char type)
 {
-	int socket = ((TCPAddress *)addr)->socket;
+	int socket = ((IPAddress *)addr)->socket;
 
 	if(socket == -1) //Not connected yet
 	{
 		if(!connectSender(addr))
 			return false; //Still unsuccesful
-		socket = ((TCPAddress *)addr)->socket;
+		socket = ((IPAddress *)addr)->socket;
 	}
 	int convLen = fromNative(bufLen);
 	send(socket, &type, 1, 0);
@@ -246,25 +201,6 @@ bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char t
 	send(socket, (char *)&convLen, sizeof(int), 0); 
 	send(socket, buf, bufLen, 0);
 	return true;
-}
-
-char *TCPChannel::receiveMessage(ChannelAddress *addr, int *retLen, char *retType)
-{
-	int socket = ((TCPAddress *)addr)->socket;
-	if(readFromSocket(socket, 1, retType) == -1)
-		return 0;
-
-	unsigned int readLen;
-	if(readFromSocket(socket, sizeof(int), (char *)&readLen) == -1)
-		return 0;
-	*retLen = ntohl(readLen);
-	char *buf = new char[*retLen];
-	if(readFromSocket(socket, *retLen, buf) == -1)
-	{
-		delete [] buf;
-		return 0;
-	}
-	return buf;
 }
 
 

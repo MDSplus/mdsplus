@@ -1,31 +1,19 @@
-#ifndef TCP_CHANNEL_H
-#define TCP_CHANNEL_H
+#ifndef UDP_CHANNEL_H
+#define UDP_CHANNEL_H
 #include "CommunicationChannel.h"
 #include "IPAddress.h"
 
+#define MAX_MSG_LEN 64000
 
-class TCPServer:public Runnable
+class UDPServer:public Runnable
 {
 	CommunicationChannel *channel;
 	int socket;
+	struct sockaddr_in retAddress;
 	Thread thread;
 
 public:
-	TCPServer(CommunicationChannel *channel, int socket)
-	{
-		this->channel = channel;
-		this->socket = socket;
-	}
-	void run(void *args);
-};
-
-class TCPHandler:public Runnable
-{
-	CommunicationChannel *channel;
-	int socket;
-
-public:
-	TCPHandler(CommunicationChannel *channel, int socket)
+	UDPServer(CommunicationChannel *channel, int socket)
 	{
 		this->channel = channel;
 		this->socket = socket;
@@ -35,15 +23,16 @@ public:
 
 
 
-class TCPChannel:public CommunicationChannel
+
+class UDPChannel:public CommunicationChannel
 {
-	int tcpSocket;
+	int udpSocket;
 	static bool initialized;
 	Thread thread;
 
 
 public:
-	TCPChannel(int idx);
+	UDPChannel(int idx);
 	bool connectSender(ChannelAddress *addr);
 	bool connectReceiver(ChannelAddress *addr);
 	bool sendMessage(ChannelAddress *addr, char *buf, int bufLen, char type);

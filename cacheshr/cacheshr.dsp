@@ -141,6 +141,10 @@ SOURCE=.\Thread.cpp
 
 SOURCE=.\TreeWriter.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\UDPChannel.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -183,6 +187,10 @@ SOURCE=.\FreeSpaceManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\IPAddress.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\LockManager.h
 # End Source File
 # Begin Source File
@@ -219,10 +227,6 @@ SOURCE=.\SharedMemTree.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TCPAddress.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\TCPChannel.h
 # End Source File
 # Begin Source File
@@ -232,6 +236,10 @@ SOURCE=.\Thread.h
 # Begin Source File
 
 SOURCE=.\TreeWriter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UDPChannel.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
