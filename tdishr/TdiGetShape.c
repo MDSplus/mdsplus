@@ -42,7 +42,7 @@ struct descriptor_a		*aptr;
 		case CLASS_D :
 			break;
 		case CLASS_A :
-			nelem = (int)aptr->arsize / (int)aptr->length;
+			nelem = ((int)aptr->length >0) ? (int)aptr->arsize / (int)aptr->length : 0;
 			if (nelem < count) {
 				count = nelem;
 				cmode = j;

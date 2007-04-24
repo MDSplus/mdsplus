@@ -167,7 +167,7 @@ int	dimct, j;
 			else					*pbound = pa->m[dim];
 		}
 	}
-	else	*pbound = (int)pa->arsize / (int)pa->length;
+	else	*pbound = ((int)pa->length > 0) ? (int)pa->arsize / (int)pa->length : 0;
 	return 1;
 }
 /*--------------------------------------------------------------

@@ -68,7 +68,10 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
   unsigned int align_size;
   array_coeff *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
-  new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);
+  if ((in_dsc->dscW_length == 0) || (*length_ptr == 0))
+    new_arsize=0;
+  else
+    new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);
   dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.dscV_coeff ? sizeof(char *) + 
                                                           sizeof(int) * in_dsc->dscB_dimct : 0) +
 						 (in_dsc->aflags.dscV_bounds ? sizeof(int) * (in_dsc->dscB_dimct * 2) 

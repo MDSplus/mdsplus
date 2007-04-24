@@ -7,6 +7,6 @@
 	if (dsc_ptr->dtype == DTYPE_MISSING) count = 0;\
 	else switch (dsc_ptr->class) {\
 	default : count = 0; status = TdiINVCLADSC; break;\
-	case CLASS_A : count = (int)((struct descriptor_a *)dsc_ptr)->arsize / (int)dsc_ptr->length; break;\
+	case CLASS_A : count = ((int)dsc_ptr->length > 0) ? (int)((struct descriptor_a *)dsc_ptr)->arsize / (int)dsc_ptr->length : 0; break;\
 	case CLASS_S : case CLASS_D : count = 1; break;\
 	}
