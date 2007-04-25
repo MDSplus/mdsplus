@@ -153,8 +153,8 @@ struct	descriptor_a
 							ptr_type	*_DSCA_(a0);	\
 							unsigned int		_DSCL_(m)[dimct];	\
 							struct {			\
-								unsigned int	_DSCL_(l);	\
-								unsigned int	_DSCL_(u);	\
+								int	_DSCL_(l);	\
+								int	_DSCL_(u);	\
 							} bounds[dimct];		\
 						}
 
