@@ -666,7 +666,7 @@ static int GetInt(Widget w, int headnid, int channel, int offset, int *answer)
 static int GetEvent(int *ref_nid, unsigned int *event_mask)
 { 
   static DESCRIPTOR_NID(nid_dsc,0);
-  int i;
+  unsigned int i;
   static EMPTYXD(xd);
   static DESCRIPTOR(expression,"BYTE_UNSIGNED(DATA(EVENT_LOOKUP($)))");
   int status;

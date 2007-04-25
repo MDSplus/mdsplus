@@ -192,7 +192,7 @@ static void ResetWave(Widget w)
     if (times_xd.pointer->class == CLASS_A) 
     {
       struct descriptor_a *array = (struct descriptor_a *)times_xd.pointer;
-      count = min(count,array->arsize/sizeof(float));
+      count = min(count,((int)(array->arsize/sizeof(float))));
       time = (float *)array->pointer;
     } 
     else
@@ -241,7 +241,7 @@ static void ResetWave(Widget w)
           if (knot_x_xd.pointer->class == CLASS_A) 
           {
             struct descriptor_a *array = (struct descriptor_a *)knot_x_xd.pointer;
-            num_knots = min(num_knots,array->arsize/sizeof(float));
+            num_knots = min(num_knots,((int)(array->arsize/sizeof(float))));
             knot_x = (float *)array->pointer;
           }
           else

@@ -61,7 +61,7 @@ int FCLOSE(FILE *fd)
 
 size_t FREAD( void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-  int samples_to_read = nmemb;
+  unsigned int samples_to_read = nmemb;
   int chunk_size;
   int this_chunk=0;
 
@@ -190,7 +190,7 @@ int DMARead2(short *buffer, const char *fname, int *chan, int *samples, int *act
         printf("%d\n", idx);
 	*/
       }
-      if (idx >= length/2) {
+      if (idx >= ((int)(length/2))) {
 	/*
         printf("back sample = %d i = %d idx = %d ", sample, i, idx);
 	*/

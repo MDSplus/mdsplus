@@ -46,7 +46,7 @@ int idl___execute(struct descriptor *niddsc, InExecuteStruct *setup)
   if (idl_initialized == 0) {
     return status;
   }
-  for (i=0;i<sizeof(initialize)/sizeof(initialize[0]);i++) (*execute)(initialize[i]);
+  for (i=0;i<((int)(sizeof(initialize)/sizeof(initialize[0])));i++) (*execute)(initialize[i]);
 
   for (cmds = setup->commands; status && (cmd = GetNextCmd(&cmds));)
     status = (*execute)(cmd) == 0;

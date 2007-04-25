@@ -257,7 +257,7 @@ static int GetEvent(char *name, EventMask *mask)
 int mit_decoder__get_event(int *ref_nid, unsigned int *event_mask)
 { 
   static DESCRIPTOR_NID(nid_dsc,0);
-  int i;
+  unsigned int i;
   static EMPTYXD(xd);
   static DESCRIPTOR(expression,"BYTE_UNSIGNED(DATA(EVENT_LOOKUP($)))");
   int status;

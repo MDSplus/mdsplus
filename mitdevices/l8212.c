@@ -433,7 +433,7 @@ static int L8212_SETUP(struct descriptor *niddsc,  Widget parent, int chans)
   Widget dbox;
   static String uids[] = {"L8212.uid","L8212_HEADERS.uid"};
   static int nid;
-  int i;
+  unsigned int i;
   static NCI_ITM   nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0}};
   static char *clock_vals_slow[] = {".2", "1.", "2.","5.","10.","20.","40.","0."};
   static char *clock_strings_slow[] = {" 200 Hz"," 1 KHz"," 2 KHz"," 5 KHz"," 10 KHz"," 20 KHz"," 40 KHz"," External"};
