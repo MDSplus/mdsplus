@@ -305,7 +305,7 @@ Do this in runs.
   /******************************
   Must have enough room to store.
   ******************************/
-    if (*bit_ptr + xe * ye + xn * yn > limit)
+    if ((_int64u)(*bit_ptr + xe * ye + xn * yn) > limit)
       return LibSTRTRU;
     header.n = X_AND_Y(xn - 1,yn);
     header.e = X_AND_Y(xe,ye - 1);

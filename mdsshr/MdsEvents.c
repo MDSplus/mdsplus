@@ -1439,7 +1439,7 @@ STATIC_ROUTINE int getRemoteId(int id, int ofs)
 
 STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers, int *use_local)
 {
-    int i, j;
+    unsigned int i, j;
     char *envname = getEnvironmentVar(env_var);
     char curr_name[256];
     if(!envname || !*envname)
@@ -1811,7 +1811,7 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
 int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
   int status = 1;
-  int i, j, use_local;    
+  unsigned int i, j, use_local;    
   int name_already_in_use;
   char *eventnam;
   *eventid = -1;
@@ -2103,14 +2103,15 @@ void RemoveAllDeadQueues() {
 int MDSEvent(char *evname_in, int data_len, char *data)
 {
   int i, j, name_idx, curr_id, use_local;
+  unsigned int u;
   char *evname;
   int status = 1;
   initializeLocalRemote(0, &use_local);
   evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
-  for (i=0,j=0;i<strlen(evname);i++)
+  for (u=0,j=0;u<strlen(evname);u++)
   {
-     if (evname[i] != 32)
-       evname[j++]=toupper(evname[i]);
+     if (evname[u] != 32)
+       evname[j++]=toupper(evname[u]);
   }
   evname[j]=0;
   if(num_send_servers > 0)

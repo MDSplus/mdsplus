@@ -62,7 +62,7 @@ union __bswap { char   b[8];
 #define swap(dtype,ptr,ans) \
 { char *p = ptr;\
   union __bswap bswap;\
-  int __i;\
+  unsigned int __i;\
   for (__i=0;__i<sizeof(dtype);__i++) bswap.b[sizeof(dtype)-__i-1] = p[__i];\
   ans = bswap.dtype##_;\
 }
@@ -72,7 +72,7 @@ union __bswap { char   b[8];
 #define swap(dtype,ptr,ans) \
 { char *p = ptr;\
   union __bswap bswap;\
-  int __i;\
+  unsigned int __i;\
   for (__i=0;__i<sizeof(dtype);__i++) bswap.b[__i] = p[__i];\
   ans = bswap.dtype##_;\
 }
@@ -322,7 +322,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
             }
           }
 	  po->pointer = (char *) po + bytes_out;
-          for (i=0,pdo=(struct descriptor **)po->pointer;i<(int)num_dsc;i++)
+          for (i=0,pdo=(struct descriptor **)po->pointer;i<num_dsc;i++)
             pdo[i] = (struct descriptor *)*(int *)&in_ptr[bytes_in];
 	  if (pi->aflags.coeff)
 	  {

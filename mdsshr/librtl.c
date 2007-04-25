@@ -2181,7 +2181,7 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx,
 		  lctx->env_strs = (char **)malloc(num*sizeof(char *));
 		  for (ptr=env,i=0; i<num; i++) {
 			  char *cptr;
-			  int len = ((cptr= (char *)index(ptr, ';'))==0) ? strlen(ptr) : cptr-ptr; 
+			  int len = ((cptr= (char *)index(ptr, ';'))==(char *)0) ? (int)strlen(ptr) : cptr-ptr; 
 			  lctx->env_strs[i] = strncpy(malloc(len+1),ptr,len);
 			  lctx->env_strs[i][len] = '\0';
 			  ptr=cptr+1;

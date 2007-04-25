@@ -136,7 +136,7 @@ void MdsShowVM(int full)
   {
     for (n=VM; n; n=n->next)
     {
-      int i;
+      unsigned int i;
       char *p = malloc(n->len+1);
       for (i=0;i<n->len;i++)
       p[i] = (n->vm[i] < 32 || n->vm[i] > 122) ? '.' : n->vm[i];

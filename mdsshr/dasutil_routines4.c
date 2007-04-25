@@ -52,7 +52,7 @@ int   dasmsg(			/* Return: status from user		*/
    {
     char  txt[240];
     char  text[33];
-    int   i;
+    unsigned int   i;
     va_list  ap;		/* argument ptr				*/
 /*    if (!nerr)
 /*#ifdef __ERRNO_MAX
@@ -118,7 +118,7 @@ char  *ptr;
     else
         k = strlen(p);
 
-    if (k >= (sizeof(name)-1))
+    if (k >= (int)(sizeof(name)-1))
         k = sizeof(name) - 1;
     strncpy(name,p,k);
     return;
