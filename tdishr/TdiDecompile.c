@@ -101,7 +101,7 @@ char			**item_ptr_ptr,
 struct descriptor_d	*out_ptr)
 {
 array_bounds_desc *a_ptr = (array_bounds_desc *)in_ptr;
-int	n = a_ptr->aflags.coeff ? a_ptr->m[level] : (int)a_ptr->arsize / max(1,(int)a_ptr->length);
+int	n = a_ptr->aflags.coeff ? a_ptr->m[level] : (int)a_ptr->arsize / max((unsigned int)1,a_ptr->length);
 int	j, status;
 
 	status = StrAppend(out_ptr, &LEFT_BRACKET);

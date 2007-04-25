@@ -79,7 +79,7 @@ STATIC_ROUTINE int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *
       for (j = 3; j < ndesc; ++j) arglist[j] = (int *)pmethod->arguments[j-3];
 	  arglist[ndesc] = MdsEND_ARG;
       if (status & 1) {
-	    status = LibCallg(arglist, TreeDoMethod);
+	    status = (int)LibCallg(arglist, TreeDoMethod);
 	    status = TdiPutLong(&status, out_ptr);
       }
       StrFree1Dx(&method_d);

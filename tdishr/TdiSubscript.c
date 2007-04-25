@@ -237,7 +237,7 @@ struct TdiCatStruct		cats[2];
 		Must avoid reading beyond end of vector.
 		******************************************************/
 		for (j = 0; ++j < highest;) {
-			if (++count[j] < arr.m[j]) {
+			if (++count[j] < ((int)(arr.m[j]))) {
 				pin += stride[j] * (*(px[j]+count[j]) - *(px[j]+count[j]-1));
 				goto inner;
 			}

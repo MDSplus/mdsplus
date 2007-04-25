@@ -94,7 +94,7 @@ int	virt = (sizeof(struct descriptor_xd)*3 + sizeof(int *))*narg + sizeof(struct
 			else {
 				n++;
 				if (j == 0) arr.m[0] = (*pnelem)[j];
-				else if (arr.m[0] != (*pnelem)[j]) goto simple;
+				else if (((int)(arr.m[0])) != (*pnelem)[j]) goto simple;
 			}
 		}
 		arr.dimct = (unsigned char)(mind + 1);
