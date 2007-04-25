@@ -955,7 +955,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
     }
     if ((*ctx > 0) && (*ctx <= info_ptr->header->tags))
     {
-      int i;
+      unsigned int i;
       char *name = (char *) (info_ptr->tag_info + *ctx - 1)->name;
       for (i=0;i<sizeof(TAG_NAME) && name[i] != ' ';i++);
       answer = strncpy(malloc(i+1),name,i);
@@ -1083,7 +1083,7 @@ struct tag_search { TAG_NAME   tag;
 int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
 
 {
-  int len = min(taglen,sizeof(TAG_NAME));
+  int len = min(taglen,(short)sizeof(TAG_NAME));
   int i;
   int *idx;
   int status;

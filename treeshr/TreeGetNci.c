@@ -75,7 +75,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   int       count = 0;
   NID      *out_nids;
   NID      *end_nids;
-  unsigned int version=0;
+  int      version=0;
   NODE     *saved_node;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
@@ -360,7 +360,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 			  part[0] = 0;
 			  for (; parent_of(node); node = parent_of(node))
 			  {
-				  int i;
+				  unsigned int i;
 				  part[0] = TreeIsChild(node) ? '.' : ':';
 				  for (i=0;i<sizeof(NODE_NAME) && node->name[i] != ' ';i++);
 				  strncpy(&part[1],node->name,i);
@@ -410,7 +410,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       found_it:
 				  for (ancestor = node; parent_of(ancestor) && (default_node != ancestor); ancestor = parent_of(ancestor))
 				  {
-					  int i;
+					  unsigned int i;
 					  part[0] = TreeIsChild(ancestor) ? '.' : ':';
 					  for (i=0;i<sizeof(NODE_NAME) && ancestor->name[i] != ' ';i++);
 					  strncpy(&part[1],ancestor->name,i);
@@ -575,7 +575,7 @@ static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
 		}
 		else
 		{
-			int i;
+			unsigned int i;
 			temp = part;
 			part = string;
 			string = temp;
@@ -690,7 +690,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	    status = OpenNciR(info);
 	  if (status & 1) {
 	    char nci_bytes[42];
-	    int n_version=0;
+	    unsigned int n_version=0;
 	    _int64 viewDate;
 	    int deleted=1;
 	    while (status & 1 && deleted) {

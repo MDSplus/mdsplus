@@ -410,7 +410,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr, NCI *old_nci_ptr)
 {
   int       status = TreeNORMAL;
-  int       bytes_to_put = data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
+  unsigned int       bytes_to_put = data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
   int       blen = bytes_to_put + (bytes_to_put + DATAF_C_MAX_RECORD_SIZE + 1)/(DATAF_C_MAX_RECORD_SIZE + 2)*sizeof(RECORD_HEADER);
   static    int nonvms_compatible=-1;
   char      *buffer;
@@ -552,7 +552,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr)
 {
   int       status = TreeNORMAL;
-  int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
+  unsigned int       bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
   memset(&info->data_file->record_header->rfa,0,sizeof(RFA));
   while (bytes_to_put && (status & 1))

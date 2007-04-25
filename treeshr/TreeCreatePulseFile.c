@@ -290,7 +290,7 @@ STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it)
   {
     off_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
     int dst_fd = MDS_IO_OPEN(dst,O_RDWR | O_CREAT | O_TRUNC, 0664);
-    if (dst_fd != -1)
+    if ((dst_fd != -1) && (src_len != -1))
     {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
       if (lock_it) MDS_IO_LOCK(src_fd,0,src_len,1,0);
@@ -298,7 +298,7 @@ STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it)
       {
         void *buff = malloc(src_len);
         size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)src_len);
-        if (bytes_read == src_len)
+        if (bytes_read == (size_t)src_len)
 	{
           int bytes_written = MDS_IO_WRITE(dst_fd,buff,(size_t)src_len);
           if (bytes_written == src_len)

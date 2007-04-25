@@ -336,8 +336,8 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
       int       blen = *buffer_size + (*buffer_size + DATAF_C_MAX_RECORD_SIZE + 1)/(DATAF_C_MAX_RECORD_SIZE + 2)*sizeof(RECORD_HEADER);
       char     *buffer = (char *)malloc(blen);
       char     *bptr_in;
-      int      bytes_remaining;
-      int      partlen = (blen % (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
+      unsigned int      bytes_remaining;
+      unsigned int      partlen = (blen % (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
       _int64 rfa_l = RfaToSeek(rfa);
       rfa_l -= blen - (partlen ? partlen : (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
       status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)buffer,blen,0) == blen) ? TreeSUCCESS : TreeFAILURE;

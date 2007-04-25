@@ -1139,7 +1139,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
   if (status & 1)
   {
     char dtype;
-    short length;
+    unsigned short length;
     char ndims;
     int dims[7];
     int numbytes;

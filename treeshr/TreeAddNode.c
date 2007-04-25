@@ -137,7 +137,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 	status = TreeNewNode(dblist, &new_ptr, &parent);
 	if (status & 1)
 	{
-	  int       i;
+	  unsigned int       i;
           unsigned short idx = *conglom_index;
           strncpy(new_ptr->name,node_name,sizeof(new_ptr->name));
           for (i=strlen(node_name);i<sizeof(new_ptr->name);i++)

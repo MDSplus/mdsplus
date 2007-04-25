@@ -636,7 +636,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	  ans.arsize=ans.length;
 	  for (i=0;i<ans.dimct; i++) ans.arsize *= ans.m[i];
 	  ans.pointer = malloc(ans.arsize);
-          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,0) == ans.arsize) ? TreeSUCCESS : TreeFAILURE;
+          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,0) == (ssize_t)ans.arsize) ? TreeSUCCESS : TreeFAILURE;
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
 	    if (ans.length > 1 && ans.dtype != DTYPE_T && ans.dtype != DTYPE_IDENT && ans.dtype != DTYPE_PATH) {
@@ -660,7 +660,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	      _int64 *tp;
 	      dim2.arsize=sinfo->rows * sizeof(_int64);
 	      dim2.pointer=malloc(dim2.arsize);
-	      status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,0) == dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
+	      status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,0) == (ssize_t)dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
 #ifdef WORDS_BIGENDIAN
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
 		*(_int64)bptr = swapquad(bptr);
@@ -1051,8 +1051,8 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     } *namelist = 0;
     int longestattname=0;
     int numnames=0;
-    int i;
-    int len=strlen(xnciname);
+    unsigned int i;
+    unsigned int len=strlen(xnciname);
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
@@ -1084,7 +1084,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     else {
       int found_index=-1;
       while(found_index==-1) {
-	int i,j;
+	unsigned int i,j;
 	for (i=0;i<NAMED_ATTRIBUTES_PER_INDEX;i++) {
 	  if (getnames==1) {
 	    if (index.attribute[i].name[0]!=0) {
@@ -1164,7 +1164,7 @@ int TreePutDsc(TREE_INFO *info, int nid_in, struct descriptor *dsc, _int64 *offs
     struct descriptor_a *ap=(struct descriptor_a *)xd.pointer;
     TreeLockDatafile(info,0,0);
     *offset=MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
-    status = (MDS_IO_WRITE(info->data_file->put,ap->pointer,ap->arsize) == ap->arsize) ? TreeSUCCESS : TreeFAILURE;
+    status = (MDS_IO_WRITE(info->data_file->put,ap->pointer,ap->arsize) == (ssize_t)ap->arsize) ? TreeSUCCESS : TreeFAILURE;
     TreeUnLockDatafile(info,0,0);
     *length=ap->arsize;
     MdsFree1Dx(&xd,0);
@@ -1733,7 +1733,7 @@ old array is same size.
 	 status = TreeINVSHAPE;
        } else if (a_coeff->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(segment_header.dimct-1)*sizeof(int)) != 0) {
 	 status = TreeINVSHAPE;
-       } else if (a_coeff->dimct == 1 && a_coeff->arsize/a_coeff->length != 1 && segment_header.dims[0] != a_coeff->arsize/a_coeff->length) {
+       } else if (a_coeff->dimct == 1 && a_coeff->arsize/a_coeff->length != 1 && (unsigned int)segment_header.dims[0] != a_coeff->arsize/a_coeff->length) {
 	 status = TreeINVSHAPE;
        }
        if (!(status & 1)) {
