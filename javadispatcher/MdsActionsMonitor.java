@@ -2,12 +2,12 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-class MdsMonitor extends MdsIp implements MonitorListener, Runnable
+class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
 {
     Vector outstream_vect = new Vector();
     Vector msg_vect = new Vector();
 
-    public MdsMonitor(int port)
+    public MdsActionsMonitor(int port)
     {
         super(port);
 //      new Thread(this).start();
@@ -25,7 +25,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
         if(messages.length < 6 || messages[2].dtype != Descriptor.DTYPE_SHORT
             || messages[1].dtype != Descriptor.DTYPE_BYTE)
         {
-            System.err.println("Unexpected message has been received by MdsMonitor");
+            System.err.println("Unexpected message has been received by MdsDoneActionsMonitor");
         }
         else
         {
@@ -67,7 +67,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
                 }
             }
             try {
-                synchronized(MdsMonitor.this)
+                synchronized(MdsActionsMonitor.this)
                 {
                     wait();
                 }
@@ -98,30 +98,27 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
             System.out.println(exc);
         }
     }
+    
     public synchronized void buildBegin(MonitorEvent event)
     {
-        communicate(event, jDispatcher.MONITOR_BUILD_BEGIN);
     }
 
     public synchronized void build(MonitorEvent event)
     {
-        communicate(event, jDispatcher.MONITOR_BUILD);
     }
 
     public synchronized void buildEnd(MonitorEvent event)
     {
-        communicate(event, jDispatcher.MONITOR_BUILD_END);
     }
     public synchronized void dispatched(MonitorEvent event)
     {
-        communicate(event, jDispatcher.MONITOR_DISPATCHED);
     }
     public synchronized void doing(MonitorEvent event)
     {
-        communicate(event, jDispatcher.MONITOR_DOING);
     }
     public synchronized void done(MonitorEvent event)
     {
         communicate(event, jDispatcher.MONITOR_DONE);
     }
 }
+

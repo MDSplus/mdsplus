@@ -296,6 +296,7 @@ class jDispatcherIp
             i++;
         }
         i = 1;
+        
         while (true) {
             String monitor_port = properties.getProperty("jDispatcher.monitor_" +
                 i +
@@ -313,7 +314,20 @@ class jDispatcherIp
                 break;
             }
         }
-
+        
+        String actionsMonitorPort = properties.getProperty("jDispatcher.actions_monitor_port");
+        if (actionsMonitorPort != null)
+        {
+        try {
+            int actionsMonitorPortVal = Integer.parseInt(actionsMonitorPort);
+            MdsActionsMonitor actionsMonitor = new MdsActionsMonitor(actionsMonitorPortVal);
+            dispatcher.addMonitorListener(actionsMonitor);
+            actionsMonitor.start();
+            }
+            catch (Exception exc) {}
+            System.out.println("Start done actions monitor on port : " + actionsMonitorPort);
+        }
+        
         String default_server = properties.getProperty(
             "jDispatcher.default_server_idx");
         try {
