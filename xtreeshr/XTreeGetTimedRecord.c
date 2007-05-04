@@ -88,7 +88,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	struct descriptor_signal **signals;
 
 
-printf("GET TIMED RECORD\n");
+//printf("GET TIMED RECORD\n");
 
 	timedAccessFlag = 1;
 	//Get names for (possible) user defined  resample and squish funs

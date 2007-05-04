@@ -103,7 +103,7 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimeb
 	}
 	else
 	{
-		while(timebaseIdx < *retSamples && timebase[timebaseIdx] < end)
+		while(timebaseIdx < *retSamples && timebase[timebaseIdx] <= end)
 		{
 			memcpy(&outData[timebaseIdx * itemSize], &data[timebaseIdx * itemSize], itemSize);
 			outDim[timebaseIdx] = timebase[timebaseIdx];
@@ -371,8 +371,7 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 	{
 		//Count number of copied samples
 		for(currIdx = 0; currIdx < numTimebaseSamples && timebase64[currIdx] < start64; currIdx++);
-		for(outSamples = 0; currIdx < numTimebaseSamples && timebase64[currIdx] < end64; currIdx++, outSamples++);
-		outSamples++;
+		for(outSamples = 0; currIdx < numTimebaseSamples && timebase64[currIdx] <= end64; currIdx++, outSamples++);
 	}
 	else 
 		outSamples = (end64 - start64)/delta64 + 1;
