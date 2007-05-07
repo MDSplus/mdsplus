@@ -49,7 +49,7 @@
 void parse_cts_db( struct MODULE *in, struct Module_ *out )
 {
 	char adpt, fmt[6], line[MODULE_ENTRY+1];
-	char comm[40];
+	char comm[41];
 	int i;
 
 	if( MSGLVL(FUNCTION_NAME) )
