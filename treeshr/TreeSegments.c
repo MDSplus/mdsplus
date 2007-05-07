@@ -473,24 +473,25 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     offset=segment_header.data_offset+startIdx*bytes_per_row;
 #ifdef WORDS_BIGENDIAN
     buffer=memcpy(malloc(bytes_to_insert),data->pointer,bytes_to_insert);
-    if (segment_header.length > 1 && array->dtype != DTYPE_T && array->dtype != DTYPE_IDENT && array->dtype != DTYPE_PATH) {
-    switch (segment_header.length) {
-    case 2: 
-      for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(short))
-	LoadShort(((short *)data->pointer)[i],bptr);
-      break;
-    case 4:
-      for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(int))
-	LoadInt(((int *)data->pointer)[i],bptr);
-      break;
-    case 8:
-      for (i=0,bptr=buffer;i<byptes_to_insert/segment_header.length;i++,bptr+=sizeof(_int64))
-	LoadQuad(((_int64 *)data->pointer)[i],bptr);
-      break;
+    if (segment_header.length > 1 && data->dtype != DTYPE_T && data->dtype != DTYPE_IDENT && data->dtype != DTYPE_PATH) {
+      switch (segment_header.length) {
+      case 2: 
+	for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(short))
+	  LoadShort(((short *)data->pointer)[i],bptr);
+	break;
+      case 4:
+	for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(int))
+	  LoadInt(((int *)data->pointer)[i],bptr);
+	break;
+      case 8:
+	for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(_int64))
+	  LoadQuad(((_int64 *)data->pointer)[i],bptr);
+	break;
+      }
     }
     TreeLockDatafile(info_ptr,0,offset);
     MDS_IO_LSEEK(info_ptr->data_file->put,offset,SEEK_SET);
-    status = (MDS_IO_WRITE(info->data_file->put,buffer,bytes_to_insert) == length) ? TreeSUCCESS : TreeFAILURE;
+    status = (MDS_IO_WRITE(info_ptr->data_file->put,buffer,bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
     free(buffer);
 #else
     TreeLockDatafile(info_ptr,0,offset);
@@ -509,6 +510,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
 }
 
 int _TreeGetNumSegments(void *dbid, int nid, int *num);
+
 int TreeGetNumSegments(int nid, int *num) {
   return  _TreeGetNumSegments(DBID, nid, num);
 }
@@ -528,8 +530,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
   *num=0;
   if (!node_ptr)
     return TreeNNF;
-  //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
-  //  return  TreeFAILURE;
   if (dblist->remote) {
     printf("Segmented records are not supported using thick client mode\n");
     return 0;
@@ -639,6 +639,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
           status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,0) == (ssize_t)ans.arsize) ? TreeSUCCESS : TreeFAILURE;
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
+            char *bptr;
 	    if (ans.length > 1 && ans.dtype != DTYPE_T && ans.dtype != DTYPE_IDENT && ans.dtype != DTYPE_PATH) {
 	      switch (ans.length) {
 	      case 2: 
@@ -651,7 +652,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 		break;
 	      case 8:
 		for (i=0,bptr=ans.pointer;i<ans.arsize/ans.length;i++,bptr+=sizeof(_int64))
-		  *(_int64)bptr = swapquad(bptr);
+		  *(_int64 *)bptr = swapquad(bptr);
 		break;
 	      }
 	    }
@@ -663,7 +664,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	      status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,0) == (ssize_t)dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
 #ifdef WORDS_BIGENDIAN
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
-		*(_int64)bptr = swapquad(bptr);
+		*(_int64 *)bptr = swapquad(bptr);
 #endif
               for (tp=(_int64 *)(dim2.pointer+dim2.arsize-dim2.length); (tp >= (_int64 *)dim2.pointer) && (*tp==0);tp--) {
 		ans.m[segment_header.dimct-1]--;
@@ -1691,6 +1692,7 @@ old array is same size.
        int bytes_to_insert;
 #ifdef WORDS_BIGENDIAN
        unsigned char *buffer,*bptr;
+       char tstamp[8];
 #endif
        _int64 offset;
        NCI       local_nci;
@@ -1760,7 +1762,7 @@ old array is same size.
        offset=segment_header.data_offset+startIdx*bytes_per_row;
 #ifdef WORDS_BIGENDIAN
        buffer=memcpy(malloc(bytes_to_insert),data->pointer,bytes_to_insert);
-       if (segment_header.length > 1 && array->dtype != DTYPE_T && array->dtype != DTYPE_IDENT && array->dtype != DTYPE_PATH) {
+       if (segment_header.length > 1 && data->dtype != DTYPE_T && data->dtype != DTYPE_IDENT && data->dtype != DTYPE_PATH) {
 	 switch (segment_header.length) {
 	 case 2: 
 	   for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(short))
@@ -1771,17 +1773,17 @@ old array is same size.
 	     LoadInt(((int *)data->pointer)[i],bptr);
 	   break;
 	 case 8:
-	   for (i=0,bptr=buffer;i<byptes_to_insert/segment_header.length;i++,bptr+=sizeof(_int64))
+	   for (i=0,bptr=buffer;i<bytes_to_insert/segment_header.length;i++,bptr+=sizeof(_int64))
 	     LoadQuad(((_int64 *)data->pointer)[i],bptr);
 	   break;
 	 }
        }
        TreeLockDatafile(info_ptr,0,offset);
        MDS_IO_LSEEK(info_ptr->data_file->put,offset,SEEK_SET);
-       status = (MDS_IO_WRITE(info->data_file->put,buffer,bytes_to_insert) == length) ? TreeSUCCESS : TreeFAILURE;
+       status = (MDS_IO_WRITE(info_ptr->data_file->put,buffer,bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
        MDS_IO_LSEEK(info_ptr->data_file->put,segment_header.dim_offset+startIdx*sizeof(_int64),SEEK_SET);
        LoadQuad(*timestamp,tstamp);
-       status = (MDS_IO_WRITE(info->data_file->put,tstamp,sizeof(_int64)) == sizeof(_int64)) ? TreeSUCCESS : TreeFAILURE;
+       status = (MDS_IO_WRITE(info_ptr->data_file->put,tstamp,sizeof(_int64)) == sizeof(_int64)) ? TreeSUCCESS : TreeFAILURE;
        free(buffer);
 #else
        TreeLockDatafile(info_ptr,0,offset);
