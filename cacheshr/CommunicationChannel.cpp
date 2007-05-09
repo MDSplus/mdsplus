@@ -56,7 +56,8 @@ void CommunicationChannel::messageReceived(ChannelAddress *addr, int senderIdx, 
 void CommunicationChannel::attachListener(ChannelListener *listener, char type)
 {
 	int i;
-	for(i = 0; i < MAX_TYPES && types[i] != -1 && types[i] != type; i++);
+	for(i = 0; i < MAX_TYPES && types[i] != -1 && types[i] != type; i++)
+		printf("%d\t%d\n", types[i], type);
 	if(i >= MAX_TYPES)
 	{
 		printf("Internal error in Reliable channel: no more types available\n");
