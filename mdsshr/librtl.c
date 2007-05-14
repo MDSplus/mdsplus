@@ -1407,17 +1407,58 @@ STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
 
 int LibConvertDateString(char *asc_time, _int64 *qtime)
 {
-  int tim;
+  time_t tim=0;
+  char time_out[24];
+  int parse_it=1;
+  int ctime_it=0;
   
   /* VMS time = unixtime * 10,000,000 + 0x7c95674beb4000q */
-  if (mds_strcasecmp(asc_time, "today") == 0) {
-    tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY;
+  if (asc_time == 0 || mds_strcasecmp(asc_time, "now") == 0) {
+    tim=time(NULL);
+    parse_it=0;
+  } else if (mds_strcasecmp(asc_time, "today") == 0) {
+    tim=time(NULL);
+    ctime_it=1;
   } else if (mds_strcasecmp(asc_time, "tomorrow") == 0) {
-    tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY+SEC_PER_DAY;
+    tim=time(NULL)+SEC_PER_DAY;
+    ctime_it=1;
   }else if (mds_strcasecmp(asc_time, "yesterday") == 0) {
-    tim=(time(NULL)/SEC_PER_DAY)*SEC_PER_DAY-SEC_PER_DAY;
+    tim=time(NULL)-SEC_PER_DAY;
+    ctime_it=1;
   }
-  else {
+  if (parse_it) {
+    if (ctime_it) {
+      char *time_str;
+      time_str = ctime(&tim);
+      time_out[0]  = time_str[8];
+      time_out[1]  = time_str[9];
+      time_out[2]  = '-';
+      time_out[3]  = time_str[4];
+      time_out[4]  = (char)(time_str[5] & 0xdf);
+      time_out[5]  = (char)(time_str[6] & 0xdf);
+      time_out[6]  = '-';
+      time_out[7]  = time_str[20];
+      time_out[8]  = time_str[21];
+      time_out[9]  = time_str[22];
+      time_out[10] = time_str[23];
+      time_out[11] = ' ';
+      time_out[12] = '0';
+      time_out[13] = '0';
+      time_out[14] = ':';
+      time_out[15] = '0';
+      time_out[16] = '0';
+      time_out[17] = ':';
+      time_out[18] = '0';
+      time_out[19] = '0';
+      time_out[20] = '.';
+      time_out[21] = '0';
+      time_out[22] = '0';
+      time_out[23] = 0;
+      tim=0;
+      asc_time=time_out;
+      printf("asc_time is now: %s\n",asc_time);
+    }
+    
 #ifndef HAVE_VXWORKS_H
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
@@ -1447,17 +1488,12 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
     if (tmp) {
-      time_t t=time(0);
-      struct tm *tm_p=localtime(&t);
+      tm.tm_isdst=-1;
       tim = mktime(&tm);
       if ((int)tim == -1) return 0;
-      tim++;
-#if defined(HAVE_WINDOWS_H)
+#if defined(HAVE_WINDOWS_Hxxxxx)
       _tzset();
       tim -= _timezone;
-#elif !defined(__hpux) && !defined(HAVE_WINDOWS_H) && !defined(_AIX)
-      tzset();
-      tim += tm_p->tm_gmtoff;
 #endif
     }
     else
@@ -1467,6 +1503,9 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 #endif
   }
   if (tim > 0) {
+    printf("ctime returned %s\n",ctime(&tim));
+    LibTimeToVMSTime(&tim,qtime);
+    return tim > 0;
 #ifndef HAVE_VXWORKS_H
     _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
 #else
@@ -1477,12 +1516,11 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     *qtime = 0;
   return tim > 0;
 }
+static _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
   
 int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   time_t t;
-  _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
   t = (time_in == NULL) ? t=time(0) : *time_in;
-// _int64 addin = 0x7c95674beb4000;
 #if defined(USE_TM_GMTOFF)
   /* this is a suggestion to change all code 
      for this as timezone is depricated unix
@@ -1492,16 +1530,9 @@ int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
     tm = localtime(&t);
     *time_out = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin;
   }
-#elif defined(HAVE_GETTIMEOFDAY)
-  {
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv,&tz);
-    *time_out=(_int64)(tv.tv_sec-(tz.tz_minuteswest*60))*10000000+tv.tv_usec*10 + addin;
-  }
 #else
   tzset();
-  *time_out = (_int64)((unsigned int)time(NULL) - timezone + daylight * 3600) * (_int64)10000000 + addin;
+  *time_out = (_int64)(t - timezone + daylight * 3600) * (_int64)10000000 + addin;
 #endif
   return 1;
 }
@@ -1519,15 +1550,17 @@ time_t LibCvtTim(int *time_in,double *t)
     time_t time_int;
     time_t dummy=0;
     memcpy(&time_local,time_in,sizeof(time_local));
-    time_d = ((double)(time_local >> 24)) * 1.6777216 - 3.5067168e+09;
-    time_int = (time_t)time_d;
-    tmval = localtime(&time_int);
+    time_local = (*(_int64 *)time_in - addin);
+    bintim=time_local/LONG_LONG_CONSTANT(10000000);
+    time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000))*1E-7;
+    tmval = localtime(&bintim);
 #ifdef USE_TM_GMTOFF
     t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff; // - (tmval->tm_isdst ? 3600 : 0);
+    bintim -= tmval->tm_gmtoff;
 #else
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
-    bintim = (long)t_out;
+    //    bintim = (long)t_out;
   }
   else
     bintim = (long)(t_out = time(0));
