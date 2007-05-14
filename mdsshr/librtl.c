@@ -1456,7 +1456,6 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
       time_out[23] = 0;
       tim=0;
       asc_time=time_out;
-      printf("asc_time is now: %s\n",asc_time);
     }
     
 #ifndef HAVE_VXWORKS_H
@@ -1503,7 +1502,6 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 #endif
   }
   if (tim > 0) {
-    printf("ctime returned %s\n",ctime(&tim));
     LibTimeToVMSTime(&tim,qtime);
     return tim > 0;
 #ifndef HAVE_VXWORKS_H
