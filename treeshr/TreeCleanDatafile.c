@@ -61,11 +61,14 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
                 }
                 while (list) {
                   _int64 now=-1;
+                  int oldlength;
                   struct nci_list *old_list=list;
 		  TreeSetViewDate(&list->nci.time_inserted);
 		  if (first) {
+                    oldlength=list->nci.length;
 		    list->nci.length=0;
 		    TreePutNci(info2, i, &list->nci, 1);
+                    list->nci.length=oldlength;
                     first=0;
                   }
 		  if (list->nci.flags2 & NciM_EXTENDED_NCI) {
