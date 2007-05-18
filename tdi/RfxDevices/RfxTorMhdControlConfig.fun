@@ -19,22 +19,25 @@ public fun RfxTorMhdControlConfig( in _system )
 	_mode 	  = execute(_path//":TRIG1_CONTR");
 	_modeName = RfxControlNameToIdx( _mode );
 	
+	_BrRadius = trim(adjustl(execute("\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL"))) ;
+	_mainTitle = _modeName//" ( r = "//_BrRadius//" )";
+	
 	switch( _modeName )
 	{
 		case ("OFFESET CORRECTION");
-			return (_modeName);
+			return (_mainTitle);
 	
 		case ("ROT.PERTURBATION")
 			return("ROTATING PERTURBATION");
 		break;
 		case ("MODE CONTROL")
-			return( _modeName );
+			return( _mainTitle );
 		break;
 		case ("MODE CONTROL+ROT.PERT.")
 			return( "MODE CONTROL & ROTATING PERTURBATION" );
 		break;		
 		case ("Bt CONTROL")
-		    _out = _modeName // " : st. "//cvt(\EDA3::CONTROL.PARAMETERS:PAR240_VAL, "1.23456");
+		    _out = _mainTitle // " : st. "//cvt(\EDA3::CONTROL.PARAMETERS:PAR240_VAL, "1.23456");
 		    _out = _out // " ed. "//cvt(execute(_path//".PARAMETERS:PAR241_VAL"), "1.23456");
 		    _out = _out // " : P "//cvt(execute(_path//".PARAMETERS:PAR237_VAL"), "1.23456");
 		    _out = _out // " : I "//cvt(execute(_path//".PARAMETERS:PAR238_VAL"), "1.23456");
@@ -42,7 +45,7 @@ public fun RfxTorMhdControlConfig( in _system )
 			return( _out );
 		break;
 		case ("F CONTROL")
-		    _out = _modeName // " : st. "//cvt(execute(_path//".PARAMETERS:PAR247_VAL"), "1.23456");
+		    _out = _mainTitle // " : st. "//cvt(execute(_path//".PARAMETERS:PAR247_VAL"), "1.23456");
 		    _out = _out // " ed. "//cvt(execute(_path//".PARAMETERS:PAR248_VAL"), "1.23456");
 		    _out = _out // " : P "//cvt(execute(_path//".PARAMETERS:PAR244_VAL"), "1.23456");
 		    _out = _out // " : I "//cvt(execute(_path//".PARAMETERS:PAR245_VAL"), "1.23456");
@@ -50,10 +53,10 @@ public fun RfxTorMhdControlConfig( in _system )
 			return( _out );
 		break;
 		case ("Closer VS")
-			return( _modeName );
+			return( _mainTitle//" r = "//trim(adjustl(execute("\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL"))) );
 		break;
 		case ("LOCK CONTROL")
-		    _out = _modeName // " : st. "//cvt(execute(_path//".PARAMETERS:PAR171_VAL"), "1.23456");
+		    _out = _mainTitle // " : st. "//cvt(execute(_path//".PARAMETERS:PAR171_VAL"), "1.23456");
 		    _out = _out // " Tresh. Strength "//cvt(execute(_path//".PARAMETERS:PAR172_VAL"), "123");
 		    _out = _out // " Tresh. Time "//cvt(execute(_path//".PARAMETERS:PAR173_VAL"), "1.23456");
 		    _out = _out // " Tresh. Interval "//cvt(execute(_path//".PARAMETERS:PAR174_VAL"), "1.23456");
@@ -62,22 +65,22 @@ public fun RfxTorMhdControlConfig( in _system )
 		break;
 
 		case ("VIRTUAL SHELL")
-			return( _modeName );
+			return( _mainTitle );
 		break;
 
 		case ("VS+ROT.PERT.(FEEDBACK)")
-			return( _modeName );
+			return( _mainTitle );
 		break;
 
 		case ("VS+ROT.PERT.(FEEDFORW)")
-			return( _modeName );
+			return( _mainTitle );
 		break;
 
 		case ("Closer VS + Rot.Pert.")
-			return( _modeName );
+			return( _mainTitle );
 		break;
 		
-		case default return( _modeName );
+		case default return( _mainTitle );
 
 	}
 
