@@ -8,6 +8,11 @@ char *SharedDataManager::startAddress;
 LockManager SharedDataManager::lock;
 SharedMemTree SharedDataManager::sharedTree;
 
+#ifdef HAVE_VXWORKS_H
+SEM_ID *LockManager::semaphores;
+#endif
+
+
 
  SharedDataManager::SharedDataManager(int size)
 {

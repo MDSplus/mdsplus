@@ -613,6 +613,13 @@ EXPORT void cacheReset()
 	if(!cache) cache = getCache();
 
 }
+#else 
+#ifdef HAVE_VXWORKS_H
+EXPORT void cacheReset()
+{
+	if(!cache) cache = getCache();
+
+}
 #else
 
 //For Linux only: remove all persistent semaphores
@@ -629,6 +636,7 @@ EXPORT void cacheReset()
  }
 
 
+#endif
 #endif
 
 

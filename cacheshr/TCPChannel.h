@@ -7,14 +7,14 @@
 class TCPServer:public Runnable
 {
 	CommunicationChannel *channel;
-	int socket;
+	int sock;
 	Thread thread;
 
 public:
-	TCPServer(CommunicationChannel *channel, int socket)
+	TCPServer(CommunicationChannel *channel, int sock)
 	{
 		this->channel = channel;
-		this->socket = socket;
+		this->sock = sock;
 	}
 	void run(void *args);
 };
@@ -22,13 +22,13 @@ public:
 class TCPHandler:public Runnable
 {
 	CommunicationChannel *channel;
-	int socket;
+	int sock;
 
 public:
-	TCPHandler(CommunicationChannel *channel, int socket)
+	TCPHandler(CommunicationChannel *channel, int sock)
 	{
 		this->channel = channel;
-		this->socket = socket;
+		this->sock = sock;
 	}
 	void run(void *args);
 };

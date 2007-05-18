@@ -13,7 +13,7 @@ void Thread::start(Runnable *rtn, void *arg)
 		printf("Error activating thread\n");
 #else 
 #ifdef HAVE_VXWORKS_H
-	taskSpawn(NULL, 20, VX_FP_TASK, 200000, (FUNCPTR)handlerWithArg, (int)withArg,0,0,0,0,0,0,0,0,0); 
+	taskSpawn(NULL, 55, VX_FP_TASK, 200000, (FUNCPTR)handlerWithArg, (int)withArg,0,0,0,0,0,0,0,0,0); 
 #else
 	int rc = pthread_create(&thread, NULL,(void *(*)(void *))handlerWithArg, (void *)withArg); 
 #endif

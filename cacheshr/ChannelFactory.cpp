@@ -3,8 +3,8 @@
 
 #define TCP_PORT 4000
 
-static 	ChannelAddress **addresses = new ChannelAddress *[512];
-static 	ChannelAddress **otherAddresses = new ChannelAddress *[512];
+static 	ChannelAddress *addresses[512];
+static 	ChannelAddress *otherAddresses[512];
 static  ChannelAddress *thisAddress;
 static int numChanAddresses;
 static int thisAddressIdx;

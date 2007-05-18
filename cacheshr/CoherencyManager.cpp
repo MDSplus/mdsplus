@@ -4,7 +4,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define DEBUG
+//#define DEBUG
+
+#include <wdLib.h>
+#include <semLib.h>
+#include <sysLib.h>
+
 
 CoherencyManager::CoherencyManager(SharedDataManager *dataManager)
 {
@@ -61,6 +66,7 @@ with an incremented timestamp and the cache becomes the current owner.
 void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, char *buf, int bufLen, char type)
 //Handle messages from other caches in the system. This is run by a single process on every machine.
 {
+
 	switch(type)
 	{
 		case REQUEST_DATA_TYPE:
@@ -138,6 +144,7 @@ void CoherencyManager::handleOwnershipMsg(int nid, int timestamp, char ownerIdx,
 	printf("OWNERSHIP message. nid: %d, timestamp: %d ownerIdx: %d\n", nid, timestamp, ownerIdx);
 #endif
 
+/*  TEMPORANEO
 	if((timestamp < prevTimestamp )|| //It is an outdated message
 		((timestamp == prevTimestamp) && ownerIdx < prevOwnerIdx)) //It is a concurrent write, but the sender has lowe priority
 
@@ -148,7 +155,7 @@ void CoherencyManager::handleOwnershipMsg(int nid, int timestamp, char ownerIdx,
 		return;
 	}
 
-		
+*/		
 	dataManager->setOwner(nid, ownerIdx, timestamp);
 
 
@@ -178,7 +185,6 @@ void CoherencyManager::handleDataMsg(int nid, char *serializedData, int dataLen,
 	}
 	dataManager->setDirty(nid, false);
 }
-
 
 
 void CoherencyManager::handleDirtyMsg(int nid, ChannelAddress *senderAddr, int senderIdx)
@@ -235,6 +241,7 @@ void CoherencyManager::checkRead(int nid)
 	Event *dataEvent = dataManager->getDataEvent(nid);
 	channel->sendMessage(addr, (char *)&sendNid, sizeof(int), REQUEST_DATA_TYPE);
 	dataEvent->wait();
+
 }
 
 void CoherencyManager::checkWrite(int nid)
@@ -263,11 +270,11 @@ void CoherencyManager::checkWrite(int nid)
 		*(unsigned int *)(&outBuf[sizeof(int)]) = channel->fromNative(timestamp);
 		outBuf[2 * sizeof(int)] = chanFactory.getThisAddressIdx();
 
+		dataManager->setCoherencyInfo(nid, true, -1, isWarm, timestamp, NULL, 0, NULL, 0);
 		for(int i = 0; i < numAddresses; i++)
 		{
 			channel->sendMessage(addresses[i], outBuf, 2 * sizeof(int)+1, OWNERSHIP_TYPE);
 		}
-		dataManager->setCoherencyInfo(nid, true, -1, isWarm, timestamp, NULL, 0, NULL, 0);
 	}
 		
 	else if(numWarm > 0 || numReader > 0) //It is owner, send last data slot to all warm nodes and dirty message to all current readers

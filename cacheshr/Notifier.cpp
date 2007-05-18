@@ -98,7 +98,7 @@ void Notifier::initialize(int nid, void (*callback)(int))
 	exit(0); //Fatal error
     }
     //100KBytes stack size
-    int status = taskSpawn(NULL, 10, VX_FP_TASK, 100000, (FUNCPTR)handleEvents, (int)&info,0,0,0,0,0,0,0,0,0);
+    int status = taskSpawn(NULL, 55, VX_FP_TASK, 100000, (FUNCPTR)handleEvents, (int)&info,0,0,0,0,0,0,0,0,0);
     if(status == ERROR)
     {
 	perror("Cannot create task");

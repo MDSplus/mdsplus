@@ -28,31 +28,31 @@ void TCPHandler::run(void *arg)
 //TCP Message protocol: type (1 byte), length (4 bytes), message (length bytes) 
 
 	IPAddress addr;
-	addr.socket = socket;
+	addr.sock = sock;
 	char senderIdx;
 	while(true)
 	{
 		char type;
 		int len;
-		if(readFromSocket(socket, 1, &type) == -1)
+		if(readFromSocket(sock, 1, &type) == -1)
 		{
 			printf("Socket communication terminated\n");
 			return;
 		}
-		if(readFromSocket(socket, 1, &senderIdx) == -1)
+		if(readFromSocket(sock, 1, &senderIdx) == -1)
 		{
 			printf("Socket communication terminated\n");
 			return;
 		}
 		unsigned int readLen;
-		if(readFromSocket(socket, 4, (char *)&readLen) == -1)
+		if(readFromSocket(sock, 4, (char *)&readLen) == -1)
 		{
 			printf("Socket communication terminated\n");
 			return;
 		}
 		len = ntohl(readLen);
 		char *buf = new char[len];
-		if(readFromSocket(socket, len, buf) == -1)
+		if(readFromSocket(sock, len, buf) == -1)
 		{
 			printf("Socket communication terminated\n");
 			return;
@@ -68,9 +68,9 @@ void TCPServer::run(void *arg)
 {
 	while(true)
 	{
-		int newSocket = accept(socket, NULL, NULL);
+		int newSocket = accept(sock, NULL, NULL);
 #ifdef HAVE_WINDOWS_H
-		if(socket == INVALID_SOCKET)
+		if(sock == INVALID_SOCKET)
 #else
 		if(newSocket == -1)
 #endif
@@ -92,14 +92,14 @@ TCPChannel::TCPChannel(int idx):CommunicationChannel(idx)
 bool TCPChannel::connectSender(ChannelAddress *addr)
 {
 	IPAddress *tcpAddr = (IPAddress *)addr;
-	tcpAddr->socket= socket(AF_INET, SOCK_STREAM, 0);
+	tcpAddr->sock= socket(AF_INET, SOCK_STREAM, 0);
 #ifdef HAVE_WINDOWS_H
-	if (tcpAddr->socket == INVALID_SOCKET) return false;
+	if (tcpAddr->sock == INVALID_SOCKET) return false;
 #else
-	if (tcpAddr->socket == -1) return false;
+	if (tcpAddr->sock == -1) return false;
 #endif
 	printf("CONNETING TO %s port %d\n", tcpAddr->ipAddress, tcpAddr->port);
-	if(connect(tcpAddr->socket, (struct sockaddr *)&tcpAddr->sin, sizeof(tcpAddr->sin)))
+	if(connect(tcpAddr->sock, (struct sockaddr *)&tcpAddr->sin, sizeof(tcpAddr->sin)))
 	{
 #ifdef HAVE_WINDOWS_H
 		int error = WSAGetLastError();
@@ -173,19 +173,19 @@ bool TCPChannel::connectReceiver(ChannelAddress *address)
 
 bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char type)
 {
-	int socket = ((IPAddress *)addr)->socket;
+	int sock = ((IPAddress *)addr)->sock;
 
-	if(socket == -1) //Not connected yet
+	if(sock == -1) //Not connected yet
 	{
 		if(!connectSender(addr))
 			return false; //Still unsuccesful
-		socket = ((IPAddress *)addr)->socket;
+		sock = ((IPAddress *)addr)->sock;
 	}
 	int convLen = fromNative(bufLen);
-	send(socket, &type, 1, 0);
-	send(socket, &thisIdx, 1, 0);
-	send(socket, (char *)&convLen, sizeof(int), 0); 
-	send(socket, buf, bufLen, 0);
+	send(sock, &type, 1, 0);
+	send(sock, &thisIdx, 1, 0);
+	send(sock, (char *)&convLen, sizeof(int), 0); 
+	send(sock, buf, bufLen, 0);
 	return true;
 }
 

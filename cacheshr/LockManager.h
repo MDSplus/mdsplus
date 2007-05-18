@@ -142,6 +142,8 @@ public:
 #include <stdlib.h>
 #define MAX_SEMAPHORES 10
 
+
+
 class LockManager
 {
     	static SEM_ID *semaphores;
@@ -193,57 +195,6 @@ public:
 
 };
 
-/*
-class LockManager
-{
-    	sem_t *semaphore;
-	
-public:
-	LockManager(){initialize(0);}
-	LockManager(int id)
-	{
-		initialize(id);
-	}
-	
-	bool initialize(int id)  //Return true if the mutex did not exist before and has been created
-	{
-		char buf[256];
-		int oflag = O_CREAT | O_EXCL;
-		mode_t mode = 0666;
-		sprintf(buf, "/mdscachex%d", id);
-		
-		semaphore = sem_open(buf, oflag);
-		if(semaphore == (void *)ERROR)
-		{
-		    semaphore = sem_open(buf, 0);
-		    if(semaphore == (void *)ERROR)
-		    {
-		    	perror("Cannot create Semaphore!\n");
-			exit(0); //Fatal error
-		    }
-		    return false;
-		}
-		sem_post(semaphore);
-		return true;
-	}
-
-
-	void lock()
-    	{
-    		sem_wait(semaphore);
-    	}
-
-	 
-
-	void unlock()
-	{
-    		sem_post(semaphore);
-	}
-	
-
-};
-
-*/
 
 #else
 #include <semaphore.h>

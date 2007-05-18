@@ -47,7 +47,7 @@ class SharedMemNodeData
 		owner = false;
 		warm = false;
 		dirty = true;
-		ownerIdx = -1;
+		ownerIdx = (char)-1;
 		ownerTimestamp = 0;
 		numWarmNodes = 0;
 		numReaderNodes = 0;
@@ -66,7 +66,7 @@ class SharedMemNodeData
 		owner = false;
 		warm = false;
 		dirty = true;
-		ownerIdx = -1;
+		ownerIdx = (char)-1;
 		ownerTimestamp = 0;
 		numWarmNodes = 0;
 		numReaderNodes = 0;

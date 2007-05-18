@@ -31,7 +31,6 @@ void CommunicationChannel::messageReceived(ChannelAddress *addr, int senderIdx, 
 
 
 	lock.lock();
-
 	for(typeIdx = 0; typeIdx < numTypes && type != types[typeIdx]; typeIdx++);
 	if(typeIdx < numTypes) //It is an expected type
 	{
@@ -49,6 +48,8 @@ void CommunicationChannel::messageReceived(ChannelAddress *addr, int senderIdx, 
 			listeners[typeIdx][j]->handleMessage(addr, senderIdx, buf, bufLen, type);
 		}
 	}
+	else
+	    printf("UNEXPECTED TYPE!!\n");
 
 	lock.unlock();
 }
@@ -56,7 +57,7 @@ void CommunicationChannel::messageReceived(ChannelAddress *addr, int senderIdx, 
 void CommunicationChannel::attachListener(ChannelListener *listener, char type)
 {
 	int i;
-	for(i = 0; i < MAX_TYPES && types[i] != -1 && types[i] != type; i++)
+	for(i = 0; i < MAX_TYPES && types[i] != (char)-1 && types[i] != type; i++)
 		printf("%d\t%d\n", types[i], type);
 	if(i >= MAX_TYPES)
 	{
@@ -64,7 +65,7 @@ void CommunicationChannel::attachListener(ChannelListener *listener, char type)
 		return;
 	}
 
-	if(types[i] == -1)
+	if(types[i] == (char)-1)
 	{
 		types[i] = type;
 		numListeners[i] = 1;

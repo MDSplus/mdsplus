@@ -6,6 +6,7 @@ class ChannelAddress
 public:
 	virtual char *getAddressString() = 0;
 	virtual void setAddressString(char *addrStr) = 0;
+	virtual void print() = 0;
 };
 
 #endif

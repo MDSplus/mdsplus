@@ -8,15 +8,15 @@
 class UDPServer:public Runnable
 {
 	CommunicationChannel *channel;
-	int socket;
+	int sock;
 	struct sockaddr_in retAddress;
 	Thread thread;
 
 public:
-	UDPServer(CommunicationChannel *channel, int socket)
+	UDPServer(CommunicationChannel *channel, int sock)
 	{
 		this->channel = channel;
-		this->socket = socket;
+		this->sock = sock;
 	}
 	void run(void *args);
 };
