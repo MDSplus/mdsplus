@@ -1537,11 +1537,11 @@ int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   { 
     struct tm *tm;
     tm = localtime(&t);
-    *time_out = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin + microseconds * 10000;
+    *time_out = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin + microseconds * 10;
   }
 #else
   tzset();
-  *time_out = (_int64)(t - timezone + daylight * 3600) * (_int64)10000000 + addin + microseconds * 10000;
+  *time_out = (_int64)(t - timezone + daylight * 3600) * (_int64)10000000 + addin + microseconds * 10;
 #endif
   return 1;
 }
