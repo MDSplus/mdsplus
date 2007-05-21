@@ -1560,6 +1560,7 @@ time_t LibCvtTim(int *time_in,double *t)
     time_t dummy=0;
     memcpy(&time_local,time_in,sizeof(time_local));
     time_local = (*(_int64 *)time_in - addin);
+    if (time_local < 0) time_local=0;
     bintim=time_local/LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000))*1E-7;
     tmval = localtime(&bintim);
