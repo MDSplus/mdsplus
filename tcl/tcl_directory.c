@@ -50,7 +50,7 @@ static char  *MdsDatime(	/* Return: ptr to date+time string	*/
     int   flags = 0;
     int   sts;
     short len;
-    static char  datime[21];
+    static char  datime[24];
     static DESCRIPTOR(dsc_datime,datime);
 
 #ifdef vms
