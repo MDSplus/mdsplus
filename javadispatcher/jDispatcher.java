@@ -801,6 +801,27 @@ class jDispatcher
         }
     }
 
+    public void redispatchAction(int nid, String phaseName)
+    {
+        PhaseDescriptor phase = (PhaseDescriptor) phases.get(phaseName);
+        if(doing_phase) //Redispatch not allowed during sequence
+            return;
+        Action action = (Action)phase.all_actions.get(new Integer(nid));
+        if(action == null)
+        {
+            System.err.println("Redispatched a non existent action");
+            return;
+        }
+        dep_dispatched.addElement(action);
+        action.setStatus(Action.DISPATCHED, 0, verbose);
+        action.setManual(true);
+        fireMonitorEvent(action, MONITOR_DISPATCHED);
+        if(!balancer.enqueueAction(action))
+            discardAction(action);
+     }
+
+
+
 
     public void redispatchAction(int nid)
     {

@@ -161,6 +161,10 @@ class jDispatcherIp
             }
             else if (first_part.equals("REDISPATCH")) {
                 String second_part = st.nextToken();
+                String phaseName = null;
+                try {
+                    phaseName = st.nextToken();
+                }catch(Exception exc){phaseName = null;}
                 int nid;
                 try {
                     nid = Integer.parseInt(second_part);
@@ -168,7 +172,10 @@ class jDispatcherIp
                 catch (Exception ex) {
                     throw new Exception("Invalid command");
                 }
-                dispatcher.redispatchAction(nid);
+                if (phaseName != null)
+                    dispatcher.redispatchAction(nid, phaseName);
+                else
+                    dispatcher.redispatchAction(nid);
             }
             else if (first_part.equals("GET")) {
                 String second_part = st.nextToken();
