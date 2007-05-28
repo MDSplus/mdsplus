@@ -187,7 +187,8 @@ public class ParameterSetting
 
     ParameterSetting(boolean isRt, boolean isOnline, String rtIp)
     {
-        addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter()
+        {
             public void windowClosing(WindowEvent e)
             {
                 System.exit(0);
@@ -206,10 +207,13 @@ public class ParameterSetting
         {
             setTitle("RFX Parameters");
             this.rtIp = rtIp;
-            if(isOnline) handleNotRt();
+            if (isOnline) handleNotRt();
         }
-        if(isRt || isOnline)
+        if (isRt || isOnline)
+        {
             handleScheduler();
+            handleAlarms();
+        }
 
         if(!isRt)
             prepareDecouplingInfo();
@@ -2225,6 +2229,55 @@ public class ParameterSetting
             }
         }
     } // End class RtHandler
+
+    void handleAlarms()
+    {
+        (new AlarmHandler()).start();
+    }
+
+    class AlarmHandler
+        extends Thread
+    {
+        DataInputStream dis;
+        DataOutputStream dos;
+        public void run()
+        {
+            try
+            {
+                ServerSocket serverSock;
+                if (isRt)
+                    serverSock = new ServerSocket(4003);
+                else
+                    serverSock = new ServerSocket(4004);
+                while (true)
+                {
+                    Socket sock = serverSock.accept();
+                    dis = new DataInputStream(sock.
+                                              getInputStream());
+                    try
+                    {
+                        while (true)
+                        {
+                            String message = dis.readUTF();
+                            JOptionPane.showMessageDialog(ParameterSetting.this, message, "Warning",
+                                JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        System.out.println("Client exited");
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                System.err.println("Error accepting socket connections");
+            }
+        }
+    }
+
+
+
 
     static final int ENTER_PAS = 1, LEAVE_PAS = 2, ENTER_PRE = 3, LEAVE_SECONDARY = 4;
     void handleScheduler()
