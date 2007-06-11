@@ -30,17 +30,33 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 		
 		if(  _ts + _tr > _te ) _tr = _te - _ts;
 		
+		
+		_zeroSig = make_signal([0.,0],,[ _ts, _te]);
 
+		_module = if_error( make_signal( [0, 0, _amp, _amp, 0, 0] , , [ fs_float(\RFX::T_START_PR), _ts, _ts + _tr, _te, _te, fs_float(\RFX::T_STOP_PR) ] ), _zeroSig );
+
+		
 		if( _type == "MODULE" )
 		{						
-			_out = if_error( make_signal( [0, 0, _amp, _amp, 0, 0] , , [ fs_float(\RFX::T_START_PR), _ts, _ts + _tr, _te, _te, fs_float(\RFX::T_STOP_PR) ] ), _zeroSig );
+			_out = _module;
 			
 		}
 		else
 		{
-			_x = [ _ts : _te : 1./_vmeFreq ];
-			_y = mod( 2 * $pi * _freq * _x + _fase, 2 * $pi ) + ( _freq > 0 ? -1 : 1 ) * $pi; 
-			_out = if_error( make_signal( _y , , _x ), _zeroSig );
+		
+			if( sum( _module ) != 0 )
+			{
+			
+				_x = [ _ts : _te : 1./_vmeFreq ];
+				_y1 = mod(  2 * $pi * _freq * _x + ( _fase -  2 * $pi * _freq * _ts ) ,   2 * $pi ) ;
+				_y = atan2d(sin(_y1), cos(_y1))/180*$pi;
+	
+				_out = if_error( make_signal( _y , , _x ), _zeroSig );
+			}
+			else
+			{
+				_out = _zeroSig;
+			}	
 			
 		}
 		
@@ -80,39 +96,39 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 			{
 				case (1)
 					if($shot < 19359 && $shot > 1000)
-						return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL"))) );
+						return ( "R P 1  m = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//" n = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL"))) );
 					else
-						return ( "R P 1  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR251_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR255_VAL"))) );
+						return ( "R P 1  m = "//trim(adjustl(execute(_path//".PARAMETERS:PAR98_VAL")))//" n = "//trim(adjustl(execute(_path//".PARAMETERS:PAR97_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR102_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR251_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR255_VAL"))) );
 				break;			
 				case (2)
 					if($shot < 19359 && $shot > 1000)
-						return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) );
+						return ( "R P 2  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) );
 					else
-						return ( "R P 2  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR252_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR256_VAL"))) );
+						return ( "R P 2  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR105_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR104_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR109_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR252_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR256_VAL"))) );
 				break;
 				case (3)
 					if($shot < 19359 && $shot > 1000)
-						return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL")))  );
+						return ( "R P 3  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL")))  );
 					else
-						return ( "R P 3  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR253_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR257_VAL"))) );
+						return ( "R P 3  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR112_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR111_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR116_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR253_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR257_VAL"))) );
 				break;
 				case (4)
 					if($shot < 19359 && $shot > 1000)				
-						return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL")))  );
+						return ( "R P 4  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL")))  );
 					else
-						return ( "R P 4  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR254_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR258_VAL"))) );
+						return ( "R P 4  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR119_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR118_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR123_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR254_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR258_VAL"))) );
 				break;
 				case (5)
-					return ( "R P 5  N = "//trim(adjustl(execute(_path//".PARAMETERS:PAR259_VAL")))//" M = "//trim(adjustl(execute(_path//".PARAMETERS:PAR260_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR264_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR267_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR268_VAL"))) );
+					return ( "R P 5  m = "//trim(adjustl(execute(_path//".PARAMETERS:PAR260_VAL")))//" n = "//trim(adjustl(execute(_path//".PARAMETERS:PAR259_VAL")))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR264_VAL")))//" "//rotRelative(execute(_path//".PARAMETERS:PAR267_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR268_VAL"))) );
 				break;			
 				case (6)
-					return ( "R P 6  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR269_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR270_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR274_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR277_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR278_VAL"))) );
+					return ( "R P 6  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR270_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR269_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR274_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR277_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR278_VAL"))) );
 				break;
 				case (7)
-					return ( "R P 7  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR279_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR280_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR284_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR287_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR288_VAL"))) );
+					return ( "R P 7  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR280_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR279_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR284_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR287_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR288_VAL"))) );
 				break;
 				case (8)
-					return ( "R P 8  N = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR289_VAL"))))//" M = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR290_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR294_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR297_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR298_VAL"))) );
+					return ( "R P 8  m = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR290_VAL"))))//" n = "//trim(adjustl(int(execute(_path//".PARAMETERS:PAR289_VAL"))))//"  f = "//trim(adjustl(execute(_path//".PARAMETERS:PAR294_VAL"))) //" "//rotRelative(execute(_path//".PARAMETERS:PAR297_VAL"))//" tr. = "//trim(adjustl(execute(_path//".PARAMETERS:PAR298_VAL"))) );
 				break;
 				
 				case default 
