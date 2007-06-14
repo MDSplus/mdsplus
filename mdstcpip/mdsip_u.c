@@ -1393,6 +1393,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
   Client *c;
   int status=1;
   int i;
+  int sock=e->sock;
   char client_type,compression_level;
   lock_ast();
   lock_client_list();
@@ -1439,16 +1440,8 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data)
       free(m);
     }
   }
-  else
-  {
-#ifndef HAVE_VXWORKS_H
-    MDSEventCan(e->eventid);
-#endif
-    if (e->info_len > 0) free(e->info);
-    free(e);
-  }
   if (status != 1)
-    CloseSocket(c->sock);
+    CloseSocket(sock);
   unlock_ast();
 }
 
