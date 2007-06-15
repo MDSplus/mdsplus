@@ -232,7 +232,7 @@ public class Node
                         ds = (DeviceSetup) deviceClass.newInstance();
                         Dimension prevDim = ds.getSize();
                         ds.addDataChangeListener(hierarchy);
-                        ds.configure(experiment, nid.getInt());
+                        ds.configure(experiment, nid.getInt(), this);
                         if (ds.getContentPane().getLayout() != null)
                             ds.pack();
                         ds.setLocation(hierarchy.getMousePosition());

@@ -25,6 +25,7 @@ public class DeviceSetup
     Vector deviceCloseListenerV = new Vector();
     Vector deviceUpdateListenerV = new Vector();
     boolean readOnly = false;
+    Node deviceNode;
 
     static Vector openDevicesV = new Vector();
 
@@ -139,9 +140,15 @@ public class DeviceSetup
             }
         });
     }
-
     public void configure(RemoteTree subtree, int baseNid)
     {
+        configure(subtree, baseNid, null);
+    }
+
+
+    public void configure(RemoteTree subtree, int baseNid, Node node)
+    {
+        deviceNode = node;
         activeNidHash.put(new Integer(baseNid), this);
         NidData oldNid = null;
         try
@@ -577,7 +584,7 @@ public class DeviceSetup
             String deviceClassName = deviceName + "Setup";
             Class deviceClass = Class.forName(deviceClassName);
             DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
-            ds.configure(tree, nid.getInt());
+            ds.configure(tree, nid.getInt(), null);
             if (ds.getContentPane().getLayout() != null)
                 ds.pack();
 
@@ -599,11 +606,8 @@ public class DeviceSetup
     {
         activeNidHash.remove(new Integer(baseNid));
 
-        if (isChanged())
-            System.out.println("DATA CHANGED");
-        else
-            System.out.println("DATA NOT CHANGED");
         openDevicesV.removeElement(this);
+        if(deviceNode != null) deviceNode.setOnUnchecked();
         dispose();
         for (int i = 0; i < deviceCloseListenerV.size(); i++)
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
