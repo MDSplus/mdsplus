@@ -30,18 +30,34 @@ public class PELLETSetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceDispatch1 = new DeviceDispatch();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        deviceChannel1 = new DeviceChannel();
+        deviceField11 = new DeviceField();
+        jPanel10 = new javax.swing.JPanel();
+        deviceChannel2 = new DeviceChannel();
+        deviceField12 = new DeviceField();
+        jPanel11 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        deviceChannel3 = new DeviceChannel();
+        deviceField13 = new DeviceField();
+        jPanel13 = new javax.swing.JPanel();
+        deviceChannel4 = new DeviceChannel();
+        deviceField14 = new DeviceField();
+        jPanel14 = new javax.swing.JPanel();
+        jPanel15 = new javax.swing.JPanel();
+        deviceChannel5 = new DeviceChannel();
+        deviceField15 = new DeviceField();
+        jPanel16 = new javax.swing.JPanel();
+        deviceChannel6 = new DeviceChannel();
+        deviceField16 = new DeviceField();
+        jPanel17 = new javax.swing.JPanel();
+        jPanel18 = new javax.swing.JPanel();
+        deviceChannel7 = new DeviceChannel();
+        deviceField17 = new DeviceField();
+        jPanel19 = new javax.swing.JPanel();
+        deviceChannel8 = new DeviceChannel();
+        deviceField18 = new DeviceField();
 
         jCheckBox1.setText("jCheckBox1");
         jCheckBox1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -52,8 +68,8 @@ public class PELLETSetup extends DeviceSetup {
         setDeviceType("PELLET");
         setHeight(300);
         setWidth(550);
-        deviceButtons1.setCheckExpressions(new String[] {"if(_pel_t1_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_1/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_1 /off'); 1;", "if(_pel_t2_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_2/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_2 /off'); 1;", "if(_pel_t3_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_3/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_3 /off'); 1;", "if(_pel_t4_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_4/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_4 /off'); 1;", "if(_pel_t5_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_5/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_5 /off'); 1;", "if(_pel_t6_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_6/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_6 /off'); 1;", "if(_pel_t7_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_7/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_7 /off'); 1;", "if(_pel_t8_state == 1) tcl('set node \\\\DPEL_RAW::FIRE_PLT_8/on'); else tcl('set node \\\\DPEL_RAW::FIRE_PLT_8 /off'); 1;"});
-        deviceButtons1.setCheckMessages(new String[] {"state_pt1", "state_pt2", "state_pt3", "state_pt4", "state_pt5", "state_pt6", "state_pt7", "state_pt8"});
+        deviceButtons1.setCheckExpressions(new String[] {});
+        deviceButtons1.setCheckMessages(new String[] {});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setLayout(new java.awt.GridLayout(6, 0));
@@ -81,77 +97,125 @@ public class PELLETSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceField3.setIdentifier("pel_t1");
-        deviceField3.setLabelString(" T1:");
-        deviceField3.setNumCols(15);
-        deviceField3.setOffsetNid(11);
-        deviceField3.setShowState(true);
-        jPanel4.add(deviceField3);
+        deviceChannel1.setInSameLine(true);
+        deviceChannel1.setLabelString("P1 ");
+        deviceChannel1.setOffsetNid(10);
+        deviceChannel1.setShowVal("");
+        deviceChannel1.setUpdateIdentifier("");
+        jPanel9.add(deviceChannel1);
 
-        deviceField4.setIdentifier("pel_t5");
-        deviceField4.setLabelString("T5:");
-        deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(75);
-        deviceField4.setShowState(true);
-        jPanel4.add(deviceField4);
+        deviceField11.setIdentifier("");
+        deviceField11.setOffsetNid(11);
+        jPanel9.add(deviceField11);
 
-        jPanel1.add(jPanel4);
+        jPanel8.add(jPanel9);
 
-        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        deviceChannel2.setInSameLine(true);
+        deviceChannel2.setLabelString("P5");
+        deviceChannel2.setOffsetNid(74);
+        deviceChannel2.setShowVal("");
+        deviceChannel2.setUpdateIdentifier("");
+        jPanel10.add(deviceChannel2);
 
-        deviceField5.setIdentifier("pel_t2");
-        deviceField5.setLabelString("T2:");
-        deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(27);
-        deviceField5.setShowState(true);
-        jPanel5.add(deviceField5);
+        deviceField12.setIdentifier("");
+        deviceField12.setOffsetNid(75);
+        jPanel10.add(deviceField12);
 
-        deviceField6.setIdentifier("pel_t6");
-        deviceField6.setLabelString("T6:");
-        deviceField6.setNumCols(15);
-        deviceField6.setOffsetNid(91);
-        deviceField6.setShowState(true);
-        jPanel5.add(deviceField6);
+        jPanel8.add(jPanel10);
 
-        jPanel1.add(jPanel5);
+        jPanel1.add(jPanel8);
 
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceField7.setIdentifier("pel_t3");
-        deviceField7.setLabelString("T3:");
-        deviceField7.setNumCols(15);
-        deviceField7.setOffsetNid(43);
-        deviceField7.setShowState(true);
-        jPanel6.add(deviceField7);
+        deviceChannel3.setInSameLine(true);
+        deviceChannel3.setLabelString("P2");
+        deviceChannel3.setOffsetNid(26);
+        deviceChannel3.setShowVal("");
+        deviceChannel3.setUpdateIdentifier("");
+        jPanel12.add(deviceChannel3);
 
-        deviceField8.setIdentifier("pel_t7");
-        deviceField8.setLabelString("T7:");
-        deviceField8.setNumCols(15);
-        deviceField8.setOffsetNid(107);
-        deviceField8.setShowState(true);
-        jPanel6.add(deviceField8);
+        deviceField13.setIdentifier("");
+        deviceField13.setOffsetNid(27);
+        jPanel12.add(deviceField13);
 
-        jPanel1.add(jPanel6);
+        jPanel11.add(jPanel12);
 
-        jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        deviceChannel4.setInSameLine(true);
+        deviceChannel4.setLabelString("P6 ");
+        deviceChannel4.setOffsetNid(90);
+        deviceChannel4.setShowVal("");
+        deviceChannel4.setUpdateIdentifier("");
+        jPanel13.add(deviceChannel4);
 
-        deviceField9.setIdentifier("pel_t4");
-        deviceField9.setLabelString("T4:");
-        deviceField9.setNumCols(15);
-        deviceField9.setOffsetNid(59);
-        deviceField9.setShowState(true);
-        jPanel7.add(deviceField9);
+        deviceField14.setIdentifier("");
+        deviceField14.setOffsetNid(91);
+        jPanel13.add(deviceField14);
 
-        deviceField10.setIdentifier("pel_t8");
-        deviceField10.setLabelString("T8:");
-        deviceField10.setNumCols(15);
-        deviceField10.setOffsetNid(123);
-        deviceField10.setShowState(true);
-        jPanel7.add(deviceField10);
+        jPanel11.add(jPanel13);
 
-        jPanel1.add(jPanel7);
+        jPanel1.add(jPanel11);
+
+        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        deviceChannel5.setInSameLine(true);
+        deviceChannel5.setLabelString("P3");
+        deviceChannel5.setOffsetNid(42);
+        deviceChannel5.setShowVal("");
+        deviceChannel5.setUpdateIdentifier("");
+        jPanel15.add(deviceChannel5);
+
+        deviceField15.setIdentifier("");
+        deviceField15.setOffsetNid(43);
+        jPanel15.add(deviceField15);
+
+        jPanel14.add(jPanel15);
+
+        deviceChannel6.setInSameLine(true);
+        deviceChannel6.setLabelString("P7 ");
+        deviceChannel6.setOffsetNid(106);
+        deviceChannel6.setShowVal("");
+        deviceChannel6.setUpdateIdentifier("");
+        jPanel16.add(deviceChannel6);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setOffsetNid(107);
+        jPanel16.add(deviceField16);
+
+        jPanel14.add(jPanel16);
+
+        jPanel1.add(jPanel14);
+
+        jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+
+        deviceChannel7.setInSameLine(true);
+        deviceChannel7.setLabelString("P4");
+        deviceChannel7.setOffsetNid(58);
+        deviceChannel7.setShowVal("");
+        deviceChannel7.setUpdateIdentifier("");
+        jPanel18.add(deviceChannel7);
+
+        deviceField17.setIdentifier("");
+        deviceField17.setOffsetNid(59);
+        jPanel18.add(deviceField17);
+
+        jPanel17.add(jPanel18);
+
+        deviceChannel8.setInSameLine(true);
+        deviceChannel8.setLabelString("P8");
+        deviceChannel8.setOffsetNid(122);
+        deviceChannel8.setShowVal("");
+        deviceChannel8.setUpdateIdentifier("");
+        jPanel19.add(deviceChannel8);
+
+        deviceField18.setIdentifier("");
+        deviceField18.setOffsetNid(123);
+        jPanel19.add(deviceField18);
+
+        jPanel17.add(jPanel19);
+
+        jPanel1.add(jPanel17);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -160,25 +224,41 @@ public class PELLETSetup extends DeviceSetup {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceChannel deviceChannel1;
+    private DeviceChannel deviceChannel2;
+    private DeviceChannel deviceChannel3;
+    private DeviceChannel deviceChannel4;
+    private DeviceChannel deviceChannel5;
+    private DeviceChannel deviceChannel6;
+    private DeviceChannel deviceChannel7;
+    private DeviceChannel deviceChannel8;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
-    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
+    private DeviceField deviceField13;
+    private DeviceField deviceField14;
+    private DeviceField deviceField15;
+    private DeviceField deviceField16;
+    private DeviceField deviceField17;
+    private DeviceField deviceField18;
     private DeviceField deviceField2;
-    private DeviceField deviceField3;
-    private DeviceField deviceField4;
-    private DeviceField deviceField5;
-    private DeviceField deviceField6;
-    private DeviceField deviceField7;
-    private DeviceField deviceField8;
-    private DeviceField deviceField9;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
 
 
