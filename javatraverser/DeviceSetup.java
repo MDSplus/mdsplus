@@ -368,7 +368,11 @@ public class DeviceSetup
                 ( (DeviceUpdateListener) deviceUpdateListenerV.elementAt(i)).
                     deviceUpdated();
         }
-
+        if(deviceNode != null)
+        {
+            deviceNode.setAllOnUnchecked();
+            FrameRepository.frame.repaint();
+        }
     }
     public void apply(int currBaseNid)
     {
@@ -403,6 +407,7 @@ public class DeviceSetup
         }
         catch (Exception exc)
         {}
+        if(deviceNode != null) deviceNode.setAllOnUnchecked();
     }
     public void reset()
     {
