@@ -67,6 +67,13 @@ public class Node
         for (int i = 0; i < members.length; i++)
             members[i].setOnUnchecked();
     }
+    void setAllOnUnchecked()
+    {
+        Node currNode = this;
+        while(currNode.parent != null)
+            currNode = currNode.parent;
+        currNode.setOnUnchecked();
+    }
 
     public void setSubtree() throws DatabaseException, RemoteException
     {

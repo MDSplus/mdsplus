@@ -607,7 +607,7 @@ public class DeviceSetup
         activeNidHash.remove(new Integer(baseNid));
 
         openDevicesV.removeElement(this);
-        if(deviceNode != null) deviceNode.setOnUnchecked();
+        if(deviceNode != null) deviceNode.setAllOnUnchecked();
         dispose();
         for (int i = 0; i < deviceCloseListenerV.size(); i++)
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
