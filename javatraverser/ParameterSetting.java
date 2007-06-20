@@ -2843,6 +2843,25 @@ System.out.println("Print Done");
                                      new Boolean(rfx.isOn(deviceNids[i], 0)));
                 }
             }
+
+
+            rfx.setDefault(nids[idx], 0);
+            deviceNids = rfx.getWild(NodeInfo.USAGE_STRUCTURE, 0);
+            rfx.setDefault(baseNid, 0);
+            if (deviceNids != null)
+            {
+                for (int i = 0; i < deviceNids.length; i++)
+                {
+                    String fullPath = rfx.getInfo(deviceNids[i], 0).
+                                     getFullPath();
+                    mapSetupHash.put(fullPath, new Integer(idx));
+                    configOnHash.put(fullPath,
+                                     new Boolean(rfx.isOn(deviceNids[i], 0)));
+                    //Dummy value
+                    configHash.put(fullPath, "");
+                }
+            }
+
             rfx.setDefault(nids[idx], 0);
             deviceNids = rfx.getWild(NodeInfo.USAGE_SIGNAL, 0);
             rfx.setDefault(baseNid, 0);
@@ -3374,6 +3393,11 @@ System.out.println("Print Done");
         while (pathNames.hasMoreElements())
         {
             String currPath = (String) pathNames.nextElement();
+
+            if(currPath.contains("VP_SETUP"))
+                System.out.println(currPath);
+
+
             String currDecompiled = (String) currSetupHash.get(currPath);
             String modelDecompiled = (String) modelSetupHash.get(currPath);
             if (currDecompiled == null) currDecompiled = "";
