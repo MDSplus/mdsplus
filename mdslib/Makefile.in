@@ -15,7 +15,7 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 
 ifeq "@MDSTCPIP@" "mdsip_xio"
 include makefile-header
-CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I/usr/local/mdsplus/include
+CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
 LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) --allow-multiple-definition
 endif
 
