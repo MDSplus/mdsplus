@@ -17,7 +17,7 @@ LDFLAGS=@LDFLAGS@
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-ifeq "@SHARETYPEMOD@x" "x"
+ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else
 	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 

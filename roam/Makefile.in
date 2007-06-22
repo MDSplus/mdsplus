@@ -10,7 +10,7 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 
-ifeq "@SHARETYPEMOD@x" "x"
+ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else
 	modules = @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ 
