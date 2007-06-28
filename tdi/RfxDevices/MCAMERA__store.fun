@@ -115,8 +115,11 @@ write(*, "Multi CAMERA Store");
 					_msg = MdsValue("MCAMERAErrorMessage( $1 )",  _i );
 				else
 					_msg = MCAMERAErrorMessage( _i );
+					
+				write(*, "  ERROR ",  _msg);
 
-				_globalErrorMessage = _globalErrorMessage//trim(adjustl(_msg));
+				_globalErrorMessage = _globalErrorMessage//" "//_msg;
+ 				
 				_globalError = 1;
 				continue;
 			}
@@ -190,7 +193,9 @@ write(*,_bitPerPixel);
 					_msg = MCAMERAErrorMessage( _i );
 
 
-				_globalErrorMessage = _globalErrorMessage//trim(adjustl(_msg));
+				write(*, "ERROR ", _msg);
+
+				_globalErrorMessage = _globalErrorMessage//" "//_msg;
 				_globalError = 1;
 			} 
 			else 
@@ -208,13 +213,28 @@ write(*,_bitPerPixel);
 					_globalError = 1;
 				}
 			}
+		}
+	}
+
+
+	
+	for(  _i = 0; _i < _NUM_CAMERAS; _i++ )
+	{
+
+		_head_chan_nid =  _N_CHANNEL_0 + ( _i *  _K_NODES_PER_CHANNEL );
+ 
+		if(DevIsOn(DevNodeRef(_nid, _head_chan_nid )))
+		{ 
 
 			if( _remote )
 				MdsValue("NI_PCI_14XX->cameraHWClose( val( $1 ) )", _i);
 			else
 				NI_PCI_14XX->cameraHWClose( val( _i ) );
 		}
+
 	}
+
+
 
 	if( _remote )
 		MdsDisconnect();

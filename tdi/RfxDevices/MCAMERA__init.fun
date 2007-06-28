@@ -29,10 +29,14 @@ public fun MCAMERA__init(as_is _nid, optional _method)
 
     private _NUM_CAMERAS = 4;
 
-    private _TIMEOUT = 3000;
+/*
+time out di 6 minuti
+*/
+    private _TIMEOUT = (60 * 1000 * 6) / 3;
 
 write(*, "Multi CAMERA init");
 
+   _status = 0;
    _error = 0;
    _globalError = 0;
    _globalErrorMessage = "";
@@ -87,9 +91,9 @@ write(*, "Multi CAMERA init");
 				_globalError = 1;
 				continue;
 			}
-
+			
 			DevNodeCvt( _nid , _head_chan_nid +  _K_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _trig_mode = 0);
-			if(_trig_mode == 1)
+			if( _trig_mode == 1)
 			{
 				_trigTime = if_error(data(DevNodeRef(_nid , _head_chan_nid + _K_TRIG_SOURCE)), _error = 1);
 				if(_error)
@@ -101,41 +105,45 @@ write(*, "Multi CAMERA init");
 			}
 
 			
-			if(_remote)
+			if( _remote )
 				_status = MdsValue("NI_PCI_14XX->cameraHWOpen( val($1) )", _i );
 			else
 				_status = NI_PCI_14XX->cameraHWOpen( val( _i ) );
 
+
 			if( _status )
 			{
-
 				if( _remote )
 					_msg = MdsValue("MCAMERAErrorMessage( $1 )",  _i );
 				else
 					_msg = MCAMERAErrorMessage( _i );
 
-				_globalErrorMessage = _globalErrorMessage//trim(adjustl(_msg));
+				_globalErrorMessage = _globalErrorMessage//"\n"//_msg;
 				_globalError = 1;
+				
+				
 				continue;
 			}
-
 
 			if( _remote )
 				_status = MdsValue('NI_PCI_14XX->cameraHWArm( val( $1 ), val( $2 ), val( $3 ), val( $4 ) )', _i, _TIMEOUT, _n_frames ,  _trig_mode );
 			else
 				_status = NI_PCI_14XX->cameraHWArm( val( _i ), val(_TIMEOUT), val( _n_frames ), val( _trig_mode) );
 
+
 			if( _status )
 			{
 				if( _remote )
-					_msg =  MdsValue("MCAMERAErrorMessage( $1 )",  _camId );
+					_msg =  MdsValue("MCAMERAErrorMessage( $1 )",  _i );
 				else
-					_msg = MCAMERAErrorMessage( _camId );
+					_msg = MCAMERAErrorMessage( _i );
 
 
-				_globalErrorMessage = _globalErrorMessage//trim(adjustl(_msg));
+				_globalErrorMessage = _globalErrorMessage//"\n"//_msg;
+				
+				write(*, "CACCA ", _globalErrorMessage);
+
 				_globalError = 1;
-				continue;
 			}
 		}
 	}
