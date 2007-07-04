@@ -8,7 +8,7 @@ public class DeviceLabel
     extends DeviceComponent
 {
   Data data;
-//  public boolean textOnly = false;
+  public boolean textOnly = false;
 //  public boolean showState = false;
   public boolean displayEvaluated = false;
   public String labelString = "Label";
@@ -96,7 +96,7 @@ public class DeviceLabel
   {
     return showState;
   }
-
+*/
   public void setTextOnly(boolean textOnly)
   {
     this.textOnly = textOnly;
@@ -106,7 +106,7 @@ public class DeviceLabel
   {
     return textOnly;
   }
-*/
+
 //  protected JCheckBox checkB;
   protected JLabel label;
 //  protected JTextField textF;
@@ -285,7 +285,7 @@ public class DeviceLabel
         else
           textF.setText(textString);
 */
-        if (textString.charAt(0) == '"')
+        if (textOnly && textString.charAt(0) == '"')
           label.setText(textString.substring(1, textString.length() - 1));
         else
           label.setText(textString);
@@ -342,12 +342,12 @@ public class DeviceLabel
      String dataString = label.getText();
      if (dataString == null)
        return null;
-/*
+
      if (textOnly)
        return Tree.dataFromExpr("\"" + dataString + "\"");
      else
-*/
        return Tree.dataFromExpr(dataString);
+ 
   }
 
   protected boolean getState() {
