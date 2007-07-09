@@ -188,7 +188,7 @@ void ConnectReceived(void *callback_arg, globus_io_handle_t *listener_handle, gl
   globus_result_t result;
   globus_io_attr_t attr;
   globus_io_tcp_get_attr(listener_handle,&attr);
-  if ((result = globus_io_tcp_accept(listener_handle,&attr,handle)) != GLOBUS_SUCCESS)
+  if ((result = globus_io_tcp_accept(:istener_handle,&attr,handle)) != GLOBUS_SUCCESS)
   {
     globus_libc_printf("Error accepting client connection:\n\t");
     globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
@@ -294,7 +294,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
     perror("Error binding to service\n");
     exit(1);
   }
-  status = listen(s,5);
+  status = listen(s,128);
   if (status < 0)
   {
     printf("Error from listen\n");
@@ -321,7 +321,7 @@ SOCKET CreateListener(unsigned short port,void (*AddClient_in)(SOCKET,void *,cha
   globus_io_attr_set_secure_protection_mode(&attr,GLOBUS_IO_SECURE_PROTECTION_MODE_SAFE);
   AddClient = AddClient_in;
   DoMessage = DoMessage_in;
-  if ((result = globus_io_tcp_create_listener(&netport,5,&attr,handle)) != GLOBUS_SUCCESS)
+  if ((result = globus_io_tcp_create_listener(&netport,128,&attr,handle)) != GLOBUS_SUCCESS)
   {
     printf("Error in globus_io_tcp_create_listener:\n\t");
     globus_libc_printf(globus_object_printable_to_string(globus_error_get(result)));
