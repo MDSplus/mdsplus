@@ -1,14 +1,15 @@
 #!/bin/sh
 #
 #
-until [ "$reltype" = "major" -o "$reltype" = "minor" -o "$reltype" = "sub" ]
+until [ "$reltype" = "major" -o "$reltype" = "minor" -o "$reltype" = "sub" -o "$reltype" = "redo" ]
 do
-  /bin/echo -n "Which type of release are you creating? major, minor or sub [sub]: "
+  /bin/echo -n "Which type of release are you creating? major, minor, redo or sub [sub]: "
   read reltype
   case "${reltype:=sub}" in
 	"major");;
 	"minor");;
 	"sub");;
+        "redo");;
 	*) echo "Invalid type";;
   esac
 done
