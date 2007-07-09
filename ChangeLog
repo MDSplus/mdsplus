@@ -1,6 +1,18 @@
 Version 2.0-1
 
 
+2007-07-09 15:08  twf
+
+	* tdi/segments/PutSegment.fun:
+	
+	wrong routine called
+
+2007-07-09 09:18  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.0-1
+
 2007-07-09 09:12  twf
 
 	* idlmdswidgets/cw_wveditv5.c:
