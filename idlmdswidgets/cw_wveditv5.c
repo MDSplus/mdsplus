@@ -208,6 +208,7 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
   char *stub_rec;
   int numchildren;
   Widget *child;
+  if (*parent_id==0) return 1;
   IDL_WidgetStubLock(TRUE);
   if ((parent_rec = IDL_WidgetStubLookup(*parent_id))
       && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
