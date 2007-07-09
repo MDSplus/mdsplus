@@ -3,7 +3,7 @@
 include('PHPlot.php');
 if (!isset($_GET['plot']))
 {
-  if (!extension_loaded('mdsplus')){dl('mdsplus_php.so');}
+  if (!extension_loaded('mdsplus')){dl('mdsplus.so');}
   $handle=mdsplus_connect('alcdata');
   mdsplus_open($handle,'waveforms',$_GET['shot']);
   $signals=mdsplus_value($handle,'GETNCI("*","NODE_NAME")');

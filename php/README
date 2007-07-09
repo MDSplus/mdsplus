@@ -27,7 +27,7 @@ If you want to just build a loadable module for php you can do the following:
     cd PHP_SOURCE_DIR/ext/mdsplus
     ./build.sh
 
-This should produce a mdsplus_php.so loadable module. You would use the dl()
+This should produce a mdsplus.so loadable module. You would use the dl()
 function to load this module. Note the location that the dl() function uses
 to find loadable modules is set in the php.ini configuration file. This may,
 by default, be set to "./" which would require the module to be located

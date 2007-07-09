@@ -451,7 +451,7 @@ PHP_FUNCTION(mdsplus_value)
 			}
 			else
 			{
-				mdsplus_replace_error("mdsplus_php currently cannot handle multidimensional arrays",0);
+				mdsplus_replace_error("mdsplus php currently cannot handle multidimensional arrays",0);
                 RETVAL_FALSE;
                 return;
             }

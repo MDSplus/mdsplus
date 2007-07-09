@@ -1,5 +1,5 @@
 <?php
-if (!extension_loaded('mdsplus')){dl('mdsplus_php.so');}
+if (!extension_loaded('mdsplus')){dl('mdsplus.so');}
 
 if ($_GET["nid"] == "")
 {
