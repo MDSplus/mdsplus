@@ -21,6 +21,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
     private MdsPlusEvent m_event;
     private String m_jscript;
     private String m_jscript_function;
+    private String m_byte_data_only;
     private boolean m_started;
     public static final long serialVersionUID=1L;
 
@@ -33,9 +34,13 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
         if (m_started) {
             if (m_jscript_function != null) {
 		String js;
-		js = "javascript: " + m_jscript_function + "('" + (new String(ab)).trim() + "',new Array(";
+		js = "javascript: " + m_jscript_function + "(";
+		if (m_byte_data_only == null) 
+		    js = js + "'" + (new String(ab)).trim() + "',";
+                js = js + "new Array(";
 		for (int i=0;i<11;i++) js +=  "" + ab[i]+",";
                 js += "" + ab[11] + "));";
+		//System.out.println(js);
 	    	try
 		    {
 			getAppletContext().showDocument(new URL(js));
@@ -48,11 +53,15 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
 	    else {
 		try {
 		    String js;
-		    js = "var MdsEventDataString='" + (new String(ab)).trim() + "'; " +
-			"var MdsEventData = new Array(12); ";
+                    if (m_byte_data_only == null)
+			js = "var MdsEventDataString='" + (new String(ab)).trim() + "'; ";
+		    else
+			js="var MdsEventDataString=''; ";
+		    js = js + "var MdsEventData = new Array(12); ";
 		    for (int i=0;i<12;i++)
 			js += "MdsEventData[" + i + "]="+ab[i]+"; ";
 		    js += m_jscript;
+		    //System.out.println(js);
 		    Object a[] = new Object[1];
 		    Object jswin = null;
 		    Method getw = null, eval = null;
@@ -78,7 +87,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
 
     public void destroy()
     {
-        System.out.println("I am in destroy");
+        //System.out.println("I am in destroy");
         m_event.Cancel();
     }
 
@@ -95,7 +104,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
 
     public void init()
     {
-        System.out.println("I am in init");
+        //System.out.println("I am in init");
         Component c;
         m_started = false;
         usePageParams();
@@ -112,13 +121,13 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
 
     public void start()
     {
-        System.out.println("I am in start");
+        //System.out.println("I am in start");
         m_started = true;
     }
 
     public void stop()
     {
-        System.out.println("I am in stop");
+        //System.out.println("I am in stop");
         m_started = false;
     }
 
@@ -132,6 +141,7 @@ public class MdsPlusEventMonitor extends Applet implements MdsPlusEvents
             m_eventName = "LOGBOOK_EVENT";
         m_jscript = getParameter("jscript");
         m_jscript_function = getParameter("jscript_function");
+	m_byte_data_only = getParameter("byte_data_only");
         try
         {
             m_eventPort = Integer.parseInt(getParameter("eventPort"));
