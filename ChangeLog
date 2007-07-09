@@ -1,5 +1,1546 @@
-Version 1.8-2
+Version 2.0-1
 
+
+2007-07-09 09:12  twf
+
+	* idlmdswidgets/cw_wveditv5.c:
+	
+	Add error return
+
+2007-07-09 09:08  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Increase listen backlog to 128
+
+2007-07-09 09:05  twf
+
+	* javaclient/MdsPlusEventMonitor.java:
+	
+	Add byte_data_only option
+
+2007-07-09 09:02  twf
+
+	* php/: README, browser.php, build.sh, mdsplus.c, mdsplus.php,
+	sample.php, shot_display.php:
+	
+	change mdsplus_php to mdsplus
+
+2007-07-09 08:51  twf
+
+	* devscripts/MakeRelease:
+	
+	Add redo operation
+
+2007-07-04 03:17  manduchi
+
+	* javatraverser/: DeviceLabel.java, ISIS_GAINSetup.java:
+	
+	Fix
+
+2007-06-28 16:28  twf
+
+	* tdi/segments/GetExtendedAttribute.fun:
+	
+	Return attribute names if no name provided
+
+2007-06-28 16:23  twf
+
+	* tdi/segments/SetExtendedAttribute.fun:
+	
+	Do not evaluated data
+
+2007-06-28 13:30  manduchi
+
+	* tdi/RfxDevices/: MCAMERA__init.fun, MCAMERA__store.fun,
+	MCAMERAErrorMessage.fun:
+	
+	Fix
+
+2007-06-27 09:46  twf
+
+	* treeshr/TreeFindNode.c:
+	
+	fix the referencing of subnodes under a tag in a different tree
+	than the current default
+
+2007-06-22 18:05  twf
+
+	* mdsip_xio/Makefile.in, mdstcpip/Makefile.in, roam/Makefile.in:
+	
+	Fix makefiles with modules
+
+2007-06-20 10:45  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Report On/Off changes in model
+
+2007-06-20 09:15  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Use SHLIB
+
+2007-06-20 09:13  twf
+
+	* mdslib/Makefile.in:
+	
+	Remove /usr/local/mdsplus reference
+
+2007-06-18 09:08  manduchi
+
+	* javatraverser/PELLETSetup.java:
+	
+	Fix
+
+2007-06-18 08:34  manduchi
+
+	* javatraverser/DeviceSetup.java:
+	
+	Report on/off info when closing devices
+
+2007-06-18 07:44  manduchi
+
+	* javatraverser/: DeviceSetup.java, Node.java:
+	
+	Report on/off status after closing devices
+
+2007-06-15 12:04  manduchi
+
+	* javatraverser/: DeviceSetup.java, Node.java:
+	
+	Handle nodes put on/off by device setup
+
+2007-06-14 10:26  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix potential double free of memory
+
+2007-06-11 03:29  manduchi
+
+	* tdi/RfxDevices/RfxRotPertConfig.fun:
+	
+	Fix
+
+2007-05-28 09:59  manduchi
+
+	* javadispatcher/: jDispatcher.java, jDispatcherIp.java:
+	
+	Allow re-dispatching of action in different phases
+
+2007-05-28 05:48  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Report Alarms to RT and Session leader
+
+2007-05-21 14:27  twf
+
+	* mdsshr/librtl.c:
+	
+	set minimum date to 1-JAN-1970
+
+2007-05-21 12:12  twf
+
+	* mdsshr/librtl.c:
+	
+	fix enhanced time resolution
+
+2007-05-21 11:48  twf
+
+	* mdsshr/librtl.c:
+	
+	Add better time resolution
+
+2007-05-21 11:48  twf
+
+	* tcl/tcl_directory.c:
+	
+	Add more precision to timestamp output
+
+2007-05-18 08:36  manduchi
+
+	* cacheshr/: CachedTreeshr.c, ChannelAddress.h, ChannelFactory.cpp,
+	CoherencyManager.cpp, CommunicationChannel.cpp, IPAddress.h,
+	LockManager.h, Notifier.cpp, SharedDataManager.cpp,
+	SharedMemNodeData.h, TCPChannel.cpp, TCPChannel.h, Thread.cpp,
+	UDPChannel.cpp, UDPChannel.h:
+	
+	Ported to VxVorks
+
+2007-05-18 04:26  manduchi
+
+	* tdi/RfxDevices/RfxTorMhdControlConfig.fun:
+	
+	Add  MHD BR measure radius in title
+
+2007-05-17 08:49  manduchi
+
+	* javatraverser/MCAMERASetup.java:
+	
+	Setup form for Multi Camera device
+
+2007-05-17 05:41  manduchi
+
+	* tdi/RfxDevices/: MCAMERACalibration.fun, MCAMERAErrorMessage.fun,
+	MCAMERAReadFrames.fun, MCAMERA__add.fun, MCAMERA__init.fun,
+	MCAMERA__store.fun:
+	
+	Add function for Multi Camera device for frame grabber National
+	Instruments NI_14XX
+
+2007-05-16 14:42  twf
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	Fix length handling in clean
+
+2007-05-14 14:45  twf
+
+	* mdsshr/librtl.c:
+	
+	Take out debug printout
+
+2007-05-14 14:42  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix date time AGAIN
+
+2007-05-09 03:49  manduchi
+
+	* cacheshr/CommunicationChannel.cpp:
+	
+	Minor fixes
+
+2007-05-07 13:06  twf
+
+	* camshr/parse_cts_db.c:
+	
+	Fix buffer overflow
+
+2007-05-07 10:26  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix for bigendian
+
+2007-05-04 12:14  manduchi
+
+	* xtreeshr/: XTreeDefaultResample.c, XTreeGetTimedRecord.c:
+	
+	Report also the last sample when its time equals end time
+
+2007-05-04 10:31  twf
+
+	* tdi/segments/: GetExtendedAttribute.fun,
+	SetExtendedAttribute.fun:
+	
+	Add extended attribute functions
+
+2007-04-26 06:20  manduchi
+
+	* javamds/: javamds.c, javamds.def:
+	
+	Added support for segmented records
+
+2007-04-26 04:53  manduchi
+
+	* javadispatcher/: MdsActionsMonitor.java, MdsMonitor.java,
+	jDispatcher.properties, jDispatcherIp.java:
+	
+	Add monitor for actions failed
+
+2007-04-25 16:41  jas
+
+	* treeshr/: RemoteAccess.c, TreeAddNode.c, TreeCreatePulseFile.c,
+	TreeFindNode.c, TreeGetDbi.c, TreeGetNci.c, TreeGetRecord.c,
+	TreePutRecord.c, TreeSegments.c:
+	
+	remove bad signed / unsigned comparisons
+
+2007-04-25 16:40  twf
+
+	* mdsshr/: MdsCmprs.c, MdsEvents.c, MdsMalloc.c, MdsSerialize.c,
+	dasutil_routines4.c, librtl.c:
+	
+	Fix compiler warnings
+
+2007-04-25 16:04  twf
+
+	* tdishr/: TdiDecompile.c, TdiDoTask.c, TdiSubscript.c,
+	TdiVector.c:
+	
+	Fix compiler warnings
+
+2007-04-25 15:47  twf
+
+	* mitdevices/: b5910a.c, idl.c, io.c, l8212.c, mit_decoder.c,
+	mpb__decoder.c:
+	
+	Fix compiler warnings
+
+2007-04-25 14:58  twf
+
+	* include/mdsdescrip.h:
+	
+	array bounds should be signed
+
+2007-04-24 14:18  jas
+
+	* tdishr/TdiBound.c, tdishr/TdiGetShape.c, tdishr/tdinelements.h,
+	mdsshr/MdsGet1DxA.c:
+	
+	avoid divide by zero errors when calculating array lengths
+
+2007-04-24 11:24  twf
+
+	* tdi/segments/PutSegment.fun:
+	
+	Add PutSegment.fun
+
+2007-04-23 10:48  manduchi
+
+	* cacheshr/: IPAddress.h, UDPChannel.cpp:
+	
+	More fixes
+
+2007-04-23 10:15  manduchi
+
+	* cacheshr/: IPAddress.h, TCPChannel.cpp, TCPChannel.h,
+	UDPChannel.cpp, UDPChannel.h:
+	
+	More fixes
+
+2007-04-23 09:54  manduchi
+
+	* cacheshr/UDPChannel.cpp:
+	
+	Fixes
+
+2007-04-23 09:37  manduchi
+
+	* cacheshr/: ChannelFactory.cpp, ChannelFactory.h,
+	CommunicationChannel.h, IPAddress.h, TCPAddress.h, TCPChannel.cpp,
+	TCPChannel.h, UDPChannel.cpp, UDPChannel.h, cacheshr.dsp:
+	
+	Added UDP support
+
+2007-04-20 12:12  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h:
+	
+	Proceede on Linux...
+
+2007-04-20 12:04  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Proceede...
+
+2007-04-20 10:54  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede...
+
+2007-04-20 10:43  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede...
+
+2007-04-20 10:40  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede...
+
+2007-04-20 10:17  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede...
+
+2007-04-20 10:10  manduchi
+
+	* cacheshr/: Cache.cpp, CachedTreeshr.c:
+	
+	Proceede...
+
+2007-04-20 09:28  manduchi
+
+	* cacheshr/: CoherencyManager.cpp, SharedMemNodeData.h:
+	
+	Proceede...
+
+2007-04-20 06:06  manduchi
+
+	* cacheshr/: CoherencyManager.cpp, SharedMemNodeData.h:
+	
+	Proceede...
+
+2007-04-20 02:53  manduchi
+
+	* cacheshr/SharedMemNodeData.h:
+	
+	Proceede...
+
+2007-04-19 12:38  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede...
+
+2007-04-19 12:27  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Proceede with distributed cache test
+
+2007-04-19 12:00  manduchi
+
+	* cacheshr/: CachedTreeshr.c, SharedMemNodeData.h, TCPChannel.cpp:
+	
+	More fixes
+
+2007-04-19 10:06  manduchi
+
+	* mdstcpip/mdsipshr.dsp:
+	
+	Make it link on WIndows
+
+2007-04-19 08:46  manduchi
+
+	* tdi/RfxDevices/RfxRotPertConfig.fun:
+	
+	fix
+
+2007-04-19 06:42  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CoherencyManager.cpp,
+	TCPChannel.cpp:
+	
+	Initial fixes for distrubuted cache support
+
+2007-04-18 07:26  manduchi
+
+	* tdi/RfxDevices/: RfxRotPertConfig.fun,
+	RfxTorMhdControlConfig.fun, RfxVirtualShellConfig.fun:
+	
+	fix
+
+2007-04-18 07:26  manduchi
+
+	* tdi/RfxDevices/RfxModeControlConfig.fun:
+	
+	Fix
+
+2007-04-16 12:12  manduchi
+
+	* mdstcpip/mdsip_u.c:
+	
+	Remove test code
+
+2007-04-12 14:45  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Take out perror
+
+2007-04-12 14:24  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Added reconnect to server
+
+2007-04-12 06:13  manduchi
+
+	* javascope/ColorMapDialog.java:
+	
+	Fix
+
+2007-04-12 05:53  manduchi
+
+	* javascope/: ColorMapDialog.java, Signal.java, Waveform.java:
+	
+	Fix
+
+2007-04-12 02:52  manduchi
+
+	* javascope/WaveInterface.java:
+	
+	Fixed a bug in X limits setup
+
+2007-04-11 13:29  manduchi
+
+	* javascope/Waveform.java:
+	
+	Fix interpolation in point mode
+
+2007-04-11 11:33  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	re-enable locking
+
+2007-04-11 09:39  manduchi
+
+	* javascope/: ColorMapDialog.java, Frames.java:
+	
+	fix 8bit pixel visualization
+
+2007-04-11 07:28  manduchi
+
+	* javascope/: Frames.java, ProfileDialog.java:
+	
+	fix
+
+2007-04-11 07:01  manduchi
+
+	* javascope/: ColorMap.java, ColorMapDialog.java, Frames.java,
+	MdsWaveInterface.java, Waveform.java:
+	
+	Modify 16 bit gray image visualzation
+
+2007-04-11 05:36  manduchi
+
+	* javatraverser/FASTCAMSetup.java:
+	
+	fix
+
+2007-04-11 05:35  manduchi
+
+	* tdi/RfxDevices/: FASTCAM__calibrate.fun, FASTCAM__init.fun,
+	FASTCAM__store.fun, FASTCAM__trigger.fun, FastCamHWReadFrame.fun,
+	FastCamResToFrate.fun, FastCamTriggerCheck.fun:
+	
+	Tdi routines for Photron fast camera device
+
+2007-04-10 12:11  twf
+
+	* math/boxsmooth.c, mdsmisc/boxsmooth.c:
+	
+	Fix for few samples
+
+2007-04-09 14:42  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Fix socket stack code
+
+2007-04-06 15:52  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Prevent premature removal of dead messages
+
+2007-04-06 10:25  manduchi
+
+	* javascope/javascope.mak:
+	
+	fix
+
+2007-04-06 10:18  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Avoid checking for condition if the job has been removed
+
+2007-04-06 10:16  manduchi
+
+	* javascope/: ContourSignal.java, MdsWaveInterface.java,
+	Signal.java, jScope.java, javascope.mak:
+	
+	Contour Plot fix
+
+2007-04-05 19:03  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Do not unlink the pipe unless there is no process using it
+
+2007-04-05 11:14  twf
+
+	* mdsip_xio/mdsip_value.c:
+	
+	Avoid trashing memory if sending to remote server fails
+
+2007-04-05 11:11  twf
+
+	* mdstcpip/mdsipshr.c:
+	
+	Avoid trashing memory if sending to remote server fails
+
+2007-04-05 09:02  manduchi
+
+	* javascope/: Grid.java, LocalDataProvider.java,
+	MdsDataProvider.java, Signal.java, WaveInterface.java, jScope.java:
+	
+	Fixed resampling support
+
+2007-04-05 09:02  manduchi
+
+	* tdi/java/JavaDimOf.fun:
+	
+	Resampling support
+
+2007-04-04 12:48  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix deleted flag on windows
+
+2007-04-02 13:54  twf
+
+	* dwscope/evaluate.c:
+	
+	Fix events
+
+2007-04-02 08:58  manduchi
+
+	* javatraverser/PELLETSetup.java:
+	
+	Fix
+
+2007-03-30 16:35  jas
+
+	* tdi/MitDevices/dt216a__init.fun:
+	
+	typo
+
+2007-03-30 15:58  jas
+
+	* mitdevices/DT216A.uil, tdi/MitDevices/dt216a__add.fun,
+	tdi/MitDevices/dt216a__init.fun,
+	tdi/MitDevices/dt216a__part_name.fun,
+	tdi/MitDevices/dt216a__store.fun:
+	
+	seperate vin for each channel
+
+2007-03-30 11:44  jas
+
+	* tdi/MitDevices/Dt216PutSignal.fun:
+	
+	make it always refer to the stored ranges
+
+2007-03-29 17:04  jas
+
+	* mitdevices/: DT216A.uil, Makefile.in:
+	
+	adding	callibrated dt216 device setup
+
+2007-03-29 15:58  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding calibrated dt216 device
+
+2007-03-29 15:57  jas
+
+	* tdi/MitDevices/: Dt216PutSignal.fun, dt216a__add.fun,
+	dt216a__init.fun, dt216a__part_name.fun, dt216a__store.fun:
+	
+	calibrated dt216 support
+
+2007-03-28 12:00  manduchi
+
+	* javatraverser/: DeviceButtons.java, DeviceSetup.java,
+	ParameterSetting.java:
+	
+	More forms in ParameterSetting
+
+2007-03-28 09:38  jas
+
+	* javascope/jScope.template, javatraverser/jTraverser.template:
+	
+	use file for 64/32 determination
+
+2007-03-28 09:36  manduchi
+
+	* javascope/: Grid.java, MdsDataProvider.java, WaveInterface.java,
+	WaveformEvent.java:
+	
+	Added resampling support for both segmented and non segmented
+	records
+
+2007-03-28 09:35  manduchi
+
+	* tdi/java/: JavaResample.fun, JavaSetResampleLimits.fun:
+	
+	Allow resampling for segmented and non segmented data
+
+2007-03-28 09:33  manduchi
+
+	* xtreeshr/: XTreeDefaultResample.c, XTreeGetTimedRecord.c:
+	
+	Added resample flag
+
+2007-03-27 15:19  twf
+
+	* tdi/math/smooth1d.fun:
+	
+	Fix doing smooth of zero length array
+
+2007-03-27 13:55  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Avoid removing same client in multiple threads
+
+2007-03-26 15:49  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix logic in LibTimeToVMSTime
+
+2007-03-26 15:45  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix logic in LibTimeToVMSTime
+
+2007-03-26 14:35  twf
+
+	* mdsshr/: MdsSerialize.c, MdsXdRoutines.c:
+	
+	Fix for APD's
+
+2007-03-26 11:38  manduchi
+
+	* javatraverser/PELLETSetup.java:
+	
+	fIX
+
+2007-03-26 11:06  twf
+
+	* treeshr/TreeSetNci.c:
+	
+	Fix uninitialized memory
+
+2007-03-26 10:59  twf
+
+	* servershr/ServerQAction.c:
+	
+	Fix uninitialized memory
+
+2007-03-22 09:02  twf
+
+	* servershr/ServerBuildDispatchTable.c:
+	
+	Fix uninitialized memory error
+
+2007-03-22 09:01  twf
+
+	* mdstcpip/mdsip_socket_io.c, mdstcpip/mdsip_u.c,
+	mdstcpip/mdsiputil.c, treeshr/RemoteAccess.c,
+	treeshr/TreeCreatePulseFile.c, treeshr/TreeGetNci.c,
+	treeshr/TreeGetRecord.c, treeshr/TreeOpen.c,
+	treeshr/TreePutRecord.c, treeshr/TreeSegments.c,
+	treeshr/TreeSetNci.c, treeshr/treeshrp.h:
+	
+	Add the enhanced single I/O distributed client read
+
+2007-03-21 16:36  twf
+
+	* mdsshr/MdsXdRoutines.c:
+	
+	Fix zero length case
+
+2007-03-21 15:30  twf
+
+	* tdishr/TdiSame.c:
+	
+	fix uninitialized memory problem found by valgrind
+
+2007-03-21 12:15  manduchi
+
+	* javascope/Grid.java:
+	
+	Support for segmented records
+
+2007-03-21 11:32  manduchi
+
+	* tdi/java/: JavaResample.fun, JavaSetResampleLimits.fun:
+	
+	Handle segments
+
+2007-03-21 10:35  manduchi
+
+	* treeshr/TreeSegments.c:
+	
+	Let it be compiled by non C++ (variables declared in function body)
+
+2007-03-21 10:34  manduchi
+
+	* mdsshr/MdsShr.def:
+	
+	Add LibTimeToVMSTime to def file
+
+2007-03-21 10:32  manduchi
+
+	* mdsshr/librtl.c:
+	
+	Let it be compiled by non C++
+
+2007-03-21 10:25  manduchi
+
+	* javascope/: Signal.java, Waveform.java, WaveformMetrics.java:
+	
+	Supports Segmented records
+
+2007-03-20 13:12  manduchi
+
+	* javatraverser/FASTCAMSetup.java:
+	
+	Add form setup for Photron Fast Camera
+
+2007-03-20 12:43  jas
+
+	* tdi/MitDevices/Dt196AOSendFiles.fun:
+	
+	Use tar to reduce the number for files to ftp - requires
+	/ffs/untarWaves.sh
+
+2007-03-20 08:45  manduchi
+
+	* javascope/: Descriptor.java, MdsDataProvider.java,
+	WaveInterface.java, jScopeBrowseUrl.java:
+	
+	Some minor fix
+
+2007-03-20 05:17  manduchi
+
+	* tdi/RfxDevices/: FASTCAM__add.fun, FASTCAM__calibrate.fun,
+	FASTCAM__init.fun, FASTCAM__store.fun, FASTCAM__trigger.fun,
+	FastCamCheckHres.fun, FastCamCheckVres.fun, FastCamErrno.fun,
+	FastCamHWReadFrame.fun, FastCamHWcalibrate.fun, FastCamHWclose.fun,
+	FastCamHWinit.fun, FastCamHWtrigger.fun, FastCamResToFrate.fun:
+	
+	New and modified fun for fast camera device
+
+2007-03-19 10:42  manduchi
+
+	* tdi/RfxDevices/RFXDiagTimes__add.fun:
+	
+	Add conglomerate device for diagnostic timing setup
+
+2007-03-19 10:39  manduchi
+
+	* javatraverser/RFXDiagTimesSetup.java:
+	
+	Add setup for diagnostic trigger configuration
+
+2007-03-13 15:53  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add TreeGetTimeContext
+
+2007-03-12 11:46  twf
+
+	* tdishr/TdiSql.c:
+	
+	Fix empty answer list
+
+2007-03-09 11:49  manduchi
+
+	* tdi/RfxDevices/: FASTCAM__add.fun, FASTCAM__init.fun,
+	FASTCAM__store.fun, FASTCAM__trigger.fun, FastCamCheckHres.fun,
+	FastCamCheckVres.fun, FastCamHWReadFrame.fun, FastCamHWinit.fun,
+	FastCamHWtrigger.fun, FastCamResToFrate.fun:
+	
+	Fast Camera PHOTRON driver function
+
+2007-03-09 09:25  manduchi
+
+	* xtreeshr/XTreeDefaultSquish.c:
+	
+	More optimization
+
+2007-03-09 08:25  manduchi
+
+	* xtreeshr/XTreeGetTimedRecord.c:
+	
+	More tests
+
+2007-03-09 08:20  manduchi
+
+	* xtreeshr/XTreeGetTimedRecord.c:
+	
+	Improve performance
+
+2007-03-09 07:58  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Remove log message
+
+2007-03-09 07:54  manduchi
+
+	* xtreeshr/XTreeDefaultSquish.c:
+	
+	More fixes
+
+2007-03-09 07:25  manduchi
+
+	* xtreeshr/: XTreeDefaultResample.c, XTreeDefaultSquish.c:
+	
+	Fixes for limits and memory allocation
+
+2007-03-07 14:37  twf
+
+	* tdi/segments/SetTimeContext.fun:
+	
+	Add SetTimeContext.fun
+
+2007-03-07 13:25  twf
+
+	* tdi/segments/PutRow.fun:
+	
+	Add PutRow.fun
+
+2007-03-07 13:24  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add TreePutRow routine
+
+2007-03-07 13:24  twf
+
+	* include/treeshr.h:
+	
+	Add new messages for segments
+
+2007-03-07 13:23  twf
+
+	* include/mdsdescrip.h:
+	
+	Use unsigned dimensions in arrays
+
+2007-03-06 13:23  twf
+
+	* tdi/segments/BeginSegment.fun:
+	
+	Add tdi helper fun
+
+2007-03-06 13:15  twf
+
+	* xtreeshr/Makefile:
+	
+	use makefile.in
+
+2007-03-06 13:14  twf
+
+	* Makefile.in:
+	
+	Add xtreeshr
+
+2007-03-06 12:17  twf
+
+	* configure, configure.in:
+	
+	Add xtreeshr
+
+2007-03-06 12:17  twf
+
+	* xtreeshr/Makefile.in:
+	
+	Add Makefile.in
+
+2007-03-06 09:57  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Use LibTimeToVMSTime
+
+2007-03-06 09:55  twf
+
+	* mdsshr/librtl.c:
+	
+	Add LibTimeToVMSTime
+
+2007-03-05 09:09  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXTorControlSetup.java:
+	
+	Added Flux control
+
+2007-03-05 08:35  manduchi
+
+	* javatraverser/Devicebeans.jar,
+	javatraverser/RFXAxiToroidalControlSetup.java,
+	javatraverser/RFXControlSetup.java,
+	javatraverser/RFXTorControlSetup.java,
+	tdi/RfxDevices/RFXAxiToroidalControl__add.fun,
+	tdi/RfxDevices/RFXControl__add.fun,
+	tdi/RfxDevices/RFXControl__init.fun,
+	tdi/RfxDevices/RFXControl__store.fun:
+	
+	Added Flux control
+
+2007-03-05 06:32  manduchi
+
+	* tdi/RfxDevices/Aurora14__init.fun:
+	
+	More verbose error description
+
+2007-03-02 11:44  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Set class and dtype in nci in TreeBeginSegment
+
+2007-02-28 16:10  jas
+
+	* mdsshr/librtl.c:
+	
+	remove debug print of isdst
+
+2007-02-28 15:39  twf
+
+	* mdsshr/librtl.c, treeshr/TreePutRecord.c:
+	
+	Fix date conversion. AGAIN
+
+2007-02-28 10:51  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	More fixes on resampling
+
+2007-02-28 09:36  manduchi
+
+	* xtreeshr/: XTreeDefaultSquish.c, XTreeGetTimedRecord.c:
+	
+	More resampling fixes
+
+2007-02-28 06:12  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Fix memory access for segments larger than actual data
+
+2007-02-27 14:25  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Trim empty rows from timestamped segments
+
+2007-02-27 12:58  twf
+
+	* treeshr/treeshr.vcproj:
+	
+	VS2005
+
+2007-02-27 12:57  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix bad return status
+
+2007-02-27 09:14  twf
+
+	* treeshr/TreeSegments.c:
+	
+	do not use return status from unlock
+
+2007-02-26 10:42  manduchi
+
+	* xtreeshr/: XTreeDefaultResample.c, XTreeGetTimedRecord.c:
+	
+	Fix default resamples for DTYPE_QU times
+
+2007-02-26 10:42  manduchi
+
+	* treeshr/TreeShr.def:
+	
+	Export TreeSetContext
+
+2007-02-23 10:36  twf
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Fix compiler warnings
+
+2007-02-23 10:29  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix data overwrite
+
+2007-02-20 16:44  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix locking
+
+2007-02-16 14:10  jas
+
+	* idl/cw_wvedit.pro:
+	
+	reset UIDPATH on 64 bit to be explicitly /usr/local/mdsplus/uid32
+
+2007-02-16 13:36  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Convert back to float timebase only if it was not 64 bit integer
+
+2007-02-16 13:14  manduchi
+
+	* xtreeshr/: XTreeConvertToLongTime.c, XTreeDefaultResample.c,
+	XTreeGetTimedRecord.c:
+	
+	Handle 64 bit time representation
+
+2007-02-16 13:13  manduchi
+
+	* mdsshr/: MdsFloatToTime.c, MdsShr.def:
+	
+	Change MDSplus 64 bit time representation.
+
+2007-02-15 14:57  twf
+
+	* dwscope/dwscope.c:
+	
+	Fix for 64-bit
+
+2007-02-12 15:32  twf
+
+	* treeshr/TreeDeletePulseFile.c:
+	
+	Allow delete pulse on remote trees (distributed client)
+
+2007-02-12 15:09  twf
+
+	* tdishr/TdiArray.c:
+	
+	fix to allow larger arrays
+
+2007-02-12 14:42  twf
+
+	* mdsshr/librtl.c:
+	
+	fix to handle larger arrays
+
+2007-02-12 14:35  twf
+
+	* mdsshr/: MdsCmprs.c, MdsGet1DxA.c, MdsMalloc.c:
+	
+	fix to handle larger arrays
+
+2007-02-12 12:19  manduchi
+
+	* tcl/tcl_commands.dsp:
+	
+	Add tcl_setshowattribute to project
+
+2007-02-12 12:05  manduchi
+
+	* treeshr/treeshr.dsp:
+	
+	Add TreeSegments to project
+
+2007-02-08 10:57  twf
+
+	* mdsshr/MdsFloatToTime.c:
+	
+	Fix memcpy calls by passing address instead of values
+
+2007-02-06 15:22  jas
+
+	* tdi/MitDevices/: Dt196AOSendFiles.fun, Dt196AOWriteOutput.fun,
+	dt196ao__init.fun:
+	
+	do the ftps in one shot instead of channel by channel
+
+2007-02-06 11:29  twf
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	Do not zero out the nci during clean
+
+2007-02-06 10:54  twf
+
+	* mitdevices/mpb__decoder.c:
+	
+	Fix missing iosb argument in CamPiow calls
+
+2007-02-02 17:07  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Use PID in the fifo name
+
+2007-02-01 17:31  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	fix deadlock
+
+2007-01-31 16:04  manduchi
+
+	* mdsshr/: MdsFloatToTime.c, MdsShr.def:
+	
+	Add MdsTimeToDouble
+
+2007-01-29 16:06  twf
+
+	* treeshr/: TreeGetRecord.c, TreeSegments.c:
+	
+	Add segmented record support to TreeGetRecord
+
+2007-01-29 12:38  twf
+
+	* xtreeshr/XTreeGetTimedRecord.c:
+	
+	TreeGetXNci will return failure status if named attribute is
+	undefined
+
+2007-01-29 12:34  twf
+
+	* include/xtreeshr.h:
+	
+	Use TreeShr routines now
+
+2007-01-29 10:44  twf
+
+	* cacheshr/Makefile:
+	
+	Use g++ to link the shared library to add in the -lstdc++ library
+
+2007-01-29 08:32  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Fix
+
+2007-01-29 08:27  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Report MHD_BR into model
+
+2007-01-29 07:56  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Neverending fix
+
+2007-01-29 07:53  manduchi
+
+	* javatraverser/: ParameterSetting.java, ParameterSetting.java:
+	
+	Fix again
+
+2007-01-29 07:50  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Fix previous
+
+2007-01-29 07:47  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Report correct values in MHD_BR
+
+2007-01-26 15:11  twf
+
+	* treeshr/TreeSegments.c:
+	
+	TreeSegments.c
+
+2007-01-26 14:57  jas
+
+	* tdi/MitDevices/Dt196ReadChannel.fun:
+	
+	use trim and adjustl on _board	instead of div & mod to make string
+
+2007-01-26 14:33  twf
+
+	* tdi/segments/: BeginTimestampedSegment.fun, GetNumSegments.fun,
+	GetSegment.fun, GetSegmentLimits.fun, PutTimestampedSegment.fun,
+	testsegments.fun:
+	
+	Add segment functions
+
+2007-01-26 14:29  twf
+
+	* treeshr/Makefile.in:
+	
+	Add segmented record support
+
+2007-01-26 14:28  twf
+
+	* tcl/Makefile.in:
+	
+	add attribute support
+
+2007-01-26 14:27  twf
+
+	* tcl/: tcl_commands.ocld, tcl_setshow_attribute.c:
+	
+	Add attribute support
+
+2007-01-26 14:26  twf
+
+	* treeshr/: TreeCleanDatafile.c, TreeGetRecord.c, TreePutRecord.c,
+	TreeSegments.c, treeshrp.h:
+	
+	Add segmented record support
+
+2007-01-26 14:25  twf
+
+	* treeshr/: RemoteAccess.c, TreeDeleteNode.c, TreeFindTagWild.c,
+	TreeGetNci.c, TreeGetSetShotId.c, TreeOpen.c, TreeRenameNode.c,
+	TreeSetDbi.c:
+	
+	Remove unused variables
+
+2007-01-26 12:29  jas
+
+	* tdi/MitDevices/Dt196AOWriteOutput.fun:
+	
+	update to running + do not do IO if file fails to open
+
+2007-01-26 11:06  jas
+
+	* tdi/MitDevices/dt196ao__init.fun:
+	
+	need to convert to singles and remove a factor of 2 on the FAWG_DIV
+
+2007-01-26 11:01  jas
+
+	* tdi/MitDevices/dc1394__init.fun:
+	
+	debug prints from running copy
+
+2007-01-26 09:20  manduchi
+
+	* tdi/RfxDevices/: WE7116_9__store.fun, WE7116__store.fun:
+	
+	fix
+
+2007-01-25 11:43  manduchi
+
+	* tdi/RfxDevices/: ISIS_GAIN__init.fun, WE7000__init.fun,
+	WE7116__init.fun, WE7116__store.fun, WE7275__init.fun,
+	WE7275__store.fun, WEGroup__init.fun:
+	
+	Fix
+
+2007-01-24 12:57  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXMHDSetup.java:
+	
+	Fix Mode control table names
+
+2007-01-23 07:51  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Handle input calibration
+
+2007-01-19 04:28  manduchi
+
+	* javatraverser/RFXMHDSetup.java:
+	
+	Change tab name
+
+2007-01-18 18:05  twf
+
+	* mdsmisc/Makefile.in:
+	
+	do not try to make MdsMisc.exports
+
+2007-01-18 17:46  twf
+
+	* treeshr/TreeShr.exports:
+	
+	fix for aix
+
+2007-01-18 17:45  twf
+
+	* tdic/TdiShrExt.c:
+	
+	Fix for aix
+
+2007-01-18 17:43  twf
+
+	* mdsshr/: librtl.c, MdsShr.exports:
+	
+	fix for aix
+
+2007-01-18 17:37  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Take out test for apple or linux
+
+2007-01-18 17:34  twf
+
+	* mdslib/mdslib_ftest.f:
+	
+	include trailing null in string
+
+2007-01-18 17:33  twf
+
+	* Makefile.in, mdsdcl/Makefile.in, mdslib/Makefile.in,
+	mdsshr/Makefile.in, servershr/Makefile.in, tdishr/Makefile.in:
+	
+	fix for aix
+
+2007-01-18 16:49  twf
+
+	* configure:
+	
+	updated for aix
+
+2007-01-18 16:49  twf
+
+	* configure.in:
+	
+	Change fortran options on aix
+
+2007-01-18 16:31  twf
+
+	* configure:
+	
+	updated for aix
+
+2007-01-18 16:30  twf
+
+	* configure.in:
+	
+	Add no-strict-aliasing for aix
+
+2007-01-18 13:46  twf
+
+	* mdslib/MdsLib.c:
+	
+	fix for aix and fix for descr2
+
+2007-01-16 15:54  jas
+
+	* tdi/MitDevices/: Dt196AOWriteOutput.fun, dt196ao__add.fun:
+	
+	fix fawg_div default, and make curl silent
+
+2007-01-16 14:04  jas
+
+	* tdi/MitDevices/: dt196ao__help.fun, dt196ao__part_name.fun:
+	
+	more dt196ao methods
+
+2007-01-16 13:22  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	Adding dt196 function generator
+
+2007-01-16 13:20  jas
+
+	* tdi/MitDevices/: Dt196AOWriteOutput.fun, dt196ao__add.fun,
+	dt196ao__init.fun:
+	
+	function generator for dt196
+
+2007-01-16 11:06  manduchi
+
+	* tdi/RfxDevices/: RFXControl__add.fun, RFXControl__init.fun,
+	RFXControl__store.fun:
+	
+	New Feedback Control for RFX
+
+2007-01-16 11:05  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXMHDSetup.java,
+	RFXTorControlSetup.java:
+	
+	New Feedback control for RFX
+
+2007-01-16 10:58  jas
+
+	* tdi/RfxDevices/DIO2__init.fun:
+	
+	need to flatten the event array for both local AND remote operation
+
+2007-01-11 16:59  twf
+
+	* configure:
+	
+	customization for aix
+
+2007-01-11 16:59  twf
+
+	* configure.in:
+	
+	Add customization for aix
+
+2007-01-11 13:14  jas
+
+	* javatraverser/jTraverser.template:
+	
+	loop to find the image off by one in the fields of ls -l.  changed
+	from -f 12 to -f 13
+
+2007-01-09 15:44  jas
+
+	* tdi/RfxDevices/DIO2__dw_setup.fun:
+	
+	Make sure setup is done on the device head
+
+2007-01-09 14:06  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding DIO2
+
+2007-01-08 17:07  manduchi
+
+	* xtreeshr/: XTreeConvertToLongTime.c, XTreeDefaultResample.c:
+	
+	Handle timestamped segments
+
+2007-01-08 10:18  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	fix piped messaging handling
+
+2007-01-08 08:06  manduchi
+
+	* cacheshr/: ChannelAddress.h, ChannelFactory.cpp,
+	ChannelListener.h, CoherencyManager.h, Makefile, Segment.h,
+	SharedDataManager.cpp, SharedMemManager.cpp, SharedMemNodeData.h,
+	TCPAddress.h, TCPChannel.cpp, TCPChannel.h, Thread.cpp,
+	TreeWriter.h:
+	
+	Ported to Linux
+
+2007-01-07 15:39  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CachedTreeshr.c,
+	CallbackManager.h, ChannelAddress.h, ChannelFactory.cpp,
+	ChannelFactory.h, ChannelListener.h, CoherencyManager.cpp,
+	CoherencyManager.h, CommunicationChannel.cpp,
+	CommunicationChannel.h, Event.h, FreeSpaceManager.cpp,
+	FreeSpaceManager.h, Runnable.h, Segment.h, SharedDataManager.cpp,
+	SharedDataManager.h, SharedMemManager.cpp, SharedMemManager.h,
+	SharedMemNodeData.h, TCPAddress.h, TCPChannel.cpp, TCPChannel.h,
+	Thread.cpp, Thread.h, TreeWriter.cpp, TreeWriter.h, cacheshr.dsp:
+	
+	Added support for distributed cache
+
+2007-01-04 11:16  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 1.8-2
 
 2007-01-04 11:10  twf
 
