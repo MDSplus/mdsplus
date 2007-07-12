@@ -1090,6 +1090,10 @@ remove 28/06/2005
             {
             0, 0, 0, 0};
 
+        
+        resetMaximizeComponent();
+        
+        
         prop = pr.getProperty(prompt + ".columns");
         if (prop == null)
             throw (new IOException("missing columns keyword"));
