@@ -641,7 +641,8 @@ typedef struct tree_info
   unsigned  flush:1;/* Flush I/O's buffers                              */
   unsigned  reopen:1;  /* Re-open nci and datafile on next access */
   unsigned  rundown:1; /* Doing rundown */
-  unsigned  :13;/* Spare bits */
+  unsigned  mapped:1;  /* Tree is mapped into memory */
+  unsigned  :12;/* Spare bits */
   int       rundown_id;  /* Rundown event id */
   NODE *root;	/* Pointer to top node                              */
   TREE_EDIT *edit;	/* Pointer to edit block (if editting the tree      */

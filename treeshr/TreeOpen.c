@@ -350,7 +350,8 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
             if (local_info->channel)
             { int status;
               MDS_IO_CLOSE(local_info->channel);
-              status = munmap(local_info->section_addr[0],local_info->alq * 512);
+	      if (local_info->mapped)
+		status = munmap(local_info->section_addr[0],local_info->alq * 512);
             }
 #endif
             if (local_info->vm_addr)
@@ -881,6 +882,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         }
         strcat(resnam,type);
         info->channel = 0;
+        info->mapped = 0;
         if (new)
         {
           fd = MDS_IO_OPEN(resnam,O_RDWR | O_CREAT, 0777);
@@ -889,7 +891,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         {
           fd = MDS_IO_OPEN(resnam,edit_flag ? O_RDWR : O_RDONLY,0);
 #if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__)) && !defined(HAVE_VXWORKS_H)
-          info->channel = (MDS_IO_SOCKET(fd) == -1) ? fd : 0;
+          info->mapped = (MDS_IO_SOCKET(fd) == -1);
 #endif
         }
         if (fd == -1)
@@ -897,6 +899,8 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
           free(resnam);
           resnam = NULL;
         }
+        else
+          info->channel = fd;
         part = &path[i+1];
       }
     }
@@ -965,7 +969,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
       MDS_IO_LSEEK(*fd, 0, SEEK_SET);
       status = TreeNORMAL;
       info->filespec=resnam;
-      *nomap = info->channel == 0;
+      *nomap = !info->mapped;
     }
   }
   return status;
@@ -1013,7 +1017,7 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
     if (nomap)
     {
       MDS_IO_READ(fd,(void *)info->section_addr[0], 512 * info->alq);
-      MDS_IO_CLOSE(fd);
+      //      MDS_IO_CLOSE(fd);
       status = 1;
     }
 #if (!defined (HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
@@ -1025,7 +1029,10 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
       info->section_addr[0] = mmap(0,info->alq * 512,PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE, MDS_IO_FD(info->channel), 0);
       status = info->section_addr[0] != (void *)-1;
       if (!status)
+	{
         perror("Error mapping file");
+        info->mapped=0;
+	}
 
     }
 #endif
