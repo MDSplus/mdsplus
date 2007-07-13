@@ -110,7 +110,7 @@ int       MdsCmprs(
   unsigned short *pxus = (unsigned short *)px;
   short     *pxs = (short *)px;
   char     *ppack = pack_dsc_ptr->pointer;
-  _int64u       limit = ((_int64u)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX);
+  _int64u       limit = (pack_dsc_ptr->arsize > 4) ? ((_int64u)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX) : 0;
   register int j,
               yy;
   register int i,
