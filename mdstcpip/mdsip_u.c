@@ -1213,8 +1213,13 @@ static void ProcessMessage(Client *c, Message *message)
         fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         if (fd == -1)
 	{
-          while (fd == -1 && ((ptr = index(filename,'\\')) != 0)) *ptr='/';
-          fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
+          int retry_open=0;
+          while (fd == -1 && ((ptr = index(filename,'\\')) != 0)) {
+            retry_open=1;
+	    *ptr='/';
+	  }
+          if (retry_open) 
+	    fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
         }
 #ifndef HAVE_WINDOWS_H
         if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
@@ -1299,7 +1304,7 @@ static void ProcessMessage(Client *c, Message *message)
 #else
 	offset = ((_int64)message->h.dims[3]) << 32 | message->h.dims[2];
 #endif
-	status = lock_file(fd, offset, size, mode, &deleted);
+	status = lock_file(fd, offset, size, mode | nowait, &deleted);
         ans_d.pointer = (char *)&status;
         SendResponse(c,deleted ? 3 : 1,(struct descriptor *)&ans_d);
         break;
