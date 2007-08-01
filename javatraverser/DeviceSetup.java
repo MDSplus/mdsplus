@@ -145,7 +145,10 @@ public class DeviceSetup
         configure(subtree, baseNid, null);
     }
 
-
+    public void resetNidHash()
+    {
+        activeNidHash.remove(new Integer(baseNid));
+    }
     public void configure(RemoteTree subtree, int baseNid, Node node)
     {
         deviceNode = node;

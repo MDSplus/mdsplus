@@ -3784,6 +3784,7 @@ System.out.println("Print Done");
             device.setReadOnly(true);
         PrintButton printB = new PrintButton(0);
         device.addButton(printB);
+        device.resetNidHash();
     }
 
 
