@@ -266,13 +266,13 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceField1.setLabelString("Comment: ");
     deviceField1.setNumCols(20);
     deviceField1.setIdentifier("");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)4,(int)9,(int)10,(int)11,(int)12});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)3,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
     deviceChoice2.setLabelString("Trig1 control: ");
-    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "MODE CONTROL", "MODE CONTROL+ROT.PERT.", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"
-        });
+    deviceChoice2.setChoiceItems(new String[] {"ROT.PERTURBATION", "MODE CONTROL", "MODE CONTROL+ROT.PERT.(FEEDBACK)", "MODE CONTROL+ROT.PERT.(FEEDFORW)", "VIRTUAL SHELL",
+        "VS+ROT.PERT.(FEEDBACK)", "VS+ROT.PERT.(FEEDFORW)"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
         jPanel31.setLayout(gridLayout7);
