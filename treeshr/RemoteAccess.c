@@ -633,6 +633,7 @@ int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm)
     case NciFULLPATH:            getnci_str = "getnci(%d,'fullpath')"; break;
     case NciMINPATH:             getnci_str = "getnci(%d,'minpath')"; break;
     case NciPARENT_TREE:         getnci_str = "getnci(%d,'parent_tree')"; break;
+    case NciVERSION:             if (*(int *)itm->pointer == 0) continue; else status=0; break;
     default:  		         status = TreeILLEGAL_ITEM; break;
     }
     if (status & 1)
