@@ -175,7 +175,7 @@ old array is same size.
     if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
       memset(&segment_index,0,sizeof(segment_index));
       segment_index.previous_offset=segment_header.index_offset;
-      segment_header.index_offset=0;
+      segment_header.index_offset=-1;
       segment_index.first_idx=idx;
     }
     sinfo=&segment_index.segment[idx % SEGMENTS_PER_INDEX];
