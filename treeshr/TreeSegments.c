@@ -93,14 +93,16 @@ int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct desc
       return status;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (!(status & 1))
+      return status;
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
     local_nci.class = CLASS_R;
     local_nci.dtype = initialValue->dtype;
@@ -276,14 +278,16 @@ static int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, str
       return status;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (!(status & 1))
+      return status;
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -428,14 +432,16 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
       return status;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (!(status & 1))
+      return status;
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -544,16 +550,16 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     SEGMENT_HEADER segment_header;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
+    if (!(status & 1))
+      return status;
     if (info_ptr->data_file == 0)
       open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
-    if (!(status & 1))
-      return status;
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
       *num=0;
@@ -600,16 +606,16 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
     SEGMENT_HEADER segment_header;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
+    if (!(status & 1))
+      return status;
+    if (info_ptr->data_file == 0)
       open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
-    if (!(status & 1))
-      return status;
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
       status = TreeFAILURE;
@@ -728,16 +734,16 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
     SEGMENT_HEADER segment_header;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
+    if (!(status & 1))
+      return status;
+    if (info_ptr->data_file==0)
       open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
     else
       open_status = 1;
     if (!(open_status & 1))
       return open_status;
-    TreeGetViewDate(&saved_viewdate);
-    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
-    if (!(status & 1))
-      return status;
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
       status = TreeFAILURE;
@@ -852,6 +858,9 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
     NAMED_ATTRIBUTES_INDEX index,current_index;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
+    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (!(status & 1))
+      return status;
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -862,7 +871,6 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
     status=TreePutDsc(info_ptr,nid,value,&value_offset,&value_length);
     if (!(status & 1))
       return status;
-    status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
          index. If not, make an empty index and flag that a new index needs to be written.
     ****/
@@ -1056,12 +1064,6 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     unsigned int len=strlen(xnciname);
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file == 0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
-    else
-      open_status = 1;
-    if (!(open_status & 1))
-      return open_status;
     if (len == strlen(attnames)) {
       for (i=0;i<len;i++) {
 	if (__tolower(xnciname[i]) != attnames[i])
@@ -1075,6 +1077,12 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
     if (!(status & 1))
       return status;
+    if (info_ptr->data_file == 0)
+      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+    else
+      open_status = 1;
+    if (!(open_status & 1))
+      return open_status;
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
       status = TreeFAILURE;
@@ -1519,14 +1527,16 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
        return status;
      if (info_ptr->reopen)
        TreeCloseFiles(info_ptr);
+     TreeGetViewDate(&saved_viewdate);
+     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+     if (!(status & 1))
+       return status;
      if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
        open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
      else
        open_status = 1;
      if (!(open_status & 1))
        return open_status;
-     TreeGetViewDate(&saved_viewdate);
-     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
      local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
      local_nci.dtype=initialValue->dtype;
      local_nci.class=CLASS_R;
@@ -1706,14 +1716,16 @@ old array is same size.
 	 return status;
        if (info_ptr->reopen)
 	 TreeCloseFiles(info_ptr);
+       TreeGetViewDate(&saved_viewdate);
+       status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+       if (!(status & 1))
+	 return status;
        if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
 	 open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
        else
 	 open_status = 1;
        if (!(open_status & 1))
 	 return open_status;
-       TreeGetViewDate(&saved_viewdate);
-       status = TreeGetNciLw(info_ptr, nidx, &local_nci);
        /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attributes
 	    index. If not, make an empty index and flag that a new index needs to be written.
        ****/
