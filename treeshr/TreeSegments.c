@@ -544,7 +544,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     SEGMENT_HEADER segment_header;
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+    if (info_ptr->data_file == 0)
       open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
     else
       open_status = 1;
@@ -1056,7 +1056,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     unsigned int len=strlen(xnciname);
     if (info_ptr->reopen)
       TreeCloseFiles(info_ptr);
-    if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
+    if (info_ptr->data_file == 0)
       open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
     else
       open_status = 1;
