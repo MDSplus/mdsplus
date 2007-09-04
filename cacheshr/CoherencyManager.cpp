@@ -6,10 +6,11 @@
 #include <stdlib.h>
 //#define DEBUG
 
+#ifdef HAVE_VXWORKS_H
 #include <wdLib.h>
 #include <semLib.h>
 #include <sysLib.h>
-
+#endif
 
 CoherencyManager::CoherencyManager(SharedDataManager *dataManager)
 {
