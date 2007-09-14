@@ -21,6 +21,12 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 
+#ifndef HAVE_VXWORKS_H
+STATIC_CONSTANT _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+#else
+STATIC_CONSTANT _int64 addin = 0x7c95674beb4000;
+#endif
+
 extern int MdsCopyDxXd();
 STATIC_ROUTINE char *GetTdiLogical(char *name);
 
@@ -144,9 +150,10 @@ STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
   HKEY regkey2=(HKEY)0;
   HKEY regkey3=(HKEY)0;
   unsigned char *path = NULL;
-  if ( (RegOpenKeyEx((HKEY)where,"SOFTWARE",0,KEY_READ,&regkey1) == ERROR_SUCCESS) &&
-       (RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2) == ERROR_SUCCESS) &&
-       (RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3) == ERROR_SUCCESS) )
+  int status1=-1,status2=-1,status3=-1;
+  if ( ((status1 = RegOpenKeyEx((HKEY)where,"SOFTWARE",0,KEY_READ,&regkey1)) == ERROR_SUCCESS) &&
+       ((status2 = RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2)) == ERROR_SUCCESS) &&
+       ((status3 = RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3)) == ERROR_SUCCESS) )
   {
     unsigned long valtype;
     unsigned long valsize;
@@ -1368,6 +1375,7 @@ int libgetvm_(unsigned int *len, void **vm, ZoneList **zone)
   return(LibGetVm(len, vm, zone));
 }
 
+
 int libgetvm(int *len, void **vm, ZoneList **zone)
 {
   return(LibGetVm(len, vm, zone));
@@ -1459,6 +1467,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     }
     
 #ifndef HAVE_VXWORKS_H
+	{
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
 #ifdef HAVE_WINDOWS_H
@@ -1497,6 +1506,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
     }
     else
       tim = 0;
+}
 #else
     tim = 0; /*It is vxWorks */
 #endif
@@ -1504,18 +1514,12 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
   if (tim > 0) {
     LibTimeToVMSTime(&tim,qtime);
     return tim > 0;
-#ifndef HAVE_VXWORKS_H
-    _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-#else
-    _int64 addin = 0x7c95674beb4000;
-#endif
     *qtime = ((_int64)tim + daylight * 3600)*10000000+addin;
   } else
     *qtime = 0;
   return tim > 0;
 }
-static _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-  
+
 int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   time_t t;
 #ifdef HAVE_GETTIMEOFDAY
