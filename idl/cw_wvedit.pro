@@ -847,7 +847,6 @@ FUNCTION cw_wvedit, UVALUE = uval, TITLE = title, ROWS = rows, USER_BUTTONS=ubut
   info = file_info('/usr/local/mdsplus/uid32')  
   if (info.exists and !version.MEMORY_BITS eq 32) then $
     setenv,'UIDPATH=/usr/local/mdsplus/uid32/%U'
-  print,getenv("UIDPATH")
 	; Defaults for keywords
   IF NOT (KEYWORD_SET(uval))  THEN uval = 0
   IF NOT (KEYWORD_SET(title)) THEN title = ''
