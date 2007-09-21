@@ -240,7 +240,8 @@ Function cw_wvedit_external,subbase, id, num, rows,w,waves, menu_buttons, num_me
   num = long(num)
   rows = long(rows)
   total = long(total(rows))
-  status =  MdsValue('_w=0L, _waves = zero($,0), IdlMdsWidgets->CW_WVEDIT(ref($), ref($),ref($),ref($),ref(_w),ref(_waves),descr($),val($))', $
+  if (!version.memory_bits eq 32) then alloc="_w=0L, _waves=zero($,0)" else alloc="_w=0q, _waves=zero($,0q)"
+  status =  MdsValue(alloc + ', IdlMdsWidgets->CW_WVEDIT(ref($), ref($),ref($),ref($),ref(_w),ref(_waves),descr($),val($))', $
                  total ,subbase,id, num, rows, menu_buttons, num_menu_button)
   w = mdsvalue('_w')
   waves = mdsvalue('_waves')
@@ -846,7 +847,7 @@ FUNCTION cw_wvedit, UVALUE = uval, TITLE = title, ROWS = rows, USER_BUTTONS=ubut
   info = file_info('/usr/local/mdsplus/uid32')  
   if (info.exists and !version.MEMORY_BITS eq 32) then $
     setenv,'UIDPATH=/usr/local/mdsplus/uid32/%U'
-
+  print,getenv("UIDPATH")
 	; Defaults for keywords
   IF NOT (KEYWORD_SET(uval))  THEN uval = 0
   IF NOT (KEYWORD_SET(title)) THEN title = ''
@@ -865,7 +866,9 @@ FUNCTION cw_wvedit, UVALUE = uval, TITLE = title, ROWS = rows, USER_BUTTONS=ubut
 
 	; Rather than use a common block to store the widget IDs of the 
 	; widgets in your compound widget, put them into this structure so
-	; that you can have multiple instances of your compound widget.
+                                ; that you can have multiple instances
+                                ; of your compound widget.
+  if (!version.memory_bits eq 32) then waves=lonarr(total(rows)) else waves=lon64arr(10)
 
   waves = lonarr(total(rows))
 
@@ -897,7 +900,7 @@ FUNCTION cw_wvedit, UVALUE = uval, TITLE = title, ROWS = rows, USER_BUTTONS=ubut
 	; is an example component which is just a label.
   subbase = SetMargins(WIDGET_BASE(mainbase, /COLUMN, EVENT_FUNC="wvedit_events"),x=0,y=0)
   id = WIDGET_STUB(subbase)
-  w=0L
+  if (!version.memory_bits eq 32) then w=0L else w=0LL
   junk =  cw_wvedit_external(subbase,id,n_elements(rows),rows,w,waves, menu_buttons, num_menu_buttons)
   new_state = {coordw:0L, helpw:0L, idx:-1l, insertw:0L, removew:0L, pointer_mode:2l, m_idx:0L, plots:w, waves:waves, $
                rows:rows, kill_proc:kill_proc, event_proc:event_proc, id:id}
