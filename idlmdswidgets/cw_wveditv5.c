@@ -477,7 +477,7 @@ static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, int stub, Atom *s
         Boolean *knots = (Boolean *)XtMalloc(num * sizeof(Boolean));
         memset(knots,1,num * sizeof(Boolean));
         XtVaSetValues(w, XmdsNcount, num, XmdsNxValue, x, XmdsNyValue, value, XmdsNselections, knots, XmdsNpenDown, knots,
-            XmdsNxMax, 0, XmdsNxMin, 0, XmdsNyMax, 0, XmdsNyMin, 0, NULL);
+            XmdsNxMax, NULL, XmdsNxMin, NULL, XmdsNyMax, NULL, XmdsNyMin, NULL, NULL);
         XtFree((String)knots);
         XtFree((String)x);
         XtFree((String)value);
