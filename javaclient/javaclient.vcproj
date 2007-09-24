@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="jWebTree"
-	ProjectGUID="{085451E8-B770-45BF-8E91-051CE984ED2E}"
+	Name="javaclient"
+	ProjectGUID="{726FB005-0E19-4DDA-BEA3-1FCACB7AF9E2}"
 	Keyword="MakeFileProj"
 	>
 	<Platforms>
@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\jWebTree___Win32_Debug"
-			IntermediateDirectory=".\jWebTree___Win32_Debug"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -25,10 +25,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;jWebTree.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;jWebTree.mak&quot; /a"
+				BuildCommandLine="nmake /f &quot;javaclient.mak&quot;"
+				ReBuildCommandLine="nmake /f &quot;javaclient.mak&quot; /a"
 				CleanCommandLine=""
-				Output="..\java\classes\jWebTree.class"
+				Output="..\java\classes\MDSplus.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -39,8 +39,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\jWebTree___Win32_Release"
-			IntermediateDirectory=".\jWebTree___Win32_Release"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -48,10 +48,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="NMAKE /f jWebTree.mak"
-				ReBuildCommandLine="NMAKE /f jWebTree.mak /a"
-				CleanCommandLine="del *.class"
-				Output="..\java\classes\jWebTree.class"
+				BuildCommandLine="nmake /f &quot;javaclient.mak&quot;"
+				ReBuildCommandLine="nmake /f &quot;javaclient.mak&quot; /a"
+				CleanCommandLine="del ..\java\classes\MDSplus.jar *.class"
+				Output="..\java\classes\MDSplus.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -69,15 +69,49 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath=".\jWebTree.java"
+				RelativePath=".\MdsPlus.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusDescriptor.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusEvent.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusEventMonitor.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusEvents.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusException.java"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsPlusJavascriptEvent.java"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Makefile"
+			Filter="*.mak"
 			>
 			<File
-				RelativePath=".\jWebTree.mak"
+				RelativePath=".\javaclient.mak"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Properties"
+			Filter="properties"
+			>
+			<File
+				RelativePath=".\jScope.properties"
 				>
 			</File>
 		</Filter>
@@ -91,10 +125,6 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 		</Filter>
-		<File
-			RelativePath="jWebTree.bsc"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

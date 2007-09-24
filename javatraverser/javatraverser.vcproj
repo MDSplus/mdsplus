@@ -1,412 +1,556 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="8.00"
 	Name="javatraverser"
 	ProjectGUID="{5A9BCCFC-3A2D-422C-8A61-CA80C2E3BAA6}"
-	SccProjectName=""
-	SccLocalPath=""
-	Keyword="MakeFileProj">
+	Keyword="MakeFileProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javatraverser.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javatraverser.mak&quot; /a"
 				CleanCommandLine="del *.class ..\java\classes\jTraverser.jar"
-				Output="..\java\classes\jTraverser.jar"/>
+				Output="..\java\classes\jTraverser.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javatraverser.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javatraverser.mak&quot; /a"
-				Output="..\java\classes\MDSplus.jar"/>
+				CleanCommandLine=""
+				Output="..\java\classes\MDSplus.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath=".\ActionData.java">
+				RelativePath=".\ActionData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ActionEditor.java">
+				RelativePath=".\ActionEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ApdData.java">
+				RelativePath=".\ApdData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ArgEditor.java">
+				RelativePath=".\ArgEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ArrayData.java">
+				RelativePath=".\ArrayData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\AtomicData.java">
+				RelativePath=".\AtomicData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\AxisEditor.java">
+				RelativePath=".\AxisEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ByteArray.java">
+				RelativePath=".\ByteArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ByteData.java">
+				RelativePath=".\ByteData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\CallData.java">
+				RelativePath=".\CallData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\CompoundData.java">
+				RelativePath=".\CompoundData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ConditionData.java">
+				RelativePath=".\ConditionData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ConglomData.java">
+				RelativePath=".\ConglomData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Data.java">
+				RelativePath=".\Data.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataChangeEvent.java">
+				RelativePath=".\Database.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataChangeListener.java">
+				RelativePath=".\DatabaseException.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataEditor.java">
+				RelativePath=".\DataChangeEvent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataId.java">
+				RelativePath=".\DataChangeListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataListener.java">
+				RelativePath=".\DataEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Database.java">
+				RelativePath=".\DataId.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DatabaseException.java">
+				RelativePath=".\DataListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DependencyData.java">
+				RelativePath=".\DependencyData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceApply.java">
+				RelativePath=".\DeviceApply.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceApplyBeanInfo.java">
+				RelativePath=".\DeviceApplyBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceButtons.java">
+				RelativePath=".\DeviceButtons.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceButtonsBeanInfo.java">
+				RelativePath=".\DeviceButtonsBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceButtonsCustomizer.java">
+				RelativePath=".\DeviceButtonsCustomizer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceCancel.java">
+				RelativePath=".\DeviceCancel.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceCancelBeanInfo.java">
+				RelativePath=".\DeviceCancelBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChannel.java">
+				RelativePath=".\DeviceChannel.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChannelBeanInfo.java">
+				RelativePath=".\DeviceChannelBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChannelCustomizer.java">
+				RelativePath=".\DeviceChannelCustomizer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChoice.java">
+				RelativePath=".\DeviceChoice.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChoiceBeanInfo.java">
+				RelativePath=".\DeviceChoiceBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceChoiceCustomizer.java">
+				RelativePath=".\DeviceChoiceCustomizer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceComponent.java">
+				RelativePath=".\DeviceComponent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceControl.java">
+				RelativePath=".\DeviceControl.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceCustomizer.java">
+				RelativePath=".\DeviceCustomizer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceDispatch.java">
+				RelativePath=".\DeviceDispatch.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceDispatchBeanInfo.java">
+				RelativePath=".\DeviceDispatchBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceDispatchField.java">
+				RelativePath=".\DeviceDispatchField.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceField.java">
+				RelativePath=".\DeviceField.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceFieldBeanInfo.java">
+				RelativePath=".\DeviceFieldBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceFieldCustomizer.java">
+				RelativePath=".\DeviceFieldCustomizer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceOffsetNidEditor.java">
+				RelativePath=".\DeviceOffsetNidEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceOk.java">
+				RelativePath=".\DeviceOk.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceOkBeanInfo.java">
+				RelativePath=".\DeviceOkBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceReset.java">
+				RelativePath=".\DeviceReset.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceResetBeanInfo.java">
+				RelativePath=".\DeviceResetBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceSetup.java">
+				RelativePath=".\DeviceSetup.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DeviceSetupBeanInfo.java">
+				RelativePath=".\DeviceSetupBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DimensionData.java">
+				RelativePath=".\DimensionData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DispatchData.java">
+				RelativePath=".\DispatchData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DispatchEditor.java">
+				RelativePath=".\DispatchEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DisplayData.java">
+				RelativePath=".\DisplayData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DisplayNci.java">
+				RelativePath=".\DisplayNci.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DoubleArray.java">
+				RelativePath=".\DoubleArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DoubleData.java">
+				RelativePath=".\DoubleData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Editor.java">
+				RelativePath=".\Editor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\EventData.java">
+				RelativePath=".\EventData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ExprEditor.java">
+				RelativePath=".\ExprEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FloatArray.java">
+				RelativePath=".\FloatArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FloatArrayEditor.java">
+				RelativePath=".\FloatArrayEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FloatData.java">
+				RelativePath=".\FloatData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FrameRepository.java">
+				RelativePath=".\FrameRepository.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FunctionData.java">
+				RelativePath=".\FunctionData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\IllegalDataException.java">
+				RelativePath=".\IllegalDataException.java"
+				>
 			</File>
 			<File
-				RelativePath=".\IntArray.java">
+				RelativePath=".\IntArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\IntArrayEditor.java">
+				RelativePath=".\IntArrayEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\IntData.java">
+				RelativePath=".\IntData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\L6810Setup.java">
+				RelativePath=".\jTraverser.java"
+				>
 			</File>
 			<File
-				RelativePath=".\LabeledExprEditor.java">
+				RelativePath=".\L6810Setup.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MethodData.java">
+				RelativePath=".\LabeledExprEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MethodEditor.java">
+				RelativePath=".\MethodData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ModifyData.java">
+				RelativePath=".\MethodEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NidData.java">
+				RelativePath=".\ModifyData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Node.java">
+				RelativePath=".\NidData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeBeanInfo.java">
+				RelativePath=".\Node.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeDataPropertyEditor.java">
+				RelativePath=".\NodeBeanInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeDisplayData.java">
+				RelativePath=".\NodeDataPropertyEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeDisplayNci.java">
+				RelativePath=".\NodeDisplayData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeEditor.java">
+				RelativePath=".\NodeDisplayNci.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeId.java">
+				RelativePath=".\NodeEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeInfo.java">
+				RelativePath=".\NodeId.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeInfoPropertyEditor.java">
+				RelativePath=".\NodeInfo.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodeModifyData.java">
+				RelativePath=".\NodeInfoPropertyEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NodePropertyEditor.java">
+				RelativePath=".\NodeModifyData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\OctaArray.java">
+				RelativePath=".\NodePropertyEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\OctaData.java">
+				RelativePath=".\OctaArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ParameterData.java">
+				RelativePath=".\OctaData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\PathData.java">
+				RelativePath=".\ParameterData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ProcedureData.java">
+				RelativePath=".\PathData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ProcedureEditor.java">
+				RelativePath=".\ProcedureData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ProgramData.java">
+				RelativePath=".\ProcedureEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ProgramEditor.java">
+				RelativePath=".\ProgramData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\QuadArray.java">
+				RelativePath=".\ProgramEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\QuadData.java">
+				RelativePath=".\QuadArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RangeData.java">
+				RelativePath=".\QuadData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RangeEditor.java">
+				RelativePath=".\RangeData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RoutineData.java">
+				RelativePath=".\RangeEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RoutineEditor.java">
+				RelativePath=".\RoutineData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ShortArray.java">
+				RelativePath=".\RoutineEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ShortData.java">
+				RelativePath=".\ShortArray.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SignalData.java">
+				RelativePath=".\ShortData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\StringData.java">
+				RelativePath=".\SignalData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SyntaxException.java">
+				RelativePath=".\StringData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TaskEditor.java">
+				RelativePath=".\SyntaxException.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Tree.java">
+				RelativePath=".\TaskEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TreeDialog.java">
+				RelativePath=".\Tree.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TreeNode.java">
+				RelativePath=".\TreeDialog.java"
+				>
 			</File>
 			<File
-				RelativePath=".\UnsupportedDataException.java">
+				RelativePath=".\TreeNode.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WindowData.java">
+				RelativePath=".\UnsupportedDataException.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WindowEditor.java">
+				RelativePath=".\WindowData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WithErrorData.java">
+				RelativePath=".\WindowEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WithUnitsData.java">
+				RelativePath=".\WithErrorData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jTraverser.java">
+				RelativePath=".\WithUnitsData.java"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Makefile"
-			Filter="mak">
+			Filter="mak"
+			>
 			<File
-				RelativePath=".\javatraverser.mak">
+				RelativePath=".\javatraverser.mak"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

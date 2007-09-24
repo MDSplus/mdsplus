@@ -519,14 +519,14 @@ static int va_MdsValue(char *expression, ...)
 
 	switch (arg->ndims)
 	{
-	  case 0: ansdescr = descr(&dtype, dptr, &null, &dlen); break;
-	  case 1: ansdescr = descr(&dtype, dptr, &dims[0], &null, &dlen); break;
-	  case 2: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen); break;
-	  case 3: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen); break;
-	  case 4: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen); break;
-	  case 5: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null, &dlen); break;
-	  case 6: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &null, &dlen); break;
-	  case 7: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &dims[6], &null, &dlen); break;
+	  case 0: ansdescr = va_descr(&dtype, dptr, &null, &dlen); break;
+	  case 1: ansdescr = va_descr(&dtype, dptr, &dims[0], &null, &dlen); break;
+	  case 2: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen); break;
+	  case 3: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen); break;
+	  case 4: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen); break;
+	  case 5: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null, &dlen); break;
+	  case 6: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &null, &dlen); break;
+	  case 7: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &dims[6], &null, &dlen); break;
 	}
 
 	MdsValueSet(dscAnswer, descrs[ansdescr-1], length);
@@ -740,14 +740,14 @@ static int va_MdsValue2(char *expression, ...)
 
 	switch (arg->ndims)
 	{
-	  case 0: ansdescr = descr(&dtype, dptr, &null, &dlen); break;
-	  case 1: ansdescr = descr(&dtype, dptr, &dims[0], &null, &dlen); break;
-	  case 2: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen); break;
-	  case 3: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen); break;
-	  case 4: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen); break;
-	  case 5: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null, &dlen); break;
-	  case 6: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &null, &dlen); break;
-	  case 7: ansdescr = descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &dims[6], &null, &dlen); break;
+	  case 0: ansdescr = va_descr(&dtype, dptr, &null, &dlen); break;
+	  case 1: ansdescr = va_descr(&dtype, dptr, &dims[0], &null, &dlen); break;
+	  case 2: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &null, &dlen); break;
+	  case 3: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &null, &dlen); break;
+	  case 4: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &null, &dlen); break;
+	  case 5: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &null, &dlen); break;
+	  case 6: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &null, &dlen); break;
+	  case 7: ansdescr = va_descr(&dtype, dptr, &dims[0], &dims[1], &dims[2], &dims[3], &dims[4], &dims[5], &dims[6], &null, &dlen); break;
 	}
 
 	MdsValueSet(dscAnswer, descrs[ansdescr-1], length);
@@ -1758,51 +1758,51 @@ int WINAPI descr1VB(int *dtype, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
     int len = strlen(value);
-    return descr(dtype,value,&zero,&len);
+    return va_descr(dtype,value,&zero,&len);
   } else
-    return descr(dtype,value,&zero);
+    return va_descr(dtype,value,&zero);
 }
-int WINAPI descr1VB2(int *dtype,int *len) {return (descr2(dtype,&zero,len));}
+int WINAPI descr1VB2(int *dtype,int *len) {return (va_descr2(dtype,&zero,len));}
 int WINAPI descr2VB(int *dtype, int *num, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
     int len = strlen(value);
-    return descr(dtype,value,num,&zero,&len);
+    return va_descr(dtype,value,num,&zero,&len);
   } else
-    return descr(dtype,value,num,&zero);
+    return va_descr(dtype,value,num,&zero);
 }
-int WINAPI descr2VB2(int *dtype,int *num,int *len) {return (descr2(dtype,num,&zero,len));}
+int WINAPI descr2VB2(int *dtype,int *num,int *len) {return (va_descr2(dtype,num,&zero,len));}
 int WINAPI descr3VB(int *dtype, int *n1, int *n2, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
     int len = strlen(value);
-    return descr(dtype,value,n1,n2,&zero,&len);
+    return va_descr(dtype,value,n1,n2,&zero,&len);
   } else
-    return descr(dtype,value,n1,n2,&zero);
+    return va_descr(dtype,value,n1,n2,&zero);
 }
-int WINAPI descr3VB2(int *dtype, int *n1, int *n2, int *len) {return (descr2(dtype,n1,n2,&zero,len));}
+int WINAPI descr3VB2(int *dtype, int *n1, int *n2, int *len) {return (va_descr2(dtype,n1,n2,&zero,len));}
 int WINAPI descr4VB(int *dtype, int *n1, int *n2, int *n3, void *value)
 { if (*dtype == DTYPE_CSTRING)
   {
     int len = strlen(value);
-    return descr(dtype,value,n1,n2,n3,&zero,&len);
+    return va_descr(dtype,value,n1,n2,n3,&zero,&len);
   } else
-    return descr(dtype,value,n1,n2,n3,&zero);
+    return va_descr(dtype,value,n1,n2,n3,&zero);
 }
-int WINAPI descr4VB2(int *dtype, int *n1, int *n2, int *n3,int *len) {return (descr2(dtype,n1,n2,n3,&zero,len));}
+int WINAPI descr4VB2(int *dtype, int *n1, int *n2, int *n3,int *len) {return (va_descr2(dtype,n1,n2,n3,&zero,len));}
 int WINAPI MdsValue1VB(char *expression, int *ansd, int *retlen)
- { return MdsValue(expression,ansd,&zero,retlen);}
+ { return va_MdsValue(expression,ansd,&zero,retlen);}
 int WINAPI MdsValue1VB2(char *expression, int *ansd, void *value, int *retlen)
- { return MdsValue2(expression,ansd,value,&zero,retlen);}
+ { return va_MdsValue2(expression,ansd,value,&zero,retlen);}
 
 int WINAPI MdsValue2VB(char *expression, int *arg1d, int *ansd, int *retlen)
- { return MdsValue(expression,arg1d,ansd,&zero,retlen);}
+ { return va_MdsValue(expression,arg1d,ansd,&zero,retlen);}
 int WINAPI MdsValue2VB2(char *expression, int *arg1d, void *arg1v, int *ansd, void *value, int *retlen)
- { return MdsValue2(expression,arg1d,arg1v,ansd,value,&zero,retlen);}
+ { return va_MdsValue2(expression,arg1d,arg1v,ansd,value,&zero,retlen);}
 int WINAPI MdsValue3VB(char *expression, int *arg1d, int *arg2d, int *ansd, int *retlen)
- { return MdsValue(expression,arg1d,arg2d,ansd,&zero,retlen);}
+ { return va_MdsValue(expression,arg1d,arg2d,ansd,&zero,retlen);}
 int WINAPI MdsValue3VB2(char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v, int *ansd, void *value, int *retlen)
- { return MdsValue2(expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero,retlen);}
+ { return va_MdsValue2(expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero,retlen);}
 int WINAPI MdsPut1VB(char *node, char *expression, int *ansd)
  { return MdsPut(node,expression,ansd,&zero);}
 int WINAPI MdsPut1VB2(char *node, char *expression, int *ansd, void *value)

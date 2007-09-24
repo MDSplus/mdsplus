@@ -1,413 +1,557 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="8.00"
 	Name="javascope"
 	ProjectGUID="{AC9DEDE9-579F-414E-9BA9-39D519B58F76}"
-	SccProjectName=""
-	SccLocalPath=""
-	Keyword="MakeFileProj">
+	Keyword="MakeFileProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
-				Output="..\java\classes\MDSplus.jar"/>
+				CleanCommandLine=""
+				Output="..\java\classes\jScope.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
 				CleanCommandLine="del ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\WaveDisplay.jar ..\java\classes\jScope.properties *.class"
-				Output="..\java\classes\jScope.jar"/>
+				Output="..\java\classes\jScope.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath="ASCIIDataProvider.java">
+				RelativePath=".\AboutWindow.java"
+				>
 			</File>
 			<File
-				RelativePath=".\AboutWindow.java">
+				RelativePath="ASCIIDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath="AsdexDataProvider.java">
+				RelativePath="AsdexDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Base64.java">
+				RelativePath=".\Base64.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ColorDialog.java">
+				RelativePath=".\ColorDialog.java"
+				>
 			</File>
 			<File
-				RelativePath=".\CompositeWaveDisplay.java">
+				RelativePath=".\CompositeWaveDisplay.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ConnectionEvent.java">
+				RelativePath=".\ConnectionEvent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ConnectionListener.java">
+				RelativePath=".\ConnectionListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataAccess.java">
+				RelativePath=".\DataAccess.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataAccessURL.java">
+				RelativePath=".\DataAccessURL.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataCacheObject.java">
+				RelativePath=".\DataCached.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataCached.java">
+				RelativePath=".\DataCacheObject.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataProvider.java">
+				RelativePath=".\DataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DataServerItem.java">
+				RelativePath=".\DataServerItem.java"
+				>
 			</File>
 			<File
-				RelativePath="DemoAccess.java">
+				RelativePath="DemoAccess.java"
+				>
 			</File>
 			<File
-				RelativePath=".\DemoDataProvider.java">
+				RelativePath=".\DemoDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Descriptor.java">
+				RelativePath=".\Descriptor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FontSelection.java">
+				RelativePath=".\FontSelection.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FrameData.java">
+				RelativePath=".\FrameData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FrameJAI.java">
+				RelativePath=".\FrameJAI.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Frames.java">
+				RelativePath=".\Frames.java"
+				>
 			</File>
 			<File
-				RelativePath=".\FtuDataProvider.java">
+				RelativePath=".\FtuDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Grid.java">
+				RelativePath=".\Grid.java"
+				>
 			</File>
 			<File
-				RelativePath="ImageTransferable.java">
+				RelativePath="ImageTransferable.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JetDataProvider.java">
+				RelativePath=".\JetDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JetMdsDataProvider.java">
+				RelativePath=".\JetMdsDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiDataSource.java">
+				RelativePath=".\JiDataSource.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiDim.java">
+				RelativePath=".\JiDim.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcSource.java">
+				RelativePath=".\JiNcSource.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVar.java">
+				RelativePath=".\JiNcVar.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarByte.java">
+				RelativePath=".\JiNcVarByte.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarChar.java">
+				RelativePath=".\JiNcVarChar.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarDouble.java">
+				RelativePath=".\JiNcVarDouble.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarFloat.java">
+				RelativePath=".\JiNcVarFloat.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarImp.java">
+				RelativePath=".\JiNcVarImp.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarInt.java">
+				RelativePath=".\JiNcVarInt.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiNcVarShort.java">
+				RelativePath=".\JiNcVarShort.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiSlab.java">
+				RelativePath=".\JiSlab.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiSlabIterator.java">
+				RelativePath=".\JiSlabIterator.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiVar.java">
+				RelativePath=".\JiVar.java"
+				>
 			</File>
 			<File
-				RelativePath=".\JiVarImpl.java">
+				RelativePath=".\JiVarImpl.java"
+				>
 			</File>
 			<File
-				RelativePath=".\LocalDataProvider.java">
+				RelativePath=".\jScope.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsAccess.java">
+				RelativePath=".\jScope_1.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsConnection.java">
+				RelativePath=".\jScope_2.java"
+				>
 			</File>
 			<File
-				RelativePath="MdsContinuousDataProvider.java">
+				RelativePath=".\jScopeBrowseSignals.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsDataClient.java">
+				RelativePath=".\jScopeBrowseUrl.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsDataProvider.java">
+				RelativePath=".\jScopeDefaultValues.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsIOException.java">
+				RelativePath=".\jScopeMac.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsMessage.java">
+				RelativePath=".\jScopeMultiWave.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsPlusBrowseSignals.java">
+				RelativePath=".\jScopeMultiWave_2.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MdsWaveInterface.java">
+				RelativePath=".\jScopeProperties.java"
+				>
 			</File>
 			<File
-				RelativePath="MdsplusParser.java">
+				RelativePath=".\jScopeWaveContainer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MultiWavePopup.java">
+				RelativePath=".\jScopeWaveContainer_2.java"
+				>
 			</File>
 			<File
-				RelativePath=".\MultiWaveform.java">
+				RelativePath=".\jScopeWavePopup.java"
+				>
 			</File>
 			<File
-				RelativePath=".\NotConnectedDataProvider.java">
+				RelativePath=".\LocalDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\ProfileDialog.java">
+				RelativePath=".\MdsAccess.java"
+				>
 			</File>
 			<File
-				RelativePath="PropertiesEditor.java">
+				RelativePath=".\MdsConnection.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RandomAccessData.java">
+				RelativePath="MdsContinuousDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RdaAccess.java">
+				RelativePath=".\MdsDataClient.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RotateFilter.java">
+				RelativePath=".\MdsDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RowColumnContainer.java">
+				RelativePath=".\MdsIOException.java"
+				>
 			</File>
 			<File
-				RelativePath=".\RowColumnLayout.java">
+				RelativePath=".\MdsMessage.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SetupDataDialog.java">
+				RelativePath=".\MdsPlusBrowseSignals.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SetupDefaults.java">
+				RelativePath="MdsplusParser.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SetupWaveformParams.java">
+				RelativePath=".\MdsWaveInterface.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Signal.java">
+				RelativePath=".\MultiWaveform.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SignalBox.java">
+				RelativePath=".\MultiWavePopup.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SignalCache.java">
+				RelativePath=".\NotConnectedDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\SignalsBoxDialog.java">
+				RelativePath=".\ProfileDialog.java"
+				>
 			</File>
 			<File
-				RelativePath="SshTunneling.java">
+				RelativePath="PropertiesEditor.java"
+				>
 			</File>
 			<File
-				RelativePath="T2DataProvider.java">
+				RelativePath=".\RandomAccessData.java"
+				>
 			</File>
 			<File
-				RelativePath="TSDataProvider.java">
+				RelativePath=".\RdaAccess.java"
+				>
 			</File>
 			<File
-				RelativePath="TWUFetchOptions.java">
+				RelativePath=".\RotateFilter.java"
+				>
 			</File>
 			<File
-				RelativePath="TWUProperties.java">
+				RelativePath=".\RowColumnContainer.java"
+				>
 			</File>
 			<File
-				RelativePath="TWUSignal.java">
+				RelativePath=".\RowColumnLayout.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TextorBrowseSignals.java">
+				RelativePath=".\SetupDataDialog.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TwuAccess.java">
+				RelativePath=".\SetupDefaults.java"
+				>
 			</File>
 			<File
-				RelativePath=".\TwuDataProvider.java">
+				RelativePath=".\SetupWaveformParams.java"
+				>
 			</File>
 			<File
-				RelativePath="TwuNameServices.java">
+				RelativePath=".\Signal.java"
+				>
 			</File>
 			<File
-				RelativePath="TwuSimpleFrameData.java">
+				RelativePath=".\SignalBox.java"
+				>
 			</File>
 			<File
-				RelativePath="TwuSingleSignal.java">
+				RelativePath=".\SignalCache.java"
+				>
 			</File>
 			<File
-				RelativePath="TwuWaveData.java">
+				RelativePath=".\SignalsBoxDialog.java"
+				>
 			</File>
 			<File
-				RelativePath=".\UniversalDataProvider.java">
+				RelativePath="SshTunneling.java"
+				>
 			</File>
 			<File
-				RelativePath=".\UpdateEvent.java">
+				RelativePath="T2DataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\UpdateEventListener.java">
+				RelativePath=".\TextorBrowseSignals.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveContainerEvent.java">
+				RelativePath="TSDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveContainerListener.java">
+				RelativePath=".\TwuAccess.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveData.java">
+				RelativePath=".\TwuDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveDisplay.java">
+				RelativePath="TWUFetchOptions.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveInterface.java">
+				RelativePath="TwuNameServices.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WavePopup.java">
+				RelativePath="TWUProperties.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Waveform.java">
+				RelativePath="TWUSignal.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformContainer.java">
+				RelativePath="TwuSimpleFrameData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformContainer_2.java">
+				RelativePath="TwuSingleSignal.java"
+				>
 			</File>
 			<File
-				RelativePath="WaveformEditor.java">
+				RelativePath="TwuWaveData.java"
+				>
 			</File>
 			<File
-				RelativePath="WaveformEditorListener.java">
+				RelativePath=".\UniversalDataProvider.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformEvent.java">
+				RelativePath=".\UpdateEvent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformListener.java">
+				RelativePath=".\UpdateEventListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformManager.java">
+				RelativePath=".\WaveContainerEvent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\WaveformMetrics.java">
+				RelativePath=".\WaveContainerListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\Waveform_2.java">
+				RelativePath=".\WaveData.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScope.java">
+				RelativePath=".\WaveDisplay.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeBrowseSignals.java">
+				RelativePath=".\Waveform.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeBrowseUrl.java">
+				RelativePath=".\Waveform_2.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeDefaultValues.java">
+				RelativePath=".\WaveformContainer.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeMac.java">
+				RelativePath=".\WaveformContainer_2.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeMultiWave.java">
+				RelativePath="WaveformEditor.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeMultiWave_2.java">
+				RelativePath="WaveformEditorListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeProperties.java">
+				RelativePath=".\WaveformEvent.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeWaveContainer.java">
+				RelativePath=".\WaveformListener.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeWaveContainer_2.java">
+				RelativePath=".\WaveformManager.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScopeWavePopup.java">
+				RelativePath=".\WaveformMetrics.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScope_1.java">
+				RelativePath=".\WaveInterface.java"
+				>
 			</File>
 			<File
-				RelativePath=".\jScope_2.java">
+				RelativePath=".\WavePopup.java"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Makefile"
-			Filter="*.mak">
+			Filter="*.mak"
+			>
 			<File
-				RelativePath=".\javascope.mak">
+				RelativePath=".\javascope.mak"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Properties"
-			Filter="properties">
+			Filter="properties"
+			>
 			<File
-				RelativePath=".\jScope.properties">
+				RelativePath=".\jScope.properties"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

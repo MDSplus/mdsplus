@@ -51,10 +51,12 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 
 ..\java\classes\jScope.jar : jScope.class CompositeWaveDisplay.class
 	- rmdir/s/q docs
+	- rm -Rf docs
 	mkdir docs
 	copy $(DOCS) docs
 	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\jScope.jar *.class *.html docs
 	- rmdir/s/q docs
+	- rm -Rf docs
 
 ..\java\classes\MindTerm.jar : MindTerm.jar
 	copy MindTerm.jar ..\java\classes\MindTerm.jar
