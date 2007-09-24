@@ -545,7 +545,16 @@ import javax.swing.event.*;
 	    marker.setSelectedIndex(ws.marker);
 	    marker_step_t.setText(""+ws.marker_step);
 	    setMarkerTextState(ws.marker);
-	    color.setSelectedIndex(ws.color_idx);
+            
+            try
+            {
+                color.setSelectedIndex(ws.color_idx);
+            }
+            catch(Exception exc)
+            {
+                color.setSelectedIndex(0);                
+            }
+            
 	    if(error_w.isVisible())
 	        error_w.setError(ws);
       }

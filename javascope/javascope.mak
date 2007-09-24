@@ -14,10 +14,10 @@ DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java   
 JiNcVarImp.java             RdaAccess.java              WavePopup.java             	 \
 Descriptor.java             JiNcVarInt.java             SshTunneling.java          Waveform.java             	 \
 JiNcVarShort.java  \
-FrameData.java              JiSlab.java 		WaveformEditor.java	    WaveformEditorListener.java\
-JiSlabIterator.java         			    WaveformEvent.java  	   SetupWaveformParams.java 	SignalBox.java\
-Frames.java                 JiVar.java              UniversalDataProvider.java     WaveformListener.java NotConnectedDataProvider.java \
-ASCIIDataProvider.java      ImageTransferable.java
+FrameData.java              JiSlab.java 		WaveformEditor.java	    WaveformEditorListener.java \
+JiSlabIterator.java         			    WaveformEvent.java  	   SetupWaveformParams.java 	SignalBox.java \
+Frames.java  JiVar.java UniversalDataProvider.java     WaveformListener.java NotConnectedDataProvider.java ASCIIDataProvider.java ImageTransferable.java 
+
 
 SOURCES = AboutWindow.java            FtuDataProvider.java        JiVarImpl.java              Signal.java                 WaveformManager.java \
 Base64.java                 Grid.java                   LocalDataProvider.java      SignalCache.java            WaveformMetrics.java \
@@ -30,16 +30,15 @@ DataAccessURL.java          JiNcVar.java                MdsWaveInterface.java   
 DataCacheObject.java        JiNcVarByte.java            MultiWavePopup.java         WaveContainerListener.java  \
 DataCached.java             JiNcVarChar.java            MultiWaveform.java          WaveData.java               jScopeMultiWave.java \
 DataProvider.java           JiNcVarDouble.java          ProfileDialog.java          WaveDisplay.java             \
-DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          jScopeProperties.java \
-DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java              WavePopup.java              jScopeWaveContainer.java \
-Descriptor.java             JiNcVarInt.java             SshTunneling.java            Waveform.java                \
-FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
-FrameData.java              JiSlab.java                 RowColumnLayout.java           \
-JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          DemoAccess.java		UniversalDataProvider.java\
-Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
-SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java \
-TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformEditorListener.java MdsplusParser.java \
-ASCIIDataProvider.java      ImageTransferable.java
+DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          jScopeProperties.java 
+
+#DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java              WavePopup.java              jScopeWaveContainer.java \
+#Descriptor.java             JiNcVarInt.java             SshTunneling.java            Waveform.java                \
+#FontSelection.java          JiNcVarShort.java           RowColumnContainer.java     WaveformContainer.java      jScopeWavePopup.java \
+#FrameData.java              JiSlab.java                 RowColumnLayout.java         JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java          DemoAccess.java		UniversalDataProvider.java Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformEditorListener.java MdsplusParser.java ASCIIDataProvider.java ImageTransferable.java 
+
+
+
 
 DOCS=ConnectionEvent.html +  DataProvider.html  +  UpdateEvent.html  +   WaveData.html + \
 ConnectionListener.html +  FrameData.html  +  UpdateEventListener.html  + jScope.html  +  data_setup.jpg + \

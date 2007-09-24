@@ -24,6 +24,8 @@ import javax.swing.plaf.basic.BasicArrowButton;
 
 import java.lang.reflect.Array;
 
+
+        
 public class jScope
     extends JFrame
     implements ActionListener, ItemListener,
@@ -70,7 +72,7 @@ public class jScope
     private JLabel shot_l, lab;
     private JTextField shot_t, signal_expr;
     private JButton apply_b;
-    private JFileChooser file_diag = new JFileChooser();
+    private JFileChooser file_diag;
     protected String curr_directory;
     protected String last_directory;
     private JLabel point_pos, print_icon;
@@ -629,7 +631,34 @@ public class jScope
         setBackground(Color.lightGray);
 
         addWindowListener(this);
+        
+        
+        file_diag = new JFileChooser();
 
+        file_diag.addChoosableFileFilter( new  javax.swing.filechooser.FileFilter()
+        {
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toLowerCase().endsWith(".dat");
+            }
+    
+            public String getDescription() {
+                return ".dat files";
+            }
+        });
+
+        file_diag.addChoosableFileFilter( new  javax.swing.filechooser.FileFilter()
+        {
+            public boolean accept(File f) {
+                return f.isDirectory() || f.getName().toLowerCase().endsWith(".jscp");
+            }
+    
+            public String getDescription() {
+                return ".jscp files";
+            }
+        });
+
+        
+        
         mb = new JMenuBar();
         setJMenuBar(mb);
         edit_m = new JMenu("File");
