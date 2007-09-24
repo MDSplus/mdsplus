@@ -1897,11 +1897,11 @@ public class jScope
         }
         catch (Exception e)
         {
-            System.out.println("Errore : " + e);
-            JOptionPane.showMessageDialog(this,
-                                          e.getMessage(),
+			JOptionPane.showMessageDialog(this,
+										  e,
                                           "alert",
                                           JOptionPane.ERROR_MESSAGE);
+
         }
         ftmp.delete();
     }
@@ -2192,11 +2192,13 @@ public class jScope
         }
         catch (PrinterException er)
         {
+			System.out.println(er);
             JOptionPane.showMessageDialog(null, "Error on print operation",
                                           "alert PrintAllWaves", JOptionPane.ERROR_MESSAGE);
         }
         catch (PrintException er)
         {
+			System.out.println(er);
             JOptionPane.showMessageDialog(null, "Error on print operation",
                                           "alert PrintAllWaves", JOptionPane.ERROR_MESSAGE);
         }
