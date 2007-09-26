@@ -258,10 +258,16 @@ static SOCKET ConnectToPort(char *host, char *service)
 #ifdef HAVE_VXWORKS_H
     user_p = "vxWorks";
 #else
-    user_p = (getpwuid(geteuid()))->pw_name;
+	struct passwd *passStruct = getpwuid(geteuid());
+//    user_p = (getpwuid(geteuid()))->pw_name;
+	if(!passStruct)
+		user_p = "Linux";
+	else
+		user_p = passStruct->pw_name;
     /*
     user_p = (cuserid(user) && strlen(user)) ? user : "?";
     */
+
 #endif
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
