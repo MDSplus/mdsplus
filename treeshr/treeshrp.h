@@ -345,7 +345,7 @@ typedef struct big_node_linkage {
   if (((char *)(a) - (char *)(b)) >= 2^32) {\
     int i; \
     if (nodeptr->parent != -1) {\
-      for (i=0;  (i<(2*MAX_SUBTREES)) && (dblist->big_node_linkage[i].node !=0); i++);\
+      for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);\
       dblist->big_node_linkage[i].node = nodeptr;\
       dblist->big_node_linkage[i].parent = parent_of(nodeptr);\
       dblist->big_node_linkage[i].child = child_of(nodeptr);\
@@ -362,7 +362,7 @@ typedef struct big_node_linkage {
   if (((char *)(a) - (char *)(b)) >= 2^32) {\
     int i; \
     if (nodeptr->parent != -1) {\
-      for (i=0;  (i<(2*MAX_SUBTREES)) && (dblist->big_node_linkage[i].node !=0); i++);\
+      for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);\
       dblist->big_node_linkage[i].node = nodeptr;\
       dblist->big_node_linkage[i].parent = parent_of(nodeptr);\
       dblist->big_node_linkage[i].child = child_of(nodeptr);\

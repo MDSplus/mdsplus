@@ -403,6 +403,7 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
       dblist->experiment = 0;
       free(dblist->main_treenam);
       dblist->main_treenam = 0;
+      memset(dblist->big_node_linkage,0,sizeof(dblist->big_node_linkage));
     }
   }
   return status;
