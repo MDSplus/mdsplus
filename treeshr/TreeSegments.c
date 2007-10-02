@@ -476,6 +476,10 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     }
     rows_in_segment = segment_header.dims[segment_header.dimct-1];
     bytes_to_insert=((rows_to_insert > (rows_in_segment - startIdx)) ? (rows_in_segment-startIdx) : rows_to_insert) * bytes_per_row;
+    if (bytes_to_insert < data->arsize) {
+      TreeUnLockNci(info_ptr,0,nidx);
+      return TreeBUFFEROVF;
+    }  
     offset=segment_header.data_offset+startIdx*bytes_per_row;
 #ifdef WORDS_BIGENDIAN
     buffer=memcpy(malloc(bytes_to_insert),data->pointer,bytes_to_insert);
