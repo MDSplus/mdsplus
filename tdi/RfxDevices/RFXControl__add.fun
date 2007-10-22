@@ -1,8 +1,7 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-   DevAddStart(_path, 'RFXControl', 1704, _nidout);
-/*   DevAddStart(_path, 'RFXControl', 1690, _nidout);*/
+   DevAddStart(_path, 'RFXControl', 1720, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -767,15 +766,15 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR298_NAME', 'TEXT', "RotPertThreshold8", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR298_VAL', 'NUMERIC', 0., *, _nid);
 
-/* Q Control */
+/* SPARE */
 
-    DevAddNode(_path // '.PARAMETERS:PAR299_NAME', 'TEXT', "QControlStart", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR299_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR299_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR300_NAME', 'TEXT', "QControlEnd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR300_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR300_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR301_NAME', 'TEXT', "QControlReferenceX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR301_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR301_VAL', 'NUMERIC', 0., *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR302_NAME', 'TEXT', "QControlReferenceY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR302_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR302_VAL', 'NUMERIC', 0., *, _nid);
 
 
@@ -805,6 +804,25 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR313_NAME', 'TEXT', "FluxControlReferenceY", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR313_VAL', 'NUMERIC', 0. ,*, _nid);
 
+
+/* Q Control */
+
+    DevAddNode(_path // '.PARAMETERS:PAR314_NAME', 'TEXT', "QControlStart", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR314_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR315_NAME', 'TEXT', "QControlEnd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR315_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR316_NAME', 'TEXT', "QControlReferenceX", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR316_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR317_NAME', 'TEXT', "QControlReferenceY", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR317_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR318_NAME', 'TEXT', "QControlKp", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR318_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR319_NAME', 'TEXT', "QControlKi", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR319_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR320_NAME', 'TEXT', "QControlKd", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR320_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR321_NAME', 'TEXT', "QControlDeltaTime", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR321_VAL', 'NUMERIC', 0., *, _nid);
 
 
 
