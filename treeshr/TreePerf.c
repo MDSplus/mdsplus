@@ -18,7 +18,7 @@ int TreeGetPerf(TREE_IO_PERF *perf) {
   static TREE_IO_PERF *p = 0;
   if (!initialized) {
     initialized = 1;
-    char *filename = getenv("tree_perf_filename");
+    char *filename = getenv("mds_perf_filename");
     if (filename != 0) {
       int pf = open(filename,O_RDONLY);
       if (pf != -1) {
