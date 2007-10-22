@@ -1265,6 +1265,9 @@ static void ProcessMessage(Client *c, Message *message)
         void *buf = malloc(message->h.dims[2]);
         size_t num = (size_t)message->h.dims[2];
       	ssize_t nbytes = read(fd,buf,num);
+#ifdef USE_PERF
+	TreePerfRead(nbytes);
+#endif
         if (nbytes > 0)
         {
           DESCRIPTOR_A(ans_d,1,DTYPE_B,0,0);
@@ -1284,6 +1287,9 @@ static void ProcessMessage(Client *c, Message *message)
       {
         ssize_t nbytes = write(message->h.dims[1],message->bytes,(size_t)message->h.dims[0]);
         DESCRIPTOR_LONG(ans_d,0);
+#ifdef USE_PERF
+	TreePerfWrite(nbytes);
+#endif
         ans_d.pointer = (char *)&nbytes;
         SendResponse(c,1,(struct descriptor *)&ans_d);
 	break;
@@ -1365,6 +1371,9 @@ static void ProcessMessage(Client *c, Message *message)
 	lock_file(fd, offset, num, 1, &deleted);
       	lseek(fd,offset,SEEK_SET);
       	nbytes = read(fd,buf,num);
+#ifdef USE_PERF
+	TreePerfRead(nbytes);
+#endif
         lock_file(fd, offset, num, 0, &deleted);
         if (nbytes > 0)
         {

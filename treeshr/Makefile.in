@@ -27,6 +27,7 @@ TreeGetNci.c \
 TreeGetRecord.c \
 TreeGetSetShotId.c \
 TreeOpen.c \
+TreePerf.c \
 TreePutRecord.c \
 TreeRenameNode.c \
 TreeRemoveNodesTags.c\

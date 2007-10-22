@@ -1222,7 +1222,13 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
     }
     else
 #endif
-    ans = (FDS[fd-1].socket == -1) ? write(FDS[fd-1].fd,buff,count) : io_write_remote(fd,buff,count);
+      if (FDS[fd-1].socket == -1) {
+#ifdef USE_PERF
+	TreePerfWrite(count);
+#endif
+	ans = write(FDS[fd-1].fd,buff,count);
+      } else
+	ans = io_write_remote(fd,buff,count);
     UnlockMdsShrMutex(&IOMutex);
   }
   return ans; 
@@ -1313,7 +1319,13 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
     }
     else
 #endif
-    ans = (FDS[fd-1].socket == -1) ? read(FDS[fd-1].fd,buff,count) : io_read_remote(fd,buff,count);
+    if (FDS[fd-1].socket == -1) {
+#ifdef USE_PERF
+      TreePerfRead(count);
+#endif
+      ans = read(FDS[fd-1].fd,buff,count);
+    } else
+      ans = io_read_remote(fd,buff,count);
     UnlockMdsShrMutex(&IOMutex);
   }
   return ans; 

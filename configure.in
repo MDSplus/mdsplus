@@ -32,6 +32,12 @@ AC_ARG_ENABLE(nodebug,
                FFLAGS="";
 	fi)
 
+AC_ARG_ENABLE(perf,
+	[  --enable-perf          enable MDSplus I/O statistics])
+	if test "$enableval" = yes; then
+		AC_DEFINE(USE_PERF)
+	fi
+
 dnl See if we should build the camac libraries, mitdevices etc.
 
 case "$target" in
