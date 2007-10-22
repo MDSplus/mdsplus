@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <semaphore.h>
-
+#include <string.h>
 
 int TreeGetPerf(TREE_IO_PERF *perf) {
   static int initialized = 0;
