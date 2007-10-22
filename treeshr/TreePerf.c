@@ -43,7 +43,7 @@ static sem_t *SEMAPHORE = 0;
 
 static void Initialize() {
   INITIALIZED=1;
-  char *filename = getenv("tree_perf_filename");
+  char *filename = getenv("mds_perf_filename");
   if (filename != 0) {
     mode_t um=umask(0);
     int pf = open(filename,O_RDWR);
@@ -59,7 +59,7 @@ static void Initialize() {
       if (PERF == 0)
 	perror("Error mapping performance file");
       else {
-	SEMAPHORE = sem_open("tree_perf_lock",O_CREAT,0777,1);
+	SEMAPHORE = sem_open("mds_perf_lock",O_CREAT,0777,1);
       }
     }
     else
@@ -71,7 +71,7 @@ static void Initialize() {
 int TreePerfZero() {
   if (!INITIALIZED)
     Initialize();
-  if (PERF != 0) {
+  if (PERF != 0 && SEMAPHORE != 0) {
     sem_wait(SEMAPHORE);
     memset(PERF,0,sizeof(*PERF));
     sem_post(SEMAPHORE);
@@ -83,7 +83,7 @@ int TreePerfZero() {
 int TreePerfWrite(int bytes) {
   if (!INITIALIZED)
     Initialize();
-  if (PERF != 0) {
+  if (PERF != 0 && SEMAPHORE != 0) {
     sem_wait(SEMAPHORE);
     if (bytes < 10) {
       PERF->num_writes_10_0_to_10_1++;
@@ -113,7 +113,7 @@ int TreePerfWrite(int bytes) {
 int TreePerfRead(int bytes) {
   if (!INITIALIZED)
     Initialize();
-  if (PERF != 0) {
+  if (PERF != 0 && SEMAPHORE != 0) {
     sem_wait(SEMAPHORE);
     if (bytes < 10) {
       PERF->num_reads_10_0_to_10_1++;
