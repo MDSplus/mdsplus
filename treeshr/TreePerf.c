@@ -16,6 +16,7 @@
 int TreeGetPerf(TREE_IO_PERF *perf) {
   static int initialized = 0;
   static TREE_IO_PERF *p = 0;
+  static sem_t *semaphore = 0;
   if (!initialized) {
     initialized = 1;
     char *filename = getenv("mds_perf_filename");
@@ -25,13 +26,17 @@ int TreeGetPerf(TREE_IO_PERF *perf) {
         p = mmap(0,sizeof(TREE_IO_PERF),PROT_READ,MAP_SHARED,pf,0);
         if (p == 0)
           perror("Error mapping performance file");
+	else
+	  semaphore = sem_open("mds_perf_lock",O_CREAT,0777,1);
       }
       else
 	perror("Error opening performance file");
     }
   }
-  if (p != 0) {
+  if (p != 0 && semaphore != 0) {
+    sem_wait(semaphore);
     *perf = *p;
+    sem_post(semaphore);
     return TreeNORMAL;
   } else
     return TreeFAILURE;
