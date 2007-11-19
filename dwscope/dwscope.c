@@ -322,6 +322,7 @@ int       main(int argc, String *argv)
     { printf("Problem loading UID\n");
       exit(1);
     }
+  SetupEventInput(AppContext,TopWidget);
   SetDirMask(XtNameToWidget(TopWidget,"*file_dialog"),&defaultfile,0);
 
   XtVaSetValues(Pane[0], XmNleftAttachment, XmATTACH_FORM, NULL);
@@ -358,7 +359,6 @@ int       main(int argc, String *argv)
     }
   BusyWindow = CreateBusyWindow(PlotsWidget);
   XtAddEventHandler(PlotsWidget, ButtonPressMask | ButtonReleaseMask, False, (XtEventHandler)Setup, 0);
-  SetupEventInput(AppContext,TopWidget);
   XtVaSetValues(TopWidget, XtNiconPixmap, 
     XCreatePixmapFromBitmapData(XtDisplay(TopWidget), XtWindow(TopWidget), (char *)dwscope_icon_bits, dwscope_icon_width, 
       dwscope_icon_height, BlackPixelOfScreen(XtScreen(TopWidget)), WhitePixelOfScreen(XtScreen(TopWidget)), 1), NULL);
