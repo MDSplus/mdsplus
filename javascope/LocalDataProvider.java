@@ -63,21 +63,18 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     {
         error = null;
 
-        //First check Whether this is a date
-        try
-        {
+        try {
             Calendar cal = Calendar.getInstance();
             cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-
-            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
-            Date date = df.parse(in);
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
+            //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
+            Date date = df.parse(in + " GMT");
+            //Date date = df.parse(in);
             cal.setTime(date);
             long javaTime = cal.getTime().getTime();
             return javaTime;
-        }
-        catch (Exception exc)
-        {} //If exception occurs this is not a date
-        return GetFloatNative(in);
+        }catch(Exception exc){} //If exception occurs this is not a date
+         return GetFloatNative(in);
     }
 
     public synchronized float[] GetFloatArray(String in)  throws IOException
