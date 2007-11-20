@@ -45,19 +45,31 @@ STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destinati
 STATIC_THREADSAFE unsigned int threadID;
 STATIC_CONSTANT int zero = 0;
 
-STATIC_ROUTINE void ReconnectToServer(int idx) {
+STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
   int status;
   STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
     routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
   STATIC_THREADSAFE int (*rtn)() = 0;
-  if (idx >= num_receive_servers || receive_servers[idx] == 0) return;
+  char **servers;
+  int *sockets;
+  int num_servers;
+  if (recv) {
+    servers=receive_servers;
+    sockets=receive_sockets;
+    num_servers = num_receive_servers;
+  } else {
+    servers=send_servers;
+    sockets=send_sockets;
+    num_servers = num_send_servers;
+  }
+  if (idx >= num_servers || servers[idx] == 0) return;
   status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
   if (status & 1) {
-    receive_sockets[idx] = (*rtn) (receive_servers[idx]);
-    if(receive_sockets[idx] == -1) {
-      printf("\nError connecting to %s", receive_servers[idx]);
+    sockets[idx] = (*rtn) (servers[idx]);
+    if(sockets[idx] == -1) {
+      printf("\nError connecting to %s", servers[idx]);
       perror("ConnectToMds");
-      receive_sockets[idx] = 0;
+      sockets[idx] = 0;
     }
   }
 }
@@ -470,7 +482,7 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 		newRemoteId(eventid);
 		for(i = 0; i < num_receive_servers; i++)
 		{
-		  if (receive_sockets[i] == 0) ReconnectToServer(i);
+		  if (receive_sockets[i] == 0) ReconnectToServer(i,1);
 			if(receive_sockets[i])
 			{ 
 				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
@@ -589,6 +601,7 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
+      int reconnects=0;
 	for(i = 0; i < num_send_servers; i++)
 	{
 	    curr_rtn = rtn;
@@ -601,8 +614,14 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
             }
             if (tmp_status & 1)
               tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
-            if (!(tmp_status & 1))
+            if (!(tmp_status & 1)) {
               status = tmp_status;
+              if (reconnects < 3) {
+	        ReconnectToServer(i,0);
+	        reconnects++;
+	        i--;
+	      }
+	    }
 	    if (ansarg.ptr) free(ansarg.ptr);
 	}
     }
@@ -760,23 +779,34 @@ STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destinati
 
 
 
-STATIC_ROUTINE void ReconnectToServer(int idx) {
+STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
   int status;
   STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
     routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
   STATIC_THREADSAFE int (*rtn)() = 0;
-  if (idx >= num_receive_servers || receive_servers[idx] == 0) return;
+  char **servers;
+  int *sockets;
+  int num_servers;
+  if (recv) {
+    servers=receive_servers;
+    sockets=receive_sockets;
+    num_servers = num_receive_servers;
+  } else {
+    servers=send_servers;
+    sockets=send_sockets;
+    num_servers = num_send_servers;
+  }
+  if (idx >= num_servers || servers[idx] == 0) return;
   status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
   if (status & 1) {
-    receive_sockets[idx] = (*rtn) (receive_servers[idx]);
-    if(receive_sockets[idx] == -1) {
-      printf("\nError connecting to %s", receive_servers[idx]);
+    sockets[idx] = (*rtn) (servers[idx]);
+    if(sockets[idx] == -1) {
+      printf("\nError connecting to %s", servers[idx]);
       perror("ConnectToMds");
-      receive_sockets[idx] = 0;
+      sockets[idx] = 0;
     }
   }
 }
-
 /************* OS dependent part ******************/
 
 STATIC_ROUTINE char *getEnvironmentVar(char *name)
@@ -1739,7 +1769,7 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 	newRemoteId(eventid);
 	for(i = 0; i < num_receive_servers; i++)
 	{
-	  if (receive_sockets[i]==0) ReconnectToServer(i);
+	  if (receive_sockets[i]==0) ReconnectToServer(i,1);
 	    if(receive_sockets[i])
 	    { 
 		status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
@@ -2063,6 +2093,7 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
       status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
+      int reconnects=0;
 	for(i = 0; i < num_send_servers; i++)
 	{
 	    curr_rtn = rtn;
@@ -2075,8 +2106,14 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
             }
             if (tmp_status & 1)
               tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
-            if (!(tmp_status & 1))
+            if (!(tmp_status & 1)) {
               status = tmp_status;
+	      if (reconnects < 3) {
+		ReconnectToServer(i,0);
+		reconnects++;
+		i--;
+	      }
+	    }
 	    if (ansarg.ptr) free(ansarg.ptr);
 	}
     }
