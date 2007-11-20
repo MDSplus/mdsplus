@@ -496,8 +496,8 @@ public class Signal
         contourLevels = s.contourLevels;
         contourSignals = s.contourSignals;
         contourLevelValues = s.contourLevelValues;
-        
-        
+
+
         if ( s.type != this.TYPE_2D )
         {
             if (s.x_double != null)
@@ -583,7 +583,7 @@ public class Signal
         color = s.color;
         interpolate = s.interpolate;
 
-       
+
         name = s.name;
         type = s.type;
         mode1D = s.mode1D;
@@ -761,7 +761,7 @@ public class Signal
     public Signal(float z2D[], float y2D[], long x2D[], int type)
     {
         error = asym_error = false;
-                
+
         if (y2D != null && y2D.length > 1)
         {
             this.z2D = z2D;
@@ -775,9 +775,6 @@ public class Signal
             {
                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                //df.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
-                //df1.setTimeZone(new SimpleTimeZone(FUSO, "GMT"));
-                Calendar ca = new GregorianCalendar(new SimpleTimeZone(FUSO, "GMT"));
 
                 java.util.Date date = new java.util.Date();
                 date.setTime(x2D[0]);
@@ -2637,12 +2634,12 @@ public class Signal
     {
       float zOut[][] = new float[x2D.length][y2D.length];
       int k;
-      
+
       for (int i = 0; i < x2D.length; i++)
       {
         for (int j = 0; j < y2D.length; j++)
         {
-          k =  j * x2D.length + i;   
+          k =  j * x2D.length + i;
           if(k < z2D.length )
             zOut[i][j] = z2D[k];
         }
