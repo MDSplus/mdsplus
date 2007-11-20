@@ -513,52 +513,16 @@ public class Grid
     public long calculateDifference(Date a, Date b)
     {
         Calendar cal1 = Calendar.getInstance();
+        cal1.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal1.setTime(a);
         cal1.set(cal1.get(Calendar.YEAR), cal1.get(Calendar.MONTH), cal1.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
         Calendar cal2 = Calendar.getInstance();
+        cal2.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal2.setTime(b);
         cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();
         if(diffMillis < 0) return 0;
         return 1 + diffMillis/(1000*3600*24);
-
-/*
-        int tempDifference = 0;
-        int difference = 0;
-        Calendar earlier = Calendar.getInstance();
-        Calendar later = Calendar.getInstance();
-
-        if (a.compareTo(b) < 0)
-        {
-            earlier.setTime(a);
-            later.setTime(b);
-        }
-        else
-        {
-            earlier.setTime(b);
-            later.setTime(a);
-        }
-
-        while (earlier.get(Calendar.YEAR) != later.get(Calendar.YEAR))
-        {
-            tempDifference = 365 *
-                (later.get(Calendar.YEAR) - earlier.get(Calendar.YEAR));
-            difference += tempDifference;
-
-            earlier.add(Calendar.DAY_OF_YEAR, tempDifference);
-        }
-
-        if (earlier.get(Calendar.DAY_OF_YEAR) != later.get(Calendar.DAY_OF_YEAR))
-        {
-            tempDifference = later.get(Calendar.DAY_OF_YEAR) -
-                earlier.get(Calendar.DAY_OF_YEAR);
-            difference += tempDifference;
-
-            earlier.add(Calendar.DAY_OF_YEAR, tempDifference);
-        }
-
-        return difference;
-*/    }
-
+    }
 
 }

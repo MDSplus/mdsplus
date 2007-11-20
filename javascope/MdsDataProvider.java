@@ -983,9 +983,9 @@ public class MdsDataProvider
         //First check Whether this is a date
         try {
             Calendar cal = Calendar.getInstance();
-            cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");
-            Date date = df.parse(in);
+            //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+            DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
+            Date date = df.parse(in + " +0000");
             cal.setTime(date);
             long javaTime = cal.getTime().getTime();
             return javaTime;
