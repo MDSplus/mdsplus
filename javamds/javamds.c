@@ -732,7 +732,7 @@ void createWindow(char *name, int idx)
 		jstr = (*env)->NewStringUTF(env, name);
 	else
 		jstr = (*env)->NewStringUTF(env, "");
-	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+	jobjects[idx] = obj, miojstr);
 }
 
 void clearWindow(char *name, int idx)
