@@ -99,7 +99,7 @@ public class RFXPolControlSetup extends DeviceSetup {
     deviceTable5.setNumCols(5);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");
-    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Par5"});
+    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Min_IP_Curr"});
         deviceTable5.setRowNames(null);
     deviceTable5.setPreferredHeight(20);
         jPanel40.setLayout(gridLayout8);

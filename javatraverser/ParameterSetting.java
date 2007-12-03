@@ -116,7 +116,7 @@ public class ParameterSetting
         maxPMVoltage, maxFillVoltage, maxPuffVoltage;
     JTextArea messageArea;
 
-    WarningDialog checkedWd, configWd, limitsWd;
+    WarningDialog checkedWd, configWd, limitsWd, versionWd;
 
     boolean doingShot = false;
     boolean isOnline;
@@ -2422,6 +2422,32 @@ public class ParameterSetting
                 limitsWd.setVisible(true);
             }
             else
+                proceedeVersions();
+        }
+        void proceedeVersions()
+        {
+            String versionMsg = checkVersionsForPas();
+            if (versionMsg != null)
+            {
+                versionWd = new WarningDialog(ParameterSetting.this, versionMsg);
+                versionWd.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        String newMsg = checkVersionsForPas();
+                        if (newMsg != null)
+                            versionWd.setText(newMsg);
+                        else
+                        {
+                            versionWd.dispose();
+                            proceedeConfirm();
+                        }
+                    }
+                });
+                versionWd.pack();
+                versionWd.setVisible(true);
+            }
+            else
                 proceedeConfirm();
         }
 
@@ -3188,6 +3214,7 @@ System.out.println("Print Done");
             prevPCConnection = loadP.getPCConnection();
             prevPVConnection = loadP.getPVConnection();
             loadSelectedSetup();
+            //Checks to be performed after loading pulse
             int currPMUnits = countPMUnits();
             if (currPMUnits != prevPMUnits)
                 JOptionPane.showMessageDialog(ParameterSetting.this,
@@ -3230,8 +3257,7 @@ System.out.println("Print Done");
                                               "Configuration discrepance",
                                               JOptionPane.WARNING_MESSAGE);
 
-
-
+            checkVersions();
         }
 
         catch (Exception exc)
@@ -3243,7 +3269,95 @@ System.out.println("Print Done");
                                           JOptionPane.WARNING_MESSAGE);
         }
         }
+        
+        boolean  checkVersions()
+        {
+            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", true))
+                return false;
+            if(!checkVersionVme("\\MHD_BC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BC", "MHD_BC", true))
+                return false;
+            if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", true))
+                return false;
+            if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", true))
+                return false;
+            if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", true))
+                return false;
+            if(!checkVersionVme("\\DEQU::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", true))
+                return false;
+            if(!checkVersionVme("\\DFLU::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", true))
+                return false;
+            return true;
+        }
+    
+        
+        String checkVersionsForPas()
+        {
+            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", false))
+                return "Incompatible major version number for MHD_AC";
+            if(!checkVersionVme("\\MHD_BC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BC", "MHD_BC", false))
+                return "Incompatible major version number for MHD_BC";
+            if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", false))
+                 return "Incompatible major version number for MHD_BR";
+           if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", false))
+                 return "Incompatible major version number for EDA1";
+           if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", false))
+                return "Incompatible major version number for EDA3";
+            if(!checkVersionVme("\\DEQU::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", false))
+                return "Incompatible major version number for DEQU";
+            if(!checkVersionVme("\\DFLU::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", false))
+                return "Incompatible major version number for DFLU";
+            return null;
+        }
 
+        
+        boolean checkVersionVme(String currPath, String configPath, String name, boolean displayWarning)
+        {
+            
+            try {
+                Data data;
+                String currVersion, version;
+                data = rfx.evaluateData(new PathData(currPath), 0);
+                currVersion = data.getString();
+                data = rfx.evaluateData(new PathData(configPath), 0);
+                version = data.getString();
+                StringTokenizer st1 = new StringTokenizer(currVersion, ".");
+                StringTokenizer st2 = new StringTokenizer(version, ".");
+                String major1 = st1.nextToken();
+                String major2 = st2.nextToken();
+                String minor1 = st1.nextToken();
+                String minor2 = st2.nextToken();
+                if(!major1.equals(major2))
+                {
+                    if(displayWarning)
+                        JOptionPane.showMessageDialog(ParameterSetting.this,
+                                                      "Major version of "+currVersion+" is not compatible with major version of "+version+
+                                                       " for "+ name +": the loaded configuration cannot be used!!",
+                                                      "Error comparing versions",
+                                                      JOptionPane.ERROR_MESSAGE);
+                    return false;
+                    
+                }
+                if(!minor1.equals(minor2) && displayWarning)
+                {
+                    JOptionPane.showMessageDialog(ParameterSetting.this,
+                                                  "Minor version of "+currVersion+" is not compatible with minor version of "+currVersion+
+                                                   " for "+ name +": the loaded configuration might be not fully compatible",
+                                                  "Error comparing versionse",
+                                                  JOptionPane.WARNING_MESSAGE);
+                    
+                }
+                return true;
+            }catch(Exception exc) 
+            {
+                JOptionPane.showMessageDialog(ParameterSetting.this,
+                        "Error reading version numbers of" + name,
+                        "Error comparing versions",
+                        JOptionPane.WARNING_MESSAGE);
+                return false;
+           }
+        }
+    
+    
             class DecouplingDialog
             extends JDialog
         {

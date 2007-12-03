@@ -21,10 +21,6 @@ public class DeviceCustomizer extends Panel
     ".CHANNEL_4:DATA"};
     public String[] getDeviceFields()
     {
-        System.out.println("\nInquiring Device Fields...");
-        JOptionPane.showInputDialog(
-                "CAZZONE");
-
         if(DeviceSetupBeanInfo.beanDeviceType == null)
         {
             DeviceSetupBeanInfo.beanDeviceType = JOptionPane.showInputDialog(
