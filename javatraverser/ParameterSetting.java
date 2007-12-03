@@ -3282,9 +3282,9 @@ System.out.println("Print Done");
                 return false;
             if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", true))
                 return false;
-            if(!checkVersionVme("\\DEQU::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", true))
+            if(!checkVersionVme("\\DEQU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", true))
                 return false;
-            if(!checkVersionVme("\\DFLU::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", true))
+            if(!checkVersionVme("\\DFLU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", true))
                 return false;
             return true;
         }
@@ -3302,9 +3302,9 @@ System.out.println("Print Done");
                  return "Incompatible major version number for EDA1";
            if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", false))
                 return "Incompatible major version number for EDA3";
-            if(!checkVersionVme("\\DEQU::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", false))
+            if(!checkVersionVme("\\DEQU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DEQU", "DEQU", false))
                 return "Incompatible major version number for DEQU";
-            if(!checkVersionVme("\\DFLU::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", false))
+            if(!checkVersionVme("\\DFLU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", false))
                 return "Incompatible major version number for DFLU";
             return null;
         }
