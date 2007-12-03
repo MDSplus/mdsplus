@@ -11,7 +11,7 @@
 public class RFXVersionSetup extends DeviceSetup {
     
     /** Creates new form RFXVersionSetup */
-    public RFXVersionSetup(java.awt.Frame parent, boolean modal) {
+    public RFXVersionSetup() {
         initComponents();
     }
     
@@ -262,7 +262,7 @@ public class RFXVersionSetup extends DeviceSetup {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RFXVersionSetup(new javax.swing.JFrame(), true).setVisible(true);
+                new RFXVersionSetup().setVisible(true);
             }
         });
     }
