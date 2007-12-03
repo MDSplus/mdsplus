@@ -1957,7 +1957,8 @@ public class ParameterSetting
                     boolean[] selectedTimes = loadSelected.getSelectedTimes();
                     applySetup(currSetupHash, currSetupOnHash, selectedDevices,
                                selectedTimes);
-                    loadSelected.setVisible(false);
+                    checkVersions();
+                   loadSelected.setVisible(false);
 
                     if (isOnline) {
                         String decouplingName = getDecouplingName(currLoadShot);
@@ -2687,6 +2688,7 @@ System.out.println("Print Done");
                                    savedDecompiled);
             }
         }
+
     }
 
     void applySetup(Hashtable setupHash, Hashtable setupOnHash,
@@ -3257,7 +3259,6 @@ System.out.println("Print Done");
                                               "Configuration discrepance",
                                               JOptionPane.WARNING_MESSAGE);
 
-            checkVersions();
         }
 
         catch (Exception exc)
@@ -3269,7 +3270,7 @@ System.out.println("Print Done");
                                           JOptionPane.WARNING_MESSAGE);
         }
         }
-        
+
         boolean  checkVersions()
         {
             if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", true))
@@ -3288,8 +3289,8 @@ System.out.println("Print Done");
                 return false;
             return true;
         }
-    
-        
+
+
         String checkVersionsForPas()
         {
             if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", false))
@@ -3309,10 +3310,10 @@ System.out.println("Print Done");
             return null;
         }
 
-        
+
         boolean checkVersionVme(String currPath, String configPath, String name, boolean displayWarning)
         {
-            
+
             try {
                 Data data;
                 String currVersion, version;
@@ -3335,7 +3336,7 @@ System.out.println("Print Done");
                                                       "Error comparing versions",
                                                       JOptionPane.ERROR_MESSAGE);
                     return false;
-                    
+
                 }
                 if(!minor1.equals(minor2) && displayWarning)
                 {
@@ -3344,10 +3345,10 @@ System.out.println("Print Done");
                                                    " for "+ name +": the loaded configuration might be not fully compatible",
                                                   "Error comparing versionse",
                                                   JOptionPane.WARNING_MESSAGE);
-                    
+
                 }
                 return true;
-            }catch(Exception exc) 
+            }catch(Exception exc)
             {
                 JOptionPane.showMessageDialog(ParameterSetting.this,
                         "Error reading version numbers of" + name,
@@ -3356,8 +3357,8 @@ System.out.println("Print Done");
                 return false;
            }
         }
-    
-    
+
+
             class DecouplingDialog
             extends JDialog
         {
@@ -3508,8 +3509,8 @@ System.out.println("Print Done");
         {
             String currPath = (String) pathNames.nextElement();
 
-            if(currPath.contains("VP_SETUP"))
-                System.out.println(currPath);
+//            if(currPath.contains("VP_SETUP"))
+//                System.out.println(currPath);
 
 
             String currDecompiled = (String) currSetupHash.get(currPath);

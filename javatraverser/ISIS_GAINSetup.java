@@ -226,8 +226,8 @@ public class ISIS_GAINSetup extends DeviceSetup {
     }
   }
   private void jbInit() throws Exception {
-    this.setWidth(850);
-    this.setHeight(900);
+    this.setWidth(800);
+    this.setHeight(600);
     this.setDeviceType("ISIS_GAIN");
     this.setDeviceProvider("150.178.3.33");
     this.setDeviceTitle("ISIS Front End Gains");
@@ -773,7 +773,7 @@ public class ISIS_GAINSetup extends DeviceSetup {
     deviceLabel17.setIdentifier("");
     deviceLabel17.setNumCols(15);
     deviceLabel17.setLabelString("");
-    deviceLabel17.setOffsetNid(191);
+    deviceLabel17.setOffsetNid(181);
     deviceLabel18.setIdentifier("");
     deviceLabel18.setNumCols(15);
     deviceLabel18.setLabelString("");
@@ -814,7 +814,7 @@ public class ISIS_GAINSetup extends DeviceSetup {
     deviceLabel35.setNumCols(15);
     deviceLabel36.setOffsetNid(197);
     deviceLabel36.setNumCols(15);
-    
+/*
     deviceLabel1.setTextOnly(true);
     deviceLabel2.setTextOnly(true);
     deviceLabel3.setTextOnly(true);
@@ -851,7 +851,7 @@ public class ISIS_GAINSetup extends DeviceSetup {
     deviceLabel34.setTextOnly(true);
     deviceLabel35.setTextOnly(true);
     deviceLabel36.setTextOnly(true);
-    
+*/
     jPanel20.setLayout(borderLayout2);
     jLabel7.setText("CHANNEL");
     jLabel4.setText("           NAME");

@@ -33,8 +33,8 @@ public class RFXDiagTimesSetup  extends DeviceSetup {
         setDeviceProvider("localhost");
         setDeviceTitle("RFX diagnostic timing setup");
         setDeviceType("RFXDiagTimes");
-        deviceButtons1.setCheckExpressions(new String[] {"( _nd_period >=  0.025 &&  _nd_period <= 0.1)", "( _nd_trigger >=  -0.025 &&  _nd_trigger <=  0.0) ", "if(_ND_TRIGGER_state == 1) tcl(\'set node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_4/on\'); else tcl(\'set "+"node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_4 /off\'); 1;", "if(_ND_TRIGGER_state == 1) tcl(\'set node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_3/on\'); else tcl(\'set "+"node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_3 /off\'); 1;"});
-        deviceButtons1.setCheckMessages(new String[] {"Error Neodimium period time :  0.025 - 0.1", "Error Neodimium trigger time :  -0.025 - 0.0", "Check state", "Check state"});
+        deviceButtons1.setCheckExpressions(new String[] {"( _nd_period >=  0.025 &&  _nd_period <= 0.1)", "( _nd_trigger >=  -0.025 &&  _nd_trigger <=  0.05) ", "if(_nd_trigger_state == 1) tcl(\'set node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_4/on\'); else tcl(\'set "+"node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_4 /off\'); 1;", "if(_nd_trigger_state == 1) tcl(\'set node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_3/on\'); else tcl(\'set "+"node \\\\RFX::STC_DIAG_DIO2_1.CHANNEL_3 /off\'); 1;"});
+        deviceButtons1.setCheckMessages(new String[] {"Error Neodimium period time :  0.025 - 0.1", "Error Neodimium trigger time :  -0.025 - 0.05", "Check state", "Check state"});
         jPanel3.add(deviceButtons1);
 
         getContentPane().add(jPanel3, java.awt.BorderLayout.SOUTH);

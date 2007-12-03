@@ -101,5 +101,17 @@ class Convert
 	    rfx.close(0);
 	 }catch(Exception exc){System.err.println(exc);}
     }
+
+    public void convertMatrix(Database db)
+    {
+        System.out.println(path);
+         try {
+            NidData nid = db.resolve(new PathData(path), 0);
+            FloatArray array = new FloatArray(data);
+            db.putData(nid, array, 0);
+         }catch(Exception exc){System.err.println(exc);}
+    }
+
+
  }
 

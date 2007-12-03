@@ -89,7 +89,7 @@ public class RFXVIConfigSetup extends DeviceSetup
     deviceField5.setIdentifier("");
     deviceField5.setEditable(false);
     deviceField4.setOffsetNid(12);
-    deviceField4.setLabelString("VIK3 Press.(mbar): ");
+    deviceField4.setLabelString("Bottle Press.(mbar): ");
     deviceField4.setNumCols(6);
     deviceField4.setIdentifier("");
     deviceField4.setEditable(false);
@@ -129,8 +129,8 @@ public class RFXVIConfigSetup extends DeviceSetup
     deviceChoice3.setChoiceIntValues(null);
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setOffsetNid(11);
-    deviceChoice3.setLabelString("VIK3 Gas: ");
-    deviceChoice3.setChoiceItems(new String[] {"H2", "He", "Not Used"});
+    deviceChoice3.setLabelString("Bottle Gas: ");
+    deviceChoice3.setChoiceItems(new String[] {"H2", "He", "Ne", "Not Used"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     deviceField10.setOffsetNid(6);

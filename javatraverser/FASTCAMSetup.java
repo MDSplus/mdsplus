@@ -214,7 +214,7 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel10.setLayout(new java.awt.GridLayout(4, 0));
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Traget Zone:");
+        deviceField10.setLabelString("Target Zone:");
         deviceField10.setNumCols(14);
         deviceField10.setOffsetNid(23);
         deviceField10.setTextOnly(true);

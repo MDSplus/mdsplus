@@ -130,7 +130,15 @@ public class DecompileTree
             if(isDeviceField) //Handle device field display
             {
                 Data data = null;
-                if(info.isSetup() || isFull)
+		
+		//TACON
+		if(info.getName().endsWith("_GAIN"))
+			System.out.println("TACON: "+ info.getName());
+		
+		if(info.isSetup() || isFull || info.getName().endsWith("_GAIN"))
+		
+		
+                //if(info.isSetup() || isFull)
                 {
                     try {
                         data = mdsTree.getData(nid, 0);
@@ -167,7 +175,13 @@ public class DecompileTree
                     || (info.isOn() && !info.isParentOn())
                     || (info.isSetup()&& data != null) || tags.length > 0
                     || subtreeNodes.size() > 0 || subtreeMembers.size() > 0
-                    || isFull) //show it only at these conditions
+                    || isFull
+
+//TACON		    
+||info.getName().endsWith("_GAIN")		    
+		    
+		    
+		    ) //show it only at these conditions
                 {
                     Element fieldNode = (Element) document.createElement("field");
                     node.appendChild(fieldNode);

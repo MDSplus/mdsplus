@@ -85,7 +85,11 @@ LASER_RUSetup.java\
 GEN_GAINSetup.java\
 EDAM_CPCISetupSetup.java\
 FEGroupSetup.java\
-ISIS_GAINSetup.java
+ISIS_GAINSetup.java\
+FASTCAMSetup.java\
+ST133Setup.java\
+RFXVersionSetup.java
+
 
 SOURCES = ActionData.java\
 ActionEditor.java\

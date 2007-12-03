@@ -100,7 +100,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChannel1.setInSameLine(true);
-        deviceChannel1.setLabelString("P1 ");
+        deviceChannel1.setLabelString("P1 ( Medio )");
         deviceChannel1.setOffsetNid(10);
         deviceChannel1.setShowVal("");
         deviceChannel1.setUpdateIdentifier("");
@@ -113,7 +113,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel8.add(jPanel9);
 
         deviceChannel2.setInSameLine(true);
-        deviceChannel2.setLabelString("P5");
+        deviceChannel2.setLabelString("P5 ( Grande )");
         deviceChannel2.setOffsetNid(74);
         deviceChannel2.setShowVal("");
         deviceChannel2.setUpdateIdentifier("");
@@ -130,7 +130,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChannel3.setInSameLine(true);
-        deviceChannel3.setLabelString("P2");
+        deviceChannel3.setLabelString("P2 ( Piccolo )");
         deviceChannel3.setOffsetNid(26);
         deviceChannel3.setShowVal("");
         deviceChannel3.setUpdateIdentifier("");
@@ -143,7 +143,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel11.add(jPanel12);
 
         deviceChannel4.setInSameLine(true);
-        deviceChannel4.setLabelString("P6 ");
+        deviceChannel4.setLabelString("P6 ( Piccolo )");
         deviceChannel4.setOffsetNid(90);
         deviceChannel4.setShowVal("");
         deviceChannel4.setUpdateIdentifier("");
@@ -160,7 +160,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChannel5.setInSameLine(true);
-        deviceChannel5.setLabelString("P3");
+        deviceChannel5.setLabelString("P3 ( Grande )");
         deviceChannel5.setOffsetNid(42);
         deviceChannel5.setShowVal("");
         deviceChannel5.setUpdateIdentifier("");
@@ -173,7 +173,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel14.add(jPanel15);
 
         deviceChannel6.setInSameLine(true);
-        deviceChannel6.setLabelString("P7 ");
+        deviceChannel6.setLabelString("P7 ( Medio )");
         deviceChannel6.setOffsetNid(106);
         deviceChannel6.setShowVal("");
         deviceChannel6.setUpdateIdentifier("");
@@ -190,7 +190,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChannel7.setInSameLine(true);
-        deviceChannel7.setLabelString("P4");
+        deviceChannel7.setLabelString("P4 ( Piccolo )");
         deviceChannel7.setOffsetNid(58);
         deviceChannel7.setShowVal("");
         deviceChannel7.setUpdateIdentifier("");
@@ -203,7 +203,7 @@ public class PELLETSetup extends DeviceSetup {
         jPanel17.add(jPanel18);
 
         deviceChannel8.setInSameLine(true);
-        deviceChannel8.setLabelString("P8");
+        deviceChannel8.setLabelString("P8 ( Piccolo )");
         deviceChannel8.setOffsetNid(122);
         deviceChannel8.setShowVal("");
         deviceChannel8.setUpdateIdentifier("");

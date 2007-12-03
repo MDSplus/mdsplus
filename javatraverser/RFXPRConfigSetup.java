@@ -310,7 +310,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable10.setIdentifier("");
     deviceTable10.setColumnNames(new String[] {"109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"});
     deviceTable10.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -324,7 +324,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable6.setIdentifier("");
     deviceTable6.setColumnNames(new String[] {"61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"});
     deviceTable6.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -339,7 +339,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable9.setIdentifier("");
     deviceTable9.setColumnNames(new String[] {"97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108"});
     deviceTable9.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -355,7 +355,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable3.setIdentifier("");
     deviceTable3.setColumnNames(new String[] {"25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"});
     deviceTable3.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -369,7 +369,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     deviceTable1.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -383,7 +383,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable16.setIdentifier("");
     deviceTable16.setColumnNames(new String[] {"181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192"});
     deviceTable16.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -398,7 +398,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable11.setIdentifier("");
     deviceTable11.setColumnNames(new String[] {"121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132"});
     deviceTable11.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -412,7 +412,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable5.setIdentifier("");
     deviceTable5.setColumnNames(new String[] {"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"});
     deviceTable5.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -428,7 +428,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable8.setIdentifier("");
     deviceTable8.setColumnNames(new String[] {"85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"});
     deviceTable8.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -442,7 +442,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable7.setIdentifier("");
     deviceTable7.setColumnNames(new String[] {"73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84"});
     deviceTable7.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -457,7 +457,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable15.setIdentifier("");
     deviceTable15.setColumnNames(new String[] {"169", "170", "171", "172", "173", "174", "175", "176", "177", "178", "179", "180"});
     deviceTable15.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -471,7 +471,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable14.setIdentifier("");
     deviceTable14.setColumnNames(new String[] {"157", "158", "159", "160", "161", "162", "163", "164", "165", "166", "167", "168"});
     deviceTable14.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -488,7 +488,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable4.setIdentifier("");
     deviceTable4.setColumnNames(new String[] {"37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
     deviceTable4.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -502,7 +502,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable12.setIdentifier("");
     deviceTable12.setColumnNames(new String[] {"133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144"});
     deviceTable12.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -516,7 +516,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable13.setIdentifier("");
     deviceTable13.setColumnNames(new String[] {"145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156"});
     deviceTable13.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
@@ -533,7 +533,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable2.setIdentifier("");
     deviceTable2.setColumnNames(new String[] {"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"});
     deviceTable2.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Not_used", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
         "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
         "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
         "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
