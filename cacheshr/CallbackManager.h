@@ -4,7 +4,7 @@
 
 class CallbackManager
 {
-	long next, prev;
+	_int64 next, prev;
 	Notifier notifier;
 
 public:
@@ -13,14 +13,14 @@ public:
 		if(nxt == NULL)
 			next = 0;
 		else
-			next = (long)nxt - (long)this;
+			next = (_int64)nxt - (_int64)this;
 	}
 	void setPrev(char *prv)
 	{
 		if(prv == NULL)
 			prev = 0;
 		else 
-			prev = (long)prv - (long)this;
+			prev = (_int64)prv - (_int64)this;
 	}
 
 	CallbackManager *getNext()

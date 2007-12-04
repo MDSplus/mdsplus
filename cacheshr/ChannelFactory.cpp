@@ -13,6 +13,12 @@ static int thisAddressIdx;
 
 ChannelFactory::ChannelFactory()
 {
+//TEMPORANEO
+	communicationEnabled = false;
+	return;
+
+
+
 	if(numChanAddresses == 0)
 	{
 		int addrIdx = 0;

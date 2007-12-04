@@ -13,27 +13,21 @@ private:
 	FreeSpaceManager *freeSpaceManager;
 	bool isEmpty;
 	SharedMemNode *header;
-	SharedMemNode *nullNode;
-	
 	SharedMemNode *current, *parent, *grand, *great;
 
-	SharedMemNode *allocateMemNode();
+	SharedMemNode *allocateMemNode(LockManager *lock);
 	int compare(SharedMemNode *n, SharedMemNodeData *d);
-	int compare(SharedMemNode *n, int nid);
-	void handleReorient(SharedMemNodeData *data);
-	SharedMemNode * rotate(SharedMemNodeData *data, SharedMemNode *node);
-	SharedMemNode * rotateWithLeftChild(SharedMemNode *node);
-	SharedMemNode * rotateWithRightChild(SharedMemNode *node);
+	int compare(SharedMemNode *n, int treeId, int nid);
 	void printTree(SharedMemNode *);
 
 
 public:
-	void initialize(FreeSpaceManager *freeSpaceManager, void **header, void **nullNode);
-	void map(FreeSpaceManager *freeSpaceManager, void *header, void *nullNode);
-	void  insert(SharedMemNode *node);
-	void insert(SharedMemNodeData *nodeData);
-	void  remove(int nid);
-	SharedMemNode  *find(int nid);
+	void initialize(FreeSpaceManager *freeSpaceManager, void **header, LockManager *lock);
+	void map(FreeSpaceManager *freeSpaceManager, void *header);
+	void  insert(SharedMemNode *node, LockManager *lock);
+	void insert(SharedMemNodeData *nodeData, LockManager *lock);
+	void  remove(int treeId, int nid, LockManager *lock);
+	SharedMemNode  *find(int treeId, int nid);
 	void  printTree();
 
 

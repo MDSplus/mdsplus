@@ -20,37 +20,30 @@ public:
 
 */
 //Initialize shared data and return header
-void SharedMemTree::initialize(FreeSpaceManager *freeSpaceManager, void **headerPtr, void **nullNodePtr)
+void SharedMemTree::initialize(FreeSpaceManager *freeSpaceManager, void **headerPtr, LockManager *lock)
 {
 	SharedMemNodeData dummyData;
 	this->freeSpaceManager = freeSpaceManager;
 	header = 0;
-	nullNode = allocateMemNode();
-	nullNode->setLeftChild(nullNode);
-	nullNode->setRightChild(nullNode);
-	nullNode->color = BLACK;
-	header = allocateMemNode();
+	header = allocateMemNode(lock);
 	header->setData(&dummyData);   
-	header->setLeftChild(nullNode);
-	header->setRightChild(nullNode);
-	header->color = BLACK;
+	header->setLeftChild(0);
+	header->setRightChild(0);
 	*headerPtr = header;
-	*nullNodePtr = nullNode;
 }
 
 //
-void SharedMemTree::map(FreeSpaceManager *freeSpaceManager, void *header, void *nullNode)
+void SharedMemTree::map(FreeSpaceManager *freeSpaceManager, void *header)
 {
 	this->freeSpaceManager = freeSpaceManager;
 	this->header = (SharedMemNode *)header;
-	this->nullNode = (SharedMemNode *)nullNode;
 }
 
 
 
-SharedMemNode   *SharedMemTree::allocateMemNode()
+SharedMemNode   *SharedMemTree::allocateMemNode(LockManager *lock)
 {
-	return (SharedMemNode *)freeSpaceManager->allocateShared(sizeof(SharedMemNode)); 
+	return (SharedMemNode *)freeSpaceManager->allocateShared(sizeof(SharedMemNode), lock); 
 }
 
 int SharedMemTree::compare(SharedMemNode*n1, SharedMemNodeData *n2)
@@ -59,19 +52,18 @@ int SharedMemTree::compare(SharedMemNode*n1, SharedMemNodeData *n2)
 	return n1->data.compare(n2);
 }
 
-int SharedMemTree::compare(SharedMemNode*n1, int nid)
+int SharedMemTree::compare(SharedMemNode*n1, int treeId, int nid)
 {
 	if(!n1)return 1;
-	return n1->data.compare(nid);
+	return n1->data.compare(treeId, nid);
 }
 
 
 
-void SharedMemTree::insert(SharedMemNodeData *nodeData)
+void SharedMemTree::insert(SharedMemNodeData *nodeData, LockManager *lock)
 {
 	current = parent = grand = header;
-	nullNode->setData(nodeData);
-	while(compare(current, nodeData)!= 0)
+	while(current && compare(current, nodeData)!= 0)
 	{
 		great = grand;
 		grand = parent;
@@ -81,112 +73,116 @@ void SharedMemTree::insert(SharedMemNodeData *nodeData)
 		else
 			current = current->rightChild();
 
-	//	if(current->leftChild()->color == RED && current->rightChild()->color == RED)
-	//		handleReorient(nodeData);
 	}
-	if(current != nullNode)
+	if(current)
 	{
 		current->setData(nodeData);
 		current->isValid = true;
-		//Adjust offsets in current->data
-		current->data.adjustOffsets(nodeData);
 	}
 	else
 	{
-		current = allocateMemNode();
-		current->setLeftChild(nullNode);
-		current->setRightChild(nullNode);
-		current->setCallbackManager(NULL);
+		current = allocateMemNode(lock);
+		current->setLeftChild(0);
+		current->setRightChild(0);
 		current->isValid = true;
-		current->color = RED;
 		current->setData(nodeData);
-		//Adjust offsets in current->data
-		current->data.adjustOffsets(nodeData);
 		if(compare(parent, nodeData) < 0)
 			parent->setLeftChild(current);
 		else
 			parent->setRightChild(current);
-
-		//handleReorient(nodeData);
 	}
 }
 
-void SharedMemTree::handleReorient(SharedMemNodeData *nodeData)
-{
-	current->color = RED;
-	current->leftChild()->color = BLACK;
-	current->rightChild()->color = BLACK;
-	if(parent->color == RED)
-	{
-		grand->color = RED;
-		if((compare(grand, nodeData) < 0) != (compare(parent, nodeData) < 0))
-			parent = rotate(nodeData, grand);
-		current = rotate(nodeData, great);
 
-		current->color = BLACK;
+SharedMemNode * SharedMemTree::find(int treeId, int nid)
+{
+	current = header;
+	for(;;)
+	{
+		if(current && compare(current, treeId, nid) < 0)
+			current = current->leftChild();
+		else if(current && compare(current, treeId, nid) > 0)
+			current = current->rightChild();
+		else 
+			return current;
 	}
-	header->rightChild()->color = BLACK;
+
 }
 
-SharedMemNode * SharedMemTree::rotate(SharedMemNodeData *nodeData, SharedMemNode *parent)
+void SharedMemTree::remove(int treeId, int nid, LockManager *lock)
 {
-	if(compare(parent, nodeData) < 0)
+	SharedMemNode *curr1, *prev1;
+	current = parent = grand = header;
+	for(;;)
 	{
-		if(compare(parent->leftChild(), nodeData) < 0)
-			return parent->setLeftChild(rotateWithLeftChild(parent->leftChild()));
+		grand = parent;
+		parent = current;
+		if(current && compare(current, treeId, nid) < 0)
+			current = current->leftChild();
+		else if(current && compare(current, treeId, nid) > 0)
+			current = current->rightChild();
+		else 
+			break;
+	}
+	if(!current)
+	{
+		printf("PANIC: remove called for non existent tree node\n");
+		exit(0);
+	}
+	if(!current->leftChild() && !current->rightChild())
+	{
+		if(parent->leftChild() == current)
+			parent->setLeftChild(0);
 		else
-			return parent->setLeftChild(rotateWithRightChild(parent->leftChild()));
+			parent->setRightChild(0);
+	}
+	else if(!current->leftChild())
+	{
+		if(parent->leftChild() == current)
+			parent->setLeftChild(current->rightChild());
+		else
+			parent->setRightChild(current->rightChild());
+	}
+	else if(!current->rightChild())
+	{
+		if(parent->leftChild() == current)
+			parent->setLeftChild(current->leftChild());
+		else
+			parent->setRightChild(current->leftChild());
 	}
 	else
 	{
-		if(compare(parent->rightChild(), nodeData) < 0)
-			return parent->setRightChild(rotateWithLeftChild(parent->rightChild()));
+		if(parent->rightChild() == current)
+		{
+			prev1 = curr1 = current->leftChild();
+			while(curr1->rightChild())
+			{
+				prev1 = curr1;
+				curr1 = curr1->rightChild();
+			}
+			if(prev1 != curr1)
+				prev1->setRightChild(curr1->leftChild());
+			parent->setRightChild(curr1);
+			curr1->setRightChild(current->rightChild());
+			if(curr1 != prev1)
+				curr1->setLeftChild(current->leftChild());
+		}
 		else
-			return parent->setRightChild(rotateWithRightChild(parent->rightChild()));
+		{
+			prev1 = curr1 = current->rightChild();
+			while(curr1->leftChild())
+			{
+				prev1 = curr1;
+				curr1 = curr1->leftChild();
+			}
+			prev1->setLeftChild(curr1->rightChild());
+			parent->setLeftChild(curr1);
+			if(curr1 != prev1)
+				curr1->setRightChild(current->rightChild());
+			curr1->setLeftChild(current->leftChild());
+		}
+		current->free(freeSpaceManager, lock);
 	}
-}
-
-SharedMemNode * SharedMemTree::rotateWithLeftChild(SharedMemNode *k2 )
-{
-        SharedMemNode *k1 = k2->leftChild();
-        k2->setLeftChild(k1->rightChild());
-        k1->setRightChild(k2);
-        return k1;
-}
-
-SharedMemNode * SharedMemTree:: rotateWithRightChild( SharedMemNode *k1 )
-{
-    SharedMemNode *k2 = k1->rightChild();
-    k1->setRightChild(k2->leftChild());
-    k2->setLeftChild(k1);
-    return k2;
-}
-
-
-SharedMemNode * SharedMemTree::find(int nid)
-{
-	SharedMemNodeData currData(nid);
-	nullNode->setData(&currData);
-	current = header;
-
-	for(;;)
-	{
-		if(compare(current, nid) < 0)
-			current = current->leftChild();
-		else if(compare(current, nid) > 0)
-			current = current->rightChild();
-		else if(current != nullNode)
-			return current;
-		else return 0;
-	}
-
-}
-
-void SharedMemTree::remove(int nid)
-{
-	SharedMemNode *retNode = find(nid);
-	if(retNode)
-		retNode->invalidate();
 }
 
 
@@ -199,7 +195,7 @@ void SharedMemTree::printTree()
 
 void SharedMemTree::printTree(SharedMemNode *node)
 {
-	if(node != nullNode)
+	if(node)
 	{
 		printTree(node->leftChild());
 		if(node != header) node->print();

@@ -68,7 +68,9 @@ bool UDPChannel::connectReceiver(ChannelAddress *address)
     struct sockaddr_in serverAddr;
 //    serverAddr.sin_len = sizeof(serverAddr);
     serverAddr.sin_family = AF_INET;
+#ifndef HAVE_WINDOWS_H
     serverAddr.sin_len = (u_char)sizeof(struct sockaddr_in);
+#endif
     serverAddr.sin_port = htons(((IPAddress *)address)->port);
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	char *ipAddress = ((IPAddress *)address)->ipAddress;

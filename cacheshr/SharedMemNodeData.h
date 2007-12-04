@@ -12,14 +12,18 @@ class SharedMemNodeData
 {
 	public: //To be defined yet
 	    int nid;
+		int treeId;
 		bool segmented;
 		char dataType;
 		int numSamples;
-		long data;
+		_int64 data;
 		int dataSize;
 		int numSegments;
-		long firstSegment;
-		long lastSegment;
+		_int64 firstSegment;
+		_int64 lastSegment;
+
+		//Callback list
+		_int64 callbackManager;
 
 		//Cache coherency parameters
 		bool owner; //true if the owner of the nid, i.e. the last writer
@@ -37,11 +41,12 @@ class SharedMemNodeData
 	SharedMemNodeData()
 	{
 		nid = -1;
+		treeId = -1;
 		dataType = 0;
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = -(long)this;
+		firstSegment = lastSegment = -(_int64)this;
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -52,15 +57,17 @@ class SharedMemNodeData
 		numWarmNodes = 0;
 		numReaderNodes = 0;
 		eventActive = false;
+		callbackManager = 0;
 	}
 	SharedMemNodeData(int nid)
 	{
 		this->nid = nid;
+		treeId = -1;
 		dataType = 0;
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = (long)this;
+		firstSegment = lastSegment = (_int64)this;
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -71,25 +78,52 @@ class SharedMemNodeData
 		numWarmNodes = 0;
 		numReaderNodes = 0;
 		eventActive = false;
+		callbackManager = 0;
+	}
+	SharedMemNodeData(int nid, int treeId)
+	{
+		this->nid = nid;
+		this->treeId = treeId;
+		dataType = 0;
+		numSamples = 0;
+		numSegments = 0;
+		segmented = false;
+		firstSegment = lastSegment = (_int64)this;
+		data = 0;
+		dataSize = 0;
+		owner = false;
+		warm = false;
+		dirty = true;
+		ownerIdx = (char)-1;
+		ownerTimestamp = 0;
+		numWarmNodes = 0;
+		numReaderNodes = 0;
+		eventActive = false;
+		callbackManager = 0;
 	}
 
 	int compare(SharedMemNodeData *n)
 	{
 		if(nid > n->nid) return 1;
 		if(nid < n->nid) return -1;
+		if(treeId > n->treeId) return 1;
+		if(treeId < n->treeId) return -1;
 		return 0;
 	}
 
-	int compare(int nid) //Returns 1 if this greater than argument, -1 if smaller, 0 if equals 
+	int compare(int treeId, int nid) //Returns 1 if this greater than argument, -1 if smaller, 0 if equals 
 	{
 		if(this->nid > nid) return 1;
 		if(this->nid < nid) return -1;
+		if(this->treeId > treeId) return 1;
+		if(this->treeId < treeId) return -1;
 		return 0;
 	}
 
-	void setNid(int nid)
+	void setNid(int treeId, int nid)
 	{
 		this->nid = nid;
+		this->treeId = treeId;
 	}
 
 
@@ -98,23 +132,34 @@ class SharedMemNodeData
 		return nid;
 	}
 
+	void setTreeId(int treeId)
+	{
+		this->treeId = treeId;
+	}
+
+
+	int getTreeId() 
+	{
+		return treeId;
+	}
+
 	void  print()
 	{
-		printf("%d\n", nid);
+		printf("%d %d\n", treeId, nid);
 	}
 
 	void setLastSegment(Segment *lastSegment)
 	{
-		this->lastSegment = (long)lastSegment - (long)this;
+		this->lastSegment = (_int64)lastSegment - (_int64)this;
 	}
 	Segment *getFirstSegment()
 	{
-		return (Segment *)((long)this + firstSegment);
+		return (Segment *)((_int64)this + firstSegment);
 	}
 
 	Segment *getLastSegment()
 	{
-		return (Segment *)((long)this + lastSegment);
+		return (Segment *)((_int64)this + lastSegment);
 	}
 
 	
@@ -131,12 +176,51 @@ class SharedMemNodeData
 		return currSegment;
 	}
 
+	void discardOldSegments(_int64 timestamp, FreeSpaceManager *fsm, LockManager *lock)
+	{
+		if(numSegments == 0) 
+			return;
+		Segment *currSegment = getFirstSegment();
+		if(!currSegment->isTimestamped()) 
+			return;
+
+		while(numSegments > 0)
+		{
+			_int64 *endTimePtr;
+			int endSize;
+			currSegment->getEndTimestamp((char **)&endTimePtr, &endSize);
+
+			if(*endTimePtr < timestamp) 
+			{
+				setFirstSegment(currSegment->getNext());
+				currSegment->free(fsm, lock);
+				fsm->freeShared((char *)currSegment, sizeof(Segment), lock);
+				currSegment = getFirstSegment();
+				numSegments--;
+			}
+			else
+				break; //No need to proccede
+		}
+		if(numSegments == 0)
+			firstSegment = lastSegment = -(_int64)this;
+	}
+
+	void discardFirstSegment(FreeSpaceManager *fsm, LockManager *lock)
+	{
+		if(numSegments == 0) 
+			return;
+		Segment *currSegment = getFirstSegment();
+		setFirstSegment(currSegment->getNext());
+		numSegments--;
+		currSegment->free(fsm, lock);
+		fsm->freeShared((char *)currSegment, sizeof(Segment), lock);
+	}
 
 
 
 	void setFirstSegment(Segment *firstSegment)
 	{
-		this->firstSegment = this->lastSegment = (long)firstSegment - (long)this;
+		this->firstSegment = (_int64)firstSegment - (_int64)this;
 	}
 
 	void appendSegment(Segment *newSegment)
@@ -172,13 +256,13 @@ class SharedMemNodeData
 	
 	void setData(char *data, int dataSize)
 	{
-		this->data = (long)data - (long)this;
+		this->data = (_int64)data - (_int64)this;
 		this->dataSize = dataSize;
 	}
 
 	void getData(char **data, int *dataSize)
 	{
-		*data = (char *)((long)this + this->data);
+		*data = (char *)((_int64)this + this->data);
 		*dataSize = this->dataSize;
 	}
 	
@@ -201,6 +285,9 @@ class SharedMemNodeData
 
 
 
+	//Adjust segment offsets. 
+	//Used when copying node data from one instance to another 
+	//(recall that adresses are stored as self-relative offsets)
 	void adjustOffsets(SharedMemNodeData *ref)
 	{
 		if(ref->isSegmented())
@@ -299,7 +386,7 @@ class SharedMemNodeData
 
 
 
-//Serialization protocol for non semented data:
+//Serialization protocol for data:
 //2 bytes: one (to detect endianity mismatch)
 //1 byte: segmented
 
@@ -316,7 +403,7 @@ class SharedMemNodeData
 //segment
 	
 
-	void initialize(char *serialized, FreeSpaceManager *fsm)
+	void initialize(char *serialized, FreeSpaceManager *fsm, LockManager *lock)
 	{
 		bool forceConversion = *(short *)serialized != 1;
 		segmented = (serialized[2])?true:false;
@@ -333,8 +420,8 @@ class SharedMemNodeData
 				if(forceConversion)
 					swapBytes((char *)&currSize, 4);
 				currOfs += 4;
-				Segment * currSegment = (Segment*)fsm->allocateShared(currSize);
-				currSegment->initialize(&serialized[currOfs], fsm);
+				Segment * currSegment = (Segment*)fsm->allocateShared(currSize, lock);
+				currSegment->initialize(&serialized[currOfs], fsm, lock);
 				appendSegment(currSegment);
 				currOfs += currSize;
 			}
@@ -350,7 +437,7 @@ class SharedMemNodeData
 				swapBytes((char *)&dataSize, 4);
 			if(dataSize > 0)
 			{
-				char *currPtr = fsm->allocateShared(dataSize);
+				char *currPtr = fsm->allocateShared(dataSize, lock);
 				memcpy(currPtr, &serialized[12], dataSize);
 //If dataType != 0, stored data are not serialized, so they need endianity conversion
 				if(dataType != 0 && forceConversion)
@@ -371,7 +458,7 @@ class SharedMemNodeData
 
 
 
-	void free(FreeSpaceManager *fsm)
+	void free(FreeSpaceManager *fsm, LockManager *lock)
 	{
 		Segment **segments = new Segment *[numSegments];
 		if(segmented)
@@ -381,13 +468,13 @@ class SharedMemNodeData
 			for(i = 0; i < numSegments; i++)
 			{
 				segments[i] = currSegment;
-				currSegment->free(fsm);
+				currSegment->free(fsm, lock);
 				currSegment = currSegment->getNext();
 			}
 			for(i = 0; i < numSegments; i++)
-				fsm->freeShared((char *)segments[i], sizeof(Segment));
+				fsm->freeShared((char *)segments[i], sizeof(Segment), lock);
 			numSegments = 0;
-			firstSegment = lastSegment = -(long)this;
+			firstSegment = lastSegment = -(_int64)this;
 		}
 		else
 		{
@@ -396,7 +483,7 @@ class SharedMemNodeData
 			if(dataSize > 0)
 			{
 				getData(&currPtr, &currSize);
-				fsm->freeShared((char *)currPtr, currSize);
+				fsm->freeShared((char *)currPtr, currSize, lock);
 			}
 			dataSize = 0;
 		}
@@ -445,6 +532,21 @@ class SharedMemNodeData
 			}
 			return totSize;
 		}
+	}
+
+	void setCallbackManager(CallbackManager *callbackManager)
+	{
+		if(callbackManager == 0)
+			this->callbackManager = 0;
+		else
+			this->callbackManager = (_int64)callbackManager - (_int64)this;
+	}
+
+	CallbackManager *getCallbackManager()
+	{
+		if(callbackManager == 0)
+			return 0;
+		return (CallbackManager *)((char *)this + callbackManager);
 	}
 
 

@@ -1,18 +1,3 @@
-//Class SharedMemInfo keeps shared zone - related information. It is  stored in shared memory at the beginning
-//of the corresponding shared memory zone. An instance of SharedMemInfo keeps the root of a tree of SharedMemNode instances,
-//each containing:
-// - the address in the shared zone of the corresponding element (i.e. the address of a SharedMemObject instance)
-// - the address of the first notify element (an instance of class NotifyUpdate), still allocated in the initial part of tthe shared zone
-// - the unique identifier of the corresponding SaredMemObject
-// - the color of the node (red/black)
-// - the left and right child references. SharedNemNode instances are organized as a Red/Black search tree.
-// - the ID of the lock for that data item
-// - the head of the list of callback descriptors (instances of CallbackInfo) 
-
-//The class handles also the holes in the allocated part. Whenever a new dataitem has to be allocated, first an hole of the same dimension
-//or slightly larger is searched. If not found, the data item is taken from the free part of the Shared memory Zone.
-//Each hole is described by an instance of HoleInfo. HoleInfo instances are organized as a red/black tree ordered
-//by hole size.
 
 #ifndef SHARED_DATA_MANAGER_H
 #define SHARED_DATA_MANAGER_H
@@ -40,14 +25,14 @@
 class SharedDataManager
 {
 private:
-	SharedMemNodeData *getNodeData(int nid, bool create);
+	SharedMemNodeData *getNodeData(int treeId, int nid, bool create);
 
 public:
     static char *startAddress; //Initial address of the associetd Memory Zone
 	static int size;		//The size in bytes of the associated Shared Memory Zone
 	static FreeSpaceManager freeSpaceManager; //The manager of free space
 	static SharedMemManager sharedMemManager; //The manager of shared memory allocation
-	static LockManager lock;   //Global lock, used wehen managing nodes
+	static LockManager lock;   //Global lock, used when managing nodes
 	static SharedMemTree sharedTree; //ID tree
 	static bool initialized;
 
@@ -57,46 +42,53 @@ public:
 	FreeSpaceManager *getFreeSpaceManager() { return &freeSpaceManager;}
 	
 
-	int deleteData(int nid);
-	void deleteData(SharedMemNodeData *nodeData);
-	int setData(int nid, char dataType, int numSamples, char *data, int size); //Write data indexed by nid
-	int getData(int nid, char *dataType, int *numSamples, char **data, int *size); //Read data indexed by nid
-	int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-		char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, bool timestamped);
+	int deleteData(int treeId, int nid);
+	int setData(int treeId, int nid, char dataType, int numSamples, char *data, int size); //Write data indexed by nid
+	int getData(int treeId, int nid, char *dataType, int *numSamples, char **data, int *size); //Read data indexed by nid
+	int beginSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+		char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, int *retIdx);
+	int beginTimestampedSegment(int treeId, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
+		_int64 start, _int64 end, char *dim, int dimSize, int *retIdx);
 
-	int isSegmented(int nid, int *segmented);
-	int getNumSegments(int nid, int *numSegments);
-	int updateSegment(int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
-	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
-	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-		int *shapeSize, int *currDataSize, bool *timestamped);
-	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, bool timestamped, char *timestamp);
+	int isSegmented(int treeId, int nid, int *segmented);
+	int getNumSegments(int treeId, int nid, int *numSegments);
+	int updateSegment(int treeId, int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
+	int getSegmentLimits(int treeId, int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
+	int getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
+		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
+	int appendSegmentData(int treeId, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, bool isTimestamped, 
+										 _int64 *timestamps, int numTimestamps, int *segmentFilled, int *retIdx);
+	int appendRow(int treeId, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, _int64 timestamp, int *segmentFilled, int *retIdx, bool *segmentCreated);
+	int appendRow(int treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, char *timestamp, int blockSize);
+	int discardOldSegments(int treeId, int nid, _int64 timestamp);
+	int discardFirstSegment(int treeId, int nid);
 
-	void *setCallback(int nid, void (*callback)(int));   //Associate a callback with the nid
-	int clearCallback(int nid, char *callbackDescr);	 //Remove the callback from the nid
-	void callCallback(int nid);							 //Call all callbacks associated with the nid
-	void append(int nid, char *data, int size);			 //Append a new data item
-	void *allocateShared(int size) {return freeSpaceManager.allocateShared(size); }
-	void freeShared(char *addr, int size) {freeSpaceManager.freeShared(addr, size); }
+
+	void *setCallback(int treeId, int nid, void (*callback)(int));   //Associate a callback with the nid
+	int clearCallback(int treeId, int nid, char *callbackDescr);	 //Remove the callback from the nid
+//	void callCallback(int treeId, int nid);							 //Call all callbacks associated with the nid
+//	void *allocateShared(int size) {return freeSpaceManager.allocateShared(size); }
+//	void freeShared(char *addr, int size) {freeSpaceManager.freeShared(addr, size); }
 
 //Cache coerency methods
-	void getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp);
-	void getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
+	void getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp);
+	void getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
 		char * &warmList, int &numWarm, char *&readerList, int &numReaders);
-	void addReader(int nid, int readerIdx);
-	void addWarm(int nid, int readerIdx);
-	void setOwner(int nid, int ownerIdx, int timestamp);	
-	void setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
+	void addReader(int treeId, int nid, int readerIdx);
+	void addWarm(int treeId, int nid, int readerIdx);
+	void setOwner(int treeId, int nid, int ownerIdx, int timestamp);	
+	void setCoherencyInfo(int treeId, int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
 		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes);
-	void setWarm(int nid, bool warm);
-	bool isWarm(int nid);
-	void setDirty(int nid, bool isDirty);
-	Event *getDataEvent(int nid);
+	void setWarm(int treeId, int nid, bool warm);
+	bool isWarm(int treeId, int nid);
+	void setDirty(int treeId, int nid, bool isDirty);
+	Event *getDataEvent(int treeId, int nid);
 
-	int getSerializedSize(int nid);
-	void getSerialized(int nid, char *serialized);
-	void setSerializedData(int nid, char *serializedData, int dataLen);
+	int getSerializedSize(int treeId, int nid);
+	void getSerialized(int treeId, int nid, char *serialized);
+	void setSerializedData(int treeId, int nid, char *serializedData, int dataLen);
 };
 
 #endif	

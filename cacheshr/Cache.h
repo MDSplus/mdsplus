@@ -11,6 +11,7 @@
 
 struct NidChain
 {
+	int treeIdx;
 	int nid;
 	char mode;
 	int idx;
@@ -24,32 +25,39 @@ class Cache
 	TreeWriter treeWriter;
 	NidChain *chainHead, *chainTail;
 	CoherencyManager *cManager;
-	bool inQueue(int nid, int idx, int mode);
+	bool inQueue(int treeIdx, int nid, int idx, int mode);
+	LockManager queueLock;
+
+	void insertInQueue(int treeIdx, int nid, char mode, int idx);
 
 public:
 	Cache();
-	int putRecord(int nid, char dataType, int numSamples, char *data, int size, int writeThrough);
-	int getRecord(int nid, char *dataType, int *numSamples, char **data, int *size);
-	int beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
+	int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough);
+	int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size);
+	int beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 		char *dim, int dimSize, char *shape, int shapeSize, char *data, 
-		int dataSize, char timestamped, int writeThrough);
-	int updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, int writeThrough);
-	int getNumSegments(int nid, int *numSegments);
-	int getSegmentLimits(int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
-	int getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
-		int *shapeSize, int *currDataSize, bool *timestamped);
-	int isSegmented(int nid, int *segmented);
-	int appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx);
-	int appendTimestampedSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, char *timestamp, int startIdx);
+		int dataSize, int writeThrough);
+	int beginTimestampedSegment(int treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, 
+		int dataSize, _int64 start, _int64 end, char *dim, int dimSize, int writeThrough);
+	int updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, int writeThrough);
+	int getNumSegments(int treeIdx, int nid, int *numSegments);
+	int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
+	int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
+		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
+	int isSegmented(int treeIdx, int nid, int *segmented);
+	int	appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, int writeMode);
+	int appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, _int64 *timestamp, int numTimestamps, int writeMode);
+	int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, _int64 timestamp, int writeMode);
 
+	int flush(int treeIdx);
+	int discardOldSegments(int treeIdx, int nid, _int64 timestamp);
 
-	int flush();
-
-	void * setCallback(int nid, void (* callback)(int));
-	int clearCallback(int nid, char *callbackManager);	
-	void setWarm(int nid, bool warm);
+	void * setCallback(int treeIdx, int nid, void (* callback)(int));
+	int clearCallback(int treeIdx, int nid, char *callbackManager);	
+	void setWarm(int treeIdx, int nid, bool warm);
 
 	void startServer();
 };

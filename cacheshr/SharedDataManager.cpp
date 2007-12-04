@@ -12,89 +12,45 @@ SharedMemTree SharedDataManager::sharedTree;
 SEM_ID *LockManager::semaphores;
 #endif
 
-
+//SharedDataManager reserves the first _int64 of the sherd memory to hold the address(offset)
+//of the node tree root.
 
  SharedDataManager::SharedDataManager(int size)
 {
-	void *header, *nullNode;
+	void *header;
 
 	bool created = lock.initialize(TREE_LOCK);
 	if(created)
 	{
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
-		freeSpaceManager.initialize((char *)startAddress + 2 * sizeof(long), size - 2 * sizeof(long));
-		sharedTree.initialize(&freeSpaceManager, &header, &nullNode);
-		//Store address (offset) of tree root in the first longword of the shared memory segment
-		*(long *)startAddress = (long)header - (long)startAddress;
-		//Store address (offset) of the empty (guard) tree node in the second longword of the shared memory segment
-		*(long *)((char *)startAddress +  sizeof(long)) = (long)nullNode - (long)startAddress;
+		freeSpaceManager.initialize((char *)startAddress + sizeof(_int64), size - sizeof(_int64));
+		sharedTree.initialize(&freeSpaceManager, &header, &lock);
+		//Store address (offset) of tree root in the first _int64word of the shared memory segment
+		*(_int64 *)startAddress = (_int64)header - (_int64)startAddress;
 
 	}
 	else
 	{
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
-		freeSpaceManager.map((char *)startAddress + 2 * sizeof(long));
-		header = (char *)(*(long *)startAddress + (long)startAddress);
-		nullNode = (char *)(*(long *)((char *)startAddress + sizeof(long)) + (long)startAddress);
-		sharedTree.map(&freeSpaceManager, header, nullNode);
+		freeSpaceManager.map((char *)startAddress + sizeof(_int64));
+		header = (char *)(*(_int64 *)startAddress + (_int64)startAddress);
+		sharedTree.map(&freeSpaceManager, header);
 	}
 	lock.unlock();
 }
 
 
 
-void SharedDataManager::deleteData(SharedMemNodeData *nodeData)
-{
-	char *currPtr;
-	int currSize;
 
-	if(nodeData->isSegmented())
-	{
-		Segment *currSegment = nodeData->getFirstSegment();
-		int numSegments = nodeData->getNumSegments();
-		for(int i = 0; i < numSegments; i++)
-		{
-			currSegment->getStart(&currPtr, &currSize);
-			if(currSize > 0)
-				freeSpaceManager.freeShared((char *)currPtr, currSize);
-			currSegment->getEnd(&currPtr, &currSize);
-			if(currSize > 0)
-				freeSpaceManager.freeShared((char *)currPtr, currSize);
-			currSegment->getDim(&currPtr, &currSize);
-			if(currSize > 0)
-				freeSpaceManager.freeShared((char *)currPtr, currSize);
-			currSegment->getShape(&currPtr, &currSize);
-			if(currSize > 0)
-				freeSpaceManager.freeShared((char *)currPtr, currSize);
-			currSegment->getData(&currPtr, &currSize);
-			if(currSize > 0)
-				freeSpaceManager.freeShared((char *)currPtr, currSize);
-
-			currSegment = currSegment->getNext();
-		}
-		nodeData->setNumSegments(0);
-	}
-	else
-	{
-		nodeData->getData(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-	}
-}
-
-
-
-
-int SharedDataManager::deleteData(int nid)
+int SharedDataManager::deleteData(int treeId, int nid)
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
-		SharedMemNodeData *nodeData = node->getData();
-		deleteData(nodeData);
+		node->getData()->free(&freeSpaceManager, &lock);
 	}
 	lock.unlock();
 	return 1;
@@ -102,30 +58,29 @@ int SharedDataManager::deleteData(int nid)
 
 
 
-int SharedDataManager::setData(int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
+int SharedDataManager::setData(int treeId, int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 
 	if(!node) 
 	//No data has been written in the cache yet
 	{
 		SharedMemNodeData nodeData;
-		nodeData.setNid(nid);
-		sharedTree.insert(&nodeData);
-		node = sharedTree.find(nid);
+		nodeData.setNid(treeId, nid);
+		sharedTree.insert(&nodeData, &lock);
+		node = sharedTree.find(treeId, nid);
 	}
 	if(node)
 	{
-		SharedMemNodeData *nodeData = node->getData();
-		deleteData(nodeData);
+		SharedMemNodeData *nodeData = node->getData() ;
+		nodeData->free(&freeSpaceManager, &lock);
 
-
-		char *currData = freeSpaceManager.allocateShared(size);
+		char *currData = freeSpaceManager.allocateShared(size, &lock);
 		memcpy(currData, data, size);
 		nodeData->setData((char *)currData, size);
 		nodeData->setDataInfo(dataType, numSamples);
-		CallbackManager *callback = node->getCallbackManager();
+		CallbackManager *callback = node->getData()->getCallbackManager();
 		if(callback)
 			callback->callCallback();
 		lock.unlock();
@@ -139,10 +94,10 @@ int SharedDataManager::setData(int nid, char dataType, int numSamples, char *dat
 	}
 }
 	
-int SharedDataManager::getData(int nid, char *dataType, int *numSamples, char **data, int *size) //Write data indexed by nid
+int SharedDataManager::getData(int treeId, int nid, char *dataType, int *numSamples, char **data, int *size) //Write data indexed by nid
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -163,19 +118,19 @@ int SharedDataManager::getData(int nid, char *dataType, int *numSamples, char **
 	}
 }
 	
-int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
-			char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, bool timestamped)
+int SharedDataManager::beginSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+			char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, int *retIdx)
 {
 	Segment *segment;
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(!node)
 	{
 		SharedMemNodeData nodeData;
-		nodeData.setNid(nid);
+		nodeData.setNid(treeId, nid);
 		nodeData.setSegmented(true);
-		sharedTree.insert(&nodeData);
-		node = sharedTree.find(nid);
+		sharedTree.insert(&nodeData, &lock);
+		node = sharedTree.find(treeId, nid);
 	}
 
 	if(node)
@@ -183,7 +138,7 @@ int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize
 		SharedMemNodeData *nodeData = node->getData();
 		if(!nodeData->isSegmented())
 		{
-			deleteData(nodeData);
+			nodeData->free(&freeSpaceManager, &lock);
 			nodeData->setSegmented(true);
 		}
 		int numSegments = nodeData->getNumSegments();
@@ -194,55 +149,122 @@ int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize
 		}
 		if(idx == numSegments || idx < 0)
 		{
-			segment = (Segment *)freeSpaceManager.allocateShared(sizeof(Segment));
+			segment = (Segment *)freeSpaceManager.allocateShared(sizeof(Segment), &lock);
 			segment->initialize();
 			nodeData->appendSegment(segment);
+			*retIdx = numSegments;
 		}
 		else
+		{
 			segment = nodeData->getSegmentAt(idx);
+			*retIdx = idx;
+		}
 
 		char *currPtr;
-		int currSize;
-		segment->getStart(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(startSize);
+		segment->free(&freeSpaceManager, &lock);
+
+		currPtr = freeSpaceManager.allocateShared(startSize, &lock);
 		memcpy(currPtr, start, startSize);
 		segment->setStart(currPtr, startSize);
 
-		segment->getEnd(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(endSize);
+		currPtr = freeSpaceManager.allocateShared(endSize, &lock);
 		memcpy(currPtr, end, endSize);
 		segment->setEnd(currPtr, endSize);
 
-		segment->getDim(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(dimSize);
+		currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
 		memcpy(currPtr, dim, dimSize);
 		segment->setDim(currPtr, dimSize);
 
-		segment->getShape(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(shapeSize);
+		currPtr = freeSpaceManager.allocateShared(shapeSize, &lock);
 		memcpy(currPtr, shape, shapeSize);
 		segment->setShape(currPtr, shapeSize);
 
-		segment->getData(&currPtr, &currSize);
-		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(dataSize);
+		currPtr = freeSpaceManager.allocateShared(dataSize, &lock);
 		memcpy(currPtr, data, dataSize);
 		segment->setData(currPtr, dataSize);
 
-		segment->setTimestamped(timestamped);
+		segment->setTimestamped(false);
 
-		CallbackManager *callback = node->getCallbackManager();
-		if(callback)
-			callback->callCallback();
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
+
+
+int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int numItems, char *shape, 
+											   int shapeSize, char *data, int dataSize, _int64 start, 
+											   _int64 end, char *dim, int dimSize, int *retIdx)
+{
+	Segment *segment;
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(!node)
+	{
+		SharedMemNodeData nodeData;
+		nodeData.setNid(treeId, nid);
+		nodeData.setSegmented(true);
+		sharedTree.insert(&nodeData, &lock);
+		node = sharedTree.find(treeId, nid);
+	}
+
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			nodeData->free(&freeSpaceManager, &lock);
+			nodeData->setSegmented(true);
+		}
+		int numSegments = nodeData->getNumSegments();
+		if(idx > numSegments)
+		{
+			lock.unlock();
+			return 0;
+		}
+		if(idx == numSegments || idx < 0)
+		{
+			segment = (Segment *)freeSpaceManager.allocateShared(sizeof(Segment), &lock);
+			segment->initialize();
+			nodeData->appendSegment(segment);
+			*retIdx = numSegments;
+		}
+		else
+		{
+			segment = nodeData->getSegmentAt(idx);
+			*retIdx = idx;
+		}
+
+		char *currPtr;
+		segment->free(&freeSpaceManager, &lock);
+
+		if(dimSize == 0)
+		{
+			currPtr = freeSpaceManager.allocateShared(8 * numItems, &lock);
+			segment->setDim(currPtr, 8 * numItems);
+		}
+		currPtr = freeSpaceManager.allocateShared(shapeSize, &lock);
+		memcpy(currPtr, shape, shapeSize);
+		segment->setShape(currPtr, shapeSize);
+
+		currPtr = freeSpaceManager.allocateShared(dataSize, &lock);
+		memcpy(currPtr, data, dataSize);
+		segment->setData(currPtr, dataSize);
+	
+		//The following parameters are meaningful only when copying a segment from the tree into cache
+		segment->setStartTimestamp(start);
+		segment->setEndTimestamp(end);
+		if(dimSize > 0)
+		{
+			currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
+			memcpy(currPtr, dim, dimSize);
+			segment->setDim(currPtr, dimSize);
+			segment->setStartTimestamp(*(_int64 *)dim);
+			if(end == 0) segment->setEndTimestamp(*(_int64 *)dim);
+		}
+		segment->setTimestamped(true);
+
 		lock.unlock();
 		return 1;
 	}
@@ -254,10 +276,10 @@ int SharedDataManager::beginSegment(int nid, int idx, char *start, int startSize
 
 
 
-int SharedDataManager::isSegmented(int nid, int *segmented)
+int SharedDataManager::isSegmented(int treeId, int nid, int *segmented)
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -270,10 +292,10 @@ int SharedDataManager::isSegmented(int nid, int *segmented)
 }
 
 
-int SharedDataManager::getNumSegments(int nid, int *numSegments)
+int SharedDataManager::getNumSegments(int treeId, int nid, int *numSegments)
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -284,7 +306,7 @@ int SharedDataManager::getNumSegments(int nid, int *numSegments)
 	lock.unlock();
 	return 0;
 }
-
+/*
 //Return Shape and type information. The coding is the following:
 //1) data type
 //2) item size in bytes
@@ -292,15 +314,11 @@ int SharedDataManager::getNumSegments(int nid, int *numSegments)
 //4) total dimension in bytes 
 //The remaining elements are the dimension limits
 
-
-
-
-
-
-
-
-int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, bool timestamped, char *timestamp)
+*/
+int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int boundsSize, char *data, 
+										 int dataSize, int idx, int startIdx, 
+										 bool isTimestamped, _int64 *timestamps, int numTimestamps, int *segmentFilled, 
+										 int *retIdx)
 {
 	int numSegments;
 	int *shape;
@@ -309,11 +327,17 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 	int segmentSize;
 
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
 		numSegments = nodeData->getNumSegments();
+		if(numSegments == 0) //May happen the first time putRow is called
+		{
+			lock.unlock();
+			return TRUNCATED;
+		}
+
 		if(idx >= numSegments || numSegments == 0)
 		{
 			lock.unlock();
@@ -321,7 +345,12 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 		}
 		Segment *segment = nodeData->getSegmentAt(idx);
 		segment->getShape((char **)&shape, &shapeSize);
-		//Check Shape
+		//Check Shape. Meaning of bound array:
+//		1) data type
+//		2) item size in bytes
+//		3) number of dimensions 
+//		4) total dimension in bytes 
+//		The remaining elements are the dimension limits
 		if(bounds[0] != shape[0])
 		{
 			lock.unlock();
@@ -331,14 +360,6 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 		{
 			lock.unlock();
 			return BAD_SHAPE;
-		}
-		if(timestamped)
-		{
-			if(bounds[2] != shape[2] - 1) //If timestamped a single data row can be inserted
-			{
-				lock.unlock();
-				return BAD_SHAPE;
-			}
 		}
 
 		for(int i = 0; i < shape[2] - 1; i++)
@@ -356,43 +377,46 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 			int leftSize = segmentSize - currSegmentSize;
 			if(dataSize > leftSize)
 			{
-				memcpy(&segmentData[currSegmentSize], data, leftSize);
-				segment->setCurrDataSize(currSegmentSize + leftSize);
 				lock.unlock();
 				return TRUNCATED;
 			}
+			if(leftSize == dataSize)
+				*segmentFilled = 1;
+			else
+				*segmentFilled = 0;
+
 			memcpy(&segmentData[currSegmentSize], data, dataSize);
 			segment->setCurrDataSize(currSegmentSize + dataSize);
-			if(timestamped)
-			{	
-				char *endPtr;
-				int endSize;
-				segment->appendTimestamp(timestamp);
-				segment->getEnd(&endPtr, &endSize);
-				memcpy(endPtr, timestamp, 8);
+			if(isTimestamped)
+				segment->appendTimestamps(timestamps, numTimestamps);
+			*retIdx = numSegments - 1;
+			CallbackManager *callback = node->getData()->getCallbackManager();
 
-			}
-			CallbackManager *callback = node->getCallbackManager();
 			if(callback)
-			callback->callCallback();
+				callback->callCallback();
 			lock.unlock();
 			return 1;
 		}
 		else
 		{
-			int leftSize = segmentSize - startIdx;
+			int itemSize = bounds[3]; //Total size of a data item (array)
+			int startOfs = startIdx * itemSize;
+			int leftSize = segmentSize - startOfs;
 			if(dataSize > leftSize)
 			{
-				memcpy(&segmentData[startIdx], data, leftSize);
-				segment->setCurrDataSize(startIdx + leftSize);
 				lock.unlock();
 				return TRUNCATED;
 			}
-			memcpy(&segmentData[startIdx], data, dataSize);
-			segment->setCurrDataSize(startIdx + dataSize);
-			CallbackManager *callback = node->getCallbackManager();
+			if(leftSize == dataSize)
+				*segmentFilled = 1;
+			else
+				*segmentFilled = 0;
+			memcpy(&segmentData[startOfs], data, dataSize);
+			*retIdx = numSegments - 1;
+			//Segment size does not change
+			CallbackManager *callback = node->getData()->getCallbackManager();
 			if(callback)
-			callback->callCallback();
+				callback->callCallback();
 			lock.unlock();
 			return 1;
 		}
@@ -402,14 +426,49 @@ int SharedDataManager::appendSegmentData(int nid, int *bounds, int boundsSize, c
 }
 
 
+int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, 
+								 _int64 timestamp, int *segmentFilled, int *retIdx, bool *newSegmentCreated)
+{
+	
+	int status = appendSegmentData(treeId, nid, bounds, boundsSize, data, dataSize, -1, -1, true, 
+		&timestamp, 1, segmentFilled, retIdx);
+	if((status & 1) && *segmentFilled)
+	{
+		int *prevBounds, prevBoundsSize;
+		char *dim, *prevData;
+		int dimSize, prevDataSize, currDataSize, actSamples;
+		bool timestamped;
+		*newSegmentCreated = true;
+		status = getSegmentData(treeId, nid, 0, &dim, &dimSize, &prevData, &prevDataSize,
+									  (char **)&prevBounds, &prevBoundsSize, &currDataSize, &timestamped, &actSamples);
+
+//Return Shape and type information. The coding is the following:
+//1) data type
+//2) item size in bytes
+//3) number of dimensions 
+//4) total dimension in bytes 
+//The remaining elements are the dimension limits
+		int newDataSize = prevBounds[3];
+		char *newData = new char[newDataSize];
+		memset((void *)newData, 0, newDataSize);
+
+		status = beginTimestampedSegment(treeId, nid, -1, newDataSize/dataSize, (char *)prevBounds, prevBoundsSize, 
+			newData, newDataSize, 0, 0, 0, 0, retIdx);
+		delete [] newData;
+	}
+	else
+		*newSegmentCreated = false;
+	return status;
+}
 
 
-int SharedDataManager::updateSegment(int nid, int idx, char *start, int startSize, char *end, int endSize, 
+
+int SharedDataManager::updateSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 								  char *dim, int dimSize)
 {
 	Segment *segment;
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -430,26 +489,26 @@ int SharedDataManager::updateSegment(int nid, int idx, char *start, int startSiz
 		int currSize;
 		segment->getStart(&currPtr, &currSize);
 		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(startSize);
+			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
+		currPtr = freeSpaceManager.allocateShared(startSize, &lock);
 		memcpy(currPtr, start, startSize);
 		segment->setStart(currPtr, startSize);
 
 		segment->getEnd(&currPtr, &currSize);
 		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(endSize);
+			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
+		currPtr = freeSpaceManager.allocateShared(endSize, &lock);
 		memcpy(currPtr, end, endSize);
 		segment->setEnd(currPtr, endSize);
 
 		segment->getDim(&currPtr, &currSize);
 		if(currSize > 0)
-			freeSpaceManager.freeShared((char *)currPtr, currSize);
-		currPtr = freeSpaceManager.allocateShared(dimSize);
+			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
+		currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
 		memcpy(currPtr, dim, dimSize);
 		segment->setDim(currPtr, dimSize);
 
-		CallbackManager *callback = node->getCallbackManager();
+		CallbackManager *callback = node->getData()->getCallbackManager();
 		if(callback)
 			callback->callCallback();
 		lock.unlock();
@@ -459,12 +518,12 @@ int SharedDataManager::updateSegment(int nid, int idx, char *start, int startSiz
 	return 0;
 }
 
-int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *startSize, 
+int SharedDataManager::getSegmentLimits(int treeId, int nid, int idx, char **start, int *startSize, 
 		char **end, int *endSize, bool *timestamped)
 {
 	Segment *segment;
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -474,18 +533,26 @@ int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *sta
 			return 0;
 		}
 		int numSegments = nodeData->getNumSegments();
-		if(idx > numSegments || idx < 0)
+		if(idx >= numSegments || idx < 0)
 		{
 			lock.unlock();
 			return 0;
 		}
 		segment = nodeData->getSegmentAt(idx);
 
-		segment->getStart((char **)start, startSize);
-
-		segment->getEnd((char **)end, endSize);
-		*timestamped = segment->isTimestamped();
-
+		if(segment->isTimestamped())
+		{
+			*timestamped = true;
+			segment->getStartTimestamp(start, startSize);
+			segment->getEndTimestamp(end, endSize);
+		}
+		else
+		{
+			segment->getStart((char **)start, startSize);
+			segment->getEnd((char **)end, endSize);
+			*timestamped = false;
+		}
+		
 		lock.unlock();
 		return 1;
 	}
@@ -493,12 +560,12 @@ int SharedDataManager::getSegmentLimits(int nid, int idx, char **start, int *sta
 	return 0;
 }
 
-int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
-									  char **shape, int *shapeSize, int *currDataSize, bool *timestamped)
+int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
+									  char **shape, int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples)
 {
 	Segment *segment;
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
@@ -508,7 +575,7 @@ int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize
 			return 0;
 		}
 		int numSegments = nodeData->getNumSegments();
-		if(idx > numSegments || idx < 0)
+		if(idx >= numSegments || idx < 0)
 		{
 			lock.unlock();
 			return 0;
@@ -520,6 +587,7 @@ int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize
 		segment->getShape((char **)shape, shapeSize);
 		*currDataSize = segment->getCurrDataSize();
 		*timestamped = segment->isTimestamped();
+		*actSamples = segment->getActSamples();
 
 		lock.unlock();
 		return 1;
@@ -529,42 +597,79 @@ int SharedDataManager::getSegmentData(int nid, int idx, char **dim, int *dimSize
 }
 
 
+int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
+{
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			lock.unlock();
+			return 0;
+		}
+		nodeData->discardOldSegments(timestamp, &freeSpaceManager, &lock);		
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
+
+int SharedDataManager::discardFirstSegment(int treeId, int nid)
+{
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			lock.unlock();
+			return 0;
+		}
+		nodeData->discardFirstSegment(&freeSpaceManager, &lock);		
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
 
 
-
-
-
-void SharedDataManager::callCallback(int nid)
+/*
+void SharedDataManager::callCallback(int treeId, int nid)
 {
 	SharedMemNode *node;
 
-	node = sharedTree.find(nid);
+	node = sharedTree.find(treeId, nid);
 	if(node)
 	{
-		CallbackManager *callback = node->getCallbackManager();
+		CallbackManager *callback = node->getData()->getCallbackManager();
 		if(callback)
 			callback->callCallback();
 	}
 }
 
+*/
 
 
-
- void *SharedDataManager::setCallback(int nid, void (*callback)(int))
+ void *SharedDataManager::setCallback(int treeId, int nid, void (*callback)(int))
 {
 
 	char *retPtr = NULL;
 	int status = 0;
 	lock.lock();
-	SharedMemNode *retNode = sharedTree.find(nid);
+	SharedMemNode *retNode = sharedTree.find(treeId, nid);
 	if(!retNode) 
 	//No data has been written in the cache yet, or the not is not cacheable,
 	//then create a nid node without data
 	{
 		SharedMemNodeData nodeData;
-		nodeData.setNid(nid);
-		sharedTree.insert(&nodeData);
-		retNode = sharedTree.find(nid);
+		nodeData.setNid(treeId, nid);
+		sharedTree.insert(&nodeData, &lock);
+		retNode = sharedTree.find(treeId, nid);
 	}
 
 
@@ -572,13 +677,13 @@ void SharedDataManager::callCallback(int nid)
 	{
 		//Create a new Callback manager and concatenate it to the linked list of Callback managers
 		//associated with this  nid node
-		CallbackManager *callbackManager = (CallbackManager *)freeSpaceManager.allocateShared(sizeof(CallbackManager));
-		CallbackManager *prevCallbackManager = retNode->getCallbackManager();
+		CallbackManager *callbackManager = (CallbackManager *)freeSpaceManager.allocateShared(sizeof(CallbackManager), &lock);
+		CallbackManager *prevCallbackManager = retNode->getData()->getCallbackManager();
 		if(prevCallbackManager)
 			prevCallbackManager->setPrev((char *)callbackManager);
-		callbackManager->setNext((char *)retNode->getCallbackManager());
+		callbackManager->setNext((char *)retNode->getData()->getCallbackManager());
 		callbackManager->setPrev(NULL);
-		retNode->setCallbackManager(callbackManager);
+		retNode->getData()->setCallbackManager(callbackManager);
 		callbackManager->initialize(nid, callback);
 		SharedMemNodeData *nodeData = retNode->getData();
 		nodeData->setWarm(true);
@@ -592,19 +697,19 @@ void SharedDataManager::callCallback(int nid)
 	}
 }
 
- int SharedDataManager::clearCallback(int nid, char *callbackDescr)
+ int SharedDataManager::clearCallback(int treeId, int nid, char *callbackDescr)
 {
 	int status = 0;
 	CallbackManager *callbackManager = (CallbackManager *)callbackDescr;
 	callbackManager->dispose();
 	lock.lock();
-	SharedMemNode *retNode = sharedTree.find(nid);
+	SharedMemNode *retNode = sharedTree.find(treeId, nid);
 	//Remove the CallbackManager instance from the queue associated with the nid node
 	if(retNode)
 	{
-		CallbackManager *callbackManagerHead = retNode->getCallbackManager();
+		CallbackManager *callbackManagerHead = retNode->getData()->getCallbackManager();
 		if(callbackManagerHead == callbackManager)
-			retNode->setCallbackManager(callbackManager->getNext());
+			retNode->getData()->setCallbackManager(callbackManager->getNext());
 		else
 		{
 			CallbackManager *next = callbackManager->getNext();
@@ -614,165 +719,168 @@ void SharedDataManager::callCallback(int nid)
 			if(next)
 				next->setPrev((char *)prev);
 		}
-		freeSpaceManager.freeShared((char *)callbackManager, sizeof(CallbackManager));
+		freeSpaceManager.freeShared((char *)callbackManager, sizeof(CallbackManager), &lock);
 		status = 1;
 	}
 	lock.unlock();
 	return status;
 }
 
-SharedMemNodeData *SharedDataManager::getNodeData(int nid, bool create)
+SharedMemNodeData *SharedDataManager::getNodeData(int treeId, int nid, bool create)
 {
 	SharedMemNode *node;
-	node = sharedTree.find(nid);
+	node = sharedTree.find(treeId, nid);
 	if(node)
 		return node->getData();
 
 	if(create)
 	{
 		SharedMemNodeData nodeData;
-		nodeData.setNid(nid);
-		sharedTree.insert(&nodeData);
-		node = sharedTree.find(nid);
+		nodeData.setNid(treeId, nid);
+		sharedTree.insert(&nodeData, &lock);
+		node = sharedTree.find(treeId, nid);
 		return node->getData();
 	}
 
 	return 0;
 }
 
-
+////////////////////////////////////////////////
 //Cache coerency methods
-void SharedDataManager::getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
+////////////////////////////////////////////////
+void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
 {
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, isDirty, timestamp);
 
 }
 
 	
-void SharedDataManager::getCoherencyInfo(int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
+void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
 		char * &warmList, int &numWarm, char *&readerList, int &numReader)
 {
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, timestamp, warmList, numWarm, readerList, numReader);
 
 }
 
 	
-void SharedDataManager::addReader(int nid, int readerIdx)
+void SharedDataManager::addReader(int treeId, int nid, int readerIdx)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->addReader(readerIdx);
 	lock.unlock();
 }
 
-void  SharedDataManager::addWarm(int nid, int warmIdx)
+void  SharedDataManager::addWarm(int treeId, int nid, int warmIdx)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->addWarm(warmIdx);
 	lock.unlock();
 }
 
-void SharedDataManager::setOwner(int nid, int ownerIdx, int timestamp)
+void SharedDataManager::setOwner(int treeId, int nid, int ownerIdx, int timestamp)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->setOwner(ownerIdx, timestamp);
 	lock.unlock();
 }
 
-void SharedDataManager::setCoherencyInfo(int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
+void SharedDataManager::setCoherencyInfo(int treeId, int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
 		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->setCoherencyInfo(isOwner, ownerIdx, isWarm, timestamp,warmNodes, numWarmNodes, 
 			readerNodes, numReaderNodes);
 	lock.unlock();
 }
 
-void SharedDataManager::setWarm(int nid, bool warm)
+void SharedDataManager::setWarm(int treeId, int nid, bool warm)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->setWarm(warm);
 	lock.unlock();
 }
 
-bool SharedDataManager::isWarm(int nid)
+bool SharedDataManager::isWarm(int treeId, int nid)
 {
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		return nodeData->isWarm();
 	return false;
 }
 
-void SharedDataManager::setDirty(int nid, bool isDirty)
+void SharedDataManager::setDirty(int treeId, int nid, bool isDirty)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->setDirty(isDirty);
 	lock.unlock();
 }
 
 
-Event *SharedDataManager::getDataEvent(int nid)
+Event *SharedDataManager::getDataEvent(int treeId, int nid)
 {
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	lock.lock();
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		return nodeData->getDataEvent();
 	return NULL;
+	lock.unlock();
 }
 
-int SharedDataManager::getSerializedSize(int nid)
+int SharedDataManager::getSerializedSize(int treeId, int nid)
 {
 	int size = 0;
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		size =  nodeData->getSerializedSize();
 	lock.unlock();
 	return size;
 }
 
-void SharedDataManager::getSerialized(int nid, char *serialized)
+void SharedDataManager::getSerialized(int treeId, int nid, char *serialized)
 {
 	lock.lock();
-	SharedMemNodeData *nodeData = getNodeData(nid, true);
+	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->getSerialized(serialized);
 	lock.unlock();
 }
 
-void SharedDataManager::setSerializedData(int nid, char *serializedData, int dataLen)
+void SharedDataManager::setSerializedData(int treeId, int nid, char *serializedData, int dataLen)
 {
 	lock.lock();
-	SharedMemNode *node = sharedTree.find(nid);
+	SharedMemNode *node = sharedTree.find(treeId, nid);
 
 	if(!node) 
 	//No data has been written in the cache yet
 	{
 		SharedMemNodeData nodeData;
-		nodeData.setNid(nid);
-		sharedTree.insert(&nodeData);
-		node = sharedTree.find(nid);
+		nodeData.setNid(treeId, nid);
+		sharedTree.insert(&nodeData, &lock);
+		node = sharedTree.find(treeId, nid);
 	}
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
-		nodeData->free(&freeSpaceManager);
-		nodeData->initialize(serializedData, &freeSpaceManager);
-		CallbackManager *callback = node->getCallbackManager();
+		nodeData->free(&freeSpaceManager, &lock);
+		nodeData->initialize(serializedData, &freeSpaceManager, &lock);
+		CallbackManager *callback = node->getData()->getCallbackManager();
 		if(callback)
 			callback->callCallback();
 	}

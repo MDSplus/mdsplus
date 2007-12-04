@@ -2,16 +2,25 @@
 #define FREE_SPACE_MANAGER_H
 #include <stdio.h>
 #include <stdlib.h>
+#include "Event.h"
+#include "LockManager.h"
 //Class FreeSpaceManager supervises memory allocation within a shared segment. 
-//The first two elements of this segment will hold a pointer (long offset to segment start) to the list of FreeDescriptor elements describing free space
-//within the segment, and a pointer (long offset to segment start) to the list of currently unused FreedDescriptor elements. FreeDescriptor elements
+//The first two elements of this segment will hold a pointer (_int64 offset to segment start) to the list of FreeDescriptor elements describing free space
+//within the segment, and a pointer (_int64 offset to segment start) to the list of currently unused FreedDescriptor elements. FreeDescriptor elements
 //are allocated from the segment as any other memory element
 //The third element keeps the size of the segment
+//The fourth element is the counter (int) of entities which are waiting for free space
+//The last element is a Event instance, used to signal when memory is released when the above counter is non zero
 
 
 
 class FreeSpaceManager
 {
+
+	Event *fullEvent;
+	int getPendingCount();
+	void incrementPendingCount();
+	void decrementPendingCount();
 
 public:
 	
@@ -19,14 +28,14 @@ public:
 	
 	class FreeDescriptor {
 	public: 
-		long startAddr;
+		_int64 startAddr;
 		int size;
-		long next;
+		_int64 next;
 		//struct FreeDescriptor *nxt;
 
 		void setStartAddr(char *startAddr)
 		{
-			this->startAddr = (long)startAddr - (long)startAddress;
+			this->startAddr = (_int64)startAddr - (_int64)startAddress;
 		}
 		char *getStartAddr()
 		{
@@ -38,7 +47,7 @@ public:
 			if(d == NULL)
 			    next = 0;
 			else
-			    next = (long)d - (long)startAddress;
+			    next = (_int64)d - (_int64)startAddress;
 		}
 
 		FreeDescriptor *getNext()
@@ -50,13 +59,13 @@ public:
 
 
 
-
+	int getFreeSize();
 	FreeDescriptor *getDescriptor();
 	void releaseDescriptor(FreeDescriptor *dsc);
 	void initialize(char *startAddr, int size);
 	void map(char *startAddress);
-	char *allocateShared(int size); 
-	void freeShared(char *addr, int size);
+	char *allocateShared(int size, LockManager *lock); 
+	void freeShared(char *addr, int size, LockManager *lock);
 	void print();
 };
 #endif

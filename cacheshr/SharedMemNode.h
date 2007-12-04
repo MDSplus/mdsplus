@@ -8,26 +8,17 @@
 class SharedMemNode
 {
 	friend class SharedMemTree;
-//Red-Black Tree related stuff
 	bool isValid; 
-//	SharedMemNode *left, *right;
-	long left, right;
-	char  color;
-
-//Used to handle tree balancing
-//	SharedMemNode *current, *parent, *grand, *great;
-
+	_int64 left, right;
 
 //Shared Memory related stuff
 	SharedMemNodeData data;
 
-//Callback list
-	long callbackManager;
 
 
 public:
 	
-	SharedMemNode(SharedMemNodeData *inData)
+/*	SharedMemNode(SharedMemNodeData *inData)
 	{
 		data = *inData;
 		isValid = true;
@@ -39,7 +30,7 @@ public:
 		isValid = true;
 	}
 
-
+*/
 
     int  compare(SharedMemNodeData &nodeData)
 	{
@@ -49,6 +40,7 @@ public:
 	SharedMemNodeData *  setData(SharedMemNodeData *nodeData)
 	{
 		data = *nodeData;
+		data.adjustOffsets(nodeData);
 		isValid = true;
 		return &data;
 	}
@@ -68,13 +60,13 @@ public:
 
 	SharedMemNode * setRightChild(SharedMemNode *node)
 	{
-		right = (long)((char *)node - (char *)this);
+		right = (_int64)((char *)node - (char *)this);
 		return node;
 	}
 
 	SharedMemNode * setLeftChild(SharedMemNode *node)
 	{
-		left = (long)((char *)node - (char *)this);
+		left = (_int64)((char *)node - (char *)this);
 		return node;
 	}
 
@@ -89,22 +81,13 @@ public:
 		return (SharedMemNode *)((char *)this + right);
 	}
 
-	void setCallbackManager(CallbackManager *callbackManager)
-	{
-		if(callbackManager == 0)
-			this->callbackManager = 0;
-		else
-			this->callbackManager = (long)callbackManager - (long)this;
-	}
-
-	CallbackManager *getCallbackManager()
-	{
-		if(callbackManager == 0)
-			return 0;
-		return (CallbackManager *)((char *)this + callbackManager);
-	}
-
 	SharedMemNodeData *getData() { return &data;}
+
+	void free(FreeSpaceManager *fsm, LockManager *lock)
+	{
+		data.free(fsm, lock);
+		fsm->freeShared((char *)this, sizeof(SharedMemNode), lock);
+	}
 
 
 };

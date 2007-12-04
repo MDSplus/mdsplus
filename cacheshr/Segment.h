@@ -6,19 +6,19 @@ static	void swapBytes(char *buf, int size);
 class Segment
 {
 	bool timestamped;
-	long data;
+	_int64 data;
 	int dataSize;
-	long shape;
+	_int64 shape;
 	int shapeSize;
-	long start;
+	_int64 start;
 	int startSize;
-	long end;
+	_int64 end;
 	int endSize;
-	long dim;
+	_int64 dim;
 	int dimSize;
 	int dimOfs;
 	int currDataSize;
-	long nxt;
+	_int64 nxt;
 
 
 
@@ -38,67 +38,84 @@ public:
 		shapeSize = 0;
 		dataSize = 0;
 		currDataSize = 0;
-		nxt = -(long)this;
+		nxt = -(_int64)this;
 	}
 
-	void free(FreeSpaceManager *fsm)
+	void free(FreeSpaceManager *fsm, LockManager *lock)
 	{
 		char *currPtr;
 		int currSize;
-		if(startSize > 0)
+//For timestamped, where start and end contains directly the 
+//start and end time, start and end size is set to 0
+		if(startSize > 0) 
 		{
 			getStart(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize);
+			fsm->freeShared((char *)currPtr, currSize, lock);
 		}
 		if(endSize > 0)
 		{
 			getEnd(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize);
+			fsm->freeShared((char *)currPtr, currSize, lock);
 		}
 		if(shapeSize > 0)
 		{
 			getShape(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize);
+			fsm->freeShared((char *)currPtr, currSize, lock);
 		}
 		if(dataSize > 0)
 		{
 			getData(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize);
+			fsm->freeShared((char *)currPtr, currSize, lock);
 		}
 		if(dimSize > 0)
 		{
 			getDim(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize);
+			fsm->freeShared((char *)currPtr, currSize, lock);
 		}
 	}
 
 
 	void setNext(Segment *segment)
 	{
-		this->nxt = (long)segment - (long)this;
+		this->nxt = (_int64)segment - (_int64)this;
 	}
 
 
 	Segment *getNext()
 	{
-		return (Segment *)((long)this + nxt);
+		return (Segment *)((_int64)this + nxt);
 	}
 
 	void setData(char *data, int dataSize)
 	{
-		this->data = (long)data - (long)this;
+		this->data = (_int64)data - (_int64)this;
 		this->dataSize = dataSize;
 		currDataSize = 0;
 	}
 
-	void appendTimestamp(char *timestamp)
+	int getActSamples()
 	{
-		memcpy((char *)((long)this + this->dim+dimOfs), timestamp, 8);
-		dimOfs += 8;
+		if(!timestamped)
+			return 0;
+		return dimOfs/8;
+	}
+
+	void appendTimestamps(_int64 *timestamps, int numTimestamps)
+	{
+		if(dimOfs + 8*numTimestamps > dimSize)
+		{
+			printf("SEGMENT TIMESTAMP OVERFLOW!!!!\n");
+			return;
+		}
+		memcpy((char *)((_int64)this + this->dim+dimOfs), timestamps, 8*numTimestamps);
+		if(dimOfs == 0)
+			start = timestamps[0];
+		dimOfs += 8*numTimestamps;
+		end = timestamps[numTimestamps-1];
 	}
 	void getData(char **data, int *dataSize)
 	{
-		*data = (char *)((long)this + this->data);
+		*data = (char *)((_int64)this + this->data);
 		*dataSize = this->dataSize;
 	}
 
@@ -110,53 +127,76 @@ public:
 
 	void setDim(char *dim, int dimSize)
 	{
-		this->dim = (long)dim - (long)this;
+		this->dim = (_int64)dim - (_int64)this;
 		this->dimSize = dimSize;
 	}
 
 
 	void getDim(char **dim, int *dimSize)
 	{
-		*dim = (char *)((long)this + this->dim);
+		*dim = (char *)((_int64)this + this->dim);
 		*dimSize = this->dimSize;
 	}
 
 	void setShape(char *shape, int shapeSize)
 	{
-		this->shape = (long)shape - (long)this;
+		this->shape = (_int64)shape - (_int64)this;
 		this->shapeSize = shapeSize;
 	}
 
 
 	void getShape(char **shape, int *shapeSize)
 	{
-		*shape = (char *)((long)this + this->shape);
+		*shape = (char *)((_int64)this + this->shape);
 		*shapeSize = this->shapeSize;
 	}
 
 	void setStart(char *start, int startSize)
 	{
-		this->start = (long)start - (long)this;
+		this->start = (_int64)start - (_int64)this;
 		this->startSize = startSize;
 	}
 
 	void getStart(char **start, int *startSize)
 	{
-		*start = (char *)((long)this + this->start);
+		*start = (char *)((_int64)this + this->start);
 		*startSize = this->startSize;
 	}
 
+	void setStartTimestamp(_int64 timestamp)
+	{
+		start = timestamp;
+	}
+
+	void getStartTimestamp(char **start, int *startSize)
+	{
+		*start = (char *)&this->start;
+		*startSize = 8;
+	}
+
+
 	void setEnd(char *end, int endSize)
 	{
-		this->end = (long)end - (long)this;
+		this->end = (_int64)end - (_int64)this;
 		this->endSize = endSize;
 	}
 
 	void getEnd(char **end, int *endSize)
 	{
-		*end = (char *)((long)this + this->end);
+		*end = (char *)((_int64)this + this->end);
 		*endSize = this->endSize;
 	}
+	void setEndTimestamp(_int64 timestamp)
+	{
+		end = timestamp;
+	}
+
+	void getEndTimestamp(char **end, int *endSize)
+	{
+		*end = (char *)&this->end;
+		*endSize = 8;
+	}
+
 	void setTimestamped(bool timestamped)
 	{
 	    this->timestamped = timestamped;
@@ -169,11 +209,11 @@ public:
 //Serialization protocol
 //	1) One (two bytes) for endianity mismatch detection
 //	2) Timestamped (one byte)
-//	3) Data size (longword) + data
-//	4) Shape size (longword) + shape
-//	5) Start size (longword) + start
-//	6) End size (longword) + end
-//	7) Dim size (longword) + dim
+//	3) Data size (_int64word) + data
+//	4) Shape size (_int64word) + shape
+//	5) Start size (_int64word) + start
+//	6) End size (_int64word) + end
+//	7) Dim size (_int64word) + dim
 
 	int getSerializedSize()
 	{
@@ -198,7 +238,7 @@ public:
 		memcpy(&serialized[2 + 1 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize + 4], currPtr, dimSize);
 	}
 
-	void initialize(char *serialized, FreeSpaceManager *fsm)
+	void initialize(char *serialized, FreeSpaceManager *fsm, LockManager *lock)
 	{
 		char *currPtr;
 		bool forceConversion = ((*(short *)serialized) != 1);
@@ -206,14 +246,14 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3], 4);
 		dataSize = *(int *)&serialized[3];
-		currPtr = fsm->allocateShared(dataSize);
+		currPtr = fsm->allocateShared(dataSize, lock);
 		memcpy(currPtr, &serialized[3+4], dataSize);		
 		setData(currPtr, dataSize);
 
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize], 4);
 		shapeSize = *(int *)&serialized[3 + 4 + dataSize];
-		currPtr = fsm->allocateShared(shapeSize);
+		currPtr = fsm->allocateShared(shapeSize, lock);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4], shapeSize);		
 		setShape(currPtr, shapeSize);
 		for(int i = 0; i < shapeSize/4; i++)
@@ -222,14 +262,14 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize], 4);
 		startSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize];
-		currPtr = fsm->allocateShared(startSize);
+		currPtr = fsm->allocateShared(startSize, lock);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4], startSize);		
 		setStart(currPtr, startSize);
 
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize], 4);
 		endSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize];
-		currPtr = fsm->allocateShared(endSize);
+		currPtr = fsm->allocateShared(endSize, lock);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4 + startSize + 4], startSize);		
 //Timestamped segments record direct 8 - byte timestamp for end time
 		if(timestamped)
@@ -239,7 +279,7 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize], 4);
 		dimSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize];
-		currPtr = fsm->allocateShared(dimSize);
+		currPtr = fsm->allocateShared(dimSize, lock);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize + 4], dimSize);		
 //Timestamped segments record direct 8 - byte timestamp array for dimension
 		if(timestamped)

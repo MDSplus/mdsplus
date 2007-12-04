@@ -1,5 +1,5 @@
-#ifndef RUNNABLE
-#define RUNNABLE
+#ifndef RUNNABLE_H
+#define RUNNABLE_H
 class Runnable
 {
 public: 
