@@ -50,13 +50,15 @@ public class RFXVersionSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
+        deviceField28 = new DeviceField();
+        deviceField29 = new DeviceField();
         jPanel2 = new javax.swing.JPanel();
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
         setDeviceTitle("RFX Version Configuration");
         setDeviceType("RFXVersion");
-        jPanel1.setLayout(new java.awt.GridLayout(9, 3));
+        jPanel1.setLayout(new java.awt.GridLayout(10, 3));
 
         deviceField1.setEditable(false);
         deviceField1.setIdentifier("");
@@ -247,6 +249,20 @@ public class RFXVersionSetup extends DeviceSetup {
         deviceField4.setTextOnly(true);
         jPanel1.add(deviceField4);
 
+        deviceField28.setEditable(false);
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("CPCI STC");
+        deviceField28.setOffsetNid(28);
+        deviceField28.setTextOnly(true);
+        jPanel1.add(deviceField28);
+
+        deviceField29.setEditable(false);
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("CPCI DIAG STC");
+        deviceField29.setOffsetNid(29);
+        deviceField29.setTextOnly(true);
+        jPanel1.add(deviceField29);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         jPanel2.add(deviceButtons1);
@@ -289,6 +305,8 @@ public class RFXVersionSetup extends DeviceSetup {
     private DeviceField deviceField25;
     private DeviceField deviceField26;
     private DeviceField deviceField27;
+    private DeviceField deviceField28;
+    private DeviceField deviceField29;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
