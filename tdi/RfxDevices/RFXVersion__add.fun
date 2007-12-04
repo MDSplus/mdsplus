@@ -1,6 +1,6 @@
 public fun RFXVersion__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXVersion', 28, _nidout);
+    DevAddStart(_path, 'RFXVersion', 30, _nidout);
     DevAddNode(_path // ':VME_DEQU', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_DFLU', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_EDA1', 'TEXT', *, *, _nid);
@@ -28,6 +28,8 @@ public fun RFXVersion__add(in _path, out _nidout)
     DevAddNode(_path // ':CPCI_BC_1', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CPCI_BC_2', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':CPCI_BR_1', 'TEXT', *, *, _nid);
+    DevAddNode(_path // ':CPCI_STC', 'TEXT', *, *, _nid);
+    DevAddNode(_path // ':CPCI_DIA_STC', 'TEXT', *, *, _nid);
     DevAddEnd();
 }
 
