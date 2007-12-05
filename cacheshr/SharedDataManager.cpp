@@ -1,3 +1,7 @@
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
+
 #include "SharedDataManager.h"
 
 
@@ -599,6 +603,7 @@ int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, 
 
 int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 {
+	printf("START DISCARD\n");
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
@@ -611,6 +616,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 		}
 		nodeData->discardOldSegments(timestamp, &freeSpaceManager, &lock);		
 		lock.unlock();
+	printf("END DISCARD\n");
 		return 1;
 	}
 	lock.unlock();
@@ -619,6 +625,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 
 int SharedDataManager::discardFirstSegment(int treeId, int nid)
 {
+	printf("START DISCARD\n");
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
@@ -631,6 +638,7 @@ int SharedDataManager::discardFirstSegment(int treeId, int nid)
 		}
 		nodeData->discardFirstSegment(&freeSpaceManager, &lock);		
 		lock.unlock();
+	printf("END DISCARD\n");
 		return 1;
 	}
 	lock.unlock();

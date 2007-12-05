@@ -1,3 +1,6 @@
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
 #include "SharedMemManager.h"
 #include <stdio.h>
 #ifdef HAVE_WINDOWS_H

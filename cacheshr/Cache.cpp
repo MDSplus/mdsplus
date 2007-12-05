@@ -1,3 +1,7 @@
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
+
 #include "Cache.h"
 #define WRITE_THROUGH 1
 #define WRITE_BACK 2

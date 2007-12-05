@@ -26,7 +26,8 @@ Thread.cpp \
 ChannelFactory.cpp \
 CoherencyManager.cpp \
 CommunicationChannel.cpp \
-TCPChannel.cpp
+TCPChannel.cpp \
+UDPChannel.cpp
 
 OBJECTS = $(SOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 EXPORTS = CacheShr.exports

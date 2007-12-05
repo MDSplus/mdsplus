@@ -1,5 +1,5 @@
 #include "FreeSpaceManager.h"
-
+#define FREE_THRESHOLD 50000
 //Class FreeSpaceManager supervises memory allocation within a shared segment. 
 //The first two elements of this segment will hold a pointer (_int64 offset to segment start) to the list of FreeDescriptor elements describing free space
 //within the segment, and a pointer (_int64 offset to segment start) to the list of currently unused FreedDescriptor elements. FreeDescriptor elements
@@ -100,22 +100,15 @@ FreeSpaceManager::FreeDescriptor *FreeSpaceManager::getDescriptor() //Get a free
 
 	int FreeSpaceManager::getFreeSize()
 	{
-				
 		FreeDescriptor *currDsc;
 		FreeDescriptor *freeDscHead = (FreeDescriptor *)(startAddress + *(_int64 *)startAddress);
 		
-		while(true)
+		int freeSize = 0;
+		for(currDsc = freeDscHead; currDsc; currDsc = currDsc->getNext())
 		{
-			int freeSize = 0;
-			for(currDsc = freeDscHead; currDsc; currDsc = currDsc->getNext())
-			{
-				freeSize += currDsc->size;
-			}
-			if(!currDsc)
-			{
-				return freeSize;
-			}
+			freeSize += currDsc->size;
 		}
+		return freeSize;
 	}
 
 
@@ -141,13 +134,16 @@ FreeSpaceManager::FreeDescriptor *FreeSpaceManager::getDescriptor() //Get a free
 
 			if(!currDsc)
 			{
-				printf("Shared Memory Allocation Failed: Waiting for free space. FreeUnusable size = %d\n", freeUnusableSize);
+				printf("Shared Memory Allocation Failed: Waiting for free space. FreeUnusable size = %d %d\n", 
+					freeUnusableSize, getFreeSize());
 				//Not enough space available: wait for more space
 				incrementPendingCount();
 				lock->unlock();
 				fullEvent->wait();
 				printf("Memory freed, retry allocation\n");
 				lock->lock();
+				freeDscHead = (FreeDescriptor *)(startAddress + *(_int64 *)startAddress);
+				unusedDscHead = (FreeDescriptor *)(startAddress + *(_int64 *)(startAddress + sizeof(_int64)));
 				decrementPendingCount();
 			}
 			else
@@ -284,8 +280,13 @@ FreeSpaceManager::FreeDescriptor *FreeSpaceManager::getDescriptor() //Get a free
 		int pend;
 		if((pend = getPendingCount()) > 0)
 		{
+		    
+		    int freeSize = getFreeSize();
+		    if(freeSize > FREE_THRESHOLD)
+		    {
 			printf("%d pending threads detected in free memory\n", pend);
 			fullEvent->signal();
+		    }
 		}
 
 		//printf("FREE DONE\n");

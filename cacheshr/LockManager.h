@@ -200,12 +200,13 @@ public:
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
-#include <pthtread.h>
+#include <pthread.h>
 
 class LockManager
 {
+	bool isLocal;
     	sem_t *semaphore;
-		pthread_mutex_t pmutex; //Used mutual exclusion within the process (among threads)
+	pthread_mutex_t pmutex; //Used mutual exclusion within the process (among threads)
 	
 public:
 	LockManager(){initialize();}
@@ -216,7 +217,7 @@ public:
 	
 	bool initialize(int id)  //Return true if the mutex did not exist before and has been created
 	{
-		pmutex = NULL;
+		isLocal = false;
 		char buf[256];
 		int oflag = O_CREAT | O_EXCL;
 		mode_t mode = 0666;
@@ -239,6 +240,7 @@ public:
 	//No argument in creator: use a 
 	bool initialize()  //Return true if the mutex did not exist before and has been created
 	{
+		isLocal = true;
 		int status = pthread_mutex_init (&pmutex , NULL);
 		if(status)
 		{
@@ -249,11 +251,11 @@ public:
 	}
 
 
-	void lock()
+    void lock()
     {
-		if(pmutex)
-			 pthread_mutex_lock (&pmutex);
-		else
+	if(isLocal)
+		 pthread_mutex_lock (&pmutex);
+	else
     		sem_wait(semaphore);
     }
 
@@ -261,10 +263,10 @@ public:
 
 	void unlock()
 	{
-		if(pmutex)
+		if(isLocal)
 			 pthread_mutex_unlock (&pmutex);
 		else
-    		sem_post(semaphore);
+    			sem_post(semaphore);
 	}
 	
 

@@ -12,7 +12,9 @@
 //The fourth element is the counter (int) of entities which are waiting for free space
 //The last element is a Event instance, used to signal when memory is released when the above counter is non zero
 
-
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
 
 class FreeSpaceManager
 {

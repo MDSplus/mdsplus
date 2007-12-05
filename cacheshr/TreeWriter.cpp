@@ -4,6 +4,9 @@ extern "C" int beginSegmentInternal(int nid, int idx, char *start, char *end, ch
 extern "C" int updateSegmentInternal(int nid, int idx, char *start, char *end);
 extern "C" int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSize, 
 					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int isTimestamped, int actSamples);
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
 
 #include "TreeWriter.h"
 
@@ -72,7 +75,7 @@ void TreeWriter::run(void *arg)
 		if(!nidHead)
 			nidEvent.wait();
 		lock.lock();
-		if(nidHead)
+		while(nidHead)
 		{
 			writeNid = nidHead->nid;
 			writeTreeIdx = nidHead->treeIdx;

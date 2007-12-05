@@ -1,3 +1,6 @@
+#ifndef HAVE_WINDOWS_H
+typedef unsigned long long _int64;
+#endif
 #include "Notifier.h"
 
 #ifdef HAVE_WINDOWS_H
