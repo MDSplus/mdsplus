@@ -524,8 +524,8 @@ public class ParameterSetting
                 {
                     devices[1] = device = new RFXPolControlSetup();
                     device.configure(rfx, nid);
-                    if (ParameterSetting.this.readOnly)
-                        device.setReadOnly(true);
+                    //if (ParameterSetting.this.readOnly)
+                    device.setReadOnly(true);
                     PrintButton printB = new PrintButton(1);
                     device.addButton(printB);
                     if(ParameterSetting.this.isRt) device.setCancelText("Acknowledge");
