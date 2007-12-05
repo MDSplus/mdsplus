@@ -1,21 +1,31 @@
 #include <mdsdescrip.h>
 
+#define WRITE_THROUGH 1
+#define WRITE_BACK 2
+#define WRITE_BUFFER 3
+#define WRITE_LAST 4
+
+extern int RTreeOpen(char *expName, int shot);
+extern int RTreeClose(char *expName, int shot);
 extern int RTreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, 
-							 struct descriptor_a *initialValue, int idx, int writeThrough);
+							 struct descriptor_a *initialValue, int idx, int writeMode);
+extern void RTreeSetShotNum(int inShotNum);
+extern int RTreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, 
+							 struct descriptor_a *initialValue, int idx, int writeMode);
+extern int RTreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx, int writeMode);
 extern int RTreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, 
-							  struct descriptor *dimension, int idx, int writeThrough);
-extern int RTreePutSegment(int nid, int idx, struct descriptor *dataD, int segIdx);
+							  struct descriptor *dimension, int idx, int writeMode);
+extern int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx, int writeMode);
+extern int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 *timestamps, int writeMode);
+extern int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode);
 extern int RTreeGetNumSegments(int nid, int *numSegments);
 extern int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
-extern int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeThrough);
+extern int RTreeDiscardOldSegments(int nid, _int64 timestamp);
+extern int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeMode);
 extern int RTreeFlush();
-extern void *RTreeSetCallback(int nid, void (*callback)(int));
-extern void RTreeClearCallback(int nid, void *callbackDescr);
+extern char *RTreeSetCallback(int nid, void (*callback)(int));
+extern int RTreeClearCallback(int nid, char *callbackDescr);
+extern int RTreeSetWarm(int nid, int warm);
 extern int RTreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
 extern void cacheReset();
-
-extern void RTreeSetGetRecord(int (*treeGetRecordIn)(int nid, struct descriptor_xd *outXd));
-extern void RTreeSetPutRecord(int (*treePutRecordIn)(int nid, struct descriptor *data, int));
-extern void RTreeSetGetTimedRecord(int (*getTimedRecordIn)(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *minDelta,
-							 struct descriptor_xd *outSig));
