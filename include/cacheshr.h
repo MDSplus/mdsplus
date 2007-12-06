@@ -28,4 +28,5 @@ extern char *RTreeSetCallback(int nid, void (*callback)(int));
 extern int RTreeClearCallback(int nid, char *callbackDescr);
 extern int RTreeSetWarm(int nid, int warm);
 extern int RTreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
-extern void cacheReset();
+extern void RTreeCacheReset();
+extern void RTreeCacheSynch();
