@@ -28,6 +28,8 @@ class TreeWriter:Runnable
 	NidHolder *nidHead;
 	Thread worker;
 	Event nidEvent;
+	Event synchEvent;
+	bool synchWaiting;
 	SharedDataManager *dataManager;
 
 public:
@@ -39,6 +41,7 @@ public:
 	void addPutTimestampedSegment(int treeIdx, int nid, int idx, int discard);
 	void addNid(int treeIdx, int nid, int idx, char mode);
 	void run(void *arg);
+	void synch();
 };
 
 #endif

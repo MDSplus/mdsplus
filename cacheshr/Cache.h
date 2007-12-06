@@ -58,7 +58,7 @@ public:
 	void * setCallback(int treeIdx, int nid, void (* callback)(int));
 	int clearCallback(int treeIdx, int nid, char *callbackManager);	
 	void setWarm(int treeIdx, int nid, bool warm);
-
+	void synch();
 	void startServer();
 };
 

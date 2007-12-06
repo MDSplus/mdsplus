@@ -12,8 +12,9 @@ typedef unsigned long long _int64;
 
 TreeWriter::TreeWriter()
 {
-	lock.initialize(TREE_WRITER_LOCK);
+	lock.initialize();
 	nidHead = 0;
+	synchWaiting = false;
 }
 
 
@@ -65,6 +66,17 @@ void TreeWriter::addNid(int treeIdx, int nid, int idx, char mode)
 	nidEvent.signal();
 }
 
+void TreeWriter::synch()
+{
+	lock.lock();
+	if(nidHead)
+		synchWaiting = true;
+	lock.unlock();
+	if(synchWaiting)
+		synchEvent.wait();
+}
+
+
 void TreeWriter::run(void *arg)
 {
 	int writeNid, writeIdx, writeMode, writeTreeIdx;
@@ -84,6 +96,8 @@ void TreeWriter::run(void *arg)
 			NidHolder *newHead = nidHead->nxt;
 			delete nidHead;
 			nidHead = newHead;
+			if(!nidHead && synchWaiting)
+				synchEvent.signal();
 			lock.unlock();	
 			
 			char *data, *start, *end, *dim;

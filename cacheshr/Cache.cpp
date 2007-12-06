@@ -40,6 +40,7 @@ extern "C" int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 extern "C" int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr);
 extern "C" int setWarm(int treeIdx, int nid, int warm, char *cachePtr);
+extern "C" void synch(char *cachePtr);
 
 static char *cache = 0;
 
@@ -160,6 +161,11 @@ int setWarm(int treeIdx, int nid, int warm, char *cachePtr)
 {
 	((Cache *)cachePtr)->setWarm(treeIdx, nid, (bool)warm);
 	return 1;
+}
+
+void synch(char *cachePtr)
+{
+	((Cache *)cachePtr)->synch();
 }
 
 ////////////////Cache Methods
@@ -366,6 +372,11 @@ bool Cache::inQueue(int treeIdx, int nid, int idx, int mode)
 		currChainNid = currChainNid->nxt;
 	}
 	return false;
+}
+
+void Cache::synch()
+{
+	treeWriter.synch();
 }
 
 

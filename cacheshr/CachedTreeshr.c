@@ -54,6 +54,7 @@ extern int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cach
 extern int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 extern int setWarm(int treeIdx, int nid, int warm, char *cachePtr);
+extern int synch(char *cachePtr);
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiEvaluate();
@@ -774,17 +775,22 @@ EXPORT int RTreeClose(char *expName, int shot)
 	return status;
 }
 
+EXPORT void RTreeSynch()
+{
+	if(!cache) cache = getCache();
+	synch(cache);
+}
 
 
 #ifdef HAVE_WINDOWS_H
-EXPORT void cacheReset()
+EXPORT void RTreeCacheReset()
 {
 	if(!cache) cache = getCache();
 
 }
 #else 
 #ifdef HAVE_VXWORKS_H
-EXPORT void cacheReset()
+EXPORT void RTreeCacheReset()
 {
 	if(!cache) cache = getCache();
 
@@ -792,17 +798,18 @@ EXPORT void cacheReset()
 #else
 
 //For Linux only: remove all persistent semaphores
-EXPORT void cacheReset()
+EXPORT void RTreeCacheReset()
 {
     char buf[256];
     int i;
    for(i = 0; i < 10; i++)
     {
-	sprintf(buf, "/mdscachex%d", i);
-	sem_unlink(buf);
+		sprintf(buf, "/mdscachex%d", i);
+		sem_unlink(buf);
     }
 	if(!cache) cache = getCache();
  }
+
 
 
 #endif
