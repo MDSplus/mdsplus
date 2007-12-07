@@ -1,6 +1,6 @@
 .SUFFIXES: .class .java
 .java.class:
-	$(JDK_DIR)\bin\javac.exe $*.java
+	"$(JDK_DIR)\bin\javac.exe" $*.java
 
 SOURCES = \
 Action.java\
@@ -29,5 +29,5 @@ ServerListener.java\
 ServerShowDialog.java
 
 all : $(SOURCES)
-	$(JDK_DIR)\bin\javac.exe -classpath ..\java\classes\jScope.jar;..\java\classes\jTraverser.jar  *.java
-	$(JDK_DIR)\bin\jar.exe -cf ..\java\classes\jDispatcher.jar *.class
+	"$(JDK_DIR)\bin\javac.exe" -classpath ..\java\classes\jScope.jar;..\java\classes\jTraverser.jar  *.java
+	"$(JDK_DIR)\bin\jar.exe" -cf ..\java\classes\jDispatcher.jar *.class

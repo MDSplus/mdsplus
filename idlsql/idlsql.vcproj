@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="idlsql"
 	ProjectGUID="{44D2A307-38B4-45F9-BE7F-9800B4D099B3}"
+	RootNamespace="idlsql"
 	>
 	<Platforms>
 		<Platform
@@ -72,7 +73,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl.lib &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
+				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot; ..\ntwdblib.lib"
 				OutputFile="$(OutDir)/idlsql.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -139,7 +140,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="%SQL_DIR%\DevTools\Include,%IDL_DIR%\external,..\include,$(SQL_DIR)\DevTools\Include,$(IDL_DIR)\external"
+				AdditionalIncludeDirectories="..\include;&quot;$(IDL_DIR)\external&quot;"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;DBNTWIN32"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -167,7 +168,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot; &quot;$(SQL_DIR)\DevTools\Lib\ntwdblib.lib&quot;"
+				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot; ..\ntwdblib.lib"
 				OutputFile="$(OutDir)/idlsql.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

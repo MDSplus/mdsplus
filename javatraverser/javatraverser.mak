@@ -1,6 +1,6 @@
 .SUFFIXES: .class .java
 .java.class:
-	%JDK_DIR%\bin\javac $*.java
+	"%JDK_DIR%\bin\javac" $*.java
 
 SOURCES_DATA=ActionData.java\
 ApdData.java\
@@ -257,9 +257,9 @@ GIFS = DeviceApply.gif \
        task.gif
 
 all : $(SOURCES_DATA) $(SOURCES_ARRAY) $(SOURCES_TRAV) $(DEVICES)
-	%JDK_DIR%\bin\javac -classpath .;..\java\classes\jScope.jar $(SOURCES_DATA)
-	%JDK_DIR%\bin\javac -classpath .;..\java\classes\jScope.jar $(SOURCES_TRAV)
-	%JDK_DIR%\bin\jar -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
-	%JDK_DIR%\bin\javac -classpath .;..\java\classes\jScope.jar $(DEVICES)
-	%JDK_DIR%\bin\jar -cf ..\java\classes\jTraverser.jar *.class *.gif
+	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar $(SOURCES_DATA)
+	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar $(SOURCES_TRAV)
+	"$(JDK_DIR)\bin\jar" -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
+	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar $(DEVICES)
+	"$(JDK_DIR)\bin\jar" -cf ..\java\classes\jTraverser.jar *.class *.gif
 

@@ -266,7 +266,7 @@ int rMdsDisconnect(int all) {
      }
    }
    else if (sock != INVALID_SOCKET)  {
-      status = DisconnectFromMds(sock) == 0;
+      status = DisconnectFromMds(sock);
       for (cptr=Connections; (cptr != NULL);)  {
         if(cptr->sock == sock)  {
           cptr->port = cptr->ip = 0;
