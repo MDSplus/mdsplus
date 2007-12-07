@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="WinInstall"
 	ProjectGUID="{17CDEB46-A5E0-4F0A-84E7-9D5CFB1E93F6}"
+	RootNamespace="WinInstall"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -72,6 +73,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="WinInstall.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -153,6 +155,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="WinInstall.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -183,6 +186,10 @@
 			>
 			<File
 				RelativePath="WinInstall.c"
+				>
+			</File>
+			<File
+				RelativePath=".\WinInstall.exe.manifest"
 				>
 			</File>
 		</Filter>

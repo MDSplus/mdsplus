@@ -13,7 +13,8 @@ int main(int argc, char **argv)
 		mdsplusdir[strlen(mdsplusdir)-1] = 0;
   if (strcmp(argv[1],"/Install") == 0)
   {
-	  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS)
+	  int status;
+	  if ((status=RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",0,KEY_READ | KEY_WRITE,&key)) == ERROR_SUCCESS)
 	  {		
 		long valtype;
 		unsigned long path_len;
@@ -24,9 +25,9 @@ int main(int argc, char **argv)
 	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
 	      if (path[0])
 	        strcat(path,";");
-	      strcat(path,mdsplusdir);
+			strcat(path,mdsplusdir);
 	        RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,path,(DWORD)strlen(path)); 
-	      free(path);
+			free(path);
 	    }
 	  }
   }
