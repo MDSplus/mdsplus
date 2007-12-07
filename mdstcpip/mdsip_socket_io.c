@@ -1,4 +1,5 @@
 #include "mdsip.h"
+#include <config.h>
 #include <STATICdef.h>
 
 int CloseSocket(SOCKET s);
@@ -698,8 +699,12 @@ SOCKET MConnect(char *host, unsigned short port)
 int CloseSocket(SOCKET s)
 {
 #ifndef GLOBUS
-  shutdown(s,2);
+  int status = shutdown(s,2);
+#ifdef HAVE_WINDOWS_H
+  return ((status=closesocket(s))==0);
+#else
   return (close(s) == 0);
+#endif
 #else
   globus_io_handle_t *handle = GetHandle(s);
   globus_result_t status;

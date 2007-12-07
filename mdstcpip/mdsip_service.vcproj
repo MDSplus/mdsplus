@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="mdsip_service"
 	ProjectGUID="{8D93B629-E718-4D28-B4CC-6AE70396C239}"
+	RootNamespace="mdsip_service"
 	>
 	<Platforms>
 		<Platform
@@ -82,6 +83,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="mdsip_service.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -196,6 +198,10 @@
 	<References>
 	</References>
 	<Files>
+		<File
+			RelativePath=".\mdsip_service.exe.manifest"
+			>
+		</File>
 		<File
 			RelativePath=".\mdsip_u.c"
 			>
