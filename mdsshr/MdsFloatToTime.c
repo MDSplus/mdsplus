@@ -35,6 +35,16 @@ void MdsTimeToFloat(_int64u inTime, float *outFloat)
 	*outFloat = (float)((double)currTime * 1E-9);
 }
 
+void MdsTimeToDouble(_int64u inTime, double *outFloat)
+{
+	_int64 baseTime, currTime;
+
+	baseTime = 1000000000;
+	baseTime *= (24 * 3600);
+	currTime = inTime - baseTime;
+	*outFloat = (double)currTime * 1E-9;
+}
+
 
 
 
