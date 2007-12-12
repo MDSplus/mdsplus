@@ -38,7 +38,7 @@ public:
 		shapeSize = 0;
 		dataSize = 0;
 		currDataSize = 0;
-		nxt = -(_int64)this;
+		nxt = -reinterpret_cast<_int64>(this);
 	}
 
 	void free(FreeSpaceManager *fsm, LockManager *lock)
@@ -77,18 +77,18 @@ public:
 
 	void setNext(Segment *segment)
 	{
-		this->nxt = (_int64)segment - (_int64)this;
+		this->nxt = reinterpret_cast<_int64>(segment) - reinterpret_cast<_int64>(this);
 	}
 
 
 	Segment *getNext()
 	{
-		return (Segment *)((_int64)this + nxt);
+		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + nxt);
 	}
 
 	void setData(char *data, int dataSize)
 	{
-		this->data = (_int64)data - (_int64)this;
+		this->data = reinterpret_cast<_int64>(data) - reinterpret_cast<_int64>(this);
 		this->dataSize = dataSize;
 		currDataSize = 0;
 	}
@@ -107,7 +107,7 @@ public:
 			printf("SEGMENT TIMESTAMP OVERFLOW!!!!\n");
 			return;
 		}
-		memcpy((char *)((_int64)this + this->dim+dimOfs), timestamps, 8*numTimestamps);
+		memcpy(reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->dim+dimOfs), timestamps, 8*numTimestamps);
 		if(dimOfs == 0)
 			start = timestamps[0];
 		dimOfs += 8*numTimestamps;
@@ -115,7 +115,7 @@ public:
 	}
 	void getData(char **data, int *dataSize)
 	{
-		*data = (char *)((_int64)this + this->data);
+		*data = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->data);
 		*dataSize = this->dataSize;
 	}
 
@@ -127,39 +127,39 @@ public:
 
 	void setDim(char *dim, int dimSize)
 	{
-		this->dim = (_int64)dim - (_int64)this;
+		this->dim = reinterpret_cast<_int64>(dim) - reinterpret_cast<_int64>(this);
 		this->dimSize = dimSize;
 	}
 
 
 	void getDim(char **dim, int *dimSize)
 	{
-		*dim = (char *)((_int64)this + this->dim);
+		*dim = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->dim);
 		*dimSize = this->dimSize;
 	}
 
 	void setShape(char *shape, int shapeSize)
 	{
-		this->shape = (_int64)shape - (_int64)this;
+		this->shape = reinterpret_cast<_int64>(shape) - reinterpret_cast<_int64>(this);
 		this->shapeSize = shapeSize;
 	}
 
 
 	void getShape(char **shape, int *shapeSize)
 	{
-		*shape = (char *)((_int64)this + this->shape);
+		*shape = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->shape);
 		*shapeSize = this->shapeSize;
 	}
 
 	void setStart(char *start, int startSize)
 	{
-		this->start = (_int64)start - (_int64)this;
+		this->start = reinterpret_cast<_int64>(start) - reinterpret_cast<_int64>(this);
 		this->startSize = startSize;
 	}
 
 	void getStart(char **start, int *startSize)
 	{
-		*start = (char *)((_int64)this + this->start);
+		*start = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->start);
 		*startSize = this->startSize;
 	}
 
@@ -170,20 +170,20 @@ public:
 
 	void getStartTimestamp(char **start, int *startSize)
 	{
-		*start = (char *)&this->start;
+		*start = reinterpret_cast<char *>(&this->start);
 		*startSize = 8;
 	}
 
 
 	void setEnd(char *end, int endSize)
 	{
-		this->end = (_int64)end - (_int64)this;
+		this->end = reinterpret_cast<_int64>(end) - reinterpret_cast<_int64>(this);
 		this->endSize = endSize;
 	}
 
 	void getEnd(char **end, int *endSize)
 	{
-		*end = (char *)((_int64)this + this->end);
+		*end = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->end);
 		*endSize = this->endSize;
 	}
 	void setEndTimestamp(_int64 timestamp)
@@ -257,7 +257,7 @@ public:
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4], shapeSize);		
 		setShape(currPtr, shapeSize);
 		for(int i = 0; i < shapeSize/4; i++)
-			swapBytes((char *)&((int *)shape)[i], 4);
+			swapBytes((char *)&(reinterpret_cast<int *>(shape))[i], 4);
 
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize], 4);

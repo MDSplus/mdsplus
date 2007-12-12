@@ -37,7 +37,7 @@ public:
 
 		void setStartAddr(char *startAddr)
 		{
-			this->startAddr = (_int64)startAddr - (_int64)startAddress;
+			this->startAddr = reinterpret_cast<_int64>(startAddr) - reinterpret_cast<_int64>(startAddress);
 		}
 		char *getStartAddr()
 		{
@@ -49,7 +49,7 @@ public:
 			if(d == NULL)
 			    next = 0;
 			else
-			    next = (_int64)d - (_int64)startAddress;
+			    next = reinterpret_cast<_int64>(d) - reinterpret_cast<_int64>(startAddress);
 		}
 
 		FreeDescriptor *getNext()

@@ -46,7 +46,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = -(_int64)this;
+		firstSegment = lastSegment = - reinterpret_cast<_int64>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -67,7 +67,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = (_int64)this;
+		firstSegment = lastSegment = reinterpret_cast<_int64>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -88,7 +88,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = (_int64)this;
+		firstSegment = lastSegment = reinterpret_cast<_int64>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -150,16 +150,16 @@ class SharedMemNodeData
 
 	void setLastSegment(Segment *lastSegment)
 	{
-		this->lastSegment = (_int64)lastSegment - (_int64)this;
+		this->lastSegment = reinterpret_cast<_int64>(lastSegment) - reinterpret_cast<_int64>(this);
 	}
 	Segment *getFirstSegment()
 	{
-		return (Segment *)((_int64)this + firstSegment);
+		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + firstSegment);
 	}
 
 	Segment *getLastSegment()
 	{
-		return (Segment *)((_int64)this + lastSegment);
+		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + lastSegment);
 	}
 
 	
@@ -202,7 +202,7 @@ class SharedMemNodeData
 				break; //No need to proccede
 		}
 		if(numSegments == 0)
-			firstSegment = lastSegment = -(_int64)this;
+			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
 	}
 
 	void discardFirstSegment(FreeSpaceManager *fsm, LockManager *lock)
@@ -220,7 +220,7 @@ class SharedMemNodeData
 
 	void setFirstSegment(Segment *firstSegment)
 	{
-		this->firstSegment = (_int64)firstSegment - (_int64)this;
+		this->firstSegment = reinterpret_cast<_int64>(firstSegment) - reinterpret_cast<_int64>(this);
 	}
 
 	void appendSegment(Segment *newSegment)
@@ -256,13 +256,13 @@ class SharedMemNodeData
 	
 	void setData(char *data, int dataSize)
 	{
-		this->data = (_int64)data - (_int64)this;
+		this->data = reinterpret_cast<_int64>(data) - reinterpret_cast<_int64>(this);
 		this->dataSize = dataSize;
 	}
 
 	void getData(char **data, int *dataSize)
 	{
-		*data = (char *)((_int64)this + this->data);
+		*data = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->data);
 		*dataSize = this->dataSize;
 	}
 	
@@ -474,7 +474,7 @@ class SharedMemNodeData
 			for(i = 0; i < numSegments; i++)
 				fsm->freeShared((char *)segments[i], sizeof(Segment), lock);
 			numSegments = 0;
-			firstSegment = lastSegment = -(_int64)this;
+			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
 		}
 		else
 		{
@@ -539,7 +539,7 @@ class SharedMemNodeData
 		if(callbackManager == 0)
 			this->callbackManager = 0;
 		else
-			this->callbackManager = (_int64)callbackManager - (_int64)this;
+			this->callbackManager = reinterpret_cast<_int64>(callbackManager) - reinterpret_cast<_int64>(this);
 	}
 
 	CallbackManager *getCallbackManager()

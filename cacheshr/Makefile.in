@@ -1,0 +1,70 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=g++
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@ @SRBINCLUDE@
+LDFLAGS=@LDFLAGS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr @LIBS@ @SRBLIB@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+CXXSOURCES = \
+	Cache.cpp\
+	ChannelFactory.cpp\
+	CoherencyManager.cpp\
+	CommunicationChannel.cpp\
+	FreeSpaceManager.cpp\
+	Notifier.cpp\
+	SharedDataManager.cpp\
+	SharedMemManager.cpp\
+	SharedMemTree.cpp\
+	TCPChannel.cpp\
+	Thread.cpp\
+	TreeWriter.cpp\
+	UDPChannel.cpp
+	
+SOURCES = CachedTreeshr.c
+
+OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
+EXPORTS = CacheShr.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libCacheShr@SHARETYPE@ @MAKELIBDIR@libCacheShr.a
+
+clean:
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKESHLIBDIR@libCacheShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libCacheShr.a
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libCacheShr@SHARETYPE@ @libdir@
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libCacheShr.a @libdir@; \
+	fi;
+
+
+@MAKESHLIBDIR@libCacheShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr
+
+@MAKELIBDIR@libCacheShr.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+CacheShr.exports: CacheShr.def
+	sed -e /LIBRARY/\;/\;/d CacheShr.def > $@
+
+
+	
+

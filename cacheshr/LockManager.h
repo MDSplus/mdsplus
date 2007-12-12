@@ -154,6 +154,7 @@ public:
 	
 	bool initialize(int id)  //Return true if the mutex did not exist before and has been created
 	{
+	
 	    if(!semaphores)
 		semaphores = (SEM_ID *)calloc(MAX_SEMAPHORES, sizeof(SEM_ID));
 	    if(id >= MAX_SEMAPHORES)
@@ -230,7 +231,7 @@ public:
 		    if(semaphore == SEM_FAILED)
 		    {
 		    	perror("Cannot create Semaphore!\n");
-			exit(0); //Fatal error
+			//exit(0); //Fatal error
 		    }
 		    return false;
 		}

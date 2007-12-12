@@ -290,7 +290,7 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 }
 
 
-
+EXPORT void test(){printf("TEST\n");}
 
 
 EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, 

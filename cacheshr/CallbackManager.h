@@ -13,14 +13,14 @@ public:
 		if(nxt == NULL)
 			next = 0;
 		else
-			next = (_int64)nxt - (_int64)this;
+			next = reinterpret_cast<_int64>(nxt) - reinterpret_cast<_int64>(this);
 	}
 	void setPrev(char *prv)
 	{
 		if(prv == NULL)
 			prev = 0;
 		else 
-			prev = (_int64)prv - (_int64)this;
+			prev = reinterpret_cast<_int64>(prv) - reinterpret_cast<_int64>(this);
 	}
 
 	CallbackManager *getNext()

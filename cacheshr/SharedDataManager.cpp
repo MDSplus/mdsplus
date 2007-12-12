@@ -31,15 +31,17 @@ SEM_ID *LockManager::semaphores;
 		freeSpaceManager.initialize((char *)startAddress + sizeof(_int64), size - sizeof(_int64));
 		sharedTree.initialize(&freeSpaceManager, &header, &lock);
 		//Store address (offset) of tree root in the first _int64word of the shared memory segment
-		*(_int64 *)startAddress = (_int64)header - (_int64)startAddress;
+		*(_int64 *)startAddress = reinterpret_cast<_int64>(header) -
+		reinterpret_cast<_int64>(startAddress);
 
 	}
 	else
 	{
 		lock.lock();
 		startAddress = sharedMemManager.initialize(size);
-		freeSpaceManager.map((char *)startAddress + sizeof(_int64));
-		header = (char *)(*(_int64 *)startAddress + (_int64)startAddress);
+		freeSpaceManager.map(reinterpret_cast<char *>(startAddress) + sizeof(_int64));
+		header = reinterpret_cast<char *>(*reinterpret_cast<_int64 *>(startAddress) +
+		reinterpret_cast<_int64>(startAddress));
 		sharedTree.map(&freeSpaceManager, header);
 	}
 	lock.unlock();
@@ -603,7 +605,7 @@ int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, 
 
 int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 {
-	printf("START DISCARD\n");
+	//printf("START DISCARD\n");
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
@@ -616,7 +618,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 		}
 		nodeData->discardOldSegments(timestamp, &freeSpaceManager, &lock);		
 		lock.unlock();
-	printf("END DISCARD\n");
+	//printf("END DISCARD\n");
 		return 1;
 	}
 	lock.unlock();
@@ -625,7 +627,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 
 int SharedDataManager::discardFirstSegment(int treeId, int nid)
 {
-	printf("START DISCARD\n");
+	//printf("START DISCARD\n");
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(node)
@@ -638,7 +640,7 @@ int SharedDataManager::discardFirstSegment(int treeId, int nid)
 		}
 		nodeData->discardFirstSegment(&freeSpaceManager, &lock);		
 		lock.unlock();
-	printf("END DISCARD\n");
+	//printf("END DISCARD\n");
 		return 1;
 	}
 	lock.unlock();
