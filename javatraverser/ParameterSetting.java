@@ -2424,6 +2424,7 @@ public class ParameterSetting
             }
             else
                 proceedeVersions();
+ //               proceedeConfirm();
         }
         void proceedeVersions()
         {
@@ -3605,7 +3606,7 @@ System.out.println("Print Done");
         Hashtable applyOnHash = new Hashtable();
         boolean allSelectedDevices[] =
             {
-            true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+            false, true, true, true, true, true, true, true, true, true, true, true, true, true};
         boolean allSelectedTimes[] =
             {
             true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
