@@ -942,7 +942,8 @@ AC_SUBST(DC1394_SUPPORT)
 AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile
 envsyms
-actions/Makefile 
+actions/Makefile
+cacheshr/Makefile 
 camshr/Makefile
 ccl/Makefile 
 cdu/Makefile 
