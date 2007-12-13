@@ -20,6 +20,7 @@ PARTS = \
         tditest \
         xmdsshr \
 	xtreeshr \
+	cacheshr \
         @MDSTCPIP@ \
         dwscope \
         mdslibidl \
