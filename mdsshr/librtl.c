@@ -1492,6 +1492,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 	tm.tm_hour=hour;
 	tm.tm_min=minute;
 	tm.tm_sec=second;
+	tmp=asc_time;
 #else
     tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
