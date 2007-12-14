@@ -976,6 +976,66 @@ public class MdsDataProvider
         }
     }
 
+    
+    double GetNow(String in) throws Exception
+    {
+        boolean isPlus = true;
+        int hours = 0, minutes = 0, seconds = 0;
+        String currStr = in.trim().toUpperCase();
+        if(!currStr.startsWith("NOW"))
+            throw new Exception();
+        currStr = currStr.substring(3).trim();
+        if(currStr.length() > 0) //Not only NOW
+        {
+            if(currStr.startsWith("+"))
+                isPlus = true;
+            else if(currStr.startsWith("-"))
+                isPlus = false;
+            else throw new Exception();
+            currStr = currStr.substring(1).trim();
+            StringTokenizer st = new StringTokenizer(currStr, ":", true);
+            String currTok = st.nextToken();
+            if(currTok.equals(":"))
+                hours = 0;
+            else
+            {
+                hours = Integer.parseInt(currTok);
+                currTok = st.nextToken();
+            }
+            if(!currTok.equals(":"))
+                throw new Exception();
+            currTok = st.nextToken();
+            if(currTok.equals(":"))
+                minutes = 0;
+            else
+            {
+                minutes = Integer.parseInt(currTok);
+                currTok = st.nextToken();
+            }
+            if(!currTok.equals(":"))
+                throw new Exception();
+            if(st.hasMoreTokens())
+            {
+                seconds = Integer.parseInt(st.nextToken());
+            }
+        }
+        if(!isPlus)
+        {
+            hours = -hours;
+            minutes = -minutes;
+            seconds = -seconds;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        cal.setTime(new Date());
+        cal.add(Calendar.HOUR, hours);
+        cal.add(Calendar.MINUTE, minutes);
+        cal.add(Calendar.SECOND, seconds);
+        long javaTime = cal.getTime().getTime();
+        return javaTime;
+    }
+    
+    
     public synchronized double GetFloat(String in) throws IOException
     {
         error = null;
@@ -991,7 +1051,12 @@ public class MdsDataProvider
             cal.setTime(date);
             long javaTime = cal.getTime().getTime();
             return javaTime;
-        }catch(Exception exc){} //If exception occurs this is not a date
+        }catch(Exception exc)
+        { 
+            try {
+                return GetNow(in);
+            }catch(Exception exc1){}
+        } //If exception occurs this is not a date, try NOW condtruction
 
 
 
