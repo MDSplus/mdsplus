@@ -21,6 +21,7 @@ public interface RemoteTree extends Remote {
     public Data evaluateData(NidData nid, int ctx)  throws RemoteException, DatabaseException;
     public Data evaluateData(Data data, int ctx)  throws RemoteException, DatabaseException;
     public void putData(NidData nid, Data data, int ctx)  throws RemoteException, DatabaseException;
+    public void putRow(NidData nid, Data data, long time, int ctx)  throws RemoteException, DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public NodeInfo getInfo(NidData nid, int ctx)  throws RemoteException, DatabaseException;
     public void setTags(NidData nid, String tags[], int ctx) throws RemoteException, DatabaseException;
@@ -48,5 +49,6 @@ public interface RemoteTree extends Remote {
     public int getCurrentShot(String experiment)throws RemoteException;
     public void setCurrentShot(int shot)throws RemoteException;
     public void setCurrentShot(String experiment, int shot)throws RemoteException;
-  }
+    public void setEvent(String event)throws RemoteException, DatabaseException;
+}
 

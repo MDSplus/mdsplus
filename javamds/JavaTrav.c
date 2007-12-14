@@ -380,6 +380,35 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
 
 
 
+JNIEXPORT void JNICALL Java_Database_putRow
+  (JNIEnv *env, jobject obj, jobject jnid, jobject jdata, jlong time, jint context)
+{
+  int nid, status;
+  jfieldID nid_fid; 
+  jclass cls;
+  struct descriptor *dsc;
+  _int64 currTime = time;
+
+  EMPTYXD(xd);
+  cls = (*env)->GetObjectClass(env, jnid);
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+  dsc = ObjectToDescrip(env, jdata);
+  if(!dsc)
+  {
+    status = TreePutRecord(nid, (struct descriptor *)&xd, 0);
+  }
+	else
+    {
+		status = TreePutRow(nid, 1000, &currTime, dsc);
+		FreeDescrip(dsc);
+    }
+	//printf("PUT RECORD: %s\n", MdsGetMsg(status));
+	if(!(status & 1))
+	    RaiseException(env, MdsGetMsg(status), status);
+}
+
+
 JNIEXPORT void JNICALL Java_Database_putData
   (JNIEnv *env, jobject obj, jobject jnid, jobject jdata, jint context)
 {
@@ -1237,6 +1266,14 @@ JNIEXPORT void JNICALL Java_Database_setCurrentShot
 {
 	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
 	TreeSetCurrentShotId((char *)name, (int)jshot);
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+}
+
+JNIEXPORT void JNICALL Java_Database_setEvent
+  (JNIEnv *env, jobject obj, jstring jname)
+{
+	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+	MDSEvent((char *)name, 0, 0);
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 }
 

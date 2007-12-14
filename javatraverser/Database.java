@@ -67,6 +67,7 @@ public class Database implements RemoteTree{
     public native Data evaluateData(NidData nid, int ctx) throws DatabaseException;
     public native Data evaluateSimpleData(Data data, int ctx) throws DatabaseException;
     public native void putData(NidData nid, Data data, int ctx) throws DatabaseException;
+    public native void putRow(NidData nid, Data data, long time, int ctx) throws DatabaseException;
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public native NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException;
     public native void setTags(NidData nid, String tags[], int ctx) throws DatabaseException;
@@ -98,5 +99,6 @@ public class Database implements RemoteTree{
     public native void setCurrentShot(String experiment, int shot);
     public native String getOriginalPartName(NidData nid) throws DatabaseException;
     public native void setFlags(NidData nid, int flags) throws DatabaseException;
+    public native void setEvent(String event)throws DatabaseException;
   }
 
