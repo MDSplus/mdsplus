@@ -7,6 +7,9 @@
 #include <mdsshr.h>
 #include <xtreeshr.h>
 
+#define INTERPOLATION 1
+#define CLOSEST_SAMPLE 2
+#define PREVIOUS_SAMPLE 3
 
 static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char  *less);
 static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
@@ -16,6 +19,9 @@ extern int TdiFloat();
 extern int TdiEvaluate();
 extern int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *converted);
 extern int XTreeConvertToLongDelta(struct descriptor *deltaD, _int64u *converted);
+
+static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
+						 struct descriptor *deltaD, char mode, struct descriptor_xd *outSignalXd);
 
 
 static void printDecompiled(struct descriptor *inD)
@@ -45,19 +51,24 @@ static void printDecompiled(struct descriptor *inD)
 //64 bit time-based resampling function. It is assumed here that the 54 bit representation of time is the count
 //of a given, fixed amount of time, starting from a given time in the past
 //The closest point is selected as representative for a given time
-static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimebase, int inTimebaseSamples, 
-					int numDims, int *dims, char *inData, int dataSize, char *outData, _int64u *outDim, int *retSamples)
+static void resample(_int64 start, _int64 end, _int64 delta, _int64 *inTimebase, int inTimebaseSamples, 
+					int numDims, int *dims, char *inData, int dataSize, char dataType, int mode, char *outData, _int64 *outDim, int *retSamples)
 {
 	int i, timebaseIdx, outIdx, itemSize, outSamples, startIdx, timebaseSamples;
-	_int64u refTime, delta1, delta2;
-	_int64u *timebase;
+	_int64 refTime, delta1, delta2;
+	_int64 *timebase;
 	char *data;
+	int numDataItems;
+
+	double prevData, nextData, currData;
+
 
 
 	itemSize = dataSize;
 	for(i = 0; i < numDims-1; i++)
 		itemSize *= dims[i];
 
+	numDataItems = itemSize/dataSize;
 
 	if(start < inTimebase[0])
 		start = inTimebase[0];
@@ -74,6 +85,9 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimeb
 		*retSamples = 0;
 		return;
 	}
+
+
+
 	timebase = &inTimebase[startIdx];
 	timebaseSamples  = inTimebaseSamples - startIdx;
 	data = &inData[startIdx * itemSize];
@@ -86,15 +100,140 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimeb
 		{
 			while(timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
 				timebaseIdx++;
-			//Select closest sample
-			if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+			switch(mode) 
 			{
-				delta1 = timebase[timebaseIdx] - refTime;
-				delta2 = refTime - timebase[timebaseIdx - 1];
-				if(delta2 < delta1)
-					timebaseIdx--;
+				case CLOSEST_SAMPLE:
+				//Select closest sample
+					if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+					{
+						delta1 = timebase[timebaseIdx] - refTime;
+						delta2 = refTime - timebase[timebaseIdx - 1];
+						if(delta2 < delta1)
+							timebaseIdx--;
+					}
+					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
+					break;
+				case PREVIOUS_SAMPLE:
+					//Select closest sample
+					if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+					{
+							timebaseIdx--;
+					}
+					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
+					break;
+				case INTERPOLATION:
+					switch(dataType) 
+					{
+						case DTYPE_BU :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((unsigned char *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((unsigned char *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((unsigned char *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_B :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((char *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((char *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((char *)&outData[outSamples * itemSize])[i] = currData;
+							}
+							break;
+						case DTYPE_WU :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((unsigned short *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((unsigned short *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((unsigned short *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_W :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((short *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((short *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((short *)&outData[outSamples * itemSize])[i] = currData;
+							}
+							break;
+						case DTYPE_LU :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((unsigned int *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((unsigned int *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((unsigned int *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_L :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((int *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((int *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((unsigned int *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_QU :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((_int64 *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((_int64 *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((_int64u *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_Q :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((_int64 *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((_int64 *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((_int64 *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_FLOAT :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((float *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((float *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((float *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						case DTYPE_DOUBLE :
+							for(i = 0; i < numDataItems; i++)
+							{
+								prevData = ((double *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((double *)(&data[timebaseIdx * itemSize]))[i];
+								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
+									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
+								((double *)(&outData[outSamples * itemSize]))[i] = currData;
+							}
+							break;
+						default: //Not able to do interpolation
+							if(timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+							{
+									timebaseIdx--;
+							}
+							memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
+
+					}
+					break;
 			}
-			memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
 			outDim[outSamples] = refTime;
 			outSamples++;
 			refTime += delta;
@@ -187,12 +326,19 @@ static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
 
 //Handle resampling in when dimension is specified as a range
 static int rangeResample(struct descriptor *startD, struct descriptor *endD, struct descriptor *deltaD, 
-			ARRAY_COEFF(char *, 256) *dataD, struct descriptor_range *rangeD, struct descriptor_xd *outSignalXd)
+			ARRAY_COEFF(char , 256) *dataD, struct descriptor_range *rangeD, 
+			char dataType, char mode, struct descriptor_xd *outSignalXd)
 {
 	int dataSize, numOutSamples, status, i, memSize, currOffset, numInSamples, totInSamples;
 	_int64 start64, end64, delta64, rangeStart64, rangeEnd64, rangeDelta64, currTime64, inTime64;
 	char *signalExpr = "MAKE_SIGNAL($1,,MAKE_RANGE(MAX($2, $3), MIN($4, $5), $6))";
 	struct descriptor signalExprD = {strlen(signalExpr), DTYPE_T, CLASS_S, signalExpr};
+
+	char *prevDataPtr, *nextDataPtr;
+	double currSample, prevSample, nextSample;
+	_int64 prevTime64, nextTime64;
+	int numDataItems;
+	int previousClosest = 1;
 
 	char *currDataPtr, *outDataPtr, *currOutDataPtr;
 	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0); 
@@ -232,6 +378,7 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 	dataSize = dataD->length;
 	for(i = 0; i < dataD->dimct-1; i++)
 		dataSize *= dataD->m[i];
+	numDataItems = dataSize/dataD->length;
 
 	totInSamples = dataD->arsize/dataD->length;
 	if(!startD || start64 < rangeStart64)
@@ -250,7 +397,122 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 	currOffset = 0;
 	while(numInSamples < totInSamples && currTime64 < end64)
 	{
-		memcpy(currOutDataPtr, currDataPtr, dataSize);
+		prevTime64 = inTime64 - rangeDelta64;
+		nextTime64 = inTime64;
+		switch(mode) 
+		{
+			case PREVIOUS_SAMPLE:
+				memcpy(currOutDataPtr, currDataPtr, dataSize);
+				break;
+			case CLOSEST_SAMPLE:
+				if(currDataPtr == dataD->pointer)
+				{
+					memcpy(currOutDataPtr, currDataPtr, dataSize);
+					break;
+				}
+				if((numInSamples < totInSamples) && ((currTime64 - prevTime64) > (nextTime64 - currTime64)))
+					memcpy(currOutDataPtr, currDataPtr+dataSize, dataSize);
+				else
+					memcpy(currOutDataPtr, currDataPtr, dataSize);
+				break;
+
+				
+			case INTERPOLATION:
+				if(currDataPtr == dataD->pointer)
+				{
+					memcpy(currOutDataPtr, currDataPtr, dataSize);
+					break;
+				}
+				prevDataPtr = currDataPtr - dataSize;
+				nextDataPtr = currDataPtr;
+				switch(dataType) 
+				{
+					case DTYPE_BU:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((unsigned char *)prevDataPtr)[i];
+							nextSample = ((unsigned char *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((unsigned char *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_B:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((char *)prevDataPtr)[i];
+							nextSample = ((char *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((char *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_WU:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((unsigned short *)prevDataPtr)[i];
+							nextSample = ((unsigned short *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((unsigned short *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_W:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((short *)prevDataPtr)[i];
+							nextSample = ((short *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((short *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_LU:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((unsigned int *)prevDataPtr)[i];
+							nextSample = ((unsigned int *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((unsigned int *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_L:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((int *)prevDataPtr)[i];
+							nextSample = ((int *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((int *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_QU:
+					case DTYPE_Q:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((_int64 *)prevDataPtr)[i];
+							nextSample = ((_int64 *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((_int64 *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_FLOAT:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((float *)prevDataPtr)[i];
+							nextSample = ((float *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((float *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					case DTYPE_DOUBLE:
+						for(i = 0; i < numDataItems; i++)
+						{
+							prevSample = ((double *)prevDataPtr)[i];
+							nextSample = ((double *)nextDataPtr)[i];
+							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
+							((double *)currOutDataPtr)[i] = currSample;
+						}
+						break;
+					default: //Not able to do interpolation
+						memcpy(currOutDataPtr, currDataPtr, dataSize);
+				}
+		}
 		currOutDataPtr += dataSize;
 		currOffset += dataSize;
 		currTime64 += delta64;
@@ -274,8 +536,10 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 	outDataArray.m[dataD->dimct - 1] = numOutSamples;
 
 //Build out signal descriptor, keeping the same data type as passed
-	status = TdiCompile(&signalExprD, &outDataArray, startD, rangeD->begin, endD, rangeD->ending, 
-		deltaD, outSignalXd MDS_END_ARG);
+	status = TdiCompile(&signalExprD, &outDataArray, (startD)?startD:rangeD->begin, rangeD->begin, 
+		(endD)?endD:rangeD->ending, rangeD->ending, 
+		(deltaD)?deltaD:rangeD->deltaval, outSignalXd MDS_END_ARG);
+
 	if((status & 1))
 		status = TdiEvaluate(outSignalXd, outSignalXd MDS_END_ARG);
 	free(outDataPtr);
@@ -284,9 +548,35 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 
 
 
+EXPORT struct descriptor_xd *XTreeResampleClosest(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
+						 struct descriptor *deltaD)
+{
+	static EMPTYXD(retXd);
+	int status = XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST_SAMPLE, &retXd);
+	return &retXd;
+}
+
+EXPORT struct descriptor_xd *XTreeResamplePrevious(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
+						 struct descriptor *deltaD)
+{
+	static EMPTYXD(retXd);
+	int status = XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS_SAMPLE, &retXd);
+	return &retXd;
+}
+
+
+
 
 EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
 						 struct descriptor *deltaD, struct descriptor_xd *outSignalXd)
+{
+	return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, INTERPOLATION, outSignalXd);
+}
+
+
+
+static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
+						 struct descriptor *deltaD, char mode, struct descriptor_xd *outSignalXd)
 {
 	char resampleExpr[64];
 	struct descriptor resampleExprD = {0, DTYPE_T, CLASS_S, resampleExpr};
@@ -314,8 +604,11 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 		((struct descriptor_range *)inSignalD->dimensions[0])->begin && 
 		((struct descriptor_range *)inSignalD->dimensions[0])->ending && 
 		((struct descriptor_range *)inSignalD->dimensions[0])->deltaval)
-
-		return rangeResample(startD, endD, deltaD, inSignalD->data, inSignalD->dimensions[0], outSignalXd); 
+	{
+		dataD = (struct descriptor_a *)inSignalD->data;
+		return rangeResample(startD, endD, deltaD, inSignalD->data, (struct descriptor_range *)inSignalD->dimensions[0], 
+			dataD->dtype, mode, outSignalXd); 
+	}
 
 	if(startD)
 	{
@@ -384,7 +677,8 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 		numTimebaseSamples = dataD->arsize/dataD->length;
 
 	resample(start64, end64, (deltaD)?delta64:0, timebase64, numTimebaseSamples, numDims, dims, 
-		dataD->pointer, dataD->length, outData, outDim, &outSamples);
+		dataD->pointer, dataD->length, dataD->dtype, mode, outData, outDim, &outSamples);
+
 
 	//Build array descriptor for out data
 	outDataArray.length = dataD->length;

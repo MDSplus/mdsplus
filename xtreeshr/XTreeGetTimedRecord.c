@@ -18,8 +18,6 @@ extern unsigned short OpcExtFunction;
 static int timedAccessFlag = 0;
 
 
-
-
 #define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
 extern int TdiData(), TdiEvaluate();
@@ -260,7 +258,8 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 //If defined, call User Provided resampling function, oterwise use default one (XTreeDefaultResample())
 		if(resampleFunName[0])
 		{
-			unsigned short funCode = OpcExtFunction;
+//			unsigned short funCode = OpcExtFunction;
+			unsigned short funCode = 162;
 			resampleFunD.length = sizeof(unsigned short);
 			resampleFunD.pointer = (char *)&funCode;
 			resampleFunNameD.length = strlen(resampleFunName);
@@ -272,6 +271,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 			resampleFunD.dscptrs[4] = endD;
 			resampleFunD.dscptrs[5] = minDeltaD;
 			status = TdiEvaluate(&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
+			printf("%s\n", MdsGetMsg(status));
 		}
 		else
 		{

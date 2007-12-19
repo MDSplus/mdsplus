@@ -359,8 +359,8 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 			MdsFree1Dx(&dimensionsXd[i], 0);
 		free((char *)dimensionsXd);
 		free(outDimBuf);
+		free((char *)arraysD);
 	}
 	MdsFree1Dx(&setRangeExprXd, 0);
-	free((char *)arraysD);
 	return status;
 }
