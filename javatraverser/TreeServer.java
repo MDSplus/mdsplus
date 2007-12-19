@@ -96,6 +96,13 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         setContext(ctx);
         tree.putData(nid, data, 0);
     }
+    
+    public void putRow(NidData nid, Data data, long time, int ctx)  throws DatabaseException
+    {
+        setContext(ctx);
+        tree.putRow(nid, data, time, 0);
+    }
+
     //public native DatabaseInfo getInfo(); throws DatabaseException;
     public NodeInfo getInfo(NidData nid, int ctx) throws DatabaseException
     {
@@ -230,9 +237,13 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         tree.setCurrentShot(shot);
     }
 
-    public void setCurrentShot(String experiment, int shot)throws RemoteException
+    public void setCurrentShot(String experiment, int shot)
     {
         tree.setCurrentShot(experiment, shot);
+    }
+    public void setEvent(String event)throws DatabaseException
+    {
+        tree.setEvent(event);
     }
 
     public static void main(String args[])
