@@ -9,7 +9,6 @@
 #endif
 
 
-
 EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime);
 EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD,
 						struct descriptor_xd *outSignal);
