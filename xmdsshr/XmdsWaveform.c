@@ -2146,6 +2146,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
       float urx = llx + width * 72. / resolution;
       float lly = ((height_limit - height) * 72. / resolution) / 2 + margin * 72;
       float ury = lly + height * 72. / resolution;
+
       if (rotate == 0)
         fprintf(printfid,"%%%%BoundingBox: %g %g %g %g\n",llx,lly,urx,ury);
       else
@@ -2219,7 +2220,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
       if (window_title && strlen(window_title))
       /* If window title, allow space at top of plot for printing window title. */
       {
-        float yscale = 1. - fontsize * 1.5 * 1.25 / (height - 1.);
+        float yscale = 1. - fontsize * 2.0 * 1.125 / (height - 1.);
 
         fprintf(printfid,"/%s findfont\n",fontname);
         fprintf(printfid,"%g scalefont\n",fontsize * 1.5);	/* Specify 13 as fontsize (see note on fontsize) */
@@ -2236,10 +2237,10 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 
           fprintf(printfid,"(%s) %g %g centershow\n",window_title,
             height_limit * 72. / resolution + 72. * 2. * margin,
-	    height - y - 1.125 * 1.5 * fontsize);
+	    (height_page * 72.) / 2. + (ury - lly) / 2. - 1.125 * fontsize);
 
 	  /* Scale so bottom of plot still at same place, */
-          fprintf(printfid,"%g %g scale\n",1.,yscale);
+	  fprintf(printfid,"%g %g scale\n",1.,yscale);
           fprintf(printfid,"%g %g translate\n",0.,y * (yscale - 1));
 	}
 	else
@@ -2248,6 +2249,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
             width_limit * 72. / resolution + 72. * 2. * margin,ury - 1.125 * fontsize);
 
           /* Scale so bottom of plot still at same place, */
+           fprintf(printfid,"0 %g translate\n",lly * (1. - yscale));
            fprintf(printfid,"%g %g scale\n",1.,yscale);
 	}
       }
@@ -2286,7 +2288,14 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
 
   fprintf(printfid,"gsave\n");
   fprintf(printfid,"%g %g translate\n",x / resinc,y / resinc);	/* Center plot */
- 
+
+  /* fudge factor, not sure why this is needed. */
+
+  if (rotate != 0)
+    fprintf(printfid,"0 -1 translate\n");	/* Center landscape plot */
+  else
+    fprintf(printfid,"1 0 translate\n");	/* Center portrait plot */ 
+
   swidth = XtWidth(w) * resinc * scale;
   sheight = XtHeight(w) * resinc * scale;
 
