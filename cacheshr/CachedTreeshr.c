@@ -32,6 +32,7 @@ extern int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *
 extern int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 extern int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
 extern int flushTree(int treeIdx, char *cachePtr);
+extern int flushNode(int treeIdx, int nid, char *cachePtr);
 extern char *setCallback(int treeIdx, int nid, void (* callback)(int), char *cachePtr);
 extern int clearCallback(int treeIdx, int nid, char *callbackDescr, char *cachePtr);
 extern int beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
@@ -51,6 +52,7 @@ extern int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, 
 extern int appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, _int64 *timestamp, int numTimestamps, int writeMode, char *cachePtr);
 extern int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr);
+extern int discardData(int treeIdx, int nid, char *cachePtr);
 extern int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 extern int setWarm(int treeIdx, int nid, int warm, char *cachePtr);
@@ -568,6 +570,13 @@ EXPORT int RTreeDiscardOldSegments(int nid, _int64 timestamp)
 }
 
 
+EXPORT int RTreeDiscardData(int nid)
+{
+	if(!cache) cache = getCache();
+	return discardData(currShotNum, nid, cache);
+}
+
+
 
 EXPORT int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeMode)
 {
@@ -611,6 +620,13 @@ EXPORT int RTreeFlush()
 {
 	if(!cache) cache = getCache();
 	return flushTree(currShotNum, cache);
+}
+
+
+EXPORT int RTreeFlushNode(int nid)
+{
+	if(!cache) cache = getCache();
+	return flushNode(currShotNum, nid, cache);
 }
 
 

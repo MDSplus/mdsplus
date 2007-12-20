@@ -53,7 +53,9 @@ public:
 										 int dataSize, _int64 timestamp, int writeMode);
 
 	int flush(int treeIdx);
+	int flush(int treeIdx, int nid);
 	int discardOldSegments(int treeIdx, int nid, _int64 timestamp);
+	int discardData(int treeIdx, int nid);
 
 	void * setCallback(int treeIdx, int nid, void (* callback)(int));
 	int clearCallback(int treeIdx, int nid, char *callbackManager);	

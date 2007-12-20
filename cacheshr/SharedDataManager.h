@@ -42,7 +42,6 @@ public:
 	FreeSpaceManager *getFreeSpaceManager() { return &freeSpaceManager;}
 	
 
-	int deleteData(int treeId, int nid);
 	int setData(int treeId, int nid, char dataType, int numSamples, char *data, int size); //Write data indexed by nid
 	int getData(int treeId, int nid, char *dataType, int *numSamples, char **data, int *size); //Read data indexed by nid
 	int beginSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
@@ -64,7 +63,7 @@ public:
 	int appendRow(int treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, char *timestamp, int blockSize);
 	int discardOldSegments(int treeId, int nid, _int64 timestamp);
 	int discardFirstSegment(int treeId, int nid);
-
+	int discardData(int treeId, int nid);
 
 	void *setCallback(int treeId, int nid, void (*callback)(int));   //Associate a callback with the nid
 	int clearCallback(int treeId, int nid, char *callbackDescr);	 //Remove the callback from the nid

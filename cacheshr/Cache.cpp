@@ -30,6 +30,7 @@ extern "C" int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *di
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
 extern "C" int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr);
 extern "C" int flushTree(int treeIdx, char *cachePtr);
+extern "C" int flushNode(int treeIdx, int nid, char *cachePtr);
 extern "C" void *setCallback(int treeIdx, int nid, void (* callback)(int), void *cachePtr);
 extern "C" int clearCallback(int treeIdx, int nid, char *callbackDescr, void *cachePtr);
 extern "C" int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
@@ -39,6 +40,7 @@ extern "C" int appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, i
 extern "C" int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 extern "C" int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr);
+extern "C" int discardData(int treeIdx, int nid, char *cachePtr);
 extern "C" int setWarm(int treeIdx, int nid, int warm, char *cachePtr);
 extern "C" void synch(char *cachePtr);
 
@@ -121,6 +123,11 @@ int flushTree(int treeIdx, char *cachePtr)
 	return ((Cache *)cachePtr)->flush(treeIdx);
 }
 
+int flushNode(int treeIdx, int nid, char *cachePtr)
+{
+	return ((Cache *)cachePtr)->flush(treeIdx, nid);
+}
+
 void *setCallback(int treeIdx, int nid, void (* callback)(int), void *cachePtr)
 {
 	return ((Cache *)cachePtr)->setCallback(treeIdx, nid, callback);
@@ -154,6 +161,11 @@ int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data,
 int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr)
 {
 	return ((Cache *)cachePtr)->discardOldSegments(treeIdx, nid, timestamp);
+}
+
+int discardData(int treeIdx, int nid, char *cachePtr)
+{
+	return ((Cache *)cachePtr)->discardData(treeIdx, nid);
 }
 
 
@@ -362,6 +374,11 @@ int Cache::discardOldSegments(int treeIdx, int nid, _int64 timestamp)
 	return dataManager.discardOldSegments(treeIdx, nid, timestamp);
 }
 
+int Cache::discardData(int treeIdx, int nid)
+{
+	return dataManager.discardData(treeIdx, nid);
+}
+
 bool Cache::inQueue(int treeIdx, int nid, int idx, int mode)
 {
 	NidChain *currChainNid = chainHead;
@@ -379,8 +396,12 @@ void Cache::synch()
 	treeWriter.synch();
 }
 
+int Cache::flush(int treeIdx)
+{
+	return flush(treeIdx, -1);
+}
 
-int Cache::flush(int treeIdx) 
+int Cache::flush(int treeIdx, int nid) 
 {
 	char *data, *dim, *shape, *start, *end;
 	char dataType;
@@ -392,7 +413,7 @@ int Cache::flush(int treeIdx)
 	queueLock.lock();
 	while(currChainNid)	
 	{
-		if(currChainNid->treeIdx == treeIdx)
+		if(currChainNid->treeIdx == treeIdx && (nid == -1 || currChainNid->nid == nid))
 		{
 			switch(currChainNid->mode) {
 				case FLUSH_PUT_RECORD:

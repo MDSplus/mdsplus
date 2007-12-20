@@ -50,7 +50,7 @@ SEM_ID *LockManager::semaphores;
 
 
 
-int SharedDataManager::deleteData(int treeId, int nid)
+int SharedDataManager::discardData(int treeId, int nid)
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -624,6 +624,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 	lock.unlock();
 	return 0;
 }
+
 
 int SharedDataManager::discardFirstSegment(int treeId, int nid)
 {
