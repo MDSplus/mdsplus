@@ -480,11 +480,13 @@ void dc1394Cleanup(void *arg)
 {
   int cam = (int)arg;
   void *status = NULL;
-  if (Cameras[cam].debug > 0)
-    fprintf(stderr, "  Cancel the thread\n");  
-  pthread_cancel(Cameras[cam].thread_id);
-  pthread_join(Cameras[cam].thread_id, &status);
-  Cameras[cam].thread_id = 0;
+  if (Cameras[cam].thread_id) {  
+    if (Cameras[cam].debug > 0)
+      fprintf(stderr, "  Cancel the thread\n");
+    pthread_cancel(Cameras[cam].thread_id);
+    pthread_join(Cameras[cam].thread_id, &status);
+    Cameras[cam].thread_id = 0;
+  }
 }
 
 extern int dc1394LoadImage() {
