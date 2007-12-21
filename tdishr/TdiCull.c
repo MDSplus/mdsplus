@@ -21,7 +21,7 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#define _MOVC3(a,b,c) memcpy(c,b,a)
+#define _MOVC3(a,b,c) memmove(c,b,a)
 
 extern struct descriptor *TdiRANGE_PTRS[3];
 extern unsigned short OpcValue;
