@@ -986,9 +986,12 @@ char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-#ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
+#ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
+#else
+STATIC_THREADSAFE HANDLE dlopen_mutex;
+#endif
 
 STATIC_ROUTINE void dlopen_lock()
 {
@@ -996,7 +999,11 @@ STATIC_ROUTINE void dlopen_lock()
   if(!dlopen_mutex_initialized)
   {
     dlopen_mutex_initialized = 1;
-    pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
+#ifdef HAVE_WINDOWS_H
+	pthread_mutex_init(&dlopen_mutex);
+#else
+	pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
+#endif
   }
 
   pthread_mutex_lock(&dlopen_mutex);
@@ -1008,12 +1015,15 @@ STATIC_ROUTINE void dlopen_unlock()
   if(!dlopen_mutex_initialized)
   {
     dlopen_mutex_initialized = 1;
+#ifdef HAVE_WINDOWS_H
+    pthread_mutex_init(&dlopen_mutex);
+#else
     pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
+#endif
   }
 
   pthread_mutex_unlock(&dlopen_mutex);
 }
-#endif
 
 int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
 {
@@ -1024,7 +1034,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   char *tmp_error2 = 0;
   int dlopen_mode = RTLD_LAZY;
   int lib_offset=3;
-  char *old_fis_error=FIS_Error;
+  char *old_fis_error;
   
   *symbol_value = NULL;
 
@@ -1042,9 +1052,8 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
 #endif
   if (strncmp(c_filename+strlen(c_filename)-strlen(SHARELIB_TYPE),SHARELIB_TYPE,strlen(SHARELIB_TYPE)))
     strcat(full_filename,SHARELIB_TYPE);
-#ifndef HAVE_WINDOWS_H
   dlopen_lock();
-#endif
+  old_fis_error=FIS_Error;
 #ifdef linux
   dlopen_mode = RTLD_NOW /* | RTLD_GLOBAL */;
 #endif
@@ -1084,9 +1093,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   }
   if (old_fis_error != 0 && old_fis_error != FIS_Error)
     free(old_fis_error);
-#ifndef HAVE_WINDOWS_H
   dlopen_unlock();
-#endif
   if (tmp_error1)
     free(tmp_error1);
   if (tmp_error2)
