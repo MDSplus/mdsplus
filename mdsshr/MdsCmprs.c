@@ -328,7 +328,7 @@ int       MdsXpand(
 		              int *bit_ptr)
 {
   int       nitems = *nitems_ptr;
-  char     *ppack = pack_dsc_ptr->pointer;
+  char     *ppack = memcpy(malloc(pack_dsc_ptr->arsize+4),pack_dsc_ptr->pointer,pack_dsc_ptr->arsize);
   int       limit = pack_dsc_ptr->arsize * 8;
   int       step = items_dsc_ptr->length;
   int       dtype = items_dsc_ptr->dtype;
@@ -360,10 +360,11 @@ int       MdsXpand(
 /********************************
 Note the sign-extended unpacking.
 ********************************/
+  memset(ppack+pack_dsc_ptr->arsize,-1,4);
   while (nitems > 0)
   {
     char nbits = (char)FIELDSY;
-    if (*bit_ptr + 2 * (BITSY + BITSX) > limit)
+    if ((*bit_ptr + 2 * (BITSY + BITSX)) > limit)
       break;
     MdsUnpk(&nbits, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
     xhead = j = X_OF_INT(header.n) + 1;
@@ -450,6 +451,7 @@ Note the sign-extended unpacking.
       break;
     }
   }
+  free(ppack);
   if (nitems > 0)
     return LibINVSTRDES;
   return 1;
