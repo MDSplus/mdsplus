@@ -115,21 +115,23 @@ public fun dt196__store(as_is _nid, optional _method)
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
 
-      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
-      if (_inc > 1) {
-        _slope = IF_ERROR(SLOPE_OF(_clk), 0);
-        if (_slope != 0) {
-          _start = (begin_of(_clk) != $missing) ? begin_of(_clk)+(_slope*_inc)/2. : $missing;
-          _dim = make_dim(make_window(_lbound/_inc, _ubound/_inc, _trigger), make_range( _start,  *, _slope*_inc));
+      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);  
+      if (rank(_data) == 1) {   
+        if (_inc > 1) {
+          _slope = IF_ERROR(SLOPE_OF(_clk), 0);
+          if (_slope != 0) {
+            _start = (begin_of(_clk) != $missing) ? begin_of(_clk)+(_slope*_inc)/2. : $missing;
+            _dim = make_dim(make_window(_lbound/_inc, _ubound/_inc, _trigger), make_range( _start,  *, _slope*_inc));
+          } else {
+            _dim = make_function(builtin_opcode('MAP'), make_dim(make_window(_lbound, _ubound, _trigger), _clk), make_range(_lbound + _inc/2,  _ubound,  _inc));
+          }
         } else {
-          _dim = make_function(builtin_opcode('MAP'), make_dim(make_window(_lbound, _ubound, _trigger), _clk), make_range(_lbound + _inc/2,  _ubound,  _inc));
+          _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
         }
-      } else {
-        _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
+        DevPutSignalNoBounds(_chan_nid, _offset, _coeff, _data, _dim);
       }
-      DevPutSignalNoBounds(_chan_nid, _offset, _coeff, _data, _dim);
     }
   }
-      tcl("show timer");
+  tcl("show timer");
   return(1);
 }
