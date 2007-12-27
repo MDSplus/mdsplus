@@ -1,6 +1,6 @@
-public fun Dt196Readchannel(in _board, in _channel, in _start, in _end, in _inc, optional  _coeffs)
+public fun Dt196Readchannel(in _board, in _channel, in _start, in _end, in _inc, optional  _coeffs, optional in _samples)
 {
-  _samples = Dt200GetNumSamples(_board);
+  if (not present(_samples)) _samples = Dt200GetNumSamples(_board);
   if (_samples <= 0) {
     write(*, "no samples taken");
     Abort();

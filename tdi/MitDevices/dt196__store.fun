@@ -89,6 +89,8 @@ public fun dt196__store(as_is _nid, optional _method)
   _offset = MdsValue('Dt200GetVoltOffset($)', _board);
   _coeff =  MdsValue('Dt196GetVoltCoef($)', _board);
 
+  _sampls=MdsValue('Dt200GetNumSamples($)',_board);
+
   /***********************************************************
    For each channel:
       If channel is turned on
@@ -115,7 +117,7 @@ public fun dt196__store(as_is _nid, optional _method)
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
 
-      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);  
+      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs, _sampls);  
       if (rank(_data) == 1) {   
         if (_inc > 1) {
           _slope = IF_ERROR(SLOPE_OF(_clk), 0);

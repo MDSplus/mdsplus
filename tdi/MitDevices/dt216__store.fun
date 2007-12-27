@@ -91,6 +91,7 @@ public fun dt216__store(as_is _nid, optional _method)
   _offset = mdsvalue('Dt196GetVoltOffset($)', _board);
   _coeff = MdsValue('Dt196GetVoltCoef($)', _board);
 
+  _sampls = MdsValue('Dt200GetNumSamples($)', _board);
   /***********************************************************
    For each channel:
       If channel is turned on
@@ -117,10 +118,14 @@ public fun dt216__store(as_is _nid, optional _method)
       _inc = if_error(long(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_INC))), 1);
       _filter_coefs = if_error(float(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_COEFFS))), 1.0);
 
+/*
       write(*, "Read channel "//_chan+1);
       tcl("init timer");
-      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs);     
+*/
+      _data= MdsValue('Dt196ReadChannel($,$,$,$,$,$,$)', _board, _chan+1, _lbound-_first_idx, _ubound-_first_idx, _inc, _filter_coefs, _sampls);     
+/*
       tcl("show timer");
+*/
       if (_inc > 1) {
         _slope = IF_ERROR(SLOPE_OF(_clk), 0);
         if (_slope != 0) {
@@ -133,7 +138,9 @@ public fun dt216__store(as_is _nid, optional _method)
         _dim = make_dim(make_window(_lbound,_ubound,_trigger),_clk);
       }
       DevPutSignalNoBounds(_chan_nid,_offset, _coeff, _data, _dim);
+/*
       tcl("show timer");
+*/
     }
   }
   return(1);
