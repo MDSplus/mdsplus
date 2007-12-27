@@ -326,21 +326,22 @@ static void  CleanupJob(int status, int jobid)
   unlock_job_list();
   if (j)
   {
+    int done=0;
     sock = j->sock;
     shutdown(sock,2);
     close(sock);
-    for (j=Jobs;j;j=j->next)
-      if (j->sock == sock)
-        DoCompletionAst(j->jobid,status,0,0);
-    for (j=Jobs;j;)
-      if (j->sock == sock)
-      {
-        Job *next = j->next;
-        RemoveJob(j);
-        j=next;
+    while (!done) {
+      done=1;
+      lock_job_list();
+      for (j=Jobs;j;j=j->next)
+	if (j->sock == sock)
+	  break;
+      unlock_job_list();
+      if (j != 0) {
+	done=0;
+	DoCompletionAst(j->jobid,status,0,1);
       }
-      else
-        j=j->next;
+    }
   }
 }
 
