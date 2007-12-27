@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="tdishr"
 	ProjectGUID="{2A17EA39-3217-4F9B-A794-4B3C80B40744}"
+	RootNamespace="tdishr"
 	>
 	<Platforms>
 		<Platform
@@ -86,6 +87,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

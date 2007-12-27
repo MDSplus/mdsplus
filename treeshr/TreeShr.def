@@ -86,6 +86,8 @@ TreeOpenNew
 _TreeOpenNew
 TreePutRecord
 _TreePutRecord
+TreePutRow
+_TreePutRow
 TreePutSegment
 _TreePutSegment
 TreeQuitTree
