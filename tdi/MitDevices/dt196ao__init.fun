@@ -15,8 +15,6 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
    _DT196AO_AO_CHANS = 16;
    _DT196AO_AO_FIT = 1;
 
-   write(*, "starting dt196o__init");
-
    _DI_NUMBERS = BUILD_SIGNAL([0,1,2,3,4,5], *, ['DI0', 'DI1', 'DI2', 'DI3', 'DI4', 'DI5' ]);
 
   _node = if_error(data(DevNodeRef(_nid,_DT196_NODE)), "");
@@ -44,10 +42,7 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
   
   _slope = slope_of(_clock)*_fawg_div;
   _fawg_div = _fawg_div*2;
-  write(*, 'here I am');
-  write(*, '_slope =', _slope);
   _dim = data(build_dim(build_window(0, _max_samples-1, _trigger), * : * : _slope));
-  write(*, '_dim= ', _dim[0:100]);
 
   _cmd = "set.ao_clk "//_clock_source//" rising";
   MdsValue('Dt200WriteMaster($, $, 1)',_board, _cmd);
@@ -72,12 +67,6 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
       _sig = getnci(_chan_nid, "RECORD");
       _knots_x = dim_of(_sig);
       _knots_y = data(_sig);
-      write(*, '_knots_x');
-      write(*, _knots_x[0:100]);
-      write(*, '_knots_y');
-      write(*, _knots_y[0:100]);
-      write(*, 'dim');
-      write(*, _dim[0:100]);
       _fit = DevNodeRef(_nid,_chan_offset+_DT196AO_AO_FIT);
 
       _knots_y = cvt(_knots_y, 1.0);
@@ -92,7 +81,6 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
       if (size(_wave) gt _max_samples) {
         _wave=_wave[0: _max_samples-1];
       }
-      write(*, _wave[0:100]);
       MdsValue('Dt196AOWriteOutput($,$,$)', _board, _chan+1, _wave);
     }
     else
