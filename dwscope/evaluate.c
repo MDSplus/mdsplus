@@ -571,9 +571,10 @@ void CloseDataSources()
   while (TreeClose(NULL,0) & 1);
 }  
 
+
+#ifdef OLD_WAY
 static XtAppContext this_app_context;
 static Widget this_widget;
-
 static void  EventAst(Boolean *received)
 {
   XClientMessageEvent event;
@@ -602,7 +603,40 @@ void SetupEventInput(XtAppContext app_context, Widget w)
   this_app_context = app_context;
   this_widget = w;
 }
+#else
+static int event_pipe[2];
+static void  EventAst(Boolean *received)
+{
+  XClientMessageEvent event;
+  char buf[1];
+  *received = 1;
+  write(event_pipe[1],buf,1);
+}
 
+void SetupEvent(String event, Boolean *received, int *id)
+{
+  if (*id)
+    MDSEventCan(*id);
+  if (strlen(event))
+  {
+    MDSEventAst(event,EventAst,received,id);
+  }
+}
+
+static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
+{
+  char buf[1];
+  read(event_pipe[0],buf,1);
+  EventUpdate(client_data, source, id);
+}
+
+void SetupEventInput(XtAppContext app_context, Widget w)
+{
+  int status=pipe(event_pipe);
+  XtAppAddInput(app_context, event_pipe[0], (XtPointer)XtInputReadMask, DoEventUpdate, 0);
+  
+}
+#endif
 #elif defined(_RPC)
 
 #include <rpc/rpc.h>
