@@ -396,7 +396,7 @@ int 	rblob;
 					
 					if (date) 
 					{		/*Julian day 3 million?? is 17-Nov-1858*/
-						
+#ifdef OLD						
 						int yr, mo, da, hr, mi, se, th, leap;
 						int status = SYB_dbconvert(dbproc,type,buf,bufs[j].len,SYBCHAR,(unsigned char*)ddate,sizeof(ddate)-1);
 						
@@ -430,6 +430,7 @@ int 	rblob;
 						STATIC_CONSTANT char *moname = "JanFebMarAprMayJunJulAugSepOctNovDec";
 						STATIC_CONSTANT int day[] = {0,31,59,90,120,151,181,212,243,273,304,334};
 						char	mon[4], *moptr, ampm[3];
+
 						len=sizeof(d_null);
 						dtype = DTYPE_FT;
 						if (status < 0) {buf = (char *)&d_null; break;}
@@ -452,6 +453,16 @@ int 	rblob;
 						d_ans = (double)(yr * 365 + day[mo] + da + leap - 678941);
 						d_ans += (double)(th + 1000*(se + 60*(mi + 60*hr)))/86400000.;
 						buf = (char *)&d_ans;
+#endif
+#else
+						d_ans=d_null;
+                                                if (bufs[j].len == 8) {
+						  d_ans=(double)(((int *)buf)[0]+15020)+((double)((unsigned int *)buf)[1])/300./60./60./24.;
+						} else if (bufs[j].len == 4) {
+						  d_ans=(double)(((unsigned short *)buf)[0]+15020)+((double)((unsigned short *)buf)[1])/60./24.;
+						}
+						buf = (char *)&d_ans;
+						len = sizeof(d_ans);
 #endif
 						AppendAnswer(j, buf, len, dtype);
 					}
