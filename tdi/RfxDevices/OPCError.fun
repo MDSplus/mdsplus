@@ -1,4 +1,4 @@
-public fun OPCError()
+public fun OPCError(in _serverHandle)
 {
-    return( MdsOpcClient->OPCError() );
+    return( opcAccess->OPCError(val(_serverHandle)) );
 }

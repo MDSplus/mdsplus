@@ -1,11 +1,7 @@
-public fun OPCPut(in _tag, in _value, optional in _nElem)
+public fun OPCPut(in _serverHandle, in _item, in _value, optional in _nElem)
 {
-write(*, _tag, _value);
-
 	if (present(_nElem))
-	{
-		return ( MdsOpcClient->OPCWrite(_tag, _value, val(_nElem)));
-	}
+		return ( opcAccess->OPCPut( val( _serverHandle ), _item, _value, val(_nElem)));
 	else
-		return ( MdsOpcClient->OPCWrite(_tag, _value, val(0)));
+		return ( opcAccess->OPCPut( val( _serverHandle ), _item, _value, val(0)));
 }

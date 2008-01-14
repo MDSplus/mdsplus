@@ -1,6 +1,6 @@
-public fun OPCErrorMessage()
+public fun OPCErrorMessage(in _serverHandle)
 {
 	_msg = "";
-    _status = MdsOpcClient->OPCErrorMessage(xd(_msg));
+    _status = opcAccess->getErrorMessage(val( _serverHandle ), xd(_msg));
     return(_msg);
 }
