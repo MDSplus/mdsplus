@@ -448,11 +448,13 @@ static void DoSrvAction(SrvJob *job_in)
 {
   int status;
   SrvActionJob *job = (SrvActionJob *)job_in;
+  char *job_text,*old_job_text;
+  sprintf((job_text=(char *)malloc(100)),"Doing nid %d in %s shot %d",job->nid,job->tree,job->shot);
+  current_job_text=job_text;
   status = TreeOpen(job->tree,job->shot,0);
   if (status & 1)
   {
     int retstatus;
-    char *job_text;
     DESCRIPTOR_NID(nid_dsc,0);
     DESCRIPTOR_LONG(ans_dsc,0);
     struct descriptor fullpath = {0, DTYPE_T, CLASS_D, 0};
@@ -466,7 +468,9 @@ static void DoSrvAction(SrvJob *job_in)
     StrAppend(&fullpath,&nullstr);
     job_text = malloc(fullpath.length + 1024);
     sprintf(job_text,"Doing %s in %s shot %d",fullpath.pointer,job->tree,job->shot);
+    old_job_text=current_job_text;
     current_job_text = job_text;
+    free(old_job_text);
     StrFree1Dx(&fullpath);
     nid_dsc.pointer = (char *)&job->nid;
     ans_dsc.pointer = (char *)&retstatus; 
