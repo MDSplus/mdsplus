@@ -350,6 +350,12 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			return BAD_INDEX;
 		}
 		Segment *segment = nodeData->getSegmentAt(idx);
+		if(!segment->isTimestamped())
+		{
+		    lock.unlock();
+		    return 0;
+		}
+		
 		segment->getShape((char **)&shape, &shapeSize);
 		//Check Shape. Meaning of bound array:
 //		1) data type

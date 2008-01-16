@@ -512,7 +512,11 @@ EXPORT int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, stru
 	arrayD.length = shape[1];
 	arrayD.pointer = data;
 	arrayD.dimct = shape[2];
-	arrayD.arsize = shape[3];
+	if(timestamped)
+		arrayD.arsize = currDataSize;
+	else
+		arrayD.arsize = shape[3];
+
 	if(arrayD.dimct > 1)
 	{
 		boundsPtr = (int *)((char *)&arrayD + sizeof(struct descriptor_a)  + sizeof(char *));
@@ -520,6 +524,8 @@ EXPORT int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, stru
 		{
 			boundsPtr[currDim] = shape[currDim + 4];
 		}
+		if(timestamped)
+		    boundsPtr[arrayD.dimct - 1] = currDataSize/shape[1];
 	}
 	else
 		arrayD.aflags.bounds = arrayD.aflags.coeff = 0;
