@@ -367,7 +367,7 @@ public class ParameterSetting
             else
             {
                 modeC = new JComboBox(new String[]
-                                      {"101", "102", "103", "104", "105", "106",
+                                      {"Select Shot", "101", "102", "103", "104", "105", "106",
                                       "107", "108", "109"});
                 shot = 101;
             }
@@ -1639,7 +1639,7 @@ public class ParameterSetting
                 {
                     rfx = new Database("RFX", -1);
                     rfx.open();
-                    rfx.create(100);
+                    rfx.create(101);
                     rfx.close(0);
                     rfx = new Database("RFX", 101);
                     rfx.open();
