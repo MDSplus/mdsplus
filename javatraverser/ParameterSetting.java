@@ -367,7 +367,7 @@ public class ParameterSetting
             else
             {
                 modeC = new JComboBox(new String[]
-                                      {"Select Shot", "101", "102", "103", "104", "105", "106",
+                                      {"101", "102", "103", "104", "105", "106",
                                       "107", "108", "109"});
                 shot = 101;
             }
