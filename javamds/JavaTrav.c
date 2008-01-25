@@ -6,6 +6,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mdstypes.h>
 
 #include <treeshr.h>
 #include <ncidef.h>
