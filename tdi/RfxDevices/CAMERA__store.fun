@@ -60,8 +60,6 @@ write(*, "CAMERA store");
 
 	write(*, _n_frames);
 
-
-
     		DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'], [0,1], _trig_mode = 0);
 		
 		if(_trig_mode)
@@ -111,7 +109,6 @@ write(*,_y_pixel);
 		{
 			DevLogErr(_nid, "No image read for CAMERA"); 
 		} else {
-		
 			_trig_time = _trig_time + 1./_frame_rate;
 			_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), make_range(*,*,(1./_frame_rate)) );
 			_frames_img = set_range(_y_pixel, _x_pixel, _n_frames, _img);

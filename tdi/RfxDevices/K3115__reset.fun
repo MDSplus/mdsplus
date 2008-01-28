@@ -9,9 +9,8 @@ public fun K3115__reset(as_is _nid, optional _method)
 	private __CLOCK_MODE = 6;
 	private __CLOCK_FREQ = 7;
 
+	private __NODES_PER_CHANNEL = 7;
 
-
-    	private __NODES_PER_CHANNEL = 7;
 	private __CHANNEL_1 = 8;
 	private __RANGE = 1;
 	private __RANGE_POL = 2;
@@ -38,7 +37,6 @@ public fun K3115__reset(as_is _nid, optional _method)
 	private _MDS$K_FHUGE = 10E10;
 
 
-
 	_camac_name = data(DevNodeRef(_nid, __CAMAC_NAME));
 
 	for(_n_chan = 0; _n_chan < 6; _n_chan++)
@@ -49,5 +47,6 @@ public fun K3115__reset(as_is _nid, optional _method)
 
 	DevCamChk(_camac_name, CamPiow(_camac_name, 0, 9, _zero = 0, 16), 1, 1);
 	DevCamChk(_camac_name, CamPiow(_camac_name, 2, 9, _zero = 0, 16), 1, 1); 
+
 	return(1);
 }

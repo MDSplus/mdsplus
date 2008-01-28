@@ -36,10 +36,12 @@ public fun XRAY__setAmpType(as_is _nid, optional _method)
 		  _id = TomoChanId( _i+1, 1, XrayChMapping() );
 
 		  if(TomoAmpType(_id) == 21)
-		     DevPut(_nid, _chan_nid + _N_CHAN_AMP_TYPE, "STANDARD");            
+		     _status = DevPut(_nid, _chan_nid + _N_CHAN_AMP_TYPE, "STANDARD");            
 		  else
-			 DevPut(_nid, _chan_nid + _N_CHAN_AMP_TYPE, "ENHANCED");            
-	}
+			 _status = DevPut(_nid, _chan_nid + _N_CHAN_AMP_TYPE, "ENHANCED");            
+
+	write(*, _status);
+}
 
     return(1);
 }

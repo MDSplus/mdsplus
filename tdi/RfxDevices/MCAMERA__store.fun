@@ -200,8 +200,8 @@ write(*,_bitPerPixel);
 			} 
 			else 
 			{
+				_trig_time = _trig_time + 1./( 2 * _frame_rate );
 			
-				_trig_time = _trig_time + 1./_frame_rate;
 				_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), make_range(*,*,(1./_frame_rate)) );
 				_video = compile('build_signal(($VALUE), set_range(`_x_pixel, `_y_pixel, `_n_frames, `_img), (`_dim))');
 				

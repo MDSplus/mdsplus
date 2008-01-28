@@ -90,7 +90,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
     if ( _type == "TITLE" )
 	{
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "ROT.PERTURBATION" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VS+ROT.PERT.(FEEDBACK)" || _modeName == "VS+ROT.PERT.(FEEDFORW)" || _modeName ==  "Closer VS + Rot.Pert.")
+		if( _modeName ==  "ROT.PERTURBATION" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VS+ROT.PERT.(FEEDBACK)" || _modeName == "VS+ROT.PERT.(FEEDFORW)" || _modeName ==  "Closer VS + Rot.Pert." || _modeName == "MODE CONTROL + ROT.PERT. FW")
 		{
 			switch( _idx )
 			{
@@ -149,7 +149,7 @@ public fun RfxRotPertConfig(in _system, in _type, in _idx)
 		_vmeFreq = if_error( execute("\\"//_system//"::VME_FREQUENCY"), 0);
 
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "ROT.PERTURBATION" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VS+ROT.PERT.(FEEDBACK)" || _modeName == "VS+ROT.PERT.(FEEDFORW)" || _modeName ==  "Closer VS + Rot.Pert.")
+		if( _modeName ==  "ROT.PERTURBATION" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VS+ROT.PERT.(FEEDBACK)" || _modeName == "VS+ROT.PERT.(FEEDFORW)" || _modeName ==  "Closer VS + Rot.Pert." || _modeName == "MODE CONTROL + ROT.PERT. FW" )
 		{
 			switch( _idx )
 			{

@@ -1,18 +1,18 @@
 public fun PELLET__store(as_is _nid, optional _method)
 {
 
-	write(*, "PELLET init");
+	write(*, "PELLET store");
 
 
-    	private _N_RS232_MAME = 1;
-    	private _N_COMMENT = 2;
-    	private _N_TSTBY = 3;
-    	private _N_TAFORM = 4;
+	private _N_RS232_MAME = 1;
+	private _N_COMMENT = 2;
+	private _N_TSTBY = 3;
+	private _N_TAFORM = 4;
    	private _N_TBFORM = 5;
-    	private _N_THOLD = 6;
+	private _N_THOLD = 6;
    	private _N_TBAKE = 7;
-    	private _N_DELAY = 8;
-    	private _N_PRESSURE = 9;
+	private _N_DELAY = 8;
+	private _N_PRESSURE = 9;
  
 	private _K_NODES_PER_PELLET = 16;
 
@@ -41,8 +41,25 @@ public fun PELLET__store(as_is _nid, optional _method)
 
 	_tree_status = 1;
 	
+	
+	_pellet_on = 0;
+	
+	for( _i = 0; _i < 8 ; _i++)
+	{		
+		if( DevIsOn(DevNodeRef(_nid, _N_PELLET_0  + ( _i * _K_NODES_PER_PELLET) )))
+		{
+			_pellet_on = 1;
+			break;
+		}
+	}
+	
+	if(! _pellet_on )
+	{
+		write(*, "All pellet off");
+		return (1);
+	}
 
-        _name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
+	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
 
 	if( _status )
 	{
@@ -50,8 +67,6 @@ public fun PELLET__store(as_is _nid, optional _method)
 		Abort();
 	}
 	
-
-
 
 	_tok0 = trim(element(0, ":", _name));
 	_tok1 = trim(element(1, ":", _name));
@@ -188,6 +203,6 @@ public fun PELLET__store(as_is _nid, optional _method)
 	}
 
 
-        return (_tree_status);
+	return ( _tree_status );
 
 }

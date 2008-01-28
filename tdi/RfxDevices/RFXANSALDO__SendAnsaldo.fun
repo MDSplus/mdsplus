@@ -51,14 +51,10 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
     }
 	write(*, 'Opc server name: '//_opc_server);
 
-
-
 	_tagPathPoloidal = "\\S7:\\Poloidale\\aliases\\";
 	_tagPathToroidal = "\\S7:\\Toroidale\\aliases\\";
 
-
-
-	_status = MdsConnect(_mdsip_address);
+	_status = MdsConnect( _mdsip_address );
 	if(_status == 0)
 	{
         DevLogErr(_nid, "Cannot connect to MdsIp server :"//_mdsip_address);
@@ -66,14 +62,62 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 	}
 
 	
-	_status = MdsValue('OpcConnect($1, $2)', _opc_server, 500 );
-	if(_status == 1)
+	_handle = MdsValue('OpcConnect($1, $2)', _opc_server, 500 );
+	if( _handle == 0 )
 	{
-    	    DevLogErr(_nid, "Cannot connect to Opc server :"//_opc_server);
+		DevLogErr(_nid, "Cannot connect to Opc server :"//_opc_server);
+		MdsDisconnect();
  	    abort();
 	}
 
+/* Create Ansaldo Group Items*/
+/*
+	_ansaldoItems = "";
 
+	for( _i = 0; _i < _N_NUM_UNIT_A - 1; _i++)
+	{
+		_unitPath = "A"//trim(adjustl(_i+1))//"_Config";
+		_ansaldoItems = _ansaldoItems//_tagPathPoloidal//_unitPath//";";
+		_ansaldoItems = _ansaldoItems//_tagPathToroidal//_unitPath//";";
+	}
+	_unitPath = "A"//trim(adjustl(_i+1))//"_Config";
+	_ansaldoItems = _ansaldoItems//_tagPathPoloidal//_unitPath//";";
+	_ansaldoItems = _ansaldoItems//_tagPathToroidal//_unitPath//";";
+
+	for( _i = 0; _i < _N_NUM_UNIT_B - 1; _i++)
+	{
+		_unitPath = "B"//trim(adjustl(_i+1))//"_Config";
+		_ansaldoItems = _ansaldoItems//_tagPathPoloidal//_unitPath//";";
+		_ansaldoItems = _ansaldoItems//_tagPathToroidal//_unitPath//";";
+	}
+	_unitPath = "B"//trim(adjustl(_i+1))//"_Config";
+	_ansaldoItems = _ansaldoItems//_tagPathPoloidal//_unitPath//";";
+	_ansaldoItems = _ansaldoItems//_tagPathToroidal//_unitPath;
+	
+	_groupName = "AnsaldoGroup";
+	_status = MdsValue("OpcAddGroup($1, $2, 500)", _handle, _groupName );
+	if( _status == 1 )
+	{
+	    _errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+		DevLogErr(_nid, _errMsg);
+		MdsValue("OpcDisconnect(\""//_opc_server //"\")");
+		MdsDisconnect();
+		abort();
+	}
+
+
+	_status = MdsValue("OpcAddItems($1, $2, $3, $4)", _handle, _groupName, _ansaldoItems, 2 * (_N_NUM_UNIT_A + _N_NUM_UNIT_B));
+	if( _status == 1 )
+	{
+	    _errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+		DevLogErr(_nid, _errMsg);
+		MdsValue("OpcDisconnect(\""//_opc_server //"\")");
+		MdsDisconnect();
+		abort();
+	}
+*/
+
+/**************************************************************************************************/
 
 	for( _i = 0; _i < _N_NUM_UNIT_A; _i++)
 	{
@@ -87,7 +131,9 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
         if(_config < 0 )
         {
     	   DevLogErr(_nid, "Invalid _config for unit "//(_i+1));
- 		   abort();
+		   MdsValue("OpcDisconnect("//_handle //")");
+		   MdsDisconnect();
+		   abort();
         }
 
 		write(*, "S and T Config: ", _config);
@@ -119,6 +165,8 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_regulation < 0 )
 			{
     			DevLogErr(_nid, "Invalid protection for unit "//(_i+1));
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
  				abort();
 			}
 
@@ -131,6 +179,8 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_window < 0 )
 			{
     			DevLogErr(_nid, "Invalid _window for unit "//(_i+1));
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
  				abort();
 			}
 
@@ -142,7 +192,9 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_protection < 0 )
 			{
     			DevLogErr(_nid, "Invalid protection for unit "//(_i+1));
- 				abort();
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
+  				abort();
 			}
 
 			write(*, "Protection: ", _protection);
@@ -161,26 +213,35 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 		write(*, "Dword unit : ", _unit_Dword);
 
 		_unitPath = "A"//trim(adjustl(_i+1))//"_Config";
-
+/*
 		_status = MdsValue('OpcPut($1, $2)', _tagPathPoloidal//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2, $3, $4)', _opc_server, _groupName, _tagPathPoloidal//_unitPath, _unit_Dword );
+*/
+		_status = MdsValue('OpcPut($1, $2, $3)', _handle, _tagPathPoloidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
-			_errMsg = MdsValue("OpcErrorMessage()");
-    			DevLogErr(_nid, _errMsg);
+			_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+			DevLogErr(_nid, _errMsg);
+			MdsValue("OpcDisconnect("//_handle //")");
+			MdsDisconnect();
  			abort();
 		}
 
-
+/*
 		_status = MdsValue('OpcPut($1, $2)', _tagPathToroidal//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2, $3, $4)', _opc_server, _groupName, _tagPathToroidal//_unitPath, _unit_Dword );
+*/
+		_status = MdsValue('OpcPut($1, $2, $3)', _handle, _tagPathToroidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
-			_errMsg = MdsValue("OpcErrorMessage()");
-    			DevLogErr(_nid, _errMsg);
- 			abort();
+			_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+			DevLogErr(_nid, _errMsg);
+			MdsValue("OpcDisconnect("//_handle //")");
+			MdsDisconnect();
+  			abort();
 		}
 
 	}
-
 
 
 	for( _i = 0; _i < _N_NUM_UNIT_B; _i++)
@@ -194,8 +255,10 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 	    DevNodeCvt(_nid, (_head_unit + _N_UNIT_CONFIG), ['INDIPENDENT', 'SERIES','PARALLEL' ], [22,23,24], _config=-1);
         if(_config < 0 )
         {
-    	   DevLogErr(_nid, "Invalid _config for unit "//(_i+1));
- 		   abort();
+    	    DevLogErr(_nid, "Invalid _config for unit "//(_i+1));
+			MdsValue("OpcDisconnect("//_handle //")");
+			MdsDisconnect();
+ 		    abort();
         }
 
 		write(*, "S and T Config: ", _config);
@@ -227,7 +290,9 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_regulation < 0 )
 			{
     			DevLogErr(_nid, "Invalid protection for unit "//(_i+1));
- 				abort();
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
+  				abort();
 			}
 
 			write(*, "Regulation: ", _regulation);
@@ -239,6 +304,8 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_window < 0 )
 			{
     			DevLogErr(_nid, "Invalid _window for unit "//(_i+1));
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
  				abort();
 			}
 
@@ -250,6 +317,8 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 			if(_protection < 0 )
 			{
     			DevLogErr(_nid, "Invalid protection for unit "//(_i+1));
+				MdsValue("OpcDisconnect("//_handle //")");
+				MdsDisconnect();
  				abort();
 			}
 
@@ -268,28 +337,36 @@ public fun RFXANSALDO__SendAnsaldo(as_is _nid, optional _method)
 		write(*, "Dword unit : ", _unit_Dword);
 
 		_unitPath = "B"//trim(adjustl(_i+1))//"_Config";
-
+/*
 		_status = MdsValue('OpcPut($1, $2)', _tagPathPoloidal//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2, $3, $4)', _opc_server, _groupName, _tagPathPoloidal//_unitPath, _unit_Dword );
+*/
+		_status = MdsValue('OpcPut($1, $2, $3)', _handle, _tagPathPoloidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
-			_errMsg = MdsValue("OpcErrorMessage()");
-    			DevLogErr(_nid, _errMsg);
+			_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+			DevLogErr(_nid, _errMsg);
+			MdsValue("OpcDisconnect("//_handle //")");
+			MdsDisconnect();
  			abort();
 		}
-
+/*
 		_status = MdsValue('OpcPut($1, $2)', _tagPathToroidal//_unitPath, _unit_Dword );
+		_status = MdsValue('OpcPut($1, $2, $3, $4)', _opc_server, _groupName, _tagPathToroidal//_unitPath, _unit_Dword );
+*/
+		_status = MdsValue('OpcPut($1, $2, $3)', _handle, _tagPathToroidal//_unitPath, _unit_Dword );
 		if( _status == 1)
 		{
-			_errMsg = MdsValue("OpcErrorMessage()");
-    			DevLogErr(_nid, _errMsg);
- 			abort();
+			_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
+			DevLogErr(_nid, _errMsg);
+			MdsValue("OpcDisconnect("//_handle //")");
+			MdsDisconnect();
+  			abort();
 		}
 
 	}
 
-
-
-	MdsValue("OpcDisconnect()");
+	MdsValue("OpcDisconnect("//_handle //")");
 
 	MdsDisconnect();
 

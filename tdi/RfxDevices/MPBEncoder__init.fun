@@ -14,6 +14,8 @@ public fun MPBEncoder__init(as_is _nid, optional _method)
     private _N_CHANNEL_1 = 3;
     private _N_CHAN_EVENT = 1;
     private _N_CHAN_TRIG = 2;
+	
+	_error = 0;
 
     _name =  if_error(DevNodeRef(_nid, _N_NAME), (DevLogErr(_nid, 'Cannot resolve CAMAC name');abort();));
     _w = 0;
@@ -43,8 +45,14 @@ public fun MPBEncoder__init(as_is _nid, optional _method)
 			}
 			else
 			{
- 	    		if_error(_event_time = data(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG)), (DevLogErr(_nid, 'Missing event time for channel '//(_chan+1));abort();));
-			_status = TimingRegisterEventTime(_event, getnci(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG), 'fullpath'));
+ 	    		if_error(_event_time = data(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG)), _error = 1);
+			    if( _error )
+				{
+				   DevLogErr(_nid, 'Missing event time for channel '//(_chan+1));
+				   abort();
+				}
+				_status = TimingRegisterEventTime(_event, getnci(DevNodeRef(_nid, _chan_nid + _N_CHAN_TRIG), 'fullpath'));
+				
 			if(_status == -1)
 			{
 			    DevLogErr(_nid, "Internal error in TimingRegisterEventTimes: different array sizes");

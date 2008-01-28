@@ -146,6 +146,9 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 				_data = MdsValue('FastCamHWReadFrame($, $, $, $)', _startFrame,  _nFramesSingleRead, _v_res, _h_res);
 			else
 				_data = FastCamHWReadFrame( _startFrame, _nFramesSingleRead, _v_res, _h_res);
+
+
+			write(*, "Data size ", esize( _data ) );
 			
 			if( esize( _data ) < 0)
 				break;
@@ -170,8 +173,8 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 	write(*, "test ", _n_frames, _num_frames * _num_trig);
 
-	_y_pixel = _v_res;
-	_x_pixel = _h_res;
+	_y_pixel = _h_res;
+	_x_pixel = _v_res;
 
 	_imgs = WORD(( _imgs >> 6 ) & 0x3FF);
 

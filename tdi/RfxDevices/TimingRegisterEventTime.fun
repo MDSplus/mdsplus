@@ -1,5 +1,7 @@
 public fun TimingRegisterEventTime(in _event, in _time)
 {
+
+
     _event_names = if_error(data(\TIMING_SUPERVISOR:EVENT_NAMES), []);
     _event_times = if_error(data(\TIMING_SUPERVISOR:EVENT_TIMES), []);
 
@@ -20,7 +22,9 @@ public fun TimingRegisterEventTime(in _event, in _time)
 		else
 			_new_times = [_new_times, _event_times[_i]];
     }
-    if(!_found)
+	
+
+   if(!_found)
     {
 		_event_names = [_event_names, _event];
 		_nid = getnci(\TIMING_SUPERVISOR:EVENT_NAMES, 'NID_NUMBER',);
@@ -29,6 +33,7 @@ public fun TimingRegisterEventTime(in _event, in _time)
     }
     _nid = getnci(\TIMING_SUPERVISOR:EVENT_TIMES, 'NID_NUMBER',);
     _status = TreeShr->TreePutRecord(val(_nid),xd(_new_times),val(0));
+
 
    return (0);
 }

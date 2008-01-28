@@ -2,8 +2,8 @@ public fun DEQUSetup__add(in _path, out _nidout)
 {
     DevAddStart(_path, 'DEQUSetup', 25, _nidout);
     
-        DevAddNode(_path // '.TRCF_ACQ', 'STRUCTURE', *, *, _nid);
-	_cn = _path // '.TRCF_ACQ';
+		DevAddNode(_path // '.TR10_ACQ', 'STRUCTURE', *, *, _nid);
+	_cn = _path // '.TR10_ACQ';
    	DevAddNode(_cn // ':EVENT', 'TEXT', 'T_START_RFX', *, _nid);
    	DevAddNode(_cn // ':DELAY', 'NUMERIC', *, *, _nid);
    	DevAddNode(_cn // ':DURATION', 'NUMERIC', *, *, _nid);

@@ -38,7 +38,7 @@ public fun bRadCheck(in _save, optional _debug)
 	_warningSigs_inout = [];
 
 
-/*
+
 	write(*, "CHECK Saturazioni correnti PR");
 
 	
@@ -89,7 +89,7 @@ public fun bRadCheck(in _save, optional _debug)
 		}
 	}
 	
-*/
+
 	_pcurr = \dequ::vmrg120_vi2va[ _START_TIME : _END_TIME : 1./\MHD_BR::CPCI_1_FREQUENCY ];
 	
 	_pCurrY = fs_float( data  ( _pcurr ) );
@@ -165,10 +165,10 @@ public fun bRadCheck(in _save, optional _debug)
 			_warningSignal = zero( _len, 0.0);
 			_faultSignal = zero( _len, 0.0);
 			
-			_status =  libRfxUtils->RadialFieldLevelCheck(  ref( _y )  , ref( _x ), val(_len),
-									_lW, _lF, _dW, _dF, 
-									ref( _warningSignal ), ref( _faultSignal ),
-									ref( _timeStartW ) ,  ref( _timeStartF ) );
+			_status =  libRfxUtils->RadialFieldLevelCheck( ref( _y ), ref( _x ), val(_len),
+															_lW, _lF, _dW, _dF, 
+															ref( _warningSignal ), ref( _faultSignal ),
+															ref( _timeStartW ) ,  ref( _timeStartF ) );
 									
 
 			if( _status > 0 )
@@ -181,8 +181,8 @@ public fun bRadCheck(in _save, optional _debug)
 					if( _timeStartF < _currentTimeStartF)
 					{
 						_currentFaultSignal = _faultSignal;
-						_currentTimeStartF = _timeStartF;
-						_currentSignalF = _signalPath;
+						_currentTimeStartF  = _timeStartF;
+						_currentSignalF     = _signalPath;
 					}
 				
 					if( _j & 1 )
@@ -195,7 +195,7 @@ public fun bRadCheck(in _save, optional _debug)
 					}
 					
 					if( PRESENT( _debug ) )
-						Write(*, "FAULT signal "//_signalPath//" "//help_of(build_path(_signalPath))//_timeStartF//_timeStartW);
+						Write(*, "FAULT signal "//_signalPath//" "//help_of(build_path(_signalPath))//_timeStartF//_timeStartW//_lF);
 					
 					_error = _error | _FAULT_CAMPO_RADIALE;
 				}
@@ -218,22 +218,18 @@ public fun bRadCheck(in _save, optional _debug)
 					}
 
 					if( PRESENT( _debug ) )
-						Write(*, "WARNING signal "//_signalPath//" "//help_of(build_path(_signalPath))//_timeStartW);
+						Write(*, "WARNING signal "//_signalPath//" "//help_of(build_path(_signalPath))//_timeStartW//_LW);
 
 					_error = _error | _WARNING_CAMPO_RADIALE;
 				}
 			}	
-
 		}
-		
 	}
 
 
-	
+	_faultSigs = [ _currentSignalF, _faultSigs_updown," ", _faultSigs_inout ];
 
-	_faultSigs = [ _faultSigs_updown," ", _faultSigs_inout ];
-
-	_warningSigs = [ _warningSigs_updown ," ", _warningSigs_inout ];
+	_warningSigs = [ _currentSignalW, _warningSigs_updown ," ", _warningSigs_inout ];
 	
 
 	write(*, "********************************************************************");
@@ -252,7 +248,9 @@ public fun bRadCheck(in _save, optional _debug)
 	
 		_nid = getnci("\\MHD_BR::BRAD_MAX", "NID_NUMBER");
 	
-		_signal = compile('build_signal(maxval(`_signals, 1),,`_x)');
+		_data = maxval(_signals, 1);
+	
+		_signal = compile('build_signal(`_data,,`_x)');
 			
 		_status = TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
 		if( ! ( _status & 1 ) )

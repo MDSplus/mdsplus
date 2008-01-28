@@ -1,6 +1,6 @@
 public fun PELLET__add(in _path, out _nidout)
 {
-    DevAddStart(_path,'PELLET', 139, _nidout);
+    DevAddStart(_path,'PELLET', 144, _nidout);
     DevAddNode(_path//':RS232_NAME', 'TEXT','/dev/ttyS0', *, _nid);
     DevAddNode(_path//':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path//':TSTBY', 'NUMERIC', *, *, _nid);
@@ -35,8 +35,15 @@ public fun PELLET__add(in _path, out _nidout)
     	DevAddNode(_cn//':BAKE', 'NUMERIC', *, *, _nid);
     	DevAddNode(_cn//':TOFA', 'NUMERIC', *, *, _nid);
     	DevAddNode(_cn//':TOFB', 'NUMERIC', *, *, _nid);
-   }
+    }
 
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'PC_SERVER',getnci(_path, 'fullpath'), _nid);
-    DevAddEnd();
+
+    DevAddNode(_path//':ANGLE', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path//':DI_MIN', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path//':GAS_TYPE', 'TEXT', *, *, _nid);
+    DevAddNode(_path//':IGOR_NAME', 'TEXT', *, *, _nid);
+    DevAddNode(_path//':I_N_MAX', 'NUMERIC', *, *, _nid);
+ 
+	DevAddEnd();
 }

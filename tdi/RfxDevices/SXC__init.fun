@@ -132,7 +132,11 @@ public fun SXC__init(as_is _nid, optional _method)
 
 		_expr = "SxcHWInit(0, $, $, $, $, $, $)";  
 	
-	        _errors = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
+		_errors = MdsValue(_expr, _chan_id, _gain_id, _filter_id , _trans_id, _detector_id, _bias_id, 0);
+
+
+		if( _trig_mode == 2 ) /* internal trigger mode*/
+			wait(7);
 
 		
 		_expr = "SxcHwStartAcq(0, $, $, $, $)" ;  

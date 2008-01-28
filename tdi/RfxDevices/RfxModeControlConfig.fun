@@ -33,7 +33,7 @@ public fun RfxModeControlConfig(in _system, in _type, in _idx)
     if ( _type == "TITLE" )
 	{
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "Closer VS")
+		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "Closer VS" || _modeName == "MODE CONTROL + ROT.PERT. FW")
 		{
 			switch( _idx )
 			{
@@ -62,7 +62,7 @@ public fun RfxModeControlConfig(in _system, in _type, in _idx)
 		_zeroSig = make_signal([0.,0],,[-1., 1.]);
 		
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "Closer VS")
+		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "Closer VS" || _modeName == "MODE CONTROL + ROT.PERT. FW")
 		{
 			switch( _idx )
 			{
@@ -114,7 +114,7 @@ public fun RfxModeControlConfig(in _system, in _type, in _idx)
     if ( _type == "TITLE" )
 	{
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VIRTUAL SHELL")		
+		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VIRTUAL SHELL" || _modeName == "MODE CONTROL + ROT.PERT. FW")		
 		{
 			switch( _idx )
 			{
@@ -142,7 +142,7 @@ public fun RfxModeControlConfig(in _system, in _type, in _idx)
 		_out = _zeroSig;
 
 	    _modeName = RfxControlNameToIdx( _mode );
-		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VIRTUAL SHELL")		
+		if( _modeName ==  "MODE CONTROL" || _modeName ==  "MODE CONTROL+ROT.PERT." || _modeName ==  "VIRTUAL SHELL" || _modeName == "MODE CONTROL + ROT.PERT. FW")		
 		{
 			switch( _idx )
 			{

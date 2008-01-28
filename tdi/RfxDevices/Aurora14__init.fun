@@ -24,6 +24,8 @@ public fun Aurora14__init(as_is _nid, optional _method)
   
     private _512K = 524288;
     private _128K = 131072;
+	
+	_error = 0;
 
     _name = DevNodeRef(_nid, _N_NAME);
 /*Master Reset */
@@ -45,8 +47,8 @@ public fun Aurora14__init(as_is _nid, optional _method)
     if(!_int_clock)
     {
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE); 
-	_clock_val = if_error(execute('`_clk'),(DevLogErr(_nid, "Cannot resolve clock"); abort();));
-	_clk = 0;
+		_clock_val = if_error(execute('`_clk'),(DevLogErr(_nid, "Cannot resolve clock"); abort();));
+		_clk = 0;
     }
     else
     {
@@ -57,11 +59,21 @@ public fun Aurora14__init(as_is _nid, optional _method)
     }
 
 /* Trigger stuff */
-    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EXTERNAL'],[1,0], _int_trig = 0);
+    DevNodeCvt(_nid, _N_TRIG_MODE, ['SOFTWARE', 'EXTERNAL'],[1,0], _int_trig = 0);
+	
     if(_int_trig)
-		_trig = 0;
+		_trig = 0.0;
     else
-		_trig=if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), (DevLogErr(_nid, "Cannot resolve trigger"); abort();));
+	{
+		_trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE))  , _error = 1);
+
+		if( _error )
+		{
+			DevLogErr(_nid, "Cannot resolve trigger"); 
+			abort();
+		}
+	}
+
 
 /* Read burst/normal mode */
     DevNodeCvt(_nid, _N_OP_MODE, ['NORMAL', 'BURST'],[1,3], _op_mode = 0);
@@ -97,13 +109,20 @@ public fun Aurora14__init(as_is _nid, optional _method)
 	    	    _curr_pts = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_end + _trig);
 		else
 	    	    _curr_pts = - x_to_i(build_dim(build_window(0,*,_trig + _curr_end), _clock_val),  _trig);
-		DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX, long(_curr_pts));
+
+
+        DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX, long(_curr_pts));
+		
+		
 		_curr_start = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_TIME)),(DevLogErr(_nid, "Cannot end time"); abort();));
 		if(_curr_start > 0)
 	    	    _curr_start_idx = x_to_i(build_dim(build_window(0,*,_trig), _clock_val), _curr_start + _trig);
 		else
 	    	    _curr_start_idx =  - x_to_i(build_dim(build_window(0,*,_trig + _curr_start ), _clock_val),_trig);
-		DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_IDX, long(_curr_start_idx));
+
+        DevPut(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_START_IDX, long(_curr_start_idx));
+
+
             }
             else 
 		_curr_pts = data(DevNodeRef(_nid, _N_CHANNEL_0  +(_i *  _K_NODES_PER_CHANNEL) +  _N_CHAN_END_IDX));	
