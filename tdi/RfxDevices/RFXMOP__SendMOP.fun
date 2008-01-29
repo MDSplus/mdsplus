@@ -114,15 +114,16 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 		MdsDisconnect();
 		abort();
 	}
-*/	
 	
+*/	
 	/**/
 	
 	write(*, 'Activity: ', _tagPathSup//"Activity", _activity);
 /*
 	_status = MdsValue("OpcPut($1, $2)", _tagPathSup//"Activity", _activity );
-*/
 	_status = MdsValue("OpcWrite($1, $2, $3, $4)", _handle, _groupName, _tagPathSup//"Activity", _activity );
+*/
+	_status = MdsValue("OpcPut($1, $2, $3)", _handle, _tagPathSup//"Activity", _activity );
 	if( _status == 1)
 	{
 	    _errMsg = MdsValue("OpcErrorMessage("//_handle //")");
@@ -174,8 +175,9 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 /*	
 	_status = MdsValue('OpcPut($1, $2, $3)', _tagPathSup//"Mop", _mopBuffer, size(_mopBuffer));
 	_status = MdsValue("OpcWrite($1, $2, $3, $4, $5)", _opc_server, _groupName, _tagPathSup//"Mop", _mopBuffer, size(_mopBuffer));
-*/	
 	_status = MdsValue("OpcPut($1, $2, $3, $4)", _handle, _tagPathSup//"Mop", _mopBuffer, size(_mopBuffer));
+*/	
+	_status = MdsValue('OpcPut($1, $2, $3, $4)', _handle, _tagPathSup//"Mop", _mopBuffer, size(_mopBuffer));
 	if( _status == 1)
 	{
 		_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
@@ -189,8 +191,9 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 /*	
 	_status = MdsValue('OpcPut($1, $2)', _tagPathSup//"MOP_END_FROM_ENGDA", 1);
 	_status = MdsValue("OpcWrite($1, $2, $3, $4)", _opc_server, _groupName,  _tagPathSup//"MOP_END_FROM_ENGDA", 1); 
-*/
 	_status = MdsValue("OpcPut($1, $2, $3)", _handle,  _tagPathSup//"MOP_END_FROM_ENGDA", 1); 
+*/
+	_status = MdsValue('OpcPut($1, $2, $3)', _handle, _tagPathSup//"MOP_END_FROM_ENGDA", 1);
 	if( _status == 1)
 	{
 		_errMsg = MdsValue("OpcErrorMessage("//_handle //")");
