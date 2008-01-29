@@ -23,12 +23,6 @@ public fun MHDReference__init(as_is _nid, optional _method)
 	{
 	    DevLogErr(_nid, 'Invalid Y value for parameter '// _i);
 	    abort();
-	}
-	_status = MdsValue('variables->setFloatArray($1, $2, $3)','feedbackMhdReferenceY'//_i, float(_curr_y), size(_curr_y));
-      	if(_status == *)
-      	{
-	    DevLogErr(_nid, 'Cannot communicate to VME');
-	    abort();
     	}
 	_curr_x = if_error(data(dim_of(DevNodeRef(_nid, _N_SIG_BASE + _i))), _data_valid = 0);
 	if(!_data_valid)
@@ -36,9 +30,13 @@ public fun MHDReference__init(as_is _nid, optional _method)
 	    DevLogErr(_nid, 'Invalid X value for parameter '// _i);
 	    abort();
 	}
-	_status = MdsValue('variables->setFloatArray($1, $2, $3)','feedbackMhdReferenceX'//_i, float(_curr_x), size(_curr_x));
-      	if(_status == *)
-      	{
+	_size = size(_curr_x);
+	if(_size > size(_curr_y))
+		_size = size(_curr_y);
+
+	_status = MdsValue('variables->setMDHFeedforwardReference($1, $2, $3)',_i, float(_curr_x), float(_curr_y), _size);
+      if(_status == *)
+      {
 	    DevLogErr(_nid, 'Cannot communicate to VME');
 	    abort();
     	}
