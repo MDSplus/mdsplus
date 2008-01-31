@@ -1,7 +1,9 @@
 public fun MHDReference__init(as_is _nid, optional _method)
 {
     private _N_VME_IP = 1;
-    private _N_SIG_BASE = 2;
+    private _N_DESCRIPTION = 2;
+    private _N_SIG_BASE = 3;
+	
    _vme_ip = DevNodeRef(_nid, _N_VME_IP);
 
     MdsDisconnect();

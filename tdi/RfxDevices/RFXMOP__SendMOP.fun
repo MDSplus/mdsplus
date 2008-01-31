@@ -60,7 +60,7 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 
 	
 	_handle = MdsValue('OpcConnect($1, $2)', _opc_server, 500 );
-	if(_status == 0)
+	if(_handle == 0)
 	{
 		DevLogErr(_nid, "Cannot connect to Opc server :"//_opc_server);
 		MdsDisconnect();

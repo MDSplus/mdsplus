@@ -181,6 +181,7 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 		abort();
 	};
 
+/*
 	_dec_2 = if_error(data(DevNodeRef(_nid, _N_DECODER_2)), "");;
 	if(_dec_2 == "")
 	{
@@ -196,11 +197,16 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_CLOCK_1 init");
 	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_CLOCK_2 init");
 	_status = tcl("do/method \\DEQU_T::TOP.DEQU_RAW_T.TIMING:VME_TRIGGER init");
+*/	
+
+
 	
-	
+
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
 	{
 		_head_channel = _N_CARD_01 + (_i *  _K_NODES_PER_CARD);
+
+		_status = tcl("do/method \\"//_dec_1//" init");
 
 		if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
 		{ 
@@ -241,10 +247,13 @@ public fun EM_EQU_TEST__init(as_is _nid, optional _method)
 			}
 
 
-			_status = tcl("do/method \\"//_dec_2//" init");
-			if(_status)
-				_status = tcl("do/method \\"//_dec_1//" init");
+			_status = tcl("do/method \\"//_dec_1//" trigger");
 
+/*
+			_status = tcl("do/method \\"//_dec_1//" init");
+			if(_status)
+				_status = tcl("do/method \\"//_dec_2//" init");
+*/
 
 			_card_id = if_error(data(DevNodeRef(_nid, _head_channel + _N_CARD_FEND)), -1);
 			if(_card_id == -1)
