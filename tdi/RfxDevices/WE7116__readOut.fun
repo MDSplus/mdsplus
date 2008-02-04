@@ -1,4 +1,4 @@
-public fun WE7116__store(as_is _nid, optional _method)
+public fun WE7116__readOut(as_is _nid, optional _method)
 {
 
     private _K_CONG_NODES =     221;
@@ -63,28 +63,10 @@ public fun WE7116__store(as_is _nid, optional _method)
 
 	private _K_NUM_SLOT    = 9;
 
-
-write(*, "WE7116__store");
-
-	private _all_ch_off = 1;
-	_num_chans = 18;
-
-    for( _i = 0; _i < _num_chans; _i++)
-    {
-		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
-        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
-        { 
-			_all_ch_off = 0;
-		}
-	}
-
-	if( _all_ch_off )
-	{
-		DevLogErr(_nid, 'WARNING : All chennels OFF');
-		abort();
-	}
-
 	_error = 0;
+
+
+write(*, "WE7116__readOut");
 
 
 	_rack     = DevNodeRef(_nid, _N_RACK);
@@ -118,9 +100,31 @@ write(*, "WE7116__store");
 	write(*, "Rack Model "//_rack_model_type);
 
 
+	private _all_ch_off = 1;
+	_num_chans = _K_NUM_SLOT * 2;
+	_num_channels_on = 0;
+
+    for( _i = 0; _i < _num_chans; _i++)
+    {
+		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
+        if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
+        { 
+			_num_channels_on++;
+			_all_ch_off = 0;
+		}
+	}
+
+	if( _all_ch_off )
+	{
+		DevLogErr(_nid, 'WARNING : All chennels OFF');
+		abort();
+	}
+
+
 	_slot_num = if_error(data(DevNodeRef(_nid, _N_SLOT)), -1);
 
-    if(_slot_num <= 0 || _slot_num > _K_NUM_SLOT)
+
+    if(_slot_num <= 0 || _slot_num > _K_NUM_SLOT )
     {
     	DevLogErr(_nid, "Invalid slot number");
  		abort();
@@ -147,8 +151,6 @@ write(*, "WE7116__store");
  		abort();
     }
 
-
-
     _controller_ip = if_error(data(DevNodeRef(_rack_nid, _N_CNTRL_IP)), "");
     if(_controller_ip == "")
     {
@@ -156,13 +158,14 @@ write(*, "WE7116__store");
  		abort();
     }
 
-
     _station_ip = if_error(data(DevNodeRef(_rack_nid, _N_STATION_IP)), "");
     if(_station_ip == "")
     {
     	DevLogErr(_nid, "Invalid station address");
  		abort();
     }
+
+/***********************************************************************************************************
 
 	_smp_int = float(0.0);
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['INTERNAL', 'EXTERNAL', 'BUSCLOCK'], [0,1,2], _clock_mode = 0);
@@ -231,6 +234,7 @@ write(*, "WE7116__store");
 		}
 	}
 
+***************************************************************************************************/
 
 /*
 Un array di trigger definisce il numero di acquisizioni da eseguire
@@ -240,6 +244,7 @@ Se scalare una sola acquisizione attualmente non gestito
 */
 	_num_acq = 1;
 
+/******************
 	_hold_off = if_error(data(DevNodeRef(_nid, _N_HOLD_OFF)), 0);
 
 
@@ -247,11 +252,15 @@ Se scalare una sola acquisizione attualmente non gestito
 
 
      DevNodeCvt(_nid, _N_ACQ_MODE, ['AUTO', 'NORMAL'], [0,1], _acq_mode = 1);
+**********************/
+
 
  	_chan_active = if_error(data(DevNodeRef(_nid, _N_CHAN_ACTIVE)), 2);
 
-
 	_num_chans = _link_mod * _chan_active;
+
+	if( _num_channels_on < _num_chans )
+		_num_chans = _num_channels_on;
 
     _rec_length = if_error(data(DevNodeRef(_nid, _N_REC_LENGTH)), -1);
     if(_rec_length == -1)
@@ -268,152 +277,14 @@ Se scalare una sola acquisizione attualmente non gestito
 
 	_pre_trigger = if_error(data(DevNodeRef(_nid, _N_PRE_TRIGGER)), 0);
 
-
-	_vResolution = zero(_num_acq, FT_FLOAT(0.0));
-	_vOffset     = zero(_num_acq, FT_FLOAT(0.0));
-
-	_data = zero(_rec_length * _num_acq, 0W);
 	_b_size = _rec_length * 2;
-
 
 	if( _rack_model_type == "WE900" )
 		_slot_num = _slot_num - 1;
 
-
-
-	_status = we7000->WE7116SlotAcqStatus( val( _slot_num ) );
-
-    if( _status ==  _N_WE7000_ACQ_DOWNLOADING   ||  
-	    _status ==  _N_WE7000_ACQ_WAITING )
-    {
-		wait(60);
-		_status = we7000->WE7116SlotAcqStatus( val( _slot_num ) );
-    }
-
-
-    if( _status ==  _N_WE7000_ACQ_ERROR   ||  
-	    _status ==  _N_WE7000_ACQ_TIMEOUT )
-    {
-	    _msg = repeat(" ", 1024);
-		we7000->WE7116GetErrorMsg(ref(_msg));
-	    DevLogErr(_nid, _msg);
-		abort();
-    }
-
-    if( _status != _N_WE7000_ACQ_DONE )
-	{
-		_hLinkMod = we7000->WE7000OpenModule(_controller_ip, _station_ip, val(_slot_num), val(_link_mod) );
-		if( _hLinkMod == 0 )
-		{
-			_msg = repeat(" ", 1024);
-			we7000->WE7116GetErrorMsg(ref(_msg));
-			DevLogErr(_nid, "Cannot open modules device"//_msg);
-			abort();
-		}
-	}
-	else
-	{
-		_hLinkMod = 0;
-	}
-
-
-    for(_i = 0; _i < _num_chans; _i++)
-    {
-		_head_channel = _N_CHANNEL_1 + (_i *  _K_NODES_PER_CHANNEL);
-
-		_error = 1;
-
-		if( _status != _N_WE7000_ACQ_DONE )	
-			_n_try = 2;
-		else
-			_n_try = 1;
-
-		_i_try = 0;
-
-		while( _error  &&  _i_try <= _n_try ) 
-		{
-			_error = 0;
-
-			if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
-			{ 
-				_end_idx   = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_END_IDX));	
-				_start_idx = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_START_IDX));
-				
-
-
-				if( _hLinkMod != 0 )
-				{
-					_error = we7000->WE7116ReadChData(val(_hLinkMod), 
-													 val(_i+1), val(_num_acq), ref(_data), val(_b_size),
-													 ref(_vResolution), ref(_vOffset));
-
-				}
-				else
-				{
-					_error = we7000->WE7116ReadBufferedData( val(_slot_num), val(_i), val(_num_acq), 
-															 ref(_data), val(_b_size),
-															 ref(_vResolution), ref(_vOffset));
-				}
-
-				if(! _error )
-				{
-					_range = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_RANGE));
-
-					_offset = data(DevNodeRef(_nid, _head_channel +  _N_CHAN_OFFSET));
-
-	/*
-					DevNodeCvt(_nid, _head_channel + _N_CHAN_PROBE, [1,10,100,1000], [0,1,2,3], _probe = 0);
-					Attualmente viene sempre impostato probe a 1
-	*/
-					_probe = 1;
-
-		/* Build signal */
-
-					_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock_val);
-
-					_sig_nid =  DevHead(_nid) + _head_channel +  _N_CHAN_DATA;
-	/*
-	write(*, "Record length ", (_rec_length ) );
-	write(*, "Pre trigger ", (_pre_trigger ) );
-	write(*, "Indice di partenza ", (_pre_trigger + _start_idx) );
-	write(*, "Indice di fine ", (_pre_trigger + _end_idx) );
-	*/
-
-	write(*, "offset ", FT_FLOAT(_vOffset[0]));
-	write(*, "gain ", FT_FLOAT(_vResolution[0]));
-
-
-					_dataSig = _data[_pre_trigger + _start_idx: _pre_trigger + _end_idx: *];
-
-	/*
-					_status = DevPutSignal(_sig_nid,  _vOffset[0], _vResolution[0], word(_data), 0, _end_idx - _start_idx - 1, _dim);
-	*/
-					_status = DevPutSignal(_sig_nid, _vOffset[0] / _vResolution[0], _vResolution[0], word(_dataSig), 0, _end_idx - _start_idx, _dim);
-
-
-					if(! _status)
-					{
-						DevLogErr(_nid, 'Error writing data in pulse file');
-					}
-
-				}
-				else
-				{
-					_msg = repeat(" ", 1024);
-					we7000->WE7116GetErrorMsg(ref(_msg));
-					DevLogErr(_nid, _msg);
-				}
-			}
-			_i_try++;
-		}
-    }
-
-    if( _hLinkMod == 0 )
-	{
-		we7000->WE7000FreeSlotBuffers( val( _slot_num ), val( _num_chans )  );
-	}
-
-	we7000->WE7000CloseModule( val( _slot_num ), val(_hLinkMod) );
+	_error = we7000->WE7116StartReadOut( _controller_ip, _station_ip, val(_slot_num), val( _num_chans ), 
+																      val(_link_mod), val(_num_acq), 
+																	  val(_b_size) ); 
 
     if( _error )
     {
@@ -422,6 +293,7 @@ Se scalare una sola acquisizione attualmente non gestito
 	    DevLogErr(_nid, _msg);
 		abort();
     }
+
 
 	return(1);
 

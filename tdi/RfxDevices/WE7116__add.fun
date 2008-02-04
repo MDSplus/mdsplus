@@ -1,6 +1,6 @@
 public fun WE7116__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'WE7116', 198, _nidout);
+    DevAddStart(_path, 'WE7116', 221, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':RACK', 'TEXT', *, *, _nid);
 	DevAddNode(_path // ':SLOT', 'NUMERIC', 1, *, _nid);
@@ -21,7 +21,7 @@ public fun WE7116__add(in _path, out _nidout)
 	DevAddNode(_path // ':CHAN_ACTIVE', 'NUMERIC', 2, *, _nid);
     DevAddNode(_path // ':USE_TIME', 'TEXT', 'TRUE', *, _nid);
 
-	for (_c = 1; _c <=9; _c++)
+	for (_c = 1; _c <= 9; _c++)
 	{
 		_cn = _path // '.CHANNEL_0' // TEXT(_c, 1);
 		DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
@@ -37,7 +37,7 @@ public fun WE7116__add(in _path, out _nidout)
 		DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
 
-	for (_c = 10; _c <=16; _c++)
+	for (_c = 10; _c <= 18; _c++)
 	{
 		_cn = _path // '.CHANNEL_' // TEXT(_c, 2);
 		DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
@@ -54,6 +54,8 @@ public fun WE7116__add(in _path, out _nidout)
 	}
 	
     DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 55,'ISIS_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':READOUT_ACT', 'STORE','READOUT', 20,'ISIS_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'ISIS_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
+
 }

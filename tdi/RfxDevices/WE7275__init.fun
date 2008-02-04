@@ -1,6 +1,6 @@
 public fun WE7275__init(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES =     211;
+    private _K_CONG_NODES =     236;
     private _N_HEAD =			0;
     private _N_COMMENT =		1;
     private _N_RACK =			2;
@@ -50,33 +50,55 @@ public fun WE7275__init(as_is _nid, optional _method)
 
 	private _K_CHAN_MEM = 1024 * 1024 * 4;
 
+	private _K_NUM_SLOT    = 9;
 
 write(*, "WE7275__init");
 
 	_error = 0;
 
+	_rack     = DevNodeRef(_nid, _N_RACK);
+    _rack_nid = if_error( compile(getnci(getnci(_rack, 'record'), 'fullpath')), (_error = 1) );
+	if(_error == 1)
+	{
+		DevLogErr(_nid, 'Cannot resolve Yokogawa device rack reference');
+		abort();
+	}
+
+	_rack_model_type = model_of(_rack_nid);
+
+	if( _rack_model_type == "WE800")
+	{
+		_K_NUM_SLOT = 8;
+	}
+	else
+	{
+		if( _rack_model_type == "WE900")
+		{
+			_K_NUM_SLOT = 9;
+		}
+		else
+		{
+			DevLogErr(_nid, 'Invalid Yokogawa device rack reference');
+			abort();
+		}
+	}
+
+		
+	write(*, "Rack Model "//_rack_model_type);
+
 	_slot_num = if_error(data(DevNodeRef(_nid, _N_SLOT)), -1);
 
-    if(_slot_num <= 0 || _slot_num > 8)
+    if(_slot_num <= 0 || _slot_num > _K_NUM_SLOT )
     {
     	DevLogErr(_nid, "Invalid slot number");
  		abort();
     }
-
-    _rack     = DevNodeRef(_nid, _N_RACK);
-    _rack_nid = if_error( compile(getnci(getnci(_rack, 'record'), 'fullpath')), (_error = 1) );
-	if(_error == 1)
-	{
-		DevLogErr(_nid, 'Cannot resolve WE7000 rack');
-		abort();
-	}
 
 	_slot_nid = _N_SLOT_1 + (_slot_num - 1) * _K_NODES_PER_SLOT;
 
 	_rack_field_nid =  _slot_nid + _N_TYPE_MODULE;
 
 	_mod_type = if_error(data(DevNodeRef(_rack_nid, _rack_field_nid)), "");
-
 
 
     if(_mod_type != "WE7275")
@@ -86,11 +108,10 @@ write(*, "WE7275__init");
  		abort();
     }
 
-	
 	_rack_field_nid =  _slot_nid + _N_LINK_MODULE;
 
 	_link_mod = if_error(data(DevNodeRef(_rack_nid, _rack_field_nid)), 0);
-    if(_link_mod <= 0 || _link_mod > 8)
+    if(_link_mod <= 0 || _link_mod > _K_NUM_SLOT)
     {
     	DevLogErr(_nid, "Invalid linked module number");
  		abort();
@@ -138,9 +159,7 @@ write(*, "WE7275__init");
 	if(_clock_mode == 3 || _clock_mode == 4)
 	{	
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE);
-
 		_clock_val = if_error( execute('`_clk'), (_error = 1) );
-
 		if(_error == 1)
 		{
 			DevLogErr(_nid, "Cannot resolve external clock source"); 
@@ -212,7 +231,7 @@ write(*, "Number acq : ", _num_acq);
 
 	_num_chans = _link_mod * _chan_active;
 
-	for(_i = _num_chans; _i < 16; _i++)
+	for(_i = _num_chans; _i < 2 * 9; _i++)
 	{
 		_head_channel = _N_CHANNEL_1 + ( _i *  _K_NODES_PER_CHANNEL );
 		TreeTurnOff(DevHead(_nid) + _head_channel);
@@ -230,6 +249,7 @@ write(*, "Number acq : ", _num_acq);
 	_filter_a		= [];
 	_aaf_a			= [];
 
+
 	_pre_trigger = 0;
 	_rec_length = 0;
     for(_i = 0; _i < _num_chans; _i++)
@@ -238,7 +258,7 @@ write(*, "Number acq : ", _num_acq);
 
         if( DevIsOn(DevNodeRef(_nid, _head_channel)) )
         { 
-		_state_a = [_state_a, 1];
+			_state_a = [_state_a, 1];
 			
         	if(_time_cvt)
         	{
@@ -324,13 +344,8 @@ write(*, '-- idx ', _curr_start_idx);
 
 		DevNodeCvt(_nid, _head_channel + _N_CHAN_AAF, [0, 20, 40, 80, 200, 400, 800, 2000, 4000, 8000, 20e3, 40e3], [0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], _aaf=0);
 		_aaf_a   = [_aaf_a, _aaf];
-      }
+    }
 
-	if( sum( _state_a ) == 0 )
-	{
-		write(*, "All channels OFF" );
-		return( 1 );
-	}
 
 	if( sum( _state_a ) == 0 )
 	{
@@ -361,7 +376,9 @@ write(*, '-- idx ', _curr_start_idx);
 	{
 		_hold_off = _rec_length;
 		DevPut(_nid,  _N_HOLD_OFF, long(_hold_off));
-/*		DevLogErr(_nid, "Warning : hold off >= record length"); */
+/*		
+		DevLogErr(_nid, "Warning : hold off >= record length"); 
+*/
 	}
 
 
@@ -400,6 +417,11 @@ write(*, '-- idx ', _curr_start_idx);
 	write(*, "Filter   :   ", _filter_a );
 	write(*, "aaf_a    :   ", _aaf_a  );
 */
+
+	if( _rack_model_type == "WE900" )
+		_slot_num = _slot_num - 1;
+
+
     _error = we7000->WE7275InitModules( _controller_ip, _station_ip, 
 										val(_slot_num), 
 										val(_link_mod), 
