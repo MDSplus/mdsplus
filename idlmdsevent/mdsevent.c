@@ -117,6 +117,36 @@ int IDLMdsGetevi(int argc, void **argv)
   return (e!=0);
 }
 
+static int event_pipe[2];
+
+static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
+{
+  char *stub_rec;
+  char *base_rec;
+  EventStruct *e;
+  IDL_WidgetStubLock(TRUE);
+  read(event_pipe[0],&e,sizeof(EventStruct *));
+  if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) && (base_rec = IDL_WidgetStubLookup(e->base_id)))
+  {
+#ifdef WIN32
+    HWND wid1, wid2;
+#endif
+    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
+    /*
+#ifdef WIN32
+    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
+    PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
+#endif
+    */
+  }
+}
+
+static void EventAst(EventStruct *e,int len, char *data)
+{
+  if (len > 0) memcpy(e->value,data,len > 12 ? 12 : len);
+  write(event_pipe[1],&e,sizeof(EventStruct *));
+}
+
 int IDLMdsEvent(int argc, void * *argv)
 {
   SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
@@ -125,8 +155,6 @@ int IDLMdsEvent(int argc, void * *argv)
   char *name = (char *)argv[3];
   EventStruct *e = (EventStruct *)malloc(sizeof(EventStruct));
   BlockSig(SIGALRM);
-  if (((sock >=0) ? MdsEventAst(sock, name,(void (*)(int))EventAst,e,&e->event_id) :
-                    MDSEventAst(name,(void (*)(int))EventAst,e,&e->event_id)) & 1)
   {
     char *parent_rec;
     char *stub_rec;
@@ -147,10 +175,14 @@ int IDLMdsEvent(int argc, void * *argv)
 		} else
 			e->thread_handle = 0;
 #else 
-      if (!XTINPUTID && (sock >= 0)) {
+      if (!XTINPUTID) {
         Widget w1, w2;
         IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
-        XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, (void *)sock);
+        if (sock >= 0) {
+	  XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, (void *)sock);
+	}
+	pipe(event_pipe);
+	XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), event_pipe[0], (XtPointer)XtInputReadMask, DoEventUpdate, 0);
       }
 #endif
       e->stub_id = *stub_id;
@@ -159,6 +191,11 @@ int IDLMdsEvent(int argc, void * *argv)
       strncpy(e->name, name, sizeof(e->name));
       e->next = EventList;
       EventList = e;
+      if (sock >=0) {
+	MdsEventAst(sock, name,(void (*)(int))EventAst,e,&e->event_id);
+      } else {
+	MDSEventAst(name,(void (*)(int))EventAst,e,&e->event_id);
+      }
       IDL_WidgetStubLock(FALSE);
       return e->loc_event_id;
     }
@@ -168,6 +205,7 @@ int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
+/*
 static void EventAst(EventStruct *e,int len, char *data)
 {
   char *stub_rec;
@@ -178,10 +216,10 @@ static void EventAst(EventStruct *e,int len, char *data)
   {
 #ifdef WIN32
     HWND wid1, wid2;
-    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
 #endif
     IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
 #ifdef WIN32
+    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
 #else
     {
@@ -204,3 +242,4 @@ static void EventAst(EventStruct *e,int len, char *data)
 
   IDL_WidgetStubLock(FALSE);
 }
+*/
