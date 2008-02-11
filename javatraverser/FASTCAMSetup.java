@@ -34,13 +34,15 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel7 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceField3 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceChoice5 = new DeviceChoice();
+        deviceField14 = new DeviceField();
         jPanel8 = new javax.swing.JPanel();
         deviceChoice3 = new DeviceChoice();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
         jPanel9 = new javax.swing.JPanel();
         deviceChoice4 = new DeviceChoice();
-        deviceChoice5 = new DeviceChoice();
         deviceChoice6 = new DeviceChoice();
         deviceChoice7 = new DeviceChoice();
         jPanel4 = new javax.swing.JPanel();
@@ -62,7 +64,7 @@ public class FASTCAMSetup extends DeviceSetup {
         setDeviceType("FASTCAM");
         jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
-        jPanel3.setLayout(new java.awt.GridLayout(5, 0));
+        jPanel3.setLayout(new java.awt.GridLayout(6, 0));
 
         jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
@@ -94,7 +96,7 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"OFF", "ON", "LOAD"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Calibrate:");
-        deviceChoice8.setOffsetNid(7);
+        deviceChoice8.setOffsetNid(8);
         deviceChoice8.setUpdateIdentifier("");
         jPanel6.add(deviceChoice8);
 
@@ -105,71 +107,78 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Trig. Mode");
-        deviceChoice2.setOffsetNid(5);
+        deviceChoice2.setOffsetNid(6);
         deviceChoice2.setUpdateIdentifier("");
         jPanel7.add(deviceChoice2);
 
         deviceField3.setIdentifier("trigs");
         deviceField3.setLabelString("Trig Source:");
         deviceField3.setNumCols(25);
-        deviceField3.setOffsetNid(6);
+        deviceField3.setOffsetNid(7);
         jPanel7.add(deviceField3);
 
         jPanel3.add(jPanel7);
+
+        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceChoice5.setChoiceItems(new String[] {"VIDEO", "DATA", "VIDEO & DATA"});
+        deviceChoice5.setIdentifier("");
+        deviceChoice5.setLabelString("Acquisition Mode:");
+        deviceChoice5.setOffsetNid(5);
+        deviceChoice5.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice5);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("Resample Source:");
+        deviceField14.setOffsetNid(13);
+        jPanel12.add(deviceField14);
+
+        jPanel3.add(jPanel12);
 
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChoice3.setChoiceItems(new String[] {"TRUE", "FALSE"});
         deviceChoice3.setIdentifier("useTime");
         deviceChoice3.setLabelString("Use Time:");
-        deviceChoice3.setOffsetNid(8);
+        deviceChoice3.setOffsetNid(9);
         deviceChoice3.setUpdateIdentifier("");
         jPanel8.add(deviceChoice3);
 
         deviceField4.setIdentifier("duration");
         deviceField4.setLabelString("Duration:");
-        deviceField4.setOffsetNid(11);
+        deviceField4.setOffsetNid(12);
         jPanel8.add(deviceField4);
 
         deviceField5.setIdentifier("numFrame");
         deviceField5.setLabelString("N. Frames:");
-        deviceField5.setOffsetNid(9);
+        deviceField5.setOffsetNid(10);
         jPanel8.add(deviceField5);
 
         jPanel3.add(jPanel8);
 
         jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceChoice4.setChoiceIntValues(new int[] {(int)1024,(int)1008,(int)992,(int)976,(int)960,(int)944,(int)928,(int)912,(int)896,(int)880,(int)864,(int)848,(int)832,(int)816,(int)800,(int)784,(int)768,(int)752,(int)736,(int)720,(int)704,(int)688,(int)672,(int)656,(int)640,(int)624,(int)608,(int)592,(int)576,(int)560,(int)544,(int)528,(int)512,(int)496,(int)480,(int)464,(int)448,(int)432,(int)416,(int)400,(int)384,(int)368,(int)352,(int)336,(int)320,(int)304,(int)288,(int)272,(int)256,(int)240,(int)224,(int)208,(int)192,(int)176,(int)160,(int)144,(int)128,(int)112,(int)96,(int)80,(int)64,(int)48,(int)32,(int)16});
-        deviceChoice4.setChoiceItems(new String[] {"1024", "1008", "992", "976", "960", "944", "928", "912", "896", "880", "864", "848", "832", "816", "800", "784", "768", "752", "736", "720", "704", "688", "672", "656", "640", "624", "608", "592", "576", "560", "544", "528", "512", "496", "480", "464", "448", "432", "416", "400", "384", "368", "352", "336", "320", "304", "288", "272", "256", "240", "224", "208", "192", "176", "160", "144", "128", "112", "96", "80", "64", "48", "32", "16"});
-        deviceChoice4.setIdentifier("vRes");
-        deviceChoice4.setLabelString("V. Res.:");
-        deviceChoice4.setOffsetNid(12);
+        deviceChoice4.setChoiceItems(new String[] {"1024x1024", "1024x512", "1024x256", "1024x128", "1024x64", "1024x32", "1024x16", "512x512", "512x256", "512x128", "512x64", "512x32", "512x16", "256x1024", "256x512", "256x256", "256x128", "256x64", "256x32", "256x16", "128x1024", "128x512", "128x256", "128x128", "128x64", "128x32", "128x16"});
+        deviceChoice4.setIdentifier("resolution");
+        deviceChoice4.setLabelString("Resolution:");
+        deviceChoice4.setOffsetNid(14);
         deviceChoice4.setUpdateIdentifier("");
         jPanel9.add(deviceChoice4);
 
-        deviceChoice5.setChoiceIntValues(new int[] {(int)1024,(int)896,(int)768,(int)640,(int)512,(int)384,(int)256,(int)128});
-        deviceChoice5.setChoiceItems(new String[] {"1024", "896", "768", "640", "512", "384", "256", "128"});
-        deviceChoice5.setIdentifier("hRes");
-        deviceChoice5.setLabelString("H. Res.:");
-        deviceChoice5.setOffsetNid(13);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice5);
-
-        deviceChoice6.setChoiceIntValues(new int[] {(int)109500,(int)90000,(int)73000,(int)67500,(int)54000,(int)45000,(int)36500,(int)30000,(int)27000,(int)22500,(int)18000,(int)15000,(int)10000,(int)9000,(int)7500,(int)6000,(int)5400,(int)5000,(int)4500,(int)3750,(int)3600,(int)3000,(int)2700,(int)2500,(int)2000,(int)1800,(int)1500,(int)1200,(int)1000,(int)500,(int)250,(int)125,(int)60});
-        deviceChoice6.setChoiceItems(new String[] {"109500", "90000", "73000", "67500", "54000", "45000", "36500", "30000", "27000", "22500", "18000", "15000", "10000", "9000", "7500", "6000", "5400", "5000", "4500", "3750", "3600", "3000", "2700", "2500", "2000", "1800", "1500", "1200", "1000", "500", "250", "125", "60"});
+        deviceChoice6.setChoiceIntValues(new int[] {(int)109500,(int)73000,(int)45000,(int)27000,(int)18000,(int)10000,(int)6000,(int)3000,(int)2000,(int)1000,(int)500,(int)250,(int)125,(int)60});
+        deviceChoice6.setChoiceItems(new String[] {"109500", "73000", "45000", "27000", "18000", "10000", "6000", "3000", "2000", "1000", "500", "250", "125", "60"});
         deviceChoice6.setIdentifier("frameRate");
         deviceChoice6.setLabelString("Frame Rate:");
-        deviceChoice6.setOffsetNid(14);
+        deviceChoice6.setOffsetNid(15);
         deviceChoice6.setUpdateIdentifier("");
         jPanel9.add(deviceChoice6);
 
-        deviceChoice7.setChoiceIntValues(new int[] {(int)60,(int)125,(int)500,(int)1000,(int)2000,(int)4000,(int)5000,(int)6000,(int)7000,(int)8000,(int)9000,(int)1000,(int)11000,(int)12000,(int)13000,(int)14000,(int)15000,(int)16000,(int)17000,(int)18000,(int)19000,(int)20000,(int)21000,(int)22000,(int)23000,(int)24000,(int)25000,(int)26000,(int)27000,(int)28000,(int)29000,(int)3000,(int)31000,(int)32000,(int)33000,(int)34000,(int)35000,(int)36000,(int)37000,(int)38000,(int)39000,(int)40000,(int)41000,(int)42000,(int)43000,(int)44000,(int)45000,(int)46000,(int)47000,(int)48000,(int)49000,(int)50000,(int)51000,(int)53000,(int)54000,(int)55000,(int)57000,(int)58000,(int)60000,(int)61000,(int)63000,(int)65000,(int)67000,(int)69000,(int)71000,(int)74000,(int)76000,(int)79000,(int)82000,(int)85000,(int)89000,(int)93000,(int)97000,(int)101000,(int)106000,(int)111000,(int)117000,(int)124000,(int)131000,(int)140000,(int)149000,(int)160000,(int)173000,(int)188000,(int)205000,(int)227000,(int)303000,(int)402000,(int)505000,(int)657000});
-        deviceChoice7.setChoiceItems(new String[] {"1/60", "1/125", "1/500", "1/1000", "1/2000", "1/4000", "1/5000", "1/6000", "1/7000", "1/8000", "1/9000", "1/1000", "1/11000", "1/12000", "1/13000", "1/14000", "1/15000", "1/16000", "1/17000", "1/18000", "1/19000", "1/20000", "1/21000", "1/22000", "1/23000", "1/24000", "1/25000", "1/26000", "1/27000", "1/28000", "1/29000", "1/3000", "1/31000", "1/32000", "1/33000", "1/34000", "1/35000", "1/36000", "1/37000", "1/38000", "1/39000", "1/40000", "1/41000", "1/42000", "1/43000", "1/44000", "1/45000", "1/46000", "1/47000", "1/48000", "1/49000", "1/50000", "1/51000", "1/53000", "1/54000", "1/55000", "1/57000", "1/58000", "1/60000", "1/61000", "1/63000", "1/65000", "1/67000", "1/69000", "1/71000", "1/74000", "1/76000", "1/79000", "1/82000", "1/85000", "1/89000", "1/93000", "1/97000", "1/101000", "1/106000", "1/111000", "1/117000", "1/124000", "1/131000", "1/140000", "1/149000", "1/160000", "1/173000", "1/188000", "1/205000", "1/227000", "1/303000", "1/402000", "1/505000", "1/657000"});
+        deviceChoice7.setChoiceIntValues(new int[] {(int)60,(int)125,(int)250,(int)500,(int)1000,(int)2000,(int)3000,(int)4000,(int)5000,(int)6000,(int)7000,(int)8000,(int)9000,(int)10000,(int)11000,(int)12000,(int)13000,(int)14000,(int)15000,(int)16000,(int)17000,(int)18000,(int)19000,(int)20000,(int)21000,(int)22000,(int)23000,(int)24000,(int)25000,(int)26000,(int)27000,(int)28000,(int)29000,(int)31000,(int)33000,(int)35000,(int)37000,(int)40000,(int)43000,(int)45000,(int)47000,(int)51000,(int)57000,(int)64000,(int)72000,(int)73000,(int)84000,(int)100000,(int)109500,(int)122000,(int)159000,(int)227000,(int)303000,(int)402000,(int)505000,(int)657000});
+        deviceChoice7.setChoiceItems(new String[] {"1/60", "1/125", "1/250", "1/500", "1/1000", "1/2000", "1/3000", "1/4000", "1/5000", "1/6000", "1/7000", "1/8000", "1/9000", "1/10000", "1/11000", "1/12000", "1/13000", "1/14000", "1/15000", "1/16000", "1/17000", "1/18000", "1/19000", "1/20000", "1/21000", "1/22000", "1/23000", "1/24000", "1/25000", "1/26000", "1/27000", "1/28000", "1/29000", "1/31000", "1/33000", "1/35000", "1/37000", "1/40000", "1/43000", "1/45000", "1/47000", "1/51000", "1/57000", "1/64000", "1/72000", "1/73000", "1/84000", "1/100000", "1/109500", "1/122000", "1/159000", "1/227000", "1/303000", "1/402000", "1/505000", "1/657000"});
         deviceChoice7.setConvert(true);
         deviceChoice7.setIdentifier("shutter");
         deviceChoice7.setLabelString("Shutter:");
-        deviceChoice7.setOffsetNid(15);
+        deviceChoice7.setOffsetNid(16);
         deviceChoice7.setUpdateIdentifier("");
         jPanel9.add(deviceChoice7);
 
@@ -185,27 +194,27 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Model:");
         deviceField6.setNumCols(18);
-        deviceField6.setOffsetNid(16);
+        deviceField6.setOffsetNid(20);
         deviceField6.setTextOnly(true);
         jPanel11.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Aperture:");
         deviceField7.setNumCols(16);
-        deviceField7.setOffsetNid(18);
+        deviceField7.setOffsetNid(22);
         jPanel11.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Filter:");
         deviceField8.setNumCols(17);
-        deviceField8.setOffsetNid(20);
+        deviceField8.setOffsetNid(24);
         deviceField8.setTextOnly(true);
         jPanel11.add(deviceField8);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Tor. Pos.:");
         deviceField9.setNumCols(15);
-        deviceField9.setOffsetNid(21);
+        deviceField9.setOffsetNid(25);
         deviceField9.setTextOnly(true);
         jPanel11.add(deviceField9);
 
@@ -216,27 +225,27 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Target Zone:");
         deviceField10.setNumCols(14);
-        deviceField10.setOffsetNid(23);
+        deviceField10.setOffsetNid(27);
         deviceField10.setTextOnly(true);
         jPanel10.add(deviceField10);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("F Distance:");
         deviceField11.setNumCols(15);
-        deviceField11.setOffsetNid(19);
+        deviceField11.setOffsetNid(23);
         jPanel10.add(deviceField11);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Lens Type:");
         deviceField12.setNumCols(15);
-        deviceField12.setOffsetNid(17);
+        deviceField12.setOffsetNid(21);
         deviceField12.setTextOnly(true);
         jPanel10.add(deviceField12);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Pol. Pos.:");
         deviceField13.setNumCols(16);
-        deviceField13.setOffsetNid(22);
+        deviceField13.setOffsetNid(26);
         deviceField13.setTextOnly(true);
         jPanel10.add(deviceField13);
 
@@ -246,8 +255,8 @@ public class FASTCAMSetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        deviceButtons1.setCheckExpressions(new String[] {"FastCamTriggerCheck(_useTime, _trigs, _duration, _numFrame, _frameRate)", " FastCamResToFrate(_vRes, _hRes) >= _frameRate"});
-        deviceButtons1.setCheckMessages(new String[] {"Trigger sequence overlaps frame acquisition", "invalid frame rate for the desired resolution"});
+        deviceButtons1.setCheckExpressions(new String[] {"((FastCamCheckFrameRate( _resolution ) - _frameRate ) >=  0 )", "( ( _frameRate == _shutter ) ||  (FastCamCheckShutter( _resolution,  _shutter) - _shutter )  ==  0 )", "( _shutter >= _frameRate ) "});
+        deviceButtons1.setCheckMessages(new String[] {"FAULT : invalid frame rate value", "WARNING : shutter is approximate to the nearest correct value", "FAULT : frame period must be equal or greater than shutter period."});
         deviceButtons1.setMethods(new String[] {"init", "trigger", "store", "calibrate"});
         jPanel2.add(deviceButtons1);
 
@@ -283,6 +292,7 @@ public class FASTCAMSetup extends DeviceSetup {
     private DeviceField deviceField11;
     private DeviceField deviceField12;
     private DeviceField deviceField13;
+    private DeviceField deviceField14;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -294,6 +304,7 @@ public class FASTCAMSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
