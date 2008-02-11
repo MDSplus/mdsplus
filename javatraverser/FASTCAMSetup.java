@@ -111,7 +111,7 @@ public class FASTCAMSetup extends DeviceSetup {
         deviceChoice2.setUpdateIdentifier("");
         jPanel7.add(deviceChoice2);
 
-        deviceField3.setIdentifier("trigs");
+        deviceField3.setIdentifier("");
         deviceField3.setLabelString("Trig Source:");
         deviceField3.setNumCols(25);
         deviceField3.setOffsetNid(7);
@@ -138,18 +138,18 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
         deviceChoice3.setChoiceItems(new String[] {"TRUE", "FALSE"});
-        deviceChoice3.setIdentifier("useTime");
+        deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Use Time:");
         deviceChoice3.setOffsetNid(9);
         deviceChoice3.setUpdateIdentifier("");
         jPanel8.add(deviceChoice3);
 
-        deviceField4.setIdentifier("duration");
+        deviceField4.setIdentifier("");
         deviceField4.setLabelString("Duration:");
         deviceField4.setOffsetNid(12);
         jPanel8.add(deviceField4);
 
-        deviceField5.setIdentifier("numFrame");
+        deviceField5.setIdentifier("");
         deviceField5.setLabelString("N. Frames:");
         deviceField5.setOffsetNid(10);
         jPanel8.add(deviceField5);
@@ -223,7 +223,7 @@ public class FASTCAMSetup extends DeviceSetup {
         jPanel10.setLayout(new java.awt.GridLayout(4, 0));
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Target Zone:");
+        deviceField10.setLabelString("Traget Zone:");
         deviceField10.setNumCols(14);
         deviceField10.setOffsetNid(27);
         deviceField10.setTextOnly(true);
