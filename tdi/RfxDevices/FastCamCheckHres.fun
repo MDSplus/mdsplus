@@ -1,6 +1,6 @@
 public fun FastCamCheckHres(in _Hres)
 {
-	_horTable = [128:1024:128, -1];
+	_horTable = [128 : 1024 : 128, -1];
 
 	_j = 0;
 

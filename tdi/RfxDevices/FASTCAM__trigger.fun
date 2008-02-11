@@ -1,34 +1,47 @@
 public fun FASTCAM__trigger(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 28;
-    private _N_HEAD = 0;
-    private _N_COMMENT = 1;
-    private _N_CAMERA_ID = 2;
-    private _N_SW_MODE = 3;
-    private _N_IP_ADDR = 4;
-    private _N_TRIG_MODE = 5;
-    private _N_TRIG_SOURCE = 6;
-    private _N_CALIBRATE = 7;
-    private _N_USE_TIME = 8;
-    private _N_NUM_FRAMES = 9;
-    private _N_START_TIME = 10;
-    private _N_END_TIME = 11;
-    private _N_V_RES = 12;
-    private _N_H_RES = 13;
-    private _N_FRAME_RATE = 14;
-    private _N_SHUTTER = 15;
+    private _K_CONG_NODES	= 33;
+    private _N_HEAD			= 0;
+    private _N_COMMENT		= 1;
+    private _N_CAMERA_ID	= 2;
+    private _N_SW_MODE		= 3;
+    private _N_IP_ADDR		= 4;
+    private _N_ACQ_MODE		= 5;
+    private _N_TRIG_MODE	= 6;
+    private _N_TRIG_SOURCE	= 7;
+    private _N_CALIBRATE	= 8;
+    private _N_USE_TIME		= 9;
+    private _N_NUM_FRAMES	= 10;
+    private _N_START_TIME	= 11;
+    private _N_END_TIME		= 12;
+	private _N_RES_SOURCE	= 13;
 
-    private _N_MODEL = 16;
-    private _N_LENS_TYPE = 17;
-    private _N_APERTURE = 18;
-    private _N_F_DISTANCE = 19;
-    private _N_FILTER  = 20;
-    private _N_TOR_POSITION = 21;
-    private _N_POL_POSITION = 22;
-    private _N_TARGET_ZONE = 23;
-    private _N_PIXEL_FRAME = 24;
-    private _N_VIDEO = 25;
+    private _N_RESOLUTION	= 14;
+    private _N_FRAME_RATE	= 15;
+    private _N_SHUTTER_IN	= 16;
+    private _N_SHUTTER   	= 17;
 
+    private _N_H_RES     	= 18;
+    private _N_V_RES	   	= 19;
+
+    private _N_MODEL		= 20;
+    private _N_LENS_TYPE	= 21;
+    private _N_APERTURE		= 22;
+    private _N_F_DISTANCE	= 23;
+    private _N_FILTER		= 24;
+    private _N_TOR_POSITION	= 25;
+    private _N_POL_POSITION	= 26;
+    private _N_TARGET_ZONE	= 27;
+    private _N_PIXEL_FRAME	= 28;
+    private _N_VIDEO		= 29;
+    private _N_DATA			= 30;
+
+    private _K_SHADING_OFF	= 0;
+    private _K_SHADING_ON1	= 1;
+    private _K_SHADING_ON2	= 2;
+    private _K_SHADING_ON3	= 3;
+    private _K_SHADING_SAVE	= 4;
+    private _K_SHADING_LOAD	= 5;
 
 	private  _INVALID = -1;
 
@@ -57,9 +70,7 @@ public fun FASTCAM__trigger(as_is _nid, optional _method)
 	if( _ext_trig == 1 )
 	{
  	    DevLogErr(_nid, "Perform this operation in INTERNAL trigger configuration");
-/*
 		abort();
-*/
 	}
 
 
