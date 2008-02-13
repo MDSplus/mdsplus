@@ -220,9 +220,12 @@ public:
 	{
 		isLocal = false;
 		char buf[256];
+		char buf1[256];
 		int oflag = O_CREAT | O_EXCL;
-		mode_t mode = 0666;
+		//mode_t mode = 0777;
+		mode_t mode = S_IRWXO | S_IRWXG | S_IRWXU ;
 		sprintf(buf, "/mdscachex%d", id);
+		sprintf(buf1, "/dev/shm/sem.mdscachex%d", id);
 		
 		semaphore = sem_open(buf, oflag, mode, 1);
 		if(semaphore == SEM_FAILED)
@@ -233,8 +236,11 @@ public:
 		    	perror("Cannot create Semaphore!\n");
 			//exit(0); //Fatal error
 		    }
+                    //It appears that Linux does not report the correct privileges in sem_open, so do it with chmod
+                    chmod(buf1, 0777);
 		    return false;
 		}
+                chmod(buf1, 0777);
 		return true;
 	}
 
