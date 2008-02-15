@@ -525,9 +525,9 @@ XrmDatabase GetFileDatabase(String file_spec)
   XrmDatabase db = 0;
   if (file)
   {
-    char      line_text[1024];
-    char      doubled[1024];
-    while (fgets(line_text, 1024, file))
+    char      line_text[32768];
+    char      doubled[32768];
+    while (fgets(line_text, 32768, file))
     {
       int       i;
       int       j;
