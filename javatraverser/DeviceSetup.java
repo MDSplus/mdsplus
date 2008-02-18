@@ -535,6 +535,7 @@ public class DeviceSetup
         }
         for (idx = 0; idx < num_expr; idx++)
         {
+			
             if (Data.evaluate(varExpr + expressions[idx]) == 0)
             {
                 JOptionPane.showMessageDialog(this, messages[idx],

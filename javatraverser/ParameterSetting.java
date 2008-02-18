@@ -3351,11 +3351,12 @@ System.out.println("Print Done");
                 return true;
             }catch(Exception exc)
             {
-                JOptionPane.showMessageDialog(ParameterSetting.this,
+              /*  JOptionPane.showMessageDialog(ParameterSetting.this,
                         "Error reading version numbers of" + name,
                         "Error comparing versions",
                         JOptionPane.WARNING_MESSAGE);
-                return false;
+                //return false;*/
+                return true;
            }
         }
 

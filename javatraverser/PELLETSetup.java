@@ -97,9 +97,9 @@ public class PELLETSetup extends DeviceSetup {
         deviceField2.setOffsetNid(1);
         jPanel3.add(deviceField2);
 
-        deviceChoice1.setChoiceItems(new String[] {"ENABLE", "DISABLE"});
+        deviceChoice1.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Valve State : ");
+        deviceChoice1.setLabelString("Pellet State : ");
         deviceChoice1.setOffsetNid(144);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
