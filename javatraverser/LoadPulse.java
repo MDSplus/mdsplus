@@ -153,6 +153,8 @@ public class LoadPulse
         while ( (basePath = br.readLine()) != null)
         {
             NidData currNid;
+            if(basePath.trim().equals("")) continue;
+            System.out.println(basePath);
             try
             {
                 currNid = tree.resolve(new PathData(basePath), 0);
