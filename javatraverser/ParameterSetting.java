@@ -1685,6 +1685,7 @@ public class ParameterSetting
                 filePath += ".rfx";
             readSetupFromFile(filePath);
             loadSelectedSetup();
+            loadSelected.setEnabledDevicesForSavingConfiguration();
         }
     }
 
@@ -1843,6 +1844,24 @@ public class ParameterSetting
                 timesInverterCB.isSelected()};
         }
 
+        void setEnabledDevicesForSavingConfiguration()
+        {
+            for (int i = 0; i < NUM_SETUP-1; i++)
+            {
+                checkBoxes[i].setSelected(true);
+                checkBoxes[i].setEnabled(true);
+            }
+            for (int i = 0; i < 13; i++)
+            {
+                timeCheckBoxes[i].setSelected(true);
+                timeCheckBoxes[i].setEnabled(true);
+            }
+            checkBoxes[0].setSelected(false);
+            checkBoxes[0].setEnabled(false);
+            timeCheckBoxes[5].setSelected(false);
+            timeCheckBoxes[5].setEnabled(false);
+        }
+        
         void setEnabledDevices(Hashtable setupHash)
         {
             for (int i = 0; i < NUM_SETUP-1; i++)
@@ -1940,6 +1959,7 @@ public class ParameterSetting
                     saveSelected.setVisible(false);
                 }
             });
+            saveSelected.setEnabledDevicesForSavingConfiguration();
         }
         saveSelected.setVisible(true);
     }

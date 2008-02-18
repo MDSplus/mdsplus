@@ -208,7 +208,10 @@ public class LoadPulse
                     System.out.println(currPath);
                     try
                     {
-                        Data currData = tree.getData(nids[i], 0);
+                        Data currData;
+                        try {
+                            currData = tree.getData(nids[i], 0);
+                        }catch(Exception exc) {currData = null;}
                         if (currData != null)
                         {
                             String currDecompiled = currData.toString();
@@ -256,17 +259,25 @@ public class LoadPulse
             currNode = (NodeDescriptor) nodesV.elementAt(i);
             String decompiled = currNode.getDecompiled();
             if(decompiled != null)
+            {
                 try
                 {
                     setupHash.put(currNode.getPath(), currNode.getDecompiled());
-                    setupOnHash.put(currNode.getPath(),
-                                    new Boolean(currNode.isOn()));
                 }
                 catch (Exception exc)
                 {
                     System.err.println(
                         "Internal error in LoadPulse.getSetup(): " + exc);
                 }
+            }
+            try {
+                setupOnHash.put(currNode.getPath(), new Boolean(currNode.isOn()));
+            }
+            catch (Exception exc)
+            {
+                System.err.println(
+                        "Internal error in LoadPulse.getSetup(): " + exc);
+            }
         }
      }
 
