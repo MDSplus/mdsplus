@@ -464,6 +464,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField1114.setPreferredWidth(-1);
     jPanel6.setBorder(titledBorder19);
     deviceField110.setShowState(true);
+        deviceField110.setEditable(false);
     deviceField110.setIdentifier("OPEN_PTSO_4");
     deviceField110.setNumCols(5);
     deviceField110.setLabelString("T_OPEN_PTSO_4");
@@ -475,12 +476,14 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField11114.setNumCols(5);
     deviceField11114.setIdentifier("OPEN_PTSO_2");
     deviceField11114.setShowState(true);
+        deviceField11114.setEditable(false);
     deviceField1112.setDisplayEvaluated(false);
     deviceField1112.setOffsetNid(21);
     deviceField1112.setLabelString("T_OPEN_PTSO_3");
     deviceField1112.setNumCols(5);
     deviceField1112.setIdentifier("OPEN_PTSO_3");
     deviceField1112.setShowState(true);
+        deviceField1112.setEditable(false);
     gridLayout4.setColumns(1);
     gridLayout4.setRows(4);
     deviceField11115.setDisplayEvaluated(false);
@@ -489,6 +492,7 @@ public class RFXTimesSetup extends DeviceSetup {
     deviceField11115.setNumCols(5);
     deviceField11115.setIdentifier("OPEN_PTSO_1");
     deviceField11115.setShowState(true);
+        deviceField11115.setEditable(false);
     jPanel23.setBorder(titledBorder13);
     jPanel23.setLayout(gridLayout4);
     deviceField7.setShowState(true);
