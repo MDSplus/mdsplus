@@ -1,8 +1,8 @@
 public fun PCAT_voltage(in _sig1, in _sig2)
 {
-   _config = \RFX::POLOIDAL:PC_CONFIG;
+   _config = data(build_path("\\RFX::POLOIDAL:PC_CONFIG"));
 
-   _control = \RFX::POLOIDAL:PC_CONTROL;
+   _control = data(build_path("\\RFX::POLOIDAL:PC_CONTROL"));
 
 	if(_config == 'SERIES')
 	{
