@@ -1788,6 +1788,17 @@ public class ParameterSetting
 
             getContentPane().add(jp1, "Center");
             jp = new JPanel();
+            JButton deselectAllB = new JButton("Deselect All");
+            deselectAllB.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    for(int i = 0; i < 14; i++)
+                        checkBoxes[i].setSelected(false);
+                    for(int i = 0; i < 13; i++)
+                        timeCheckBoxes[i].setSelected(false);
+                }
+            });
+            jp.add(deselectAllB);
             JButton saveB = new JButton("Save");
             saveB.addActionListener(actionListener);
             jp.add(saveB);
