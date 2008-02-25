@@ -3373,7 +3373,7 @@ System.out.println("Print Done");
                 if(!minor1.equals(minor2) && displayWarning)
                 {
                     JOptionPane.showMessageDialog(ParameterSetting.this,
-                                                  "Minor version of "+currVersion+" is not compatible with minor version of "+currVersion+
+                                                  "Minor version of "+currVersion+" is not compatible with minor version of "+version+
                                                    " for "+ name +": the loaded configuration might be not fully compatible",
                                                   "Error comparing versionse",
                                                   JOptionPane.WARNING_MESSAGE);
