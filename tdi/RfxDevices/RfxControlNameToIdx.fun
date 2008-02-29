@@ -8,7 +8,7 @@ public fun RfxControlNameToIdx(in _idx)
 			   "SIMULINK", 
 			   "LOCK CONTROL", 
 			   "MODE CONTROL",
-			   "MODE CONTROL+ROT.PERT.(FEEDBACK)",			   
+			   "MODE CONTROL + ROT.PERT. (FEEDBACK)",			   
 			   "VIRTUAL SHELL", 
 			   "VS+ROT.PERT.(FEEDBACK)", 
 			   "VS+ROT.PERT.(FEEDFORW)", 

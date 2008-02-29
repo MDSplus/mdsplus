@@ -95,7 +95,7 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 	}
 
 
-    DevNodeCvt(_nid, _N_ACQ_MODE, ['VIDEO', 'SIGNAL', 'VIDEO+SIGNAL'], [0, 1, 2], _acq_mode = 0);
+    DevNodeCvt(_nid, _N_ACQ_MODE, ['VIDEO & DATA', 'VIDEO', 'DATA' ], [2, 0, 1], _acq_mode = 0);
 
  
     _num_frames = if_error( data(DevNodeRef(_nid, _N_NUM_FRAMES)), _INVALID);
@@ -104,6 +104,8 @@ public fun FASTCAM__store(as_is _nid, optional _method)
     	DevLogErr(_nid, "Invalid frames number  value ");
  		abort();
     }
+
+	_num_frames--;
 
 	write(*, "Num frames ", _num_frames);
 
@@ -195,7 +197,6 @@ public fun FASTCAM__store(as_is _nid, optional _method)
  * Save into pulse file the video signal
  */
 
-		_imgs = [];
 		_ranges = [];
 		_maxNumFramesInSingleRead = int ( (1024 * 1024) / ( _v_res * _h_res) );
 
@@ -204,24 +205,35 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 		_expositionDelay = 2.35e-6;
 
+		_deltaFrameTime =  _expositionDelay + (2./_shutter);
 
-		_frameRange = ( _trigs : _trigs + (_num_frames * 1./_frame_rate) : 1./_frame_rate ) + _deltaFrameTime =  _expositionDelay + (2./_shutter); 
+		_frameRange = ( _trigs : _trigs + (_num_frames * 1./_frame_rate) : 1./_frame_rate ) + _deltaFrameTime; 
 
-		write(*, "frame range ", _frameRange);
+ 
+		 write(*, "frame range ", _frameRange);
 
 		_totalFrame = size( _frameRange );
 	
-		_k = 0;
 		_frameTimes = [];
 		_imgs = [];
+	    _k = 0;
 
-		for( _n = 0; _n < _totalFrame; _n++)
-		{
-			if( _frameRange[ _n ] >= _resample_source[ _k ] )
+
+
+		_k = 0;
+
+		for(_n = 0;  _n < _totalFrame - 1 && _k < size( _resample_source ); _n++ )
+		{			
+							
+
+		     for(;	_k < size( _resample_source ) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
+				;
+
+		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] )
 			{
-				write(*, "Leggo frame ", _n , _frameRange[ _n ]);
+				write(*, "Leggo frame ", _n, _k , _frameRange[ _n ], _resample_source[ _k ] , _frameRange[ _n + 1 ],( _frameRange[ _n + 1] > _resample_source[ _k ] ) );
+
 				_frameTimes = [ _frameTimes, _frameRange[ _n ]];
-				_k++;
 
 				if(_remote != 0)
 					_data = MdsValue('FastCamHWReadFrame($, $, $)', _n, _v_res, _h_res);
@@ -235,50 +247,105 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 				}
 
 				_imgs = [ _imgs, _data ];
-				
+				_k++;
+			}
+			
+		}
+
+		_n_frames = size( _frameTimes );
+		write(*, "Num frames ", _n_frames);
+
+		if( _n_frames > 0 )
+		{
+			_y_pixel = _v_res;
+			_x_pixel = _h_res;
+	
+			_imgs = WORD(( _imgs >> 6 ) & 0x3FF);
+	
+	/*
+			_dim = make_dim(make_window(0, _n_frames - 1, _frameRange[0]), _frameRange );
+	*/
+			_video = compile('build_signal(($VALUE), set_range(`_x_pixel, `_y_pixel, `_n_frames, `_imgs), (`_frameTimes))');
+			
+			_video_nid =  DevHead(_nid) + _N_VIDEO;
+			_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
+			if( !(_status & 1) )
+			{
+				if( _remote != 0 )
+					MdsDisconnect();
+				DevLogErr(_nid, 'Error writing data in pulse file');
+				abort();
 			}
 		}
-
-		if(_remote != 0)
-			MdsValue('FastCamHWClose()');
-		else
-			_msg = FastCamHWClose();
-
-
-		_n_frames = _totalFrame;
-
-		_y_pixel = _v_res;
-		_x_pixel = _h_res;
-
-		_imgs = WORD(( _imgs >> 6 ) & 0x3FF);
-
-/*
-		_dim = make_dim(make_window(0, _n_frames - 1, _frameRange[0]), _frameRange );
-*/
-		_video = compile('build_signal(($VALUE), set_range(`_y_pixel, `_x_pixel, `_n_frames, `_imgs), (`_frameTimes))');
-
-		_video_nid =  DevHead(_nid) + _N_VIDEO;
-		_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
-		if( !(_status & 1) )
-		{
-			if( _remote != 0 )
-				MdsDisconnect();
-			DevLogErr(_nid, 'Error writing data in pulse file');
-			abort();
-		}
-
 	}
 
 
-	if( _acq_mode == 1 )
+	if( _acq_mode == 1 || _acq_mode == 2)
 	{
+
+		write(*, "Reading signal ");
+
 /**
 * Save into pulse file the signal of the mean value of the frame 
 **/
-		_acq_mode = 1;
+		_expositionDelay = 2.35e-6;
+		_deltaFrameTime =  _expositionDelay + (2./_shutter);
+
+		_num_samples = long(_end_time*_frame_rate)+1;
+		_period = 1./_frame_rate;
+
+		_lens_type = if_error( data(DevNodeRef(_nid, _N_LENS_TYPE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+			DevLogErr(_nid, "Invalid lens type ");
+			abort();
+		}
+		
+		_aperture = if_error( data(DevNodeRef(_nid, _N_APERTURE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+			DevLogErr(_nid, "Invalid aperture ");
+			abort();
+		}
+
+		_f_distance = if_error( data(DevNodeRef(_nid, _N_F_DISTANCE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+			DevLogErr(_nid, "Invalid Aperture ");
+			abort();
+		}
+		
+		_filter = if_error( data(DevNodeRef(_nid, _N_FILTER)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+			DevLogErr(_nid, "Invalid F distance ");
+			abort();
+		}
+		
+		_comp_mode = 0;
+		_help = "Average Intensity";
+		if(_remote != 0)
+				_data = MdsValue('FastCamHWReadSignal($, $, $, $, $, $)',_comp_mode , _num_samples, text(_lens_type), float(_aperture), float(_f_distance), text(_filter));
+			else
+				_data = FastCamHWReadSignal(_comp_mode, _num_samples, text(_lens_type), float(_aperture), float(_f_distance), text(_filter));
+		
+		_signal_nid =  DevHead(_nid) + _N_DATA;
+		_dim = make_dim(make_window(0, _num_samples - 1, _trigs[0]+_deltaFrameTime), make_range(*,*,_period));
+		_signal = compile('build_param(build_signal(($VALUE), (`_data), (`_dim)),(`_help),)');
+		_status = TreeShr->TreePutRecord(val(_signal_nid),xd(_signal),val(0));
+		if(! _status)
+		{
+			DevLogErr(_nid, 'Error writing data in pulse file');
+			abort();
+		}
 	}
+	
 
-
+	if(_remote != 0)
+		MdsValue('FastCamHWClose()');
+	else
+		_msg = FastCamHWClose();
+	
 	if( _remote != 0 )
 		MdsDisconnect();
 
