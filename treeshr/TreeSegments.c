@@ -1200,6 +1200,7 @@ static int PutSegmentHeader(TREE_INFO *info, SEGMENT_HEADER *hdr, _int64 *offset
   int status;
   _int64 loffset;
   int j;
+  char *next_row_fix=getenv("NEXT_ROW_FIX");
   unsigned char buffer[2*sizeof(char)+1*sizeof(short)+10*sizeof(int)+3*sizeof(_int64)],*bptr=buffer;
   if (*offset == -1) {
     TreeLockDatafile(info,0,0);
@@ -1217,6 +1218,17 @@ static int PutSegmentHeader(TREE_INFO *info, SEGMENT_HEADER *hdr, _int64 *offset
   }
   LoadShort(hdr->length,bptr); bptr+=sizeof(short);
   LoadInt(hdr->idx,bptr); bptr+=sizeof(int);
+  if (next_row_fix != 0) {
+    int fix=atoi(next_row_fix);
+    if (fix > 0) {
+      if (fix <= hdr->next_row) {
+	hdr->next_row -= fix;
+	printf("next row adjusted down %d, now %d\n",fix,hdr->next_row);
+      } else {
+	printf("next row not adjusted, requested=%d, next_row=%d\n",fix,hdr->next_row);
+      }
+    }
+  }
   LoadInt(hdr->next_row,bptr); bptr+=sizeof(int);
   LoadQuad(hdr->index_offset,bptr); bptr+=sizeof(_int64);
   LoadQuad(hdr->data_offset,bptr); bptr+=sizeof(_int64);
@@ -2053,3 +2065,65 @@ int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct desc
    }
    return status;
  }
+
+int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row);
+
+int TreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row) {
+  return _TreeGetSegmentInfo(DBID, nid, dtype, dimct, dims, idx, next_row);
+}
+
+int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row) {
+  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
+  NID       *nid_ptr = (NID *)&nid;
+  int       status=TreeFAILURE;
+  int       open_status;
+  TREE_INFO *info_ptr;
+  int       nidx;
+  NODE      *node_ptr;
+  if (!(IS_OPEN(dblist)))
+    return TreeNOT_OPEN;
+  nid_to_node(dblist, nid_ptr, node_ptr);
+  if (!node_ptr)
+    return TreeNNF;
+  if (dblist->remote) {
+    printf("Segmented records are not supported using thick client mode\n");
+    return 0;
+  }
+  nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
+  if (info_ptr)
+  {
+    int       stv;
+    NCI       local_nci;
+    _int64    saved_viewdate;
+    EXTENDED_ATTRIBUTES attributes;
+    SEGMENT_HEADER segment_header;
+    if (info_ptr->reopen)
+      TreeCloseFiles(info_ptr);
+    TreeGetViewDate(&saved_viewdate);
+    status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
+    if (!(status & 1))
+      return status;
+    if (info_ptr->data_file == 0)
+      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+    else
+      open_status = 1;
+    if (!(open_status & 1))
+      return open_status;
+    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
+	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
+      status = TreeFAILURE;
+    } else if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY]==0 ||
+       ((GetSegmentHeader(info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header)&1)==0)) {
+      status = TreeFAILURE;
+    }
+    else {
+      *dtype = segment_header.dtype;
+      *dimct = segment_header.dimct;
+      memcpy(dims,segment_header.dims,sizeof(segment_header.dims));
+      *idx = segment_header.idx;
+      *next_row = segment_header.next_row;
+    }
+    TreeUnLockNci(info_ptr,0,nidx);
+  }
+  return status;
+}
