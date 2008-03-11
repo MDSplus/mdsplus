@@ -21,7 +21,7 @@ extern int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descripto
 extern int RTreeGetNumSegments(int nid, int *numSegments);
 extern int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
-extern int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int leftItems, int *leftRows);
+extern int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
 extern int RTreeDiscardOldSegments(int nid, _int64 timestamp);
 extern int RTreeDiscardData(int nid);
 extern int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeMode);
