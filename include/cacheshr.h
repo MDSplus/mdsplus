@@ -15,7 +15,7 @@ extern int RTreeBeginSegment(int nid, struct descriptor *start, struct descripto
 extern int RTreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx, int writeMode);
 extern int RTreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, 
 							  struct descriptor *dimension, int idx, int writeMode);
-extern int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx, int writeMode);
+extern int RTreePutSegment(int nid, nt segIdx, struct descriptor *dataD, iint writeMode);
 extern int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 *timestamps, int writeMode);
 extern int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode);
 extern int RTreeGetNumSegments(int nid, int *numSegments);

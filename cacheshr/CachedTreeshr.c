@@ -243,7 +243,7 @@ static int intBeginTimestampedSegment(int nid, struct descriptor_a *initialValue
 EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, 
 							 struct descriptor_a *initialValue, int idx, int writeMode);
 
-EXPORT int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx, int writeMode)
+EXPORT int RTreePutSegment(int nid, int segIdx, struct descriptor *dataD, int writeMode)
 {
 	int bounds[MAX_BOUND_SIZE];
 	int boundsSize;
@@ -306,7 +306,7 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 			if(!(status & 1)) return status;
 			if(currIdx < numSegments - 1)
 			{
-				status = RTreePutSegment(nid, dataXd.pointer, -1, 0);
+				status = RTreePutSegment(nid,  -1, dataXd.pointer,0);
 				if(!(status & 1)) return status;
 			}
 			else //Last Segment: keep track of the fact that it may be partially filled
@@ -317,7 +317,7 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 					arrD = (struct descriptor_a *)dataXd.pointer;
 					oldLen = arrD->arsize;
 					arrD->arsize -= leftItems * arrD->length;
-					status = RTreePutSegment(nid, (struct descriptor *)arrD, -1, 0);
+					status = RTreePutSegment(nid,  -1,(struct descriptor *)arrD, 0);
 					arrD->arsize = oldLen;
 				}
 				if(!(status & 1)) return status;
