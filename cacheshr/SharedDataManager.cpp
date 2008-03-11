@@ -572,6 +572,34 @@ int SharedDataManager::getSegmentLimits(int treeId, int nid, int idx, char **sta
 	return 0;
 }
 
+
+int SharedDataManager::getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
+{
+	Segment *segment;
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeIdx, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			lock.unlock();
+			return 0;
+		}
+		int numSegments = nodeData->getNumSegments();
+		segment = nodeData->getSegmentAt(numSegments - 1);
+		segment->getShape(reinterpret_cast<char **>(shape), shapeSize);
+		*currDataSize = segment->getCurrDataSize();
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
+
+
+
+
 int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
 									  char **shape, int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples)
 {

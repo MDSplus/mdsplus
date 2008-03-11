@@ -7,7 +7,7 @@ typedef unsigned long long _int64;
 #define WRITE_BACK 2
 #define WRITE_BUFFER 3
 #define WRITE_LAST 4
-
+#define UPDATE_FLUSH 5
 
 
 extern "C" char *getCache();
@@ -21,13 +21,14 @@ extern "C" int beginTimestampedSegment(int treeIdx, int nid, int idx, int numIte
 						_int64 start, _int64 end, char *dim, int dimSize, int writeThrough, char *cachePtr);
 extern "C" int putSegmentInternal(int nid, 
 						char *start, int startSize, char *end, int endSize, char *dim, int dimSize, char *data, 
-						int dataSize, int *shape, int shapeSize, int isTimestamped, int actSamples);
+						int dataSize, int *shape, int shapeSize, int isTimestamped, int actSamples, int updateOnly);
 extern "C" int updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 							 int dimSize, int writeThrough, char *cachePtr);
 extern "C" int getNumSegments(int treeIdx, int nid, int *numSegments, char *cachePtr);
 extern "C" int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
 extern "C" int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
+extern "C" int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
 extern "C" int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr);
 extern "C" int flushTree(int treeIdx, char *cachePtr);
 extern "C" int flushNode(int treeIdx, int nid, char *cachePtr);
@@ -110,6 +111,10 @@ int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char
 		shapeSize, currDataSize, &boolTimestamped, &actSamples);
 	*timestamped = (boolTimestamped)?1:0;
 	return status;
+}
+int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
+{
+	return ((Cache *)cachePtr)->getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
 }
 
 int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr)
@@ -256,6 +261,10 @@ int Cache::beginSegment(int treeIdx, int nid, int idx, char *start, int startSiz
 	{
 		insertInQueue(treeIdx, nid, FLUSH_BEGIN_SEGMENT, retIdx);
 	}//If writeMode == 0, this segment is being copied from tree, and therefore requires no attention
+	if(writeMode == UPDATE_FLUSH)
+	{
+		insertInQueue(treeIdx, nid, FLUSH_UPDATE_SEGMENT, retIdx);
+	}//If writeMode == 0, this segment is being copied from tree, and therefore requires no attention
 	return 1;
 }
 
@@ -356,6 +365,10 @@ int Cache::getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *st
 	return 1;
 }
 
+int Cache::getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
+{
+	return dataManager.getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
+}
 
 int Cache::getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
 						  char **shape, int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples)
@@ -425,16 +438,15 @@ int Cache::flush(int treeIdx, int nid)
 					}
 					break;
 				case FLUSH_BEGIN_SEGMENT:
+				case FLUSH_UPDATE_SEGMENT:
 					status = dataManager.getSegmentLimits(currChainNid->treeIdx, currChainNid->nid, currChainNid->idx, &start, &startSize, 
 						&end, &endSize, &isTimestamped);
 					status = dataManager.getSegmentData(currChainNid->treeIdx, currChainNid->nid, currChainNid->idx, &dim, &dimSize, 
 						&data, &dataSize, &shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(currChainNid->nid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, (int *)shape, shapeSize, isTimestamped, actSamples);
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, (int *)shape, shapeSize, isTimestamped, 
+						actSamples, currChainNid->mode == FLUSH_UPDATE_SEGMENT);
 
-					
-					
-					
 					if(!(status & 1))
 					{
 						errStatus = status;

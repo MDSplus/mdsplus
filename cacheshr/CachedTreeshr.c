@@ -12,6 +12,7 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 #include <mdstypes.h>
+#include <treeshr.h>
 
 #define NOT_A_NATIVE_TYPE 2
 #define BAD_SHAPE 4
@@ -23,6 +24,7 @@
 #define WRITE_BACK 2
 #define WRITE_BUFFER 3
 #define WRITE_LAST 4
+#define UPDATE_FLUSH 5
 #define MAX_OPEN_TREES 1024
 
 #define MAX_BOUND_SIZE 512
@@ -46,6 +48,7 @@ extern int getNumSegments(int treeIdx, int nid, int *numSegments, char *cachePtr
 extern int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *cachePtr, char *timestamped);
 extern int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, 
 						  int *dataSize,char **shape, int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
+extern int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
 extern int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr);
 extern int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode, char *cachePtr);
@@ -240,6 +243,18 @@ static int intBeginTimestampedSegment(int nid, struct descriptor_a *initialValue
 EXPORT int RTreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension, 
 							 struct descriptor_a *initialValue, int idx, int writeMode);
 
+EXPORT int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx, int writeMode)
+{
+	int bounds[MAX_BOUND_SIZE];
+	int boundsSize;
+	int status;
+
+	if(!cache) cache = getCache();
+
+	getDataTypeAndShape(dataD, bounds, &boundsSize);
+	status = appendSegmentData(currShotNum, nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  writeMode, cache);
+	return status;
+}
 //Read segmented data into cache memory
 static int copySegmentedIntoCache(int nid, int *copiedSegments)
 {
@@ -251,6 +266,8 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 
 	_int64 *times;
 	int nTimes;
+	char dtype, dimct;
+	int dims[64], leftItems, leftRows, oldLen;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	struct descriptor_a *arrD, *timesD;
 
@@ -285,8 +302,31 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 		else
 		{
 			status = RTreeBeginSegment(nid, startXd.pointer, endXd.pointer, dimXd.pointer, (struct descriptor_a *)dataXd.pointer, 
-				-1, 0);
+				-1, (currIdx < numSegments - 1)?0:UPDATE_FLUSH);
+			if(!(status & 1)) return status;
+			if(currIdx < numSegments - 1)
+			{
+				status = RTreePutSegment(nid, dataXd.pointer, -1, 0);
+				if(!(status & 1)) return status;
+			}
+			else //Last Segment: keep track of the fact that it may be partially filled
+			{
+				status = TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &leftItems, &leftRows);
+				if(status & 1)
+				{
+					arrD = (struct descriptor_a *)dataXd.pointer;
+					oldLen = arrD->arsize;
+					arrD->arsize -= leftItems * arrD->length;
+					status = RTreePutSegment(nid, (struct descriptor *)arrD, -1, 0);
+					arrD->arsize = oldLen;
+				}
+				if(!(status & 1)) return status;
+			}
 		}
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+		MdsFree1Dx(&dataXd, 0);
+		MdsFree1Dx(&dimXd, 0);
 	}
 	return status;
 }
@@ -395,18 +435,6 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 
 
 
-EXPORT int RTreePutSegment(int nid, struct descriptor *dataD, int segIdx, int writeMode)
-{
-	int bounds[MAX_BOUND_SIZE];
-	int boundsSize;
-	int status;
-
-	if(!cache) cache = getCache();
-
-	getDataTypeAndShape(dataD, bounds, &boundsSize);
-	status = appendSegmentData(currShotNum, nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  writeMode, cache);
-	return status;
-}
 
 EXPORT int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 *timestamps, int writeMode)
 {
@@ -569,6 +597,31 @@ EXPORT int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStar
 	return 1;
 }
 
+EXPORT int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
+{
+	int *shape, shapeSize, currDataSize, i, nItems, dataSize;
+	if(!cache) cache = getCache();
+	getSegmentInfo(currShotNum, nid, &shape, &shapeSize, &currDataSize, cache);
+//Return Shape and type information. The coding is the following:
+//1) data type
+//2) item size in bytes
+//3) number of dimensions 
+//4) total dimension in bytes 
+//The remaining elements are the dimension limits
+	*dtype = shape[0];
+	*dimct = shape[2];
+	nItems = 1;
+	for(i = 0; i < shape[2]; i++)
+		nItems *= shape[4+i];
+	dataSize = nItems * shape[1];
+	*leftItems = (dataSize - currDataSize)/shape[1];
+	*leftRows = *leftItems/(nItems / shape[4 + shape[2]-1]);
+	return 1;
+}
+
+
+
+
 EXPORT int RTreeDiscardOldSegments(int nid, _int64 timestamp)
 {
 	if(!cache) cache = getCache();
@@ -723,7 +776,7 @@ int putRecordInternal(int nid, char dataType, int numSamples, char *data, int si
 
 int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSize, 
 					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, 
-					   int isTimestamped, int actSamples)
+					   int isTimestamped, int actSamples, int updateOnly)
 {
 	EMPTYXD(dataXd);
 	EMPTYXD(dimXd);
@@ -765,7 +818,16 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 		status = MdsSerializeDscIn(start, &startXd);
 		if(status & 1) status = MdsSerializeDscIn(end, &endXd);
 		if(status & 1) status = MdsSerializeDscIn(dim, &dimXd);
-		if(status & 1) status = TreeBeginSegment(nid, startXd.pointer, endXd.pointer, dimXd.pointer, dataXd.pointer, -1);
+
+
+
+		if(status & 1)
+		{
+			if(updateOnly)
+				status = TreePutSegment(nid, 0, dataXd.pointer);
+			else
+				status = TreeBeginSegment(nid, startXd.pointer, endXd.pointer, dimXd.pointer, dataXd.pointer, -1);
+		}
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		MdsFree1Dx(&dimXd, 0);

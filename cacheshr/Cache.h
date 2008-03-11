@@ -7,6 +7,7 @@
 
 #define FLUSH_PUT_RECORD 1
 #define FLUSH_BEGIN_SEGMENT 2
+#define FLUSH_UPDATE_SEGMENT 3
 
 
 struct NidChain
@@ -44,6 +45,7 @@ public:
 	int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
 	int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
+	int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize);
 	int isSegmented(int treeIdx, int nid, int *segmented);
 	int	appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode);

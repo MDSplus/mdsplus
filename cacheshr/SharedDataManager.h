@@ -53,7 +53,8 @@ public:
 	int getNumSegments(int treeId, int nid, int *numSegments);
 	int updateSegment(int treeId, int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
 	int getSegmentLimits(int treeId, int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
-	int getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
+	int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize);
+	int getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize, char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
 	int appendSegmentData(int treeId, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, bool isTimestamped, 
