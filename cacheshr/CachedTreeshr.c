@@ -267,7 +267,7 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 	_int64 *times;
 	int nTimes;
 	char dtype, dimct;
-	int dims[64], leftItems, leftRows, oldLen;
+	int dims[64], segItems, segRows, oldLen;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	struct descriptor_a *arrD, *timesD;
 
@@ -280,8 +280,8 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 		if(!(status & 1)) return status;
 		status = TreeGetSegment(nid, currIdx, &dataXd, &dimXd);
 		if(!(status & 1)) return status;
-		status = TdiData(&dimXd, &dimXd MDS_END_ARG);
-		if(!(status & 1)) return status;
+		//status = TdiData(&dimXd, &dimXd MDS_END_ARG);
+		//if(!(status & 1)) return status;
 
 		arrD = (struct descriptor_a *)dataXd.pointer;
 		getDataTypeAndShape((struct descriptor *)arrD, bounds, &boundsSize);
@@ -311,12 +311,12 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 			}
 			else //Last Segment: keep track of the fact that it may be partially filled
 			{
-				status = TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &leftItems, &leftRows);
+				status = TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &segItems, &segRows);
 				if(status & 1)
 				{
 					arrD = (struct descriptor_a *)dataXd.pointer;
 					oldLen = arrD->arsize;
-					arrD->arsize -= leftItems * arrD->length;
+					arrD->arsize = segItems * arrD->length;
 					status = RTreePutSegment(nid,  -1,(struct descriptor *)arrD, 0);
 					arrD->arsize = oldLen;
 				}
@@ -403,10 +403,12 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 	int status;
 
 	if(!cache) cache = getCache();
-	MdsSerializeDscOut(start, &startSerXd);
-	MdsSerializeDscOut(end, &endSerXd);
-	if(dimension->dtype = DTYPE_SIGNAL)//If a signal has been passed as dimension
+	if(start) MdsSerializeDscOut(start, &startSerXd);
+	if(end) MdsSerializeDscOut(end, &endSerXd);
+	if(dimension)
 	{
+	    if(dimension->dtype = DTYPE_SIGNAL)//If a signal has been passed as dimension
+	    {
 		savedData = ((struct descriptor_signal *)dimension)->data;
 		savedRaw = ((struct descriptor_signal *)dimension)->raw;
 		((struct descriptor_signal *)dimension)->data = 0;
@@ -414,16 +416,19 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 		MdsSerializeDscOut(dimension, &dimSerXd);
 		((struct descriptor_signal *)dimension)->data = savedData;
 		((struct descriptor_signal *)dimension)->raw = savedRaw;
-	}
-	else //Any other expression
+	    }
+	    else //Any other expression
 		MdsSerializeDscOut(start, &dimSerXd);
-
+	}
+	
+	
 	startSerA = (struct descriptor_a *)startSerXd.pointer;
 	endSerA = (struct descriptor_a *)endSerXd.pointer;
 	dimSerA = (struct descriptor_a *)dimSerXd.pointer;
 
-	status = updateSegment(currShotNum, nid, idx,  (char *)startSerA->pointer, startSerA->arsize, (char *)endSerA->pointer, endSerA->arsize, 
-						(char *)dimSerA->pointer, dimSerA->arsize, writeMode, cache);
+	status = updateSegment(currShotNum, nid, idx,  (start)?(char *)startSerA->pointer:0, (start)?startSerA->arsize:0, 
+						(end)?(char *)endSerA->pointer:0, (end)?endSerA->arsize:0, 
+						(dimension)?(char *)dimSerA->pointer:0, (dimension)?dimSerA->arsize:0, writeMode, cache);
 
 	MdsFree1Dx(&startSerXd, 0);
 	MdsFree1Dx(&endSerXd, 0);
@@ -612,9 +617,12 @@ EXPORT int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int
 	*dimct = shape[2];
 	nItems = 1;
 	for(i = 0; i < shape[2]; i++)
-		nItems *= shape[4+i];
+	{
+	    nItems *= shape[4+i];
+	    dims[i] = shape[4+i];
+	}
 	dataSize = nItems * shape[1];
-	*leftItems = (dataSize - currDataSize)/shape[1];
+	*leftItems = currDataSize/shape[1];
 	*leftRows = *leftItems/(nItems / shape[4 + shape[2]-1]);
 	return 1;
 }
@@ -658,7 +666,7 @@ EXPORT int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeM
 		descriptor_ptr->length, writeMode, cache);
 	    return status;
 	}
-	if(descriptor_ptr->class == CLASS_A) //Handle arrays
+	if(descriptor_ptr->class == CLASS_A && ((struct descriptor_a*)descriptor_ptr)->dimct <= 1)  //Handle 1D arrays
 	{
 	    arrPtr = (struct descriptor_a *)descriptor_ptr;
 	    status = putRecord(currShotNum, nid, arrPtr->dtype, arrPtr->arsize/arrPtr->length, arrPtr->pointer,
@@ -758,6 +766,11 @@ int putRecordInternal(int nid, char dataType, int numSamples, char *data, int si
 	struct descriptor descr;
 	DESCRIPTOR_A(descrA, 0, 0, 0, 0);
 	struct descriptor *retDescr;
+	if(size == 0)
+	{
+	    status = TreePutRecord(nid, (struct descriptor *)&xd, 0);
+	    return status;
+	}
 	if(dataType) //If scalar or array
 	{
 	    retDescr = rebuildDataDescr(dataType, numSamples, data, size, &descr, (struct descriptor_a *)&descrA);
@@ -775,10 +788,12 @@ int putRecordInternal(int nid, char dataType, int numSamples, char *data, int si
 
 
 int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSize, 
-					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, 
+					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int currDataSize,
+					    
 					   int isTimestamped, int actSamples, int updateOnly)
 {
 	EMPTYXD(dataXd);
+	EMPTYXD(fullDataXd);
 	EMPTYXD(dimXd);
 	EMPTYXD(startXd);
 	EMPTYXD(endXd);
@@ -786,7 +801,7 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 	struct descriptor startD = {8, DTYPE_QU, CLASS_S, 0};
 	struct descriptor endD = {8, DTYPE_QU, CLASS_S, 0};
 
-	int status;
+	int status, i, rowItems;
 
 //Return Shape and type information. The coding is the following:
 //1) data type
@@ -794,11 +809,31 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 //3) number of dimensions 
 //4) total dimension in bytes 
 //The remaining elements are the dimension limits
+
+//first build whiole segment description
+	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &fullDataXd);
+	if(!(status & 1)) return status;
+
+//then build actual data segment (possibly incomplete)
 	if(isTimestamped)
 	{
 		//Adjust shape description so that actSamples are the actual time samples
 		shape[4+shape[2]-1] = actSamples;
 	}
+	else
+	{
+	
+//Update shape information to keep track of the actual data size stored in the segment
+//this is based on currDataSize
+		rowItems = 1;
+		for(i = 0; i < shape[2]-1; i++)
+		{
+	    		rowItems *= shape[4+i];
+		}	
+		 shape[4+shape[2]-1]  = currDataSize/(rowItems * shape[1]);
+		 shape[3] = currDataSize;
+	}
+	
 	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &dataXd);
 	if(!(status & 1)) return status;
 	if(isTimestamped)
@@ -819,19 +854,17 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 		if(status & 1) status = MdsSerializeDscIn(end, &endXd);
 		if(status & 1) status = MdsSerializeDscIn(dim, &dimXd);
 
-
-
 		if(status & 1)
 		{
-			if(updateOnly)
-				status = TreePutSegment(nid, 0, dataXd.pointer);
-			else
-				status = TreeBeginSegment(nid, startXd.pointer, endXd.pointer, dimXd.pointer, dataXd.pointer, -1);
+			if(!updateOnly)
+				status = TreeBeginSegment(nid, startXd.pointer, endXd.pointer, dimXd.pointer, fullDataXd.pointer, -1);
+			if(status & 1) status = TreePutSegment(nid, 0, dataXd.pointer);
 		}
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		MdsFree1Dx(&dimXd, 0);
 		MdsFree1Dx(&dataXd, 0);
+		MdsFree1Dx(&fullDataXd, 0);
 	}
 	return status;
 }

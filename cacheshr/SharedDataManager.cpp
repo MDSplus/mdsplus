@@ -350,12 +350,12 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			return BAD_INDEX;
 		}
 		Segment *segment = nodeData->getSegmentAt(idx);
-		if(!segment->isTimestamped())
+/*		if(!segment->isTimestamped())
 		{
 		    lock.unlock();
 		    return 0;
 		}
-		
+*/		
 		segment->getShape((char **)&shape, &shapeSize);
 		//Check Shape. Meaning of bound array:
 //		1) data type
@@ -500,26 +500,33 @@ int SharedDataManager::updateSegment(int treeId, int nid, int idx, char *start, 
 		char *currPtr;
 		int currSize;
 		segment->getStart(&currPtr, &currSize);
-		if(currSize > 0)
+		if(startSize > 0)
+		{
+		    if(currSize > 0)
 			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
-		currPtr = freeSpaceManager.allocateShared(startSize, &lock);
-		memcpy(currPtr, start, startSize);
-		segment->setStart(currPtr, startSize);
-
-		segment->getEnd(&currPtr, &currSize);
-		if(currSize > 0)
+		    currPtr = freeSpaceManager.allocateShared(startSize, &lock);
+		    memcpy(currPtr, start, startSize);
+		    segment->setStart(currPtr, startSize);
+		}
+		if(endSize > 0)
+		{
+		    segment->getEnd(&currPtr, &currSize);
+		    if(currSize > 0)
 			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
-		currPtr = freeSpaceManager.allocateShared(endSize, &lock);
-		memcpy(currPtr, end, endSize);
-		segment->setEnd(currPtr, endSize);
-
-		segment->getDim(&currPtr, &currSize);
-		if(currSize > 0)
+		    currPtr = freeSpaceManager.allocateShared(endSize, &lock);
+		    memcpy(currPtr, end, endSize);
+		    segment->setEnd(currPtr, endSize);
+		}
+		
+		if(dimSize > 0)
+		{
+		    segment->getDim(&currPtr, &currSize);
+		    if(currSize > 0)
 			freeSpaceManager.freeShared((char *)currPtr, currSize, &lock);
-		currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
-		memcpy(currPtr, dim, dimSize);
-		segment->setDim(currPtr, dimSize);
-
+		    currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
+		    memcpy(currPtr, dim, dimSize);
+		    segment->setDim(currPtr, dimSize);
+  		}
 		CallbackManager *callback = node->getData()->getCallbackManager();
 		if(callback)
 			callback->callCallback();

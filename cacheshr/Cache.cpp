@@ -21,7 +21,7 @@ extern "C" int beginTimestampedSegment(int treeIdx, int nid, int idx, int numIte
 						_int64 start, _int64 end, char *dim, int dimSize, int writeThrough, char *cachePtr);
 extern "C" int putSegmentInternal(int nid, 
 						char *start, int startSize, char *end, int endSize, char *dim, int dimSize, char *data, 
-						int dataSize, int *shape, int shapeSize, int isTimestamped, int actSamples, int updateOnly);
+						int dataSize, int *shape, int shapeSize, int currDataSize, int isTimestamped, int actSamples, int updateOnly);
 extern "C" int updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 							 int dimSize, int writeThrough, char *cachePtr);
 extern "C" int getNumSegments(int treeIdx, int nid, int *numSegments, char *cachePtr);
@@ -444,7 +444,8 @@ int Cache::flush(int treeIdx, int nid)
 					status = dataManager.getSegmentData(currChainNid->treeIdx, currChainNid->nid, currChainNid->idx, &dim, &dimSize, 
 						&data, &dataSize, &shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(currChainNid->nid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, (int *)shape, shapeSize, isTimestamped, 
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, (int*)shape, shapeSize, 
+						currDataSize, isTimestamped, 
 						actSamples, currChainNid->mode == FLUSH_UPDATE_SEGMENT);
 
 					if(!(status & 1))
