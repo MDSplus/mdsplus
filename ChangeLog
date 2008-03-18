@@ -1,6 +1,18 @@
 Version 2.1-0
 
 
+2008-03-18 16:00  twf
+
+	* include/release.h:
+	
+	Fix release
+
+2008-03-18 15:58  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-0
+
 2008-03-18 15:16  twf
 
 	* ChangeLog:
