@@ -736,22 +736,23 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         if (num != (tag_info_pages*512)) goto error_exit;
         num = MDS_IO_WRITE(ntreefd,info_ptr->external,512*external_pages);
         if (num != (external_pages*512)) goto error_exit;
-		status = TreeWriteNci(info_ptr);
-		if ((status & 1) == 0) goto error_exit;
-		status = MDS_IO_CLOSE(info_ptr->channel);
-		info_ptr->channel=0;
-	    status = MDS_IO_REMOVE(info_ptr->filespec);
-		if (status == -1) {status=0;goto error_exit;}
+	status = TreeWriteNci(info_ptr);
+	if ((status & 1) == 0) goto error_exit;
+	status = MDS_IO_CLOSE(info_ptr->channel);
+	info_ptr->channel=0;
+	status = MDS_IO_REMOVE(info_ptr->filespec);
+	if (status == -1) {status=0;goto error_exit;}
         status = MDS_IO_CLOSE(ntreefd);
-		if (status == -1) {status=0; goto error_exit;}
+	if (status == -1) {status=0; goto error_exit;}
         status = MDS_IO_RENAME(nfilenam,info_ptr->filespec);
-		if (status == -1) {status=0; goto error_exit;}
-		info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec,O_RDWR,0);
-		if (info_ptr->channel == -1) {status=0; goto error_exit;}
-		status=1;
-
-		(*dblist)->modified = 0;	
-	    TreeCallHook(WriteTree, info_ptr,0);
+	if (status == -1) {status=0; goto error_exit;}
+	info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec,O_RDWR,0);
+	if (info_ptr->channel == -1) {status=0; goto error_exit;}
+	status=MDS_IO_LOCK(info_ptr->channel,1,1,10,0);
+	status=1;
+	
+	(*dblist)->modified = 0;	
+	TreeCallHook(WriteTree, info_ptr,0);
       }
       else
       {

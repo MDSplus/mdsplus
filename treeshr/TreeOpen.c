@@ -344,13 +344,14 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
           if (local_info->rundown_id)
           MDSEventCan(local_info->rundown_id);
 #endif
-		  if (local_info->channel)
-			  MDS_IO_CLOSE(local_info->channel);
+	  if (local_info->channel)
+	    MDS_IO_CLOSE(local_info->channel);
           if (local_info->section_addr[0])
           {
 #if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
-		      if (local_info->mapped)
-				status = munmap(local_info->section_addr[0],local_info->alq * 512);
+	    if (local_info->mapped) {
+	      status = (munmap(local_info->section_addr[0],local_info->alq * 512) == 0) ? TreeSUCCESS : TreeFAILURE; 
+	    }
 #endif
             if (local_info->vm_addr)
               free(local_info->vm_addr);
