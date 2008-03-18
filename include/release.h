@@ -1,1 +1,1 @@
-#define MDSPLUS_RELEASE "Name:  $release$"
+#define MDSPLUS_RELEASE "$Name$"
