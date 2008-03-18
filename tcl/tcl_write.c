@@ -1,3 +1,7 @@
+#include <config.h>
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 #include        "tclsysdef.h"
 
 /**********************************************************************
@@ -33,8 +37,14 @@ int TclWrite()
         sts = TreeWriteTree(0,0);
        }
 
-    if (~sts & 1)
+	if (~sts & 1) {
+#ifdef HAVE_WINDOWS_H
+		char errormsg[1024];
+		DWORD error=GetLastError();
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,NULL,error,LANG_USER_DEFAULT,errormsg,1024,(va_list *)NULL);
+		TclTextOut(errormsg);
+#endif
         MdsMsg(sts,"TclWrite: *ERR* from TreeWriteTree");
-
+	}
     return sts;
    }
