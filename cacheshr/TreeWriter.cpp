@@ -3,7 +3,8 @@ extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *d
 extern "C" int beginSegmentInternal(int nid, int idx, char *start, char *end, char *dim, char *data);
 extern "C" int updateSegmentInternal(int nid, int idx, char *start, char *end);
 extern "C" int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSize, 
-					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int isTimestamped, int actSamples);
+					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int currDataSize,
+					   int isTimestamped, int actSamples, int updateOnly);
 #ifndef HAVE_WINDOWS_H
 typedef unsigned long long _int64;
 #endif
@@ -96,8 +97,6 @@ void TreeWriter::run(void *arg)
 			NidHolder *newHead = nidHead->nxt;
 			delete nidHead;
 			nidHead = newHead;
-			if(!nidHead && synchWaiting)
-				synchEvent.signal();
 			lock.unlock();	
 			
 			char *data, *start, *end, *dim;
@@ -117,7 +116,8 @@ void TreeWriter::run(void *arg)
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, writeIdx, &dim, &dimSize, 
 						&data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(writeNid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 0, 0);
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 
+						currDataSize, 0, 0, 0);
 					break;
 				case TREEWRITER_PUT_SEGMENT_DISCARD:
 					status = dataManager->getSegmentLimits(writeTreeIdx, writeNid, 0, &start, &startSize, 
@@ -125,7 +125,8 @@ void TreeWriter::run(void *arg)
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, 0, &dim, &dimSize, 
 						&data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(writeNid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 0, 0);
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 
+						currDataSize, 0, 0, 0);
 					if(status & 1) dataManager->discardFirstSegment(writeTreeIdx, writeNid);
 					break;
 
@@ -135,7 +136,8 @@ void TreeWriter::run(void *arg)
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, writeIdx, &dim, &dimSize, 
 						&data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(writeNid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 1, actSamples);
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 
+						currDataSize, 1, actSamples, 0);
 					break;
 				case TREEWRITER_PUT_TIMESTAMPED_SEGMENT_DISCARD:
 					status = dataManager->getSegmentLimits(writeTreeIdx, writeNid, 0, &start, &startSize, 
@@ -143,10 +145,14 @@ void TreeWriter::run(void *arg)
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, 0, &dim, &dimSize, 
 						&data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
 					if(status &1 )status = putSegmentInternal(writeNid, 
-						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 1, actSamples);
+						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 
+						currDataSize, 1, actSamples, 0);
 					if(status & 1) dataManager->discardFirstSegment(writeTreeIdx, writeNid);
 					break;
 			}
+			if(!nidHead && synchWaiting)
+				synchEvent.signal();
+
 		}
 	}
 }
