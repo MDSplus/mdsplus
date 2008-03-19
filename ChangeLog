@@ -1,6 +1,37 @@
 Version 2.1-0
 
 
+2008-03-19 16:15  twf
+
+	* Setup/Setup.vdproj:
+	
+	New release
+
+2008-03-19 16:12  twf
+
+	* idlmdsevent/mdsevent.c:
+	
+	fix event handling on windows
+
+2008-03-19 12:57  manduchi
+
+	* cacheshr/: Cache.cpp, CachedTreeshr.c, SharedDataManager.cpp,
+	SharedMemNodeData.h, TreeWriter.cpp:
+	
+	Fix race condition in memory free
+
+2008-03-19 03:48  manduchi
+
+	* cacheshr/: CachedTreeshr.c, Segment.h, SharedMemNodeData.h:
+	
+	FIx memory management
+
+2008-03-18 16:04  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-0
+
 2008-03-18 16:03  twf
 
 	* include/release.h:
