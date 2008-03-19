@@ -59,7 +59,6 @@ extern void MdsDispatchEvent(void *, int *, unsigned long *);
 
 static EventStruct *EventList = (EventStruct *)0;
 static int EventCount = 1;
-
 static void EventAst(EventStruct *e, int eventid, char *data);
 #include <export.h>
 #if defined(__VMS) || defined(WIN32)
@@ -117,6 +116,7 @@ int IDLMdsGetevi(int argc, void **argv)
   return (e!=0);
 }
 
+#ifndef WIN32
 static int event_pipe[2];
 
 static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
@@ -141,12 +141,13 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
   }
 }
 
+
 static void EventAst(EventStruct *e,int len, char *data)
 {
   if (len > 0) memcpy(e->value,data,len > 12 ? 12 : len);
   write(event_pipe[1],&e,sizeof(EventStruct *));
 }
-
+#endif
 int IDLMdsEvent(int argc, void * *argv)
 {
   SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
@@ -205,7 +206,7 @@ int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
-/*
+#ifdef WIN32
 static void EventAst(EventStruct *e,int len, char *data)
 {
   char *stub_rec;
@@ -214,32 +215,12 @@ static void EventAst(EventStruct *e,int len, char *data)
   if (len > 0) memcpy(e->value,data,len > 12 ? 12 : len);
   if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) && (base_rec = IDL_WidgetStubLookup(e->base_id)))
   {
-#ifdef WIN32
     HWND wid1, wid2;
-#endif
     IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
-#ifdef WIN32
     IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
-#else
-    {
-      Widget top;
-      Widget w;
-      IDL_WidgetGetStubIds(base_rec, (unsigned long *)&top, (unsigned long *)&w);
-      if (w)
-      {
-        XClientMessageEvent event;
-        event.type = ClientMessage;
-        event.display = XtDisplay(top);
-        event.window = XtWindow(top);
-        event.format = 8;
-        XSendEvent(XtDisplay(top),XtWindow(top),TRUE,0,(XEvent *)&event);
-        XFlush(XtDisplay(top));
-      }
-    }
-#endif
   }
 
   IDL_WidgetStubLock(FALSE);
 }
-*/
+#endif
