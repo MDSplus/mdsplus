@@ -348,7 +348,9 @@ int Cache::appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *da
 		if(writeMode == WRITE_THROUGH  && segmentFilled)
 			treeWriter.addPutTimestampedSegment(treeIdx, nid, retIdx, 0);
 		else if((writeMode == WRITE_BUFFER &&segmentFilled)|| writeMode == WRITE_LAST)
+		{
 			treeWriter.addPutTimestampedSegment(treeIdx, nid, 0, 1);
+		}
 		else if(writeMode == WRITE_BACK && newSegmentCreated)
 			insertInQueue(treeIdx, nid, FLUSH_BEGIN_SEGMENT, retIdx);
 	}

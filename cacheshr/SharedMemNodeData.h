@@ -211,20 +211,11 @@ class SharedMemNodeData
 			return;
 		Segment *currSegment = getFirstSegment();
 
-		char *currData;
-		int dataLen;
-		currSegment->getData(&currData, &dataLen);
-		printf("DISCARD FIRST SEGMENT: %f\n", *(float *)currData);
 
 		setFirstSegment(currSegment->getNext());
-		getFirstSegment()->getData(&currData, &dataLen);
-		printf("DISCARD FIRST SEGMENT 1: %f\n", *(float *)currData);
-
 		numSegments--;
 		currSegment->free(fsm, lock);
 		fsm->freeShared((char *)currSegment, sizeof(Segment), lock);
-		getFirstSegment()->getData(&currData, &dataLen);
-		printf("DISCARD FIRST SEGMENT: %f\n", *(float *)currData);
 
 	}
 

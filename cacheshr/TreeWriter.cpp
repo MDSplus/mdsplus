@@ -111,6 +111,7 @@ void TreeWriter::run(void *arg)
 					if(status &1 )status = putRecordInternal(writeNid, dataType, numSamples, data);
 					break;
 				case TREEWRITER_PUT_SEGMENT:
+				
 					status = dataManager->getSegmentLimits(writeTreeIdx, writeNid, writeIdx, &start, &startSize, 
 						&end, &endSize, &isTimestamped);
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, writeIdx, &dim, &dimSize, 

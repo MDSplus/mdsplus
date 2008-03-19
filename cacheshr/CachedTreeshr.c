@@ -803,8 +803,6 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 
 	int status, i, rowItems;
 
-	printf("PUT SEGMENT INTERNAL %f\n", *(float *)data);
-	
 	//Return Shape and type information. The coding is the following:
 //1) data type
 //2) item size in bytes

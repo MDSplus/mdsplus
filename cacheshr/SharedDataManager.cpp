@@ -204,6 +204,7 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 											   _int64 end, char *dim, int dimSize, int *retIdx)
 {
 	Segment *segment;
+//printf("BEGIN TIMESTAMPED SEGMENT SHARE: %d\n", *(int *)shape);
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
 	if(!node)
@@ -232,6 +233,9 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 		if(idx == numSegments || idx < 0)
 		{
 			segment = (Segment *)freeSpaceManager.allocateShared(sizeof(Segment), &lock);
+			
+//			printf("ALLOCATED SEGMENT: %x\n", segment);
+			
 			segment->initialize();
 			nodeData->appendSegment(segment);
 			*retIdx = numSegments;
@@ -248,13 +252,16 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 		if(dimSize == 0)
 		{
 			currPtr = freeSpaceManager.allocateShared(8 * numItems, &lock);
+//			printf("ALLOCATED SEGMENT DIM: %x\n", currPtr);
 			segment->setDim(currPtr, 8 * numItems);
 		}
 		currPtr = freeSpaceManager.allocateShared(shapeSize, &lock);
+//			printf("ALLOCATED SEGMENT SHAPE: %x  %d\n", currPtr, *(int *)shape);
 		memcpy(currPtr, shape, shapeSize);
 		segment->setShape(currPtr, shapeSize);
 
 		currPtr = freeSpaceManager.allocateShared(dataSize, &lock);
+//			printf("ALLOCATED SEGMENTDATA: %x\n", currPtr);
 		memcpy(currPtr, data, dataSize);
 		segment->setData(currPtr, dataSize);
 	
@@ -264,6 +271,7 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 		if(dimSize > 0)
 		{
 			currPtr = freeSpaceManager.allocateShared(dimSize, &lock);
+//			printf("ALLOCATED SEGMENT DIM : %x\n", currPtr);
 			memcpy(currPtr, dim, dimSize);
 			segment->setDim(currPtr, dimSize);
 			segment->setStartTimestamp(*(_int64 *)dim);
@@ -272,6 +280,7 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 		segment->setTimestamped(true);
 
 		lock.unlock();
+//printf("END BEGIN TIMESTAMPED SEGMENT LAST SEGMENT: %x\n", nodeData->getLastSegment());
 		return 1;
 	}
 	lock.unlock();
@@ -341,12 +350,16 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 		if(numSegments == 0) //May happen the first time putRow is called
 		{
 			lock.unlock();
+			
+//			printf("APPENDSEGMENT DATA: NO SEGMENTS");
+			
 			return TRUNCATED;
 		}
 
 		if(idx >= numSegments || numSegments == 0)
 		{
 			lock.unlock();
+//			printf("APPENDSEGMENT DATA: BAD INDEX");
 			return BAD_INDEX;
 		}
 		Segment *segment = nodeData->getSegmentAt(idx);
@@ -366,11 +379,13 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 		if(bounds[0] != shape[0])
 		{
 			lock.unlock();
+//			printf("APPENDSEGMENT DATA: BAD TYPE %d   %d\n", bounds[0], shape[0]);
 			return BAD_TYPE;
 		}
 		if(bounds[2] < shape[2] - 1 || bounds[2] > shape[2])
 		{
 			lock.unlock();
+//			printf("APPENDSEGMENT DATA: BAD TYPE 1");
 			return BAD_SHAPE;
 		}
 
@@ -379,6 +394,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			if(bounds[4 + i] != shape[4 + i])
 			{
 				lock.unlock();
+//			printf("APPENDSEGMENT DATA: BAD SHAPE");
 				return BAD_SHAPE;
 			}
 		}
@@ -390,6 +406,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			if(dataSize > leftSize)
 			{
 				lock.unlock();
+//			printf("APPENDSEGMENT DATA: DATASIZE > LEFT SIZE");
 				return TRUNCATED;
 			}
 			if(leftSize == dataSize)
@@ -417,6 +434,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			if(dataSize > leftSize)
 			{
 				lock.unlock();
+//			printf("APPENDSEGMENT DATA: DATASIZE > LEFT SIZE");
 				return TRUNCATED;
 			}
 			if(leftSize == dataSize)
@@ -446,6 +464,9 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 		&timestamp, 1, segmentFilled, retIdx);
 	if((status & 1) && *segmentFilled)
 	{
+
+//printf("SEGMENT FILLED FOR %f\n", *(float *)data);
+
 		int *prevBounds, prevBoundsSize;
 		char *dim, *prevData;
 		int dimSize, prevDataSize, currDataSize, actSamples;
@@ -463,10 +484,12 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 		int newDataSize = prevBounds[3];
 		char *newData = new char[newDataSize];
 		memset((void *)newData, 0, newDataSize);
-
-		status = beginTimestampedSegment(treeId, nid, -1, newDataSize/dataSize, (char *)prevBounds, prevBoundsSize, 
+		char *newBounds = new char[prevBoundsSize];
+		memcpy(newBounds, prevBounds, prevBoundsSize);
+		status = beginTimestampedSegment(treeId, nid, -1, newDataSize/dataSize, (char *)newBounds, prevBoundsSize, 
 			newData, newDataSize, 0, 0, 0, 0, retIdx);
 		delete [] newData;
+		delete [] newBounds;
 	}
 	else
 		*newSegmentCreated = false;
