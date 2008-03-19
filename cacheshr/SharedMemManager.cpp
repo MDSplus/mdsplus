@@ -57,18 +57,23 @@ char *SharedMemManager::initialize(int size)
 {
 	this->size = size;
 	if(startAddress) return startAddress; //Already mapped
-	key_t key = ftok("/tmp", 0);
+	//key_t key = ftok("/tmp", 0);
+	key_t key = ftok("/tmp", 1);
 	if(key == (key_t)-1)
 	{
 	    perror("Cannot create Unique ID in ftok\n");
 	    exit(0);//Fatal error
 	}
 	
+	printf("INITIALIZE MEMORY\n");
+	
 	shmid = shmget(key, size, IPC_CREAT | 0666);
 	
 	if(shmid == -1)
 	{
-	    perror("Cannot create shared memory");
+            char buf[256];
+            sprintf(buf, "Cannot create shared memory for %d bytes", size);
+	    perror(buf);
 	     exit(0); //Fatal error
 	}  
 	startAddress = (char *)shmat(shmid, NULL, 0);

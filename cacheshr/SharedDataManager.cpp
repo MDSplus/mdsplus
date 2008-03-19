@@ -472,8 +472,10 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 		int dimSize, prevDataSize, currDataSize, actSamples;
 		bool timestamped;
 		*newSegmentCreated = true;
-		status = getSegmentData(treeId, nid, 0, &dim, &dimSize, &prevData, &prevDataSize,
-									  (char **)&prevBounds, &prevBoundsSize, &currDataSize, &timestamped, &actSamples);
+//		status = getSegmentData(treeId, nid, 0, &dim, &dimSize, &prevData, &prevDataSize,
+//									  (char **)&prevBounds, &prevBoundsSize, &currDataSize, &timestamped, &actSamples);
+		status = getSegmentDataAndShapeCopy(treeId, nid, 0, &prevData, &prevDataSize,
+									  (char **)&prevBounds, &prevBoundsSize);
 
 //Return Shape and type information. The coding is the following:
 //1) data type
@@ -482,14 +484,10 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 //4) total dimension in bytes 
 //The remaining elements are the dimension limits
 		int newDataSize = prevBounds[3];
-		char *newData = new char[newDataSize];
-		memset((void *)newData, 0, newDataSize);
-		char *newBounds = new char[prevBoundsSize];
-		memcpy(newBounds, prevBounds, prevBoundsSize);
-		status = beginTimestampedSegment(treeId, nid, -1, newDataSize/dataSize, (char *)newBounds, prevBoundsSize, 
-			newData, newDataSize, 0, 0, 0, 0, retIdx);
-		delete [] newData;
-		delete [] newBounds;
+		status = beginTimestampedSegment(treeId, nid, -1, newDataSize/dataSize, (char *)prevBounds, prevBoundsSize, 
+			prevData, newDataSize, 0, 0, 0, 0, retIdx);
+		delete [] prevData;
+		delete [] prevBounds;
 	}
 	else
 		*newSegmentCreated = false;
@@ -658,6 +656,43 @@ int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, 
 		*currDataSize = segment->getCurrDataSize();
 		*timestamped = segment->isTimestamped();
 		*actSamples = segment->getActSamples();
+
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
+int SharedDataManager::getSegmentDataAndShapeCopy(int treeId, int nid, int idx, char **data, int *dataSize,
+									  char **shape, int *shapeSize)
+{
+	Segment *segment;
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			lock.unlock();
+			return 0;
+		}
+		int numSegments = nodeData->getNumSegments();
+		if(idx >= numSegments || idx < 0)
+		{
+			lock.unlock();
+			return 0;
+		}
+		segment = nodeData->getSegmentAt(idx);
+
+		char *currData;
+		segment->getData((char **)&currData, dataSize);
+		*data = new char[*dataSize];
+		memcpy(*data, currData,*dataSize);
+		char *currShape;
+		segment->getShape((char **)&currShape, shapeSize);
+		*shape = new char[*shapeSize];
+		memcpy(*shape, currShape, *shapeSize);
 
 		lock.unlock();
 		return 1;

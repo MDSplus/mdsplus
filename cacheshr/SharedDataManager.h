@@ -20,7 +20,7 @@
 #define BAD_TYPE 10
 
 
-#define DEFAULT_SIZE 500000
+#define DEFAULT_SIZE 20000000
 
 class SharedDataManager
 {
@@ -56,6 +56,8 @@ public:
 	int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize);
 	int getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize, char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
+	int getSegmentDataAndShapeCopy(int treeId, int nid, int idx, char **data, int *dataSize, char **shape, 
+		int *shapeSize);
 	int appendSegmentData(int treeId, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, bool isTimestamped, 
 										 _int64 *timestamps, int numTimestamps, int *segmentFilled, int *retIdx);

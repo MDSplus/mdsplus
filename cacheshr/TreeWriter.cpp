@@ -88,6 +88,11 @@ void TreeWriter::run(void *arg)
 		if(!nidHead)
 			nidEvent.wait();
 		lock.lock();
+		if(!nidHead) 
+		{
+			//printf("ERRORE: NidHead nullo\n"); 
+			lock.unlock();
+		}
 		while(nidHead)
 		{
 			writeNid = nidHead->nid;
@@ -141,14 +146,19 @@ void TreeWriter::run(void *arg)
 						currDataSize, 1, actSamples, 0);
 					break;
 				case TREEWRITER_PUT_TIMESTAMPED_SEGMENT_DISCARD:
+				//printf("PUT TIMESTAMP SEGMENT DISCARD\n");
 					status = dataManager->getSegmentLimits(writeTreeIdx, writeNid, 0, &start, &startSize, 
 						&end, &endSize, &isTimestamped);
+				//printf("PUT TIMESTAMP SEGMENT DISCARD 1\n");
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, 0, &dim, &dimSize, 
 						&data, &dataSize, (char **)&shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
+				//printf("PUT TIMESTAMPED SEGMENT DISCARD 2 %f\n", *(float *)data);
 					if(status &1 )status = putSegmentInternal(writeNid, 
 						start, startSize, end, endSize, dim, dimSize, data, dataSize, shape, shapeSize, 
 						currDataSize, 1, actSamples, 0);
+				//printf("PUT TIMESTAMP SEGMENT DISCARD 3\n");
 					if(status & 1) dataManager->discardFirstSegment(writeTreeIdx, writeNid);
+				//printf("PUT TIMESTAMP SEGMENT DISCARD 4\n");
 					break;
 			}
 			if(!nidHead && synchWaiting)
