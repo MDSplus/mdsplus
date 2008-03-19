@@ -5,6 +5,8 @@ static	void swapBytes(char *buf, int size);
 
 class Segment
 {
+public:
+	
 	bool timestamped;
 	_int64 data;
 	int dataSize;
