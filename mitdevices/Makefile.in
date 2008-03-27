@@ -760,8 +760,8 @@ MitDevices.exports: MitDevices.def
 #
 @MAKESHLIBDIR@libIdl.so : callidl.c
 	cc -o @MAKESHLIBDIR@libIdl.so callidl.c -shared \
-               -I/usr/local/rsi/idl/external \
-               -L/usr/local/rsi/idl/bin/bin.linux.x86/ -lidl \
+               -I/usr/local/itt/idl/external \
+               -L/usr/local/itt/idl/bin/bin.linux.x86/ -lidl \
                -L/usr/X11R6/lib -lXm -lXp -lXpm -lXext -lXt -lSM -lICE -lX11 \
                -ldl -ltermcap -lrt -lm -lpthread
 #
