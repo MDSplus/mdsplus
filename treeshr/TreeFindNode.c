@@ -1141,6 +1141,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
       switch (tsearch.info->header->tags)
       {
 	  case 0:	status = TreeTNF;
+				break;
 	  case 1: if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
 			  {
 				  *nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
@@ -1149,6 +1150,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 			  }
 		      else
 			    status = TreeTNF;
+			break;
        default:
 		   if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
 			   tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0)
@@ -1159,6 +1161,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 		   }
 		   else
 			   status = TreeTNF;
+		   break;
       }
       if (status == TreeTNF && tree == 0)
       {
