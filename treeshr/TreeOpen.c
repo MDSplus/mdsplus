@@ -837,6 +837,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
   int i;
   char tree_lower[13];
   char *resnam = 0;
+  int is_tree = strcmp(type,TREE_TREEFILE_TYPE)==0;
 #ifdef HAVE_SYS_RESOURCE_H
   static int initialized = 0;
   if (!initialized)
@@ -881,8 +882,10 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
           strcat(resnam,name);
         }
         strcat(resnam,type);
-        info->channel = 0;
-        info->mapped = 0;
+	if (is_tree) {
+	  info->channel = 0;
+	  info->mapped = 0;
+	}
         if (new)
         {
           fd = MDS_IO_OPEN(resnam,O_RDWR | O_CREAT, 0777);
@@ -899,8 +902,9 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
           free(resnam);
           resnam = NULL;
         }
-        else
+        else if (is_tree) {
           info->channel = fd;
+	}
         part = &path[i+1];
       }
     }
@@ -912,7 +916,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     */
     free(path);
   }
-  if (fd != -1 && strcmp(type,TREE_TREEFILE_TYPE) == 0 && edit_flag)
+  if (fd != -1 && is_tree && edit_flag)
   {
     if (!(MDS_IO_LOCK(fd,1,1,10,0) & 1))
     {
@@ -1276,6 +1280,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
         {
           char *resnam = 0;
           MDS_IO_CLOSE(fd);
+          info->channel=0;
           fd = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0, 0);
           if (resnam)
             free(resnam);
