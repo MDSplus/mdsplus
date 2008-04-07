@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR RMIC CAMSHR CC_LDFLAGS CCL D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GCCLIB GEN_DEVICE GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JDK_DIR JVM JDK_LIVECONNECT LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC VAL MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICES MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN REMCAM SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF LIBDC1394 DC1394_SUPPORT LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR RMIC CAMSHR CC_LDFLAGS CCL D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GCCLIB GEN_DEVICE GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JDK_DIR JVM JDK_LIVECONNECT LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC VAL MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICES MITDEVICESIO_TARGETS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN REMCAM SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF DC1394_SUPPORT DC1394_SUPPORT2 LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -873,7 +873,6 @@ Optional Packages:
  --with-jdk=java-jdk-dir	specify location of java jdk
   --with-xio=globus-location:flavor  use globus xio for mdsip communications
   --with-srb=srb-install-dir  Enable srb capabilities
-  --with-libdc1394=location  compile the libdc1394 digital camera support stuff
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -1538,7 +1537,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:1541:" \
+echo "$as_me:1540:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -2896,7 +2895,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2899:" \
+echo "$as_me:2898:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -4219,42 +4218,220 @@ _ACEOF
 
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 
+echo "$as_me:$LINENO: checking for dc1394_new  in -ldc1394" >&5
+echo $ECHO_N "checking for dc1394_new  in -ldc1394... $ECHO_C" >&6
+if test "${ac_cv_lib_dc1394_dc1394_new_+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldc1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
 
-echo "$as_me:$LINENO: checking \"libdb1394 - firewire camera support library\"" >&5
-echo $ECHO_N "checking \"libdb1394 - firewire camera support library\"... $ECHO_C" >&6
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char dc1394_new  ();
+int
+main ()
+{
+dc1394_new  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_dc1394_dc1394_new_=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
-# Check whether --with-libdc1394 or --without-libdc1394 was given.
-if test "${with_libdc1394+set}" = set; then
-  withval="$with_libdc1394"
-  LIBDC1394="$withval"
-	if test "$LIBDC1394" = "yes"
-	then
-	  cat <<EOF
-You need to provide the location of the libdc1394 software and include files
+ac_cv_lib_dc1394_dc1394_new_=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_new_" >&5
+echo "${ECHO_T}$ac_cv_lib_dc1394_dc1394_new_" >&6
+if test $ac_cv_lib_dc1394_dc1394_new_ = yes; then
+  dc1394_v2=yes
+fi
 
-EOF
-	  exit
-        else
-         echo "LIBDC1394 is /$LIBDC1394/"
-	fi
-        if test -d /usr/local/include/libraw1394/
-	then
-	  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
-          echo "DC1394_SUPPORT=$DC1394_SUPPORT"
-        else cat <<EOF
-The libraw1394 package must be available on the sytem in order to compile and link the libdc1394
-support code.  It can be gotten from : http://www.linux1394.org/
+echo "$as_me:$LINENO: checking for dc1394_get_camera_info  in -ldc1394" >&5
+echo $ECHO_N "checking for dc1394_get_camera_info  in -ldc1394... $ECHO_C" >&6
+if test "${ac_cv_lib_dc1394_dc1394_get_camera_info_+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldc1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
 
-libdc1394 support disabled.
-EOF
-	  DC1394_SUPPORT=""
-	fi
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char dc1394_get_camera_info  ();
+int
+main ()
+{
+dc1394_get_camera_info  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_dc1394_dc1394_get_camera_info_=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
+ac_cv_lib_dc1394_dc1394_get_camera_info_=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_get_camera_info_" >&5
+echo "${ECHO_T}$ac_cv_lib_dc1394_dc1394_get_camera_info_" >&6
+if test $ac_cv_lib_dc1394_dc1394_get_camera_info_ = yes; then
+  dc1394_v1=yes
+fi
+
+echo "$as_me:$LINENO: checking for raw1394_get_libversion  in -lraw1394" >&5
+echo $ECHO_N "checking for raw1394_get_libversion  in -lraw1394... $ECHO_C" >&6
+if test "${ac_cv_lib_raw1394_raw1394_get_libversion_+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lraw1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char raw1394_get_libversion  ();
+int
+main ()
+{
+raw1394_get_libversion  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_raw1394_raw1394_get_libversion_=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_raw1394_raw1394_get_libversion_=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_raw1394_raw1394_get_libversion_" >&5
+echo "${ECHO_T}$ac_cv_lib_raw1394_raw1394_get_libversion_" >&6
+if test $ac_cv_lib_raw1394_raw1394_get_libversion_ = yes; then
+  raw1394=yes
+fi
+
+if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
+else
+  DC1394_SUPPORT2=""
+fi
+if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
 else
   DC1394_SUPPORT=""
-
-
-fi;
+fi
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -10150,7 +10327,7 @@ ac_x_header_dirs='
 /usr/openwin/share/include'
 
 if test "$ac_x_includes" = no; then
-  # Guess where to find include files, by looking for Intrinsic.h.
+  # Guess where to find include files, by looking for Xlib.h.
   # First, try using that file with no special directory specified.
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -10158,7 +10335,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 _ACEOF
 if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
@@ -10185,7 +10362,7 @@ else
 sed 's/^/| /' conftest.$ac_ext >&5
 
   for ac_dir in $ac_x_header_dirs; do
-  if test -r "$ac_dir/X11/Intrinsic.h"; then
+  if test -r "$ac_dir/X11/Xlib.h"; then
     ac_x_includes=$ac_dir
     break
   fi
@@ -10199,18 +10376,18 @@ if test "$ac_x_libraries" = no; then
   # See if we find them without any special options.
   # Don't add to $LIBS permanently.
   ac_save_LIBS=$LIBS
-  LIBS="-lXt $LIBS"
+  LIBS="-lX11 $LIBS"
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 int
 main ()
 {
-XtMalloc (0)
+XrmInitialize ()
   ;
   return 0;
 }
@@ -12664,8 +12841,8 @@ s,@uiddir@,$uiddir,;t t
 s,@USE_SEMAPHORE_H@,$USE_SEMAPHORE_H,;t t
 s,@USE_PIPED_MESSAGING@,$USE_PIPED_MESSAGING,;t t
 s,@USE_TM_GMTOFF@,$USE_TM_GMTOFF,;t t
-s,@LIBDC1394@,$LIBDC1394,;t t
 s,@DC1394_SUPPORT@,$DC1394_SUPPORT,;t t
+s,@DC1394_SUPPORT2@,$DC1394_SUPPORT2,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
