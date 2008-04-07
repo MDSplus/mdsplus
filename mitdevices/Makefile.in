@@ -16,8 +16,9 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 MATH_LIBS=-L@MAKESHLIBDIR@ -lMdsMath
-LIBDC1394_LIBS=-L@LIBDC1394@libdc1394/.libs/ -ldc1394_control -lraw1394
-LIBDC1394_INCS=-I@LIBDC1394@
+LIBDC1394_LIBS=-ldc1394 -lraw1394
+LIBDC1394_INCS=-I/usr/local/include/dc1394 -I/usr/local/include/libraw1394
+
 UIDS = \
 @MAKEUIDDIR@A12.uid \
 @MAKEUIDDIR@A14.uid \
@@ -27,6 +28,7 @@ UIDS = \
 @MAKEUIDDIR@B5910A.uid \
 @MAKEUIDDIR@CHS_A14.uid \
 @MAKEUIDDIR@DC1394.uid \
+@MAKEUIDDIR@DC1394A.uid \
 @MAKEUIDDIR@DT101.uid \
 @MAKEUIDDIR@DT196.uid \
 @MAKEUIDDIR@DT200.uid \
@@ -195,10 +197,6 @@ OBJECTS = $(SOURCES:.c=.o)
 
 IO_OBJECTS = $(IO_SOURCES:.c=.o)
 
-DC1394_SOURCES = dc1394_support.c
-
-DC1394_OBJECTS = $(DC1394_SOURCES:.c=.o)
-
 EXPORTS = MitDevices.exports
 
 
@@ -208,7 +206,7 @@ all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKELIBDIR@libMitDevices.a \
        @MITDEVICESIO_TARGETS@ $(UIDS) \
        @MAKEBINDIR@reboot_dtaq_satelite \
-       @DC1394_SUPPORT@
+       @DC1394_SUPPORT@ @DC1394_SUPPORT2@
 
 
 depend:
@@ -239,7 +237,7 @@ install:
 	if [ -x @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ ] ; then \
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @libdir@ ;\
 	fi;
-		
+
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ @libdir@
 	ln -sf libMitDevices@SHARETYPE@ @libdir@/libMIT\$$DEVICES@SHARETYPE@
 	if (test @SHARETYPE@ != .a) then \
@@ -682,6 +680,7 @@ MitDevices.exports: MitDevices.def
 @MAKEUIDDIR@B5910A.uid : B5910A.uil ; $(UIL) -o @MAKEUIDDIR@B5910A.uid B5910A.uil
 @MAKEUIDDIR@CHS_A14.uid : CHS_A14.uil ; $(UIL) -o @MAKEUIDDIR@CHS_A14.uid CHS_A14.uil
 @MAKEUIDDIR@DC1394.uid : DC1394.uil ; $(UIL) -o @MAKEUIDDIR@DC1394.uid DC1394.uil
+@MAKEUIDDIR@DC1394A.uid : DC1394A.uil ; $(UIL) -o @MAKEUIDDIR@DC1394A.uid DC1394A.uil
 @MAKEUIDDIR@DT101.uid : DT101.uil ; $(UIL) -o @MAKEUIDDIR@DT101.uid DT101.uil
 @MAKEUIDDIR@DT196.uid : DT196.uil ; $(UIL) -o @MAKEUIDDIR@DT196.uid DT196.uil
 @MAKEUIDDIR@DT200.uid : DT200.uil ; $(UIL) -o @MAKEUIDDIR@DT200.uid DT200.uil
@@ -772,4 +771,11 @@ MitDevices.exports: MitDevices.def
 
 
 dc1394_support.o : dc1394_support.c
+	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
+
+@DC1394_SUPPORT2@ : dc1394_support2.o
+	$(LD) -o $@ @LINKSHARED@  dc1394_support2.o $(LIBDC1394_LIBS) $(LIBS)
+
+
+dc1394_support2.o : dc1394_support2.c
 	$(CC) -c -o $@ $(CFLAGS) $< $(LIBDC1394_INCS)
