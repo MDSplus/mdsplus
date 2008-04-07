@@ -483,38 +483,20 @@ esac
 AC_CHECK_SIZEOF(int *)
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 
-
-dnl see if we are going to build the dc1394_support devices
-AC_MSG_CHECKING("libdb1394 - firewire camera support library")
-AC_ARG_WITH(libdc1394,
-	[  --with-libdc1394=location  compile the libdc1394 digital camera support stuff],
-	LIBDC1394="$withval"
-	if test "$LIBDC1394" = "yes"
-	then
-	  cat <<EOF
-You need to provide the location of the libdc1394 software and include files
-
-EOF
-	  exit
-        else
-         echo "LIBDC1394 is /$LIBDC1394/"
-	fi
-        if test -d /usr/local/include/libraw1394/
-	then
-	  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
-          echo "DC1394_SUPPORT=$DC1394_SUPPORT"
-        else cat <<EOF
-The libraw1394 package must be available on the sytem in order to compile and link the libdc1394
-support code.  It can be gotten from : http://www.linux1394.org/  
-
-libdc1394 support disabled.
-EOF
-	  DC1394_SUPPORT=""
-	fi
-	,
-	DC1394_SUPPORT=""
-
-)
+dnl see if we have libdc1394 libraries and what version
+AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
+AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
+AC_CHECK_LIB(raw1394,raw1394_get_libversion ,raw1394=yes)
+if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
+else
+  DC1394_SUPPORT2=""
+fi
+if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
+else
+  DC1394_SUPPORT=""
+fi
 
 dnl Checks for programs.
 AC_PROG_RANLIB
@@ -937,8 +919,8 @@ AC_SUBST(uiddir)
 AC_SUBST(USE_SEMAPHORE_H)
 AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
-AC_SUBST(LIBDC1394)
 AC_SUBST(DC1394_SUPPORT)
+AC_SUBST(DC1394_SUPPORT2)
 AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile
 envsyms
