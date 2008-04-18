@@ -623,7 +623,10 @@ EXPORT int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int
 	}
 	dataSize = nItems * shape[1];
 	*leftItems = currDataSize/shape[1];
-	*leftRows = *leftItems/(nItems / shape[4 + shape[2]-1]);
+	if(*leftItems == 0)
+	    *leftRows = 0;
+	else
+	    *leftRows = *leftItems/(nItems / shape[4 + shape[2]-1]);
 	return 1;
 }
 
