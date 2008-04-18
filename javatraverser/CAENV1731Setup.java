@@ -26,6 +26,7 @@ public class CAENV1731Setup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
+        deviceField13 = new DeviceField();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -98,6 +99,12 @@ public class CAENV1731Setup extends DeviceSetup {
         deviceField2.setNumCols(6);
         deviceField2.setOffsetNid(2);
         jPanel1.add(deviceField2);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Board Id: ");
+        deviceField13.setNumCols(2);
+        deviceField13.setOffsetNid(52);
+        jPanel1.add(deviceField13);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -401,6 +408,7 @@ public class CAENV1731Setup extends DeviceSetup {
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
+    private DeviceField deviceField13;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;

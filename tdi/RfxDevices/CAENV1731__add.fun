@@ -1,7 +1,7 @@
 public fun CAENV1731__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'CAENV1731', 54, _nidout);
+    DevAddStart(_path, 'CAENV1731', 55, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_ADDRESS', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':TRIG_MODE', 'TEXT', 'OVER', *, _nid);
@@ -29,6 +29,7 @@ public fun CAENV1731__add(in _path, out _nidout)
         DevAddNode(_cn // ':TRIG_STATE', 'TEST', 'DISABLED', *, _nid);
         DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
+    DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
