@@ -204,7 +204,7 @@ public class CAENV1731Setup extends DeviceSetup {
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Monitor"));
-        deviceChoice5.setChoiceItems(new String[] {"MAJORITY", "SAWTOOTH", "BUF. OCCUPANCY"});
+        deviceChoice5.setChoiceItems(new String[] {"MAJORITY", "SAWTOOTH", "BUF. OCCUPANCY", "SELECTED LEVEL"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Mode: ");
         deviceChoice5.setOffsetNid(10);
