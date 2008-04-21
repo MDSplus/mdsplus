@@ -1,11 +1,10 @@
 public fun CAENV1731__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'CAENV1731', 55, _nidout);
+    DevAddStart(_path, 'CAENV1731', 78, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_ADDRESS', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':TRIG_MODE', 'TEXT', 'OVER', *, _nid);
-    DevAddNode(_path // ':TRIG_TRESH', 'NUMERIC', 0.5, *, _nid);
     DevAddNode(_path // ':TRIG_SOFT', 'TEXT', 'ENABLED', *, _nid);
     DevAddNode(_path // ':TRIG_EXT', 'TEXT', 'ENABLED', *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);
@@ -21,18 +20,25 @@ public fun CAENV1731__add(in _path, out _nidout)
     DevAddNode(_path // ':END_IDX', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':START_TIME', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':END_TIME', 'NUMERIC', 1E-6, *, _nid);
+    DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
 	for (_c = 1; _c <=8; _c++)
     {
         _cn = _path // '.CHANNEL_' // TEXT(_c, 1);
         DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
         DevAddNode(_cn // ':STATE', 'TEST', 'ENABLED', *, _nid);
-        DevAddNode(_cn // ':TRIG_STATE', 'TEST', 'DISABLED', *, _nid);
+        DevAddNode(_cn // ':TRIG_STATE', 'TEXT', 'DISABLED', *, _nid);
+        DevAddNode(_cn // ':TR_TRESH_LEV', 'NUMERIC', 0, *, _nid);
+        DevAddNode(_cn // ':TRIG_TRESH', 'NUMERIC', 0, *, _nid);
+        DevAddNode(_cn // ':OFFSET', 'NUMERIC', 0, *, _nid);
         DevAddNode(_cn // ':DATA', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
-    DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddAction(_path//':INIT_ACTION', 'INIT', 'INIT', 50,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE','STORE', 50,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
+
+
+
+
 
 
