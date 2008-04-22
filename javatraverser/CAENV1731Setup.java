@@ -162,14 +162,14 @@ public class CAENV1731Setup extends DeviceSetup {
         deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Soft. Trig.:");
-        deviceChoice2.setOffsetNid(5);
+        deviceChoice2.setOffsetNid(4);
         deviceChoice2.setUpdateIdentifier("");
         jPanel7.add(deviceChoice2);
 
         deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISBLED"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Ext. Trig.:");
-        deviceChoice3.setOffsetNid(6);
+        deviceChoice3.setOffsetNid(5);
         deviceChoice3.setUpdateIdentifier("");
         jPanel7.add(deviceChoice3);
 
