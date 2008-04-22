@@ -1875,7 +1875,7 @@ old array is same size.
 
  static int DataCopy(TREE_INFO *info1, TREE_INFO *info2, _int64 offset1, int length, _int64 *offset2) {
    int status=1;
-   if (offset1 != -1) {
+   if (offset1 != -1 && length >= 0) {
      char *data=malloc(length);
      status = MDS_IO_READ_X(info1->data_file->get,offset1,data,length,0) == length;
      if (status) {
