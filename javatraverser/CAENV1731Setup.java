@@ -247,25 +247,25 @@ public class CAENV1731Setup extends DeviceSetup {
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Start Time: ");
         deviceField9.setNumCols(8);
-        deviceField9.setOffsetNid(18);
+        deviceField9.setOffsetNid(17);
         jPanel13.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("End Time: ");
         deviceField10.setNumCols(8);
-        deviceField10.setOffsetNid(19);
+        deviceField10.setOffsetNid(18);
         jPanel13.add(deviceField10);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Start Idx: ");
         deviceField11.setNumCols(8);
-        deviceField11.setOffsetNid(16);
+        deviceField11.setOffsetNid(15);
         jPanel13.add(deviceField11);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("End Idx: ");
         deviceField12.setNumCols(8);
-        deviceField12.setOffsetNid(17);
+        deviceField12.setOffsetNid(16);
         jPanel13.add(deviceField12);
 
         jPanel10.add(jPanel13);
