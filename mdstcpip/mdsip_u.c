@@ -1470,7 +1470,7 @@ static void ExecuteMessage(Client *c)
   int java = CType(c->client_type) == JAVA_CLIENT;
   if (StrCompare(c->descrip[0],&eventastreq) == 0)
   {
-    static int eventid;
+    static int eventid = -1;
     static DESCRIPTOR_LONG(eventiddsc,&eventid);
     MdsEventList *newe = (MdsEventList *)malloc(sizeof(MdsEventList));
     struct descriptor_a *info = (struct descriptor_a *)c->descrip[2];
@@ -1499,14 +1499,15 @@ static void ExecuteMessage(Client *c)
       newe->info->eventid = newe->eventid;
     }
     newe->next = 0;
-    if (!(status & 1))
-    {
+    if (!(status & 1)) {
+      eventiddsc.pointer=(void *)&eventid;
       free(newe->info);
       free(newe);
     }
     else
     {
       MdsEventList *e;
+      eventiddsc.pointer=(void *)&newe->eventid;
       if (c->event)
       {
         for(e=c->event;e->next;e=e->next);
