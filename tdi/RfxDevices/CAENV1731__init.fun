@@ -33,7 +33,7 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 
     private _INVALID = 10E20;
 
-    write(*, 'CAENV1731');
+    write(*, 'CAENV1731 INIT');
 
 
      
@@ -154,8 +154,6 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     DevNodeCvt(_nid, _N_TRIG_EXT, ['ENABLED', 'DISABLED'], [1,0], _trig_ext = 0);
     _chan_trig_enable = _chan_trig_enable | (_trig_ext << 30);
 
-write(*, 'CHAN_MASK', _chan_enable);
-
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8120, long(_chan_enable));
     if(_status != 0)
     {
@@ -172,8 +170,6 @@ write(*, 'CHAN_MASK', _chan_enable);
 
 /* Monitor */
     DevNodeCvt(_nid, _N_MONITOR_MODE, ['MAJORITY', 'SAWTOOTH', 'BUF. OCCUPANCY', 'SELECTED LEVEL'], [0,1,3,4], _monitor_mode = 0);
-
-write(*, 'Monitor mode: ', _monitor_mode);
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8144, long(_monitor_mode));
     if(_status != 0)
     {
@@ -205,8 +201,6 @@ write(*, 'Monitor mode: ', _monitor_mode);
 	DevLogErr(_nid, "Cannot resolve trigger"); 
 	abort();
     }
-
-write(*, 'Trigger: ', _trig);
 /* Clock Source */
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['500 MHz', '1 GHz', 'EXTERNAL'], [500E6,1E9,0], _clock_freq = 0);
     if(_clock_freq == 0)
@@ -224,10 +218,6 @@ write(*, 'Trigger: ', _trig);
 	_clock_val = make_range(*,*,1./ _clock_freq);
     	 DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
     }
-
-
-write(*, 'Clock: ', _clock_val);
-
 
 /* PTS */
     _pts = if_error(data(DevNodeRef(_nid, _N_PTS))  , _INVALID);
@@ -253,7 +243,6 @@ write(*, 'Clock: ', _clock_val);
     DevNodeCvt(_nid, _N_USE_TIME, ['YES', 'NO'], [1,0], _use_time=0);
     if(_use_time)
     {
-write(*, 'Use Time');
     	_start_time = if_error(data(DevNodeRef(_nid, _N_START_TIME))  , _INVALID);
     	if(_start_time == _INVALID)
     	{
@@ -281,10 +270,7 @@ write(*, 'Use Time');
 
         DevPut(_nid, _N_START_IDX, long(_start_idx));
 
-
-write(*, _start_idx, _end_idx);
-
-    }
+   }
 
 /* Run device */
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8100, 4L);
