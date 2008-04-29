@@ -69,12 +69,25 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     }
  
 
+/* Num Segments */
+    DevNodeCvt(_nid, _N_NUM_SEGMENTS, [1,2,4,8,16,32,64,128,256,512, 1024], [0,1,2,3,4,5,6,7,8,9,10], _num_segments=0);
+    _status = CAENVME_WriteCycle(_handle, _vme_address + 0x800C, long(_num_segments));
+    if(_status != 0)
+    {
+    	DevLogErr(_nid, 'Error setting Number of Segments');
+ 	abort();
+    }
+    _segment_size = 4194304 / (2 ** _num_segments);
+
+
+
+
 /* Channel Global Configuration */
 
     DevNodeCvt(_nid, _N_TRIG_MODE, ['OVER THRESHOLD', 'UNDER THRESHOLD'], [0,1], _trig_mode = 0);
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['500 MHz', '1 GHz', 'EXTERNAL'], [0,1, 0], _clock_mode = 0);
 
-    _chan_conf = (_trig_mode << 6) | (_clock_mode << 12);
+    _chan_conf = (_trig_mode << 6) | (_clock_mode << 12) | 0x00000010;
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8000, _chan_conf);
     if(_status != 0)
     {
@@ -133,13 +146,15 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 	DevNodeCvt(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_STATE, ['ENABLED', 'DISABLED'], [1,0], _enabled = 0);
 	_chan_enable = _chan_enable | (_enabled << _c);
 	DevNodeCvt(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_STATE, ['ENABLED', 'DISABLED'], [1,0], _enabled = 0);
-	_chan_enable = _chan_trig_enable | (_enabled << _c);
+	_chan_trig_enable = _chan_trig_enable | (_enabled << _c);
     }
 	
     DevNodeCvt(_nid, _N_TRIG_SOFT, ['ENABLED', 'DISABLED'], [1,0], _trig_soft = 0);
     _chan_trig_enable = _chan_trig_enable | (_trig_soft << 31);
     DevNodeCvt(_nid, _N_TRIG_EXT, ['ENABLED', 'DISABLED'], [1,0], _trig_ext = 0);
     _chan_trig_enable = _chan_trig_enable | (_trig_ext << 30);
+
+write(*, 'CHAN_MASK', _chan_enable);
 
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8120, long(_chan_enable));
     if(_status != 0)
@@ -157,6 +172,8 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 
 /* Monitor */
     DevNodeCvt(_nid, _N_MONITOR_MODE, ['MAJORITY', 'SAWTOOTH', 'BUF. OCCUPANCY', 'SELECTED LEVEL'], [0,1,3,4], _monitor_mode = 0);
+
+write(*, 'Monitor mode: ', _monitor_mode);
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8144, long(_monitor_mode));
     if(_status != 0)
     {
@@ -189,6 +206,7 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 	abort();
     }
 
+write(*, 'Trigger: ', _trig);
 /* Clock Source */
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['500 MHz', '1 GHz', 'EXTERNAL'], [500E6,1E9,0], _clock_freq = 0);
     if(_clock_freq == 0)
@@ -207,15 +225,9 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     	 DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
     }
 
-/* Num Segments */
-    DevNodeCvt(_nid, _N_NUM_SEGMENTS, [1,2,4,8,16,32,64,128,256,512, 1024], [0,1,2,3,4,5,6,7,8,9,10], _num_segments=0);
-    _status = CAENVME_WriteCycle(_handle, _vme_address + 0x800C, long(_num_segments));
-    if(_status != 0)
-    {
-    	DevLogErr(_nid, 'Error setting Number of Segments');
- 	abort();
-    }
-    _segment_size = 4194304 / (2 ** _num_segments);
+
+write(*, 'Clock: ', _clock_val);
+
 
 /* PTS */
     _pts = if_error(data(DevNodeRef(_nid, _N_PTS))  , _INVALID);
@@ -238,9 +250,10 @@ public fun CAENV1731__init(as_is _nid, optional _method)
   
 
 /* Time management */
-    DevNodeCvt(_nid, _N_USE_TIME, ['TRUE', 'FALSE'], [1,0], _use_time=0);
+    DevNodeCvt(_nid, _N_USE_TIME, ['YES', 'NO'], [1,0], _use_time=0);
     if(_use_time)
     {
+write(*, 'Use Time');
     	_start_time = if_error(data(DevNodeRef(_nid, _N_START_TIME))  , _INVALID);
     	if(_start_time == _INVALID)
     	{
@@ -267,6 +280,10 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 	    _start_idx =  - x_to_i(build_dim(build_window(0,*,_trig + _start_time ), _clock_val),_trig);
 
         DevPut(_nid, _N_START_IDX, long(_start_idx));
+
+
+write(*, _start_idx, _end_idx);
+
     }
 
 /* Run device */

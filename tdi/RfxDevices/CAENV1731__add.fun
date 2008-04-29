@@ -25,7 +25,7 @@ public fun CAENV1731__add(in _path, out _nidout)
     {
         _cn = _path // '.CHANNEL_' // TEXT(_c, 1);
         DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
-        DevAddNode(_cn // ':STATE', 'TEST', 'ENABLED', *, _nid);
+        DevAddNode(_cn // ':STATE', 'TEXT', 'ENABLED', *, _nid);
         DevAddNode(_cn // ':TRIG_STATE', 'TEXT', 'DISABLED', *, _nid);
         DevAddNode(_cn // ':TR_TRESH_LEV', 'NUMERIC', 0, *, _nid);
         DevAddNode(_cn // ':TRIG_TRESH', 'NUMERIC', 0, *, _nid);
