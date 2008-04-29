@@ -194,6 +194,16 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     	}
     }
 
+/* Front Panel trigger out setting set TRIG/CLK to TTL*/
+    _status = CAENVME_WriteCycle(_handle, _vme_address + 0x811C,1L);
+    if(_status != 0)
+    {
+        DevLogErr(_nid, 'Error setting trigger out');
+     	abort();
+    }
+
+
+
 /* Trigger source */
     _trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE))  , _INVALID);
     if(_trig == _INVALID)
