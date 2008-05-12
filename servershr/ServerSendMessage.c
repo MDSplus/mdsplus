@@ -611,6 +611,59 @@ int ServerBadSocket(int socket)
   return status == 1;
 }
 
+int ServerDisconnect(char *server_in) {
+  int status = 0;
+  char *srv = TranslateLogical(server_in);
+  char *server = srv ? srv : server_in;
+  int found = 0;
+  unsigned int addr;
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+  short port=0;
+  int num = sscanf(server,"%[^:]:%s",hostpart,portpart);
+  if (num != 2)
+  {
+    printf("Server /%s/ unknown\n",server_in);
+  }
+  else
+  {
+    addr = GetHostAddr(hostpart);
+    if (addr != 0)
+    {
+      if (atoi(portpart) == 0)
+      {
+        struct servent *sp = getservbyname(portpart,"tcp");
+        if (sp != NULL)
+          port = sp->s_port;
+        else
+        {
+          char *portnam = getenv(portpart);
+          portnam = (portnam == NULL) ? ((hostpart[0]=='_') ? "8200" : "8000") : portnam;
+          port = htons((short)atoi(portnam));
+        }
+      }
+      else
+        port = htons((short)atoi(portpart));
+      if (port)
+      {
+        Client *c;
+        lock_client_list();
+        for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
+        unlock_client_list();
+        if (c)
+        {
+            RemoveClient(c,0);
+	    status=1;
+        }
+      }
+    }
+  }
+  if (srv)
+    TranslateLogicalFree(srv);
+  return(status);
+}
+
+
 int ServerConnect(char *server_in)
 {
   int sock = -1;
