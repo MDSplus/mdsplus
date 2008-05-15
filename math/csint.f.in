@@ -130,7 +130,7 @@
 ! slope = (W(i+1)*secant(i-1)+W(i-1)*secant(i))/(W(i+1)+W(i-1))
 ! W(i) = abs(secant(i) - secant(i-1))
 	Integer j,n,nbes
-	Real	g,gm,wm,wp,secant
+	Real*8	g,gm,wm,wp,secant
 	secant(j) = (c(1,j+1) - c(1,j))/(break(j+1) - break(j))
 
 	n = ndata
@@ -146,8 +146,12 @@
 		g = secant(j)
 		wm = abs(gm - secant(j-2))
 		wp = abs(secant(j+1) - g)
-		c(2,j) = wp*gm + wm*g
-		If (wm + wp .gt. 0) c(2,j) = c(2,j) / (wm + wp)
+		If (wm + wp  .gt. 0) Then
+                  c(2,j) = (wp*gm + wm*g)/(wm + wp)
+                Else
+                  c(2,j) = wp*gm + wm*g
+                Endif
+!		If (wm + wp .gt. 0) c(2,j) = c(2,j) / (wm + wp)
 	    Enddo
 ! move weight for second (matches IMSL) and f''=0 at first
 ! Warning in IMSL their method is only C1 continuous.
