@@ -22,7 +22,7 @@ public fun HMSPECTRO__info(as_is _nid, optional _method)
 	private _HMSPECTRO_INVALID_BUFFER_ALLOCATION = 9004;
     private _HMSPECTRO_NOT_ACQUIRED_ALL_FRAME = 9005;
 
-write(*, "HMSPECTRO__arm");
+write(*, "HMSPECTRO__info");
 
 	_DevicesType = ['C9404MC', 'C9405MC', 'C9404GC', 'C9913GC', 'C9914GB', 'C10082MD', 'C10083MD', 'C9404CA', 'C9404CAH', 'C9405CA', 'C10082CA', 'C10083CA', 'C10083CA', 'C10082CAH', 'C10083CAH' ]; 
 	_DevicesCode = [ 0x2905,    0x2905,    0x2905,    0x2907,    0x2907,    0x2908,     0x2908,     0x290D,    0x290D,     0x290D,    0x2909,     0x2909,     0x2909,      0x2909,     0x2909];
@@ -53,10 +53,11 @@ write(*, "1 _dev_name ", _dev_name);
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _info = MdsValue('HMSPECTRO->HMSpectroInfo( $1 )', _dev_name);
+	    _info = MdsValue('HMSpectroInfo( $1 )', _dev_name);
+
 
 		_status = _HMSPECTRO_SUCCESS;
-		if(size( _info ) == 1)
+		if(len( _info ) == 4)
 			_status = _info[0];
 
 		if( _status != _HMSPECTRO_SUCCESS )
@@ -67,7 +68,6 @@ write(*, "1 _dev_name ", _dev_name);
 	}
 	else
 	{
-
 		_info = repeat(' ', 4096);
 		_status = HMSPECTRO->HMSpectroInfo( _dev_name, ref( _info ), val( 4096 ) );
 
@@ -78,11 +78,14 @@ write(*, "1 _dev_name ", _dev_name);
 		}
 	}
 
+
 	if( _status != _HMSPECTRO_SUCCESS )
 	{
     	DevLogErr(_nid, _msg );	
 		abort();
 	}
+
+	write(*,  _info  );
 
 	return (1);
 

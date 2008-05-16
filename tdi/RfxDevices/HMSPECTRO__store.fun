@@ -182,6 +182,18 @@ write(*, "_bufSize ", _bufSize);
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
+
+	    _lambda = MdsValue('HMSPECTROReadLambda( $1,  $2 )',  _dev_name ,  _hwPixel);
+
+		_status = _HMSPECTRO_SUCCESS;
+		if(size( _lambda ) == 1)
+			_status = _lambda[0];
+
+		if( _status != _HMSPECTRO_SUCCESS )
+		{
+			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
+		}
+
 	    _data = MdsValue('HMSPECTROReadData( $1,  $2 )',  _dev_name ,  _bufSize);
 
 		_status = _HMSPECTRO_SUCCESS;
@@ -200,15 +212,26 @@ write(*, "_bufSize ", _bufSize);
 	{
 
 		_data = zero( _bufSize, 0WU); 
+		_lambda = zero( _pixel, ft_float(0.0) ); 
 
-		_status = HMSPECTRO->HMSpectroReadData( _dev_name, ref( _data ), val( _bufSize ));
 
+		_status = HMSPECTRO->HMSpectroReadLambda( _dev_name, ref( _lambda ), val( _hwPixel ));
 
 		if( _status != _HMSPECTRO_SUCCESS )
 		{
 			_msg = repeat(' ', 200);
 			HMSPECTRO->HMSpectroGetMsg( val( _status ), ref( _msg ) );
 		}
+
+
+		_status = HMSPECTRO->HMSpectroReadData( _dev_name, ref( _data ), val( _bufSize ));
+
+		if( _status != _HMSPECTRO_SUCCESS )
+		{
+			_msg = repeat(' ', 200);
+			HMSPECTRO->HMSpectroGetMsg( val( _status ), ref( _msg ) );
+		}
+
 	}
 
 	if( _status != _HMSPECTRO_SUCCESS )
@@ -224,16 +247,13 @@ write(*, "_bufSize ", _bufSize);
 		}
 	}
 
-	_buf = set_range(_hwPixel, _num_scan, _data);
-	
-	_buf1 = transpose( _buf );
+	_buf = transpose( set_range(_hwPixel, _num_scan, _data) );
 
-    _dim1 = make_dim(make_window(0, _hwPixel - 1, 0),  make_range(*,*,1));
-
-    _dim2 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_delta));
+    _dim1 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_integ_time));
+    _dim2 = f_float( _lambda );
 
 	_data_nid = DevHead(_nid) + _N_DATA;
-    _signal = compile('build_signal((`_buf1), $VALUE, (`_dim2), (`_dim1))');
+    _signal = compile('build_signal((`_buf), $VALUE, (`_dim1), (`_dim2))');
 
     return (TreeShr->TreePutRecord(val(_data_nid),xd(_signal),val(0)));
 

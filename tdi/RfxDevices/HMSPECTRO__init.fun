@@ -81,7 +81,7 @@ write(*, "_hwPixel", _hwPixel);
 write(*, "_swGain ", _swGain);
 
 
-    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0, 0x1, 0x2], _trig_mode = _INVALID);
+    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0,0x1, 0x2], _trig_mode = _INVALID);
     if( _trig_mode == _INVALID )
     {
     	DevLogErr(_nid, "Invalid trigger mode specification");
@@ -113,6 +113,7 @@ write(*, "_trig_edge ", _trig_edge);
 		_gain = 0xFF;
 		DevPut(_nid, _N_GAIN, 'NO_FUNCTION');
 	}
+
 write(*, "_gain ", _gain);
 
     _integ_time = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
@@ -124,7 +125,6 @@ write(*, "_gain ", _gain);
     _integration_time = LONG( _integ_time * 1000000 );
 
 write(*, "_integration_time ", _integration_time);
-
 
 	if( _trig_mode != 0x0)
 	{
@@ -177,15 +177,21 @@ write(*, "_num_scan ", _num_scan);
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-		
+
+		 _status = _HMSPECTRO_SUCCESS;
+
 		if( _trig_mode == 0x2 )
-		{		
-			write(*, " PRIMA INIT ");
+		{
+			write(*, " PRE INIZIALIZZAZIONE ");
 			_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
-		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, 1);
+		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, 0x1);
 		}
+
 		
-		_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
+		write(*, " INIZIALIZZAZIONE ");
+
+		if( _status == _HMSPECTRO_SUCCESS )
+			_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
 		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, _trig_mode);
 		
 		if( _status != _HMSPECTRO_SUCCESS )
