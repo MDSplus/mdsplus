@@ -18,6 +18,7 @@ public fun HMSPECTRO__store(as_is _nid, optional _method)
  
  
     private _INVALID = -1 ;
+    private _OK = 1 ;
 	
     private _HMSPECTRO_SUCCESS = 0;
 	private _HMSPECTRO_INVALID_BUFFER_ALLOCATION = 9004;
@@ -83,7 +84,7 @@ write(*, "_hwPixel", _hwPixel);
 
 write(*, "_swGain ", _swGain);
 
-    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0,0x1, 0xFF], _trig_mode = _INVALID);
+    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0, 0x1, 0x2], _trig_mode = _INVALID);
     if( _trig_mode == _INVALID )
     {
     	DevLogErr(_nid, "Invalid trigger mode specification");
@@ -92,7 +93,7 @@ write(*, "_swGain ", _swGain);
 
 write(*, "_trig_mode ", _trig_mode);
 
-    DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING_EDGE', 'FALLING_EDGE', 'NO_FUNCTION'], [0x0,0x1, 0xFF], _trig_edge = _INVALID);
+    DevNodeCvt(_nid, _N_TRIG_EDGE, ['RISING_EDGE', 'FALLING_EDGE', 'NO_FUNCTION'], [0x0, 0x1, 0xFF], _trig_edge = _INVALID);
     if( _trig_edge == _INVALID )
     {
     	DevLogErr(_nid, "Invalid trigger edge specification");
@@ -118,30 +119,6 @@ write(*, "_trig_edge ", _trig_edge);
 
 write(*, "_gain ", _gain);
 
-	if( _trig_mode != 0x0)
-	{
-		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
-		if( _trig_time == _INVALID )
-		{
-    		DevLogErr(_nid, "Invalid scan number specification");
- 			abort();
-		}
-	}
-	else
-	{
-		_trig_time = 0;
-	}
-
-write(*, "_trig_time ", _trig_time);
-
-    _num_scan = if_error(data(DevNodeRef(_nid, _N_NUM_SCAN)), _INVALID);
-    if( _num_scan == _INVALID || _num_scan <= 0)
-    {
-    	DevLogErr(_nid, "Invalid scan number specification");
- 		abort();
-    }
-
-write(*, "_num_scan ", _num_scan);
 
     _integ_time = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
     if( _integ_time == _INVALID)
@@ -152,6 +129,50 @@ write(*, "_num_scan ", _num_scan);
     _integration_time = LONG( _integ_time * 1000000 );
 
 write(*, "_integration_time ", _integration_time);
+
+
+	if( _trig_mode != 0x0)
+	{
+
+		_status = _OK;
+/*
+		_clock = if_error( evaluate(DevNodeRef(_nid, _N_TRIG_SOURCE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+    		DevLogErr(_nid, "Invalid scan number specification");
+ 			abort();
+		}
+		_clock = execute('evaluate(`_clock)');
+		_trig_time = dscptr(_clock, 0);
+		_delta = dscptr(_clock, 2);
+*/
+		
+		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+    		DevLogErr(_nid, "Invalid scan number specification");
+ 			abort();
+		}
+		_delta = _integ_time;
+
+	}
+	else
+	{
+		_trig_time = 0;
+		_delta = _integ_time;
+	}
+
+write(*, "_trig_time ", _trig_time);
+
+    _num_scan = if_error(data(DevNodeRef(_nid, _N_NUM_SCAN)), _INVALID);
+    if( _num_scan == _INVALID || _num_scan <= 0)
+    {
+    	DevLogErr(_nid, "Invalid scan number specification");
+ 		abort();
+    }
+	
+write(*, "_num_scan ", _num_scan);
+
 
 	_bufSize = _hwPixel * _num_scan;
 
@@ -204,12 +225,15 @@ write(*, "_bufSize ", _bufSize);
 	}
 
 	_buf = set_range(_hwPixel, _num_scan, _data);
+	
+	_buf1 = transpose( _buf );
 
     _dim1 = make_dim(make_window(0, _hwPixel - 1, 0),  make_range(*,*,1));
-    _dim2 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_integ_time));
+
+    _dim2 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_delta));
 
 	_data_nid = DevHead(_nid) + _N_DATA;
-    _signal = compile('build_signal((`_buf), $VALUE, (`_dim1), (`_dim2))');
+    _signal = compile('build_signal((`_buf1), $VALUE, (`_dim2), (`_dim1))');
 
     return (TreeShr->TreePutRecord(val(_data_nid),xd(_signal),val(0)));
 

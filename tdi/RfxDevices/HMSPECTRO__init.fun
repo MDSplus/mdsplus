@@ -17,6 +17,7 @@ public fun HMSPECTRO__init(as_is _nid, optional _method)
     private _N_DATA = 13;
  
     private _INVALID = -1 ;
+    private _OK = 0 ;
 
     private _HMSPECTRO_SUCCESS = 0;
 
@@ -80,7 +81,7 @@ write(*, "_hwPixel", _hwPixel);
 write(*, "_swGain ", _swGain);
 
 
-    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0,0x1, 0xFF], _trig_mode = _INVALID);
+    DevNodeCvt(_nid, _N_TRIG_MODE, ['INTERNAL', 'EDGE_TRIGGER', 'GATE_TRIGGER'], [0x0, 0x1, 0x2], _trig_mode = _INVALID);
     if( _trig_mode == _INVALID )
     {
     	DevLogErr(_nid, "Invalid trigger mode specification");
@@ -114,19 +115,49 @@ write(*, "_trig_edge ", _trig_edge);
 	}
 write(*, "_gain ", _gain);
 
+    _integ_time = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
+    if( _integ_time == _INVALID)
+    {
+    	DevLogErr(_nid, "Invalid integration time specification");
+ 		abort();
+    }
+    _integration_time = LONG( _integ_time * 1000000 );
+
+write(*, "_integration_time ", _integration_time);
+
 
 	if( _trig_mode != 0x0)
 	{
-		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _INVALID);
-		if( _trig_time == _INVALID )
+	
+		_status = _OK;
+/*
+		_clock = if_error( evaluate(DevNodeRef(_nid, _N_TRIG_SOURCE)), _status = _INVALID);
+		if( _status == _INVALID )
 		{
     		DevLogErr(_nid, "Invalid scan number specification");
  			abort();
 		}
-	}
+
+
+		_clock = execute('evaluate(`_clock)');
+		_trig_time = dscptr(_clock, 0);
+		_delta = dscptr(_clock, 2);
+	
+*/
+
+		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _status = _INVALID);
+		if( _status == _INVALID )
+		{
+    		DevLogErr(_nid, "Invalid scan number specification");
+ 			abort();
+		}
+		_delta = _integ_time;
+
+    }
 	else
 	{
 		_trig_time = 0;
+		_delta = _integ_time;
 	}
 
 write(*, "_trig_time ", _trig_time);
@@ -140,23 +171,23 @@ write(*, "_trig_time ", _trig_time);
 
 write(*, "_num_scan ", _num_scan);
 
-    _integ_time = if_error(data(DevNodeRef(_nid, _N_INTEG_TIME)), _INVALID);
-    if( _integ_time == _INVALID)
-    {
-    	DevLogErr(_nid, "Invalid integration time specification");
- 		abort();
-    }
-    _integration_time = LONG( _integ_time * 1000000 );
-
-write(*, "_integration_time ", _integration_time);
 
 
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
-	    _status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
+		
+		if( _trig_mode == 0x2 )
+		{		
+			write(*, " PRIMA INIT ");
+			_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
+		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, 1);
+		}
+		
+		_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
 		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, _trig_mode);
+		
 		if( _status != _HMSPECTRO_SUCCESS )
 		{
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
