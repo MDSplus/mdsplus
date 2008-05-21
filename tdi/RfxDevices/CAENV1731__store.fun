@@ -169,9 +169,10 @@ write(*, 'Acquired events: ', _act_segments);
 	_data = CAENVME_FIFOBLTReadCycle(_handle, _vme_address, long(_exp_size), _ret_len = 0L, _status = 0L);
     	if(_status != 0)    
     	{
-    	    DevLogErr(_nid, 'Error Reading data for segment ', _i);
+    	    DevLogErr(_nid, 'Error Reading data for segment '// _i);
  	    abort();
     	}
+
 	_event_size = (0x000000FF & long(_data[0])) | (0x0000FF00 & (long(_data[1]) << 8)) | (0x00FF0000 & (long(_data[2]) << 16)) | (0x0F000000 & (long(_data[3]) << 24));
 	_event_size = _event_size * 4;
     	if(_exp_size != _event_size)
@@ -248,43 +249,91 @@ write(*, 'Acquired events: ', _act_segments);
 
     if(_chan_mask & 1)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(0 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(0 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch1_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch1_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 2) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(1 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(1 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch2_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch2_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 4) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(2 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(2 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch3_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch3_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 8) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(3 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(3 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch4_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch4_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 16) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(4 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(4 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch5_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch5_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 32) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(5 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(5 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch6_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch6_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 64) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(6 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(6 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch7_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch7_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
     if((_chan_mask & 128) != 0)
     {
+	_offset = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(7 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_OFFSET)),_INVALID);
+    	if(_offset == _INVALID)
+    	{
+    	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
+ 	    abort();
+    	}
 	_sig_nid =  DevHead(_nid) + _N_CHANNEL_0  +(7 *  _K_NODES_PER_CHANNEL) +  _N_CHAN_DATA;
-	_status = DevPutSignal(_sig_nid,0., 1D0/256., byte(_ch8_data), 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
+	_status = DevPutSignal(_sig_nid, -128 + (_offset/0.5) * 128, 1D0/256., _ch8_data, 0, _act_segments * (_end_idx - _start_idx) - 1, _dim);
     }
 
     return (1);

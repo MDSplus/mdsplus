@@ -8,6 +8,12 @@ public fun CAENV1731__trigger(as_is _nid, optional _method)
     private _INVALID = 10E20;
 
 
+    _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
+    if(_board_id == _INVALID)
+    {
+    	DevLogErr(_nid, "Invalid Board ID specification");
+ 	abort();
+    }
 /* Initialize Library if the first time */
     _handle = if_error(_handle, public _handle = CAENVME_Init(_board_id));
 

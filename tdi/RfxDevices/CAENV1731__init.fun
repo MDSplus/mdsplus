@@ -88,7 +88,9 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     DevNodeCvt(_nid, _N_CLOCK_MODE, ['500 MHz', '1 GHz', 'EXTERNAL'], [0,1, 0], _clock_mode = 0);
 
     _chan_conf = (_trig_mode << 6) | (_clock_mode << 12) | 0x00000010;
-    _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8000, _chan_conf);
+
+/*    _chan_conf = (_trig_mode << 6) | (_clock_mode << 12) | 0x00000018;
+*/    _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8000, _chan_conf);
     if(_status != 0)
     {
     	DevLogErr(_nid, 'Error setting Channel Configuration');
@@ -136,8 +138,11 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     	    DevLogErr(_nid, 'Error Getting offset for channel ' // _c);
  	    abort();
     	}
+	if(_offset > 0.5) _offset = 0.5;
+	if(_offset < -0.5) _offset = -0.5;
 	_offset = (_offset / 0.5) * 32767;
-        _status = CAENVME_WriteCycle(_handle, _vme_address + 0x1098 + _c * 0x100, long(_offset));
+
+        _status = CAENVME_WriteCycle(_handle, _vme_address + 0x1098 + _c * 0x100, long(_offset + 0x08000));
     	if(_status != 0)
     	{
     	    DevLogErr(_nid, 'Error setting Channel offset for channel ' // _c);
@@ -153,6 +158,7 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     _chan_trig_enable = _chan_trig_enable | (_trig_soft << 31);
     DevNodeCvt(_nid, _N_TRIG_EXT, ['ENABLED', 'DISABLED'], [1,0], _trig_ext = 0);
     _chan_trig_enable = _chan_trig_enable | (_trig_ext << 30);
+
 
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8120, long(_chan_enable));
     if(_status != 0)
