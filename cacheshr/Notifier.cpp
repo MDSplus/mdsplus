@@ -17,7 +17,7 @@ extern "C" void handleEvents(ThreadInfo *info)
 		{
 			_endthread();
 		}
-		info->callback(info->nid);
+		info->callback(info->nid, info->argument);
 	}
 }
 
@@ -48,11 +48,13 @@ HANDLE Notifier::getHandle(int nid)
 	return 0;
 }
 
-void Notifier::initialize(int nid, void (*callback)(int))
+void Notifier::initialize(int nid, void *argument, void (*callback)(int, void *))
 {
     info.nid = nid;
+	info.argument = argument;
     info.killed = 0;
     info.callback = callback;
+	info.argument = argument;
     
     char name[128];
     sprintf((char *)name, "NID_%d", nid);
@@ -64,7 +66,14 @@ void Notifier::initialize(int nid, void (*callback)(int))
 
 void Notifier::notify()
 {
-    PulseEvent(info.handle);
+    char name[128];
+    sprintf((char *)name, "NID_%d", info.nid);
+
+    HANDLE eventHandle = OpenEvent(EVENT_MODIFY_STATE, FALSE, (char *)name);
+
+    int status = PulseEvent(eventHandle);
+	if(status == 0) printf("Error in PulseEvent. Windows Error Code: %x\n ", GetLastError());
+
 }
 
 void Notifier::dispose()
@@ -85,13 +94,14 @@ extern "C" void handleEvents(ThreadInfo *info)
 		{
 			return;
 		}
-		info->callback(info->nid);
+		info->callback(info->nid, info->argument);
 	}
 }
 
-void Notifier::initialize(int nid, void (*callback)(int))
+void Notifier::initialize(int nid, void (*callback)(int, void *))
 {
     info.nid = nid;
+	info.argument = argument;
     info.killed = 0;
     info.callback = callback;
     info.semaphore = semBCreate(SEM_Q_FIFO, SEM_EMPTY); 
@@ -135,14 +145,15 @@ extern "C" void handleEvents(ThreadInfo *info)
 		{
 			return;
 		}
-		info->callback(info->nid);
+		info->callback(info->nid, info->argument);
 	}
 }
 
 
-void Notifier::initialize(int nid, void (*callback)(int))
+void Notifier::initialize(int nid, void (*callback)(int, void *))
 {
     info.nid = nid;
+	info.argument = argument;
     info.killed = 0;
     info.callback = callback;
     int sts = sem_init(&info.semaphore, 1, 0);

@@ -34,9 +34,9 @@ public:
 		return (CallbackManager *)((char *)this + prev);
 	}
 
-	void initialize(int nid, void (*callback)(int))
+	void initialize(int nid, void *argument, void (*callback)(int, void *))
 	{
-	    notifier.initialize(nid, callback);
+	    notifier.initialize(nid, argument, callback);
 	}
 
 	

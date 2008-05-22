@@ -38,7 +38,7 @@ public:
 
 public:
 	
-	SharedDataManager(int size = DEFAULT_SIZE);
+	SharedDataManager(bool isShared, int size = DEFAULT_SIZE);
 	FreeSpaceManager *getFreeSpaceManager() { return &freeSpaceManager;}
 	
 
@@ -68,7 +68,7 @@ public:
 	int discardFirstSegment(int treeId, int nid);
 	int discardData(int treeId, int nid);
 
-	void *setCallback(int treeId, int nid, void (*callback)(int));   //Associate a callback with the nid
+	void *setCallback(int treeId, int nid, void *argument, void (*callback)(int, void *));   //Associate a callback with the nid
 	int clearCallback(int treeId, int nid, char *callbackDescr);	 //Remove the callback from the nid
 //	void callCallback(int treeId, int nid);							 //Call all callbacks associated with the nid
 //	void *allocateShared(int size) {return freeSpaceManager.allocateShared(size); }

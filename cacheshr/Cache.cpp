@@ -10,7 +10,7 @@ typedef unsigned long long _int64;
 #define UPDATE_FLUSH 5
 
 
-extern "C" char *getCache();
+extern "C" char *getCache(int isShared, int size);
 extern "C" int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
 extern "C" int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
@@ -32,7 +32,7 @@ extern "C" int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize,
 extern "C" int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr);
 extern "C" int flushTree(int treeIdx, char *cachePtr);
 extern "C" int flushNode(int treeIdx, int nid, char *cachePtr);
-extern "C" void *setCallback(int treeIdx, int nid, void (* callback)(int), void *cachePtr);
+extern "C" void *setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *), void *cachePtr);
 extern "C" int clearCallback(int treeIdx, int nid, char *callbackDescr, void *cachePtr);
 extern "C" int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode, char *cachePtr);
@@ -47,11 +47,11 @@ extern "C" void synch(char *cachePtr);
 
 static char *cache = 0;
 
-char *getCache()
+char *getCache(int isShared, int size)
 {
 	if(!cache)
 	{
-		cache = (char *)new Cache();
+		cache = (char *)new Cache((bool)isShared, size);
 		((Cache *)cache)->startServer();
 	}
 	return cache;
@@ -133,9 +133,9 @@ int flushNode(int treeIdx, int nid, char *cachePtr)
 	return ((Cache *)cachePtr)->flush(treeIdx, nid);
 }
 
-void *setCallback(int treeIdx, int nid, void (* callback)(int), void *cachePtr)
+void *setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *), void *cachePtr)
 {
-	return ((Cache *)cachePtr)->setCallback(treeIdx, nid, callback);
+	return ((Cache *)cachePtr)->setCallback(treeIdx, nid, argument, callback);
 }
 
 int  clearCallback(int treeIdx, int nid, char *callbackDescr, void *cachePtr)
@@ -187,7 +187,16 @@ void synch(char *cachePtr)
 
 ////////////////Cache Methods
 
-Cache::Cache()
+Cache::Cache():dataManager(true)
+{
+	queueLock.initialize();
+	treeWriter.setDataManager(&dataManager);
+	treeWriter.start();
+	chainHead = chainTail = 0;
+
+}
+
+Cache::Cache(bool isShared, int size):dataManager(isShared, size)
 {
 	queueLock.initialize();
 	treeWriter.setDataManager(&dataManager);
@@ -481,9 +490,9 @@ int Cache::flush(int treeIdx, int nid)
  
 }
 
-void *Cache::setCallback(int treeIdx, int nid, void (* callback)(int))
+void *Cache::setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *))
 {
-	return dataManager.setCallback(treeIdx, nid, callback);
+	return dataManager.setCallback(treeIdx, nid, argument, callback);
 }
 
 

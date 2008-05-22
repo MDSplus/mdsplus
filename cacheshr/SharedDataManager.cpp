@@ -19,33 +19,60 @@ SEM_ID *LockManager::semaphores;
 //SharedDataManager reserves the first _int64 of the sherd memory to hold the address(offset)
 //of the node tree root.
 
- SharedDataManager::SharedDataManager(int size)
+ SharedDataManager::SharedDataManager(bool isShared, int size)
 {
 	void *header;
 
-	bool created = lock.initialize(TREE_LOCK);
-	if(created)
+	if(isShared)
 	{
-		lock.lock();
-		startAddress = sharedMemManager.initialize(size);
-		freeSpaceManager.initialize((char *)startAddress + sizeof(_int64), size - sizeof(_int64));
-		sharedTree.initialize(&freeSpaceManager, &header, &lock);
-		//Store address (offset) of tree root in the first _int64word of the shared memory segment
-		*(_int64 *)startAddress = reinterpret_cast<_int64>(header) -
-		reinterpret_cast<_int64>(startAddress);
+		bool created = lock.initialize(TREE_LOCK);
+		if(created)
+		{
+			lock.lock();
+			startAddress = sharedMemManager.initialize(size);
+			freeSpaceManager.initialize((char *)startAddress + sizeof(_int64), size - sizeof(_int64));
+			sharedTree.initialize(&freeSpaceManager, &header, &lock);
+			//Store address (offset) of tree root in the first _int64word of the shared memory segment
+			*(_int64 *)startAddress = reinterpret_cast<_int64>(header) -
+			reinterpret_cast<_int64>(startAddress);
 
+		}
+		else
+		{
+			lock.lock();
+			startAddress = sharedMemManager.initialize(size);
+			freeSpaceManager.map(reinterpret_cast<char *>(startAddress) + sizeof(_int64));
+			header = reinterpret_cast<char *>(*reinterpret_cast<_int64 *>(startAddress) +
+			reinterpret_cast<_int64>(startAddress));
+			sharedTree.map(&freeSpaceManager, header);
+		}
+		lock.unlock();
 	}
 	else
 	{
-		lock.lock();
-		startAddress = sharedMemManager.initialize(size);
-		freeSpaceManager.map(reinterpret_cast<char *>(startAddress) + sizeof(_int64));
-		header = reinterpret_cast<char *>(*reinterpret_cast<_int64 *>(startAddress) +
-		reinterpret_cast<_int64>(startAddress));
-		sharedTree.map(&freeSpaceManager, header);
+		bool created = lock.initialize(); //Will always return true since the lock is local
+		if(created)
+		{
+			lock.lock();
+			startAddress = (char *)malloc(size);
+			freeSpaceManager.initialize((char *)startAddress + sizeof(_int64), size - sizeof(_int64));
+			sharedTree.initialize(&freeSpaceManager, &header, &lock);
+			//Store address (offset) of tree root in the first _int64word of the shared memory segment
+			*(_int64 *)startAddress = reinterpret_cast<_int64>(header) -
+			reinterpret_cast<_int64>(startAddress);
+
+		}
+		else
+		{
+			printf("PANIC: Shared Lock used for private cache!!\n");
+			exit(0);
+		}
+		lock.unlock();
 	}
-	lock.unlock();
+
+
 }
+
 
 
 
@@ -468,9 +495,8 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 //printf("SEGMENT FILLED FOR %f\n", *(float *)data);
 
 		int *prevBounds, prevBoundsSize;
-		char *dim, *prevData;
-		int dimSize, prevDataSize, currDataSize, actSamples;
-		bool timestamped;
+		char *prevData;
+		int prevDataSize;
 		*newSegmentCreated = true;
 //		status = getSegmentData(treeId, nid, 0, &dim, &dimSize, &prevData, &prevDataSize,
 //									  (char **)&prevBounds, &prevBoundsSize, &currDataSize, &timestamped, &actSamples);
@@ -765,7 +791,7 @@ void SharedDataManager::callCallback(int treeId, int nid)
 */
 
 
- void *SharedDataManager::setCallback(int treeId, int nid, void (*callback)(int))
+ void *SharedDataManager::setCallback(int treeId, int nid, void *argument, void (*callback)(int, void *))
 {
 
 	char *retPtr = NULL;
@@ -794,7 +820,7 @@ void SharedDataManager::callCallback(int treeId, int nid)
 		callbackManager->setNext((char *)retNode->getData()->getCallbackManager());
 		callbackManager->setPrev(NULL);
 		retNode->getData()->setCallbackManager(callbackManager);
-		callbackManager->initialize(nid, callback);
+		callbackManager->initialize(nid, argument, callback);
 		SharedMemNodeData *nodeData = retNode->getData();
 		nodeData->setWarm(true);
 		lock.unlock();

@@ -33,6 +33,7 @@ class Cache
 
 public:
 	Cache();
+	Cache(bool isShared, int size);
 	int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough);
 	int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size);
 	int beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
@@ -59,7 +60,7 @@ public:
 	int discardOldSegments(int treeIdx, int nid, _int64 timestamp);
 	int discardData(int treeIdx, int nid);
 
-	void * setCallback(int treeIdx, int nid, void (* callback)(int));
+	void * setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *));
 	int clearCallback(int treeIdx, int nid, char *callbackManager);	
 	void setWarm(int treeIdx, int nid, bool warm);
 	void synch();

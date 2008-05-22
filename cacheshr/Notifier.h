@@ -11,7 +11,8 @@ static HANDLE handles[NUM_HANDLES];
 struct ThreadInfo
 {
 	HANDLE handle;
-	void (*callback)(int);
+	void (*callback)(int, void *);
+	void *argument;
 	int nid;
 	char killed;
 };
@@ -23,7 +24,7 @@ class Notifier
 	HANDLE getHandle(int nid);
 
 public:
-	void initialize(int nid, void (*callback)(int));
+	void initialize(int nid, void *argument, void (*callback)(int, void *));
 	void notify();
 	bool isMulticast() {return true;}//Windows signaling mechanism is multicast
 	void dispose();
@@ -40,7 +41,7 @@ public:
 struct ThreadInfo
 {
 	SEM_ID semaphore;
-	void (*callback)(int);
+	void (*callback)(int, void *);
 	int nid;
 	char killed;
 };
@@ -53,7 +54,7 @@ class Notifier
 public:
 	
 
-	void initialize(int nid, void (*callback)(int));
+	void initialize(int nid, void *argument, void (*callback)(int, void *));
 	void notify();
 	bool isMulticast() {return false;}
 	void dispose();
@@ -73,7 +74,7 @@ public:
 struct ThreadInfo
 {
 	sem_t semaphore;
-	void (*callback)(int);
+	void (*callback)(int, void *);
 	int nid;
 	char killed;
 };
@@ -86,7 +87,7 @@ class Notifier
 public:
 	
 
-	void initialize(int nid, void (*callback)(int));
+	void initialize(int nid, void *argument, void (*callback)(int, void *));
 	void notify();
 	bool isMulticast() {return false;}
 	void dispose();
