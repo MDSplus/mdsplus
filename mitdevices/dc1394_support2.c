@@ -35,12 +35,14 @@ static char model[43] = "\0";
 
 static void CleanUp(void *arg)
 {
+  if(debug_flag) printf("Starting Cleanup\n");
     dc1394_capture_stop(camera);
     dc1394_video_set_transmission(camera, DC1394_OFF);
     dc1394_camera_free(camera);
     dc1394_free (d);
     camera = NULL;
     d = NULL;
+  if(debug_flag) printf("Done with Cleanup\n");
 }
 
 void *CaptureFrames(void *arg)
@@ -49,6 +51,8 @@ void *CaptureFrames(void *arg)
 
     int i;
     pthread_cleanup_push(CleanUp, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &i);
+
     /*-----------------------------------------------------------------------
      *  have the camera start sending us data
      *-----------------------------------------------------------------------*/
@@ -155,7 +159,8 @@ void *CaptureFrames(void *arg)
  */
 
 int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode, 
-	       int shutter, int gain, int trig_on, int frame_rate, int debug)
+	       int shutter, int gain, int trig_on, int frame_rate, int width, 
+	       int height, int xoffset, int yoffset, int debug)
 {
 
     dc1394featureset_t features;
@@ -166,6 +171,7 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
     debug_flag = debug;
     max_frames = max_frames_in;
     if (thread_id) {
+      dc1394_capture_stop(camera);
       if (pthread_cancel(thread_id) == 0) {
 	if (pthread_join(thread_id, NULL) != 0) {
           perror("Unable to join child thread - restarting parent process");
@@ -240,13 +246,21 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
       fprintf(stderr, "Failed to set camera mode - restarting server\n");
       exit(0);
     }
-
-  if (debug > 0)
-    printf("mode set, now the frame rate\n");
-   /* and the frame_rate */
-  if(dc1394_video_set_framerate(camera, frame_rate) != DC1394_SUCCESS) {
-    fprintf(stderr, "unable to set frame_rate to %d\n", frame_rate);
-  }
+    if ((mode >= DC1394_VIDEO_MODE_FORMAT7_0) && (mode <= DC1394_VIDEO_MODE_FORMAT7_7)) {
+      if (debug > 0) fprintf(stderr, "format 7 so attempting to set width %d height %d xoffset %d yoffset %d\n", 
+			     width, height, xoffset, yoffset);
+      err = dc1394_format7_set_roi(camera, DC1394_VIDEO_MODE_FORMAT7_0,
+                                 DC1394_COLOR_CODING_MONO8,
+                                 DC1394_USE_MAX_AVAIL, // use max packet size
+                                 xoffset, yoffset, // left, top
+                                 width, height);  // width, height
+    }
+    if (debug > 0)
+      printf("mode set, now the frame rate\n");
+    /* and the frame_rate */
+    if(dc1394_video_set_framerate(camera, frame_rate) != DC1394_SUCCESS) {
+      fprintf(stderr, "unable to set frame_rate to %d\n", frame_rate);
+    }
   
     err=dc1394_capture_setup(camera,4, DC1394_CAPTURE_FLAGS_DEFAULT);
     if(err != DC1394_SUCCESS) {
