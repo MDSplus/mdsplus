@@ -18,8 +18,8 @@ static int thisAddressIdx;
 ChannelFactory::ChannelFactory()
 {
 //TEMPORANEO
-	communicationEnabled = false;
-	return;
+//	communicationEnabled = false;
+//	return;
 
 
 
@@ -45,6 +45,7 @@ ChannelFactory::ChannelFactory()
 		{
 			char currIp[512];
 			sscanf(line, "%s", currIp);
+			printf("%s\n", currIp);
 			currAddr = addresses[addrIdx++] = new IPAddress(currIp, TCP_PORT);
 			if(strcmp(thisIp, currIp))
 			{
@@ -60,6 +61,7 @@ ChannelFactory::ChannelFactory()
 		}
 		numChanAddresses = addrIdx;
 		communicationEnabled = true;
+		printf("CommunicationEnabled\n");
 	}
 }
 

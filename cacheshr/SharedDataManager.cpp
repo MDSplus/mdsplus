@@ -16,7 +16,7 @@ SharedMemTree SharedDataManager::sharedTree;
 SEM_ID *LockManager::semaphores;
 #endif
 
-//SharedDataManager reserves the first _int64 of the sherd memory to hold the address(offset)
+//SharedDataManager reserves the first _int64 of the shared memory to hold the address(offset)
 //of the node tree root.
 
  SharedDataManager::SharedDataManager(bool isShared, int size)

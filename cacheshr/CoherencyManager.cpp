@@ -174,8 +174,10 @@ void CoherencyManager::handleOwnershipMsg(int treeIdx, int nid, int timestamp, c
 		int msgNid = channel->fromNative(nid);
 		int msgTreeIdx = channel->fromNative(treeIdx);
 		int msgInfo[2];
-		msgInfo[0] = nid;
-		msgInfo[1] = treeIdx;
+//		msgInfo[0] = nid;
+//		msgInfo[1] = treeIdx;
+		msgInfo[0] = msgNid;
+		msgInfo[1] = msgTreeIdx;
 		ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
 		channel->sendMessage(retAddr, (char *)msgInfo, 2*sizeof(int), OWNERSHIP_WARM_ACK_TYPE);
 	}
