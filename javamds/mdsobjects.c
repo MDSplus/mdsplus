@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
-#include "mdsdata_data.h"
-#include "mdstree_mdstree.h"
+#include "mdsdata_Data.h"
+#include "mdstree_MdsTree.h"
 #include <treeshr.h>
 #include <ncidef.h>
 #include <usagedef.h>
