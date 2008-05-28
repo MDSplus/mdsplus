@@ -655,12 +655,10 @@ EXPORT int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeM
 {
 	EMPTYXD(ser_xd);
 
+
 	int status;
 	struct descriptor_a *arrPtr;
 	if(!cache) cache = getCache(cacheIsShared, cacheSize);
-
-
-	
 
 	//Manage Empty descriptor
 	if(descriptor_ptr->class == CLASS_XD && ((struct descriptor_xd *)descriptor_ptr)->l_length == 0)

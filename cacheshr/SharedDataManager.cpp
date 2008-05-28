@@ -378,7 +378,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 		{
 			lock.unlock();
 			
-//			printf("APPENDSEGMENT DATA: NO SEGMENTS");
+		//	printf("APPENDSEGMENT DATA: NO SEGMENTS");
 			
 			return TRUNCATED;
 		}
@@ -433,7 +433,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 			if(dataSize > leftSize)
 			{
 				lock.unlock();
-//			printf("APPENDSEGMENT DATA: DATASIZE > LEFT SIZE");
+	//		printf("APPENDSEGMENT DATA: DATASIZE > LEFT SIZE");
 				return TRUNCATED;
 			}
 			if(leftSize == dataSize)
@@ -489,6 +489,7 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 	
 	int status = appendSegmentData(treeId, nid, bounds, boundsSize, data, dataSize, -1, -1, true, 
 		&timestamp, 1, segmentFilled, retIdx);
+
 	if((status & 1) && *segmentFilled)
 	{
 

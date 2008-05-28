@@ -90,7 +90,7 @@ ChannelAddress **ChannelFactory::getOtherAddresses(int &numAddresses)
 CommunicationChannel *ChannelFactory::getChannel()
 {
 	if(!communicationEnabled) return 0;
-//	return new TCPChannel(thisIdx);
-	return new UDPChannel(thisIdx);
+	return new TCPChannel(thisIdx);
+//	return new UDPChannel(thisIdx);
 }
 
