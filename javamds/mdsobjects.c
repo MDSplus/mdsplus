@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <stdlib.h>
