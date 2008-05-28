@@ -791,6 +791,9 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		array_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
 		memcpy(array_d, &template_array, sizeof(struct descriptor_a));
 		array_d->dtype = dtype;
+		array_d->class = CLASS_APD;
+		array_d->length = sizeof(struct descriptor *);
+		array_d->arsize = array_d->length * ndescs;
 		array_d->pointer = (char *)malloc(sizeof(void *) * ndescs);
 		for(i = 0; i < ndescs; i++)
 		 ((struct descriptor **)(array_d->pointer))[i] = ObjectToDescrip(env,(*env)->GetObjectArrayElement(env,jdescs, i));

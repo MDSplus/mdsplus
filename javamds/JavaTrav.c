@@ -13,8 +13,8 @@
 #include <libroutines.h>
 #include <usagedef.h>
 
-extern struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
-extern jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
+struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
+jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 extern void FreeDescrip(struct descriptor *desc);
 extern int TdiData();
 extern int TdiCompile();
@@ -930,7 +930,7 @@ JNIEXPORT void JNICALL Java_Database_setOn
      status = TreeTurnOff(nid);
   if(!(status & 1))
   {
-	printf("Failed %s status: %d %s\n", TreeGetPath(nid), status, MdsGetMsg(status));
+		printf("Failed %s status: %d %s\n", TreeGetPath(nid), status, MdsGetMsg(status));
 
       RaiseException(env, MdsGetMsg(status), status);
   }
