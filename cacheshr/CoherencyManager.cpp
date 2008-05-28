@@ -76,14 +76,14 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case REQUEST_DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((unsigned int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
 			handleRequestDataMsg(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
 		case OWNERSHIP_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((unsigned int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
 			int timestamp = channel->toNative(*(unsigned int *)(&buf[2*sizeof(int)]));
 			char ownerIdx = buf[3 * sizeof(int)];
 			handleOwnershipMsg(treeIdx, nid, timestamp, ownerIdx, senderAddr, senderIdx);
@@ -92,7 +92,7 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case OWNERSHIP_WARM_ACK_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((unsigned int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
 			handleOwnershipWarmMessage(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
@@ -100,14 +100,14 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((unsigned int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
 			handleDataMsg(treeIdx, nid, &buf[2*sizeof(int)], bufLen - 2*sizeof(int), senderAddr, senderIdx);
 			break;
 		}
 		case DIRTY_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((unsigned int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
 			handleDirtyMsg(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
@@ -228,7 +228,7 @@ void CoherencyManager::handleOwnershipWarmMessage(int treeIdx, int nid, ChannelA
 	dataManager->addWarm(treeIdx, nid, senderIdx);
 	int serializedSize = dataManager->getSerializedSize(treeIdx, nid);
 	char *serialized = new char[2*sizeof(int)+serializedSize];
-	*(int *)serialized = channel->fromNative(nid);
+	*(unsigned int *)serialized = channel->fromNative(nid);
 	((int *)serialized)[1] = channel->fromNative(treeIdx);
 	dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)]);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
@@ -288,7 +288,7 @@ void CoherencyManager::checkWrite(int treeIdx, int nid)
 		ChannelAddress **addresses = chanFactory.getOtherAddresses(numAddresses);
 		char outBuf[3*sizeof(int)+1];
 		*(unsigned int *)outBuf = channel->fromNative(nid);
-		((unsigned int *)outBuf)[1] = channel->fromNative(treeIdx);
+		((int *)outBuf)[1] = channel->fromNative(treeIdx);
 		((unsigned int *)outBuf)[2] = channel->fromNative(timestamp);
 		outBuf[3 * sizeof(int)] = chanFactory.getThisAddressIdx();
 
