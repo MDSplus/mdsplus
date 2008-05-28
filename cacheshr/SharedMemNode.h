@@ -60,25 +60,33 @@ public:
 
 	SharedMemNode * setRightChild(SharedMemNode *node)
 	{
-		right = (_int64)((char *)node - (char *)this);
+      if(!node) 
+         right = 0;
+      else
+		   right = (_int64)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
 		return node;
 	}
 
 	SharedMemNode * setLeftChild(SharedMemNode *node)
 	{
-		left = (_int64)((char *)node - (char *)this);
+      if(!node)
+         left = 0;
+      else
+		   left = (_int64)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
 		return node;
 	}
 
 
 	SharedMemNode *leftChild()
 	{
-		return (SharedMemNode *)((char *)this + left);
+      if(left == 0) return 0;
+		return reinterpret_cast<SharedMemNode *>((reinterpret_cast<char *>(this) + left));
 	}
 
 	SharedMemNode *rightChild()
 	{
-		return (SharedMemNode *)((char *)this + right);
+      if(right == 0) return 0;
+		return reinterpret_cast<SharedMemNode *>((reinterpret_cast<char *>(this) + right));
 	}
 
 	SharedMemNodeData *getData() { return &data;}
@@ -86,7 +94,7 @@ public:
 	void free(FreeSpaceManager *fsm, LockManager *lock)
 	{
 		data.free(fsm, lock);
-		fsm->freeShared((char *)this, sizeof(SharedMemNode), lock);
+		fsm->freeShared(reinterpret_cast<char *>(this), sizeof(SharedMemNode), lock);
 	}
 
 

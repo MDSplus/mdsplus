@@ -35,7 +35,7 @@ SEM_ID *LockManager::semaphores;
 			//Store address (offset) of tree root in the first _int64word of the shared memory segment
 			*(_int64 *)startAddress = reinterpret_cast<_int64>(header) -
 			reinterpret_cast<_int64>(startAddress);
-
+ 
 		}
 		else
 		{

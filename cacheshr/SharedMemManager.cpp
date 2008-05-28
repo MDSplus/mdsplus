@@ -65,7 +65,7 @@ char *SharedMemManager::initialize(int size)
 	    exit(0);//Fatal error
 	}
 	
-	printf("INITIALIZE MEMORY\n");
+	printf("INITIALIZE MEMORY: %d %d\n", size, key);
 	
 	shmid = shmget(key, size, IPC_CREAT | 0666);
 	
@@ -77,6 +77,9 @@ char *SharedMemManager::initialize(int size)
 	     exit(0); //Fatal error
 	}  
 	startAddress = (char *)shmat(shmid, NULL, 0);
+
+   printf("StartAddress: %x %d %d %d\n", startAddress, startAddress[0], 
+      startAddress[1000], startAddress[2000]);
 	if(startAddress == (char *)-1)
 	{
 	    perror("Cannot attach to shared memory");

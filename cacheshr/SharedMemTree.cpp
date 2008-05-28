@@ -26,6 +26,7 @@ public:
 //Initialize shared data and return header
 void SharedMemTree::initialize(FreeSpaceManager *freeSpaceManager, void **headerPtr, LockManager *lock)
 {
+printf("SharedMemTree::initialize\n");
 	SharedMemNodeData dummyData;
 	this->freeSpaceManager = freeSpaceManager;
 	header = 0;
@@ -39,6 +40,7 @@ void SharedMemTree::initialize(FreeSpaceManager *freeSpaceManager, void **header
 //
 void SharedMemTree::map(FreeSpaceManager *freeSpaceManager, void *header)
 {
+printf("SharedMemTree::map\n");
 	this->freeSpaceManager = freeSpaceManager;
 	this->header = (SharedMemNode *)header;
 }

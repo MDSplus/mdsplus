@@ -38,7 +38,7 @@ FreeSpaceManager::FreeDescriptor *FreeSpaceManager::getDescriptor() //Get a free
 	void FreeSpaceManager::initialize(char *startAddr, int size)
 	{
 		//fullEvent.initialize();
-
+printf("FreeSpaceManager::initialize %d\n", size);
 		this->startAddress = startAddr;
 		//Creates a single free memory descriptor describing the whole segment and a single unused free descriptor 
 

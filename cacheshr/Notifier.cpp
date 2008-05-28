@@ -140,7 +140,12 @@ extern "C" void handleEvents(ThreadInfo *info)
 {
 	while(1)
 	{
-		sem_wait(&info->semaphore);
+		int status = sem_wait(&info->semaphore);
+      if(status != 0)
+      {
+         perror("Error waiting Notifier semaphore\n");
+         return;
+      }
 		if(info->killed) 
 		{
 			return;
