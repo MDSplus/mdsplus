@@ -50,7 +50,7 @@ struct ThreadInfo
 class Notifier
 {
 	ThreadInfo info;
-
+	void *argument;
 public:
 	
 
@@ -76,6 +76,7 @@ struct ThreadInfo
 	sem_t semaphore;
 	void (*callback)(int, void *);
 	int nid;
+	void *argument;
 	char killed;
 };
 

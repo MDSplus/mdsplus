@@ -98,7 +98,7 @@ extern "C" void handleEvents(ThreadInfo *info)
 	}
 }
 
-void Notifier::initialize(int nid, void (*callback)(int, void *))
+void Notifier::initialize(int nid, void *argument, void (*callback)(int, void *))
 {
     info.nid = nid;
 	info.argument = argument;
@@ -150,7 +150,7 @@ extern "C" void handleEvents(ThreadInfo *info)
 }
 
 
-void Notifier::initialize(int nid, void (*callback)(int, void *))
+void Notifier::initialize(int nid, void *argument, void (*callback)(int, void *))
 {
     info.nid = nid;
 	info.argument = argument;
