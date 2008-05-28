@@ -76,15 +76,15 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case REQUEST_DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[1]);
 			handleRequestDataMsg(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
 		case OWNERSHIP_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
-			int timestamp = channel->toNative(*(unsigned int *)(&buf[2*sizeof(int)]));
+			int treeIdx = channel->toNative(((int *)buf)[1]);
+			int timestamp = channel->toNative(((unsigned int *)buf)[2]);
 			char ownerIdx = buf[3 * sizeof(int)];
 			handleOwnershipMsg(treeIdx, nid, timestamp, ownerIdx, senderAddr, senderIdx);
 			break;
@@ -92,7 +92,7 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case OWNERSHIP_WARM_ACK_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[1]);
 			handleOwnershipWarmMessage(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
@@ -100,14 +100,14 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[1]);
 			handleDataMsg(treeIdx, nid, &buf[2*sizeof(int)], bufLen - 2*sizeof(int), senderAddr, senderIdx);
 			break;
 		}
 		case DIRTY_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[sizeof(int)]);
+			int treeIdx = channel->toNative(((int *)buf)[1]);
 			handleDirtyMsg(treeIdx, nid, senderAddr, senderIdx);
 			break;
 		}
