@@ -792,7 +792,7 @@ int putRecordInternal(int nid, char dataType, int numSamples, char *data, int si
 
 
 int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSize, 
-					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int currDataSize,
+					   char *dim, int dimSize, char *data, int dataSize, int *inShape, int shapeSize, int currDataSize,
 					    
 					   int isTimestamped, int actSamples, int updateOnly)
 {
@@ -806,6 +806,9 @@ int putSegmentInternal(int nid, char *start, int startSize, char *end, int endSi
 	struct descriptor endD = {8, DTYPE_QU, CLASS_S, 0};
 
 	int status, i, rowItems;
+	int shape[512];
+
+	memcpy(shape, inShape, shapeSize);
 
 	//Return Shape and type information. The coding is the following:
 //1) data type
