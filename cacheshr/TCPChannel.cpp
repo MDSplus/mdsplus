@@ -15,11 +15,13 @@ static int readFromSocket(int sock, int numBytes, char *buf)
 
 	while(numReadBytes < numBytes)
 	{
-		if((currBytes = recv(sock, &buf[numReadBytes], numBytes - numReadBytes,0)) < 0)
+		if((currBytes = recv(sock, &buf[numReadBytes], numBytes - numReadBytes,0)) <= 0)
 		{
+			printf("ERRORE IN recv\n");
 			printf("Error in recv: socket closed\n");
 			return -1;
 		}
+			printf("recv OK\n");
 		numReadBytes += currBytes;
 	}
 	return 0;
@@ -35,6 +37,8 @@ void TCPHandler::run(void *arg)
 	char senderIdx;
 	while(true)
 	{
+printf("Lettura Messaggio\n");
+		
 		char type;
 		int len;
 		if(readFromSocket(sock, 1, &type) == -1)

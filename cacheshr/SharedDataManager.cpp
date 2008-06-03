@@ -91,6 +91,7 @@ int SharedDataManager::discardData(int treeId, int nid)
 
 
 
+
 int SharedDataManager::setData(int treeId, int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
 {
 	lock.lock();
@@ -117,7 +118,6 @@ int SharedDataManager::setData(int treeId, int nid, char dataType, int numSample
 		if(callback)
 			callback->callCallback();
 		lock.unlock();
-		
 		return 1;
 	}
 	else
@@ -887,19 +887,22 @@ SharedMemNodeData *SharedDataManager::getNodeData(int treeId, int nid, bool crea
 ////////////////////////////////////////////////
 void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
 {
+	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, isDirty, timestamp);
-
+	lock.unlock();
 }
 
 	
 void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
 		char * &warmList, int &numWarm, char *&readerList, int &numReader)
 {
+	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
 	if(nodeData)
 		nodeData->getCoherencyInfo(isOwner, ownerIdx, isWarm, timestamp, warmList, numWarm, readerList, numReader);
+	lock.unlock();
 
 }
 
@@ -953,10 +956,13 @@ void SharedDataManager::setWarm(int treeId, int nid, bool warm)
 
 bool SharedDataManager::isWarm(int treeId, int nid)
 {
+	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
+	bool warm = false;
 	if(nodeData)
-		return nodeData->isWarm();
-	return false;
+		warm = nodeData->isWarm();
+	lock.unlock();
+	return warm;
 }
 
 void SharedDataManager::setDirty(int treeId, int nid, bool isDirty)
@@ -973,10 +979,11 @@ Event *SharedDataManager::getDataEvent(int treeId, int nid)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
+	Event *retEv = NULL;
 	if(nodeData)
-		return nodeData->getDataEvent();
-	return NULL;
+		retEv = nodeData->getDataEvent();
 	lock.unlock();
+	return retEv;
 }
 
 int SharedDataManager::getSerializedSize(int treeId, int nid)

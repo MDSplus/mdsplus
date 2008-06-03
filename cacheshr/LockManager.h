@@ -68,9 +68,10 @@ public:
 
 	int lock()
 	{
-		
-      DWORD dwWaitResult; 
 
+		
+
+      DWORD dwWaitResult; 
  
       dwWaitResult = WaitForSingleObject( 
          hMutex,        // handle of mutex
@@ -122,6 +123,7 @@ public:
 
 	void unlock()
 	{
+
 		ReleaseMutex(hMutex) ;
 	}
 
