@@ -37,8 +37,6 @@ void TCPHandler::run(void *arg)
 	char senderIdx;
 	while(true)
 	{
-printf("Lettura Messaggio\n");
-		
 		char type;
 		int len;
 		if(readFromSocket(sock, 1, &type) == -1)
@@ -64,6 +62,7 @@ printf("Lettura Messaggio\n");
 			printf("Socket communication terminated\n");
 			return;
 		}
+		printf("Message received\n");
 		channel->messageReceived(&addr, (int)senderIdx, type, buf, len);
 	}
 }
@@ -76,6 +75,7 @@ void TCPServer::run(void *arg)
 	while(true)
 	{
 		int newSocket = accept(sock, NULL, NULL);
+		printf("New Connection received\n");
 #ifdef HAVE_WINDOWS_H
 		if(sock == INVALID_SOCKET)
 #else
@@ -125,6 +125,9 @@ bool TCPChannel::connectSender(ChannelAddress *addr)
 			default: printf("BOH\n");
 		}
 #endif
+		char buf[512];
+		sprintf(buf, "Error Connecting to %s", addr->getAddressString());
+		perror(buf);
 		return false;
 	}
 	printf("CONNECTED\n");

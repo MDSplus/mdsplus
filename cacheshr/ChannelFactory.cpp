@@ -45,6 +45,9 @@ ChannelFactory::ChannelFactory()
 		{
 			char currIp[512];
 			sscanf(line, "%s", currIp);
+			for(unsigned int i = 0; (i < strlen(line)) && (line[i] == ' ' || line[i] == '\t') ; i++);
+			if(i == strlen(line))
+				continue;
 			printf("%s\n", currIp);
 			currAddr = addresses[addrIdx++] = new IPAddress(currIp, TCP_PORT);
 			if(strcmp(thisIp, currIp))
