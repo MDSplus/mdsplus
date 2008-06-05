@@ -192,7 +192,14 @@ bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char t
 		sock = ((IPAddress *)addr)->sock;
 	}
 	int convLen = fromNative(bufLen);
-	send(sock, &type, 1, 0);
+	if(send(sock, &type, 1, 0) == -1) //If connection meanwhile went down
+	{
+		if(!connectSender(addr))
+			return false; //Still unsuccesful
+		sock = ((IPAddress *)addr)->sock;
+		if(send(sock, &type, 1, 0) == -1)
+			return false;
+	}
 	send(sock, &thisIdx, 1, 0);
 	send(sock, (char *)&convLen, sizeof(int), 0); 
 	send(sock, buf, bufLen, 0);
