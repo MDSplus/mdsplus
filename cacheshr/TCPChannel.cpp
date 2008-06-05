@@ -192,7 +192,9 @@ bool TCPChannel::sendMessage(ChannelAddress *addr, char *buf, int bufLen, char t
 		sock = ((IPAddress *)addr)->sock;
 	}
 	int convLen = fromNative(bufLen);
-	if(send(sock, &type, 1, 0) == -1) //If connection meanwhile went down
+	int sent = send(sock, &type, 1, 0);
+	printf("Sent Bytes: %d\n", sent);
+	if(sent == -1) //If connection meanwhile went down
 	{
 		if(!connectSender(addr))
 			return false; //Still unsuccesful
