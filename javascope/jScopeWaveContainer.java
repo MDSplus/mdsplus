@@ -1657,7 +1657,7 @@ remove 28/06/2005
         Vector panel = new Vector();
         MdsWaveInterface wi;
         jScopeMultiWave wave;
-
+	    
         if (!all &&
             (w == null || w.wi == null || w.wi.signals == null ||
              w.wi.signals.length == 0))
@@ -1742,7 +1742,7 @@ remove 28/06/2005
                         txtsig_file));
                     for (int l = 0; l < 3; l++)
                     {
-                        out.write("%");
+                        s = "%";
                         for (int k = 0; k < panel.size(); k++)
                         {
                             wave = (jScopeMultiWave) panel.elementAt(k);
@@ -1756,30 +1756,30 @@ remove 28/06/2005
                                 switch (l)
                                 {
                                     case 0:
-                                        s = "x : " +
+                                        s += "x : " +
                                             ( (wi.in_x != null &&
                                                wi.in_x.length > 0) ? wi.in_x[i] :
                                              "None");
                                         break;
                                     case 1:
-                                        s = "y : " +
+                                        s += "y : " +
                                             ( (wi.in_y != null &&
                                                wi.in_y.length > 0) ? wi.in_y[i] :
                                              "None");
                                         break;
                                     case 2:
-                                        s = "Shot : " +
+                                        s += "Shot : " +
                                             ( (wi.shots != null &&
                                                wi.shots.length > 0) ?
                                              "" + wi.shots[i] : "None");
                                         break;
                                 }
-                                out.write(s, 0,
-                                          (s.length() < 34) ? s.length() : 34);
+                                out.write(s, 0, (s.length() < 50) ? s.length() : 50);
                                 space.setLength(0);
-                                for (int u = 0; u < 35 - s.length(); u++)
+                                for (int u = 0; u < 52 - s.length(); u++)
                                     space.append(' ');
                                 out.write(space.toString());
+				s="";
                             }
                         }
                         out.newLine();
@@ -1852,14 +1852,14 @@ remove 28/06/2005
                                 }
                                 out.write(s1);
                                 space.setLength(0);
-                                for (int u = 0; u < 15 - s1.length(); u++)
+                                for (int u = 0; u < 25 - s1.length(); u++)
                                     space.append(' ');
                                 space.append(' ');
                                 out.write(space.toString());
                                 out.write(" ");
                                 out.write(s2);
                                 space.setLength(0);
-                                for (int u = 0; u < 18 - s2.length(); u++)
+                                for (int u = 0; u < 25 - s2.length(); u++)
                                     space.append(' ');
                                 out.write(space.toString());
                             }
@@ -1876,6 +1876,5 @@ remove 28/06/2005
             }
         }
         file_diag = null;
-
     }
 }
