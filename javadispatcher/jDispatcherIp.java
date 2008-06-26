@@ -238,7 +238,7 @@ class jDispatcherIp
             treeName = "RFX";
         Balancer balancer = new Balancer();
         jDispatcher dispatcher = new jDispatcher(balancer);
-        dispatcher.addServer(new InfoServer());
+		dispatcher.addServer(new InfoServer());
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream("jDispatcher.properties"));
@@ -321,7 +321,7 @@ class jDispatcherIp
                 break;
             }
         }
-        
+/*        
         String actionsMonitorPort = properties.getProperty("jDispatcher.actions_monitor_port");
         if (actionsMonitorPort != null)
         {
@@ -334,7 +334,7 @@ class jDispatcherIp
             catch (Exception exc) {}
             System.out.println("Start done actions monitor on port : " + actionsMonitorPort);
         }
-        
+*/        
         String default_server = properties.getProperty(
             "jDispatcher.default_server_idx");
         try {
