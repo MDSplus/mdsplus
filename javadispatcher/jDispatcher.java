@@ -604,18 +604,22 @@ class jDispatcher
         if(!action.isManual())
         {
             //check dependent actions
-            Enumeration depend_actions = ( (Vector) curr_phase.dependencies.get(
-                action.getAction())).elements();
-            while (depend_actions.hasMoreElements()) {
-                Action curr_action = (Action) (depend_actions.nextElement());
-                if (curr_action.isOn() &&
-                    isEnabled( ( (DispatchData) curr_action.getAction().
+            Vector currDepV =  (Vector) curr_phase.dependencies.get(action.getAction());
+            if(currDepV != null && currDepV.size() > 0)
+            {
+                Enumeration depend_actions = currDepV.elements();
+                while (depend_actions.hasMoreElements()) 
+                {
+                    Action curr_action = (Action) (depend_actions.nextElement());
+                    if (curr_action.isOn() &&
+                        isEnabled( ( (DispatchData) curr_action.getAction().
                                 getDispatch()).getWhen())) { //the dependent action is now enabled
-                    dep_dispatched.addElement(curr_action);
+                        dep_dispatched.addElement(curr_action);
                     curr_action.setStatus(Action.DISPATCHED, 0, verbose);
                     fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
                     if(!balancer.enqueueAction(curr_action))
                         discardAction(action);
+                    }
                 }
             }
             //Handle now possible dependencies based on sequence expression
