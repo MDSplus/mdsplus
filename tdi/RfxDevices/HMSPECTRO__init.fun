@@ -176,7 +176,12 @@ write(*, "_num_scan ", _num_scan);
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
+		_status = execute(_cmd);
+		if( _status == 0 )
+		{
+			DevLogErr(_nid,  "Could not open connection to MDS server" );	
+			abort();
+		}
 
 		 _status = _HMSPECTRO_SUCCESS;
 

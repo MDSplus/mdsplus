@@ -52,7 +52,13 @@ write(*, "1 _dev_name ", _dev_name);
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
+		_status = execute(_cmd);
+		if( _status == 0 )
+		{
+			DevLogErr(_nid,  "Could not open connection to MDS server" );	
+			abort();
+		}
+		
 	    _status = MdsValue('HMSPECTRO->HMSpectroArm( $1 )', _dev_name);
 		if( _status != _HMSPECTRO_SUCCESS )
 		{
