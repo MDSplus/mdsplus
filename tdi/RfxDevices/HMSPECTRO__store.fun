@@ -173,7 +173,6 @@ write(*, "_trig_time ", _trig_time);
 	
 write(*, "_num_scan ", _num_scan);
 
-
 	_bufSize = _hwPixel * _num_scan;
 
 write(*, "_bufSize ", _bufSize);
@@ -210,6 +209,14 @@ write(*, "_bufSize ", _bufSize);
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
 		}
 
+	    _tbase = MdsValue('HMSPECTROReadTbase( $1,  $2 )',  _dev_name ,  _num_scan);
+
+		write(*, "Tbase ", _tbase / 3579545. );
+
+
+		MdsValue( 'HMSPECTRO->HMSpectroClose(val($1))', _dev_name );
+
+
 		MdsDisconnect();
 
 	}
@@ -217,6 +224,7 @@ write(*, "_bufSize ", _bufSize);
 	{
 
 		_data = zero( _bufSize, 0WU); 
+		_tbase = zero( _num_scan, fs_float(0.0));
 		_lambda = zero( _pixel, ft_float(0.0) ); 
 
 
@@ -237,6 +245,13 @@ write(*, "_bufSize ", _bufSize);
 			HMSPECTRO->HMSpectroGetMsg( val( _status ), ref( _msg ) );
 		}
 
+		HMSPECTRO->HMSpectroReadTbase( _dev_name, ref( _tbase ), val( _num_scan ));
+
+		write(*, "Tbase ", _tbase);
+
+		HMSPECTRO->HMSpectroClose(val(_dev_name));
+
+
 	}
 
 	if( _status != _HMSPECTRO_SUCCESS )
@@ -252,10 +267,12 @@ write(*, "_bufSize ", _bufSize);
 		}
 	}
 
+	_read_out_time = (1.1 + 2 * 2048)/1000.;
+
 	_buf = transpose( set_range(_hwPixel, _num_scan, _data) );
 
     _dim1 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_integ_time));
-    _dim2 = f_float( _lambda );
+    _dim2 = make_with_units(( _lambda ),"nm");
 
 	_data_nid = DevHead(_nid) + _N_DATA;
     _signal = compile('build_signal((`_buf), $VALUE, (`_dim1), (`_dim2))');
