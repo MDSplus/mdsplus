@@ -179,16 +179,17 @@ STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
 
 char *TranslateLogical(char *pathname)
 {
-	char *path = GetRegistry((char *)HKEY_CURRENT_USER, pathname);
-	if (!path)
-	{
-	  path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
-          if (!path)
-           // path = GetTdiLogical(char *pathname);
-           path = GetTdiLogical(pathname);
-	}
-
-	return path;
+  char *path=NULL;
+  char *tpath=getenv(pathname);
+  if (tpath)
+    path = strcpy((char *)malloc(strlen(tpath)+1),tpath);
+  if (!path)
+	path = GetRegistry((char *)HKEY_CURRENT_USER, pathname);
+  if (!path)
+	path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
+  if (!path)
+    path = GetTdiLogical(pathname);
+  return path;
 }
 
 int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)

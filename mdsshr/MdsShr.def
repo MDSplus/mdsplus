@@ -114,3 +114,4 @@ LibDeleteVmZone
 MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
+MdsPutEnv
