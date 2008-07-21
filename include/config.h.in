@@ -151,6 +151,9 @@
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 
+/* Define if you have the getaddrinfo routine */
+#undef HAVE_GETADDRINFO
+
 /* Is malloc.h available?  */
 #undef HAVE_MALLOC_H
 

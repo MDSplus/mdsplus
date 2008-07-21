@@ -569,6 +569,7 @@ AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_
 AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
 AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline -lcurses",LIBREADLINE="",-lcurses)
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
+AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
