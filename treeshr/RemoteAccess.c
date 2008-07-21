@@ -114,8 +114,40 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
- 
+#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+
+STATIC_THREADSAFE struct _host_list {char *host; int socket; struct sockaddr_in sockaddr; int connections; time_t time; struct _host_list *next;} *host_list = 0;
+
+STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
+  int status;
+  struct addrinfo *res;
+  struct sockaddr_in *in;
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+  int i;
+  sscanf(host,"%[^:]:%s",hostpart,portpart);
+  if (strlen(portpart) == 0)
+  {
+    if (host[0] == '_')
+      strcpy(portpart,"mdsips");
+    else
+      strcpy(portpart,"mdsip");
+  }
+  for (i=strlen(hostpart)-1;i>=0 && hostpart[i]==32;hostpart[i]=0,i--);
+  status=getaddrinfo(hostpart,portpart,0,&res);
+  if (status == 0) {
+    memcpy(sockaddr,(struct sockaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
+    freeaddrinfo(res);
+  }
+  return status;
+}
+
+#else 
 STATIC_THREADSAFE struct _host_list {char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
+#endif
 
 STATIC_ROUTINE void MdsIpFree(void *ptr)
 {
@@ -135,6 +167,10 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
   STATIC_THREADSAFE int (*rtn)(char *) = 0;
   int socket = -1;
   int connections = -1;
+#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+  struct sockaddr_in sockaddr;
+  int getaddr_status=GetAddr(host,&sockaddr);
+#endif
   if (rtn == 0)
   {
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
@@ -143,7 +179,11 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
   LockMdsShrMutex(&HostListMutex,&HostListMutex_initialized);
   for (nextone = &host_list,hostchk = host_list; hostchk; nextone = &hostchk->next, hostchk = hostchk->next)
   {
+#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+    if (((getaddr_status == 0) ? memcmp(&sockaddr,&hostchk->sockaddr,sizeof(sockaddr)) : strcmp(hostchk->host,host)) == 0)
+#else
     if (strcmp(hostchk->host,host) == 0)
+#endif
     {
       hostchk->time = time(0);
       if (inc_count)
@@ -161,6 +201,9 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
       (*nextone)->host = strcpy(malloc(strlen(host)+1),host);
       (*nextone)->socket = socket;
       (*nextone)->connections = inc_count ? 1 : 0;
+#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+      memcpy(&(*nextone)->sockaddr,&sockaddr,sizeof(sockaddr));
+#endif
       (*nextone)->time = time(0);
       (*nextone)->next = 0;
       connections = (*nextone)->connections;
