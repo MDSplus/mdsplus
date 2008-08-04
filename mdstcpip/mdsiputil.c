@@ -259,7 +259,6 @@ static SOCKET ConnectToPort(char *host, char *service)
     user_p = "vxWorks";
 #else
 	struct passwd *passStruct = getpwuid(geteuid());
-//    user_p = (getpwuid(geteuid()))->pw_name;
 	if(!passStruct)
 		user_p = "Linux";
 	else
