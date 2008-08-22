@@ -2,7 +2,12 @@
 #
 if [ -z $1 ]
 then
-  SPEC="rpm"
+  if [ -r rpm/`uname -p`.spec ]
+  then
+    SPEC=`uname -p`
+  else
+    SPEC="rpm"
+  fi
 else
   SPEC="${1}"
 fi
