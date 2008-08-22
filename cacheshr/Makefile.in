@@ -54,7 +54,7 @@ install:
 
 
 @MAKESHLIBDIR@libCacheShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
 
 @MAKELIBDIR@libCacheShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
