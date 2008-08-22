@@ -1,6 +1,18 @@
 Version 2.1-1
 
 
+2008-08-22 12:15  twf
+
+	* cacheshr/Makefile.in:
+	
+	add CFLAGS to CXXFLAGS
+
+2008-08-22 10:42  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-1
+
 2008-08-22 10:41  twf
 
 	* devscripts/MakeRpm:
