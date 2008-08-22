@@ -1,5 +1,486 @@
-Version 2.1-0
+Version 2.1-1
 
+
+2008-08-21 15:29  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Update time inserted in BeginSegment
+
+2008-08-21 08:58  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Unlock nci if error opening datafile
+
+2008-08-21 08:57  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Fix hook calls
+
+2008-08-04 08:39  jas
+
+	* mdstcpip/mdsiputil.c:
+	
+	remove non standard comment syntax
+
+2008-07-21 15:59  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Only open same host:port once
+
+2008-07-21 15:57  twf
+
+	* configure, configure.in, include/config.h.in:
+	
+	Add HAVE_GETADDRINFO test
+
+2008-07-15 11:47  twf
+
+	* mdsshr/: MdsShr.def, librtl.c:
+	
+	Add use of environment variables for windows
+
+2008-07-14 07:46  manduchi
+
+	* tdi/RfxDevices/HMSPECTRO__store.fun:
+	
+	Mod
+
+2008-06-30 11:34  manduchi
+
+	* tdi/RfxDevices/: HMSPECTRO__init.fun, HMSPECTRO__arm.fun,
+	HMSPECTRO__store.fun:
+	
+	Fix
+
+2008-06-26 11:05  manduchi
+
+	* javadispatcher/jDispatcher.java:
+	
+	Fixed dependencies based on sequence expression
+
+2008-06-26 09:06  manduchi
+
+	* javadispatcher/: jDispatcher.properties, jDispatcherIp.java:
+	
+	Minor fixes
+
+2008-06-06 09:55  manduchi
+
+	* javascope/jScopeWaveContainer.java:
+	
+	File format column space fixed in  SaveAsText method
+
+2008-06-05 11:06  manduchi
+
+	* cacheshr/TCPChannel.cpp:
+	
+	Test Messages
+
+2008-06-05 10:46  manduchi
+
+	* cacheshr/TCPChannel.cpp:
+	
+	Better TCP/IP reconnection
+
+2008-06-05 10:32  manduchi
+
+	* cacheshr/ChannelFactory.cpp:
+	
+	Fix compile error
+
+2008-06-05 10:27  manduchi
+
+	* cacheshr/: ChannelFactory.cpp, TCPChannel.cpp:
+	
+	More info messages
+
+2008-06-03 09:16  manduchi
+
+	* cacheshr/: CommunicationChannel.cpp, LockManager.h,
+	SharedDataManager.cpp, TCPChannel.cpp:
+	
+	Fix shared configuration
+
+2008-05-30 04:47  manduchi
+
+	* javamds/: Makefile.in, mdsdata_Data.h, mdsobjects.c,
+	mdstree_MdsTree.h:
+	
+	No more link against cacheshr
+
+2008-05-29 08:51  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fix flush segments
+
+2008-05-28 12:10  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Unsigned
+
+2008-05-28 12:04  manduchi
+
+	* cacheshr/CoherencyManager.cpp:
+	
+	Fix unsigned
+
+2008-05-28 11:53  manduchi
+
+	* cacheshr/: ChannelFactory.cpp, CoherencyManager.cpp,
+	SharedDataManager.cpp:
+	
+	Fix big/little endian
+
+2008-05-28 09:59  manduchi
+
+	* cacheshr/: FreeSpaceManager.cpp, Makefile.in, Notifier.cpp,
+	SharedDataManager.cpp, SharedMemManager.cpp, SharedMemNode.h,
+	SharedMemTree.cpp:
+	
+	Fix shared memory wrong cross-references
+
+2008-05-28 05:57  manduchi
+
+	* javamds/Makefile.in:
+	
+	Link also to CacheShr
+
+2008-05-28 05:22  manduchi
+
+	* include/cacheshr.h:
+	
+	Added one argument to RTreeSetCallback
+
+2008-05-28 05:21  manduchi
+
+	* javamds/mdstree_MdsTree.h:
+	
+	Mismatch
+
+2008-05-28 05:20  manduchi
+
+	* javamds/mdstree_MDsTree.h:
+	
+	Still mismatch
+
+2008-05-28 05:19  manduchi
+
+	* javamds/: mdsdata_Data.h, mdstree_MDsTree.h:
+	
+	Fix upper/lowercase mispatch
+
+2008-05-28 05:13  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	fix _int64
+
+2008-05-28 05:08  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix uppercase in include
+
+2008-05-28 05:03  manduchi
+
+	* cacheshr/: Notifier.h, Notifier.cpp:
+	
+	Fix for Linux
+
+2008-05-28 04:54  manduchi
+
+	* javamds/: JavaData.c, JavaTrav.c, Makefile.in, javamds.dsp,
+	mdsdata_data.h, mdsobjects.c:
+	
+	Added support for dmsobjects
+
+2008-05-28 04:53  manduchi
+
+	* cacheshr/: CachedTreeshr.c, ChannelFactory.cpp,
+	SharedDataManager.cpp:
+	
+	Better support for distribued applications
+
+2008-05-23 15:35  jas
+
+	* mitdevices/dc1394_support2.c:
+	
+	have to stop capture before canceling the thread
+
+2008-05-22 11:46  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CachedTreeshr.c,
+	CallbackManager.h, Notifier.cpp, Notifier.h, SharedDataManager.cpp,
+	SharedDataManager.h, cacheshr.dsp:
+	
+	Allow shared or private cache. Allows cache configuration
+	(private/shared, cache size).  Add an additional void * parameter
+	to RTreeSetCallback to be passed to the callback routine.
+
+2008-05-21 08:26  manduchi
+
+	* javatraverser/CAENV1731Setup.java:
+	
+	Added Action dispatching setup
+
+2008-05-21 08:00  manduchi
+
+	* tdi/RfxDevices/CAENV1731__calibrate.fun:
+	
+	Calibration procedure for CAEN V1731
+
+2008-05-21 07:59  manduchi
+
+	* tdi/RfxDevices/: CAENV1731__init.fun, CAENV1731__store.fun,
+	CAENV1731__trigger.fun, CAENVME_FIFOBLTReadCycle.fun:
+	
+	Fixed offset setting
+
+2008-05-16 05:40  manduchi
+
+	* tdi/RfxDevices/: HMSPECTROInfo.fun, HMSPECTROReadLambda.fun,
+	HMSPECTRO__info.fun, HMSPECTRO__init.fun, HMSPECTRO__store.fun:
+	
+	Fix and add new functionalities to Hamamatsu mini petrometer
+
+2008-05-16 03:38  manduchi
+
+	* tdi/RfxDevices/: HMSPECTRO__init.fun, HMSPECTRO__store.fun:
+	
+	Fix
+
+2008-05-15 12:30  twf
+
+	* math/csint.f.in:
+	
+	Use double precision
+
+2008-05-14 04:54  manduchi
+
+	* tdi/RfxDevices/HMSPECTROInfo.fun:
+	
+	Hamamatsu mini spectrometer information function
+
+2008-05-14 04:54  manduchi
+
+	* tdi/RfxDevices/HMSPECTRO__info.fun:
+	
+	Hamamatsu mini spectrometer information method
+
+2008-05-12 15:16  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Add ServerDisconnect entry point
+
+2008-05-12 10:39  twf
+
+	* mdslib/MdsLib.c:
+	
+	Fix variable argument list for use with 64-bit gcc
+
+2008-05-12 09:32  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Fix control
+
+2008-05-12 09:26  manduchi
+
+	* javatraverser/RFXControlSetup.java:
+	
+	Added control
+
+2008-05-12 08:07  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Added new algorithm
+
+2008-05-12 05:27  manduchi
+
+	* javatraverser/HMSPECTROSetup.java:
+	
+	Setup for for HAMAMATSU Mini Spetrometer
+
+2008-05-12 05:24  manduchi
+
+	* tdi/RfxDevices/: HMSPECTROGetMsg.fun, HMSPECTROReadData.fun,
+	HMSPECTRO__add.fun, HMSPECTRO__arm.fun, HMSPECTRO__init.fun,
+	HMSPECTRO__store.fun:
+	
+	Add functions for HANANATSU Micro pectrometer
+
+2008-04-29 10:42  manduchi
+
+	* tdi/RfxDevices/CAENV1731__init.fun:
+	
+	TTL trig in
+
+2008-04-29 10:10  manduchi
+
+	* tdi/RfxDevices/: CAENV1731__init.fun, CAENV1731__store.fun,
+	CAENVME_FIFOBLTReadCycle.fun:
+	
+	First version of CAENV1731 device
+
+2008-04-29 08:58  manduchi
+
+	* tdi/RfxDevices/: CAENV1731__add.fun, CAENV1731__init.fun,
+	CAENV1731__store.fun, CAENV1731__trigger.fun,
+	CAENVME_FIFOBLTReadCycle.fun, CAENVME_FIFOBLTWriteCycle.fun,
+	CAENVME_Init.fun, CAENVME_ReadCycle.fun, CAENVME_WriteCycle.fun:
+	
+	CAEN V1731 support
+
+2008-04-23 15:00  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix remote event canceling
+
+2008-04-23 13:09  manduchi
+
+	* tdi/RfxDevices/CAENV1731__init.fun:
+	
+	Init fun for CAEN V1731
+
+2008-04-22 16:13  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Prevent writing 0 byte records during clean or compress
+
+2008-04-22 12:17  manduchi
+
+	* javatraverser/CAENV1731Setup.java:
+	
+	Again field nid
+
+2008-04-22 12:02  manduchi
+
+	* javatraverser/CAENV1731Setup.java:
+	
+	Fix field nid
+
+2008-04-22 11:34  manduchi
+
+	* tdi/RfxDevices/getVersions.fun:
+	
+	Manage VME version numbers in RFX
+
+2008-04-21 11:28  manduchi
+
+	* javatraverser/CAENV1731Setup.java:
+	
+	More option
+
+2008-04-21 11:20  manduchi
+
+	* javatraverser/CAENV1731Setup.java,
+	tdi/RfxDevices/CAENV1731__add.fun:
+	
+	Re-organize fields
+
+2008-04-18 12:20  manduchi
+
+	* tdi/RfxDevices/CAENV1731__add.fun,
+	javatraverser/CAENV1731Setup.java:
+	
+	Added field
+
+2008-04-18 12:00  manduchi
+
+	* tdi/RfxDevices/CAENV1731__add.fun:
+	
+	Added CAEN V1731 device
+
+2008-04-18 11:59  manduchi
+
+	* javatraverser/: CAENV1731Setup.java, Makefile.in:
+	
+	Added CAEN V1731 Device
+
+2008-04-18 02:42  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fix null descriptors
+
+2008-04-07 15:26  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding dc1394 version 2 support
+
+2008-04-07 14:53  jas
+
+	* configure:
+	
+	added libdc1394 version 2 support
+
+2008-04-07 14:39  jas
+
+	* tdi/MitDevices/: dc1394a__add.fun, dc1394a__init.fun,
+	dc1394a__load_image.fun, dc1394a__part_name.fun,
+	dc1394a__store.fun, dt196__store.fun:
+	
+	support for libdc1394 Version 2
+
+2008-04-07 14:38  jas
+
+	* configure.in:
+	
+	adding libdc1394 V2 support
+
+2008-04-07 14:35  jas
+
+	* mitdevices/Makefile.in:
+	
+	adding new libdc1394 support
+
+2008-04-07 12:51  twf
+
+	* treeshr/TreeOpen.c:
+	
+	fix channel assigment during edit/new
+
+2008-04-07 12:50  twf
+
+	* treeshr/TreeFindNode.c:
+	
+	Add breaks to case statements
+
+2008-04-04 16:53  jas
+
+	* mitdevices/: DC1394A.uil, dc1394_support2.c:
+	
+	libdc1394 Version 2 support
+
+2008-03-27 13:34  jas
+
+	* mitdevices/Makefile.in:
+	
+	Idl has moved
+
+2008-03-19 18:40  manduchi
+
+	* cacheshr/: SharedDataManager.cpp, SharedDataManager.h,
+	SharedMemManager.cpp, TreeWriter.cpp:
+	
+	iFix race conditions in shared memory management
+
+2008-03-19 16:16  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-0
 
 2008-03-19 16:15  twf
 
