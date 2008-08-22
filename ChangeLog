@@ -1,6 +1,18 @@
 Version 2.1-1
 
 
+2008-08-22 12:25  twf
+
+	* cacheshr/Makefile.in:
+	
+	Fix cxxflags
+
+2008-08-22 12:16  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-1
+
 2008-08-22 12:15  twf
 
 	* cacheshr/Makefile.in:
