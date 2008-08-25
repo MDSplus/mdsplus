@@ -37,6 +37,10 @@ public class jServer
     ActionQueue actionQueue = new ActionQueue();
     Worker worker = new Worker();
     boolean watchdogStarted = false;
+    
+    
+   
+    
 
 //static inner class ActionDescriptor is used to keep action-related information
     static class ActionDescriptor
@@ -264,6 +268,7 @@ public class jServer
             return null;
         }
     }
+    
     synchronized void removeAllRetSocket()
     {
         retSocketsV.removeAllElements();
@@ -321,8 +326,8 @@ public class jServer
                         //int nid = dis.readInt();
                         String name = new String(messages[8].body);
 
-                        //  System.out.println("SrvAction " + id + " " + tree + " " + shot +
-                        //                     " " + nid);
+                        //  System.out.println("SrvAction " + id + " " + tree + " " + shot + " " + nid);
+                        
                         actionQueue.enqueueAction(new ActionDescriptor(name,
                             address, port, id,
                             tree, shot));
@@ -374,11 +379,9 @@ public class jServer
                         //System.out.println("SrvCommand " + id + " " + cli + " " + command);
                         break;
                     case SrvSetLogging:
-
                         //System.out.println("SrvSetLogging " + id);
                         break;
                     case SrvStop:
-
                         //System.out.println("SrvStop " + id);
                         break;
                     case SrvWatchdogPort:
@@ -480,20 +483,32 @@ public class jServer
     public static void main(String args[])
     {
         int port;
-        try {
+
+        try 
+        {
             System.out.println(args[0]);
             port = Integer.parseInt(args[0]);
         }
-        catch (Exception exc) {
+        catch (Exception exc) 
+        {
             port = 8002;
         }
-
-        if (args.length > 1) {
+        
+        /*
+        try 
+        {
+            PrintStream logFile = new PrintStream(new FileOutputStream("out_"+port+".log"));
+            System.setOut(new TeeStream(System.out, logFile));
+            System.setErr(new TeeStream(System.err, logFile));
+        }
+        catch (Exception exc) {}
+        */   
+        
+        if (args.length > 1 ) {
             String tclBatch = args[1];
             Database tree = new Database();
             try {
-                tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"),
-                                  0);
+                tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"), 0);
             }
             catch (Exception exc) {
                 System.err.println("Error executing initial TCL batch: " + exc);
@@ -514,7 +529,7 @@ public class jServer
             }
         }
         catch (Exception exc) {}
-
+        
     }
 
     String lastTree = null;
@@ -558,6 +573,9 @@ public class jServer
                                tree + " shot " + shot);
 
             mdsTree.doAction(nid, 0);
+      
+         
+      
             System.out.println("" + new Date() + ", Done " + name + " in " +
                                tree + " shot " + shot);
             status = 1;

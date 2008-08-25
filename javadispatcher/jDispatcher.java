@@ -14,6 +14,9 @@ class jDispatcher
     static final int MONITOR_DOING = 6;
     static final int MONITOR_DONE = 7;
 
+    static final int MONITOR_START_PHASE = 8;
+    static final int MONITOR_END_PHASE = 9;
+
 
     static final int TdiUNKNOWN_VAR = 0xfd380f2;
 
@@ -446,7 +449,16 @@ class jDispatcher
                 case MONITOR_DONE:
                     curr_listener.done(event);
                     break;
-            }
+                case MONITOR_START_PHASE:
+                    event.eventId = MonitorEvent.START_PHASE_EVENT;
+                    curr_listener.startPhase(event);
+                    break;
+                case MONITOR_END_PHASE:
+                    event.eventId = MonitorEvent.END_PHASE_EVENT;
+                    curr_listener.endPhase(event);
+                    break;
+                    
+             }
         }
    }
 
@@ -458,12 +470,20 @@ class jDispatcher
 
     public synchronized boolean startPhase(String phase_name)
     {
+
+       
         doing_phase = false;
         //increment timestamp. Incoming messages with older timestamp will be ignored
         curr_phase = (PhaseDescriptor) phases.get(phase_name); //select data structures for the current phase
         if (curr_phase == null)
-            return false; //Phase name does not correspond to any known phase.
-
+        {
+             curr_phase = new PhaseDescriptor(phase_name);
+//           return false; //Phase name does not correspond to any known phase.
+        }    
+ 
+        System.out.println("------------- INIZIO DELLA FASE --------------------- ");
+        fireMonitorEvent( (Action)null, MONITOR_START_PHASE);
+        
         //GAB CHRISTMAS 2004
 
         //dispatch immediate actions, if any
@@ -509,6 +529,8 @@ class jDispatcher
             }
             return true;
         }
+        System.out.println("XXX ------------- FINE DELLA FASE --------------------- ");
+        fireMonitorEvent( (Action)null, MONITOR_END_PHASE);        
         return false; //no actions to be executed in this phase
     }
 
@@ -708,6 +730,9 @@ class jDispatcher
                             fireMonitorEvent(action, MONITOR_DONE);
                         }
                     }
+                    System.out.println("------------- FINE DELLA FASE --------------------- ");
+                    //fireMonitorEvent(this.curr_phase.phase_name , MonitorEvent.END_PHASE_EVENT);
+                    fireMonitorEvent( (Action)null, MONITOR_END_PHASE);
                     synchronized(this)
                     {
                         notify();
@@ -824,9 +849,7 @@ class jDispatcher
             discardAction(action);
      }
 
-
-
-
+    
     public void redispatchAction(int nid)
     {
         if(doing_phase) //Redispatch not allowed during sequence
@@ -894,6 +917,7 @@ class jDispatcher
                             dos.writeUTF(serverClass);
                             dos.writeUTF(address);
                             dos.writeBoolean(isActive);
+                            //dos.writeInt(currServer.getDoingAction());
                             dos.flush();
                         }
                     }
@@ -931,7 +955,46 @@ class jDispatcher
             catch (Exception exc) {}
         }
     }
+    
+    public void disconnected(ServerEvent event)
+    {
+        System.out.println(" ----- CRASH -------  ");
+        fireMonitorEvent(event.getMessage(), MonitorEvent.DISCONNECT_EVENT);    
+    }
+    
+    public void connected(ServerEvent event)
+    {
+        System.out.println(" ----- RECONNECTED -------  " + event.getMessage() );
+        event.getAction();
+        fireMonitorEvent(event.getMessage(), MonitorEvent.CONNECT_EVENT);    
+    }
 
+     protected synchronized void fireMonitorEvent(String message, int mode)
+    {
+        MonitorEvent event = new MonitorEvent(this, mode, message);
+        Enumeration monitor_list = monitors.elements();
+        while (monitor_list.hasMoreElements()) {
+            MonitorListener curr_listener = (MonitorListener) monitor_list.
+                nextElement();
+            switch (mode) {
+                case MonitorEvent.CONNECT_EVENT:
+                    curr_listener.connect(event);
+                    break;
+                case MonitorEvent.DISCONNECT_EVENT:
+                    curr_listener.disconnect(event);
+                    break;
+                case MonitorEvent.START_PHASE_EVENT:
+                    curr_listener.startPhase(event);
+                    break;
+                case MonitorEvent.END_PHASE_EVENT:
+                    curr_listener.endPhase(event);
+                    break;
+            }
+        }
+   }
+
+    
+    
     public static void main(String args[])
     {
         Server server;
@@ -962,5 +1025,5 @@ class jDispatcher
     private void jbInit() throws Exception
     {
     }
-
+    
 }

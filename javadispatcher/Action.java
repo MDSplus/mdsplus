@@ -3,6 +3,7 @@ import java.util.*;
 class Action
 {
     ActionData action;
+    String server_address="CACCA";
     int nid;
     String name;
     boolean on;
@@ -22,7 +23,7 @@ class Action
 
 
 
-    public Action(ActionData action, int nid, String name, boolean on)
+    public Action(ActionData action, int nid, String name, boolean on, String server_address)
     {
         this.action = action;
         this.nid = nid;
@@ -30,6 +31,7 @@ class Action
         this.on = on;
         dispatch_status = NOT_DISPATCHED;
         status = 0;
+        this.server_address = server_address;
     }
 
   //public int getTimestamp() {return timestamp; }
@@ -44,6 +46,9 @@ class Action
     public synchronized void setManual(boolean manual) {this.manual = manual; }
     synchronized void setStatus(int status) {this.status = status; }
 
+    public synchronized String getServerAddress(){return server_address;}
+    public synchronized void setServerAddress(String server_address){this.server_address = server_address;}
+    
     synchronized void setStatus(int dispatch_status, int status, boolean verbose)
     {
         String server;

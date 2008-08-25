@@ -298,6 +298,7 @@ class jDispatcherIp
             Server server = new ActionServer("", server_ip.trim(),
                                              server_class.trim(),
                                              server_subtree, useJavaServer, watchdogPort);
+           
             servers.addElement(server);
             dispatcher.addServer(server);
             i++;

@@ -14,6 +14,7 @@ class InfoServer implements Server
     public void addServerListener(ServerListener listener){}
     public String getServerClass(){return "INFO_PROVIDER"; }
     public int getQueueLength() {return 0; }
+    public int getDoingAction() {return 0; }
     public void abort(boolean flush){}
     public boolean abortAction(Action action) {return false; }
 
@@ -80,7 +81,7 @@ class InfoServer implements Server
                 if(action_data.getDispatch() == null || action_data.getTask() == null)
                     continue;
                 action = new Action(action_data, nids[i].getInt(), info.getFullPath(),
-                    model_database.isOn(nids[i], 0));
+                    model_database.isOn(nids[i], 0), null );
                 action_vect.addElement(action);
                 nid_array[num_actions] = nids[i].getInt();
                 action_table.put(new Integer(nids[i].getInt()), action_data);

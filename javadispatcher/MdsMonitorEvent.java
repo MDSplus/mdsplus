@@ -11,22 +11,38 @@ class MdsMonitorEvent extends MdsServerEvent
     static final int MonitorDoing      =6;
     static final int MonitorDone       =7;
 
+    static final int MonitorServerConnected      = 8;
+    static final int MonitorServerDisconnected   = 9;
+    static final int MonitorEndPhase             = 10;
+    static final int MonitorStartPhase           = 11;
+
+
     String tree;
-    int    shot;
+    long   shot;
     int    phase;
     int    nid;
     String name;
     int    on;
     int    mode;
     String server;
+    String server_address;
     int    ret_status;
 
     String node_path;
     Date   date;
     String date_st;
     String error_message;
-    long execution_time; //msec
+    long   execution_time; //msec
 
+    
+    public MdsMonitorEvent(Object obj, int mode,  String msg)
+    {
+        super(obj, 0, 0, 1);
+        this.mode = mode;
+        this.error_message = msg;
+   }
+
+    
     public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
     {
         super(obj, 0, 0, 1);
@@ -38,7 +54,7 @@ class MdsMonitorEvent extends MdsServerEvent
    }
 
     public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode,
-        String server, int ret_status)
+        String server, String server_address, int ret_status)
     {
         super(obj, 0, 0, 1);
         this.tree = tree;
@@ -49,6 +65,7 @@ class MdsMonitorEvent extends MdsServerEvent
         this.on = on;
         this.mode = mode;
         this.server = server;
+        this.server_address = server_address;
         this.ret_status = ret_status;
         this.error_message = MdsHelper.getErrorString(ret_status);
         date_st = (new Date()).toString();
@@ -64,7 +81,7 @@ class MdsMonitorEvent extends MdsServerEvent
 
             tree   = new String(buf.nextToken());
             if(buf.hasMoreTokens())
-                shot   = Integer.decode(buf.nextToken()).intValue();
+                shot   = Long.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
                 phase    = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
@@ -75,6 +92,8 @@ class MdsMonitorEvent extends MdsServerEvent
                 mode   = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
                 server = new String(buf.nextToken());
+            if(buf.hasMoreTokens())
+                server_address = new String(buf.nextToken());
             if(buf.hasMoreTokens())
                 ret_status    = Integer.decode(buf.nextToken()).intValue();
             if(buf.hasMoreTokens())
@@ -89,6 +108,8 @@ class MdsMonitorEvent extends MdsServerEvent
         }
         catch (NumberFormatException e)
         {
+            e.printStackTrace();
+            System.out.println(e);
             throw(new Exception("Bad monitor event data"));
         }
     }
@@ -96,7 +117,7 @@ class MdsMonitorEvent extends MdsServerEvent
     public synchronized byte [] toBytes()
     {
         String out_st = tree + " " + shot + " " + phase + " " + nid + " " + on + " "
-            + mode + " " + server + " " + ret_status + " " + name + " " + date_st + " ; " + error_message;
+            + mode + " " + server + " " + server_address + " " + ret_status + " " + name + " " + date_st + " ; " + error_message;
         byte [] msg = out_st.getBytes();
 
         String head_st = "" + jobid + " " + flags + " " + status + " " + msg.length;
@@ -109,23 +130,27 @@ class MdsMonitorEvent extends MdsServerEvent
 
     private String getMode(int mode_id)
     {
-
         switch(mode_id)
         {
-            case MonitorBuildBegin : return "MonitorBuildBegin";
-            case MonitorBuild      : return "MonitorBuild";
-            case MonitorBuildEnd   : return "MonitorBuildEnd";
-            case MonitorCheckin    : return "MonitorCheckin";
-            case MonitorDispatched : return "MonitorDispatched";
-            case MonitorDoing      : return "MonitorDoing";
-            case MonitorDone       : return "MonitorDone";
+            case MonitorBuildBegin          : return "MonitorBuildBegin";
+            case MonitorBuild               : return "MonitorBuild";
+            case MonitorBuildEnd            : return "MonitorBuildEnd";
+            case MonitorCheckin             : return "MonitorCheckin";
+            case MonitorDispatched          : return "MonitorDispatched";
+            case MonitorDoing               : return "MonitorDoing";
+            case MonitorDone                : return "MonitorDone";
+            case MonitorServerConnected     : return "MonitorServerConnected";
+            case MonitorServerDisconnected  : return "MonitorServerDisconnected";
+            case MonitorEndPhase            : return "MonitorEndPhase";
+            case MonitorStartPhase          : return "MonitorStartPhase";
         }
         return "";
     }
 
     public synchronized String toString()
     {
-        return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+";status="+ret_status+"]");
+        return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+
+               "; ServerAddress="+ server_address+" ;status="+ret_status+"]");
     }
 
  
@@ -162,7 +187,7 @@ class MdsMonitorEvent extends MdsServerEvent
         return out.toString().trim();
     }
 
-    private String msecToString(long msec)
+    public static String msecToString(long msec)
     {
       int min = (int)(msec/60000.);
       msec -= min * 60000;

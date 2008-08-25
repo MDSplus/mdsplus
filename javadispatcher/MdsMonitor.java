@@ -78,10 +78,32 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
     protected void communicate(MonitorEvent event, int mode)
     {
         try {
-            MdsMonitorEvent mds_event;
+            MdsMonitorEvent mds_event = null;
             if(event.getAction() == null)
-                mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(),
-                    0, 0, "", 1, mode, "", 1);
+            {
+                int currMode = 0;
+                switch(event.eventId)
+                {
+                    case MonitorEvent.CONNECT_EVENT:    
+                        currMode = MdsMonitorEvent.MonitorServerConnected; 
+                        mds_event = new MdsMonitorEvent(this, null, 0, 0, 0, null, 1, currMode, null, event.getMessage(), 1);
+                    break;
+                    case MonitorEvent.DISCONNECT_EVENT: 
+                        currMode = MdsMonitorEvent.MonitorServerDisconnected; 
+                        mds_event = new MdsMonitorEvent(this, null, 0, 0, 0, null, 1, currMode, null, event.getMessage(), 1);
+                    break;
+                    case MonitorEvent.START_PHASE_EVENT: 
+                        currMode = MdsMonitorEvent.MonitorStartPhase; 
+                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);                        
+                        break;
+                    case MonitorEvent.END_PHASE_EVENT:    
+                        currMode = MdsMonitorEvent.MonitorEndPhase; 
+                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), MdsHelper.toPhaseId(event.getPhase()), 0, null, 1, currMode, null, null, 1);                        
+                        break;                 
+                    default:
+                        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), 0, 0, null, 1, mode, null, null, 1);
+                }                   
+            }
             else
             {
                 Action action = event.getAction();
@@ -89,6 +111,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
                     MdsHelper.toPhaseId(event.getPhase()), action.getNid(),
                     action.getName(), action.isOn()?1:0, mode,
                     ((DispatchData)(action.getAction().getDispatch())).getIdent().getString(),
+                    action.getServerAddress(),
                     action.getStatus());
             }
             msg_vect.addElement(mds_event);
@@ -124,4 +147,26 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
     {
         communicate(event, jDispatcher.MONITOR_DONE);
     }
+    
+    public synchronized void disconnect(MonitorEvent event)
+    {
+        communicate( event, MonitorEvent.DISCONNECT_EVENT );
+    }
+    
+    public synchronized void connect(MonitorEvent event)
+    {
+        communicate( event, MonitorEvent.CONNECT_EVENT );
+    }
+
+    public synchronized void endPhase(MonitorEvent event)
+    {
+        communicate( event, MonitorEvent.DISCONNECT_EVENT );
+    }
+    
+    public synchronized void startPhase(MonitorEvent event)
+    {
+        communicate( event, MonitorEvent.CONNECT_EVENT );
+    }
+
+    
 }
