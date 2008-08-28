@@ -1504,17 +1504,13 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
 #else
     tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
-    if (tmp) {
-      tm.tm_isdst=-1;
-      tim = mktime(&tm);
-      if ((int)tim == -1) return 0;
+    tm.tm_isdst=-1;
+    tim = mktime(&tm);
+    if ((int)tim == -1) return 0;
 #if defined(HAVE_WINDOWS_Hxxxxx)
-      _tzset();
-      tim -= _timezone;
+    _tzset();
+    tim -= _timezone;
 #endif
-    }
-    else
-      tim = 0;
 }
 #else
     tim = 0; /*It is vxWorks */
