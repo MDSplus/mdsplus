@@ -268,11 +268,12 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 	EMPTYXD(dimXd);
 
 	_int64 *times;
-	int nTimes;
+	int nTimes, i;
 	char dtype, dimct;
-	int dims[64], segItems, segRows, oldLen;
+	int dims[64], segItems, nextRow, oldLen;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
-	struct descriptor_a *arrD, *timesD;
+	struct descriptor_a *timesD;
+	ARRAY_BOUNDS(char, 16) *arrD;
 
 	status = TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1)) return status;
@@ -314,12 +315,20 @@ static int copySegmentedIntoCache(int nid, int *copiedSegments)
 			}
 			else //Last Segment: keep track of the fact that it may be partially filled
 			{
-				status = TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &segItems, &segRows);
+				status = TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &segItems, &nextRow);
 				if(status & 1)
 				{
 					arrD = (struct descriptor_a *)dataXd.pointer;
 					oldLen = arrD->arsize;
-					arrD->arsize = segItems * arrD->length;
+					if(nextRow < dims[dimct - 1]) //If there is a unfilled section of the segment
+					{
+				            arrD->arsize = arrD->length;
+					    for(i = 0; i < dimct - 1; i++)
+					    	arrD->arsize *= dims[i];
+					    arrD->arsize *= nextRow;
+					    if(arrD->dimct > 1)
+					    	arrD->m[dimct - 1] = nextRow;
+					}
 					status = RTreePutSegment(nid,  -1,(struct descriptor *)arrD, 0);
 					arrD->arsize = oldLen;
 				}
