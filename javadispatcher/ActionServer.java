@@ -32,7 +32,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     public ActionServer(String tree, String ip_address, String server_class, String subtree,
                         boolean useJavaServer, int watchdogPort)
     {
-        System.out.println("------------------------------Action Server "+ ip_address);
+        //System.out.println("------------------------------Action Server "+ ip_address);
         this.tree = tree;
         this.server_class = server_class;
         this.ip_address = ip_address;
@@ -100,7 +100,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             mds_server.addMdsServerListener(ActionServer.this);
                             mds_server.addConnectionListener(ActionServer.this);
                             mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
-                            System.out.println("Restarting server");
+                            System.out.println("Restarting server. Class : "+ server_class +" Address: "+ ip_address);
                             Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
                         }
                         catch (Exception exc) {

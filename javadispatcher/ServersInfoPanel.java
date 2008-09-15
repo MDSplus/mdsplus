@@ -88,7 +88,7 @@ public class ServersInfoPanel extends JPanel {
                 startAllServerActionPerformed(evt);
             }
         });
-        jPanel1.add(startAllServer);
+        //jPanel1.add(startAllServer);
 
         killAllServer.setText("Kill All Servers");
         killAllServer.addActionListener(new java.awt.event.ActionListener() {
@@ -96,7 +96,7 @@ public class ServersInfoPanel extends JPanel {
                 killAllServerActionPerformed(evt);
             }
         });
-        jPanel1.add(killAllServer);
+        //jPanel1.add(killAllServer);
 
         add(jPanel1, java.awt.BorderLayout.PAGE_END);
 
