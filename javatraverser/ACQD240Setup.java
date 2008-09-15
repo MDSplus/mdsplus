@@ -2,6 +2,7 @@
 		A basic implementation of the DeviceSetup class.
 */
 
+
 import java.awt.*;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
