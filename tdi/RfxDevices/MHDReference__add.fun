@@ -17,8 +17,8 @@ public fun MHDReference__add(in _path, out _nidout)
     	    DevAddNode(_path // ':I'//TEXT(_i, 2)//TEXT(_j, 1), 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
 	}
     }    
-    DevAddAction(_path//':LOAD_ACTION', 'LOAD', 'PULSE_PREPATAYION', 20,'VME_SERVER', getnci(_path, 'fullpath'), _nid);
-    DevAddAction(_path//':INIT_ACTION', 'INIT', 'PULSE_PREPATAYION', 50,'VME_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':LOAD_ACTION', 'PULSE_PREPARATION', 'LOAD', 20,'VME_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 50,'VME_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }
 	    

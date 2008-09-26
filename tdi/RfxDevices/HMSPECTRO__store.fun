@@ -211,7 +211,7 @@ write(*, "_bufSize ", _bufSize);
 
 	    _tbase = MdsValue('HMSPECTROReadTbase( $1,  $2 )',  _dev_name ,  _num_scan);
 
-		write(*, "Tbase ", _tbase / 3579545. );
+		write(*, "Tbase ",  _tbase  );
 
 
 		MdsValue( 'HMSPECTRO->HMSpectroClose(val($1))', _dev_name );
@@ -267,11 +267,11 @@ write(*, "_bufSize ", _bufSize);
 		}
 	}
 
-	_read_out_time = (1.1 + 2 * 2048)/1000.;
+	_t0 = _trig_time;
 
 	_buf = transpose( set_range(_hwPixel, _num_scan, _data) );
 
-    _dim1 = make_dim(make_window(0, _num_scan - 1, _trig_time),  make_range(*,*,_integ_time));
+    _dim1 = make_dim(make_window(0, _num_scan - 1, _t0 ),  make_range(*,*,_integ_time));
     _dim2 = make_with_units(( _lambda ),"nm");
 
 	_data_nid = DevHead(_nid) + _N_DATA;

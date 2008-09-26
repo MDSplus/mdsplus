@@ -67,13 +67,13 @@ public fun RFXControl__store(as_is _nid, optional _method)
 	_n_samples =  MdsValue('size(Feedback->getDacSignal:dsc(0,0))');
       if(_n_samples == *)
       {
-	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    DevLogErr(_nid, 'Cannot communicate to VME : read _n_samples');
 	    abort();
     	}
 	_n_pretrigger =  MdsValue('Feedback->getPreTriggerSamples()');
       if(_n_pretrigger == *)
       {
-	    DevLogErr(_nid, 'Cannot communicate to VME');
+	    DevLogErr(_nid, 'Cannot communicate to VME : read _n_pretrigger');
 	    abort();
     	}
 

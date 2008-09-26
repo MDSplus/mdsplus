@@ -175,7 +175,7 @@ public fun FASTCAM__init(as_is _nid, optional _method)
  			abort();
 		}
 	
-		_num_frames = int ( (_end_time - _start_time) * _frame_rate );
+		_num_frames = int ( (_end_time - _start_time) * _frame_rate ) + 1;
 
 		DevPut(_nid, _N_NUM_FRAMES, _num_frames);
 
@@ -205,7 +205,7 @@ public fun FASTCAM__init(as_is _nid, optional _method)
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 
 		execute(_cmd);
-	    _status = MdsValue('FastCamHWinit($, $, $, $, $, $, $)', _frame_rate, _num_frames + 1, _num_trig, _shutter, _calibrate, _v_res, _h_res);
+	    _status = MdsValue('FastCamHWinit($, $, $, $, $, $, $)', _frame_rate, _num_frames, _num_trig, _shutter, _calibrate, _v_res, _h_res);
 		if(_status < 0 )
 			_msg = MdsValue('FastCamErrno($)', _status);
 
@@ -222,7 +222,7 @@ public fun FASTCAM__init(as_is _nid, optional _method)
 	}
 	else
 	{
-	    _status = FastCamHWinit( _frame_rate, _num_frames + 1, _num_trig, _shutter, _calibrate, _v_res, _h_res);
+	    _status = FastCamHWinit( _frame_rate, _num_frames, _num_trig, _shutter, _calibrate, _v_res, _h_res);
 		if(_status < 0)
 		{
 			_msg = FastCamErrno( _status );	

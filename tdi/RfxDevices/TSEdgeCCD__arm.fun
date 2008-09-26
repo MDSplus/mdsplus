@@ -51,19 +51,26 @@ write(*, "TSEdgeCCD__arm");
 
 	if(_remote != 0)
 	{
+		write(*, "Connect to "//_ip_addr);
+	
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		_status = execute(_cmd);
 		if( _status != 0 )
 		{
 			_cmd = 'TSEdgeCCD->TSEdgeCCD_arm(val('//_interface_id//'), val(65535))';
+		write(*, "Command "//_cmd);
 			_status = MdsValue(_cmd);
 			if(_status == 0)
 			{
+			/*
 				_msg = MdsValue('TSEdgeCCDError()');
 				DevLogErr(_nid, "Error in arm operation : "//_msg);
+			*/
+				DevLogErr(_nid, "Error in arm operation : ");
 				MdsDisconnect();
 				abort();
 			}
+		write(*, "Disconnect");
 			MdsDisconnect();
 		}
 		else
@@ -78,8 +85,11 @@ write(*, "TSEdgeCCD__arm");
 		_status = TSEdgeCCD->TSEdgeCCD_arm(val(_interface_id), val(65535));
 		if(_status == 0)
 		{
+		/*
 		    _msg = TSEdgeCCDError();
 			DevLogErr(_nid, "Error in arm operation : "//_msg);
+		*/
+			DevLogErr(_nid, "Error in arm operation : ");
 			abort();
 		}
 	}

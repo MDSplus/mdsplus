@@ -59,8 +59,11 @@ write(*, "TSEdgeCCD__trigger");
 			_status = MdsValue(_cmd);
 			if(_status == 0)
 			{
+			/*
 				_msg = MdsValue('TSEdgeCCDError()');
 				DevLogErr(_nid, "Error in trigger operation :  "//_msg);
+			*/
+				DevLogErr(_nid, "Error in trigger operation :  ");
 				MdsDisconnect();
 				abort();
 			}
@@ -78,8 +81,11 @@ write(*, "TSEdgeCCD__trigger");
 		_status = TSEdgeCCD->TSEdgeCCD_trigger(val(_interface_id));
 		if(_status == 0)
 		{
+		/*
 			_msg = TSEdgeCCDError();
 			DevLogErr(_nid, "Error in trigger operation :  "//_msg);
+		*/
+			DevLogErr(_nid, "Error in trigger operation :  ");
 			abort();
 		}
 	}

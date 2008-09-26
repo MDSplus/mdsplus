@@ -1,8 +1,10 @@
 public fun bRadCheck(in _save, optional _debug)
 {
-	_PASMA_CURRENT_LEVEL = 100000;
+	_PLASMA_CURRENT_LEVEL = 100000;
+
 	_START_TIME = -1.0;
 	_END_TIME = 1.0;
+	_PERIOD = 0.001;
 	
 	_CORRENTI_PR_SATURATE = 2;
 	_WARNING_CAMPO_RADIALE = 4;
@@ -35,14 +37,13 @@ public fun bRadCheck(in _save, optional _debug)
 
 	_warningSigs = [];
 	_warningSigs_updown = [];
+
 	_warningSigs_inout = [];
-
-
 
 	write(*, "CHECK Saturazioni correnti PR");
 
 	
-	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 8];
+	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
 	
 	_level = _PrMaxCurrent * 0.9;
 	_satDuration = 0.01;
@@ -88,27 +89,44 @@ public fun bRadCheck(in _save, optional _debug)
 			}
 		}
 	}
-	
 
-	_pcurr = \dequ::vmrg120_vi2va[ _START_TIME : _END_TIME : 1./\MHD_BR::CPCI_1_FREQUENCY ];
+	_pcurr = \dequ::vmrg120_vi2va[ _START_TIME : _END_TIME : _PERIOD ];
 	
 	_pCurrY = fs_float( data  ( _pcurr ) );
 	_pCurrX = fs_float( dim_of( _pcurr ) );
 	
-	if( maxval( _pCurrY ) < _PASMA_CURRENT_LEVEL )
+	if( maxval( _pCurrY ) < _PLASMA_CURRENT_LEVEL )
 		return ( 1 );
-	
+
+/*
 	_st = fs_float( _pCurrX[0] );
 	_ed = fs_float( _pCurrX[ size( _pCurrX ) - 1] );
+*/	
 	
-	
-	write(*, "CHECK campo radiale e generazione segnale campo radiale massimo", _st, _ed);
+	write(*, "CHECK campo radiale e generazione segnale campo radiale massimo", _START_TIME, _END_TIME);
 
-
+/*
 	_x = [ _START_TIME : _END_TIME : 1./\MHD_BR::CPCI_1_FREQUENCY ];
-	_currentLimit = _pCurrY > _PASMA_CURRENT_LEVEL;
+*/	
+	_x = fs_float( dim_of( _pcurr ) );
+
+	_currentLimit = _pCurrY > _PLASMA_CURRENT_LEVEL;
 
 
+/*
+    Calcolo il campo verticale		
+*/
+
+	_mod = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2"));
+	_phs = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_PHS_2"));
+
+	_m0 = ( 2./192. ) * _mod * sin( _phs );
+
+	_m0Sig = make_signal( _m0, ,dim_of( build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2")) );
+
+	_Bv = resample( _m0Sig, _START_TIME, _END_TIME, _PERIOD );
+			
+		
 	for( _j = 1 ; _j <= 4 ; _j++)
 	{		
 		if( _j & 1 )
@@ -118,7 +136,7 @@ public fun bRadCheck(in _save, optional _debug)
 */
 			_lW = 0.005; 
 			_lF = 0.009;
-			_dW = _dF = 0.01;
+			_dW = _dF = 0.03;
 
 		}
 		else
@@ -126,10 +144,15 @@ public fun bRadCheck(in _save, optional _debug)
 		
 /*
 	Sonde alto-basso: 8mT (allarme) e 12 mT (intervento).
-*/
+	Sonde alto-basso: 8mT (allarme) e 9 mT (intervento).
+**/
+/*
 			_lW = 0.008; 
 			_lF = 0.012;
-			_dW = _dF = 0.01;
+*/
+			_lW = 0.008; 
+			_lF = 0.009;
+			_dW = _dF = 0.03;
 	
 		}
 
@@ -141,29 +164,38 @@ public fun bRadCheck(in _save, optional _debug)
 			{
 				_signalPath = "\\mhd_br::VMBRX0"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA";
 				
-				_sigName = "\\mhd_br::VMBRX0"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA[ "//_START_TIME//" : "//_END_TIME//" : 1./\\MHD_BR::CPCI_1_FREQUENCY]";
+				_sigName = "\\mhd_br::VMBRX0"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA[ "//_START_TIME//" : "//_END_TIME//" : _PERIOD]";
+
 			}
 			else
 			{
 				_signalPath = "\\mhd_br::VMBRX"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA";
 
-				_sigName = "\\mhd_br::VMBRX"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA[ "//_START_TIME//" : "//_END_TIME//" : 1./\\MHD_BR::CPCI_1_FREQUENCY]";
+				_sigName = "\\mhd_br::VMBRX"//trim(adjustl(_k))//trim(adjustl( _j ))//"_VI2VA[ "//_START_TIME//" : "//_END_TIME//" : _PERIOD]";
+
 			}
-
+/*
+			_signal = resample( build_path( _signalPath ), _START_TIME, _END_TIME, 0.001 );
+*/
 			_signal = execute(_sigName);
-			
-			_y = fs_float( abs( data(_signal) ) );
 
+			_y = abs( data(_signal) );
+			
+			if( ( _j & 1 ) == 0 )
+			{
+			   _y = _y + _Bv;			
+			}
+			
 			_signals = [ _signals, _y ];
 			
 			_y = _y * _currentLimit;
-			
+
+			_y = fs_float( _y );
 
 			_len = size(_y);
-						
-			
+									
 			_warningSignal = zero( _len, 0.0);
-			_faultSignal = zero( _len, 0.0);
+			_faultSignal   = zero( _len, 0.0);
 			
 			_status =  libRfxUtils->RadialFieldLevelCheck( ref( _y ), ref( _x ), val(_len),
 															_lW, _lF, _dW, _dF, 
@@ -173,8 +205,7 @@ public fun bRadCheck(in _save, optional _debug)
 
 			if( _status > 0 )
 			{
-			
-			
+						
 				if( _status ==  2 )
 				{
 				
@@ -234,7 +265,7 @@ public fun bRadCheck(in _save, optional _debug)
 
 	write(*, "********************************************************************");
 	
-	write(*, "Segnale su cui e' stato rilevato il primo faul : ", _currentSignalF, _currentTimeStartF);
+	write(*, "Segnale su cui e' stato rilevato il primo fault : ", _currentSignalF, _currentTimeStartF);
 	write(*, "Segnale su cui e' stato rilevato il primo Warning : ", _currentSignalW, _currentTimeStartW);
 	
 	write(*, "Fault Signals ", _faultSigs[*] );

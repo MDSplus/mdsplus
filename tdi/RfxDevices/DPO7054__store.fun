@@ -274,7 +274,7 @@ public fun DPO7054__store(as_is _nid, optional _method)
 		_end_idx = _window01_record_length - _window01_horiz_acq_position_points;
 	write(*,'_start_idx',_start_idx);
 	write(*,'_end_idx',_end_idx);
-		_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
+		_dim = make_dim(make_window(_start_idx, _end_idx, _trig[0]), _clock);
 
 
 		/************ WINDOW01 CH01 ******************/
@@ -371,7 +371,7 @@ public fun DPO7054__store(as_is _nid, optional _method)
 		_y_mult = 0.;
 		_start_idx = - _window02_horiz_acq_position_points;
 		_end_idx = _window02_record_length - _window02_horiz_acq_position_points;
-		_dim = make_dim(make_window(_start_idx, _end_idx, _trig), _clock);
+		_dim = make_dim(make_window(_start_idx, _end_idx, _trig[1]), _clock);
 
 		_data = zero(_buffer_size, 0B);
 
@@ -449,6 +449,11 @@ public fun DPO7054__store(as_is _nid, optional _method)
 		}
 	}
 
+	}
+	else
+	{
+		DevLogErr(_nid, 'Module is not in stop state. Store not done.');
+		abort();
 	}
 
 

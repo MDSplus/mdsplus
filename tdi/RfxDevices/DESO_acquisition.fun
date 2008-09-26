@@ -3,9 +3,9 @@ public fun DESO_acquisition()
 
 	_DELAY_BETWEEN_SHOT = 120;
 
-	_WAIT_FOR_ACQUISITION = 13;
+	_WAIT_FOR_ACQUISITION = 14;
 	
-	_PLC_SYNC = 1;
+	_PLC_SYNC      = 1;
 	_EXECUTE_PULSE = 1;
 
 	/*
@@ -25,9 +25,9 @@ public fun DESO_acquisition()
 	{
 		Write(*, "CONNECT to mdsip");
 		_status = mdsconnect("150.178.34.151:8100");
-		if( ! ( _status & 1 ) )
+		if( _status == 0 )
 		{
-			write(*, "Impossibile connettersi con mdsip server su ntopc");
+			write(*, "Impossibile connettersi con mdsip server su ntopc", _status);
 			abort();
 		}
 		
@@ -62,6 +62,11 @@ public fun DESO_acquisition()
 			mdsdisconnect();
 			abort();
 		}
+		
+		/* Tentativo di correzione del nuovo problema di comunicazione con OPC server
+		    Apro e chiudo la comunicazione */
+		mdsvalue("opcDisconnect("//_handle//")");		
+		mdsdisconnect();				
 	}
 	
 	/*
@@ -73,12 +78,19 @@ public fun DESO_acquisition()
 	
 	if( _EXECUTE_PULSE )
 	{
-		Write(*, "Esegue il primo impulso pre impostato ed attende 120 secondi");
+		Write(*, "Esegue il primo impulso pre-impostato ed attende 120 secondi");
 	
+/*
 		tcl("do/method \\DESO_RAW::DESO_TBASE init");
-
 		tcl("do/method \\DESO_RAW::WAVE init");
+*/		
+
+		tcl("do/method \\DESO_RAW::DESO_VME_TRIGGER init");
+		tcl("do/method \\DESO_RAW::DESO_VME_CLOCK init");		
+		tcl("do/method \\DESO_RAW::DESO_CONTROL init");
 	
+		wait(1);
+		
 		tcl("do/method \\DESO_RAW::DESO_DECODER init");
 
 		Write(*, "Attesa di 120 secondi");
@@ -89,8 +101,30 @@ public fun DESO_acquisition()
 	if( _PLC_SYNC )
 	{
 
+		/* Tentativo di correzione del nuovo problema di comunicazione con OPC server
+		    Apro e chiudo la comunicazione */
+
+		Write(*, "CONNECT to mdsip");
+		_status = mdsconnect("150.178.34.151:8100");
+		if( _status == 0 )
+		{
+			write(*, "Impossibile connettersi con mdsip server su ntopc", _status);
+			abort();
+			
+		}
+		
+		Write(*, "CONNECT to OPC server");
+		_handle = mdsvalue("opcconnect('OPC.SimaticNET', 500)");
+		if( _handle == 0 )
+		{
+			write(*, "Errore nella connessione all'OPC server su NtOpc \n", mdsvalue("OpcErrorMessage(0)"));
+			abort();
+		}
+		
+		
 		Write(*, "Verifico Lo stato di V1");
 		_ready = mdsvalue("OpcGet("//_handle//", '\\\\SR:\\\\V1_ISO_Fetch\\\\aliases\\\\DESO_VI_READY')");
+		Write(*, "Stato V1 ", _ready);
 		if( _ready == 0 )
 		{
 			write(*, "V1 in errore abortita l'esecuzione del secondo impulso\n", mdsvalue("OpcErrorMessage("//_handle//")"));
@@ -98,6 +132,12 @@ public fun DESO_acquisition()
 			mdsdisconnect();
 			abort();
 		}
+		
+		/* Tentativo di correzione del nuovo problema di comunicazione con OPC server
+		    Apro e chiudo la comunicazione */
+		mdsvalue("opcDisconnect("//_handle//")");		
+		mdsdisconnect();
+		
 	}		
 		
 	/*
@@ -233,7 +273,7 @@ write(*, "Creazione segnale PUFFING");
 
 ******************************************/
 
-write(*, "Salvataggio segnali e estemi di generazione");
+write(*, "Salvataggio segnali e estremi di generazione");
 
 
 	if( sum( _yWaveF ) != 0 && sum( _yWaveP ) != 0 )
@@ -319,6 +359,7 @@ write(*, "Salvataggio segnali e estemi di generazione");
 	
 		if( _yWave[ _i ] == 0 && _yWave[ _i - 1 ] == 0 && ! _firstPulse)
 		{
+
 			_delayToAdd = _delayToAdd + _delay;
 		}
 		_xWaveNew = [ _xWaveNew, _xWave[ _i ] + _delayToAdd ];
@@ -358,9 +399,13 @@ write(*, "Salvataggio segnali e estemi di generazione");
 		tcl("do/method \\DESO_RAW::DESO_CADH init");
 	
 		tcl("do/method \\DESO_RAW::DESO_CADH_1 init");
-
+/*
 		tcl("do/method \\DESO_RAW::WAVE init");
-	
+*/
+		tcl("do/method \\DESO_RAW::DESO_CONTROL init");
+
+		wait(1);
+
 		tcl("do/method \\DESO_RAW::DESO_DECODER init");
 
 		wait( _WAIT_FOR_ACQUISITION );
@@ -368,10 +413,32 @@ write(*, "Salvataggio segnali e estemi di generazione");
 		tcl("do/method \\DESO_RAW::DESO_CADH store");
 
 		tcl("do/method \\DESO_RAW::DESO_CADH_1 store");
+		
+		tcl("do/method \\DESO_RAW::DESO_CONTROL store");
+		
 	}
 
 	if( _PLC_SYNC )
 	{
+
+		/* Tentativo di correzione del nuovo problema di comunicazione con OPC server
+		    Apro e chiudo la comunicazione */
+
+		Write(*, "CONNECT to mdsip");
+		_status = mdsconnect("150.178.34.151:8100");
+		if( _status == 0 )
+		{
+			write(*, "Impossibile connettersi con mdsip server su ntopc", _status);
+			abort();
+		}
+		
+		Write(*, "CONNECT to OPC server");
+		_handle = mdsvalue("opcconnect('OPC.SimaticNET', 500)");
+		if( _handle == 0 )
+		{
+			write(*, "Errore nella connessione all'OPC server su NtOpc \n", mdsvalue("OpcErrorMessage(0)"));
+			abort();
+		}
 
 		/*
 			Segnala al PLC che la procedura e' conclusa

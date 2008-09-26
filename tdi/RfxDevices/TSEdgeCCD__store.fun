@@ -59,8 +59,11 @@ write(*, "TSEdgeCCD__store");
 			_data = MdsValue(_cmd);
 			if( size(_data) == 1 )
 			{
+			/*
 				_msg = MdsValue('TSEdgeCCDError()');
 				DevLogErr(_nid, "Error in readData operation : "//_msg);
+			*/
+				DevLogErr(_nid, "Error in readData operation : ");
 				MdsDisconnect();
 				abort();
 			}
@@ -79,8 +82,11 @@ write(*, "TSEdgeCCD__store");
 		_status = TSEdgeCCD->TSEdgeCCD_ReadData(val(_interface_id), val(50), val(1), val(300), val(578), val(1), val(1), ref(_data));
 		if(_status == 0)
 		{
+		/*
 		    _msg = TSEdgeCCDError();
 			DevLogErr(_nid, "Error in readData operation : "//_msg);
+		*/
+			DevLogErr(_nid, "Error in readData operation : ");
 			abort();
 		}
 	}

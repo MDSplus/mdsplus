@@ -54,7 +54,7 @@ write(*, "\t\t\tTags ", _tag);
 		if( !_error)
 		{
 /*
-write(*, "Tags ", _ltag, size(_sigs), size(_sigs[*, 0]), size(_time) );
+write(*, "Tags ", _ltag, size(_sigs), size(_sigs[*, 0]), size(_time), _time[0]);
 */
 				_dim1 = _time;
 				if(_mode == "MAX")

@@ -36,7 +36,7 @@ public fun MHDReference__init(as_is _nid, optional _method)
 	if(_size > size(_curr_y))
 		_size = size(_curr_y);
 
-	_status = MdsValue('variables->setMDHFeedforwardReference($1, $2, $3)',_i, float(_curr_x), float(_curr_y), _size);
+	_status = MdsValue('variables->setMDHFeedforwardReference($1, $2, $3, $4)',_i, float(_curr_x), float(_curr_y), _size);
       if(_status == *)
       {
 	    DevLogErr(_nid, 'Cannot communicate to VME');

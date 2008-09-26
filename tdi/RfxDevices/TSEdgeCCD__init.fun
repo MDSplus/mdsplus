@@ -59,8 +59,11 @@ write(*, "TSEdgeCCD__init");
 			_status = MdsValue(_cmd);
 			if(_status == 0)
 			{
+			/*
 				_msg = MdsValue('TSEdgeCCDError()');
 				DevLogErr(_nid, "Error Initializing "//_msg);
+			*/
+				DevLogErr(_nid, "Error Initializing ");
 				MdsDisconnect();
 				abort();
 			}
@@ -78,8 +81,11 @@ write(*, "TSEdgeCCD__init");
 		_status = TSEdgeCCD->TSEdgeCCD_init(val(_interface_id));
 		if(_status == 0)
 		{
+		/*
 			_msg = TSEdgeCCDError();
 			DevLogErr(_nid, "Error Initializing "//_msg);
+		*/
+			DevLogErr(_nid, "Error Initializing ");
 			abort();
 		}
 	}

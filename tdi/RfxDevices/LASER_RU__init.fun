@@ -267,6 +267,8 @@ public fun LASER_RU__init(as_is _nid, optional _method)
 	}
 	else
 	{
+		write(*,  _port,  _trig_mode,  _osc_par,  _amp_par, _pbal_par, _dtime1_par, _delay_fire, _df1m_par,  _bit_states);
+
 		_status = LASER_RU_HWinit(_port, _trig_mode, _osc_par, _amp_par,  _pbal_par, _dtime1_par, _delay_fire, _df1m_par, _bit_states);
 		if(_status == 0)
 			abort();

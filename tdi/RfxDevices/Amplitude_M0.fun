@@ -33,22 +33,5 @@ public fun Amplitude_M0()
 				
 	return ( make_signal(set_range(_ntime, 25, _data),, _times, [0..24] ) );
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+
 }

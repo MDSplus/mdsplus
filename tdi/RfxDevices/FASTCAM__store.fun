@@ -160,9 +160,9 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 	{
 		_resample_source = _trigs : _trigs + _end_time : 1./_frame_rate;
 	}
-
+/*
 	write(*, "_resample_source : ", _resample_source);
-
+*/
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
@@ -209,9 +209,9 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 		_frameRange = ( _trigs : _trigs + (_num_frames * 1./_frame_rate) : 1./_frame_rate ) + _deltaFrameTime; 
 
- 
+ /*
 		 write(*, "frame range ", _frameRange);
-
+ */
 		_totalFrame = size( _frameRange );
 	
 		_frameTimes = [];
@@ -226,13 +226,14 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 		{			
 							
 
-		     for(;	_k < size( _resample_source ) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
+		     for(;	_k < (size( _resample_source ) - 1) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
 				;
 
 		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] )
 			{
+			
 				write(*, "Leggo frame ", _n, _k , _frameRange[ _n ], _resample_source[ _k ] , _frameRange[ _n + 1 ],( _frameRange[ _n + 1] > _resample_source[ _k ] ) );
-
+			
 				_frameTimes = [ _frameTimes, _frameRange[ _n ]];
 
 				if(_remote != 0)

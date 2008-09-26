@@ -78,5 +78,25 @@ public fun StopStartVmeSch(in _node)
       MdsDisconnect();
    }
 
+   if(_node == "MHD_I" || _node == "ALL")
+   {	
+      MdsConnect("150.178.34.15");
+      write(*,"Stop e start dello scheduler su MHDI"); 
+      MdsValue("VmeStateMachine->engdaStop()");
+      wait(2);
+      MdsValue('VmeStateMachine->engdaStart("R8","150.178.34.130", val(2016), val(1))');
+      MdsDisconnect();
+   }
+
+   if(_node == "EDAV" || _node == "ALL")
+   {	
+      MdsConnect("192.168.34.9");
+      write(*,"Stop e start dello scheduler su EDAV"); 
+      MdsValue("VmeStateMachine->engdaStop()");
+      wait(2);
+      MdsValue('VmeStateMachine->engdaStart("R9","150.178.34.130", val(2017), val(1))');
+      MdsDisconnect();
+   }
+
    return (1);
 }

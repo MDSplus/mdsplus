@@ -47,9 +47,9 @@ public fun ST133__init(as_is _nid, optional _method)
 
 	_status = MdsConnect(_ip_address);
 
-	write(*, "_status ", _status);
+	write(*, "_status ", _status, _ip_address);
 
-        if( _status != 0 )
+	if( _status != 0 )
 	{
 	    _status = mdsvalue('ST133HwInit($)', _shot_num);
   	    MdsDisconnect();

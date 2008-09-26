@@ -81,7 +81,7 @@ write(*, "WE7116__store");
 	if( _all_ch_off )
 	{
 		DevLogErr(_nid, 'WARNING : All chennels OFF');
-		abort();
+		return (1);
 	}
 
 	_error = 0;
