@@ -301,7 +301,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         notify();
     }
 
-    protected synchronized void processDisconnected(String msg)
+    protected void processDisconnected(String msg)
     {
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
@@ -311,7 +311,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         }
     }
 
-    protected synchronized void processConnected(String msg)
+    protected void processConnected(String msg)
     {
         Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
