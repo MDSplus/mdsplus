@@ -77,9 +77,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     return; //Already processed
             }catch(Exception exc)
             {
-                System.err.println("Error shutting down socket");
+                System.err.println("Error shutting down socket : " + ip_address);
             }
-            System.out.println("Detected server crash");
+            System.out.println("Detected server crash : " + server_class);
             try {
                 Thread.currentThread().sleep(2000); //Give time to mdsip server to start its own threads
             }
@@ -163,7 +163,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
         synchronized (enqueued_actions){
             action.setServerAddress(ip_address);
-            System.out.println("-- Action1 -> " + ip_address);
+            //System.out.println("-- Action1 -> " + ip_address);
             enqueued_actions.addElement(action);
         }
         try {
@@ -234,7 +234,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                     timer.cancel();
                 }catch(Exception exc){}
 
-                System.out.println("JOBID: " + e.getJobid());
+                //System.out.println("JOBID: " + e.getJobid());
 
                 if(e.getJobid() == 0) return; //SrvJobFINISHED messages are generated also by SrvCreatePulse and SrvClose
                 Action done_action = (Action)doing_actions.remove(new Integer(e.getJobid()));
