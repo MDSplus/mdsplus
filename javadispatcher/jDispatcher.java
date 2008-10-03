@@ -969,7 +969,7 @@ class jDispatcher
         fireMonitorEvent(event.getMessage(), MonitorEvent.CONNECT_EVENT);    
     }
 
-     protected synchronized void fireMonitorEvent(String message, int mode)
+     protected void fireMonitorEvent(String message, int mode)
     {
         MonitorEvent event = new MonitorEvent(this, mode, message);
         Enumeration monitor_list = monitors.elements();
