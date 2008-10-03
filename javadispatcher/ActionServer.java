@@ -178,7 +178,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
 
 
-    public synchronized void processMdsServerEvent(MdsServerEvent e)
+    public /* OCT 2008 synchronized*/ void processMdsServerEvent(MdsServerEvent e)
     {
        int mode = e.getFlags();
        Action doing_action;
@@ -373,7 +373,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         return this.doing_actions.size();
     }
 
-    public synchronized void abort(boolean flush)
+    public /* OCT 2008 synchronized */ void abort(boolean flush)
     {
         if(mds_server == null) return;
         try {

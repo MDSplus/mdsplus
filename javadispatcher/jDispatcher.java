@@ -420,7 +420,7 @@ class jDispatcher
         monitors.addElement(monitor);
     }
 
-    protected synchronized void fireMonitorEvent(Action action, int mode)
+    protected void fireMonitorEvent(Action action, int mode)
     {
         String server;
         MonitorEvent event = new MonitorEvent(this, tree, shot,
@@ -549,7 +549,7 @@ class jDispatcher
         return true;
     }
 
-    public synchronized void abortAction(int nid)
+    public /* OCT 2008 synchronized */ void abortAction(int nid)
     {
         if (action_nids == null)
             return;
