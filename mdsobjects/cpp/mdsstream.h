@@ -2,7 +2,7 @@
 #define MDSSTREAMS_H
 #include "mdsdata.h"
 
-using namespace mdsplus;
+using namespace MDSobjects;
 class DataStreamConsumer
 {
 public:

@@ -7,17 +7,23 @@
 #include <treeshr.h>
 #include <libroutines.h>
 #include <cacheshr.h>
+#include <opcopcodes.h>
 
 extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
 extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
 extern int TdiData();
+extern int TdiEvaluate();
 extern int TdiDecompile();
 extern int TdiCompile();
-extern void *createScalarData(int dtype, int length, char *ptr);
-extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr);
-extern void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs);
-extern void *createApdData(int nData, char **dataPtr);
+extern void *createScalarData(int dtype, int length, char *ptr, void *unitsData, void *errorData, 
+								  void *helpData, void *validationData);
+extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, void *unitsData, void *errorData, 
+								  void *helpData, void *validationData);
+extern void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, void *unitsData, void *errorData, 
+								  void *helpData, void *validationData);
+extern void *createApdData(int nData, char **dataPtr, void *unitsData, void *errorData, 
+								  void *helpData, void *validationData);
 extern void *convertDataToDsc(void *data);
 extern void convertTime(int *time, char *retTime);
 
@@ -226,14 +232,17 @@ void *convertToApdDsc(int ndescs, void **descs)
 	return xdPtr;
 }
 			
-void *evaluateData(void *dscPtr)
+void *evaluateData(void *dscPtr, int isEvaluate)
 {
 	EMPTYXD(emptyXd);
 	int status;
 
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
-	status = TdiData(dscPtr, xdPtr MDS_END_ARG);
+	if(isEvaluate)
+		status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
+	else
+		status = TdiData(dscPtr, xdPtr MDS_END_ARG);
 	if(!(status & 1))
 		return 0;
 	return (void *)xdPtr;
@@ -245,17 +254,54 @@ void *convertFromDsc(void *ptr)
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
 	struct descriptor *dscPtr;
 	int i;
+	void *unitsData = 0;
+	void *errorData = 0;
+	void *helpData = 0;
+	void *validationData = 0;
+	struct descriptor_r *dscRPtr;
 	
 	
-	
-	if(xdPtr->class != CLASS_XD)
+/*	if(xdPtr->class != CLASS_XD)
 	{
 		printf("PANIC in convertFromDsc: not an XD\n");
 		exit(0);
 	}
 	dscPtr = xdPtr->pointer;
+*/
+	while(xdPtr && xdPtr->class == CLASS_XD)
+		xdPtr = (struct descriptor_xd *)xdPtr->pointer;
+	
+	dscPtr = (struct descriptor *)xdPtr;
+	if(!dscPtr) return NULL;
+
+	//Check for help, units and error
+	dscRPtr = (struct descriptor_r *)dscPtr;
+	while(dscRPtr->class == CLASS_R && (dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_WITH_UNITS 
+		|| dscRPtr->dtype == DTYPE_PARAM)) 
+	{
+		if(!errorData && dscRPtr->dtype == DTYPE_WITH_ERROR)
+		{
+			errorData = convertFromDsc(dscRPtr->dscptrs[1]);
+			dscRPtr = (struct descriptor_r *)dscRPtr->dscptrs[0];
+		}
+		if(!unitsData && dscRPtr->dtype == DTYPE_WITH_UNITS)
+		{
+			unitsData = convertFromDsc(dscRPtr->dscptrs[1]);
+			dscRPtr = (struct descriptor_r *)dscRPtr->dscptrs[0];
+		}
+		if(dscRPtr->dtype == DTYPE_PARAM)
+		{
+			helpData = (dscRPtr->dscptrs[1])?convertFromDsc(dscRPtr->dscptrs[1]):0;
+			validationData = (dscRPtr->dscptrs[2])?convertFromDsc(dscRPtr->dscptrs[2]):0;
+			dscRPtr = (struct descriptor_r *)dscRPtr->dscptrs[0];
+		}
+	}
+	dscPtr = (struct descriptor *)dscRPtr;
+
+	
 	switch(dscPtr->class) {
-		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer);
+		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer, unitsData, 
+						   errorData, helpData, validationData);
 		case CLASS_A : 
 			{
 
@@ -264,19 +310,29 @@ void *convertFromDsc(void *ptr)
 				if(arrDscPtr->dimct > 1)
 				{
 					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct, 
-						(int *)&arrDscPtr->m, arrDscPtr->pointer);
+						(int *)&arrDscPtr->m, arrDscPtr->pointer, unitsData, errorData, helpData, validationData);
 				}
 				else
 				{
 					int dims = arrDscPtr->arsize/arrDscPtr->length;
-					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer);
+					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer, 
+						unitsData, errorData, helpData, validationData);
 				}
 			}
 		case CLASS_R :
 			{
-				struct descriptor_r *dscRPtr = (struct descriptor_r *)dscPtr;
-				char **descs = malloc(dscRPtr->ndesc * sizeof(char *));
 				void *retData;
+				char **descs = malloc(dscRPtr->ndesc * sizeof(char *));
+				//Remove WITH_UNITS, WITH ERROR, PARAM which are not on the top of the Data tree
+				dscRPtr = (struct descriptor_r *)dscPtr;
+				if(dscRPtr->dtype == DTYPE_WITH_UNITS || dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_PARAM)
+				{
+					EMPTYXD(currXd);
+					MdsCopyDxXd(dscRPtr->dscptrs[0], &currXd);
+					retData = convertFromDsc(&currXd);
+					MdsFree1Dx(&currXd, 0);
+					return retData;
+				}
 				for(i = 0; i < dscRPtr->ndesc; i++)
 				{
 					if(dscRPtr->dscptrs[i])
@@ -289,7 +345,8 @@ void *convertFromDsc(void *ptr)
 					else
 						descs[i] = 0;
 				}
-				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, dscRPtr->pointer, dscRPtr->ndesc, descs);
+				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, dscRPtr->pointer, dscRPtr->ndesc, descs, 
+					unitsData, errorData, helpData, validationData);
 				free((char *)descs);
 				return retData;
 			}
@@ -311,7 +368,7 @@ void *convertFromDsc(void *ptr)
 					else
 						descs[i] = 0;
 				}
-				retData = createApdData(size, descs);
+				retData = createApdData(size, descs, unitsData, errorData, helpData, validationData);
 
 				free((char *)descs);
 				return retData;
@@ -382,7 +439,7 @@ void *compileFromExpr(char *expr)
 void *compileFromExprWithArgs(char *expr, int nArgs, void **args)
 {
 	int varIdx;
-	int i;
+	int i, status;
 	void *arglist[MAX_ARGS];
 	void *data;
 	EMPTYXD(xd);
@@ -398,11 +455,219 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args)
 	arglist[varIdx++] = &xd;
 	arglist[varIdx++] = MdsEND_ARG;
 	*(int *)&arglist[0] = varIdx-1;
-	LibCallg(arglist, TdiCompile);
+	status = (int)LibCallg(arglist, TdiCompile);
+	if(!(status & 1))
+		return NULL;
 	data = convertFromDsc(&xd);
 	MdsFree1Dx(&xd, 0);
 	return data;
 }
+
+
+
+
+void * convertToByte(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcByte, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+void * convertToShort(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcWord, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+void * convertToInt(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcLong, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+void * convertToLong(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcQuadword, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+void * convertToFloat(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcFloat, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+void * convertToDouble(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcFT_float, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+
+void * convertToShape(void *dsc)
+{
+	int status;
+	DESCRIPTOR_FUNCTION(funD, OpcShape, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+
+void * convertToParameter(void *dsc, void *helpDsc, void *validationDsc)
+{
+	struct descriptor_xd *retXd;
+	EMPTYXD(emptyXd);
+	struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
+	struct descriptor_xd *helpXd = (struct descriptor_xd *)helpDsc;
+	struct descriptor_xd *validationXd = (struct descriptor_xd *)validationDsc;
+	DESCRIPTOR_PARAM(paramD, 0, 0, 0);
+
+	if(xd)
+	{
+		paramD.value = xd->pointer;
+	}
+	if(helpXd)
+	{
+		paramD.help = helpXd->pointer;
+	}
+	if(validationXd)
+	{
+		paramD.validation = validationXd->pointer;
+	}
+	retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	*retXd = emptyXd;
+	MdsCopyDxXd((struct descriptor *)&paramD, retXd);
+	return retXd;
+}
+
+void * convertToUnits(void *dsc, void *unitsDsc)
+{
+	struct descriptor_xd *retXd;
+	EMPTYXD(emptyXd);
+	struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
+	struct descriptor_xd *unitsXd = (struct descriptor_xd *)unitsDsc;
+	DESCRIPTOR_WITH_UNITS(withUnitsD, 0, 0);
+
+	if(xd)
+	{
+		withUnitsD.data = xd->pointer;
+	}
+	if(unitsXd)
+	{
+		withUnitsD.units = unitsXd->pointer;
+	}
+	retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	*retXd = emptyXd;
+	MdsCopyDxXd((struct descriptor *)&withUnitsD, retXd);
+	return retXd;
+}
+void * convertToError(void *dsc, void *errorDsc)
+{
+	struct descriptor_xd *retXd;
+	EMPTYXD(emptyXd);
+	struct descriptor_xd *xd = (struct descriptor_xd *)dsc;
+	struct descriptor_xd *errorXd = (struct descriptor_xd *)errorDsc;
+	DESCRIPTOR_WITH_ERROR(withErrorD, 0, 0);
+
+	if(xd)
+	{
+		withErrorD.data = xd->pointer;
+	}
+	if(errorXd)
+	{
+		withErrorD.error = errorXd->pointer;
+	}
+	retXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	*retXd = emptyXd;
+	MdsCopyDxXd((struct descriptor *)&withErrorD, retXd);
+	return retXd;
+}
+
+
+
+/*
+
+/////////////////////TREE STUFF
 
 
 int getTreeData(int nid, void **data, int isCached)
@@ -500,3 +765,4 @@ int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast)
 	return status;
 }
 
+*/

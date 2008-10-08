@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../include" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "HAVE_WINDOWS_H" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm- /GX /ZI /Od /I "..\..\include" /I "..\..\tdishr" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "HAVE_WINDOWS_H" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG"
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ../mdsshr/debug/MdsShr.lib ../tdishr/debug/TdiShr.lib ../treeshr/debug/TreeShr.lib ../cacheshr/debug/CacheShr.lib /nologo /dll /debug /machine:I386 /def:".\mdsobjects.def" /out:"../Debug/mdsobjects.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ../../mdsshr/debug/MdsShr.lib ../../tdishr/debug/TdiShr.lib ../../treeshr/debug/TreeShr.lib ../../cacheshr/debug/CacheShr.lib /nologo /dll /debug /machine:I386 /def:".\mdsobjects.def" /out:"../../Debug/mdsobjects.dll" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -98,10 +98,6 @@ SOURCE=.\mdsdata.c
 
 SOURCE=.\mdsdataobjects.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\mdsobjects.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -109,22 +105,6 @@ SOURCE=.\mdsobjects.c
 # Begin Source File
 
 SOURCE=.\mdsdata.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mdsdata_Data.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mdsstream.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mdstree.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mdstree_MdsTree.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
