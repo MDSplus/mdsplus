@@ -7,7 +7,9 @@
 #include <stdarg.h>
 #include <iostream.h>
 #include <exception>
+#ifndef HAVE_WINDOWS_H
 #include <mdstypes.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
 #else
@@ -475,6 +477,17 @@ EXPORT	Data *compile(char *expr, ...)
 	class Uint64 : public Scalar
 	{
 	public:
+#ifdef HAVE_WINDOWS_H
+		Uint64(unsigned _int64 val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			clazz = CLASS_S;
+			dtype = DTYPE_QU;
+			length = sizeof(_int64);
+			ptr = new char[sizeof(_int64)];
+			*(unsigned _int64 *)ptr = val;
+			setAccessory(units, error, help, validation);
+		}
+#else
 		Uint64(_int64u val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
@@ -484,6 +497,7 @@ EXPORT	Data *compile(char *expr, ...)
 			*(_int64u *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
+#endif
 		char getByte() {return (char)(*(_int64 *)ptr);}
 		short getShort() {return (short)(*(_int64 *)ptr);}
 		int getInt() {return (int)(*(_int64 *)ptr);}
