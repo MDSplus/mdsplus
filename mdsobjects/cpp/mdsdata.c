@@ -6,9 +6,8 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <libroutines.h>
-#include <cacheshr.h>
 #include <opcopcodes.h>
-
+#include <mdstypes.h>
 extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
 extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
@@ -192,7 +191,10 @@ void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndes
 	}
 	for(i = 0; i < ndescs; i++)
 		if(xds[i])
+		{
 			MdsFree1Dx(xds[i], 0);
+			free((char *)xds[i]);
+		}
 
 	return xdPtr;
 }
@@ -227,7 +229,10 @@ void *convertToApdDsc(int ndescs, void **descs)
 	free((char *)apdDsc.pointer);
 	for(i = 0; i < ndescs; i++)
 		if(xds[i])
+		{
 			MdsFree1Dx(xds[i], 0);
+			free((char *)xds[i]);
+		}
 	free((char *)xds);
 	return xdPtr;
 }

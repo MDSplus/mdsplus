@@ -1,0 +1,60 @@
+SHELL=/bin/sh
+CC=@CC@
+LD=g++
+top_srcdir=@top_srcdir@
+RM=$(top_srcdir)/devscripts/rm_if
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC
+CXXFLAGS=-g -O2 -fPIC @CFLAGS@
+LDFLAGS=@LDFLAGS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr @LIBS@ @SRBLIB@
+INSTALL=@top_srcdir@/conf/install-sh -c
+
+CXXSOURCES = \
+	mdsdataobjects.cpp
+	
+SOURCES = mdsdata.c
+
+OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
+EXPORTS = ObjectsCppShr.exports
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libObjectsCppShr@SHARETYPE@
+@MAKELIBDIR@libObjectsCppShr.a
+
+clean:
+	@ $(RM) $(OBJECTS)
+	@ $(RM) so_locations
+	@ $(RM) @MAKESHLIBDIR@libObjectsCppShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libObjectsCppShr.a
+
+depend:
+	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install:
+	if [ ! -d @libdir@ ] ; then \
+                mkdir @libdir@; \
+                chmod 755 @libdir@; \
+        fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libObjectsCppShr@SHARETYPE@ @libdir@
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libObjectsCppShr.a @libdir@; \
+	fi;
+
+
+@MAKESHLIBDIR@libCacheShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
+
+@MAKELIBDIR@libCacheShr.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+@MAKELIBDIR@ :
+	mkdir @MAKELIBDIR@
+
+ObjectsCppShr.exports: ObjectsCppShr.def
+	sed -e /LIBRARY/\;/\;/d ObjectsCppShr.def > $@
+
+
+	
+

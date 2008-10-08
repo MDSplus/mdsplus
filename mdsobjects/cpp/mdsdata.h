@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <iostream.h>
 #include <exception>
-
+#include <mdstypes.h>
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
 #else
@@ -71,7 +71,6 @@
 
 
 #ifndef HAVE_WINDOWS_H
-typedef unsigned long long _int64;
 #define EXPORT
 #else
 #define EXPORT __declspec(dllexport)
@@ -476,13 +475,13 @@ EXPORT	Data *compile(char *expr, ...)
 	class Uint64 : public Scalar
 	{
 	public:
-		Uint64(unsigned _int64 val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64(_int64u val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
 			dtype = DTYPE_QU;
 			length = sizeof(_int64);
 			ptr = new char[sizeof(_int64)];
-			*(unsigned _int64 *)ptr = val;
+			*(_int64u *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
 		char getByte() {return (char)(*(_int64 *)ptr);}
@@ -1023,7 +1022,9 @@ EXPORT	Data *compile(char *expr, ...)
 		virtual ~Compound()
 		{
 			if(length > 0)
-				delete ptr;
+				delete []ptr;
+			if(nDescs > 0)
+				delete [] descs;
 		}
 
 		virtual void propagateDeletion()

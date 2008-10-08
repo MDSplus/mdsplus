@@ -136,6 +136,7 @@ char *Data::decompile()
 	char *retStr = new char[strlen(dec)+1];
 	strcpy(retStr, dec);
 	freeChar(dec);
+	freeDsc(dscPtr);
 	return retStr;
 }
 
@@ -353,11 +354,34 @@ void * Data::completeConversionToDsc(void *dsc)
 
 
 	if(help || validation)
-		retDsc = convertToParameter(retDsc, (help)?help->convertToDsc():0, (validation)?validation->convertToDsc():0); 
+	{
+		void *helpDsc = (help)?help->convertToDsc():0;
+		void *validationDsc = (validation)?validation->convertToDsc():0;
+		void *oldDsc = retDsc;
+		retDsc = convertToParameter(retDsc, helpDsc, validationDsc);
+		if(helpDsc) freeDsc(helpDsc);
+		if(validationDsc) freeDsc(validationDsc);
+		if(oldDsc) freeDsc(oldDsc);
+	}
+		 
 	if(error)
-		retDsc = convertToError(retDsc, error->convertToDsc());
+	{
+		void *errorDsc = error->convertToDsc();
+		void *oldDsc = retDsc;
+		retDsc = convertToError(retDsc, errorDsc);
+		if(errorDsc) freeDsc(errorDsc);
+		if(oldDsc) freeDsc(oldDsc);
+	}
+		
 	if(units)
-		retDsc = convertToUnits(retDsc, units->convertToDsc());
+	{
+		void *unitsDsc = units->convertToDsc();
+		void *oldDsc = retDsc;
+		retDsc = convertToUnits(retDsc, unitsDsc);
+		if(unitsDsc) freeDsc(unitsDsc);
+		if(oldDsc) freeDsc(oldDsc);
+	}
+
 	return retDsc;
 }
 
