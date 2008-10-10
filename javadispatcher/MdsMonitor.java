@@ -75,7 +75,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
         }
     }
 
-    protected void communicate(MonitorEvent event, int mode)
+    protected synchronized void communicate(MonitorEvent event, int mode)
     {
         try {
             MdsMonitorEvent mds_event = null;
@@ -115,7 +115,10 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
                     action.getStatus());
             }
             msg_vect.addElement(mds_event);
-            notify();
+            synchronized(MdsMonitor.this)
+            {
+                notify();
+            }
         }catch(Exception exc)
         {
             System.out.println(exc);

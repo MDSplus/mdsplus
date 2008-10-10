@@ -114,7 +114,10 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
                     action.getStatus());
             }
             msg_vect.addElement(mds_event);
-            notify();
+            synchronized(MdsActionsMonitor.this)
+            {
+                notify();
+            }
         }catch(Exception exc)
         {
             System.out.println(exc);
@@ -138,7 +141,7 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
     public  void doing(MonitorEvent event)
     {
     }
-    public  void done(MonitorEvent event)
+    public  synchronized void done(MonitorEvent event)
     {
         communicate( event, jDispatcher.MONITOR_DONE );
     }
