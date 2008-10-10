@@ -121,41 +121,41 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
         }
     }
     
-    public synchronized void buildBegin(MonitorEvent event)
+    public  void buildBegin(MonitorEvent event)
     {
     }
 
-    public synchronized void build(MonitorEvent event)
+    public  void build(MonitorEvent event)
     {
     }
 
-    public synchronized void buildEnd(MonitorEvent event)
+    public  void buildEnd(MonitorEvent event)
     {
     }
-    public synchronized void dispatched(MonitorEvent event)
+    public  void dispatched(MonitorEvent event)
     {
     }
-    public synchronized void doing(MonitorEvent event)
+    public  void doing(MonitorEvent event)
     {
     }
-    public synchronized void done(MonitorEvent event)
+    public  void done(MonitorEvent event)
     {
         communicate( event, jDispatcher.MONITOR_DONE );
     }
     
-    public synchronized void disconnect(MonitorEvent event)
+    public  void disconnect(MonitorEvent event)
     {
     }
     
-    public synchronized void connect(MonitorEvent event)
+    public  void connect(MonitorEvent event)
     {
     }
 
-    public synchronized void endPhase(MonitorEvent event)
+    public  void endPhase(MonitorEvent event)
     {
     }
     
-    public synchronized void startPhase(MonitorEvent event)
+    public  void startPhase(MonitorEvent event)
     {
     }
 
