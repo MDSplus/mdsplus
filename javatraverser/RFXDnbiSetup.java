@@ -784,7 +784,8 @@ public class RFXDnbiSetup extends DeviceSetup {
 
         deviceLabel15.setLabelString("NONE");
         deviceLabel15.setNumCols(15);
-        deviceLabel15.setPreferredWidth(90);
+        deviceLabel15.setOffsetNid(90);
+        deviceLabel15.setPreferredWidth(60);
         jPanel23.add(deviceLabel15);
 
         deviceField60.setLabelString("Start");
