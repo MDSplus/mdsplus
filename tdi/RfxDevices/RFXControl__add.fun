@@ -766,10 +766,12 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR298_NAME', 'TEXT', "RotPertThreshold8", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR298_VAL', 'NUMERIC', 0., *, _nid);
 
-/* SPARE */
+/* Ramp Down Flags */
 
-    DevAddNode(_path // '.PARAMETERS:PAR299_NAME', 'TEXT', "Spare", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR299_VAL', 'NUMERIC', 0., *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR299_NAME', 'TEXT', "RampDownFlags", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR299_VAL', 'NUMERIC', zero(192, 0.), *, _nid);
+ 
+/* SPARE */ 
     DevAddNode(_path // '.PARAMETERS:PAR300_NAME', 'TEXT', "Spare", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR300_VAL', 'NUMERIC', 0., *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR301_NAME', 'TEXT', "Spare", *, _nid);
