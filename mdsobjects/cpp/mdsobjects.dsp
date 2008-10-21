@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm- /GX /ZI /Od /I "..\..\include" /I "..\..\tdishr" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "HAVE_WINDOWS_H" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\..\include" /I "..\..\tdishr" /I "$(JDK_DIR)\include" /I "$(JDK_DIR)\include\win32" /D "HAVE_WINDOWS_H" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "MDSOBJECTS_EXPORTS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG"
@@ -98,13 +98,21 @@ SOURCE=.\mdsdata.c
 
 SOURCE=.\mdsdataobjects.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\mdstree.c
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\mdsdata.h
+SOURCE=.\mdsobjects.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\mdsstream.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

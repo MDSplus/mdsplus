@@ -1,6 +1,12 @@
-#include "mdsdata.h"
+#include "mdsobjects.h"
 //#include "mdstree.h"
 using namespace MDSobjects;
+
+#ifdef HAVE_WINDOWS_H
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
@@ -11,7 +17,7 @@ extern "C" void *convertDataToDsc(void *data)
 }
 
 extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsData, Data *errorData, 
-								  Data *helpData, Data *validationData)
+								  Data *helpData, Data *validationData, Tree *tree)
 {
 	switch(dtype) {
 		case DTYPE_B: return new Int8(*ptr, unitsData, errorData, helpData, validationData);
@@ -25,8 +31,8 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_FLOAT: return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
-		case DTYPE_NID: return new Nid(*(int *)ptr, unitsData, errorData, helpData, validationData);
-		case DTYPE_PATH: return new Path(ptr, length, unitsData, errorData, helpData, validationData);
+		case DTYPE_NID: return new TreeNode(*(int *)ptr, tree, unitsData, errorData, helpData, validationData);
+		case DTYPE_PATH: return new TreePath(ptr, length, tree, unitsData, errorData, helpData, validationData);
 		case DTYPE_EVENT: return new Event(ptr, length, unitsData, errorData, helpData, validationData);
 	}
 	return 0;
@@ -97,6 +103,8 @@ extern "C" void * convertToParameter(void *dcs, void *helpDsc, void *validationD
 extern "C" void * convertToUnits(void *dcs, void *unitsDsc);
 extern "C" void * convertToError(void *dcs, void *errorDsc);
 
+extern "C" char * serializeData(void *dsc, int *retSize, void **retDsc);
+
 ////////////////////Data methods implementation////////////////////////
 Data *Data::data()
 {
@@ -129,16 +137,6 @@ Data *Data::evaluate()
 }
 
 
-char *Data::decompile()
-{
-	void *dscPtr = convertToDsc();
-	char *dec = decompileDsc(dscPtr);
-	char *retStr = new char[strlen(dec)+1];
-	strcpy(retStr, dec);
-	freeChar(dec);
-	freeDsc(dscPtr);
-	return retStr;
-}
 
 //Make a dymanically allocated copy of the Data instance Tee
 Data *Data::clone()
@@ -148,6 +146,27 @@ Data *Data::clone()
 	freeDsc(dscPtr);
 	return retData;
 }
+
+char *	Data::serialize(int *size)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc;
+	int retSize;
+	char *serialized = serializeData(dscPtr, &retSize, &retDsc);
+	if(!serialized)
+	{
+		freeDsc(dscPtr);
+		throw new exception("Cannot serialize Data object");
+	}
+	char *retSerialized = new char[retSize];
+	memcpy(retSerialized, serialized, retSize);
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	*size = retSize;
+	return retSerialized;
+}
+
+
 
 
 char Data::getByte()
@@ -240,110 +259,12 @@ double Data::getDouble()
 	return res;
 }
 
-int * Data::getShape(int *numDim)
+Data *Data::getDimensionAt(int dimIdx)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShape(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot compute shape");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int *res = retData->getIntArray(numDim);
-	deleteData(retData);
-	return res;
+	return execute("DIM_OF($, $)", 0, this, new Int32(dimIdx));
 }
 
-char * Data::getByteArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Byte Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	char *res = retData->getByteArray(numElements);
-	deleteData(retData);
-	return res;
-}
 
-short * Data::getShortArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Short Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	short *res = retData->getShortArray(numElements);
-	deleteData(retData);
-	return res;
-}
-
-int * Data::getIntArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Int Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int *res = retData->getIntArray(numElements);
-	deleteData(retData);
-	return res;
-}
-
-_int64 * Data::getLongArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Long Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	_int64 *res = retData->getLongArray(numElements);
-	deleteData(retData);
-	return res;
-}
-
-float * Data::getFloatArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToFloat(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Float Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	float *res = retData->getFloatArray(numElements);
-	deleteData(retData);
-	return res;
-}
-
-double * Data::getDoubleArray(int *numElements)
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToDouble(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Double Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	double *res = retData->getDoubleArray(numElements);
-	deleteData(retData);
-	return res;
-}
 
 
 //Complete Conversion to Dsc by condsidering help, units and error
@@ -438,7 +359,7 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 	delete [] rowDims;
 
 	if(getNumDims == nDims) //return a scalar
-		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0);
+		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
 	//Otherwise return an array
 	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
 }
@@ -505,6 +426,16 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 
 }
 
+
+
+EXPORT Data *MDSobjects::deserialize(char *serialized, int size)
+{
+	void *dscPtr = deserializeData(serialized, size);
+	if(!dscPtr) throw new exception("Cannot build Data instance from serialized content");
+	Data *retData = (Data *)convertFromDsc(dscPtr);
+	freeDsc(dscPtr);
+	return retData;
+}
 
 
 

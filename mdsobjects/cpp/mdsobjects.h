@@ -1,5 +1,5 @@
-#ifndef MDSDATA_H
-#define MDSDATA_H
+#ifndef MDSOBJECTS_H
+#define MDSOBJECTS_H
 
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +7,10 @@
 #include <stdarg.h>
 #include <iostream.h>
 #include <exception>
+#include <ncidef.h>
+#include <dbidef.h>
+#include <usagedef.h>
+
 #ifndef HAVE_WINDOWS_H
 #include <mdstypes.h>
 #endif
@@ -85,41 +89,91 @@ extern "C" {
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
-	void *compileFromExprWithArgs(char *expr, int nArgs, void *args);
+	void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void *convertToApdDsc(int ndescs, void **ptr);
+	void *deserializeData(char *serialized, int size);
+	char *MdsGetMsg(int status);
+
+	void * convertToByte(void *dsc); 
+	void * convertToShort(void *dsc); 
+	void * convertToInt(void *dsc); 
+	void * convertToLong(void *dsc); 
+	void * convertToFloat(void *dsc); 
+	void * convertToDouble(void *dsc); 
+	void * convertToShape(void *dcs);
+
+
 }
 
 
 
 namespace MDSobjects  {
 
+class Tree;
+void setActiveTree(Tree *tree);
 
-	class EXPORT DataException//: public exception
+/////Exceptions//////////////
+
+	class EXPORT MdsException
 	{
-		char *message;
+	protected:
+		int status;
+		char *msg;
 	public:
-		DataException(int clazz, int dtype, char *msg)
+		~MdsException()
 		{
-			if(!msg)
+			if(msg)
+				delete [] msg;
+		}
+
+		virtual const char* what() const 
+		{
+			if(msg)
+				return msg;
+			return MdsGetMsg(status);
+		}
+	};
+
+
+
+	class EXPORT TreeException: public MdsException
+	{
+	public:
+		TreeException(int status)
+		{
+			this->status = status;
+			msg = 0;
+		}
+		TreeException(char *message)
+		{
+			msg = new char[strlen(message) + 1];
+			strcpy(msg, message);
+		}
+	};
+
+
+
+	class EXPORT DataException: public MdsException
+	{
+	public:
+		DataException(int clazz, int dtype, char *inMsg)
+		{
+			if(!inMsg)
 			{
-				message = new char[64];
-				sprintf(message, "Class = %d Dtype = %d", clazz, dtype);
+				msg = new char[64];
+				sprintf(msg, "Class = %d Dtype = %d", clazz, dtype);
 			}
 			else
 			{
-				message = new char[strlen(msg) + 64];
-				sprintf(message, "%s  Class = %d Dtype = %d", msg, clazz, dtype);
+				msg = new char[strlen(inMsg) + 64];
+				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
 			}
 		}
-		virtual const char* what() const 
-		{
-			return message;
-		}
-		~DataException() {delete[] message;}
 	};
+
 
 
 ////////////////////Data class//////////////////////////////
@@ -127,6 +181,8 @@ namespace MDSobjects  {
 class EXPORT Data 
 {
 		friend EXPORT Data *compile(char *expr, ...);
+		friend EXPORT Data *execute(char *expr, ...);
+		friend EXPORT Data *deserialize(char *serialized, int size);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
 
@@ -167,8 +223,20 @@ protected:
 		}
 		Data *evaluate();
 		Data *data();
-		char *decompile();
+		char *decompile()
+		{
+			void *dscPtr = convertToDsc();
+			char *dec = decompileDsc(dscPtr);
+			char *retStr = new char[strlen(dec)+1];
+			strcpy(retStr, dec);
+			freeChar(dec);
+			freeDsc(dscPtr);
+			return retStr;
+		}
+
 		Data *clone();
+
+		char *	serialize(int *size);
 
 		virtual char getByte(); 
 		virtual short getShort();
@@ -177,13 +245,111 @@ protected:
 		virtual float getFloat();
 		virtual double getDouble(); 
 		virtual char * getString(){return decompile();}
-		virtual int *getShape(int *numDim);
-		virtual char *getByteArray(int *numElements);
-		virtual short *getShortArray(int *numElements);
-		virtual int *getIntArray(int *numElements);
-		virtual _int64 *getLongArray(int *numElements);
-		virtual float *getFloatArray(int *numElements);
-		virtual double *getDoubleArray(int *numElements);
+
+		virtual int * getShape(int *numDim)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToShape(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_S)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot compute shape");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			int *res = retData->getIntArray(numDim);
+			deleteData(retData);
+			return res;
+		}
+		virtual char *getByteArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToByte(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Byte Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			char *res = retData->getByteArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+
+		virtual short * getShortArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToShort(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Short Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			short *res = retData->getShortArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+
+		virtual int * getIntArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToInt(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Int Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			int *res = retData->getIntArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+
+		virtual _int64 * getLongArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToLong(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Long Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			_int64 *res = retData->getLongArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+
+		virtual float * getFloatArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToFloat(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Float Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			float *res = retData->getFloatArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+
+		virtual double * getDoubleArray(int *numElements)
+		{
+			void *dscPtr = convertToDsc();
+			void *retDsc = convertToDouble(dscPtr);
+			Data *retData = (Data *)convertFromDsc(retDsc);
+			if(!retData || retData->clazz != CLASS_A)
+				throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Double Array");
+			freeDsc(dscPtr);
+			freeDsc(retDsc);
+			
+			double *res = retData->getDoubleArray(numElements);
+			deleteData(retData);
+			return res;
+		}
+		virtual Data *getDimensionAt(int dimIdx);
 
 		virtual Data *getUnits()
 		{
@@ -254,7 +420,63 @@ EXPORT	Data *compile(char *expr, ...)
 				break;
 			args[nArgs++] = currArg->convertToDsc();
 		}
-		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args);
+		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+	}
+EXPORT	Data *compile(char *expr, Tree *tree...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, tree);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		setActiveTree(tree);
+		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+	}
+EXPORT	Data *execute(char *expr, ...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, expr);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		Data *evalData = compData->data();
+		delete compData;
+		return evalData;
+	}
+EXPORT	Data *execute(char *expr, Tree *tree...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, tree);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		setActiveTree(tree);
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		Data *evalData = compData->data();
+		delete compData;
+		return evalData;
 	}
 
 	ostream& operator<<(ostream& output, Data *data)
@@ -283,7 +505,7 @@ EXPORT	Data *compile(char *expr, ...)
 			delete [] ptr;
 		}
 		 
-		void *convertToDsc()
+		virtual void *convertToDsc()
 		{
 			return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
 		}
@@ -601,29 +823,13 @@ EXPORT	Data *compile(char *expr, ...)
 
 
 
-	class Nid : public Data
-	{
-		int nid;
-	public:
-		Nid(int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_S;
-			dtype = DTYPE_NID;
-			nid = val;
-			setAccessory(units, error, help, validation);
-		}
-		void *convertToDsc()
-		{
-			return completeConversionToDsc(convertToScalarDsc(clazz, dtype, sizeof(int), (char *)&nid));
-		}
-	};
 
-	class Path : public Data
+	class TreePath : public Data
 	{
 		int length;
 		char *ptr;
 	public:
-		Path(char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
 			dtype = DTYPE_PATH;
@@ -632,7 +838,7 @@ EXPORT	Data *compile(char *expr, ...)
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
 		}
-		Path(char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
 			dtype = DTYPE_PATH;
@@ -735,11 +941,26 @@ EXPORT	Data *compile(char *expr, ...)
 		{
 			int *retDims = new int[nDims];
 			*numDims = nDims;
+			for(int i = 0; i < nDims; i++)
+				retDims[i] = dims[i];
 			return retDims;
 		}
-		 
+		
+		
+
 		Data *getElementAt(int *getDims, int getNumDims); 
 		void setElementAt(int *getDims, int getNumDims, Data *data); 
+
+		Data *getElementAt(int dim)
+		{
+			return getElementAt(&dim, 1);
+		}
+
+		void setElementAt(int dim, Data *data)
+		{
+			setElementAt(&dim, 1, data);
+		}
+
 
 
 		void *convertToDsc()
@@ -749,55 +970,56 @@ EXPORT	Data *compile(char *expr, ...)
 		void *getArray() {return ptr;}
 		char *getByteArray(int *numElements)
 		{
-			char *retArr = new char[arsize];
-			for(int i = 0; i < arsize; i++)
+			char *retArr = new char[arsize/length];
+			int size = arsize/length;
+			for(int i = 0; i < size; i++)
 				retArr[i] = *(char *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 		short *getShortArray(int *numElements)
 		{
-			short *retArr = new short[arsize];
+			short *retArr = new short[arsize/length];
 			int size = arsize/length;
 			for(int i = 0; i < size; i++)
 				retArr[i] = *(short *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 		int *getIntArray(int *numElements)
 		{
-			int *retArr = new int[arsize];
 			int size = arsize/length;
+			int *retArr = new int[size];
 			for(int i = 0; i < size; i++)
 				retArr[i] = *(int *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 		_int64 *getLongArray(int *numElements)
 		{
-			_int64 *retArr = new _int64[arsize];
 			int size = arsize/length;
+			_int64 *retArr = new _int64[size];
 			for(int i = 0; i < size; i++)
 				retArr[i] = *(_int64 *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 		float *getFloatArray(int *numElements)
 		{
-			float *retArr = new float[arsize];
 			int size = arsize/length;
+			float *retArr = new float[size];
 			for(int i = 0; i < size; i++)
 				retArr[i] = *(float *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 		double *getDoubleArray(int *numElements)
 		{
-			double *retArr = new double[arsize];
 			int size = arsize/length;
+			double *retArr = new double[size];
 			for(int i = 0; i < size; i++)
 				retArr[i] = *(double *)&ptr[i * length];
-			*numElements = arsize;
+			*numElements = size;
 			return retArr;
 		}
 
@@ -1520,11 +1742,12 @@ EXPORT	Data *compile(char *expr, ...)
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Call(Data *image, Data *routine, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-			length = 0;
-			ptr = 0;
+			length = 1;
+			ptr = new char;
+			*ptr = retType;
 			nDescs = 2 + nargs;
 			descs = new Data *[nDescs];
 			descs[0] = image;
@@ -1533,6 +1756,8 @@ EXPORT	Data *compile(char *expr, ...)
 				descs[2+i] = args[i];
 			incrementRefCounts();
 		}
+		char getRetType() {return *ptr;}
+		void setRetType(char retType){*ptr = retType;}
 		Data *getImage(){return descs[0];}
 		Data *getRoutine(){return descs[1];}
 		Data *getArgumentAt(int idx){return descs[2 + idx];}
@@ -1619,13 +1844,1101 @@ EXPORT	Data *compile(char *expr, ...)
 
 
 
+////////////////////Streams//////////////////////
+class DataStreamConsumer
+{
+public:
+	virtual void acceptSegment(Array *data, Data *start, Data *end, Data *times) = 0;
+	virtual void acceptRow(Data *data, _int64 time, bool isLast = false) = 0;
+};
 
+class DataStreamProducer
+{
+public:
+	virtual void addDataStreamConsumer(DataStreamConsumer *consumer) = 0;
+	virtual void removeDataStreamConsumer(DataStreamConsumer *consumer) = 0;
+};
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////
+
+//              Tree Objects
+
+/////////////////////////////////////////////////////////////////
+
+
+
+
+extern "C" void RTreeSynch();
+extern "C" int TreeOpen(char *tree, int shot, int readOnly);
+extern "C" int TreeClose(char *tree, int shot);
+extern "C" int RTreeOpen(char *tree, int shot);
+extern "C" int RTreeClose(char *tree, int shot);
+extern "C" char *RTreeSetCallback(int nid, void *argument, void (*callback)(int, void *));
+extern "C" char RTreeSetWarm(int nid, int warm);
+extern "C" int RTreeClearCallback(int nid, char *callbackDescr);
+extern "C" void RTreeConfigure(int shared, int size);
+extern "C" int TreeClose(char *tree, int shot);
+extern "C" int TreeFindNode(char *path, int *nid);
+extern "C" int TreeFindNodeWild(char *path, int *nid, void **ctx, int mask);
+extern "C" char *TreeGetPath(int nid);
+extern "C" void TreeFree(void *ptr);
+extern "C" int TreeGetDbi(struct dbi_itm *itmlst);
+extern "C" int TreeGetNci(int nid, struct nci_itm *itmlst);
+extern "C" int TreeSetNci(int nid, struct nci_itm *itmlst);
+extern "C" int TreeIsOn(int nid);
+extern "C" int TreeTurnOff(int nid);
+extern "C" int TreeTurnOn(int nid);
+extern "C" void convertTime(int *time, char *retTime);
+extern "C" int TreeSetDefaultNid(int nid);
+extern "C" int TreeGetDefaultNid(int *nid);
+extern "C" char *TreeFindNodeTags(int nid, void *ctx);
+extern "C" int TreeFindTagEnd(void *ctx);
+
+extern "C" int getTreeData(int nid, void **data, int isCached);
+extern "C" int putTreeData(int nid, void *data, int isCached, int cachePolicy);
+extern "C" int deleteTreeData(int nid);
+extern "C" int doTreeMethod(int nid, char *method);
+extern "C" int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, 
+								void *timeDsc, int isCached, int cachePolicy);
+extern "C" int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy);
+extern "C" int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
+								void *timeDsc, int isCached, int cachePolicy);
+extern "C" int getTreeNumSegments(int nid, int *numSegments, int isCached); 
+extern "C" int getTreeSegmentLimits(int nid, void **startDsc, void **endDsc, int isCached);
+extern "C" int getTreeSegment(int nid, int segIdx, void **dataDsc, int isCached);
+extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
+extern "C" int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy);
+extern "C" int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
+extern "C" int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
+extern "C" void * TreeSwitchDbid(void *ctx);
+extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
+extern "C" int TreeSetViewDate(_int64 *date);
+
+
+
+extern "C" int RTreeFlush(int nid);
+//using namespace std;
+
+
+	class Tree;
+	class TreeNode;
+
+
+	class EXPORT TreeNode: public Data, DataStreamConsumer
+	{
+	friend	ostream &operator<<(ostream &stream, TreeNode *treeNode);
+	protected:
+		Tree *tree;
+		int nid;
+		virtual bool isCached() {return false;}
+		virtual int getCachePolicy() { return 0;}
+//From Data
+		virtual bool isImmutable() {return false;}
+		virtual void *convertToDsc()
+		{
+			setActiveTree(tree);
+			return completeConversionToDsc(convertToScalarDsc(clazz, dtype, sizeof(int), (char *)&nid));
+		}
+
+		int getFlag(int flagOfs)
+		{
+			int nciFlags;
+			int nciFlagsLen = sizeof(int);
+			struct nci_itm nciList[] =  {{4, NciGET_FLAGS, &nciFlags, &nciFlagsLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			return (nciFlags & flagOfs)?true:false;
+		}
+
+		void setFlag(int flagOfs, bool val)
+		{
+			int nciFlags;
+			int nciFlagsLen = sizeof(int);
+			struct nci_itm nciList[] =  {{4, NciGET_FLAGS, &nciFlags, &nciFlagsLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			if(val)
+				nciFlags |= flagOfs;
+			else
+				nciFlags &= ~flagOfs;
+
+			status = TreeSetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+	public:
+		TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			if(!tree)
+				throw new DataException(CLASS_S, DTYPE_NID, "A Tree instance must be defined when ceating TreeNode instances");
+			this->nid = nid;
+			this->tree = tree;
+			clazz = CLASS_S;
+			dtype = DTYPE_NID;
+			setAccessory(units, error, help, validation);
+		}
+
+		Tree *getTree(){return tree;}
+		void setTree(Tree *tree) {this->tree = tree;}
+		
+		
+		
+		
+		char *getPath()
+		{
+			setActiveTree(tree);
+			char *currPath = TreeGetPath(nid);
+			char *path = new char[strlen(currPath) + 1];
+			strcpy(path, currPath);
+			TreeFree(currPath);
+			return path;
+		}
+
+		char *getFullPath()
+		{
+			char path[1024];
+			int pathLen = 1024;
+			struct nci_itm nciList[] = 
+				{{511, NciFULLPATH, path, &pathLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			char *retPath = new char[strlen(path)+1];
+			strcpy(retPath, path);
+			return retPath;
+		}
+
+
+		virtual Data *getData()
+		{
+			Data *data = 0;
+			setActiveTree(tree);
+			int status = getTreeData(nid, (void **)&data, isCached());
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+			return data;
+		}
+
+		virtual void putData(Data *data)
+		{
+			setActiveTree(tree);
+			int status = putTreeData(nid, (void *)data, isCached(), getCachePolicy());
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+		}
+		virtual void deleteData()
+		{
+			setActiveTree(tree);
+			int status = deleteTreeData(nid);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+		}
+
+
+		int getNid() { return nid;}
+		bool isOn()
+		{
+			setActiveTree(tree);
+			return TreeIsOn(nid)?true:false;
+		}
+		void setOn(bool on)
+		{
+			setActiveTree(tree);
+			if(on)
+				TreeTurnOn(nid);
+			else
+				TreeTurnOff(nid);
+		}
+
+		virtual int getDataSize()
+		{
+			int length;
+			int lengthLen = sizeof(int);
+			struct nci_itm nciList[] = 
+				{{4, NciLENGTH, &length, &lengthLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			return length;
+		}
+		virtual int getCompressedDataSize()
+		{
+			int length;
+			int lengthLen = sizeof(int);
+			struct nci_itm nciList[] = 
+				{{4, NciRLENGTH, &length, &lengthLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			return length;
+		}
+
+		virtual char *getInsertionDate()
+		{
+			int timeInserted[2]; 
+			int timeLen;
+			struct nci_itm nciList[] = 
+				{{8, NciTIME_INSERTED, timeInserted, &timeLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+			char ascTim[512];
+			convertTime(timeInserted, ascTim);
+
+			char *retTim = new char[strlen(ascTim) + 1];
+			strcpy(retTim, ascTim);
+			return retTim;
+		}
+
+		void doMethod(char *method)
+		{
+			setActiveTree(tree);
+			int status = doTreeMethod(nid, method);
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		bool isSetup()
+		{
+			return getFlag(NciM_SETUP_INFORMATION)?true:false;
+		}
+
+		void setSetup(bool flag)
+		{
+			setFlag(NciM_SETUP_INFORMATION, flag);
+		}
+
+		bool isWriteOnce()
+		{
+			return getFlag(NciM_WRITE_ONCE)?true:false;
+		}
+
+		void setWriteOnce(bool flag)
+		{
+			setFlag(NciM_WRITE_ONCE, flag);
+		}
+
+		bool isCompressible()
+		{
+			return getFlag(NciM_COMPRESSIBLE)?true:false;
+		}
+
+		void setCompressible(bool flag)
+		{
+			setFlag(NciM_COMPRESSIBLE, flag);
+		}
+		bool isNoWriteModel()
+		{
+			return getFlag(NciM_NO_WRITE_MODEL)?true:false;
+		}
+
+		void setNoWriteModel(bool flag)
+		{
+			setFlag(NciM_NO_WRITE_MODEL, flag);
+		}
+
+		bool isNoWriteShot()
+		{
+			return getFlag(NciM_NO_WRITE_SHOT)?true:false;
+		}
+
+		void setNoWriteShot(bool flag)
+		{
+			setFlag(NciM_NO_WRITE_SHOT, flag);
+		}
+
+		TreeNode *getParent()
+		{
+
+			int nidLen = 4;
+			int parentNid;
+			struct nci_itm nciList[] = 
+				{{4, NciPARENT, &parentNid, &nidLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+
+			return new TreeNode(parentNid, tree);
+		}
+		
+		TreeNode **getChildren(int *numChildren)
+		{
+
+			int numLen = 4;
+			int numMembers, nChildren;
+			struct nci_itm nciList[] = 
+				{{4, NciNUMBER_OF_MEMBERS, &numMembers, &numLen},
+				{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+
+			int *childrenNids = new int[numMembers+nChildren];
+
+			int retLen = sizeof(int) * (numMembers+nChildren);
+			struct nci_itm nciList1[] = 
+				{{4, NciMEMBER_NIDS, &childrenNids[0], &retLen},
+				{4, NciCHILDREN_NIDS, &childrenNids[numMembers], &retLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+			{
+				delete [] childrenNids;
+				throw new TreeException(status);
+			}
+			TreeNode **retChildren = new TreeNode* [numMembers+nChildren];
+			for(int i = 0; i < numMembers+nChildren; i++)
+				retChildren[i] = new TreeNode(childrenNids[i], tree);
+
+			delete[] childrenNids;
+			*numChildren = numMembers+nChildren;
+			return retChildren;
+		}
+
+			
+		int getUsage()
+		{
+
+			int usageLen = 4;
+			int usage;
+			struct nci_itm nciList[] = 
+				{{4, NciUSAGE, &usage, &usageLen},
+				{NciEND_OF_LIST, 0, 0, 0}};
+
+			setActiveTree(tree);
+			int status = TreeGetNci(nid, nciList);
+			if(!(status & 1))
+				throw new TreeException(status);
+
+			return usage;
+		}
+
+		char **getTags(int *numRetTags)
+		{
+			const int MAX_TAGS = 128;
+			
+			char *tags[MAX_TAGS];
+			int numTags;
+			void *ctx = 0;
+			setActiveTree(tree);
+			for(numTags = 0; numTags < MAX_TAGS; numTags++)
+			{
+				tags[numTags] = TreeFindNodeTags(nid, &ctx);
+				if(!tags[numTags]) break;
+			}
+			TreeFindTagEnd(&ctx);
+
+			*numRetTags = numTags;
+			char **retTags = new char *[numTags];
+			for(int i = 0; i < numTags; i++)
+			{
+				retTags[i] = new char(strlen(tags[i])+1);
+				strcpy(retTags[i], tags[i]);
+				TreeFree(tags[i]);
+			}
+			return retTags;
+		}
+
+		void beginSegment(Data *start, Data *end, Data *time, Array *initialData)
+		{
+			setActiveTree(tree);
+			int status = beginTreeSegment(getNid(), start->convertToDsc(), 
+				end->convertToDsc(), time->convertToDsc(), initialData->convertToDsc(), isCached(), getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		void putSegment(Array *data, int ofs)
+		{
+			setActiveTree(tree);
+			int status = putTreeSegment(getNid(), data->convertToDsc(), ofs, isCached(), getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		void updateSegment(Data *start, Data *end, Data *time)
+		{
+			setActiveTree(tree);
+			int status = updateTreeSegment(getNid(), start->convertToDsc(), 
+				end->convertToDsc(), time->convertToDsc(), isCached(), getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		int getNumSegments()
+		{
+			int numSegments;
+
+			setActiveTree(tree);
+			int status = getTreeNumSegments(getNid(), &numSegments, isCached());
+			if(!(status & 1))
+				throw new TreeException(status);
+			return  numSegments;
+		}
+
+		void getSegmentLimits(int segmentIdx, Data **start, Data **end)
+		{
+			void *startDsc, *endDsc;
+			setActiveTree(tree);
+			int status = getTreeSegmentLimits(getNid(), &startDsc, &endDsc, isCached());
+			if(!(status & 1))
+				throw new TreeException(status);
+			*start = (Data*)convertFromDsc(startDsc);
+			freeDsc(startDsc);
+			*end = (Data*)convertFromDsc(endDsc);
+			freeDsc(endDsc);
+		}
+			
+		Array *getSegment(int segIdx)
+		{
+			void *dataDsc;
+			
+			setActiveTree(tree);
+			int status = getTreeSegment(getNid(), segIdx, &dataDsc, isCached());
+			if(!(status & 1))
+				throw new TreeException(status);
+			Array *retData = (Array *)convertFromDsc(dataDsc);
+			freeDsc(dataDsc);
+			return retData;
+		}
+
+
+		void beginTimestampedSegment(Array *initData)
+		{
+			int status = beginTreeTimestampedSegment(getNid(), initData->convertToDsc(), isCached(), getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		void putTimestampedSegment(Array *data, Int64Array *times)
+		{
+			int nTimesArray;
+			_int64 *timesArray = times->getLongArray(&nTimesArray);
+			int status = putTreeTimestampedSegment(getNid(), data->convertToDsc(), timesArray, isCached(), getCachePolicy());
+			delete [] timesArray;
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		void putRow(Data *data, Int64 *time)
+		{
+			_int64 time64 = time->getLong();
+			int status = putTreeRow(getNid(), data->convertToDsc(), &time64, isCached(), false, getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+		void acceptSegment(Array *data, Data *start, Data *end, Data *times)
+		{
+			int status = beginTreeSegment(getNid(), data->convertToDsc(), start->convertToDsc(), 
+				end->convertToDsc(), times->convertToDsc(), isCached(), getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+		void acceptRow(Data *data, _int64 time, bool isLast)
+		{
+			int status = putTreeRow(getNid(), data->convertToDsc(), &time, isCached(), false, getCachePolicy());
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+	};
+
+/////////////////End Class TreeTreeNode///////////////
+	ostream &operator<<(ostream &stream, TreeNode *treeNode)
+	{
+		return stream << treeNode->getPath();
+	}
+
+
+	
+	
+	
+	
+/////////////////CachedTreeNode/////////////////////////////
+	class CachedTreeNode: public TreeNode
+	{
+	protected:
+		int cachePolicy;
+		virtual bool isCached() { return true;}
+		virtual int getCachePolicy() { return cachePolicy;}
+		void flush() {RTreeFlush(getNid());}
+
+	public:
+		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){}
+		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
+	};
+
+
+
+////////////////Class TreeNodeArray///////////////////////
+	class TreeNodeArray
+	{
+		TreeNode **nodes;
+		int numNodes;
+
+	public:
+		TreeNodeArray(TreeNode **nodes, int numNodes)
+		{
+			this->numNodes = numNodes;
+			this->nodes = new TreeNode *[numNodes];
+
+			for(int i = 0; i < numNodes; i++)
+				this->nodes[i] = nodes[i];
+		}
+
+		StringArray *getPath()
+		{
+			int i;
+			char **paths = new char *[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				paths[i] = nodes[i]->getPath();
+			}
+
+			StringArray *retData = new StringArray(paths, numNodes);
+			for(i = 0; i < numNodes; i++)
+			{
+				delete [] paths[i];
+			}
+			delete [] paths;
+			return  retData;
+		}
+		StringArray *getFullPath()
+		{
+			int i;
+			char **paths = new char *[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				paths[i] = nodes[i]->getFullPath();
+			}
+
+			StringArray *retData = new StringArray(paths, numNodes);
+			for(i = 0; i < numNodes; i++)
+			{
+				delete [] paths[i];
+			}
+			delete [] paths;
+			return  retData;
+		}
+
+		Int32Array *getNid()
+		{
+			int i;
+			int *nids = new int[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				nids[i] = nodes[i]->getNid();
+			}
+
+			Int32Array *retData = new Int32Array(nids, numNodes);
+			delete [] nids;
+			return  retData;
+		}
+
+		Int8Array *isOn()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isOn();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setOn(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setOn((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int8Array *isSetup()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isSetup();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setSetup(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setSetup((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int8Array *isWriteOnce()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isWriteOnce();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setWriteOnce(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setWriteOnce((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int8Array *isCompressible()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isCompressible();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setCompressible(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setCompressible((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int8Array *isNoWriteModel()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isNoWriteModel();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setNoWriteModel(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setNoWriteModel((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int8Array *isNoWriteShot()
+		{
+			int i;
+			char *info = new char[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				info[i] = nodes[i]->isNoWriteShot();
+			}
+
+			Int8Array *retData = new Int8Array(info, numNodes);
+			delete [] info;
+			return  retData;
+		}
+
+		void setNoWriteShot(Int8Array *info)
+		{
+			int i, numInfo;
+			char *infoArray = info->getByteArray(&numInfo);
+			if(numInfo > numNodes)
+				numInfo = numNodes;
+
+			for(i = 0; i < numInfo; i++)
+			{
+				nodes[i]->setNoWriteShot((infoArray[i])?true:false);
+			}
+			delete [] infoArray;
+		}
+
+		Int32Array *getDataSize()
+		{
+			int i;
+			int *sizes = new int[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				sizes[i] = nodes[i]->getDataSize();
+			}
+
+			Int32Array *retData = new Int32Array(sizes, numNodes);
+			delete [] sizes;
+			return  retData;
+		}
+		Int32Array *getCompressedSize()
+		{
+			int i;
+			int *sizes = new int[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				sizes[i] = nodes[i]->getCompressedDataSize();
+			}
+
+			Int32Array *retData = new Int32Array(sizes, numNodes);
+			delete [] sizes;
+			return  retData;
+		}
+
+		Int32Array *getUsage()
+		{
+			int i;
+			int *usages = new int[numNodes];
+			for(i = 0; i < numNodes; i++)
+			{
+				usages[i] = nodes[i]->getUsage();
+			}
+
+			Int32Array *retData = new Int32Array(usages, numNodes);
+			delete [] usages;
+			return  retData;
+		}
+	};
+
+
+	
+	
+////////////////Class Tree/////////////////////////////////
+
+extern "C" void *TreeSaveContext();
+extern "C" void TreeRestoreContext(void *ctx);
+
+
+	class Tree
+	{
+		friend void setActiveTree(Tree *tree);
+		friend Tree *getActiveTree();
+
+	protected:
+		char *name;
+		int shot;
+		void *ctx;
+
+	
+
+	public:
+		Tree(char *name, int shot)
+		{
+			this->shot = shot;
+			TreeSwitchDbid((void *)0);
+			int status = TreeOpen(name, shot, 0);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+			ctx=TreeSwitchDbid((void *)0);
+			TreeSwitchDbid(ctx);
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+		}
+
+		~Tree()
+		{
+			void *currentCtx = TreeSwitchDbid(ctx);
+			TreeClose(name, shot);
+			if (currentCtx == ctx)
+				TreeSwitchDbid((void *)0);
+			else
+				TreeSwitchDbid(currentCtx);
+			delete [] name;
+		}
+
+		TreeNode *getNode(char *path)
+		{
+			int nid, status;
+
+			setActiveTree(this);
+			status = TreeFindNode(path, &nid);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+			return new TreeNode(nid, this);
+		}
+
+	
+		TreeNode *getNode(TreePath *path)
+		{
+			int nid, status;
+			char *pathName = path->getString();
+			setActiveTree(this);
+			status = TreeFindNode(pathName, &nid);
+			delete[] pathName;
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+			return new TreeNode(nid, this);
+		}
+
+	
+
+		TreeNodeArray *getNodeWild(char *path, int usageMask)
+		{
+			int currNid, status; 
+			int numNids = 0;
+			void *ctx = 0;
+			setActiveTree(this);
+			while ((status = TreeFindNodeWild(path,&currNid,&ctx, usageMask)) & 1)
+				numNids++;
+
+
+			printf("%s\n", MdsGetMsg(status));
+
+			TreeNode **retNodes = new TreeNode *[numNids];
+			ctx = 0;
+			setActiveTree(this);
+			for(int i = 0; i < numNids; i++)
+			{
+				TreeFindNodeWild(path,&currNid,&ctx, usageMask);
+				retNodes[i] = new TreeNode(currNid, this);
+			}
+			TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
+			delete [] retNodes;
+			return nodeArray;
+		}
+
+		TreeNodeArray *getNodeWild(char *path)
+		{
+
+			return getNodeWild(path, -1);
+		}
+
+
+		void setDefault(TreeNode *treeNode)
+		{
+			setActiveTree(this);
+			int status = TreeSetDefaultNid(treeNode->getNid());
+			if(!(status & 1)) 
+				throw new TreeException(status);
+		}
+
+		TreeNode *getDeault()
+		{
+			int nid;
+
+			setActiveTree(this);
+			int status = TreeGetDefaultNid(&nid);
+			if(!(status & 1)) 
+				throw new TreeException(status);
+			return new TreeNode(nid, this);
+		}
+
+		bool supportsVersions()
+		{
+			int supports, len, status;
+			struct dbi_itm dbiList[] = 
+			{{sizeof(int), DbiVERSIONS_IN_PULSE, &supports, &len},
+			{0, DbiEND_OF_LIST,0,0}};
+
+			setActiveTree(this);
+			status = TreeGetDbi(dbiList);
+			if(!(status & 1)) 
+				throw new TreeException(status);
+			return (supports)?true:false;
+		}
+
+		void setViewDate(char *date)
+		{
+			_int64  qtime;
+
+			int status = LibConvertDateString(date, &qtime);
+			if(!(status & 1))
+				throw new TreeException("Invalid date format");
+			setActiveTree(this);
+			status = TreeSetViewDate(&qtime);
+			if(!(status & 1)) 
+				throw new TreeException(status);
+		}
+
+
+		void setTimeContext(Data *start, Data *end, Data *delta)
+		{
+			setActiveTree(this);
+			int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0, 
+				(delta)?delta->convertToDsc():0);
+			if(!(status & 1))
+				throw new TreeException(status);
+		}
+
+
+	};
+
+/////////////////End Class Tree /////////////////////
+
+/////////////////CachedTree/////////////////////////
+
+#define DEFAULT_CACHE_SIZE 2000000
+
+	class CachedTree: public Tree
+	{
+		bool cacheShared;
+		int cacheSize;
+	public:
+		CachedTree(char *name, int shot):Tree(name, shot)
+		{
+			cacheShared = false;
+			cacheSize = DEFAULT_CACHE_SIZE;
+		}
+
+		virtual void open() 
+		{
+			int status;
+			
+			RTreeConfigure(1, cacheSize);
+			status = RTreeOpen(name, shot);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+		}
+
+		virtual void close()
+		{
+			int status = RTreeClose(name, shot);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+		}
+
+		void configure(bool cacheShared, int cacheSize)
+		{
+			this->cacheShared = cacheShared;
+			this->cacheSize = cacheSize;
+		}
+
+		bool isCacheShared() {return cacheShared;}
+		int getCacheSize() { return cacheSize;}
+
+		CachedTreeNode *getCachedNode(char *path)
+		{
+			int nid, status;
+
+			status = TreeFindNode(path, &nid);
+			if(!(status & 1))
+			{
+				throw new TreeException(status);
+			}
+			return new CachedTreeNode(nid, this);
+		}
+		void synch()
+		{
+			RTreeSynch();
+		}
+	};
+	void setActiveTree(Tree *tree)
+	{
+		TreeSwitchDbid(tree->ctx);
+	}
+
+	Tree *getActiveTree()
+	{
+		char name[1024];
+		int shot;
+		int retNameLen, retShotLen;
+		
+		DBI_ITM dbiItems[] = {
+			{1024, DbiNAME, name, &retNameLen},
+			{sizeof(int), DbiSHOTID, &shot, &retShotLen},
+			{0, DbiEND_OF_LIST, 0, 0}};
+		int 
+			status = TreeGetDbi(dbiItems);
+		if(!(status & 1))
+			throw new TreeException(status);
+		return new Tree(name, shot);
+	}
 
 }
 
-
-
-
-	
-	
 #endif
