@@ -8,6 +8,39 @@ using namespace MDSobjects;
 #define EXPORT
 #endif
 
+#define MAX_ARGS 512
+
+
+
+extern "C" {
+
+	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
+	void *evaluateData(void *dscPtr, int isEvaluate);
+	void freeDsc(void *dscPtr);
+	void *convertFromDsc(void *dscPtr);
+	char *decompileDsc(void *dscPtr);
+	char *decompileDsc(void *dscPtr);
+	void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
+	void freeChar(void *);
+	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
+	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
+	void *convertToApdDsc(int ndescs, void **ptr);
+	char * serializeData(void *dsc, int *retSize, void **retDsc);
+	void *deserializeData(char *serialized, int size);
+
+	void * convertToByte(void *dsc); 
+	void * convertToShort(void *dsc); 
+	void * convertToInt(void *dsc); 
+	void * convertToLong(void *dsc); 
+	void * convertToFloat(void *dsc); 
+	void * convertToDouble(void *dsc); 
+	void * convertToShape(void *dcs);
+	void * convertToParameter(void *dsc, void *helpDsc, void *validationDsc);
+	void * convertToUnits(void *dsc, void *unitsDsc);
+	void * convertToError(void *dsc, void *errorDsc);
+
+}
+
 
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
 
@@ -33,7 +66,6 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
 		case DTYPE_NID: return new TreeNode(*(int *)ptr, tree, unitsData, errorData, helpData, validationData);
 		case DTYPE_PATH: return new TreePath(ptr, length, tree, unitsData, errorData, helpData, validationData);
-		case DTYPE_EVENT: return new Event(ptr, length, unitsData, errorData, helpData, validationData);
 	}
 	return 0;
 }
@@ -91,21 +123,7 @@ extern "C" void *createApdData(int nData, char **dataPtrs, Data *unitsData,
 }
 
 
-
-extern "C" void * convertToByte(void *dsc); 
-extern "C" void * convertToShort(void *dsc); 
-extern "C" void * convertToInt(void *dsc); 
-extern "C" void * convertToLong(void *dsc); 
-extern "C" void * convertToFloat(void *dsc); 
-extern "C" void * convertToDouble(void *dsc); 
-extern "C" void * convertToShape(void *dcs);
-extern "C" void * convertToParameter(void *dcs, void *helpDsc, void *validationDsc);
-extern "C" void * convertToUnits(void *dcs, void *unitsDsc);
-extern "C" void * convertToError(void *dcs, void *errorDsc);
-
-extern "C" char * serializeData(void *dsc, int *retSize, void **retDsc);
-
-////////////////////Data methods implementation////////////////////////
+///////////////////Data methods implementation////////////////////////
 Data *Data::data()
 {
 	if(!hasChanged() && !dataCache)
@@ -136,7 +154,23 @@ Data *Data::evaluate()
 	return retData;
 }
 
+char *Data::decompile()
+{
+	void *dscPtr = convertToDsc();
+	char *dec = decompileDsc(dscPtr);
+	char *retStr = new char[strlen(dec)+1];
+	strcpy(retStr, dec);
+	freeChar(dec);
+	freeDsc(dscPtr);
+	return retStr;
+}
 
+
+
+void *Scalar::convertToDsc()
+{
+	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
+}
 
 //Make a dymanically allocated copy of the Data instance Tee
 Data *Data::clone()
@@ -145,6 +179,110 @@ Data *Data::clone()
 	Data *retData = (Data *)convertFromDsc(dscPtr);
 	freeDsc(dscPtr);
 	return retData;
+}
+int * Data::getShape(int *numDim)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToShape(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot compute shape");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	int *res = retData->getIntArray(numDim);
+	deleteData(retData);
+	return res;
+}
+
+char *Data::getByteArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToByte(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Byte Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	char *res = retData->getByteArray(numElements);
+	deleteData(retData);
+	return res;
+}
+
+short * Data::getShortArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToShort(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Short Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	short *res = retData->getShortArray(numElements);
+	deleteData(retData);
+	return res;
+}
+
+int * Data::getIntArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToInt(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Int Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	int *res = retData->getIntArray(numElements);
+	deleteData(retData);
+	return res;
+}
+
+_int64 * Data::getLongArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToLong(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Long Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	_int64 *res = retData->getLongArray(numElements);
+	deleteData(retData);
+	return res;
+}
+
+float * Data::getFloatArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToFloat(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Float Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	float *res = retData->getFloatArray(numElements);
+	deleteData(retData);
+	return res;
+}
+
+double * Data::getDoubleArray(int *numElements)
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToDouble(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_A)
+		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Double Array");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	double *res = retData->getDoubleArray(numElements);
+	deleteData(retData);
+	return res;
 }
 
 char *	Data::serialize(int *size)
@@ -265,6 +403,79 @@ Data *Data::getDimensionAt(int dimIdx)
 }
 
 
+EXPORT	Data *MDSobjects::compile(char *expr, ...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, expr);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+	}
+EXPORT	Data *MDSobjects::compile(char *expr, Tree *tree...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, tree);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		setActiveTree(tree);
+		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+	}
+EXPORT	Data *MDSobjects::execute(char *expr, Tree *tree...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, tree);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		setActiveTree(tree);
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		Data *evalData = compData->data();
+		delete compData;
+		return evalData;
+	}
+
+EXPORT	Data *MDSobjects::execute(char *expr, ...)
+	{
+		int nArgs = 0;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, expr);
+		for(int i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		Data *evalData = compData->data();
+		delete compData;
+		return evalData;
+	}
 
 
 //Complete Conversion to Dsc by condsidering help, units and error
@@ -330,6 +541,14 @@ EXPORT void MDSobjects::deleteData(Data *data)
 	}
 }
 
+int *Array::getShape(int *numDims)
+{
+	int *retDims = new int[nDims];
+	*numDims = nDims;
+	for(int i = 0; i < nDims; i++)
+		retDims[i] = dims[i];
+	return retDims;
+}
 
 //Array Methods setElementAt and getElementAt
 Data * Array::getElementAt(int *getDims, int getNumDims)
@@ -425,7 +644,79 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 	changed = true;
 
 }
+char *Array::getByteArray(int *numElements)
+{
+	char *retArr = new char[arsize/length];
+	int size = arsize/length;
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(char *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
+short *Array::getShortArray(int *numElements)
+{
+	short *retArr = new short[arsize/length];
+	int size = arsize/length;
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(short *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
+int *Array::getIntArray(int *numElements)
+{
+	int size = arsize/length;
+	int *retArr = new int[size];
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(int *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
+_int64 *Array::getLongArray(int *numElements)
+{
+	int size = arsize/length;
+	_int64 *retArr = new _int64[size];
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(_int64 *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
+float *Array::getFloatArray(int *numElements)
+{
+	int size = arsize/length;
+	float *retArr = new float[size];
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(float *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
+double *Array::getDoubleArray(int *numElements)
+{
+	int size = arsize/length;
+	double *retArr = new double[size];
+	for(int i = 0; i < size; i++)
+		retArr[i] = *(double *)&ptr[i * length];
+	*numElements = size;
+	return retArr;
+}
 
+void *TreePath::convertToDsc()
+{
+	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
+}
+
+void *Array::convertToDsc()
+{
+	return completeConversionToDsc(convertToArrayDsc(clazz, dtype, length, arsize, nDims, dims, ptr));
+}
+
+void *Compound::convertToDsc()
+{
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, length, ptr, nDescs, (void **)descs));
+}
+void *Apd::convertToDsc()
+{
+	return completeConversionToDsc(convertToApdDsc(nDescs, (void **)descs));
+}
 
 
 EXPORT Data *MDSobjects::deserialize(char *serialized, int size)
@@ -437,5 +728,18 @@ EXPORT Data *MDSobjects::deserialize(char *serialized, int size)
 	return retData;
 }
 
+ostream& operator<<(ostream& output, Data *data)
+{
+	output << data->decompile();
+	return output;
+}
 
 
+//Required in Windows Debug configuation to propely de-allocate native arrays
+EXPORT void MDSobjects::deleteNativeCharArray(char *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeShortArray(short *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeIntArray(int *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeLongArray(long *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeFloatArray(float *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeDoubleArray(double *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeCharPtrArray(char **array){delete [] array;}

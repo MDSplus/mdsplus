@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ../../mdsshr/debug/MdsShr.lib ../../tdishr/debug/TdiShr.lib ../../treeshr/debug/TreeShr.lib ../../cacheshr/debug/CacheShr.lib /nologo /dll /debug /machine:I386 /def:".\mdsobjects.def" /out:"../../Debug/mdsobjects.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ../../mdsshr/debug/MdsShr.lib ../../tdishr/debug/TdiShr.lib ../../treeshr/debug/TreeShr.lib ../../cacheshr/debug/CacheShr.lib /nologo /dll /debug /machine:I386 /out:"../../Debug/mdsobjects.dll" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -102,6 +102,10 @@ SOURCE=.\mdsdataobjects.cpp
 
 SOURCE=.\mdstree.c
 # End Source File
+# Begin Source File
+
+SOURCE=.\mdstreeobjects.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -109,10 +113,6 @@ SOURCE=.\mdstree.c
 # Begin Source File
 
 SOURCE=.\mdsobjects.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\mdsstream.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

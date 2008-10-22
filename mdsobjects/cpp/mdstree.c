@@ -39,26 +39,26 @@ extern int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start
 extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
 
 
-EXPORT int getTreeData(int nid, void **data, int isCached);
-EXPORT int putTreeData(int nid, void *data, int isCached);
-EXPORT int deleteTreeData(int nid);
-EXPORT int doTreeMethod(int nid, char *method);
-EXPORT int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, 
+ int getTreeData(int nid, void **data, int isCached);
+ int putTreeData(int nid, void *data, int isCached);
+ int deleteTreeData(int nid);
+ int doTreeMethod(int nid, char *method);
+ int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
 
-EXPORT int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy);
-EXPORT int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
+ int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy);
+ int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
-EXPORT int getTreeNumSegments(int nid, int *numSegments, int isCached); 
-EXPORT int getTreeSegmentLimits(int nid, void **startDsc, void **endDsc, int isCached);
-EXPORT int getTreeSegment(int nid, int segIdx, void **dataDsc, void **timesDsc, int isCached);
-EXPORT int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
-EXPORT int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy);
-EXPORT int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
-EXPORT int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
+ int getTreeNumSegments(int nid, int *numSegments, int isCached); 
+ int getTreeSegmentLimits(int nid, void **startDsc, void **endDsc, int isCached);
+ int getTreeSegment(int nid, int segIdx, void **dataDsc, void **timesDsc, int isCached);
+ int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
+ int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy);
+ int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
+ int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
 
 
-EXPORT  int getTreeData(int nid, void **data, int isCached)
+  int getTreeData(int nid, void **data, int isCached)
 {
 	EMPTYXD(xd);
 	int status;
@@ -74,7 +74,7 @@ EXPORT  int getTreeData(int nid, void **data, int isCached)
 	return status;
 }
 
-EXPORT int putTreeData(int nid, void *data, int isCached)
+ int putTreeData(int nid, void *data, int isCached)
 {
 	struct descriptor_xd *xdPtr;
 	int status;
@@ -88,7 +88,7 @@ EXPORT int putTreeData(int nid, void *data, int isCached)
 	return status;
 }
 
-EXPORT int deleteTreeData(int nid)
+ int deleteTreeData(int nid)
 {
 	EMPTYXD(xd);
 	int status;
@@ -98,7 +98,7 @@ EXPORT int deleteTreeData(int nid)
 }
 
 	
-EXPORT void convertTime(int *time, char *retTime)
+ void convertTime(int *time, char *retTime)
 {
 	char timeStr[512];
 	int retLen;
@@ -110,7 +110,7 @@ EXPORT void convertTime(int *time, char *retTime)
 }
 
 
-EXPORT int doTreeMethod(int nid, char *method)
+ int doTreeMethod(int nid, char *method)
 {
 	struct descriptor nidD = {sizeof(int), DTYPE_NID, CLASS_S, (char *)&nid};
 	struct descriptor methodD = {strlen(method), DTYPE_T, CLASS_S, method};
@@ -119,7 +119,7 @@ EXPORT int doTreeMethod(int nid, char *method)
 }
 
 
-EXPORT int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int isCached, int cachePolicy)
+ int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
@@ -148,7 +148,7 @@ EXPORT int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc
 }
 
 #define PUTROW_BUFSIZE 1000
-EXPORT int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy)
+ int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -164,7 +164,7 @@ EXPORT int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int is
 }
 
 
-EXPORT int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy)
+ int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -181,7 +181,7 @@ EXPORT int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cac
 
 
 
-EXPORT int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
+ int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
@@ -203,7 +203,7 @@ EXPORT int updateTreeSegment(int nid, void *startDsc, void *endDsc,
 	return status;
 }
 
-EXPORT int getTreeNumSegments(int nid, int *numSegments, int isCached)
+ int getTreeNumSegments(int nid, int *numSegments, int isCached)
 {
 	if(isCached)
 		return RTreeGetNumSegments(nid, numSegments);
@@ -211,7 +211,7 @@ EXPORT int getTreeNumSegments(int nid, int *numSegments, int isCached)
 		return TreeGetNumSegments(nid, numSegments);
 }
 
-EXPORT int getTreeSegmentLimits(int nid, void **startPtr, void **endPtr, int isCached)
+ int getTreeSegmentLimits(int nid, void **startPtr, void **endPtr, int isCached)
 {
 	struct descriptor_xd *startXd, *endXd;
 	EMPTYXD(emptyXd);
@@ -232,7 +232,7 @@ EXPORT int getTreeSegmentLimits(int nid, void **startPtr, void **endPtr, int isC
 
 
 
-EXPORT int getTreeSegment(int nid, int segIdx, void **dataDsc, void **timeDsc, int isCached)
+ int getTreeSegment(int nid, int segIdx, void **dataDsc, void **timeDsc, int isCached)
 {
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
@@ -250,7 +250,7 @@ EXPORT int getTreeSegment(int nid, int segIdx, void **dataDsc, void **timeDsc, i
 }
 
 
-EXPORT int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
+ int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
 {
 	int status;
 
@@ -266,7 +266,7 @@ EXPORT int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc)
 
 
 }
-EXPORT int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy)
+ int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -279,7 +279,7 @@ EXPORT int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int
 	return status;
 }
 
-EXPORT extern int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy)
+ extern int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;

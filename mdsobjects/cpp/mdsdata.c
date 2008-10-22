@@ -37,7 +37,7 @@ extern void *deserializeData(char *serialized, int size);
 
 
 
-void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
+ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 {
 	EMPTYXD(emptyXd);
 	int status;
@@ -62,7 +62,7 @@ void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr)
 
 #define MAX_DIMS 32
 
-void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims, void *ptr)
+ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims, int *dims, void *ptr)
 {
 	EMPTYXD(emptyXd);
 	int status, i;
@@ -191,7 +191,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 }
 
 
-void *convertFromDsc(void *ptr, void *tree)
+ void *convertFromDsc(void *ptr, void *tree)
 {
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
 	struct descriptor *dscPtr;
@@ -323,7 +323,7 @@ void *convertFromDsc(void *ptr, void *tree)
 }
 
 
-void freeDsc(void *dscPtr)
+ void freeDsc(void *dscPtr)
 {
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)dscPtr;
 	if(xdPtr->class != CLASS_XD)
@@ -335,7 +335,7 @@ void freeDsc(void *dscPtr)
 	free((char *)xdPtr);
 }
 
-char *decompileDsc(void *ptr)
+ char *decompileDsc(void *ptr)
 {
     int status;
 	EMPTYXD(xd);
@@ -357,9 +357,9 @@ char *decompileDsc(void *ptr)
 	return buf;
 }
 
-void freeChar(void *ptr){free(ptr);}
+ void freeChar(void *ptr){free(ptr);}
 
-void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree)
+ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree)
 {
 	int varIdx;
 	int i, status;
@@ -389,7 +389,7 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree)
 
 
 
-EXPORT void * convertToByte(void *dsc)
+ void * convertToByte(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcByte;
@@ -408,7 +408,7 @@ EXPORT void * convertToByte(void *dsc)
 	return xdPtr;
 }
 
-EXPORT void * convertToShort(void *dsc)
+ void * convertToShort(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcWord;
@@ -427,7 +427,7 @@ EXPORT void * convertToShort(void *dsc)
 	return xdPtr;
 }
 
-EXPORT void * convertToInt(void *dsc)
+ void * convertToInt(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcLong;
@@ -446,7 +446,7 @@ EXPORT void * convertToInt(void *dsc)
 	return xdPtr;
 }
 
-EXPORT void * convertToLong(void *dsc)
+ void * convertToLong(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcQuadword;
@@ -465,7 +465,7 @@ EXPORT void * convertToLong(void *dsc)
 	return xdPtr;
 }
 
-EXPORT void * convertToFloat(void *dsc)
+ void * convertToFloat(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcFloat;
@@ -484,7 +484,7 @@ EXPORT void * convertToFloat(void *dsc)
 	}
 	return xdPtr;
 }
-EXPORT void * convertToDouble(void *dsc)
+ void * convertToDouble(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcFT_float;
@@ -505,7 +505,7 @@ EXPORT void * convertToDouble(void *dsc)
 }
 
 
-EXPORT void * convertToShape(void *dsc)
+ void * convertToShape(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcShape;
