@@ -12,9 +12,9 @@ LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr @LIBS@ @SRBLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
-	mdsdataobjects.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp
 	
-SOURCES = mdsdata.c
+SOURCES = mdsdata.c mdstree.c
 
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = ObjectsCppShr.exports

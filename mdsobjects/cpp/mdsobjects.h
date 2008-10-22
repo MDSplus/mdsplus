@@ -838,6 +838,7 @@ protected:
 			}
 			setSpecific(padData, maxLen, DTYPE_T, nData);
 			setAccessory(units, error, help, validation);
+			delete[] padData;
 		}
 	};
 
@@ -1645,6 +1646,16 @@ public:
 			for(int i = 0; i < numNodes; i++)
 				this->nodes[i] = nodes[i];
 		}
+		~TreeNodeArray()
+		{
+			if(numNodes > 0)
+			{
+			    for(int i = 0; i < numNodes; i++)
+			        deleteData(nodes[i]);
+			    delete [] nodes;
+			}
+			    	
+		}
 
 		StringArray *getPath()
 		{
@@ -1979,13 +1990,16 @@ extern "C" void TreeRestoreContext(void *ctx);
 		void synch();
 	};
 
-EXPORT void deleteNativeCharArray(char *array);
-EXPORT void deleteNativeShortArray(short *array);
-EXPORT void deleteNativeIntArray(int *array);
-EXPORT void deleteNativeLongArray(long *array);
-EXPORT void deleteNativeFloatArray(float *array);
-EXPORT void deleteNativeDoubleArray(double *array);
-EXPORT void deleteNativeCharPtrArray(char **array);
+
+//Required for handling dynamic memory allocated in a different DLL on windows
+//in Debug configuration
+EXPORT void deleteNativeArray(char *array);
+EXPORT void deleteNativeArray(short *array);
+EXPORT void deleteNativeArray(int *array);
+EXPORT void deleteNativeArray(long *array);
+EXPORT void deleteNativeArray(float *array);
+EXPORT void deleteNativeArray(double *array);
+EXPORT void deleteNativeArray(char **array);
 
 }
 #endif

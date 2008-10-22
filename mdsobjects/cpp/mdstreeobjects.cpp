@@ -50,6 +50,7 @@ extern "C" void RTreeConfigure(int shared, int size);
 extern "C" int TreeClose(char *tree, int shot);
 extern "C" int TreeFindNode(char *path, int *nid);
 extern "C" int TreeFindNodeWild(char *path, int *nid, void **ctx, int mask);
+extern "C" int TreeFindNodeEnd(void **ctx);
 extern "C" char *TreeGetPath(int nid);
 extern "C" void TreeFree(void *ptr);
 extern "C" int TreeGetDbi(struct dbi_itm *itmlst);
@@ -153,7 +154,7 @@ TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 	setActiveTree(this);
 	while ((status = TreeFindNodeWild(path,&currNid,&ctx, usageMask)) & 1)
 		numNids++;
-
+	TreeFindNodeEnd(&ctx);
 
 	printf("%s\n", MdsGetMsg(status));
 
@@ -165,6 +166,7 @@ TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 		TreeFindNodeWild(path,&currNid,&ctx, usageMask);
 		retNodes[i] = new TreeNode(currNid, this);
 	}
+	TreeFindNodeEnd(&ctx);
 	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
 	delete [] retNodes;
 	return nodeArray;

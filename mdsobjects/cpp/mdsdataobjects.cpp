@@ -294,7 +294,7 @@ char *	Data::serialize(int *size)
 	if(!serialized)
 	{
 		freeDsc(dscPtr);
-		throw new exception("Cannot serialize Data object");
+		throw new TreeException("Cannot serialize Data object");
 	}
 	char *retSerialized = new char[retSize];
 	memcpy(retSerialized, serialized, retSize);
@@ -438,12 +438,12 @@ EXPORT	Data *MDSobjects::compile(char *expr, Tree *tree...)
 	}
 EXPORT	Data *MDSobjects::execute(char *expr, Tree *tree...)
 	{
-		int nArgs = 0;
+		int nArgs = 0, i;
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, tree);
-		for(int i = 0; i < MAX_ARGS; i++)
+		for(i = 0; i < MAX_ARGS; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
 			if(currArg == 0)
@@ -453,18 +453,20 @@ EXPORT	Data *MDSobjects::execute(char *expr, Tree *tree...)
 		setActiveTree(tree);
 		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
 		Data *evalData = compData->data();
-		delete compData;
+		deleteData(compData);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
 		return evalData;
 	}
 
 EXPORT	Data *MDSobjects::execute(char *expr, ...)
 	{
-		int nArgs = 0;
+		int nArgs = 0, i;
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, expr);
-		for(int i = 0; i < MAX_ARGS; i++)
+		for(i = 0; i < MAX_ARGS; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
 			if(currArg == 0)
@@ -473,7 +475,9 @@ EXPORT	Data *MDSobjects::execute(char *expr, ...)
 		}
 		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
 		Data *evalData = compData->data();
-		delete compData;
+		deleteData (compData);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
 		return evalData;
 	}
 
@@ -722,7 +726,7 @@ void *Apd::convertToDsc()
 EXPORT Data *MDSobjects::deserialize(char *serialized, int size)
 {
 	void *dscPtr = deserializeData(serialized, size);
-	if(!dscPtr) throw new exception("Cannot build Data instance from serialized content");
+	if(!dscPtr) throw new TreeException("Cannot build Data instance from serialized content");
 	Data *retData = (Data *)convertFromDsc(dscPtr);
 	freeDsc(dscPtr);
 	return retData;
@@ -736,10 +740,10 @@ ostream& operator<<(ostream& output, Data *data)
 
 
 //Required in Windows Debug configuation to propely de-allocate native arrays
-EXPORT void MDSobjects::deleteNativeCharArray(char *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeShortArray(short *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeIntArray(int *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeLongArray(long *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeFloatArray(float *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeDoubleArray(double *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeCharPtrArray(char **array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(char *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(short *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(int *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(long *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(float *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(double *array){delete [] array;}
+EXPORT void MDSobjects::deleteNativeArray(char **array){delete [] array;}

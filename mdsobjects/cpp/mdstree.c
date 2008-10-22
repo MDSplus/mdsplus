@@ -5,6 +5,7 @@
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <libroutines.h>
+#include <mdstypes.h>
 #include <cacheshr.h>
 
 
