@@ -26,12 +26,16 @@
 #else
 #include <sys/ioctl.h>
 #ifndef I_NREAD
+#ifdef FIONREAD
+#define I_NREAD FIONREAD
+#else
 #if defined(HAVE_VXWORKS_H)
 #include <vxWorks.h>
 #include <ioLib.h>
 #define I_NREAD FIONREAD
 #elif !defined(__sparc__) && !defined(__QNX__)
 #include <stropts.h>
+#endif
 #endif
 #endif
 #endif
