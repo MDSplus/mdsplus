@@ -424,7 +424,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(0, updated);
                         }
@@ -466,7 +466,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(14, updated);
                         }
@@ -534,7 +534,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(1, updated);
                         }
@@ -574,7 +574,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(2, updated);
                         }
@@ -614,7 +614,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(3, updated);
                         }
@@ -655,7 +655,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(4, updated);
                         }
@@ -699,7 +699,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(5, updated);
                         }
@@ -739,7 +739,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(6, updated);
                         }
@@ -779,7 +779,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(7, updated);
                         }
@@ -819,7 +819,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(8, updated);
                         }
@@ -859,7 +859,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(9, updated);
                         }
@@ -899,7 +899,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(10, updated);
                         }
@@ -944,12 +944,20 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(11, updated);
                             //Copy the same configuration to MHD BC
                             //devices[11].apply( mhdControlRoot.getInt());
-                            devices[11].apply(mhdBcNid.getInt());
+                            
+                            //GABRIELE OTTOBRE 2008
+                            //Faccio Apply solo se isChanged true
+                            if(updated && justApplied)
+                                devices[11].apply(mhdBcNid.getInt());
+                            /////////////////////////////////////////
+                            
+                            
+                            
                             //Copy PAR303_VAL (measure radius), PAR304_VAL (MoNo sine excluded)
                             //and PAR305_VAL (N limits for sideband correction) into MHD_BR
                             copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL");
@@ -997,7 +1005,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(12, updated);
                         }
@@ -1037,7 +1045,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(13, updated);
                         }
@@ -1094,7 +1102,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(15, updated);
                         }
@@ -1131,7 +1139,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(16, updated);
                         }
@@ -1168,7 +1176,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(17, updated);
                         }
@@ -1209,7 +1217,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(18, updated);
                         }
@@ -1246,7 +1254,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(19, updated);
                         }
@@ -1283,7 +1291,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(20, updated);
                         }
@@ -1320,7 +1328,7 @@ public class ParameterSetting
                     device.setVisible(true);
                     device.addDeviceCloseListener(new DeviceCloseListener()
                     {
-                        public void deviceClosed(boolean updated)
+                        public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(21, updated);
                         }

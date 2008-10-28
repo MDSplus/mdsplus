@@ -26,6 +26,7 @@ public class DeviceSetup
     Vector deviceUpdateListenerV = new Vector();
     boolean readOnly = false;
     Node deviceNode;
+    boolean justApplied = false;
 
     static Vector openDevicesV = new Vector();
 
@@ -376,6 +377,7 @@ public class DeviceSetup
             deviceNode.setAllOnUnchecked();
             FrameRepository.frame.repaint();
         }
+        justApplied = true;
     }
     public void apply(int currBaseNid)
     {
@@ -411,6 +413,7 @@ public class DeviceSetup
         catch (Exception exc)
         {}
         if(deviceNode != null) deviceNode.setAllOnUnchecked();
+        justApplied = true;
     }
     public void reset()
     {
@@ -620,7 +623,9 @@ public class DeviceSetup
         dispose();
         for (int i = 0; i < deviceCloseListenerV.size(); i++)
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
-                deviceClosed(isChanged());
+                deviceClosed(isChanged(), justApplied);
+        
+        justApplied = true;
 
     }
 
