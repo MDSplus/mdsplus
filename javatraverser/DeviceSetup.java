@@ -625,7 +625,7 @@ public class DeviceSetup
             ( (DeviceCloseListener) deviceCloseListenerV.elementAt(i)).
                 deviceClosed(isChanged(), justApplied);
         
-        justApplied = true;
+        justApplied = false;
 
     }
 
