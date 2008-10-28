@@ -110,7 +110,21 @@ Tree::Tree(char *name, int shot)
 	strcpy(this->name, name);
 }
 
+
 Tree::~Tree()
+{
+  void *currentCtx = TreeSwitchDbid(ctx);
+  while (TreeClose(0, 0) & 1);   /**** close all trees in this context in case some expression opened another tree in this context ***/
+  if (currentCtx == ctx)
+      TreeSwitchDbid((void *)0);
+  else
+      TreeSwitchDbid(currentCtx);
+  TreeFree(currentCtx);
+  delete [] name;
+}
+
+
+/*Tree::~Tree()
 {
 	void *currentCtx = TreeSwitchDbid(ctx);
 	TreeClose(name, shot);
@@ -120,7 +134,7 @@ Tree::~Tree()
 		TreeSwitchDbid(currentCtx);
 	delete [] name;
 }
-
+*/
 TreeNode *Tree::getNode(char *path)
 {
 	int nid, status;
@@ -203,7 +217,7 @@ TreeNode *Tree::getDeault()
 	return new TreeNode(nid, this);
 }
 
-bool Tree::containsVersions()
+bool Tree::supportsVersions()
 {
 	int supports, len, status;
 	struct dbi_itm dbiList[] = 
@@ -562,7 +576,10 @@ bool TreeNode::isIncludedInPulse()
 {
 	return getFlag(NciM_INCLUDE_IN_PULSE)?true:false;
 }
-
+bool TreeNode::containsVersions()
+{
+	return getFlag(NciM_VERSIONS)?true:false;
+}
 bool TreeNode::isMember()
 {
 	int parLen = 4;

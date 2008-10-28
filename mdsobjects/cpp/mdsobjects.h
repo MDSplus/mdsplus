@@ -1610,7 +1610,7 @@ public:
 		TreeNodeArray *getConglomerateNids();
 
 		int getDepth();
-
+		bool containsVersions();
 		char **getTags(int *numRetTags);
 
 		void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
@@ -1967,7 +1967,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNodeArray *getNodeWild(char *path);
 		void setDefault(TreeNode *treeNode);
 		TreeNode *getDeault();
-		bool containsVersions();
+		bool supportsVersions();
 		void setViewDate(char *date);
 
 		void setTimeContext(Data *start, Data *end, Data *delta);
