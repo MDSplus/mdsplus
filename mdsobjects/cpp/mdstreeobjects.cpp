@@ -1,4 +1,6 @@
 #include "mdsobjects.h"
+#include <usagedef.h>
+
 //#include "mdstree.h"
 using namespace MDSobjects;
 
@@ -84,6 +86,9 @@ extern "C" int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, in
 extern "C" void * TreeSwitchDbid(void *ctx);
 extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
 extern "C" int TreeSetViewDate(_int64 *date);
+
+extern "C" const char *MdsClassString(int id);
+extern "C" const char *MdsDtypeString(int id);
 
 
 
@@ -198,7 +203,7 @@ TreeNode *Tree::getDeault()
 	return new TreeNode(nid, this);
 }
 
-bool Tree::supportsVersions()
+bool Tree::containsVersions()
 {
 	int supports, len, status;
 	struct dbi_itm dbiList[] = 
@@ -299,12 +304,64 @@ char *TreeNode::getPath()
 	return path;
 }
 
+
+char *TreeNode::getMinPath()
+{
+	char path[1024];
+	int pathLen = 1024;
+	struct nci_itm nciList[] = 
+		{{511, NciMINPATH, path, &pathLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	char *retPath = new char[strlen(path)+1];
+	strcpy(retPath, path);
+	return retPath;
+}
+
 char *TreeNode::getFullPath()
 {
 	char path[1024];
 	int pathLen = 1024;
 	struct nci_itm nciList[] = 
 		{{511, NciFULLPATH, path, &pathLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	char *retPath = new char[strlen(path)+1];
+	strcpy(retPath, path);
+	return retPath;
+}
+
+char *TreeNode::getOriginalPartName()
+{
+	char path[1024];
+	int pathLen = 1024;
+	struct nci_itm nciList[] = 
+		{{511, NciORIGINAL_PART_NAME, path, &pathLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	char *retPath = new char[strlen(path)+1];
+	strcpy(retPath, path);
+	return retPath;
+}
+
+char *TreeNode::getNodeName()
+{
+	char path[1024];
+	int pathLen = 1024;
+	struct nci_itm nciList[] = 
+		{{511, NciNODE_NAME, path, &pathLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	setActiveTree(tree);
@@ -348,6 +405,8 @@ void TreeNode::deleteData()
 	}
 }
 
+
+
 bool TreeNode::isOn()
 {
 	setActiveTree(tree);
@@ -362,7 +421,7 @@ void TreeNode::setOn(bool on)
 		TreeTurnOff(nid);
 }
 
-int TreeNode::getDataSize()
+int TreeNode::getLength()
 {
 	int length;
 	int lengthLen = sizeof(int);
@@ -376,7 +435,7 @@ int TreeNode::getDataSize()
 		throw new TreeException(status);
 	return length;
 }
-int TreeNode::getCompressedDataSize()
+int TreeNode::getCompressedLength()
 {
 	int length;
 	int lengthLen = sizeof(int);
@@ -391,23 +450,48 @@ int TreeNode::getCompressedDataSize()
 	return length;
 }
 
-char *TreeNode::getInsertionDate()
+int TreeNode::getStatus()
 {
-	int timeInserted[2]; 
+	int id;
+	int idLen = sizeof(int);
+	struct nci_itm nciList[] = 
+		{{4, NciSTATUS, &id, &idLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return id;
+}
+
+int TreeNode::getOwnerId()
+{
+	int id;
+	int idLen = sizeof(int);
+	struct nci_itm nciList[] = 
+		{{4, NciOWNER_ID, &id, &idLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return id;
+}
+
+_int64 TreeNode::getTimeInserted()
+{
+	_int64 timeInserted; 
 	int timeLen;
 	struct nci_itm nciList[] = 
-		{{8, NciTIME_INSERTED, timeInserted, &timeLen},
+		{{8, NciTIME_INSERTED, (char *)&timeInserted, &timeLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 	setActiveTree(tree);
 	int status = TreeGetNci(nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
-	char ascTim[512];
-	convertTime(timeInserted, ascTim);
-
-	char *retTim = new char[strlen(ascTim) + 1];
-	strcpy(retTim, ascTim);
-	return retTim;
+	return timeInserted;
 }
 
 void TreeNode::doMethod(char *method)
@@ -423,10 +507,6 @@ bool TreeNode::isSetup()
 	return getFlag(NciM_SETUP_INFORMATION)?true:false;
 }
 
-void TreeNode::setSetup(bool flag)
-{
-	setFlag(NciM_SETUP_INFORMATION, flag);
-}
 
 bool TreeNode::isWriteOnce()
 {
@@ -438,14 +518,14 @@ void TreeNode::setWriteOnce(bool flag)
 	setFlag(NciM_WRITE_ONCE, flag);
 }
 
-bool TreeNode::isCompressible()
+bool TreeNode::isCompressOnPut()
 {
-	return getFlag(NciM_COMPRESSIBLE)?true:false;
+	return getFlag(NciM_COMPRESS_ON_PUT)?true:false;
 }
 
-void TreeNode::setCompressible(bool flag)
+void TreeNode::setCompressOnPut(bool flag)
 {
-	setFlag(NciM_COMPRESSIBLE, flag);
+	setFlag(NciM_COMPRESS_ON_PUT, flag);
 }
 bool TreeNode::isNoWriteModel()
 {
@@ -457,6 +537,17 @@ void TreeNode::setNoWriteModel(bool flag)
 	setFlag(NciM_NO_WRITE_MODEL, flag);
 }
 
+bool TreeNode::isEssential()
+{
+	return getFlag(NciM_ESSENTIAL)?true:false;
+}
+
+void TreeNode::setEssential(bool flag)
+{
+	setFlag(NciM_ESSENTIAL, flag);
+}
+
+
 bool TreeNode::isNoWriteShot()
 {
 	return getFlag(NciM_NO_WRITE_SHOT)?true:false;
@@ -465,6 +556,48 @@ bool TreeNode::isNoWriteShot()
 void TreeNode::setNoWriteShot(bool flag)
 {
 	setFlag(NciM_NO_WRITE_SHOT, flag);
+}
+
+bool TreeNode::isIncludedInPulse()
+{
+	return getFlag(NciM_INCLUDE_IN_PULSE)?true:false;
+}
+
+bool TreeNode::isMember()
+{
+	int parLen = 4;
+	int par;
+	struct nci_itm nciList[] = 
+		{{4, NciPARENT_RELATIONSHIP, &par, &parLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	
+	return  (par & NciK_IS_MEMBER)?true:false;
+}
+
+bool TreeNode::isChild()
+{
+	int parLen = 4;
+	int par;
+	struct nci_itm nciList[] = 
+		{{4, NciPARENT_RELATIONSHIP, &par, &parLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	
+	return  (par & NciK_IS_MEMBER)?true:false;
+}
+
+void TreeNode::setIncludedInPulse(bool flag)
+{
+	setFlag(NciM_INCLUDE_IN_PULSE, flag);
 }
 
 TreeNode *TreeNode::getParent()
@@ -484,7 +617,107 @@ TreeNode *TreeNode::getParent()
 	return new TreeNode(parentNid, tree);
 }
 
-TreeNode **TreeNode::getChildren(int *numChildren)
+TreeNode *TreeNode::getBrother()
+{
+
+	int nidLen = 4;
+	int brotherNid;
+	struct nci_itm nciList[] = 
+		{{4, NciBROTHER, &brotherNid, &nidLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return new TreeNode(brotherNid, tree);
+}
+
+TreeNode *TreeNode::getChild()
+{
+
+	int nidLen = 4;
+	int childNid;
+	struct nci_itm nciList[] = 
+		{{4, NciCHILD, &childNid, &nidLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return new TreeNode(childNid, tree);
+}
+
+TreeNode *TreeNode::getMember()
+{
+
+	int nidLen = 4;
+	int memberNid;
+	struct nci_itm nciList[] = 
+		{{4, NciCHILD, &memberNid, &nidLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return new TreeNode(memberNid, tree);
+}
+
+
+int TreeNode::getNumChildren()
+{
+	int numLen = 4;
+	int nChildren;
+	struct nci_itm nciList[] = 
+	{{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return nChildren;
+}
+
+int TreeNode::getNumMembers()
+{
+	int numLen = 4;
+	int nChildren;
+	struct nci_itm nciList[] = 
+	{{4, NciNUMBER_OF_MEMBERS, &nChildren, &numLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return nChildren;
+}
+
+int TreeNode::getNumDescendants()
+{
+	int numLen = 4;
+	int numMembers, nChildren;
+	struct nci_itm nciList[] = 
+		{{4, NciNUMBER_OF_MEMBERS, &numMembers, &numLen},
+		{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return numMembers+nChildren;
+}
+
+
+TreeNode **TreeNode::getDescendants(int *numDescendants)
 {
 
 	int numLen = 4;
@@ -518,12 +751,119 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 		retChildren[i] = new TreeNode(childrenNids[i], tree);
 
 	delete[] childrenNids;
-	*numChildren = numMembers+nChildren;
+	*numDescendants = numMembers+nChildren;
 	return retChildren;
 }
 
+TreeNode **TreeNode::getChildren(int *numChildren)
+{
+
+	int numLen = 4;
+	int nChildren;
+	struct nci_itm nciList[] = 
+	{{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	int *childrenNids = new int[nChildren];
+
+	int retLen = sizeof(int) * (nChildren);
+	struct nci_itm nciList1[] = 
+		{{4, NciCHILDREN_NIDS, &childrenNids[0], &retLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+	{
+		delete [] childrenNids;
+		throw new TreeException(status);
+	}
+	TreeNode **retChildren = new TreeNode* [nChildren];
+	for(int i = 0; i < nChildren; i++)
+		retChildren[i] = new TreeNode(childrenNids[i], tree);
+
+	delete[] childrenNids;
+	*numChildren = nChildren;
+	return retChildren;
+}
+
+TreeNode **TreeNode::getMembers(int *numMembers)
+{
+
+	int numLen = 4;
+	int nMembers;
+	struct nci_itm nciList[] = 
+	{{4, NciNUMBER_OF_MEMBERS, &nMembers, &numLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	int *memberNids = new int[nMembers];
+
+	int retLen = sizeof(int) * (nMembers);
+	struct nci_itm nciList1[] = 
+		{{4, NciMEMBER_NIDS, &memberNids[0], &retLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+	{
+		delete [] memberNids;
+		throw new TreeException(status);
+	}
+	TreeNode **retMembers = new TreeNode* [nMembers];
+	for(int i = 0; i < nMembers; i++)
+		retMembers[i] = new TreeNode(memberNids[i], tree);
+
+	delete[] memberNids;
+	*numMembers = nMembers;
+	return retMembers;
+}
+
+
+
+const char *TreeNode::getClass()
+{
+
+	int clsLen = 1;
+	char cls;
+	struct nci_itm nciList[] = 
+		{{1, NciCLASS, &cls, &clsLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return MdsClassString(cls);
+}
 	
-int TreeNode::getUsage()
+const char *TreeNode::getDType()
+{
+
+	int clsLen = 1;
+	char cls;
+	struct nci_itm nciList[] = 
+		{{1, NciDTYPE, &cls, &clsLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return MdsDtypeString(cls);
+}
+	
+const char *TreeNode::getUsage()
 {
 
 	int usageLen = 4;
@@ -537,8 +877,102 @@ int TreeNode::getUsage()
 	if(!(status & 1))
 		throw new TreeException(status);
 
-	return usage;
+	switch(usage)  {
+		case TreeUSAGE_ACTION: return "ACTION";
+		case TreeUSAGE_ANY: return "ANY";
+		case TreeUSAGE_AXIS: return "AXIS";
+		case TreeUSAGE_COMPOUND_DATA: return "COMPOUND_DATA";
+		case TreeUSAGE_DEVICE: return "DEVICE";
+		case TreeUSAGE_DISPATCH: return "DISPATCH";
+		case TreeUSAGE_STRUCTURE: return "STRUCTURE";
+		case TreeUSAGE_NUMERIC: return "NUMERIC";
+		case TreeUSAGE_SIGNAL: return "SIGNAL";
+		case TreeUSAGE_SUBTREE: return "SUBTREE";
+		case TreeUSAGE_TASK: return "TASK";
+		case TreeUSAGE_TEXT: return "TEXT";
+		case TreeUSAGE_WINDOW: return "WINDOW";
+	}
+	return "Unknown";
 }
+
+int TreeNode::getConglomerateElt()
+{
+
+	int eltLen;
+	int elt;
+	struct nci_itm nciList[] = 
+		{{1, NciCONGLOMERATE_ELT, (char *)&elt, &eltLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return elt;
+}
+int TreeNode::getNumElts()
+{
+
+	int nNidsLen;
+	int nNids;
+	struct nci_itm nciList[] = 
+		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return nNidsLen;
+}
+
+	
+TreeNodeArray *TreeNode::getConglomerateNids()
+{
+
+	int nNidsLen, retLen;
+	int nNids;
+	struct nci_itm nciList[] = 
+		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	int *nids = new int[nNids];
+	struct nci_itm nciList1[] = 
+		{{4*nNids, NciCONGLOMERATE_ELT, (char *)nids, &retLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	status = TreeGetNci(nid, nciList1);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	TreeNodeArray *resArray = new TreeNodeArray(nids, nNids, tree);
+	delete [] nids;
+	return resArray;
+}
+	
+int TreeNode::getDepth()
+{
+
+	int depthLen;
+	int depth;
+	struct nci_itm nciList[] = 
+		{{1, NciDEPTH, (char *)&depth, &depthLen},
+		{NciEND_OF_LIST, 0, 0, 0}};
+
+	setActiveTree(tree);
+	int status = TreeGetNci(nid, nciList);
+	if(!(status & 1))
+		throw new TreeException(status);
+
+	return depth;
+}
+	
 
 char **TreeNode::getTags(int *numRetTags)
 {

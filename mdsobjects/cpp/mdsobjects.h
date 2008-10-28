@@ -1522,6 +1522,7 @@ public:
 
 	class Tree;
 	class TreeNode;
+	class TreeNodeArray;
 
 
 	class  TreeNode: public Data, DataStreamConsumer
@@ -1545,16 +1546,12 @@ public:
 
 		Tree *getTree(){return tree;}
 		void setTree(Tree *tree) {this->tree = tree;}
-		
-		
-		
-		
 		char *getPath();
+		char *getMinPath();
 		char *getFullPath();
-
-
+		char *getNodeName();
+		char *getOriginalPartName();
 		virtual Data *getData();
-
 		virtual void putData(Data *data);
 		virtual void deleteData();
 
@@ -1562,32 +1559,57 @@ public:
 		int getNid() { return nid;}
 		bool isOn();
 		void setOn(bool on);
-		virtual int getDataSize();
-		virtual int getCompressedDataSize();
+		virtual int getLength();
+		virtual int getCompressedLength();
+		int getOwnerId();
+		int getStatus();
 
-		virtual char *getInsertionDate();
+		virtual _int64 getTimeInserted();
 
 		void doMethod(char *method);
 		bool isSetup();
 
-		void setSetup(bool flag);
 		bool isWriteOnce();
 
 		void setWriteOnce(bool flag);
 
-		bool isCompressible();
+		bool isCompressOnPut();
+		void setCompressOnPut(bool flag);
 
-		void setCompressible(bool flag);
 		bool isNoWriteModel();
 		void setNoWriteModel(bool flag);
 		bool isNoWriteShot();
 
 		void setNoWriteShot(bool flag);
 		TreeNode *getParent();
+		TreeNode *getBrother();
+		TreeNode *getChild();
+		TreeNode *getMember();
+		int getNumMembers();
+		int getNumChildren();
+		int getNumDescendants();
 		TreeNode **getChildren(int *numChildren);
+		TreeNode **getMembers(int *numChildren);
+		TreeNode **getDescendants(int *numChildren);
 
-			
-		int getUsage();
+		
+		
+		const char *getClass();
+		const char *getDType();
+		const char *getUsage();
+
+		bool isEssential();
+		void setEssential(bool flag);
+		bool isIncludedInPulse();
+		void setIncludedInPulse(bool flag);
+		bool isMember();
+		bool isChild();
+
+		int getConglomerateElt();
+		int getNumElts();
+		TreeNodeArray *getConglomerateNids();
+
+		int getDepth();
 
 		char **getTags(int *numRetTags);
 
@@ -1645,6 +1667,14 @@ public:
 
 			for(int i = 0; i < numNodes; i++)
 				this->nodes[i] = nodes[i];
+		}
+		TreeNodeArray(int *nids, int numNodes, Tree *tree)
+		{
+			this->numNodes = numNodes;
+			this->nodes = new TreeNode *[numNodes];
+
+			for(int i = 0; i < numNodes; i++)
+				this->nodes[i] = new TreeNode(nids[i], tree);
 		}
 		~TreeNodeArray()
 		{
@@ -1748,19 +1778,6 @@ public:
 			return  retData;
 		}
 
-		void setSetup(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setSetup((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
 
 		Int8Array *isWriteOnce()
 		{
@@ -1790,13 +1807,13 @@ public:
 			delete [] infoArray;
 		}
 
-		Int8Array *isCompressible()
+		Int8Array *isCompressOnPut()
 		{
 			int i;
 			char *info = new char[numNodes];
 			for(i = 0; i < numNodes; i++)
 			{
-				info[i] = nodes[i]->isCompressible();
+				info[i] = nodes[i]->isCompressOnPut();
 			}
 
 			Int8Array *retData = new Int8Array(info, numNodes);
@@ -1804,7 +1821,7 @@ public:
 			return  retData;
 		}
 
-		void setCompressible(Int8Array *info)
+		void setCompressOnPut(Int8Array *info)
 		{
 			int i, numInfo;
 			char *infoArray = info->getByteArray(&numInfo);
@@ -1813,7 +1830,7 @@ public:
 
 			for(i = 0; i < numInfo; i++)
 			{
-				nodes[i]->setCompressible((infoArray[i])?true:false);
+				nodes[i]->setCompressOnPut((infoArray[i])?true:false);
 			}
 			delete [] infoArray;
 		}
@@ -1874,26 +1891,26 @@ public:
 			delete [] infoArray;
 		}
 
-		Int32Array *getDataSize()
+		Int32Array *getLength()
 		{
 			int i;
 			int *sizes = new int[numNodes];
 			for(i = 0; i < numNodes; i++)
 			{
-				sizes[i] = nodes[i]->getDataSize();
+				sizes[i] = nodes[i]->getLength();
 			}
 
 			Int32Array *retData = new Int32Array(sizes, numNodes);
 			delete [] sizes;
 			return  retData;
 		}
-		Int32Array *getCompressedSize()
+		Int32Array *getCompressedLength()
 		{
 			int i;
 			int *sizes = new int[numNodes];
 			for(i = 0; i < numNodes; i++)
 			{
-				sizes[i] = nodes[i]->getCompressedDataSize();
+				sizes[i] = nodes[i]->getCompressedLength();
 			}
 
 			Int32Array *retData = new Int32Array(sizes, numNodes);
@@ -1901,16 +1918,16 @@ public:
 			return  retData;
 		}
 
-		Int32Array *getUsage()
+		StringArray *getUsage()
 		{
 			int i;
-			int *usages = new int[numNodes];
+			const char **usages = new const char *[numNodes];
 			for(i = 0; i < numNodes; i++)
 			{
 				usages[i] = nodes[i]->getUsage();
 			}
 
-			Int32Array *retData = new Int32Array(usages, numNodes);
+			StringArray *retData = new StringArray((char **)usages, numNodes);
 			delete [] usages;
 			return  retData;
 		}
@@ -1950,7 +1967,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNodeArray *getNodeWild(char *path);
 		void setDefault(TreeNode *treeNode);
 		TreeNode *getDeault();
-		bool supportsVersions();
+		bool containsVersions();
 		void setViewDate(char *date);
 
 		void setTimeContext(Data *start, Data *end, Data *delta);
