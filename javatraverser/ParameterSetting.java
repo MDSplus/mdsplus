@@ -952,7 +952,7 @@ public class ParameterSetting
                             
                             //GABRIELE OTTOBRE 2008
                             //Faccio Apply solo se isChanged true
-                            if(updated && justApplied)
+                            if(justApplied)
                                 devices[11].apply(mhdBcNid.getInt());
                             /////////////////////////////////////////
                             
