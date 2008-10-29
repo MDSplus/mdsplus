@@ -124,6 +124,16 @@ public class ServersInfoPanel extends JPanel {
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
         jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
         jTable1.getColumnModel().getColumn(0).setCellRenderer(new StateRenderer());
+
+        jTable1.getColumnModel().getColumn(1).setMinWidth(180);
+        jTable1.getColumnModel().getColumn(1).setPreferredWidth(180);
+        jTable1.getColumnModel().getColumn(1).setMaxWidth(180);
+
+		jTable1.getColumnModel().getColumn(2).setMinWidth(200);
+        jTable1.getColumnModel().getColumn(2).setPreferredWidth(200);
+        jTable1.getColumnModel().getColumn(2).setMaxWidth(200);
+
+		
         jTable1.getColumnModel().getColumn(3).setMinWidth(200);
         jTable1.getColumnModel().getColumn(3).setPreferredWidth(200);
         jTable1.getColumnModel().getColumn(3).setCellRenderer(new ActionRenderer());

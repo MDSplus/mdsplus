@@ -1447,10 +1447,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         public void printValues(PrintStream out)
         {
             Vector phDur = shotsInfo.get(new Long(shot));
-            out.print("\t"+shot);
+           
             for(int i = 0; i < phDur.size(); i++)
+			{
+				if( (i % (labelText.size() - 1)) == 0) 
+				{
+					 out.println("\t"+shot);	
+				}
                 out.print("\t"+phDur.elementAt(i));
-            out.println();
+			}
         }
         
         public void print()
@@ -1462,11 +1467,16 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             Enumeration e = shotsInfo.elements();
             while( e.hasMoreElements() )
             {
-                System.out.print("\t"+shots.nextElement());
+                String shotStr = "\t"+shots.nextElement();
                 Vector phDur = (Vector)e.nextElement();
                 for(int i = 0; i < phDur.size(); i++)
+				{
+					if( (i % (labelText.size() - 1)) == 0)
+					{						
+						System.out.println(shotStr);
+					}	
                     System.out.print("\t"+phDur.elementAt(i));
-                System.out.println();
+				}
             }
         }         
     }
