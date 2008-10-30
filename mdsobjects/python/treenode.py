@@ -95,7 +95,7 @@ class TreeNode(Data):
 
         from MDSobjects.scalar import String
         if name.lower() == 'nid':
-            return self.tree.getNode(str(self)).nid
+            return self.tree.getNode(str(self))
         if name.lower() == 'tags':
             return self.getTags()
         if name.lower() == 'usage':
@@ -104,6 +104,8 @@ class TreeNode(Data):
             return self.getDescendants()
         if name.lower() == 'number_of_descendants':
             return self.number_of_members+self.number_of_children
+        if name.lower() == 'segmented':
+            return self.getNumSegments().value > 0
         if name.upper() in nciAttributes:
             from MDSobjects._tdishr import TdiException
             self.restoreContext()
@@ -419,7 +421,7 @@ class TreeNode(Data):
 
     def isSegmented(self):
         """Return true if this node contains segmented records"""
-        return self.segments
+        return self.segmented
     
     def __setNode(self,qualifier,flag,reversed=False):
         self.restoreContext()
@@ -443,6 +445,86 @@ class TreeNode(Data):
             else:
                 raise TreeException,msg
         return
+
+    def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
+        """Begin a record segment"""
+        status=Data.execute('BeginSegment($,$,$,$,$,$)',self.nid,start,end,dimension,initialValue,idx)
+        if not (status & 1)==1:
+            raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        return
+
+    def putSegment(self,data,idx):
+        """Load a segment in a node"""
+        status=Data.execute('PutSegment($,$,$)',self.nid,idx,data)
+        if not (status & 1)==1:
+            raise TreeException,'Error putting segment:'+MdsGetMsg(int(status))
+        return
+
+    def updateSegment(self,start,end,dim,idx):
+        """Update a segment"""
+        status=Data.execute('TreeShr->TreeUpdateSegment(val($),descr($),descr($),descr($),val($))',self.nid,start,end,dim,idx)
+        if not (status & 1)==1:
+            raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        return
+
+    def beginTimestampedSegment(self,array,idx=-1):
+        """Allocate space for a timestamped segment"""
+        status=Data.execute('BeginTimestampedSegment($,$,$)',self.nid,array,idx)
+        if not (status & 1)==1:
+            raise TreeException,'Error beginning timestampd segment:'+MdsGetMsg(int(status))
+        return
+
+    def putTimestampedSegment(self,array,timestampArray):
+        """Load a timestamped segment"""
+        status=Data.execute('putTimestampedSegment($,$,$)',self.nid,timestampArray,array)
+        if not (status & 1)==1:
+            raise TreeException,'Error putting timestampd segment:'+MdsGetMsg(int(status))
+        return
+
+    def putRow(self,bufsize,array,timestamp):
+        """Load a timestamped segment row"""
+        status=Data.execute('putRow($,$,$,$)',self.nid,bufsize,timestamp,array)
+        if not (status & 1)==1:
+            raise TreeException,'Error putting timestampd row:'+MdsGetMsg(int(status))
+        return
+                
+    def getNumSegments(self):
+        """return number of segments contained in this node"""
+        return Data.execute('getNumSegments($)',self.nid)
+
+    def getSegmentStart(self,idx):
+        """return start of segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            return l[0]
+        else:
+            return None
+
+    def getSegmentEnd(self,idx):
+        """return end of segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            return l[1]
+        else:
+            return None
+
+    def getSegmentDim(self,idx):
+        """Return dimension of segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            return self.getSegment(idx).getDimension(0)
+        else:
+            return None
+
+    def getSegment(self,idx):
+        """Return segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            return Data.execute('getSegment($,$)',self.nid,idx)
+        else:
+            return None
 
     def getTree(self):
         """Return Tree associated with this node"""
@@ -475,6 +557,7 @@ class TreePath(TreeNode):
             self.tree=Tree._activeTree
         else:
             self.tree=tree
+        return
 
     def __str__(self):
         """Convert path to string."""

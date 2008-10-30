@@ -1,4 +1,4 @@
-from ctypes import CDLL,pointer
+from ctypes import CDLL,pointer,c_void_p
 import os
 
 if os.name=='nt':
@@ -14,14 +14,14 @@ def TdiExecute(expression,args=None):
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
     if args is None:
-        status=TdiShr.TdiExecute(pointer(descriptor(expression)),pointer(xd),-1)
+        status=TdiShr.TdiExecute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
     else:
         if isinstance(args,tuple):
             __execute=TdiShr.TdiExecute
             exp='__execute(pointer(descriptor(expression))'
             for i in range(len(args)):
                 exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
-            exp=exp+',pointer(xd),-1)'
+            exp=exp+',pointer(xd),c_void_p(-1))'
             status=eval(exp)
         else:
             raise TypeError,'Arguments must be passed as a tuple'
@@ -36,7 +36,7 @@ def TdiCompile(expression,args=None):
     __execute=TdiShr.TdiCompile
     xd=descriptor_xd()
     if args is None:
-        status=__execute(pointer(descriptor(expression)),pointer(xd),-1)
+        status=__execute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
     else:
         if isinstance(args,tuple):
             if len(args) > 0:
@@ -45,7 +45,7 @@ def TdiCompile(expression,args=None):
             exp='__execute(pointer(descriptor(expression))'
             for i in range(len(args)):
                 exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
-            exp=exp+',pointer(xd),-1)'
+            exp=exp+',pointer(xd),c_void_p(-1))'
             status=eval(exp)
         else:
             raise TypeError,'Arguments must be passed as a tuple'
@@ -58,7 +58,7 @@ def TdiDecompile(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
-    status=TdiShr.TdiDecompile(pointer(descriptor(value)),pointer(xd),-1)
+    status=TdiShr.TdiDecompile(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
     if (status & 1 != 0):
         return str(xd.value)
     else:
@@ -68,7 +68,7 @@ def TdiEvaluate(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
-    status=TdiShr.TdiEvaluate(pointer(descriptor(value).toXd()),pointer(xd),-1)
+    status=TdiShr.TdiEvaluate(pointer(descriptor(value).toXd()),pointer(xd),c_void_p(-1))
     if (status & 1 != 0):
         return xd.value
     else:
@@ -78,7 +78,7 @@ def TdiData(value):
     """Return primiitive data type. Format: TdiData(value)"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
-    status=TdiShr.TdiData(pointer(descriptor(value).toXd()),pointer(xd),-1)
+    status=TdiShr.TdiData(pointer(descriptor(value).toXd()),pointer(xd),c_void_p(-1))
     if (status & 1 != 0):
         return xd.value
     else:
