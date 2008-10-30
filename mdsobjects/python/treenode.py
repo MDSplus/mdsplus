@@ -20,7 +20,7 @@ class TreeNode(Data):
     """Class to represent an MDSplus node reference (nid)."""
 
     def __init__(self,n,tree=None):
-        self.nid=int(n);
+        self.__dict__['nid']=int(n);
         if tree is None:
             self.tree=Tree._activeTree
         else:
@@ -94,6 +94,8 @@ class TreeNode(Data):
         write_once            - Bool, Flag indicating that data can only be written if node is empty."""
 
         from MDSobjects.scalar import String
+        if name.lower() == 'nid':
+            return self.tree.getNode(str(self)).nid
         if name.lower() == 'tags':
             return self.getTags()
         if name.lower() == 'usage':
@@ -105,10 +107,18 @@ class TreeNode(Data):
         if name.upper() in nciAttributes:
             from MDSobjects._tdishr import TdiException
             self.restoreContext()
-            ans = Data.execute('getnci($,$)',self.nid,name)
-            if isinstance(ans,Uint8):
-                if name not in ('class','dtype'):
-                    return bool(ans)
+            try:
+                ans = Data.execute('getnci($,$)',self.nid,name)
+                if isinstance(ans,Uint8):
+                    if name not in ('class','dtype'):
+                        return bool(ans)
+            except TdiException,e:
+                if 'TreeNNF' in str(e):
+                    ans=None
+                else:
+                    raise
+            if isinstance(ans,String):
+                return ans.rstrip()
             return ans
         raise AttributeError,'Attribute %s is not defined' % (name,)
 
@@ -155,6 +165,8 @@ class TreeNode(Data):
             return
         if name.upper() in nciAttributes:
             raise AttributeError,'Attribute %s is read only' %(name,)
+        if name.lower() == "nid":
+            raise AttributeError,'Attribute nid is read only'
         else:
             self.__dict__[name]=value
 
@@ -162,8 +174,112 @@ class TreeNode(Data):
         """Restore tree context. Used by internal functions."""
         self.tree.restoreContext()
 
+    def getClass(self):
+        """Return MDSplus class name of this node"""
+        return self.class_str
+
+    def isCompressOnPut(self):
+        """Return true if node is set to compress on put"""
+        return self.compress_on_put
+
+    def setCompressOnPut(self,flag):
+        """Set compress on put state of this node"""
+        self.__setNode('compress_on_put',flag)
+
+    def getConglomerateElt(self):
+        """Return index of this node in a conglomerate"""
+        return self.conglomerate_elt
+    
+    def getNumElts(self):
+        """Return number of nodes in this conglomerate"""
+        return self.number_of_elts
+
+    def getConglomerateNodes(self):
+        """Return TreeNodeArray of conglomerate elements"""
+        return self.conglomerate_nids
+
+    def getOriginalPartName(self):
+        """Return the original part name of node in conglomerate"""
+        return self.original_part_name
+
+    def getDtype(self):
+        """Return the name of the data type stored in this node"""
+        return self.dtype_str
+    
+    def isEssential(self):
+        """Return true if successful action completion is essential"""
+        return self.essential
+
+    def setEssential(self,flag):
+        """Set essential state of this node"""
+        return self.__setNode('essential',flag)
+
+    def getFullPath(self):
+        """Return full path of this node"""
+        return self.fullpath
+
+    def getMinPath(self):
+        """Return shortest path string for this node"""
+        return self.minpath
+    
+    def getPath(self):
+        """Return path of this node"""
+        return self.path
+
+    def getNodeName(self):
+        """Return node name"""
+        return self.node_name
+    
+    def isIncludedInPulse(self):
+        """Return true if this subtree is to be included in pulse file"""
+        return self.include_in_pulse
+
+    def setIncludedInPulse(self,flag):
+        """Set include in pulse state of this node"""
+        return self.__setNode('include_in_pulse',flag)
+
+    def getDepth(self):
+        """Get depth of this node in the tree"""
+        return self.depth
+
+    def isChild(self):
+        """Return true if this is a child node"""
+        return self.is_child
+
+    def getChild(self):
+        """Return first child of this node"""
+        return self.child
+
+    def getNumChildren(self):
+        """Return number of children nodes"""
+        return self.number_of_children
+
+    def getChildren(self):
+        """Return TreeNodeArray of children nodes"""
+        return self.children_nids
+
+    def isMember(self):
+        """Return true if this is a member node"""
+        return self.is_member
+
+    def getMember(self):
+        """Return first member node"""
+        return self.member
+
+    def getNumMembers(self):
+        """Return number of members"""
+        return self.number_of_members
+
+    def getMembers(self):
+        """Return TreeNodeArray of this nodes members"""
+        return self.member_nids
+
+    def getNumDescendants(self):
+        """Return number of first level descendants (children and members)"""
+        return self.number_of_descendants
+
     def getDescendants(self):
-        """Return TreeNodeArray of first level descendants."""
+        """Return TreeNodeArray of first level descendants (children and members)."""
         try:
             members=self.member_nids
             try:
@@ -182,14 +298,74 @@ class TreeNode(Data):
             except:
                 return None
             
-    def getPath(self):
-        """Return path of this node"""
-        return self.path
+    def getParent(self):
+        """Return parent of this node"""
+        return self.parent
 
-    def getFullPath(self):
-        """Return full path of this node"""
-        return self.fullpath
+    def getBrother(self):
+        """Return sibling of this node"""
+        return self.brother
 
+    def getLength(self):
+        """Return uncompressed data length of this node"""
+        return self.length
+
+    def getCompressedLength(self):
+        """Return compressed data length of this node"""
+        return self.rlength
+
+    def getNid(self):
+        """Return node index"""
+        return self.nid
+
+    def isNoWriteModel(self):
+        """Return true if data storage to model is disabled for this node"""
+        return self.no_write_model
+
+    def setNoWriteModel(self,flag):
+        """Set no write model state for this node"""
+        self.__setNode('no_write_model',flag)
+        return
+
+    def isNoWriteShot(self):
+        """Return true if data storage to pulse file is disabled for this node"""
+        return self.no_write_shot
+
+    def setNoWriteShot(self,flag):
+        """Set no write shot state for this node"""
+        self.__setNode('no_write_shot',flag)
+        return
+
+    def isWriteOnce(self):
+        """Return true if node is set write once"""
+        return self.write_once
+
+    def setWriteOnce(self,flag):
+        """Set write once state of node"""
+        self.__setNode('write_once',flag)
+        return
+    
+    def isOn(self):
+        """Return True if node is turned on, False if not."""
+        return self.on
+
+    def setOn(self,flag):
+        """Turn node on or off"""
+        from MDSobjects._treeshr import TreeTurnOn,TreeTurnOff
+        self.restoreContext()
+        if flag is True:
+            TreeTurnOn(self.nid)
+        else:
+            if flag is False:
+                TreeTurnOff(self.nid)
+            else:
+                raise TypeError,'argument must be True or False'
+        return
+
+    def getOwnerId(self):
+        """Get id/gid value of account which wrote data to this node"""
+        return self.owner_id
+    
     def getData(self):
         """Return data"""
         return self.record
@@ -208,36 +384,7 @@ class TreeNode(Data):
         TreePutRecord(self.nid,None)
         return
 
-    def getNid(self):
-        """Return node index"""
-        return self.nid
-
-    def isOn(self):
-        """Return True if node is turned on, False if not."""
-        return self.on.value==1
-
-    def setOn(self,flag):
-        """Turn node on or off"""
-        from MDSobjects._treeshr import TreeTurnOn,TreeTurnOff
-        self.restoreContext()
-        if flag is True:
-            TreeTurnOn(self.nid)
-        else:
-            if flag is False:
-                TreeTurnOff(self.nid)
-            else:
-                raise TypeError,'argument must be True or False'
-        return
-
-    def getDataSize(self):
-        """Return uncompressed data length"""
-        return self.length
-
-    def getCompressedDataSize(self):
-        """Return compressed data length"""
-        return self.rlength
-
-    def getInsertionTime(self):
+    def getTimeInserted(self):
         """Return time data was written"""
         return self.time_inserted
 
@@ -250,12 +397,30 @@ class TreeNode(Data):
 
     def isSetup(self):
         """Return true if data is setup information."""
-        return self.setup.value==1
+        return self.setup
 
-    def isWriteOnce(self):
-        """Return true if node is set write once"""
-        return self.write_once.value==1
+    def getStatus(self):
+        """Return action completion status"""
+        return self.status
+    
+    def getUsage(self):
+        """Return usage of this node"""
+        return self.usage
 
+    def getTags(self):
+        """Return tags of this node"""
+        from MDSobjects._treeshr import TreeFindNodeTags
+        self.restoreContext()
+        return TreeFindNodeTags(self)
+
+    def containsVersions(self):
+        """Return true if this node contains data versions"""
+        return self.versions
+
+    def isSegmented(self):
+        """Return true if this node contains segmented records"""
+        return self.segments
+    
     def __setNode(self,qualifier,flag,reversed=False):
         self.restoreContext()
         if flag is True or flag is False:
@@ -279,84 +444,6 @@ class TreeNode(Data):
                 raise TreeException,msg
         return
 
-    def setWriteOnce(self,flag):
-        """Set write once state of node"""
-        self.__setNode('write_once',flag)
-        return
-    
-    def isCompressible(self):
-        """Return true if node contains data which can be compressed"""
-        return self.compressible.value==1
-
-    def isDoNotCompress(self):
-        """Return true of compression is disabled for this node"""
-        return self.do_not_compress.value==1
-
-    def setDoNotCompress(self,flag):
-        """Set do not compress state of this node"""
-        self.__setNode('do_not_compress',flag)
-        return
-
-    def isCompressOnPut(self):
-        """Return true if node is set to compress on put"""
-        return self.compress_on_put.value==1
-
-    def setCompressOnPut(self,flag):
-        """Set compress on put state of this node"""
-        self.__setNode('compress_on_put',flag)
-
-    def isEssential(self):
-        """Return true if successful action completion is essential"""
-        return self.essential.value==1
-
-    def setEssential(self,flag):
-        """Set essential state of this node"""
-        return self.__setNode('essential',flag)
-
-    def isIncludeInPulse(self):
-        """Return true if this subtree is to be included in pulse file"""
-        return self.include_in_pulse.value==1
-
-    def setIncludeInPulse(self,flag):
-        """Set include in pulse state of this node"""
-        return self.__setNode('include_in_pulse',flag)
-
-    def isNoWriteModel(self):
-        """Return true if data storage to model is disabled for this node"""
-        return self.no_write_model.value==1
-
-    def setNoWriteModel(self,flag):
-        """Set no write model state for this node"""
-        self.__setNode('no_write_model',flag)
-        return
-
-    def isNoWriteShot(self):
-        """Return true if data storage to pulse file is disabled for this node"""
-        return self.no_write_shot.value==1
-
-    def setNoWriteShot(self,flag):
-        """Set no write shot state for this node"""
-        self.__setNode('no_write_shot',flag)
-        return
-
-    def getParent(self):
-        """Return parent of this node"""
-        return self.parent
-
-    def getChildren(self):
-        """Return children of this node"""
-        return self.children_nids
-
-    def getUsage(self):
-        """Return usage of this node"""
-        return self.usage
-
-    def getTags(self):
-        """Return tags of this node"""
-        from MDSobjects._treeshr import TreeFindNodeTags
-        self.restoreContext()
-        return TreeFindNodeTags(self)
-
     def getTree(self):
         """Return Tree associated with this node"""
         return self.tree
@@ -365,20 +452,33 @@ class TreeNode(Data):
         """Set Tree associated with this node"""
         self.tree=tree
 
+    def isCompressible(self):
+        """Return true if node contains data which can be compressed"""
+        return self.compressible
+
+    def isDoNotCompress(self):
+        """Return true of compression is disabled for this node"""
+        return self.do_not_compress
+
+    def setDoNotCompress(self,flag):
+        """Set do not compress state of this node"""
+        self.__setNode('do_not_compress',flag)
+        return
+
 
     
-class TreePath(Data):
+class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
     def __init__(self,path,tree=None):
-        self.path=makeData(path);
+        self.tree_path=makeData(path);
         if tree is None:
             self.tree=Tree._activeTree
         else:
             self.tree=tree
-        
+
     def __str__(self):
         """Convert path to string."""
-        return str(self.path)
+        return str(self.tree_path)
 
     def restoreContext(self):
         self.tree.restoreContext()
