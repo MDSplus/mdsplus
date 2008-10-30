@@ -7,7 +7,7 @@ from MDSobjects.treenode import TreeNode,TreePath,TreeNodeArray
 from MDSobjects.ident import Ident
 from MDSobjects.apd import Apd
 from MDSobjects.compound import *
-from MDSobjects._mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx
+from MDSobjects._mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
 import numpy as _N
 import ctypes as _C
 import os
@@ -379,6 +379,9 @@ class descriptor(_C.Structure):
             return MdsDecompress(self)
         raise Exception,'Unsupported class: '+str(mdsclasses(self.dclass))
     value = property(_getValue)
+
+    def toXd(self):
+        return MdsCopyDxXd(self)
 
         
 descriptor._fields_ = [("length",_C.c_ushort),

@@ -42,6 +42,7 @@ def rawPart(item):
     return __mdsplus_function((item,),"raw_of($)",None)
    
 def makeData(value):
+    """Convert a python object to a MDSobject Data object"""
     if value is None:
         return EmptyData()
     if isinstance(value,Data):
@@ -147,6 +148,7 @@ class Data(object):
         return Data.execute('abs($)',self)
 
     def __add__(self,y):
+        """Used for evaluating this object + another object"""
         from MDSobjects.scalar import String
         from MDSobjects.array import StringArray
         y=makeData(y)
@@ -170,15 +172,18 @@ class Data(object):
         return Data.execute('$ - $',y,self)
 
     def __div__(self,y):
+        """Used for evaluating this object / another object"""
         return Data.execute('$/$',self,y)
 
     def __rdiv__(self,y):
+        """Used for evaluating another object / this object"""
         return Data.execute('$/$',y,self)
 
     def __floordiv__(self,y):
         return Data.execute('floor($/$)',self,y)
 
     def __radd__(self,y):
+        """Used for evaluating another object + this object"""
         from MDSobjects.scalar import String
         from MDSobjects.array import StringArray
         y=makeData(y)
@@ -201,8 +206,19 @@ class Data(object):
     compile=staticmethod(compile)
 
     def execute(expr,*args):
+        """Execute and expression inserting optional arguments into the expression before evaluating"""
         return TdiExecute(expr,args)
     execute=staticmethod(execute)
+
+    def setVar(tdivarname,value):
+        """Set tdi public variable"""
+        return TdiExecute('public '+str(tdivarname)+'=$',(value,))
+    setVar=staticmethod(setVar)
+
+    def getVar(tdivarname):
+        """Get tdi public variable"""
+        return TdiExecute('public '+str(tdivarname))
+    getVar=staticmethod(getVar)
     
     def decompile(self):
         """Return the result of TDI decompile(this)
@@ -275,6 +291,7 @@ class Data(object):
         return ans
 
     def __long__(self):
+        """Convert this object to python long"""
         return long(self.getLong()._value)
 
     def getFloat(self):
@@ -288,6 +305,7 @@ class Data(object):
         return ans
 
     def __float__(self):
+        """Convert this object to python float"""
         return float(self.getFloat()._value)
     
     def getDouble(self):

@@ -20,7 +20,7 @@ def TdiExecute(expression,args=None):
             __execute=TdiShr.TdiExecute
             exp='__execute(pointer(descriptor(expression))'
             for i in range(len(args)):
-                exp=exp+',pointer(descriptor(args[%d]))' % i
+                exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
             exp=exp+',pointer(xd),-1)'
             status=eval(exp)
         else:
@@ -44,7 +44,7 @@ def TdiCompile(expression,args=None):
                     return TdiCompile(expression,args[0])
             exp='__execute(pointer(descriptor(expression))'
             for i in range(len(args)):
-                exp=exp+',pointer(descriptor(args[%d]))' % i
+                exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
             exp=exp+',pointer(xd),-1)'
             status=eval(exp)
         else:
@@ -68,7 +68,7 @@ def TdiEvaluate(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
-    status=TdiShr.TdiEvaluate(pointer(descriptor(value)),pointer(xd),-1)
+    status=TdiShr.TdiEvaluate(pointer(descriptor(value).toXd()),pointer(xd),-1)
     if (status & 1 != 0):
         return xd.value
     else:
@@ -78,7 +78,7 @@ def TdiData(value):
     """Return primiitive data type. Format: TdiData(value)"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
     xd=descriptor_xd()
-    status=TdiShr.TdiData(pointer(descriptor(value)),pointer(xd),-1)
+    status=TdiShr.TdiData(pointer(descriptor(value).toXd()),pointer(xd),-1)
     if (status & 1 != 0):
         return xd.value
     else:
