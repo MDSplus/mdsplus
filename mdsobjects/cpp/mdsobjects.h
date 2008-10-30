@@ -577,31 +577,6 @@ protected:
 
 
 
-	class TreePath : public Data
-	{
-		int length;
-		char *ptr;
-	public:
-		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_S;
-			dtype = DTYPE_PATH;
-			length = strlen(val);
-			ptr = new char[length];
-			memcpy(ptr, val, length);
-			setAccessory(units, error, help, validation);
-		}
-		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_S;
-			dtype = DTYPE_PATH;
-			length = len;
-			ptr = new char[length];
-			memcpy(ptr, val, length);
-			setAccessory(units, error, help, validation);
-		}
-		void *convertToDsc();
-	};
 
 ////////////////ARRAYS/////////////////////
 
@@ -1635,6 +1610,15 @@ public:
 
 
 /////////////////End Class TreeTreeNode///////////////
+	class TreePath : public TreeNode
+	{
+		int length;
+		char *ptr;
+	public:
+		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+		void *convertToDsc();
+	};
 	
 	
 /////////////////CachedTreeNode/////////////////////////////

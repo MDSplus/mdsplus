@@ -1121,6 +1121,32 @@ void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 }
 
 
+TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
+{
+	clazz = CLASS_S;
+	dtype = DTYPE_PATH;
+	length = strlen(val);
+	ptr = new char[length];
+	memcpy(ptr, val, length);
+	setAccessory(units, error, help, validation);
+	setActiveTree(tree);
+	int status = TreeFindNode(ptr, &nid);
+	if(!(status & 1))
+		nid = -1;
+}
+TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
+{
+	clazz = CLASS_S;
+	dtype = DTYPE_PATH;
+	length = len;
+	ptr = new char[length];
+	memcpy(ptr, val, length);
+	setAccessory(units, error, help, validation);
+	setActiveTree(tree);
+	int status = TreeFindNode(ptr, &nid);
+	if(!(status & 1))
+		nid = -1;
+}
 
 	
 	
