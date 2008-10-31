@@ -56,11 +56,20 @@ def makeData(value):
         return makeArray(value)
 
 class Data(object):
-    """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses."""
+    """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
+    @ivar units: The units of the data.
+    @type units: Data
+    @ivar error: The errors associated with the data.
+    @type error: Data
+    @ivar help: A help string for the data
+    @type help: String
+    """
     
     def __init__(self,*value):
-        """Cannot create instancces of class Data objects. Use MDSobjects.Data.makeData(initial-value) instead"""
-        raise Exception,'Cannot create instances of class Data. Use MDSobjects.Data.makeData(initial-value) instead'
+        """Cannot create instances of class Data objects. Use MDSobjects.Data.makeData(initial-value) instead
+        @raise TypeError: Raised if attempting to create an instance of Data
+        """
+        raise TypeError,'Cannot create \'MDSobjects.Data\' instances'
 
     def __function(self,name,default):
         found = False

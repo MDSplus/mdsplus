@@ -40,6 +40,7 @@ class Scalar(Data):
         return ans
 
     def _getValue(self):
+        """Return the numpy scalar representation of the scalar"""
         return self._value
 
     value=property(_getValue)

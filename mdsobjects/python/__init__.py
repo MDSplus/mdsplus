@@ -4,7 +4,12 @@ MDSobjects
 
 Provides a object oriented interface to the MDSplus data system.
 
-Information about the MDSplus data system can be found at http://www.mdsplus.org
+Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Homepage<http://www.mdsplus.org>}
+@authors: Tom Fredian(MIT/USA), Gabriele Manduchi(CNR/IT), Josh Stillerman(MIT/USA)
+@copyright: 2008
+@license: GNU GPL
+
+
 
 """
 

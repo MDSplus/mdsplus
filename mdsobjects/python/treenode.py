@@ -17,7 +17,12 @@ nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','CLASS','CLASS_STR',
                      'USAGE_TEXT','USAGE_WINDOW','VERSIONS','WRITE_ONCE')
 
 class TreeNode(Data):
-    """Class to represent an MDSplus node reference (nid)."""
+    """Class to represent an MDSplus node reference (nid).
+    @ivar nid: Index of the node in the tree.
+    @type nid: int
+    @ivar tree: Tree associated with this node
+    @type tree: Tree
+    """
 
     def __init__(self,n,tree=None):
         self.__dict__['nid']=int(n);
@@ -511,7 +516,12 @@ class TreeNode(Data):
             return None
 
     def getSegmentDim(self,idx):
-        """Return dimension of segment"""
+        """Return dimension of segment
+        @param idx: The index of the segment to return. Indexes start with 0.
+        @type idx: int
+        @return: Segment dimension
+        @rtype: Dimension
+        """
         num=self.getNumSegments()
         if num > 0 and idx < num:
             return self.getSegment(idx).getDimension(0)
@@ -519,7 +529,12 @@ class TreeNode(Data):
             return None
 
     def getSegment(self,idx):
-        """Return segment"""
+        """Return segment
+        @param idx: The index of the segment to return. Indexes start with 0.
+        @type idx: int
+        @return: Data segment
+        @rtype: Signal | None
+        """
         num=self.getNumSegments()
         if num > 0 and idx < num:
             return Data.execute('getSegment($,$)',self.nid,idx)

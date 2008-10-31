@@ -38,6 +38,7 @@ class Array(Data):
         return ans
 
     def _getValue(self):
+        """Return the numpy ndarray representation of the array"""
         return self._value
 
     value=property(_getValue)
