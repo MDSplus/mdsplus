@@ -30,6 +30,26 @@ class Tree(object):
     def __str__(self):
         return 'Tree("%s",%d)' % (self.tree,self.shot)
 
+    def doMethod(nid,method):
+        from MDSobjects.treenode import TreeNode
+        t=Tree(Data.execute('$EXPT').value,Data.execute('$shot').value)
+        n=TreeNode(nid,t)
+        top=n.conglomerate_nids[0]
+        c=top.record
+        q=c.qualifiers
+        model=c.model
+        for i in range(len(q)):
+            exec str(q[0])
+        try:
+            exec str('Data.setVar("_result",'+model+'(top).'+method+'(Data.getVar("__do_method_arg__")))')
+        except AttributeError:
+            Data.setVar("_result",0xfd180b0)
+        except Exception,e:
+            Data.setVar("_result",0)
+            raise
+        return Data.getVar("_result")
+    doMethod=staticmethod(doMethod)
+
     def restoreContext(self):
         """Use internal context associated with this tree. Internal use only."""
         from MDSobjects._treeshr import TreeRestoreContext
