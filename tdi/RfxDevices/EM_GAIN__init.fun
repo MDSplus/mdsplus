@@ -253,6 +253,7 @@ write(*, _i);
 			*/
 				_word = WordSetGain(_write_value, ( 15 - _i ), _INTEGRAL, _gain);								
 				WriteGain(_name, _word);
+
 /*
 write(*, "Integral Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
 */
@@ -295,6 +296,7 @@ write(*, _gain_read , _gain);
 			*/
 
 				_word = WordSetGain(_write_value, (15 - _i), _LINEAR, _gain);
+
 /*
 write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain(_word));
 */	
@@ -304,9 +306,11 @@ write(*, "Linear Card   = ", WordGetCard(_word), WordGetChan(_word), WordGetGain
 				WordSetChan( _read_value, ( 15 - _i ) );
 				ReadWord( _name,  _read_value, _word_read );
 				_gain_read = WordGetGain(_word_read);
-/*				
+				
+/*
 write(*, _gain_read , _gain);
 */
+
 				if(_gain_read != _gain)
 				{
 					DevLogErr(_nid, "EM gain card "//_card_addr//": Error set linear gain value for channel "//(_i + 1)//" write "//_gain//" read "//_gain_read); 

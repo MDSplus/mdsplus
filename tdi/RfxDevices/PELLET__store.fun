@@ -127,23 +127,21 @@ public fun PELLET__store(as_is _nid, optional _method)
 	    		_value = PELLETHWReadParam( _fd, trim(_g_param[_i]) );
 		}
 		
-	        if( kind( _value ) == 14)
-	    	{
+		if( kind( _value ) == 14)
+		{
 			if ( _remote )
 			{
-	    			MdsValue('PELLETHWClose($1)', _fd);
+				MdsValue('PELLETHWClose($1)', _fd);
 				MdsDisconnect();
 			}			
 			else
-	    	 	        PELLETHWClose( _fd );
-
+				PELLETHWClose( _fd );
 
 			_msg = "Error on "//_value//" query operation";
 			DevLogErr(_nid, _msg); 
 			Abort();
-	    	}
+		}
 	
-
 		_param_nid =  DevHead(_nid) + _N_TSTBY + _i;
 		_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));
 	}
@@ -151,38 +149,41 @@ public fun PELLET__store(as_is _nid, optional _method)
 
 	for(_pellet = 1; _pellet <= 8 && ( _tree_status & 1 ); _pellet++)
 	{
+		_pelNid = _N_PELLET_0 + ( (_pellet - 1) * _K_NODES_PER_PELLET );
 
-		for(_i = 0; _i < size(_p_param) && (_tree_status & 1); _i++)
+		if( DevIsOn(DevNodeRef(_nid, _pelNid)) )
 		{
-
-			_param = trim(_p_param[_i])//TEXT(_pellet, 1);
-
-			if ( _remote )
+			for(_i = 0; _i < size(_p_param) && (_tree_status & 1); _i++)
 			{
-	    		     _value = MdsValue('PELLETHWReadParam($1, $2)', _fd, _param);
-			}
-			else
-			{
-			     _value = PELLETHWReadParam( _fd, _param );
-			}
-		
-	        	if( kind( _value ) == 14)
-	    		{
+				_param = trim(_p_param[_i])//TEXT(_pellet, 1);
+	
 				if ( _remote )
 				{
-	    				MdsValue('PELLETHWClose($1)', _fd);
-					MdsDisconnect();
-				}								
+						 _value = MdsValue('PELLETHWReadParam($1, $2)', _fd, _param);
+				}
 				else
-	    				PELLETHWClose( _fd );
+				{
+					 _value = PELLETHWReadParam( _fd, _param );
+				}
+			
+				if( kind( _value ) == 14)
+				{
+					if ( _remote )
+					{
+						MdsValue('PELLETHWClose($1)', _fd);
+						MdsDisconnect();
+					}								
+					else
+						PELLETHWClose( _fd );
 					
-
-				_msg = "Error on "//_value//" query operation";
-				DevLogErr(_nid, _msg); 
-				Abort();
-	    		}
-			_param_nid =  DevHead(_nid) + _N_PELLET_0  +( (_pellet - 1) *  _K_NODES_PER_PELLET) +  _N_SPEED + _i;
-			_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));
+					_msg = "Error on "//_value//" query operation";
+					DevLogErr(_nid, _msg); 
+					Abort();
+				}
+				
+				_param_nid =  DevHead(_nid) + _pelNid +  _N_SPEED + _i;
+				_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));				
+			}
 		}
 	}
 

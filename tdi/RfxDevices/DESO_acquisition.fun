@@ -55,6 +55,7 @@ public fun DESO_acquisition()
 		
 		Write(*, "Verifica che il PLC V1 e' predisposto");
 		_ready = mdsvalue("opcget("//_handle//", '\\\\SR:\\\\V1_ISO_Fetch\\\\aliases\\\\DESO_VI_READY')");
+		Write(*, "Stato V1 Predisposizione ", _ready);
 		if( _ready == 0 )
 		{
 			write(*, "V1 non predisposto per l'esecuzione degli impulsi\n", mdsvalue("OpcErrorMessage("//_handle//")"));
@@ -124,7 +125,7 @@ public fun DESO_acquisition()
 		
 		Write(*, "Verifico Lo stato di V1");
 		_ready = mdsvalue("OpcGet("//_handle//", '\\\\SR:\\\\V1_ISO_Fetch\\\\aliases\\\\DESO_VI_READY')");
-		Write(*, "Stato V1 ", _ready);
+		Write(*, "Stato V1 Predisposizione ", _ready);
 		if( _ready == 0 )
 		{
 			write(*, "V1 in errore abortita l'esecuzione del secondo impulso\n", mdsvalue("OpcErrorMessage("//_handle//")"));

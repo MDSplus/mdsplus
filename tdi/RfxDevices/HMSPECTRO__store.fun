@@ -209,15 +209,16 @@ write(*, "_bufSize ", _bufSize);
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
 		}
 
+/*
 	    _tbase = MdsValue('HMSPECTROReadTbase( $1,  $2 )',  _dev_name ,  _num_scan);
-
 		write(*, "Tbase ",  _tbase  );
-
+*/
 
 		MdsValue( 'HMSPECTRO->HMSpectroClose(val($1))', _dev_name );
 
 
 		MdsDisconnect();
+write(*, "OK");
 
 	}
 	else
@@ -244,11 +245,10 @@ write(*, "_bufSize ", _bufSize);
 			_msg = repeat(' ', 200);
 			HMSPECTRO->HMSpectroGetMsg( val( _status ), ref( _msg ) );
 		}
-
+/*
 		HMSPECTRO->HMSpectroReadTbase( _dev_name, ref( _tbase ), val( _num_scan ));
-
 		write(*, "Tbase ", _tbase);
-
+*/
 		HMSPECTRO->HMSpectroClose(val(_dev_name));
 
 
@@ -268,14 +268,17 @@ write(*, "_bufSize ", _bufSize);
 	}
 
 	_t0 = _trig_time;
+write(*, "OK");
 
 	_buf = transpose( set_range(_hwPixel, _num_scan, _data) );
 
     _dim1 = make_dim(make_window(0, _num_scan - 1, _t0 ),  make_range(*,*,_integ_time));
     _dim2 = make_with_units(( _lambda ),"nm");
+write(*, "OK");
 
 	_data_nid = DevHead(_nid) + _N_DATA;
     _signal = compile('build_signal((`_buf), $VALUE, (`_dim1), (`_dim2))');
+write(*, "OK");
 
     return (TreeShr->TreePutRecord(val(_data_nid),xd(_signal),val(0)));
 
