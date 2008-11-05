@@ -1855,17 +1855,17 @@ int WINAPI MdsValue3VB(char *expression, int *arg1d, int *arg2d, int *ansd, int 
 int WINAPI MdsValue3VB2(char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v, int *ansd, void *value, int *retlen)
  { return va_MdsValue2(expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero,retlen);}
 int WINAPI MdsPut1VB(char *node, char *expression, int *ansd)
- { return MdsPut(node,expression,ansd,&zero);}
+ { return va_MdsPut(node,expression,ansd,&zero);}
 int WINAPI MdsPut1VB2(char *node, char *expression, int *ansd, void *value)
- { return MdsPut2(node,expression,ansd,value,&zero);}
+ { return va_MdsPut2(node,expression,ansd,value,&zero);}
 int WINAPI MdsPut2VB(char *node, char *expression, int *arg1d, int *ansd)
- { return MdsPut(node,expression,arg1d,ansd,&zero);}
+ { return va_MdsPut(node,expression,arg1d,ansd,&zero);}
 int WINAPI MdsPut2VB2(char *node, char *expression, int *arg1d, void *arg1v, int *ansd, void *value)
- { return MdsPut2(node,expression,arg1d,arg1v,ansd,value,&zero);}
+ { return va_MdsPut2(node,expression,arg1d,arg1v,ansd,value,&zero);}
 int WINAPI MdsPut3VB(char *node, char *expression, int *arg1d, int *arg2d, int *ansd)
- { return MdsPut(node,expression,arg1d,arg2d,ansd,&zero);}
+ { return va_MdsPut(node,expression,arg1d,arg2d,ansd,&zero);}
 int WINAPI MdsPut3VB2(char *node, char *expression, int *arg1d, void *arg1v, int *arg2d, void *arg2v,int *ansd, void *value)
- { return MdsPut2(node,expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero);}
+ { return va_MdsPut2(node,expression,arg1d,arg1v,arg2d,arg2v,ansd,value,&zero);}
 #endif
 
 /************************************************************
