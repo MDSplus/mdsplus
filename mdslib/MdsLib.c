@@ -98,6 +98,7 @@ static int va_descr (int *dtype, void *data, int *dim1, ...)
   else
 #endif
     dsc->pointer = (char *)data;
+  dsc->length = 0;
   dsc->length = dtype_length(dsc); /* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
@@ -264,6 +265,7 @@ static int va_descr2 (int *dtype, int *dim1, ...)
   dsc->dtype = *dtype;
 
   dsc->pointer = 0;
+  dsc->length = 0;
   dsc->length = dtype_length(dsc); /* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
