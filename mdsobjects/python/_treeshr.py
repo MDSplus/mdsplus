@@ -5,14 +5,14 @@ if os.name=='nt':
     __TreeShr=_C.CDLL('treeshr')
 else:
     __TreeShr=_C.CDLL('libTreeShr.so')
-__TreeOpen=__TreeShr.TreeOpen
-__TreeOpen.argtypes=[_C.c_char_p,_C.c_int]
-__TreeClose=__TreeShr.TreeClose
-__TreeClose.argtypes=[_C.c_char_p,_C.c_int]
-__TreeFindNode=__TreeShr.TreeFindNode
-__TreeFindNode.argtypes=[_C.c_char_p,_C.POINTER(_C.c_int)]
-__TreeGetPath=__TreeShr.TreeGetPath
-__TreeGetPath.argtypes=[_C.c_int]
+__TreeOpen=__TreeShr._TreeOpen
+__TreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeClose=__TreeShr._TreeClose
+__TreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeFindNode=__TreeShr._TreeFindNode
+__TreeFindNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int)]
+__TreeGetPath=__TreeShr._TreeGetPath
+__TreeGetPath.argtypes=[_C.c_void_p,_C.c_int]
 __TreeGetPath.restype=_C.c_void_p
 TreeFree=__TreeShr.TreeFree
 TreeFree.argtypes=[_C.c_void_p]
@@ -20,75 +20,48 @@ __TreeSwitchDbid=__TreeShr.TreeSwitchDbid
 __TreeSwitchDbid.argtypes=[_C.c_void_p]
 __TreeSwitchDbid.restype=_C.c_void_p
 
-__TreeGetRecord=__TreeShr.TreeGetRecord
-__TreeGetRecord.argtypes=[_C.c_int,_C.POINTER(descriptor_xd),_C.c_int]
-__TreeDoMethod=__TreeShr.TreeDoMethod
-__TreeDoMethod.argtypes=[_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
-__TreePutRecord=__TreeShr.TreePutRecord
-__TreePutRecord.argtypes=[_C.c_int,_C.POINTER(descriptor),_C.c_int]
-__TreeTurnOn=__TreeShr.TreeTurnOn
-__TreeTurnOn.argtypes=[_C.c_int]
-__TreeTurnOff=__TreeShr.TreeTurnOff
-__TreeTurnOff.argtypes=[_C.c_int]
+__TreeDoMethod=__TreeShr._TreeDoMethod
+__TreeDoMethod.argtypes=[_C.c_void_p,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
+__TreePutRecord=__TreeShr._TreePutRecord
+__TreePutRecord.argtypes=[_C.POINTER(_C.c_void_p),_C.c_int,_C.POINTER(descriptor),_C.c_int]
+__TreeTurnOn=__TreeShr._TreeTurnOn
+__TreeTurnOn.argtypes=[_C.c_void_p,_C.c_int]
+__TreeTurnOff=__TreeShr._TreeTurnOff
+__TreeTurnOff.argtypes=[_C.c_void_p,_C.c_int]
+__TreeFindNodeTags=__TreeShr._TreeFindNodeTags
+__TreeFindNodeTags.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_void_p)]
+__TreeFindNodeTags.restype=_C.c_char_p
 
 class TreeException(Exception):
     pass
 
-def TreeFindNode(path):
+def TreeFindNode(ctx,path):
     n=_C.c_int()
-    status=__TreeFindNode(path,n)
+    status=__TreeFindNode(ctx,path,n)
     if (status & 1):
         return n.value
     else:
         raise TreeException,'Error finding node '+str(path)+': '+MdsGetMsg(status)
 
-def TreeGetRecord(n):
-    """Get record from MDSplus tree. Accepts Path, TreeNode or integer"""
-    try:
-        n=TreeFindNode(n)
-    except _C.ArgumentError:
-        pass
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be an Nid or integer'
-    xd=descriptor_xd()
-    status=__TreeGetRecord(c_nid,xd,0)
-    if (status & 1):
-        return xd.value
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def TreeGetDefault():
+def TreeGetDefault(ctx):
     """Get default node"""
     ans=_C.c_int(0)
-    status = __TreeShr.TreeGetDefaultNid(_C.pointer(ans))
+    status = __TreeShr._TreeGetDefaultNid(ctx,_C.pointer(ans))
     if (status & 1):
         return ans.value
     else:
-        raise TreeException.MdsGetMsg(status)
+        raise TreeException,MdsGetMsg(status)
     
-def TreeSetDefault(n):
+def TreeSetDefault(ctx,n):
     """Set default node"""
-    status = __TreeShr.TreeSetDefaultNid(_C.c_int(n))
+    status = __TreeShr._TreeSetDefaultNid(ctx,_C.c_int(n))
     if (status & 1):
         return
     else:
-        raise TreeException.MdsGetMsg(status)
+        raise TreeException,MdsGetMsg(status)
     
 def TreeGetPath(n):
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    p=__TreeGetPath(c_nid)
+    p=__TreeGetPath(n.tree.ctx,n.nid)
     ans=_C.cast(p,_C.c_char_p).value
     if not p is None:
         TreeFree(p)
@@ -96,19 +69,15 @@ def TreeGetPath(n):
 
 def TreeFindNodeTags(n):
     from MDSobjects.array import makeArray
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    ctx=_C.c_int(0)
+    ctx=_C.c_void_p(0)
     tags=list()
-    tag='                                                                             '
-    tag_d=descriptor(tag)
-    while __TreeShr.TreeFindNodeTagsDsc(c_nid,_C.pointer(ctx),_C.pointer(tag_d)):
-        tags.append(tag_d.value.rstrip())
+    done=False
+    while not done:
+        tag=__TreeFindNodeTags(n.tree.ctx,n.nid,_C.pointer(ctx))
+        try:
+            tags.append(tag.rstrip())
+        except:
+            done=True
     if len(tags) > 0:
         tags=makeArray(tags)
     else:
@@ -135,20 +104,9 @@ def TreePutRecord(n,value):
         raise TreeException,MdsGetMsg(status)
     return None
 
-def TreeDoMethod(n,method):
+def TreeDoMethod(n,method,arg=None):
     """Do a method of an MDSplus device. Accepts path, TreeNode or integer and the value"""
-    try:
-        n=TreeFindNode(n)
-    except _C.ArgumentError:
-        pass
-    try:
-        nid=int(n)
-    except TypeError:
-        try:
-            nid=n.nid
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    status=__TreeDoMethod(_C.pointer(descriptor(nid)),_C.pointer(descriptor(method)),0)
+    status=__TreeDoMethod(n.tree.ctx,_C.pointer(descriptor(n)),_C.pointer(descriptor(method)),_C.pointer(descriptor(arg)),0)
     if (status & 1):
         return status
     else:
@@ -157,19 +115,13 @@ def TreeDoMethod(n,method):
 
     
 def TreeTurnOn(n):
-    """Turn on a tree node. Accepts path, TreeNode or integer"""
+    """Turn on a tree node."""
+    from MDSobjects.tree import Tree
     try:
-        n=TreeFindNode(n)
-    except _C.ArgumentError:
-        pass
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    status=__TreeTurnOn(c_nid)
+        Tree.lock()
+        status=__TreeTurnOn(n.tree.ctx,n.nid)
+    finally:
+        Tree.unlock()
     if (status & 1):
         return status
     else:
@@ -177,19 +129,13 @@ def TreeTurnOn(n):
     return None
 
 def TreeTurnOff(n):
-    """Turn off a tree node. Accepts path, TreeNode or integer"""
+    """Turn off a tree node."""
+    from MDSobjects.tree import Tree
     try:
-        n=TreeFindNode(n)
-    except _C.ArgumentError:
-        pass
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    status=__TreeTurnOff(c_nid)
+        Tree.lock()
+        status=__TreeTurnOff(n.tree.ctx,n.nid)
+    finally:
+        Tree.unlock()
     if (status & 1):
         return status
     else:
@@ -197,22 +143,31 @@ def TreeTurnOff(n):
     return None
 
 def TreeOpen(tree,shot):
-    oldctx=__TreeSwitchDbid(_C.c_void_p(0))
-    status = __TreeOpen(tree,shot)
+    ctx=_C.c_void_p(0)
+#    oldctx=__TreeSwitchDbid(_C.c_void_p(0))
+    status = __TreeOpen(_C.pointer(ctx),tree,shot)
     if (status & 1):
-        ctx=__TreeSwitchDbid(_C.c_void_p(0))
-        __TreeSwitchDbid(ctx)
+#        ctx=__TreeSwitchDbid(_C.c_void_p(0))
+#        __TreeSwitchDbid(ctx)
         return ctx
     else:
-        __TreeSwitchDbid(oldctx)
+#        __TreeSwitchDbid(oldctx)
         raise TreeException,MdsGetMsg(status)
 
 def TreeRestoreContext(ctx):
     return __TreeSwitchDbid(ctx)
 
-def TreeClose(tree,shot):
-    status = __TreeClose(tree,shot)
+def TreeClose(ctx,tree,shot):
+    status = __TreeClose(_C.pointer(ctx),tree,shot)
     if (status & 1):
         return status
     else:
         raise TreeException,MdsGetMsg(status)
+
+def TreeCloseAll(ctx):
+    status = __TreeClose(_C.pointer(ctx),None,0)
+    while (status & 1) == 1:
+        try:
+            status = __TreeClose(_C.pointer(ctx),None,0)
+        except:
+            status = 0

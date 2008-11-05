@@ -2,7 +2,7 @@ from MDSobjects.data import Data,makeData
 from MDSobjects.scalar import Uint8
 from MDSobjects.array import Int32Array
 from MDSobjects.tree import Tree
-nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','CLASS','CLASS_STR',
+nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
                      'ERROR_ON_PUT','ESSENTIAL','FULLPATH','GET_FLAGS','INCLUDE_IN_PULSE',
@@ -37,7 +37,7 @@ class TreeNode(Data):
         if self.nid is None:
             ans="NODEREF(*)"
         else:
-            self.restoreContext()
+#            self.restoreContext()
             ans=TreeGetPath(self)
         return ans
 
@@ -48,7 +48,7 @@ class TreeNode(Data):
         brother               - TreeNode,Next node in tree
         child                 - TreeNode,First ancestor
         children_nids         - TreeNodeArray, Children nodes
-        class                 - Uint8, Internal numeric MDSplus descriptor class
+        mclass                - Uint8, Internal numeric MDSplus descriptor class
         class_str             - String, Name of MDSplus descriptor class
         compressible          - Bool, Flag indicating node contains compressible data
         compress_on_put       - Bool, Flag indicating automatic compression
@@ -113,19 +113,25 @@ class TreeNode(Data):
             return self.getNumSegments().value > 0
         if name.upper() in nciAttributes:
             from MDSobjects._tdishr import TdiException
-            self.restoreContext()
             try:
-                ans = Data.execute('getnci($,$)',self.nid,name)
-                if isinstance(ans,Uint8):
-                    if name not in ('class','dtype'):
-                        return bool(ans)
-            except TdiException,e:
-                if 'TreeNNF' in str(e):
-                    ans=None
-                else:
-                    raise
+                if name.lower() == 'mclass':
+                    name='class';
+                Tree.lock()
+                self.restoreContext()
+                try:
+                    ans = Data.execute('getnci($,$)',self,name)
+                    if isinstance(ans,Uint8):
+                        if name not in ('class','dtype'):
+                            ans = bool(ans)
+                except TdiException,e:
+                    if 'TreeNNF' in str(e):
+                        ans=None
+                    else:
+                        raise
+            finally:
+                Tree.unlock()
             if isinstance(ans,String):
-                return ans.rstrip()
+                return String(ans.rstrip())
             return ans
         raise AttributeError,'Attribute %s is not defined' % (name,)
 
@@ -359,14 +365,17 @@ class TreeNode(Data):
     def setOn(self,flag):
         """Turn node on or off"""
         from MDSobjects._treeshr import TreeTurnOn,TreeTurnOff
-        self.restoreContext()
-        if flag is True:
-            TreeTurnOn(self.nid)
-        else:
-            if flag is False:
-                TreeTurnOff(self.nid)
+        try:
+            Tree.lock()
+            if flag is True:
+                TreeTurnOn(self)
             else:
-                raise TypeError,'argument must be True or False'
+                if flag is False:
+                    TreeTurnOff(self)
+                else:
+                    raise TypeError,'argument must be True or False'
+        finally:
+            Tree.unlock()
         return
 
     def getOwnerId(self):
@@ -380,31 +389,36 @@ class TreeNode(Data):
     def putData(self,data):
         """Store data"""
         from MDSobjects._treeshr import TreePutRecord
-        self.restoreContext()
-        TreePutRecord(self.nid,data)
+        try:
+            Tree.lock()
+            TreePutRecord(self.tree.ctx,self.nid,data)
+        finally:
+            Tree.unlock()
         return
 
     def deleteData(self):
         """Delete data"""
-        from MDSobjects._treeshr import TreePutRecord
-        self.restoreContext()
-        TreePutRecord(self.nid,None)
+        self.putData(None)
         return
 
     def getTimeInserted(self):
         """Return time data was written"""
         return self.time_inserted
 
-    def doMethod(self,method):
+    def doMethod(self,method,arg=None):
         """Execute method on conglomerate element"""
         from MDSobjects._treeshr import TreeDoMethod
-        self.restoreContext()
-        TreeDoMethod(self.nid,str(method))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            TreeDoMethod(self,str(method),arg)
+        finally:
+            Tree.unlock()
         return
 
     def isSetup(self):
         """Return true if data is setup information."""
-        return self.setup
+        return self.setup_information
 
     def getStatus(self):
         """Return action completion status"""
@@ -417,8 +431,12 @@ class TreeNode(Data):
     def getTags(self):
         """Return tags of this node"""
         from MDSobjects._treeshr import TreeFindNodeTags
-        self.restoreContext()
-        return TreeFindNodeTags(self)
+        try:
+            Tree.lock()
+            ans=TreeFindNodeTags(self)
+        finally:
+            Tree.unlock()
+        return ans
 
     def containsVersions(self):
         """Return true if this node contains data versions"""
@@ -440,68 +458,113 @@ class TreeNode(Data):
                 switch="/no"
             else:
                 raise TypeError,'Argument must be True or False'
-        status = Data.compile('tcl("set node \\'+self.fullpath+switch+qualifier+'")').evaluate()
-        if not (status & 1):
-            from MDSobjects._descriptor import MdsGetMsg
-            from MDSobjects._treeshr import TreeException
-            msg=MdsGetMsg(int(status))
-            if 'TreeFAILURE' in msg:
-                raise TreeException,'Error writing to tree, possibly file protection problem'
-            else:
-                raise TreeException,msg
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status = Data.compile('tcl("set node \\'+self.fullpath+switch+qualifier+'")').evaluate()
+            if not (status & 1):
+                from MDSobjects._descriptor import MdsGetMsg
+                from MDSobjects._treeshr import TreeException
+                msg=MdsGetMsg(int(status))
+                if 'TreeFAILURE' in msg:
+                    raise TreeException,'Error writing to tree, possibly file protection problem'
+                else:
+                    raise TreeException,msg
+        finally:
+            Tree.unlock()
         return
 
     def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
         """Begin a record segment"""
-        status=Data.execute('BeginSegment($,$,$,$,$,$)',self.nid,start,end,dimension,initialValue,idx)
-        if not (status & 1)==1:
-            raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status=Data.execute('BeginSegment($,$,$,$,$,$)',self.nid,start,end,dimension,initialValue,idx)
+            if not (status & 1)==1:
+                raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
 
     def putSegment(self,data,idx):
         """Load a segment in a node"""
-        status=Data.execute('PutSegment($,$,$)',self.nid,idx,data)
-        if not (status & 1)==1:
-            raise TreeException,'Error putting segment:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status=Data.execute('PutSegment($,$,$)',self.nid,idx,data)
+            if not (status & 1)==1:
+                raise TreeException,'Error putting segment:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
 
     def updateSegment(self,start,end,dim,idx):
         """Update a segment"""
-        status=Data.execute('TreeShr->TreeUpdateSegment(val($),descr($),descr($),descr($),val($))',self.nid,start,end,dim,idx)
-        if not (status & 1)==1:
-            raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status=Data.execute('TreeShr->TreeUpdateSegment(val($),descr($),descr($),descr($),val($))',self.nid,start,end,dim,idx)
+            if not (status & 1)==1:
+                raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment"""
-        status=Data.execute('BeginTimestampedSegment($,$,$)',self.nid,array,idx)
-        if not (status & 1)==1:
-            raise TreeException,'Error beginning timestampd segment:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status=Data.execute('BeginTimestampedSegment($,$,$)',self.nid,array,idx)
+            if not (status & 1)==1:
+                raise TreeException,'Error beginning timestampd segment:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
 
     def putTimestampedSegment(self,array,timestampArray):
         """Load a timestamped segment"""
-        status=Data.execute('putTimestampedSegment($,$,$)',self.nid,timestampArray,array)
-        if not (status & 1)==1:
-            raise TreeException,'Error putting timestampd segment:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            self.restoreContext()
+            status=Data.execute('putTimestampedSegment($,$,$)',self.nid,timestampArray,array)
+            if not (status & 1)==1:
+                raise TreeException,'Error putting timestampd segment:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
 
     def putRow(self,bufsize,array,timestamp):
         """Load a timestamped segment row"""
-        status=Data.execute('putRow($,$,$,$)',self.nid,bufsize,timestamp,array)
-        if not (status & 1)==1:
-            raise TreeException,'Error putting timestampd row:'+MdsGetMsg(int(status))
+        try:
+            Tree.lock()
+            status=Data.execute('putRow($,$,$,$)',self.nid,bufsize,timestamp,array)
+            if not (status & 1)==1:
+                raise TreeException,'Error putting timestampd row:'+MdsGetMsg(int(status))
+        finally:
+            Tree.unlock()
         return
                 
     def getNumSegments(self):
         """return number of segments contained in this node"""
-        return Data.execute('getNumSegments($)',self.nid)
+        try:
+            Tree.lock()
+            self.restoreContext()
+            ans=Data.execute('getNumSegments($)',self.nid)
+        finally:
+            Tree.unlock()
+        return ans
 
     def getSegmentStart(self,idx):
         """return start of segment"""
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            try:
+                Tree.lock()
+                self.restoreContext()
+                l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            finally:
+                Tree.unlock()
             return l[0]
         else:
             return None
@@ -510,7 +573,12 @@ class TreeNode(Data):
         """return end of segment"""
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            try:
+                Tree.lock()
+                self.restoreContext()
+                l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
+            finally:
+                Tree.unlock()
             return l[1]
         else:
             return None
@@ -537,7 +605,13 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            return Data.execute('getSegment($,$)',self.nid,idx)
+            try:
+                Tree.lock()
+                self.restoreContexT()
+                ans = Data.execute('getSegment($,$)',self.nid,idx)
+            finally:
+                Tree.unlock()
+            return ans
         else:
             return None
 
@@ -561,8 +635,6 @@ class TreeNode(Data):
         """Set do not compress state of this node"""
         self.__setNode('do_not_compress',flag)
         return
-
-
     
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
@@ -577,9 +649,6 @@ class TreePath(TreeNode):
     def __str__(self):
         """Convert path to string."""
         return str(self.tree_path)
-
-    def restoreContext(self):
-        self.tree.restoreContext()
 
 class TreeNodeArray(Data):
     def __init__(self,nids,tree=None):
@@ -601,10 +670,15 @@ class TreeNodeArray(Data):
 
     def __getattr__(self,name):
         try:
-            self.restoreContext()
-            return Data.execute('getnci($,$)',self.nids,name)
-        except Exception,e:
-            if 'TdiBAD_INDEX' in str(e):
-                raise AttributeError,'Attribute %s is not defined' % (name,)
-            else:
-                raise
+            Tree.lock()
+            try:
+                self.restoreContext()
+                ans = Data.execute('getnci($,$)',self.nids,name)
+            except Exception,e:
+                if 'TdiBAD_INDEX' in str(e):
+                    raise AttributeError,'Attribute %s is not defined' % (name,)
+                else:
+                    raise
+        finally:
+            Tree.unlock()
+        return ans

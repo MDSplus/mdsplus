@@ -1,20 +1,37 @@
 from MDSobjects.data import Data
+from threading import RLock,Thread
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
+    _lock=RLock()
+
     def __init__(self,tree,shot):
         from MDSobjects._treeshr import TreeOpen
-        self.ctx=TreeOpen(tree,shot)
-        Tree._activeTree=self
+        try:
+            Tree.lock()
+            self.ctx=TreeOpen(tree,shot)
+            Tree._activeTree=self
+        finally:
+            Tree.unlock()
         return
 
     def __getattr__(self,name):
         if name == 'shot':
-            self.restoreContext()
-            return int(Data.execute('$shot'))
+            try:
+                Tree.lock()
+                self.restoreContext()
+                ans = int(Data.execute('$shot'))
+            finally:
+                Tree.unlock()
+            return ans
         if name == 'tree':
-            self.restoreContext()
-            return str(Data.execute('$expt'))
+            try:
+                Tree.lock()
+                self.restoreContext()
+                ans = str(Data.execute('$expt'))
+            finally:
+                Tree.unlock()
+            return ans
         if name == 'default':
             return self.getDefault()
         else:
@@ -31,6 +48,7 @@ class Tree(object):
         return 'Tree("%s",%d)' % (self.tree,self.shot)
 
     def doMethod(nid,method):
+        """Support for PyDoMethod.fun used for python device support"""
         from MDSobjects.treenode import TreeNode
         t=Tree(Data.execute('$EXPT').value,Data.execute('$shot').value)
         n=TreeNode(nid,t)
@@ -57,23 +75,21 @@ class Tree(object):
         return TreeRestoreContext(self.ctx)
 
     def __del__(self):
-        from MDSobjects._treeshr import TreeRestoreContext,TreeClose,TreeFree
-        oldctx=TreeRestoreContext(self.ctx)
-        done=False
-        while not done:
-            try:
-                TreeClose(None,0)
-            except Exception,e:
-                done=True
-        TreeFree(self.ctx)
-        TreeRestoreContext(oldctx)
+        tc=TreeCtxCleanup(self.ctx)
+        tc.start()
+        return
 
     def getDefault(self):
         """Return current default TreeNode"""
         from MDSobjects._treeshr import TreeGetDefault
         from MDSobjects.treenode import TreeNode
-        self.restoreContext()
-        return TreeNode(TreeGetDefault())
+        try:
+            Tree.lock()
+            ans = TreeNode(TreeGetDefault(self.ctx))
+        finally:
+            Tree.unlock()
+        return ans
+            
 
     def setDefault(self,node):
         """Set current default TreeNode."""
@@ -81,8 +97,7 @@ class Tree(object):
         from MDSobjects.treenode import TreeNode
         if isinstance(node,TreeNode):
             if node.tree is self:
-                self.restoreContext()
-                TreeSetDefault(node.nid)
+                TreeSetDefault(self.ctx,node.nid)
             else:
                 raise TypeError,'TreeNode must be in same tree'
         else:
@@ -92,27 +107,56 @@ class Tree(object):
         """Locate node in tree. Returns TreeNode if found. Use double backslashes in node names."""
         from MDSobjects.treenode import TreeNode
         from MDSobjects._treeshr import TreeFindNode
-        self.restoreContext()
         if isinstance(name,int):
             return TreeNode(name,self)
         else:
-            return TreeNode(TreeFindNode(str(name)),self)
+            try:
+                Tree.lock()
+                ans=TreeNode(TreeFindNode(self.ctx,str(name)),self)
+            finally:
+                Tree.unlock()
+            return ans
+        
+    def lock(cls):
+        cls._lock.acquire()
+    lock=classmethod(lock)
+
+    def unlock(cls):
+        cls._lock.release()
+    unlock=classmethod(unlock)
 
     def getNodeWild(self,name,*usage):
         """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found."""
         from MDSobjects.treenode import TreeNodeArray
-        self.restoreContext()
-        if len(usage) > 0:
-            from numpy import array
-            for i in range(len(usage)):
-                if not isinstance(usage[i],str):
-                    raise TypeError,'Usage arguments must be strings'
-            usage=array(usage)
-            nids=Data.compile('getnci($,"NID_NUMBER",$)',name,usage).evaluate()
-        else:
-            nids=Data.compile('getnci($,"NID_NUMBER")',(name,)).evaluate()
+        try:
+            Tree.lock()
+            self.restoreContext()
+            if len(usage) > 0:
+                from numpy import array
+                for i in range(len(usage)):
+                    if not isinstance(usage[i],str):
+                        raise TypeError,'Usage arguments must be strings'
+                    usage=array(usage)
+                    nids=Data.compile('getnci($,"NID_NUMBER",$)',name,usage).evaluate()
+            else:
+                nids=Data.compile('getnci($,"NID_NUMBER")',(name,)).evaluate()
+        finally:
+            Tree.unlock()
         return TreeNodeArray(nids)
-            
-            
-        
+
+class TreeCtxCleanup(Thread):
+    """Close trees and free tree ctx in thread when tree instance is deleted"""
+    def __init__(self,ctx):
+        Thread.__init__(self)
+        self.ctx=ctx
+
+    def run(self):
+        from MDSobjects._treeshr import TreeCloseAll,TreeFree,TreeException
+        if hasattr(self,'ctx'):
+            try:
+                Tree.lock()
+                TreeCloseAll(self.ctx)
+            finally:
+                Tree.unlock()
+            TreeFree(self.ctx)
         
