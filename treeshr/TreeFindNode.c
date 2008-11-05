@@ -1172,7 +1172,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
         NID *nidptr=(NID *)&nid;
         int i;
         for (i=0;i<sizeof(tsearch.tag);i++) if (tsearch.tag[i]==' ') tsearch.tag[i]='\0';
-        tag = TreeFindTagWild(tsearch.tag, &nid, &ctx);
+        tag = _TreeFindTagWild(db, tsearch.tag, &nid, &ctx);
         if (tag)
 	{
           status = TreeNORMAL;
