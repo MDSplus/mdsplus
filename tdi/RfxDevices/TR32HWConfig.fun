@@ -53,7 +53,7 @@ public fun TR32HWConfig(in _board_id)
 	_clock_source = byte(_TR32_CLK_SOURCE_EXTERNAL);
 	_clock_div_mode = byte(_TR32_CLK_SUB_SAMPLE);
 	TR32->TR32_Clk_SetClock(val(_handle), val(_clock_source), val(_TR32_CLK_NO_EXT_CLOCK),
-		val(_clock_div_mode), val(_TR32_CLK_RISING_EDGE), val(_clock_termination), val(long(1)));
+		val(_clock_div_mode), val(_TR32_CLK_RISING_EDGE), val(_TR32_TRG_TERMINATION_OFF), val(long(1)));
 		  
 /* Set Trigger function */
 	_trig_mode =_TR32_TRG_SOURCE_EXTERNAL;
