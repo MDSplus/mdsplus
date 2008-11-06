@@ -133,7 +133,7 @@ static char *ReplaceAliasTrees(char *tree_in)
   return ans;
 }
     
-int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
+EXPORT int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
 {
   int       status = TreeFAILURE;
   int       shot;

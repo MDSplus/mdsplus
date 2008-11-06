@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="treeshr"
 	ProjectGUID="{5A4F3EDD-D5B9-4C41-BBA9-DFEFE6AA92CE}"
+	RootNamespace="treeshr"
 	>
 	<Platforms>
 		<Platform
@@ -173,6 +174,7 @@
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\TreeShr.def"
 				SubSystem="2"
+				EnableCOMDATFolding="0"
 				ImportLibrary="$(OutDir)/treeshr.lib"
 			/>
 			<Tool
@@ -207,6 +209,10 @@
 		<Filter
 			Name="Includes"
 			>
+			<File
+				RelativePath="..\include\treeshr.h"
+				>
+			</File>
 			<File
 				RelativePath="treeshrp.h"
 				>
