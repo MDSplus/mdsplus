@@ -1,5 +1,11 @@
 #ifndef __TREESHR
 #define __TREESHR
+#include <config.h>
+#ifdef HAVE_WINDOWS_H
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
@@ -297,237 +303,237 @@ static struct stsText  treeshr_stsText[] = {
 
 #ifdef _MDS_NO_PROTO
 
-extern char* TreeAbsPath();           /********** Use TreeFree(result) *****/
-extern char* _TreeAbsPath();          /********** Use TreeFree(result) *****/
-extern int TreeAddConglom();
-extern int _TreeAddConglom();
+extern EXPORT char* TreeAbsPath();           /********** Use TreeFree(result) *****/
+extern EXPORT char* _TreeAbsPath();          /********** Use TreeFree(result) *****/
+extern EXPORT int TreeAddConglom();
+extern EXPORT int _TreeAddConglom();
 /* obsolete */	extern int TreeAddMethodImage();
-extern int TreeAddNode();
-extern int _TreeAddNode();
-extern int TreeAddTag();
-extern int _TreeAddTag();
-extern int TreeCleanDatafile();
-extern int _TreeCleanDatafile();
-/* obsolete */	extern int TreeClearMethodImageS();
-extern int TreeClose();
-extern int _TreeClose();
-extern int TreeCompressDatafile();
-extern int _TreeCompressDatafile();
-extern int TreeCreatePulseFile();
-extern int _TreeCreatePulseFile();
-extern int  TreeCreateTreeFiles();
-extern void TreeDeleteNodeExecute();
-extern int TreeDeleteNodeGetNid();
-extern int TreeDeleteNodeInitialize();
-extern int TreeDeletePulseFile();
-extern int _TreeDeletePulseFile();
-extern int TreeDoMethod();
-extern int _TreeDoMethod();
-/* obsolete */	extern int TreeDoMethodHandler();
-extern int TreeEditing();
-extern int _TreeEditing();
-extern int TreeEndConglomerate();
-extern int _TreeEndConglomerate();
-extern int TreeFindNode();
-extern int _TreeFindNode();
-extern int TreeFindNodeEnd();
-extern int _TreeFindNodeEnd();
-extern char *TreeFindNodeTags();   /********** Use TreeFree(result) *****/
-extern char *_TreeFindNodeTags();  /********** Use TreeFree(result) *****/
-extern int TreeFindNodeWild();
-extern int _TreeFindNodeWild();
-extern void TreeFindTagEnd();
-extern char *TreeFindTagWild();
-extern char *_TreeFindTagWild();
-extern int TreeFlushOff();
-extern int TreeFlushReset();
-extern int TreeFree();
-extern int TreeGetDbi();
-extern int _TreeGetDbi();
-extern int TreeGetNci();
-extern int _TreeGetNci();
-extern int TreeGetDefaultNid();
-extern int _TreeGetDefaultNid();
-extern char *TreeGetMinimumPath();  /********** Use TreeFree(result) *****/
-extern char *_TreeGetMinimumPath(); /********** Use TreeFree(result) *****/
-extern char *TreeGetPath(); /********** Use TreeFree(result) *****/
-extern char *_TreeGetPath();/********** Use TreeFree(result) *****/
-extern int TreeGetRecord();
-extern int _TreeGetRecord();
-extern int TreeGetStackSize();
-extern int _TreeGetStackSize();
-extern int TreeIsOn();
-extern int _TreeIsOn();
-extern int TreeIsOpen();
-extern int _TreeIsOpen();
-	extern int TreeLink();
-	extern int TreeMarkIncludes();
-extern int TreeOpen();
-extern int _TreeOpen();
-extern int TreeOpenEdit();
-extern int _TreeOpenEdit();
-extern int TreeOpenNew();
-extern int _TreeOpenNew();
-extern int TreePutRecord();
-extern int _TreePutRecord();
-extern int TreeQuitTree();
-extern int _TreeQuitTree();
-extern int TreeRemoveNodesTags();
-extern int _TreeRemoveNodesTags();
-extern int TreeRemoveTag();
-extern int _TreeRemoveTag();
-extern int TreeRenameNode();
-extern int _TreeRenameNode();
-extern void TreeRestoreContext();
-extern void _TreeRestoreContext();
-	extern int TreeRundownTree();
-extern void *TreeSaveContext();
-extern void *_TreeSaveContext();
-extern int TreeSetNci();
-extern int _TreeSetNci();
-extern int TreeSetDefault();
-extern int _TreeSetDefault();
-extern int TreeSetDefaultNid();
-extern int _TreeSetDefaultNid();
-extern int TreeSetNoSubtree();
-extern int _TreeSetNoSubtree();
-extern int TreeSetStackSize();
-extern int _TreeSetStackSize();
-extern int TreeSetSubtree();
-extern int _TreeSetSubtree();
-extern int TreeStartConglomerate();
-extern int _TreeStartConglomerate();
-extern void *TreeSwitchDbid();
-extern int TreeTurnOff();
-extern int _TreeTurnOff();
-extern int TreeTurnOn();
-extern int _TreeTurnOn();
-extern int TreeVerify();
-extern int _TreeVerify();
-	extern int TreeWait();
-extern int TreeWriteTree();
-extern int _TreeWriteTree();
-extern int TreeGetCurrentShotId();
-extern int TreeSetCurrentShotId();
+extern EXPORT int TreeAddNode();
+extern EXPORT int _TreeAddNode();
+extern EXPORT int TreeAddTag();
+extern EXPORT int _TreeAddTag();
+extern EXPORT int TreeCleanDatafile();
+extern EXPORT int _TreeCleanDatafile();
+/* obsolete */	extern EXPORT int TreeClearMethodImageS();
+extern EXPORT int TreeClose();
+extern EXPORT int _TreeClose();
+extern EXPORT int TreeCompressDatafile();
+extern EXPORT int _TreeCompressDatafile();
+extern EXPORT int TreeCreatePulseFile();
+extern EXPORT int _TreeCreatePulseFile();
+extern EXPORT int  TreeCreateTreeFiles();
+extern EXPORT void TreeDeleteNodeExecute();
+extern EXPORT int TreeDeleteNodeGetNid();
+extern EXPORT int TreeDeleteNodeInitialize();
+extern EXPORT int TreeDeletePulseFile();
+extern EXPORT int _TreeDeletePulseFile();
+extern EXPORT int TreeDoMethod();
+extern EXPORT int _TreeDoMethod();
+/* obsolete */	extern EXPORT int TreeDoMethodHandler();
+extern EXPORT int TreeEditing();
+extern EXPORT int _TreeEditing();
+extern EXPORT int TreeEndConglomerate();
+extern EXPORT int _TreeEndConglomerate();
+extern EXPORT int TreeFindNode();
+extern EXPORT int _TreeFindNode();
+extern EXPORT int TreeFindNodeEnd();
+extern EXPORT int _TreeFindNodeEnd();
+extern EXPORT char *TreeFindNodeTags();   /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeFindNodeTags();  /********** Use TreeFree(result) *****/
+extern EXPORT int TreeFindNodeWild();
+extern EXPORT int _TreeFindNodeWild();
+extern EXPORT void TreeFindTagEnd();
+extern EXPORT char *TreeFindTagWild();
+extern EXPORT char *_TreeFindTagWild();
+extern EXPORT int TreeFlushOff();
+extern EXPORT int TreeFlushReset();
+extern EXPORT int TreeFree();
+extern EXPORT int TreeGetDbi();
+extern EXPORT int _TreeGetDbi();
+extern EXPORT int TreeGetNci();
+extern EXPORT int _TreeGetNci();
+extern EXPORT int TreeGetDefaultNid();
+extern EXPORT int _TreeGetDefaultNid();
+extern EXPORT char *TreeGetMinimumPath();  /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeGetMinimumPath(); /********** Use TreeFree(result) *****/
+extern EXPORT char *TreeGetPath(); /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeGetPath();/********** Use TreeFree(result) *****/
+extern EXPORT int TreeGetRecord();
+extern EXPORT int _TreeGetRecord();
+extern EXPORT int TreeGetStackSize();
+extern EXPORT int _TreeGetStackSize();
+extern EXPORT int TreeIsOn();
+extern EXPORT int _TreeIsOn();
+extern EXPORT int TreeIsOpen();
+extern EXPORT int _TreeIsOpen();
+	extern EXPORT int TreeLink();
+	extern EXPORT int TreeMarkIncludes();
+extern EXPORT int TreeOpen();
+extern EXPORT int _TreeOpen();
+extern EXPORT int TreeOpenEdit();
+extern EXPORT int _TreeOpenEdit();
+extern EXPORT int TreeOpenNew();
+extern EXPORT int _TreeOpenNew();
+extern EXPORT int TreePutRecord();
+extern EXPORT int _TreePutRecord();
+extern EXPORT int TreeQuitTree();
+extern EXPORT int _TreeQuitTree();
+extern EXPORT int TreeRemoveNodesTags();
+extern EXPORT int _TreeRemoveNodesTags();
+extern EXPORT int TreeRemoveTag();
+extern EXPORT int _TreeRemoveTag();
+extern EXPORT int TreeRenameNode();
+extern EXPORT int _TreeRenameNode();
+extern EXPORT void TreeRestoreContext();
+extern EXPORT void _TreeRestoreContext();
+	extern EXPORT int TreeRundownTree();
+extern EXPORT void *TreeSaveContext();
+extern EXPORT void *_TreeSaveContext();
+extern EXPORT int TreeSetNci();
+extern EXPORT int _TreeSetNci();
+extern EXPORT int TreeSetDefault();
+extern EXPORT int _TreeSetDefault();
+extern EXPORT int TreeSetDefaultNid();
+extern EXPORT int _TreeSetDefaultNid();
+extern EXPORT int TreeSetNoSubtree();
+extern EXPORT int _TreeSetNoSubtree();
+extern EXPORT int TreeSetStackSize();
+extern EXPORT int _TreeSetStackSize();
+extern EXPORT int TreeSetSubtree();
+extern EXPORT int _TreeSetSubtree();
+extern EXPORT int TreeStartConglomerate();
+extern EXPORT int _TreeStartConglomerate();
+extern EXPORT void *TreeSwitchDbid();
+extern EXPORT int TreeTurnOff();
+extern EXPORT int _TreeTurnOff();
+extern EXPORT int TreeTurnOn();
+extern EXPORT int _TreeTurnOn();
+extern EXPORT int TreeVerify();
+extern EXPORT int _TreeVerify();
+	extern EXPORT int TreeWait();
+extern EXPORT int TreeWriteTree();
+extern EXPORT int _TreeWriteTree();
+extern EXPORT int TreeGetCurrentShotId();
+extern EXPORT int TreeSetCurrentShotId();
 
 #else
 
-extern char *TreeAbsPath(char *in);             /********** Use TreeFree(result) *****/
-extern char *_TreeAbsPath( void *dbid, char *in);  /********** Use TreeFree(result) *****/
-extern int TreeAddConglom(char *path, char *congtype, int *nid);
-extern int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid);
-extern int TreeAddNode(char *name, int *nid_ret, char usage);
-extern int _TreeAddNode(void *dbid, char *name, int *nid_ret, char usage);
-extern int TreeAddTag(int nid, char *tagnam);
-extern int _TreeAddTag(void *dbid, int nid, char *tagnam);
-extern int TreeCleanDatafile(char *tree, int shot);
-extern int _TreeCleanDatafile(void **dbid, char *tree, int shot);
-extern int TreeClose(char *tree, int shot);
-extern int _TreeClose(void **dbid, char *tree, int shot);
-extern int TreeCompressDatafile(char *tree, int shot);
-extern int _TreeCompressDatafile(void **dbid, char *tree, int shot);
-extern int TreeCreatePulseFile( int shot, int numnids, int *nids);
-extern int _TreeCreatePulseFile(void *dbid, int shot, int numnids, int *nids);
-extern int  TreeCreateTreeFiles(char *tree, int shot, int source_shot);
-extern void TreeDeleteNodeExecute(void);
-extern void _TreeDeleteNodeExecute(void *dbid);
-extern int TreeDeleteNodeGetNid(int *nid);
-extern int _TreeDeleteNodeGetNid(void *dbid, int *nid);
-extern int TreeDeleteNodeInitialize(int nid, int *count, int reset);
-extern int _TreeDeleteNodeInitialize(void *dbid, int nid, int *count, int reset);
-extern int TreeDeletePulseFile(int shotid, int all_versions);
-extern int _TreeDeletePulseFile(void *dbid, int shotid, int all_versions);
-extern int TreeDoMethod(struct descriptor *nid, struct descriptor *method, ...);
-extern int _TreeDoMethod(void *dbid, struct descriptor *nid, struct descriptor *method, ...);
-extern int TreeDoMethod_HANDLER(int *sig_args, int *mech_args);
-extern int TreeEditing();
-extern int _TreeEditing(void *dbid);
-extern int TreeEndConglomerate();
-extern int _TreeEndConglomerate(void *dbid);
-extern int TreeFindNode(char *path, int *nid);
-extern int _TreeFindNode(void *dbid, char *path, int *nid);
-extern int TreeFindNodeEnd(void **ctx);
-extern int _TreeFindNodeEnd(void *dbid, void **ctx);
-extern char *TreeFindNodeTags(int nid, void **ctx);   /********** Use TreeFree(result) *****/
-extern char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);  /********** Use TreeFree(result) *****/
-extern int TreeFindNodeWild(char *path, int *nid, void **ctx, int usage_mask);
-extern int _TreeFindNodeWild(void *dbid, char *path, int *nid, void **ctx, int usage_mask);
-extern void TreeFindTagEnd(void **ctx);
-extern char *TreeFindTagWild(char *wild, int *nidout, void **search_ctx);
-extern char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx);
-extern int TreeFlushOff(int nid);
-extern int _TreeFlushOff(void *dbid, int nid);
-extern int TreeFlushReset(int nid);
-extern int _TreeFlushReset(void *dbid, int nid);
-extern void TreeFree(void *);
-extern int TreeGetDbi(struct dbi_itm *itmlst);
-extern int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
-extern int TreeGetNci(int nid, struct nci_itm *itmlst);
-extern int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
-extern int TreeGetDefaultNid(int *nid);
-extern int _TreeGetDefaultNid(void *dbid, int *nid);
-extern char *TreeGetMinimumPath(int *def_nid, int nid); /********** Use TreeFree(result) *****/
-extern char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid); /********** Use TreeFree(result) *****/
-extern char *TreeGetPath(int nid); /********** Use TreeFree(result) *****/
-extern char *_TreeGetPath(void *dbid, int nid); /********** Use TreeFree(result) *****/
-extern int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
-extern int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
-extern int TreeGetStackSize();
-extern int _TreeGetStackSize(void *dbid);
-extern int TreeIsOn(int nid);
-extern int _TreeIsOn(void *dbid, int nid);
-extern int TreeIsOpen();
-extern int _TreeIsOpen(void *dbid);
-extern int TreeLink(struct descriptor *intree, struct descriptor *outtree);
-extern int TreeMarkIncludes();
-extern int TreeNodePresent(int *nid);
-extern int TreeOpen(char *tree, int shot, int flags);
-extern int _TreeOpen(void **dbid,char *tree, int shot, int flags);
-extern int TreeOpenEdit(char *tree, int shot);
-extern int _TreeOpenEdit(void **dbid, char *tree, int shot);
-extern int TreeOpenNew(char *tree, int shot);
-extern int _TreeOpenNew(void **dbid, char *tree, int shot);
-extern int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
-extern int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor, int utility_update);
-extern int TreeQuitTree(char *tree, int shot);
-extern int _TreeQuitTree(void **dbid, char *tree, int shot);
-extern int TreeRemoveNodesTags(int nid);
-extern int _TreeRemoveNodesTags(void *dbid, int nid);
-extern int TreeRemoveTag(char *tagnam);
-extern int _TreeRemoveTag(void *dbid, char *tagnam);
-extern int TreeRenameNode(int nid, char *newnamedsc_ptr);
-extern int _TreeRenameNode(void *dbid, int nid, char *newname);
-extern void TreeRestoreContext(void *ctx);
-extern void _TreeRestoreContext(void **dbid, void *ctx);
-extern int TreeRundownTree(struct descriptor *treenam, int *shotid, int single_tree, int force_exit);
-extern void *TreeSaveContext();
-extern void *_TreeSaveContext(void *dbid);
-extern int TreeSetNci(int nid, struct nci_itm *itmlst);
-extern int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
-extern int TreeSetDefault(char *path, int *nid);
-extern int _TreeSetDefault(void *dbid, char *path, int *nid);
-extern int TreeSetDefaultNid(int nid);
-extern int _TreeSetDefaultNid(void *dbid, int nid);
-extern int TreeSetNoSubtree(int nid);
-extern int _TreeSetNoSubtree(void *dbid, int nid);
-extern int TreeSetStackSize(int new_size);
-extern int _TreeSetStackSize(void **dbid, int new_size);
-extern int TreeSetSubtree(int nid);
-extern int _TreeSetSubtree(void *dbid, int nid);
-extern int TreeStartConglomerate(int numnodes);
-extern int _TreeStartConglomerate(void *dbid, int numnodes);
-extern void *TreeSwitchDbid(void *dbid);
-extern int TreeTurnOff(int nid);
-extern int _TreeTurnOff(void *dbid, int nid);
-extern int TreeTurnOn(int nid);
-extern int _TreeTurnOn(void *dbid, int nid);
-extern int TreeVerify();
-extern int _TreeVerify(void *dbid);
-extern int TreeWait();
-extern int TreeWriteTree(char *tree, int shot);
-extern int _TreeWriteTree(void **dbid, char *tree, int shot);
-extern int TreeGetCurrentShotId(char *experiment);
-extern int TreeSetCurrentShotId(char *experiment, int shot);
+extern EXPORT char *TreeAbsPath(char *in);             /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeAbsPath( void *dbid, char *in);  /********** Use TreeFree(result) *****/
+extern EXPORT int TreeAddConglom(char *path, char *congtype, int *nid);
+extern EXPORT int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid);
+extern EXPORT int TreeAddNode(char *name, int *nid_ret, char usage);
+extern EXPORT int _TreeAddNode(void *dbid, char *name, int *nid_ret, char usage);
+extern EXPORT int TreeAddTag(int nid, char *tagnam);
+extern EXPORT int _TreeAddTag(void *dbid, int nid, char *tagnam);
+extern EXPORT int TreeCleanDatafile(char *tree, int shot);
+extern EXPORT int _TreeCleanDatafile(void **dbid, char *tree, int shot);
+extern EXPORT int TreeClose(char *tree, int shot);
+extern EXPORT int _TreeClose(void **dbid, char *tree, int shot);
+extern EXPORT int TreeCompressDatafile(char *tree, int shot);
+extern EXPORT int _TreeCompressDatafile(void **dbid, char *tree, int shot);
+extern EXPORT int TreeCreatePulseFile( int shot, int numnids, int *nids);
+extern EXPORT int _TreeCreatePulseFile(void *dbid, int shot, int numnids, int *nids);
+extern EXPORT int  TreeCreateTreeFiles(char *tree, int shot, int source_shot);
+extern EXPORT void TreeDeleteNodeExecute(void);
+extern EXPORT void _TreeDeleteNodeExecute(void *dbid);
+extern EXPORT int TreeDeleteNodeGetNid(int *nid);
+extern EXPORT int _TreeDeleteNodeGetNid(void *dbid, int *nid);
+extern EXPORT int TreeDeleteNodeInitialize(int nid, int *count, int reset);
+extern EXPORT int _TreeDeleteNodeInitialize(void *dbid, int nid, int *count, int reset);
+extern EXPORT int TreeDeletePulseFile(int shotid, int all_versions);
+extern EXPORT int _TreeDeletePulseFile(void *dbid, int shotid, int all_versions);
+extern EXPORT int TreeDoMethod(struct descriptor *nid, struct descriptor *method, ...);
+extern EXPORT int _TreeDoMethod(void *dbid, struct descriptor *nid, struct descriptor *method, ...);
+extern EXPORT int TreeDoMethod_HANDLER(int *sig_args, int *mech_args);
+extern EXPORT int TreeEditing();
+extern EXPORT int _TreeEditing(void *dbid);
+extern EXPORT int TreeEndConglomerate();
+extern EXPORT int _TreeEndConglomerate(void *dbid);
+extern EXPORT int TreeFindNode(char *path, int *nid);
+extern EXPORT int _TreeFindNode(void *dbid, char *path, int *nid);
+extern EXPORT int TreeFindNodeEnd(void **ctx);
+extern EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
+extern EXPORT char *TreeFindNodeTags(int nid, void **ctx);   /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);  /********** Use TreeFree(result) *****/
+extern EXPORT int TreeFindNodeWild(char *path, int *nid, void **ctx, int usage_mask);
+extern EXPORT int _TreeFindNodeWild(void *dbid, char *path, int *nid, void **ctx, int usage_mask);
+extern EXPORT void TreeFindTagEnd(void **ctx);
+extern EXPORT char *TreeFindTagWild(char *wild, int *nidout, void **search_ctx);
+extern EXPORT char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx);
+extern EXPORT int TreeFlushOff(int nid);
+extern EXPORT int _TreeFlushOff(void *dbid, int nid);
+extern EXPORT int TreeFlushReset(int nid);
+extern EXPORT int _TreeFlushReset(void *dbid, int nid);
+extern EXPORT void TreeFree(void *);
+extern EXPORT int TreeGetDbi(struct dbi_itm *itmlst);
+extern EXPORT int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
+extern EXPORT int TreeGetNci(int nid, struct nci_itm *itmlst);
+extern EXPORT int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
+extern EXPORT int TreeGetDefaultNid(int *nid);
+extern EXPORT int _TreeGetDefaultNid(void *dbid, int *nid);
+extern EXPORT char *TreeGetMinimumPath(int *def_nid, int nid); /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeGetMinimumPath(void *dbid, int *def_nid, int nid); /********** Use TreeFree(result) *****/
+extern EXPORT char *TreeGetPath(int nid); /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeGetPath(void *dbid, int nid); /********** Use TreeFree(result) *****/
+extern EXPORT int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
+extern EXPORT int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
+extern EXPORT int TreeGetStackSize();
+extern EXPORT int _TreeGetStackSize(void *dbid);
+extern EXPORT int TreeIsOn(int nid);
+extern EXPORT int _TreeIsOn(void *dbid, int nid);
+extern EXPORT int TreeIsOpen();
+extern EXPORT int _TreeIsOpen(void *dbid);
+extern EXPORT int TreeLink(struct descriptor *intree, struct descriptor *outtree);
+extern EXPORT int TreeMarkIncludes();
+extern EXPORT int TreeNodePresent(int *nid);
+extern EXPORT int TreeOpen(char *tree, int shot, int flags);
+extern EXPORT int _TreeOpen(void **dbid,char *tree, int shot, int flags);
+extern EXPORT int TreeOpenEdit(char *tree, int shot);
+extern EXPORT int _TreeOpenEdit(void **dbid, char *tree, int shot);
+extern EXPORT int TreeOpenNew(char *tree, int shot);
+extern EXPORT int _TreeOpenNew(void **dbid, char *tree, int shot);
+extern EXPORT int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
+extern EXPORT int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor, int utility_update);
+extern EXPORT int TreeQuitTree(char *tree, int shot);
+extern EXPORT int _TreeQuitTree(void **dbid, char *tree, int shot);
+extern EXPORT int TreeRemoveNodesTags(int nid);
+extern EXPORT int _TreeRemoveNodesTags(void *dbid, int nid);
+extern EXPORT int TreeRemoveTag(char *tagnam);
+extern EXPORT int _TreeRemoveTag(void *dbid, char *tagnam);
+extern EXPORT int TreeRenameNode(int nid, char *newnamedsc_ptr);
+extern EXPORT int _TreeRenameNode(void *dbid, int nid, char *newname);
+extern EXPORT void TreeRestoreContext(void *ctx);
+extern EXPORT void _TreeRestoreContext(void **dbid, void *ctx);
+extern EXPORT int TreeRundownTree(struct descriptor *treenam, int *shotid, int single_tree, int force_exit);
+extern EXPORT void *TreeSaveContext();
+extern EXPORT void *_TreeSaveContext(void *dbid);
+extern EXPORT int TreeSetNci(int nid, struct nci_itm *itmlst);
+extern EXPORT int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
+extern EXPORT int TreeSetDefault(char *path, int *nid);
+extern EXPORT int _TreeSetDefault(void *dbid, char *path, int *nid);
+extern EXPORT int TreeSetDefaultNid(int nid);
+extern EXPORT int _TreeSetDefaultNid(void *dbid, int nid);
+extern EXPORT int TreeSetNoSubtree(int nid);
+extern EXPORT int _TreeSetNoSubtree(void *dbid, int nid);
+extern EXPORT int TreeSetStackSize(int new_size);
+extern EXPORT int _TreeSetStackSize(void **dbid, int new_size);
+extern EXPORT int TreeSetSubtree(int nid);
+extern EXPORT int _TreeSetSubtree(void *dbid, int nid);
+extern EXPORT int TreeStartConglomerate(int numnodes);
+extern EXPORT int _TreeStartConglomerate(void *dbid, int numnodes);
+extern EXPORT void *TreeSwitchDbid(void *dbid);
+extern EXPORT int TreeTurnOff(int nid);
+extern EXPORT int _TreeTurnOff(void *dbid, int nid);
+extern EXPORT int TreeTurnOn(int nid);
+extern EXPORT int _TreeTurnOn(void *dbid, int nid);
+extern EXPORT int TreeVerify();
+extern EXPORT int _TreeVerify(void *dbid);
+extern EXPORT int TreeWait();
+extern EXPORT int TreeWriteTree(char *tree, int shot);
+extern EXPORT int _TreeWriteTree(void **dbid, char *tree, int shot);
+extern EXPORT int TreeGetCurrentShotId(char *experiment);
+extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
 
 #endif
 
