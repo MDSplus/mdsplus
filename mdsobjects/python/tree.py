@@ -1,4 +1,4 @@
-from MDSobjects.data import Data
+from MDSobjects.data import Data,makeData
 from threading import RLock,Thread
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -59,13 +59,14 @@ class Tree(object):
         for i in range(len(q)):
             exec str(q[0])
         try:
-            exec str('Data.setVar("_result",'+model+'(top).'+method+'(Data.getVar("__do_method_arg__")))')
-        except AttributeError:
-            Data.setVar("_result",0xfd180b0)
+            exec str('makeData('+model+'(top).'+method+'(Data.getTdiVar("__do_method_arg__"))).setTdiVar("_result")')
+        except AttributeError,e:
+            makeData(0xfd180b0).setTdiVar("_result")
         except Exception,e:
-            Data.setVar("_result",0)
+            print "Error doing %s on node %s" % (str(method),str(n))
+            makeData(0).setTdiVar("_result")
             raise
-        return Data.getVar("_result")
+        return Data.getTdiVar("_result")
     doMethod=staticmethod(doMethod)
 
     def restoreContext(self):
