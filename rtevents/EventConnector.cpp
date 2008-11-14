@@ -613,15 +613,19 @@ public:
 		switch(evMsg.mode)
 		{
 			case IS_ASYNCH_EVENT:
+				printf("RICEVUTO IS_ASYNCH_EVENT\n");
 				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufLen);
 				break;
 			case IS_SYNCH_EVENT:
+				printf("RICEVUTO IS_SYNCH_EVENT\n");
 				thread.start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr));
 				break;
 			case IS_EVENT_ACK:
+				printf("RICEVUTO IS_EVENT_ACK\n");
 				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId);
 				break;
 			case IS_EVENT_REGISTRATION:
+				printf("RICEVUTO IS_EVENT_REGISTRATION\n");
 				extEventManager->addExternalListener(evMsg.name, addr);
 				break;
 		}
@@ -644,6 +648,8 @@ static int numExtAddresses;
 
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
+printf("EVENT CALLBACK\n");
+
 	if(isSynch)
 	{
 		int numSems;
@@ -665,6 +671,8 @@ static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
+printf("REGISTER EVENT CALLBACK\n");
+	
 	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
 	char *msg = evMessage->serialize(msgLen, msgManager); 
