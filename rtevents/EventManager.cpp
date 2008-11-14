@@ -194,7 +194,10 @@ EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int
 		int nameLen = strlen(name)+1;
 		char *msg = new char[nameLen];
 		strcpy(msg, name);
-		eventManager->trigger("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager);
+
+		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
+		if(strcmp(name, "@@@EVENT_MANAGER@@@"))
+			eventManager->trigger("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager);
 		delete [] msg;
 		return handl;
 	}

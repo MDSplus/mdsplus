@@ -665,7 +665,7 @@ static void registerEventCallback(char *name, char *buf, int bufLen, bool isSync
 static void trim(char *line)
 {
 	int i;
-	for(i = strlen(line) - 1; i >= 0 && (line[i] == ' ' || line[i] == '\t'); i--);
+	for(i = strlen(line) - 1; i >= 0 && (line[i] == ' ' || line[i] == '\t' || line[i] == '\r' || line[i] == '\n'); i--);
 	line[i+1] = 0;
 }
 	
