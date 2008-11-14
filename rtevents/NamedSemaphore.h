@@ -70,7 +70,7 @@ public:
 	bool isZero()
 	{
 		int semCount;
-		int status = sem_getvalue(&semStruct, &semCount);
+		int status = sem_getvalue(semPtr, &semCount);
 		if(status)
 			throw new SystemException("Error triggering Notifier", errno);
 		return semCount == 0;

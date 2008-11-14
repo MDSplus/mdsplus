@@ -1,8 +1,5 @@
 #include "SharedMemManager.h"
 
-#ifdef CACCA
-
-
 #include "MessageManager.h"
 #include "TCPMessageManager.h"
 #include "Lock.h"
@@ -724,5 +721,3 @@ int main(int argc, char *argv[])
 	sem.initialize(0);
 	sem.wait(); //Suspend forever
 }
-
-#endif
