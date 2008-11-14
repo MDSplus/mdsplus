@@ -656,9 +656,17 @@ static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
+	EventMessage *evMessage = new EventMessage(name);
+	int msgLen;
+	char *msg = evMessage->serialize(msgLen, msgManager); 
 	for(int i = 0; i < numExtAddresses; i++)
 	{
-		extEventManager->addExternalListener(buf, extAddresses[i]);
+		try {
+			msgManager->sendMessage(extAddresses[i], msg, msgLen);
+		}catch(SystemException *exc)
+		{
+			printf("Error Sending registration message: %s\n", exc->what());
+		}
 	}
 }
 
