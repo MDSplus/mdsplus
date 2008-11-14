@@ -63,7 +63,7 @@ bool Notifier::waitTermination(Timeout &timeout)
 	if(synch)
 	{
 		//if(sem_timedwait(&replySem, &waitTimeout))
-		if(replySem.timedWait(timeout));
+		if(replySem.timedWait(timeout))
 			timeoutOccurred = true;
 	}
 	synch = false;
@@ -92,7 +92,6 @@ void Notifier::dispose(bool semaphoresOnly)
 //Check for orphan 
 bool Notifier::isOrphan()
 {
-	int semCount = watchdogSem.getValue();
-	return semCount != 0;
+	return !watchdogSem.isZero();
 }
 

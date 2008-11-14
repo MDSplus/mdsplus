@@ -109,6 +109,7 @@ void EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMe
 }
 bool EventManager::triggerAndWait(char *eventName, Timeout &timeout, char *buf, int size, SharedMemManager *memManager)
 {
+	bool isTimeout = false;
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
@@ -117,10 +118,11 @@ bool EventManager::triggerAndWait(char *eventName, Timeout &timeout, char *buf, 
 			currHandler->setData(buf, size, memManager);
 			if(currHandler->isCatchAll())
 				currHandler->setName(eventName, memManager);
-			currHandler->triggerAndWait(timeout);
+			isTimeout |= currHandler->triggerAndWait(timeout);
 		}
 		currHandler = currHandler->getNext();
 	}
+	return isTimeout;
 }
 
 void EventManager::clean(int milliSecs, SharedMemManager *memManager)
@@ -184,15 +186,16 @@ static void checkEventManager()
 		eventLock.dispose();
 	}
 }
-extern "C" void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
 {
 	try {
 		checkEventManager();
 		void *handl = eventManager->addListener(name, new Thread, callback, &memManager);
 		int nameLen = strlen(name)+1;
-		char msg[nameLen];
+		char *msg = new char[nameLen];
 		strcpy(msg, name);
 		eventManager->trigger("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager);
+		delete [] msg;
 		return handl;
 	}
 	catch(SystemException *exc)
@@ -201,7 +204,7 @@ extern "C" void * EventAddListener(char *name,  void (*callback)(char *, char *,
 		return NULL;
 	}
 }
-extern "C" void EventRemoveListener(void *eventHandler)
+EXPORT void EventRemoveListener(void *eventHandler)
 {
 	if(!eventManager)
 		return;
@@ -215,7 +218,7 @@ extern "C" void EventRemoveListener(void *eventHandler)
 	
 }
 
-extern "C" int EventTrigger(char *name, char *buf, int size)
+EXPORT  int EventTrigger(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();
@@ -229,7 +232,7 @@ extern "C" int EventTrigger(char *name, char *buf, int size)
 	}
 	
 }
-extern "C" int EventTriggerAndWait(char *name, char *buf, int size)
+EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();
@@ -243,7 +246,7 @@ extern "C" int EventTriggerAndWait(char *name, char *buf, int size)
 	}
 }
 
-extern "C" int EventClean()
+EXPORT void EventClean()
 {
 	try {
 		checkEventManager();

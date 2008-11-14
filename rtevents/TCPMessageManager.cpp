@@ -1,3 +1,4 @@
+#include "SharedMemManager.h"
 #include "TCPMessageManager.h"
 #include "TCPMessageSender.h"
 #include "IPAddress.h"
@@ -62,13 +63,17 @@ void TCPServer::run(void *arg)
 	{
 		struct sockaddr clientAddr;
 		memset(&clientAddr, 0, sizeof(clientAddr));
+#ifdef HAVE_WINDOWS_H
+		int addrSize = sizeof(clientAddr);
+		int newSocket = accept(sock, &clientAddr, &addrSize);
+		((sockaddr_in *)&clientAddr)->sin_port = htonl(0);
+		printf("New Connection received\n");
+		if(sock == INVALID_SOCKET)
+#else
 		socklen_t addrSize = sizeof(clientAddr);
 		int newSocket = accept(sock, &clientAddr, &addrSize);
 		((sockaddr_in *)&clientAddr)->sin_port = htonl(0);
 		printf("New Connection received\n");
-#ifdef HAVE_WINDOWS_H
-		if(sock == INVALID_SOCKET)
-#else
 		if(newSocket == -1)
 #endif
 		{   

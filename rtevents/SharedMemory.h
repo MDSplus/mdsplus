@@ -1,6 +1,8 @@
 #ifndef SHAREDMEMORY_H_
 #define SHAREDMEMORY_H_
-
+#ifdef HAVE_WINDOWS_H
+#include "WindowsSharedMemory.h"
+#else
 #include <sys/ipc.h>
 #include <sys/shm.h>
 # include <sys/types.h>
@@ -40,5 +42,6 @@ public:
 		
 	}
 };
+#endif
 #endif
 

@@ -1,5 +1,4 @@
 #include "EventHandler.h"
-#include <unistd.h>
 
 void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 {

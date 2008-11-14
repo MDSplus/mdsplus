@@ -1,10 +1,14 @@
 #ifndef IPADDRESS_H_
 #define IPADDRESS_H_
+#include "NetworkAddress.h"
+#include <string.h>
 
 #ifdef HAVE_WINDOWS_H
 #include <winsock.h>
 #include <windows.h>
+#include <stdio.h>
 #else
+
 #ifdef HAVE_VXWORKS_H
 #include <vxWorks.h>
 #include <sockLib.h>
@@ -19,9 +23,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #endif
-#endif
 
-#include <string.h>
+#endif
 
 
 class IPAddress:public NetworkAddress
@@ -114,7 +117,11 @@ public:
 	{
 		sin = *inSin;
 		sock = inSock;
+#ifdef HAVE_WINDOWS_H
+		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#else
 		struct hostent *host = gethostbyaddr(&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#endif
 		if(host && host->h_name)
 		{
 			strcpy(ipAddress, host->h_name);

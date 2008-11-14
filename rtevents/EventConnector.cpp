@@ -1,3 +1,9 @@
+#include "SharedMemManager.h"
+
+#ifdef CACCA
+
+
+#include "MessageManager.h"
 #include "TCPMessageManager.h"
 #include "Lock.h"
 #include "UnnamedSemaphore.h"
@@ -681,7 +687,7 @@ static void readExtAddresses(char *fileName)
 	char line[512];
 	fgets(line, 512, confFile);
 	trim(line);
-	if(!strcmp(line, "TCP") || !strcmp(line, "tcp"));
+	if(!strcmp(line, "TCP") || !strcmp(line, "tcp"))
 	{
 
 		int addrIdx = 0;
@@ -719,3 +725,4 @@ int main(int argc, char *argv[])
 	sem.wait(); //Suspend forever
 }
 
+#endif

@@ -1,12 +1,14 @@
 #ifndef RELATIVEPOINTER_H_
 #define RELATIVEPOINTER_H_
-#include <mdstypes.h>
 #ifndef NULL
 #define NULL 0
 #endif
 //Class RelativePointer handles memory references stored as a 64 bit offset from the 
 //actual, process-specific, address of the current instance
-
+#ifndef HAVE_WINDOWS_H
+typedef long long _int64;
+typedef unsigned long long _int64u;
+#endif
 class RelativePointer
 {
 	_int64 offset;

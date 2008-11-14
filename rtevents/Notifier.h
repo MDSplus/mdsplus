@@ -66,8 +66,7 @@ public:
 		while(true)
 		{
 			//if(sem_wait(&ntf->triggerSem))
-			if(ntf->triggerSem.wait())
-				printf("ERROR IN NOTIFIED WAIT SEMAPHORE %x\n", &ntf->triggerSem);
+			ntf->triggerSem.wait();
 			if(disposed)
 			{
 				printf("Notifier exited\n");
@@ -98,8 +97,7 @@ public:
 		while(true)
 		{
 			//if(sem_wait(&ntf->watchdogSem))
-			if(ntf->watchdogSem.wait())
-				printf("ERROR IN WATCHDOG NOTIFIED WAIT SEMAPHORE %x\n", &ntf->triggerSem);
+			ntf->watchdogSem.wait();
 			if(disposed)
 			{
 				printf("Watchdog Notified exited\n");

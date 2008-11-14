@@ -1,5 +1,8 @@
 #ifndef DELAY_H_
 #define DELAY_H_
+#ifdef HAVE_WINDOWS_H
+#include "WindowsDelay.h"
+#else
 #include <time.h>
 
 class Delay
@@ -19,4 +22,5 @@ public:
 			printf("Error in nanosleep\n");
 	}
 };
+#endif
 #endif /*DELAY_H_*/

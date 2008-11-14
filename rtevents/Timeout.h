@@ -12,6 +12,7 @@ public:
 	}
 	long getSecs(){return secs;}	
 	long getNanoSecs(){return nanoSecs;}
+	long getTotMilliSecs(){return secs * 1000 + nanoSecs / 1000000;}
 };
 
 

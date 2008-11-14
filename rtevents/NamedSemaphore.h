@@ -1,6 +1,8 @@
 #ifndef NAMEDSEMAPHORE_H_
 #define NAMEDSEMAPHORE_H_
-
+#ifdef HAVE_WINDOWS_H
+#include "WindowsNamedSemaphore.h"
+#else
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -41,7 +43,7 @@ public:
 	
 	int wait() //Return 0 if successful
 	{
-		sem_wait(semPtr);
+		return sem_wait(semPtr);
 	}
 	int timedWait(Timeout &timeout)
 	{
@@ -65,13 +67,13 @@ public:
 		sem_post(semPtr);
 	}
 	
-	int getValue()
+	bool isZero()
 	{
 		int semCount;
-		int status = sem_getvalue(semPtr, &semCount);
+		int status = sem_getvalue(&semStruct, &semCount);
 		if(status)
 			throw new SystemException("Error triggering Notifier", errno);
-		return semCount;
+		return semCount == 0;
 	}
 	
 	void dispose()
@@ -83,5 +85,5 @@ public:
 };
 
 
-
+#endif
 #endif /*NAMEDSEMAPHORE_H_*/

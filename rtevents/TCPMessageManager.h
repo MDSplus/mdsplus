@@ -1,9 +1,9 @@
 #ifndef TCPMESSAGEMANAGER_H_
 #define TCPMESSAGEMANAGER_H_
-#include "MessageManager.h"
 #include "IPAddress.h"
 #include "Runnable.h"
 #include "Thread.h"
+#include "MessageManager.h"
 
 class TCPServer:public Runnable
 {

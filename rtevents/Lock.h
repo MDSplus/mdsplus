@@ -6,7 +6,8 @@
 //Class Lock handles a critical section using a unnamed semaphore
 class Lock
 {
-		UnnamedSemaphore sem;
+
+	UnnamedSemaphore sem;
 	
 public:
 	//Initialize the semaphore structure. If the semaphore is shared among processes

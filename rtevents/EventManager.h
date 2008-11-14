@@ -3,6 +3,12 @@
 #include "EventHandler.h"
 #include "Lock.h"
 
+#ifdef HAVE_WINDOWS_H
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
 class EventRunnable;
 //Class EventManager represents the top manager for events. It is expected that a shared memory
 //segment will be dedicated to this instance, which will therefore reside at the beginning of the
@@ -68,9 +74,9 @@ public:
 #define EVENT_ID 2 //Used in global lock for event structure initialization
 #define EVENT_SIZE 10000 //Total size of shared memory used for event management
 
-extern "C" void *EventAddListener(char *name,  void (*callback)(char *, char *, int, bool));
-extern "C" void EventRemoveListener(void *eventHandler);
-extern "C" int EventTrigger(char *name, char *buf, int size);
-extern "C" int EventTriggerAndWait(char *name, char *buf, int size);
-extern "C" int EventClean();
+extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, bool));
+extern "C" EXPORT void EventRemoveListener(void *eventHandler);
+extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
+extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);
+extern "C" EXPORT void EventClean();
 #endif /*EVENTMANAGER_H_*/

@@ -1,5 +1,8 @@
 #ifndef UNNAMEDSEMAPHORE_H_
 #define UNNAMEDSEMAPHORE_H_
+#ifdef HAVE_WINDOWS_H
+#include "WindowsUnnamedSemaphore.h"
+#else
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
@@ -20,11 +23,9 @@ public:
 			throw new SystemException("Error initializing Semaphore", errno);
 	}
 	
-	int  wait() 
+	void  wait() 
 	{
-		int status = sem_wait(&semStruct);
-		if(status != 0)
-			throw new SystemException("Error waiting Semaphore", errno);
+		sem_wait(&semStruct);
 	}
 	
 	int timedWait(Timeout &timeout)
@@ -52,13 +53,13 @@ public:
 			throw new SystemException("Error waiting Semaphore", errno);
 	}
 	
-	int getValue()
+	bool isZero()
 	{
 		int semCount;
 		int status = sem_getvalue(&semStruct, &semCount);
 		if(status)
 			throw new SystemException("Error triggering Notifier", errno);
-		return semCount;
+		return semCount == 0;
 	}
 	
 	void dispose()
@@ -69,5 +70,5 @@ public:
 	}
 };
 
-
+#endif
 #endif /*UNNAMEDSEMAPHORE_H_*/

@@ -106,7 +106,6 @@ void AllocationManager::initialize(int size)
 		int size = (remainder == 0)?inSize:inSize + 4 - remainder;
 		FreeDescriptor *currDsc, *prevDsc;
 		FreeDescriptor *freeDscHead = reinterpret_cast<FreeDescriptor *>(freeListHead.getAbsAddress());
-		char *currPtr; 
 
 		//Find corresponding FreeDescriptor
 		for(currDsc = prevDsc = freeDscHead; currDsc && currDsc->getStartAddr() < addr; currDsc = currDsc->getNext())

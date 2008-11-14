@@ -2,17 +2,18 @@
 #define SHAREDMEMMANAGER_H_
 
 #include "Lock.h"
-#include "GlobalLock.h"
 #include "SharedMemory.h"
 #include "AllocationManager.h"
+#include "GlobalLock.h"
 
-//Global Lock id used in ShaedMemManager Initialization
+//Global Lock id used in SharedMemManager Initialization
 #define MEM_MANAGER_LOCK 1
 
 class SharedMemManager
 {
 	//globalLock is used to guarantree mutual exclusion in memory initialization
 	//or mapping.
+	
 	GlobalLock globalLock;
 	//Mutual exclusion in buffer allocation-deallocation is instead ensured by 
 	//a shared instance of Lock, stored in the initial section of the shared memory.
