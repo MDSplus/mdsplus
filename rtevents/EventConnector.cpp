@@ -424,6 +424,7 @@ public:
 		{
 			if(!strcmp(name, currEvent->eventName))
 				break;
+			currEvent = currEvent->nxt;
 		}
 		return currEvent;
 	}
