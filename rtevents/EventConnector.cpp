@@ -716,6 +716,7 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 	readExtAddresses(argv[1]);
+	EventReset();
 	extEventManager = new ExternalEventManager();
 	EventMessageReceiver messageReceiver(extEventManager, msgManager);
 

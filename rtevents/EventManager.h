@@ -79,4 +79,5 @@ extern "C" EXPORT void EventRemoveListener(void *eventHandler);
 extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
 extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);
 extern "C" EXPORT void EventClean();
+extern "C" EXPORT void EventReset();
 #endif /*EVENTMANAGER_H_*/

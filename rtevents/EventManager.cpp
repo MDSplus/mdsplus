@@ -186,6 +186,23 @@ static void checkEventManager()
 		eventLock.dispose();
 	}
 }
+
+
+EXPORT void EventReset()
+{
+	GlobalLock eventLock;
+	eventLock.initialize(EVENT_ID);
+	eventLock.lock();
+	bool firstCreated = memManager.initialize(EVENT_ID, EVENT_SIZE);
+	memManager.reset();
+	eventManager = (EventManager *)memManager.allocate(sizeof(EventManager));
+	eventManager->initialize();
+	eventLock.unlock();
+	eventLock.dispose();
+}
+
+
+
 EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
 {
 	try {
