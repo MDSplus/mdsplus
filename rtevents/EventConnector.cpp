@@ -9,6 +9,7 @@
 #include "Thread.h"
 #include <stdio.h>
 
+static void eventCallback(char *name, char *buf, int bufLen, bool isSynch);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
 //internal listener exosts) for which another
@@ -516,11 +517,18 @@ public:
 	}
 	void addExternalListener(char *name, NetworkAddress *addr)
 	{
+		bool isNewEvent = false;
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
+		{
 			extEvent = newEvent(name);
+			isNewEvent = true;
+		}
 		extEvent->addExternalListener(addr);
+		if(isNewEvent)
+			EventAddListener(name, eventCallback);
+
 		lock.unlock();
 	}
 	//Called upon connection termination

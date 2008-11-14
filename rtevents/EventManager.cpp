@@ -203,7 +203,7 @@ EXPORT void EventReset()
 
 
 
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
+EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool))
 {
 	try {
 		checkEventManager();
@@ -216,6 +216,19 @@ EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int
 		if(strcmp(name, "@@@EVENT_MANAGER@@@"))
 			eventManager->trigger("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager);
 		delete [] msg;
+		return handl;
+	}
+	catch(SystemException *exc)
+	{
+		printf("%s\n", exc->what());
+		return NULL;
+	}
+}
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
+{
+	try {
+		checkEventManager();
+		void *handl = eventManager->addListener(name, new Thread, callback, &memManager);
 		return handl;
 	}
 	catch(SystemException *exc)

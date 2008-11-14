@@ -75,6 +75,7 @@ public:
 #define EVENT_SIZE 10000 //Total size of shared memory used for event management
 
 extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, bool));
+extern "C" EXPORT void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool));
 extern "C" EXPORT void EventRemoveListener(void *eventHandler);
 extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
 extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);
