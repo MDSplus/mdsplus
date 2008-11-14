@@ -656,7 +656,7 @@ static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
-	EventMessage *evMessage = new EventMessage(name);
+	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
 	char *msg = evMessage->serialize(msgLen, msgManager); 
 	for(int i = 0; i < numExtAddresses; i++)
