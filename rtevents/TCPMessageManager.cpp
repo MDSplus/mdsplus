@@ -209,3 +209,4 @@ unsigned int TCPMessageManager::toNative(unsigned int n)
 }
 
 
+bool IPAddress::initialized;

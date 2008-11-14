@@ -299,7 +299,6 @@ public:
 		waitIds = new unsigned int[numListeners];
 		currListener = extListenerHead;
 		int semIdx = 0;
-		unsigned int waitId;
 		while(currListener)
 		{
 			addExternalPending(currListener->addr, retSems[semIdx], waitIds[semIdx]);
@@ -434,6 +433,7 @@ public:
 		ExternalEvent *newEv = new ExternalEvent(name);
 		newEv->nxt = extEventHead;
 		extEventHead = newEv;
+		return newEv;
 	}
 	
 	bool isExternalEvent(char *name, char *buf, int size)
@@ -635,9 +635,6 @@ static int numExtAddresses;
 
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
-	UnnamedSemaphore *sem;
-	unsigned int waitId;
-	
 	if(isSynch)
 	{
 		int numSems;
@@ -674,7 +671,6 @@ static void trim(char *line)
 	
 static void readExtAddresses(char *fileName)
 {
-	int i;
 	FILE *confFile = fopen(fileName, "r");
 	if(!confFile)
 	{
@@ -720,4 +716,5 @@ int main(int argc, char *argv[])
 	UnnamedSemaphore sem;
 	sem.initialize(0);
 	sem.wait(); //Suspend forever
+	return 0;
 }
