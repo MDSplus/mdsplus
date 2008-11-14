@@ -399,6 +399,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "mdsobjects"=.\mdsobjects\cpp\mdsobjects.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "mdsshr"=.\mdsshr\mdsshr.dsp - Package Owner=<4>
 
 Package=<5>
@@ -434,6 +446,18 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name mdsipshr
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "rtevents"=.\rtevents\rtevents.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
