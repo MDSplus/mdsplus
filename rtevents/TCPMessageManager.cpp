@@ -69,7 +69,7 @@ void TCPServer::run(void *arg)
 		printf("ATTENDO IN ACCEPT\n");
 		int newSocket = accept(sock, &clientAddr, &addrSize);
 		printf("RICEVUTO ACCEPT\n");
-		((sockaddr_in *)&clientAddr)->sin_port = htonl(port);
+		((sockaddr_in *)&clientAddr)->sin_port = htons(port);
 		printf("New Connection received\n");
 		if(sock == INVALID_SOCKET)
 #else

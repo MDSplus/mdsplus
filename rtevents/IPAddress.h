@@ -117,7 +117,8 @@ public:
 	IPAddress(IPAddress *inAddr)
 	{
 		memcpy(&sin, &inAddr->sin, sizeof(sin));
-		sin.sin_port = port = inAddr->port;
+		port = inAddr->port;
+		sin.sin_port = htons(port);
 		ipAddress[0] = 0;
 		addressStr[0] = 0;
 		sock = inAddr->sock;
