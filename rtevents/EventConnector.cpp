@@ -672,9 +672,6 @@ printf("EVENT CALLBACK\n");
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
 printf("REGISTER EVENT CALLBACK\n");
-	
-	if(!strcmp(name, "@@@EVENT_MANAGER@@@"))
-		return;
 
 	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
@@ -688,6 +685,7 @@ printf("REGISTER EVENT CALLBACK\n");
 			printf("Error Sending registration message: %s\n", exc->what());
 		}
 	}
+	delete evMessage;
 }
 
 static void trim(char *line)
