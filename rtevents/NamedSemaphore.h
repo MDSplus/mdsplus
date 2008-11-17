@@ -41,9 +41,13 @@ public:
 			throw new SystemException("Error initializing Named Semaphore", errno);
 	}
 	
-	int wait() //Return 0 if successful
+	void wait() //Return 0 if successful
 	{
-		return sem_wait(semPtr);
+		while(status = sem_wait(semPtr))
+		{
+			if(errno != EINTR)
+				throw new SystemException("Error waiting semaphore", errno);
+		}
 	}
 	int timedWait(Timeout &timeout)
 	{

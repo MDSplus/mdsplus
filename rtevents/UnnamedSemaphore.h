@@ -25,7 +25,12 @@ public:
 	
 	void  wait() 
 	{
-		sem_wait(&semStruct);
+		int status;
+		while(status = sem_wait(&semStruct))
+		{
+			if(errno != EINTR)
+				throw new SystemException("Error waiting semaphore", errno);
+		}
 	}
 	
 	int timedWait(Timeout &timeout)
