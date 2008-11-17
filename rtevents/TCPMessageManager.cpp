@@ -67,13 +67,13 @@ void TCPServer::run(void *arg)
 #ifdef HAVE_WINDOWS_H
 		int addrSize = sizeof(clientAddr);
 		int newSocket = accept(sock, &clientAddr, &addrSize);
-		((sockaddr_in *)&clientAddr)->sin_port = htonl(0);
+		((sockaddr_in *)&clientAddr)->sin_port = htonl(port);
 		printf("New Connection received\n");
 		if(sock == INVALID_SOCKET)
 #else
 		socklen_t addrSize = sizeof(clientAddr);
 		int newSocket = accept(sock, &clientAddr, &addrSize);
-		((sockaddr_in *)&clientAddr)->sin_port = htonl(0);
+		((sockaddr_in *)&clientAddr)->sin_port = htonl(port);
 		printf("New Connection received\n");
 		if(newSocket == -1)
 #endif
@@ -169,7 +169,7 @@ bool TCPMessageManager::connectReceiver(NetworkAddress *address, MessageReceiver
 	//Start a new Server thread listening to incoming connections.
 	//Find the first free (TCPMessageManager can handle several ports)
 	Thread *thread = new Thread();
-	TCPServer *tcpServer = new TCPServer(this, tcpSocket);
+	TCPServer *tcpServer = new TCPServer(this, tcpSocket, port);
 	thread->start(tcpServer, receiver);
 	return true;
 }

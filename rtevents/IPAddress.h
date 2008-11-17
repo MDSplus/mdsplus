@@ -115,7 +115,8 @@ public:
 	}
 	IPAddress(IPAddress *inAddr)
 	{
-		sin = inAddr->sin;
+		memcpy(&sin, &inAddr->sin, sizeof(sin));
+		sin.sin_port = port = inAddr->port;
 #ifdef HAVE_WINDOWS_H
 		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
 #else

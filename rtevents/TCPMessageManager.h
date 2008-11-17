@@ -8,13 +8,15 @@
 class TCPServer:public Runnable
 {
 	int sock;
+	int port;
 	MessageManager *manager;
 	Thread thread;
 
 public:
-	TCPServer(MessageManager *manager, int sock)
+	TCPServer(MessageManager *manager, int sock, int port)
 	{
 		this->sock = sock;
+		this->port = port;
 		this->manager = manager;
 	}
 	void run(void *args);
