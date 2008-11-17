@@ -43,6 +43,7 @@ public:
 	
 	void wait() //Return 0 if successful
 	{
+		int status;
 		while(status = sem_wait(semPtr))
 		{
 			if(errno != EINTR)
