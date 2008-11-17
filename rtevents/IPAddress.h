@@ -30,7 +30,8 @@
 class IPAddress:public NetworkAddress
 {
 	friend class TCPMessageManager;
-	
+
+public:	
 	char addressStr[512];
 	static bool initialized;
 	int sock;
@@ -117,33 +118,17 @@ public:
 	{
 		memcpy(&sin, &inAddr->sin, sizeof(sin));
 		sin.sin_port = port = inAddr->port;
-#ifdef HAVE_WINDOWS_H
-		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#else
-		struct hostent *host = gethostbyaddr(&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#endif
-		if(host && host->h_name)
-		{
-			strcpy(ipAddress, host->h_name);
-			sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
-		}
-		sock = -1;
+		ipAddress[0] = 0;
+		addressStr[0] = 0;
+		sock = inAddr->sock;
 	}
 	IPAddress(struct sockaddr_in *inSin, int inPort, int inSock) 
 	{
 		sin = *inSin;
 		sock = inSock;
 		port = inPort;
-#ifdef HAVE_WINDOWS_H
-		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#else
-		struct hostent *host = gethostbyaddr(&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-#endif
-		if(host && host->h_name)
-		{
-			strcpy(ipAddress, host->h_name);
-			sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
-		}
+		ipAddress[0] = 0;
+		addressStr[0] = 0;
 	}
 
 	virtual bool equals(NetworkAddress *addr)
@@ -154,6 +139,19 @@ public:
 	
 	virtual char *getAddressString()
 	{
+		if(!ipAddress[0])
+		{
+#ifdef HAVE_WINDOWS_H
+			struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#else
+			struct hostent *host = gethostbyaddr(&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#endif
+			if(host && host->h_name)
+			{
+				strcpy(ipAddress, host->h_name);
+				sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
+			}
+		}
 		return addressStr;
 	}
 	virtual void setAddressString(char *addrStr)

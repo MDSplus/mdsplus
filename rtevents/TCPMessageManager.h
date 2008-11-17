@@ -30,7 +30,7 @@ public:
 	TCPHandler(MessageManager *manager, IPAddress *addr)
 	{
 		this->manager = manager;
-		this->addr = addr;
+		this->addr = new IPAddress(addr);
 	}
 	void run(void *args);
 };

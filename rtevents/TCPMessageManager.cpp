@@ -28,7 +28,7 @@ void TCPHandler::run(void *arg)
 //TCP Message protocol: length (4 bytes), message (length bytes) 
 
 	MessageReceiver *msgReceiver = (MessageReceiver *)arg;
-	IPAddress currAddr(addr);
+	IPAddress currAddr(&addr->sin, addr->port, -1);
 	while(true)
 	{
 		int len;
@@ -66,7 +66,9 @@ void TCPServer::run(void *arg)
 		memset(&clientAddr, 0, sizeof(clientAddr));
 #ifdef HAVE_WINDOWS_H
 		int addrSize = sizeof(clientAddr);
+		printf("ATTENDO IN ACCEPT\n");
 		int newSocket = accept(sock, &clientAddr, &addrSize);
+		printf("RICEVUTO ACCEPT\n");
 		((sockaddr_in *)&clientAddr)->sin_port = htonl(port);
 		printf("New Connection received\n");
 		if(sock == INVALID_SOCKET)
