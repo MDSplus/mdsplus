@@ -12,11 +12,11 @@ def makeArray(value):
     if isinstance(value,tuple) | isinstance(value,list):
         return makeArray(numpy.array(value))
     if isinstance(value,numpy.ndarray):
-        if isinstance(value[0],numpy.string_):
+        if str(value.dtype)[0:2] == '|S':
             return StringArray(value)
-        if isinstance(value[0],numpy.bool_):
-            return makeArray(value.__array__(numpy.int8))
-        exec 'ans='+value.reshape(value.size)[0].__class__.__name__.capitalize()+'Array(value)'
+        if str(value.dtype) == 'bool':
+            return makeArray(value.__array__(numpy.uint8))
+        exec 'ans='+str(value.dtype).capitalize()+'Array(value)'
         return ans
     if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
         return makeArray(numpy.array(value).reshape(1))
@@ -83,131 +83,12 @@ class Array(Data):
     def __deepcopy__(self,memo=None):
         return self.__copy__()
 
-    def __getitem__(self,itm):
-        return self._binop('__getitem__',itm)
-    getElementAt=__getitem__
+    def getElementAt(self,itm):
+        return makeData(self._value[itm])
 
-    def __setitem__(self,i,y):
-        return self._triop('__setitem__',i,y)
-    setElementAt=__setitem__
+    def setElementAt(self,i,y):
+        self._value[i]=y
     
-    def __hex__(self):
-        return self._unop('__hex__')
-
-    def __invert__(self):
-        return self._unop('__invert__')
-
-    def __lshift__(self,y):
-        return self._binop('__lshift__',y)
-
-    def __mod__(self,y):
-        return self._binop('__mod__',y)
-
-    def __mul__(self,y):
-        return self._binop('__mul__',y)
-
-    def __neg__(self):
-        return self._unop('__neg__')
-
-    def __nonzero__(self,y):
-        return self._unop('__nonzero__')
-
-    def __oct__(self):
-        return self._unop('__oct__')
-
-    def __or__(self,y):
-        return self._binop('__or__')
-
-    def __pos__(self):
-        return self._unop('__pos__')
-
-    def __pow__(self,y,*z):
-        if z:
-            return self._triop('__pow__',y,z[0])
-        else:
-            return self._binop('__pow__',y)
-
-    def __rand__(self,y):
-        return self._binop('__rand__',y)
-
-    def __rdiv__(self,y):
-        return self._binop('__rdiv__',y)
-
-    def __rdivmod(self,y):
-        return self._binop('__rdivmod__',y)
-
-    def __reduce__(self):
-        return self._unop('__reduce__')
-
-    def __repr__(self):
-        return self._value.__repr__()
-
-    def __rfloordiv__(self,y):
-        return self._binop('__rfloordiv__',y)
-
-    def __rlshift__(self,y):
-        return self._binop('__rlshift__',y)
-
-    def __rmod__(self,y):
-        return self._binop('__rmod__',y)
-
-    def __rmul__(self,y):
-        return self._binop('__rmul__',y)
-
-    def __ror__(self,y):
-        return self._binop('__ror__',y)
-
-    def __rpow__(self,y,*z):
-        if z:
-            return self._triop('__rppow__',y,z[0])
-        else:
-            return self._binop('__rpow__',y)
-
-    def __rrshift__(self,y):
-        return self._binop('__rrshift__',y)
-
-    def __rshift__(self,y):
-        return self._binop('__rshift__',y)
-
-    def __rsub__(self,y):
-        return self._binop('__rsub__',y)
-
-    def __rtruediv(self,y):
-        return self._binop('__rtruediv__',y)
-
-    def __rxor__(self,y):
-        return self._binop('__rxor__',y)
-
-    def __setstate__(self):
-        return self._unop('__setstate__')
-
-    def __sub__(self,y):
-        return self._binop('__sub__',y)
-
-    def __truediv__(self,y):
-        return self._binop('__truediv__',y)
-
-    def __xor__(self,y):
-        return self._binop('__xor__',y)
-    
-    def __eq__(self,y):
-        return self._binop('__eq__',y)
-
-    def __ge__(self,y):
-        return self._binop('__ge__',y)
-
-    def __gt__(self,y):
-        return self._binop('__gt__',y)
-
-    def __le__(self,y):
-        return self._binop('__le__',y)
-
-    def __lt__(self,y):
-        return self._binop('__lt__',y)
-
-    def __ne__(self,y):
-        return self._binop('__ne__',y)
-
     def all(self):
         return self._unop('all')
 

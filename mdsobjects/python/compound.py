@@ -28,16 +28,16 @@ class Compound(Data):
         return self._fieldValue
 
     def getArguments(self):
-        return self[self._argOffset:]
+        return self.args[self._argOffset:]
 
     def getArgumentAt(self,n):
-        return self[self._argOffset+n]
+        return self.args[self._argOffset+n]
 
     def setArguments(self,args):
-        self[self._argOffset:]=args
+        self.args[self._argOffset:]=args
 
     def setArgumentAt(self,n,arg):
-        self[self._argOffset+n]=arg
+        self.args[self._argOffset+n]=arg
 
     def __getattr__(self,name,*args):
         if name in self.__dict__:
@@ -95,13 +95,13 @@ class Compound(Data):
         return len(self.args)
 
     def getDescAt(self,num):
-        return self[num]
+        return self.args[num]
 
     def __getitem__(self,num):
         return self.args[num]
 
     def setDescAt(self,num,value):
-        self[num]=value
+        self.args[num]=value
 
     def __setitem__(self,num,value):
         if isinstance(num,slice):
@@ -293,6 +293,9 @@ class Signal(Compound):
         else:
             return makeData(None)
 
+    def __getitem__(self,idx):
+        return Data.execute('$[$]',self,idx)
+    
     def getDimension(self,idx):
         return self[2+idx]
 
