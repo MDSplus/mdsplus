@@ -126,6 +126,7 @@ public:
 			strcpy(ipAddress, host->h_name);
 			sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
 		}
+		sock = -1;
 	}
 	IPAddress(struct sockaddr_in *inSin, int inSock) 
 	{
