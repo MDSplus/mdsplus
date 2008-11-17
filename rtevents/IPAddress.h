@@ -129,10 +129,11 @@ public:
 		}
 		sock = -1;
 	}
-	IPAddress(struct sockaddr_in *inSin, int inSock) 
+	IPAddress(struct sockaddr_in *inSin, int inPort, int inSock) 
 	{
 		sin = *inSin;
 		sock = inSock;
+		port = inPort;
 #ifdef HAVE_WINDOWS_H
 		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
 #else

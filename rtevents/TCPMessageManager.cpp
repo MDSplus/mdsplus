@@ -82,7 +82,7 @@ void TCPServer::run(void *arg)
 			return;
 		}
 		
-		TCPHandler *tcpHandler = new TCPHandler(manager, new IPAddress((struct sockaddr_in *)&clientAddr, newSocket));
+		TCPHandler *tcpHandler = new TCPHandler(manager, new IPAddress((struct sockaddr_in *)&clientAddr, port, newSocket));
 		thread.start((Runnable *)tcpHandler, (void *)msgReceiver);
 	}
 }
