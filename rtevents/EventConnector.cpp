@@ -673,6 +673,9 @@ static void registerEventCallback(char *name, char *buf, int bufLen, bool isSync
 {
 printf("REGISTER EVENT CALLBACK\n");
 	
+	if(!strcmp(name, "@@@EVENT_MANAGER@@@"))
+		return;
+
 	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
 	char *msg = evMessage->serialize(msgLen, msgManager); 
