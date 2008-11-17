@@ -76,137 +76,7 @@ class Scalar(Data):
                 'Float32':DTYPE_FS,
                 'Float64':DTYPE_FT}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
-    
-    def __array__(self):
-        raise TypeError,'__array__ not yet supported'
 
-    def __copy__(self):
-        return type(self)(self._value)
-
-    def __deepcopy__(self,memo=None):
-        return self.__copy__()
-
-    def __hex__(self):
-        return self._unop('__hex__')
-
-    def __invert__(self):
-        return self._unop('__invert__')
-
-    def __lshift__(self,y):
-        return self._binop('__lshift__',y)
-
-    def __mod__(self,y):
-        return self._binop('__mod__',y)
-
-    def __mul__(self,y):
-        return self._binop('__mul__',y)
-
-    def __neg__(self):
-        return self._unop('__neg__')
-
-    def __nonzero__(self):
-        return self.value.__nonzero__()
-
-    def __oct__(self):
-        return self._unop('__oct__')
-
-    def __or__(self,y):
-        return self._binop('__or__')
-
-    def __pos__(self):
-        return self._unop('__pos__')
-
-    def __pow__(self,y,*z):
-        if z:
-            return self._triop('__pow__',y,z[0])
-        else:
-            return self._binop('__pow__',y)
-
-    def __rand__(self,y):
-        return self._binop('__rand__',y)
-
-    def __rdiv__(self,y):
-        return self._binop('__rdiv__',y)
-
-    def __rdivmod(self,y):
-        return self._binop('__rdivmod__',y)
-
-    def __reduce__(self):
-        return self._unop('__reduce__')
-
-    def __repr__(self):
-        return self._value.__repr__()
-
-    def __rfloordiv__(self,y):
-        return self._binop('__rfloordiv__',y)
-
-    def __rlshift__(self,y):
-        return self._binop('__rlshift__',y)
-
-    def __rmod__(self,y):
-        return self._binop('__rmod__',y)
-
-    def __rmul__(self,y):
-        return self._binop('__rmul__',y)
-
-    def __ror__(self,y):
-        return self._binop('__ror__',y)
-
-    def __rpow__(self,y,*z):
-        if z:
-            return self._triop('__rppow__',y,z[0])
-        else:
-            return self._binop('__rpow__',y)
-
-    def __rrshift__(self,y):
-        return self._binop('__rrshift__',y)
-
-    def __rshift__(self,y):
-        return self._binop('__rshift__',y)
-
-    def __rsub__(self,y):
-        return self._binop('__rsub__',y)
-
-    def __rtruediv(self,y):
-        return self._binop('__rtruediv__',y)
-
-    def __rxor__(self,y):
-        return self._binop('__rxor__',y)
-
-    def __setstate__(self):
-        return self._unop('__setstate__')
-
-    def __str__(self):
-        return str(self._value)
-    
-    def __sub__(self,y):
-        return self._binop('__sub__',y)
-
-    def __truediv__(self,y):
-        return self._binop('__truediv__',y)
-
-    def __xor__(self,y):
-        return self._binop('__xor__',y)
-    
-    def __eq__(self,y):
-        if y is None:
-            return makeData(self.value is None)
-        return self._binop('__eq__',y)
-
-    def __ge__(self,y):
-        return self._binop('__ge__',y)
-
-    def __gt__(self,y):
-        return self._binop('__gt__',y)
-
-    def __le__(self,y):
-        return self._binop('__le__',y)
-
-    def __lt__(self,y):
-        return self._binop('__lt__',y)
-
-    def __ne__(self,y):
-        return self._binop('__ne__',y)
 
     def all(self):
         return self._unop('all')
@@ -237,9 +107,6 @@ class Scalar(Data):
 
     def clip(self,y,z):
         return self._triop('clip',y,z)
-
-    def __nonzero__(self):
-        return self.value.__nonzero__()
 
 
 class Int8(Scalar):

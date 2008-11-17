@@ -1,6 +1,6 @@
 import numpy
 import copy
-from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiData,TdiExecute
+from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiExecute
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -37,7 +37,7 @@ def getDimension(item,idx=0):
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    return TdiExecute('data($)',(item,))
+    return TdiExecute('data($)',(item,)).value
 
 def decompile(item):
     """Returns the item converted to a string
@@ -200,8 +200,11 @@ class Data(object):
         Return boolean
         @rtype: Bool
         """
+        from MDSobjects.array import Array
+        if isinstance(self,Array):
+            return self.all().bool()
         ans=int(self)
-        return (ans & 1) == 0
+        return (ans & 1) == 1
 
     def __add__(self,y):
         """
@@ -233,7 +236,7 @@ class Data(object):
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: Data"""
-        return float(Data.execute('float($)[0]',self))
+        return float(Data.execute('float($)[0]',self).value)
 
     def __floordiv__(self,y):
         """Floordiv: x.__floordiv__(y) <==> x//y
@@ -245,6 +248,11 @@ class Data(object):
         @rtype: Bool"""
         return Data.execute('$ >= $',self,y).bool()
 
+    def __getitem__(self,y):
+        """Subscript: x.__getitem__(y) <==> x[y]
+        @rtype: Data"""
+        return Data.execute('$[$]',self,y)
+    
     def __gt__(self,y):
         """Greater than: x.__gt__(y) <==> x>y
         @rtype: Bool"""
@@ -279,7 +287,7 @@ class Data(object):
     def __lshift__(self,y):
         """Lrft binary shift: x.__lshift__(y) <==> x<<y
         @rtype: Data"""
-        return Data.execute('$<<y',self,y)
+        return Data.execute('$<<$',self,y)
 
     def __lt__(self,y):
         """Less than: x.__lt__(y) <==> x<y
@@ -289,7 +297,7 @@ class Data(object):
     def __mod__(self,y):
         """Modulus: x.__mod__(y) <==> x%y
         @rtype: Data"""
-        return Data.execute('x%y',self,y)
+        return Data.execute('$ mod $',self,y)
     
     def __mul__(self,y):
         """Multiply: x.__mul__(y) <==> x*y
@@ -309,7 +317,7 @@ class Data(object):
     def __nonzero__(self):
         """Not equal 0: x.__nonzero__() <==> x != 0
         @rtype: Bool"""
-        return Data.execute('$ != 0').bool()
+        return Data.execute('$ != 0',self).bool()
 
     def __or__(self,y):
         """Or: x.__or__(y) <==> x|y
@@ -454,7 +462,7 @@ class Data(object):
         """Return primitimive value of the data.
         @rtype: Scalar,Array
         """
-        return TdiData(self)
+        return TdiExecute("data($)",(self,)).value
 
     def evaluate(self):
         """Return the result of TDI evaluate(this).
@@ -565,7 +573,7 @@ class Data(object):
         array using row-first ordering if a multidimensional array.
         @rtype: Int16Array
         """
-        return Data.execute('short($)',self)
+        return Data.execute('word($)',self)
 
     def getIntArray(self):
         """Convert this data into a byte array. Implemented at this class level by
