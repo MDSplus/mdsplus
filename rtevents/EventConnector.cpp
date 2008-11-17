@@ -8,7 +8,6 @@
 #include "Runnable.h"
 #include "Thread.h"
 #include <stdio.h>
-#include <unistd.h>
 
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch);
 
@@ -746,6 +745,5 @@ int main(int argc, char *argv[])
 	UnnamedSemaphore sem;
 	sem.initialize(0);
 	sem.wait(); //Suspend forever
-	sleep(10000);
 	return 0;
 }
