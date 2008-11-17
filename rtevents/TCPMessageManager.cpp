@@ -28,6 +28,7 @@ void TCPHandler::run(void *arg)
 //TCP Message protocol: length (4 bytes), message (length bytes) 
 
 	MessageReceiver *msgReceiver = (MessageReceiver *)arg;
+	IPAddress currAddr(addr);
 	while(true)
 	{
 		int len;
@@ -36,7 +37,7 @@ void TCPHandler::run(void *arg)
 		if(readFromSocket(sock, 4, (char *)&readLen) == -1)
 		{
 			printf("Socket communication terminated\n");
-			msgReceiver->connectionTerminated((NetworkAddress *)addr);
+			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
 			return;
 		}
 		len = ntohl(readLen);
@@ -44,11 +45,11 @@ void TCPHandler::run(void *arg)
 		if(readFromSocket(sock, len, buf) == -1)
 		{
 			printf("Socket communication terminated\n");
-			msgReceiver->connectionTerminated((NetworkAddress *)addr);
+			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
 			return;
 		}
 		printf("Message received\n");
-		msgReceiver->messageReceived((NetworkAddress *)addr, buf, len);
+		msgReceiver->messageReceived((NetworkAddress *)&currAddr, buf, len);
 		delete [] buf;
 	}
 }

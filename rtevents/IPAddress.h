@@ -113,6 +113,20 @@ public:
 		setAddressString(addr);
 		buildAddress();
 	}
+	IPAddress(IPAddress *inAddr)
+	{
+		sin = inAddr->sin;
+#ifdef HAVE_WINDOWS_H
+		struct hostent *host = gethostbyaddr((const char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#else
+		struct hostent *host = gethostbyaddr(&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+#endif
+		if(host && host->h_name)
+		{
+			strcpy(ipAddress, host->h_name);
+			sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
+		}
+	}
 	IPAddress(struct sockaddr_in *inSin, int inSock) 
 	{
 		sin = *inSin;
