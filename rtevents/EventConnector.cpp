@@ -729,6 +729,7 @@ printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 			printf("Error Sending registration message: %s\n", exc->what());
 		}
 	}
+	delete [] msg;
 	delete evMessage;
 }
 
