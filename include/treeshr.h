@@ -1,6 +1,10 @@
 #ifndef __TREESHR
 #define __TREESHR
+#ifdef HAVE_VXWORKS_H
+typedef long long  _int64;
+#else
 #include <config.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
 #else
@@ -415,6 +419,33 @@ extern EXPORT int TreeWriteTree();
 extern EXPORT int _TreeWriteTree();
 extern EXPORT int TreeGetCurrentShotId();
 extern EXPORT int TreeSetCurrentShotId();
+//Segments
+extern EXPORT int TreeBeginSegment();
+extern EXPORT int _TreeBeginSegment();
+extern EXPORT int TreePutSegment();
+extern EXPORT int _TreePutSegment();
+extern EXPORT int TreeUpdateSegment();
+extern EXPORT int _TreeUpdateSegment();
+extern EXPORT int TreeBeginTimestampedSegment();
+extern EXPORT int _TreeBeginTimestampedSegment();
+extern EXPORT int TreePutTimestampedSegment();
+extern EXPORT int _TreePutTimestampedSegment();
+extern EXPORT int TreePutRow();
+extern EXPORT int _TreePutRow();
+extern EXPORT int TreeSetTimeContext();
+extern EXPORT int _TreeSetTimeContext();
+extern EXPORT int TreeGetNumSegments();
+extern EXPORT int TreeGetSegmentLimits();
+extern EXPORT int _TreeGetSegmentLimits();
+extern EXPORT int TreeGetSegment();
+extern EXPORT int _TreeGetSegment();
+
+
+extern EXPORT int TreeSetViewDate();
+extern EXPORT int _TreeSetViewDate();
+extern EXPORT int TreeSetCurrentShotId();
+extern EXPORT int TreeGetCurrentShotId();
+
 
 #else
 
@@ -534,6 +565,37 @@ extern EXPORT int TreeWriteTree(char *tree, int shot);
 extern EXPORT int _TreeWriteTree(void **dbid, char *tree, int shot);
 extern EXPORT int TreeGetCurrentShotId(char *experiment);
 extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
+
+//Segments
+extern EXPORT int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
+							struct descriptor *dim, struct descriptor_a *initialData, int idx);
+extern EXPORT int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+							struct descriptor *dim, struct descriptor_a *initialData, int idx);
+extern EXPORT int TreePutSegment(int nid, int rowidx, struct descriptor_a *data);
+extern EXPORT int _TreePutSegment(void *dbid, int nid, int rowidx, struct descriptor_a *data);
+extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);
+extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);
+extern EXPORT int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx);
+extern EXPORT int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx);
+extern EXPORT int TreePutTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int _TreePutTimestampedSegment(void *dbid, int nid, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
+extern EXPORT int _TreeSetTimeContext(void *dbid,  struct descriptor *start, struct descriptor *end, struct descriptor *delta);
+extern EXPORT int TreeGetNumSegments(int nid, int *num);
+extern EXPORT int _TreeGetNumSegments(void *dbid, int nid, int *num);
+extern EXPORT int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
+extern EXPORT int _TreeGetSegmentLimits(void *dbid, int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
+extern EXPORT int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
+extern EXPORT int _TreeGetSegment(void *dbid, int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
+
+
+extern EXPORT int TreeSetViewDate(_int64 *date);
+extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
+extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
+extern EXPORT int TreeGetCurrentShotId(char *experiment);
+
 
 #endif
 
