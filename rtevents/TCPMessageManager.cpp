@@ -129,6 +129,7 @@ bool TCPMessageManager::connectSender(NetworkAddress *addr)
 		tcpAddr->sock = -1;
 		return false;
 	}
+	setsockopt(tcpAddr->sock, IPPROTO_TCP, TCP_NODELAY, NULL, NULL);
 	printf("CONNECTED\n");
 	return true;
 
