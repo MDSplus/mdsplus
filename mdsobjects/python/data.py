@@ -362,11 +362,11 @@ class Data(object):
 
     __rmul__=__mul__
     """Reverse multiply: x.__rmul__(y) <==> y*x
-    @rtype: Data"""
+    @type: Data"""
 
     __ror__=__or__
     """Reverse or: x.__ror__(y) <==> y|x
-    @rtype: Data"""
+    @type: Data"""
 
     def __rrshift__(self,y):
         """Reverse right binary shift: x.__rrshift__(y) <==> y>>x
@@ -455,7 +455,7 @@ class Data(object):
 
     __str__=decompile
     """String: x.__str__() <==> str(x)
-    @rtype: String"""
+    @type: String"""
 
 
     def data(self):
