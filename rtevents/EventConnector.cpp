@@ -434,6 +434,8 @@ public:
 	{
 		ExternalEvent *newEv = new ExternalEvent(name);
 		newEv->nxt = extEventHead;
+		if(extEventHead)
+			extEventHead->prv = newEv;
 		extEventHead = newEv;
 		return newEv;
 	}
@@ -613,19 +615,19 @@ public:
 		switch(evMsg.mode)
 		{
 			case IS_ASYNCH_EVENT:
-				printf("RICEVUTO IS_ASYNCH_EVENT\n");
+				printf("RICEVUTO IS_ASYNCH_EVENT %s\n", evMsg.name);
 				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufLen);
 				break;
 			case IS_SYNCH_EVENT:
-				printf("RICEVUTO IS_SYNCH_EVENT\n");
+				printf("RICEVUTO IS_SYNCH_EVENT %s\n", evMsg.name);
 				thread.start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr));
 				break;
 			case IS_EVENT_ACK:
-				printf("RICEVUTO IS_EVENT_ACK\n");
+				printf("RICEVUTO IS_EVENT_ACK %s\n", evMsg.name);
 				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId);
 				break;
 			case IS_EVENT_REGISTRATION:
-				printf("RICEVUTO IS_EVENT_REGISTRATION\n");
+				printf("RICEVUTO IS_EVENT_REGISTRATION %s\n", evMsg.name);
 				extEventManager->addExternalListener(evMsg.name, addr);
 				break;
 		}
@@ -648,7 +650,7 @@ static int numExtAddresses;
 
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
-printf("EVENT CALLBACK\n");
+printf("EVENT CALLBACK %s\n", name);
 
 	if(isSynch)
 	{
@@ -671,7 +673,7 @@ printf("EVENT CALLBACK\n");
 
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
-printf("REGISTER EVENT CALLBACK\n");
+printf("REGISTER EVENT CALLBACK %s\n", name);
 
 	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
