@@ -7,6 +7,7 @@
 #include "EventManager.h"
 #include "Runnable.h"
 #include "Thread.h"
+#include "Delay.h"
 #include <stdio.h>
 
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch);
@@ -615,19 +616,19 @@ public:
 		switch(evMsg.mode)
 		{
 			case IS_ASYNCH_EVENT:
-				printf("RICEVUTO IS_ASYNCH_EVENT %s\n", evMsg.name);
+				printf("Received IS_ASYNCH_EVENT %s\n", evMsg.name);
 				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufLen);
 				break;
 			case IS_SYNCH_EVENT:
-				printf("RICEVUTO IS_SYNCH_EVENT %s\n", evMsg.name);
+				printf("Received IS_SYNCH_EVENT %s\n", evMsg.name);
 				thread.start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr));
 				break;
 			case IS_EVENT_ACK:
-				printf("RICEVUTO IS_EVENT_ACK %s\n", evMsg.name);
+				printf("Received IS_EVENT_ACK %s\n", evMsg.name);
 				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId);
 				break;
 			case IS_EVENT_REGISTRATION:
-				printf("RICEVUTO IS_EVENT_REGISTRATION %s\n", evMsg.name);
+				printf("Received IS_EVENT_REGISTRATION %s\n", evMsg.name);
 				extEventManager->addExternalListener(evMsg.name, addr);
 				break;
 		}
@@ -727,7 +728,22 @@ static void readExtAddresses(char *fileName)
 	//other Networks not yet supported
 }
 
+class OrphanChecker:public Runnable
+{
+public:
+	void run(void *arg)
+	{
+		Delay delay(1000); //Wait 1 sec
+		while(true)
+		{
+			EventClean();
+			delay.wait();
+		}
+	}
+};
 
+		
+		
 int main(int argc, char *argv[])
 {
 	if(argc != 2)
@@ -742,6 +758,10 @@ int main(int argc, char *argv[])
 
 	msgManager->connectReceiver(new IPAddress(TCP_PORT), &messageReceiver);
 	EventAddListener("@@@EVENT_MANAGER@@@",  registerEventCallback);
+
+	Thread checkerThread;
+	checkerThread.start(new OrphanChecker, 0);
+
 	UnnamedSemaphore sem;
 	sem.initialize(0);
 	sem.wait(); //Suspend forever

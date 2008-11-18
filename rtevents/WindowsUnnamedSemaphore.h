@@ -40,7 +40,7 @@ public:
             INFINITE);           // zero-second time-out interval
 		if(status == WAIT_FAILED)
 			throw new SystemException("Error waiting Semaphore", GetLastError());
-		CloseHandle(semHandle);
+		//CloseHandle(semHandle);
 	}
 	
 	int timedWait(Timeout &timeout)
@@ -53,7 +53,7 @@ public:
             timeout.getTotMilliSecs());           // zero-second time-out interval
 		if(status == WAIT_FAILED)
 			throw new SystemException("Error waiting Semaphore", GetLastError());
-		CloseHandle(semHandle);
+		//CloseHandle(semHandle);
 		return status == WAIT_TIMEOUT;
 	}
 	
@@ -64,7 +64,7 @@ public:
 			throw new SystemException("Error opening semaphore", GetLastError());
 		if(!ReleaseSemaphore( semHandle, 1, NULL))
 			throw new SystemException("Error posting Semaphore", GetLastError());
-		CloseHandle(semHandle);
+		//CloseHandle(semHandle);
 	}
 	
 	bool isZero()

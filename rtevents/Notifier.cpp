@@ -28,20 +28,26 @@ void Notifier::initialize(Thread *thread, Runnable *runnable, void *arg)
 //in stored in shared memory. It operated only via shared unnamed semaphore(s).
 void Notifier::trigger()
 {
-	triggerSem.post();
+	try {
+		triggerSem.post();
+	}catch(SystemException *exc){}
 }
 
 
 void Notifier::synchTrigger()
 {
 	synch = true;
-	triggerSem.post();
+	try {
+		triggerSem.post();
+	}catch(SystemException *exc){}
 }
 
 void Notifier::watchdogTrigger()
 {
-	synch = true;
-	watchdogSem.post();
+	try {
+		synch = true;
+		watchdogSem.post();
+	}catch(SystemException *exc){}
 }
 
 
@@ -50,7 +56,9 @@ void Notifier::waitTermination()
 {
 	if(synch)
 	{
-		replySem.wait();
+		try {
+			replySem.wait();
+		}catch(SystemException *exc){}
 	}
 	synch = false;
 }
@@ -59,15 +67,16 @@ void Notifier::waitTermination()
 bool Notifier::waitTermination(Timeout &timeout)
 {
 	bool timeoutOccurred = false;
-	
-	if(synch)
-	{
-		//if(sem_timedwait(&replySem, &waitTimeout))
-		if(replySem.timedWait(timeout))
-			timeoutOccurred = true;
-	}
-	synch = false;
-	return timeoutOccurred;
+	try {
+		if(synch)
+		{
+			//if(sem_timedwait(&replySem, &waitTimeout))
+			if(replySem.timedWait(timeout))
+				timeoutOccurred = true;
+		}
+		synch = false;
+		return timeoutOccurred;
+	}catch(SystemException *exc){return true;}
 }
 
 //Terminates waiting thread and release dynamic memory
@@ -82,16 +91,21 @@ void Notifier::dispose(bool semaphoresOnly)
 		watchdogSem.post();
 		thread->join(); //wait for actual termination of the underlying thread, once awakened
 		watchdogThread.join();
+		delete thread;
 	}
 	triggerSem.dispose();
 	replySem.dispose();
 	watchdogSem.dispose();
-	delete thread;
 }
 
 //Check for orphan 
 bool Notifier::isOrphan()
 {
-	return !watchdogSem.isZero();
+	try {
+		return !watchdogSem.isZero();
+	}catch(SystemException *exc)
+	{
+		return true;
+	}
 }
 

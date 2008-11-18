@@ -83,6 +83,7 @@ void EventHandler::clean(SharedMemManager *memManager)
 		Notifier *nextNotifier = currNotifier->getNext();
 		if(currNotifier->isOrphan())
 		{
+			printf("Removed Orphan for event %s\n", name.getAbsAddress());
 			if(currNotifier == notifierHead.getAbsAddress())
 			{
 				Notifier *nextNotifier = currNotifier->getNext();

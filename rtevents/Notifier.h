@@ -93,7 +93,7 @@ public:
 	virtual void run(void *inNtf)
 	{
 		Notifier *ntf = (Notifier *)inNtf;
-		
+		disposed = false;
 		while(true)
 		{
 			//if(sem_wait(&ntf->watchdogSem))
@@ -103,7 +103,6 @@ public:
 				printf("Watchdog Notified exited\n");
 				return;
 			}
-			printf("WATCHDOG\n");
 		}
 	}
 };
