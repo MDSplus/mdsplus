@@ -505,5 +505,9 @@ SOURCE=.\javascope.mak
 SOURCE=.\jScope.properties
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\WaveformEditor.java
+# End Source File
 # End Target
 # End Project
