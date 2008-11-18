@@ -13,7 +13,7 @@
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
-//internal listener exosts) for which another
+//internal listener registers) for which another
 //node registered. In this case, EventConnector has registered as listener for this event
 //but its associated callback has not to send the event to the other node (it will receive it directly
 //from the event originator).
@@ -24,6 +24,13 @@ public:
 	int size;
 	InternalPending *nxt, *prv;
 	InternalPending(){nxt = prv = 0;}
+	InternalPending(char *inBuf, int inSize)
+	{
+		size = inSize;
+		buf = new char[inSize];
+		memcpy(buf, inBuf, inSize);
+	}
+
 	bool corresponds(char *inBuf, int inSize)
 	{
 		if(size != inSize) return false;
@@ -269,6 +276,16 @@ public:
 		return false;
 	}
 
+//Add a new Internalpending structure to record the receipt of an external event for which
+//someone registered remotely
+	void addInternalPending(char *buf, int bufLen)
+	{
+		InternalPending *newIntPending = new InternalPending(buf, bufLen);
+		newIntPending->nxt = intPendingHead;
+		if(intPendingHead)
+			intPendingHead->prv = newIntPending;
+	}
+
 //Handle the receipt of a network message indicating the termination of a synchronous trigger
 //the message will brinh the unique long id of ExternalPending instance
 	void signalExternalTermination(unsigned int id)
@@ -448,7 +465,7 @@ public:
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
 		{
-			printf("INTERNALE ERROR: received event with no event structure!!");
+			printf("INTERNAL ERROR: received event with no event structure!!");
 		}
 		else
 			isExt = extEvent->isExternalEvent(buf, size);
@@ -518,6 +535,21 @@ public:
 		lock.unlock();
 		
 	}
+
+	void addInternalPending(char *name, char *buf, int bufLen)
+	{
+		lock.lock();
+		ExternalEvent *extEvent = findEvent(name);
+		if(!extEvent)
+		{
+			printf("INTERNALE ERROR: received event message with no event structure!!");
+		}
+		else
+			extEvent->addInternalPending(buf, bufLen);
+		lock.unlock();
+	}	
+
+
 	void addExternalListener(char *name, NetworkAddress *addr)
 	{
 		bool isNewEvent = false;
@@ -542,6 +574,7 @@ public:
 		while(extEvent)
 		{
 			extEvent->removeExternalListeners(addr);
+			extEvent = extEvent->nxt;
 		}
 		lock.unlock();
 	}
@@ -552,6 +585,7 @@ public:
 		while(extEvent)
 		{
 			extEvent->unblockExternalPending(addr);
+			extEvent = extEvent->nxt;
 		}
 		lock.unlock();
 	}
@@ -617,10 +651,12 @@ public:
 		{
 			case IS_ASYNCH_EVENT:
 				printf("Received IS_ASYNCH_EVENT %s\n", evMsg.name);
+				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufLen);
 				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufLen);
 				break;
 			case IS_SYNCH_EVENT:
 				printf("Received IS_SYNCH_EVENT %s\n", evMsg.name);
+				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufLen);
 				thread.start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr));
 				break;
 			case IS_EVENT_ACK:
@@ -652,6 +688,10 @@ static int numExtAddresses;
 static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
 printf("EVENT CALLBACK %s\n", name);
+
+//The Event has been triggered as response from an external message.
+	if(extEventManager->isExternalEvent(name, buf, bufLen))
+		return;
 
 	if(isSynch)
 	{
