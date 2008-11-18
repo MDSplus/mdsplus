@@ -22,6 +22,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/types.h>
+#include <netinet/tcp.h>
 #endif
 
 #endif

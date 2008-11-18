@@ -34,6 +34,7 @@ void TCPHandler::run(void *arg)
 		int len;
 		unsigned int readLen;
 		int sock = addr->getSocket();
+		setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, NULL, NULL);
 		if(readFromSocket(sock, 4, (char *)&readLen) == -1)
 		{
 			printf("Socket communication terminated\n");
@@ -134,6 +135,7 @@ bool TCPMessageManager::connectSender(NetworkAddress *addr)
 	return true;
 
 }
+
 
 bool TCPMessageManager::connectReceiver(NetworkAddress *address, MessageReceiver *receiver)
 {
