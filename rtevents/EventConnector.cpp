@@ -673,7 +673,7 @@ printf("EVENT CALLBACK %s\n", name);
 
 static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
 {
-printf("REGISTER EVENT CALLBACK %s\n", name);
+printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 
 	EventMessage *evMessage = new EventMessage(buf);
 	int msgLen;
