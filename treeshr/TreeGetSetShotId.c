@@ -33,6 +33,7 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ncidef.h>
+#include <treeshr.h>
 #include "treeshrp.h"
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();

@@ -224,7 +224,7 @@ old array is same size.
 }
 
 
-static int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
+int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
 			     int idx);
 
 int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
@@ -232,7 +232,7 @@ int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
   return _TreeUpdateSegment(DBID, nid, start, end, dimension, idx);
 }
 
-static int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
+int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dimension,
 		      int idx) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID       *nid_ptr = (NID *)&nid;
