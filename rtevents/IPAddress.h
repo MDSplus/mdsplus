@@ -32,7 +32,6 @@ class IPAddress:public NetworkAddress
 	friend class TCPMessageManager;
 
 public:	
-	char addressStr[512];
 	static bool initialized;
 	int sock;
 	int port;
@@ -98,6 +97,7 @@ public:
 	IPAddress()
 	{
 		sock = -1;
+		ipAddress[0] = 0;
 		memset(&sin, 0, sizeof(struct sockaddr_in));
 	}
 	IPAddress(char *ip, int port)
@@ -120,7 +120,6 @@ public:
 		port = inAddr->port;
 		sin.sin_port = htons(port);
 		ipAddress[0] = 0;
-		addressStr[0] = 0;
 		sock = inAddr->sock;
 	}
 	IPAddress(struct sockaddr_in *inSin, int inPort, int inSock) 
@@ -129,7 +128,6 @@ public:
 		sock = inSock;
 		port = inPort;
 		ipAddress[0] = 0;
-		addressStr[0] = 0;
 	}
 
 	virtual bool equals(NetworkAddress *addr)
@@ -150,23 +148,21 @@ public:
 			if(host && host->h_name)
 			{
 				strcpy(ipAddress, host->h_name);
-				sprintf(addressStr, "%s:%d", host->h_name, ntohl(sin.sin_port));
 			}
 		}
-		return addressStr;
+		return ipAddress;
 	}
 	virtual void setAddressString(char *addrStr)
 	{
-		strcpy(addressStr, addrStr);
 		int colonIdx;
-		int len = strlen(addressStr);
-		for(colonIdx = 0;colonIdx < len && addressStr[colonIdx] != ':'; colonIdx++);
+		int len = strlen(addrStr);
+		for(colonIdx = 0;colonIdx < len && addrStr[colonIdx] != ':'; colonIdx++);
 		if(colonIdx < len - 1)
 		{
-			addressStr[colonIdx] = 0;
-			strcpy(ipAddress, addressStr);
-			addressStr[colonIdx] = ':';
-			sscanf(&addressStr[colonIdx + 1], "%d", &port);
+			addrStr[colonIdx] = 0;
+			strcpy(ipAddress, addrStr);
+			addrStr[colonIdx] = ':';
+			sscanf(&addrStr[colonIdx + 1], "%d", &port);
 		}
 	}
 

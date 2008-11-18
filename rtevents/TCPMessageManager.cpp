@@ -126,7 +126,6 @@ bool TCPMessageManager::connectSender(NetworkAddress *addr)
 #endif
 		char buf[512];
 		sprintf(buf, "Error Connecting to %s", addr->getAddressString());
-		perror(buf);
 		return false;
 	}
 	printf("CONNECTED\n");
