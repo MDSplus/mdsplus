@@ -284,6 +284,7 @@ public:
 		newIntPending->nxt = intPendingHead;
 		if(intPendingHead)
 			intPendingHead->prv = newIntPending;
+		intPendingHead = newIntPending;
 	}
 
 //Handle the receipt of a network message indicating the termination of a synchronous trigger
