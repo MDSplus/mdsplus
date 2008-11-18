@@ -18,13 +18,19 @@ nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR'
 
 class TreeNode(Data):
     """Class to represent an MDSplus node reference (nid).
-    @ivar nid: Index of the node in the tree.
+    @ivar nid: node index of this node.
     @type nid: int
-    @ivar tree: Tree associated with this node
+    @ivar tree: Tree instance that this node belongs to.
     @type tree: Tree
     """
 
     def __init__(self,n,tree=None):
+        """Initialze TreeNode
+        @param n: Index of the node in the tree.
+        @type n: int
+        @param tree: Tree associated with this node
+        @type tree: Tree
+        """
         self.__dict__['nid']=int(n);
         if tree is None:
             self.tree=Tree._activeTree
@@ -32,12 +38,11 @@ class TreeNode(Data):
             self.tree=tree
     
     def __str__(self):
-        """Convert nid to string."""
+        """Convert TreeNode to string."""
         from MDSobjects._treeshr import TreeGetPath
         if self.nid is None:
             ans="NODEREF(*)"
         else:
-#            self.restoreContext()
             ans=TreeGetPath(self)
         return ans
 
@@ -188,87 +193,149 @@ class TreeNode(Data):
         self.tree.restoreContext()
 
     def getClass(self):
-        """Return MDSplus class name of this node"""
+        """Return MDSplus class name of this node
+        @return: MDSplus class name of the data stored in this node.
+        @rtype: String
+        """
         return self.class_str
 
     def isCompressOnPut(self):
-        """Return true if node is set to compress on put"""
+        """Return true if node is set to compress on put
+        @return: True if compress on put
+        @rtype: bool
+        """
         return self.compress_on_put
 
     def setCompressOnPut(self,flag):
-        """Set compress on put state of this node"""
+        """Set compress on put state of this node
+        @param flag: State to set the compress on put characteristic
+        @type flag: bool
+        """
         self.__setNode('compress_on_put',flag)
 
     def getConglomerateElt(self):
-        """Return index of this node in a conglomerate"""
+        """Return index of this node in a conglomerate
+        @return: element index of this node in a conglomerate. 0 if not in a conglomerate.
+        @rtype: Int32
+        """
         return self.conglomerate_elt
     
     def getNumElts(self):
-        """Return number of nodes in this conglomerate"""
+        """Return number of nodes in this conglomerate
+        @return: Number of nodes in this conglomerate or 0 if not in a conglomerate.
+        @rtype: Int32
+        """
         return self.number_of_elts
 
     def getConglomerateNodes(self):
-        """Return TreeNodeArray of conglomerate elements"""
+        """Return TreeNodeArray of conglomerate elements
+        @return: Nodes in this conglomerate.
+        @rtype: TreeNodeArray
+        """
         return self.conglomerate_nids
 
     def getOriginalPartName(self):
-        """Return the original part name of node in conglomerate"""
+        """Return the original part name of node in conglomerate
+        @return: Original part name of this node when conglomerate was first instantiated.
+        @rtype: String
+        """
         return self.original_part_name
 
     def getDtype(self):
-        """Return the name of the data type stored in this node"""
+        """Return the name of the data type stored in this node
+        @return: MDSplus data type name of data stored in this node.
+        @rtype: String
+        """
         return self.dtype_str
     
     def isEssential(self):
-        """Return true if successful action completion is essential"""
+        """Return true if successful action completion is essential
+        @return: True if this node is marked essential.
+        @rtype: bool
+        """
         return self.essential
 
     def setEssential(self,flag):
-        """Set essential state of this node"""
+        """Set essential state of this node
+        @param flag: State to set the essential characteristic. This is used on action nodes when phases are dispacted.
+        @type flag: bool
+        """
         return self.__setNode('essential',flag)
 
     def getFullPath(self):
-        """Return full path of this node"""
+        """Return full path of this node
+        @return: full path specification of this node.
+        @rtype: String
+        """
         return self.fullpath
 
     def getMinPath(self):
-        """Return shortest path string for this node"""
+        """Return shortest path string for this node
+        @return: shortest path designation depending on the current node default and whether the node has tag names or not.
+        @rtype: String
+        """
         return self.minpath
     
     def getPath(self):
-        """Return path of this node"""
+        """Return path of this node
+        @return: Path to this node.
+        @rtype: String
+        """
         return self.path
 
     def getNodeName(self):
-        """Return node name"""
+        """Return node name
+        @return: Node name of this node. 1 to 12 characters
+        @rtype: String
+        """
         return self.node_name
     
     def isIncludedInPulse(self):
-        """Return true if this subtree is to be included in pulse file"""
+        """Return true if this subtree is to be included in pulse file
+        @return: True if subtree is to be included in pulse file creation.
+        @rtype: bool
+        """
         return self.include_in_pulse
 
     def setIncludedInPulse(self,flag):
-        """Set include in pulse state of this node"""
+        """Set include in pulse state of this node
+        @param flag: State to set the include in pulse characteristic. If true and this node is the top node of a subtree the subtree will be included in the pulse.
+        @type flag: bool
+        """
         return self.__setNode('include_in_pulse',flag)
 
     def getDepth(self):
-        """Get depth of this node in the tree"""
+        """Get depth of this node in the tree
+        @return: number of levels between this node and the top of the currently opened tree.
+        @rtype: Int32
+        """
         return self.depth
 
     def isChild(self):
-        """Return true if this is a child node"""
+        """Return true if this is a child node
+        @return: True if this is a child node instead of a member node.
+        @rtype: bool
+        """
         return self.is_child
 
     def getChild(self):
-        """Return first child of this node"""
+        """Return first child of this node.
+        @return: Return first child of this node or None if it has no children.
+        """
         return self.child
 
     def getNumChildren(self):
-        """Return number of children nodes"""
+        """Return number of children nodes.
+        @return: Number of children
+        @rtype: Int32
+        """
         return self.number_of_children
 
     def getChildren(self):
-        """Return TreeNodeArray of children nodes"""
+        """Return TreeNodeArray of children nodes.
+        @return: Children of this node
+        @rtype: TreeNodeArray
+        """
         return self.children_nids
 
     def isMember(self):
@@ -336,7 +403,10 @@ class TreeNode(Data):
         return self.no_write_model
 
     def setNoWriteModel(self,flag):
-        """Set no write model state for this node"""
+        """Set no write model state for this node
+        @param flag: State to set the no write in model characteristic. If true then no data can be stored in this node in the model.
+        @type flag: bool
+        """
         self.__setNode('no_write_model',flag)
         return
 
@@ -345,7 +415,10 @@ class TreeNode(Data):
         return self.no_write_shot
 
     def setNoWriteShot(self,flag):
-        """Set no write shot state for this node"""
+        """Set no write shot state for this node
+        @param flag: State to set the no write in shot characteristic. If true then no data can be stored in this node in a shot file.
+        @type flag: bool
+        """
         self.__setNode('no_write_shot',flag)
         return
 
@@ -354,7 +427,10 @@ class TreeNode(Data):
         return self.write_once
 
     def setWriteOnce(self,flag):
-        """Set write once state of node"""
+        """Set write once state of node
+        @param flag: State to set the write once characteristic. If true then data can only be written if the node is empty.
+        @type flag: bool
+        """
         self.__setNode('write_once',flag)
         return
     
@@ -363,7 +439,10 @@ class TreeNode(Data):
         return self.on
 
     def setOn(self,flag):
-        """Turn node on or off"""
+        """Turn node on or off
+        @param flag: State to set the on characteristic. If true then the node is turned on. If false the node is turned off.
+        @type flag: bool
+        """
         from MDSobjects._treeshr import TreeTurnOn,TreeTurnOff
         try:
             Tree.lock()
@@ -387,7 +466,10 @@ class TreeNode(Data):
         return self.record
 
     def putData(self,data):
-        """Store data"""
+        """Store data
+        @param data: Data to store in this node.
+        @type data: Data
+        """
         from MDSobjects._treeshr import TreePutRecord
         try:
             Tree.lock()
@@ -397,7 +479,7 @@ class TreeNode(Data):
         return
 
     def deleteData(self):
-        """Delete data"""
+        """Delete data from this node"""
         self.putData(None)
         return
 

@@ -144,12 +144,12 @@ class Compound(Data):
         def upcase(s):
             return s[0:1].upper()+s[1:]
         
-        ans = 'Compound data type\n\nCompound Attributes:\n\n'
+        ans = 'Compound data type\n\nCompound Attributes::\n\n'
         for i in range(len(fields)):
-            ans=ans+bold(fields[i])+' = <Data object>\n    '+upcase(fields[i])+' attribute\n\n'
-        ans = ans + '\nThe associated method are also provided:\n\n'
+            ans=ans+"\t"+bold(fields[i])+' = <Data object>\n\t\t'+upcase(fields[i])+' attribute\n\n'
+        ans = ans + '\nThe associated method are also provided::\n\n'
         for i in range(len(fields)):
-            ans = ans + bold('get'+upcase(fields[i]))+'(self)\n    Return the '+fields[i]+' attribute\n\n'+bold('set'+upcase(fields[i]))+'(self,value)\n  Set the '+fields[i]+' attribute\n\n'
+            ans = ans + "\t"+bold('get'+upcase(fields[i]))+'(self)\n\t\tReturn the '+fields[i]+' attribute\n\n\t'+bold('set'+upcase(fields[i]))+'(self,value)\n\t\tSet the '+fields[i]+' attribute\n\n'
         return ans+'\n'
     makeDoc=classmethod(makeDoc)
 
