@@ -67,7 +67,7 @@ public:
 			throw new SystemException("Error in UnnamedSemaphore::timedWait", errno);
 		return status;
 	}
-	int post() //Return 0 if successful
+	void post() //Return 0 if successful
 	{
 		sem_post(semPtr);
 	}

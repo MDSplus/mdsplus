@@ -19,7 +19,7 @@ public:
 		this->port = port;
 		this->manager = manager;
 	}
-	void run(void *args);
+	virtual void run(void *args);
 };
 
 class TCPHandler:public Runnable

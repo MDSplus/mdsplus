@@ -3,9 +3,10 @@
 #include <time.h>
 
 
-void Notifier::initialize(Thread *thread, Runnable *runnable, void *arg)
+void Notifier::initialize(ThreadAttributes *threadAttr, Runnable *runnable, void *arg)
 {
-	this->thread = thread;
+	thread = new Thread(threadAttr);
+	
 	
 	triggerSem.initialize(0);
 	replySem.initialize(0);

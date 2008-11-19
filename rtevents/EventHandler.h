@@ -48,7 +48,7 @@ public:
 	bool isCatchAll() {return catchAll;}
 	void initialize(char *name, SharedMemManager *memManager);
 	void initialize();
-	void *addListener(Thread *thread, Runnable *runnable, void *arg, SharedMemManager *memManager);
+	void *addListener(ThreadAttributes *threadAttr, Runnable *runnable, void *arg, SharedMemManager *memManager);
 	//RemoveListener removes the corresponding Notifier from the notifier chain if found
 	//The passed address is valid only in the same address space of the process which
 	//created the Notifier instance

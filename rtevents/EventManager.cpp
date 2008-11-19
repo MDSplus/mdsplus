@@ -7,7 +7,7 @@ void EventManager::initialize()
 	lock.initialize();
 }
 	
-void *EventManager::addListener(char *eventName, Thread *thread, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
+void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
 {
 	//NOTE: EventHandlers are never deallocated
 	
@@ -20,12 +20,12 @@ void *EventManager::addListener(char *eventName, Thread *thread, void (*callback
 		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
 		eventHead = currHandler;
 	}
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(thread, new EventRunnable(callback), currHandler, memManager);
+	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback), currHandler, memManager);
 	lock.unlock();
 	return new ListenerAddress(currHandler, currNotifier);
 }
 
-void *EventManager::addCatchAllListener(Thread *thread, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
+void *EventManager::addCatchAllListener(ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
 {
 	//NOTE: EventHandlers are never deallocated
 	
@@ -38,7 +38,7 @@ void *EventManager::addCatchAllListener(Thread *thread, void (*callback)(char *,
 		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
 		eventHead = currHandler;
 	}
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(thread, new EventRunnable(callback), currHandler, memManager);
+	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback), currHandler, memManager);
 	lock.unlock();
 	return new ListenerAddress(currHandler, currNotifier);
 }
@@ -207,7 +207,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 {
 	try {
 		checkEventManager();
-		void *handl = eventManager->addListener(name, new Thread, callback, &memManager);
+		void *handl = eventManager->addListener(name, NULL, callback, &memManager);
 		int nameLen = strlen(name)+1;
 		char *msg = new char[nameLen];
 		strcpy(msg, name);
@@ -228,7 +228,7 @@ EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int
 {
 	try {
 		checkEventManager();
-		void *handl = eventManager->addListener(name, new Thread, callback, &memManager);
+		void *handl = eventManager->addListener(name, NULL, callback, &memManager);
 		return handl;
 	}
 	catch(SystemException *exc)

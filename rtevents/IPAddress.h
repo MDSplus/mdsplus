@@ -75,7 +75,7 @@ public:
 		hp = gethostbyname(ipAddress);
 		if (hp == NULL)
 		{
-			int addr = inet_addr(ipAddress);
+			unsigned int addr = inet_addr(ipAddress);
 			if (addr != 0xffffffff)
     			hp = gethostbyaddr((const char *) &addr, (int) sizeof(addr), AF_INET);
 		}

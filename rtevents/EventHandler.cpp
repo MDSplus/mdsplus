@@ -30,11 +30,11 @@ void EventHandler::setName(char *inName, SharedMemManager *memManager)
 	strcpy(sharedName, inName);
 }
 
-void *EventHandler::addListener(Thread *thread, Runnable *runnable, void *arg, SharedMemManager *memManager)
+void *EventHandler::addListener(ThreadAttributes *threadAttr, Runnable *runnable, void *arg, SharedMemManager *memManager)
 {
 	lock.lock();
 	Notifier *newNotifier = (Notifier *)memManager->allocate(sizeof(Notifier));
-	newNotifier->initialize(thread, runnable, arg);
+	newNotifier->initialize(threadAttr, runnable, arg);
 	newNotifier->setNext((Notifier *)notifierHead.getAbsAddress());
 	if(notifierHead.getAbsAddress())
 		((Notifier *)notifierHead.getAbsAddress())->setPrev(newNotifier);
@@ -110,20 +110,28 @@ void EventHandler::triggerAndWait()
 	lock.lock();
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
+	int numSems = 0;
+	while(currNotifier)
+	{
+		numSems++;
+		currNotifier = currNotifier->getNext();
+	}
+	UnnamedSemaphore **sems = new UnnamedSemaphore*[numSems];
+	
 //First pass: asynchronous triggers
+	int i = 0;
+	currNotifier = (Notifier *)notifierHead.getAbsAddress();
 	while(currNotifier)
 	{
 		currNotifier->synchTrigger();
-		currNotifier = currNotifier->getNext();
-	}
-	currNotifier = (Notifier *)notifierHead.getAbsAddress();
-//Second pass: wait synch termination
-	while(currNotifier)
-	{
-		currNotifier->waitTermination();
+		sems[i] = currNotifier->getReplySemaphore();
 		currNotifier = currNotifier->getNext();
 	}
 	lock.unlock();
+	
+//Wait termination WITHOUT locking Event data strucures
+	for(int i = 0; i < numSems; i++)
+		sems[i]->wait();
 }
 
 bool EventHandler::triggerAndWait(Timeout &timeout)

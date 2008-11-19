@@ -23,8 +23,8 @@ class EventManager
 	
 public:
 	void initialize();
-	void *addCatchAllListener(Thread *thread, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager);
-	void *addListener(char *eventName, Thread *thread, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager);
+	void *addCatchAllListener(ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager);
+	void *addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager);
 	void removeListener(void *eventAddr,  SharedMemManager *memManager);
 	void trigger(char *eventName, char *buf, int size, SharedMemManager *memManager);
 	void triggerAndWait(char *eventName, char *buf, int size, SharedMemManager *memManager);

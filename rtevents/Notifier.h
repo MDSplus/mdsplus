@@ -30,8 +30,9 @@ Notifier *getNext() {return (Notifier *)nxt.getAbsAddress();}
 void setNext(Notifier *ntf) {nxt = ntf;}
 Notifier *getPrev() {return (Notifier *)prv.getAbsAddress();}
 void setPrev(Notifier *ntf) {prv = ntf;}
+UnnamedSemaphore *getReplySemaphore() {return &replySem;}
 
-void initialize(Thread *thread, Runnable *runnable, void *arg);
+void initialize(ThreadAttributes *threadAttr, Runnable *runnable, void *arg);
 void trigger();
 void synchTrigger();
 void watchdogTrigger();
