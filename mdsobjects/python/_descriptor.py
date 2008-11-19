@@ -334,7 +334,7 @@ class descriptor(_C.Structure):
                         arglist.append(ans.dscptrs[i].contents.value)
                     else:
                         arglist.append(None)
-                return eval(str(mdsdtypes(self.dtype))[6:].lower().capitalize()+'(opcode,tuple(arglist))')
+                return eval(str(mdsdtypes(self.dtype))[6:].lower().capitalize()+'(args=tuple(arglist),opcode=opcode)')
             if self.dtype in (DTYPE_ACTION,DTYPE_PROCEDURE,DTYPE_DISPATCH,DTYPE_DIMENSION,DTYPE_METHOD,DTYPE_CONGLOM,DTYPE_SIGNAL,DTYPE_PROGRAM,
                               DTYPE_ROUTINE,DTYPE_WINDOW):
                 arglist=list()
