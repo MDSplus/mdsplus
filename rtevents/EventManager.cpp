@@ -279,6 +279,22 @@ EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 	}
 }
 
+EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs)
+{
+	try {
+		checkEventManager();
+		Timeout *timout = new Timeout(millisecs);
+		eventManager->triggerAndWait(name, *timout, buf, size, &memManager);
+		delete timout;
+		return 0;
+	}
+	catch(SystemException *exc)
+	{
+		printf("%s\n", exc->what());
+		return -1;
+	}
+}
+
 EXPORT void EventClean()
 {
 	try {

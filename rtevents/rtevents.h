@@ -11,6 +11,7 @@ EXTERN void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *
 EXTERN void EventRemoveListener(void *eventHandler);
 EXTERN int EventTrigger(char *name, char *buf, int size);
 EXTERN int EventTriggerAndWait(char *name, char *buf, int size);
+EXTERN int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs);
 EXTERN void EventClean();
 EXTERN void EventReset();
 	
