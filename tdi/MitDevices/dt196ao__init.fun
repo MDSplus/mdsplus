@@ -41,7 +41,6 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
 
   
   _slope = slope_of(_clock)*_fawg_div;
-  _fawg_div = _fawg_div*2;
   _dim = data(build_dim(build_window(0, _max_samples-1, _trigger), * : * : _slope));
 
   _cmd = "set.ao_clk "//_clock_source//" rising";
