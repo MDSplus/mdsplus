@@ -627,6 +627,8 @@ public:
 		char *msgBuf = msg.serialize(msgLen, msgManager);
 		msgManager->sendMessage(addr, msgBuf, msgLen);
 		delete []msgBuf;
+		Thread *thread = (Thread *)arg;
+		delete thread;
 	}
 };
 
@@ -646,7 +648,7 @@ public:
 	virtual void messageReceived(NetworkAddress *addr, char *buf, int size)
 	{
 		
-		Thread thread;
+		Thread *thread;
 		EventMessage evMsg(buf, size, msgManager);
 		switch(evMsg.mode)
 		{
@@ -658,7 +660,8 @@ public:
 			case IS_SYNCH_EVENT:
 				printf("Received IS_SYNCH_EVENT %s\n", evMsg.name);
 				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufLen);
-				thread.start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr));
+				thread = new Thread();
+				thread->start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr), thread);
 				break;
 			case IS_EVENT_ACK:
 				printf("Received IS_EVENT_ACK %s\n", evMsg.name);

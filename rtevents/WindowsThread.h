@@ -1,9 +1,9 @@
-#include "Lock.h"
 #include "Runnable.h"
 #include "ThreadAttributes.h"
+#include <Windows.h>
 struct  WithArg{
 	Runnable *rtn;
-	Lock *lockPtr;
+	HANDLE sem; 
 	void *arg;
 };
 extern  "C" void handlerWithArg(WithArg *);
@@ -11,7 +11,7 @@ extern  "C" void handlerWithArg(WithArg *);
 class Thread
 {
 	HANDLE threadH;
-	Lock lock;
+	HANDLE semH;
 	WithArg *withArg;
 	ThreadAttributes *attributes;
 public:
@@ -33,6 +33,7 @@ public:
 	{
 		if(attributes)
 			delete attributes;
+		CloseHandle(semH);
 	}
 	void setAttributes(ThreadAttributes *attr)
 	{
