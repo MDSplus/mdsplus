@@ -130,7 +130,7 @@ void EventHandler::triggerAndWait()
 	lock.unlock();
 	
 //Wait termination WITHOUT locking Event data strucures
-	for(int i = 0; i < numSems; i++)
+	for(i = 0; i < numSems; i++)
 		sems[i]->wait();
 }
 
