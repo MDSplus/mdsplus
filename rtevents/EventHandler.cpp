@@ -110,28 +110,21 @@ void EventHandler::triggerAndWait()
 	lock.lock();
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
-	int numSems = 0;
-	while(currNotifier)
-	{
-		numSems++;
-		currNotifier = currNotifier->getNext();
-	}
-	UnnamedSemaphore **sems = new UnnamedSemaphore*[numSems];
-	
+
 //First pass: asynchronous triggers
-	int i = 0;
-	currNotifier = (Notifier *)notifierHead.getAbsAddress();
 	while(currNotifier)
 	{
 		currNotifier->synchTrigger();
-		sems[i] = currNotifier->getReplySemaphore();
+		currNotifier = currNotifier->getNext();
+	}
+	//Second pass: wait termination
+	currNotifier = (Notifier *)notifierHead.getAbsAddress();
+	while(currNotifier)
+	{
+		currNotifier->waitTermination();
 		currNotifier = currNotifier->getNext();
 	}
 	lock.unlock();
-	
-//Wait termination WITHOUT locking Event data strucures
-	for(i = 0; i < numSems; i++)
-		sems[i]->wait();
 }
 
 bool EventHandler::triggerAndWait(Timeout &timeout)
