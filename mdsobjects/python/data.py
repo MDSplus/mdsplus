@@ -433,7 +433,7 @@ class Data(object):
         @return: Returns new value of the tdi variable
         """
         from MDSobjects.compound import Function
-        return Function((152,Function((284,str(tdivarname))),self)).evaluate()
+        return Function(opcode='equals',args=(Function(opcode='public',args=(str(tdivarname),)),self)).evaluate()
 
     def getTdiVar(tdivarname):
         """Get value of tdi public variable
@@ -442,7 +442,7 @@ class Data(object):
         @rtype: Data"""
         from MDSobjects.compound import Function
         try:
-            return Function((284,str(tdivarname))).evaluate()
+            return Function(opcode='public',args=(str(tdivarname),)).evaluate()
         except:
             return None
     getTdiVar=staticmethod(getTdiVar)
