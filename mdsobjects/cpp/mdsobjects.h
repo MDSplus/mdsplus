@@ -1529,6 +1529,7 @@ public:
 		virtual Data *getData();
 		virtual void putData(Data *data);
 		virtual void deleteData();
+		virtual void resolveNid(){}
 
 
 		int getNid() { return nid;}
@@ -1618,6 +1619,7 @@ public:
 		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 		void *convertToDsc();
+		void resolveNid();
 	};
 	
 	
@@ -1942,6 +1944,11 @@ extern "C" void TreeRestoreContext(void *ctx);
 		Tree(char *name, int shot);
 
 		~Tree();
+
+		static void lock();
+		static void unlock();
+		
+		
 		TreeNode *getNode(char *path);
 	
 		TreeNode *getNode(TreePath *path);
