@@ -1,4 +1,5 @@
 #include "EventHandler.h"
+#include "ExitHandler.h"
 
 void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 {
@@ -106,9 +107,10 @@ void EventHandler::clean(SharedMemManager *memManager)
 }
 
 
-void EventHandler::triggerAndWait()
+void EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memManager)
 {
 	waitLock.lock();
+	setData(buf, size, memManager);
 	lock.lock();
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();

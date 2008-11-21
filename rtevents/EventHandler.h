@@ -57,7 +57,7 @@ public:
 	void removeListener(void *notifierAddr, SharedMemManager *memManager);
 	void trigger();
 	void watchdogTrigger();
-	void triggerAndWait();
+	void triggerAndWait(char *buf, int size, SharedMemManager *memManager);
 	bool triggerAndWait(Timeout &);
 	bool corresponds(char *name);
 	void clean(SharedMemManager *memManager);

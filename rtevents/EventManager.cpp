@@ -99,10 +99,10 @@ void EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMe
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, memManager);
+			//currHandler->setData(buf, size, memManager);
 			if(currHandler->isCatchAll())
 				currHandler->setName(eventName, memManager);
-			currHandler->triggerAndWait();
+			currHandler->triggerAndWait(buf, size, memManager);
 		}
 		currHandler = currHandler->getNext();
 	}
