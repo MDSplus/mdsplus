@@ -9,6 +9,7 @@ void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 	dataBuffer = NULL;
 	setNext(NULL);
 	lock.initialize();
+	waitLock.initialize();
 	catchAll = false;
 }
 
@@ -19,6 +20,7 @@ void EventHandler::initialize()
 	dataBuffer = NULL;
 	setNext(NULL);
 	lock.initialize();
+	waitLock.initialize();
 	catchAll = true;
 }
 void EventHandler::setName(char *inName, SharedMemManager *memManager)
@@ -65,8 +67,8 @@ void EventHandler::removeListener(void *notifierAddr, SharedMemManager *memManag
 			{
 				currNotifier->getPrev()->setNext(currNotifier->getNext());
 			}
-			currNotifier->dispose();
-			memManager->deallocate((char *)currNotifier, sizeof(Notifier));
+			currNotifier->dispose(false, memManager);
+			//memManager->deallocate((char *)currNotifier, sizeof(Notifier));
 			break;
 		}
 		currNotifier = currNotifier->getNext();
@@ -95,8 +97,7 @@ void EventHandler::clean(SharedMemManager *memManager)
 			{
 				currNotifier->getPrev()->setNext(currNotifier->getNext());
 			}
-			currNotifier->dispose(true);//Dispose only semaphores
-			memManager->deallocate((char *)currNotifier, sizeof(Notifier));
+			currNotifier->dispose(true, memManager);//Dispose only semaphores
 		}
 		currNotifier = nextNotifier;
 	}
@@ -107,24 +108,38 @@ void EventHandler::clean(SharedMemManager *memManager)
 
 void EventHandler::triggerAndWait()
 {
+	waitLock.lock();
 	lock.lock();
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
 
+//Count Notifiers
+	int numNotifiers = 0;
+	while(currNotifier)
+	{
+		numNotifiers++;
+		currNotifier = currNotifier->getNext();
+	}
+	Notifier **notifiers = new Notifier*[numNotifiers];
+
+
+	currNotifier = (Notifier *)notifierHead.getAbsAddress();
 //First pass: asynchronous triggers
+	int i = 0;
 	while(currNotifier)
 	{
 		currNotifier->synchTrigger();
+		notifiers[i] = currNotifier;
 		currNotifier = currNotifier->getNext();
 	}
-	//Second pass: wait termination
-	currNotifier = (Notifier *)notifierHead.getAbsAddress();
-	while(currNotifier)
-	{
-		currNotifier->waitTermination();
-		currNotifier = currNotifier->getNext();
-	}
+
 	lock.unlock();
+
+	ExitHandler::atExit(new WaitLockTerminator(&waitLock));
+	for(i = 0; i < numNotifiers; i++)
+		notifiers[i]->waitTermination();
+	ExitHandler::dispose();
+	waitLock.unlock();
 }
 
 bool EventHandler::triggerAndWait(Timeout &timeout)

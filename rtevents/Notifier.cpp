@@ -20,6 +20,7 @@ void Notifier::initialize(ThreadAttributes *threadAttr, Runnable *runnable, void
 	
 	
 	synch = false;
+	finished = true;
 	nxt = NULL;
 	prv = NULL;
 }
@@ -57,9 +58,11 @@ void Notifier::waitTermination()
 {
 	if(synch)
 	{
+		finished = false;
 		try {
 			replySem.wait();
 		}catch(SystemException *exc){}
+		finished = true;
 	}
 	synch = false;
 }
@@ -71,9 +74,11 @@ bool Notifier::waitTermination(Timeout &timeout)
 	try {
 		if(synch)
 		{
+			finished = false;
 			//if(sem_timedwait(&replySem, &waitTimeout))
 			if(replySem.timedWait(timeout))
 				timeoutOccurred = true;
+			finished = true;
 		}
 		synch = false;
 		return timeoutOccurred;
@@ -82,9 +87,9 @@ bool Notifier::waitTermination(Timeout &timeout)
 
 //Terminates waiting thread and release dynamic memory
 //To be called only by the process which called initialize()
-void Notifier::dispose(bool semaphoresOnly)
+void Notifier::dispose(bool semaphoresOnly, SharedMemManager *memManager)
 {
-	if(!semaphoresOnly)
+	if(!semaphoresOnly) //Notifier instance is being disposed by the same listener process which created it
 	{
 		notified->dispose();
 		watchdogNotified->dispose();
@@ -93,10 +98,24 @@ void Notifier::dispose(bool semaphoresOnly)
 		thread->join(); //wait for actual termination of the underlying thread, once awakened
 		watchdogThread.join();
 		delete thread;
+		triggerSem.dispose();
+		replySem.dispose();
+		watchdogSem.dispose();
+		memManager->deallocate((char *)this, sizeof(Notifier));
 	}
-	triggerSem.dispose();
-	replySem.dispose();
-	watchdogSem.dispose();
+	else 
+//Notifier instance is being disposed possibly by another process in a clean operation
+//it cannot be deallocated immediately, but only after either
+//when a sender waiting for termination terminates or a timeout expires (in the case also the sender was gone)
+ 
+	{
+		triggerSem.dispose();
+		watchdogSem.dispose();
+		//Trigger possible waiting sender
+		replySem.post();
+		Thread *terminatorThread = new Thread();
+		terminatorThread->start(new NotifierTerminator(this, memManager), (void *)terminatorThread);
+	}
 }
 
 //Check for orphan 

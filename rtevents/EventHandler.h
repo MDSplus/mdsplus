@@ -5,6 +5,7 @@
 #include "Notifier.h"
 #include "RelativePointer.h"
 #include "Timeout.h"
+#include "ExitHandler.h"
 
 //Class EventHandler manages the occurrence of a given event. 
 //Events can be associated with either an ID integer or a char string.
@@ -15,6 +16,7 @@ class EventHandler
 	RelativePointer name;
 	RelativePointer notifierHead;
 	Lock lock;
+	Lock waitLock;
 	RelativePointer nxt;
 	RelativePointer dataBuffer;
 	int dataSize;
@@ -59,6 +61,20 @@ public:
 	bool triggerAndWait(Timeout &);
 	bool corresponds(char *name);
 	void clean(SharedMemManager *memManager);
+};
+
+class WaitLockTerminator: public Runnable
+{
+	Lock *lock;
+public:
+	WaitLockTerminator(Lock *lock)
+	{
+		this->lock = lock;
+	}
+	void run(void *arg)
+	{
+		lock->unlock();
+	}
 };
 
 

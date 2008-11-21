@@ -6,6 +6,8 @@
 #include "RelativePointer.h"
 #include "Timeout.h"
 #include "UnnamedSemaphore.h"
+#include "SharedMemManager.h"
+#include "Delay.h"
 
 class Notified;
 class WatchdogNotified;
@@ -14,6 +16,7 @@ class  Notifier
 {
 	friend class Notified;
 	friend class WatchdogNotified;
+	friend class NotifierTerminator;
 	Thread *thread;
 	Thread watchdogThread;
 	UnnamedSemaphore triggerSem;
@@ -23,6 +26,7 @@ class  Notifier
 	WatchdogNotified *watchdogNotified;
 	RelativePointer nxt, prv; 
 	bool synch;
+	bool finished;
 
 public:
 bool isSynch() { return synch;}
@@ -36,7 +40,7 @@ void synchTrigger();
 void watchdogTrigger();
 bool waitTermination(Timeout &);
 void waitTermination();
-void dispose(bool semaphoresOnly = false);
+void dispose(bool semaphoresOnly, SharedMemManager *memManager);
 bool isOrphan();
 };
 
@@ -70,6 +74,7 @@ public:
 			{
 				printf("Notifier exited\n");
 				delete rtn;
+				ntf->finished = true;
 				return;
 			}
 			rtn->run(arg);
@@ -105,5 +110,39 @@ public:
 		}
 	}
 };
+
+class NotifierTerminator: public Runnable
+{
+	Notifier *ntf;
+	SharedMemManager *memManager;
+public:
+	NotifierTerminator(Notifier *ntf, SharedMemManager *memManager)
+	{
+		this->ntf = ntf;
+		this->memManager = memManager;
+	}
+
+	virtual void run(void *threadPtr)
+	{
+		Delay delay(100);
+		for(int i = 0; i < 10; i++) //1 Sec timeout
+		{
+			delay.wait();
+			if(ntf->finished)
+			{
+				ntf->replySem.dispose();
+				memManager->deallocate((char *)ntf, sizeof(Notifier));
+				delete((Thread *)threadPtr);
+				return;
+			}
+		}
+//After timeout: remove Notifier anyway
+		ntf->replySem.dispose();
+		memManager->deallocate((char *)ntf, sizeof(Notifier));
+		delete((Thread *)threadPtr);
+	}
+};
+
+
 
 #endif /*NOTIFIER_H_*/

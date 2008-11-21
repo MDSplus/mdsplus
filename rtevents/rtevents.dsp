@@ -120,6 +120,10 @@ SOURCE=.\TCPMessageManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\WindowsExitHandler.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\WindowsSharedMemory.cpp
 # End Source File
 # Begin Source File
@@ -145,6 +149,10 @@ SOURCE=.\EventHandler.h
 # Begin Source File
 
 SOURCE=.\EventManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ExitHandler.h
 # End Source File
 # Begin Source File
 
