@@ -676,6 +676,7 @@ protected:
 			setSpecific(data, 1, DTYPE_BU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
+		Data* deserialize();
 	};
 
 	class Int16Array: public Array

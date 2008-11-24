@@ -738,6 +738,12 @@ ostream& operator<<(ostream& output, Data *data)
 	return output;
 }
 
+EXPORT Data *Uint8Array::deserialize()
+{
+    return (Data *)deserializeData(ptr, arsize);
+}
+
+
 
 //Required in Windows Debug configuation to propely de-allocate native arrays
 EXPORT void MDSobjects::deleteNativeArray(char *array){delete [] array;}
