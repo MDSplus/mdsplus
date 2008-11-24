@@ -23,7 +23,7 @@ __TreeSwitchDbid.restype=_C.c_void_p
 __TreeDoMethod=__TreeShr._TreeDoMethod
 __TreeDoMethod.argtypes=[_C.c_void_p,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
 __TreePutRecord=__TreeShr._TreePutRecord
-__TreePutRecord.argtypes=[_C.POINTER(_C.c_void_p),_C.c_int,_C.POINTER(descriptor),_C.c_int]
+__TreePutRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd),_C.c_int]
 __TreeTurnOn=__TreeShr._TreeTurnOn
 __TreeTurnOn.argtypes=[_C.c_void_p,_C.c_int]
 __TreeTurnOff=__TreeShr._TreeTurnOff
@@ -86,18 +86,7 @@ def TreeFindNodeTags(n):
 
 def TreePutRecord(n,value):
     """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
-    try:
-        n=TreeFindNode(n)
-    except _C.ArgumentError:
-        pass
-    try:
-        c_nid=_C.c_int(n)
-    except TypeError:
-        try:
-            c_nid=_C.c_int(n.nid)
-        except AttributeError:
-            raise TypeError,'Argument must be a path, TreeNode or integer'
-    status=__TreePutRecord(c_nid,_C.pointer(descriptor(value)),0)
+    status=__TreePutRecord(n.tree.ctx,n.nid,_C.pointer(descriptor(value).toXd()),0)
     if (status & 1):
         return status
     else:
