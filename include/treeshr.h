@@ -10,7 +10,7 @@ typedef long long  _int64;
 #else
 #define EXPORT
 #endif
-
+#include <mdstypes.h>
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
 

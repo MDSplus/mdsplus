@@ -12125,7 +12125,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
           ac_config_headers="$ac_config_headers include/config.h"
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -12681,6 +12681,7 @@ do
   "mdsip_xio/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdsip_xio/Makefile" ;;
   "mdslib/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdslib/Makefile" ;;
   "mdslibidl/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdslibidl/Makefile" ;;
+  "mdsobjects/cpp/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/Makefile" ;;
   "mdsmisc/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdsmisc/Makefile" ;;
   "mdsshr/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdsshr/Makefile" ;;
   "mdssql/Makefile" ) CONFIG_FILES="$CONFIG_FILES mdssql/Makefile" ;;
@@ -12692,6 +12693,7 @@ do
   "rpm/Makefile" ) CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;
   "rpm/envsyms" ) CONFIG_FILES="$CONFIG_FILES rpm/envsyms" ;;
   "rpm/post_install_script" ) CONFIG_FILES="$CONFIG_FILES rpm/post_install_script" ;;
+  "rtevents/Makefile" ) CONFIG_FILES="$CONFIG_FILES rtevents/Makefile" ;;
   "scripts/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
   "servershr/Makefile" ) CONFIG_FILES="$CONFIG_FILES servershr/Makefile" ;;
   "setevent/Makefile" ) CONFIG_FILES="$CONFIG_FILES setevent/Makefile" ;;

@@ -954,6 +954,7 @@ mdsjet/Makefile
 mdsip_xio/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
+mdsobjects/cpp/Makefile
 mdsmisc/Makefile
 mdsshr/Makefile 
 mdssql/Makefile
@@ -965,6 +966,7 @@ roam/Makefile
 rpm/Makefile
 rpm/envsyms
 rpm/post_install_script
+rtevents/Makefile
 scripts/Makefile
 servershr/Makefile 
 setevent/Makefile

@@ -21,6 +21,8 @@ PARTS = \
         xmdsshr \
 	xtreeshr \
 	cacheshr \
+	mdsobjects/cpp \
+	rtevents \
         @MDSTCPIP@ \
         dwscope \
         mdslibidl \
