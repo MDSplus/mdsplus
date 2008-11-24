@@ -1,6 +1,6 @@
 public fun L9109__add(in _path, out _nidout)
 {
-	DevAddStart(_path, 'L9109', 36, _nidout);
+	DevAddStart(_path, 'L9109', 37, _nidout);
 
 	/******** GENERAL ********/
 
@@ -65,6 +65,7 @@ public fun L9109__add(in _path, out _nidout)
 
 	DevAddAction(_path //':INIT_ACTION', 'PULSE_PREPARATION', 'INIT', 50,'DMWR_SERVER', getnci(_path, 'fullpath'), _nid);
 	DevAddAction(_path //':ARM_ACTION', 'INIT', 'ARM', 50,'DMWR_SERVER', getnci(_path, 'fullpath'), _nid);
+	DevAddAction(_path //':RESET_ACTION', 'STORE', 'RESET', 50,'DMWR_SERVER', getnci(_path, 'fullpath'), _nid);
 
     	DevAddEnd();
 }

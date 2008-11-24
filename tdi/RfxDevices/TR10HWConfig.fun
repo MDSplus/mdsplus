@@ -50,7 +50,8 @@ public fun TR10HWConfig(in _board_id)
 
 
 /* Set clock functions on external clock */
-	_clock_source = byte(_TR10_TRG_SOURCE_EXTERNAL);
+/*	_clock_source = byte(_TR10_TRG_SOURCE_EXTERNAL);*/
+	_clock_source = byte(_TR10_CLK_SOURCE_EXTERNAL);
 	TR10->TR10_Clk_SetClockMode(val(_handle), val(_clock_source), val(_TR10_CLK_NO_EXT_CLOCK),
 		val(0B), val(_TR10_CLK_RISING_EDGE), val(_TR10_CLK_TERMINATION_OFF), val(long(1)));
 		  
