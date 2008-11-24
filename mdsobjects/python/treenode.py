@@ -473,7 +473,7 @@ class TreeNode(Data):
         from MDSobjects._treeshr import TreePutRecord
         try:
             Tree.lock()
-            TreePutRecord(self.tree.ctx,self.nid,data)
+            TreePutRecord(self,data)
         finally:
             Tree.unlock()
         return
