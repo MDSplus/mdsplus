@@ -5,7 +5,7 @@ from MDSobjects._mdsclasses import *
 from MDSobjects.data import makeData
 from MDSobjects.treenode import TreeNode,TreePath,TreeNodeArray
 from MDSobjects.ident import Ident
-from MDSobjects.apd import Apd
+from MDSobjects.apd import Apd,Dictionary
 from MDSobjects.compound import *
 from MDSobjects._mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
 import numpy as _N
@@ -61,6 +61,9 @@ class descriptor(_C.Structure):
             self.__add_to_cache(value)
             return
         
+        if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
+            value=makeData(value)
+
         if isinstance(value,_N.ndarray):
             if str(value.dtype)[1:2]=='S':
                 for i in range(len(value)):
@@ -196,11 +199,22 @@ class descriptor(_C.Structure):
             self.__add_to_cache(value)
             return
 
+        if isinstance(value,Dictionary):
+            apd=descriptor(value.toApd())
+            self.length=10000
+            self.dtype=DTYPE_DSC
+            self.pointer=_C.cast(_C.pointer(apd),_C.POINTER(descriptor))
+            self.__add_to_cache(value)
+            self.__add_to_cache(apd)
+            return
+
         if isinstance(value,Apd):
             apd_a=descriptor_apd_a()
+            apd_a.dtype=value.dtype
             for i in range(len(value.descs)):
                 apd_a.dscptrs[i]=_C.pointer(descriptor(value.descs[i]))
             apd=descriptor_apd(_C.pointer(apd_a),len(value.descs))
+            apd.dtype=value.dtype
             self.length=10000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(apd),_C.POINTER(descriptor))
@@ -295,7 +309,7 @@ class descriptor(_C.Structure):
                     return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == DTYPE_IDENT):
                     return Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
-                raise TypeError,'Unsupported data type: ' + str(mdsdtypes(self.dtype))
+                raise TypeError,'Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype)
         if (self.dclass == CLASS_R):
             ans = _C.cast(_C.pointer(self),_C.POINTER(descriptor_r)).contents
             if self.dtype == DTYPE_WITH_UNITS:
@@ -362,8 +376,9 @@ class descriptor(_C.Structure):
                                   buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents)))
                 return TreeNodeArray(nids)
             try:
-                return makeArray(_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
-                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents)))
+                a=_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
+                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents))
+                return makeArray(a)
             except TypeError,e:
                 raise TypeError,'Arrays of type '+str(mdsdtypes(self.dtype))+' are unsupported'
             raise Exception,'Unsupported array type'
@@ -373,7 +388,11 @@ class descriptor(_C.Structure):
             descs=list()
             for i in range(descr.arsize/descr.length):
                 descs.append(apd_a.dscptrs[i].contents.value)
-            return Apd(tuple(descs))
+            ans=Apd(tuple(descs),descr.dtype)
+            if descr.dtype == DTYPE_DICTIONARY:
+                return Dictionary(ans)
+            else:
+                return ans
 
         if self.dclass == CLASS_CA:
             return MdsDecompress(self)

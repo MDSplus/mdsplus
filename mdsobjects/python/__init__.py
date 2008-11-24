@@ -14,7 +14,7 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 """
 
 from pydoc import TextDoc
-from MDSobjects.apd import Apd
+from MDSobjects.apd import Apd,Dictionary
 from MDSobjects.array import makeArray,Float32Array,Float64Array,Int128Array,Int16Array,Int32Array,Int64Array,Int8Array,StringArray,Uint128Array,Uint16Array,Uint32Array,Uint64Array,Uint8Array
 from MDSobjects.compound import Action,Conglom,Dependency,Dimension,Dispatch,Function,Method,Procedure,Program,Range,Routine,Signal,Window
 from MDSobjects.data import Data,EmptyData,getUnits,getError,getValuePart,getDimension,data,decompile,evaluate,rawPart,makeData
