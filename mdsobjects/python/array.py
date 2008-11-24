@@ -6,7 +6,7 @@ from MDSobjects.scalar import Scalar
 
 def makeArray(value):
     if isinstance(value,Array):
-        return copy.deepcopy(value)
+        return value
     if isinstance(value,Scalar):
         return makeArray((value._value,))
     if isinstance(value,tuple) | isinstance(value,list):
@@ -16,6 +16,8 @@ def makeArray(value):
             return StringArray(value)
         if str(value.dtype) == 'bool':
             return makeArray(value.__array__(numpy.uint8))
+        if str(value.dtype) == 'object':
+            raise TypeError,'cannot make Array out of an numpy.ndarray of dtype object'
         exec 'ans='+str(value.dtype).capitalize()+'Array(value)'
         return ans
     if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
@@ -134,6 +136,11 @@ class Int64Array(Array):
 
 class Uint8Array(Array):
     """8-bit unsigned number"""
+    def deserialize(self):
+        """Return data item if this array was returned from serialize.
+        @rtype: Data
+        """
+        return Data.deserialize(self)
 
 class Uint16Array(Array):
     """16-bit unsigned number"""
