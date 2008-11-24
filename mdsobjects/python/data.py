@@ -1,6 +1,7 @@
 import numpy
 import copy
 from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiExecute
+from MDSobjects._mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -64,12 +65,23 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str):
+    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
         from MDSobjects.scalar import makeScalar
         return makeScalar(value)
-    if isinstance(value,numpy.ndarray) | isinstance(value,tuple) | isinstance(value,list):
+    if isinstance(value,tuple) or (isinstance(value,numpy.ndarray) and isinstance(value.dtype,numpy.object)):
+        from MDSobjects.apd import Apd
+        return Apd(tuple(value),DTYPE_TUPLE)
+    if isinstance(value,list):
+        from MDSobjects.apd import Apd
+        return Apd(tuple(value),DTYPE_LIST)
+    if isinstance(value,numpy.ndarray):
         from MDSobjects.array import makeArray
         return makeArray(value)
+    if isinstance(value,dict):
+        from MDSobjects.apd import Dictionary
+        return Dictionary(value)
+    else:
+        raise TypeError,'Cannot make MDSplus data type from type: %s' % (str(type(value)),)
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
@@ -457,6 +469,9 @@ class Data(object):
     """String: x.__str__() <==> str(x)
     @type: String"""
 
+    __repr__=decompile
+    """Representation"""
+
 
     def data(self):
         """Return primitimive value of the data.
@@ -651,6 +666,21 @@ class Data(object):
         @rtype: Float32Array
         """
         return Data.execute('sind($)',self)
+
+    def serialize(self):
+        """Return Uint8Array binary representation.
+        @rtype: Uint8Array
+        """
+        return Data.execute('SerializeOut($)',self)
+
+    def deserialize(data):
+        """Return Data from serialized buffer.
+        @param data: Buffer returned from serialize.
+        @type data: Uint8Array
+        @rtype: Data
+        """
+        return Data.execute('SerializeIn($)',data)
+    deserialize=staticmethod(deserialize)
 
 class EmptyData(Data):
     """No Value"""
