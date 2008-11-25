@@ -135,7 +135,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	{
 	  *po = in;
 	  po->pointer = (struct descriptor *) (po + 1);
-          memcpy(po->pointer,in_ptr+12,in.length);
+          memcpy(po->pointer,in_ptr+12,in.l_length);
 	}
 	bytes_out = align(sizeof(struct descriptor_xs) + in.l_length,sizeof(void *));
 	bytes_in = 12 + in.l_length;
@@ -322,8 +322,6 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
             }
           }
 	  po->pointer = (char *) po + bytes_out;
-          for (i=0,pdo=(struct descriptor **)po->pointer;i<num_dsc;i++)
-            pdo[i] = (struct descriptor *)*(int *)&in_ptr[bytes_in];
 	  if (pi->aflags.coeff)
 	  {
             int offset;
@@ -675,10 +673,10 @@ STATIC_ROUTINE int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned
           out_ptr += num_dsc * 4;
           memset(dscptr, 0, num_dsc * 4);
         }
-	bytes_in = 16
+	bytes_in = sizeof(struct descriptor_a)
 		+ (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
 		+ (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0) + inp->arsize;
-	bytes_out = sizeof(struct descriptor_a)
+	bytes_out = 16
 		+ (inp->aflags.coeff ? sizeof(char *) + sizeof(int) * inp->dimct : 0)
 		+ (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0 + num_dsc * 4);
       /******************************
