@@ -13,19 +13,19 @@ import ctypes as _C
 import os
 
 class descriptor(_C.Structure):
-    indentation=0
     __cached_values={}
-    def __add_to_cache(self,value):
-        descriptor.__cached_values.setdefault(_C.cast(self.pointer,_C.c_void_p).value,value)
+
+    def addToCache(self,value):
+        try:
+            cache=self.__dict__['_cache']
+        except:
+            cache=self.__dict__['_cache']=list()
+        cache.append(value)
         return
 
-    def __remove_from_cache(self):
-        if self.pointer:
-            try:
-                descriptor.__cached_values.pop(_C.cast(self.pointer,_C.c_void_p).value)
-            except:
-                pass
-        return
+    def nextIdx(self):
+        descriptor.__next_idx=descriptor.__next_idx+1
+        return descriptor.__next_idx
     
     def __init__(self,value=None):
         self.dclass=CLASS_S
@@ -38,13 +38,13 @@ class descriptor(_C.Structure):
             self.length=4
             self.dtype=DTYPE_L
             self.pointer=_C.cast(_C.pointer(_C.c_int(value)),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
         if isinstance(value,long):
             self.length=8
             self.dtype=DTYPE_Q
             self.pointer=_C.cast(_C.pointer(_C.c_long(value)),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
         if isinstance(value,str):
             str_d=descriptor_string(value)
@@ -52,13 +52,13 @@ class descriptor(_C.Structure):
             self.length=d.length
             self.dtype=d.dtype
             self.pointer=d.pointer
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
         if isinstance(value,float):
             self.length=8
             self.dtype=DTYPE_NATIVE_DOUBLE
             self.pointer=_C.cast(_C.pointer(_C.c_double(value)),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
         
         if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
@@ -72,7 +72,7 @@ class descriptor(_C.Structure):
             self.length=10000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(a),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
 
         if (not hasattr(value,'_doing_units')) & hasattr(value,'_units'):
@@ -88,8 +88,8 @@ class descriptor(_C.Structure):
             self.length=1000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(r_d),_C.POINTER(descriptor))
-            self.__add_to_cache(r_d)
-            self.__add_to_cache(value)
+            self.addToCache(r_d)
+            self.addToCache(value)
             delattr(value,'_doing_units')
             return
 
@@ -114,8 +114,8 @@ class descriptor(_C.Structure):
             self.length=1000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(r_d),_C.POINTER(descriptor))
-            self.__add_to_cache(r_d)
-            self.__add_to_cache(value)
+            self.addToCache(r_d)
+            self.addToCache(value)
             delattr(value,'_doing_help')
             return
                 
@@ -132,8 +132,8 @@ class descriptor(_C.Structure):
             self.length=1000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(r_d),_C.POINTER(descriptor))
-            self.__add_to_cache(r_d)
-            self.__add_to_cache(value)
+            self.addToCache(r_d)
+            self.addToCache(value)
             delattr(value,'_doing_error')
             return
 
@@ -163,8 +163,8 @@ class descriptor(_C.Structure):
             self.length=1000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(c_d),_C.POINTER(descriptor))
-            self.__add_to_cache(c_d)
-            self.__add_to_cache(value)
+            self.addToCache(c_d)
+            self.addToCache(value)
             return
 
         if (isinstance(value,TreeNode)):
@@ -172,7 +172,7 @@ class descriptor(_C.Structure):
             self.length=4
             self.dtype=DTYPE_NID
             self.pointer=_C.cast(_C.pointer(_C.c_int(value.nid)),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
 
         if (isinstance(value,TreeNodeArray)):
@@ -187,7 +187,7 @@ class descriptor(_C.Structure):
             self.length=d.length
             self.dtype=DTYPE_PATH
             self.pointer=d.pointer
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
 
         if isinstance(value,Ident):
@@ -196,31 +196,36 @@ class descriptor(_C.Structure):
             self.length=d.length
             self.dtype=DTYPE_IDENT
             self.pointer=d.pointer
-            self.__add_to_cache(value)
+            self.addToCache(value)
             return
 
         if isinstance(value,Dictionary):
             apd=descriptor(value.toApd())
-            self.length=10000
-            self.dtype=DTYPE_DSC
-            self.pointer=_C.cast(_C.pointer(apd),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
-            self.__add_to_cache(apd)
+            self.length=apd.length
+            self.dtype=apd.dtype
+            self.pointer=apd.pointer
+            self.addToCache(value)
+            self.addToCache(apd)
             return
 
         if isinstance(value,Apd):
             apd_a=descriptor_apd_a()
-            apd_a.dtype=value.dtype
+            ds=list()
+            self.addToCache(ds)
             for i in range(len(value.descs)):
-                apd_a.dscptrs[i]=_C.pointer(descriptor(value.descs[i]))
+                ds.append(descriptor(value.descs[i]))
+                if ds[-1].dtype == DTYPE_DSC:
+                    apd_a.dscptrs[i]=ds[-1].pointer
+                else:
+                    apd_a.dscptrs[i]=_C.pointer(ds[-1])
             apd=descriptor_apd(_C.pointer(apd_a),len(value.descs))
             apd.dtype=value.dtype
             self.length=10000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(apd),_C.POINTER(descriptor))
-            self.__add_to_cache(value)
-            self.__add_to_cache(apd_a)
-            self.__add_to_cache(apd)
+            self.addToCache(value)
+            self.addToCache(apd_a)
+            self.addToCache(apd)
             return
         if not isinstance(value,_N.generic):
             raise TypeError,'Cannot make descriptor of '+str(type(value))
@@ -228,14 +233,8 @@ class descriptor(_C.Structure):
         self.dtype=mdsdtypes.fromNumpy(value)
         self.length=value.nbytes
         self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),_C.POINTER(descriptor))
-        self.__add_to_cache(a)
+        self.addToCache(a)
         return
-            
-
-    def __del__(self):
-        self.__remove_from_cache()
-
-            
 
     def __str__(self):
         if (self.length == 4):
@@ -250,7 +249,7 @@ class descriptor(_C.Structure):
         elif (self.length == 2):
             ptrstr=", value="+str(_C.cast(self.pointer,_C.POINTER(_C.c_ushort)).contents.value)
         else:
-            if (bool(self.pointer)==True and (self.dtype == CLASS_XD or self.length > 0)):
+            if (bool(self.pointer)==True and (self.dtype == DTYPE_DSC or self.length > 0)):
                 ptrstr=", pointer="+str(self.pointer)
             else:
                 ptrstr=", pointer=NULL"
@@ -401,6 +400,15 @@ class descriptor(_C.Structure):
 
     def toXd(self):
         return MdsCopyDxXd(self)
+
+    def copy(self):
+        xd=self.toXd()
+        if xd.dtype == DTYPE_DSC and xd.l_length > 0:
+            ans=_C.cast(xd.pointer,_C.POINTER(descriptor)).contents
+            ans.addToCache(xd)
+        else:
+            ans=descriptor(None)
+        return ans
 
         
 descriptor._fields_ = [("length",_C.c_ushort),

@@ -1,6 +1,6 @@
 import numpy
 import copy
-from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiExecute
+from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile
 from MDSobjects._mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
 
 def getUnits(item):
@@ -38,7 +38,7 @@ def getDimension(item,idx=0):
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    return TdiExecute('data($)',(item,)).value
+    return TdiCompile('data($)',(item,)).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
@@ -434,7 +434,7 @@ class Data(object):
     def execute(expr,*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        return TdiExecute(expr,args)
+        return TdiCompile(expr,args).evaluate()
     execute=staticmethod(execute)
 
     def setTdiVar(self,tdivarname):
@@ -477,7 +477,7 @@ class Data(object):
         """Return primitimive value of the data.
         @rtype: Scalar,Array
         """
-        return TdiExecute("data($)",(self,)).value
+        return self.execute("data($)",(self,)).value
 
     def evaluate(self):
         """Return the result of TDI evaluate(this).

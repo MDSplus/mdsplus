@@ -86,7 +86,7 @@ def TreeFindNodeTags(n):
 
 def TreePutRecord(n,value):
     """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
-    status=__TreePutRecord(n.tree.ctx,n.nid,_C.pointer(descriptor(value).toXd()),0)
+    status=__TreePutRecord(n.tree.ctx,n.nid,_C.pointer(descriptor(value)),0)
     if (status & 1):
         return status
     else:

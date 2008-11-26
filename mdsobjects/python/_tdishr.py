@@ -14,38 +14,6 @@ def restoreContext():
     if hasattr(Tree,'_activeTree'):
         Tree._activeTree.restoreContext()
         
-def TdiExecute(expression,args=None):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from MDSobjects.tree import Tree
-    xd=descriptor_xd()
-    if args is None:
-        try:
-            Tree.lock()
-            restoreContext()
-            status=TdiShr.TdiExecute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
-        finally:
-            Tree.unlock()
-    else:
-        if isinstance(args,tuple):
-            __execute=TdiShr.TdiExecute
-            exp='__execute(pointer(descriptor(expression))'
-            for i in range(len(args)):
-                exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
-            exp=exp+',pointer(xd),c_void_p(-1))'
-            try:
-                Tree.lock()
-                restoreContext()
-                status=eval(exp)
-            finally:
-                Tree.unlock()
-        else:
-            raise TypeError,'Arguments must be passed as a tuple'
-    if (status & 1 != 0):
-        return xd.value
-    else:
-        raise TdiException,MdsGetMsg(status,"Error executing expression")
-
 def TdiCompile(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
     from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
@@ -57,7 +25,7 @@ def TdiCompile(expression,args=None):
         Tree.lock()
         restoreContext()
         if args is None:
-            status=__execute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
+            status=TdiShr.TdiCompile(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
         else:
             if isinstance(args,tuple):
                 if len(args) > 0:
@@ -65,9 +33,9 @@ def TdiCompile(expression,args=None):
                         ans = TdiCompile(expression,args[0])
                         done=True
                 if not done:
-                    exp='__execute(pointer(descriptor(expression))'
+                    exp='TdiShr.TdiCompile(pointer(descriptor(expression))'
                     for i in range(len(args)):
-                        exp=exp+',pointer(descriptor(args[%d]).toXd())' % i
+                        exp=exp+',pointer(descriptor(args[%d]))' % i
                     exp=exp+',pointer(xd),c_void_p(-1))'
                     status=eval(exp)
             else:
@@ -105,7 +73,7 @@ def TdiEvaluate(value):
     try:
         Tree.lock()
         restoreContext()
-        status=TdiShr.TdiEvaluate(pointer(descriptor(value).toXd()),pointer(xd),c_void_p(-1))
+        status=TdiShr.TdiEvaluate(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
     finally:
         Tree.unlock()
     if (status & 1 != 0):
@@ -121,7 +89,7 @@ def TdiData(value):
     try:
         Tree.lock()
         restoreContext()
-        status=TdiShr.TdiData(pointer(descriptor(value).toXd()),pointer(xd),c_void_p(-1))
+        status=TdiShr.TdiData(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
     finally:
         Tree.unlock()
     if (status & 1 != 0):
