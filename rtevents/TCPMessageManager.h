@@ -26,6 +26,7 @@ class TCPHandler:public Runnable
 {
 	IPAddress *addr;
 	MessageManager *manager;
+
 public:
 	TCPHandler(MessageManager *manager, IPAddress *addr)
 	{
@@ -41,10 +42,10 @@ class TCPMessageManager:public MessageManager
 {
 	friend class TCPMessageSender;
 	
-	bool TCPMessageManager::connectSender(NetworkAddress *addr);
+	bool connectSender(NetworkAddress *addr);
 
 public:
-	virtual bool TCPMessageManager::sendMessage(NetworkAddress *addr, char *buf, int bufLen);
+	virtual bool sendMessage(NetworkAddress *addr, char *buf, int bufLen);
 	virtual MessageSender *getSender(NetworkAddress *addr);
 	virtual bool connectReceiver(NetworkAddress *addr, MessageReceiver *receiver);
 	virtual unsigned int fromNative(unsigned int n);
