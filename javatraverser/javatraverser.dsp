@@ -579,6 +579,10 @@ SOURCE=.\Aurora14Setup.java
 # End Source File
 # Begin Source File
 
+SOURCE=.\CAENV1731Setup.java
+# End Source File
+# Begin Source File
+
 SOURCE=.\DIO2EncoderSetup.java
 # End Source File
 # Begin Source File
