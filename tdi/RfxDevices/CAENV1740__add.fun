@@ -20,7 +20,7 @@ public fun CAENV1740__add(in _path, out _nidout)
     DevAddNode(_path // ':END_IDX', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':START_TIME', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':END_TIME', 'NUMERIC', 1E-6, *, _nid);
-    DevAddNode(_path // ':CONT_SAMPL', 'NUMERIC', 1E-6, *, _nid);
+    DevAddNode(_path // ':CONT_SAMPL', 'TEXT', 'NO', *, _nid);
 	for (_c = 1; _c <=8; _c++)
     {
         _cn = _path // '.GROUP_' // TEXT(_c, 1);
