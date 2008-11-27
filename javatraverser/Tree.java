@@ -250,13 +250,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    JPanel mjp = new JPanel();
 	    mjp.setLayout(new BorderLayout());
 	    JPanel jp1 = new JPanel();
-	    jp1.setLayout(new GridLayout(4,1));
+	    jp1.setLayout(new GridLayout(3,1));
 	    jp1.add(new JLabel("Tree: "));
 	    jp1.add(new JLabel("Shot: "));
         open_edit = new JCheckBox("edit");
         jp1.add(open_edit);
-        open_realtime = new JCheckBox("realtime");
-        jp1.add(open_realtime);
 	    mjp.add(jp1, "West");
 	    jp1 = new JPanel();
 	    jp1.setLayout(new GridLayout(3,1));
@@ -292,7 +290,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
         open_edit.setSelected(false);
-        open_realtime.setSelected(false);
 	    open_readonly.setSelected(false);
 	}
     }
@@ -332,7 +329,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    }
 	    if(is_editable != open_edit.isSelected())
 	        pop = null;
-	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected(), open_realtime.isSelected());
+	    open(exp.toUpperCase(), shot, open_edit.isSelected(), open_readonly.isSelected(), false);
 	    open_dialog.setVisible(false);
 	    frame.pack();
 	    repaint();
