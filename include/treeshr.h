@@ -444,10 +444,13 @@ extern EXPORT int _TreeGetSegmentInfo();
 
 extern EXPORT int TreeGetXNci();
 extern EXPORT int _TreeGetXNci();
+extern EXPORT int TreeSetXNci();
+extern EXPORT int _TreeSetXNci();
 extern EXPORT int TreeSetViewDate();
 extern EXPORT int _TreeSetViewDate();
 extern EXPORT int TreeSetCurrentShotId();
 extern EXPORT int TreeGetCurrentShotId();
+extern EXPORT int TreeSetDbiItm();
 
 
 #else
@@ -598,11 +601,13 @@ extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *di
 
 extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value);
 extern EXPORT int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
+extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor_xd *value);
+extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
 extern EXPORT int TreeSetViewDate(_int64 *date);
 extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
 extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
 extern EXPORT int TreeGetCurrentShotId(char *experiment);
-
+extern EXPORT int TreeSetDbiItm(int code, int value);
 
 #endif
 
