@@ -299,6 +299,10 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	a_tmp.aflags.bounds = bounds();
         a_tmp.dimct = dimct();
         set_arsize(a_tmp.arsize);
+	if (a_tmp.length != sizeof(void *)) {
+	  a_tmp.arsize=a_tmp.arsize/a_tmp.length*sizeof(void *);
+	  a_tmp.length=sizeof(void *);
+	}
 	bytes_in = 16
 		+ (pi->aflags.coeff ? sizeof(int) + sizeof(int) * pi->dimct : 0)
 		+ (pi->aflags.bounds ? sizeof(int) * (pi->dimct * 2) : 0);
@@ -335,7 +339,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
           po->arsize = num_dsc * sizeof(struct descriptor *);
 	}
 	bytes_out += pi->arsize;
-        bytes_in += pi->arsize;
+        bytes_in += num_dsc*sizeof(int);
       /******************************
       Each descriptor must be copied.
       ******************************/
@@ -638,7 +642,9 @@ STATIC_ROUTINE int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned
 	{
           int dscsize = 16 + (inp->aflags.coeff ? sizeof(int) + sizeof(int) * inp->dimct : 0)
                     + (inp->aflags.bounds ? sizeof(int) * (inp->dimct * 2) : 0);
-          LoadShort(inp->length, out_ptr);
+	  short length=sizeof(int);
+	  int arsize=sizeof(int)*num_dsc;
+          LoadShort(length, out_ptr);
           LoadChar(inp->dtype, out_ptr+2);
           LoadChar(inp->class,out_ptr+3);
           LoadInt(dscsize,out_ptr+4);
@@ -646,7 +652,7 @@ STATIC_ROUTINE int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned
           LoadChar(inp->digits,out_ptr+9);
           set_aflags(out_ptr,in);
           LoadChar(inp->dimct,out_ptr+11);
-          LoadInt(inp->arsize,out_ptr+12);
+          LoadInt(arsize,out_ptr+12);
           out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
