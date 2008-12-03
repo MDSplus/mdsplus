@@ -601,8 +601,8 @@ extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *di
 
 extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value);
 extern EXPORT int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
-extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor_xd *value);
-extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
+extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor *value);
+extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value);
 extern EXPORT int TreeSetViewDate(_int64 *date);
 extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
 extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
