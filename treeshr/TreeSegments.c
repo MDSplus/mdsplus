@@ -26,7 +26,7 @@ int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDED_ATTRI
 static int GetNamedAttributesIndex(TREE_INFO *info_ptr, _int64 offset, NAMED_ATTRIBUTES_INDEX *index);
 int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc);
 extern _int64 TreeTimeInserted();
-static int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
+int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
 			     struct descriptor *dimension,
 			     struct descriptor_a *initialValue, int idx);
 
