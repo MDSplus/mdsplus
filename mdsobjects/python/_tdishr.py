@@ -1,23 +1,19 @@
 from ctypes import CDLL,pointer,c_void_p
-import os
+from _mdsshr import _load_library
 
-if os.name=='nt':
-    TdiShr=CDLL('tdishr')
-else:
-    TdiShr=CDLL('libTdiShr.so')
-    
+TdiShr=_load_library('TdiShr')
 class TdiException(Exception):
     pass
 
 def restoreContext():
-    from MDSobjects.tree import Tree
+    from tree import Tree
     if hasattr(Tree,'_activeTree'):
         Tree._activeTree.restoreContext()
         
 def TdiCompile(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from MDSobjects.tree import Tree
+    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
+    from tree import Tree
     __execute=TdiShr.TdiCompile
     xd=descriptor_xd()
     done=False
@@ -51,8 +47,8 @@ def TdiCompile(expression,args=None):
 
 def TdiDecompile(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from MDSobjects.tree import Tree
+    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
+    from tree import Tree
     xd=descriptor_xd()
     try:
         Tree.lock()
@@ -67,8 +63,8 @@ def TdiDecompile(value):
 
 def TdiEvaluate(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from MDSobjects.tree import Tree
+    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
+    from tree import Tree
     xd=descriptor_xd()
     try:
         Tree.lock()
@@ -83,8 +79,8 @@ def TdiEvaluate(value):
 
 def TdiData(value):
     """Return primiitive data type. Format: TdiData(value)"""
-    from MDSobjects._descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from MDSobjects.tree import Tree
+    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
+    from tree import Tree
     xd=descriptor_xd()
     try:
         Tree.lock()

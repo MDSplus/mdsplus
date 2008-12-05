@@ -1,5 +1,5 @@
 import sys
-from MDSobjects._opcodes.opcodes import *
+from opcodes import *
 find_opcode('$')
 for o in opcodes_by_name:
     try:

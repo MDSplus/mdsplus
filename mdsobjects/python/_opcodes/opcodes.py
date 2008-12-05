@@ -1,10 +1,10 @@
-from MDSobjects.compound import Range,Signal
-#from MDSobjects.dollar_value import dollar_value
-from MDSobjects.data import Data
+from compound import Range,Signal
+#from dollar_value import dollar_value
+from data import Data
 import numpy as _N
 
 def parenthesize(obj,prec):
-    from MDSobjects.opc import opc
+    from opc import opc
     if (isinstance(obj,opc)):
       if (obj.opcode.precedence < prec):
           ans = "(" + obj.opcode.str(obj.args) + ")"
@@ -46,7 +46,7 @@ class opcode(object):
         return eval(self.str_code)
     
     def evaluate(self,args):
-        from MDSobjects.tdishr import TdiExecute
+        from tdishr import TdiExecute
         if self.evaluate_code is None:
             exp='TdiExecute("'+self.name+'('
             for i in range(len(args)-1):

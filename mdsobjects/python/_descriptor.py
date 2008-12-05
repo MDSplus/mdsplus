@@ -1,13 +1,13 @@
-from MDSobjects.scalar import makeScalar,Scalar
-from MDSobjects.array import makeArray,Array,StringArray
-from MDSobjects._mdsdtypes import *
-from MDSobjects._mdsclasses import *
-from MDSobjects.data import makeData
-from MDSobjects.treenode import TreeNode,TreePath,TreeNodeArray
-from MDSobjects.ident import Ident
-from MDSobjects.apd import Apd,Dictionary
-from MDSobjects.compound import *
-from MDSobjects._mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
+from scalar import makeScalar,Scalar
+from array import makeArray,Array,StringArray
+from _mdsdtypes import *
+from _mdsclasses import *
+from data import makeData
+from treenode import TreeNode,TreePath,TreeNodeArray
+from ident import Ident
+from apd import Apd,Dictionary,List
+from compound import *
+from _mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
 import numpy as _N
 import ctypes as _C
 import os
@@ -208,6 +208,15 @@ class descriptor(_C.Structure):
             self.addToCache(apd)
             return
 
+        if isinstance(value,List):
+            apd=descriptor(value.toApd())
+            self.length=apd.length
+            self.dtype=apd.dtype
+            self.pointer=apd.pointer
+            self.addToCache(value)
+            self.addToCache(apd)
+            return
+
         if isinstance(value,Apd):
             apd_a=descriptor_apd_a()
             ds=list()
@@ -238,7 +247,7 @@ class descriptor(_C.Structure):
 
     def __str__(self):
         if (self.length == 4):
-            from MDSobjects._tdishr import CvtConvertFloat
+            from _tdishr import CvtConvertFloat
             if (self.dtype == DTYPE_F):
                 CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
                 val=_C.c_float(0)
@@ -277,7 +286,7 @@ class descriptor(_C.Structure):
             try:
                 return makeScalar(mdsdtypes(self.dtype).toNumpy()(_C.cast(self.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype())).contents.value))
             except TypeError:
-                from MDSobjects._tdishr import CvtConvertFloat
+                from _tdishr import CvtConvertFloat
                 if (self.dtype == DTYPE_F):
                     CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
                     val=_C.c_float(0)
@@ -390,6 +399,8 @@ class descriptor(_C.Structure):
             ans=Apd(tuple(descs),descr.dtype)
             if descr.dtype == DTYPE_DICTIONARY:
                 return Dictionary(ans)
+            elif descr.dtype == DTYPE_LIST:
+                return List(ans)
             else:
                 return ans
 

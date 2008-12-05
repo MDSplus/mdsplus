@@ -1,4 +1,4 @@
-from MDSobjects.data import Data
+from data import Data
 class Ident(Data):
     """Reference to MDSplus Ken Variable"""
     def __init__(self,name):

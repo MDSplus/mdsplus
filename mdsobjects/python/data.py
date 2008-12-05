@@ -1,7 +1,7 @@
 import numpy
 import copy
-from MDSobjects._tdishr import TdiEvaluate,TdiCompile,TdiDecompile
-from MDSobjects._mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
+from _tdishr import TdiEvaluate,TdiCompile,TdiDecompile
+from _mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -66,19 +66,17 @@ def makeData(value):
     if isinstance(value,Data):
         return value
     if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
-        from MDSobjects.scalar import makeScalar
+        from scalar import makeScalar
         return makeScalar(value)
-    if isinstance(value,tuple) or (isinstance(value,numpy.ndarray) and isinstance(value.dtype,numpy.object)):
-        from MDSobjects.apd import Apd
-        return Apd(tuple(value),DTYPE_TUPLE)
-    if isinstance(value,list):
-        from MDSobjects.apd import Apd
-        return Apd(tuple(value),DTYPE_LIST)
+    if isinstance(value,tuple) or (isinstance(value,numpy.ndarray) and isinstance(value.dtype,numpy.object)) or isinstance(value,list):
+        from apd import Apd,List
+        apd = Apd(tuple(value),DTYPE_LIST)
+        return List(apd)
     if isinstance(value,numpy.ndarray):
-        from MDSobjects.array import makeArray
+        from array import makeArray
         return makeArray(value)
     if isinstance(value,dict):
-        from MDSobjects.apd import Dictionary
+        from apd import Dictionary
         return Dictionary(value)
     else:
         raise TypeError,'Cannot make MDSplus data type from type: %s' % (str(type(value)),)
@@ -88,11 +86,11 @@ class Data(object):
     """
     
     def __init__(self,*value):
-        """Cannot create instances of class Data objects. Use MDSobjects.Data.makeData(initial-value) instead
+        """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
         @raise TypeError: Raised if attempting to create an instance of Data
         @rtype: Data
         """
-        raise TypeError,'Cannot create \'MDSobjects.Data\' instances'
+        raise TypeError,'Cannot create \'Data\' instances'
 
     def __function(self,name,default):
         found = False
@@ -212,7 +210,7 @@ class Data(object):
         Return boolean
         @rtype: Bool
         """
-        from MDSobjects.array import Array
+        from array import Array
         if isinstance(self,Array):
             return self.all().bool()
         ans=int(self)
@@ -222,8 +220,8 @@ class Data(object):
         """
         Add: x.__add__(y) <==> x+y
         @rtype: Data"""
-        from MDSobjects.scalar import String
-        from MDSobjects.array import StringArray
+        from scalar import String
+        from array import StringArray
         y=makeData(y)
         if isinstance(self,String) or isinstance(y,String) or isinstance(self,StringArray) or isinstance(y,StringArray):
             return Data.execute('$//$',self,y)
@@ -344,8 +342,8 @@ class Data(object):
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
-        from MDSobjects.scalar import String
-        from MDSobjects.array import StringArray
+        from scalar import String
+        from array import StringArray
         y=makeData(y)
         if isinstance(self,String) or isinstance(y,String) or isinstance(self,StringArray) or isinstance(y,StringArray):
             return Data.execute('$//$',y,self)
@@ -415,7 +413,7 @@ class Data(object):
         """Return descriptor for passing data to MDSplus library routines.
         @rtype: descriptor
         """
-        from MDSobjects._descriptor import descriptor
+        from _descriptor import descriptor
         return descriptor(self)
 
     descriptor=property(_getDescriptor)
@@ -444,7 +442,7 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        from MDSobjects.compound import Function
+        from compound import Function
         return Function(opcode='equals',args=(Function(opcode='public',args=(str(tdivarname),)),self)).evaluate()
 
     def getTdiVar(tdivarname):
@@ -452,7 +450,7 @@ class Data(object):
         @param tdivarname: The name of the publi tdi variable
         @type tdivarname: string
         @rtype: Data"""
-        from MDSobjects.compound import Function
+        from compound import Function
         try:
             return Function(opcode='public',args=(str(tdivarname),)).evaluate()
         except:
@@ -488,7 +486,7 @@ class Data(object):
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        from MDSobjects.scalar import Scalar
+        from scalar import Scalar
         return isinstance(x,Scalar)
     _isScalar=staticmethod(_isScalar)
     

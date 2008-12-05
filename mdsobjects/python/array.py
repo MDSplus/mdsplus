@@ -1,8 +1,8 @@
 import numpy,copy
 from types import NotImplementedType
-from MDSobjects.data import Data,makeData
-from MDSobjects._mdsdtypes import *
-from MDSobjects.scalar import Scalar
+from data import Data,makeData
+from _mdsdtypes import *
+from scalar import Scalar
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -22,13 +22,13 @@ def makeArray(value):
         return ans
     if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
         return makeArray(numpy.array(value).reshape(1))
-    raise TypeError,'Cannot make MDSobjects.Array out of '+str(type(value))
+    raise TypeError,'Cannot make Array out of '+str(type(value))
                         
 
 class Array(Data):
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
-            raise TypeError,"cannot create 'MDSobjects.Array' instances"
+            raise TypeError,"cannot create 'Array' instances"
         if self.__class__.__name__ == 'StringArray':
             self._value=numpy.array(value).__array__(numpy.string_)
             return

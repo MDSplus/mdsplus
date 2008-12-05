@@ -1,7 +1,7 @@
 import numpy,copy
 from types import NotImplementedType
-from MDSobjects.data import *
-from MDSobjects._mdsdtypes import *
+from data import *
+from _mdsdtypes import *
 
 def makeScalar(value):
     if isinstance(value,Scalar):
@@ -24,12 +24,12 @@ def makeScalar(value):
         return String(value)
     if isinstance(value,bool):
         return Int8(int(value))
-    raise TypeError,'Cannot make MDSobjects.Scalar out of '+str(type(value))
+    raise TypeError,'Cannot make Scalar out of '+str(type(value))
 
 class Scalar(Data):
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Scalar':
-            raise TypeError,"cannot create 'MDSobjects.Scalar' instances"
+            raise TypeError,"cannot create 'Scalar' instances"
         if self.__class__.__name__ == 'String':
             self._value=numpy.string_(value)
             return

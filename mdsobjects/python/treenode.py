@@ -1,7 +1,7 @@
-from MDSobjects.data import Data,makeData
-from MDSobjects.scalar import Uint8
-from MDSobjects.array import Int32Array
-from MDSobjects.tree import Tree
+from data import Data,makeData
+from scalar import Uint8
+from array import Int32Array
+from tree import Tree
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -39,7 +39,7 @@ class TreeNode(Data):
     
     def __str__(self):
         """Convert TreeNode to string."""
-        from MDSobjects._treeshr import TreeGetPath
+        from _treeshr import TreeGetPath
         if self.nid is None:
             ans="NODEREF(*)"
         else:
@@ -103,7 +103,7 @@ class TreeNode(Data):
         versions              - Bool, Flag indicating that data contains versions
         write_once            - Bool, Flag indicating that data can only be written if node is empty."""
 
-        from MDSobjects.scalar import String
+        from scalar import String
         if name.lower() == 'nid':
             return self.tree.getNode(str(self))
         if name.lower() == 'tags':
@@ -117,7 +117,7 @@ class TreeNode(Data):
         if name.lower() == 'segmented':
             return self.getNumSegments().value > 0
         if name.upper() in nciAttributes:
-            from MDSobjects._tdishr import TdiException
+            from _tdishr import TdiException
             try:
                 if name.lower() == 'mclass':
                     name='class';
@@ -443,7 +443,7 @@ class TreeNode(Data):
         @param flag: State to set the on characteristic. If true then the node is turned on. If false the node is turned off.
         @type flag: bool
         """
-        from MDSobjects._treeshr import TreeTurnOn,TreeTurnOff
+        from _treeshr import TreeTurnOn,TreeTurnOff
         try:
             Tree.lock()
             if flag is True:
@@ -470,7 +470,7 @@ class TreeNode(Data):
         @param data: Data to store in this node.
         @type data: Data
         """
-        from MDSobjects._treeshr import TreePutRecord
+        from _treeshr import TreePutRecord
         try:
             Tree.lock()
             TreePutRecord(self,data)
@@ -489,7 +489,7 @@ class TreeNode(Data):
 
     def doMethod(self,method,arg=None):
         """Execute method on conglomerate element"""
-        from MDSobjects._treeshr import TreeDoMethod
+        from _treeshr import TreeDoMethod
         try:
             Tree.lock()
             self.restoreContext()
@@ -512,7 +512,7 @@ class TreeNode(Data):
 
     def getTags(self):
         """Return tags of this node"""
-        from MDSobjects._treeshr import TreeFindNodeTags
+        from _treeshr import TreeFindNodeTags
         try:
             Tree.lock()
             ans=TreeFindNodeTags(self)
@@ -545,8 +545,8 @@ class TreeNode(Data):
             self.restoreContext()
             status = Data.compile('tcl("set node \\'+self.fullpath+switch+qualifier+'")').evaluate()
             if not (status & 1):
-                from MDSobjects._descriptor import MdsGetMsg
-                from MDSobjects._treeshr import TreeException
+                from _descriptor import MdsGetMsg
+                from _treeshr import TreeException
                 msg=MdsGetMsg(int(status))
                 if 'TreeFAILURE' in msg:
                     raise TreeException,'Error writing to tree, possibly file protection problem'
@@ -713,6 +713,10 @@ class TreeNode(Data):
         """Return true of compression is disabled for this node"""
         return self.do_not_compress
 
+    def isSetup(self):
+        """Return true if this node's data was written to the model"""
+        return self.setup_information
+
     def setDoNotCompress(self,flag):
         """Set do not compress state of this node"""
         self.__setNode('do_not_compress',flag)
@@ -741,10 +745,7 @@ class TreeNodeArray(Data):
             self.tree=tree
 
     def __getitem__(self,n):
-        old=Tree._activeTree
-        Tree._activeTree=self.tree
-        ans=TreeNode(self.nids[n])
-        Tree._activeTree=old
+        ans=TreeNode(self.nids[n],self.tree)
         return ans
 
     def restoreContext(self):

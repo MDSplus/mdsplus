@@ -1,5 +1,5 @@
-from MDSobjects.data import Data
-from MDSobjects._mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
+from data import Data
+from _mdsdtypes import DTYPE_LIST,DTYPE_DICTIONARY
 
 class Apd(Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
@@ -76,36 +76,17 @@ class Apd(Data):
 
     def data(self):
         """Returns native representation of the apd"""
-        if self.dtype == DTYPE_LIST:
-            return list(self.descs)
-        else:
-            if self.dtype == DTYPE_DICTIONARY:
-                from MDSobjects.scalar import Scalar
-                import numpy
-                ans=dict()
-                for idx in range(len(self)-1,0,-2):
-                    key=self[idx-1]
-                    if isinstance(key,Scalar):
-                        key=key.value
-                    if isinstance(key,numpy.string_):
-                        key=str(key)
-                    elif isinstance(key,numpy.int32):
-                        key=int(key)
-                    elif isinstance(key,numpy.float32) or isinstance(key,numpy.float64):
-                        key=float(key)
-                    val=self[idx]
-                    if isinstance(val,Apd):
-                        val=val.data()
-                    ans.setdefault(key,val)
-                return ans
-        return self.descs
+        l=list()
+        for d in self.descs:
+            l.append(d.data())
+        return l
 
 class Dictionary(dict,Data):
     """dictionary class"""
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd):
-                from MDSobjects.scalar import Scalar
+                from scalar import Scalar
                 import numpy
                 for idx in range(0,len(value),2):
                     key=value[idx]
@@ -140,8 +121,14 @@ class Dictionary(dict,Data):
             self.__dict__[name]=value
         else:
             self.setdefault(name,value)
-            
 
+    def data(self):
+        """Return native representation of data item"""
+        d=dict()
+        for key,val in self.items():
+            d.setdefault(key,val.data())
+        return d
+        
     def toApd(self):
         apd=Apd(tuple(),DTYPE_DICTIONARY)
         for key,val in self.items():
@@ -151,4 +138,26 @@ class Dictionary(dict,Data):
 
     def __str__(self):
         return dict.__str__(self)
+ 
+class List(list,Data):
+    """list class"""
+    def __init__(self,value=None):
+        if value is not None:
+            if isinstance(value,Apd):
+                for idx in range(len(value)):
+                    self.append(value[idx])
+            elif isinstance(value,list) or isinstance(value,tuple):
+                for idx in range(len(value)):
+                    self.append(value[idx])
+            else:
+                raise TypeError,'Cannot create List from type: '+str(type(value))
+
+    def toApd(self):
+        apd=Apd(tuple(),DTYPE_LIST)
+        for idx in range(len(self)):
+            apd.append(self[idx])
+        return apd
+
+    def __str__(self):
+        return list.__str__(self)
  

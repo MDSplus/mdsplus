@@ -1,10 +1,7 @@
 import ctypes as _C
-from MDSobjects._descriptor import descriptor_xd,MdsGetMsg,descriptor
-import os
-if os.name=='nt':
-    __TreeShr=_C.CDLL('treeshr')
-else:
-    __TreeShr=_C.CDLL('libTreeShr.so')
+from _mdsshr import _load_library
+from _descriptor import descriptor_xd,MdsGetMsg,descriptor
+__TreeShr=_load_library('TreeShr')
 __TreeOpen=__TreeShr._TreeOpen
 __TreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
 __TreeClose=__TreeShr._TreeClose
@@ -68,7 +65,7 @@ def TreeGetPath(n):
     return ans
 
 def TreeFindNodeTags(n):
-    from MDSobjects.array import makeArray
+    from array import makeArray
     ctx=_C.c_void_p(0)
     tags=list()
     done=False
@@ -105,7 +102,7 @@ def TreeDoMethod(n,method,arg=None):
     
 def TreeTurnOn(n):
     """Turn on a tree node."""
-    from MDSobjects.tree import Tree
+    from tree import Tree
     try:
         Tree.lock()
         status=__TreeTurnOn(n.tree.ctx,n.nid)
@@ -119,7 +116,7 @@ def TreeTurnOn(n):
 
 def TreeTurnOff(n):
     """Turn off a tree node."""
-    from MDSobjects.tree import Tree
+    from tree import Tree
     try:
         Tree.lock()
         status=__TreeTurnOff(n.tree.ctx,n.nid)
@@ -154,9 +151,10 @@ def TreeClose(ctx,tree,shot):
         raise TreeException,MdsGetMsg(status)
 
 def TreeCloseAll(ctx):
-    status = __TreeClose(_C.pointer(ctx),None,0)
-    while (status & 1) == 1:
-        try:
-            status = __TreeClose(_C.pointer(ctx),None,0)
-        except:
-            status = 0
+    if ctx is not None:
+        status = __TreeClose(_C.pointer(ctx),None,0)
+        while (status & 1) == 1:
+            try:
+                status = __TreeClose(_C.pointer(ctx),None,0)
+            except:
+                status = 0

@@ -1,4 +1,4 @@
-from MDSobjects.data import Data,makeData
+from data import Data,makeData
 from threading import RLock,Thread
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
@@ -6,7 +6,7 @@ class Tree(object):
     _lock=RLock()
 
     def __init__(self,tree,shot):
-        from MDSobjects._treeshr import TreeOpen
+        from _treeshr import TreeOpen
         try:
             Tree.lock()
             self.ctx=TreeOpen(tree,shot)
@@ -49,7 +49,7 @@ class Tree(object):
 
     def doMethod(nid,method):
         """Support for PyDoMethod.fun used for python device support"""
-        from MDSobjects.treenode import TreeNode
+        from treenode import TreeNode
         t=Tree(Data.execute('$EXPT').value,Data.execute('$shot').value)
         n=TreeNode(nid,t)
         top=n.conglomerate_nids[0]
@@ -71,19 +71,22 @@ class Tree(object):
 
     def restoreContext(self):
         """Use internal context associated with this tree. Internal use only."""
-        from MDSobjects._treeshr import TreeRestoreContext
+        from _treeshr import TreeRestoreContext
         Tree._activeTree=self
         return TreeRestoreContext(self.ctx)
 
     def __del__(self):
-        tc=TreeCtxCleanup(self.ctx)
-        tc.start()
+        try:
+            tc=TreeCtxCleanup(self.ctx)
+            tc.start()
+        except:
+            pass
         return
 
     def getDefault(self):
         """Return current default TreeNode"""
-        from MDSobjects._treeshr import TreeGetDefault
-        from MDSobjects.treenode import TreeNode
+        from _treeshr import TreeGetDefault
+        from treenode import TreeNode
         try:
             Tree.lock()
             ans = TreeNode(TreeGetDefault(self.ctx))
@@ -94,8 +97,8 @@ class Tree(object):
 
     def setDefault(self,node):
         """Set current default TreeNode."""
-        from MDSobjects._treeshr import TreeSetDefault
-        from MDSobjects.treenode import TreeNode
+        from _treeshr import TreeSetDefault
+        from treenode import TreeNode
         if isinstance(node,TreeNode):
             if node.tree is self:
                 TreeSetDefault(self.ctx,node.nid)
@@ -106,8 +109,8 @@ class Tree(object):
 
     def getNode(self,name):
         """Locate node in tree. Returns TreeNode if found. Use double backslashes in node names."""
-        from MDSobjects.treenode import TreeNode
-        from MDSobjects._treeshr import TreeFindNode
+        from treenode import TreeNode
+        from _treeshr import TreeFindNode
         if isinstance(name,int):
             return TreeNode(name,self)
         else:
@@ -128,7 +131,7 @@ class Tree(object):
 
     def getNodeWild(self,name,*usage):
         """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found."""
-        from MDSobjects.treenode import TreeNodeArray
+        from treenode import TreeNodeArray
         try:
             Tree.lock()
             self.restoreContext()
@@ -152,12 +155,15 @@ class TreeCtxCleanup(Thread):
         self.ctx=ctx
 
     def run(self):
-        from MDSobjects._treeshr import TreeCloseAll,TreeFree,TreeException
+        from _treeshr import TreeCloseAll,TreeFree,TreeException
         if hasattr(self,'ctx'):
             try:
                 Tree.lock()
                 TreeCloseAll(self.ctx)
             finally:
-                Tree.unlock()
-            TreeFree(self.ctx)
+                try:
+                    Tree.unlock()
+                    TreeFree(self.ctx)
+                except:
+                    pass
         

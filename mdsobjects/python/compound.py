@@ -1,7 +1,7 @@
-from MDSobjects.data import Data,makeData
-from MDSobjects._mdsdtypes import DTYPE_ACTION,DTYPE_CALL,DTYPE_CONGLOM,DTYPE_DEPENDENCY,DTYPE_DIMENSION
-from MDSobjects._mdsdtypes import DTYPE_DISPATCH,DTYPE_FUNCTION,DTYPE_METHOD,DTYPE_PROCEDURE,DTYPE_PROGRAM
-from MDSobjects._mdsdtypes import DTYPE_RANGE,DTYPE_ROUTINE,DTYPE_SIGNAL,DTYPE_WINDOW
+from data import Data,makeData
+from _mdsdtypes import DTYPE_ACTION,DTYPE_CALL,DTYPE_CONGLOM,DTYPE_DEPENDENCY,DTYPE_DIMENSION
+from _mdsdtypes import DTYPE_DISPATCH,DTYPE_FUNCTION,DTYPE_METHOD,DTYPE_PROCEDURE,DTYPE_PROGRAM
+from _mdsdtypes import DTYPE_RANGE,DTYPE_ROUTINE,DTYPE_SIGNAL,DTYPE_WINDOW
 
 
 class Compound(Data):
@@ -234,7 +234,7 @@ class Function(Compound):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-        from MDSobjects._opcodes.opcodes import find_opcode
+        from _opcodes.opcodes import find_opcode
         super(Function,self).__init__(args=args,opcode=opcode)
         opc=find_opcode(self._opcode)
         if opc:
@@ -249,7 +249,7 @@ class Function(Compound):
         @param opcode: either a string or a index number of the builtin operation
         @type opcode: str,int
         """
-        from MDSobjects._opcodes.opcodes import find_opcode
+        from _opcodes.opcodes import find_opcode
         opc=find_opcode(opcode)
         if not opc:
             raise Exception("Invalid opcode - "+str(opcode))

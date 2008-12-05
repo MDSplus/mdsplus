@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, Extension
-version='0.1'
+version='0.2'
 setup(name='MDSobjects',
       version=version,
       description='MDSplus Python Objects',
@@ -24,7 +24,8 @@ setup(name='MDSobjects',
       'Topic :: Scientific/Engineering',
       ],
       keywords = ('physics','mdsplus',),
-       install_requires=['numpy','ctypes'],
+#       install_requires=['numpy','ctypes'],
 #      include_package_data = True,
+      test_suite='tests.test_all',
       zip_safe = False,
      )
