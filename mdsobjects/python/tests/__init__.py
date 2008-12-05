@@ -5,7 +5,10 @@ MDSobjects tests
 Tests of MDSobjects
 
 """
+from unittest import TestCase,TestSuite,TextTestRunner
+import treeUnitTest
+import threadsUnitTest
 
-from MDSobjects.tests.test1 import test as test1
-from MDSobjects.tests.test2 import test as test2
-from MDSobjects.tests.test3 import test as test3
+def test_all():
+    return TestSuite([treeUnitTest.suite(),threadsUnitTest.suite()])
+
