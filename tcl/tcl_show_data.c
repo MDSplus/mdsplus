@@ -31,56 +31,6 @@ extern int TdiOpcodeString();
 	 * lib_cvt_dx_dx:
 	 * Convert data for display ...
 	 ****************************************************************/
-static int   lib_cvt_dx_dx(	/* Returns:  status			*/
-    struct descriptor  *dsc_in	/* <r> data to convert			*/
-   ,struct descriptor  *dsc_out	/* <w> output string			*/
-   ,unsigned short *len		/* <w> length of output string		*/
-   )
-   {
-    char   dtype;
-    char  string[48];
-    void  *p;
-
-    if (!is_cdescr(dsc_out) && !is_ddescr(dsc_out))
-        return(MdsMsg(0,"lib_cvt_dx_dx: dsc_out is not a descriptor"));
-
-    p = dsc_in->dscA_pointer;
-    dtype = dsc_in->dscB_dtype;
-
-    if (dtype == DTYPE_T)
-        return(str_copy_dx(dsc_out,dsc_in));	/*------------> return	*/
-
-    switch(dtype)
-       {
-        default:
-            sprintf(string,"CantDisplay%s",MdsDtypeString(dtype));
-            break;
-        case DTYPE_B:
-        case DTYPE_BU:
-            sprintf(string,"0x%02X",*(unsigned char *)p);
-            break;
-        case DTYPE_NATIVE_FLOAT:
-            sprintf(string,"%.8g",*(float *)p);
-            break;
-        case DTYPE_NATIVE_DOUBLE:
-            sprintf(string,"%.14lg",*(double *)p);
-            break;
-        case DTYPE_L:
-            sprintf(string,"%d",*(int *)p);
-            break;
-        case DTYPE_LU:
-            sprintf(string,"%u",*(unsigned int *)p);
-            break;
-        case DTYPE_W:
-            sprintf(string,"%d",*(short *)p);
-            break;
-        case DTYPE_WU:
-            sprintf(string,"%u",*(unsigned short *)p);
-            break;
-       }
-    return(str_copy_dx(dsc_out,string));
-   }
-
 
 
 	/****************************************************************
@@ -185,7 +135,8 @@ static int CvtNumericT(struct descriptor *in_dsc_ptr,int depth)
 
     dstr = TclDtypeString(in_dsc_ptr->dscB_dtype);
     str_dupl_char(&spaces,depth,' ');
-    sts = lib_cvt_dx_dx(in_dsc_ptr,&static_str,&static_str.dscW_length);
+    sts = TdiDecompile(in_dsc_ptr,&static_str MDS_END_ARG);
+    // sts = lib_cvt_dx_dx(in_dsc_ptr,&static_str,&static_str.dscW_length);
     if (sts & 1)
         str_concat(&out_str,&spaces,dstr,&static_str,0);
     else
