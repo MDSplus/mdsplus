@@ -1,6 +1,4 @@
-from compound import Range,Signal
 #from dollar_value import dollar_value
-from data import Data
 import numpy as _N
 
 def parenthesize(obj,prec):
@@ -196,7 +194,7 @@ def find_opcode(name):
         opcodes_by_number[ 80]=opcode("BUILD_PATH",'"BUILD_PATH"',None,1,1) ################ NOT IMPLEMENTED
         opcodes_by_number[ 81]=opcode("BUILD_PROCEDURE",'"BUILD_PROCEDURE"',None,3,254) ################ NOT IMPLEMENTED
         opcodes_by_number[ 82]=opcode("BUILD_PROGRAM",'"BUILD_PROGRAM"',None,2,2) ################ NOT IMPLEMENTED
-        opcodes_by_number[ 83]=opcode("BUILD_RANGE",'"BUILD_RANGE"',None,2,3,Range)
+        opcodes_by_number[ 83]=opcode("BUILD_RANGE",'"BUILD_RANGE"',None,2,3)
         opcodes_by_number[ 84]=opcode("BUILD_ROUTINE",'"BUILD_ROUTINE"',None,3,254) ################ NOT IMPLEMENTED
         opcodes_by_number[ 85]=opcode("BUILD_SIGNAL",'"BUILD_SIGNAL"',None,2,10)
         opcodes_by_number[ 86]=opcode("BUILD_SLOPE",'"BUILD_SLOPE"',None,1,254) ################ NOT IMPLEMENTED
