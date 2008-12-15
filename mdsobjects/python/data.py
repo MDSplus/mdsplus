@@ -211,10 +211,14 @@ class Data(object):
         @rtype: Bool
         """
         from array import Array
+        from compound import Compound
         if isinstance(self,Array):
-            return self.all().bool()
-        ans=int(self)
-        return (ans & 1) == 1
+            return self._value!=0
+        elif isinstance(self,Compound) and hasattr(self,'value'):
+            return self.value.bool()
+        else:
+            ans=int(self)
+            return (ans & 1) == 1
 
     def __add__(self,y):
         """
@@ -231,7 +235,7 @@ class Data(object):
     def __and__(self,y):
         """And: x.__and__(y) <==> x&y
         @rtype: Data"""
-        return Data.execute('$ && $',self,y)
+        return Data.execute('$ & $',self,y)
 
     def __div__(self,y):
         """Divide: x.__div__(y) <==> x/y
@@ -499,7 +503,7 @@ class Data(object):
         """
         ans=Data.execute('byte($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
     def getShort(self):
@@ -511,7 +515,7 @@ class Data(object):
         """
         ans=Data.execute('word($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
     
     def getInt(self):
@@ -523,7 +527,7 @@ class Data(object):
         """
         ans=Data.execute('long($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
     def getLong(self):
@@ -535,7 +539,7 @@ class Data(object):
         """
         ans=Data.execute('quadword($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
     def getFloat(self):
@@ -547,7 +551,7 @@ class Data(object):
         """
         ans=Data.execute('float($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
     def getDouble(self):
@@ -559,7 +563,7 @@ class Data(object):
         """
         ans=Data.execute('ft_float($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar'
+            raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
     def getShape(self):
