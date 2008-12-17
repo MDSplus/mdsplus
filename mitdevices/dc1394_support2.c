@@ -159,7 +159,7 @@ void *CaptureFrames(void *arg)
  */
 
 int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode, 
-	       int shutter, int gain, int trig_on, int frame_rate, int widthi_in, 
+	       int shutter, int gain, int trig_on, int frame_rate, int width_in, 
 	       int height_in, int xoffset, int yoffset, int debug)
 {
 
