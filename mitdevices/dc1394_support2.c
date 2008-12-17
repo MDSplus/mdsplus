@@ -159,8 +159,8 @@ void *CaptureFrames(void *arg)
  */
 
 int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode, 
-	       int shutter, int gain, int trig_on, int frame_rate, int width, 
-	       int height, int xoffset, int yoffset, int debug)
+	       int shutter, int gain, int trig_on, int frame_rate, int widthi_in, 
+	       int height_in, int xoffset, int yoffset, int debug)
 {
 
     dc1394featureset_t features;
@@ -248,12 +248,12 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
     }
     if ((mode >= DC1394_VIDEO_MODE_FORMAT7_0) && (mode <= DC1394_VIDEO_MODE_FORMAT7_7)) {
       if (debug > 0) fprintf(stderr, "format 7 so attempting to set width %d height %d xoffset %d yoffset %d\n", 
-			     width, height, xoffset, yoffset);
+			     width_in, height_in, xoffset, yoffset);
       err = dc1394_format7_set_roi(camera, DC1394_VIDEO_MODE_FORMAT7_0,
                                  DC1394_COLOR_CODING_MONO8,
                                  DC1394_USE_MAX_AVAIL, // use max packet size
                                  xoffset, yoffset, // left, top
-                                 width, height);  // width, height
+                                 width_in, height_in);  // width, height
     }
     if (debug > 0)
       printf("mode set, now the frame rate\n");
