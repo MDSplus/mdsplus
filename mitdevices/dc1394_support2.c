@@ -42,6 +42,7 @@ static void CleanUp(void *arg)
     dc1394_free (d);
     camera = NULL;
     d = NULL;
+    thread_id = 0;
   if(debug_flag) printf("Done with Cleanup\n");
 }
 
@@ -171,7 +172,6 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
     debug_flag = debug;
     max_frames = max_frames_in;
     if (thread_id) {
-      dc1394_capture_stop(camera);
       if (pthread_cancel(thread_id) == 0) {
 	if (pthread_join(thread_id, NULL) != 0) {
           perror("Unable to join child thread - restarting parent process");
