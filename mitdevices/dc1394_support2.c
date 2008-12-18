@@ -163,6 +163,7 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
 	       int shutter, int gain, int trig_on, int frame_rate, int width_in, 
 	       int height_in, int xoffset, int yoffset, int debug)
 {
+    pthread_t lthread_id;
 
     dc1394featureset_t features;
     dc1394video_modes_t modes;
@@ -172,8 +173,9 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
     debug_flag = debug;
     max_frames = max_frames_in;
     if (thread_id) {
+      lthread_id = thread_id;
       if (pthread_cancel(thread_id) == 0) {
-	if (pthread_join(thread_id, NULL) != 0) {
+	if (pthread_join(lthread_id, NULL) != 0) {
           perror("Unable to join child thread - restarting parent process");
           exit(errno);
 	}
