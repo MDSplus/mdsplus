@@ -107,10 +107,6 @@ SOURCE=.\javamds.def
 
 SOURCE=.\JavaTrav.c
 # End Source File
-# Begin Source File
-
-SOURCE=.\mdsobjects.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
