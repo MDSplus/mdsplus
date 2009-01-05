@@ -78,9 +78,10 @@ struct event_struct { char *eventnam;
                       void (*astadr)(void *,int,char *);
                       void *astprm;
 					  int len;
-					  char *data;
+					  char data[256];
 					  unsigned long thread;
 					  HANDLE event;
+					  HANDLE pipe;
 };
 
 STATIC_ROUTINE void EventActionProc(struct event_struct *event)
@@ -92,8 +93,12 @@ STATIC_ROUTINE void EventThreadProc(struct event_struct *event)
 {
 	while ( WaitForSingleObject(event->event,INFINITE) != WAIT_FAILED)
 	{
-		event->len = 0;
-		_beginthread((void (*)(void *))EventActionProc,0,(void *)event);
+		if (event->pipe != INVALID_HANDLE_VALUE)
+		{
+			int status;
+			status = ReadFile(event->pipe,event->data,sizeof(event->data),&event->len,0);
+			_beginthread((void (*)(void *))EventActionProc,0,(void *)event);
+		}
 	}
 	
 }
@@ -104,8 +109,10 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
 
   int use_local;    
   char *eventnam;
+  char pipename[256];
   int status = 1;
-  int i,j;
+  size_t i,j;
+  memset(event,0,sizeof(struct event_struct));
   if(!eventnam_in || !*eventnam_in) return 1;
   eventnam = strcpy(malloc(strlen(eventnam_in)+1),eventnam_in);
   for (i=0,j=0;i<strlen(eventnam);i++) 
@@ -119,6 +126,8 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
     eventAstRemote(eventnam, astadr, astprm, eventid);
   if(use_local)
   {
+	int status = ERROR_PIPE_BUSY;
+	int num;
 
     /* Local stuff */
     
@@ -126,6 +135,16 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
     event->eventnam = eventnam;
     event->astadr = astadr;
     event->astprm = astprm;
+	event->pipe = INVALID_HANDLE_VALUE;
+	for (num=0;(event->pipe == INVALID_HANDLE_VALUE) && (status == ERROR_PIPE_BUSY);num++)
+	{
+	  sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",event->eventnam,num);
+	  event->pipe = CreateNamedPipe(pipename,PIPE_ACCESS_INBOUND,PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,1,512,512,1000,0);
+	  if (event->pipe == INVALID_HANDLE_VALUE)
+	  {
+	    status = GetLastError();
+	  }
+	}
     event->event = CreateEvent(NULL, TRUE, FALSE, eventnam);
     if (event->event == NULL) return(0);
     event->thread = _beginthread( (void(*)(void *))EventThreadProc, 0, (void *)event);
@@ -170,6 +189,7 @@ int MDSEventCan(int eventid)
   {
     struct event_struct *event = (struct event_struct *)eventid;
     CloseHandle(event->event);
+	CloseHandle(event->pipe);
     free(event->eventnam);
     free(event);
   }
@@ -222,7 +242,7 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 {
   int use_local;
   char *evname;
-  int i,j;
+  size_t i,j;
   initializeLocalRemote(0, &use_local);
   evname = strcpy(malloc(strlen(evname_in)+1),evname_in);
   for (i=0,j=0;i<strlen(evname);i++)
@@ -233,12 +253,31 @@ int MDSEvent(char *evname_in, int data_len, char *data)
   evname[j]=0;
   if(num_send_servers > 0)
     sendRemoteEvent(evname, data_len, data);
-  if(use_local)
-  {
+  if(use_local){
     HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
-    if (handle != NULL)
-      PulseEvent(handle);
-    CloseHandle(handle);
+	if (handle != NULL) {
+		char pipename[256];
+		int	status;
+		int num;
+		HANDLE pipe = 0;
+		int fail_count=0;
+		for (num=0;fail_count<512;num++)
+		{
+			sprintf(pipename,"\\\\.\\pipe\\mdsevents\\%s\\%0x",evname,num);
+			pipe = CreateFile(pipename,GENERIC_WRITE,0,0,OPEN_EXISTING,0,0);
+			if (pipe != INVALID_HANDLE_VALUE)
+			{
+				int len_written = 0;
+				status = WriteFile(pipe,data,data_len,&len_written,0);
+				CloseHandle(pipe);
+				fail_count=0;
+			} else {
+				fail_count++;
+			}
+		}
+		PulseEvent(handle);
+		CloseHandle(handle);
+	}
   }
   free(evname);
   return 1;
