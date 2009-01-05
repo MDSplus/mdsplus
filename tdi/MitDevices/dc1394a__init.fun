@@ -15,13 +15,15 @@ public fun dc1394a__init(as_is _nid, optional in _method)
   _DC1394A_TRIG_ON      = 10;
   _DC1394A_WIDTH        = 11;
   _DC1394A_HEIGHT       = 12;
-  _DC1394A_PIX_DEPTH    = 13;
-  _DC1394A_FRAMES       = 14;
-  _DC1394A_REQUESTED    = 15;
-  _DC1394A_CAMERA       = 16;
-  _DC1394A_TRIGGER      = 17;
-  _DC1394A_INIT_ACTION  = 18;
-  _DC1394A_STORE_ACTION = 19;
+  _DC1394A_XOFFSET      = 13;
+  _DC1394A_YOFFSET      = 14;
+  _DC1394A_PIX_DEPTH    = 15;
+  _DC1394A_FRAMES       = 16;
+  _DC1394A_REQUESTED    = 17;
+  _DC1394A_CAMERA       = 18;
+  _DC1394A_TRIGGER      = 19;
+  _DC1394A_INIT_ACTION  = 20;
+  _DC1394A_STORE_ACTION = 21;
 
   _DC1394_VIDEO_MODE_160x120_YUV444 = 64;
   _DC1394_VIDEO_MODE_320x240_YUV422 = 65;
@@ -92,14 +94,16 @@ public fun dc1394a__init(as_is _nid, optional in _method)
   if (_debug > 0) write(*, 'Debug is '//_debug);
 
   _max_frames = if_error(DevNodeRef(_nid, _DC1394A_MAX_FRAMES), 2);
-  _width = 0L;
-  _height = 0L;
-  _pix_depth = 0l;
   _shutter = if_error(data(DevNodeRef(_nid, _DC1394A_SHUTTER)), 0);
   _gain = if_error(data(DevNodeRef(_nid, _DC1394A_GAIN)), 1);
 
   _mode = if_error(data(DevNodeRef(_nid, _DC1394A_MODE)), _DC1394_VIDEO_MODE_800x600_RGB8 );
   _mode = min(max(_mode, _DC1394_VIDEO_MODE_160x120_YUV444 ),  _DC1394_VIDEO_MODE_FORMAT7_7);
+
+  _width = if_error(data(DevNodeRef(_nid, _DC1394A_WIDTH)), 0);
+  _height = if_error(data(DevNodeRef(_nid, _DC1394A_HEIGHT)), 0);
+  _xoffset = if_error(data(DevNodeRef(_nid, _DC1394A_XOFFSET)), 0);
+  _yoffset = if_error(data(DevNodeRef(_nid, _DC1394A_YOFFSET)), 0);
 
   _trig_mode = if_error(data(DevNodeRef(_nid, _DC1394A_TRIG_MODE)), 384);
   _trig_mode = max(min(_trig_mode,  _DC1394_TRIGGER_MODE_15),  _DC1394_TRIGGER_MODE_1);
@@ -114,6 +118,7 @@ public fun dc1394a__init(as_is _nid, optional in _method)
 
   _status = libdc1394_support2->dc1394Init( val(_mode), val(_iso_speed), val(_max_frames), 
                                             val(_trig_mode), val(_shutter), val(_gain), val(_trig_on), 
-                                            val(_frame_rate), val(_debug));
+                                            val(_frame_rate),  val(_width), val(_height), val(_xoffset), 
+					    val(_yoffset), val(_debug));
   return(_status);
 } 

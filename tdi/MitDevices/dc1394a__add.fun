@@ -1,6 +1,6 @@
 public fun dc1394a__add(in _path, out _nidout)
 {
-  DevAddStart(_path,'dc1394a',20,_nidout);
+  DevAddStart(_path,'dc1394a',22,_nidout);
   DevAddNode(_path//':COMMENT','TEXT',*,*,_nid);
   DevAddNode(_path//':MODEL','TEXT',"Dragon Fly",*,_nid);
   DevAddNode(_path//':MAX_FRAMES', 'NUMERIC', 60, '/noshot_write', _nid);
@@ -75,6 +75,8 @@ public fun dc1394a__add(in _path, out _nidout)
   DevAddNode(_path//':TRIG_ON   ', 'NUMERIC', 0 , '/noshot_write', _nid); /* 0 - no trigger , 1 - trigger expected */
   DevAddNode(_path//':WIDTH', 'NUMERIC', *, *, _nid);
   DevAddNode(_path//':HEIGHT', 'NUMERIC', *, *, _nid);
+  DevAddNode(_path//':XOFFSET', 'NUMERIC', 0, *, _nid);
+  DevAddNode(_path//':YOFFSET', 'NUMERIC', 0, *, _nid);
   DevAddNode(_path//':PIX_DEPTH', 'NUMERIC', *, *, _nid);
   DevAddNode(_path//':FRAMES','SIGNAL',*,'/write_once/compress_on_put/nomodel_write',_nid);
   DevAddNode(_path//':REQUESTED', 'NUMERIC', 0 : 59 : 1, '/noshot_write', _nid);

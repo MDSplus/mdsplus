@@ -14,6 +14,8 @@ public fun dc1394a__PART_NAME(as_is _nid, optional in _method)
   ':TRIG_ON',
   ':WIDTH',
   ':HEIGHT',
+  ':XOFFSET',
+  ':YOFFSET',
   ':PIX_DEPTH',
   ':FRAMES',
   ':REQUESTED',
