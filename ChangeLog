@@ -1,5 +1,946 @@
-Version 2.1-1
+Version 2.1-2
 
+
+2009-01-05 12:16  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix handling event data on local windows
+
+2008-12-25 13:34  manduchi
+
+	* javamds/javamds.dsp:
+	
+	remove unnecessary link
+
+2008-12-25 13:30  manduchi
+
+	* javamds/javamds.dsp:
+	
+	Remove unused object file
+
+2008-12-24 11:12  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Add mdsip_server script
+
+2008-12-24 11:09  twf
+
+	* mdstcpip/mdsip_server:
+	
+	Add an mdsip server startup file
+
+2008-12-18 14:17  jas
+
+	* mitdevices/dc1394_support2.c:
+	
+	since cleanup zeros the thread_id   I have to save it - (there is
+	still a short race condition)
+
+2008-12-17 14:06  jas
+
+	* mitdevices/dc1394_support2.c:
+	
+	zero thread on cleanup - do not stop camera twice
+
+2008-12-17 12:11  jas
+
+	* mitdevices/dc1394_support2.c:
+	
+	typo
+
+2008-12-17 11:18  jas
+
+	* mitdevices/dc1394_support2.c:
+	
+	problems with arg name width and static var width
+
+2008-12-15 08:34  twf
+
+	* mdsobjects/python/_opcodes/opcodes.py:
+	
+	fix import
+
+2008-12-15 08:33  twf
+
+	* mdsobjects/python/data.py:
+	
+	Fix bool and add more info to errors
+
+2008-12-09 15:29  twf
+
+	* tcl/tcl_show_data.c:
+	
+	Support show data of vms data types
+
+2008-12-05 17:12  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _mdsshr.py,
+	_tdishr.py, _treeshr.py, apd.py, array.py, compound.py, data.py,
+	ident.py, scalar.py, setup.py, tree.py, treenode.py,
+	_opcodes/__init__.py, _opcodes/opcodes.py:
+	
+	Use relative module names in imports
+
+2008-12-05 17:11  twf
+
+	* mdsobjects/python/tests/: test1.py, test2.py, test3.py:
+	
+	Remove original tests
+
+2008-12-05 17:09  twf
+
+	* mdsobjects/python/tests/: __init__.py, dataUnitTest.py,
+	threadsUnitTest.py, treeUnitTest.py:
+	
+	Add unit testing modules
+
+2008-12-03 12:44  twf
+
+	* treeshr/TreeSegments.c:
+	
+	remote static on external routines
+
+2008-12-03 12:43  twf
+
+	* include/treeshr.h:
+	
+	Fix TreeSetXNCI prototypes
+
+2008-12-01 12:25  twf
+
+	* mdsshr/MdsSerialize.c:
+	
+	Fix for 64-bit
+
+2008-11-27 11:45  manduchi
+
+	* javatraverser/Tree.java:
+	
+	Removed realtime checkbox
+
+2008-11-27 11:42  manduchi
+
+	* tdi/RfxDevices/CAENV1740__add.fun:
+	
+	Usage
+
+2008-11-27 11:33  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Dw Setup for CAEN V1740
+
+2008-11-27 11:27  manduchi
+
+	* tdi/RfxDevices/CAENV1740__add.fun:
+	
+	Add fun for CAEN V1740
+
+2008-11-27 11:05  manduchi
+
+	* include/treeshr.h:
+	
+	Added definitiond for TreeSetXNci and TreeSetDbiItm
+
+2008-11-27 11:05  manduchi
+
+	* javatraverser/: CAENV1740Setup.java, javatraverser.dsp:
+	
+	Added Device Setup form for CAEN V1740
+
+2008-11-26 13:17  twf
+
+	* mdsobjects/python/: _descriptor.py, _tdishr.py, _treeshr.py,
+	data.py:
+	
+	remove need to copy descriptors
+
+2008-11-26 09:34  manduchi
+
+	* rtevents/rtevents.h:
+	
+	Fix syntax
+
+2008-11-26 09:17  manduchi
+
+	* rtevents/TCPMessageManager.h:
+	
+	Syntax fix
+
+2008-11-25 16:44  twf
+
+	* mdsshr/MdsSerialize.c:
+	
+	Fix serialize of apd
+
+2008-11-24 10:49  manduchi
+
+	* Makefile.in, configure, configure.in, include/treeshr.h:
+	
+	Added mdsobjects/cpp and rtevents in configure Added #include
+	<MdsTypes.h> in treeshr as a consequence of the introcuction of
+	segment stuff in treeshr
+
+2008-11-24 10:47  manduchi
+
+	* rtevents/: ExitHandler.cpp, Makefile.in:
+	
+	Added Linux Exit Handler Added Makefile.in
+
+2008-11-24 10:46  manduchi
+
+	* mdsobjects/cpp/: Makefile.in, mdsdataobjects.cpp, mdsobjects.h:
+	
+	Added Makefile.in Added Uint8::deserialize()
+
+2008-11-24 09:26  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix TreePutRecord
+
+2008-11-24 09:21  twf
+
+	* mdsobjects/python/data.py:
+	
+	Add Dictionary and serialize/unserialize methods
+
+2008-11-24 09:16  twf
+
+	* mdsobjects/python/array.py:
+	
+	Add deserialize to the Uint8Array class
+
+2008-11-24 09:14  twf
+
+	* mdsobjects/python/apd.py:
+	
+	Add Dictionary
+
+2008-11-24 09:14  twf
+
+	* mdsobjects/python/_mdsdtypes.py:
+	
+	Add new data types, Dictionary, List, Tuple
+
+2008-11-24 09:13  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Fix TreePutRecord
+
+2008-11-24 09:08  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py:
+	
+	Add Dictionary
+
+2008-11-21 12:49  manduchi
+
+	* rtevents/: EventHandler.cpp, EventHandler.h, EventManager.cpp:
+	
+	Last fixes for critical conditions
+
+2008-11-21 07:38  manduchi
+
+	* rtevents/: EventHandler.cpp, EventHandler.h, ExitHandler.h,
+	Notifier.cpp, Notifier.h, WindowsExitHandler.cpp, rtevents.dsp:
+	
+	Handle abnormal termination
+
+2008-11-20 11:49  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Lock treeshr operations
+
+2008-11-20 11:48  manduchi
+
+	* include/treeshr.h:
+	
+	Export Segment stuff
+
+2008-11-19 16:24  twf
+
+	* mdsobjects/python/data.py:
+	
+	New Function implementation
+
+2008-11-19 16:23  twf
+
+	* mdsobjects/python/apd.py:
+	
+	Add documentation and index methods
+
+2008-11-19 16:23  twf
+
+	* mdsobjects/python/: _descriptor.py, compound.py:
+	
+	New Compound implementation
+
+2008-11-19 13:36  jas
+
+	* tdi/MitDevices/dt196ao__init.fun:
+	
+	Take out extra factor of 2
+
+2008-11-19 09:18  manduchi
+
+	* rtevents/: EventManager.cpp, Timeout.h, rtevents.h:
+	
+	Added timeout trigger version in C layer
+
+2008-11-19 08:07  manduchi
+
+	* rtevents/: EventConnector.cpp, WindowsThread.cpp,
+	WindowsThread.h:
+	
+	Fixes for Windows
+
+2008-11-19 06:09  manduchi
+
+	* rtevents/: EventHandler.cpp, Notifier.h:
+	
+	Fixes
+
+2008-11-19 05:24  manduchi
+
+	* rtevents/EventHandler.cpp:
+	
+	Compiler inconsistencies
+
+2008-11-19 05:22  manduchi
+
+	* rtevents/: EventHandler.cpp, EventHandler.h, EventManager.cpp,
+	EventManager.h, IPAddress.h, NamedSemaphore.h, Notifier.cpp,
+	Notifier.h, TCPMessageManager.cpp, TCPMessageManager.h, Thread.h,
+	ThreadAttributes.h, WindowsThread.h, rtevents.h:
+	
+	More fixes
+
+2008-11-18 12:33  manduchi
+
+	* include/treeshr.h:
+	
+	Include Segment routines and few other
+
+2008-11-18 12:32  manduchi
+
+	* treeshr/: TreeGetSetShotId.c, TreeSegments.c, TreeShr.def,
+	treeshr.dsp:
+	
+	Use EXPORT definition directly to specify declspec(__dllexport)
+
+2008-11-18 11:43  manduchi
+
+	* javascope/javascope.dsp:
+	
+	Include WaveformEditor
+
+2008-11-18 10:52  twf
+
+	* mdsobjects/python/: compound.py, treenode.py:
+	
+	Fix doc indentation
+
+2008-11-18 10:33  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	First working version
+
+2008-11-18 10:07  twf
+
+	* mdsobjects/python/data.py:
+	
+	improve documentation
+
+2008-11-18 09:56  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Fix
+
+2008-11-18 09:43  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Fix
+
+2008-11-18 08:06  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp:
+	
+	TCP Nodelay
+
+2008-11-18 08:00  manduchi
+
+	* rtevents/TCPMessageManager.cpp:
+	
+	Set TCP_NODELAY
+
+2008-11-18 07:44  manduchi
+
+	* rtevents/TCPMessageManager.cpp:
+	
+	Fix
+
+2008-11-18 07:29  manduchi
+
+	* rtevents/: EventConnector.cpp, EventHandler.cpp, Notifier.cpp,
+	Notifier.h, WindowsUnnamedSemaphore.h:
+	
+	Add Automatic Orphan detection
+
+2008-11-18 05:01  manduchi
+
+	* rtevents/: EventManager.cpp, IPAddress.h, TCPMessageManager.cpp:
+	
+	Fix
+
+2008-11-18 04:24  manduchi
+
+	* rtevents/: EventConnector.cpp, EventConnector.cpp:
+	
+	Fix
+
+2008-11-17 15:57  twf
+
+	* mdsobjects/python/tests/test3.py:
+	
+	Add test3
+
+2008-11-17 15:56  twf
+
+	* mdsobjects/python/: _tdishr.py, array.py, compound.py,
+	tests/__init__.py:
+	
+	Fix string method
+
+2008-11-17 15:55  twf
+
+	* mdsobjects/python/: data.py, scalar.py:
+	
+	remove some local methods
+
+2008-11-17 13:29  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp:
+	
+	Fix
+
+2008-11-17 13:09  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp,
+	TCPMessageManager.h:
+	
+	Fix
+
+2008-11-17 12:23  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp:
+	
+	Fix
+
+2008-11-17 12:07  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp,
+	TCPMessageManager.h:
+	
+	Fix
+
+2008-11-17 11:41  manduchi
+
+	* rtevents/IPAddress.h:
+	
+	Fix
+
+2008-11-17 11:38  manduchi
+
+	* rtevents/: IPAddress.h, TCPMessageManager.cpp:
+	
+	Fix
+
+2008-11-17 10:51  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Fix
+
+2008-11-17 08:36  manduchi
+
+	* rtevents/: EventConnector.cpp, NamedSemaphore.h,
+	EventConnector.cpp:
+	
+	Fix
+
+2008-11-17 08:35  manduchi
+
+	* rtevents/: NamedSemaphore.h, UnnamedSemaphore.h:
+	
+	Let semaphores be handled under GDB
+
+2008-11-17 04:34  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Curr fix
+
+2008-11-14 12:38  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Curr fix
+
+2008-11-14 12:27  manduchi
+
+	* rtevents/: EventConnector.cpp, EventManager.cpp, EventManager.h:
+	
+	Curr fix
+
+2008-11-14 12:10  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	curr fix
+
+2008-11-14 12:03  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	curr fix
+
+2008-11-14 11:50  manduchi
+
+	* rtevents/: EventConnector.cpp, EventManager.cpp, EventManager.h,
+	WindowsUnnamedSemaphore.h:
+	
+	curr fix
+
+2008-11-14 11:15  manduchi
+
+	* rtevents/EventConnector.cpp:
+	
+	Fix
+
+2008-11-14 10:28  manduchi
+
+	* rtevents/: EventConnector.cpp, EventManager.cpp,
+	WindowsThread.cpp:
+	
+	Alignments
+
+2008-11-14 09:03  manduchi
+
+	* rtevents/: EventConnector.cpp, TCPMessageManager.cpp:
+	
+	Syntax aligment
+
+2008-11-14 08:57  manduchi
+
+	* rtevents/: EventConnector.cpp, NamedSemaphore.h:
+	
+	Last syntax aligments
+
+2008-11-14 08:44  manduchi
+
+	* rtevents/: AllocationManager.cpp, Delay.h, EventConnector.cpp,
+	EventHandler.cpp, EventManager.cpp, EventManager.h, GlobalLock.h,
+	IPAddress.h, Lock.h, NamedSemaphore.h, Notifier.cpp, Notifier.h,
+	RelativePointer.h, SharedMemManager.h, SharedMemory.h,
+	SystemException.h, TCPMessageManager.cpp, TCPMessageManager.h,
+	Thread.h, Timeout.h, UnnamedSemaphore.h, WindowsDelay.h,
+	WindowsNamedSemaphore.h, WindowsSharedMemory.cpp,
+	WindowsSharedMemory.h, WindowsSystemException.h, WindowsThread.cpp,
+	WindowsThread.h, WindowsUnnamedSemaphore.h, rtevents.dsp:
+	
+	Windows version of rtevents
+
+2008-11-14 08:43  manduchi
+
+	* mdsplus.dsw:
+	
+	Include rtevents
+
+2008-11-13 05:06  manduchi
+
+	* rtevents/: AllocationManager.cpp, AllocationManager.h, Delay.h,
+	EventConnector.cpp, EventHandler.cpp, EventHandler.h,
+	EventManager.cpp, EventManager.h, GlobalLock.h, IPAddress.h,
+	Lock.h, MessageManager.h, MessageReceiver.h, MessageSender.h,
+	NamedSemaphore.h, NetworkAddress.h, Notifier.cpp, Notifier.h,
+	RelativePointer.cpp, RelativePointer.h, Runnable.h,
+	SharedMemManager.h, SharedMemory.h, SystemException.h,
+	TCPMessageManager.cpp, TCPMessageManager.h, TCPMessageSender.h,
+	Thread.cpp, Thread.h, Timeout.h, UnnamedSemaphore.h:
+	
+	First Release of Rel Time Events
+
+2008-11-10 10:23  manduchi
+
+	* tdi/RfxDevices/ModeThreshold.fun:
+	
+	Set VME Mode Threshold Variable
+
+2008-11-07 15:19  twf
+
+	* mdsobjects/python/MDSobjects-epydoc.prj:
+	
+	New configuration
+
+2008-11-07 15:17  twf
+
+	* mdsobjects/python/: data.py, tree.py, tests/test2.py:
+	
+	Add better documentation
+
+2008-11-06 12:02  twf
+
+	* treeshr/: TreeFindNode.c, TreeOpen.c, treeshr.vcproj:
+	
+	Fix for underscore routine exports on windows
+
+2008-11-06 12:02  twf
+
+	* include/treeshr.h:
+	
+	Add dllexport to get underscore routines exported
+
+2008-11-05 13:37  twf
+
+	* mdslib/MdsLib.c:
+	
+	Fix compile error on windows
+
+2008-11-05 12:48  twf
+
+	* mdslib/MdsLib.c:
+	
+	Fix uninitialize descriptor length
+
+2008-11-05 10:15  twf
+
+	* treeshr/TreeFindNode.c:
+	
+	Use underscore version of _TreeFindTagWild in _TreeFindTag
+
+2008-11-05 10:11  twf
+
+	* mdsobjects/python/: _tdishr.py, _treeshr.py, setup.py, tree.py,
+	treenode.py:
+	
+	Add thread locking
+
+2008-11-05 10:10  twf
+
+	* mdsobjects/python/tests/: __init__.py, test1.py, test2.py:
+	
+	Add tests
+
+2008-11-03 14:34  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Add python device support
+
+2008-11-03 14:33  twf
+
+	* tdi/MitDevices/MitDevices.py:
+	
+	Sample pyton device
+
+2008-11-03 14:31  twf
+
+	* tdi/MitDevices/a12py__add.fun:
+	
+	sample python device add
+
+2008-11-03 14:30  twf
+
+	* tdi/dev_support/: DevAddPyStart.fun, PyDoMethod.fun:
+	
+	Support for python devices
+
+2008-11-03 14:29  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Suport for python devices
+
+2008-10-31 14:17  twf
+
+	* mdsobjects/python/: __init__.py, array.py, data.py, scalar.py,
+	setup.py, treenode.py:
+	
+	More documentation and fix PyIndex registration
+
+2008-10-30 15:10  twf
+
+	* mdsobjects/python/MDSobjects-epydoc.prj:
+	
+	use relative file names
+
+2008-10-30 14:16  twf
+
+	* mdsobjects/python/: _tdishr.py, treenode.py:
+	
+	Add more attributes and methods
+
+2008-10-30 12:55  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Make TreePath subclass of TreeNode
+
+2008-10-30 11:46  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add more methods
+
+2008-10-30 10:02  twf
+
+	* mdsobjects/python/: _descriptor.py, _mdsshr.py, _tdishr.py,
+	data.py:
+	
+	Remove extra DSC descriptors before calling TdiShr routines
+
+2008-10-29 14:47  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _mdsclasses.py,
+	_mdsdtypes.py, _mdsshr.py, _tdishr.py, _treeshr.py, apd.py,
+	array.py, compound.py, data.py, ident.py, scalar.py, setup.py,
+	tree.py, treenode.py, _opcodes/__init__.py, _opcodes/opcodes.py,
+	MDSobjects-epydoc.prj:
+	
+	Add python MDSobjects
+
+2008-10-29 14:27  twf
+
+	* tdi/Py.fun:
+	
+	Add Py.fun
+
+2008-10-29 10:58  manduchi
+
+	* javadispatcher/: ServersInfoPanel.java, jDispatchMonitor.java:
+	
+	Minor fix
+
+2008-10-28 13:15  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Hopefully last fix
+
+2008-10-28 13:07  manduchi
+
+	* javatraverser/: DeviceSetup.java, ParameterSetting.java:
+	
+	Fix
+
+2008-10-28 13:00  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Fix again
+
+2008-10-28 12:54  manduchi
+
+	* javatraverser/: DeviceCloseListener.java, DeviceSetup.java,
+	ParameterSetting.java:
+	
+	Fix Close MHD in ParameterSetting
+
+2008-10-28 12:03  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Further refinements
+
+2008-10-28 10:16  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Refined TreeNode Methods
+
+2008-10-24 11:14  twf
+
+	* mdstcpip/mdsip.h:
+	
+	Fix for fc9
+
+2008-10-22 08:40  manduchi
+
+	* javatraverser/CompileTree.java:
+	
+	Fix truncation at 12 chars
+
+2008-10-22 05:21  manduchi
+
+	* mdsobjects/cpp/: Makefile.in, mdsdataobjects.cpp, mdsobjects.h,
+	mdstree.c, mdstreeobjects.cpp:
+	
+	Fix memory leaks.
+
+2008-10-22 04:15  manduchi
+
+	* mdsobjects/cpp/: mdsdata.c, mdsdataobjects.cpp, mdsobjects.dsp,
+	mdsobjects.h, mdstree.c, mdstreeobjects.cpp:
+	
+	Final class and libraries organization
+
+2008-10-21 08:58  manduchi
+
+	* mdsobjects/cpp/: mdsdata.c, mdsdata.h, mdsdataobjects.cpp,
+	mdsobjects.dsp, mdsobjects.h, mdsstream.h, mdstree.c, mdstree.h:
+	
+	First release of Data + Tree MDS objects
+
+2008-10-16 16:32  twf
+
+	* tdishr/TdiGetNci.c:
+	
+	Fix arrays of usage
+
+2008-10-15 03:29  manduchi
+
+	* tdi/RfxDevices/RFXControl__add.fun:
+	
+	New Parameter
+
+2008-10-10 04:48  manduchi
+
+	* javadispatcher/: MdsActionsMonitor.java, MdsMonitor.java:
+	
+	Synchronize Notify()
+
+2008-10-10 03:45  manduchi
+
+	* javatraverser/RFXDnbiSetup.java:
+	
+	Fix Nid value
+
+2008-10-10 03:08  manduchi
+
+	* javadispatcher/: MdsActionsMonitor.java, MdsMonitor.java:
+	
+	Remove useless synchronized
+
+2008-10-09 04:33  manduchi
+
+	* javatraverser/: RFXDnbiSetup.form, RFXDnbiSetup.java:
+	
+	Setup interface of the Diagnostic Neutral Beam Injector
+
+2008-10-08 09:37  manduchi
+
+	* mdsobjects/cpp/mdsdata.h:
+	
+	Make it compile under Windows
+
+2008-10-08 09:31  manduchi
+
+	* mdsobjects/cpp/: Makefile.in, mdsdata.c, mdsdata.h,
+	mdsdataobjects.cpp:
+	
+	First bunch of memory checks with valgrind
+
+2008-10-08 07:26  manduchi
+
+	* mdsobjects/cpp/mdsdataobjects.cpp:
+	
+	Code for mds data objects
+
+2008-10-08 06:08  manduchi
+
+	* mdsobjects/: mdsplus.eap, cpp/mdsdata.c, cpp/mdsdata.h,
+	cpp/mdsobjects.c, cpp/mdsobjects.dsp, cpp/mdsstream.h,
+	cpp/mdstree.h:
+	
+	First Release C++ Data Objects
+
+2008-10-03 04:06  manduchi
+
+	* javadispatcher/: ActionServer.java, jDispatcher.java:
+	
+	Removed useless synchronized
+
+2008-10-03 03:40  manduchi
+
+	* javadispatcher/jDispatcher.java:
+	
+	Revone synchronized
+
+2008-09-30 12:00  manduchi
+
+	* javadispatcher/ActionServer.java:
+	
+	Remove synchronized in processConnected eand Disconnected
+
+2008-09-30 11:36  manduchi
+
+	* javadispatcher/ActionServer.java:
+	
+	Add print info
+
+2008-09-23 08:10  twf
+
+	* idl/mdsconnect.pro:
+	
+	Use square brackets instead of parenthisis for array indexing
+
+2008-09-15 04:59  manduchi
+
+	* javadispatcher/: ActionServer.java, Makefile.in,
+	ServersInfoPanel.java:
+	
+	Mod.
+
+2008-09-10 11:40  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fixed copy of incomplete segments into cache
+
+2008-09-02 06:34  manduchi
+
+	* tdi/RfxDevices/DESO_acquisition.fun:
+	
+	Pre acquisition Gas Filling and Puffing
+
+2008-09-01 03:33  manduchi
+
+	* javatraverser/DeviceApply.java:
+	
+	Do the check after reporting values on the model
+
+2008-08-28 14:00  jas
+
+	* mdsshr/librtl.c:
+	
+	don't care about the return status of strptime since tm contains 0
+	to start - allows for partial input time strings
+
+2008-08-25 10:46  manduchi
+
+	* javadispatcher/: Action.java, ActionServer.java, Balancer.java,
+	InfoServer.java, MdsActionsMonitor.java, MdsMonitor.java,
+	MdsMonitorEvent.java, MonitorEvent.java, MonitorListener.java,
+	Server.java, ServerEvent.java, ServerInfo.java,
+	ServerListener.java, ServerShowDialog.java, ServersInfoPanel.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcherIp.java,
+	jServer.java:
+	
+	Fix and modify Dispatch Monitor
+
+2008-08-22 12:26  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.1-1
 
 2008-08-22 12:25  twf
 
