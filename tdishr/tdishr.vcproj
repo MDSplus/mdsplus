@@ -465,22 +465,6 @@
 		<File
 			RelativePath=".\TdiSql.c"
 			>
-			<FileConfiguration
-				Name="Release|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_DEBUG;SYBASE;_MBCS;_USRDLL;MDSSQL_EXPORTS;DBNTWIN32;$(NoInherit)"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;SYBASE;_MBCS;_USRDLL;MDSSQL_EXPORTS;DBNTWIN32;$(NoInherit)"
-				/>
-			</FileConfiguration>
 		</File>
 		<File
 			RelativePath=".\TdiSquare.c"

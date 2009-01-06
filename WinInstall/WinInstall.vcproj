@@ -156,6 +156,7 @@
 			<Tool
 				Name="VCManifestTool"
 				AdditionalManifestFiles="WinInstall.exe.manifest"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -202,6 +203,10 @@
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath=".\WinInstall.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

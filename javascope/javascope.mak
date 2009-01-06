@@ -30,7 +30,7 @@ DataAccessURL.java          JiNcVar.java                MdsWaveInterface.java   
 DataCacheObject.java        JiNcVarByte.java            MultiWavePopup.java         WaveContainerListener.java  \
 DataCached.java             JiNcVarChar.java            MultiWaveform.java          WaveData.java               jScopeMultiWave.java \
 DataProvider.java           JiNcVarDouble.java          ProfileDialog.java          WaveDisplay.java             \
-DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          jScopeProperties.java 
+DataServerItem.java         JiNcVarFloat.java           RandomAccessData.java       WaveInterface.java          WaveformEditor.java jScopeProperties.java 
 
 #DemoDataProvider.java       JiNcVarImp.java             RdaAccess.java              WavePopup.java              jScopeWaveContainer.java \
 #Descriptor.java             JiNcVarInt.java             SshTunneling.java            Waveform.java                \

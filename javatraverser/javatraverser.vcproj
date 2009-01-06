@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="javatraverser"
 	ProjectGUID="{5A9BCCFC-3A2D-422C-8A61-CA80C2E3BAA6}"
+	RootNamespace="javatraverser"
 	Keyword="MakeFileProj"
 	>
 	<Platforms>
