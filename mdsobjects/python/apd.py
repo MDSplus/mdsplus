@@ -1,4 +1,4 @@
-from data import Data
+from mdsdata import Data
 from _mdsdtypes import DTYPE_LIST,DTYPE_DICTIONARY
 
 class Apd(Data):

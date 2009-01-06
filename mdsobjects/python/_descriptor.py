@@ -2,7 +2,7 @@ from scalar import makeScalar,Scalar
 from array import makeArray,Array,StringArray
 from _mdsdtypes import *
 from _mdsclasses import *
-from data import makeData
+from mdsdata import makeData
 from treenode import TreeNode,TreePath,TreeNodeArray
 from ident import Ident
 from apd import Apd,Dictionary,List

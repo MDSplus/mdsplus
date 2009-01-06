@@ -1,4 +1,4 @@
-from data import Data,makeData
+from mdsdata import Data,makeData
 from threading import RLock,Thread
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""

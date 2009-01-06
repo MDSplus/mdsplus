@@ -1,6 +1,6 @@
 import numpy,copy
 from types import NotImplementedType
-from data import *
+from mdsdata import *
 from _mdsdtypes import *
 
 def makeScalar(value):

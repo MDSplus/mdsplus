@@ -1,4 +1,4 @@
-from data import Data,makeData
+from mdsdata import Data,makeData
 from scalar import Uint8
 from array import Int32Array
 from tree import Tree

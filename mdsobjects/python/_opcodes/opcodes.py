@@ -1,5 +1,8 @@
 #from dollar_value import dollar_value
+from compound import Signal
+import sys
 import numpy as _N
+import os
 
 def parenthesize(obj,prec):
     from opc import opc

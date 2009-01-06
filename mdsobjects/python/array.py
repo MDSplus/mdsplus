@@ -1,6 +1,6 @@
 import numpy,copy
 from types import NotImplementedType
-from data import Data,makeData
+from mdsdata import Data,makeData
 from _mdsdtypes import *
 from scalar import Scalar
 

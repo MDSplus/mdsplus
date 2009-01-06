@@ -2,7 +2,7 @@
 
 from setuptools import setup, Extension
 version='0.2'
-setup(name='MDSobjects',
+setup(name='MDSplus',
       version=version,
       description='MDSplus Python Objects',
       long_description = """
@@ -13,9 +13,9 @@ setup(name='MDSobjects',
       author_email='twf@www.mdsplus.org',
       url='http://www.mdsplus.org/',
       download_url = 'http://www.mdsplus.org/binaries/python/',
-      package_dir = {'MDSobjects':'.','MDSobjects._opcodes':'./_opcodes','MDSobjects.tests':'./tests'},
-      packages = ['MDSobjects','MDSobjects._opcodes','MDSobjects.tests'],
-#      package_data = {'MDSobjects':'*'},
+      package_dir = {'MDSplus':'.','MDSplus._opcodes':'./_opcodes','MDSplus.tests':'./tests'},
+      packages = ['MDSplus','MDSplus._opcodes','MDSplus.tests'],
+#      package_data = {'MDSplus':'*'},
       platforms = ('Any',),
       classifiers = [ 'Development Status :: 4 - Beta',
       'Programming Language :: Python',
