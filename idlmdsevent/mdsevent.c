@@ -132,12 +132,27 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
     HWND wid1, wid2;
 #endif
     IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
-    /*
 #ifdef WIN32
     IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
     PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
+#else
+    {
+      Widget top;
+      Widget w;
+      IDL_WidgetGetStubIds(base_rec, (unsigned long *)&top, (unsigned long *)&w);
+      if (w)
+      {
+        XClientMessageEvent event;
+        event.type = ClientMessage;
+        event.display = XtDisplay(top);
+        event.window = XtWindow(top);
+        event.format = 8;
+        XSendEvent(XtDisplay(top),XtWindow(top),TRUE,0,(XEvent *)&event);
+        XFlush(XtDisplay(top));
+      }
+    }
+
 #endif
-    */
   }
 }
 
