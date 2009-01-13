@@ -663,7 +663,7 @@ protected:
 		}
 	};
 
-	class Uint8Array: public Array
+	class EXPORT Uint8Array: public Array
 	{
 	public:
 		Uint8Array(char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -1495,13 +1495,12 @@ public:
 
 //using namespace std;
 
-
 	class Tree;
 	class TreeNode;
 	class TreeNodeArray;
 
 
-	class  TreeNode: public Data, DataStreamConsumer
+	class  EXPORT TreeNode: public Data, DataStreamConsumer
 	{
 	friend	ostream &operator<<(ostream &stream, TreeNode *treeNode);
 	protected:
@@ -1625,23 +1624,29 @@ public:
 	
 	
 /////////////////CachedTreeNode/////////////////////////////
-	class CachedTreeNode: public TreeNode
+#define WRITE_THROUGH 1
+#define WRITE_BACK 2
+#define WRITE_BUFFER 3
+#define WRITE_LAST 4
+
+	class EXPORT CachedTreeNode: public TreeNode
 	{
 	protected:
 		int cachePolicy;
 		virtual bool isCached() { return true;}
 		virtual int getCachePolicy() { return cachePolicy;}
-		void flush();
 
 	public:
-		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){}
+		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = WRITE_BUFFER;}
 		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
+		void flush();
+		void putLastRow(Data *data, Int64 *time);
 	};
 
 
 
 ////////////////Class TreeNodeArray///////////////////////
-	class TreeNodeArray
+	class EXPORT TreeNodeArray
 	{
 		TreeNode **nodes;
 		int numNodes;
@@ -1949,7 +1954,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		static void lock();
 		static void unlock();
 		
-		
+		void *getCtx() {return ctx;}
 		TreeNode *getNode(char *path);
 	
 		TreeNode *getNode(TreePath *path);
@@ -1971,7 +1976,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 
 #define DEFAULT_CACHE_SIZE 2000000
 
-	class CachedTree: public Tree
+	class EXPORT CachedTree: public Tree
 	{
 		bool cacheShared;
 		int cacheSize;

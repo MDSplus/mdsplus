@@ -41,49 +41,50 @@ extern "C" {
 
 
 extern "C" void RTreeSynch();
-extern "C" int TreeOpen(char *tree, int shot, int readOnly);
-extern "C" int TreeClose(char *tree, int shot);
-extern "C" int RTreeOpen(char *tree, int shot);
-extern "C" int RTreeClose(char *tree, int shot);
-extern "C" char *RTreeSetCallback(int nid, void *argument, void (*callback)(int, void *));
-extern "C" char RTreeSetWarm(int nid, int warm);
-extern "C" int RTreeClearCallback(int nid, char *callbackDescr);
-extern "C" void RTreeConfigure(int shared, int size);
-extern "C" int TreeClose(char *tree, int shot);
-extern "C" int TreeFindNode(char *path, int *nid);
-extern "C" int TreeFindNodeWild(char *path, int *nid, void **ctx, int mask);
-extern "C" int TreeFindNodeEnd(void **ctx);
-extern "C" char *TreeGetPath(int nid);
+extern "C" int _TreeOpen(void *dbid, char *tree, int shot, int readOnly);
+extern "C" int _TreeClose(void *dbid, char *tree, int shot);
+extern "C" int _RTreeOpen(void *dbid, char *tree, int shot);
+extern "C" int _RTreeClose(void *dbid, char *tree, int shot);
+extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
+extern "C" char _RTreeSetWarm(void *dbid, int nid, int warm);
+extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
+extern "C" int _TreeClose(void *dbid, char *tree, int shot);
+extern "C" int _TreeFindNode(void *dbid, char *path, int *nid);
+extern "C" int _TreeFindNodeWild(void *dbid, char *path, int *nid, void **ctx, int mask);
+extern "C" int _TreeFindNodeEnd(void *dbid, void **ctx);
+extern "C" char *_TreeGetPath(void *dbid, int nid);
 extern "C" void TreeFree(void *ptr);
+extern "C" int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
 extern "C" int TreeGetDbi(struct dbi_itm *itmlst);
-extern "C" int TreeGetNci(int nid, struct nci_itm *itmlst);
-extern "C" int TreeSetNci(int nid, struct nci_itm *itmlst);
-extern "C" int TreeIsOn(int nid);
-extern "C" int TreeTurnOff(int nid);
-extern "C" int TreeTurnOn(int nid);
-extern "C" void convertTime(int *time, char *retTime);
-extern "C" int TreeSetDefaultNid(int nid);
-extern "C" int TreeGetDefaultNid(int *nid);
-extern "C" char *TreeFindNodeTags(int nid, void *ctx);
+extern "C" int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
+extern "C" int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
+extern "C" int _TreeIsOn(void *dbid, int nid);
+extern "C" int _TreeTurnOff(void *dbid, int nid);
+extern "C" int _TreeTurnOn(void *dbid, int nid);
+extern "C" void convertTime(void *dbid, int *time, char *retTime);
+extern "C" int _TreeSetDefaultNid(void *dbid, int nid);
+extern "C" int _TreeGetDefaultNid(void *dbid, int *nid);
+extern "C" char *_TreeFindNodeTags(void *dbid, int nid, void *ctx);
 extern "C" int TreeFindTagEnd(void *ctx);
+extern "C" void *TreeSwitchDbid(void *dbid);
+extern "C" void RTreeConfigure(int shared, int size);
 
-extern "C" int getTreeData(int nid, void **data, int isCached);
-extern "C" int putTreeData(int nid, void *data, int isCached, int cachePolicy);
-extern "C" int deleteTreeData(int nid);
-extern "C" int doTreeMethod(int nid, char *method);
-extern "C" int beginTreeSegment(int nid, void *dataDsc, void *startDsc, void *endDsc, 
+extern "C" int getTreeData(void *dbid, int nid, void **data, int isCached);
+extern "C" int putTreeData(void *dbid, int nid, void *data, int isCached, int cachePolicy);
+extern "C" int deleteTreeData(void *dbid, int nid, int isCached, int cachePolicy);
+extern "C" int doTreeMethod(void *dbid, int nid, char *method);
+extern "C" int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
-extern "C" int putTreeSegment(int nid, void *dataDsc, int ofs, int isCached, int cachePolicy);
-extern "C" int updateTreeSegment(int nid, void *startDsc, void *endDsc, 
+extern "C" int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs, int isCached, int cachePolicy);
+extern "C" int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
-extern "C" int getTreeNumSegments(int nid, int *numSegments, int isCached); 
-extern "C" int getTreeSegmentLimits(int nid, void **startDsc, void **endDsc, int isCached);
-extern "C" int getTreeSegment(int nid, int segIdx, void **dataDsc, int isCached);
+extern "C" int getTreeNumSegments(void *dbid, int nid, int *numSegments, int isCached); 
+extern "C" int getTreeSegmentLimits(void *dbid, int nid, void **startDsc, void **endDsc, int isCached);
+extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, int isCached);
 extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
-extern "C" int beginTreeTimestampedSegment(int nid, void *dataDsc, int isCached, int cachePolicy);
-extern "C" int putTreeTimestampedSegment(int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
-extern "C" int putTreeRow(int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
-extern "C" void * TreeSwitchDbid(void *ctx);
+extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
+extern "C" int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
+extern "C" int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
 extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
 extern "C" int TreeSetViewDate(_int64 *date);
 
@@ -92,7 +93,7 @@ extern "C" const char *MdsDtypeString(int id);
 
 
 
-extern "C" int RTreeFlush(int nid);
+extern "C" int _RTreeFlush(void *dbid, int nid);
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
@@ -142,16 +143,12 @@ void Tree::unlock()
 Tree::Tree(char *name, int shot)
 {
 	this->shot = shot;
-	lock();
-	TreeSwitchDbid((void *)0);
-	int status = TreeOpen(name, shot, 0);
+	ctx = 0;
+	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
 	}
-	ctx=TreeSwitchDbid((void *)0);
-	TreeSwitchDbid(ctx);
-	unlock();
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
 }
@@ -159,38 +156,16 @@ Tree::Tree(char *name, int shot)
 
 Tree::~Tree()
 {
-  lock();
-  void *currentCtx = TreeSwitchDbid(ctx);
-  while (TreeClose(0, 0) & 1);   /**** close all trees in this context in case some expression opened another tree in this context ***/
-  if (currentCtx == ctx)
-      TreeSwitchDbid((void *)0);
-  else
-      TreeSwitchDbid(currentCtx);
-  unlock();
-  TreeFree(currentCtx);
-  delete [] name;
+    _TreeClose(ctx, name, shot);
+    delete [] name;
 }
 
 
-/*Tree::~Tree()
-{
-	void *currentCtx = TreeSwitchDbid(ctx);
-	TreeClose(name, shot);
-	if (currentCtx == ctx)
-		TreeSwitchDbid((void *)0);
-	else
-		TreeSwitchDbid(currentCtx);
-	delete [] name;
-}
-*/
 TreeNode *Tree::getNode(char *path)
 {
 	int nid, status;
 
-	lock();
-	setActiveTree(this);
-	status = TreeFindNode(path, &nid);
-	unlock();
+	status = _TreeFindNode(ctx, path, &nid);
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -203,10 +178,7 @@ TreeNode *Tree::getNode(TreePath *path)
 {
 	int nid, status;
 	char *pathName = path->getString();
-	lock();
-	setActiveTree(this);
-	status = TreeFindNode(pathName, &nid);
-	unlock();
+	status = _TreeFindNode(ctx, pathName, &nid);
 	delete[] pathName;
 	if(!(status & 1))
 	{
@@ -221,25 +193,22 @@ TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 {
 	int currNid, status; 
 	int numNids = 0;
-	void *ctx = 0;
-	lock();
-	setActiveTree(this);
-	while ((status = TreeFindNodeWild(path,&currNid,&ctx, usageMask)) & 1)
-		numNids++;
-	TreeFindNodeEnd(&ctx);
+	void *wildCtx = 0;
 
-	printf("%s\n", MdsGetMsg(status));
+	while ((status = _TreeFindNodeWild(ctx, path,&currNid,&wildCtx, usageMask)) & 1)
+		numNids++;
+	_TreeFindNodeEnd(ctx, &wildCtx);
+
+	//printf("%s\n", MdsGetMsg(status));
 
 	TreeNode **retNodes = new TreeNode *[numNids];
 	ctx = 0;
-	setActiveTree(this);
 	for(int i = 0; i < numNids; i++)
 	{
-		TreeFindNodeWild(path,&currNid,&ctx, usageMask);
+		_TreeFindNodeWild(ctx, path,&currNid,&wildCtx, usageMask);
 		retNodes[i] = new TreeNode(currNid, this);
 	}
-	TreeFindNodeEnd(&ctx);
-	unlock();
+	_TreeFindNodeEnd(ctx, &wildCtx);
 	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
 	delete [] retNodes;
 	return nodeArray;
@@ -254,10 +223,7 @@ TreeNodeArray *Tree::getNodeWild(char *path)
 
 void Tree::setDefault(TreeNode *treeNode)
 {
-	lock();
-	setActiveTree(this);
-	int status = TreeSetDefaultNid(treeNode->getNid());
-	unlock();
+	int status = _TreeSetDefaultNid(ctx, treeNode->getNid());
 	if(!(status & 1)) 
 		throw new TreeException(status);
 }
@@ -266,10 +232,7 @@ TreeNode *Tree::getDeault()
 {
 	int nid;
 
-	lock();
-	setActiveTree(this);
-	int status = TreeGetDefaultNid(&nid);
-	unlock();
+	int status = _TreeGetDefaultNid(ctx, &nid);
 	if(!(status & 1)) 
 		throw new TreeException(status);
 	return new TreeNode(nid, this);
@@ -282,10 +245,7 @@ bool Tree::supportsVersions()
 	{{sizeof(int), DbiVERSIONS_IN_PULSE, &supports, &len},
 	{0, DbiEND_OF_LIST,0,0}};
 
-	lock();
-	setActiveTree(this);
-	status = TreeGetDbi(dbiList);
-	unlock();
+	status = _TreeGetDbi(ctx, dbiList);
 	if(!(status & 1)) 
 		throw new TreeException(status);
 	return (supports)?true:false;
@@ -298,10 +258,7 @@ void Tree::setViewDate(char *date)
 	int status = LibConvertDateString(date, &qtime);
 	if(!(status & 1))
 		throw new TreeException("Invalid date format");
-	lock();
-	setActiveTree(this);
 	status = TreeSetViewDate(&qtime);
-	unlock();
 	if(!(status & 1)) 
 		throw new TreeException(status);
 }
@@ -309,11 +266,8 @@ void Tree::setViewDate(char *date)
 
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
-	lock();
-	setActiveTree(this);
 	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0, 
 		(delta)?delta->convertToDsc():0);
-	unlock();
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -335,11 +289,8 @@ int TreeNode::getFlag(int flagOfs)
 	struct nci_itm nciList[] =  {{4, NciGET_FLAGS, &nciFlags, &nciFlagsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return (nciFlags & flagOfs)?true:false;
@@ -352,10 +303,8 @@ void TreeNode::setFlag(int flagOfs, bool val)
 	struct nci_itm nciList[] =  {{4, NciGET_FLAGS, &nciFlags, &nciFlagsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
 		Tree::unlock();
@@ -366,8 +315,7 @@ void TreeNode::setFlag(int flagOfs, bool val)
 	else
 		nciFlags &= ~flagOfs;
 
-	status = TreeSetNci(nid, nciList);
-	Tree::unlock();
+	status = _TreeSetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -386,11 +334,8 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 		
 char *TreeNode::getPath()
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	char *currPath = TreeGetPath(nid);
-	Tree::unlock();
+	char *currPath = _TreeGetPath(tree->getCtx(), nid);
 	char *path = new char[strlen(currPath) + 1];
 	strcpy(path, currPath);
 	TreeFree(currPath);
@@ -406,11 +351,8 @@ char *TreeNode::getMinPath()
 		{{511, NciMINPATH, path, &pathLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	char *retPath = new char[strlen(path)+1];
@@ -426,11 +368,8 @@ char *TreeNode::getFullPath()
 		{{511, NciFULLPATH, path, &pathLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	char *retPath = new char[strlen(path)+1];
@@ -446,11 +385,8 @@ char *TreeNode::getOriginalPartName()
 		{{511, NciORIGINAL_PART_NAME, path, &pathLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	char *retPath = new char[strlen(path)+1];
@@ -466,11 +402,8 @@ char *TreeNode::getNodeName()
 		{{511, NciNODE_NAME, path, &pathLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	char *retPath = new char[strlen(path)+1];
@@ -482,11 +415,8 @@ char *TreeNode::getNodeName()
 Data *TreeNode::getData()
 {
 	Data *data = 0;
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = getTreeData(nid, (void **)&data, isCached());
-	Tree::unlock();
+	int status = getTreeData(tree->getCtx(), nid, (void **)&data, isCached());
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -496,11 +426,8 @@ Data *TreeNode::getData()
 
 void TreeNode::putData(Data *data)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = putTreeData(nid, (void *)data, isCached(), getCachePolicy());
-	Tree::unlock();
+	int status = putTreeData(tree->getCtx(), nid, (void *)data, isCached(), getCachePolicy());
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -508,9 +435,8 @@ void TreeNode::putData(Data *data)
 }
 void TreeNode::deleteData()
 {
-	setActiveTree(tree);
 	resolveNid();
-	int status = deleteTreeData(nid);
+	int status = deleteTreeData(tree->getCtx(), nid, isCached(), getCachePolicy());
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -521,23 +447,17 @@ void TreeNode::deleteData()
 
 bool TreeNode::isOn()
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	bool retOn = TreeIsOn(nid)?true:false;
-	Tree::unlock();
+	bool retOn = _TreeIsOn(tree->getCtx(), nid)?true:false;
 	return  retOn;
 }
 void TreeNode::setOn(bool on)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
 	if(on)
-		TreeTurnOn(nid);
+		_TreeTurnOn(tree->getCtx(), nid);
 	else
-		TreeTurnOff(nid);
-	Tree::unlock();
+		_TreeTurnOff(tree->getCtx(), nid);
 }
 
 int TreeNode::getLength()
@@ -548,11 +468,8 @@ int TreeNode::getLength()
 		{{4, NciLENGTH, &length, &lengthLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return length;
@@ -565,11 +482,8 @@ int TreeNode::getCompressedLength()
 		{{4, NciRLENGTH, &length, &lengthLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return length;
@@ -583,11 +497,8 @@ int TreeNode::getStatus()
 		{{4, NciSTATUS, &id, &idLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return id;
@@ -601,11 +512,8 @@ int TreeNode::getOwnerId()
 		{{4, NciOWNER_ID, &id, &idLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return id;
@@ -618,11 +526,8 @@ _int64 TreeNode::getTimeInserted()
 	struct nci_itm nciList[] = 
 		{{8, NciTIME_INSERTED, (char *)&timeInserted, &timeLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return timeInserted;
@@ -630,11 +535,8 @@ _int64 TreeNode::getTimeInserted()
 
 void TreeNode::doMethod(char *method)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = doTreeMethod(nid, method);
-	Tree::unlock();
+	int status = doTreeMethod(tree->getCtx(), nid, method);
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -711,11 +613,8 @@ bool TreeNode::isMember()
 		{{4, NciPARENT_RELATIONSHIP, &par, &parLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	
@@ -730,11 +629,8 @@ bool TreeNode::isChild()
 		{{4, NciPARENT_RELATIONSHIP, &par, &parLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	
@@ -755,11 +651,8 @@ TreeNode *TreeNode::getParent()
 		{{4, NciPARENT, &parentNid, &nidLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -775,11 +668,8 @@ TreeNode *TreeNode::getBrother()
 		{{4, NciBROTHER, &brotherNid, &nidLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -795,11 +685,8 @@ TreeNode *TreeNode::getChild()
 		{{4, NciCHILD, &childNid, &nidLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -815,11 +702,8 @@ TreeNode *TreeNode::getMember()
 		{{4, NciCHILD, &memberNid, &nidLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -835,11 +719,8 @@ int TreeNode::getNumChildren()
 	{{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return nChildren;
@@ -853,11 +734,8 @@ int TreeNode::getNumMembers()
 	{{4, NciNUMBER_OF_MEMBERS, &nChildren, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return nChildren;
@@ -872,11 +750,8 @@ int TreeNode::getNumDescendants()
 		{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -894,13 +769,10 @@ TreeNode **TreeNode::getDescendants(int *numDescendants)
 		{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
-		Tree::unlock();
 		throw new TreeException(status);
 	}
 
@@ -912,8 +784,7 @@ TreeNode **TreeNode::getDescendants(int *numDescendants)
 		{4, NciCHILDREN_NIDS, &childrenNids[numMembers], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
 		delete [] childrenNids;
@@ -937,13 +808,10 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 	{{4, NciNUMBER_OF_CHILDREN, &nChildren, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
-		Tree::unlock();
 		throw new TreeException(status);
 	}
 
@@ -954,8 +822,7 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 		{{4, NciCHILDREN_NIDS, &childrenNids[0], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
 		delete [] childrenNids;
@@ -979,13 +846,10 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 	{{4, NciNUMBER_OF_MEMBERS, &nMembers, &numLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
-		Tree::unlock();
 		throw new TreeException(status);
 	}
 
@@ -996,8 +860,7 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 		{{4, NciMEMBER_NIDS, &memberNids[0], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
 		delete [] memberNids;
@@ -1023,11 +886,8 @@ const char *TreeNode::getClass()
 		{{1, NciCLASS, &cls, &clsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1043,11 +903,8 @@ const char *TreeNode::getDType()
 		{{1, NciDTYPE, &cls, &clsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1063,11 +920,8 @@ const char *TreeNode::getUsage()
 		{{4, NciUSAGE, &usage, &usageLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1098,11 +952,8 @@ int TreeNode::getConglomerateElt()
 		{{1, NciCONGLOMERATE_ELT, (char *)&elt, &eltLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1117,11 +968,8 @@ int TreeNode::getNumElts()
 		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 	return nNidsLen;
@@ -1137,13 +985,10 @@ TreeNodeArray *TreeNode::getConglomerateNids()
 		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 	{
-		Tree::unlock();
 		throw new TreeException(status);
 	}
 
@@ -1152,8 +997,7 @@ TreeNodeArray *TreeNode::getConglomerateNids()
 		{{4*nNids, NciCONGLOMERATE_ELT, (char *)nids, &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = TreeGetNci(nid, nciList1);
-	Tree::unlock();
+	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1171,11 +1015,8 @@ int TreeNode::getDepth()
 		{{1, NciDEPTH, (char *)&depth, &depthLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = TreeGetNci(nid, nciList);
-	Tree::unlock();
+	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
 
@@ -1190,16 +1031,13 @@ char **TreeNode::getTags(int *numRetTags)
 	char *tags[MAX_TAGS];
 	int numTags;
 	void *ctx = 0;
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
 	for(numTags = 0; numTags < MAX_TAGS; numTags++)
 	{
-		tags[numTags] = TreeFindNodeTags(nid, &ctx);
+		tags[numTags] = _TreeFindNodeTags(tree->getCtx(), nid, &ctx);
 		if(!tags[numTags]) break;
 	}
 	TreeFindTagEnd(&ctx);
-	Tree::unlock();
 	*numRetTags = numTags;
 	char **retTags = new char *[numTags];
 	for(int i = 0; i < numTags; i++)
@@ -1213,35 +1051,26 @@ char **TreeNode::getTags(int *numRetTags)
 
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = beginTreeSegment(getNid(), start->convertToDsc(), 
+	int status = beginTreeSegment(tree->getCtx(), getNid(), start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc(), initialData->convertToDsc(), isCached(), getCachePolicy());
-	Tree::unlock();
 	if(!(status & 1))
 		throw new TreeException(status);
 }
 
 void TreeNode::putSegment(Array *data, int ofs)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = putTreeSegment(getNid(), data->convertToDsc(), ofs, isCached(), getCachePolicy());
-	Tree::unlock();
+	int status = putTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), ofs, isCached(), getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
 
 void TreeNode::updateSegment(Data *start, Data *end, Data *time)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = updateTreeSegment(getNid(), start->convertToDsc(), 
+	int status = updateTreeSegment(tree->getCtx(), getNid(), start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc(), isCached(), getCachePolicy());
-	Tree::unlock();
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1250,11 +1079,8 @@ int TreeNode::getNumSegments()
 {
 	int numSegments;
 
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = getTreeNumSegments(getNid(), &numSegments, isCached());
-	Tree::unlock();
+	int status = getTreeNumSegments(tree->getCtx(), getNid(), &numSegments, isCached());
 	if(!(status & 1))
 		throw new TreeException(status);
 	return  numSegments;
@@ -1263,11 +1089,8 @@ int TreeNode::getNumSegments()
 void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 {
 	void *startDsc, *endDsc;
-	Tree::lock();
 	resolveNid();
-	setActiveTree(tree);
-	int status = getTreeSegmentLimits(getNid(), &startDsc, &endDsc, isCached());
-	Tree::unlock();
+	int status = getTreeSegmentLimits(tree->getCtx(), getNid(), &startDsc, &endDsc, isCached());
 	if(!(status & 1))
 		throw new TreeException(status);
 	*start = (Data*)convertFromDsc(startDsc);
@@ -1280,11 +1103,8 @@ Array *TreeNode::getSegment(int segIdx)
 {
 	void *dataDsc;
 	
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = getTreeSegment(getNid(), segIdx, &dataDsc, isCached());
-	Tree::unlock();
+	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, isCached());
 	if(!(status & 1))
 		throw new TreeException(status);
 	Array *retData = (Array *)convertFromDsc(dataDsc);
@@ -1295,11 +1115,8 @@ Array *TreeNode::getSegment(int segIdx)
 
 void TreeNode::beginTimestampedSegment(Array *initData)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = beginTreeTimestampedSegment(getNid(), initData->convertToDsc(), isCached(), getCachePolicy());
-	Tree::unlock();
+	int status = beginTreeTimestampedSegment(tree->getCtx(), getNid(), initData->convertToDsc(), isCached(), getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1308,11 +1125,8 @@ void TreeNode::putTimestampedSegment(Array *data, Int64Array *times)
 {
 	int nTimesArray;
 	_int64 *timesArray = times->getLongArray(&nTimesArray);
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = putTreeTimestampedSegment(getNid(), data->convertToDsc(), timesArray, isCached(), getCachePolicy());
-	Tree::unlock();
+	int status = putTreeTimestampedSegment(tree->getCtx(), getNid(), data->convertToDsc(), timesArray, isCached(), getCachePolicy());
 	delete [] timesArray;
 	if(!(status & 1))
 		throw new TreeException(status);
@@ -1321,33 +1135,24 @@ void TreeNode::putTimestampedSegment(Array *data, Int64Array *times)
 void TreeNode::putRow(Data *data, Int64 *time)
 {
 	_int64 time64 = time->getLong();
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = putTreeRow(getNid(), data->convertToDsc(), &time64, isCached(), false, getCachePolicy());
-	Tree::unlock();
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, isCached(), false, getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
 
 void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = beginTreeSegment(getNid(), data->convertToDsc(), start->convertToDsc(), 
+	int status = beginTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), start->convertToDsc(), 
 		end->convertToDsc(), times->convertToDsc(), isCached(), getCachePolicy());
-	Tree::unlock();
 	if(!(status & 1))
 		throw new TreeException(status);
 }
 void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 {
-	Tree::lock();
-	setActiveTree(tree);
 	resolveNid();
-	int status = putTreeRow(getNid(), data->convertToDsc(), &time, isCached(), false, getCachePolicy());
-	Tree::unlock();
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, isCached(), false, getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1374,20 +1179,19 @@ TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Dat
 
 void TreePath::resolveNid()
 {
-	setActiveTree(tree);
-	int status = TreeFindNode(ptr, &nid);
+	int status = _TreeFindNode(tree->getCtx(), ptr, &nid);
 	if(!(status & 1))
 		nid = -1;
 }
 	
-void CachedTreeNode::flush() {RTreeFlush(getNid());}
+void CachedTreeNode::flush() {_RTreeFlush(tree->getCtx(), getNid());}
 
 void CachedTree::open() 
 {
 	int status;
 	
 	RTreeConfigure(1, cacheSize);
-	status = RTreeOpen(name, shot);
+	status = _RTreeOpen(getCtx(), name, shot);
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -1396,7 +1200,7 @@ void CachedTree::open()
 
 void CachedTree::close()
 {
-	int status = RTreeClose(name, shot);
+	int status = _RTreeClose(getCtx(), name, shot);
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
@@ -1407,13 +1211,25 @@ CachedTreeNode *CachedTree::getCachedNode(char *path)
 {
 	int nid, status;
 
-	status = TreeFindNode(path, &nid);
+	status = _TreeFindNode(getCtx(), path, &nid);
 	if(!(status & 1))
 	{
 		throw new TreeException(status);
 	}
 	return new CachedTreeNode(nid, this);
 }
+
+
+void CachedTreeNode::putLastRow(Data *data, Int64 *time)
+{
+	_int64 time64 = time->getLong();
+	resolveNid();
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, true, true, getCachePolicy());
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+
 void CachedTree::synch()
 {
 	RTreeSynch();
@@ -1421,7 +1237,7 @@ void CachedTree::synch()
 
 void MDSobjects::setActiveTree(Tree *tree)
 {
-	TreeSwitchDbid(tree->ctx);
+	TreeSwitchDbid(tree->getCtx());
 }
 
 Tree *MDSobjects::getActiveTree()
