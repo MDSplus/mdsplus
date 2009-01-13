@@ -28,18 +28,18 @@ class CoherencyManager:ChannelListener
 	CommunicationChannel *channel;
 	ChannelFactory chanFactory;
 
-	void handleRequestDataMsg(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
-	void handleOwnershipMsg(int treeIdx, int nid, int timestamp, char ownerIdx, ChannelAddress *senderAddr, int senderIdx);
-	void handleDirtyMsg(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
-	void handleDataMsg(int treeIdx, int nid, char *buf, int bufLen, ChannelAddress *senderAddr, int senderIdx);
-	void handleOwnershipWarmMessage(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
+	void handleRequestDataMsg(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
+	void handleOwnershipMsg(TreeDescriptor treeIdx, int nid, int timestamp, char ownerIdx, ChannelAddress *senderAddr, int senderIdx);
+	void handleDirtyMsg(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
+	void handleDataMsg(TreeDescriptor treeIdx, int nid, char *buf, int bufLen, ChannelAddress *senderAddr, int senderIdx);
+	void handleOwnershipWarmMessage(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx);
 
  
 public:
 	void handleMessage(ChannelAddress *addr, int senderIdx, char *buf, int bufLen, char type);
 	CoherencyManager(SharedDataManager *dataManager);
-	void checkRead(int treeIdx, int nid);
-	void checkWrite(int treeIdx, int nid);
+	void checkRead(TreeDescriptor treeIdx, int nid);
+	void checkWrite(TreeDescriptor treeIdx, int nid);
 	void startMessageHandler();
 	void startServer();
 };

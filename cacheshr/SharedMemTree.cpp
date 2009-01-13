@@ -58,7 +58,7 @@ int SharedMemTree::compare(SharedMemNode*n1, SharedMemNodeData *n2)
 	return n1->data.compare(n2);
 }
 
-int SharedMemTree::compare(SharedMemNode*n1, int treeId, int nid)
+int SharedMemTree::compare(SharedMemNode*n1, TreeDescriptor treeId, int nid)
 {
 	if(!n1)return 1;
 	return n1->data.compare(treeId, nid);
@@ -100,7 +100,7 @@ void SharedMemTree::insert(SharedMemNodeData *nodeData, LockManager *lock)
 }
 
 
-SharedMemNode * SharedMemTree::find(int treeId, int nid)
+SharedMemNode * SharedMemTree::find(TreeDescriptor treeId, int nid)
 {
 	current = header;
 	for(;;)
@@ -115,7 +115,7 @@ SharedMemNode * SharedMemTree::find(int treeId, int nid)
 
 }
 
-void SharedMemTree::remove(int treeId, int nid, LockManager *lock)
+void SharedMemTree::remove(TreeDescriptor treeId, int nid, LockManager *lock)
 {
 	SharedMemNode *curr1, *prev1;
 	current = parent = grand = header;

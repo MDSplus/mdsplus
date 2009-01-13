@@ -3,6 +3,7 @@ typedef unsigned long long _int64;
 #endif
 
 #include "Cache.h"
+
 #define WRITE_THROUGH 1
 #define WRITE_BACK 2
 #define WRITE_BUFFER 3
@@ -11,38 +12,38 @@ typedef unsigned long long _int64;
 
 
 extern "C" char *getCache(int isShared, int size);
-extern "C" int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
-extern "C" int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
-extern "C" int putRecordInternal(int nid, char dataType, int numSamples, char *data, int size);
-extern "C" int beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+extern "C" int putRecord(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
+extern "C" int getRecord(char *name, int shot, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
+extern "C" int putRecordInternal(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size);
+extern "C" int beginSegment(char *name, int shot, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
 						int writeThrough, char *cachePtr);
-extern "C" int beginTimestampedSegment(int treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
+extern "C" int beginTimestampedSegment(char *name, int shot, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
 						_int64 start, _int64 end, char *dim, int dimSize, int writeThrough, char *cachePtr);
-extern "C" int putSegmentInternal(int nid, 
+extern "C" int putSegmentInternal(char *name, int shot, int nid, 
 						char *start, int startSize, char *end, int endSize, char *dim, int dimSize, char *data, 
 						int dataSize, int *shape, int shapeSize, int currDataSize, int isTimestamped, int actSamples, int updateOnly);
-extern "C" int updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
+extern "C" int updateSegment(char *name, int shot, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, 
 							 int dimSize, int writeThrough, char *cachePtr);
-extern "C" int getNumSegments(int treeIdx, int nid, int *numSegments, char *cachePtr);
-extern "C" int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
-extern "C" int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
+extern "C" int getNumSegments(char *name, int shot, int nid, int *numSegments, char *cachePtr);
+extern "C" int getSegmentLimits(char *name, int shot, int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
+extern "C" int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
-extern "C" int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
-extern "C" int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr);
-extern "C" int flushTree(int treeIdx, char *cachePtr);
-extern "C" int flushNode(int treeIdx, int nid, char *cachePtr);
-extern "C" void *setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *), void *cachePtr);
-extern "C" int clearCallback(int treeIdx, int nid, char *callbackDescr, void *cachePtr);
-extern "C" int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+extern "C" int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
+extern "C" int isSegmented(char *name, int shot, int nid, int *segmented, char *cachePtr);
+extern "C" int flushTree(char *name, int shot, char *cachePtr);
+extern "C" int flushNode(char *name, int shot, int nid, char *cachePtr);
+extern "C" void *setCallback(char *name, int shot, int nid, void *argument, void (* callback)(int, void *), void *cachePtr);
+extern "C" int clearCallback(char *name, int shot, int nid, char *callbackDescr, void *cachePtr);
+extern "C" int appendSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode, char *cachePtr);
-extern "C" int appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+extern "C" int appendTimestampedSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, _int64 *timestamp, int numTimestamps, int writeMode, char *cachePtr);
-extern "C" int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+extern "C" int appendRow(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
-extern "C" int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr);
-extern "C" int discardData(int treeIdx, int nid, char *cachePtr);
-extern "C" int setWarm(int treeIdx, int nid, int warm, char *cachePtr);
+extern "C" int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr);
+extern "C" int discardData(char *name, int shot, int nid, char *cachePtr);
+extern "C" int setWarm(char *name, int shot, int nid, int warm, char *cachePtr);
 extern "C" void synch(char *cachePtr);
 
 static char *cache = 0;
@@ -59,123 +60,143 @@ char *getCache(int isShared, int size)
 
 
 
-int putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr)
+int putRecord(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->putRecord(treeIdx, nid, dataType, numSamples, data, size, writeThrough);
 }
 
-int getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr)
+int getRecord(char *name, int shot, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->getRecord(treeIdx, nid, dataType, numSamples, data, size);
 }
 
-int beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+int beginSegment(char *name, int shot, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 									char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
 									int writeThrough, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->beginSegment(treeIdx, nid, idx, start, startSize, end, endSize, dim, dimSize, shape, shapeSize, data, 
 			dataSize, writeThrough);
 }
 
-int beginTimestampedSegment(int treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
+int beginTimestampedSegment(char *name, int shot, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
 									_int64 start, _int64 end, char *dim, int dimSize, int writeThrough, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->beginTimestampedSegment(treeIdx, nid, idx, numItems, shape, shapeSize, data, 
 			dataSize, start, end, dim, dimSize, writeThrough);
 }
 
-int updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
+int updateSegment(char *name, int shot, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
 				  int writeThrough, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->updateSegment(treeIdx, nid, idx, start, startSize, end, endSize, dim, dimSize, writeThrough);
 }
 
 
-int getNumSegments(int treeIdx, int nid, int *numSegments, char *cachePtr)
+int getNumSegments(char *name, int shot, int nid, int *numSegments, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->getNumSegments(treeIdx, nid, numSegments);
 }
 
-int getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped, char *cachePtr)
+int getSegmentLimits(char *name, int shot, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->getSegmentLimits(treeIdx, nid, idx, start, startSize, end, endSize, timestamped);
 }
 
-int getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
+int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 				   int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr)
 {
 	bool boolTimestamped;
 	int status;
 	int actSamples;
+	TreeDescriptor treeIdx(name, shot);
 	status = ((Cache *)cachePtr)->getSegmentData(treeIdx, nid, idx, dim, dimSize, data, dataSize, shape, 
 		shapeSize, currDataSize, &boolTimestamped, &actSamples);
 	*timestamped = (boolTimestamped)?1:0;
 	return status;
 }
-int getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
+int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
 }
 
-int isSegmented(int treeIdx, int nid, int *segmented, char *cachePtr)
+int isSegmented(char *name, int shot, int nid, int *segmented, char *cachePtr)
 
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->isSegmented(treeIdx, nid, segmented);
 }
 
-int flushTree(int treeIdx, char *cachePtr)
+int flushTree(char *name, int shot, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->flush(treeIdx);
 }
 
-int flushNode(int treeIdx, int nid, char *cachePtr)
+int flushNode(char *name, int shot, int nid, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->flush(treeIdx, nid);
 }
 
-void *setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *), void *cachePtr)
+void *setCallback(char *name, int shot, int nid, void *argument, void (* callback)(int, void *), void *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->setCallback(treeIdx, nid, argument, callback);
 }
 
-int  clearCallback(int treeIdx, int nid, char *callbackDescr, void *cachePtr)
+int  clearCallback(char *name, int shot, int nid, char *callbackDescr, void *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->clearCallback(treeIdx, nid, callbackDescr);
 }
 
-int appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+int appendSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->appendSegmentData(treeIdx, nid, bounds, boundsSize, data, dataSize, idx, startIdx, writeMode);
 }
 
-int appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+int appendTimestampedSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, _int64 *timestamps, int numTimestamps, int writeMode, char *cachePtr)
 
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->appendTimestampedSegmentData(treeIdx, nid, bounds, boundsSize, data, dataSize, idx, startIdx, 
 		timestamps, numTimestamps, writeMode);
 }
-int appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data,
+int appendRow(char *name, int shot, int nid, int *bounds, int boundsSize, char *data,
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->appendRow(treeIdx, nid, bounds, boundsSize, data, dataSize, 
 		timestamp, writeMode);
 }
 
-int discardOldSegments(int treeIdx, int nid, _int64 timestamp, char *cachePtr)
+int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->discardOldSegments(treeIdx, nid, timestamp);
 }
 
-int discardData(int treeIdx, int nid, char *cachePtr)
+int discardData(char *name, int shot, int nid, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->discardData(treeIdx, nid);
 }
 
 
-int setWarm(int treeIdx, int nid, int warm, char *cachePtr)
+int setWarm(char *name, int shot, int nid, int warm, char *cachePtr)
 {
+	TreeDescriptor treeIdx(name, shot);
 	((Cache *)cachePtr)->setWarm(treeIdx, nid, (bool)warm);
 	return 1;
 }
@@ -205,7 +226,7 @@ Cache::Cache(bool isShared, int size):dataManager(isShared, size)
 
 }
 
-void Cache::insertInQueue(int treeIdx, int nid, char mode, int idx)
+void Cache::insertInQueue(TreeDescriptor treeIdx, int nid, char mode, int idx)
 {
 	queueLock.lock();
 	if(mode == FLUSH_BEGIN_SEGMENT || !inQueue(treeIdx, nid, idx, FLUSH_PUT_RECORD))
@@ -228,13 +249,16 @@ void Cache::insertInQueue(int treeIdx, int nid, char mode, int idx)
 
 
 
-int Cache::putRecord(int treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeMode)
+int Cache::putRecord(TreeDescriptor treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeMode)
 {
 	int status = dataManager.setData(treeIdx, nid, dataType, numSamples, data, size);
 	if(!(status & 1)) return status;
 	if(writeMode == WRITE_THROUGH || writeMode == WRITE_BUFFER)
 	{
-		treeWriter.addPutRecord(treeIdx, nid);
+		if(size == 0)
+			treeWriter.addDelete(treeIdx, nid);
+		else
+			treeWriter.addPutRecord(treeIdx, nid);
 	}
 	else  //WRITE_BACK
 	{
@@ -247,14 +271,14 @@ int Cache::putRecord(int treeIdx, int nid, char dataType, int numSamples, char *
 
 
 
-int Cache::getRecord(int treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size)
+int Cache::getRecord(TreeDescriptor treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size)
 {
 	cManager->checkRead(treeIdx, nid);
 	return dataManager.getData(treeIdx, nid, dataType, numSamples, data, size);
 }
 
 
-int Cache::beginSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+int Cache::beginSegment(TreeDescriptor treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 									char *dim, int dimSize, char *shape, int shapeSize, char *data, 
 									int dataSize, int writeMode)
 {
@@ -277,7 +301,7 @@ int Cache::beginSegment(int treeIdx, int nid, int idx, char *start, int startSiz
 	return 1;
 }
 
-int Cache::beginTimestampedSegment(int treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, 
+int Cache::beginTimestampedSegment(TreeDescriptor treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, 
 									int dataSize, _int64 start, _int64 end, char *dim, int dimSize, int writeMode)
 {
 	int retIdx;
@@ -296,7 +320,7 @@ int Cache::beginTimestampedSegment(int treeIdx, int nid, int idx, int numItems, 
 }
 
 
-int Cache::updateSegment(int treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+int Cache::updateSegment(TreeDescriptor treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 						 char *dim, int dimSize, int writeThrough)
 {
 	int status = dataManager.updateSegment(treeIdx, nid, idx, start, startSize, end, endSize, dim, dimSize);
@@ -305,12 +329,12 @@ int Cache::updateSegment(int treeIdx, int nid, int idx, char *start, int startSi
 
 
 	
-int Cache::getNumSegments(int treeIdx, int nid, int *numSegments)
+int Cache::getNumSegments(TreeDescriptor treeIdx, int nid, int *numSegments)
 {
 	return dataManager.getNumSegments(treeIdx, nid, numSegments);
 }
 
-int Cache::appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+int Cache::appendSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode)
 {
 	int status, segmentFilled, retIdx;
@@ -327,7 +351,7 @@ int Cache::appendSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, 
 
 }
 
-int Cache::appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+int Cache::appendTimestampedSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, _int64 *timestamps, int numTimestamps, int writeMode)
 {
 	int status, segmentFilled, retIdx;
@@ -345,7 +369,7 @@ int Cache::appendTimestampedSegmentData(int treeIdx, int nid, int *bounds, int b
 
 }
 
-int Cache::appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *data, 
+int Cache::appendRow(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode)
 {
 	int status, segmentFilled, retIdx;
@@ -367,7 +391,7 @@ int Cache::appendRow(int treeIdx, int nid, int *bounds, int boundsSize, char *da
 }
 
 
-int Cache::getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped)
+int Cache::getSegmentLimits(TreeDescriptor treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped)
 {
 	int status;
 	bool timestampedBool;
@@ -376,34 +400,34 @@ int Cache::getSegmentLimits(int treeIdx, int nid, int idx, char **start, int *st
 	return 1;
 }
 
-int Cache::getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
+int Cache::getSegmentInfo(TreeDescriptor treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
 {
 	return dataManager.getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
 }
 
-int Cache::getSegmentData(int treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
+int Cache::getSegmentData(TreeDescriptor treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
 						  char **shape, int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples)
 {
 	return dataManager.getSegmentData(treeIdx, nid, idx, dim, dimSize, data, dataSize, shape, shapeSize, 
 		currDataSize, timestamped, actSamples);
 }
 
-int Cache::isSegmented(int treeIdx, int nid, int *segmented)
+int Cache::isSegmented(TreeDescriptor treeIdx, int nid, int *segmented)
 {
 	return dataManager.isSegmented(treeIdx, nid, segmented);
 }
 
-int Cache::discardOldSegments(int treeIdx, int nid, _int64 timestamp)
+int Cache::discardOldSegments(TreeDescriptor treeIdx, int nid, _int64 timestamp)
 {
 	return dataManager.discardOldSegments(treeIdx, nid, timestamp);
 }
 
-int Cache::discardData(int treeIdx, int nid)
+int Cache::discardData(TreeDescriptor treeIdx, int nid)
 {
 	return dataManager.discardData(treeIdx, nid);
 }
 
-bool Cache::inQueue(int treeIdx, int nid, int idx, int mode)
+bool Cache::inQueue(TreeDescriptor treeIdx, int nid, int idx, int mode)
 {
 	NidChain *currChainNid = chainHead;
 	while(currChainNid)
@@ -420,12 +444,12 @@ void Cache::synch()
 	treeWriter.synch();
 }
 
-int Cache::flush(int treeIdx)
+int Cache::flush(TreeDescriptor treeIdx)
 {
 	return flush(treeIdx, -1);
 }
 
-int Cache::flush(int treeIdx, int nid) 
+int Cache::flush(TreeDescriptor treeIdx, int nid) 
 {
 	char *data, *dim, *shape, *start, *end;
 	char dataType;
@@ -442,7 +466,7 @@ int Cache::flush(int treeIdx, int nid)
 			switch(currChainNid->mode) {
 				case FLUSH_PUT_RECORD:
 					status = dataManager.getData(currChainNid->treeIdx, currChainNid->nid,&dataType, &numSamples,  &data, &dataSize);
-					if(status &1 )status = putRecordInternal(currChainNid->nid, dataType, numSamples, data, dataSize);
+					if(status &1 )status = putRecordInternal(treeIdx.getName(), treeIdx.getShot(), currChainNid->nid, dataType, numSamples, data, dataSize);
 					if(!(status & 1))
 					{
 						errStatus = status;
@@ -454,7 +478,7 @@ int Cache::flush(int treeIdx, int nid)
 						&end, &endSize, &isTimestamped);
 					status = dataManager.getSegmentData(currChainNid->treeIdx, currChainNid->nid, currChainNid->idx, &dim, &dimSize, 
 						&data, &dataSize, &shape, &shapeSize, &currDataSize, &isTimestamped, &actSamples);
-					if(status &1 )status = putSegmentInternal(currChainNid->nid, 
+					if(status &1 )status = putSegmentInternal(treeIdx.getName(), treeIdx.getShot(), currChainNid->nid, 
 						start, startSize, end, endSize, dim, dimSize, data, dataSize, (int*)shape, shapeSize, 
 						currDataSize, isTimestamped, 
 						actSamples, currChainNid->mode == FLUSH_UPDATE_SEGMENT);
@@ -490,13 +514,13 @@ int Cache::flush(int treeIdx, int nid)
  
 }
 
-void *Cache::setCallback(int treeIdx, int nid, void *argument, void (* callback)(int, void *))
+void *Cache::setCallback(TreeDescriptor treeIdx, int nid, void *argument, void (* callback)(int, void *))
 {
 	return dataManager.setCallback(treeIdx, nid, argument, callback);
 }
 
 
-int Cache::clearCallback(int treeIdx, int nid, char *callbackDescr)
+int Cache::clearCallback(TreeDescriptor treeIdx, int nid, char *callbackDescr)
 {
 	return dataManager.clearCallback(treeIdx, nid, callbackDescr);
 }
@@ -509,7 +533,7 @@ void Cache::startServer()
 	cManager->startServer();
 }
 
-void Cache::setWarm(int treeIdx, int nid, bool warm)
+void Cache::setWarm(TreeDescriptor treeIdx, int nid, bool warm)
 {
 	dataManager.setWarm(treeIdx, nid, warm);
 }

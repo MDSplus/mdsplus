@@ -17,7 +17,7 @@ private:
 
 	SharedMemNode *allocateMemNode(LockManager *lock);
 	int compare(SharedMemNode *n, SharedMemNodeData *d);
-	int compare(SharedMemNode *n, int treeId, int nid);
+	int compare(SharedMemNode *n, TreeDescriptor treeIdx, int nid);
 	void printTree(SharedMemNode *);
 
 
@@ -26,8 +26,8 @@ public:
 	void map(FreeSpaceManager *freeSpaceManager, void *header);
 	void  insert(SharedMemNode *node, LockManager *lock);
 	void insert(SharedMemNodeData *nodeData, LockManager *lock);
-	void  remove(int treeId, int nid, LockManager *lock);
-	SharedMemNode  *find(int treeId, int nid);
+	void  remove(TreeDescriptor treeIdx, int nid, LockManager *lock);
+	SharedMemNode  *find(TreeDescriptor treeIdx, int nid);
 	void  printTree();
 
 

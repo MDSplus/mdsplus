@@ -30,7 +30,7 @@ A single process on every machine hosting a cache serve cache coherency messages
 		If not already in the associated reader node list, the requesting 
 		node is added to the list. 
 
-		Message format: int nid, int treeIdx, 
+		Message format: int nid, TreeDescriptor treeIdx, 
 		Answer format: if owner, int nid, serialized version of associated MemNodeData instance
 
 2) Ownership changed. Compare the current ownership timestamp with the passed timestamp: if the new timestamp
@@ -38,7 +38,7 @@ A single process on every machine hosting a cache serve cache coherency messages
 		update ownership information, and set dirty flag for that nid. 
 		If the cache is warm for that nid, send an ownership Warm message.
 
-		Message format: int nid; int treeIdx, int timestamp, char ownerIdx 
+		Message format: int nid; TreeDescriptor treeIdx, int timestamp, char ownerIdx 
 
 3) Ownership Warm: returned by nodes which are not owner in response to a owneriship message
 		If the receiver is owner, add nid to warm list, and send data
@@ -76,39 +76,69 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 		case REQUEST_DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[1]);
+			int shotNum = channel->toNative(((int *)buf)[1]);
+			char nameLen = buf[2*sizeof(int)];
+			char *name = new char[nameLen+1];
+			memcpy(name, &buf[2*sizeof(int)+1], nameLen);
+			name[nameLen] = 0;
+			TreeDescriptor treeIdx(name, shotNum);
 			handleRequestDataMsg(treeIdx, nid, senderAddr, senderIdx);
+			delete [] name;
 			break;
 		}
 		case OWNERSHIP_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[1]);
+			int shotNum = channel->toNative(((int *)buf)[1]);
+			char nameLen = buf[2*sizeof(int)];
+			char *name = new char[nameLen+1];
+			memcpy(name, &buf[2*sizeof(int)+1], nameLen);
+			name[nameLen] = 0;
+			TreeDescriptor treeIdx(name, shotNum);
 			int timestamp = channel->toNative(((unsigned int *)buf)[2]);
 			char ownerIdx = buf[3 * sizeof(int)];
 			handleOwnershipMsg(treeIdx, nid, timestamp, ownerIdx, senderAddr, senderIdx);
+			delete [] name;
 			break;
 		}
 		case OWNERSHIP_WARM_ACK_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[1]);
+			int shotNum = channel->toNative(((int *)buf)[1]);
+			char nameLen = buf[2*sizeof(int)];
+			char *name = new char[nameLen+1];
+			memcpy(name, &buf[2*sizeof(int)+1], nameLen);
+			name[nameLen] = 0;
+			TreeDescriptor treeIdx(name, shotNum);
 			handleOwnershipWarmMessage(treeIdx, nid, senderAddr, senderIdx);
+			delete [] name;
 			break;
 		}
 
 		case DATA_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[1]);
-			handleDataMsg(treeIdx, nid, &buf[2*sizeof(int)], bufLen - 2*sizeof(int), senderAddr, senderIdx);
+			int shotNum = channel->toNative(((int *)buf)[1]);
+			char nameLen = buf[2*sizeof(int)];
+			char *name = new char[nameLen+1];
+			memcpy(name, &buf[2*sizeof(int)+1], nameLen);
+			name[nameLen] = 0;
+			TreeDescriptor treeIdx(name, shotNum);
+			handleDataMsg(treeIdx, nid, &buf[2*sizeof(int) + 1 + nameLen], bufLen - (2*sizeof(int) + 1 + nameLen), senderAddr, senderIdx);
+			delete [] name;
 			break;
 		}
 		case DIRTY_TYPE:
 		{
 			int nid = channel->toNative(*(unsigned int *)buf);
-			int treeIdx = channel->toNative(((int *)buf)[1]);
+			int shotNum = channel->toNative(((int *)buf)[1]);
+			char nameLen = buf[2*sizeof(int)];
+			char *name = new char[nameLen+1];
+			memcpy(name, &buf[2*sizeof(int)+1], nameLen);
+			name[nameLen] = 0;
+			TreeDescriptor treeIdx(name, shotNum);
 			handleDirtyMsg(treeIdx, nid, senderAddr, senderIdx);
+			delete[] name;
 			break;
 		}
 		default: printf("Unsupported message type received: %d\n", type);
@@ -118,7 +148,7 @@ void CoherencyManager::handleMessage(ChannelAddress *senderAddr, int senderIdx, 
 
 //Manages request for data: read the whole data slot set  and send it. 
 //The returned message contains the data slots.
-void CoherencyManager::handleRequestDataMsg(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
+void CoherencyManager::handleRequestDataMsg(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
 {
 
 	int serializedSize;
@@ -127,19 +157,24 @@ void CoherencyManager::handleRequestDataMsg(int treeIdx, int nid, ChannelAddress
 	printf("DATA REQUEST message. nid: %d\n", nid);
 #endif
 	serializedSize = dataManager->getSerializedSize(treeIdx, nid);
-	char *serialized = new char[2*sizeof(int)+serializedSize];
+	char *name = treeIdx.getName();
+	char nameLen = strlen(name);
+	
+	char *serialized = new char[2*sizeof(int)+1+nameLen+serializedSize];
 	*(int *)serialized = channel->fromNative(nid);
-	((int *)serialized)[1] = channel->fromNative(treeIdx);
-	dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)]);
+	((int *)serialized)[1] = channel->fromNative(treeIdx.getShot());
+	serialized[2*sizeof(int)] = nameLen;
+	memcpy(&serialized[2*sizeof(int)+1], name, nameLen);
+	dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)+1+nameLen]);
 	dataManager->addReader(treeIdx, nid, senderIdx);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
 
-	channel->sendMessage(retAddr, serialized, serializedSize + 2 * sizeof(int), DATA_TYPE);
+	channel->sendMessage(retAddr, serialized, serializedSize + 2 * sizeof(int)+1+nameLen, DATA_TYPE);
 	delete [] serialized;
 }
 
 
-void CoherencyManager::handleOwnershipMsg(int treeIdx, int nid, int timestamp, char ownerIdx, 
+void CoherencyManager::handleOwnershipMsg(TreeDescriptor treeIdx, int nid, int timestamp, char ownerIdx, 
 										  ChannelAddress *addr, int senderIdx)
 {
 
@@ -172,21 +207,26 @@ void CoherencyManager::handleOwnershipMsg(int treeIdx, int nid, int timestamp, c
 	if(isWarm)
 	{
 		int msgNid = channel->fromNative(nid);
-		int msgTreeIdx = channel->fromNative(treeIdx);
-		int msgInfo[2];
+		int msgTreeIdx = channel->fromNative(treeIdx.getShot());
+		char *msgTreeName = treeIdx.getName();
+		char msgTreeNameLen = strlen(msgTreeName);
+		char *msgInfo = new char[2*sizeof(int)+1+msgTreeNameLen];
 //		msgInfo[0] = nid;
 //		msgInfo[1] = treeIdx;
-		msgInfo[0] = msgNid;
-		msgInfo[1] = msgTreeIdx;
+		((int *)msgInfo)[0] = msgNid;
+		((int *)msgInfo)[1] = msgTreeIdx;
+		msgInfo[2*sizeof(int)] = msgTreeNameLen;
+		memcpy(&msgInfo[2*sizeof(int)+1], msgTreeName, msgTreeNameLen);
 		ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
-		channel->sendMessage(retAddr, (char *)msgInfo, 2*sizeof(int), OWNERSHIP_WARM_ACK_TYPE);
+		channel->sendMessage(retAddr, (char *)msgInfo, 2*sizeof(int)+1+msgTreeNameLen, OWNERSHIP_WARM_ACK_TYPE);
+		delete[] msgInfo;
 	}
 	else
 		dataManager->setDirty(treeIdx, nid, true);
 }
 
 
-void CoherencyManager::handleDataMsg(int treeIdx, int nid, char *serializedData, int dataLen, 
+void CoherencyManager::handleDataMsg(TreeDescriptor treeIdx, int nid, char *serializedData, int dataLen, 
 									 ChannelAddress *senderAddr, int senderIdx)
 {
 #ifdef DEBUG
@@ -203,7 +243,7 @@ void CoherencyManager::handleDataMsg(int treeIdx, int nid, char *serializedData,
 }
 
 
-void CoherencyManager::handleDirtyMsg(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
+void CoherencyManager::handleDirtyMsg(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
 {
 #ifdef DEBUG
 	printf("DIRTY message. nid: %d \n", nid);
@@ -211,7 +251,7 @@ void CoherencyManager::handleDirtyMsg(int treeIdx, int nid, ChannelAddress *send
 	dataManager->setDirty(treeIdx, nid, true);
 }
 
-void CoherencyManager::handleOwnershipWarmMessage(int treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
+void CoherencyManager::handleOwnershipWarmMessage(TreeDescriptor treeIdx, int nid, ChannelAddress *senderAddr, int senderIdx)
 {
 	int ownerIdx;
 	bool isOwner;
@@ -227,18 +267,23 @@ void CoherencyManager::handleOwnershipWarmMessage(int treeIdx, int nid, ChannelA
 	if(!isOwner) return;
 	dataManager->addWarm(treeIdx, nid, senderIdx);
 	int serializedSize = dataManager->getSerializedSize(treeIdx, nid);
-	char *serialized = new char[2*sizeof(int)+serializedSize];
+	char *name = treeIdx.getName();
+	char nameLen = strlen(name);
+	char *serialized = new char[2*sizeof(int)+1+nameLen+serializedSize];
 	*(unsigned int *)serialized = channel->fromNative(nid);
-	((int *)serialized)[1] = channel->fromNative(treeIdx);
-	dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)]);
+	((int *)serialized)[1] = channel->fromNative(treeIdx.getShot());
+	serialized[2*sizeof(int)] = nameLen;
+	memcpy(&serialized[2*sizeof(int) + 1], name, nameLen);
+
+	dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)+1+nameLen]);
 	ChannelAddress *retAddr = chanFactory.getAddress(senderIdx);
-	channel->sendMessage(retAddr, serialized, serializedSize+2*sizeof(int), DATA_TYPE);
+	channel->sendMessage(retAddr, serialized, serializedSize+2*sizeof(int)+1+nameLen, DATA_TYPE);
 	delete[] serialized;
 }
 
 
 //Make sure data is up-to-date with latest cache version before reading
-void CoherencyManager::checkRead(int treeIdx, int nid)
+void CoherencyManager::checkRead(TreeDescriptor treeIdx, int nid)
 {
 	int ownerIdx;
 	bool isOwner;
@@ -255,17 +300,23 @@ void CoherencyManager::checkRead(int treeIdx, int nid)
 	ChannelAddress *addr = chanFactory.getAddress(ownerIdx);
 	//Request whole data set
 	sendNid = channel->fromNative(nid);
-	sendTreeIdx = channel->fromNative(treeIdx);
-	int sendInfo[2];
-	sendInfo[0] = sendNid;
-	sendInfo[1] = sendTreeIdx;
+	sendTreeIdx = channel->fromNative(treeIdx.getShot());
+	char *name = treeIdx.getName();
+	char nameLen = strlen(name);
+
+	char *sendInfo = new char[2*sizeof(int)+1+nameLen];
+	((int *)sendInfo)[0] = sendNid;
+	((int *)sendInfo)[1] = sendTreeIdx;
+	sendInfo[2*sizeof(int)] = nameLen;
+	memcpy(&sendInfo[2*sizeof(int)+1], name, nameLen);
 	Event *dataEvent = dataManager->getDataEvent(treeIdx, nid);
-	channel->sendMessage(addr, (char *)sendInfo, 2*sizeof(int), REQUEST_DATA_TYPE);
+	channel->sendMessage(addr, (char *)sendInfo, 2*sizeof(int)+1+nameLen, REQUEST_DATA_TYPE);
 	dataEvent->wait();
+	delete [] sendInfo;
 
 }
 
-void CoherencyManager::checkWrite(int treeIdx, int nid)
+void CoherencyManager::checkWrite(TreeDescriptor treeIdx, int nid)
 {
 	int ownerIdx;
 	bool isOwner;
@@ -286,17 +337,28 @@ void CoherencyManager::checkWrite(int treeIdx, int nid)
 		int numAddresses;
 		timestamp++;
 		ChannelAddress **addresses = chanFactory.getOtherAddresses(numAddresses);
-		char outBuf[3*sizeof(int)+1];
+		char *name = treeIdx.getName();
+		char nameLen = strlen(name);
+
+		
+		char *outBuf = new char[3*sizeof(int)+1+1+nameLen];
 		*(unsigned int *)outBuf = channel->fromNative(nid);
-		((int *)outBuf)[1] = channel->fromNative(treeIdx);
-		((unsigned int *)outBuf)[2] = channel->fromNative(timestamp);
-		outBuf[3 * sizeof(int)] = chanFactory.getThisAddressIdx();
+		((int *)outBuf)[1] = channel->fromNative(treeIdx.getShot());
+		outBuf[2*sizeof(int)] = nameLen;
+		memcpy(&outBuf[2*sizeof(int) + 1], name, nameLen);
+		int msgTimestamp = channel->fromNative(timestamp);
+		memcpy(&outBuf[2*sizeof(int) + 1 + nameLen], &msgTimestamp, sizeof(int));
+		outBuf[3 * sizeof(int)+1+nameLen] = chanFactory.getThisAddressIdx();
+
+		//((unsigned int *)outBuf)[2] = channel->fromNative(timestamp);
+		//outBuf[3 * sizeof(int)] = chanFactory.getThisAddressIdx();
 
 		dataManager->setCoherencyInfo(treeIdx, nid, true, -1, isWarm, timestamp, NULL, 0, NULL, 0);
 		for(int i = 0; i < numAddresses; i++)
 		{
-			channel->sendMessage(addresses[i], outBuf, 3 * sizeof(int)+1, OWNERSHIP_TYPE);
+			channel->sendMessage(addresses[i], outBuf, 3 * sizeof(int) + 1 + 1 + nameLen, OWNERSHIP_TYPE);
 		}
+		delete[] outBuf;
 	}
 		
 	else if(numWarm > 0 || numReader > 0) //It is owner, send last data slot to all warm nodes and dirty message to all current readers
@@ -305,26 +367,37 @@ void CoherencyManager::checkWrite(int treeIdx, int nid)
 		if(numWarm > 0)
 		{
 			int serializedSize = dataManager->getSerializedSize(treeIdx, nid);
-			char *serialized = new char[serializedSize+2*sizeof(int)];
+			char *name = treeIdx.getName();
+			char nameLen = strlen(name);
+
+			char *serialized = new char[serializedSize+2*sizeof(int)+1+nameLen];
 			*(int *)serialized = channel->fromNative(nid);
-			((int *)serialized)[1] = channel->fromNative(treeIdx);
-			dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)]);
+			((int *)serialized)[1] = channel->fromNative(treeIdx.getShot());
+			serialized[2*sizeof(int)] = nameLen;
+			memcpy(&serialized[2*sizeof(int)+1], name, nameLen);
+			dataManager->getSerialized(treeIdx, nid, &serialized[2*sizeof(int)+1+nameLen]);
 			
 			for(int i = 0; i < numWarm; i++)
 			{
 				ChannelAddress *currAddr = chanFactory.getAddress(warmList[i]);
-				channel->sendMessage(currAddr, serialized, serializedSize+2*sizeof(int), DATA_TYPE);
+				channel->sendMessage(currAddr, serialized, serializedSize+2*sizeof(int)+1+nameLen, DATA_TYPE);
 			}
+			delete[] serialized;
 		}
 		for(int i = 0; i < numReader; i++)
 		{
+			char *name = treeIdx.getName();
+			char nameLen = strlen(name);
 			ChannelAddress *currAddr = chanFactory.getAddress(readerList[i]);
 			int msgNid = channel->fromNative(nid);
-			int msgTreeIdx = channel->fromNative(treeIdx);
-			int msgInfo[2];
-			msgInfo[0] = msgNid;
-			msgInfo[1] = msgTreeIdx;
-			channel->sendMessage(currAddr, (char *)msgInfo, 2*sizeof(int), DIRTY_TYPE);
+			int msgTreeIdx = channel->fromNative(treeIdx.getShot());
+			char *msgInfo = new char[2*sizeof(int) + 1+nameLen];
+			((int *)msgInfo)[0] = msgNid;
+			((int *)msgInfo)[1] = msgTreeIdx;
+			msgInfo[2*sizeof(int)] = nameLen;
+			memcpy(&msgInfo[2*sizeof(int) + 1], name, nameLen);
+			channel->sendMessage(currAddr, (char *)msgInfo, 2*sizeof(int)+1+nameLen, DIRTY_TYPE);
+			delete[]msgInfo;
 		}
 	}
 }

@@ -11,10 +11,11 @@
 #define TREEWRITER_PUT_TIMESTAMPED_SEGMENT 3
 #define TREEWRITER_PUT_SEGMENT_DISCARD 4
 #define TREEWRITER_PUT_TIMESTAMPED_SEGMENT_DISCARD 5
+#define TREEWRITER_DELETE_RECORD 6
 
 struct NidHolder
 {
-	int treeIdx;
+	TreeDescriptor treeIdx;
 	int nid;
 	int idx;
 	char mode;
@@ -30,16 +31,19 @@ class TreeWriter:Runnable
 	Event nidEvent;
 	Event synchEvent;
 	bool synchWaiting;
+	bool workerWaiting;
+	bool working;
 	SharedDataManager *dataManager;
 
 public:
 	TreeWriter();
 	void setDataManager(SharedDataManager *dataManager);
 	void start();
-	void addPutRecord(int treeIdx, int nid);
-	void addPutSegment(int treeIdx, int nid, int idx, int discard);
-	void addPutTimestampedSegment(int treeIdx, int nid, int idx, int discard);
-	void addNid(int treeIdx, int nid, int idx, char mode);
+	void addDelete(TreeDescriptor treeIdx, int nid);
+	void addPutRecord(TreeDescriptor treeIdx, int nid);
+	void addPutSegment(TreeDescriptor treeIdx, int nid, int idx, int discard);
+	void addPutTimestampedSegment(TreeDescriptor treeIdx, int nid, int idx, int discard);
+	void addNid(TreeDescriptor treeIdx, int nid, int idx, char mode);
 	void run(void *arg);
 	void synch();
 };

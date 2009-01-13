@@ -7,12 +7,12 @@
 #include "CallbackManager.h"
 #include "Segment.h"
 #include "Event.h"
-
+#include "TreeDescriptor.h"
 class SharedMemNodeData
 {
 	public: //To be defined yet
 	    int nid;
-		int treeId;
+		TreeDescriptor treeId;
 		bool segmented;
 		char dataType;
 		int numSamples;
@@ -41,7 +41,7 @@ class SharedMemNodeData
 	SharedMemNodeData()
 	{
 		nid = -1;
-		treeId = -1;
+		//treeId = -1;
 		dataType = 0;
 		numSamples = 0;
 		numSegments = 0;
@@ -62,7 +62,7 @@ class SharedMemNodeData
 	SharedMemNodeData(int nid)
 	{
 		this->nid = nid;
-		treeId = -1;
+		//treeId = -1;
 		dataType = 0;
 		numSamples = 0;
 		numSegments = 0;
@@ -80,7 +80,7 @@ class SharedMemNodeData
 		eventActive = false;
 		callbackManager = 0;
 	}
-	SharedMemNodeData(int nid, int treeId)
+	SharedMemNodeData(int nid, TreeDescriptor treeId)
 	{
 		this->nid = nid;
 		this->treeId = treeId;
@@ -111,7 +111,7 @@ class SharedMemNodeData
 		return 0;
 	}
 
-	int compare(int treeId, int nid) //Returns 1 if this greater than argument, -1 if smaller, 0 if equals 
+	int compare(TreeDescriptor treeId, int nid) //Returns 1 if this greater than argument, -1 if smaller, 0 if equals 
 	{
 		if(this->nid > nid) return 1;
 		if(this->nid < nid) return -1;
@@ -120,7 +120,7 @@ class SharedMemNodeData
 		return 0;
 	}
 
-	void setNid(int treeId, int nid)
+	void setNid(TreeDescriptor treeId, int nid)
 	{
 		this->nid = nid;
 		this->treeId = treeId;
@@ -132,20 +132,20 @@ class SharedMemNodeData
 		return nid;
 	}
 
-	void setTreeId(int treeId)
+	void setTreeId(TreeDescriptor treeId)
 	{
 		this->treeId = treeId;
 	}
 
 
-	int getTreeId() 
+	TreeDescriptor getTreeId() 
 	{
 		return treeId;
 	}
 
 	void  print()
 	{
-		printf("%d %d\n", treeId, nid);
+		printf("%d %d\n", treeId.getShot(), nid);
 	}
 
 	void setLastSegment(Segment *lastSegment)

@@ -77,7 +77,7 @@ SEM_ID *LockManager::semaphores;
 
 
 
-int SharedDataManager::discardData(int treeId, int nid)
+int SharedDataManager::discardData(TreeDescriptor treeId, int nid)
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -92,7 +92,7 @@ int SharedDataManager::discardData(int treeId, int nid)
 
 
 
-int SharedDataManager::setData(int treeId, int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
+int SharedDataManager::setData(TreeDescriptor treeId, int nid, char dataType, int numSamples, char *data, int size) //Write data indexed by nid
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -127,7 +127,7 @@ int SharedDataManager::setData(int treeId, int nid, char dataType, int numSample
 	}
 }
 	
-int SharedDataManager::getData(int treeId, int nid, char *dataType, int *numSamples, char **data, int *size) //Write data indexed by nid
+int SharedDataManager::getData(TreeDescriptor treeId, int nid, char *dataType, int *numSamples, char **data, int *size) //Write data indexed by nid
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -151,7 +151,7 @@ int SharedDataManager::getData(int treeId, int nid, char *dataType, int *numSamp
 	}
 }
 	
-int SharedDataManager::beginSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+int SharedDataManager::beginSegment(TreeDescriptor treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 			char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, int *retIdx)
 {
 	Segment *segment;
@@ -226,7 +226,7 @@ int SharedDataManager::beginSegment(int treeId, int nid, int idx, char *start, i
 }
 
 
-int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int numItems, char *shape, 
+int SharedDataManager::beginTimestampedSegment(TreeDescriptor treeId, int nid, int idx, int numItems, char *shape, 
 											   int shapeSize, char *data, int dataSize, _int64 start, 
 											   _int64 end, char *dim, int dimSize, int *retIdx)
 {
@@ -318,7 +318,7 @@ int SharedDataManager::beginTimestampedSegment(int treeId, int nid, int idx, int
 
 
 
-int SharedDataManager::isSegmented(int treeId, int nid, int *segmented)
+int SharedDataManager::isSegmented(TreeDescriptor treeId, int nid, int *segmented)
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -334,7 +334,7 @@ int SharedDataManager::isSegmented(int treeId, int nid, int *segmented)
 }
 
 
-int SharedDataManager::getNumSegments(int treeId, int nid, int *numSegments)
+int SharedDataManager::getNumSegments(TreeDescriptor treeId, int nid, int *numSegments)
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
@@ -357,7 +357,7 @@ int SharedDataManager::getNumSegments(int treeId, int nid, int *numSegments)
 //The remaining elements are the dimension limits
 
 */
-int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int boundsSize, char *data, 
+int SharedDataManager::appendSegmentData(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, 
 										 bool isTimestamped, _int64 *timestamps, int numTimestamps, int *segmentFilled, 
 										 int *retIdx)
@@ -483,7 +483,7 @@ int SharedDataManager::appendSegmentData(int treeId, int nid, int *bounds, int b
 }
 
 
-int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, 
+int SharedDataManager::appendRow(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, 
 								 _int64 timestamp, int *segmentFilled, int *retIdx, bool *newSegmentCreated)
 {
 	
@@ -523,7 +523,7 @@ int SharedDataManager::appendRow(int treeId, int nid, int *bounds, int boundsSiz
 
 
 
-int SharedDataManager::updateSegment(int treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
+int SharedDataManager::updateSegment(TreeDescriptor treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 								  char *dim, int dimSize)
 {
 	Segment *segment;
@@ -585,7 +585,7 @@ int SharedDataManager::updateSegment(int treeId, int nid, int idx, char *start, 
 	return 0;
 }
 
-int SharedDataManager::getSegmentLimits(int treeId, int nid, int idx, char **start, int *startSize, 
+int SharedDataManager::getSegmentLimits(TreeDescriptor treeId, int nid, int idx, char **start, int *startSize, 
 		char **end, int *endSize, bool *timestamped)
 {
 	Segment *segment;
@@ -628,7 +628,7 @@ int SharedDataManager::getSegmentLimits(int treeId, int nid, int idx, char **sta
 }
 
 
-int SharedDataManager::getSegmentInfo(int treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
+int SharedDataManager::getSegmentInfo(TreeDescriptor treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
 {
 	Segment *segment;
 	lock.lock();
@@ -655,7 +655,7 @@ int SharedDataManager::getSegmentInfo(int treeIdx, int nid, int **shape, int *sh
 
 
 
-int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
+int SharedDataManager::getSegmentData(TreeDescriptor treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
 									  char **shape, int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples)
 {
 	Segment *segment;
@@ -690,7 +690,7 @@ int SharedDataManager::getSegmentData(int treeId, int nid, int idx, char **dim, 
 	lock.unlock();
 	return 0;
 }
-int SharedDataManager::getSegmentDataAndShapeCopy(int treeId, int nid, int idx, char **data, int *dataSize,
+int SharedDataManager::getSegmentDataAndShapeCopy(TreeDescriptor treeId, int nid, int idx, char **data, int *dataSize,
 									  char **shape, int *shapeSize)
 {
 	Segment *segment;
@@ -729,7 +729,7 @@ int SharedDataManager::getSegmentDataAndShapeCopy(int treeId, int nid, int idx, 
 }
 
 
-int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
+int SharedDataManager::discardOldSegments(TreeDescriptor treeId, int nid, _int64 timestamp)
 {
 	//printf("START DISCARD\n");
 	lock.lock();
@@ -752,7 +752,7 @@ int SharedDataManager::discardOldSegments(int treeId, int nid, _int64 timestamp)
 }
 
 
-int SharedDataManager::discardFirstSegment(int treeId, int nid)
+int SharedDataManager::discardFirstSegment(TreeDescriptor treeId, int nid)
 {
 	//printf("START DISCARD\n");
 	lock.lock();
@@ -776,7 +776,7 @@ int SharedDataManager::discardFirstSegment(int treeId, int nid)
 
 
 /*
-void SharedDataManager::callCallback(int treeId, int nid)
+void SharedDataManager::callCallback(TreeDescriptor treeId, int nid)
 {
 	SharedMemNode *node;
 
@@ -792,7 +792,7 @@ void SharedDataManager::callCallback(int treeId, int nid)
 */
 
 
- void *SharedDataManager::setCallback(int treeId, int nid, void *argument, void (*callback)(int, void *))
+ void *SharedDataManager::setCallback(TreeDescriptor treeId, int nid, void *argument, void (*callback)(int, void *))
 {
 
 	char *retPtr = NULL;
@@ -834,7 +834,7 @@ void SharedDataManager::callCallback(int treeId, int nid)
 	}
 }
 
- int SharedDataManager::clearCallback(int treeId, int nid, char *callbackDescr)
+ int SharedDataManager::clearCallback(TreeDescriptor treeId, int nid, char *callbackDescr)
 {
 	int status = 0;
 	CallbackManager *callbackManager = (CallbackManager *)callbackDescr;
@@ -863,7 +863,7 @@ void SharedDataManager::callCallback(int treeId, int nid)
 	return status;
 }
 
-SharedMemNodeData *SharedDataManager::getNodeData(int treeId, int nid, bool create)
+SharedMemNodeData *SharedDataManager::getNodeData(TreeDescriptor treeId, int nid, bool create)
 {
 	SharedMemNode *node;
 	node = sharedTree.find(treeId, nid);
@@ -885,7 +885,7 @@ SharedMemNodeData *SharedDataManager::getNodeData(int treeId, int nid, bool crea
 ////////////////////////////////////////////////
 //Cache coerency methods
 ////////////////////////////////////////////////
-void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
+void SharedDataManager::getCoherencyInfo(TreeDescriptor treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, bool &isDirty, int &timestamp)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -895,7 +895,7 @@ void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int
 }
 
 	
-void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
+void SharedDataManager::getCoherencyInfo(TreeDescriptor treeId, int nid, bool &isOwner, int &ownerIdx, bool &isWarm, int &timestamp, 
 		char * &warmList, int &numWarm, char *&readerList, int &numReader)
 {
 	lock.lock();
@@ -907,7 +907,7 @@ void SharedDataManager::getCoherencyInfo(int treeId, int nid, bool &isOwner, int
 }
 
 	
-void SharedDataManager::addReader(int treeId, int nid, int readerIdx)
+void SharedDataManager::addReader(TreeDescriptor treeId, int nid, int readerIdx)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -916,7 +916,7 @@ void SharedDataManager::addReader(int treeId, int nid, int readerIdx)
 	lock.unlock();
 }
 
-void  SharedDataManager::addWarm(int treeId, int nid, int warmIdx)
+void  SharedDataManager::addWarm(TreeDescriptor treeId, int nid, int warmIdx)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -925,7 +925,7 @@ void  SharedDataManager::addWarm(int treeId, int nid, int warmIdx)
 	lock.unlock();
 }
 
-void SharedDataManager::setOwner(int treeId, int nid, int ownerIdx, int timestamp)
+void SharedDataManager::setOwner(TreeDescriptor treeId, int nid, int ownerIdx, int timestamp)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -934,7 +934,7 @@ void SharedDataManager::setOwner(int treeId, int nid, int ownerIdx, int timestam
 	lock.unlock();
 }
 
-void SharedDataManager::setCoherencyInfo(int treeId, int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
+void SharedDataManager::setCoherencyInfo(TreeDescriptor treeId, int nid, bool isOwner, int ownerIdx, bool isWarm, int timestamp,
 		char *warmNodes, int numWarmNodes, char *readerNodes, int numReaderNodes)
 {
 	lock.lock();
@@ -945,7 +945,7 @@ void SharedDataManager::setCoherencyInfo(int treeId, int nid, bool isOwner, int 
 	lock.unlock();
 }
 
-void SharedDataManager::setWarm(int treeId, int nid, bool warm)
+void SharedDataManager::setWarm(TreeDescriptor treeId, int nid, bool warm)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -954,7 +954,7 @@ void SharedDataManager::setWarm(int treeId, int nid, bool warm)
 	lock.unlock();
 }
 
-bool SharedDataManager::isWarm(int treeId, int nid)
+bool SharedDataManager::isWarm(TreeDescriptor treeId, int nid)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -965,7 +965,7 @@ bool SharedDataManager::isWarm(int treeId, int nid)
 	return warm;
 }
 
-void SharedDataManager::setDirty(int treeId, int nid, bool isDirty)
+void SharedDataManager::setDirty(TreeDescriptor treeId, int nid, bool isDirty)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -975,7 +975,7 @@ void SharedDataManager::setDirty(int treeId, int nid, bool isDirty)
 }
 
 
-Event *SharedDataManager::getDataEvent(int treeId, int nid)
+Event *SharedDataManager::getDataEvent(TreeDescriptor treeId, int nid)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -986,7 +986,7 @@ Event *SharedDataManager::getDataEvent(int treeId, int nid)
 	return retEv;
 }
 
-int SharedDataManager::getSerializedSize(int treeId, int nid)
+int SharedDataManager::getSerializedSize(TreeDescriptor treeId, int nid)
 {
 	int size = 0;
 	lock.lock();
@@ -997,7 +997,7 @@ int SharedDataManager::getSerializedSize(int treeId, int nid)
 	return size;
 }
 
-void SharedDataManager::getSerialized(int treeId, int nid, char *serialized)
+void SharedDataManager::getSerialized(TreeDescriptor treeId, int nid, char *serialized)
 {
 	lock.lock();
 	SharedMemNodeData *nodeData = getNodeData(treeId, nid, true);
@@ -1006,7 +1006,7 @@ void SharedDataManager::getSerialized(int treeId, int nid, char *serialized)
 	lock.unlock();
 }
 
-void SharedDataManager::setSerializedData(int treeId, int nid, char *serializedData, int dataLen)
+void SharedDataManager::setSerializedData(TreeDescriptor treeId, int nid, char *serializedData, int dataLen)
 {
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
