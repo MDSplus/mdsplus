@@ -105,6 +105,13 @@ class TreeNode(Data):
 
         from scalar import String
         if name.lower() == 'nid':
+            try:
+                return self.__dict__['nid']
+            except KeyError:
+                try:
+                    return self.tree.getNode(self.tree_path)
+                except:
+                    return None
             return self.tree.getNode(str(self))
         if name.lower() == 'tags':
             return self.getTags()
@@ -734,7 +741,7 @@ class TreePath(TreeNode):
 
     def __str__(self):
         """Convert path to string."""
-        return str(self.tree_path)
+        return self.tree_path.value
 
 class TreeNodeArray(Data):
     def __init__(self,nids,tree=None):

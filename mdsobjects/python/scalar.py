@@ -147,6 +147,8 @@ class String(Scalar):
     """String"""
     def __radd__(self,y):
         return String(str(y)+str(self))
+    def __str__(self):
+        return self.value
 
 class Int128(Scalar):
     """128-bit number"""

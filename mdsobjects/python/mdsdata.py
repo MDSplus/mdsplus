@@ -265,7 +265,12 @@ class Data(object):
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        return Data.execute('$[$]',self,y)
+        from array import Array
+        ans = Data.execute('$[$]',self,y)
+        if isinstance(ans,Array):
+            if ans.shape[0]==0:
+                raise IndexError
+        return ans
     
     def __gt__(self,y):
         """Greater than: x.__gt__(y) <==> x>y

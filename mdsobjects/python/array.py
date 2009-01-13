@@ -35,6 +35,12 @@ class Array(Data):
         exec 'self._value=numpy.array(value).__array__(numpy.'+self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()+')'
         return
 
+
+#    def __getitem__(self,y):
+#        """Subscript: x.__getitem__(y) <==> x[y]
+#        @rtype: Data"""
+#        return makeData(self.value.__getitem__(y))
+    
     def __getattr__(self,name):
         exec 'ans=self._value.'+name
         return ans

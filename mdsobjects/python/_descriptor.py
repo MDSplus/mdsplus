@@ -167,6 +167,16 @@ class descriptor(_C.Structure):
             self.addToCache(value)
             return
 
+        if (isinstance(value,TreePath)):
+            value.restoreContext()
+            str_d=descriptor_string(str(value))
+            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
+            self.length=d.length
+            self.dtype=DTYPE_PATH
+            self.pointer=d.pointer
+            self.addToCache(value)
+            return
+
         if (isinstance(value,TreeNode)):
             value.restoreContext()
             self.length=4
@@ -178,16 +188,6 @@ class descriptor(_C.Structure):
         if (isinstance(value,TreeNodeArray)):
             value.restoreContext()
             self.__init__(value.nids)
-            return
-
-        if (isinstance(value,TreePath)):
-            value.restoreContext()
-            str_d=descriptor_string(str(value))
-            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-            self.length=d.length
-            self.dtype=DTYPE_PATH
-            self.pointer=d.pointer
-            self.addToCache(value)
             return
 
         if isinstance(value,Ident):
@@ -275,14 +275,16 @@ class descriptor(_C.Structure):
             try:
                 return self.pointer.contents.value
             except ValueError,e:
-                return None
+                return makeData(None)
             
         if (self.dclass == CLASS_S or self.dclass == CLASS_D):
-            if (self.length == 0):
-                return None
             if (self.dtype == DTYPE_T):
-                ans = makeScalar(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
-                return ans
+                if self.length == 0:
+                    return makeScalar('')
+                else:
+                    return makeScalar(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
+            if (self.length == 0):
+                return makeData(None)
             try:
                 return makeScalar(mdsdtypes(self.dtype).toNumpy()(_C.cast(self.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype())).contents.value))
             except TypeError:
