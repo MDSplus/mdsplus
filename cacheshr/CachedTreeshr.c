@@ -949,7 +949,7 @@ EXPORT int _RTreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr)
 	status = getRecord(name, shot, nid, &dataType, &numSamples, &data, &dataLen, cache);
 	if(!(status & 1) || dataLen == 0)
 	{
-		status = TreeGetRecord(nid, dsc_ptr);
+		status = _TreeGetRecord(dbid,nid, dsc_ptr);
 			
 		if(status & 1 && dsc_ptr->pointer)
 		{
