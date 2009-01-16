@@ -110,6 +110,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     if (conglom_ptr->dtype != DTYPE_CONGLOM)
       return TreeNOT_CONGLOM;
     if (conglom_ptr->image && conglom_ptr->image->length == strlen("__python__") && strncmp(conglom_ptr->image->pointer,"__python__",strlen("__python__"))==0) {
+      void *dbid=DBID;
       /**** Try python class ***/
       struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
       STATIC_CONSTANT DESCRIPTOR(open,"PyDoMethod(");
@@ -128,10 +129,22 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	arglist[1] = &exp;
 	arglist[nargs] = MdsEND_ARG;
 	status = (int)LibCallg(arglist,addr);
+	if (status & 1) {
+	  STATIC_CONSTANT DESCRIPTOR(getstat,"public _method_status");
+	  int stat;
+	  DESCRIPTOR_LONG(stat_d,&stat);
+	  arglist[0]=(void *)3;
+	  arglist[1]=&getstat;
+	  arglist[2]=&stat_d;
+	  arglist[3]=MdsEND_ARG;
+	  status = (int)LibCallg(arglist,addr);
+	  if (status & 1) status=stat;
+	}
 	if (status == TdiUNKNOWN_VAR)
 	  status = TreeNOMETHOD;
       }
       StrFree1Dx(&exp);
+      DBID=dbid;
       return status;
     }   
     StrConcat(&method, conglom_ptr->model, &underunder, method_ptr MDS_END_ARG);
