@@ -27,7 +27,9 @@ public:
 	
 	void lock()
 	{
-		sem.wait();
+		try {
+			sem.wait();
+		}catch(SystemException *exc) {sem.initialize(0); }
 	}
 
 	void unlock()

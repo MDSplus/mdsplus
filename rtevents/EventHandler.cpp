@@ -131,12 +131,11 @@ void EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memMana
 	while(currNotifier)
 	{
 		currNotifier->synchTrigger();
-		notifiers[i] = currNotifier;
+		notifiers[i++] = currNotifier;
 		currNotifier = currNotifier->getNext();
 	}
 
 	lock.unlock();
-
 	ExitHandler::atExit(new WaitLockTerminator(&waitLock));
 	for(i = 0; i < numNotifiers; i++)
 		notifiers[i]->waitTermination();

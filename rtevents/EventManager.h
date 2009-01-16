@@ -9,6 +9,7 @@
 #define EXPORT
 #endif
 
+
 class EventRunnable;
 //Class EventManager represents the top manager for events. It is expected that a shared memory
 //segment will be dedicated to this instance, which will therefore reside at the beginning of the

@@ -2,25 +2,45 @@
 #include <signal.h>
 #include "ExitHandler.h"
 
-Runnable *ExitHandler::handler;
+#define MAX_HANDLERS 64
+static Runnable *exitHandlers[MAX_HANDLERS];
+int ExitHandler::handlerIdx = -1;
+Lock *ExitHandler::lock;
 
 static void linHandler(int reason)
 {
-	if(ExitHandler::handler)
-		ExitHandler::handler->run(0);
+	for(int i = ExitHandler::handlerIdx; i >= 0; i--)
+	{
+		exitHandlers[ExitHandler::handlerIdx]->run(0);
+	}
 	signal(SIGINT, SIG_DFL);
 }
 
 
 void ExitHandler::atExit(Runnable *inHandl)
 {
-	handler = inHandl;
-	signal(SIGINT, linHandler);
+	checkLock();
+	if(handlerIdx >= MAX_HANDLERS - 1)
+	{
+		printf("INTERNAL ERROR: ExitHandler overflow\n");
+		return;
+	}
+
+	lock->lock();
+	exitHandlers[++handlerIdx] = inHandl;
+	signal(SIGINT, winHandler);
+	lock->unlock();
 }
 
 void ExitHandler::dispose()
 {
-	signal(SIGINT, SIG_DFL);
-
+	checkLock();
+	lock->lock();
+	handlerIdx--;
+	if(handlerIdx < 0)
+		signal(SIGINT, SIG_DFL);
+	lock->unlock();
 }
+
+
 

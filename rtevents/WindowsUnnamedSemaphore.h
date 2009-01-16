@@ -33,7 +33,7 @@ public:
 	void  wait() 
 	{
 		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, semName);
-		if(semHandle == 0)
+		if(semHandle == 0) 
 			throw new SystemException("Error opening semaphore", GetLastError());
         int status = WaitForSingleObject( 
             semHandle,   // handle to semaphore

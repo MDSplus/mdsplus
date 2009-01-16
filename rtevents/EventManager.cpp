@@ -1,5 +1,85 @@
 #include "EventManager.h"
 #include "Delay.h"
+#include "ExitHandler.h"
+
+static bool exiting = false;
+static void removePendingListeners();
+class HandlePendingListeners: public Runnable
+{
+public:
+	void run(void *arg)
+	{
+		exiting = true;
+		removePendingListeners();
+	}
+};
+
+struct ListenerDescr {
+	void *listenerAddr;
+	ListenerDescr *nxt, *prv;
+};
+static bool exitHandlerInstalled = 0;
+
+static ListenerDescr *pendingListeners = 0;
+static void addIntListener(void *addr)  //NOTE to be called in locked section
+{
+	ListenerDescr *newDescr = new ListenerDescr;
+	newDescr->listenerAddr = addr;
+	if(!pendingListeners)
+	{
+		pendingListeners = newDescr;
+		newDescr->nxt = newDescr->prv = 0;
+	}
+	else
+	{
+		newDescr->prv = 0;
+		newDescr->nxt = pendingListeners;
+		pendingListeners->prv = newDescr;
+		pendingListeners = newDescr;
+	}
+	if(!exitHandlerInstalled)
+	{
+		exitHandlerInstalled = true;
+		ExitHandler::atExit(new HandlePendingListeners);
+	}
+}
+
+
+static void removeIntListener(void *addr)  //NOTE to be called in locked section
+{
+	ListenerDescr *currDescr;
+	for(currDescr = pendingListeners; currDescr; currDescr = currDescr->nxt)
+	{
+		if(currDescr->listenerAddr == addr)
+		{
+			if(currDescr->prv)
+			{
+				currDescr->prv->nxt = currDescr->nxt;
+				if(currDescr->nxt)
+					currDescr->nxt->prv = currDescr->prv;
+			}
+			else
+			{
+				pendingListeners = currDescr->nxt;
+				if(pendingListeners)
+					pendingListeners->prv = 0;
+			}
+			delete currDescr;
+			break;
+		}
+	}
+}
+
+static void removePendingListeners()
+{
+	ListenerDescr *currDescr;
+	for(currDescr = pendingListeners; currDescr; currDescr = currDescr->nxt)
+	{
+		EventRemoveListener(currDescr->listenerAddr);
+	}
+}
+
+
 
 void EventManager::initialize()
 {
@@ -21,8 +101,10 @@ void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, v
 		eventHead = currHandler;
 	}
 	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback), currHandler, memManager);
+	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier);
+	addIntListener(retAddr);
 	lock.unlock();
-	return new ListenerAddress(currHandler, currNotifier);
+	return retAddr;
 }
 
 void *EventManager::addCatchAllListener(ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
@@ -46,9 +128,12 @@ void *EventManager::addCatchAllListener(ThreadAttributes *threadAttr, void (*cal
 
 void EventManager::removeListener(void *addr, SharedMemManager *memManager)
 {
+	lock.lock();
 	ListenerAddress *eventAddr = (ListenerAddress *)addr;
 	eventAddr->getHandler()->removeListener((void *)eventAddr->getNotifier(), memManager);
 	delete eventAddr;
+	if(!exiting) removeIntListener(addr);
+	lock.unlock();
 }
 
 EventHandler *EventManager::getHandler(char *name)
