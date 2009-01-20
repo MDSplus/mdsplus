@@ -230,8 +230,8 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
     int   kchar;
     int   num;
     char  c;
-    char  line[256];
-    char  displayLine[256];
+    char  *line;
+    char  *displayLine;
 #if !defined(_WIN32)
     struct termios  tt,ttsave;
 #endif
@@ -337,12 +337,21 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 		/*=======================================================
 		 * Edit input line from tty ...
 		 *======================================================*/
+    line=(char *)malloc(maxlen);
+    displayLine=(char *)malloc(maxlen);
+
     line[0] = '\0';
     if (prompt)
         printf("%s",prompt);
     fflush(stdout);
     for (p=line ; ; )
        {
+	 if ((p - line) >= maxlen) {
+	   printf("Line too long\n");
+	   free(line);
+	   free(displayLine);
+	   return 0;
+	 }
         k = read(fd,&c,1);
         if (k<=0 || c=='\n')
             break;
@@ -470,6 +479,8 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
         perror("Error from tcseattr");
 #endif
     strncpy(usrline,line,maxlen);
+    free(line);
+    free(displayLine);
     printf("\n");
 #endif
     return(usrline);

@@ -654,7 +654,7 @@ int   ascToken(
     int   sts;
     int   tknLen;
     char  *p;
-    static char  defaultAlph[] = "0123456789_-$";
+    static char  defaultAlph[] = "0123456789_-$\\.:";
     char  *alphExtensions;
 
     alphExtensions = optAlph ? optAlph : defaultAlph;
