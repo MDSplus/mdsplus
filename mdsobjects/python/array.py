@@ -165,6 +165,18 @@ class Float64Array(Array):
 
 class StringArray(Array):
     """String"""
+    def __radd__(self,y):
+        """Reverse add: x.__radd__(y) <==> y+x
+        @rtype: Data"""
+        return self.execute('$//$',y,self)
+    def __add__(self,y):
+        """Add: x.__add__(y) <==> x+y
+        @rtype: Data"""
+        return self.execute('$//$',self,y)
+    def __str__(self):
+        """String: x.__str__() <==> str(x)
+        @type: String"""
+        return self.decompile()
 
 class Int128Array(Array):
     """128-bit signed number"""
