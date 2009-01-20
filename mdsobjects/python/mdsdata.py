@@ -224,13 +224,10 @@ class Data(object):
         """
         Add: x.__add__(y) <==> x+y
         @rtype: Data"""
-        from scalar import String
-        from array import StringArray
-        y=makeData(y)
-        if isinstance(self,String) or isinstance(y,String) or isinstance(self,StringArray) or isinstance(y,StringArray):
-            return Data.execute('$//$',self,y)
-        else:
+        if isinstance(y,Data):
             return Data.execute('$+$',self,y)
+        else:
+            return self+makeData(y)
 
     def __and__(self,y):
         """And: x.__and__(y) <==> x&y
@@ -351,13 +348,10 @@ class Data(object):
     def __radd__(self,y):
         """Reverse add: x.__radd__(y) <==> y+x
         @rtype: Data"""
-        from scalar import String
-        from array import StringArray
-        y=makeData(y)
-        if isinstance(self,String) or isinstance(y,String) or isinstance(self,StringArray) or isinstance(y,StringArray):
-            return Data.execute('$//$',y,self)
-        else:
+        if isinstance(y,Data):
             return Data.execute('$+$',y,self)
+        else:
+            return makeData(y)+self
 
     def __rdiv__(self,y):
         """Reverse divide: x.__rdiv__(y) <==> y/x
@@ -451,8 +445,9 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        from compound import Function
-        return Function(opcode='equals',args=(Function(opcode='public',args=(str(tdivarname),)),self)).evaluate()
+        #from compound import Function
+        #return Function(opcode='equals',args=(Function(opcode='public',args=(str(tdivarname),)),self)).evaluate()
+        return self.execute("`public "+str(tdivarname)+"=$",self)
 
     def getTdiVar(tdivarname):
         """Get value of tdi public variable
