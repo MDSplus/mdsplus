@@ -32,7 +32,7 @@
 
 extern char  *cliNonblank();
 extern int   cliToken();
-
+extern int USE_HYPHEN_CONTINUATION = 1;
 
 static struct cduVerb  *currentTable;	/* addr of current table	*/
 static struct cduVerb  *currentSyntax;	/* addr of current verb/syntax	*/
@@ -579,7 +579,7 @@ static int   cli_process_verb(		/* Return: status		*/
 
     for ( ; sts&1 && (p=cliNonblank(p)) ; )
        {
-        if (IS_QUALIFIER_CHARACTER(*p))
+        if (IS_QUALIFIER_CHARACTER(*p) && (*p != '-' || USE_HYPHEN_CONTINUATION))
            {
             if (!isalpha(*(++p)))
                 return(CLI_STS_BADLINE);
@@ -705,7 +705,15 @@ static struct cduEntity  *find_entity(	/* Return: addr of struct	*/
    }
 
 
+/******************************************************************
+* Set hyphen continuation
+*******************************************************************/
 
+int set_hyphen(int flag) {
+  int old_flag=USE_HYPHEN_CONTINUATION;
+  USE_HYPHEN_CONTINUATION=flag;
+  return old_flag;
+}
 	/*****************************************************************
 	 * cli_debug:
 	 *****************************************************************/
