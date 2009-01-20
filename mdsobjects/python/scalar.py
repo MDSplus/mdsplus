@@ -146,8 +146,16 @@ class Float64(Scalar):
 class String(Scalar):
     """String"""
     def __radd__(self,y):
-        return String(str(y)+str(self))
+        """Reverse add: x.__radd__(y) <==> y+x
+        @rtype: Data"""
+        return self.execute('$//$',y,self)
+    def __add__(self,y):
+        """Add: x.__add__(y) <==> x+y
+        @rtype: Data"""
+        return self.execute('$//$',self,y)
     def __str__(self):
+        """String: x.__str__() <==> str(x)
+        @type: String"""
         return self.value
 
 class Int128(Scalar):
