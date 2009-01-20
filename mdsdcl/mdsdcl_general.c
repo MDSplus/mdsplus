@@ -100,6 +100,16 @@ int   mdsdcl_type()
    }
 
 
+        /****************************************************************
+         * mdsdcl_set_hyphen:
+         ****************************************************************/
+mdsdcl_set_hyphen(              /* Returns: status                      */
+   struct _mdsdcl_ctrl  *ctrl   /* <m> the "ctrl" structure             */
+   )
+   {
+   set_hyphen(cli_present("HYPHEN") & 1);
+   return 1;
+   }
 
 	/****************************************************************
 	 * mdsdcl_set_verify:
