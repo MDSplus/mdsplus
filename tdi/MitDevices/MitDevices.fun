@@ -7,6 +7,7 @@ FUN  PUBLIC MITDEVICES() {
 	'B3224\0',	 'MitDevices\0',		
 	'B5910A\0',	 'MitDevices\0',
         'CHS_A14\0',     'MitDevices\0',		
+	'CP7452\0',      '\0',
         'DC1394\0',      'MitDevices\0',
 	'DC1394A\0',	 'MitDevices\0',		
         'DIO2\0',	 'MitDevices\0',
