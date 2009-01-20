@@ -18,7 +18,7 @@ public fun Py(in _cmd) {
 	dl->dlopen('lib'//getenv("PyLib")//'.so',val(258));
      }
      PyCall("Py_Initialize");
-     PyCall("PyRun_SimpleString","from MDSobjects import *");
+     PyCall("PyRun_SimpleString","from MDSplus import *");
      public _PyInit=1;
    }
    for (_i=0;_i<size(_cmd);_i++) {
