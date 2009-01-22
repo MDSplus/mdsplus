@@ -1,7 +1,7 @@
 #ifndef RUNNABLE_H_
 #define RUNNABLE_H_
-#define RUNNABLE_H
-class Runnable
+#include "SystemSpecific.h"
+class EXPORT Runnable
 {
 public: 
 	virtual void run(void *arg) = 0;

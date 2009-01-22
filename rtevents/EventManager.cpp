@@ -87,7 +87,7 @@ void EventManager::initialize()
 	lock.initialize();
 }
 	
-void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
+void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*), SharedMemManager *memManager, bool copyBuf, int retDataSize)
 {
 	//NOTE: EventHandlers are never deallocated
 	
@@ -100,30 +100,17 @@ void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, v
 		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
 		eventHead = currHandler;
 	}
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback), currHandler, memManager);
-	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier);
+	RetEventDataDescriptor *retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
+	int size;
+	void *data = retDataDescr->getData(size);
+	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, size, data), currHandler, memManager);
+
+	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier, retDataDescr);
 	addIntListener(retAddr);
 	lock.unlock();
 	return retAddr;
 }
 
-void *EventManager::addCatchAllListener(ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool), SharedMemManager *memManager)
-{
-	//NOTE: EventHandlers are never deallocated
-	
-	lock.lock();
-	EventHandler *currHandler = getCatchAllHandler();
-	if(!currHandler) //New Event
-	{
-		currHandler = (EventHandler *)memManager->allocate(sizeof(EventHandler));
-		currHandler->initialize();
-		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
-		eventHead = currHandler;
-	}
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback), currHandler, memManager);
-	lock.unlock();
-	return new ListenerAddress(currHandler, currNotifier);
-}
 
 
 void EventManager::removeListener(void *addr, SharedMemManager *memManager)
@@ -131,6 +118,7 @@ void EventManager::removeListener(void *addr, SharedMemManager *memManager)
 	lock.lock();
 	ListenerAddress *eventAddr = (ListenerAddress *)addr;
 	eventAddr->getHandler()->removeListener((void *)eventAddr->getNotifier(), memManager);
+	eventAddr->getHandler()->removeRetDataDescr(eventAddr->getRetDataDescr(), memManager);
 	delete eventAddr;
 	if(!exiting) removeIntListener(addr);
 	lock.unlock();
@@ -142,74 +130,74 @@ EventHandler *EventManager::getHandler(char *name)
 	
 	while(currHandler)
 	{
-		if(!currHandler->isCatchAll() && !strcmp(currHandler->getName(), name))
-			break;
-		currHandler = currHandler->getNext();
-	}
-	return currHandler;
-}
-EventHandler *EventManager::getCatchAllHandler()
-{
-	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
-	
-	while(currHandler)
-	{
-		if(currHandler->isCatchAll())
+		if(!strcmp(currHandler->getName(), name))
 			break;
 		currHandler = currHandler->getNext();
 	}
 	return currHandler;
 }
 
-void EventManager::trigger(char *eventName, char *buf, int size, SharedMemManager *memManager)
+void EventManager::trigger(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, memManager);
-			if(currHandler->isCatchAll())
-				currHandler->setName(eventName, memManager);
+			currHandler->setData(buf, size, copyBuf, memManager);
 			currHandler->trigger();
 		}
 		currHandler = currHandler->getNext();
 	}
 }
 
-void EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMemManager *memManager)
+EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			//currHandler->setData(buf, size, memManager);
-			if(currHandler->isCatchAll())
-				currHandler->setName(eventName, memManager);
-			currHandler->triggerAndWait(buf, size, memManager);
+			currHandler->setData(buf, size, copyBuf, memManager);
+			return currHandler->triggerAndCollect(buf, size, memManager, copyBuf, inAnsw, timeout);
 		}
 		currHandler = currHandler->getNext();
 	}
+	if(inAnsw)
+	{
+		inAnsw->setNumMsg(0);
+		return inAnsw;
+	}
+	else
+		return new EventAnswer(0, copyBuf);
 }
-bool EventManager::triggerAndWait(char *eventName, Timeout &timeout, char *buf, int size, SharedMemManager *memManager)
+bool EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
 {
 	bool isTimeout = false;
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
+	char *dataBuf;
+	if(copyBuf && size > 0)
+	{
+		dataBuf = new char[size];
+		memcpy(dataBuf, buf, size);
+	}
+	else
+		dataBuf = buf;
+
+
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, memManager);
-			if(currHandler->isCatchAll())
-				currHandler->setName(eventName, memManager);
-			isTimeout |= currHandler->triggerAndWait(timeout);
+			isTimeout |= currHandler->triggerAndWait(dataBuf, size, memManager, copyBuf, timeout);
 		}
 		currHandler = currHandler->getNext();
 	}
+	if(copyBuf && size > 0)
+		delete[]dataBuf;
+
 	return isTimeout;
 }
-
 void EventManager::clean(int milliSecs, SharedMemManager *memManager)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
@@ -247,10 +235,10 @@ void EventManager::clean(char *eventName, int milliSecs, SharedMemManager *memMa
 	}
 }
 
-
-//////////////////////////External C Interface/////////////////////
 static EventManager *eventManager = 0;
 static SharedMemManager memManager;
+
+
 
 static void checkEventManager()
 {
@@ -272,6 +260,19 @@ static void checkEventManager()
 	}
 }
 
+SharedMemManager *EventManager::getMemManager()
+{
+	checkEventManager();
+	return &memManager;
+}
+
+EventManager *EventManager::getEventManager() 
+{
+	checkEventManager();
+	return eventManager;
+}
+
+//////////////////////////External C Interface/////////////////////
 
 EXPORT void EventReset()
 {
@@ -288,7 +289,7 @@ EXPORT void EventReset()
 
 
 
-EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool))
+EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool, int, char *))
 {
 	try {
 		checkEventManager();
@@ -299,7 +300,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 
 		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
 		if(strcmp(name, "@@@EVENT_MANAGER@@@"))
-			eventManager->triggerAndWait("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager);
+			eventManager->triggerAndWait("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager, false);
 		delete [] msg;
 		return handl;
 	}
@@ -309,7 +310,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 		return NULL;
 	}
 }
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool))
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool, int, char*))
 {
 	try {
 		checkEventManager();
@@ -354,7 +355,7 @@ EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();
-		eventManager->triggerAndWait(name, buf, size, &memManager);
+		eventManager->triggerAndWait(name, buf, size, &memManager, true);
 		return 0;
 	}
 	catch(SystemException *exc)
@@ -369,7 +370,7 @@ EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millise
 	try {
 		checkEventManager();
 		Timeout *timout = new Timeout(millisecs);
-		eventManager->triggerAndWait(name, *timout, buf, size, &memManager);
+		eventManager->triggerAndWait(name,  buf, size, &memManager, true, timout);
 		delete timout;
 		return 0;
 	}

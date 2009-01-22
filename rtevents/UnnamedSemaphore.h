@@ -1,5 +1,6 @@
 #ifndef UNNAMEDSEMAPHORE_H_
 #define UNNAMEDSEMAPHORE_H_
+#include "SystemSpecific.h"
 #ifdef HAVE_WINDOWS_H
 #include "WindowsUnnamedSemaphore.h"
 #else
@@ -12,7 +13,7 @@
 #include "SystemException.h"
 #include "Timeout.h"
 
-class UnnamedSemaphore
+class EXPORT UnnamedSemaphore
 {
 	sem_t semStruct;
 public:

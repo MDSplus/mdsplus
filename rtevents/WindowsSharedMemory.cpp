@@ -36,5 +36,10 @@ bool SharedMemory::initialize(int id, int size)
 	}
 	return isFirst;
 }
+
+
+
+char *SharedMemory::getStartAddr() {return startAddress;}
+
 char *SharedMemory::startAddress;
 

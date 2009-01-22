@@ -1,6 +1,6 @@
 #ifndef EVENTHANDLER_H_
 #define EVENTHANDLER_H_
-
+#include "SystemSpecific.h"
 #include "SharedMemManager.h"
 #include "Notifier.h"
 #include "RelativePointer.h"
@@ -10,6 +10,8 @@
 //Class EventHandler manages the occurrence of a given event. 
 //Events can be associated with either an ID integer or a char string.
 
+class RetEventDataDescriptor;
+class EventAnswer;
 
 class EventHandler
 {
@@ -19,9 +21,11 @@ class EventHandler
 	Lock waitLock;
 	RelativePointer nxt;
 	RelativePointer dataBuffer;
+	RelativePointer retDataHead;
 	int dataSize;
-	bool catchAll;
 	bool synch;
+	bool collect;
+	bool intTriggerAndWait(char *buf, int size, SharedMemManager *memManager, bool collect, bool copyBuf, Timeout *timeout = 0);
 	
 public:
 	void setNext(EventHandler *next)
@@ -33,7 +37,8 @@ public:
 		return (EventHandler *)nxt.getAbsAddress();
 	}
 	bool isSynch() {return synch;}
-	void setData(void *buf, int size, SharedMemManager *memManager);
+	bool isCollect() {return collect;}
+	void setData(void *buf, int size, bool copyBuf, SharedMemManager *memManager);
 	void *getDataBuffer()
 	{
 		return dataBuffer.getAbsAddress();
@@ -47,7 +52,6 @@ public:
 	{
 		return (char *)name.getAbsAddress();
 	}
-	bool isCatchAll() {return catchAll;}
 	void initialize(char *name, SharedMemManager *memManager);
 	void initialize();
 	void *addListener(ThreadAttributes *threadAttr, Runnable *runnable, void *arg, SharedMemManager *memManager);
@@ -57,10 +61,12 @@ public:
 	void removeListener(void *notifierAddr, SharedMemManager *memManager);
 	void trigger();
 	void watchdogTrigger();
-	void triggerAndWait(char *buf, int size, SharedMemManager *memManager);
-	bool triggerAndWait(Timeout &);
+	bool triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
 	bool corresponds(char *name);
 	void clean(SharedMemManager *memManager);
+	void *addRetBuffer(int size, SharedMemManager *memManager);
+	void removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager);
+	EventAnswer *triggerAndCollect(char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
 };
 
 class WaitLockTerminator: public Runnable
@@ -74,6 +80,83 @@ public:
 	void run(void *arg)
 	{
 		lock->unlock();
+	}
+};
+
+
+class RetEventDataDescriptor
+{
+public:
+	RelativePointer nxt, prv;
+	RelativePointer data;
+	int size;
+
+	void initialize() {data = 0; size = 0; nxt = 0; prv = 0;}
+	RetEventDataDescriptor *getNext(){return (RetEventDataDescriptor *)nxt.getAbsAddress();}
+	RetEventDataDescriptor *getPrev(){return (RetEventDataDescriptor *)prv.getAbsAddress();}
+	void setNext(void *nxt) {this->nxt = nxt;}
+	void setPrev(void *prv) {this->prv = prv;}
+	void setData(void *data, int size)
+	{
+		this->data = data;
+		this->size = size;
+	}
+	void *getData(int &size)
+	{
+		size = this->size;
+		return data.getAbsAddress();
+	}
+};
+
+
+//Used to pack returned data
+class EXPORT EventAnswer 
+{
+	int numMsg;
+	int *retSizes;
+	char **retData;
+	bool copyBuf;
+public:
+	EventAnswer(int numMsg, bool copyBuf)
+	{
+		this->numMsg = numMsg;
+		this->copyBuf = copyBuf;
+		retSizes = new int[numMsg];
+		retData = new char *[numMsg];
+	}
+	~EventAnswer()
+	{
+		if(copyBuf)
+		{
+			delete[] retSizes;
+			delete[] retData;
+		}
+	}
+	void setNumMsg(int numMsg)
+	{
+		if(numMsg < this->numMsg)
+			this->numMsg = numMsg;
+	}
+	int getNumMsg() {return numMsg;}
+	char *getMsgAt(int idx, int &retSize)
+	{
+		if(idx >= numMsg)
+			return 0;
+		retSize = retSizes[idx];
+		return retData[idx];
+	}
+	void setMsgAt(int idx, char *data, int size)
+	{
+		if(idx >= numMsg)
+			return;
+		if(copyBuf)
+		{
+			retData[idx] = new char[size];
+			memcpy(retData[idx], data, size);
+		}
+		else
+			retData[idx] = data;
+		retSizes[idx] = size;
 	}
 };
 

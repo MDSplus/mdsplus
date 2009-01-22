@@ -1,11 +1,12 @@
 #ifndef DELAY_H_
 #define DELAY_H_
+#include "SystemSpecific.h"
 #ifdef HAVE_WINDOWS_H
 #include "WindowsDelay.h"
 #else
 #include <time.h>
 
-class Delay
+class EXPORT Delay
 {
 	struct timespec delayTime;
 public:

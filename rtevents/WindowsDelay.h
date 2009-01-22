@@ -1,5 +1,6 @@
 #include <Windows.h>
-class Delay
+#include "SystemSpecific.h"
+class EXPORT Delay
 {
 	long milliSecs;
 public:

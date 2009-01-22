@@ -1,6 +1,6 @@
 #ifndef GLOBALLOCK_H_
 #define GLOBALLOCK_H_
-
+#include "SystemSpecific.h"
 #include "NamedSemaphore.h"
 
 //Requiored  to avoid name clash with Windows definitions
@@ -10,7 +10,7 @@
 
 
 //Class Lock handles a critical section using a unnamed semaphore
-class GlobalLock
+class EXPORT GlobalLock
 {
 	NamedSemaphore sem;
 public:

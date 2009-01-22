@@ -1,13 +1,14 @@
 #ifndef MESSAGEMANAGER_H_
 #define MESSAGEMANAGER_H_
 
+#include "SystemSpecific.h"
 #include "NetworkAddress.h"
 #include "MessageReceiver.h"
 #include "MessageSender.h"
 
 //Class Message Manager is the common interface for exchanging messages
 //over a given network 
-class MessageManager
+class EXPORT MessageManager
 {
 public:
 	virtual MessageSender *getSender(NetworkAddress *addr) = 0;

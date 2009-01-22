@@ -9,11 +9,15 @@ Lock *ExitHandler::lock;
 
 static void winHandler(int reason)
 {
+printf("EXIT HANDLER\n");
 	for(int i = ExitHandler::handlerIdx; i >= 0; i--)
 	{
+		printf("EXIT RUN %d\n", i);
 		exitHandlers[i]->run(0);
 	}
+	printf("FINE RUNS\n");
 	signal(SIGINT, SIG_DFL);
+printf("FINE EXIT HANDLER\n");
 }
 
 

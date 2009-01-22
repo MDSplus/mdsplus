@@ -10,7 +10,7 @@
 #include "Delay.h"
 #include <stdio.h>
 
-static void eventCallback(char *name, char *buf, int bufLen, bool isSynch);
+static void eventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
 //internal listener registers) for which another
@@ -90,7 +90,7 @@ public:
 #define IS_ASYNCH_EVENT 2
 #define IS_EVENT_REGISTRATION 3
 #define IS_EVENT_ACK 4
-//Class Event Message described the event message sent over the network
+//Class Event Message describes the event message sent over the network
 class EventMessage
 {
 public:
@@ -276,7 +276,7 @@ public:
 		return false;
 	}
 
-//Add a new Internalpending structure to record the receipt of an external event for which
+//Add a new InternalPending structure to record the receipt of an external event for which
 //someone registered remotely
 	void addInternalPending(char *buf, int bufLen)
 	{
@@ -288,7 +288,7 @@ public:
 	}
 
 //Handle the receipt of a network message indicating the termination of a synchronous trigger
-//the message will brinh the unique long id of ExternalPending instance
+//the message will bring the unique long id of ExternalPending instance
 	void signalExternalTermination(unsigned int id)
 	{
 		ExternalPending *currPend = extPendingHead;
@@ -541,11 +541,7 @@ public:
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
-		if(!extEvent)
-		{
-			printf("INTERNALE ERROR: received event message with no event structure!!");
-		}
-		else
+		if(extEvent)
 			extEvent->addInternalPending(buf, bufLen);
 		lock.unlock();
 	}	
@@ -689,9 +685,9 @@ static int numExtAddresses;
 #define TCP_PORT 4000 
 
 
-static void eventCallback(char *name, char *buf, int bufLen, bool isSynch)
+static void eventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData)
 {
-printf("EVENT CALLBACK %s\n", name);
+//printf("EVENT CALLBACK %s\n", name);
 
 //The Event has been triggered as response from an external message.
 	if(extEventManager->isExternalEvent(name, buf, bufLen))
@@ -716,7 +712,7 @@ printf("EVENT CALLBACK %s\n", name);
 }
 
 
-static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch)
+static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData)
 {
 printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 

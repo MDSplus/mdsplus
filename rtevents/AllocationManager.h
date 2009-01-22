@@ -2,6 +2,7 @@
 #define ALLOCATIONMANAGER_H_
 #include <stdlib.h>
 #include <stdio.h>
+#include "SystemSpecific.h"
 #include "RelativePointer.h"
 //Class FreeSpaceManager supervises memory allocation within a shared segment. 
 //The first two elements of this segment will hold a pointer (_int64 offset to segment start) to the list of FreeDescriptor elements describing free space
@@ -11,7 +12,7 @@
 //The fourth element is the counter (int) of entities which are waiting for free space
 //The last element is a Event instance, used to signal when memory is released when the above counter is non zero
 
-class AllocationManager
+class EXPORT AllocationManager
 {
 
 	class FreeDescriptor {

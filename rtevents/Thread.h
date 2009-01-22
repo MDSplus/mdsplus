@@ -1,5 +1,6 @@
 #ifndef THREAD_H_
 #define THREAD_H_
+#include "SystemSpecific.h"
 #ifdef HAVE_WINDOWS_H
 #include "WindowsThread.h"
 #else
@@ -12,7 +13,7 @@ struct  WithArg{
 };
 extern  "C" void handlerWithArg(WithArg *);
 
-class Thread
+class EXPORT Thread
 {
 	pthread_t thread;
 	ThreadAttributes *attributes;

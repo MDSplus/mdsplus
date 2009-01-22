@@ -1,9 +1,10 @@
+#include "SystemSpecific.h"
 #include "SystemException.h"
 #include "Timeout.h"
 #include <Windows.h>
 
 #define MAX_SEM_COUNT 256
-class NamedSemaphore
+class EXPORT NamedSemaphore
 {
 	HANDLE semHandle;	
 public:

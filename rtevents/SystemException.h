@@ -1,11 +1,12 @@
 #ifndef SYSTEMEXCEPTION_H_
 #define SYSTEMEXCEPTION_H_
+#include "SystemSpecific.h"
 #include <string.h>
 #include <stdio.h>
 #ifdef HAVE_WINDOWS_H
 #include "WindowsSystemException.h"
 #else
-class SystemException
+class EXPORT SystemException
 {
 	char msg[512];
 

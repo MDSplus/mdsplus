@@ -1,8 +1,9 @@
 #ifndef TCPMESSAGESENDER_H_
 #define TCPMESSAGESENDER_H_
+#include "SystemSpecific.h"
 #include "TCPMessageManager.h"
 
-class TCPMessageSender: public MessageSender
+class EXPORT TCPMessageSender: public MessageSender
 {
 	TCPMessageManager *manager;
 	IPAddress *address;

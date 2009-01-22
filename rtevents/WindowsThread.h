@@ -1,3 +1,4 @@
+#include "SystemSpecific.h"
 #include "Runnable.h"
 #include "ThreadAttributes.h"
 #include <Windows.h>
@@ -8,7 +9,7 @@ struct  WithArg{
 };
 extern  "C" void handlerWithArg(WithArg *);
 
-class Thread
+class EXPORT Thread
 {
 	HANDLE threadH;
 	HANDLE semH;

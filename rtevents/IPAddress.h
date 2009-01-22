@@ -1,5 +1,6 @@
 #ifndef IPADDRESS_H_
 #define IPADDRESS_H_
+#include "SystemSpecific.h"
 #include "NetworkAddress.h"
 #include <string.h>
 
@@ -29,7 +30,7 @@
 #endif
 
 
-class IPAddress:public NetworkAddress
+class EXPORT IPAddress:public NetworkAddress
 {
 	friend class TCPMessageManager;
 

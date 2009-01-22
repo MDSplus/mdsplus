@@ -1,6 +1,7 @@
 #include "Windows.h"
+#include "SystemSpecific.h"
 
-class SharedMemory
+class EXPORT SharedMemory
 {
 	HANDLE hFile; 
 	int size;
@@ -8,7 +9,7 @@ class SharedMemory
 
 public:
 	bool initialize(int id, int size);
-	char *getStartAddr() {return startAddress;}
+	char *getStartAddr();
 	void dispose(){}
 };
 

@@ -11,19 +11,8 @@ void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 	setNext(NULL);
 	lock.initialize();
 	waitLock.initialize();
-	catchAll = false;
 }
 
-void EventHandler::initialize()
-{
-	name = NULL;
-	notifierHead = NULL;
-	dataBuffer = NULL;
-	setNext(NULL);
-	lock.initialize();
-	waitLock.initialize();
-	catchAll = true;
-}
 void EventHandler::setName(char *inName, SharedMemManager *memManager)
 {
 	if(name.getAbsAddress())
@@ -45,6 +34,52 @@ void *EventHandler::addListener(ThreadAttributes *threadAttr, Runnable *runnable
 	lock.unlock();
 	return newNotifier;
 }
+
+
+void *EventHandler::addRetBuffer(int size, SharedMemManager *memManager)
+{
+	lock.lock();
+	RetEventDataDescriptor *dataDescr = (RetEventDataDescriptor *)memManager->allocate(sizeof(RetEventDataDescriptor));
+	dataDescr->initialize();
+	void *data = memManager->allocate(size);
+	dataDescr->setData(data, size);
+	dataDescr->setNext(retDataHead.getAbsAddress());
+	if(retDataHead.getAbsAddress())
+	{
+		RetEventDataDescriptor *currHead = (RetEventDataDescriptor *)retDataHead.getAbsAddress();
+		currHead->setPrev(dataDescr);
+	}
+	retDataHead = dataDescr;
+	lock.unlock();
+	return dataDescr;
+}
+
+void EventHandler::removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager)
+{
+	lock.lock();
+	RetEventDataDescriptor *currDataDescr = (RetEventDataDescriptor *)retDataHead.getAbsAddress();
+	while(currDataDescr)
+	{
+		if(currDataDescr == retDataDescr)
+		{
+			if(currDataDescr->getPrev())
+				currDataDescr->getPrev()->setNext(currDataDescr->getNext());
+			if(currDataDescr->getNext())
+				currDataDescr->getNext()->setPrev(currDataDescr->getPrev());
+			if(retDataHead.getAbsAddress() == currDataDescr)
+				retDataHead = currDataDescr->getNext();
+			memManager->deallocate((char *)retDataDescr, sizeof(RetEventDataDescriptor));
+			lock.unlock();
+			return;
+		}
+	}
+	lock.unlock();
+}
+
+		
+
+
+
 
 //RemoveListener removes the corresponding Notifier from the notifier chain if found
 //The passed address is valid only in the same address space of the process which
@@ -106,15 +141,66 @@ void EventHandler::clean(SharedMemManager *memManager)
 	
 }
 
-
-void EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memManager)
+EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	waitLock.lock();
-	setData(buf, size, memManager);
+	//Count 
+	RetEventDataDescriptor *currDataDescr = (RetEventDataDescriptor *)retDataHead.getAbsAddress();
+	int numRet = 0;
+	while(currDataDescr)
+	{
+		numRet++;
+		currDataDescr = currDataDescr->getNext();
+	}
+	EventAnswer *ans; 
+	if(inAnsw)
+	{
+		ans = inAnsw;
+		ans->setNumMsg(numRet);
+	}
+	else
+		ans = new EventAnswer(numRet, copyBuf);
+
+	bool timeoutOccurred = intTriggerAndWait(buf, size, memManager, true, copyBuf, timeout);
+	if(timeout && timeoutOccurred) 
+		return ans;
+
+
+	int idx = 0;
+	for(currDataDescr = (RetEventDataDescriptor *)retDataHead.getAbsAddress(); currDataDescr; currDataDescr = currDataDescr->getNext())
+	{
+		int currSize;
+		void *currMsg = currDataDescr->getData(currSize);
+		ans->setMsgAt(idx++, (char *)currMsg, currSize);
+	}
+	
+	waitLock.unlock();
+	return ans;
+}
+
+
+
+
+
+bool EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
+{
+	waitLock.lock();
+	bool ans = intTriggerAndWait(buf, size, memManager, false, copyBuf, timeout);
+	waitLock.unlock();
+	return ans;
+}
+
+#define MAX_NOTIFIERS 100
+bool EventHandler::intTriggerAndWait(char *buf, int size, SharedMemManager *memManager, bool isCollect, bool copyBuf, Timeout *timeout)
+{
+	Notifier *autoNotifiers[MAX_NOTIFIERS];
+
+	setData(buf, size, copyBuf, memManager);
 	lock.lock();
+	collect = isCollect;
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
-
+	bool timeoutOccurred = false;
 //Count Notifiers
 	int numNotifiers = 0;
 	while(currNotifier)
@@ -122,8 +208,12 @@ void EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memMana
 		numNotifiers++;
 		currNotifier = currNotifier->getNext();
 	}
-	Notifier **notifiers = new Notifier*[numNotifiers];
 
+	Notifier **notifiers;
+	if(numNotifiers > MAX_NOTIFIERS)
+		notifiers = new Notifier*[numNotifiers];
+	else
+		notifiers = autoNotifiers;
 
 	currNotifier = (Notifier *)notifierHead.getAbsAddress();
 //First pass: asynchronous triggers
@@ -138,33 +228,19 @@ void EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memMana
 	lock.unlock();
 	ExitHandler::atExit(new WaitLockTerminator(&waitLock));
 	for(i = 0; i < numNotifiers; i++)
-		notifiers[i]->waitTermination();
+	{
+		if(timeout)
+			timeoutOccurred |= notifiers[i]->waitTermination(*timeout);
+		else
+			notifiers[i]->waitTermination();
+	}
 	ExitHandler::dispose();
-	waitLock.unlock();
-}
+	if(numNotifiers > MAX_NOTIFIERS)
+		delete [] notifiers;
 
-bool EventHandler::triggerAndWait(Timeout &timeout)
-{
-	lock.lock();
-	synch = true;
-	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
-//First pass: asynchronous triggers
-	while(currNotifier)
-	{
-		currNotifier->synchTrigger();
-		currNotifier = currNotifier->getNext();
-	}
-	currNotifier = (Notifier *)notifierHead.getAbsAddress();
-//Second pass: wait synch termination
-	bool timeoutOccurred = false;
-	while(currNotifier)
-	{
-		timeoutOccurred |= currNotifier->waitTermination(timeout);
-		currNotifier = currNotifier->getNext();
-	}
-	lock.unlock();
 	return timeoutOccurred;
 }
+
 
 void EventHandler::trigger()
 {
@@ -195,8 +271,6 @@ void EventHandler::watchdogTrigger()
 
 bool EventHandler::corresponds(char *inName)
 {
-	if(catchAll)
-		return true;
 	bool corr = false;
 	char *sharedName = (char *)name.getAbsAddress();
 	int nameLen = strlen(inName);
@@ -207,14 +281,24 @@ bool EventHandler::corresponds(char *inName)
 	return corr;
 }
 
-void EventHandler::setData(void *buf, int size, SharedMemManager *memManager)
+void EventHandler::setData(void *buf, int size, bool copyBuf, SharedMemManager *memManager)
 {
-	if(dataBuffer.getAbsAddress())
-		memManager->deallocate((char *)dataBuffer.getAbsAddress(), dataSize);
-	dataSize = size;
-	if(size == 0)
-		dataBuffer = NULL;
+	if(copyBuf)
+	{
+		if(dataBuffer.getAbsAddress())
+			memManager->deallocate((char *)dataBuffer.getAbsAddress(), dataSize);
+		dataSize = size;
+		if(size == 0)
+			dataBuffer = NULL;
+		else
+			dataBuffer = memManager->allocate(size);
+		memcpy(dataBuffer.getAbsAddress(), buf, size);
+	}
 	else
-		dataBuffer = memManager->allocate(size);
-	memcpy(dataBuffer.getAbsAddress(), buf, size);
+	{
+		dataBuffer = buf;
+		dataSize = size;
+	}
 }
+
+

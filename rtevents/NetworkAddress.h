@@ -1,7 +1,8 @@
 #ifndef NETWORKADDRESS_H_
 #define NETWORKADDRESS_H_
+#include "SystemSpecific.h"
 
-class NetworkAddress
+class EXPORT NetworkAddress
 {
 public:
 	virtual char *getAddressString() = 0;

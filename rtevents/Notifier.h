@@ -1,6 +1,7 @@
 #ifndef NOTIFIER_H_
 #define NOTIFIER_H_
 #include <stdio.h>
+#include "SystemSpecific.h"
 #include "Runnable.h"
 #include "Thread.h"
 #include "RelativePointer.h"

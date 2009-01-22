@@ -1,6 +1,7 @@
 #ifndef TIMEOUT_H_
 #define TIMEOUT_H_
-class Timeout
+#include "SystemSpecific.h"
+class EXPORT Timeout
 {
 	long secs;
 	long nanoSecs;

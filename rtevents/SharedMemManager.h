@@ -1,6 +1,6 @@
 #ifndef SHAREDMEMMANAGER_H_
 #define SHAREDMEMMANAGER_H_
-
+#include "SystemSpecific.h"
 #include "Lock.h"
 #include "SharedMemory.h"
 #include "AllocationManager.h"
@@ -9,7 +9,7 @@
 //Global Lock id used in SharedMemManager Initialization
 #define MEM_MANAGER_LOCK 1
 
-class SharedMemManager
+class EXPORT SharedMemManager
 {
 	//globalLock is used to guarantree mutual exclusion in memory initialization
 	//or mapping.

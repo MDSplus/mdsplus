@@ -1,5 +1,7 @@
 #include <Windows.h>
-class SystemException
+#include "SystemSpecific.h"
+
+class EXPORT SystemException
 {
 	char msg[1024];
 

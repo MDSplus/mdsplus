@@ -1,6 +1,7 @@
 #ifndef MESSAGESENDER_H_
 #define MESSAGESENDER_H_
-class MessageSender 
+#include "SystemSpecific.h"
+class EXPORT MessageSender 
 {
 public:
 	virtual void sendMessage(char *buf, int size) = 0;

@@ -1,9 +1,10 @@
 #ifndef EXIT_HANDLER_H
 #define EXIT_HANDLER_H
+#include "SystemSpecific.h"
 #include "Runnable.h"
 #include "Lock.h"
 
-class ExitHandler
+class EXPORT ExitHandler
 {
 	static Lock *lock;
 	static void checkLock()

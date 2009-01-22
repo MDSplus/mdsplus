@@ -1,5 +1,6 @@
 #ifndef TCPMESSAGEMANAGER_H_
 #define TCPMESSAGEMANAGER_H_
+#include "SystemSpecific.h"
 #include "IPAddress.h"
 #include "Runnable.h"
 #include "Thread.h"
@@ -38,7 +39,7 @@ public:
 
 
 
-class TCPMessageManager:public MessageManager
+class EXPORT TCPMessageManager:public MessageManager
 {
 	friend class TCPMessageSender;
 	

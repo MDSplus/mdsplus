@@ -1,7 +1,8 @@
 #ifndef MESSAGERECEIVER_H_
 #define MESSAGERECEIVER_H_
+#include "SystemSpecific.h"
 #include "NetworkAddress.h"
-class MessageReceiver 
+class EXPORT MessageReceiver 
 {
 public:
 	virtual void messageReceived(NetworkAddress *addr, char *buf, int size) = 0;

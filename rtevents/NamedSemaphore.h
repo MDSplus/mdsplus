@@ -1,5 +1,6 @@
 #ifndef NAMEDSEMAPHORE_H_
 #define NAMEDSEMAPHORE_H_
+#include "SystemSpecific.h"
 #ifdef HAVE_WINDOWS_H
 #include "WindowsNamedSemaphore.h"
 #else
@@ -15,7 +16,7 @@
 #include "SystemException.h"
 #include "Timeout.h"
 
-class NamedSemaphore
+class EXPORT NamedSemaphore
 {
 	sem_t *semPtr;
 public:

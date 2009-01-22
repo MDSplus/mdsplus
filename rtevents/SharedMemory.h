@@ -1,5 +1,6 @@
 #ifndef SHAREDMEMORY_H_
 #define SHAREDMEMORY_H_
+#include "SystemSpecific.h"
 #ifdef HAVE_WINDOWS_H
 #include "WindowsSharedMemory.h"
 #else
@@ -8,7 +9,7 @@
 # include <sys/types.h>
 # include <sys/ipc.h>
 
-class SharedMemory
+class EXPORT SharedMemory
 {
 	int memId;
 	char *startAddr;

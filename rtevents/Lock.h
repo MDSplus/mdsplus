@@ -1,10 +1,12 @@
 #ifndef LOCK_H_
 #define LOCK_H_
+#include "SystemSpecific.h"
 #include "UnnamedSemaphore.h"
 #include "SystemException.h"
+#include "RelativePointer.h"
 
 //Class Lock handles a critical section using a unnamed semaphore
-class Lock
+class EXPORT Lock
 {
 
 	UnnamedSemaphore sem;
