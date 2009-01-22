@@ -679,7 +679,7 @@ static void InitializeCommandInterface(Widget w)
 {
   static DESCRIPTOR(const image_name, "tcl_commands");
   static DESCRIPTOR(const routine_name, "TclSetCallbacks");
-  static DESCRIPTOR(const set_command, "set command tcl_commands -def_file=*.tcl");
+  static DESCRIPTOR(const set_command, "set command tcl_commands /def_file=*.tcl");
   int status = mdsdcl_do_command(&set_command);
   if (status&1) {
     int (*set_callbacks)();
