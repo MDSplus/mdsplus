@@ -32,7 +32,7 @@
 
 extern char  *cliNonblank();
 extern int   cliToken();
-extern int USE_HYPHEN_CONTINUATION = -1;
+int USE_HYPHEN_CONTINUATION = -1;
 
 static struct cduVerb  *currentTable;	/* addr of current table	*/
 static struct cduVerb  *currentSyntax;	/* addr of current verb/syntax	*/
