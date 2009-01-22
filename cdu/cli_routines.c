@@ -714,6 +714,11 @@ int set_hyphen(int flag) {
   USE_HYPHEN_CONTINUATION=flag;
   return old_flag;
 }
+
+int get_hyphen(int flag) {
+  return USE_HYPHEN_CONTINUATION;
+}
+
 	/*****************************************************************
 	 * cli_debug:
 	 *****************************************************************/
