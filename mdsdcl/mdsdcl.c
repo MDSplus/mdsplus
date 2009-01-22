@@ -57,6 +57,7 @@ int  main(
 		 *  an extra command table, like for TCL or CCL ...
 		 *-------------------------------------------------------*/
         i = 1;
+	set_hyphen(1);
         if (IS_QUALIFIER_CHARACTER(*argv[i]))
            {
             str_copy_dx(&dsc_cmdline,argv[i]);
@@ -77,6 +78,7 @@ int  main(
                 exit(sts);
             str_free1_dx(&dsc_cmdline);
            }
+	set_hyphen(-1);
 
 		/*--------------------------------------------------------
 		 * Now handle the rest of the command line ...

@@ -32,7 +32,7 @@
 
 extern char  *cliNonblank();
 extern int   cliToken();
-extern int USE_HYPHEN_CONTINUATION = 1;
+extern int USE_HYPHEN_CONTINUATION = -1;
 
 static struct cduVerb  *currentTable;	/* addr of current table	*/
 static struct cduVerb  *currentSyntax;	/* addr of current verb/syntax	*/
@@ -761,6 +761,10 @@ int   cli_dcl_parse(		/* Returns: status			*/
     struct cduValue  *val;
     struct descriptor  *dsc;
     static DYNAMIC_DESCRIPTOR(dsc_parameter);
+
+    if (USE_HYPHEN_CONTINUATION == -1)
+      USE_HYPHEN_CONTINUATION = getenv("VMS_SEMANTICS") ? 0 : 1;
+
 
     clearCurrentSyntax();
     init_table(table);

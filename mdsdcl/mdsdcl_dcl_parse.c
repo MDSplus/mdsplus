@@ -53,7 +53,7 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
 
     if (!doIndirect[0])
        {			/* first time ...			*/
-        sprintf(doIndirect,"DO %cINDIRECT",QUALIFIER_CHARACTER);
+        sprintf(doIndirect,"DO %cINDIRECT",'/');
        }
 
 		/*-------------------------------------------------------

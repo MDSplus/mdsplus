@@ -87,7 +87,7 @@ int mdsdcl_do_command(
 
     if (!doMacro[0])
        {			/* first time ...			*/
-        sprintf(doMacro,"DO %cMACRO ",QUALIFIER_CHARACTER);
+        sprintf(doMacro,"DO %cMACRO ","/");
        }
 
     io = ctrl->ioLevel + ctrl->depth;
