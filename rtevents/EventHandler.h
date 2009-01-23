@@ -59,6 +59,7 @@ public:
 	//The passed address is valid only in the same address space of the process which
 	//created the Notifier instance
 	void removeListener(void *notifierAddr, SharedMemManager *memManager);
+	void resizeRetData(RetEventDataDescriptor *retDataDescr, int newSize, SharedMemManager *memManager);
 	void trigger();
 	void watchdogTrigger();
 	bool triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
@@ -79,7 +80,9 @@ public:
 	}
 	void run(void *arg)
 	{
+		printf("PARTE RUN WAIT LOCK TERMINATOR\n");
 		lock->unlock();
+		printf("FINISCE RUN WAIT LOCK TERMINATOR\n");
 	}
 };
 
@@ -106,6 +109,20 @@ public:
 		size = this->size;
 		return data.getAbsAddress();
 	}
+	void deallocateData(SharedMemManager *memManager)
+	{
+		memManager->deallocate((char *)data.getAbsAddress(), size);
+	}
+	void resizeData(int newSize, SharedMemManager *memManager)
+	{
+		if(size != newSize)
+		{
+			memManager->deallocate((char *)data.getAbsAddress(), size);
+			data = memManager->allocate(newSize);
+			size = newSize;
+		}
+	}
+
 };
 
 
@@ -144,6 +161,12 @@ public:
 			return 0;
 		retSize = retSizes[idx];
 		return retData[idx];
+	}
+	int getMsgSizeAt(int idx)
+	{
+		if(idx >= numMsg)
+			return 0;
+		return retSizes[idx];
 	}
 	void setMsgAt(int idx, char *data, int size)
 	{

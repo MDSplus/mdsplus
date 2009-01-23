@@ -124,6 +124,20 @@ void EventManager::removeListener(void *addr, SharedMemManager *memManager)
 	lock.unlock();
 }
 
+
+void EventManager::resizeListener(void *addr, int newSize, SharedMemManager *memManager)
+{
+	lock.lock();
+	ListenerAddress *eventAddr = (ListenerAddress *)addr;
+	eventAddr->getHandler()->resizeRetData(eventAddr->getRetDataDescr(), newSize, memManager);
+	delete eventAddr;
+	if(!exiting) removeIntListener(addr);
+	lock.unlock();
+}
+
+
+
+
 EventHandler *EventManager::getHandler(char *name)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();

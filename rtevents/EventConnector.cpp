@@ -8,9 +8,10 @@
 #include "Runnable.h"
 #include "Thread.h"
 #include "Delay.h"
+#include "Event.h"
 #include <stdio.h>
 
-static void eventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData);
+static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
 //internal listener registers) for which another
@@ -57,17 +58,23 @@ class ExternalPending
 public:
 	unsigned int id;
 	UnnamedSemaphore sem;
+	int bufSize;
+	char *buf;
 	NetworkAddress *addr;
 	ExternalPending *nxt, *prv;
 	ExternalPending(int id, NetworkAddress *addr)
 	{
 		this->id = id;
 		this->addr = addr;
+		buf = 0;
+		bufSize = 0;
 		nxt = prv = 0;
 		sem.initialize(0);
 	}
 	~ExternalPending()
 	{
+		if(bufSize > 0)
+			delete [] buf;
 		sem.dispose();
 	}
 };
@@ -90,6 +97,8 @@ public:
 #define IS_ASYNCH_EVENT 2
 #define IS_EVENT_REGISTRATION 3
 #define IS_EVENT_ACK 4
+#define IS_SYNCH_COLLECT_EVENT 5
+#define IS_EVENT_COLLECT_ACK 6
 //Class Event Message describes the event message sent over the network
 class EventMessage
 {
@@ -98,18 +107,25 @@ public:
 	char *name;
 	unsigned int waitId;
 	char *buf;
-	int bufLen;
+	int bufSize;
+	int retSize;
+	EventAnswer *evAnsw;
 	
-	EventMessage(char *name, char *buf, int bufLen, bool synch, unsigned int waitId)
+	EventMessage(char *name, char *buf, int bufSize, bool isCollect, bool synch, unsigned int waitId)
 	{
 		if(synch)
 			mode = IS_SYNCH_EVENT;
 		else
-			mode = IS_ASYNCH_EVENT;
+		{
+			if(isCollect)
+				mode = IS_SYNCH_COLLECT_EVENT;
+			else
+				mode = IS_ASYNCH_EVENT;
+		}
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
 		this->buf = buf; 
-		this->bufLen = bufLen;
+		this->bufSize = bufSize;
 		this->waitId = waitId;
 	}
 	
@@ -121,15 +137,25 @@ public:
 		this->waitId = waitId;
 	}
 	
-	EventMessage(char *name)
+	EventMessage(char *name, int waitId, EventAnswer *evAnsw)
 	{
-		mode = IS_EVENT_REGISTRATION;
+		mode = IS_EVENT_COLLECT_ACK;
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
+		this->waitId = waitId;
+		this->evAnsw = evAnsw;
+	}
+	
+	EventMessage(char *buf)
+	{
+		mode = IS_EVENT_REGISTRATION;
+		this->name = new char[strlen(buf) + 1];
+		sscanf(buf, "%s %d", this->name, &this->retSize);
 	}
 	
 	EventMessage(char *inBuf, int inBufSize, MessageManager *msgManager)
 	{
+		retSize = 0;
 		char *ptr = inBuf;
 		mode = *ptr;
 		ptr++;
@@ -141,28 +167,40 @@ public:
 		ptr += nameLen;
 		switch(mode) {
 			case IS_ASYNCH_EVENT:
-				bufLen = msgManager->toNative(*(unsigned int *)ptr);
+				bufSize = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				buf = ptr; //Note that buffer is not copied
-				ptr += bufLen;
+				ptr += bufSize;
 				waitId = 0;
 				break;
 			case IS_SYNCH_EVENT:
-				bufLen = msgManager->toNative(*(unsigned int *)ptr);
+			case IS_SYNCH_COLLECT_EVENT:
+				bufSize = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				buf = ptr; //Note that buffer is not copied
-				ptr += bufLen;
+				ptr += bufSize;
 				waitId = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				break;
 			case IS_EVENT_ACK:
-				bufLen = 0;
+				bufSize = 0;
 				buf = 0;
 				waitId = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				break;
+			case IS_EVENT_COLLECT_ACK:
+				bufSize = 0;
+				buf = 0;
+				waitId = msgManager->toNative(*(unsigned int *)ptr);
+				ptr += 4;
+				bufSize = msgManager->toNative(*(unsigned int *)ptr);
+				ptr += 4;
+				buf = ptr;//Note that buffer is not copied
+				break;
 			case IS_EVENT_REGISTRATION:
-				bufLen = 0;
+				ptr += 4;
+				retSize = msgManager->toNative(*(unsigned int *)ptr);
+				bufSize = 0;
 				buf = 0;
 				waitId = 0;
 				break;
@@ -177,18 +215,27 @@ public:
 		switch(mode) 
 		{
 			case IS_ASYNCH_EVENT:
-				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ bufLen + 4 /*buf and length */;
+				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ bufSize + 4 /*buf and length */;
 				break;
 			case IS_SYNCH_EVENT:
+			case IS_SYNCH_COLLECT_EVENT:
 				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ 
-					bufLen + 4 /*buf and length */ + 4 /*waitId*/;
+					bufSize + 4 /*buf and length */ + 4 /*waitId*/;
 				break;
 			case IS_EVENT_ACK:
 				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ 4 /*waitId*/;
 				break;
 			case IS_EVENT_REGISTRATION:
-				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/;
+				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/ + 4 /*ret size*/;
 				break;
+			case IS_EVENT_COLLECT_ACK:
+				int msgSize = 0;
+				for(int i = 0; i < evAnsw->getNumMsg(); i++)
+					msgSize+= evAnsw->getMsgSizeAt(i);
+				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ 4 /*waitId*/ 
+					+ 4 + msgSize /*retMessage and retMessage len*/;
+				break;
+
 		}
 
 		char *retBuf = new char[size];
@@ -203,22 +250,37 @@ public:
 		switch (mode)
 		{
 			case IS_ASYNCH_EVENT:
-				*((unsigned int *)ptr) = msgManager->fromNative(bufLen);
+				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
 				ptr += 4;
-				memcpy(ptr, buf, bufLen);
+				memcpy(ptr, buf, bufSize);
 				break;
 			case IS_SYNCH_EVENT:
-				*((unsigned int *)ptr) = msgManager->fromNative(bufLen);
+			case IS_SYNCH_COLLECT_EVENT:
+				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
 				ptr += 4;
-				memcpy(ptr, buf, bufLen);
-				ptr += bufLen;
+				memcpy(ptr, buf, bufSize);
+				ptr += bufSize;
 				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
 				break;
 			case IS_EVENT_ACK:
 				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
 				break;
 			case IS_EVENT_REGISTRATION:
+				*((unsigned int *)ptr) = msgManager->fromNative(retSize);
 				break;
+			case IS_EVENT_COLLECT_ACK:
+				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
+				ptr +=4;
+				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
+				ptr += 4;
+				int currSize;
+				for(int i = 0; i < evAnsw->getNumMsg(); i++)
+				{
+					memcpy(ptr, evAnsw->getMsgAt(i, currSize), currSize);
+					ptr += currSize;
+				}
+				break;
+
 		}
 		retSize = size;
 		return retBuf;
@@ -240,13 +302,16 @@ class ExternalEvent
 {
 public:
 	char *eventName;
+	void *listenerAddr;
+	int retSize;
 	InternalPending *intPendingHead;
 	ExternalPending *extPendingHead;
 	ExternalListener *extListenerHead;
 	ExternalEvent *nxt, *prv;
 	
-	ExternalEvent(char *name)
+	ExternalEvent(char *name, int retSize)
 	{
+		this->retSize = retSize;
 		eventName = new char[strlen(name) + 1];
 		strcpy(eventName, name);
 		intPendingHead = NULL;
@@ -278,9 +343,9 @@ public:
 
 //Add a new InternalPending structure to record the receipt of an external event for which
 //someone registered remotely
-	void addInternalPending(char *buf, int bufLen)
+	void addInternalPending(char *buf, int bufSize)
 	{
-		InternalPending *newIntPending = new InternalPending(buf, bufLen);
+		InternalPending *newIntPending = new InternalPending(buf, bufSize);
 		newIntPending->nxt = intPendingHead;
 		if(intPendingHead)
 			intPendingHead->prv = newIntPending;
@@ -289,13 +354,16 @@ public:
 
 //Handle the receipt of a network message indicating the termination of a synchronous trigger
 //the message will bring the unique long id of ExternalPending instance
-	void signalExternalTermination(unsigned int id)
+	void signalExternalTermination(unsigned int id, int bufSize, char *buf)
 	{
 		ExternalPending *currPend = extPendingHead;
 		while(currPend)
 		{
 			if(currPend->id == id)
 			{
+				currPend->bufSize = bufSize;
+				currPend->buf = new char[bufSize];
+				memcpy(currPend->buf, buf, bufSize);
 				currPend->sem.post();
 				break;
 			}
@@ -304,7 +372,7 @@ public:
 
 	
 //SendEvent sends a message describing the event. 
-	void sendSynchEvent(char *buf, int bufLen, MessageManager *msgManager, 
+	void sendSynchEvent(char *buf, int bufSize, bool isCollect, MessageManager *msgManager, 
 			UnnamedSemaphore ** &retSems, unsigned int * &waitIds, int &numSems)
 	{
 		//count listeners
@@ -322,7 +390,7 @@ public:
 		while(currListener)
 		{
 			addExternalPending(currListener->addr, retSems[semIdx], waitIds[semIdx]);
-			EventMessage msg(eventName, buf, bufLen, true, waitIds[semIdx]);
+			EventMessage msg(eventName, buf, bufSize, isCollect, true, waitIds[semIdx]);
 			int msgLen;
 			char *msgBuf = msg.serialize(msgLen, msgManager);
 			msgManager->sendMessage(currListener->addr, msgBuf, msgLen);
@@ -334,10 +402,10 @@ public:
 	}
 	
 	//SendEvent sends a message describing the event. 
-	void sendAsynchEvent(char *buf, int bufLen, MessageManager *msgManager)
+	void sendAsynchEvent(char *buf, int bufSize, MessageManager *msgManager)
 	{
 		ExternalListener *currListener = extListenerHead;
-		EventMessage msg(eventName, buf, bufLen, false, 0);
+		EventMessage msg(eventName, buf, bufSize, false, false, 0);
 		int msgLen;
 		char *msgBuf = msg.serialize(msgLen, msgManager);
 		while(currListener)
@@ -375,6 +443,22 @@ public:
 		}
 	}
 	
+	void collectExternalPendingData(unsigned int id, int &retSize, char * &retBuf)
+	{
+		retSize = 0;
+		retBuf = 0;
+		ExternalPending *currPend = extPendingHead;
+		while(currPend)
+		{
+			if(currPend->id == id)
+			{
+				retSize = currPend->bufSize;
+				retBuf = currPend->buf;
+				return;
+			}
+		}
+	}
+		
 	void unblockExternalPending(NetworkAddress *addr)
 	{
 		ExternalPending *currPend = extPendingHead;
@@ -449,9 +533,9 @@ public:
 		return currEvent;
 	}
 	
-	ExternalEvent *newEvent(char *name)
+	ExternalEvent *newEvent(char *name, int retSize)
 	{
-		ExternalEvent *newEv = new ExternalEvent(name);
+		ExternalEvent *newEv = new ExternalEvent(name, retSize);
 		newEv->nxt = extEventHead;
 		if(extEventHead)
 			extEventHead->prv = newEv;
@@ -474,7 +558,7 @@ public:
 		return  isExt;
 	}
 
-	void signalExternalTermination(char *name, unsigned int id)
+	void signalExternalTermination(char *name, unsigned int id, int bufSize, char *buf)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -483,10 +567,10 @@ public:
 			printf("INTERNALE ERROR: received event message with no event structure!!");
 		}
 		else
-			extEvent->signalExternalTermination(id);
+			extEvent->signalExternalTermination(id, bufSize, buf);
 		lock.unlock();
 	}
-	void sendAsynchEvent(char *name, char *buf, int bufLen, MessageManager *msgManager)
+	void sendAsynchEvent(char *name, char *buf, int bufSize, MessageManager *msgManager)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -495,10 +579,10 @@ public:
 			printf("INTERNALE ERROR: received event message with no event structure!!");
 		}
 		else
-			extEvent->sendAsynchEvent(buf, bufLen, msgManager);
+			extEvent->sendAsynchEvent(buf, bufSize, msgManager);
 		lock.unlock();
 	}
-	void sendSynchEvent(char *name, char *buf, int bufLen, MessageManager *msgManager, 
+	void sendSynchEvent(char *name, char *buf, int bufSize, bool isCollect, MessageManager *msgManager, 
 			UnnamedSemaphore ** &retSems, unsigned int * &waitIds, int &numSems)
 	{
 		lock.lock();
@@ -508,7 +592,7 @@ public:
 			printf("INTERNALE ERROR: received event message with no event structure!!");
 		}
 		else
-			extEvent->sendSynchEvent(buf, bufLen, msgManager, retSems, waitIds, numSems);
+			extEvent->sendSynchEvent(buf, bufSize, isCollect, msgManager, retSems, waitIds, numSems);
 		lock.unlock();
 	}
 /*	void addExternalPending(char *name, UnnamedSemaphore * &retSem, unsigned int &retId)
@@ -536,31 +620,50 @@ public:
 		lock.unlock();
 		
 	}
+	void collectExternalPendingData(char *name, unsigned int i, int &retSize, char * &retBuf)
+	{
+		lock.lock();
+		ExternalEvent *extEvent = findEvent(name);
+		if(!extEvent)
+		{
+			printf("INTERNALE ERROR: received event message with no event structure!!");
+		}
+		else
+			extEvent->collectExternalPendingData(i, retSize, retBuf);
+		lock.unlock();
+		
+	}
 
-	void addInternalPending(char *name, char *buf, int bufLen)
+	void addInternalPending(char *name, char *buf, int bufSize)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
 		if(extEvent)
-			extEvent->addInternalPending(buf, bufLen);
+			extEvent->addInternalPending(buf, bufSize);
 		lock.unlock();
 	}	
 
 
-	void addExternalListener(char *name, NetworkAddress *addr)
+	void addExternalListener(char *name, int retSize, NetworkAddress *addr)
 	{
+		Event ev;
 		bool isNewEvent = false;
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
 		{
-			extEvent = newEvent(name);
+			extEvent = newEvent(name, retSize);
 			isNewEvent = true;
 		}
 		extEvent->addExternalListener(addr);
 		if(isNewEvent)
-			EventAddListener(name, eventCallback);
-
+			extEvent->listenerAddr = ev.addListener(name, eventCallback, false, retSize);
+		else
+		{
+			int prevSize = extEvent->retSize;
+			ev.resizeListener(extEvent->listenerAddr, prevSize + retSize);
+			extEvent->retSize = prevSize + retSize;
+		}
 		lock.unlock();
 	}
 	//Called upon connection termination
@@ -596,16 +699,18 @@ public:
 	NetworkAddress *addr;
 	char *name;
 	char *buf;
-	int bufLen;
+	int bufSize;
+	bool isCollect;
 	unsigned int waitId;
 	
-	TrigWaitRunnable(char *name,char *buf, int bufLen,  unsigned int waitId, MessageManager *msgManager, NetworkAddress *addr)
+	TrigWaitRunnable(char *name,char *buf, int bufSize,  unsigned int waitId, bool isCollect, MessageManager *msgManager, NetworkAddress *addr)
 	{
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
-		this->buf = new char[bufLen];
-		memcpy(this->buf, buf, bufLen);
-		this->bufLen = bufLen;
+		this->buf = new char[bufSize];
+		memcpy(this->buf, buf, bufSize);
+		this->bufSize = bufSize;
+		this->isCollect = isCollect;
 		this->msgManager = msgManager;
 		this->addr = addr;
 		this->waitId = waitId;
@@ -617,14 +722,30 @@ public:
 	}
 	virtual void run(void *arg)
 	{
-		EventTriggerAndWait(name, buf, bufLen);
-		EventMessage msg(name, waitId);
-		int msgLen;
-		char *msgBuf = msg.serialize(msgLen, msgManager);
-		msgManager->sendMessage(addr, msgBuf, msgLen);
-		delete []msgBuf;
-		Thread *thread = (Thread *)arg;
-		delete thread;
+		Event ev;
+		if(isCollect)
+		{
+			EventAnswer *answ = ev.triggerAndCollect(name, buf, bufSize);
+			EventMessage msg(name, waitId, answ);
+			int msgLen;
+			char *msgBuf = msg.serialize(msgLen, msgManager);
+			msgManager->sendMessage(addr, msgBuf, msgLen);
+			delete []msgBuf;
+			delete answ;
+			Thread *thread = (Thread *)arg;
+			delete thread;
+		}
+		else
+		{
+			ev.triggerAndWait(name, buf, bufSize);
+			EventMessage msg(name, waitId);
+			int msgLen;
+			char *msgBuf = msg.serialize(msgLen, msgManager);
+			msgManager->sendMessage(addr, msgBuf, msgLen);
+			delete []msgBuf;
+			Thread *thread = (Thread *)arg;
+			delete thread;
+		}
 	}
 };
 
@@ -650,22 +771,32 @@ public:
 		{
 			case IS_ASYNCH_EVENT:
 				printf("Received IS_ASYNCH_EVENT %s\n", evMsg.name);
-				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufLen);
-				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufLen);
+				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufSize);
+				EventTrigger(evMsg.name, evMsg.buf, evMsg.bufSize);
 				break;
 			case IS_SYNCH_EVENT:
 				printf("Received IS_SYNCH_EVENT %s\n", evMsg.name);
-				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufLen);
+				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufSize);
 				thread = new Thread();
-				thread->start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufLen, evMsg.waitId, msgManager, addr), thread);
+				thread->start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufSize, evMsg.waitId, false, msgManager, addr), thread);
+				break;
+			case IS_SYNCH_COLLECT_EVENT:
+				printf("Received IS_SYNCH_COLLECT_EVENT %s\n", evMsg.name);
+				extEventManager->addInternalPending(evMsg.name, evMsg.buf, evMsg.bufSize);
+				thread = new Thread();
+				thread->start((Runnable *)new TrigWaitRunnable(evMsg.name, evMsg.buf, evMsg.bufSize, evMsg.waitId, true, msgManager, addr), thread);
 				break;
 			case IS_EVENT_ACK:
 				printf("Received IS_EVENT_ACK %s\n", evMsg.name);
-				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId);
+				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId, 0, 0);
+				break;
+			case IS_EVENT_COLLECT_ACK:
+				printf("Received IS_EVENT_COLLECT_ACK %s\n", evMsg.name);
+				extEventManager->signalExternalTermination(evMsg.name, evMsg.waitId, evMsg.bufSize, evMsg.buf);
 				break;
 			case IS_EVENT_REGISTRATION:
 				printf("Received IS_EVENT_REGISTRATION %s\n", evMsg.name);
-				extEventManager->addExternalListener(evMsg.name, addr);
+				extEventManager->addExternalListener(evMsg.name, evMsg.retSize, addr);
 				break;
 		}
 	}
@@ -685,34 +816,66 @@ static int numExtAddresses;
 #define TCP_PORT 4000 
 
 
-static void eventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData)
+static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData)
 {
 //printf("EVENT CALLBACK %s\n", name);
 
 //The Event has been triggered as response from an external message.
-	if(extEventManager->isExternalEvent(name, buf, bufLen))
+	if(extEventManager->isExternalEvent(name, buf, bufSize))
 		return;
 
 	if(isSynch)
 	{
+		int i;
 		int numSems;
 		UnnamedSemaphore **sems;
 		unsigned int *waitIds;
-		extEventManager->sendSynchEvent(name, buf, bufLen, msgManager, sems, waitIds, numSems);
-		for(int i = 0; i < numSems; i++)
+		extEventManager->sendSynchEvent(name, buf, bufSize, (retSize > 0), msgManager, sems, waitIds, numSems);
+
+		int *retSizes = new int[numSems];
+		char **retBufs = new char *[numSems];
+
+		for(i = 0; i < numSems; i++)
 		{
 			sems[i]->wait();
+			extEventManager->collectExternalPendingData(name, waitIds[i], retSizes[i], retBufs[i]);
+		}
+		//All external data  collected
+		int totRetSize = 0;
+		for(i = 0; i < numSems; i++)
+			totRetSize += retSizes[i];
+
+		if(totRetSize != retSize)
+			printf("UNEXPECTED RET EVENT SIZE: Expected %d, Actual: %d\n", retSize, totRetSize);
+
+		int currSize = 0;
+		for(i = 0; i < numSems; i++)
+		{
+			if(currSize + retSizes[i] <= retSize)
+				memcpy(&retData[currSize], retBufs[i], retSizes[i]);
+			else
+				break;
+			currSize += retSizes[i];
+			delete [] retBufs[i];
+		}
+
+		//Deallocate ExternalPendings
+		for(i = 0; i < numSems; i++)
+		{
 			extEventManager->removeExternalPending(name, waitIds[i]);
 		}
 		delete []sems;
 		delete [] waitIds;
+		delete [] retSizes;
+		delete [] retBufs;
+
 	}
 	else
-		extEventManager->sendAsynchEvent(name, buf, bufLen, msgManager);
+		extEventManager->sendAsynchEvent(name, buf, bufSize, msgManager);
 }
 
 
-static void registerEventCallback(char *name, char *buf, int bufLen, bool isSynch, int retSize, char *retData)
+static void registerEventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData)
 {
 printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 

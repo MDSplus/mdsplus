@@ -29,6 +29,7 @@ public:
 	char *getSharedBuffer(int size);
 	static EventManager *getEventManager();
 	static SharedMemManager *EventManager::getMemManager();
+	void resizeListener(void *eventAddr,  int newSize, SharedMemManager *memManager);
 };
 
 class EventRunnable: public Runnable

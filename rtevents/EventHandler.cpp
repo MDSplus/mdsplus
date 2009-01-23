@@ -68,17 +68,23 @@ void EventHandler::removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  Sha
 				currDataDescr->getNext()->setPrev(currDataDescr->getPrev());
 			if(retDataHead.getAbsAddress() == currDataDescr)
 				retDataHead = currDataDescr->getNext();
+			retDataDescr->deallocateData(memManager);
 			memManager->deallocate((char *)retDataDescr, sizeof(RetEventDataDescriptor));
 			lock.unlock();
 			return;
 		}
+		currDataDescr = currDataDescr->getNext();
 	}
 	lock.unlock();
 }
 
+void EventHandler::resizeRetData(RetEventDataDescriptor *retDataDescr, int newSize, SharedMemManager *memManager)
+{
+	lock.lock();
+	retDataDescr->resizeData(newSize, memManager);
+	lock.unlock();
+}
 		
-
-
 
 
 //RemoveListener removes the corresponding Notifier from the notifier chain if found

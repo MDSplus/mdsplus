@@ -19,9 +19,29 @@ public:
 	{
 		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
 	}
+
+	void *addListenerGlobal(char *eventName, void (*callback)(char *, char *, int, bool, int, char *), int retDataSize = 0)
+	{
+		void *addr = evManager->addListener(eventName, 0, callback, memManager, true, retDataSize);
+		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
+		int msgSize = strlen(eventName) + 16;
+		char *msg = new char[msgSize];
+		sprintf(msg, "%s %d", eventName, retDataSize);
+
+		if(strcmp(eventName, "@@@EVENT_MANAGER@@@"))
+			triggerAndWait("@@@EVENT_MANAGER@@@", msg, strlen(msg) + 1, false);
+		delete [] msg;
+	}
+
+
+
 	void removeListener(void *eventAddr)
 	{
 		evManager->removeListener(eventAddr, memManager);
+	}
+	void resizeListener(void *eventAddr, int newSize)
+	{
+		evManager->resizeListener(eventAddr, newSize, memManager);
 	}
 	void trigger(char *eventName, char *buf, int size, bool copyBuf = true)
 	{
