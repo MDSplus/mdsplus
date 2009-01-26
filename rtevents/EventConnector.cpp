@@ -277,7 +277,8 @@ public:
 				int currSize;
 				for(int i = 0; i < evAnsw->getNumMsg(); i++)
 				{
-					memcpy(ptr, evAnsw->getMsgAt(i, currSize), currSize);
+					char *currMsg = evAnsw->getMsgAt(i, currSize);
+					memcpy(ptr, currMsg, currSize);
 					ptr += currSize;
 				}
 				break;
