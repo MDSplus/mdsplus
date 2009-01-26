@@ -114,14 +114,14 @@ public:
 	EventMessage(char *name, char *buf, int bufSize, bool isCollect, bool synch, unsigned int waitId)
 	{
 		if(synch)
-			mode = IS_SYNCH_EVENT;
-		else
 		{
 			if(isCollect)
 				mode = IS_SYNCH_COLLECT_EVENT;
 			else
-				mode = IS_ASYNCH_EVENT;
+				mode = IS_SYNCH_EVENT;
 		}
+		else
+			mode = IS_ASYNCH_EVENT;
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
 		this->buf = buf; 
