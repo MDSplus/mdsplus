@@ -196,6 +196,7 @@ public:
 				bufSize = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				buf = ptr;//Note that buffer is not copied
+				ptr += bufSize;
 				break;
 			case IS_EVENT_REGISTRATION:
 				retSize = msgManager->toNative(*(unsigned int *)ptr);
@@ -858,7 +859,7 @@ static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int 
 			else
 				break;
 			currSize += retSizes[i];
-			delete [] retBufs[i];
+			//delete [] retBufs[i];
 		}
 
 		//Deallocate ExternalPendings
