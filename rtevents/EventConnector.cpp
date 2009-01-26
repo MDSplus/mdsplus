@@ -957,14 +957,15 @@ int main(int argc, char *argv[])
 	}
 	readExtAddresses(argv[1]);
 	EventReset();
+	Event ev;
 	extEventManager = new ExternalEventManager();
 	EventMessageReceiver messageReceiver(extEventManager, msgManager);
 
 	msgManager->connectReceiver(new IPAddress(TCP_PORT), &messageReceiver);
-	EventAddListener("@@@EVENT_MANAGER@@@",  registerEventCallback);
+	ev.addListener("@@@EVENT_MANAGER@@@",  registerEventCallback);
 
 	Thread checkerThread;
-	checkerThread.start(new OrphanChecker, 0);
+	//checkerThread.start(new OrphanChecker, 0);
 
 	UnnamedSemaphore sem;
 	sem.initialize(0);

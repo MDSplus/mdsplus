@@ -8,6 +8,7 @@ void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 	strcpy(sharedName, inName);
 	notifierHead = NULL;
 	dataBuffer = NULL;
+	retDataHead = NULL;
 	setNext(NULL);
 	lock.initialize();
 	waitLock.initialize();

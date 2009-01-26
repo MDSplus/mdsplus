@@ -28,8 +28,10 @@ public:
 		char *msg = new char[msgSize];
 		sprintf(msg, "%s %d", eventName, retDataSize);
 
+		printf("AddEventListener: %s\n", msg);
+		
 		if(strcmp(eventName, "@@@EVENT_MANAGER@@@"))
-			triggerAndWait("@@@EVENT_MANAGER@@@", msg, strlen(msg) + 1, false);
+			triggerAndWait("@@@EVENT_MANAGER@@@", msg, strlen(msg) + 1);
 		delete [] msg;
 	}
 

@@ -28,7 +28,7 @@ void ExitHandler::atExit(Runnable *inHandl)
 
 	lock->lock();
 	exitHandlers[++handlerIdx] = inHandl;
-	signal(SIGINT, winHandler);
+	signal(SIGINT, linHandler);
 	lock->unlock();
 }
 
