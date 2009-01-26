@@ -272,7 +272,7 @@ public:
 			case IS_EVENT_COLLECT_ACK:
 				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
 				ptr +=4;
-				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
+				*((unsigned int *)ptr) = msgManager->fromNative(retMsgSize);
 				ptr += 4;
 				int currSize;
 				for(int i = 0; i < evAnsw->getNumMsg(); i++)
