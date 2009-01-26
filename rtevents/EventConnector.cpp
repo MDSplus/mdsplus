@@ -175,12 +175,12 @@ public:
 				break;
 			case IS_SYNCH_EVENT:
 			case IS_SYNCH_COLLECT_EVENT:
+				waitId = msgManager->toNative(*(unsigned int *)ptr);
+				ptr += 4;
 				bufSize = msgManager->toNative(*(unsigned int *)ptr);
 				ptr += 4;
 				buf = ptr; //Note that buffer is not copied
 				ptr += bufSize;
-				waitId = msgManager->toNative(*(unsigned int *)ptr);
-				ptr += 4;
 				break;
 			case IS_EVENT_ACK:
 				bufSize = 0;
@@ -212,6 +212,7 @@ public:
 	char *serialize(int &outSize, MessageManager *msgManager)
 	{
 		int size;
+		int retMsgSize = 0;
 		switch(mode) 
 		{
 			case IS_ASYNCH_EVENT:
@@ -229,11 +230,11 @@ public:
 				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/ + 4 /*ret size*/;
 				break;
 			case IS_EVENT_COLLECT_ACK:
-				int msgSize = 0;
+				retMsgSize = 0;
 				for(int i = 0; i < evAnsw->getNumMsg(); i++)
-					msgSize+= evAnsw->getMsgSizeAt(i);
+					retMsgSize+= evAnsw->getMsgSizeAt(i);
 				size = 1 /* mode*/ + strlen(name) + 4/*name and name length*/+ 4 /*waitId*/ 
-					+ 4 + msgSize /*retMessage and retMessage len*/;
+					+ 4 + retMsgSize /*retMessage and retMessage len*/;
 				break;
 
 		}
@@ -256,10 +257,10 @@ public:
 				break;
 			case IS_SYNCH_EVENT:
 			case IS_SYNCH_COLLECT_EVENT:
-				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
+				*((unsigned int *)ptr) = msgManager->fromNative(retMsgSize);
 				ptr += 4;
-				memcpy(ptr, buf, bufSize);
-				ptr += bufSize;
+				memcpy(ptr, buf, retMsgSize);
+				ptr += retMsgSize;
 				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
 				break;
 			case IS_EVENT_ACK:
