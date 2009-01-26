@@ -198,18 +198,18 @@ public:
 				buf = ptr;//Note that buffer is not copied
 				break;
 			case IS_EVENT_REGISTRATION:
-				ptr += 4;
 				retSize = msgManager->toNative(*(unsigned int *)ptr);
 				bufSize = 0;
 				buf = 0;
 				waitId = 0;
+				ptr += 4;
 				break;
 		}
 		if(ptr - inBuf != inBufSize)
 			printf("INTERNAL ERROR: WRONG MESSAGE SIZE IN DISTRIBUTED EVENTS");
 	}
 	
-	char *serialize(int &retSize, MessageManager *msgManager)
+	char *serialize(int &outSize, MessageManager *msgManager)
 	{
 		int size;
 		switch(mode) 
@@ -282,7 +282,7 @@ public:
 				break;
 
 		}
-		retSize = size;
+		outSize = size;
 		return retBuf;
 	}
 	
