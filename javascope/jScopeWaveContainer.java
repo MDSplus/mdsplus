@@ -738,11 +738,13 @@ remove 28/06/2005
                 abort = true;
             else
                 abort = false;
-
+/*
             if (def_vals != null && def_vals.public_variables != null &&
                 def_vals.public_variables.length() != 0)
+*/          
+            if( def_vals != null && !def_vals.getIsEvaluated() )
             {
-                dp.SetEnvironment(def_vals.public_variables);
+                dp.SetEnvironment(def_vals.getPublicVariables());
                 if (IsCacheEnabled())
                 {
                     JOptionPane.showMessageDialog(this,
@@ -752,6 +754,7 @@ remove 28/06/2005
 
                     SetCacheState(false);
                 }
+                def_vals.setIsEvaluated(true);
             }
 
             for (int i = 0, k = 0; i < 4 && !abort; i++)
@@ -849,8 +852,20 @@ remove 28/06/2005
                     }
                 }
             }
+            
+            for (int i = 0, k = 0; i < 4; i++)
+            {
+                for (int j = 0; j < rows[i]; j++, k++)
+                {
+                    if (wave_all != null && wave_all[k] != null)
+                    {
+                         ((MdsWaveInterface) wave_all[k].wi).allEvaluated();
+                    }
+                }
+            }
+             
             wave_all = null;
-
+            
         }
         catch (Exception e)
         {
@@ -1221,7 +1236,7 @@ remove 28/06/2005
             else
                 def_vals.shot_str = prop;
 
-            def_vals.is_evaluated = false;
+            def_vals.setIsEvaluated(false);
         }
 
         ResetDrawPanel(read_rows);
@@ -1624,12 +1639,18 @@ remove 28/06/2005
 
             // Disable signal cache if public variable
             // are set
+        /*
         if (def_vals != null &&
             def_vals.public_variables != null &&
             def_vals.public_variables.trim().length() != 0 &&
             IsCacheEnabled())
         {
             this.SetCacheState(false);
+        }
+        */
+        if (def_vals != null && def_vals.isSet() )
+        {
+            this.SetCacheState(false);            
         }
 
         WaveContainerEvent wce = new WaveContainerEvent(this,
@@ -1641,13 +1662,17 @@ remove 28/06/2005
         //is evaluated, in the other cases, refresh from popup menu
         //or event update, all signals in the waveform must be
         //evaluated
+        
+        /*
         if (!add_sig)
             ( (jScopeMultiWave) w).wi.setModified(true);
-
+        */
+        
         w.Refresh();
 
         if (add_sig)
             resetSplitPosition();
+        
 
     }
 
