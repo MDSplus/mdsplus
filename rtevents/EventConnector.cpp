@@ -262,7 +262,7 @@ public:
 				ptr += 4;
 				*((unsigned int *)ptr) = msgManager->fromNative(bufSize);
 				ptr += 4;
-				memcpy(ptr, buf, retMsgSize);
+				memcpy(ptr, buf, bufSize);
 				ptr += retMsgSize;
 				break;
 			case IS_EVENT_ACK:
