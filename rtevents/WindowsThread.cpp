@@ -28,7 +28,10 @@ void handlerWithArg(WithArg *withArg)
 {
 	withArg->rtn->run(withArg->arg);
 	if(withArg->deallocate)
+	{
+		withArg->rtn->dispose();
 		delete withArg->rtn;
+	}
 	ReleaseSemaphore(withArg->sem, 1, NULL);
 	delete withArg;
 }
