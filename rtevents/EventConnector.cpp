@@ -366,8 +366,11 @@ public:
 			if(currPend->id == id)
 			{
 				currPend->bufSize = bufSize;
-				currPend->buf = new char[bufSize];
-				memcpy(currPend->buf, buf, bufSize);
+				if(bufSize > 0)
+				{
+					currPend->buf = new char[bufSize];
+					memcpy(currPend->buf, buf, bufSize);
+				}
 				currPend->sem.post();
 				break;
 			}
