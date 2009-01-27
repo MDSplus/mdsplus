@@ -915,7 +915,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 		        wi.EvaluateOthers();
 		        if(wi.error != null)
 		            throw(new IOException(wi.error));
-		        w.Update(wi.frames);
+		        w.Update(wi.getFrames());
             }
         }
         catch(Exception e)

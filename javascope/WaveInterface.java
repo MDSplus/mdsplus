@@ -25,7 +25,7 @@ public class WaveInterface
 
     public String in_shot;
     public int num_shot = 1;
-    protected boolean modified = true;
+    private boolean modified = true;
 
     //Used by GetShotArray methods to define
     //if required shots must be evaluate
@@ -70,7 +70,7 @@ public class WaveInterface
     boolean horizontal_flip = false;
     boolean vertical_flip = false;
     int signal_select = -1;
-    Frames frames;
+    private Frames frames;
 
     protected boolean is_async_update = false;
 
@@ -92,6 +92,11 @@ public class WaveInterface
     public WaveInterface()
     {
         CreateWaveInterface(null, null);
+    }
+
+    public WaveInterface(Waveform wave)
+    {
+        CreateWaveInterface(wave, null);
     }
 
     public WaveInterface(DataProvider dp)
@@ -329,6 +334,12 @@ public class WaveInterface
         modified = state;
     }
 
+    public boolean getModified()
+    {
+        return modified;
+    }
+
+    
     public void SetLegendPosition(double x, double y)
     {
         legend_x = x;
@@ -460,6 +471,17 @@ public class WaveInterface
         return name;
     }
 
+    
+    public Frames getFrames()
+    {
+        return frames;
+    }
+    
+    public void setFrames(Frames f)
+    {
+        frames = f;
+    }
+    
     public void AddFrames(String frames)
     {
         AddFrames(frames, null);
@@ -647,7 +669,6 @@ public class WaveInterface
         else
             curr_num_shot = curr_shots.length;
 
-        modified = true;
 
         int num_signal;
         int num_expr;
@@ -670,6 +691,8 @@ public class WaveInterface
 
         if (num_signal == 0)
             return false;
+
+        modified = true;
 
         String[] in_label = new String[num_signal];
         String[] in_x = new String[num_signal];
@@ -1023,7 +1046,10 @@ public class WaveInterface
             return false;
         for (int curr_wave = 0; curr_wave < num_waves; curr_wave++)
             if (!evaluated[curr_wave])
+            {
+                modified = true;
                 return false;
+            }
         modified = false;
         return true;
     }
@@ -1034,11 +1060,14 @@ public class WaveInterface
 
         if (is_image)
         {
-            InitializeFrames();
-            if (frames != null)
-                frames.SetViewRect( (int) xmin, (int) ymin, (int) xmax,
+            if(!evaluated[0])
+            {
+                InitializeFrames();
+                if (frames != null)
+                    frames.SetViewRect( (int) xmin, (int) ymin, (int) xmax,
                                    (int) ymax);
-            error = curr_error;
+                error = curr_error;
+            }
             return;
         }
 
@@ -1134,9 +1163,13 @@ public class WaveInterface
                     frames.setName(in_label[0]);
                 else
                     frames.setName(in_y[0]);
+                evaluated[0] = true;
             }
             else
+            {
                 curr_error = dp.ErrorString();
+                evaluated[0] = false;
+            }
             frames.WaitLoadFrame();
 
             this.wave.SetMode(mode);
@@ -1160,7 +1193,8 @@ public class WaveInterface
 
     public long[] GetShotArray(String in_shots) throws IOException
     {
-        return GetShotArray(in_shots, dp);
+        long curr_shots[] = GetShotArray(in_shots, dp);
+        return curr_shots;
     }
 
     static public long[] GetShotArray(String in_shots, DataProvider dp) throws

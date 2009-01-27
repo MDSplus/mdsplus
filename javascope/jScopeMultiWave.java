@@ -193,7 +193,7 @@ public class jScopeMultiWave
         super.legend_x = wi.legend_x;
         super.legend_y = wi.legend_y;
         super.is_image = wi.is_image;
-        SetFrames(wi.frames);
+        SetFrames(wi.getFrames());
 
         if (wi.signals != null)
         {
@@ -223,7 +223,7 @@ public class jScopeMultiWave
             }
         }
 
-        if (wi.is_image && wi.frames != null)
+        if (wi.is_image && wi.getFrames() != null)
         {
             super.frames.setAspectRatio(wi.keep_ratio);
             super.curr_point_sig_idx = 0;
@@ -231,8 +231,10 @@ public class jScopeMultiWave
             if (signals.size() != 0)
                 signals.removeAllElements();
 
+            if( wi.getModified() )
+                frame = 0;
+            
             not_drawn = true;
-            frame = 0;
             super.Update();
             return;
         }
