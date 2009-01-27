@@ -41,7 +41,7 @@ class MdsWaveInterface
     {
         this.def_vals = def_vals;
         default_is_update = false;
-        this.def_vals.is_evaluated = false;
+        this.def_vals.setIsEvaluated(false);
     }
 
     public String GetDefaultValue(int i, boolean def_flag)
@@ -271,10 +271,21 @@ class MdsWaveInterface
     public void UpdateShot() throws IOException
     {
         long curr_shots[] = null;
+        
+        
         String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
             getMainShotStr();
         String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
 
+        if( !getModified() && in_shot != null && c_shot_str != null)
+        {
+        
+            setModified( !in_shot.equals( c_shot_str ) );
+        
+            if(! getModified() )
+                return;
+        }
+        
         error = null;
 
 /*
@@ -306,7 +317,7 @@ Fix bug : shot expression must be always evaluated.
             }
             else
             {
-                if (def_vals.is_evaluated)
+                if (def_vals.getIsEvaluated())
                     curr_shots = def_vals.shots;
                 else
                 {
@@ -315,7 +326,7 @@ Fix bug : shot expression must be always evaluated.
                     if (error == null)
                     {
                         def_vals.shots = curr_shots;
-                        def_vals.is_evaluated = true;
+                        def_vals.setIsEvaluated(false);
                     }
                 }
             }
@@ -339,7 +350,7 @@ Fix bug : shot expression must be always evaluated.
         num_waves = wi.num_waves;
         num_shot = wi.num_shot;
         defaults = wi.defaults;
-        modified = wi.modified;
+        setModified(wi.getModified());
         in_grid_mode = wi.in_grid_mode;
         x_log = wi.x_log;
         y_log = wi.y_log;
@@ -635,17 +646,18 @@ Fix bug : shot expression must be always evaluated.
             error = Update();
             if (error == null)
             {
-                //if(modified)
+                if(getModified())
                 {
                     StartEvaluate();
                     if (error == null)
                         EvaluateOthers();
                 }
-                //modified = (error != null);
+                setModified(error != null);
             }
         }
         catch (IOException e)
         {
+            setModified(true);
             error = e.getMessage();
         }
     }
