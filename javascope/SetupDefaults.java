@@ -448,7 +448,7 @@ public class SetupDefaults extends JDialog implements ActionListener
 	    y_curr_lines_grid = Grid.MAX_GRID;
 	  y_grid_lines.setText(""+y_curr_lines_grid);
 
-	  def_vals.is_evaluated = false;
+	  def_vals.setIsEvaluated(false);
     }
 
 

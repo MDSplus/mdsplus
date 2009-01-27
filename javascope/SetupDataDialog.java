@@ -1237,11 +1237,13 @@ import javax.swing.event.*;
       wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
 //      wave.addWaveformListener(this);
-      //wi = (MdsWaveInterface)wave.wi;
+//      wi = (MdsWaveInterface)wave.wi;
+      
       wi = new MdsWaveInterface(wave,
                                 ((MdsWaveInterface)wave.wi).dp,
                                 ((MdsWaveInterface)wave.wi).def_vals,
                                 wave.wi.cache_enabled);
+
       wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
       putWindowSetup((MdsWaveInterface)wave.wi);
       updateDataSetup();
@@ -1250,9 +1252,9 @@ import javax.swing.event.*;
       setTitle("Wave Setup for column " + col + " row " + row);
       jScope.jScopeSetUI(this);
       jScope.jScopeSetUI(error_w);
-	  error_w.pack();
+      error_w.pack();
       jScope.jScopeSetUI(expand_expr);
-	  expand_expr.pack();
+      expand_expr.pack();
       pack();
       setVisible(true);
    }
@@ -1453,6 +1455,8 @@ import javax.swing.event.*;
 
        setImageDialog(wi.is_image);
 
+       //this.wi.evaluated_shot = wi.evaluated_shot;
+       
        this.wi.colorMap = wi.colorMap;
 
        this.wi.cexperiment = wi.cexperiment;
@@ -1634,7 +1638,7 @@ import javax.swing.event.*;
 
     	if(wave_wi == null) return true;
 
-	if(wave_wi.modified) return true;
+	if( wave_wi.getModified() ) return true;
 
 	if(s.length     != wave_wi.num_waves) return true;
 	if(signalList.getNumShot() != wave_wi.num_shot) return true;
@@ -1655,16 +1659,21 @@ import javax.swing.event.*;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
         if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;
 	if(y_log.isSelected() != wave_wi.y_log)				            return true;
-        if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))            return true;
+        
+       // if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))            return true;
+       if(!main_scope.equalsString(shot.getText(),   wave_wi.in_shot))         return true;
+
+        
         if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;
         if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))     return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;
 	if(image_b.isSelected() != wave_wi.is_image)				                  return true;
 	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;
+/*        
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;
 	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				  return true;
-
+*/
         for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
@@ -1728,80 +1737,87 @@ import javax.swing.event.*;
 
    private int updateWI()
    {
-	  Data[] s;
-	  int num_signal;
+          Data[] s;
+          int num_signal;
 
-	  s = signalList.getSignals();
-	  num_signal = s.length;
+          s = signalList.getSignals();
+          num_signal = s.length;
 
- 	  if(num_signal == 0)
- 	  {
+          if(num_signal == 0)
+          {
                if(wave.wi != null)
                    wave.wi.Erase();
                return 1;
           }
 
-	  wi.modified = isChanged(s);
-	  main_scope.setChange(wi.modified);
-	  wi.is_image = image_b.isSelected();
-	  wi.keep_ratio = keep_ratio_b.isSelected();
-	  wi.horizontal_flip = horizontal_flip_b.isSelected();
-	  wi.vertical_flip = vertical_flip_b.isSelected();
+          wi.setModified(isChanged(s));
+          main_scope.setChange(wi.getModified());
+          wi.is_image = image_b.isSelected();
+          wi.keep_ratio = keep_ratio_b.isSelected();
+          wi.horizontal_flip = horizontal_flip_b.isSelected();
+          wi.vertical_flip = vertical_flip_b.isSelected();
 
-	  if(!wi.modified)
-	  {
-		wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
+          if(!wi.getModified())
+          {
+                wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
                 if(wi.is_image)
+                {
+                    if( wave.frames != null )
+                    {
+                        wave.frames.setHorizontalFlip(wi.horizontal_flip);
+                        wave.frames.setVerticalFlip(wi.vertical_flip);
+                    }
                     return 0;
-
-		for(int i = 0; i < wave.wi.num_waves; i++)
-		{
-		    wave.wi.markers[i]      = s[i].marker;
-		    wave.wi.markers_step[i] = s[i].marker_step;
-		    wave.wi.interpolates[i] = s[i].interpolate;
-		    wave.wi.mode2D[i]       = s[i].mode2D;
-		    wave.wi.mode1D[i]       = s[i].mode1D;
+                }
+                
+                for(int i = 0; i < wave.wi.num_waves; i++)
+                {
+                    wave.wi.markers[i]      = s[i].marker;
+                    wave.wi.markers_step[i] = s[i].marker_step;
+                    wave.wi.interpolates[i] = s[i].interpolate;
+                    wave.wi.mode2D[i]       = s[i].mode2D;
+                    wave.wi.mode1D[i]       = s[i].mode1D;
 //		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
-		    wave.wi.colors_idx[i]   = s[i].color_idx;
-		    wave.wi.in_label[i]     = s[i].label;
-		}
-		return 0;
-	  }
+                    wave.wi.colors_idx[i]   = s[i].color_idx;
+                    wave.wi.in_label[i]     = s[i].label;
+                }
+                return 0;
+          }
 
-	  updateGlobalWI();
+          updateGlobalWI();
 
-	  wi.num_waves = num_signal;
+          wi.num_waves = num_signal;
 
-	  wi.experiment     = new String(experiment.getText());
-	  wi.in_shot        = new String(shot.getText());
-	  wi.in_def_node    = new String(def_node.getText());
+          wi.experiment     = new String(experiment.getText());
+          wi.in_shot        = new String(shot.getText());
+          wi.in_def_node    = new String(def_node.getText());
      // wi.in_upd_event   = new String(upd_event.getText());
      // wi.cin_upd_event   = new String(upd_event.getText());
-	  wi.in_xmax        = new String(x_max.getText());
-	  wi.in_xmin        = new String(x_min.getText());
+          wi.in_xmax        = new String(x_max.getText());
+          wi.in_xmin        = new String(x_min.getText());
 
-	  wi.in_timemax        = new String(time_max.getText());
-	  wi.in_timemin        = new String(time_min.getText());
+          wi.in_timemax        = new String(time_max.getText());
+          wi.in_timemin        = new String(time_min.getText());
 
-	  wi.in_ymax        = new String(y_max.getText());
-	  wi.in_ymin        = new String(y_min.getText());
-	  wi.in_title       = new String(title.getText());
-	  wi.in_xlabel      = new String(x_label.getText());
-	  wi.in_ylabel      = new String(y_label.getText());
+          wi.in_ymax        = new String(y_max.getText());
+          wi.in_ymin        = new String(y_min.getText());
+          wi.in_title       = new String(title.getText());
+          wi.in_xlabel      = new String(x_label.getText());
+          wi.in_ylabel      = new String(y_label.getText());
 
-	  wi.x_log        = x_log.isSelected();
-	  wi.y_log        = y_log.isSelected();
-	  wi.in_upd_limits   = upd_limits.isSelected();
-	  wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
-	  wi.num_shot     = signalList.getNumShot();
-	  wi.defaults     = getDefaultFlags();
+          wi.x_log        = x_log.isSelected();
+          wi.y_log        = y_log.isSelected();
+          wi.in_upd_limits   = upd_limits.isSelected();
+          wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
+          wi.num_shot     = signalList.getNumShot();
+          wi.defaults     = getDefaultFlags();
 
-	  wi.in_label     = new String[num_signal];
-	  wi.in_x         = new String[num_signal];
-	  wi.in_y         = new String[num_signal];
+          wi.in_label     = new String[num_signal];
+          wi.in_x         = new String[num_signal];
+          wi.in_y         = new String[num_signal];
 
-	  wi.in_up_err    = new String[num_signal];
-      wi.in_low_err   = new String[num_signal];
+          wi.in_up_err    = new String[num_signal];
+          wi.in_low_err   = new String[num_signal];
       wi.markers      = new int[num_signal];
       wi.markers_step = new int[num_signal];
       wi.colors_idx   = new int[num_signal];
@@ -1814,40 +1830,40 @@ import javax.swing.event.*;
 
           for(int i = 0; i < num_signal; i++)
           {
-	        if(s[i].label != null)
-		        wi.in_label[i]         = new String(s[i].label);
+                if(s[i].label != null)
+                        wi.in_label[i]         = new String(s[i].label);
 
-	        if(s[i].x_expr != null)
-		        wi.in_x[i]         = new String(s[i].x_expr);
-	        if(s[i].y_expr != null)
-		        wi.in_y[i]         = new String(s[i].y_expr);
+                if(s[i].x_expr != null)
+                        wi.in_x[i]         = new String(s[i].x_expr);
+                if(s[i].y_expr != null)
+                        wi.in_y[i]         = new String(s[i].y_expr);
 
-	        if(wi.shots != null)
-		        wi.shots[i]        = s[i].shot;
+                if(wi.shots != null)
+                        wi.shots[i]        = s[i].shot;
 
-		    if(!wi.is_image)
-		    {
-	            wi.markers[i]      = s[i].marker;
-	            wi.markers_step[i] = s[i].marker_step;
-	            wi.interpolates[i] = s[i].interpolate;
-	            wi.mode2D[i]       = s[i].mode2D;
-	            wi.mode1D[i]       = s[i].mode1D;
-	            if(s[i].up_err != null)
-		            wi.in_up_err[i] = new String(s[i].up_err);
-	            if(s[i].low_err != null)
-		            wi.in_low_err[i] = new String(s[i].low_err);
+                    if(!wi.is_image)
+                    {
+                    wi.markers[i]      = s[i].marker;
+                    wi.markers_step[i] = s[i].marker_step;
+                    wi.interpolates[i] = s[i].interpolate;
+                    wi.mode2D[i]       = s[i].mode2D;
+                    wi.mode1D[i]       = s[i].mode1D;
+                    if(s[i].up_err != null)
+                            wi.in_up_err[i] = new String(s[i].up_err);
+                    if(s[i].low_err != null)
+                            wi.in_low_err[i] = new String(s[i].low_err);
 //	            wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
-	            wi.colors_idx[i]   = s[i].color_idx;
-	        }
-	      }
+                    wi.colors_idx[i]   = s[i].color_idx;
+                }
+              }
 
-	      //if(wi.shots[0] == jScope.UNDEF_SHOT)
-	   	  //   wi.shots = null;
+              //if(wi.shots[0] == jScope.UNDEF_SHOT)
+                  //   wi.shots = null;
 
 
-	      wave.wi = wi;
+              wave.wi = wi;
 
-	      return 0;
+              return 0;
      }
 
    private int checkSetup()
@@ -1897,6 +1913,7 @@ import javax.swing.event.*;
 	            main_scope.SetStatusLabel("Error during apply: "+e);
                 setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	        }
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
    }
 
