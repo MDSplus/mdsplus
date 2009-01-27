@@ -312,9 +312,6 @@ public class MdsDataProvider
                 return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
         }
 
-
-
-
         private double[] encodeTimeBase(String expr)
         {
             try
@@ -545,12 +542,13 @@ public class MdsDataProvider
             {
                 String expr;
                 if (_jscope_set)
-                    expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                 //   expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                      expr = "Units(dim_of(_jscope_" + v_idx + "))";
                 else
                 {
                     _jscope_set = true;
-                    expr = "( _jscope_" + v_idx + " = (" + in_y +
-                        "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                    //expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                    expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
                     var_idx+=2;
                 }
 
@@ -582,9 +580,32 @@ public class MdsDataProvider
             return out;
         }
 
+        
         public String GetYLabel() throws IOException
         {
+                        
             String expr;
+            
+            if( GetNumDimension() > 1)
+            {                
+                if (_jscope_set)
+                    expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                else
+                {
+                    _jscope_set = true;
+                    expr = "( _jscope_" + v_idx + " = (" + in_y +
+                        "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                    var_idx+=2;
+                }
+
+                //String out = GetDefaultZLabel(expr);
+                String out = GetStringValue(expr);
+                if (out == null)
+                    _jscope_set = false;
+
+                return out;
+            }
+            
             if (_jscope_set)
                 expr = "Units(_jscope_" + v_idx + ")";
             else
@@ -606,18 +627,19 @@ public class MdsDataProvider
         }
 
         public String GetZLabel() throws IOException
-        {
+        {            
             String expr;
+                        
             if (_jscope_set)
-                expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                expr = "Units(_jscope_" + v_idx + ")";
             else
             {
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
-                    "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                    "), Units(_jscope_" + v_idx + "))";
                 var_idx+=2;
             }
-
+            
             //String out = GetDefaultZLabel(expr);
             String out = GetStringValue(expr);
             if (out == null)
@@ -846,7 +868,7 @@ public class MdsDataProvider
                 out_byte = dosb.toByteArray();
                 return out_byte;
             case Descriptor.DTYPE_USHORT:
-            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised
+            case Descriptor.DTYPE_SHORT: // bdb hacked this to try to make profile dialog read true data values, not normalised                
                 for(int i = 0; i < desc.short_data.length; i++)
                     dos.writeShort(desc.short_data[i]);
                 out_byte = dosb.toByteArray();
