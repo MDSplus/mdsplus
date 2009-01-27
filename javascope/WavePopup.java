@@ -464,14 +464,17 @@ public class WavePopup
         if (getComponentCount() != 0)
             removeAll();
 
-        if ( ( (WaveformManager) parent).isMaximize())
+        if( parent != null && parent instanceof WaveformManager )
         {
-            maximize.setText("Show All Panels");
-        }
-        else
-        {
-            maximize.setText("Maximize Panel");
-        }
+            if ( ( (WaveformManager) parent).isMaximize() )
+            {
+                maximize.setText("Show All Panels");
+            }
+            else
+            {
+                maximize.setText("Maximize Panel");
+            }
+        }    
 
         if (is_image)
         {
@@ -479,7 +482,7 @@ public class WavePopup
             colorList.setText("Colors");
             if (profDialog != null)
                 add(profile_dialog);
-            if (parent instanceof WaveformManager)
+            if (parent != null && parent instanceof WaveformManager)
             {
                 add(maximize);
                 add(remove_panel);
@@ -490,7 +493,7 @@ public class WavePopup
             add(set_point);
             add(sep2);
             add(autoscale);
-            if (parent instanceof WaveformManager)
+            if (parent != null && parent instanceof WaveformManager)
             {
                 autoscaleAll.setText("Autoscale all images");
                 add(autoscaleAll);
@@ -558,7 +561,7 @@ public class WavePopup
             add(sep2);
             add(autoscale);
             add(autoscaleY);
-            if (parent instanceof WaveformManager)
+            if (parent != null && parent instanceof WaveformManager)
             {
                 insert(maximize, 1);
                 insert(remove_panel, 2);
@@ -738,7 +741,7 @@ public class WavePopup
             SetImageMenu();
         else
             SetSignalMenu();
-        if (parent instanceof WaveformManager)
+        if (parent != null && parent instanceof WaveformManager)
             remove_panel.setEnabled( ( (WaveformManager) parent).
                                     GetWaveformCount() > 1);
     }
@@ -780,13 +783,13 @@ public class WavePopup
     {
         if (w.ShowMeasure())
         {
-            if (parent instanceof WaveformManager)
+            if (parent != null && parent instanceof WaveformManager)
                 ( (WaveformManager) parent).SetShowMeasure(false);
             w.SetShowMeasure(false);
         }
         else
         {
-            if (parent instanceof WaveformManager)
+            if (parent != null && parent instanceof WaveformManager)
                 ( (WaveformManager) parent).SetShowMeasure(true);
             w.SetShowMeasure(true);
             w.SetPointMeasure();
@@ -816,21 +819,24 @@ public class WavePopup
                 SetMarker(idx);
                 markerStep.setEnabled(! (wave.GetMarker() == Signal.NONE ||
                                          wave.GetMarker() == Signal.POINT));
-                wave.Repaint(true);
+                //wave.Repaint(true);
+                wave.ReportChanges();
                 return;
             }
 
             if (action.equals("MARKER_STEP"))
             {
                 SetMarkerStep(Signal.markerStepList[idx]);
-                wave.Repaint(true);
+                //wave.Repaint(true);
+                wave.ReportChanges();
                 return;
             }
 
             if (action.equals("COLOR_LIST"))
             {
                 SetColor(idx);
-                wave.Repaint(true);
+                //wave.Repaint(true);
+                wave.ReportChanges();
                 return;
             }
         }
