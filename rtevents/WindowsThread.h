@@ -6,6 +6,7 @@ struct  WithArg{
 	Runnable *rtn;
 	HANDLE sem; 
 	void *arg;
+	bool deallocate;
 };
 extern  "C" void handlerWithArg(WithArg *);
 
@@ -41,7 +42,7 @@ public:
 		attributes = new ThreadAttributes;
 		*attributes = *attr;
 	}
-	void start(Runnable *rtn, void *arg = 0);
+	void start(Runnable *rtn, void *arg = 0, bool deallocate = true);
 	void join();
 	friend void handlerWithArg(WithArg *rtn);
 };

@@ -24,7 +24,7 @@ void ExitHandler::atExit(Runnable *inHandl)
 	if(handlerIdx >= MAX_HANDLERS - 1)
 	{
 		printf("INTERNAL ERROR: ExitHandler overflow\n");
-		return;
+		exit(0);
 	}
 
 	lock->lock();

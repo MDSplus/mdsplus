@@ -4,11 +4,12 @@
 #include "SystemException.h"
 
 
-void Thread::start(Runnable *rtn, void *arg)
+void Thread::start(Runnable *rtn, void *arg, bool deallocate)
 {
 	withArg = new WithArg;
 	withArg->rtn = rtn;
 	withArg->arg = arg;
+	withArg->deallocate = deallocate;
 
 	semH = CreateSemaphore(NULL, 0, 256, NULL);
 	withArg->sem = semH;
@@ -26,6 +27,8 @@ void Thread::join()
 void handlerWithArg(WithArg *withArg)
 {
 	withArg->rtn->run(withArg->arg);
+	if(withArg->deallocate)
+		delete withArg->rtn;
 	ReleaseSemaphore(withArg->sem, 1, NULL);
 	delete withArg;
 }

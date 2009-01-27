@@ -15,7 +15,7 @@ public:
 		memManager = evManager->getMemManager();
 	}
 
-	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *), bool copyBuf = false, int retDataSize = 0)
+	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *), bool copyBuf = true, int retDataSize = 0)
 	{
 		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
 	}
