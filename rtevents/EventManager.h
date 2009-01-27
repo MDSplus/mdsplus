@@ -28,7 +28,7 @@ public:
 	void clean(char *eventName, int milliSecs, SharedMemManager *memManager);
 	char *getSharedBuffer(int size);
 	static EventManager *getEventManager();
-	static SharedMemManager *EventManager::getMemManager();
+	static SharedMemManager *getMemManager();
 	void resizeListener(void *eventAddr,  int newSize, SharedMemManager *memManager);
 };
 

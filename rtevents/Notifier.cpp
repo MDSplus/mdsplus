@@ -98,6 +98,8 @@ void Notifier::dispose(bool semaphoresOnly, SharedMemManager *memManager)
 		thread->join(); //wait for actual termination of the underlying thread, once awakened
 		watchdogThread.join();
 		delete thread;
+		delete notified;
+		delete watchdogNotified;
 		triggerSem.dispose();
 		replySem.dispose();
 		watchdogSem.dispose();

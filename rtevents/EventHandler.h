@@ -149,6 +149,11 @@ public:
 	{
 		if(copyBuf)
 		{
+			for(int i = 0; i < numMsg; i++)
+			{
+				if(retSizes[i] > 0)
+					delete [] retData[i];
+			}
 			delete[] retSizes;
 			delete[] retData;
 		}
