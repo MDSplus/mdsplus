@@ -258,11 +258,12 @@ public:
 				break;
 			case IS_SYNCH_EVENT:
 			case IS_SYNCH_COLLECT_EVENT:
+				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
+				ptr += 4;
 				*((unsigned int *)ptr) = msgManager->fromNative(retMsgSize);
 				ptr += 4;
 				memcpy(ptr, buf, retMsgSize);
 				ptr += retMsgSize;
-				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
 				break;
 			case IS_EVENT_ACK:
 				*((unsigned int *)ptr) = msgManager->fromNative(waitId);
