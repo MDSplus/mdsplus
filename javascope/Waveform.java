@@ -1295,10 +1295,6 @@ public class Waveform
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
             
-
-
-
-
         double xrange = xmax - xmin;
         xmax += xrange * horizontal_offset / 200.;
         xmin -= xrange * horizontal_offset / 200.;
@@ -1322,12 +1318,10 @@ public class Waveform
               orizLabel = vertLabel;
               vertLabel = waveform_signal.getZlabel();
               break;
-/*
-            case Signal.MODE_YX:
-              orizLabel = waveform_signal.getZlabel();
-              // vertLabel = waveform_signal.getYlabel();
+            case Signal.MODE_XZ:
+              //orizLabel = waveform_signal.getZlabel();
+              vertLabel = waveform_signal.getZlabel();
               break;
-*/
           }
         }
       }
@@ -2021,13 +2015,71 @@ public class Waveform
 
     Rectangle r = frames.GetZoomRect();
     Graphics2D g2 = (Graphics2D)g;
-
+    Dimension imgDim = new Dimension(((BufferedImage)img).getWidth(),((BufferedImage)img).getHeight()); 
+    
+    
     // Turn on antialiasing.
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
 
     if ( type != FrameData.JAI_IMAGE )
     {
+        
+    int dx1;// the x coordinate of the first corner of the destination rectangle.
+    int dy1;// the y coordinate of the first corner of the destination rectangle.
+    int dx2;// the x coordinate of the second corner of the destination rectangle.
+    int dy2;// the y coordinate of the second corner of the destination rectangle.
+    int sx1;// the x coordinate of the first corner of the source rectangle.
+    int sy1;// the y coordinate of the first corner of the source rectangle.
+    int sx2;// the x coordinate of the second corner of the source rectangle.
+    int sy2;// the y coordinate of the second corner of the source rectangle.
+        
+      dx1 = 1;
+      dy1 = 1;
+      dx2 = dim.width;
+      dy2 = dim.height;
+      if( frames.getVerticaFlipState() && frames.getHorizontalFlipState() )  
+      {
+        System.out.println("FLIP V & H");  
+        sx1 = r == null ? imgDim.width  : r.x + r.width ;
+        sy1 = r == null ? imgDim.height : r.y + r.height ;
+        sx2 = r == null ? 0 : r.x;
+        sy2 = r == null ? 0 : r.y;          
+      }
+      else
+      {
+          if( frames.getVerticaFlipState() )
+          {              
+                System.out.println("FLIP V");  
+                sx1 = r == null ? 0 : r.x;
+                sy1 = r == null ? imgDim.height : r.y + r.height ;
+                sx2 = r == null ? imgDim.width  : r.x + r.width ;
+                sy2 = r == null ? 0 : r.y;          
+          }
+          else
+          {
+              if( frames.getHorizontalFlipState() )
+              {
+                //System.out.println("FLIP H");  
+                sx1 = r == null ? imgDim.width  : r.x + r.width ;
+                sy1 = r == null ? 0 : r.y;          
+                sx2 = r == null ? 0 : r.x;
+                sy2 = r == null ? imgDim.height : r.y + r.height ;                  
+              }
+              else
+              {
+                //System.out.println("NO FLIP");  
+                sx1 = r == null ? 0 : r.x;
+                sy1 = r == null ? 0 : r.y;          
+                sx2 = r == null ? imgDim.width  : r.x + r.width ;
+                sy2 = r == null ? imgDim.height : r.y + r.height ;
+              }
+          }
+      }
+          
+      //g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
+      g2.drawImage( (Image) img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, this);
+/*        
       if (r == null) {
         g2.drawImage( (Image) img, 1, 1, dim.width, dim.height, this);
       }
@@ -2042,9 +2094,12 @@ public class Waveform
                     r.x + r.width,
                     r.y + r.height,
                     this);
+ 
       }
+ */
     }
-    else {
+    else 
+    {
       g2.clearRect(0, 0, dim.width, dim.height);
       g2.drawRenderedImage( (RenderedImage) img,
                              new AffineTransform(1f, 0f, 0f, 1f, 0F, 0F));
