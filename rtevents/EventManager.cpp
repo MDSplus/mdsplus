@@ -101,9 +101,7 @@ void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, v
 		eventHead = currHandler;
 	}
 	RetEventDataDescriptor *retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
-	int size;
-	void *data = retDataDescr->getData(size);
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, size, data), currHandler, memManager);
+	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, retDataDescr), currHandler, memManager);
 
 	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier, retDataDescr);
 	addIntListener(retAddr);

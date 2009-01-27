@@ -65,6 +65,8 @@ public:
 	bool triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
 	bool corresponds(char *name);
 	void clean(SharedMemManager *memManager);
+	int getRetSize();
+	void *getRetBuffer();
 	void *addRetBuffer(int size, SharedMemManager *memManager);
 	void removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager);
 	EventAnswer *triggerAndCollect(char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
@@ -104,6 +106,8 @@ public:
 		this->data = data;
 		this->size = size;
 	}
+	char *getData() {return (char *)data.getAbsAddress();}
+	int getSize() {return size;}
 	void *getData(int &size)
 	{
 		size = this->size;

@@ -35,16 +35,14 @@ public:
 class EventRunnable: public Runnable
 {
 	void (*callback)(char *, char *, int, bool, int, char*);
-	int retSize;
-	void *data;
 	bool copyBuf;
+	RetEventDataDescriptor *retDataDescr;
 public:
-	EventRunnable(void (*callback)(char *, char *, int, bool, int, char *), bool copyBuf, int retSize, void *data)
+	EventRunnable(void (*callback)(char *, char *, int, bool, int, char *), bool copyBuf, RetEventDataDescriptor *retDataDescr)
 	{
 		this->callback = callback;
-		this->retSize = retSize;
-		this->data = data;
 		this->copyBuf = copyBuf;
+		this->retDataDescr = retDataDescr;
 	}
 	virtual void run(void *arg)
 	{
@@ -57,17 +55,18 @@ public:
 			char *buf = new char[dataSize];
 			memcpy(buf, eh->getDataBuffer(), dataSize);
 			char *retBuf = 0;
+			int retSize = retDataDescr->getSize();
 			if(retSize > 0)
 				retBuf = new char[retSize];
 			callback(evName, buf, dataSize, eh->isSynch(), (eh->isCollect())?retSize:0, (eh->isCollect())?retBuf:0);
-			memcpy(data, retBuf, retSize);
+			memcpy(retDataDescr->getData(), retBuf, retSize);
 			delete [] retBuf;
 			delete [] buf;
 			delete [] evName;
 		}
 		else
 			callback(eh->getName(), (char *)eh->getDataBuffer(), eh->getDataSize(), eh->isSynch(), 
-			(eh->isCollect())?retSize:0, (eh->isCollect())?(char *)data:0);
+			(eh->isCollect())?retDataDescr->getSize():0, (eh->isCollect())?retDataDescr->getData():0);
 	}
 };
 
