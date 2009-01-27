@@ -33,6 +33,7 @@ public:
 		if(strcmp(eventName, "@@@EVENT_MANAGER@@@"))
 			triggerAndWait("@@@EVENT_MANAGER@@@", msg, strlen(msg) + 1);
 		delete [] msg;
+		return addr;
 	}
 
 
