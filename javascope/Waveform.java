@@ -2038,7 +2038,8 @@ public class Waveform
       dy1 = 1;
       dx2 = dim.width;
       dy2 = dim.height;
-      if( frames.getVerticaFlipState() && frames.getHorizontalFlipState() )  
+      //if( frames.getVerticaFlipState() && frames.getHorizontalFlipState() )  
+      if( frames.vertical_flip && frames.horizontal_flip )  
       {
         System.out.println("FLIP V & H");  
         sx1 = r == null ? imgDim.width  : r.x + r.width ;
@@ -2048,7 +2049,9 @@ public class Waveform
       }
       else
       {
-          if( frames.getVerticaFlipState() )
+          //if( frames.getVerticaFlipState() )
+          if( frames.vertical_flip )
+          
           {              
                 System.out.println("FLIP V");  
                 sx1 = r == null ? 0 : r.x;
@@ -2058,7 +2061,8 @@ public class Waveform
           }
           else
           {
-              if( frames.getHorizontalFlipState() )
+              //if( frames.getHorizontalFlipState() )
+              if( frames.horizontal_flip )
               {
                 //System.out.println("FLIP H");  
                 sx1 = r == null ? imgDim.width  : r.x + r.width ;
