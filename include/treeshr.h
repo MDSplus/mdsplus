@@ -1,7 +1,7 @@
 #ifndef __TREESHR
 #define __TREESHR
 #ifdef HAVE_VXWORKS_H
-typedef long long  _int64;
+//typedef long long  _int64;
 #else
 #include <config.h>
 #endif
