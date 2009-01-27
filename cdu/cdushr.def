@@ -36,3 +36,5 @@ show_timer
 strntrim
 termio_init
 yesno
+set_hyphen
+
