@@ -472,7 +472,10 @@ public class jScope
         {
             String prop;
             int idx = 0;
-
+            
+             name_list.removeAllElements();
+             expr_list.removeAllElements();
+            
             while ( (prop = pr.getProperty(prompt + idx)) != null)
             {
                 StringTokenizer st = new StringTokenizer(prop, "=");
@@ -1773,10 +1776,11 @@ public class jScope
 
     public void setPublicVariables(String public_variables)
     {
-        def_values.public_variables = public_variables;
-        def_values.is_evaluated = false;
-        //Force update in all waveform
-        wave_panel.SetModifiedState(true);
+            def_values.setPublicVariables(public_variables);
+            if( ! def_values.getIsEvaluated() )
+            //def_values.setIsEvaluated(false);
+                //Force update in all waveform
+                wave_panel.SetModifiedState(true);
     }
 
 
@@ -1904,8 +1908,10 @@ public class jScope
 
         if (conf_file == null || conf_file.length() == 0)
             return;
-        if (conf_file.indexOf('.') == -1)
-            conf_file = conf_file + ".jscp";
+        int pPos = conf_file.indexOf('.');
+        int sPos = conf_file.lastIndexOf(File.separatorChar);
+        if ( pPos == -1 || pPos <  sPos  )
+                conf_file = conf_file + ".jscp";
 
         last_directory = new String(conf_file);
         save_i.setEnabled(true);
@@ -1913,7 +1919,6 @@ public class jScope
 
         fok = new File(conf_file);
         ftmp = new File(conf_file + "_tmp");
-
 
         try
         {
