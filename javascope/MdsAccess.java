@@ -17,14 +17,14 @@ public class MdsAccess implements DataAccess
     public static void main(String args[])
     {
         MdsAccess access = new MdsAccess();
-//        String url = "mds:://150.178.3.80/a/14000/\\emra_it";
-          String url1 = "mds://150.178.34.39/a/19321/\\emra_it";
-//          String url = "mds://150.178.34.39/RFX/19321/\\DSTC::VIS_VIDEO_0";
-       String  url = "mds://150.178.34.39/rfx/19321/FramesInterleave(\\dstc::vis_video_1)";
+//      String url = "mds:://150.178.3.80/a/14000/\\emra_it";
+        String url1 = "mds://150.178.34.39/a/19321/\\emra_it";
+//      String url = "mds://150.178.34.39/RFX/19321/\\DSTC::VIS_VIDEO_0";
+        String  url = "mds://150.178.34.39/rfx/19321/FramesInterleave(\\dstc::vis_video_1)";
         boolean supports = access.supports(url);
         try
         {
-//            Signal s = access.getSignal(url);
+//          Signal s = access.getSignal(url);
             FrameData fd = access.getFrameData(url);
             //s = access.getSignal(url);
             float x [] = access.getX(url);
