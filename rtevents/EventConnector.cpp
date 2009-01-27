@@ -719,8 +719,9 @@ public:
 		this->addr = addr;
 		this->waitId = waitId;
 	}
-	~TrigWaitRunnable()
+	virtual void dispose()
 	{
+		printf("ECCO LA DISPOSE\n");
 		delete []name;
 		delete[] buf;
 	}

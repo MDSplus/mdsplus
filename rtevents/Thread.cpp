@@ -1,5 +1,5 @@
 #include "Thread.h"
-
+#include <stdio.h>
 
 
 void Thread::start(Runnable *rtn, void *arg)
@@ -17,5 +17,9 @@ void Thread::join()
 void handlerWithArg(WithArg *withArg)
 {
 	withArg->rtn->run(withArg->arg);
+
+	printf("RUNNABLE TERMINATA\n");
+	withArg->rtn->dispose();
+	delete withArg->rtn;
 	delete withArg;
 }
