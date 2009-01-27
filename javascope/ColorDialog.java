@@ -549,7 +549,7 @@ class ColorDialog
         String prop;
         int idx = 0;
         Vector newColorMap = new Vector();
-//**	removeAllColorItems();
+	removeAllColorItems();
 
          //Syntax  Scope.color_x: <name>,java.awt.Color[r=xxx,g=xxx,b=xxx]
 
