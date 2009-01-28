@@ -1,7 +1,8 @@
 public fun RFXControl__add(in _path, out _nidout)
 {
 write(*,'RFXControl__add'); 
-   DevAddStart(_path, 'RFXControl', 1721, _nidout);
+/*  DevAddStart(_path, 'RFXControl', 1721, _nidout);*/
+    DevAddStart(_path, 'RFXControl', 1785, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':FREQUENCY', 'NUMERIC', *, *, _nid);
@@ -394,13 +395,13 @@ write(*,'RFXControl__add');
 
 /* Simulink Parameters */
     DevAddNode(_path // '.PARAMETERS:PAR130_NAME', 'TEXT', "SimulinkAxiFeedforw", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR130_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR130_VAL', 'NUMERIC', [0.,0,0,0,0,0,0], *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR131_NAME', 'TEXT', "SimulinkAxiFeedback", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR131_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR132_NAME', 'TEXT', "SimulinkPar3", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR132_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR133_NAME', 'TEXT', "SimulinkPar4", *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR133_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR131_VAL', 'NUMERIC', [0.,0,0,0,0,0,0], *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR132_NAME', 'TEXT', "SimulinkAmpTurnCompDistr", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR132_VAL', 'NUMERIC', [0.,0,0,0,0,0,0,0], *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR133_NAME', 'TEXT', "SimulinkBvGenDistr", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR133_VAL', 'NUMERIC', [0.,0,0,0,0,0,0,0], *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR134_NAME', 'TEXT', "SimulinkPar5", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR134_VAL', 'NUMERIC', [0.,0,0,0,0], *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR135_NAME', 'TEXT', "SimulinkPar6", *, _nid);
@@ -827,6 +828,15 @@ write(*,'RFXControl__add');
     DevAddNode(_path // '.PARAMETERS:PAR321_VAL', 'NUMERIC', 0., *, _nid);
 
 
+/* Additional Simulink Waveforms */
+	
+	for(_i = 0; _i < 16; _i++)
+	{
+		DevAddNode(_path // '.PARAMETERS:PAR'//trim(adjustl(2*_i+322))//'_NAME', 'TEXT', 'SimulinkWaveX'//trim(adjustl(17+_i)), *, _nid);
+		DevAddNode(_path // '.PARAMETERS:PAR'//trim(adjustl(2*_i+322))//'_VAL', 'NUMERIC', [0.,0.5,1.], *, _nid);
+		DevAddNode(_path // '.PARAMETERS:PAR'//trim(adjustl(2*_i+323))//'_NAME', 'TEXT', 'SimulinkWaveY'//trim(adjustl(17+_i)), *, _nid);
+		DevAddNode(_path // '.PARAMETERS:PAR'//trim(adjustl(2*_i+323))//'_VAL', 'NUMERIC', [0.,0.,0.], *, _nid);
+	}	
 
 	DevAddAction(_path// ':INIT_ACTION', 'INIT', 'INIT', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'VME_SERVER',getnci(_path, 'fullpath'), _nid);

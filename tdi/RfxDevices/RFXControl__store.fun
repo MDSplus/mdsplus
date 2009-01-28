@@ -30,19 +30,24 @@ public fun RFXControl__store(as_is _nid, optional _method)
     private _N_MODEL_1 = 28;
     private _N_MODEL_2 = 29;
 	
+
+
     private _N_ADC_IN_1 = 31;
     private _N_DAC_OUT_1 = 223;
-    private _N_USER_1 = 1476;
-
+/*    private _N_USER_1 = 1476;*/
+    private _N_USER_1 = 1540;
     private _N_MODES_1 = 447;
+
 
 
     private _N_PAR1_NAME = 832;
     private _N_PAR1_VALUE = 833; 
 
  
-	private _MAX_CONTROLS = 20;
-	private _NUM_PARAMETERS = 321;
+	private _MAX_CONTROLS = 22;
+/*	private _NUM_PARAMETERS = 321;*/
+	private _NUM_PARAMETERS = 352;
+
 
 
     _vme_ip = DevNodeRef(_nid, _N_VME_IP);
