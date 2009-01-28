@@ -33,6 +33,15 @@ public class RFXAxiControlSetup extends DeviceSetup
     GridLayout gridLayout1 = new GridLayout();
     JPanel jPanel3 = new JPanel();
     DeviceField deviceField2 = new DeviceField();
+    DeviceWave deviceWave12 = new DeviceWave();
+    DeviceWave deviceWave13 = new DeviceWave();
+    DeviceWave deviceWave14 = new DeviceWave();
+    DeviceWave deviceWave15 = new DeviceWave();
+    DeviceWave deviceWave16 = new DeviceWave();
+    DeviceWave deviceWave17 = new DeviceWave();
+    DeviceWave deviceWave18 = new DeviceWave();
+    DeviceWave deviceWave19 = new DeviceWave();
+    DeviceField deviceField3 = new DeviceField();
     public RFXAxiControlSetup()
     {
         try
@@ -113,9 +122,44 @@ public class RFXAxiControlSetup extends DeviceSetup
         jPanel1.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
         gridLayout1.setRows(2);
-        deviceField2.setOffsetNid(68);
+        deviceField2.setOffsetNid(116);
         deviceField2.setLabelString("Bv_Gain");
         deviceField2.setIdentifier("");
+        deviceWave12.setUpdateExpression("");
+        deviceWave12.setIdentifier("");
+        deviceWave12.setMinYVisible(true);
+        deviceWave12.setOffsetNid(69);
+        deviceWave13.setUpdateExpression("");
+        deviceWave13.setIdentifier("");
+        deviceWave13.setMinYVisible(true);
+        deviceWave13.setOffsetNid(75);
+        deviceWave14.setUpdateExpression("");
+        deviceWave14.setIdentifier("");
+        deviceWave14.setMinYVisible(true);
+        deviceWave14.setOffsetNid(81);
+        deviceWave15.setUpdateExpression("");
+        deviceWave15.setIdentifier("");
+        deviceWave15.setMinYVisible(true);
+        deviceWave15.setOffsetNid(87);
+        deviceWave16.setUpdateExpression("");
+        deviceWave16.setIdentifier("");
+        deviceWave16.setMinYVisible(true);
+        deviceWave16.setOffsetNid(93);
+        deviceWave17.setUpdateExpression("");
+        deviceWave17.setIdentifier("");
+        deviceWave17.setMinYVisible(true);
+        deviceWave17.setOffsetNid(99);
+        deviceWave18.setUpdateExpression("");
+        deviceWave18.setIdentifier("");
+        deviceWave18.setMinYVisible(true);
+        deviceWave18.setOffsetNid(105);
+        deviceWave19.setUpdateExpression("");
+        deviceWave19.setIdentifier("");
+        deviceWave19.setMinYVisible(true);
+        deviceWave19.setOffsetNid(111);
+        deviceField3.setOffsetNid(117);
+        deviceField3.setLabelString("T Start Int. Action");
+        deviceField3.setIdentifier("");
         this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
       this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
       jTabbedPane1.add(deviceWave1,   "BV_add");
@@ -129,11 +173,20 @@ public class RFXAxiControlSetup extends DeviceSetup
       jTabbedPane1.add(deviceWave9,   "I_FS6_add");
       jTabbedPane1.add(deviceWave10,   "I_FS7_add");
       jTabbedPane1.add(deviceWave11,   "I_FS8_add");
+        jTabbedPane1.add(deviceWave12,   "delta_I_FS1");
+        jTabbedPane1.add(deviceWave13,   "delta_I_FS2");
+        jTabbedPane1.add(deviceWave14,   "delta_I_FS3");
+        jTabbedPane1.add(deviceWave15,   "delta_I_FS4");
+        jTabbedPane1.add(deviceWave16,    "delta_I_FS5");
+        jTabbedPane1.add(deviceWave17,    "delta_I_FS6");
+        jTabbedPane1.add(deviceWave18,   "delta_I_FS7");
+        jTabbedPane1.add(deviceWave19,   "delta_I_FS8");
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
         jPanel1.add(jPanel2, null);
         jPanel2.add(deviceField1, null);
         jPanel1.add(jPanel3, null);
         jPanel3.add(deviceField2, null);
+        jPanel3.add(deviceField3, null);
     }
 
 }
