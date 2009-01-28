@@ -34,6 +34,8 @@
 #define _DSCV_(field) field
 #endif
 
+#define DTYPE_DICTIONARY 216
+#define DTYPE_POINTER 51
 /*
  *	Descriptor Prototype - each class of descriptor consists of at least the following fields:
  */

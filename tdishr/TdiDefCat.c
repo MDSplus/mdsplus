@@ -93,7 +93,7 @@ const struct TdiCatStruct_table TdiREF_CAT[] = {
 {"?",   0x7fff, 0,      0,	0},     /*48 ? */
 {"?",   0x7fff, 0,      0,	0},     /*49 ? */
 {"?",   0x7fff, 0,      0,	0},     /*50 ? */
-{"?",   0x7fff, 0,      0,	0},     /*51 ? */
+{"P",   0x7fff, sizeof(void *),      36,	0},     /*51 POINTER */
 {"FS",  0x8703, 4,      16,	FS_SYM},    /*52 ieee single floating */
 {"FT",  0x8707, 8,      32,	FT_SYM},    /*53 ieee double floating */
 {"FSC", 0x9703, 8,      24,	FS_SYM},    /*54 ieee single floating complex */

@@ -83,6 +83,14 @@ STATIC_ROUTINE int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*
   	      *result_g = (*called_g)(newdsc, routine);
               break;
             }
+	  case DTYPE_POINTER:
+	    if (f_regs){
+	      void *(*called_p)() = (void * (*)())called;
+	      void **result_p = (void *)result;
+	      *max = sizeof(void *);
+	      *result_p = (*called_p)(newdsc, routine);
+	      break;
+	    }
 #if  defined(__ALPHA) && defined(__VMS)
             else
             { __int64 (*called_g)() = (__int64 (*)())called;
@@ -163,9 +171,16 @@ unsigned char			origin[255];
 			}
 			else if (code == OpcVal)
 			  {
-                            int ans; 
+                            int ans;
+			    EMPTYXD(xd);
+			    status = TdiData(pfun->arguments[0],&xd MDS_END_ARG);
+			    if (status & 1 && xd.pointer && xd.pointer->dtype == DTYPE_POINTER) {
+			      *(void **)&newdsc[j-1]=*(void **)xd.pointer->pointer;
+                            } else {
                                 status = TdiGetLong(pfun->arguments[0], &ans);
                             *(long *)&newdsc[j-1]=ans;
+                            }
+                            MdsFree1Dx(&xd,0);
                           }
 			else if (code == OpcXd) {
 				tmp[ntmp] = EMPTY_XD;
@@ -225,6 +240,14 @@ fort:			tmp[ntmp] = EMPTY_XD;
 	case DTYPE_NID:
 		dx.length = sizeof(int);
 		break;
+	case DTYPE_POINTER:
+	  dx.length=sizeof(void *);
+	  //	  if (sizeof(void *) == 8)
+	  //  dx.dtype = DTYPE_QU;
+	  //else
+	  //  dx.dtype = DTYPE_LU;
+	  break;
+
 	default :
 		if (opcode < TdiCAT_MAX) {
 			if ((dx.length = TdiREF_CAT[opcode].length) > max) status = TdiTOO_BIG;

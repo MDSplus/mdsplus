@@ -537,6 +537,13 @@ char n1c;
 			t2.dtype = DTYPE_T;
 			status = StrConcat(out_ptr, out_ptr, &BUILD_EVENT, &t2, &CLOSE_EVENT MDS_END_ARG);
 			break;
+		case DTYPE_POINTER : {
+			char outstr[256];
+                        struct descriptor out={0,DTYPE_T,CLASS_S,outstr};
+			out.length=sprintf(outstr,"Pointer(%p)",*(void **)in_ptr->pointer);
+			status = StrAppend(out_ptr,&out);
+			break;
+			}
 		}
 		break;
 
