@@ -719,6 +719,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable3.setPreferredHeight(20);
     deviceTable5.setOffsetNid(1093);
     deviceTable5.setLabelString("Axi Feedback");
+    deviceTable5.setUseExpressions(true);
     deviceTable5.setNumCols(7);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");

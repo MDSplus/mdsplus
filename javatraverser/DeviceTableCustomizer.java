@@ -131,7 +131,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setBinary(binaryC.getState());
                 listeners.firePropertyChange("binary", oldBinary, bean.getBinary());
                 boolean oldUseExpressions = bean.getUseExpressions();
-                bean.setUseExpressions(binaryC.getState());
+                bean.setUseExpressions(useExpressionsC.getState());
                 listeners.firePropertyChange("useExpression", oldUseExpressions, bean.getUseExpressions());
                 int oldPreferredColumnWidth = bean.getPreferredColumnWidth();
                 bean.setPreferredColumnWidth(Integer.parseInt(preferredColumnWidthT.getText()));
