@@ -1,7 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 #include "EventManager.h"
-
+extern "C" void EventReset();
 //Facade class for Event Managent
 class Event
 {
@@ -73,6 +73,11 @@ public:
 	char *getSharedBuffer(int size)
 	{
 		return memManager->allocate(size);
+	}
+
+	void reset()
+	{
+		EventReset();
 	}
 };
 
