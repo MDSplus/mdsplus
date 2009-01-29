@@ -34,6 +34,8 @@
 #define _DSCV_(field) field
 #endif
 
+#define DTYPE_LIST 214
+#define DTYPE_TUPLE 215
 #define DTYPE_DICTIONARY 216
 #define DTYPE_POINTER 51
 /*
