@@ -1,15 +1,14 @@
 public fun Py(in _cmd) {
    fun PyCall(in _routine,optional in _arg) {
-      _DTYPE_POINTER=51;
       if (allocated(public _PyInit)) 
-        _GIL=build_call(_DTYPE_POINTER,getenv("PyLib"),"PyGILState_Ensure");
+        _GIL=build_call(51,getenv("PyLib"),"PyGILState_Ensure");
       if (present(_arg)) {
         _ans=build_call(8,getenv("PyLib"),_routine,_arg);
       } else {
         _ans=build_call(8,getenv("PyLib"),_routine);
       }
       if (allocated(public _PyInit)) 
-        build_call(_DTYPE_POINTER,getenv("PyLib"),"PyGILState_Release",val(_GIL));
+        build_call(51,getenv("PyLib"),"PyGILState_Release",val(_GIL));
       return(_ans);
    }
 
