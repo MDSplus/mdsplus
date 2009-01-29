@@ -289,7 +289,7 @@ block_type			*block_ptr;
 int				size = 0, status;
 STATIC_CONSTANT int zero = 0;
  if (ident_ptr->dtype == DTYPE_DSC)
-   return TdiPutIdent(ident_ptr->pointer,data_ptr);
+   return TdiPutIdent((struct descriptor_r *)ident_ptr->pointer,data_ptr);
   LockTdiMutex(&lock,&lock_initialized);
 
 	/************************************
