@@ -95,7 +95,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 ** pack_cray			- Converts the standard intermediate data type
 **				  to CRAY floating point.
 **
-** round			- Rounds the standard intermediate data type
+** _round			- Rounds the standard intermediate data type
 **				  according to specified rounding rules.
 **
 ** unpack_vax_f			- Converts VAX F_Floating point to the 
@@ -521,7 +521,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 			    CVT_CRAY      output_value,
 			    U_Int_32      options);
 
-STATIC_ROUTINE void round(UNPACKED_REAL	intermediate_value,
+STATIC_ROUTINE void _round(UNPACKED_REAL	intermediate_value,
 		  U_Int_32	round_bit_position,
 		  U_Int_32	options);
 
@@ -930,7 +930,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_f(UNPACKED_REAL  intermediate_value,
   */	  
   else 
   {
-    round(intermediate_value, 24, options);
+    _round(intermediate_value, 24, options);
 
     /*
     ** Check for underflow.
@@ -1131,7 +1131,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_d(UNPACKED_REAL  intermediate_value,
   */	  
   else 
   {
-    round(intermediate_value, 56, options);
+    _round(intermediate_value, 56, options);
 
     /*	  
     ** Check for underflow.
@@ -1339,7 +1339,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_g(UNPACKED_REAL  intermediate_value,
   */	  
   else 
   {
-    round(intermediate_value, 53, options);
+    _round(intermediate_value, 53, options);
 
     /*	  
     ** Check for underflow.
@@ -1549,7 +1549,7 @@ STATIC_ROUTINE CVT_STATUS pack_vax_h(UNPACKED_REAL  intermediate_value,
   */	  
   else 
   {
-    round(intermediate_value, 113, options);
+    _round(intermediate_value, 113, options);
 
     /*	  
     ** Check for underflow.
@@ -1774,7 +1774,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_s(UNPACKED_REAL  intermediate_value,
     else if (round_bit_position > 24)
       round_bit_position = 24;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for Denorm or underflow.
@@ -2049,7 +2049,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_t(UNPACKED_REAL  intermediate_value,
     else if (round_bit_position > 53)
       round_bit_position = 53;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for Denorm or underflow.
@@ -2352,7 +2352,7 @@ STATIC_ROUTINE CVT_STATUS pack_ieee_x(UNPACKED_REAL  intermediate_value,
     else if (round_bit_position > 113)
       round_bit_position = 113;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for Denorm or underflow.
@@ -2700,7 +2700,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_l(UNPACKED_REAL  intermediate_value,
     else 
       round_bit_position = 56;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for underflow.
@@ -2945,7 +2945,7 @@ STATIC_ROUTINE CVT_STATUS pack_ibm_s(UNPACKED_REAL  intermediate_value,
     else 
       round_bit_position = 24;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for underflow.
@@ -3184,7 +3184,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
   {
     round_bit_position = 48;
 
-    round(intermediate_value, round_bit_position, options);
+    _round(intermediate_value, round_bit_position, options);
 
     /*	  
     ** Check for underflow.
@@ -3295,7 +3295,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
 }
 
 
-STATIC_ROUTINE void round(UNPACKED_REAL  intermediate_value,
+STATIC_ROUTINE void _round(UNPACKED_REAL  intermediate_value,
 		  U_Int_32       round_bit_position,
 		  U_Int_32       options)
 /*

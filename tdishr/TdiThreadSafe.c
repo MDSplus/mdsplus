@@ -3,7 +3,7 @@
 #endif
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
-
+#include <stdlib.h>
 STATIC_THREADSAFE  pthread_mutex_t mutex;
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;

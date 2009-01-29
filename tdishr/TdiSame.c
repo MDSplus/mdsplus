@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
+#include <string.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
