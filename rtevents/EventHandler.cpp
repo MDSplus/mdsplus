@@ -14,15 +14,6 @@ void EventHandler::initialize(char *inName, SharedMemManager *memManager)
 	waitLock.initialize();
 }
 
-void EventHandler::setName(char *inName, SharedMemManager *memManager)
-{
-	if(name.getAbsAddress())
-		memManager->deallocate((char *)name.getAbsAddress(), strlen((char *)name.getAbsAddress()));
-	name = memManager->allocate(strlen(inName) + 1);
-	char *sharedName = (char *)name.getAbsAddress();
-	strcpy(sharedName, inName);
-}
-
 void *EventHandler::addListener(ThreadAttributes *threadAttr, Runnable *runnable, void *arg, SharedMemManager *memManager)
 {
 	lock.lock();
@@ -93,6 +84,7 @@ void EventHandler::resizeRetData(RetEventDataDescriptor *retDataDescr, int newSi
 //created the Notifier instance
 void EventHandler::removeListener(void *notifierAddr, SharedMemManager *memManager)
 {
+	waitLock.lock();
 	lock.lock();
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
 	while(currNotifier)
@@ -111,12 +103,13 @@ void EventHandler::removeListener(void *notifierAddr, SharedMemManager *memManag
 				currNotifier->getPrev()->setNext(currNotifier->getNext());
 			}
 			currNotifier->dispose(false, memManager);
-			//memManager->deallocate((char *)currNotifier, sizeof(Notifier));
+			memManager->deallocate((char *)currNotifier, sizeof(Notifier));
 			break;
 		}
 		currNotifier = currNotifier->getNext();
 	}
 	lock.unlock();
+	waitLock.unlock();
 }
 
 void EventHandler::clean(SharedMemManager *memManager)

@@ -90,7 +90,8 @@ void EventManager::initialize()
 void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*), SharedMemManager *memManager, bool copyBuf, int retDataSize)
 {
 	//NOTE: EventHandlers are never deallocated
-	
+	bool isNewHandler = false;
+
 	lock.lock();
 	EventHandler *currHandler = getHandler(eventName);
 	if(!currHandler) //New Event
@@ -98,13 +99,15 @@ void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, v
 		currHandler = (EventHandler *)memManager->allocate(sizeof(EventHandler));
 		currHandler->initialize(eventName, memManager);
 		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
-		eventHead = currHandler;
+		isNewHandler = true;
 	}
 	RetEventDataDescriptor *retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
 	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, retDataDescr), currHandler, memManager);
 
 	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier, retDataDescr);
 	addIntListener(retAddr);
+	if(isNewHandler)
+		eventHead = currHandler;
 	lock.unlock();
 	return retAddr;
 }

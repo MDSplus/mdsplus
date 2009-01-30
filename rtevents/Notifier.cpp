@@ -16,7 +16,8 @@ void Notifier::initialize(ThreadAttributes *threadAttr, Runnable *runnable, void
 	thread->start(notified, this);
 	
 	watchdogNotified = new WatchdogNotified();
-	watchdogThread.start(watchdogNotified, this);
+	watchdogThread = new Thread(0);
+	watchdogThread->start(watchdogNotified, this);
 	
 	
 	synch = false;
@@ -96,14 +97,14 @@ void Notifier::dispose(bool semaphoresOnly, SharedMemManager *memManager)
 		triggerSem.post();
 		watchdogSem.post();
 		thread->join(); //wait for actual termination of the underlying thread, once awakened
-		watchdogThread.join();
+		watchdogThread->join();
 		delete thread;
+		delete watchdogThread;
 		//delete notified;
 		//delete watchdogNotified;
 		triggerSem.dispose();
 		replySem.dispose();
 		watchdogSem.dispose();
-		memManager->deallocate((char *)this, sizeof(Notifier));
 	}
 	else 
 //Notifier instance is being disposed possibly by another process in a clean operation

@@ -19,7 +19,7 @@ class  Notifier
 	friend class WatchdogNotified;
 	friend class NotifierTerminator;
 	Thread *thread;
-	Thread watchdogThread;
+	Thread *watchdogThread;
 	UnnamedSemaphore triggerSem;
 	UnnamedSemaphore replySem;
 	UnnamedSemaphore watchdogSem;

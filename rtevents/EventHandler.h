@@ -47,7 +47,6 @@ public:
 	{
 		return dataSize;
 	}
-	void setName(char *name, SharedMemManager *memManager);
 	char *getName() 
 	{
 		return (char *)name.getAbsAddress();
