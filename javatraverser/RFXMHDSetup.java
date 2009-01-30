@@ -279,6 +279,7 @@ public class RFXMHDSetup extends DeviceSetup {
         gridLayout7.setColumns(2);
         deviceTable7.setOffsetNid(1229);
     deviceTable7.setLabelString("Gain Module:");
+    deviceTable7.setRefMode(DeviceTable.REFLEX);
     deviceTable7.setNumCols(48);
     deviceTable7.setNumRows(4);
     deviceTable7.setIdentifier("");
@@ -305,6 +306,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable13.setNumRows(4);
     deviceTable13.setNumCols(48);
     deviceTable13.setLabelString("Derivative Gain:");
+    deviceTable13.setRefMode(DeviceTable.REFLEX);
     deviceTable13.setOffsetNid(1247);
     deviceField37.setOffsetNid(1237);
     deviceField37.setLabelString("Start Time(s): ");
@@ -317,6 +319,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable8.setNumRows(4);
     deviceTable8.setNumCols(48);
     deviceTable8.setLabelString("Gain Module:");
+    deviceTable8.setRefMode(DeviceTable.REFLEX);
     deviceTable8.setOffsetNid(1241);
     deviceField36.setIdentifier("");
     deviceField36.setLabelString("End Time(s): ");
@@ -333,6 +336,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable15.setNumRows(4);
     deviceTable15.setNumCols(48);
     deviceTable15.setLabelString("Derivative Gain:");
+    deviceTable15.setRefMode(DeviceTable.REFLEX);
     deviceTable15.setOffsetNid(1259);
     deviceField38.setIdentifier("");
     deviceField38.setLabelString("End Time(s): ");
@@ -352,6 +356,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable9.setNumRows(4);
     deviceTable9.setNumCols(48);
     deviceTable9.setLabelString("Gain Module:");
+    deviceTable9.setRefMode(DeviceTable.REFLEX);
     deviceTable9.setOffsetNid(1253);
     jPanel54.setLayout(gridLayout9);
         gridLayout9.setColumns(1);
@@ -363,6 +368,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable23.setNumRows(4);
         deviceTable23.setNumCols(48);
         deviceTable23.setLabelString("Kd");
+        deviceTable23.setRefMode(DeviceTable.REFLEX);
         deviceTable23.setOffsetNid(1085);
         deviceTable24.setDisplayRowNumber(true);
         deviceTable24.setRowNames(null);
@@ -371,6 +377,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable24.setNumRows(4);
         deviceTable24.setNumCols(48);
         deviceTable24.setLabelString("Ki");
+        deviceTable24.setRefMode(DeviceTable.REFLEX);
         deviceTable24.setOffsetNid(1083);
         jPanel55.setLayout(borderLayout9);
         deviceTable22.setDisplayRowNumber(true);
@@ -382,6 +389,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable22.setNumRows(4);
         deviceTable22.setNumCols(48);
         deviceTable22.setLabelString("Mode Gains (Module)");
+        deviceTable22.setRefMode(DeviceTable.REFLEX);
         deviceTable22.setOffsetNid(1269);
         deviceField44.setOffsetNid(1265);
         deviceField44.setLabelString("Start time: ");
@@ -405,6 +413,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable25.setNumRows(4);
         deviceTable25.setNumCols(48);
         deviceTable25.setLabelString("Mode Gains (Module)");
+        deviceTable25.setRefMode(DeviceTable.REFLEX);
         deviceTable25.setOffsetNid(1279);
         deviceField46.setOffsetNid(1275);
         deviceField46.setLabelString("Start time: ");
@@ -419,6 +428,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable26.setNumRows(4);
         deviceTable26.setNumCols(48);
         deviceTable26.setLabelString("Mode Gains (Module)");
+        deviceTable26.setRefMode(DeviceTable.REFLEX);
         deviceTable26.setOffsetNid(1289);
         jPanel59.setLayout(borderLayout11);
         deviceField48.setOffsetNid(1285);
@@ -431,6 +441,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceField47.setOffsetNid(1287);
         deviceTable27.setOffsetNid(1271);
         deviceTable27.setLabelString("Mode Gains (Phase, Rad)");
+        deviceTable27.setRefMode(DeviceTable.REFLEX_INVERT);
         deviceTable27.setNumCols(48);
         deviceTable27.setNumRows(4);
         deviceTable27.setIdentifier("");
@@ -441,6 +452,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable27.setDisplayRowNumber(true);
         deviceTable28.setOffsetNid(1281);
         deviceTable28.setLabelString("Mode Gains (Phase, Rad)");
+        deviceTable28.setRefMode(DeviceTable.REFLEX_INVERT);
         deviceTable28.setNumCols(48);
         deviceTable28.setNumRows(4);
         deviceTable28.setIdentifier("");
@@ -451,6 +463,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable28.setDisplayRowNumber(true);
     deviceTable210.setOffsetNid(1291);
     deviceTable210.setLabelString("Mode Gains (Phase, Rad)");
+    deviceTable210.setRefMode(DeviceTable.REFLEX_INVERT);
     deviceTable210.setNumCols(48);
     deviceTable210.setNumRows(4);
     deviceTable210.setIdentifier("");
@@ -461,6 +474,7 @@ public class RFXMHDSetup extends DeviceSetup {
     deviceTable210.setDisplayRowNumber(true);
         deviceTable18.setOffsetNid(1245);
         deviceTable18.setLabelString("Inetgral Gain:");
+        deviceTable18.setRefMode(DeviceTable.REFLEX);
         deviceTable18.setNumCols(48);
         deviceTable18.setNumRows(4);
         deviceTable18.setIdentifier("");
@@ -469,6 +483,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable18.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable19.setOffsetNid(1257);
     deviceTable19.setLabelString("Integral Gain:");
+    deviceTable19.setRefMode(DeviceTable.REFLEX);
     deviceTable19.setNumCols(48);
     deviceTable19.setNumRows(4);
     deviceTable19.setIdentifier("");
@@ -841,9 +856,11 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable11.setNumRows(4);
         deviceTable11.setNumCols(48);
         deviceTable11.setLabelString("Derivative Gain:");
+        deviceTable11.setRefMode(DeviceTable.REFLEX);
         deviceTable11.setOffsetNid(1235);
         deviceTable16.setOffsetNid(1233);
         deviceTable16.setLabelString("Integral Gain:");
+        deviceTable16.setRefMode(DeviceTable.REFLEX);
         deviceTable16.setNumCols(48);
         deviceTable16.setNumRows(4);
         deviceTable16.setIdentifier("");
@@ -857,6 +874,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable110.setNumRows(4);
         deviceTable110.setNumCols(48);
         deviceTable110.setLabelString("Gain Phase (Rad):");
+        deviceTable110.setRefMode(DeviceTable.REFLEX_INVERT);
         deviceTable110.setOffsetNid(1231);
         deviceTable111.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable111.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
@@ -865,6 +883,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable111.setNumRows(4);
         deviceTable111.setNumCols(48);
         deviceTable111.setLabelString("Gain Phase (Rad):");
+        deviceTable111.setRefMode(DeviceTable.REFLEX_INVERT);
         deviceTable111.setOffsetNid(1243);
         deviceTable112.setRowNames(new String[] {"0", "1", "2", "3"});
         deviceTable112.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9",
@@ -873,6 +892,7 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable112.setNumRows(4);
         deviceTable112.setNumCols(48);
         deviceTable112.setLabelString("Gain Phase (Rad):");
+        deviceTable112.setRefMode(DeviceTable.REFLEX_INVERT);
         deviceTable112.setOffsetNid(1255);
         deviceField73.setOffsetNid(1261);
         deviceField73.setLabelString("Derivative Cutoff freq (Hz):");

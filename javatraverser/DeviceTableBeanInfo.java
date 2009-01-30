@@ -36,7 +36,8 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
                property("displayRowNumber", "displayRowNumber"),
                property("preferredColumnWidth", "preferredColumnWidth"),
                property("preferredHeight", "preferredHeight"),
-               property("useExpressions", "Use Expressions")
+               property("useExpressions", "Use Expressions"),
+               property("refMode", "Reflexion Mode")
             };
             return props;
         }catch(IntrospectionException e)

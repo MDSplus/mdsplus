@@ -11,6 +11,8 @@ public class DeviceTable extends DeviceComponent
 {
 //    int preferredWidth = 200;
 //    int preferredHeight = 100;
+    static public final int NORMAL = 0, REFLEX = 1, REFLEX_INVERT = 2;
+    int refMode = NORMAL;
     int numRows = 3;
     int numCols = 3;
     int currRow = -1;
@@ -36,6 +38,32 @@ public class DeviceTable extends DeviceComponent
     protected String items[] = new String[9];
     static String copiedColItems[], copiedRowItems[], copiedItems[];
 
+    public void setRefMode(int refMode)
+    {
+        this.refMode = refMode;
+        if(refMode == REFLEX || refMode == REFLEX_INVERT)
+        {
+            table.setDefaultRenderer(Object.class, new TableCellRenderer() {
+
+                public Component getTableCellRendererComponent(JTable table,
+                                               Object value,
+                                               boolean isSelected,
+                                               boolean hasFocus,
+                                               int row,
+                                               int column)
+                {
+                    JTextField tf = new JTextField();
+                    tf.setText(""+value);
+                    tf.setEnabled(DeviceTable.this.isEditable(row, column));
+                    return tf;
+                }
+                
+            });
+       }
+        
+     }
+    public int getRefMode() { return refMode;}
+    
     public void setNumRows(int numRows)
     {
         this.numRows = numRows;
@@ -122,6 +150,7 @@ public class DeviceTable extends DeviceComponent
         if(rowNames.length > 0)
           displayRowNumber = true;
         table = new JTable();
+        
         scroll = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new Dimension(200, 70));
         label = new JLabel();
@@ -303,8 +332,25 @@ public class DeviceTable extends DeviceComponent
       }catch(Exception exc){}
       table.repaint();
     }
-
-
+    private boolean isEditable(int row, int col)
+    {
+        if(displayRowNumber && col == 0)
+            return false;
+        else if (refMode == NORMAL)
+             return editable;
+        else if (!editable)
+            return false;
+        else
+        {
+            int actCol = (displayRowNumber)?col-1:col;
+            if((row == 0 || row == numRows/2) && actCol > numCols/2)
+                return false;
+            else if (row > numRows/2)
+                return false;
+            return true;
+        }
+    }
+    
     public void initializeData(Data data, boolean is_on)
     {
         initializing = true;
@@ -383,19 +429,19 @@ public class DeviceTable extends DeviceComponent
                     }
                   }
                   else {
-                    try {
-                      String retItem = items[row * numCols + col - 1];
-                      if(!binary)
-                        return retItem;
-                      else if (retItem.trim().equals("0"))
-                        return new Boolean(false);
-                      else return new Boolean(true);
+                       try {
+                           String retItem = items[row * numCols + col - 1];
+                           if(!binary)
+                            return retItem;
+                          else if (retItem.trim().equals("0"))
+                            return new Boolean(false);
+                          else return new Boolean(true);
+                        }
+                        catch (Exception exc) {
+                          return null;
+                        }
+                      }
                     }
-                    catch (Exception exc) {
-                      return null;
-                    }
-                  }
-                }
                 else if(displayRowNumber)
                 {
                   if (col == 0)
@@ -429,32 +475,79 @@ public class DeviceTable extends DeviceComponent
             }
             public boolean isCellEditable(int row, int col)
             {
-                if(displayRowNumber && col == 0)
-                    return false;
-                else
-                    return editable;
+                return isEditable(row, col);    
             }
-
+            private String convertValue(String value)
+            {
+                if(refMode != REFLEX_INVERT)
+                    return value;
+                else if(value.trim().startsWith("-"))
+                    return value.trim().substring(1);
+                else
+                    return "-"+value.trim();
+            }
             public void setValueAt(Object value, int row, int col)
             {
               int itemIdx;
-                if((rowNames != null && rowNames.length > 0) || displayRowNumber)
-                  itemIdx = row * numCols + col - 1;
-                else
-                  itemIdx = row * numCols + col;
+              int actCol;
+              if((rowNames != null && rowNames.length > 0) || displayRowNumber)
+                  actCol = col - 1;
+              else
+                  actCol = col;
+               if(refMode == REFLEX || refMode == REFLEX_INVERT)
+               {
+                  //binary assumed to be false
+                  if(row == 0 || row == numRows/2)
+                  {
+                      if(actCol <= numCols/2)
+                      {
+                          itemIdx = row * numCols + actCol;
+                          items[itemIdx] = (String)value;
+                          if(actCol > 0)
+                          {
+                            itemIdx = row * numCols + numCols - actCol;
+                            items[itemIdx] = convertValue((String)value);
+                            table.repaint();
+                          }
+                      }
+                  }
+                  else if(row <= numRows/2)
+                  {
+                      itemIdx = row * numCols + actCol;
+                      items[itemIdx] =(String)value;
+                      if(actCol == 0 && row > 0)
+                      {
+                          itemIdx = (numRows - row) * numCols + actCol;
+                          items[itemIdx] = convertValue((String)value);
+                          table.repaint();
+                      }
+                      if(actCol > 0 && row > 0 && (actCol != numCols/2 || row != numRows/2 ))
+                      {
+                          itemIdx = (numRows - row) * numCols + numCols - actCol;
+                          items[itemIdx] = convertValue((String)value);
+                          table.repaint();
+                      }
+                  }
+                  
+               }
+               else //refMode == NORMAL
+               {
+                    if((rowNames != null && rowNames.length > 0) || displayRowNumber)
+                        itemIdx = row * numCols + actCol;
+                    else
+                    itemIdx = row * numCols + actCol;
 
-                if(binary)
-                {
-                  boolean isOn = ((Boolean)value).booleanValue();
-                  items[itemIdx] = (isOn)?"1":"0";
-                  currRow = row;
-                  currCol = col;
-
-
+                    if(binary)
+                    {
+                        boolean isOn = ((Boolean)value).booleanValue();
+                        items[itemIdx] = (isOn)?"1":"0";
+                        currRow = row;
+                        currCol = col;
+                    }
+                    else
+                        items[itemIdx] = (String)value;
+                    fireTableCellUpdated(row, col);
                 }
-                else
-                  items[itemIdx] = (String)value;
-                fireTableCellUpdated(row, col);
             }
 
             public Class getColumnClass(int c) {

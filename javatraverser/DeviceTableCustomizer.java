@@ -11,7 +11,7 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
     PropertyChangeSupport listeners = new PropertyChangeSupport(this);
     TextField labelString, identifier, numCols, numRows, columnNames, rowNames,
         preferredColumnWidthT, preferredHeightT;
-    Choice nids;
+    Choice nids, modeChoice;
     Button doneButton;
     Checkbox displayRowNumC, editableC, binaryC, useExpressionsC;
 
@@ -68,6 +68,12 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
         jp1.add(editableC = new Checkbox("Editable", bean.getEditable()));
         jp1.add(binaryC = new Checkbox("Binary", bean.getBinary()));
         jp1.add(useExpressionsC = new Checkbox("Use Expressions", bean.getBinary()));
+        jp1.add(new Label("Mode: "));
+        jp1.add(modeChoice = new Choice());
+        modeChoice.add("Normal");
+        modeChoice.add("Reflex");
+        modeChoice.add("Reflex Inverted");
+        modeChoice.select(bean.getRefMode());
         jp.add(jp1);
 
         jp1 = new Panel();
@@ -123,8 +129,11 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 boolean oldDisplayRowNumber = bean.getDisplayRowNumber();
                 bean.setDisplayRowNumber(displayRowNumC.getState());
                 listeners.firePropertyChange("displayRowNumber", oldDisplayRowNumber, bean.getDisplayRowNumber());
-
-                boolean oldEditable = bean.getEditable();
+                int oldRefMode = bean.getRefMode();
+                bean.setRefMode(modeChoice.getSelectedIndex());
+                listeners.firePropertyChange("refMode", oldRefMode, bean.getRefMode());
+              
+                 boolean oldEditable = bean.getEditable();
                 bean.setEditable(editableC.getState());
                 listeners.firePropertyChange("editable", oldEditable, bean.getEditable());
                 boolean oldBinary = bean.getBinary();
@@ -140,6 +149,9 @@ public class DeviceTableCustomizer extends DeviceCustomizer implements Customize
                 bean.setPreferredHeight(Integer.parseInt(preferredHeightT.getText()));
                 listeners.firePropertyChange("preferredHeight", oldPreferredHeight, bean.getPreferredHeight());
 
+                
+                
+                
                 StringTokenizer st = new StringTokenizer(columnNames.getText(), " ");
                 String colNames[] = new String[st.countTokens()];
                 int idx = 0;

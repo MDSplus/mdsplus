@@ -38,6 +38,8 @@ public class ParameterSetting
     static final int NUM_SETUP = 15;
     boolean isRt = false;
     boolean readOnly = false;
+    static String refShotLabelText = "Ref. Shot: ";
+    JLabel refShotLabel;
     JButton timesB, poloidalControlB, axiSetupB, pcSetupB, pmSetupB,
         toroidalControlB, chopperSetupB, ffSetupB, inverterSetupB, tfSetupB,
         bfControlB,
@@ -399,6 +401,8 @@ public class ParameterSetting
                 }
             });
             jp.add(modeC);
+            if(isOnline)
+               jp.add(refShotLabel = new JLabel("")); 
         }
 
         buttons[0] = timesB = new JButton("Times Setup");
@@ -1649,6 +1653,11 @@ public class ParameterSetting
                     rfx.close(0);
                     rfx = new Database("RFX", 100);
                     rfx.open();
+                    try {
+                        NidData nidD = rfx.resolve(new PathData("\\INFO:REF_SHOT"), 0);
+                        int refShot = rfx.getData(nidD, 0).getInt();
+                        refShotLabel.setText(refShotLabelText+ refShot);
+                    }catch(Exception exc){}
                 }
                 else
                 {
@@ -2017,7 +2026,7 @@ public class ParameterSetting
                             copyDecoupling(currLoadShot, shot);
                         }
 
-                        if (JOptionPane.showConfirmDialog(ParameterSetting.this,
+                        /*if (JOptionPane.showConfirmDialog(ParameterSetting.this,
                                                           "Stampare la scheda di caricamento impulso?",
                                                           "Caricamento impulso",
                                                           JOptionPane.YES_NO_OPTION) ==
@@ -2027,8 +2036,10 @@ public class ParameterSetting
                             } catch (Exception exc) {
                                 System.err.println("Error printing form: " + exc);
                             }
-                        }
-                    }
+                        }*/
+                        //Report saved shot
+                        refShotLabel.setText(refShotLabelText + currLoadShot);
+                     }
                 }
             });
         }
@@ -3692,6 +3703,15 @@ System.out.println("Print Done");
         notifyChangedRt(modifiedSetupHash, modifiedSetupOnHash);
         applySetup(modifiedSetupHash, modifiedSetupOnHash);
         applyTimes();
+        
+        //Write Ref. Shot
+        try {
+            String refShotStr = refShotLabel.getText().substring(refShotLabelText.length());
+            NidData refShotNid = rfx.resolve(new PathData("\\INFO:REF_SHOT"), 0);
+            int refShot = Integer.parseInt(refShotStr);
+            rfx.putData(refShotNid, new IntData(refShot), 0);
+        }catch(Exception exc){System.out.println("Cannot write Ref. Shot");}
+        
 
         try
         {
