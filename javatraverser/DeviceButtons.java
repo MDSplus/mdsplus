@@ -21,9 +21,9 @@ public class DeviceButtons extends JPanel
         add(cancel = new DeviceCancel());
     }
 
-    public void check()
+    public boolean check()
     {
-        apply.check();
+        return apply.check();
     }
 
     public void setCheckExpressions(String []checkExpressions)

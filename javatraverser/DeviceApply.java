@@ -10,8 +10,8 @@ public class DeviceApply extends DeviceControl
     }
     protected void doOperation(DeviceSetup deviceSetup)
     {
-        deviceSetup.apply();
-        check();
+        if(check())
+            deviceSetup.apply();
     }
 
 }

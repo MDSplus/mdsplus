@@ -43,12 +43,13 @@ public abstract class DeviceControl extends JButton
         this.checkMessages = checkMessages;
     }
     public String [] getCheckMessages() {return checkMessages; }
-    protected void check()
+    protected boolean check()
     {
         if(deviceSetup == null)
             discoverDevice();
         if(deviceSetup != null && checkExpressions != null && checkMessages != null)
-            deviceSetup.check(checkExpressions, checkMessages);
+            return deviceSetup.check(checkExpressions, checkMessages);
+        return true;
     }
 
     void setReadOnly(boolean readOnly){}

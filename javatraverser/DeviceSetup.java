@@ -495,10 +495,11 @@ public class DeviceSetup
             Data.evaluate(varExpr.toString());
     }
 
-    public void check()
+    public boolean check()
     {
         if(buttons != null)
-            buttons.check();
+            return buttons.check();
+        return true;
     }
 
     public void setCancelText(String cancelText)
@@ -507,9 +508,9 @@ public class DeviceSetup
             buttons.setCancelText(cancelText);
     }
 
-    public int check(String expressions[], String[] messages)
+    public boolean check(String expressions[], String[] messages)
     {
-        if (expressions == null || messages == null)return 0;
+        if (expressions == null || messages == null)return true;
         int num_expr = expressions.length;
         if (num_expr > messages.length)
             num_expr = messages.length;
@@ -544,10 +545,10 @@ public class DeviceSetup
                 JOptionPane.showMessageDialog(this, messages[idx],
                                               "Error in device configuration",
                                               JOptionPane.WARNING_MESSAGE);
-                return 0;
+                return false;
             }
         }
-        return 1;
+        return true;
     }
 
     public void fireUpdate(String id, Data val)
