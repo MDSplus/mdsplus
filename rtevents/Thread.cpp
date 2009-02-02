@@ -2,11 +2,12 @@
 #include <stdio.h>
 
 
-void Thread::start(Runnable *rtn, void *arg)
+void Thread::start(Runnable *rtn, void *arg, bool deallocate)
 {
 	WithArg *withArg = new WithArg;
 	withArg->rtn = rtn;
 	withArg->arg = arg;
+	withArg->deallocate = deallocate;
 	int rc = pthread_create(&thread, NULL,(void *(*)(void *))handlerWithArg, (void *)withArg); 
 }
 
@@ -18,8 +19,10 @@ void handlerWithArg(WithArg *withArg)
 {
 	withArg->rtn->run(withArg->arg);
 
-	printf("RUNNABLE TERMINATA\n");
-	withArg->rtn->dispose();
-	delete withArg->rtn;
+	if(withArg->deallocate)
+	{
+		withArg->rtn->dispose();
+		delete withArg->rtn;
+	}
 	delete withArg;
 }
