@@ -368,7 +368,6 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable23.setNumRows(4);
         deviceTable23.setNumCols(48);
         deviceTable23.setLabelString("Kd");
-        deviceTable23.setRefMode(DeviceTable.REFLEX);
         deviceTable23.setOffsetNid(1085);
         deviceTable24.setDisplayRowNumber(true);
         deviceTable24.setRowNames(null);
@@ -377,7 +376,6 @@ public class RFXMHDSetup extends DeviceSetup {
         deviceTable24.setNumRows(4);
         deviceTable24.setNumCols(48);
         deviceTable24.setLabelString("Ki");
-        deviceTable24.setRefMode(DeviceTable.REFLEX);
         deviceTable24.setOffsetNid(1083);
         jPanel55.setLayout(borderLayout9);
         deviceTable22.setDisplayRowNumber(true);
