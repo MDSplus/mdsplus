@@ -23,9 +23,10 @@ class EventHandler
 	RelativePointer dataBuffer;
 	RelativePointer retDataHead;
 	int dataSize;
+	int type;
 	bool synch;
 	bool collect;
-	bool intTriggerAndWait(char *buf, int size, SharedMemManager *memManager, bool collect, bool copyBuf, Timeout *timeout = 0);
+	bool intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool collect, bool copyBuf, Timeout *timeout = 0);
 	
 public:
 	void setNext(EventHandler *next)
@@ -38,7 +39,7 @@ public:
 	}
 	bool isSynch() {return synch;}
 	bool isCollect() {return collect;}
-	void setData(void *buf, int size, bool copyBuf, SharedMemManager *memManager);
+	void setData(void *buf, int size, int type, bool copyBuf, SharedMemManager *memManager);
 	void *getDataBuffer()
 	{
 		return dataBuffer.getAbsAddress();
@@ -61,14 +62,15 @@ public:
 	void resizeRetData(RetEventDataDescriptor *retDataDescr, int newSize, SharedMemManager *memManager);
 	void trigger();
 	void watchdogTrigger();
-	bool triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
+	bool triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
 	bool corresponds(char *name);
 	void clean(SharedMemManager *memManager);
 	int getRetSize();
 	void *getRetBuffer();
 	void *addRetBuffer(int size, SharedMemManager *memManager);
 	void removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager);
-	EventAnswer *triggerAndCollect(char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
+	EventAnswer *triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
+	int getType(){return type;}
 };
 
 class WaitLockTerminator: public Runnable

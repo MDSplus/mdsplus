@@ -6,8 +6,8 @@ extern "C" {
 #else
 #define EXTERN extern
 #endif
-EXTERN void *EventAddListener(char *name,  void (*callback)(char *, char *, int, char));
-EXTERN void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, char));
+EXTERN void *EventAddListener(char *name,  void (*callback)(char *, char *, int, char, int));
+EXTERN void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, char, int));
 EXTERN void EventRemoveListener(void *eventHandler);
 EXTERN int EventTrigger(char *name, char *buf, int size);
 EXTERN int EventTriggerAndWait(char *name, char *buf, int size);

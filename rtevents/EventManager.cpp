@@ -87,7 +87,7 @@ void EventManager::initialize()
 	lock.initialize();
 }
 	
-void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*), SharedMemManager *memManager, bool copyBuf, int retDataSize)
+void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*, int), SharedMemManager *memManager, bool copyBuf, int retDataSize)
 {
 	//NOTE: EventHandlers are never deallocated
 	bool isNewHandler = false;
@@ -151,29 +151,29 @@ EventHandler *EventManager::getHandler(char *name)
 	return currHandler;
 }
 
-void EventManager::trigger(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf)
+void EventManager::trigger(char *eventName, char *buf, int type, int size, SharedMemManager *memManager, bool copyBuf)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, copyBuf, memManager);
+			currHandler->setData(buf, size, copyBuf, type, memManager);
 			currHandler->trigger();
 		}
 		currHandler = currHandler->getNext();
 	}
 }
 
-EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
+EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, copyBuf, memManager);
-			return currHandler->triggerAndCollect(buf, size, memManager, copyBuf, inAnsw, timeout);
+			//currHandler->setData(buf, size, copyBuf, memManager);
+			return currHandler->triggerAndCollect(buf, size, type, memManager, copyBuf, inAnsw, timeout);
 		}
 		currHandler = currHandler->getNext();
 	}
@@ -185,7 +185,7 @@ EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int siz
 	else
 		return new EventAnswer(0, copyBuf);
 }
-bool EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
+bool EventManager::triggerAndWait(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
 {
 	bool isTimeout = false;
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
@@ -203,7 +203,7 @@ bool EventManager::triggerAndWait(char *eventName, char *buf, int size, SharedMe
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			isTimeout |= currHandler->triggerAndWait(dataBuf, size, memManager, copyBuf, timeout);
+			isTimeout |= currHandler->triggerAndWait(dataBuf, size, type, memManager, copyBuf, timeout);
 		}
 		currHandler = currHandler->getNext();
 	}
@@ -303,7 +303,7 @@ EXPORT void EventReset()
 
 
 
-EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool, int, char *))
+EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool, int, char *, int))
 {
 	try {
 		checkEventManager();
@@ -314,7 +314,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 
 		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
 		if(strcmp(name, "@@@EVENT_MANAGER@@@"))
-			eventManager->triggerAndWait("@@@EVENT_MANAGER@@@", msg, nameLen, &memManager, false);
+			eventManager->triggerAndWait("@@@EVENT_MANAGER@@@", msg, nameLen, 0, &memManager, false);
 		delete [] msg;
 		return handl;
 	}
@@ -324,7 +324,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 		return NULL;
 	}
 }
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool, int, char*))
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool, int, char*, int))
 {
 	try {
 		checkEventManager();
@@ -355,7 +355,7 @@ EXPORT  int EventTrigger(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();
-		eventManager->trigger(name, buf, size, &memManager);
+		eventManager->trigger(name, buf, size, 0, &memManager);
 		return 0;
 	}
 	catch(SystemException *exc)
@@ -369,7 +369,7 @@ EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();
-		eventManager->triggerAndWait(name, buf, size, &memManager, true);
+		eventManager->triggerAndWait(name, buf, size, 0, &memManager, true);
 		return 0;
 	}
 	catch(SystemException *exc)
@@ -384,7 +384,7 @@ EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millise
 	try {
 		checkEventManager();
 		Timeout *timout = new Timeout(millisecs);
-		eventManager->triggerAndWait(name,  buf, size, &memManager, true, timout);
+		eventManager->triggerAndWait(name,  buf, size, 0, &memManager, true, timout);
 		delete timout;
 		return 0;
 	}

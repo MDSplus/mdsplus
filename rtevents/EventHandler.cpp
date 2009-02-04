@@ -141,7 +141,7 @@ void EventHandler::clean(SharedMemManager *memManager)
 	
 }
 
-EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
+EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	waitLock.lock();
 	//Count 
@@ -161,7 +161,7 @@ EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, SharedMemManag
 	else
 		ans = new EventAnswer(numRet, copyBuf);
 
-	bool timeoutOccurred = intTriggerAndWait(buf, size, memManager, true, copyBuf, timeout);
+	bool timeoutOccurred = intTriggerAndWait(buf, size, type, memManager, true, copyBuf, timeout);
 	if(timeout && timeoutOccurred) 
 		return ans;
 
@@ -182,20 +182,20 @@ EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, SharedMemManag
 
 
 
-bool EventHandler::triggerAndWait(char *buf, int size, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
+bool EventHandler::triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
 {
 	waitLock.lock();
-	bool ans = intTriggerAndWait(buf, size, memManager, false, copyBuf, timeout);
+	bool ans = intTriggerAndWait(buf, size, type, memManager, false, copyBuf, timeout);
 	waitLock.unlock();
 	return ans;
 }
 
 #define MAX_NOTIFIERS 100
-bool EventHandler::intTriggerAndWait(char *buf, int size, SharedMemManager *memManager, bool isCollect, bool copyBuf, Timeout *timeout)
+bool EventHandler::intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool isCollect, bool copyBuf, Timeout *timeout)
 {
 	Notifier *autoNotifiers[MAX_NOTIFIERS];
 
-	setData(buf, size, copyBuf, memManager);
+	setData(buf, size, type, copyBuf, memManager);
 	lock.lock();
 	collect = isCollect;
 	synch = true;
@@ -281,8 +281,9 @@ bool EventHandler::corresponds(char *inName)
 	return corr;
 }
 
-void EventHandler::setData(void *buf, int size, bool copyBuf, SharedMemManager *memManager)
+void EventHandler::setData(void *buf, int size, int type, bool copyBuf, SharedMemManager *memManager)
 {
+	this->type = type;
 	if(copyBuf)
 	{
 		if(dataBuffer.getAbsAddress())

@@ -1,7 +1,7 @@
 #include "SharedMemManager.h"
 
-#include "MessageManager.h"
-#include "TCPMessageManager.h"
+#include "NetworkManager.h"
+#include "TCPNetworkManager.h"
 #include "Lock.h"
 #include "UnnamedSemaphore.h"
 #include "EventManager.h"
@@ -11,7 +11,7 @@
 #include "Event.h"
 #include <stdio.h>
 
-static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData);
+static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
 //internal listener registers) for which another
@@ -153,7 +153,7 @@ public:
 		sscanf(buf, "%s %d", this->name, &this->retSize);
 	}
 	
-	EventMessage(char *inBuf, int inBufSize, MessageManager *msgManager)
+	EventMessage(char *inBuf, int inBufSize, NetworkManager *msgManager)
 	{
 		retSize = 0;
 		char *ptr = inBuf;
@@ -210,7 +210,7 @@ public:
 			printf("INTERNAL ERROR: WRONG MESSAGE SIZE IN DISTRIBUTED EVENTS");
 	}
 	
-	char *serialize(int &outSize, MessageManager *msgManager)
+	char *serialize(int &outSize, NetworkManager *msgManager)
 	{
 		int size;
 		int retMsgSize = 0;
@@ -379,7 +379,7 @@ public:
 
 	
 //SendEvent sends a message describing the event. 
-	void sendSynchEvent(char *buf, int bufSize, bool isCollect, MessageManager *msgManager, 
+	void sendSynchEvent(char *buf, int bufSize, bool isCollect, NetworkManager *msgManager, 
 			UnnamedSemaphore ** &retSems, unsigned int * &waitIds, int &numSems)
 	{
 		//count listeners
@@ -409,7 +409,7 @@ public:
 	}
 	
 	//SendEvent sends a message describing the event. 
-	void sendAsynchEvent(char *buf, int bufSize, MessageManager *msgManager)
+	void sendAsynchEvent(char *buf, int bufSize, NetworkManager *msgManager)
 	{
 		ExternalListener *currListener = extListenerHead;
 		EventMessage msg(eventName, buf, bufSize, false, false, 0);
@@ -577,7 +577,7 @@ public:
 			extEvent->signalExternalTermination(id, bufSize, buf);
 		lock.unlock();
 	}
-	void sendAsynchEvent(char *name, char *buf, int bufSize, MessageManager *msgManager)
+	void sendAsynchEvent(char *name, char *buf, int bufSize, NetworkManager *msgManager)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -589,7 +589,7 @@ public:
 			extEvent->sendAsynchEvent(buf, bufSize, msgManager);
 		lock.unlock();
 	}
-	void sendSynchEvent(char *name, char *buf, int bufSize, bool isCollect, MessageManager *msgManager, 
+	void sendSynchEvent(char *name, char *buf, int bufSize, bool isCollect, NetworkManager *msgManager, 
 			UnnamedSemaphore ** &retSems, unsigned int * &waitIds, int &numSems)
 	{
 		lock.lock();
@@ -702,7 +702,7 @@ public:
 class TrigWaitRunnable: public Runnable
 {
 public:
-	MessageManager *msgManager;
+	NetworkManager *msgManager;
 	NetworkAddress *addr;
 	char *name;
 	char *buf;
@@ -710,7 +710,7 @@ public:
 	bool isCollect;
 	unsigned int waitId;
 	
-	TrigWaitRunnable(char *name,char *buf, int bufSize,  unsigned int waitId, bool isCollect, MessageManager *msgManager, NetworkAddress *addr)
+	TrigWaitRunnable(char *name,char *buf, int bufSize,  unsigned int waitId, bool isCollect, NetworkManager *msgManager, NetworkAddress *addr)
 	{
 		this->name = new char[strlen(name) + 1];
 		strcpy(this->name, name);
@@ -759,12 +759,12 @@ public:
 
 
 //Class EventMessageReceiver handles the reception of event messages over the network
-class EventMessageReceiver:public MessageReceiver
+class EventMessageReceiver:public NetworkReceiver
 {
 public:
-	MessageManager *msgManager;
+	NetworkManager *msgManager;
 	ExternalEventManager *extEventManager;
-	EventMessageReceiver(ExternalEventManager *extEventManager, MessageManager *msgManager)
+	EventMessageReceiver(ExternalEventManager *extEventManager, NetworkManager *msgManager)
 	{
 		this->extEventManager = extEventManager;
 		this->msgManager = msgManager;
@@ -819,12 +819,12 @@ public:
 
 static ExternalEventManager *extEventManager;
 static NetworkAddress *extAddresses[512];
-static MessageManager *msgManager;
+static NetworkManager *msgManager;
 static int numExtAddresses;
 #define TCP_PORT 4000 
 
 
-static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData)
+static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type)
 {
 //printf("EVENT CALLBACK %s\n", name);
 
@@ -883,7 +883,7 @@ static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int 
 }
 
 
-static void registerEventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData)
+static void registerEventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type)
 {
 printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 
@@ -935,7 +935,7 @@ static void readExtAddresses(char *fileName)
 
 		}
 		numExtAddresses = addrIdx;
-		msgManager = new TCPMessageManager();
+		msgManager = new TCPNetworkManager();
 	}
 	//other Networks not yet supported
 }

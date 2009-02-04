@@ -15,12 +15,12 @@ public:
 		memManager = evManager->getMemManager();
 	}
 
-	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *), bool copyBuf = true, int retDataSize = 0)
+	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), bool copyBuf = true, int retDataSize = 0)
 	{
 		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
 	}
 
-	void *addListenerGlobal(char *eventName, void (*callback)(char *, char *, int, bool, int, char *), int retDataSize = 0)
+	void *addListenerGlobal(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), int retDataSize = 0)
 	{
 		void *addr = evManager->addListener(eventName, 0, callback, memManager, true, retDataSize);
 		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
@@ -46,19 +46,32 @@ public:
 	{
 		evManager->resizeListener(eventAddr, newSize, memManager);
 	}
+	void trigger(char *eventName, char *buf, int size, int type, bool copyBuf = true)
+	{
+		evManager->trigger(eventName, buf, size, type, memManager, copyBuf);
+	}
 	void trigger(char *eventName, char *buf, int size, bool copyBuf = true)
 	{
-		evManager->trigger(eventName, buf, size, memManager, copyBuf);
+		evManager->trigger(eventName, buf, size, 0, memManager, copyBuf);
+	}
+
+	bool triggerAndWait(char *eventName, char *buf, int size, int type, bool copyBuf = true, Timeout *timeout = 0)
+	{
+		return evManager->triggerAndWait(eventName, buf, size, type, memManager, copyBuf, timeout);
 	}
 
 	bool triggerAndWait(char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
 	{
-		return evManager->triggerAndWait(eventName, buf, size, memManager, copyBuf, timeout);
+		return evManager->triggerAndWait(eventName, buf, size, 0, memManager, copyBuf, timeout);
 	}
 
+	EventAnswer *triggerAndCollect(char *eventName, char *buf, int size, int type, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
+	{
+		return evManager->triggerAndCollect(eventName, buf, size, type, memManager, copyBuf, inAnsw, timeout);
+	}
 	EventAnswer *triggerAndCollect(char *eventName, char *buf, int size, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
 	{
-		return evManager->triggerAndCollect(eventName, buf, size, memManager, copyBuf, inAnsw, timeout);
+		return evManager->triggerAndCollect(eventName, buf, size, 0, memManager, copyBuf, inAnsw, timeout);
 	}
 	void clean(int milliSecs = 100)
 	{
