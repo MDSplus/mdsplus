@@ -195,8 +195,8 @@ bool EventHandler::intTriggerAndWait(char *buf, int size, int type, SharedMemMan
 {
 	Notifier *autoNotifiers[MAX_NOTIFIERS];
 
-	setData(buf, size, type, copyBuf, memManager);
 	lock.lock();
+	setData(buf, size, type, copyBuf, memManager);
 	collect = isCollect;
 	synch = true;
 	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
@@ -283,6 +283,8 @@ bool EventHandler::corresponds(char *inName)
 
 void EventHandler::setData(void *buf, int size, int type, bool copyBuf, SharedMemManager *memManager)
 {
+
+	printf("EventHandler::setData type %d\n", type);
 	this->type = type;
 	if(copyBuf)
 	{

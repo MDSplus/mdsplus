@@ -120,6 +120,10 @@ SOURCE=.\TCPNetworkManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\UDPNetworkManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\WindowsExitHandler.cpp
 # End Source File
 # Begin Source File

@@ -46,13 +46,9 @@ public:
 	{
 		evManager->resizeListener(eventAddr, newSize, memManager);
 	}
-	void trigger(char *eventName, char *buf, int size, int type, bool copyBuf = true)
+	void trigger(char *eventName, char *buf, int size, int type = 0, bool copyBuf = true)
 	{
 		evManager->trigger(eventName, buf, size, type, memManager, copyBuf);
-	}
-	void trigger(char *eventName, char *buf, int size, bool copyBuf = true)
-	{
-		evManager->trigger(eventName, buf, size, 0, memManager, copyBuf);
 	}
 
 	bool triggerAndWait(char *eventName, char *buf, int size, int type, bool copyBuf = true, Timeout *timeout = 0)

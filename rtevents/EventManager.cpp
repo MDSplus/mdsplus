@@ -151,14 +151,16 @@ EventHandler *EventManager::getHandler(char *name)
 	return currHandler;
 }
 
-void EventManager::trigger(char *eventName, char *buf, int type, int size, SharedMemManager *memManager, bool copyBuf)
+void EventManager::trigger(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf)
 {
+
+	printf("EventManager type %d\n", type);
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{
 		if(currHandler->corresponds(eventName))
 		{
-			currHandler->setData(buf, size, copyBuf, type, memManager);
+			currHandler->setData(buf, size, type, copyBuf, memManager);
 			currHandler->trigger();
 		}
 		currHandler = currHandler->getNext();
