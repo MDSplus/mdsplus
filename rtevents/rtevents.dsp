@@ -116,7 +116,7 @@ SOURCE=.\RelativePointer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TCPMessageManager.cpp
+SOURCE=.\TCPNetworkManager.cpp
 # End Source File
 # Begin Source File
 

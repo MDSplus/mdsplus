@@ -41,7 +41,6 @@ public:
 
 class EXPORT TCPNetworkManager:public NetworkManager
 {
-	friend class TCPNetworkSender;
 	
 	bool connectSender(NetworkAddress *addr);
 

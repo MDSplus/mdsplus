@@ -2,6 +2,7 @@
 
 #include "NetworkManager.h"
 #include "TCPNetworkManager.h"
+#include "UDPNetworkManager.h"
 #include "Lock.h"
 #include "UnnamedSemaphore.h"
 #include "EventManager.h"
@@ -935,7 +936,8 @@ static void readExtAddresses(char *fileName)
 
 		}
 		numExtAddresses = addrIdx;
-		msgManager = new TCPNetworkManager();
+//		msgManager = new TCPNetworkManager();
+		msgManager = new UDPNetworkManager();
 	}
 	//other Networks not yet supported
 }
