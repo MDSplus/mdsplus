@@ -169,7 +169,11 @@ public:
 		}
 	}
 
-	
+	void setPort(int port)
+	{
+		this->port = port;
+		sin.sin_port = htons( port );
+	}
 	int getSocket() {return sock;}
 	int getPort() { return port;}
 	void print()

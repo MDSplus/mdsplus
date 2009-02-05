@@ -11,6 +11,8 @@
 #include "Delay.h"
 #include "Event.h"
 #include <stdio.h>
+#define TCP_PORT 4000 
+#define UDP_PORT 4001 
 
 static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type);
 
@@ -410,7 +412,7 @@ public:
 	}
 	
 	//SendEvent sends a message describing the event. 
-	void sendAsynchEvent(char *buf, int bufSize, NetworkManager *msgManager)
+	void sendAsynchEvent(char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
 	{
 		ExternalListener *currListener = extListenerHead;
 		EventMessage msg(eventName, buf, bufSize, false, false, 0);
@@ -418,7 +420,12 @@ public:
 		char *msgBuf = msg.serialize(msgLen, msgManager);
 		while(currListener)
 		{
-			msgManager->sendMessage(currListener->addr, msgBuf, msgLen);
+			IPAddress currAddr((IPAddress *)currListener->addr);
+			if(isUdp)
+				currAddr.setPort(UDP_PORT);
+			else
+				currAddr.setPort(TCP_PORT);
+			msgManager->sendMessage(&currAddr, msgBuf, msgLen);
 			currListener = currListener->nxt;
 		}
 		delete [] msgBuf;
@@ -578,7 +585,7 @@ public:
 			extEvent->signalExternalTermination(id, bufSize, buf);
 		lock.unlock();
 	}
-	void sendAsynchEvent(char *name, char *buf, int bufSize, NetworkManager *msgManager)
+	void sendAsynchEvent(char *name, char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -587,7 +594,7 @@ public:
 			printf("INTERNALE ERROR: received event message with no event structure!!");
 		}
 		else
-			extEvent->sendAsynchEvent(buf, bufSize, msgManager);
+			extEvent->sendAsynchEvent(buf, bufSize, msgManager, isUdp);
 		lock.unlock();
 	}
 	void sendSynchEvent(char *name, char *buf, int bufSize, bool isCollect, NetworkManager *msgManager, 
@@ -820,9 +827,10 @@ public:
 
 static ExternalEventManager *extEventManager;
 static NetworkAddress *extAddresses[512];
+static NetworkAddress *udpExtAddresses[512];
 static NetworkManager *msgManager;
+static NetworkManager *udpMsgManager;
 static int numExtAddresses;
-#define TCP_PORT 4000 
 
 
 static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type)
@@ -880,7 +888,12 @@ static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int 
 
 	}
 	else
-		extEventManager->sendAsynchEvent(name, buf, bufSize, msgManager);
+	{
+		if(type)
+			extEventManager->sendAsynchEvent(name, buf, bufSize, udpMsgManager, true);
+		else
+			extEventManager->sendAsynchEvent(name, buf, bufSize, msgManager, false);
+	}
 }
 
 
@@ -932,12 +945,13 @@ static void readExtAddresses(char *fileName)
 			if(strlen(line) == 0)
 				continue;
 			printf("%s\n", line);
+			udpExtAddresses[addrIdx] = new IPAddress(line, UDP_PORT);
 			extAddresses[addrIdx++] = new IPAddress(line, TCP_PORT);
 
 		}
 		numExtAddresses = addrIdx;
-//		msgManager = new TCPNetworkManager();
-		msgManager = new UDPNetworkManager();
+		msgManager = new TCPNetworkManager();
+		udpMsgManager = new UDPNetworkManager();
 	}
 	//other Networks not yet supported
 }
@@ -972,6 +986,7 @@ int main(int argc, char *argv[])
 	EventMessageReceiver messageReceiver(extEventManager, msgManager);
 
 	msgManager->connectReceiver(new IPAddress(TCP_PORT), &messageReceiver);
+	udpMsgManager->connectReceiver(new IPAddress(UDP_PORT), &messageReceiver);
 	ev.addListener("@@@EVENT_MANAGER@@@",  registerEventCallback);
 
 	Thread checkerThread;
