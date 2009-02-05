@@ -283,8 +283,6 @@ bool EventHandler::corresponds(char *inName)
 
 void EventHandler::setData(void *buf, int size, int type, bool copyBuf, SharedMemManager *memManager)
 {
-
-	printf("EventHandler::setData type %d\n", type);
 	this->type = type;
 	if(copyBuf)
 	{
