@@ -12,12 +12,13 @@ class UDPServer:public Runnable
 	NetworkManager *channel;
 	int sock;
 	struct sockaddr_in retAddress;
-	Thread thread;
+	int port;
 
 public:
-	UDPServer(NetworkManager *channel, int sock)
+	UDPServer(NetworkManager *channel, int port, int sock)
 	{
 		this->channel = channel;
+		this->port = port;
 		this->sock = sock;
 	}
 	void run(void *args);

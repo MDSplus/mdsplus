@@ -30,8 +30,10 @@ void UDPServer::run(void *arg)
     	{
 			printf("Error receiving UDP messages\n");
         }
-		addr = new IPAddress;
-		memcpy(&addr->sin, &clientAddr, sizeof(struct sockaddr));
+		addr = new IPAddress();
+		memcpy(&addr->sin, &clientAddr, addrSize);
+		addr->sin.sin_port = htons( port );
+
 		msgReceiver->messageReceived(addr, recBuf, recBytes);
 	}
 }
@@ -86,7 +88,7 @@ bool UDPNetworkManager::connectReceiver(NetworkAddress *address, NetworkReceiver
 
 		//Find the first free (TCPNetworkManager can handle several ports)
 	Thread *thread = new Thread();
-	UDPServer *udpServer = new UDPServer(this, udpSocket);
+	UDPServer *udpServer = new UDPServer(this, port, udpSocket);
 	thread->start(udpServer, receiver);
 	return true;
 }
