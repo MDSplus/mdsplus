@@ -4,11 +4,11 @@ void UDPServer::run(void *arg)
 {
 //TCP Message protocol: type (1 byte), length (4 bytes), message (length bytes) 
 
-	IPAddress addr;
+	IPAddress *addr;
 	int recBytes;
 	static	char recBuf[MAX_MSG_LEN];
     struct sockaddr_in clientAddr;
-	addr.sock = sock;
+	//addr.sock = sock;
 	int addrSize = sizeof(clientAddr);
 
 	NetworkReceiver *msgReceiver = (NetworkReceiver *)arg;
@@ -30,7 +30,9 @@ void UDPServer::run(void *arg)
     	{
 			printf("Error receiving UDP messages\n");
         }
-		msgReceiver->messageReceived((NetworkAddress *)&addr, recBuf, recBytes);
+		addr = new IPAddress;
+		memcpy(&addr->sin, &clientAddr, sizeof(struct sockaddr));
+		msgReceiver->messageReceived(addr, recBuf, recBytes);
 	}
 }
 
