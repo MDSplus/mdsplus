@@ -49,11 +49,13 @@ public:
 		EventHandler *eh = (EventHandler *)arg;
 		if(copyBuf)
 		{
+			eh->lockData();
 			int dataSize = eh->getDataSize();
 			char *evName = new char[strlen(eh->getName()) + 1];
 			strcpy(evName, eh->getName());
 			char *buf = new char[dataSize];
 			memcpy(buf, eh->getDataBuffer(), dataSize);
+			eh->unlockData();
 			char *retBuf = 0;
 			int retSize = retDataDescr->getSize();
 			if(retSize > 0)

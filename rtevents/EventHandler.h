@@ -71,6 +71,8 @@ public:
 	void removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager);
 	EventAnswer *triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
 	int getType(){return type;}
+	void lockData(){lock.lock();}
+	void unlockData() {lock.unlock();}
 };
 
 class WaitLockTerminator: public Runnable
