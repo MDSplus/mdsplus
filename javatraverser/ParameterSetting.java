@@ -2510,12 +2510,12 @@ public class ParameterSetting
                 proceedeConfirm();
         }
 		
- 		private String getPulseCheck()
+ 		private String executePulseCheck()
 		{
 
 			try {
-				Data waveData = rfx.evaluateData(Data.fromExpr("ParameterSettingCheck()"), 0);
-				String s = waveData.toString();
+				Data msgData = rfx.evaluateData(Data.fromExpr("ParameterSettingCheck()"), 0);
+				String s = msgData.toString();
 				s = s.substring(1, s.length() - 1);
 				StringTokenizer st =  new StringTokenizer(s, "#");
 				String out="";
@@ -2534,7 +2534,7 @@ public class ParameterSetting
         void proceedeConfirm()
         {
 
-			String msg = getPulseCheck();
+			String msg = executePulseCheck();
 			
 			System.out.println("Messaggio = " + msg);
 
