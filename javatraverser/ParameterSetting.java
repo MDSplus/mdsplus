@@ -2509,16 +2509,57 @@ public class ParameterSetting
             else
                 proceedeConfirm();
         }
+		
+ 		private String getPulseCheck()
+		{
 
+			try {
+				Data waveData = rfx.evaluateData(Data.fromExpr("ParameterSettingCheck()"), 0);
+				String s = waveData.toString();
+				s = s.substring(1, s.length() - 1);
+				StringTokenizer st =  new StringTokenizer(s, "#");
+				String out="";
+				while( st.hasMoreTokens() )
+				{	
+					out += st.nextToken() + "\n";
+				}
+				return out;
+			}catch(Exception exc)
+			{
+				System.err.println("Error evalutaing ParameterSettingCheck function : " + exc);
+				return "";
+			}
+		}
+		
         void proceedeConfirm()
         {
 
+			String msg = getPulseCheck();
+			
+			System.out.println("Messaggio = " + msg);
+
+			if (msg != null && msg.length() > 0) 
+				msg = "Transitare dal PAS (Corrente Magnetizzante: " +
+                getMagnetizingCurrent() + " A)?\n\n\tATTENZIONE\n\n" + msg;
+			else
+				msg = "Transitare dal PAS (Corrente Magnetizzante: " +
+                getMagnetizingCurrent() + " A)?\n\n";
+			
+            JOptionPane.showConfirmDialog(
+                ParameterSetting.this,
+				msg,
+                "Acknowledgement request",
+                JOptionPane.YES_OPTION);
+			
+			
+/* Taliercio 6 - 2 - 2009
             JOptionPane.showConfirmDialog(
                 ParameterSetting.this,
                 "Transitare dal PAS (Corrente Magnetizzante: " +
                 getMagnetizingCurrent() + " A)?",
                 "Acknowledgement request",
                 JOptionPane.YES_OPTION);
+*/
             try
             {
                 dos.writeInt(1);
