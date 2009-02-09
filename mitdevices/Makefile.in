@@ -764,7 +764,7 @@ MitDevices.exports: MitDevices.def
                -I/usr/local/itt/idl/external \
                -L/usr/local/itt/idl/bin/bin.linux.x86/ -lidl \
                -L/usr/X11R6/lib -lXm -lXp -lXpm -lXext -lXt -lSM -lICE -lX11 \
-               -ldl -ltermcap -lrt -lm -lpthread
+               -ldl -ltermcap -lrt -lm -lpthread -lXinerama -lgcc_s
 #
 # Support for libdc1394 connected cameras
 #
