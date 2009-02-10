@@ -5,9 +5,12 @@ import javax.swing.JFrame;
 
 class ASCIIDataProvider implements DataProvider
 {
+    private boolean xPropertiesFile = false;
+    private boolean yPropertiesFile = false;
+    
     String error = null;
     String path_exp = null;
-    long   curr_shot;
+    long   curr_shot = -1;
     float time[];
     float y[];
     float x[];
@@ -20,7 +23,7 @@ class ASCIIDataProvider implements DataProvider
     * YLabel=
     * ZLabel=
     * Dimension=
-    * Time=t_start:t_end:dt;....;t_start:t_end:dt oppure t1,t2,...,tn
+    * Time=t_start:t_end:dt;....;t_start:t_end:dt or t1,t2,...,tn
     * Data=y1,y2,y3....,yn
     * X=x1,x2,x3....,xn
     */
@@ -35,7 +38,7 @@ class ASCIIDataProvider implements DataProvider
         public SimpleWaveData(String in_y)
         {
             file_y = getPathValue(in_y);
-            setPropValues(file_y, y_prop);
+            xPropertiesFile = yPropertiesFile =  setPropValues(file_y, y_prop);
             x_prop = y_prop;
             file_x = null;
         }
@@ -43,35 +46,111 @@ class ASCIIDataProvider implements DataProvider
         public SimpleWaveData(String in_y, String in_x)
         {
             file_y = getPathValue(in_y);
-            setPropValues(file_y, y_prop);
+            yPropertiesFile = setPropValues(file_y, y_prop);
             file_x = getPathValue(in_x);
-            setPropValues(file_x, x_prop);
+            xPropertiesFile = setPropValues(file_x, x_prop);
         }
 
         private String getPathValue(String in)
         {
             String out = "";
+            
             if(path_exp != null)
                 out = path_exp;
-            if(curr_shot >= 0)
+            
+            if(curr_shot > 0)
                 out = out + File.separatorChar + curr_shot;
-
-            out = out + File.separatorChar + in;
-
+            
+            if( out != null && out.length() > 0 )
+                out = out + File.separatorChar + in;
+            else
+                out = in;
+            
             return out;
         }
 
-        private void setPropValues(String in, Properties prop)
+        private int numElement(String val, String separator)
+        {
+            StringTokenizer st = new StringTokenizer(val, separator);
+            return ( st.countTokens() );
+        }
+        
+        private boolean isPropertiesFile(Properties prop)
+        {
+            
+            String val = prop.getProperty("Time");
+            
+            if( val == null || numElement(val, ",") < 2 )
+                return false;
+            return true;
+        }
+        
+        private float[] resizeBuffer(float[] b, int size)
+        {
+            float[] newB = new float[size];
+            System.arraycopy(b, 0, newB, 0, size);
+            return newB;
+        }
+        
+        private void loadSignalValues(String in) throws Exception
+        {
+            
+            
+            BufferedReader bufR = new BufferedReader(new FileReader(in));
+            
+            String ln;
+            StringTokenizer st;
+            
+            while (( ln = bufR.readLine() ) != null )
+            {
+                st = new StringTokenizer(ln);
+                int numColumn = st.countTokens();
+                if(numColumn == 2 && st.nextToken().equals("Time") && st.nextToken().equals("Data") )
+                {
+                    x = new float[1000];
+                    y = new float[1000];
+                    int count = 0;
+                    int maxCount = 1000;
+                    while (( ln = bufR.readLine() ) != null )
+                    {
+                        st = new StringTokenizer(ln);
+                        if(count == maxCount)
+                        {
+                            x = resizeBuffer(x, x.length + 1000 );
+                            y = resizeBuffer(y, y.length + 1000 );
+                            maxCount = y.length;
+                        }
+                        x[count] = Float.parseFloat( st.nextToken() );
+                        y[count] = Float.parseFloat( st.nextToken() ); 
+                        count++;
+                    }
+                    x = resizeBuffer(x, count );
+                    y = resizeBuffer(y, count );                  
+                }
+            }
+            bufR.close();
+        }
+        
+        private boolean setPropValues(String in, Properties prop)
         {
             String str, p1, p2;
+            boolean propertiesFile = false;
+            
             try
             {
-                prop.load(new FileInputStream(in));
+                prop.load( new FileInputStream(in) );
+                propertiesFile = isPropertiesFile(prop);
+                if( !propertiesFile )
+                {
+                    loadSignalValues(in);
+                }
+                return propertiesFile;
             }
-            catch (IOException exc)
+            catch (Exception exc)
             {
-                error = exc.getMessage();
+                error = "File " +in+ " sintax error : "+exc.getMessage();
             }
+            return false;
         }
 
         public int GetNumDimension()throws IOException
@@ -89,22 +168,31 @@ class ASCIIDataProvider implements DataProvider
 
         public float[] GetFloatData() throws IOException
         {
-           return decodeValues(x_prop.getProperty("Data"));
+           if( xPropertiesFile ) 
+               return decodeValues( x_prop.getProperty("Data") );
+           else
+               return y;
         }
 
         public double[] GetXDoubleData(){return null;}
-        public long[] GetXLongData(){return null;}
-        public float[] GetXData()   throws IOException
+        public long[]   GetXLongData(){return null;}
+        public float[]  GetXData()   throws IOException
         {
             if(file_x == null)
-                return decodeTimes(y_prop.getProperty("Time"));
+                if( yPropertiesFile )
+                    return decodeTimes(y_prop.getProperty("Time"));
+                else
+                    return x;
             else
-                return decodeValues(x_prop.getProperty("Data"));
+                if( xPropertiesFile )
+                    return decodeValues(x_prop.getProperty("Data"));
+                else
+                    return y;
          }
 
         public float[] GetYData() throws IOException
         {
-            return decodeValues(x_prop.getProperty("X"));
+            return decodeValues( x_prop.getProperty("X") );
         }
 
         public String GetTitle() throws IOException
@@ -429,4 +517,10 @@ class ASCIIDataProvider implements DataProvider
         return buf;
     }
 
+    public static void main(String args[])
+    {      
+        ASCIIDataProvider p = new ASCIIDataProvider();
+        p.GetWaveData("c:\\test.txt");
+
+    }
  }
