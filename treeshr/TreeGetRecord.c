@@ -85,6 +85,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
       {
 	if (nci.length)
 	{
+	  status = TreeCallHook(GetData,info,nid_in);
+	  if (status & !(status & 1))
+	    return 0;
 	  switch (nci.class)
 	  {
 	   case CLASS_APD:
