@@ -995,13 +995,13 @@ public class WaveInterface
 
         for (curr_wave = 0; curr_wave < num_waves; curr_wave++)
         {
-            if (shots[curr_wave] == shot && !evaluated[curr_wave] &&
+            if ( ( shot == 0 ) || ( shots[curr_wave] == shot && !evaluated[curr_wave] &&
                 (interpolates[curr_wave] ||
-                 markers[curr_wave] != Signal.NONE))
+                 markers[curr_wave] != Signal.NONE)) )
             {
                 w_error[curr_wave] = null;
-                evaluated[curr_wave] = true;
                 signals[curr_wave] = GetSignal(curr_wave, -HUGE, HUGE);
+                evaluated[curr_wave] = true;
                 if (signals[curr_wave] == null)
                 {
                     w_error[curr_wave] = curr_error;
@@ -1084,9 +1084,9 @@ public class WaveInterface
                    this.markers[curr_wave] == Signal.NONE))
             {
                 w_error[curr_wave] = null;
-                evaluated[curr_wave] = true;
-//                signals[curr_wave] = GetSignal(curr_wave, (double) - HUGE, (double) HUGE);
+//              signals[curr_wave] = GetSignal(curr_wave, (double) - HUGE, (double) HUGE);
                 signals[curr_wave] = GetSignal(curr_wave, (double) xmin, (double) xmax);
+                evaluated[curr_wave] = true;
                 if (signals[curr_wave] == null)
                 {
                     w_error[curr_wave] = curr_error;
@@ -1203,7 +1203,7 @@ public class WaveInterface
         long shot_list[] = null;
         String error;
 
-        if (in_shots == null || in_shots.trim().length() == 0)
+        if (in_shots == null || in_shots.trim().length() == 0 || dp == null)
             return null;
 
         shot_list = dp.GetShots(in_shots);
@@ -1306,7 +1306,7 @@ public class WaveInterface
         catch(IOException exc)
         {
             this.wave.SetMode(mode);
-            throw(exc);
+            // 10-2-2009 throw(exc);
         }
         return out_signal;
     }
@@ -1608,6 +1608,7 @@ public class WaveInterface
             return null;
         }
         // Se e' definito il campo x si assume full_flag true
+        //if is defined the x signal field we assumed full_flag to be true
         if (full_flag ||
             dimension > 1 ||
             (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0))
@@ -1623,6 +1624,12 @@ public class WaveInterface
         if (dimension == 2)
         {
             curr_y = wd.GetYData();
+            if(curr_y == null || curr_y.length == 0 )
+            {
+                curr_error = dp.ErrorString();
+                return null;               
+            }
+            
             if (curr_x == null)
             {
                 if (curr_x_double != null)
