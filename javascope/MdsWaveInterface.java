@@ -276,7 +276,7 @@ class MdsWaveInterface
         String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
             getMainShotStr();
         String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
-
+/* 12-2-2009 
         if( !getModified() && in_shot != null && c_shot_str != null)
         {
         
@@ -285,7 +285,7 @@ class MdsWaveInterface
             if(! getModified() )
                 return;
         }
-        
+ */       
         error = null;
 
 /*
@@ -317,7 +317,7 @@ Fix bug : shot expression must be always evaluated.
             }
             else
             {
-                if (def_vals.getIsEvaluated())
+                if (def_vals.getIsEvaluated() && def_vals.shots != null )
                     curr_shots = def_vals.shots;
                 else
                 {
