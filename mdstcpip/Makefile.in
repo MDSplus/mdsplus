@@ -90,7 +90,7 @@ install:
 	cp mdsipd @MAKEBINDIR@mdsipd
 
 @MAKEBINDIR@mdsip_server : mdsip_server
-        cp mdsip_server @MAKEBINDIR@mdsip_server
+	cp mdsip_server @MAKEBINDIR@mdsip_server
 
 @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) 
