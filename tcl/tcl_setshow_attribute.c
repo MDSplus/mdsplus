@@ -121,7 +121,7 @@ int TclSetAttribute()
         if (sts & 1)
            {
             if (!value_xd.dscL_l_length) value_xd.dscB_dtype = DTYPE_DSC;
-            sts = TreeSetXNci(nid,dsc_attname.dscA_pointer,(struct descriptor *)&value_xd,0);
+            sts = TreeSetXNci(nid,dsc_attname.dscA_pointer,(struct descriptor *)&value_xd);
            }
        }
     str_free1_dx(&dsc_ascValue);
