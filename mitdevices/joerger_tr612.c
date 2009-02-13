@@ -141,8 +141,8 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct *setup)
   int max_bursts[] = {8,4,3,2,2,2,2,1};
   float c_coef[6];
   short c_offset[6];
-  static float coefs[] = {5./4096.,5./4096.,10./4096.,10./4096.,20./4096.,20./4096.,20./4096,20./4096};
-  static float freq[] = {333E-9, 500e-9,1E-6,1E-5,0,0,0,0};
+  static float coefs[] = {5./4095.,5./4095.,10./4095.,10./4095.,20./4095.,20./4095.,20./4095,20./4095};
+  static float freq[] = {1./3e6, 500e-9,1E-6,1E-5,0,0,0,0};
   trigger_nid = setup->head_nid + JOERGER_TR612_N_TRIGGER;
   ext_clock_nid = setup->head_nid + JOERGER_TR612_N_EXT_CLOCK;
   pio(0,1,(short *)&reg2,&one);
