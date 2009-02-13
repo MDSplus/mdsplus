@@ -93,9 +93,7 @@ class ASCIIDataProvider implements DataProvider
         }
         
         private void loadSignalValues(String in) throws Exception
-        {
-            
-            
+        {                       
             BufferedReader bufR = new BufferedReader(new FileReader(in));
             
             String ln;
@@ -128,6 +126,8 @@ class ASCIIDataProvider implements DataProvider
                     y = resizeBuffer(y, count );                  
                 }
             }
+            if( x == null || y == null )
+                throw(new Exception("No data in file or file syntax error"));
             bufR.close();
         }
         
@@ -144,11 +144,10 @@ class ASCIIDataProvider implements DataProvider
                 {
                     loadSignalValues(in);
                 }
-                return propertiesFile;
             }
             catch (Exception exc)
             {
-                error = "File " +in+ " sintax error : "+exc.getMessage();
+                error = "File " +in+ " error : "+exc.getMessage();
             }
             return false;
         }
@@ -171,7 +170,11 @@ class ASCIIDataProvider implements DataProvider
            if( xPropertiesFile ) 
                return decodeValues( x_prop.getProperty("Data") );
            else
+           {
+               if( y == null )
+                   throw( new IOException(error));
                return y;
+           }
         }
 
         public double[] GetXDoubleData(){return null;}
@@ -182,17 +185,32 @@ class ASCIIDataProvider implements DataProvider
                 if( yPropertiesFile )
                     return decodeTimes(y_prop.getProperty("Time"));
                 else
+                {
+                   if( x == null )
+                       throw( new IOException(error));
                     return x;
+                }
             else
                 if( xPropertiesFile )
                     return decodeValues(x_prop.getProperty("Data"));
                 else
+                {
+                   if( y == null )
+                       throw( new IOException(error));
                     return y;
+                }
          }
 
         public float[] GetYData() throws IOException
         {
-            return decodeValues( x_prop.getProperty("X") );
+            if(xPropertiesFile)
+                return decodeValues( x_prop.getProperty("X") );
+            else
+            {
+                error = "2D signal in column ASCII file format not yet supported";
+                return null;
+                //throw( new IOException(error) );
+            }
         }
 
         public String GetTitle() throws IOException
