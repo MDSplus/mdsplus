@@ -131,7 +131,7 @@ void EventManager::resizeListener(void *addr, int newSize, SharedMemManager *mem
 	lock.lock();
 	ListenerAddress *eventAddr = (ListenerAddress *)addr;
 	eventAddr->getHandler()->resizeRetData(eventAddr->getRetDataDescr(), newSize, memManager);
-	delete eventAddr;
+	//delete eventAddr;
 	lock.unlock();
 }
 
