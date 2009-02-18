@@ -451,7 +451,10 @@ public:
 				if(currPend == extPendingHead)
 					extPendingHead = currPend->nxt;
 				else
-					currPend->prv->nxt = currPend->nxt;
+				{
+					if(currPend->prv)
+						currPend->prv->nxt = currPend->nxt;
+				}
 				if(currPend->nxt)
 					currPend->nxt->prv = currPend->prv;
 				delete currPend;
