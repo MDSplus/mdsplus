@@ -13,7 +13,7 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp \
-	ExitHandler.cpp TCPMessageManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp
+	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp
 	
 	
 SOURCES = 
