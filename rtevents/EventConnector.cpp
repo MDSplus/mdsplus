@@ -496,9 +496,9 @@ public:
 		if(exists)
 			return;
 		ExternalListener *newListener = new ExternalListener(addr);
-		newListener->prv = extListenerHead;
+		newListener->nxt = extListenerHead;
 		if(extListenerHead)
-			extListenerHead->nxt = newListener;
+			extListenerHead->prv = newListener;
 		extListenerHead = newListener;
 	}
 	void removeExternalListeners(NetworkAddress *addr)
