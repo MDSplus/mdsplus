@@ -341,9 +341,10 @@ public:
 					currPend->prv->nxt = currPend->nxt;
 				if(currPend->nxt)
 					currPend->nxt->prv = currPend->prv;
+				delete currPend;
+				return true;
 			}
-			delete currPend;
-			return true;
+			currPend = currPend->nxt;
 		}
 		return false;
 	}
@@ -456,6 +457,7 @@ public:
 				delete currPend;
 				return;
 			}
+			currPend = currPend->nxt;
 		}
 	}
 	
@@ -472,6 +474,7 @@ public:
 				retBuf = currPend->buf;
 				return;
 			}
+			currPend = currPend->nxt;
 		}
 	}
 		
@@ -518,6 +521,7 @@ public:
 				delete currListener;
 				return;
 			}
+			currListener = currListener->nxt;
 		}
 	}
 };
