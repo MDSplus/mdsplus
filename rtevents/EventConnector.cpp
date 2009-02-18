@@ -377,6 +377,7 @@ public:
 				currPend->sem.post();
 				break;
 			}
+			currPend = currPend->nxt;
 		}
 	}
 
