@@ -2001,7 +2001,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		int getCacheSize() { return cacheSize;}
 
 		CachedTreeNode *getCachedNode(char *path);
-		void synch();
+		static void synch();
 	};
 
 
