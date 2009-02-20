@@ -25,6 +25,8 @@ public class RFXPolControlSetup extends DeviceSetup {
   DeviceTable deviceTable6 = new DeviceTable();
   DeviceTable deviceTable3 = new DeviceTable();
   DeviceTable deviceTable5 = new DeviceTable();
+  DeviceTable ampereTurnTable = new DeviceTable();
+  DeviceTable verticalFieldTable = new DeviceTable();
   JPanel jPanel40 = new JPanel();
   GridLayout gridLayout8 = new GridLayout();
   JPanel jPanel10 = new JPanel();
@@ -74,14 +76,14 @@ public class RFXPolControlSetup extends DeviceSetup {
     jPanel9.setLayout(borderLayout3);
     jPanel9.setDebugGraphicsOptions(0);
     jPanel33.setLayout(borderLayout2);
-    gridLayout3.setRows(4);
+    gridLayout3.setRows(6);
     jPanel1.setLayout(gridLayout3);
     deviceTable6.setOffsetNid(1091);
     deviceTable6.setLabelString("Axi Feedforward");
-    deviceTable6.setNumCols(5);
+    deviceTable6.setNumCols(7);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes", "Tau1", "Alpha"});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable6.setUseExpressions(true);
@@ -96,13 +98,35 @@ public class RFXPolControlSetup extends DeviceSetup {
     deviceTable3.setPreferredHeight(20);
     deviceTable5.setOffsetNid(1093);
     deviceTable5.setLabelString("Axi Feedback");
-    deviceTable5.setNumCols(5);
+    deviceTable5.setNumCols(7);
     deviceTable5.setNumRows(1);
     deviceTable5.setIdentifier("");
-    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Min_IP_Curr"});
+    deviceTable5.setColumnNames(new String[] {"Kp", "Ki", "Kd", "Max_PVAT_Curr", "Min_IP_Curr", "NLin_I_Max", "T_Start_Int"});
         deviceTable5.setRowNames(null);
     deviceTable5.setPreferredHeight(20);
-        jPanel40.setLayout(gridLayout8);
+    
+    ampereTurnTable.setPreferredHeight(20);
+    ampereTurnTable.setRowNames(null);
+    ampereTurnTable.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+    ampereTurnTable.setIdentifier("");
+    ampereTurnTable.setNumRows(1);
+    ampereTurnTable.setNumCols(8);
+    ampereTurnTable.setLabelString("AmpereTurn Compensation Distribution");
+    ampereTurnTable.setOffsetNid(1095);
+
+    verticalFieldTable.setOffsetNid(1097);
+    verticalFieldTable.setLabelString("Vertical Field Distribution");
+    verticalFieldTable.setNumCols(8);
+    verticalFieldTable.setNumRows(1);
+    verticalFieldTable.setIdentifier("");
+    verticalFieldTable.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+    verticalFieldTable.setRowNames(null);
+    verticalFieldTable.setPreferredHeight(20);
+   
+    
+    
+    
+    jPanel40.setLayout(gridLayout8);
     gridLayout8.setColumns(1);
     gridLayout8.setHgap(0);
     gridLayout8.setRows(1);
@@ -123,6 +147,8 @@ public class RFXPolControlSetup extends DeviceSetup {
     jPanel1.add(deviceTable3, null);
     jPanel1.add(deviceTable6, null);
     jPanel1.add(deviceTable5, null);
+    jPanel1.add(ampereTurnTable, null);
+    jPanel1.add(verticalFieldTable, null);
     this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
   }
 
