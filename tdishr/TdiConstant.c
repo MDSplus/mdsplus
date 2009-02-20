@@ -15,8 +15,12 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 TdiRefStandard(Tdi1Constant)
 
-	status = MdsCopyDxXd((struct descriptor *)(long)(*TdiRefFunction[opcode].f3)(), out_ptr);
-	return status;
+/*
+     struct descriptor *(*fun)()=(struct descriptor *(*)())*TdiRefFunction[opcode].f3;
+        status = MdsCopyDxXd(fun(),out_ptr);
+*/
+     return MdsCopyDxXd(((struct descriptor *(*)())*TdiRefFunction[opcode].f3)(),out_ptr);
+     return status;
 }
 /*------------------------------------------------
 	Descriptor definitions of constants, MKS.
