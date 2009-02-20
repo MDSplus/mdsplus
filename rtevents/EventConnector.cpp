@@ -319,7 +319,7 @@ public:
 	
 	ExternalEvent(char *name, int retSize)
 	{
-		this->retSize = retSize;
+		this->retSize = this->totRetSize = retSize;
 		eventName = new char[strlen(name) + 1];
 		strcpy(eventName, name);
 		intPendingHead = NULL;
