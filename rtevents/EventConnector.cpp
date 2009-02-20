@@ -311,6 +311,7 @@ public:
 	char *eventName;
 	void *listenerAddr;
 	int retSize;
+	int totRetSize;
 	InternalPending *intPendingHead;
 	ExternalPending *extPendingHead;
 	ExternalListener *extListenerHead;
@@ -686,8 +687,16 @@ public:
 		else
 		{
 			int prevSize = extEvent->retSize;
-			ev.resizeListener(extEvent->listenerAddr, prevSize + retSize);
-			extEvent->retSize = prevSize + retSize;
+
+//If ret size larger than previous (singleEvent) retSize, make enough room
+			if(prevSize < retSize)
+			{
+				extEvent->totRetSize = (extEvent->totRetSize/extEvent->retSize)*retSize;
+				extEvent->totRetSize = retSize;
+			}
+			else
+				extEvent->totRetSize += extEvent->retSize;
+			ev.resizeListener(extEvent->listenerAddr, extEvent->totRetSize);
 		}
 		lock.unlock();
 	}
