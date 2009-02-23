@@ -153,8 +153,6 @@ EventHandler *EventManager::getHandler(char *name)
 
 void EventManager::trigger(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf)
 {
-
-	printf("EventManager type %d\n", type);
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
 	{

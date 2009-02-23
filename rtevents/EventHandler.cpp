@@ -48,6 +48,7 @@ void *EventHandler::addRetBuffer(int size, SharedMemManager *memManager)
 
 void EventHandler::removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager)
 {
+	printf("EventHandler::removeRetDataDescr\n");
 	lock.lock();
 	RetEventDataDescriptor *currDataDescr = (RetEventDataDescriptor *)retDataHead.getAbsAddress();
 	while(currDataDescr)
@@ -61,6 +62,7 @@ void EventHandler::removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  Sha
 			if(retDataHead.getAbsAddress() == currDataDescr)
 				retDataHead = currDataDescr->getNext();
 			retDataDescr->deallocateData(memManager);
+
 			memManager->deallocate((char *)retDataDescr, sizeof(RetEventDataDescriptor));
 			lock.unlock();
 			return;

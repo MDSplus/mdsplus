@@ -109,22 +109,32 @@ public:
 		this->data = data;
 		this->size = size;
 	}
-	char *getData() {return (char *)data.getAbsAddress();}
+	char *getData()
+	{
+		if(size == 0)
+			return 0; 
+		return (char *)data.getAbsAddress();
+	}
 	int getSize() {return size;}
 	void *getData(int &size)
 	{
 		size = this->size;
+		if(size == 0)
+			return 0; 
 		return data.getAbsAddress();
 	}
 	void deallocateData(SharedMemManager *memManager)
 	{
+		if(size == 0) 
+			return;
 		memManager->deallocate((char *)data.getAbsAddress(), size);
 	}
 	void resizeData(int newSize, SharedMemManager *memManager)
 	{
 		if(size != newSize)
 		{
-			memManager->deallocate((char *)data.getAbsAddress(), size);
+			if(size != 0)
+				memManager->deallocate((char *)data.getAbsAddress(), size);
 			data = memManager->allocate(newSize);
 			size = newSize;
 		}
