@@ -8,20 +8,20 @@
 #include <libroutines.h>
 #include <opcopcodes.h>
 #include <mdstypes.h>
-extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
+extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
 extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
 extern int TdiData();
 extern int TdiEvaluate();
 extern int TdiDecompile();
 extern int TdiCompile();
-extern void *createScalarData(int dtype, int length, char *ptr, void *unitsData, void *errorData, 
+extern void *createScalarData(int dtype, int length, char *ptr, void *unitsData, void *errorData,
 								  void *helpData, void *validationData, void *tree);
-extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, void *unitsData, void *errorData, 
+extern void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, void *unitsData, void *errorData,
 								  void *helpData, void *validationData);
-extern void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, void *unitsData, void *errorData, 
+extern void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, void *unitsData, void *errorData,
 								  void *helpData, void *validationData);
-extern void *createApdData(int nData, char **dataPtr, void *unitsData, void *errorData, 
+extern void *createApdData(int nData, char **dataPtr, void *unitsData, void *errorData,
 								  void *helpData, void *validationData);
 extern void *convertDataToDsc(void *data);
 extern void convertTime(int *time, char *retTime);
@@ -46,7 +46,7 @@ extern void *deserializeData(char *serialized, int size);
 
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
-	
+
 	dsc.class = clazz;
 	dsc.dtype = dtype;
 	dsc.length = length;
@@ -70,6 +70,8 @@ extern void *deserializeData(char *serialized, int size);
 	DESCRIPTOR_A_COEFF(arrNDsc, length, dtype, 0, MAX_DIMS, arsize);
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
+
+
 
 	if(nDims == 1)
 	{
@@ -135,7 +137,7 @@ void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndes
 
 	return xdPtr;
 }
-			
+
 void *convertToApdDsc(int ndescs, void **descs)
 {
 	EMPTYXD(emptyXd);
@@ -173,7 +175,7 @@ void *convertToApdDsc(int ndescs, void **descs)
 	free((char *)xds);
 	return xdPtr;
 }
-			
+
 void *evaluateData(void *dscPtr, int isEvaluate)
 {
 	EMPTYXD(emptyXd);
@@ -201,8 +203,8 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	void *helpData = 0;
 	void *validationData = 0;
 	struct descriptor_r *dscRPtr;
-	
-	
+
+
 /*	if(xdPtr->class != CLASS_XD)
 	{
 		printf("PANIC in convertFromDsc: not an XD\n");
@@ -212,14 +214,14 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 */
 	while(xdPtr && xdPtr->class == CLASS_XD)
 		xdPtr = (struct descriptor_xd *)xdPtr->pointer;
-	
+
 	dscPtr = (struct descriptor *)xdPtr;
 	if(!dscPtr) return NULL;
 
 	//Check for help, units and error
 	dscRPtr = (struct descriptor_r *)dscPtr;
-	while(dscRPtr->class == CLASS_R && (dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_WITH_UNITS 
-		|| dscRPtr->dtype == DTYPE_PARAM)) 
+	while(dscRPtr->class == CLASS_R && (dscRPtr->dtype == DTYPE_WITH_ERROR || dscRPtr->dtype == DTYPE_WITH_UNITS
+		|| dscRPtr->dtype == DTYPE_PARAM))
 	{
 		if(!errorData && dscRPtr->dtype == DTYPE_WITH_ERROR)
 		{
@@ -240,24 +242,24 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	}
 	dscPtr = (struct descriptor *)dscRPtr;
 
-	
+
 	switch(dscPtr->class) {
-		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer, unitsData, 
+		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer, unitsData,
 						   errorData, helpData, validationData, tree);
-		case CLASS_A : 
+		case CLASS_A :
 			{
 
 				ARRAY_COEFF(char , 64) *arrDscPtr;
 				arrDscPtr = (void *)dscPtr;
 				if(arrDscPtr->dimct > 1)
 				{
-					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct, 
+					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct,
 						(int *)&arrDscPtr->m, arrDscPtr->pointer, unitsData, errorData, helpData, validationData);
 				}
 				else
 				{
 					int dims = arrDscPtr->arsize/arrDscPtr->length;
-					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer, 
+					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer,
 						unitsData, errorData, helpData, validationData);
 				}
 			}
@@ -287,7 +289,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 					else
 						descs[i] = 0;
 				}
-				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, dscRPtr->pointer, dscRPtr->ndesc, descs, 
+				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, dscRPtr->pointer, dscRPtr->ndesc, descs,
 					unitsData, errorData, helpData, validationData);
 				free((char *)descs);
 				return retData;
@@ -315,7 +317,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 				free((char *)descs);
 				return retData;
 			}
-		default: 
+		default:
 			printf("CONVERSION NOT YET SUPPORTED\n");
 			exit(0);
 	}
@@ -343,7 +345,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	struct descriptor *dscPtr = (struct descriptor *)ptr;
 
 	status = TdiDecompile(dscPtr, &xd MDS_END_ARG);
-	if(!(status & 1)) 
+	if(!(status & 1))
     {
       printf("Error decompiling expression: %s\n", MdsGetMsg(status));
       return NULL;
@@ -632,11 +634,11 @@ extern void *deserializeData(char *serialized, int size)
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *xdPtr;
 	int status;
-	
+
 	xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
 	status = MdsSerializeDscIn(serialized, xdPtr);
-	if(!(status & 1)) 
+	if(!(status & 1))
 		return 0;
 	return xdPtr;
 }

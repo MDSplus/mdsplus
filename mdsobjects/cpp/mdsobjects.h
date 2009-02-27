@@ -2,6 +2,7 @@
 #define MDSOBJECTS_H
 
 #include <stdio.h>
+#include <iostream.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -137,6 +138,11 @@ void setActiveTree(Tree *tree);
 				return msg;
 			return MdsGetMsg(status);
 		}
+		friend ostream & operator << (ostream &outStream, MdsException &exc)
+		{
+		    return outStream << exc.what();
+		}
+		
 	};
 
 
@@ -1963,7 +1969,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNodeArray *getNodeWild(char *path, int usageMask);
 		TreeNodeArray *getNodeWild(char *path);
 		void setDefault(TreeNode *treeNode);
-		TreeNode *getDeault();
+		TreeNode *getDefault();
 		bool supportsVersions();
 		void setViewDate(char *date);
 

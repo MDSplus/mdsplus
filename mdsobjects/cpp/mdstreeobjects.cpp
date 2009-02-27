@@ -228,7 +228,7 @@ void Tree::setDefault(TreeNode *treeNode)
 		throw new TreeException(status);
 }
 
-TreeNode *Tree::getDeault()
+TreeNode *Tree::getDefault()
 {
 	int nid;
 
@@ -1052,8 +1052,8 @@ char **TreeNode::getTags(int *numRetTags)
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
 	resolveNid();
-	int status = beginTreeSegment(tree->getCtx(), getNid(), start->convertToDsc(), 
-		end->convertToDsc(), time->convertToDsc(), initialData->convertToDsc(), isCached(), getCachePolicy());
+	int status = beginTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(), 
+		end->convertToDsc(), time->convertToDsc(), isCached(), getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
