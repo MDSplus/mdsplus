@@ -33,7 +33,6 @@
 #define O_BINARY 0x0
 #endif
 
-
 #ifndef O_RANDOM
 #define O_RANDOM 0x0
 #endif
@@ -124,10 +123,27 @@ STATIC_THREADSAFE struct _host_list {char *host; int socket; struct sockaddr_in 
 STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
   int status;
   struct addrinfo *res;
+  struct addrinfo hints;
   struct sockaddr_in *in;
+  STATIC_THREADSAFE struct addr_list {
+    char *host;
+    struct sockaddr_in sockaddr;
+    struct addr_list *next;
+  } *AddrList=0;
   char hostpart[256] = {0};
   char portpart[256] = {0};
   int i;
+  struct addr_list *a;
+  for (a=AddrList;a;a=a->next) {
+    if (strcmp(host,a->host)==0) {
+      memcpy(sockaddr,&a->sockaddr,sizeof(*sockaddr));
+      return 0;
+    }
+  }
+  memset(&hints,0,sizeof(struct addrinfo));
+  hints.ai_family=AF_INET;
+  hints.ai_socktype=SOCK_STREAM;
+  hints.ai_protocol=IPPROTO_TCP;
   sscanf(host,"%[^:]:%s",hostpart,portpart);
   if (strlen(portpart) == 0)
   {
@@ -137,10 +153,22 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
       strcpy(portpart,"mdsip");
   }
   for (i=strlen(hostpart)-1;i>=0 && hostpart[i]==32;hostpart[i]=0,i--);
-  status=getaddrinfo(hostpart,portpart,0,&res);
+  status=getaddrinfo(hostpart,portpart,&hints,&res);
   if (status == 0) {
+    struct addr_list *p=malloc(sizeof(struct addr_list)),*next;
+    p->host=strcpy(malloc(strlen(host)+1),host);
+    memset(((struct sockaddr_in *)res->ai_addr)->sin_zero,0,sizeof(sockaddr->sin_zero));
+    memcpy(&p->sockaddr,(struct socaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
     memcpy(sockaddr,(struct sockaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
+    p->next=0;
     freeaddrinfo(res);
+    if (AddrList) {
+      for (next=AddrList; next->next; next=next->next);
+      next->next=p;
+    }
+    else {
+      AddrList=p;
+    }
   }
   return status;
 }
@@ -169,13 +197,14 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
   int connections = -1;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   struct sockaddr_in sockaddr;
-  int getaddr_status=GetAddr(host,&sockaddr);
+  int getaddr_status;
 #endif
   if (rtn == 0)
   {
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
     if (!(status & 1)) return -1;
   }
+  getaddr_status=GetAddr(host,&sockaddr);
   LockMdsShrMutex(&HostListMutex,&HostListMutex_initialized);
   for (nextone = &host_list,hostchk = host_list; hostchk; nextone = &hostchk->next, hostchk = hostchk->next)
   {
