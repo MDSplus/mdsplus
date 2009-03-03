@@ -2014,13 +2014,19 @@ old array is same size.
    return status;
  }
 
- int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
+int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
+
+int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
+  return _TreeGetSegmentedRecord(DBID,nid,data);
+}
+
+ int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data) {
    static int activated=0;
-   static int (*addr)(int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
+   static int (*addr)(void *, int, struct descriptor *, struct descriptor *, struct descriptor *, struct descriptor_xd *);
    int status=42;
    if (!activated) {
      static DESCRIPTOR(library,"XTreeShr");
-     static DESCRIPTOR(routine,"XTreeGetTimedRecord");
+     static DESCRIPTOR(routine,"_XTreeGetTimedRecord");
      status = LibFindImageSymbol(&library,&routine,&addr);
      if (status & 1) {
        activated=1;
@@ -2029,7 +2035,7 @@ old array is same size.
        return status;
      }
    }
-   status = (*addr)(nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
+   status = (*addr)(dbid, nid, TREE_START_CONTEXT.pointer, TREE_END_CONTEXT.pointer, TREE_DELTA_CONTEXT.pointer, data);
    return status;
  }
 

@@ -108,7 +108,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		   status = TreeGetDsc(info,attributes.facility_offset[STANDARD_RECORD_FACILITY],
 				       attributes.facility_length[STANDARD_RECORD_FACILITY],dsc);
 		 } else if ( status & 1 && attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1) {
-		   status = TreeGetSegmentedRecord(nid_in,dsc);
+		   status = _TreeGetSegmentedRecord(dbid,nid_in,dsc);
 		 } else
 		   status = TreeBADRECORD;
 	       }
