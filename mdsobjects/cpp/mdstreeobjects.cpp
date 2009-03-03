@@ -80,7 +80,7 @@ extern "C" int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endD
 								void *timeDsc, int isCached, int cachePolicy);
 extern "C" int getTreeNumSegments(void *dbid, int nid, int *numSegments, int isCached); 
 extern "C" int getTreeSegmentLimits(void *dbid, int nid, void **startDsc, void **endDsc, int isCached);
-extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, int isCached);
+extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc, int isCached);
 extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
 extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
 extern "C" int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
@@ -1102,13 +1102,15 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 Array *TreeNode::getSegment(int segIdx)
 {
 	void *dataDsc;
+	void *timeDsc;
 	
 	resolveNid();
-	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, isCached());
+	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc, isCached());
 	if(!(status & 1))
 		throw new TreeException(status);
 	Array *retData = (Array *)convertFromDsc(dataDsc);
 	freeDsc(dataDsc);
+	freeDsc(timeDsc);
 	return retData;
 }
 

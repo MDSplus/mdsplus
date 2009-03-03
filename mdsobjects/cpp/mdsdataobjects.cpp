@@ -653,7 +653,20 @@ char *Array::getByteArray(int *numElements)
 	char *retArr = new char[arsize/length];
 	int size = arsize/length;
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(char *)&ptr[i * length];
+	{
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
+	}
 	*numElements = size;
 	return retArr;
 }
@@ -662,7 +675,18 @@ short *Array::getShortArray(int *numElements)
 	short *retArr = new short[arsize/length];
 	int size = arsize/length;
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(short *)&ptr[i * length];
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
 	*numElements = size;
 	return retArr;
 }
@@ -671,7 +695,18 @@ int *Array::getIntArray(int *numElements)
 	int size = arsize/length;
 	int *retArr = new int[size];
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(int *)&ptr[i * length];
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
 	*numElements = size;
 	return retArr;
 }
@@ -680,7 +715,18 @@ _int64 *Array::getLongArray(int *numElements)
 	int size = arsize/length;
 	_int64 *retArr = new _int64[size];
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(_int64 *)&ptr[i * length];
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
 	*numElements = size;
 	return retArr;
 }
@@ -689,7 +735,18 @@ float *Array::getFloatArray(int *numElements)
 	int size = arsize/length;
 	float *retArr = new float[size];
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(float *)&ptr[i * length];
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
 	*numElements = size;
 	return retArr;
 }
@@ -698,7 +755,18 @@ double *Array::getDoubleArray(int *numElements)
 	int size = arsize/length;
 	double *retArr = new double[size];
 	for(int i = 0; i < size; i++)
-		retArr[i] = *(double *)&ptr[i * length];
+		switch(dtype) {
+			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
+			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
+			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
+			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
+			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
+			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+		}
 	*numElements = size;
 	return retArr;
 }

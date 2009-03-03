@@ -793,7 +793,7 @@ protected:
 		}
 		Float64Array(double *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(double), DTYPE_Q, nDims, dims);
+			setSpecific((char *)data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
