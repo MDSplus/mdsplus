@@ -55,8 +55,7 @@ static void printDecompiled(struct descriptor *inD)
 EXPORT void XTreeResetTimedAccessFlag() {timedAccessFlag = 0; }
 EXPORT int XTreeTestTimedAccessFlag() {return timedAccessFlag;}
 
-
-EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD,
+EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD,
 						struct descriptor_xd *outSignal)
 {
 	int status;
@@ -90,7 +89,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 
 	timedAccessFlag = 1;
 	//Get names for (possible) user defined  resample and squish funs
-	status = TreeGetXNci(nid, "ResampleFun", &xd);
+	status = (dbid)?_TreeGetXNci(dbid, nid, "ResampleFun", &xd):TreeGetXNci(nid, "ResampleFun", &xd);
 	if(status & 1 && xd.pointer) //If a user defined fun exists
 	{
 		nameLen = xd.pointer->length;
@@ -102,7 +101,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	else
 		resampleFunName[0] = 0;
 
-	status = TreeGetXNci(nid, "SquishFun", &xd);
+	status = (dbid)?_TreeGetXNci(dbid, nid, "SquishFun", &xd):TreeGetXNci(nid, "SquishFun", &xd);
 	if(status & 1 && xd.pointer) //If a user defined fun exists
 	{
 		nameLen = xd.pointer->length;
@@ -131,7 +130,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 
 	
 
-	status = TreeGetNumSegments(nid, &numSegments);
+	status = (dbid)?_TreeGetNumSegments(dbid, nid, &numSegments):TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1))
 		return status;
 
@@ -143,7 +142,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	{
 		while(startIdx < numSegments)
 		{
-			status = TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
+			status = (dbid)?_TreeGetSegmentLimits(dbid, nid, startIdx, &retStartXd, &retEndXd):TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
 			if(!(status & 1)) return status;
 			status = XTreeConvertToLongTime(retStartXd.pointer, &currStart);
 			status = XTreeConvertToLongTime(retEndXd.pointer, &currEnd);
@@ -175,7 +174,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 		segmentIdx = startIdx;
 		while(segmentIdx < numSegments)
 		{
-			status = TreeGetSegmentLimits(nid, segmentIdx, &retStartXd, &retEndXd);
+			status = (dbid)?_TreeGetSegmentLimits(dbid, nid, segmentIdx, &retStartXd, &retEndXd):TreeGetSegmentLimits(nid, segmentIdx, &retStartXd, &retEndXd);
 			if(!(status & 1)) return status;
 			status = XTreeConvertToLongTime(retStartXd.pointer, &currStart);
 			status = XTreeConvertToLongTime(retEndXd.pointer, &currEnd);
@@ -221,7 +220,7 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 
 	for(currIdx = startIdx, currSegIdx = 0; currIdx <= endIdx; currIdx++, currSegIdx++)
 	{
-		status = TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
+		status = (dbid)?_TreeGetSegment(dbid, nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]):TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
 		if(!(status & 1))
 		{
 			free((char *)signals);
@@ -341,3 +340,8 @@ EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descri
 	return status;
 }
 
+EXPORT int XTreeGetTimedRecord(int nid, struct descriptor *startD, struct descriptor *endD, struct descriptor *minDeltaD,
+						struct descriptor_xd *outSignal)
+{
+	return _XTreeGetTimedRecord(0, nid, startD, endD, minDeltaD, outSignal);
+}
