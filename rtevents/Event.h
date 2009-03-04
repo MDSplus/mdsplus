@@ -84,6 +84,11 @@ public:
 		return memManager->allocate(size);
 	}
 
+	void freeSharedBuffer(char *buf, int size)
+	{
+		memManager->deallocate(buf, size);
+	}
+
 	void reset()
 	{
 		EventReset();
