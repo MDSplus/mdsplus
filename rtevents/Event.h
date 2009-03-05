@@ -20,6 +20,11 @@ public:
 		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
 	}
 
+	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), ThreadAttributes *tAttr, bool copyBuf = true, int retDataSize = 0)
+	{
+		return evManager->addListener(eventName, tAttr, callback, memManager, copyBuf, retDataSize);
+	}
+
 	void *addListenerGlobal(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), int retDataSize = 0)
 	{
 		void *addr = evManager->addListener(eventName, 0, callback, memManager, true, retDataSize);

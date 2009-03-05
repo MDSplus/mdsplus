@@ -5,12 +5,21 @@
 #include "WindowsThread.h"
 #else
 #include <pthread.h>
+#include <sched.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "Runnable.h"
 #include "ThreadAttributes.h"
 struct  WithArg{
 	Runnable *rtn;
 	void *arg;
 	bool deallocate;
+	int stackSize;
+	bool useAttr;
+	int priority;
+	int policy;
+	int cpuMask[CPU_MASK_SIZE];
+
 };
 extern  "C" void handlerWithArg(WithArg *);
 
