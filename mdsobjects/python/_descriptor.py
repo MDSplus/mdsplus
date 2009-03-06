@@ -2,7 +2,7 @@ from scalar import makeScalar,Scalar
 from array import makeArray,Array,StringArray
 from _mdsdtypes import *
 from _mdsclasses import *
-from mdsdata import makeData
+from mdsdata import makeData,EmptyData
 from treenode import TreeNode,TreePath,TreeNodeArray
 from ident import Ident
 from apd import Apd,Dictionary,List
@@ -14,6 +14,7 @@ import os
 
 class descriptor(_C.Structure):
     __cached_values={}
+    indentation=0
 
     def addToCache(self,value):
         try:
@@ -29,9 +30,9 @@ class descriptor(_C.Structure):
     
     def __init__(self,value=None):
         self.dclass=CLASS_S
-        if value is None:
+        if value is None or isinstance(value,EmptyData):
             self.length=0
-            self.dtype=DTYPE_DSC
+            self.dtype=DTYPE_MISSING
             self.pointer=None
             return
         if isinstance(value,int):
