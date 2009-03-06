@@ -33,7 +33,10 @@ class TreeNode(Data):
         """
         self.__dict__['nid']=int(n);
         if tree is None:
-            self.tree=Tree._activeTree
+            try:
+                self.tree=Tree._activeTree
+            except:
+                self.tree=Tree()
         else:
             self.tree=tree
     
@@ -113,6 +116,8 @@ class TreeNode(Data):
                 except:
                     return None
             return self.tree.getNode(str(self))
+        if name.lower() == 'record':
+            return self.getData()
         if name.lower() == 'tags':
             return self.getTags()
         if name.lower() == 'usage':
@@ -470,7 +475,8 @@ class TreeNode(Data):
     
     def getData(self):
         """Return data"""
-        return self.record
+        from _treeshr import TreeGetRecord
+        return TreeGetRecord(self)
 
     def putData(self,data):
         """Store data
@@ -636,13 +642,8 @@ class TreeNode(Data):
                 
     def getNumSegments(self):
         """return number of segments contained in this node"""
-        try:
-            Tree.lock()
-            self.restoreContext()
-            ans=Data.execute('getNumSegments($)',self.nid)
-        finally:
-            Tree.unlock()
-        return ans
+        from _treeshr import TreeGetNumSegments
+        return makeData(TreeGetNumSegments(self))
 
     def getSegmentStart(self,idx):
         """return start of segment"""
@@ -772,3 +773,92 @@ class TreeNodeArray(Data):
         finally:
             Tree.unlock()
         return ans
+
+class CachedTreeNode(TreeNode):
+    """Node belonging to a cached tree"""
+
+    def getData(self):
+        """Return data"""
+        from _treeshr import RTreeGetRecord
+        return RTreeGetRecord(self)
+
+    def getNumSegments(self):
+        """return number of segments contained in this node"""
+        from _treeshr import RTreeGetNumSegments
+        return makeData(RTreeGetNumSegments(self))
+
+    def getCachePolicy(self):
+        """return cache policy for this node"""
+        try:
+            return self.cachePolicy
+        except:
+            return 0
+
+    def setCachePolicy(self,policy):
+        """set cache policy for this node"""
+        self.cachePolicy=policy
+
+    def flush(self):
+        from _treeshr import RTreeFlushNode
+        RTreeFlushNode(self.tree.ctx,self.nid)
+
+    def putData(self,value):
+        from _treeshr import RTreePutRecord
+        return RTreePutRecord(self,value,self)
+
+    def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
+        from _treeshr import RTreeBeginSegment
+        return RTreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
+
+    def putSegment(self,data,idx):
+        from _treeshr import RTreePutSegment
+        return RTreePutSegment(self,data,idx)
+
+    def putRow(self,bufsize,array,timestamp):
+        from _treeshr import RTreePutRow
+        return RTreePutRow(self,bufsize,array,timestamp)
+    
+    def putLastRow(self,bufsize,array,timestamp):
+        from _treeshr import RTreePutRow
+        try:
+            if self.cachePolicy == 3:
+                self.cachePolicy = 4
+            status = RTreePutRow(self,bufsize,array,timestamp)
+        finally:
+            if self.cachePolicy == 4:
+                self.cachePolicy = 3
+        return status
+    
+    def updateSegment(self,start,end,dim,idx):
+        """Update a segment"""
+        from _treeshr import RTreeUpdateSegment
+        return RTreeUpdateSegment(self,start,end,dim,idx)
+
+    def getNumSegments(self):
+        """Get number of segments"""
+        from _treeshr import RTreeGetNumSegments
+        return RTreeGetNumSegments(self)
+    
+    def putTimestampedSegment(self,array,timestampArray):
+        """Put timestamped segment"""
+        from _treeshr import RTreePutTimestampedSegment
+        return RTreePutTimestampedSegment(self,array,timestampArray)
+
+    def getSegmentStart(self,idx):
+        """return start of segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            l=RTreeGetSegmentStart(self,idx)
+            return l[0]
+        else:
+            return None
+
+    def getSegmentEnd(self,idx):
+        """return end of segment"""
+        num=self.getNumSegments()
+        if num > 0 and idx < num:
+            l=RTreeGetSegmentEnd(self,idx)
+            return l[1]
+        else:
+            return None
+
