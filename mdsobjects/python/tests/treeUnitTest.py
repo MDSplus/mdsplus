@@ -19,9 +19,9 @@ class treeTests(TestCase):
 
     def openTrees(self):
         local_data.pulse=Tree('cmod',1080326005)
-        self.assertEqual(str(local_data.pulse),'Tree(""CMOD"",1080326005)')
+        self.assertEqual(str(local_data.pulse),'Tree("CMOD",1080326005)')
         local_data.model=Tree('cmod',-1)
-        self.assertEqual(str(local_data.model),'Tree(""CMOD"",-1)')
+        self.assertEqual(str(local_data.model),'Tree("CMOD",-1)')
         return
 
     def getNode(self):
@@ -59,7 +59,7 @@ class treeTests(TestCase):
         x=array(int32(0)).repeat(len(members)+len(children))
         x[0:len(members)]=members.nid_number.data()
         x[len(members):]=children.nid_number.data()
-        self.assertEqual((makeData(x)==top.descendants.nid_number).all(),True)
+        self.assertEqual((makeArray(x)==top.descendants.nid_number).all(),True)
         self.assertEqual((top.descendants.nid_number==top.getDescendants().nid_number).all(),True)
         self.assertEqual(top.child.child.depth,3)
         self.assertEqual(top.getNumDescendants(),len(x))
@@ -71,7 +71,7 @@ class treeTests(TestCase):
         devs=local_data.pulse.getNodeWild('\\ENGINEERING::TOP.***','DEVICE')
         dev=devs[0].conglomerate_nids
         self.assertEqual((dev.nid_number==devs[0].getConglomerateNodes().nid_number).all(),True)
-        self.assertEqual((dev.conglomerate_elt==makeData(array(range(len(dev)))+1)).all(),True)
+        self.assertEqual((dev.conglomerate_elt==makeArray(array(range(len(dev)))+1)).all(),True)
         for idx in range(len(dev)):
             self.assertEqual(dev[idx].conglomerate_elt,idx+1)
             self.assertEqual(dev[idx].getConglomerateElt(),idx+1)
