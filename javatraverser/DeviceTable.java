@@ -595,19 +595,22 @@ public class DeviceTable extends DeviceComponent
         String dataString = "[";
         for(int i = 0; i < n_data; i++)
         {
-            if(items[i] == null || items[i].equals(""))
+            /*if(items[i] == null || items[i].equals(""))
             {
                 dataString += "]";
                 break;
             }
-
+*/
             if(i % numCols == 0)
                 dataString += "[";
-            dataString += items[i];
+            if(items[i].trim().equals(""))
+                dataString += "0";
+            else
+                dataString += items[i];
             if(i % numCols == numCols - 1)
             {
                 dataString += "]";
-                if(i < n_data - 1 && items[i+1] != null && !items[i+1].equals(""))
+                if(i < n_data - 1 && items[i+1] != null)// && !items[i+1].equals(""))
                     dataString += ",";
                 else
                    if(i == n_data - 1)
