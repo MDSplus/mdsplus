@@ -175,6 +175,7 @@ write(*, 'Acquired events: ', _act_segments);
 
 	_event_size = (0x000000FF & long(_data[0])) | (0x0000FF00 & (long(_data[1]) << 8)) | (0x00FF0000 & (long(_data[2]) << 16)) | (0x0F000000 & (long(_data[3]) << 24));
 	_event_size = _event_size * 4;
+
     	if(_exp_size != _event_size)
     	{
             DevLogErr(_nid, 'Internal Error: expected event size diferent from actual size: '// _exp_size // _event_size);
