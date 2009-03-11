@@ -59,14 +59,14 @@ int get_file_count( int dbType )
 
 	switch( dbType ) {
 		case CTS_DB:
-			(struct MODULE *)dbptr = CTSdb;
+			dbptr = (void *)CTSdb;
 			entrySize              = MODULE_ENTRY;
 			FileIsMapped           = &CTSdbFileIsMapped;
 			sprintf(dbFileName, "%s", CTS_DB_FILE);
 			break;
 
 		case CRATE_DB:
-			(struct CRATE *)dbptr  = CRATEdb;
+			dbptr  = (void *)CRATEdb;
 			entrySize              = CRATE_ENTRY;
 			FileIsMapped           = &CRATEdbFileIsMapped;
 			sprintf(dbFileName, "%s", CRATE_DB_FILE);

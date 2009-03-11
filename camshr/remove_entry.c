@@ -85,12 +85,12 @@ int remove_entry( int dbType, int index )
 	// cull db specific info
 	switch( dbType ) {
 		case CTS_DB:
-			(struct MODULE *)dbptr = CTSdb;
+			dbptr = (void *)CTSdb;
 			entrySize              = MODULE_ENTRY; 
 			break;
 
 		case CRATE_DB:
-			(struct CRATE *)dbptr  = CRATEdb;
+			dbptr  = (void *)CRATEdb;
 			entrySize              = CRATE_ENTRY;  
 			break;
 	}

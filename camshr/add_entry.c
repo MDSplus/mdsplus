@@ -75,13 +75,13 @@ int add_entry( int dbType, char *newEntry )
 	// cull db specific info
 	switch( dbType ) {
 		case CTS_DB:
-			(struct MODULE *)dbptr = CTSdb;
-			entrySize              = MODULE_ENTRY;
+			dbptr = (void *)CTSdb;
+			entrySize = MODULE_ENTRY;
 			break;
 
 		case CRATE_DB:
-			(struct CRATE  *)dbptr = CRATEdb;
-			entrySize              = CRATE_ENTRY;
+			dbptr = (void *)CRATEdb;
+			entrySize = CRATE_ENTRY;
 			break;
 	}
 

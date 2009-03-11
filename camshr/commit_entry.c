@@ -53,11 +53,11 @@ int commit_entry( int dbType )
 
 	switch( dbType ) {
 		case CTS_DB:
-			(struct MODULE *)dbptr = CTSdb;
+			dbptr = (void *)CTSdb;
 			break;
 
 		case CRATE_DB:
-			(struct CRATE  *)dbptr = CRATEdb;
+			dbptr = (void *)CRATEdb;
 			break;
 	}
 
