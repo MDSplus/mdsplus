@@ -155,7 +155,7 @@ void setActiveTree(Tree *tree);
 			this->status = status;
 			msg = 0;
 		}
-		TreeException(char *message)
+		TreeException(const char *message)
 		{
 			msg = new char[strlen(message) + 1];
 			strcpy(msg, message);
@@ -167,7 +167,7 @@ void setActiveTree(Tree *tree);
 	class EXPORT DataException: public MdsException
 	{
 	public:
-		DataException(int clazz, int dtype, char *inMsg)
+		DataException(int clazz, int dtype, const char *inMsg)
 		{
 			if(!inMsg)
 			{
@@ -188,10 +188,10 @@ void setActiveTree(Tree *tree);
 
 class EXPORT Data 
 {
-		friend EXPORT Data *compile(char *expr, ...);
-		friend EXPORT Data *compile(char *expr, Tree *tree...);
-		friend EXPORT Data *execute(char *expr, ...);
-		friend EXPORT Data *execute(char *expr, Tree *tree ...);
+		friend EXPORT Data *compile(const char *expr, ...);
+		friend EXPORT Data *compile(const char *expr, Tree *tree...);
+		friend EXPORT Data *execute(const char *expr, ...);
+		friend EXPORT Data *execute(const char *expr, Tree *tree ...);
 		friend EXPORT Data *deserialize(char *serialized, int size);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
