@@ -2011,6 +2011,11 @@ extern "C" void TreeRestoreContext(void *ctx);
 	};
 
 EXPORT void deleteData(Data *);
+EXPORT Data *deserialize(char *serialized, int size);
+EXPORT	Data *compile(char *expr, ...);
+EXPORT	Data *compile(char *expr, Tree *tree...);
+EXPORT	Data *execute(char *expr, Tree *tree...);
+EXPORT	Data *execute(char *expr, ...);
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
 EXPORT void deleteNativeArray(char *array);
