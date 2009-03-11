@@ -2010,7 +2010,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		static void synch();
 	};
 
-
+EXPORT void deleteData(Data *);
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
 EXPORT void deleteNativeArray(char *array);
