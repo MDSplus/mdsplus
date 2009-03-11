@@ -1,6 +1,6 @@
 #include "mdsobjects.h"
 //#include "mdstree.h"
-using namespace MDSobjects;
+using namespace MDSplus;
 
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
@@ -403,7 +403,7 @@ Data *Data::getDimensionAt(int dimIdx)
 }
 
 
-EXPORT	Data *MDSobjects::compile(char *expr, ...)
+EXPORT	Data *MDSplus::compile(char *expr, ...)
 	{
 		int nArgs = 0;
 		void *args[MAX_ARGS];
@@ -419,7 +419,7 @@ EXPORT	Data *MDSobjects::compile(char *expr, ...)
 		}
 		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
 	}
-EXPORT	Data *MDSobjects::compile(char *expr, Tree *tree...)
+EXPORT	Data *MDSplus::compile(char *expr, Tree *tree...)
 	{
 		int nArgs = 0;
 		void *args[MAX_ARGS];
@@ -436,7 +436,7 @@ EXPORT	Data *MDSobjects::compile(char *expr, Tree *tree...)
 		setActiveTree(tree);
 		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
 	}
-EXPORT	Data *MDSobjects::execute(char *expr, Tree *tree...)
+EXPORT	Data *MDSplus::execute(char *expr, Tree *tree...)
 	{
 		int nArgs = 0, i;
 		void *args[MAX_ARGS];
@@ -459,7 +459,7 @@ EXPORT	Data *MDSobjects::execute(char *expr, Tree *tree...)
 		return evalData;
 	}
 
-EXPORT	Data *MDSobjects::execute(char *expr, ...)
+EXPORT	Data *MDSplus::execute(char *expr, ...)
 	{
 		int nArgs = 0, i;
 		void *args[MAX_ARGS];
@@ -523,7 +523,7 @@ void * Data::completeConversionToDsc(void *dsc)
 
 
 //Controlled deletion of dynamic data
-EXPORT void MDSobjects::deleteData(Data *data)
+EXPORT void MDSplus::deleteData(Data *data)
 {
 	if(!data) return;
 	data->refCount--;
@@ -791,7 +791,7 @@ void *Apd::convertToDsc()
 }
 
 
-EXPORT Data *MDSobjects::deserialize(char *serialized, int size)
+EXPORT Data *MDSplus::deserialize(char *serialized, int size)
 {
 	void *dscPtr = deserializeData(serialized, size);
 	if(!dscPtr) throw new TreeException("Cannot build Data instance from serialized content");
@@ -814,10 +814,10 @@ EXPORT Data *Uint8Array::deserialize()
 
 
 //Required in Windows Debug configuation to propely de-allocate native arrays
-EXPORT void MDSobjects::deleteNativeArray(char *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(short *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(int *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(long *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(float *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(double *array){delete [] array;}
-EXPORT void MDSobjects::deleteNativeArray(char **array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}

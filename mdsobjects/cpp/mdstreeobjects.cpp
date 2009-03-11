@@ -2,7 +2,7 @@
 #include <usagedef.h>
 
 //#include "mdstree.h"
-using namespace MDSobjects;
+using namespace MDSplus;
 
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
@@ -1237,12 +1237,12 @@ void CachedTree::synch()
 	RTreeSynch();
 }
 
-void MDSobjects::setActiveTree(Tree *tree)
+void MDSplus::setActiveTree(Tree *tree)
 {
 	TreeSwitchDbid(tree->getCtx());
 }
 
-Tree *MDSobjects::getActiveTree()
+Tree *MDSplus::getActiveTree()
 {
 	char name[1024];
 	int shot;

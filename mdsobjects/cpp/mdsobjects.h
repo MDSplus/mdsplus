@@ -113,7 +113,7 @@ extern "C" {
 */
 using namespace std;
 
-namespace MDSobjects  {
+namespace MDSplus  {
 
 class Tree;
 void setActiveTree(Tree *tree);
