@@ -36,13 +36,15 @@ class CAENV1740(object):
     	self.cvA2719 = 3L                    # Optical link piggy-back                      
     	self.cvA32_S_DATA = 0x0D             # A32 supervisory data access                  */
     	self.cvD32 = 0x04		    # D32
-	self.Structure = Structure
+    	self.cvD64 = 0x08
+    	self.N_DATA_0= 68
 
         return
 
     def init(self,arg):
-        from MDSobjects import *
-	from ctypes import *
+      try:
+        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 	import time
 	baseNid = self.node.getNid()
  
@@ -208,12 +210,17 @@ class CAENV1740(object):
     	status = caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8100), byref(c_int(4)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
     	caenLib.CAENVME_End(handle)
     	return 1
+      except:
+	print 'Generic Error' 
+	caenLib.CAENVME_End(handle)
+	return 0
 
 ################################TRIGGER###################################
 
     def trigger(self,arg):
-        from MDSobjects import *
-	from ctypes import *
+      try:
+        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 	import time
 	baseNid = self.node.getNid()
     	boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
@@ -236,12 +243,17 @@ class CAENV1740(object):
 
     	caenLib.CAENVME_End(handle)
     	return 1
+      except:
+	print 'Generic Error' 
+	caenLib.CAENVME_End(handle)
+	return 0
 
 ####################################STORE###################################
 
     def store(self,arg):
-        from MDSobjects import Tree, TreeNode, Int16Array, Int32, Int64, Float32, Float64, Signal, Data
-	from ctypes import CDLL, c_int, c_short, c_long, byref
+      try:
+        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
 	import time
 	baseNid = self.node.getNid()
     	boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
@@ -301,6 +313,10 @@ class CAENV1740(object):
     	    return 0
     
         print 'Acquired segments: ', actSegments.value
+	if actSegments.value == 0:
+    	    caenLib.CAENVME_End(handle)
+    	    return 1
+
     
     #Compute Segment Size
         try:
@@ -375,107 +391,83 @@ class CAENV1740(object):
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     			    	channels[group*8][c[group*8+0]] = segment.data[groupOffset+rpnt] & 0x00000FFF
     				c[group*8+0] = c[group*8+0]+1
-    #			    	channels[group*8].append(segment.data[groupOffset+rpnt] & 0x00000FFF)
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     			    	channels[group*8][c[group*8+0]] = (segment.data[groupOffset+rpnt] & 0x00FFF000) >> 12
     				c[group*8+0] = c[group*8+0]+1
-    #			    	channels[group*8].append((segment.data[groupOffset+rpnt] & 0x00FFF000) >> 12)
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     			    	channels[group*8][c[group*8+0]] = ((segment.data[groupOffset+rpnt] & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8)
     				c[group*8+0] = c[group*8+0]+1
-    ##			    	channels[group*8].append(((segment.data[groupOffset+rpnt] & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8))
     		        if rpnt % 9 == 1:
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     			    	channels[group*8+1][c[group*8+1]] = (segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4
     				c[group*8+1] = c[group*8+1]+1
-    #			    	channels[group*8+1].append((segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4)
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     			    	channels[group*8+1][c[group*8+1]] = (segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16
     				c[group*8+1] = c[group*8+1]+1
-    #			    	channels[group*8+1].append((segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16)
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     			    	channels[group*8+1][c[group*8+1]] = ((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4)
     				c[group*8+1] = c[group*8+1]+1
-    #			    	channels[group*8+1].append(((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4))
     		        if rpnt % 9 == 2:
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     			    	channels[group*8+2][c[group*8+2]] = (segment.data[groupOffset+rpnt] &   0x000FFF00) >> 8
     				c[group*8+2] = c[group*8+2]+1
-    #			    	channels[group*8+2].append((segment.data[groupOffset+rpnt] &   0x000FFF00) >> 8)
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+2][c[group*8+2]] = (segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20
     				c[group*8+2] = c[group*8+2]+1
-    #		    	    	channels[group*8+2].append((segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20) 
     		        if rpnt % 9 == 3:
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+2][c[group*8+2]] = segment.data[groupOffset+rpnt] &  0x00000FFF
     				c[group*8+2] = c[group*8+2]+1
-    #		    	    	channels[group*8+2].append(segment.data[groupOffset+rpnt] &  0x00000FFF)
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     		    	    	channels[group*8+3][c[group*8+3]] = (segment.data[groupOffset+rpnt]  & 0x00FFF000) >> 12
     				c[group*8+3] = c[group*8+3]+1
-    #		    	    	channels[group*8+3].append((segment.data[groupOffset+rpnt]  & 0x00FFF000) >> 12) 
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+3][c[group*8+3]] = ((segment.data[groupOffset+rpnt]  & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8)
     				c[group*8+3] = c[group*8+3]+1
-    #		    	    	channels[group*8+3].append(((segment.data[groupOffset+rpnt]  & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8))
     		        if rpnt % 9 == 4:
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+3][c[group*8+3]] = (segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4
     				c[group*8+3] = c[group*8+3]+1
-    #		    	    	channels[group*8+3].append((segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4)
-    			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
+   			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     		    	    	channels[group*8+4][c[group*8+4]] = (segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16
     				c[group*8+4] = c[group*8+4]+1
-    #		    	    	channels[group*8+4].append((segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16)
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+4][c[group*8+4]] = ((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4)
     				c[group*8+4] = c[group*8+4]+1
-    #		    	    	channels[group*8+4].append(((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4))
     		        if rpnt % 9 == 5:
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+4][c[group*8+4]] = (segment.data[groupOffset+rpnt]  & 0x000FFF00) >> 8
     				c[group*8+4] = c[group*8+4]+1
-    #		    	    	channels[group*8+4].append((segment.data[groupOffset+rpnt]  & 0x000FFF00) >> 8)
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     		    	    	channels[group*8+5][c[group*8+5]] = (segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20
     				c[group*8+5] = c[group*8+5]+1
-    #		    	    	channels[group*8+5].append((segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20)
     		        if rpnt % 9 == 6:
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+5][c[group*8+5]] = segment.data[groupOffset+rpnt]  & 0x00000FFF
     				c[group*8+5] = c[group*8+5]+1
-    #		    	    	channels[group*8+5].append(segment.data[groupOffset+rpnt]  & 0x00000FFF)
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+5][c[group*8+5]] = (segment.data[groupOffset+rpnt] & 0x00FFF000) >> 12
     				c[group*8+5] = c[group*8+5]+1
-    #		    	    	channels[group*8+5].append((segment.data[groupOffset+rpnt] & 0x00FFF000) >> 12)
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     		    	    	channels[group*8+6][c[group*8+6]] = ((segment.data[groupOffset+rpnt] & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8)
     				c[group*8+6] = c[group*8+6]+1
-    #		    	    	channels[group*8+6].append(((segment.data[groupOffset+rpnt] & 0xFF000000) >> 24) | ((segment.data[groupOffset+rpnt+1] & 0x0000000F) << 8))
     		        if rpnt % 9 == 7:
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+6][c[group*8+6]] = (segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4
     				c[group*8+6] = c[group*8+6]+1
-    #		    	    	channels[group*8+6].append((segment.data[groupOffset+rpnt] & 0x0000FFF0) >> 4)
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+6][c[group*8+6]] = (segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16
     				c[group*8+6] = c[group*8+6]+1
-    #		    	    	channels[group*8+6].append((segment.data[groupOffset+rpnt] & 0x0FFF0000) >> 16)
     			    if sampleCount >= currStartIdx and sampleCount <= currEndIdx :
     		    	    	channels[group*8+7][c[group*8+7]] = ((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4)
     				c[group*8+7] = c[group*8+7]+1
-    #		    	    	channels[group*8+7].append(((segment.data[groupOffset+rpnt] & 0xF0000000) >> 28) | ((segment.data[groupOffset+rpnt+1] & 0x000000FF) << 4))
     		        if rpnt % 9 == 8:
     			    if sampleCount +1 >= currStartIdx and sampleCount + 1 <= currEndIdx :
     		    	    	channels[group*8+7][c[group*8+7]] = (segment.data[groupOffset+rpnt] & 0x000FFF00) >> 8
     				c[group*8+7] = c[group*8+7]+1
-    #		    	    	channels[group*8+7].append((segment.data[groupOffset+rpnt] & 0x000FFF00) >> 8)
     			    if sampleCount +2 >= currStartIdx and sampleCount +2 <= currEndIdx :
     		    	    	channels[group*8+7][c[group*8+7]] = (segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20
     				c[group*8+7] = c[group*8+7]+1
-    #		    	    	channels[group*8+7].append((segment.data[groupOffset+rpnt] & 0xFFF00000) >> 20)
     		        if rpnt % 9 == 8:
     		    	    sampleCount = sampleCount + 3
     		        rpnt = rpnt + 1
@@ -521,4 +513,9 @@ class CAENV1740(object):
     
         caenLib.CAENVME_End(handle)
         return 1
+      except:
+	print 'Generic Error' 
+	caenLib.CAENVME_End(handle)
+	return 0
+
  

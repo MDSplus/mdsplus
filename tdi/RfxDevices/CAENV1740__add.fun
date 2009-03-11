@@ -1,7 +1,7 @@
 public fun CAENV1740__add(in _path, out _nidout)
 {
     write(*, _path);
-    DevAddStart(_path, 'CAENV1740', 134, _nidout);
+    DevAddPyStart(_path,'CAENV1740',134,['from RfxDevices import CAENV1740'],_nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':BOARD_ID', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':VME_ADDRESS', 'NUMERIC', *, *, _nid);
