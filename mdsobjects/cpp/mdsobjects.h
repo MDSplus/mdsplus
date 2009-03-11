@@ -2,11 +2,10 @@
 #define MDSOBJECTS_H
 
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <iostream.h>
 #include <exception>
 #include <ncidef.h>
 #include <dbidef.h>
@@ -112,6 +111,7 @@ extern "C" {
 }
 
 */
+using namespace std;
 
 namespace MDSobjects  {
 
