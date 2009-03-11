@@ -117,7 +117,7 @@ namespace MDSplus  {
 
 class Tree;
 void setActiveTree(Tree *tree);
-
+Tree *getActiveTree();
 /////Exceptions//////////////
 
 	class EXPORT MdsException
