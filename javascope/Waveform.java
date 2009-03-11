@@ -649,7 +649,7 @@ public class Waveform
               }
               repaint();
               sendUpdateEvent();
-
+          
           }
           public void keyReleased(KeyEvent e)
           {}
@@ -1634,9 +1634,15 @@ public class Waveform
     if (execute_print) {
       return;
     }
+    
     Insets i = this.getInsets();
+    
     Dimension d = getSize();
     paint(g, d, NO_PRINT);
+    
+    if (mode == MODE_POINT && send_profile) 
+        sendProfileEvent();
+
   }
 
 

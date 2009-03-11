@@ -940,10 +940,6 @@ Fix bug : shot expression must be always evaluated.
                 return "xz(y)";
             case Signal.MODE_YZ:
                 return "yz(x)";
-            /*
-            case Signal.MODE_YX:
-                return "y & x";
-            */
             case Signal.MODE_IMAGE:
                 return "Image";
         }
@@ -956,10 +952,6 @@ Fix bug : shot expression must be always evaluated.
             return Signal.MODE_XZ;
         if (mode.equals("yz(x)"))
             return Signal.MODE_YZ;
-        /*
-        if (mode.equals("yz(x)"))
-            return Signal.MODE_YX;
-        */
         if (mode.equals("Image"))
             return Signal.MODE_IMAGE;
         return 0;

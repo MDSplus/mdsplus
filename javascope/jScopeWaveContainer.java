@@ -530,14 +530,13 @@ remove 28/06/2005
         return main_shot_str;
     }
 
-    public void SetMainShot(String main_shot_str)
+    public void SetMainShot(String shot_str)
     {
-        if (main_shot_str == null || !main_shot_str.equals(this.main_shot_str))
+        if ( shot_str != null )
         {
             try
             {
-                this.main_shot_str = main_shot_str.trim();
-                EvaluateMainShot(this.main_shot_str);
+                EvaluateMainShot( shot_str.trim() );
             }
             catch (IOException exc)
             {
@@ -574,7 +573,7 @@ remove 28/06/2005
                 main_shot_error = "Main shot value Undefine";
                 return;
             }
-            long_data = WaveInterface.GetShotArray(in_shots, dp);
+            long_data = WaveInterface.GetShotArray(in_shots, def_vals.experiment_str, dp);
             if (main_shot_error == null)
                 main_shots = long_data;
 
@@ -871,7 +870,7 @@ remove 28/06/2005
         {
             //e.printStackTrace();
             RepaintAllWave();
-            //throw (new Exception("UpdateAllWaves " + e));
+            //throw (e);
         }
     }
 
@@ -1101,14 +1100,10 @@ remove 28/06/2005
         IOException
     {
         String prop;
-        int read_rows[] =
-            {
-            0, 0, 0, 0};
+        int read_rows[] = {0, 0, 0, 0};
 
-        
         resetMaximizeComponent();
-        
-        
+                
         prop = pr.getProperty(prompt + ".columns");
         if (prop == null)
             throw (new IOException("missing columns keyword"));
@@ -1124,7 +1119,6 @@ remove 28/06/2005
 
         print_event = pr.getProperty(prompt + ".print_event");
 
-
         server_item = buildDataServerItem(pr, prompt);
         DataServerItem server_item_conf = DataServerFromClient(server_item);
         if(server_item_conf != null)
@@ -1139,7 +1133,7 @@ remove 28/06/2005
                                           JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
             if(out == JOptionPane.OK_OPTION)
 */
-                server_item = server_item_conf;
+            server_item = server_item_conf;
         }
 
         for (int c = 1; c <= MAX_COLUMN; c++)
@@ -1187,15 +1181,13 @@ remove 28/06/2005
 
         def_vals.ylabel = pr.getProperty(prompt + ".global_1_1.y_label");
 
-        def_vals.experiment_str = pr.getProperty(prompt +
-                                                 ".global_1_1.experiment");
+        def_vals.experiment_str = pr.getProperty(prompt + ".global_1_1.experiment");
 
         def_vals.title_str = pr.getProperty(prompt + ".global_1_1.title");
 
         def_vals.upd_event_str = pr.getProperty(prompt + ".global_1_1.event");
 
-        def_vals.def_node_str = pr.getProperty(prompt +
-                                               ".global_1_1.default_node");
+        def_vals.def_node_str = pr.getProperty(prompt + ".global_1_1.default_node");
 
         prop = pr.getProperty(prompt + ".global_1_1.horizontal_offset");
         {
@@ -1425,7 +1417,7 @@ remove 28/06/2005
             this.server_item = server_item;
         }
         catch (IOException e)
-        {
+        {     
             server_item = null;
             dp = null;
             throw (new Exception(e.getMessage()));
@@ -1902,4 +1894,18 @@ remove 28/06/2005
         }
         file_diag = null;
     }
+    
+    ProgressMonitor progressMonitor;
+    public void startUpdatingPanel()
+    {
+        progressMonitor = new ProgressMonitor(this,
+                                      "Running a Long Task",
+                                      "", 0, 0);
+    }
+
+    public void stopUpdatingPanel()
+    {
+        progressMonitor.close();
+    }
+    
 }

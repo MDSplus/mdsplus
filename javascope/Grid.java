@@ -56,9 +56,28 @@ public class Grid
         this.reversed = reversed;
     }
 
-    private int BuildGrid(double val[], int mode, double xmax, double ymax,
-                          double xmin,
-                          double ymin, boolean xlog, boolean ylog)
+    
+    static public double evalStep(double min, double max, int numStep)
+    {
+        double step = 0;
+        
+        double delta = Math.abs(max - min);
+        int pow = (int) Math.log10(delta) - 1;
+        
+        double k = Math.pow(10, pow);
+        
+        int n1 = (int) ( delta / ( 2.  * k) );
+        int n2 = (int) ( delta / ( 5.  * k)  );
+        int n3 = (int) ( delta / ( 10. * k)  );
+        
+        return ( 2. * k );
+        
+    }
+    
+    private int BuildGridNew(double val[], int mode, 
+                          double xmax, double ymax,
+                          double xmin, double ymin, 
+                          boolean xlog, boolean ylog)
     {
 
 
@@ -66,14 +85,129 @@ public class Grid
             ymax = ymin + 1E-10;
         if (xmax < xmin)
             xmax = xmin + 1E-10;
+        
         double step, curr, curr_max, curr_min,
                xrange = xmax - xmin,
                yrange = ymax - ymin;
+        
         boolean greater = false;
         boolean is_log;
         int grid_step;
         int count = 0, i, num_steps, rem_step = 1;
         Float f;
+        
+        if (xrange <= 0)
+            xrange = (double) 1E-3;
+        if (yrange <= 0)
+            yrange = (double) 1E-3;
+
+        if (mode == IS_X)
+        {
+            grid_step = grid_step_x;
+            curr_max = xmax + 0.1 * xrange;
+            curr_min = xmin - 0.1 * xrange;
+            step = (xmax - xmin) / grid_step;
+            
+            step = evalStep(xmin, xmax,  grid_step);
+            
+            is_log = xlog;
+        }
+        else
+        {
+            grid_step = grid_step_y;
+            curr_max = ymax + (double) 0.1 * yrange;
+            curr_min = ymin - (double) 0.1 * yrange;
+            step = (ymax - ymin) / grid_step;
+            is_log = ylog;
+        }
+
+        if (step > 1)
+        {
+            greater = true;
+            while (step / 10. > 1.)
+            {
+                step /= 10;
+                count++;
+            }
+        }
+        else
+        {
+            greater = false;
+            while (step < 1 && step > 0)
+            {
+                step *= 10;
+                count++;
+            }
+        }
+        
+        step = (double) ( (int) step);
+        num_steps = (int) step;
+
+        if (greater)
+            for (i = 0; i < count; i++)
+                step *= 10;
+        else
+            for (i = 0; i < count; i++)
+                step /= 10;
+        
+        curr = (long) (curr_min / step) * step;
+        if (curr > curr_min)
+            curr -= (long) ( (curr - curr_min) / step) * step;
+
+        while (curr >= curr_min)
+            curr -= step;
+        
+        for (i = 0; i < 50 && curr < curr_max + step; i++)
+        {
+            val[i] = (long) (curr / step + 0.5) * step;
+//Fix per la stampa dello 0
+            if (val[i] < step / 100 && val[i] > -step / 100)
+                val[i] = 0;
+
+            curr += step;
+        }
+        if (mode == IS_X)
+        {
+            x_step = (double) step / num_steps;
+            num_x_steps = num_steps;
+        }
+        else
+        {
+            y_step = (double) step / num_steps;
+            num_y_steps = num_steps;
+        }
+
+        return i;
+    }
+
+    
+    
+    
+    
+    
+    
+    private int BuildGrid(double val[], int mode, 
+                          double xmax, double ymax,
+                          double xmin, double ymin, 
+                          boolean xlog, boolean ylog)
+    {
+
+
+        if (ymax < ymin)
+            ymax = ymin + 1E-10;
+        if (xmax < xmin)
+            xmax = xmin + 1E-10;
+        
+        double step, curr, curr_max, curr_min,
+               xrange = xmax - xmin,
+               yrange = ymax - ymin;
+        
+        boolean greater = false;
+        boolean is_log;
+        int grid_step;
+        int count = 0, i, num_steps, rem_step = 1;
+        Float f;
+        
         if (xrange <= 0)
             xrange = (double) 1E-3;
         if (yrange <= 0)
@@ -525,4 +659,10 @@ public class Grid
         return 1 + diffMillis/(1000*3600*24);
     }
 
+    public static void main(String args[])
+    {
+        double step = Grid.evalStep(0., 1., 10);
+        step = Grid.evalStep(0., 10., 10);
+        step = Grid.evalStep(0., 100., 5);
+    }
 }

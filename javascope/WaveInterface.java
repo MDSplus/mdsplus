@@ -69,7 +69,7 @@ public class WaveInterface
     boolean keep_ratio = true;
     boolean horizontal_flip = false;
     boolean vertical_flip = false;
-    int signal_select = -1;
+    int     signal_select = -1;
     private Frames frames;
 
     protected boolean is_async_update = false;
@@ -683,8 +683,10 @@ public class WaveInterface
             num_expr = num_waves / num_shot;
         }
 
+
         if (is_image)
         {
+            modified = true;
             shots = curr_shots;
             return true;
         }
@@ -1193,11 +1195,45 @@ public class WaveInterface
 
     public long[] GetShotArray(String in_shots) throws IOException
     {
-        long curr_shots[] = GetShotArray(in_shots, dp);
+        long curr_shots[] = GetShotArray(in_shots, experiment, dp);
         return curr_shots;
     }
 
-    static public long[] GetShotArray(String in_shots, DataProvider dp) throws
+    
+    static String processShotExpression(String shotExpr, String exp)
+    {
+        
+        String outStr = "";
+        int idx = 0;
+        int prevIdx = 0;
+        
+        shotExpr = shotExpr.trim();
+        
+        if( exp == null || exp.length() == 0 )
+            return shotExpr;
+             
+        while( (idx = shotExpr.indexOf('0', prevIdx) ) != -1 )
+        {
+            
+            if( ( idx > 0 && Character.isLetterOrDigit( shotExpr.charAt( idx - 1 )) ) ||
+                ( idx < ( shotExpr.length() - 1 ) && Character.isLetterOrDigit( shotExpr.charAt( idx + 1 )) ) )
+            {
+                outStr += shotExpr.substring(prevIdx, idx+1);
+            }
+            else
+            {
+                outStr += shotExpr.substring(prevIdx, idx) + "current_shot(\""+exp+"\")";
+            }
+            prevIdx = idx + 1;                
+        }
+        if( outStr.length() == 0 )
+            return shotExpr;
+        else
+            outStr += ( prevIdx < shotExpr.length() ? shotExpr.substring(prevIdx, shotExpr.length()) :"" );
+        return outStr;
+    }
+    
+    static public long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
         IOException
     {
         long shot_list[] = null;
@@ -1206,7 +1242,10 @@ public class WaveInterface
         if (in_shots == null || in_shots.trim().length() == 0 || dp == null)
             return null;
 
-        shot_list = dp.GetShots(in_shots);
+        String shotExpr = in_shots;
+        if( exp != null )
+            shotExpr = processShotExpression(in_shots, exp);
+        shot_list = dp.GetShots( shotExpr );
         if (shot_list == null || shot_list.length == 0 ||
             shot_list.length > MAX_NUM_SHOT)
         {

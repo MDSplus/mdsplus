@@ -33,7 +33,7 @@ public class jScope
     UpdateEventListener, ConnectionListener, Printable
 {
 
-    static final String VERSION = "jScope (version 7.4.2)";
+    static final String VERSION = "jScope (version 7.4.4)";
     static public boolean is_debug = false;
 
     public static final int MAX_NUM_SHOT = 30;
@@ -1746,10 +1746,19 @@ public class jScope
         return brief_error_i.getState();
     }
 
-    public boolean IsShotDefined()
+    public boolean IsShotDefinedXX()
     {
-        return (shot_t.getText() != null &&
-                shot_t.getText().trim().length() > 0);
+        String s = shot_t.getText();
+        
+        if ( s != null && s.trim().length() > 0)
+            return true;
+        s = def_values.shot_str;
+        if (s != null && s.trim().length() > 0)
+        {
+            shot_t.setText(s);
+            return true;
+        }
+        return false;
     }
 
     public boolean equalsString(String s1, String s2)
@@ -1812,6 +1821,16 @@ public class jScope
 
     public void UpdateAllWaves()
     {
+        
+        String s = shot_t.getText();
+        String s1 = def_values.shot_str;
+        
+        // Set main shot text field with 
+        // global setting shot if defined.  
+        if ( ( s == null || s.trim().length() == 0 ) && 
+              ( s1 != null && s1.trim().length() !=  0 ) ) 
+            shot_t.setText(s1);
+        
         executing_update = true;
         apply_b.setText("Abort");
         setPublicVariables(pub_var_diag.getPublicVar());
@@ -2094,6 +2113,7 @@ public class jScope
         if (curr_directory != null && curr_directory.trim().length() != 0)
             file_diag.setCurrentDirectory(new File(curr_directory));
 
+  
         javax.swing.Timer t = new javax.swing.Timer(20, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -2809,8 +2829,7 @@ public class jScope
                 height = new Integer(st.nextToken("x+")).intValue();
                 xpos = new Integer(st.nextToken("+")).intValue();
                 ypos = new Integer(st.nextToken("+")).intValue();
-                Dimension screenSize = Toolkit.getDefaultToolkit().
-                    getScreenSize();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 if (height > screenSize.height)
                     height = screenSize.height;
                 if (width > screenSize.width)
@@ -2893,8 +2912,11 @@ public class jScope
 remove 28/06/2005
             wave_panel.SetServerItem(dsi);
 */
-            SetDataServer(dsi);
-
+            
+                
+            if( ! SetDataServer(dsi) )
+                SetDataServer(new DataServerItem("Not Connected", null, null,
+                                             "NotConnectedDataProvider", null, null, null, false));
           //SetFastNetworkState(wave_panel.GetFastNetworkState());
             UpdateAllWaves();
         }
@@ -2904,8 +2926,8 @@ remove 28/06/2005
             JOptionPane.showMessageDialog(this, e.getMessage(),
                                           "alert LoadConfiguration", JOptionPane.ERROR_MESSAGE);
         }
-        SetWindowTitle("");
-        System.gc();
+        //SetWindowTitle("");
+        //System.gc();
     }
 
     protected jScope buildNewScope(int x, int y)

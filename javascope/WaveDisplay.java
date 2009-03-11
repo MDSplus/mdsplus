@@ -1,6 +1,5 @@
 /* $Id$ */
 import java.awt.*;
-import java.net.URL;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -9,9 +8,8 @@ import java.security.*;
 public class WaveDisplay
     extends JApplet
     implements WaveformListener {
-  MultiWaveform w;
+    MultiWaveform w;
   WavePopup wave_popup;
-  private Frame frame;
   JTextField shot_txt;
   ProfileDialog profDialog;
 
@@ -22,7 +20,7 @@ public class WaveDisplay
 
     JPanel panel = new JPanel();
     w = new MultiWaveform();
-    w.setWaveInterface(new WaveInterface());
+    w.setWaveInterface(new WaveInterface(w));
     w.addWaveformListener(this);
 
     setBackground(Color.lightGray);
@@ -103,6 +101,7 @@ public class WaveDisplay
     int we_id = we.getID();
 
     switch (we_id) {
+      case WaveformEvent.MEASURE_UPDATE :
       case WaveformEvent.POINT_UPDATE:
       case WaveformEvent.POINT_IMAGE_UPDATE:
         s = we.toString();
@@ -121,6 +120,9 @@ public class WaveDisplay
         s = we.status_info;
         showStatus(s);
         break;
+      default:
+        showStatus(we.toString());
+                
     }
 
   }
@@ -133,91 +135,177 @@ public class WaveDisplay
       return false;
     }
   }
-
-  private void getSignalsParameter() {
-    String url = null, color, marker, name, title;
-    String sig_param;
-    String param;
-    String global_autentication, signal_autentication,
-        autentication;
-    boolean async_update = false;
-
-    global_autentication = getParameter("AUTENTICATION");
-
-    param = getParameter("ASYNC_UPDATE");
-    if (param != null) {
-      async_update = this.translateToBoolean(param);
-
-    }
-    try {
-      if ( (sig_param = getParameter("SIGNAL")) != null) {
-
-        signal_autentication = getParameterValue(sig_param, "autentication");
-        if (signal_autentication != null) {
-          autentication = signal_autentication;
-        }
-        else {
-          autentication = global_autentication;
-
-        }
-        url = getParameterValue(sig_param, "url");
-
-        //Signal s = DataAccessURL.getSignal(url, autentication);
+  
+//  public void addSignals( String url, boolean isImage )
+   public void addSignals()
+  {
+      String url = "mds://150.178.3.242/a/14000/\\emra_it";
+      boolean isImage = false;
+              
+    try
+    {
+        System.out.println("Add signal : " + url);
         DataAccess da = DataAccessURL.getDataAccess(url);
-        //if(s != null)
-        if (da != null) {
-          da.setPassword(autentication);
+        if (da != null) 
+        {
+                  
+//       da.setPassword(autentication);
           da.setProvider(url);
 
           WaveInterface wi = w.getWaveInterface();
           wi.SetDataProvider(da.getDataProvider());
           wi.experiment = da.getExperiment();
+
+          System.out.println("Signal Name : " + da.getSignalName() );
+
+          if( !isImage )
+          {
+            wi.AddSignal(da.getSignalName());
+ 
+            System.out.println("Shots : "+da.getShot());
+            wi.setShotArray(da.getShot());
+          
+            if( wi.StartEvaluate() == 1 )
+                wi.EvaluateOthers();
+
+            if (  wi.signals != null && (wi.signals[0]) != null ) 
+            {
+                w.Update(wi.signals);
+            } else {
+                JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
+                                          JOptionPane.ERROR_MESSAGE);
+            }           
+        } else {
+              Frames f = new Frames();
+              DataAccessURL.getImages(url, f);
+              if (f != null) {
+                w.UpdateImage(f);
+              }
+            }
+          }
+        }
+        catch (Exception e) {
+          if (e instanceof AccessControlException) {
+            JOptionPane.showMessageDialog(this,
+                                          e.toString() + "\n url " + url +
+                                          "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
+                                          "alert",
+                                          JOptionPane.ERROR_MESSAGE);
+          }
+          else {
+            e.printStackTrace();  
+            JOptionPane.showMessageDialog(this,
+                                          e.toString(),
+                                          "alert",
+                                          JOptionPane.ERROR_MESSAGE);
+          }
+         }     
+      }
+
+   public void resetSignal()
+   {
+          WaveInterface wi = w.getWaveInterface();
+          
+          if( wi.signals != null)
+          {
+            wi.Erase();
+          }
+          w.Erase();
+   }
+   
+   public void addSignal(String signalParams, String globalAutentication, boolean asyncUpdate, boolean image)
+   {
+        String url = null, color, marker, name, title;
+        String param;
+        String signalAutentication, autentication;
+        
+        if( signalParams == null ) return ;
+
+    try {
+      if ( !image  ) {
+
+        signalAutentication = getParameterValue(signalParams, "autentication");
+        if (signalAutentication != null) {
+          autentication = signalAutentication;
+        }
+        else {
+          autentication = globalAutentication;
+        }
+         
+        
+        url = getParameterValue(signalParams, "url");
+
+        DataAccess da = DataAccessURL.getDataAccess(url);
+        if (da != null) 
+        {
+                    
+          da.setPassword(autentication);
+          da.setProvider(url);
+
+          WaveInterface wi = w.getWaveInterface();
+          
+          if( wi.signals != null)
+            wi.Erase();
+          
+          wi.SetDataProvider(da.getDataProvider());
+          wi.experiment = da.getExperiment();
+
+          System.out.println("Signal Name : " + da.getSignalName() );
+          System.out.println("Shots : "+da.getShot());
+
           wi.AddSignal(da.getSignalName());
-
-          wi.full_flag = !async_update;
+ 
+          wi.full_flag = !asyncUpdate; 
           wi.setShotArray(da.getShot());
-          wi.StartEvaluate();
-          wi.EvaluateOthers();
-
+          
+          if( wi.StartEvaluate() == 1 )
+            wi.EvaluateOthers();
+          
           Signal s;
-          if (wi.signals != null && (s = wi.signals[0]) != null) {
-            color = getParameterValue(sig_param, "color");
+          if (wi.signals != null && (s = wi.signals[0]) != null) 
+          {
+            color = getParameterValue(signalParams, "color");
             if (color != null) {
               s.setColor(new Color(Integer.decode(color).intValue()));
 
             }
-            marker = getParameterValue(sig_param, "marker");
+            marker = getParameterValue(signalParams, "marker");
             s.setMarker(marker);
 
-            name = getParameterValue(sig_param, "name");
+            name = getParameterValue(signalParams, "name");
             if (name != null) {
               s.setName(name);
             }
             else {
               s.setName(wi.in_y[0]);
-
             }
-            title = getParameterValue(sig_param, "title");
+            title = getParameterValue(signalParams, "title");
             if (title != null) {
               w.SetTitle(title);
             }
           }
+          else
+          {
+            JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
+                                          JOptionPane.ERROR_MESSAGE);
+             
+          }          
           w.Update(wi.signals);
         }
       }
       else {
         String aspect_ratio, horizontal_flip, vertical_flip;
-        if ( (sig_param = getParameter("IMAGE")) != null) {
-          url = getParameterValue(sig_param, "url");
+        
+          url = getParameterValue(signalParams, "url");
           Frames f = new Frames();
 
-          horizontal_flip = getParameterValue(sig_param, "h_flip");
+          horizontal_flip = getParameterValue(signalParams, "h_flip");
           if (horizontal_flip != null &&
               horizontal_flip.toLowerCase().equals("true")) {
             f.setHorizontalFlip(true);
 
           }
-          vertical_flip = getParameterValue(sig_param, "v_flip");
+          vertical_flip = getParameterValue(signalParams, "v_flip");
           if (vertical_flip != null &&
               vertical_flip.toLowerCase().equals("true")) {
             f.setVerticalFlip(true);
@@ -226,20 +314,19 @@ public class WaveDisplay
 
           DataAccessURL.getImages(url, f);
           if (f != null) {
-            name = getParameterValue(sig_param, "name");
+            name = getParameterValue(signalParams, "name");
             if (name != null) {
               f.setName(name);
 
             }
-            aspect_ratio = getParameterValue(sig_param, "ratio");
+            aspect_ratio = getParameterValue(signalParams, "ratio");
             if (aspect_ratio != null &&
                 aspect_ratio.toLowerCase().equals("false")) {
               f.setAspectRatio(false);
 
-            }
+            
             w.UpdateImage(f);
           }
-
         }
       }
     }
@@ -252,15 +339,42 @@ public class WaveDisplay
                                       JOptionPane.ERROR_MESSAGE);
       }
       else {
+        e.printStackTrace();  
         JOptionPane.showMessageDialog(this,
                                       e.toString(),
                                       "alert",
                                       JOptionPane.ERROR_MESSAGE);
       }
+    }                
+   }
+   
+   
+  private void getSignalsParameter() {
+    String sig_param;
+    String param;
+    String global_autentication;
+    boolean async_update = false;
+    boolean image = false;
+
+    global_autentication = getParameter("AUTENTICATION");
+
+    param = getParameter("ASYNC_UPDATE");
+    if (param != null) {
+      async_update = this.translateToBoolean(param);
     }
+        
+    if ( (sig_param = getParameter("SIGNAL")) == null)
+    {
+        sig_param = getParameter("IMAGE");
+        image = true;
+    }   
+    
+    addSignal(sig_param, global_autentication, async_update, image);
+
   }
 
-  protected String getParameterValue(String context, String param) {
+  protected String getParameterValue(String context, String param) 
+  {
     boolean found = false;
     String value = null;
 
@@ -275,7 +389,6 @@ public class WaveDisplay
         else {
           return null;
         }
-
       }
       value = null;
     }
