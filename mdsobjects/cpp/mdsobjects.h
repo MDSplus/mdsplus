@@ -180,6 +180,24 @@ Tree *getActiveTree();
 				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
 			}
 		}
+		DataException(int clazz, int dtype, const char *inMsg)
+		{
+			if(!inMsg)
+			{
+				msg = new char[64];
+				sprintf(msg, "Class = %d Dtype = %d", clazz, dtype);
+			}
+			else
+			{
+				msg = new char[strlen(inMsg) + 64];
+				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
+			}
+		}
+		DataException(int clazz, int dtype, const string inMsg)
+		{
+			msg = new char[inMsg.length() + 64];
+			sprintf(msg, "%s  Class = %d Dtype = %d", inMsg.c_str(), clazz, dtype);
+		}
 	};
 
 
@@ -2016,6 +2034,8 @@ EXPORT	Data *compile(char *expr, ...);
 EXPORT	Data *compile(char *expr, Tree *tree...);
 EXPORT	Data *execute(char *expr, Tree *tree...);
 EXPORT	Data *execute(char *expr, ...);
+Tree *getActiveTree();
+void setActiveTree(Tree *tree);
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
 EXPORT void deleteNativeArray(char *array);
