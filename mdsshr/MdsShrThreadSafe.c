@@ -5,6 +5,7 @@
 #endif
 #include <STATICdef.h>
 #include "mdsshrthreadsafe.h"
+#include <stdlib.h>
 
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;

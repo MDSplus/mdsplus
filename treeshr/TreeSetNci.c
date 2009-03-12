@@ -131,7 +131,7 @@ int TreeSetNciItm(int nid, int code, int value)
 int _TreeFlushOff(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID *nid_ptr = (NID *)nid;
+  NID *nid_ptr = (NID *)&nid;
   int       node_number;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
@@ -148,7 +148,7 @@ int _TreeFlushOff(void *dbid, int nid)
 int _TreeFlushReset(void *dbid,  int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID *nid_ptr = (NID *)nid;
+  NID *nid_ptr = (NID *)&nid;
   int       node_number;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))

@@ -356,7 +356,8 @@ typedef struct big_node_linkage {
     }\
     nodeptr->INFO.LINK_INFO.big_linkage->field=(a);\
   } else {\
-    nodeptr->INFO.LINK_INFO.big_linkage->field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; nodeptr->INFO.LINK_INFO.big_linkage->field = swapint((char *)&nodeptr->INFO.LINK_INFO.big_linkage->field);\
+    nodeptr->INFO.LINK_INFO.big_linkage->field = (NODE *)(((((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0) + (char *)0); \
+    nodeptr->INFO.LINK_INFO.big_linkage->field = (NODE *)((swapint((char *)&nodeptr->INFO.LINK_INFO.big_linkage->field)) + (char *)0);\
   }
 #define link_parent(dblist,nodeptr,a,b)  \
   if (((char *)(a) - (char *)(b)) >= 2^32) {\
@@ -453,7 +454,7 @@ efficiently.
 ************************************/
 typedef struct
 {
-  unsigned char rfa[6] PACK_ATTR;
+  unsigned char rfa[6];
 }         RFA; 
 
 #ifdef RFA_MACROS
@@ -470,7 +471,7 @@ typedef struct record_header
 {
   unsigned  short rlength PACK_ATTR;
   int       node_number PACK_ATTR;
-  RFA       rfa PACK_ATTR;
+  RFA       rfa;
 }         RECORD_HEADER;
 
 #ifdef HAVE_WINDOWS_H

@@ -37,6 +37,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
+#include <string.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -44,7 +45,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
                      for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-
+#define arglist_nargs(nargs) (void *)((char *)0+(nargs));
 extern void *DBID;
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
@@ -54,7 +55,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   void *arglist[256];
   va_list   incrmtr;
   count(nargs);
-  arglist[0] = (void *)(nargs + 2);
+  arglist[0] = arglist_nargs(nargs+2);
   arglist[1] = DBID;
   arglist[2] = nid_dsc;
   arglist[3] = method_ptr;
@@ -63,7 +64,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
     arglist[i + 1] = va_arg(incrmtr, struct descriptor *);
   va_end(incrmtr);
   arglist[nargs+2] = MdsEND_ARG;
-  return (int)LibCallg(arglist,_TreeDoMethod);
+  return (char *)LibCallg(arglist,_TreeDoMethod)-(char *)0;
 }
 
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
@@ -85,7 +86,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   int nargs;
   void *arglist[256];
   count(nargs);
-  arglist[0] = (void *)nargs;
+  arglist[0] = arglist_nargs(nargs);
 
   if (nid_dsc->dtype != DTYPE_NID || (!nid_dsc->pointer))
     return TreeNOMETHOD;
@@ -125,19 +126,19 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       if (status & 1) {
 	for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
 	nargs += 2;
-	arglist[0] = (void *)nargs;
+	arglist[0] = arglist_nargs(nargs);
 	arglist[1] = &exp;
 	arglist[nargs] = MdsEND_ARG;
-	status = (int)LibCallg(arglist,addr);
+	status = (char *)LibCallg(arglist,addr)-(char *)0;
 	if (status & 1) {
 	  STATIC_CONSTANT DESCRIPTOR(getstat,"public _method_status");
 	  int stat;
 	  DESCRIPTOR_LONG(stat_d,&stat);
-	  arglist[0]=(void *)3;
+	  arglist[0] = arglist_nargs(3);
 	  arglist[1]=&getstat;
 	  arglist[2]=&stat_d;
 	  arglist[3]=MdsEND_ARG;
-	  status = (int)LibCallg(arglist,addr);
+	  status = (char *)LibCallg(arglist,addr) - (char *)0;
 	  if (status & 1) status=stat;
 	}
 	if (status == TdiUNKNOWN_VAR)
@@ -163,7 +164,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     {
       void *old_dbid = DBID;
       DBID = dbid;
-      status = (int)LibCallg(arglist, addr);
+      status = (char *)LibCallg(arglist, addr) - (char *)0;
       DBID = old_dbid;
       if (arglist[nargs])
       {
@@ -190,10 +191,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       {
         for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
         nargs += 2;
-        arglist[0] = (void *)nargs;
+	arglist[0] = arglist_nargs(nargs);
         arglist[1] = &exp;
         arglist[nargs] = MdsEND_ARG;
-        status = (int)LibCallg(arglist,addr);
+        status = (char *)LibCallg(arglist,addr)-(char *)0;
         if (status == TdiUNKNOWN_VAR)
           status = TreeNOMETHOD;
       }

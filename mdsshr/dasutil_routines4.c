@@ -477,9 +477,10 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
 		/*=======================================================
 		 * First arg is destination string:  a descriptor
 		 *======================================================*/
-    if (!(is_ddescr(dsc_dest) || is_cdescr(dsc_dest)))
-        return((char *)(dasmsg(0,"str_concat: dest must be descriptor")));
-
+    if (!(is_ddescr(dsc_dest) || is_cdescr(dsc_dest))) {
+      dasmsg(0,"str_concat: dest must be descriptor");
+      return (char *)0;
+    }
 		/*=======================================================
 		 * Set up argList ...
 		 *======================================================*/
@@ -640,8 +641,10 @@ char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
    {
     char  *p;
 
-    if (!(is_ddescr(dsc_ret) || is_cdescr(dsc_ret)))
-        return((char *)dasmsg(0,"str_dupl_char: 1st arg not a descriptor"));
+    if (!(is_ddescr(dsc_ret) || is_cdescr(dsc_ret))) {
+        dasmsg(0,"str_dupl_char: 1st arg not a descriptor");
+	return (char *)0;
+    }
 
     p = malloc(icnt+1);
     if (!p)

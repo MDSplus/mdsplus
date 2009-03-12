@@ -69,6 +69,7 @@
 #include <librtl_messages.h>
 #include <STATICdef.h>
 #include <mdstypes.h>
+#include <stdlib.h>
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
