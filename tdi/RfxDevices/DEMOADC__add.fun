@@ -1,9 +1,8 @@
 public fun DEMOADC__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'DEMOADC', 27, _nidout);
-	DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
+    DevAddStart(_path, 'DEMOADC', 26, _nidout);
+    DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
-    DevAddNode(_path // ':CHANNELS', 'NUMERIC', 4, *, _nid);
     DevAddNode(_path // ':CLOCK_MODE', 'TEXT', 'INTERNAL', *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':CLOCK_SOURCE', 'NUMERIC', *, *, _nid);

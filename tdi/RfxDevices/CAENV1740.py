@@ -42,23 +42,23 @@ class CAENV1740(object):
         return
 
     def init(self,arg):
+      from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
+      import time
+      caenLib = CDLL("libCAENVME.so")
+      handle = c_long(0)
+      status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
+      if status != 0:
+	print 'Error initializing CAENVME' 
+	return 0
+
       try:
-        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
-	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-	import time
 	baseNid = self.node.getNid()
- 
  
    	boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
     	print 'BOARD ID: ', boardId
     	vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
     	print 'VME ADDRESS: ', vmeAddress
-    	caenLib = CDLL("libCAENVME.so")
-    	handle = c_long(0)
-    	status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
-    	if status != 0:
-	    print 'Error initializing CAENVME' 
-	    return 0
   #Module Reset
     	data = c_int(0)
     	status = caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0xEF24), byref(data), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -79,7 +79,6 @@ class CAENV1740(object):
 	    print 'Error writing number of segments' 
 	    caenLib.CAENVME_End(handle)
 	    return 0
-
 #Global Group Configuration
     	trigModeDict = {'OVER THRESHOLD':0, 'UNDER THRESHOLD':1}
     	trigMode = TreeNode(baseNid + self.N_TRIG_MODE).data()
@@ -165,8 +164,9 @@ class CAENV1740(object):
 	    	caenLib.CAENVME_End(handle)
 	    	return 0
     	else:
+	    
 	    clockSource = Range(None, None, Float64(1/62.5E6))
-    	    TreeNode(baseNid + self.N_CLOCK_SOURCE).putData(clockSource);
+    	    TreeNode(baseNid + self.N_CLOCK_SOURCE).putData(clockSource)
 
 #Post Trigger Samples
     	try:
@@ -175,13 +175,11 @@ class CAENV1740(object):
 	    print 'Cannot resolve PTS samples'
 	    caenLib.CAENVME_End(handle)
 	    return 0
-
-    	segmentSize = 196608/nSegments
+   	segmentSize = 196608/nSegments
     	if pts > segmentSize:
 	    print 'PTS Larger than segmentSize'
 	    caenLib.CAENVME_End(handle)
 	    return 0
-
     	status = caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8114), byref(c_int(pts)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
 
 #Time management
@@ -218,21 +216,21 @@ class CAENV1740(object):
 ################################TRIGGER###################################
 
     def trigger(self,arg):
+      from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
+      import time
+      caenLib = CDLL("libCAENVME.so")
+      handle = c_long(0)
+      status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
+      if status != 0:
+	print 'Error initializing CAENVME' 
+	return 0
       try:
-        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
-	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-	import time
-	baseNid = self.node.getNid()
+ 	baseNid = self.node.getNid()
     	boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
     	print 'BOARD ID: ', boardId
     	vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
     	print 'VME ADDRESS: ', vmeAddress
-    	caenLib = CDLL("libCAENVME.so")
-    	handle = c_long(0)
-    	status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
-    	if status != 0:
-	    print 'Error initializing CAENVME' 
-	    return 0
   #Module Reset
     	data = c_int(0)
     	status = caenLib.CAENVME_WriteCycle(handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -251,21 +249,21 @@ class CAENV1740(object):
 ####################################STORE###################################
 
     def store(self,arg):
+      from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
+      from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
+      import time
+      caenLib = CDLL("libCAENVME.so")
+      handle = c_long(0)
+      status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
+      if status != 0:
+	print 'Error initializing CAENVME' 
+	return 0
       try:
-        from MDSobjects import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
-	from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
-	import time
 	baseNid = self.node.getNid()
     	boardId = TreeNode(baseNid + self.N_BOARD_ID).data()
     	print 'BOARD ID: ', boardId
     	vmeAddress = TreeNode(baseNid + self.N_VME_ADDRESS).data()
     	print 'VME ADDRESS: ', vmeAddress
-    	caenLib = CDLL("libCAENVME.so")
-    	handle = c_long(0)
-    	status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(0), byref(handle))
-    	if status != 0:
-	    print 'Error initializing CAENVME' 
-	    return 0
     	try:
 	    clock = TreeNode(baseNid + self.N_CLOCK_SOURCE).evaluate()
 	    dt = clock.getDelta().data()
