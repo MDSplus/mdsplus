@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 version='0.2'
 setup(name='MDSplus',
       version=version,
@@ -13,9 +13,10 @@ setup(name='MDSplus',
       author_email='twf@www.mdsplus.org',
       url='http://www.mdsplus.org/',
       download_url = 'http://www.mdsplus.org/binaries/python/',
-      package_dir = {'MDSplus':'.','MDSplus._opcodes':'./_opcodes','MDSplus.tests':'./tests'},
+      package_dir = {'MDSplus':'.','MDSplus._opcodes':'./_opcodes','MDSplus.tests':'./tests','MDSplus.doc':'./doc'},
       packages = ['MDSplus','MDSplus._opcodes','MDSplus.tests'],
-#      package_data = {'MDSplus':'*'},
+      package_data = {'':['doc/*.*']},
+      include_package_data = True,
       platforms = ('Any',),
       classifiers = [ 'Development Status :: 4 - Beta',
       'Programming Language :: Python',
