@@ -325,12 +325,14 @@ static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
 
 
 //Handle resampling in when dimension is specified as a range
+typedef ARRAY_COEFF(char, 256) Array_coeff_type;
 static int rangeResample(struct descriptor *startD, struct descriptor *endD, struct descriptor *deltaD, 
-			ARRAY_COEFF(char , 256) *dataD, struct descriptor_range *rangeD, 
+			struct descriptor *dataD_in, struct descriptor_range *rangeD, 
 			char dataType, char mode, struct descriptor_xd *outSignalXd)
 {
 	int dataSize, numOutSamples, status, i, memSize, currOffset, numInSamples, totInSamples;
 	_int64 start64, end64, delta64, rangeStart64, rangeEnd64, rangeDelta64, currTime64, inTime64;
+	Array_coeff_type *dataD = (Array_coeff_type *)dataD_in;
 	char *signalExpr = "MAKE_SIGNAL($1,,MAKE_RANGE(MAX($2, $3), MIN($4, $5), $6))";
 	struct descriptor signalExprD = {strlen(signalExpr), DTYPE_T, CLASS_S, signalExpr};
 

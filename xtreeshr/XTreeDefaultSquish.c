@@ -211,7 +211,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor
 
 			if(currSignalD->dimensions[0]->class == CLASS_A) //Data evaluation not needed
 			{
-				arraysD[i] = arrayD = currSignalD->dimensions[0];
+				arraysD[i] = arrayD = (struct descriptor_a *)currSignalD->dimensions[0];
 			}
 			else
 			{
