@@ -11,7 +11,7 @@ class EXPORT SystemException
 	char msg[512];
 
 public:
-	SystemException(char *msg, int errNo)
+	SystemException(const char *msg, int errNo)
 	{
 		perror("ERRORE DI SISTEMA");
 		sprintf(this->msg, "%s %d", msg, errNo);

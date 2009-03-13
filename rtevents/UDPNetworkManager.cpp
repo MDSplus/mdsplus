@@ -61,7 +61,7 @@ bool UDPNetworkManager::connectReceiver(NetworkAddress *address, NetworkReceiver
     struct sockaddr_in serverAddr;
 //    serverAddr.sin_len = sizeof(serverAddr);
     serverAddr.sin_family = AF_INET;
-#ifdef HAVE_WXWORKS_H%
+#ifdef HAVE_WXWORKS_H
     serverAddr.sin_len = (u_char)sizeof(struct sockaddr_in);
 #endif
     serverAddr.sin_port = htons(((IPAddress *)address)->port);
