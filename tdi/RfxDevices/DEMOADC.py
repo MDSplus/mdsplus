@@ -236,7 +236,7 @@ class DEMOADC(object):
 	    convExpr.setUnits("Volt")
 
 #build the signal object
-	    signal = Signal(convExpr, Int16Array(reducedRawChan), dim)
+	    signal = Signal(convExpr, rawMdsData, dim)
 
 #write the signal in the tree 
     	    try:
