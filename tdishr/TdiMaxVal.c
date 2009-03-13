@@ -175,6 +175,36 @@ int TdiGtQ();
   break;\
 }
 
+#define OperateT(testit) \
+{ int *outp = (int *)out->pointer;\
+  char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  char testval;\
+  int  status;\
+  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
+  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
+  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
+  o_d.pointer=(char *)&testval;\
+  result.pointer=pi0;\
+  step0=in->length;\
+  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+        if (*pm0 & 1) {\
+	   s_d.pointer=pi0;\
+	   status = testit(&s_d,&result,&o_d);\
+           if (testval) {\
+             result.pointer=pi0;\
+             count=j0;\
+           }\
+        }\
+      }\
+      *outp++ = count;\
+    }\
+  }\
+  break;\
+}
+
 #define OperateFloc(type,dtype,start,operator) \
 { int *outp = (int *)out->pointer;\
   type *pi0=(type *)in->pointer,*pi1=pi0,*pi2=pi0;\
@@ -204,8 +234,7 @@ int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,((char *)pi1 - (char *)0),Tdi3Gt(pi0,*(int *)result),
-		         result = ((char *)pi0 - (char *)0);count = j0;,*outp++ = count)
+    case DTYPE_T:  OperateT(Tdi3Gt)
     case DTYPE_B:  OperateL(char,(char)-127,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_BU: OperateL(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)-32768,*pi0 > result,result = *pi0;count = j0;,*outp++ = count)
@@ -238,8 +267,7 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  OperateL(int,((char *)pi1 - (char *)0),Tdi3Lt(pi0,*(int *)result),
-		         result = ((char *)pi0 - (char *)0);count = j0;,*outp++ = count)
+    case DTYPE_T:  OperateT(Tdi3Lt)
     case DTYPE_B:  OperateL(char,(char)127,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_BU: OperateL(unsigned char,(unsigned char)255,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
     case DTYPE_W:  OperateL(short,(short)32767,*pi0 < result,result = *pi0;count = j0;,*outp++ = count)
@@ -286,6 +314,37 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
   break;\
 }
 
+#define OperateTval(testit) \
+{ char *outp = (char *)out->pointer;\
+  char *pi0=(char *)in->pointer,*pi1=pi0,*pi2=pi0;\
+  char *pm0, *pm1, *pm2 = (char *)mask->pointer;\
+  char testval;\
+  int  status;\
+  struct descriptor s_d={in->length,DTYPE_T,CLASS_S,0};\
+  struct descriptor o_d={1,DTYPE_B,CLASS_S,0};\
+  struct descriptor result={in->length,DTYPE_T,CLASS_S,0};\
+  o_d.pointer=(char *)&testval;\
+  result.pointer=pi0;\
+  step0=in->length;\
+  for (j2 = 0; j2++ < count2; pi2 += step2, pm2 += stepm2) {\
+    for (j1 = 0, pi1 = pi2, pm1 = pm2; j1++ < count1; pi1 += step1,pm1 += stepm1) {\
+      for (count=0, j0 = 0, pi0 = pi1, pm0 = pm1; j0 < count0; j0++, pi0 += step0,pm0 += stepm0) {\
+        if (*pm0 & 1) {\
+	   s_d.pointer=pi0;\
+	   status = testit(&s_d,&result,&o_d);\
+           if (testval) {\
+             result.pointer=pi0;\
+             count=j0;\
+           }\
+        }\
+      }\
+      memmove(outp,result.pointer,step0);\
+      outp += step0;\
+    }\
+  }\
+  break;\
+}
+
 int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask, 
 	       struct descriptor *out,int count0, int count1, int count2,
 	       int step0, int step1, int step2)
@@ -294,8 +353,7 @@ int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  Operate(int,((char *)pi1 - (char *)0),Tdi3Gt(pi0,*(int *)result),
-		         result = ((char *)pi0 - (char *)0);count = j0;,memmove(out++,(int *)result,step0))
+    case DTYPE_T:  OperateTval(Tdi3Gt)
     case DTYPE_B:  Operate(char,(char)-128,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_BU: Operate(unsigned char,(unsigned char)0,*pi0 > result,result = *pi0;,*outp++ = result)
     case DTYPE_W:  Operate(short,(short)-32768,*pi0 > result,result = *pi0;,*outp++ = result)
@@ -328,8 +386,7 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
   SetupArgs
   switch (in->dtype)
   {
-    case DTYPE_T:  Operate(int,((char *)pi1 - (char *)0),Tdi3Lt(pi0,*(int *)result),
-		         result = ((char *)pi0 - (char *)0);count = j0;,memmove(out++,(int *)result,step0))
+    case DTYPE_T:  OperateTval(Tdi3Lt)
     case DTYPE_B:  Operate(char,(char)127,*pi0 < result,result = *pi0;,*outp++ = result)
     case DTYPE_BU: Operate(unsigned char,(unsigned char)255,*pi0 < result,result = *pi0;,*outp++ = result)
     case DTYPE_W:  Operate(short,(short)32767,*pi0 < result,result = *pi0;,*outp++ = result)
