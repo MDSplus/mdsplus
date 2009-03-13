@@ -139,7 +139,7 @@ static int   initLookupTable(	/* Return: num entries in cmd-lookup table*/
         *addrTable = entLookup;
         clear_buffer(entLookup,(maxEntities+1)*sizeof(struct cmd_struct));
         entLookup[0].cmdL_id = 0;
-        entLookup[0].cmdA_string = (void *)(maxEntities+1);
+        entLookup[0].cmdA_string = (maxEntities+1) + (char *)0;
        }
 
 		/*======================================================
@@ -229,7 +229,7 @@ static int   init_table(	/* Return: num verbs defined		*/
            }
         clear_buffer(cmdVerb,(maxVerbs+1)*sizeof(struct cmd_struct));
         cmdVerb[0].cmdL_id = 0;
-        cmdVerb[0].cmdA_string = (void *)(maxVerbs+1);
+        cmdVerb[0].cmdA_string = (maxVerbs+1) + (char *)0;
        }
 		/*======================================================
 		 * Initialize cmdVerb[] table ...

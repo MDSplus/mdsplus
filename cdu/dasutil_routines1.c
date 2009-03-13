@@ -122,7 +122,7 @@ int cmd_lookup(
     if (nowildcard)
         wc = 0;
     else if (wc = strpbrk(cmd,"*%"))
-        wc = (char *)((cmd+k) > wc);	/* Wildcard char within cmd ?	*/
+        wc = ((cmd+k) > wc) ? 0 : wc;	/* Wildcard char within cmd ?	*/
 
 		/*========================================================
 		 * If not a wildcard search, but *context is nonzero, then

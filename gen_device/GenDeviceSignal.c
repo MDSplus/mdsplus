@@ -17,6 +17,7 @@
    
 --------------------------------------------------------------------------- */
 #include <treeshr.h>
+#include <stdio.h>
 
 extern int GenDeviceCallData();
 

@@ -42,6 +42,7 @@
 #include <sys/mman.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
+#include <string.h>
 #define ROUTINE_NAME "scsi_io"
 
 #ifndef SG_FLAG_MMAP_IO
