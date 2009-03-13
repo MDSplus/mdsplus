@@ -162,11 +162,11 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
 					  {"c_startidx_nid",NULL},
 					  {"c_endidx_nid",NULL},
 					  {"c_path",NULL}};
-      uilnames[0].value = (char *) data_nid;
-      uilnames[1].value = (char *) name;
-      uilnames[2].value = (char *) startidx_nid;
-      uilnames[3].value = (char *) endidx_nid;
-      uilnames[4].value = (char *) path;
+      uilnames[0].value = data_nid + (char *)0;
+      uilnames[1].value = name;
+      uilnames[2].value = startidx_nid + (char *)0;
+      uilnames[3].value = endidx_nid + (char *)0;
+      uilnames[4].value = path;
       MrmRegisterNamesInHierarchy(drm_hierarchy,uilnames,XtNumber(uilnames));
       if (info.nodes_per_channel > 1)  
         MrmFetchWidget(drm_hierarchy,"channel_dlog",rowcol_w,&w,&class);

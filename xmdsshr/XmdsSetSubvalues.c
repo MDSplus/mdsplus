@@ -47,10 +47,10 @@ int XmdsSetSubvalues(XtPointer record,XtResourceList resources,Cardinal num_reso
   {
     if (*((int *) &resources[i].resource_offset) >= 0)
     {
-      resources[i].resource_name = (char *) XrmStringToQuark(resources[i].resource_name);
-      resources[i].resource_class = (char *) XrmStringToQuark(resources[i].resource_class);
-      resources[i].resource_type = (char *) XrmStringToQuark(resources[i].resource_type);
-      resources[i].default_type = (char *) XrmStringToQuark(resources[i].default_type);
+      resources[i].resource_name = XrmStringToQuark(resources[i].resource_name) + (char *)0;
+      resources[i].resource_class = XrmStringToQuark(resources[i].resource_class) + (char *)0;
+      resources[i].resource_type = XrmStringToQuark(resources[i].resource_type) + (char *)0;
+      resources[i].default_type = XrmStringToQuark(resources[i].default_type) + (char *)0;
       resources[i].resource_offset = -(resources[i].resource_offset + 1);
     }
   }

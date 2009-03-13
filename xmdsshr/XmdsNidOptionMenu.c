@@ -139,7 +139,7 @@ Widget XmdsCreateNidOptionMenu(Widget parent,String name,ArgList args,Cardinal a
 	arglist[0].value = (long) *s;
 	arglist[1].value = (long) xd;
 	b = XmCreatePushButtonGadget(info->pulldown,"",arglist,XtNumber(arglist));
-	XtAddCallback(b,XmNactivateCallback,(XtCallbackProc)ButtonPushed,(XtPointer)idx);
+	XtAddCallback(b,XmNactivateCallback,(XtCallbackProc)ButtonPushed,(XtPointer)(idx + (char *)0));
       }
     }
   }
