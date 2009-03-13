@@ -575,8 +575,9 @@ void CloseDataSources()
 #ifdef OLD_WAY
 static XtAppContext this_app_context;
 static Widget this_widget;
-static void  EventAst(Boolean *received)
+static void  EventAst(void *astparam, int dlen, char *data)
 {
+  Boolean *received = (Boolean *)astparam;
   XClientMessageEvent event;
   *received = 1;
   XtAppAddTimeOut(this_app_context, 1, (XtTimerCallbackProc)EventUpdate, 0);
@@ -605,8 +606,9 @@ void SetupEventInput(XtAppContext app_context, Widget w)
 }
 #else
 static int event_pipe[2];
-static void  EventAst(Boolean *received)
+static void  EventAst(void *astparam, int dlen, char *data)
 {
+  Boolean *received = (Boolean *)astparam;
   XClientMessageEvent event;
   char buf[1];
   *received = 1;
