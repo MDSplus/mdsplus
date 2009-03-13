@@ -35,7 +35,7 @@ int dt200__dw_setup( struct descriptor *niddsc, struct descriptor *methoddsc, Wi
 	{"UnManageChild",(XtPointer)UnManageChild},};
   static NCI_ITM   nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0}};
   TreeGetNci(nid, nci);
-  uilnames[0].value = (XtPointer)nid;
+  uilnames[0].value = (XtPointer)(nid + (char *)0);
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "DT200", uilnames, XtNumber(uilnames), 0);
 }
 #endif

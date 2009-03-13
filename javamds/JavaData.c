@@ -737,7 +737,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			for(i = 0; i < length; i++)
 			{
 				jstrings[i] = (*env)->GetObjectArrayElement(env, jobjects, i);
-				strings[i] = (*env)->GetStringUTFChars(env, jstrings[i], 0);
+				strings[i] = (char *)(*env)->GetStringUTFChars(env, jstrings[i], 0);
 				if(maxlen < (int)strlen(strings[i])) maxlen = (int)strlen(strings[i]);
 			}
 			array_d->pointer = (char *)malloc(length * maxlen);

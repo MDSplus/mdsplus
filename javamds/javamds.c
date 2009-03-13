@@ -620,7 +620,7 @@ static void handleEvent(void *nameIdx, int dim ,char *buf)
 	if(!cls) printf("Error getting class for LocalDataProvider\n");
 	mid = (*env)->GetMethodID(env, cls,  "fireEvent", "(I)V");
 	if(!mid) printf("Error getting method fireEvent for LoalDataProvider\n");
-	args[0].i = (int)nameIdx;
+	args[0].i = (char *)nameIdx-(char *)0;
 	(*env)->CallVoidMethodA(env, localDataProviderInstance, mid, args);
 	releaseJNIEnv();
 }
@@ -642,7 +642,7 @@ JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
 	}
 	localDataProviderInstance = (*env)->NewGlobalRef(env, obj);
  	event = (*env)->GetStringUTFChars(env, jevent, 0);
-	status = MDSEventAst((char *)event, handleEvent, (void *)idx, &evId);
+	status = MDSEventAst((char *)event, handleEvent, idx+(char *)0, &evId);
 	if(!(status & 1))
 	{
 		printf("Error calling MDSEventAst");
