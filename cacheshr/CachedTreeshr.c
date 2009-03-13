@@ -290,6 +290,7 @@ EXPORT int RTreePutSegment(int nid, int segIdx, struct descriptor *dataD, int wr
 }
 
 //Read segmented data into cache memory
+typedef ARRAY_BOUNDS(char, 16) Array_bounds_type;
 static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 {
 	int status, numSegments, currIdx;
@@ -304,7 +305,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 	int dims[64], segItems, nextRow, oldLen;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	struct descriptor_a *timesD;
-	ARRAY_BOUNDS(char, 16) *arrD;
+	Array_bounds_type *arrD;
 
 	status = (dbid)?_TreeGetNumSegments(dbid, nid, &numSegments):TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1)) return status;
@@ -318,7 +319,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 		//status = TdiData(&dimXd, &dimXd MDS_END_ARG);
 		//if(!(status & 1)) return status;
 
-		arrD = (struct descriptor_a *)dataXd.pointer;
+		arrD = (Array_bounds_type *)dataXd.pointer;
 		getDataTypeAndShape((struct descriptor *)arrD, bounds, &boundsSize);
 
 		if(startXd.pointer && startXd.pointer->class == CLASS_S && (startXd.pointer->dtype == DTYPE_Q || startXd.pointer->dtype == DTYPE_QU))
@@ -349,7 +350,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 				status = (dbid)?_TreeGetSegmentInfo(dbid, nid, &dtype, &dimct, dims, &segItems, &nextRow):TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &segItems, &nextRow);
 				if(status & 1)
 				{
-					arrD = (struct descriptor_a *)dataXd.pointer;
+					arrD = (Array_bounds_type *)dataXd.pointer;
 					oldLen = arrD->arsize;
 					if(nextRow < dims[dimct - 1]) //If there is a unfilled section of the segment
 					{
