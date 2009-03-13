@@ -603,7 +603,7 @@ STATIC_ROUTINE void Dispatch(int i)
       {
         pthread_mutex_lock(&send_msg_mutex);
 	status = ServerDispatchAction(0, Server(server,actions[i].server), table->tree, table->shot, 
-				      actions[i].nid, DoActionDone, (void *)i, &actions[i].status, 
+				      actions[i].nid, DoActionDone, i+(char *)0, &actions[i].status, 
 				      &actions[i].netid, Before);
         pthread_mutex_unlock(&send_msg_mutex);
 	ProgLoc = 7003;

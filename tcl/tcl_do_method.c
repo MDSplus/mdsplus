@@ -93,9 +93,9 @@ int TclDoMethod()
                 dometh_stat_d.dscA_pointer = (char *)&dometh_stat;
                 arglist[argc+3] = &dometh_stat_d;
                 arglist[argc+4] = MdsEND_ARG;
-                arglist[0] = (void *)(argc + 4);
+                arglist[0] = (argc + 4)+(char *)0;
 #endif
-                sts = LibCallg(arglist,TreeDoMethod);
+                sts = (char *)LibCallg(arglist,TreeDoMethod)-(char *)0;
                 if (sts & 1) sts = dometh_stat;
                }
             str_free1_dx(&arg);

@@ -143,8 +143,8 @@ static void LinkConditions()
     if (actions[i].condition)
     {
       EMPTYXD(xd);
-      MdsCopyDxXdZ(actions[i].condition,&xd,0,fixup_nid,(void *)i,fixup_path,(void *)i);
-      MdsCopyDxXdZ((struct descriptor *)&xd,(struct descriptor_xd *)actions[i].condition,0,0,(void *)0,make_idents,(void *)i);
+      MdsCopyDxXdZ(actions[i].condition,&xd,0,fixup_nid,i+(char *)0,fixup_path,i+(char *)0);
+      MdsCopyDxXdZ((struct descriptor *)&xd,(struct descriptor_xd *)actions[i].condition,0,0,0,make_idents,i+(char *)0);
       MdsFree1Dx(&xd,0);
     }
   }

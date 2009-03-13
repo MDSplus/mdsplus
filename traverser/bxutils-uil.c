@@ -454,7 +454,7 @@ static void copyWcsToMbs
     }
 
     tmp = tbuf[lenToConvert];
-    tbuf[lenToConvert] = (wchar_t) NULL;
+    tbuf[lenToConvert] = 0; /* (wchar_t) NULL; */
     numCvt = doWcstombs(mbs, tbuf, lenToConvert);
     tbuf[lenToConvert] = tmp;
     
