@@ -79,7 +79,9 @@
 -------------------------------------------------------------------------------- */
 #include "complex.h"
 #include "filter.h"
-
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
 
 static complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);
 static complex *FindButtwPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);

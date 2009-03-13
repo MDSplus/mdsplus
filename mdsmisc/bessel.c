@@ -115,6 +115,7 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 //#include "definitions.h"
 #include "bessel.h"
 #include "filter.h"

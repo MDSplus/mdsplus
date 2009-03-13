@@ -12,6 +12,7 @@
 /*  DEC/CMS REPLACEMENT HISTORY, Element COMPLEX.C */
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "complex.h"
 
 complex AddC(complex c1, complex c2)

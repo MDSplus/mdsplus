@@ -56,6 +56,7 @@ which actually perform digital filtering.
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "complex.h"
 #include "filter.h"
 

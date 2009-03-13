@@ -1,5 +1,5 @@
 #include <mdsdescrip.h>
-
+#include <stdio.h>
 
 struct descriptor *fformat(double *f, int *width, int *precision)
 {
