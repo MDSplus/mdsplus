@@ -530,7 +530,7 @@ void SetSocketOptions(SOCKET s, int reuse)
 #ifndef GLOBUS
   STATIC_CONSTANT int sendbuf=SEND_BUF_SIZE,recvbuf=RECV_BUF_SIZE;
   int one = 1;
-  size_t len;
+  socklen_t len;
   static int debug_winsize=0;
   static int init=1;
   if (init)
@@ -940,7 +940,7 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   SOCKET s=-1;
 #ifndef GLOBUS
   struct sockaddr_in sin;
-  size_t n = sizeof(sin);
+  socklen_t n = sizeof(sin);
   int status = 1;
 #ifdef _VMS
   status = sys$assign(&INET, &s, 0, 0);

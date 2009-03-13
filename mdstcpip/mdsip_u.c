@@ -1563,7 +1563,7 @@ static void ExecuteMessage(Client *c)
     MdsSetClientAddr(c->addr);
     ResetErrors();
     SetCompressionLevel(c->compression_level);
-    status = (int)LibCallg(&c->nargs, TdiExecute);
+    status = (char *)LibCallg(&c->nargs, TdiExecute)-(char *)0;
     if (status & 1) status = TdiData(xd,&ans MDS_END_ARG);
     if (!(status & 1)) 
       GetErrorText(status,&ans);

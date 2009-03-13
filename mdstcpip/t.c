@@ -5,6 +5,7 @@
 /*  CMS REPLACEMENT HISTORY, Element T.C */
 #include <ipdesc.h>
 #include <stdio.h>
+#include <stdlib.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 int main( int argc, void **argv)
 {
