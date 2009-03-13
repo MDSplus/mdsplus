@@ -380,7 +380,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	arglist[varIdx++] = &xd;
 	arglist[varIdx++] = MdsEND_ARG;
 	*(int *)&arglist[0] = varIdx-1;
-	status = (int)LibCallg(arglist, TdiCompile);
+	status = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
 	if(!(status & 1))
 		return NULL;
 	data = convertFromDsc(&xd, tree);
