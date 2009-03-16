@@ -1,6 +1,24 @@
 Version 2.2-0
 
 
+2009-03-16 13:39  twf
+
+	* configure, configure.in:
+	
+	Look in /etc/alternatives for java sdk
+
+2009-03-16 13:15  twf
+
+	* rpm/: fusiongrid.spec, rpm.spec, x86_64.spec:
+	
+	Use license tag
+
+2009-03-16 13:05  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-16 13:01  twf
 
 	* rpm/: rpm.spec, x86_64.spec, fusiongrid.spec:
