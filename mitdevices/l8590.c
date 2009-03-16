@@ -4,6 +4,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include <treeshr.h>
+#include <stdio.h>
 #include "l8590_gen.h"
 
 extern unsigned short OpcValue;

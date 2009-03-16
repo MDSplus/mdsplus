@@ -377,7 +377,7 @@ int l8501__dw_setup( struct descriptor *niddsc, struct descriptor *methoddsc, Wi
   static MrmRegisterArg uilnames[] = {{"nid",(XtPointer)0},{"Check",(XtPointer)Check}};
   static NCI_ITM   nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0}};
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (XtPointer)nid;
+  uilnames[0].value = (char *)0+nid;
   return XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8501", uilnames, XtNumber(uilnames), 0);
 }
 

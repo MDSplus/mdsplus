@@ -4,6 +4,7 @@
 #include <treeshr.h>
 #include <ncidef.h>
 #include <time.h>
+#include <string.h>
 
 extern int TdiData();
 extern int CamX();

@@ -35,6 +35,7 @@
 	
 ------------------------------------------------------------------------------*/
 #include <math.h>
+#include <stdlib.h>
 #include "filter.h"
 #include "complex.h"
 

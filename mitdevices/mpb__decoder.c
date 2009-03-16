@@ -416,7 +416,7 @@ int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methodd
     name[2]='0'+i;
     mode_w = XtNameToWidget(w,name);
     XtVaGetValues(mode_w,XmNsubMenuId,&pulldown_w,NULL);
-    XtAddCallback(pulldown_w,XmNentryCallback,(XtCallbackProc)ModeChange,(XtPointer)i);
+    XtAddCallback(pulldown_w,XmNentryCallback,(XtCallbackProc)ModeChange,(char *)+i);
   }
   Reset(w,NULL,NULL);
   return 1;
@@ -432,7 +432,7 @@ static void Reset(Widget w, XtPointer client_data, XmAnyCallbackStruct *cb)
     Widget mode_w;
     name[2]='0'+i;
     mode_w = XtNameToWidget(XtParent(XtParent(XtParent(w))),name);
-    rc_cb.data = (XtPointer)XmdsGetOptionIdx(mode_w);
+    rc_cb.data = (char *)0+XmdsGetOptionIdx(mode_w);
     ModeChange(mode_w, i, &rc_cb);
   }
 }
@@ -527,7 +527,7 @@ static void ModeChange(Widget w, int cnum, XmRowColumnCallbackStruct *cb)
   for (parent = XtParent(w),c_w=XtNameToWidget(parent,name);parent && !c_w;
         parent=XtParent(parent),c_w=XtNameToWidget(parent,name));
   XtVaGetValues(c_w,XmNchildren,&children,NULL);
-  switch ((int)cb->data)
+  switch (*(int *)&cb->data)
   {
     case CLOCK: 
 	{

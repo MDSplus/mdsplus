@@ -5,6 +5,7 @@
 #include <libroutines.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "idl_gen.h"
 
 static char *GetNextCmd (char **cmds);

@@ -114,7 +114,7 @@ int b5910a__dw_setup(struct descriptor *niddsc,  struct descriptor *methoddsc, W
 				       {"SetPointerMode", (char *)SetPointerMode}};
   char *title;
   TreeGetNci(*(int *)niddsc->pointer,nci);
-  uilnames[0].value=(XtPointer)(nid + B5910A_N_EXT_CLOCK);
+  uilnames[0].value=(char *)0 + (nid + B5910A_N_EXT_CLOCK);
   status =  XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "B5910A", uilnames, XtNumber(uilnames), &w);
   XtVaGetValues(XtParent(w),XtNtitle,&title,NULL);  
   XtVaSetValues(XtParent(XtNameToWidget(w,"*draw_popup")),XtNtitle,title,NULL);

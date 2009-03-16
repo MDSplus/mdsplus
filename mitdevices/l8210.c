@@ -111,7 +111,7 @@ int l8210___store(struct descriptor *niddsc_ptr, InStoreStruct *setup)
                   &min_idx, &max_idx, &frequency, &num_chans), status);
   channel_data_ptr = malloc(samples_per_channel * sizeof(short));
   status = TreePutRecord(clock_out_nid, 
-        (struct descriptor *)(frequency == 0.0) ? &ext_clock_d : (struct descriptor *)(&int_clock_d),0);
+        (frequency == 0.0) ? (struct descriptor *)&ext_clock_d : (struct descriptor *)(&int_clock_d),0);
   for (chan=0;((chan<num_chans) && (status & 1));chan++)
   {
     int channel_nid = setup->head_nid + L8210_N_INPUT_1 + chan * (L8210_N_INPUT_2 - L8210_N_INPUT_1);
@@ -325,7 +325,7 @@ int       l8210__dw_setup(struct descriptor *niddsc,  struct descriptor *methodd
                                        {"pts_dismiss_proc", (XtPointer)pts_dismiss_proc}};
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (XtPointer)(nid+L8210_N_MEMORIES);
+  uilnames[0].value = (char *)0+(nid+L8210_N_MEMORIES);
   status =  XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "L8210",uilnames,XtNumber(uilnames), &dbox);
   reset(dbox);
   return status;

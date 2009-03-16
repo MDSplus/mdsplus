@@ -53,7 +53,7 @@ int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Wi
  Executable:                                                                  */
 
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (XtPointer)(nid + MDSDCL_N_VERBS);
+  uilnames[0].value = (char *)0+(nid + MDSDCL_N_VERBS);
   XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "MDSDCL", uilnames, XtNumber(uilnames), 0);
   return 1;
 }

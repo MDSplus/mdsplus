@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include <libroutines.h>
 #include <mitdevices_msg.h>
+#include <stdio.h>
 extern int CamPiow();
 extern int CamStopw();
 extern int TdiCompile();

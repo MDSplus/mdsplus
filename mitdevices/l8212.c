@@ -468,8 +468,8 @@ static int L8212_SETUP(struct descriptor *niddsc,  Widget parent, int chans)
 					{"reset_proc", (void *)reset_proc}};
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  uilnames[0].value = (XtPointer)(nid+L8212_04_N_MEMORIES);
-  uilnames[1].value = (XtPointer)chans;
+  uilnames[0].value = (char *)0+(nid+L8212_04_N_MEMORIES);
+  uilnames[1].value = (char *)0+chans;
   switch (chans) {
     case 32: {
                for (i = 0; i < XtNumber(clock_vals_slow); i++) {
@@ -557,7 +557,7 @@ static void chans_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct *re
   Widget *buttons = (Widget *)XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
   int i;
   for (i=0; i<num_buttons; i++) XtSetSensitive(buttons[i], 1);
-  switch ((int)reason->data) {
+  switch (*(int *)&reason->data) {
     case 3 : XtSetSensitive(buttons[num_buttons-5], 0);
     case 2 : XtSetSensitive(buttons[num_buttons-4], 0);
     case 1 : XtSetSensitive(buttons[num_buttons-3], 0);
@@ -571,7 +571,7 @@ static void clock_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct *re
   Widget clock_menu = XtNameToWidget(parent, "clock_menu");
   int num_buttons;
   int *buttons = XmdsNidOptionMenuGetButtons(clock_menu, &num_buttons);
-  if ((int)reason->data == (num_buttons-2))
+  if (*(int *)&reason->data == (num_buttons-2))
     XtManageChild(XtNameToWidget(parent, "external_clock"));
   else
     XtUnmanageChild(XtNameToWidget(parent, "external_clock"));
@@ -582,7 +582,7 @@ static void header_changed_proc(Widget w, int *tag, XmRowColumnCallbackStruct *r
   Widget pts_menu = XtNameToWidget(XtParent(XtParent(w)), "pts_menu");
   int mems;
   struct descriptor_xd *header_xd = XmdsNidOptionMenuIdxGetXd(XtNameToWidget(XtParent(XtParent(w)), "header_menu"), 
-                                                                  (int)reason->data);
+                                                                  *(int *)&reason->data);
   static char header[11];
   static struct descriptor_s header_dsc = {sizeof(header), DTYPE_T, CLASS_S, header};
   int status = TdiText(header_xd, &header_dsc MDS_END_ARG);
