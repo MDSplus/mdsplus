@@ -1,7 +1,6 @@
 Name: fusiongrid
 Version: 1.0
 Release: 3
-Copyright: GNU GPL
 Group: Applications/Acquisition
 Prefix: /usr/local
 Buildroot: /tmp/fusiongrid

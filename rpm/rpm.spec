@@ -1,7 +1,6 @@
 Name: mdsplus#GLOBUS#
 Version: #VERSION#
 Release: #RELEASE#
-Copyright: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
 Prefix: /usr/local

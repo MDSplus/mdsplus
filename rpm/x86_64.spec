@@ -1,7 +1,6 @@
 Name: mdsplus_x86_64
 Version: #VERSION#
 Release: #RELEASE#
-Copyright: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
 Prefix: /usr/local
