@@ -37,8 +37,7 @@ $GPT_LOCATION/sbin/gpt-postinstall --force
 LD_LIBRARY_PATH=$RPM_BUILD_ROOT/usr/local/fusiongrid/lib
 export LD_LIBRARY_PATH
 cd mdsplus
-JDKDIR=/bigdisk/jdk/j2sdk1.4.2_04
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/fusiongrid --enable-nodebug --with-xio=$RPM_BUILD_ROOT/usr/local/fusiongrid:gcc32 --with-jdk=$JDKDIR
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/fusiongrid --enable-nodebug --with-xio=$RPM_BUILD_ROOT/usr/local/fusiongrid:gcc32
 find . -name makefile-header -exec rm -f {} \;
 make
 cd ..
