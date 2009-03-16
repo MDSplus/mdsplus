@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-16 14:04  twf
+
+	* rpm/: fusiongrid.spec, x86_64.spec:
+	
+	do no specify jdk dir in rpm spec
+
+2009-03-16 13:41  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-16 13:39  twf
 
 	* configure, configure.in:
