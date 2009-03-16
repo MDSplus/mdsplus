@@ -401,7 +401,7 @@ JNIEXPORT void JNICALL Java_Database_putRow
   }
 	else
     {
-		status = TreePutRow(nid, 1000, &currTime, dsc);
+		status = TreePutRow(nid, 1000, &currTime, (struct descriptor_a *)dsc);
 		FreeDescrip(dsc);
     }
 	//printf("PUT RECORD: %s\n", MdsGetMsg(status));
@@ -509,14 +509,14 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   path[path_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
   constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
-  args[0].z = !(nci_flags & NciM_STATE);
-  args[1].z = !(nci_flags & NciM_PARENT_STATE);
-  args[2].z = nci_flags & NciM_SETUP_INFORMATION;
-  args[3].z = nci_flags & NciM_WRITE_ONCE;
-  args[4].z = nci_flags & NciM_COMPRESSIBLE;
-  args[5].z = nci_flags & NciM_COMPRESS_ON_PUT;
-  args[6].z = nci_flags & NciM_NO_WRITE_MODEL;
-  args[7].z = nci_flags & NciM_NO_WRITE_SHOT;
+  args[0].z = (nci_flags & NciM_STATE) == 0;
+  args[1].z = (nci_flags & NciM_PARENT_STATE) == 0;
+  args[2].z = (nci_flags & NciM_SETUP_INFORMATION) != 0;
+  args[3].z = (nci_flags & NciM_WRITE_ONCE) != 0;
+  args[4].z = (nci_flags & NciM_COMPRESSIBLE) != 0;
+  args[5].z = (nci_flags & NciM_COMPRESS_ON_PUT) != 0;
+  args[6].z = (nci_flags & NciM_NO_WRITE_MODEL) != 0;
+  args[7].z = (nci_flags & NciM_NO_WRITE_SHOT) != 0;
 
 
   if(time_inserted[0] || time_inserted[1])
@@ -619,7 +619,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getTags
   {
 
 	 n_tags++;
-	 if((int)ctx == -1)
+	 if(*(int *)&ctx == -1)
 		break;
   }
   jtags = (*env)->NewObjectArray(env, n_tags, string_cls, 0); 
@@ -1052,7 +1052,7 @@ static int doAction(int nid)
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	char type = DTYPE_L;
-	DESCRIPTOR_CALL(call_d, (unsigned int *)0, 256, 0, 0);
+	DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
 	struct descriptor *decArgs;
 	char *currPtr; 
 	int argLen, numArgs;
