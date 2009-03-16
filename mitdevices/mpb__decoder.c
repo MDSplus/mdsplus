@@ -416,7 +416,7 @@ int mpb__decoder__dw_setup(struct descriptor *niddsc, struct descriptor *methodd
     name[2]='0'+i;
     mode_w = XtNameToWidget(w,name);
     XtVaGetValues(mode_w,XmNsubMenuId,&pulldown_w,NULL);
-    XtAddCallback(pulldown_w,XmNentryCallback,(XtCallbackProc)ModeChange,(char *)+i);
+    XtAddCallback(pulldown_w,XmNentryCallback,(XtCallbackProc)ModeChange,(char *)0+i);
   }
   Reset(w,NULL,NULL);
   return 1;
