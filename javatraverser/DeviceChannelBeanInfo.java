@@ -10,8 +10,14 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
     
     public BeanDescriptor getBeanDescriptor()
     {
-        return new BeanDescriptor(DeviceChannel.class, DeviceChannelCustomizer.class);
+        BeanDescriptor desc = new BeanDescriptor(DeviceChannel.class, DeviceChannelCustomizer.class);
+        desc.setValue("allowedChildTypes", new String[]{"DeviceComponent"});
+        desc.setValue("disallowedChildTypes", new String[]{});
+        desc.setValue("isContainer", Boolean.TRUE);
+        desc.setValue("containerDelegate", "getContainer");
+        return desc;
     }
+
     public PropertyDescriptor property(String name, String description)
     throws IntrospectionException
     {

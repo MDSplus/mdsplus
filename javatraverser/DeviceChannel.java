@@ -69,6 +69,10 @@ public class DeviceChannel extends DeviceComponent
         }
      }
 
+    public Container getContainer() {
+           //JOptionPane.showMessageDialog(null, "GET CONTAINER", "", JOptionPane.INFORMATION_MESSAGE);
+           return componentsPanel;
+    }
 
     public void setShowVal(String showVal)
     {
