@@ -1021,7 +1021,7 @@ RenameNode( Widget w, XtPointer client_data, XtPointer call_data)
 	};
         Widget qdlog;
         Widget widg;
-	ok_callback_list[0].closure = (XtPointer)nid;
+	ok_callback_list[0].closure = (char *)0+nid;
 	qargs[0].value = (long)XmStringCreateLtoR("Rename node", XmSTRING_DEFAULT_CHARSET);
 	qargs[1].value = (long)XmStringCreateLtoR("Rename", XmSTRING_DEFAULT_CHARSET);
         qdlog = XmCreateQuestionDialog(toplevel, "rename", qargs, XtNumber(qargs));
