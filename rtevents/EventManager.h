@@ -15,17 +15,17 @@ class EXPORT EventManager
 	friend class EventRunnable;
 	Lock lock;
 	RelativePointer eventHead;
-	EventHandler *getHandler(char *name);
+	EventHandler *getHandler(const char *name);
 	
 public:
 	void initialize();
-	void *addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char *, int), SharedMemManager *memManager, bool copyBuf = false, int retDataSize = 0);
+	void *addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char *, int), SharedMemManager *memManager, bool copyBuf = false, int retDataSize = 0);
 	void removeListener(void *eventAddr,  SharedMemManager *memManager);
-	void trigger(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true);
-	bool triggerAndWait(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, Timeout *timeout = 0);
-	EventAnswer *triggerAndCollect(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
+	void trigger(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true);
+	bool triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, Timeout *timeout = 0);
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
 	void clean(int milliSecs, SharedMemManager *memManager);
-	void clean(char *eventName, int milliSecs, SharedMemManager *memManager);
+	void clean(const char *eventName, int milliSecs, SharedMemManager *memManager);
 	char *getSharedBuffer(int size);
 	static EventManager *getEventManager();
 	static SharedMemManager *getMemManager();

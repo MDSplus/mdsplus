@@ -52,7 +52,7 @@ public:
 	{
 		return (char *)name.getAbsAddress();
 	}
-	void initialize(char *name, SharedMemManager *memManager);
+	void initialize(const char *name, SharedMemManager *memManager);
 	void initialize();
 	void *addListener(ThreadAttributes *threadAttr, Runnable *runnable, void *arg, SharedMemManager *memManager);
 	//RemoveListener removes the corresponding Notifier from the notifier chain if found
@@ -63,7 +63,7 @@ public:
 	void trigger();
 	void watchdogTrigger();
 	bool triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
-	bool corresponds(char *name);
+	bool corresponds(const char *name);
 	void clean(SharedMemManager *memManager);
 	int getRetSize();
 	void *getRetBuffer();

@@ -15,17 +15,17 @@ public:
 		memManager = evManager->getMemManager();
 	}
 
-	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), bool copyBuf = true, int retDataSize = 0)
+	void *addListener(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), bool copyBuf = true, int retDataSize = 0)
 	{
 		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
 	}
 
-	void *addListener(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), ThreadAttributes *tAttr, bool copyBuf = true, int retDataSize = 0)
+	void *addListener(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), ThreadAttributes *tAttr, bool copyBuf = true, int retDataSize = 0)
 	{
 		return evManager->addListener(eventName, tAttr, callback, memManager, copyBuf, retDataSize);
 	}
 
-	void *addListenerGlobal(char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), int retDataSize = 0)
+	void *addListenerGlobal(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), int retDataSize = 0)
 	{
 		void *addr = evManager->addListener(eventName, 0, callback, memManager, true, retDataSize);
 		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
@@ -56,21 +56,21 @@ public:
 		evManager->trigger(eventName, buf, size, type, memManager, copyBuf);
 	}
 
-	bool triggerAndWait(char *eventName, char *buf, int size, int type, bool copyBuf = true, Timeout *timeout = 0)
+	bool triggerAndWait(const char *eventName, char *buf, int size, int type, bool copyBuf = true, Timeout *timeout = 0)
 	{
 		return evManager->triggerAndWait(eventName, buf, size, type, memManager, copyBuf, timeout);
 	}
 
-	bool triggerAndWait(char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
+	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
 	{
 		return evManager->triggerAndWait(eventName, buf, size, 0, memManager, copyBuf, timeout);
 	}
 
-	EventAnswer *triggerAndCollect(char *eventName, char *buf, int size, int type, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
 	{
 		return evManager->triggerAndCollect(eventName, buf, size, type, memManager, copyBuf, inAnsw, timeout);
 	}
-	EventAnswer *triggerAndCollect(char *eventName, char *buf, int size, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
 	{
 		return evManager->triggerAndCollect(eventName, buf, size, 0, memManager, copyBuf, inAnsw, timeout);
 	}
@@ -79,7 +79,7 @@ public:
 		evManager->clean(milliSecs, memManager);
 	}
 
-	void clean(char *eventName, int milliSecs = 100)
+	void clean(const char *eventName, int milliSecs = 100)
 	{
 		evManager->clean(eventName, milliSecs, memManager);
 	}

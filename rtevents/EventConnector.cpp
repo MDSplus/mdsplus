@@ -317,7 +317,7 @@ public:
 	ExternalListener *extListenerHead;
 	ExternalEvent *nxt, *prv;
 	
-	ExternalEvent(char *name, int retSize)
+	ExternalEvent(const char *name, int retSize)
 	{
 		this->retSize = this->totRetSize = retSize;
 		eventName = new char[strlen(name) + 1];
@@ -547,7 +547,7 @@ public:
 		lock.dispose();
 	}
 	
-	ExternalEvent *findEvent(char *name)
+	ExternalEvent *findEvent(const char *name)
 	{
 		ExternalEvent *currEvent = extEventHead;
 		while(currEvent)
@@ -559,7 +559,7 @@ public:
 		return currEvent;
 	}
 	
-	ExternalEvent *newEvent(char *name, int retSize)
+	ExternalEvent *newEvent(const char *name, int retSize)
 	{
 		ExternalEvent *newEv = new ExternalEvent(name, retSize);
 		newEv->nxt = extEventHead;
@@ -569,7 +569,7 @@ public:
 		return newEv;
 	}
 	
-	bool isExternalEvent(char *name, char *buf, int size)
+	bool isExternalEvent(const char *name, char *buf, int size)
 	{
 		bool isExt = false;
 		lock.lock();
@@ -584,7 +584,7 @@ public:
 		return  isExt;
 	}
 
-	void signalExternalTermination(char *name, unsigned int id, int bufSize, char *buf)
+	void signalExternalTermination(const char *name, unsigned int id, int bufSize, char *buf)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -596,7 +596,7 @@ public:
 			extEvent->signalExternalTermination(id, bufSize, buf);
 		lock.unlock();
 	}
-	void sendAsynchEvent(char *name, char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
+	void sendAsynchEvent(const char *name, char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -608,7 +608,7 @@ public:
 			extEvent->sendAsynchEvent(buf, bufSize, msgManager, isUdp);
 		lock.unlock();
 	}
-	void sendSynchEvent(char *name, char *buf, int bufSize, bool isCollect, NetworkManager *msgManager, 
+	void sendSynchEvent(const char *name, char *buf, int bufSize, bool isCollect, NetworkManager *msgManager, 
 			UnnamedSemaphore ** &retSems, unsigned int * &waitIds, int &numSems)
 	{
 		lock.lock();
@@ -633,7 +633,7 @@ public:
 			extEvent->addExternalPending(retSem, retId);
 		lock.unlock();
 	}
-*/	void removeExternalPending(char *name, unsigned int id)
+*/	void removeExternalPending(const char *name, unsigned int id)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -646,7 +646,7 @@ public:
 		lock.unlock();
 		
 	}
-	void collectExternalPendingData(char *name, unsigned int i, int &retSize, char * &retBuf)
+	void collectExternalPendingData(const char *name, unsigned int i, int &retSize, char * &retBuf)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -660,7 +660,7 @@ public:
 		
 	}
 
-	void addInternalPending(char *name, char *buf, int bufSize)
+	void addInternalPending(const char *name, char *buf, int bufSize)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -670,7 +670,7 @@ public:
 	}	
 
 
-	void addExternalListener(char *name, int retSize, NetworkAddress *addr)
+	void addExternalListener(const char *name, int retSize, NetworkAddress *addr)
 	{
 		Event ev;
 		bool isNewEvent = false;

@@ -87,7 +87,7 @@ void EventManager::initialize()
 	lock.initialize();
 }
 	
-void *EventManager::addListener(char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*, int), SharedMemManager *memManager, bool copyBuf, int retDataSize)
+void *EventManager::addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*, int), SharedMemManager *memManager, bool copyBuf, int retDataSize)
 {
 	//NOTE: EventHandlers are never deallocated
 	bool isNewHandler = false;
@@ -138,7 +138,7 @@ void EventManager::resizeListener(void *addr, int newSize, SharedMemManager *mem
 
 
 
-EventHandler *EventManager::getHandler(char *name)
+EventHandler *EventManager::getHandler(const char *name)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	
@@ -151,7 +151,7 @@ EventHandler *EventManager::getHandler(char *name)
 	return currHandler;
 }
 
-void EventManager::trigger(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf)
+void EventManager::trigger(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
@@ -165,7 +165,7 @@ void EventManager::trigger(char *eventName, char *buf, int size, int type, Share
 	}
 }
 
-EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
+EventAnswer *EventManager::triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
@@ -185,7 +185,7 @@ EventAnswer *EventManager::triggerAndCollect(char *eventName, char *buf, int siz
 	else
 		return new EventAnswer(0, copyBuf);
 }
-bool EventManager::triggerAndWait(char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
+bool EventManager::triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
 {
 	bool isTimeout = false;
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
@@ -229,7 +229,7 @@ void EventManager::clean(int milliSecs, SharedMemManager *memManager)
 		currHandler = currHandler->getNext();
 	}
 }
-void EventManager::clean(char *eventName, int milliSecs, SharedMemManager *memManager)
+void EventManager::clean(const char *eventName, int milliSecs, SharedMemManager *memManager)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
@@ -365,7 +365,7 @@ EXPORT  int EventTrigger(char *name, char *buf, int size)
 	}
 	
 }
-EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
+EXPORT int EventTriggerAndWait(const char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();

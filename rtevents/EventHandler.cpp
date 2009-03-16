@@ -1,7 +1,7 @@
 #include "EventHandler.h"
 #include "ExitHandler.h"
 
-void EventHandler::initialize(char *inName, SharedMemManager *memManager)
+void EventHandler::initialize(const char *inName, SharedMemManager *memManager)
 {
 	name = memManager->allocate(strlen(inName) + 1);
 	char *sharedName = (char *)name.getAbsAddress();
@@ -271,7 +271,7 @@ void EventHandler::watchdogTrigger()
 	lock.unlock();
 }
 
-bool EventHandler::corresponds(char *inName)
+bool EventHandler::corresponds(const char *inName)
 {
 	bool corr = false;
 	char *sharedName = (char *)name.getAbsAddress();
