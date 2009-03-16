@@ -88,13 +88,17 @@ fi
 
 if test "$java_enable" = "yes"
 then
+  if test -z "$JDK_DIR"
+  then
+    JDK_DIR="/etc/alternatives/java_sdk"
+  fi
   AC_ARG_WITH(jdk,
 	[ --with-jdk=java-jdk-dir	specify location of java jdk],
 	jdk_dir="$withval",
 	jdk_dir="$JDK_DIR"
   )
 dnl Look for java jdk
-  AC_MSG_CHECKING(for presence of $jdk_dir/jre)
+  AC_MSG_CHECKING(for presence of Java Development Kit)
   if [ test -r $jdk_dir/jre ]
   then
     AC_MSG_RESULT(found.)
