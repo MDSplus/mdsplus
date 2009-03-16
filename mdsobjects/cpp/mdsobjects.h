@@ -180,19 +180,6 @@ Tree *getActiveTree();
 				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
 			}
 		}
-		DataException(int clazz, int dtype, const char *inMsg)
-		{
-			if(!inMsg)
-			{
-				msg = new char[64];
-				sprintf(msg, "Class = %d Dtype = %d", clazz, dtype);
-			}
-			else
-			{
-				msg = new char[strlen(inMsg) + 64];
-				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
-			}
-		}
 		DataException(int clazz, int dtype, const string inMsg)
 		{
 			msg = new char[inMsg.length() + 64];
