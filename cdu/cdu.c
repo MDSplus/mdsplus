@@ -538,15 +538,19 @@ static struct valueClause  *cmd_value()	/* Return: addr of structure	*/
         if (p && *p==',')
             bumpString_linePtr();
 
-        if (!cduGetString("    valueOpt",&dsc_token,0))
-            return((void *)illegalCmdline(0,0));
+        if (!cduGetString("    valueOpt",&dsc_token,0)) {
+            illegalCmdline(0,0);
+	    return 0;
+	}
 
         p = strncpy(cmd,token,sizeof(cmd)-1);
         if (*p == ')')
             break;		/*--> end of VALUE(...) spec		*/
         opt = cdu_lookup(&p,cmdValue,0,NOMSG,0);
-        if (!opt)
-            return((void *)illegalCmdline(0,0));
+        if (!opt) {
+            illegalCmdline(0,0);
+	    return 0;
+	}
 
         switch(opt)
            {
@@ -574,8 +578,10 @@ static struct valueClause  *cmd_value()	/* Return: addr of structure	*/
                 break;
 
             case VAL_TYPE:
-                if (!getEqualsString("=type",&dsc_token,0))
-                    return((void *)illegalCmdline(psave,"unexpected eof"));
+	      if (!getEqualsString("=type",&dsc_token,0)) {
+                    illegalCmdline(psave,"unexpected eof");
+		    return 0;
+	      }
                 l2un(typeString,token,sizeof(typeString)-1);
                 p = typeString;
                 mask = cdu_lookup(&p,built_in_types,0,NOMSG,0);

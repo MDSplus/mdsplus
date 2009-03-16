@@ -194,7 +194,7 @@ struct cmd_struct  *make_lookup_keyword( /* Return: addr of cmd_struct	*/
         exit(0);
        }
     clear_buffer(cmd,(icnt+1)*sizeof(struct cmd_struct));
-    cmd[0].cmdA_string = (void *)(icnt+1);
+    cmd[0].cmdA_string = (char *)0+(icnt+1);
 
 		/*======================================================
 		 * Initialize cmd[] table ...
