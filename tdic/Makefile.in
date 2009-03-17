@@ -8,7 +8,7 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
-TDIC_LIBS= -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsdcl  -lMdsShr @LIBREADLINE@ @LIBS@
+TDIC_LIBS= -ldl
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
