@@ -35,6 +35,13 @@ class descriptor(_C.Structure):
             self.dtype=DTYPE_MISSING
             self.pointer=None
             return
+        if isinstance(value,_N.generic):
+            a=_N.array(value)
+            self.dtype=mdsdtypes.fromNumpy(value)
+            self.length=value.nbytes
+            self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),_C.POINTER(descriptor))
+            self.addToCache(a)
+            return
         if isinstance(value,int):
             self.length=4
             self.dtype=DTYPE_L
@@ -237,13 +244,7 @@ class descriptor(_C.Structure):
             self.addToCache(apd_a)
             self.addToCache(apd)
             return
-        if not isinstance(value,_N.generic):
-            raise TypeError,'Cannot make descriptor of '+str(type(value))
-        a=_N.array(value)
-        self.dtype=mdsdtypes.fromNumpy(value)
-        self.length=value.nbytes
-        self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),_C.POINTER(descriptor))
-        self.addToCache(a)
+        raise TypeError,'Cannot make descriptor of '+str(type(value))
         return
 
     def __str__(self):
