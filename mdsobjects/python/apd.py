@@ -1,4 +1,5 @@
 from mdsdata import Data
+from scalar import String
 from _mdsdtypes import DTYPE_LIST,DTYPE_DICTIONARY
 
 class Apd(Data):
@@ -198,9 +199,14 @@ class BulkFetch(List):
                     ans[name]=Dictionary({'error':str(e)})
             return ans
         else:
+	    
             self.serialize().setTdiVar('_fetch')
             Data.execute("mdsconnect('"+str(host)+"')")
-            return Data.execute("mdsvalue('public _fetch=$,Py(\"BulkFetch.remote()\"),public _ans',public _fetch)").deserialize()
+            ans=Data.execute("mdsvalue('public _fetch=$,Py(\"BulkFetch.remote()\"),public _ans',public _fetch)")
+	    if isinstance(ans,String):
+		raise Exception("Error fetching data: "+ans)
+	    else:
+                return ans.deserialize()
 
     def remote():
         BulkFetch(Data.getTdiVar('_fetch').deserialize()).get().serialize().setTdiVar('_ans')
