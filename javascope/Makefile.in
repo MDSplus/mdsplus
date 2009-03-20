@@ -85,7 +85,7 @@ install:
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @exec_prefix@/java/classes
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/WaveDisplay.jar @exec_prefix@/java/classes
 	$(INSTALL) -m 644  jScope.properties @exec_prefix@/java/classes
-	$(INSTALL) -m 755  @MAKEBINDIR@jScope @exec_prefix@/bin
+	$(INSTALL) -m 755  @MAKEBINDIR@jScope @bindir@
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
