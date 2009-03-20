@@ -208,7 +208,7 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
     if (!(status & 1)) return -1;
   }
-#if define(HAVE_GETADDRINFO) && !defined(GLOBUS)
+#if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   getaddr_status=GetAddr(host,&sockaddr);
 #endif
   LockMdsShrMutex(&HostListMutex,&HostListMutex_initialized);
