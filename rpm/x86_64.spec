@@ -5,7 +5,7 @@ License: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
 Prefix: /usr/local
-Buildroot: /var/tmp/mdsplus
+BuildRoot: /var/tmp/mdsplus
 Vendor: http://www.mdsplus.org
 Summary: MDSplus Data Acquisition System
 

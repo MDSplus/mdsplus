@@ -5,7 +5,7 @@ License: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
 Prefix: /usr/local
-Buildroot: /var/tmp/mdsplus
+BuildRoot: /var/tmp/mdsplus
 Vendor: MIT Plasma Science and Fusion Center 
 Summary: MDSplus Data Acquisition System
 
@@ -26,11 +26,11 @@ Main libraries and routines to get MDS operational
 make
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -Rf $RPM_BUILD_ROOT
 make install
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -Rf $RPM_BUILD_ROOT
 
 %post 
 $RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
