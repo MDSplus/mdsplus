@@ -95,6 +95,9 @@ struct timezone { short timezone; };
 /* Define if you have the sigvector function.  */
 #undef HAVE_SIGVECTOR
 
+/* Define if you have the getaddrinfo function. */
+#define HAVE_GETADDRINFO
+
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
 #define HAVE_SOCKET
