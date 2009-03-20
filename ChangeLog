@@ -1,6 +1,36 @@
 Version 2.2-0
 
 
+2009-03-20 16:19  twf
+
+	* mdsplus.sln:
+	
+	Add cacheshr to project
+
+2009-03-20 16:19  twf
+
+	* cacheshr/cacheshr.vcproj:
+	
+	Add cacheshr.vcproj for VStudio
+
+2009-03-20 16:18  twf
+
+	* include/config.h_win32:
+	
+	Use gethostaddr on windows
+
+2009-03-20 16:16  twf
+
+	* Setup/Setup.vdproj:
+	
+	Add cacheshr and new tdi funs
+
+2009-03-20 16:16  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-20 16:14  twf
 
 	* javascope/Makefile.in, javatraverser/Makefile.in,
