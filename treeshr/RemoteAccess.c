@@ -8,6 +8,8 @@
 #define __USE_FILE_OFFSET64
 #endif
 #ifdef HAVE_WINDOWS_H
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
 #include <io.h>
 #define write _write
@@ -114,9 +116,11 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
+#if !defined(HAVE_WINDOWS_H)
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#endif
 
 STATIC_THREADSAFE struct _host_list {char *host; int socket; struct sockaddr_in sockaddr; int connections; time_t time; struct _host_list *next;} *host_list = 0;
 
@@ -158,7 +162,7 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
     struct addr_list *p=malloc(sizeof(struct addr_list)),*next;
     p->host=strcpy(malloc(strlen(host)+1),host);
     memset(((struct sockaddr_in *)res->ai_addr)->sin_zero,0,sizeof(sockaddr->sin_zero));
-    memcpy(&p->sockaddr,(struct socaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
+    memcpy(&p->sockaddr,(struct sockaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
     memcpy(sockaddr,(struct sockaddr_in *)res->ai_addr,sizeof(struct sockaddr_in));
     p->next=0;
     freeaddrinfo(res);
@@ -204,7 +208,9 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
     int status = FindImageSymbol("ConnectToMds",(void **)&rtn);
     if (!(status & 1)) return -1;
   }
+#if define(HAVE_GETADDRINFO) && !defined(GLOBUS)
   getaddr_status=GetAddr(host,&sockaddr);
+#endif
   LockMdsShrMutex(&HostListMutex,&HostListMutex_initialized);
   for (nextone = &host_list,hostchk = host_list; hostchk; nextone = &hostchk->next, hostchk = hostchk->next)
   {
