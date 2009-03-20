@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-20 16:54  twf
+
+	* rpm/: rpm.spec, x86_64.spec:
+	
+	fix build root
+
+2009-03-20 16:34  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-20 16:33  twf
 
 	* treeshr/RemoteAccess.c:
