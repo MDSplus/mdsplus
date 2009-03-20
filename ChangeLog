@@ -1,11 +1,29 @@
 Version 2.2-0
 
 
+2009-03-20 16:33  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix #if defined typo
+
+2009-03-20 16:20  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-20 16:19  twf
 
 	* mdsplus.sln:
 	
 	Add cacheshr to project
+
+2009-03-20 16:19  twf
+
+	* cacheshr/cacheshr.vcproj:
+	
+	Add cacheshr.vcproj for VStudio
 
 2009-03-20 16:19  twf
 
