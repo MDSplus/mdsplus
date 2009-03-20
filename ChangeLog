@@ -1,6 +1,67 @@
 Version 2.2-0
 
 
+2009-03-20 16:14  twf
+
+	* javascope/Makefile.in, javatraverser/Makefile.in,
+	javadispatcher/Makefile.in:
+	
+	use bindir for scripts
+
+2009-03-20 14:21  twf
+
+	* tdishr/tdishr.vcproj:
+	
+	Embed manifest
+
+2009-03-20 14:20  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Fix for windows
+
+2009-03-20 10:29  manduchi
+
+	* tdi/RfxDevices/getBradErrorSignal.fun:
+	
+	Radial Field check utility function
+
+2009-03-17 16:20  twf
+
+	* mdsobjects/python/apd.py:
+	
+	Put error check in BulkFetch get method
+
+2009-03-17 13:36  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	check for numpy scalar first
+
+2009-03-17 13:36  twf
+
+	* mdsobjects/python/makedoc.sh:
+	
+	Fix main document prefix
+
+2009-03-17 12:21  twf
+
+	* tdic/: Makefile.in, tdic.c:
+	
+	New version from Basil
+
+2009-03-16 15:29  twf
+
+	* mdsobjects/cpp/mdsobjects.h:
+	
+	Remove duplicate DataException declaration
+
+2009-03-16 14:05  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-16 14:04  twf
 
 	* rpm/: fusiongrid.spec, x86_64.spec:
