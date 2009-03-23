@@ -122,7 +122,7 @@ int cmd_lookup(
     if (nowildcard)
         wc = 0;
     else if (wc = strpbrk(cmd,"*%"))
-        wc = ((cmd+k) > wc) ? 0 : wc;	/* Wildcard char within cmd ?	*/
+        wc = 0; /* this never worked right! ((cmd+k) > wc) ? 0 : wc;	*//* Wildcard char within cmd ?	*/
 
 		/*========================================================
 		 * If not a wildcard search, but *context is nonzero, then
@@ -134,8 +134,8 @@ int cmd_lookup(
         first = ilast;
     else if (wc && !context)
        {
-        printf("  cmd_lookup:  Illegal wildcard specification\n");
-        return(0);
+//        printf("  cmd_lookup:  Illegal wildcard specification\n");
+//        return(0);
        }
 
 		/*======================================================
