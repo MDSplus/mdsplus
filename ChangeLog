@@ -1,11 +1,35 @@
 Version 2.2-0
 
 
+2009-03-23 14:25  twf
+
+	* cdu/dasutil_routines1.c:
+	
+	wildcard handling never worked it seems
+
+2009-03-23 13:24  twf
+
+	* configure, configure.in:
+	
+	support gfortran
+
+2009-03-23 08:54  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-20 16:54  twf
 
 	* ChangeLog:
 	
 	New MDSplus release 2.2-0
+
+2009-03-20 16:54  twf
+
+	* rpm/: rpm.spec, x86_64.spec:
+	
+	fix build root
 
 2009-03-20 16:54  twf
 
