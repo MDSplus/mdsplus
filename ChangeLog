@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-23 15:37  twf
+
+	* configure, configure.in:
+	
+	Fix uiddir
+
+2009-03-23 14:47  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-23 14:25  twf
 
 	* cdu/dasutil_routines1.c:
