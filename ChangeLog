@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-23 16:45  twf
+
+	* configure, configure.in:
+	
+	Fix uid
+
+2009-03-23 16:18  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-23 16:18  twf
 
 	* rpm/x86_64.spec:
