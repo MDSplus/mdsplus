@@ -1,6 +1,36 @@
 Version 2.2-0
 
 
+2009-03-24 12:29  twf
+
+	* Makefile.in:
+	
+	Add install symlinks to install
+
+2009-03-24 12:28  twf
+
+	* devscripts/install_symlinks:
+	
+	add install_symlinks used for install
+
+2009-03-24 12:07  twf
+
+	* Makefile.in:
+	
+	exclude CVS in install
+
+2009-03-24 11:05  twf
+
+	* configure, configure.in:
+	
+	Fix uiddir
+
+2009-03-24 10:13  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-24 10:11  twf
 
 	* rpm/x86_64.spec:
