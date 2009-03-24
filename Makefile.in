@@ -109,6 +109,7 @@ install:
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
+	devscripts/install_symlinks "@exec_prefix@"
 
 BINARIES = bin etc lib uid \
            tdi idl trees envsyms \
