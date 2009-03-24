@@ -107,8 +107,7 @@ install:
 	for dir in $(PARTS) ; do\
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
 	done
-	tar cf - $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
-	find @exec_prefix@ -name CVS -exec rm -R {} \;
+	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
 BINARIES = bin etc lib uid \
