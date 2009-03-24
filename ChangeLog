@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-24 13:21  twf
+
+	* devscripts/install_symlinks:
+	
+	Add symlink correctly
+
+2009-03-24 12:34  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-24 12:34  twf
 
 	* devscripts/install_symlinks:
