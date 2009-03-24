@@ -9,7 +9,11 @@ if [ -z "$1" ]
 then
   echo "Usage: $0 installation_directory"
 fi
-if ! [ -d ${1}/${2} -o -h ${1}/${2} ]
+if [ -h ${1}/${2} ]
+then
+  rm -f ${1}/${2}
+fi
+if ! [ -d ${1}/${2} ]
 then
   if [ -d ${1}/${2}64 ]
   then
