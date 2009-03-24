@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-24 17:28  twf
+
+	* javascope/Makefile.in, javadispatcher/Makefile.in:
+	
+	Use exec_prefix
+
+2009-03-24 13:21  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-24 13:21  twf
 
 	* devscripts/install_symlinks:
