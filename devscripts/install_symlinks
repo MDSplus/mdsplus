@@ -1,0 +1,21 @@
+#!/bin/sh
+if [ -z "$2" ]
+then
+  $0 "$1" bin
+  $0 "$1" lib
+  $0 "$1" uid
+fi
+if [ -z "$1" ]
+then
+  echo "Usage: $0 installation_directory"
+fi
+if ! [ -d ${1}/${2} -o -h ${1}/${2} ]
+then
+  if [ -d ${1}/${2}64 ]
+  then
+    ln -sf ${1}/${2}64 ${1}/${2}
+  else
+    ln -sf ${1}/${2}32 {$1}/${2}
+  fi
+fi
+
