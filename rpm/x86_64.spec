@@ -35,7 +35,6 @@ cd ..
 %install
 cd mdsplus
 make install
-mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin64
 cp -r bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
 ln -sf bin64 $RPM_BUILD_ROOT/usr/local/mdsplus/bin
 cp -r lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
