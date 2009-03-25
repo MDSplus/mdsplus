@@ -22,6 +22,7 @@ Main libraries and routines to get MDS operational
 %setup
 
 %build
+chmod -R u+w .
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug #ENABLEGLOBUS#
 make
 
