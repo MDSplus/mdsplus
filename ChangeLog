@@ -1,6 +1,18 @@
 Version 2.2-0
 
 
+2009-03-25 16:51  twf
+
+	* rpm/: rpm.spec, x86_64.spec:
+	
+	make all files owner writable in mdsplus source root
+
+2009-03-25 09:46  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
+
 2009-03-25 09:45  twf
 
 	* devscripts/MakeRpm:
