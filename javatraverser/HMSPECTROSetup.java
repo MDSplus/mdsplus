@@ -104,7 +104,7 @@ public class HMSPECTROSetup extends DeviceSetup {
         deviceChoice2.setUpdateIdentifier("");
         jPanel4.add(deviceChoice2);
 
-        deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EDGE_TRIGGER", "GATE_TRIGGER	"});
+        deviceChoice3.setChoiceItems(new String[] {"INTERNAL", "EDGE_TRIGGER", "GATE_TRIGGER"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("Trig. Mode:");
         deviceChoice3.setOffsetNid(6);
