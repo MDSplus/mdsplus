@@ -11,6 +11,7 @@
 #include <dbidef.h>
 #include <usagedef.h>
 
+
 #ifndef HAVE_WINDOWS_H
 #include <mdstypes.h>
 #endif
@@ -1537,6 +1538,7 @@ public:
 		char *getFullPath();
 		char *getNodeName();
 		char *getOriginalPartName();
+		TreeNode *getNode(char *relPath);
 		virtual Data *getData();
 		virtual void putData(Data *data);
 		virtual void deleteData();
@@ -1617,6 +1619,15 @@ public:
 
 		void acceptSegment(Array *data, Data *start, Data *end, Data *times);
 		void acceptRow(Data *data, _int64 time, bool isLast);
+
+//////////Edit methods////////////////
+		TreeNode *addNode(char *name, char *usage);
+		void deleteNode(char *name);
+		void renameNode(char *newName);
+		TreeNode *addDevice(char *name, char *type);
+		void addTag(char *tagName);
+		void removeTag(char *tagName);
+		void setSubtree(bool isSubtree);
 	};
 
 
@@ -1949,6 +1960,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 	{
 		friend void setActiveTree(Tree *tree);
 		friend Tree *getActiveTree();
+		Tree(void *dbid, char *name, int shot);
 
 	protected:
 		char *name;
@@ -1964,12 +1976,20 @@ extern "C" void TreeRestoreContext(void *ctx);
 
 		static void lock();
 		static void unlock();
+		static void setCurrent(char *treeName, int shot);
+		static int getCurrent(char *treeName);
+		static Tree *create(char *treeName, int shot);
 		
 		void *getCtx() {return ctx;}
+		void edit();
+		void write();
+		void quit();
+
 		TreeNode *getNode(char *path);
-	
 		TreeNode *getNode(TreePath *path);
-	
+		TreeNode *addNode(char *name, char *usage);
+		TreeNode *addDevice(char *name, char *type);
+		void deleteNode(char *name);
 
 		TreeNodeArray *getNodeWild(char *path, int usageMask);
 		TreeNodeArray *getNodeWild(char *path);
@@ -1977,8 +1997,11 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNode *getDefault();
 		bool supportsVersions();
 		void setViewDate(char *date);
-
 		void setTimeContext(Data *start, Data *end, Data *delta);
+		void createPulse(int shot);
+		void deletePulse(int shot);
+		StringArray *findTags(char *wild);
+
 	};
 
 /////////////////End Class Tree /////////////////////

@@ -33,10 +33,43 @@ extern "C" {
 	void * convertToFloat(void *dsc); 
 	void * convertToDouble(void *dsc); 
 	void * convertToShape(void *dcs);
-
-
+	StringArray *findTags(char *wild);
 }
 
+static int convertUsage(char *usage)
+{
+	char usageCode;
+	if(!strcmp(usage, "ACTION"))
+		usageCode = TreeUSAGE_ACTION;
+	else if(!strcmp(usage, "ANY"))
+		usageCode = TreeUSAGE_ANY;
+	else if(!strcmp(usage, "AXIS"))
+		usageCode = TreeUSAGE_AXIS;
+	else if(!strcmp(usage, "COMPOUND_DATA"))
+		usageCode = TreeUSAGE_COMPOUND_DATA;
+	else if(!strcmp(usage, "DEVICE"))
+		usageCode = TreeUSAGE_DEVICE;
+	else if(!strcmp(usage, "DISPATCH"))
+		usageCode = TreeUSAGE_DISPATCH;
+	else if(!strcmp(usage, "STRUCTURE"))
+		usageCode = TreeUSAGE_STRUCTURE;
+	else if(!strcmp(usage, "NUMERIC"))
+		usageCode = TreeUSAGE_NUMERIC;
+	else if(!strcmp(usage, "SIGNAL"))
+		usageCode = TreeUSAGE_SIGNAL;
+	else if(!strcmp(usage, "SUBTREE"))
+		usageCode = TreeUSAGE_SUBTREE;
+	else if(!strcmp(usage, "TASK"))
+		usageCode = TreeUSAGE_TASK;
+	else if(!strcmp(usage, "TEXT"))
+		usageCode = TreeUSAGE_TEXT;
+	else if(!strcmp(usage, "WINDOW"))
+		usageCode = TreeUSAGE_WINDOW;
+	else
+		usageCode = TreeUSAGE_ANY;
+
+	return usageCode;
+}
 
 
 
@@ -90,10 +123,27 @@ extern "C" int TreeSetViewDate(_int64 *date);
 
 extern "C" const char *MdsClassString(int id);
 extern "C" const char *MdsDtypeString(int id);
-
-
-
+extern "C" int  TreeSetCurrentShotId(char *experiment, int shot);
+extern "C" int  TreeGetCurrentShotId(char *experiment);
+extern "C" int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles);
+extern "C" int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in);
+extern "C" char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+extern "C" int _TreeOpenEdit(void **dbid, char *tree_in, int shot_in);
+extern "C" int _TreeOpenNew(void **dbid, char *tree_in, int shot_in);
+extern "C" int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid);
+extern "C" int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid);
+extern "C" int _TreeAddNode(void *dbid, char *name, int *nid_out, char usage);
+extern "C" int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset);
+extern "C" void _TreeDeleteNodeExecute(void *dbid);
+extern "C" int _TreeSetDefaultNid(void *dbid, int nid_in);
+extern "C" int _TreeGetDefaultNid(void *dbid, int *nid_in);
+extern "C" int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid);
+extern "C" int _TreeRenameNode(void *dbid, int nid, char *newname);
+extern "C" int _TreeAddTag(void *dbid, int nid_in, char *tagnam);
+extern "C" int _TreeRemoveTag(void *dbid, char *name);
 extern "C" int _RTreeFlush(void *dbid, int nid);
+extern "C" int _TreeSetSubtree(void *dbid, int nid);
+extern "C" int _TreeSetNoSubtree(void *dbid, int nid);
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
@@ -153,12 +203,97 @@ Tree::Tree(char *name, int shot)
 	strcpy(this->name, name);
 }
 
+Tree::Tree(void *dbid, char *name, int shot)
+{
+	this->shot = shot;
+	this->name = new char[strlen(name) + 1];
+	strcpy(this->name, name);
+	this->ctx = dbid;
+}
+
 
 Tree::~Tree()
 {
     _TreeClose(ctx, name, shot);
     delete [] name;
 }
+
+
+void Tree::edit()
+{
+	int status = _TreeOpenEdit(&ctx, name, shot);
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
+}
+
+Tree *Tree::create(char *name, int shot)
+{
+	void *dbid;
+	int status = _TreeOpenNew(&dbid, name, shot);
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
+	return new Tree(dbid, name, shot);
+}
+
+void Tree::write()
+{
+	int status = _TreeWriteTree(&ctx, name, shot);
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
+}
+void Tree::quit()
+{
+	int status = _TreeQuitTree(&ctx, name, shot);
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
+}
+
+
+TreeNode *Tree::addNode(char *name, char *usage)
+{
+
+	int newNid;
+	int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
+	if(!(status & 1))
+		throw new TreeException(status);
+	return new TreeNode(newNid, this);
+}
+
+
+TreeNode *Tree::addDevice(char *name, char *type)
+{
+	int newNid;
+	int status = _TreeAddConglom(ctx, name, type, &newNid);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return new TreeNode(newNid, this);
+}
+
+
+
+void Tree::deleteNode(char *name)
+{
+	int count;
+	TreeNode *delNode = getNode(name);
+	int status = _TreeDeleteNodeInitialize(ctx, delNode->getNid(), &count, 1);
+	delete delNode;
+	if(status & 1)_TreeDeleteNodeExecute(ctx);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+
+
+
+
 
 
 TreeNode *Tree::getNode(char *path)
@@ -271,6 +406,55 @@ void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 	if(!(status & 1))
 		throw new TreeException(status);
 }
+
+
+
+void Tree::setCurrent(char *treeName, int shot)
+{
+	int status = TreeSetCurrentShotId(treeName, shot);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+int Tree::getCurrent(char *treeName)
+{
+	return TreeGetCurrentShotId(treeName);
+}
+
+void Tree::createPulse(int shot)
+{
+	int  retNids;
+	int status = _TreeCreatePulseFile(getCtx(), shot, 0, &retNids);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+void Tree::deletePulse(int shot)
+{
+	int status = _TreeDeletePulseFile(getCtx(), shot, 1);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+
+
+StringArray *Tree::findTags(char *wild)
+{
+	const int MAX_TAGS = 1024;
+	char *tagNames[MAX_TAGS];
+	void *ctx = 0;
+	int nTags = 0;
+	int nidOut;
+	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindTagWild(getCtx(), wild, &nidOut, &ctx)))
+		nTags++;
+	StringArray *stArr = new StringArray(tagNames, nTags);
+	for(int i = 0; i < nTags; i++)
+		TreeFree(tagNames[i]);
+	return stArr;
+}
+	
+
+//////////////////////TreeNode Methods/////////////////
 
 
 void *TreeNode::convertToDsc()
@@ -1155,6 +1339,96 @@ void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 {
 	resolveNid();
 	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, isCached(), false, getCachePolicy());
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+
+TreeNode *TreeNode::getNode(char *relPath)
+{
+	int defNid;
+	int newNid;
+	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return new TreeNode(newNid, tree);
+}
+
+
+
+TreeNode *TreeNode::addNode(char *name, char *usage)
+{
+
+	int defNid;
+	int newNid;
+	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	if(status & 1) status = _TreeAddNode(tree->getCtx(), name, &newNid, convertUsage(usage));
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return new TreeNode(newNid, tree);
+}
+
+
+void TreeNode::deleteNode(char *name)
+{
+	int count;
+	TreeNode *delNode = getNode(name);
+	int status = _TreeDeleteNodeInitialize(tree->getCtx(), delNode->nid, &count, 1);
+	delete delNode;
+	if(status & 1)_TreeDeleteNodeExecute(tree->getCtx());
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+TreeNode *TreeNode::addDevice(char *name, char *type)
+{
+
+	int defNid;
+	int newNid;
+	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	if(status & 1) status = _TreeAddConglom(tree->getCtx(), name, type, &newNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(!(status & 1))
+		throw new TreeException(status);
+	return new TreeNode(newNid, tree);
+}
+
+void TreeNode::renameNode(char *newName)
+{
+	int status = _TreeRenameNode(tree->getCtx(), nid, newName);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+
+void TreeNode::addTag(char *tagName)
+{
+	int status = _TreeAddTag(tree->getCtx(), nid, tagName);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+void TreeNode::removeTag(char *tagName)
+{
+
+	int status = _TreeRemoveTag(tree->getCtx(), tagName);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
+void TreeNode::setSubtree(bool isSubtree)
+{
+	int status;
+	if(isSubtree)
+		status = _TreeSetSubtree(tree->getCtx(), nid);
+	else
+		status = _TreeSetNoSubtree(tree->getCtx(), nid);
 	if(!(status & 1))
 		throw new TreeException(status);
 }
