@@ -141,7 +141,6 @@ write(*, "Multi CAMERA init");
 
 				_globalErrorMessage = _globalErrorMessage//"\n"//_msg;
 				
-				write(*, "CACCA ", _globalErrorMessage);
 
 				_globalError = 1;
 			}

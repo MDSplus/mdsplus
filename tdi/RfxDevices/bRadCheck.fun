@@ -299,16 +299,14 @@ public fun bRadCheck(in _save, optional _debug)
 		}
 		
 			
-		if( ( _error & _WARNING_CAMPO_RADIALE ) == 4 || ( _error & _FAULT_CAMPO_RADIALE ) == 8 )
+		if( ( _error & _WARNING_CAMPO_RADIALE ) == 4 )
 		{
-			
-			_nid = getnci("\\MHD_BR::BRAD_FAULT", "NID_NUMBER");
-	
-	
+
+/*			
+			_nid = getnci("\\MHD_BR::BRAD_FAULT", "NID_NUMBER");	
 			_signal = compile('build_signal(`_currentFaultSignal,,`_x)');
-			
 			TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
-			
+*/			
 		
 			_nid = getnci("\\MHD_BR::BRAD_WARNING", "NID_NUMBER");
 			
@@ -317,19 +315,45 @@ public fun bRadCheck(in _save, optional _debug)
 			TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
 		
 	/*	
-			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");
-			
+			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");			
 			TreeShr->TreePutRecord(val(_nid),xd( _currentSignalF ),val(0));
 	*/	
-	
-	
-			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");
-				
+/*	
+			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");				
 			TreeShr->TreePutRecord(val(_nid),xd( _faultSigs ),val(0));
-	
+*/	
 			_nid = getnci("\\MHD_BR::BRAD_WSIGS", "NID_NUMBER");
-				
 			TreeShr->TreePutRecord(val(_nid),xd( _warningSigs ),val(0));
+/*	
+			write(*, "\n\nFAULT   : Sig "// _currentSignalF //" Start "// _currentTimeStartF);
+*/
+		}
+		
+		if( ( _error & _FAULT_CAMPO_RADIALE ) == 8 )
+		{
+			
+			_nid = getnci("\\MHD_BR::BRAD_FAULT", "NID_NUMBER");
+	
+			_signal = compile('build_signal(`_currentFaultSignal,,`_x)');
+			
+			TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
+			
+/*		
+			_nid = getnci("\\MHD_BR::BRAD_WARNING", "NID_NUMBER");			
+			_signal = compile('build_signal(`_currentWarningSignal,,`_x)');
+			TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
+*/		
+	/*	
+			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");			
+			TreeShr->TreePutRecord(val(_nid),xd( _currentSignalF ),val(0));
+	*/	
+			_nid = getnci("\\MHD_BR::BRAD_FSIGS", "NID_NUMBER");
+			
+			TreeShr->TreePutRecord(val(_nid),xd( _faultSigs ),val(0));
+/*	
+			_nid = getnci("\\MHD_BR::BRAD_WSIGS", "NID_NUMBER");
+			TreeShr->TreePutRecord(val(_nid),xd( _warningSigs ),val(0));
+*/
 /*	
 			write(*, "\n\nFAULT   : Sig "// _currentSignalF //" Start "// _currentTimeStartF);
 */

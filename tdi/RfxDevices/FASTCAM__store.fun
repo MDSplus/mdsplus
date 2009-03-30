@@ -231,9 +231,9 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] )
 			{
-			
+/*			
 				write(*, "Leggo frame ", _n, _k , _frameRange[ _n ], _resample_source[ _k ] , _frameRange[ _n + 1 ],( _frameRange[ _n + 1] > _resample_source[ _k ] ) );
-			
+*/			
 				_frameTimes = [ _frameTimes, _frameRange[ _n ]];
 
 				if(_remote != 0)

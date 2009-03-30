@@ -7,7 +7,7 @@ public fun DESO_acquisition()
 	
 	_PLC_SYNC      = 1;
 	_EXECUTE_PULSE = 1;
-
+	
 	/*
 		Aprire connessione con opc server per richiedere 
 		predisposizione impianto VI.
@@ -81,11 +81,35 @@ public fun DESO_acquisition()
 	{
 		Write(*, "Esegue il primo impulso pre-impostato ed attende 120 secondi");
 	
-/*
-		tcl("do/method \\DESO_RAW::DESO_TBASE init");
-		tcl("do/method \\DESO_RAW::WAVE init");
-*/		
+		tcl("do/method \\DESO_RAW::DESO_CLOCK init");
 
+		tcl("do/method \\DESO_RAW::DESO_TRIGGER init");
+		
+		tcl("do/method \\DESO_RAW::DESO_VME_TRIGGER init");
+		
+		tcl("do/method \\DESO_RAW::DESO_VME_CLOCK init");		
+
+		tcl("do/method \\DESO_RAW::FP_DESO_CADH init");
+	
+		tcl("do/method \\DESO_RAW::FP_DESO_CADH_1 init");
+
+		tcl("do/method \\DESO_RAW::FP_DESO_CONTROL init");
+		
+		wait(1);
+
+		tcl("do/method \\DESO_RAW::DESO_DECODER init");
+
+		wait( _WAIT_FOR_ACQUISITION );
+
+		tcl("do/method \\DESO_RAW::FP_DESO_CADH store");
+
+		tcl("do/method \\DESO_RAW::FP_DESO_CADH_1 store");
+
+		tcl("do/method \\DESO_RAW::FP_DESO_CONTROL store");
+		
+/*
+		tcl("do/method \\DESO_RAW::DESO_CONTROL store");
+		
 		tcl("do/method \\DESO_RAW::DESO_VME_TRIGGER init");
 		tcl("do/method \\DESO_RAW::DESO_VME_CLOCK init");		
 		tcl("do/method \\DESO_RAW::DESO_CONTROL init");
@@ -93,6 +117,7 @@ public fun DESO_acquisition()
 		wait(1);
 		
 		tcl("do/method \\DESO_RAW::DESO_DECODER init");
+*/
 
 		Write(*, "Attesa di 120 secondi");
 
@@ -396,6 +421,10 @@ write(*, "Salvataggio segnali e estremi di generazione");
 		tcl("do/method \\DESO_RAW::DESO_CLOCK init");
 
 		tcl("do/method \\DESO_RAW::DESO_TRIGGER init");
+		
+		tcl("do/method \\DESO_RAW::DESO_VME_TRIGGER init");
+		
+		tcl("do/method \\DESO_RAW::DESO_VME_CLOCK init");		
 
 		tcl("do/method \\DESO_RAW::DESO_CADH init");
 	

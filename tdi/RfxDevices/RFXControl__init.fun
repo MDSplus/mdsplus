@@ -328,7 +328,9 @@ write(*, _trig1_time);
 	
     for(_par = 0; _par < _NUM_PARAMETERS; _par++)
 	{
+
 		_par_name = if_error(data(DevNodeRef(_nid, _N_PAR1_NAME + _par * 2)), "");
+		/*write(*, _par_name, _par);*/
 		if(_par_name == "")
 			DevLogErr(_nid, 'Invalid name for parameter '// _par);
 		else

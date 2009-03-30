@@ -87,8 +87,8 @@ public fun PELLET__store(as_is _nid, optional _method)
 	    _rs232 = _tok0;	
 	}
 
-	write(*, "OK");
 
+	write(*, "OPENING RS232");
 
 	if ( _remote )
 	{
@@ -111,6 +111,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 	    }
 	}
 	
+	write(*, "OPENED RS232");
 	
 	
 	_value = 0.0;
@@ -129,6 +130,9 @@ public fun PELLET__store(as_is _nid, optional _method)
 		
 		if( kind( _value ) == 14)
 		{
+		
+			write(*, "CLOSING RS232");
+
 			if ( _remote )
 			{
 				MdsValue('PELLETHWClose($1)', _fd);
@@ -136,6 +140,8 @@ public fun PELLET__store(as_is _nid, optional _method)
 			}			
 			else
 				PELLETHWClose( _fd );
+
+			write(*, "CLOSED RS232");
 
 			_msg = "Error on "//_value//" query operation";
 			DevLogErr(_nid, _msg); 
@@ -168,6 +174,9 @@ public fun PELLET__store(as_is _nid, optional _method)
 			
 				if( kind( _value ) == 14)
 				{
+				
+					write(*, "CLOSING RS232");
+				
 					if ( _remote )
 					{
 						MdsValue('PELLETHWClose($1)', _fd);
@@ -175,6 +184,8 @@ public fun PELLET__store(as_is _nid, optional _method)
 					}								
 					else
 						PELLETHWClose( _fd );
+						
+					write(*, "CLOSED RS232");	
 					
 					_msg = "Error on "//_value//" query operation";
 					DevLogErr(_nid, _msg); 
@@ -188,6 +199,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 	}
 
 
+	write(*, "CLOSING RS232");
 
 	if ( _remote )
 	{
@@ -197,12 +209,13 @@ public fun PELLET__store(as_is _nid, optional _method)
 	else
 	    _status = PELLETHWClose( _fd );
 
+	write(*, "CLOSED RS232");
+
 	if( _status != 0)
 	{
 		DevLogErr(_nid, "Close serial port"); 
 		Abort();
 	}
-
 
 	return ( _tree_status );
 
