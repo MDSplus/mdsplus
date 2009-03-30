@@ -875,10 +875,13 @@ EXPORT int _RTreeFlushNode(void *dbid, int nid)
 	if(!cache) cache = getCache(cacheIsShared, cacheSize);
 	return flushNode(name, shot, nid, cache);
 }
-EXPORT int RTreeFlushNode(char *expName, int shot, int nid)
+EXPORT int RTreeFlushNode(int nid)
 {
-	if(!expName)
-		return _RTreeFlushNode(0, nid);
+	return _RTreeFlushNode(0, nid);
+}
+
+EXPORT int RTreeFlushNodeShot(char *expName, int shot, int nid)
+{
 	if(!cache) cache = getCache(cacheIsShared, cacheSize);
 	return flushNode(expName, shot, nid, cache);
 }
