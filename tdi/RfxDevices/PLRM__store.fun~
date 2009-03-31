@@ -32,7 +32,7 @@ public fun PLRM__store(as_is _nid, optional _method)
 
 
 
-	write(*, 'PLRM__show_angles');
+	write(*, 'PLRM__store');
 	_status = 1 ;
 	_ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), _status = 0);
 	if (0 == _status)
@@ -60,9 +60,21 @@ public fun PLRM__store(as_is _nid, optional _method)
 
 
         _nid_head = getnci(_nid, 'nid_number');
-        _ga_nid = _nid_head + _N_ANGLE_01_GA;
 
+        _ga_nid = _nid_head + _N_ANGLE_01_GA;
 	DevPutValue(_ga_nid, _angles[0]);
+        _ga_nid = _nid_head + _N_ANGLE_02_GA;
+	DevPutValue(_ga_nid, _angles[1]);
+        _ga_nid = _nid_head + _N_ANGLE_03_GA;
+	DevPutValue(_ga_nid, _angles[2]);
+        _ga_nid = _nid_head + _N_ANGLE_04_GA;
+	DevPutValue(_ga_nid, _angles[3]);
+        _ga_nid = _nid_head + _N_ANGLE_05_GA;
+	DevPutValue(_ga_nid, _angles[4]);
+        _ga_nid = _nid_head + _N_ANGLE_06_GA;
+	DevPutValue(_ga_nid, _angles[5]);
+
+
 
 	return(1);
 }

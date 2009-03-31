@@ -1,8 +1,8 @@
 public fun PLRM_convga_to_float(in _ga)
 {
 
-	write(*, 'PLRM_read_angles');
-	write(* , "_ga: ", _ga);
+	write(*, 'PLRM_convga_to_float');
+
 
 	_f = extract(5, 6, _ga);
 
@@ -24,7 +24,7 @@ public fun PLRM_convga_to_float(in _ga)
 
 	_f = .01 * _f;
 
-	
+	write(* , "_f: ", _f);	
 
 	return(_f);
 }

@@ -7,7 +7,7 @@ public fun PLRM_convsa_to_cmd(in _prefix, in _ga, in _sa)
 
 
 
-
+	write(*, 'PLRM_convsa_to_cmd');
 
 
 	_a = _ga - 360. * floor(_ga / 360.);
@@ -49,7 +49,7 @@ public fun PLRM_convsa_to_cmd(in _prefix, in _ga, in _sa)
 
 
 
-	_ra = _PRECISIONE  * (  _ra + (_ra >= 0)?.005:-.005);
+	_ra = _PRECISIONE  * (  _ra + ((_ra >= 0)?.005:-.005));
 	_ra = int(_ra);
 
 	_sign = (_ra >= 0) ? "+" : "-";
