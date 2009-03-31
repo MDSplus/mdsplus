@@ -116,6 +116,11 @@ public fun PLRM__init(as_is _nid, optional _method)
 
 	_sockfd = simpletcp->s_open(_addr, _port, val(10));
 	write(* , "_sockfd: ", _sockfd);
+	if (-1 == _sockfd)
+	{
+		DevLogErr(_nid, 's_open');
+		abort();
+	}
 /****************/
 	if(DevIsOn(DevNodeRef(_nid, _N_ANGLE_01)))
 	{
@@ -124,6 +129,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra01: ", _ra01);
 		_n = simpletcp->s_writen(val(_sockfd), _ra01, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -137,6 +148,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra02: ", _ra02);
 		_n = simpletcp->s_writen(val(_sockfd), _ra02, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -150,6 +167,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra03: ", _ra03);
 		_n = simpletcp->s_writen(val(_sockfd), _ra03, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -163,6 +186,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra04: ", _ra04);
 		_n = simpletcp->s_writen(val(_sockfd), _ra04, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -176,6 +205,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra05: ", _ra05);
 		_n = simpletcp->s_writen(val(_sockfd), _ra05, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -189,6 +224,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 		write(* , "_ra06: ", _ra06);
 		_n = simpletcp->s_writen(val(_sockfd), _ra06, val(11), val(10));
 		write(* , "_n: ", _n);
+		if ((-1 == _n)||(0 == _n)||(11 != _n))
+		{
+			simpletcp->s_close(val(_sockfd));
+			DevLogErr(_nid, 's_writen');
+			abort();
+		}
 	}
 	else
 	{
@@ -197,8 +238,12 @@ public fun PLRM__init(as_is _nid, optional _method)
 
 
 
-	simpletcp->s_close(val(_sockfd));
-
+	_s = simpletcp->s_close(val(_sockfd));
+	if (-1 == _s)
+	{
+		DevLogErr(_nid, 's_close');
+		abort();
+	}
 
 
 
