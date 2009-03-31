@@ -58,6 +58,10 @@ public fun PLRM__store(as_is _nid, optional _method)
 
 	_angles = PLRM_read_angles(_addr, _port);
 
+	for (_i = 0; _i < 6; _i++)
+	{
+		write(* , "_angle: ", _angles[_i]);	
+	}
 
         _nid_head = getnci(_nid, 'nid_number');
 
