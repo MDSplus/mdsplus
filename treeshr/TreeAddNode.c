@@ -109,7 +109,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
   /****************************************************
     make sure that the node is not already there
   *****************************************************/
-    status = TreeFindNode(upcase_name, &nid);
+    status = _TreeFindNode(dbid,upcase_name, &nid);
     if (status & 1)
       status = TreeALREADY_THERE;
     else if (status == TreeNNF)
