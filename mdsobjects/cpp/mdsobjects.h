@@ -1971,6 +1971,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 
 	public:
 		Tree(char *name, int shot);
+		Tree(char *name, int shot, char *mode);
 
 		~Tree();
 
@@ -1995,7 +1996,13 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNodeArray *getNodeWild(char *path);
 		void setDefault(TreeNode *treeNode);
 		TreeNode *getDefault();
-		bool supportsVersions();
+		bool versionsInModelEnabled();
+		bool versionsInPulseEnabled();
+		bool isModified();
+		bool isOpenForEdit();
+		bool isReadOnly();
+		void setVersionsInModel(bool enable);
+		void setVersionsInPulse(bool enable);
 		void setViewDate(char *date);
 		void setTimeContext(Data *start, Data *end, Data *delta);
 		void createPulse(int shot);

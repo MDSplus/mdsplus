@@ -89,6 +89,8 @@ extern "C" char *_TreeGetPath(void *dbid, int nid);
 extern "C" void TreeFree(void *ptr);
 extern "C" int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
 extern "C" int TreeGetDbi(struct dbi_itm *itmlst);
+extern "C" int _TreeSetDbi(void *dbid, struct dbi_itm *itmlst);
+extern "C" int TreeSetDbi(struct dbi_itm *itmlst);
 extern "C" int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
 extern "C" int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
 extern "C" int _TreeIsOn(void *dbid, int nid);
@@ -209,6 +211,33 @@ Tree::Tree(void *dbid, char *name, int shot)
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
 	this->ctx = dbid;
+}
+
+Tree::Tree(char *name, int shot, char *mode)
+{
+	this->shot = shot;
+	ctx = 0;
+	int len = strlen(mode);
+	char *upMode = new char[len];
+	for(int i = 0; i < len; i++)
+		upMode[i] = toupper(mode[i]);
+	upMode[len] = 0;
+	int status = 0;
+	if(!strcmp(upMode, "NORMAL"))
+		status = _TreeOpen(&ctx, name, shot, 0);
+	else if(!strcmp(upMode, "READONLY"))
+		status = _TreeOpen(&ctx, name, shot, 0);
+	else if(!strcmp(upMode, "NEW"))
+		status = _TreeOpenNew(&ctx, name, shot);
+	else if(!strcmp(upMode, "EDIT"))
+		status = _TreeOpenEdit(&ctx, name, shot);
+
+	else
+		throw new TreeException("Invalid Open mode");
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
 }
 
 
@@ -373,7 +402,7 @@ TreeNode *Tree::getDefault()
 	return new TreeNode(nid, this);
 }
 
-bool Tree::supportsVersions()
+bool Tree::versionsInPulseEnabled()
 {
 	int supports, len, status;
 	struct dbi_itm dbiList[] = 
@@ -385,6 +414,85 @@ bool Tree::supportsVersions()
 		throw new TreeException(status);
 	return (supports)?true:false;
 }
+
+bool Tree::versionsInModelEnabled()
+{
+	int supports, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_MODEL, &supports, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	status = _TreeGetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+	return (supports)?true:false;
+}
+
+bool Tree::isModified()
+{
+	int modified, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_MODEL, &modified, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	status = _TreeGetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+	return (modified)?true:false;
+}
+
+bool Tree::isOpenForEdit()
+{
+	int edit, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_MODEL, &edit, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	status = _TreeGetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+	return (edit)?true:false;
+}
+
+bool Tree::isReadOnly()
+{
+	int readOnly, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_MODEL, &readOnly, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	status = _TreeGetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+	return (readOnly)?true:false;
+}
+
+void Tree::setVersionsInModel(bool verEnabled)
+{
+	int supports, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_MODEL, &supports, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	supports = (verEnabled)?1:0;
+	status = _TreeSetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+}
+
+void Tree::setVersionsInPulse(bool verEnabled)
+{
+	int supports, len, status;
+	struct dbi_itm dbiList[] = 
+	{{sizeof(int), DbiVERSIONS_IN_PULSE, &supports, &len},
+	{0, DbiEND_OF_LIST,0,0}};
+
+	supports = (verEnabled)?1:0;
+	status = _TreeSetDbi(ctx, dbiList);
+	if(!(status & 1)) 
+		throw new TreeException(status);
+}
+
 
 void Tree::setViewDate(char *date)
 {
