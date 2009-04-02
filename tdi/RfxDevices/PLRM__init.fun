@@ -29,7 +29,7 @@ public fun PLRM__init(as_is _nid, optional _method)
 
 
 
-	write(*, 'PLRM__init');
+	write(*, '********************* PLRM__init *********************');
 	_status = 1 ;
 	_ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), _status = 0);
 	if (0 == _status)

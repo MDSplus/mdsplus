@@ -32,7 +32,9 @@ public fun PLRM__store(as_is _nid, optional _method)
 
 
 
-	write(*, 'PLRM__store');
+
+	write(*, '********************* PLRM__store *********************');
+
 	_status = 1 ;
 	_ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), _status = 0);
 	if (0 == _status)

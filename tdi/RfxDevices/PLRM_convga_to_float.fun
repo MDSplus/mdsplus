@@ -1,7 +1,8 @@
 public fun PLRM_convga_to_float(in _ga)
 {
 
-	write(*, 'PLRM_convga_to_float');
+
+	write(*, '********************* PLRM_convga_to_float *********************');
 
 
 	_f = extract(5, 6, _ga);

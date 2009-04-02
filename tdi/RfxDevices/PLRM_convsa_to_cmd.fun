@@ -7,7 +7,7 @@ public fun PLRM_convsa_to_cmd(in _prefix, in _ga, in _sa)
 
 
 
-	write(*, 'PLRM_convsa_to_cmd');
+	write(*, '********************* PLRM_convsa_to_cmd *********************');
 
 
 	_a = _ga - 360. * floor(_ga / 360.);

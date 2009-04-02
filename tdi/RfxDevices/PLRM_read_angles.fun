@@ -1,7 +1,8 @@
 public fun PLRM_read_angles(in _addr, in _port)
 {
 
-	write(*, 'PLRM_read_angles');	
+
+	write(*, '********************* PLRM_read_angles *********************');	
 	write(* , "_addr: ", _addr);
 	write(* , "_port: ", _port);
 

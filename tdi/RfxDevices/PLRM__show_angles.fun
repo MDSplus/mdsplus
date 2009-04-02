@@ -29,7 +29,8 @@ public fun PLRM__show_angles(as_is _nid, optional _method)
 
 
 
-	write(*, 'PLRM__show_angles');
+
+	write(*, '********************* PLRM__show_angles *********************');
 	_status = 1 ;
 	_ip = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), _status = 0);
 	if (0 == _status)
@@ -57,7 +58,8 @@ public fun PLRM__show_angles(as_is _nid, optional _method)
 
 	for (_i = 0; _i < 6; _i++)
 	{
-		write(* , "_angle: ", _angles[_i]);	
+		_curr_angle = "angle 0" // trim(adjustl(_i+1)) // ":  " // trim(adjustl(_angles[_i]));
+		write(* , "", _curr_angle);	
 	}
 
 	return(1);
