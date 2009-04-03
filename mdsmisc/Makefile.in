@@ -23,7 +23,8 @@ SOURCES = boxsmooth.c \
 	  bessel.c \
 	  fir.c \
 	  iir.c \
-	  MdsFilter.c
+	  MdsFilter.c \
+	  whoami.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
