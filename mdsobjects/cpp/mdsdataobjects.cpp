@@ -468,6 +468,29 @@ EXPORT	Data *MDSplus::execute(char *expr, Tree *tree...)
 		return evalData;
 	}
 
+EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
+	{
+		int nArgs = 0, i;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, tree);
+		for(i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		setActiveTree(tree);
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree);
+		Data *evalData = compData->data();
+		deleteData(compData);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
+		return evalData;
+	}
+
 EXPORT	Data *MDSplus::execute(char *expr, ...)
 	{
 		int nArgs = 0, i;
@@ -483,6 +506,29 @@ EXPORT	Data *MDSplus::execute(char *expr, ...)
 			args[nArgs++] = currArg->convertToDsc();
 		}
 		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		Data *evalData = compData->data();
+		deleteData (compData);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
+		return evalData;
+	}
+
+
+EXPORT	Data *MDSplus::execute(const char *expr, ...)
+	{
+		int nArgs = 0, i;
+		void *args[MAX_ARGS];
+
+		va_list v;
+		va_start(v, expr);
+		for(i = 0; i < MAX_ARGS; i++)
+		{
+			Data *currArg = va_arg(v, Data *);
+			if(currArg == 0)
+				break;
+			args[nArgs++] = currArg->convertToDsc();
+		}
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, 0);
 		Data *evalData = compData->data();
 		deleteData (compData);
 		for(i = 0; i < nArgs; i++)
@@ -830,3 +876,4 @@ EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
 EXPORT void MDSplus::deleteString(char *str){delete[] str;}
+
