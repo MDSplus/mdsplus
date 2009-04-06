@@ -33,7 +33,6 @@ extern "C" {
 	void * convertToFloat(void *dsc); 
 	void * convertToDouble(void *dsc); 
 	void * convertToShape(void *dcs);
-	StringArray *findTags(char *wild);
 }
 
 static int convertUsage(char *usage)
@@ -101,6 +100,7 @@ extern "C" int _TreeSetDefaultNid(void *dbid, int nid);
 extern "C" int _TreeGetDefaultNid(void *dbid, int *nid);
 extern "C" char *_TreeFindNodeTags(void *dbid, int nid, void *ctx);
 extern "C" int TreeFindTagEnd(void *ctx);
+extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 extern "C" void *TreeSwitchDbid(void *dbid);
 extern "C" void RTreeConfigure(int shared, int size);
 
@@ -238,6 +238,8 @@ Tree::Tree(char *name, int shot, char *mode)
 	{
 		throw new TreeException(status);
 	}
+	this->name = new char[strlen(name) + 1];
+	strcpy(this->name, name);
 }
 
 
@@ -245,6 +247,15 @@ Tree::~Tree()
 {
     _TreeClose(ctx, name, shot);
     delete [] name;
+}
+
+EXPORT void *Tree::operator new(unsigned int sz)
+{
+	return ::operator new(sz);
+}
+EXPORT void Tree::operator delete(void *p)
+{
+	::operator delete(p);
 }
 
 
@@ -308,7 +319,7 @@ TreeNode *Tree::addDevice(char *name, char *type)
 
 
 
-void Tree::deleteNode(char *name)
+void Tree::remove(char *name)
 {
 	int count;
 	TreeNode *delNode = getNode(name);
@@ -366,7 +377,7 @@ TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 	//printf("%s\n", MdsGetMsg(status));
 
 	TreeNode **retNodes = new TreeNode *[numNids];
-	ctx = 0;
+	wildCtx = 0;
 	for(int i = 0; i < numNids; i++)
 	{
 		_TreeFindNodeWild(ctx, path,&currNid,&wildCtx, usageMask);
@@ -556,10 +567,16 @@ StringArray *Tree::findTags(char *wild)
 	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindTagWild(getCtx(), wild, &nidOut, &ctx)))
 		nTags++;
 	StringArray *stArr = new StringArray(tagNames, nTags);
-	for(int i = 0; i < nTags; i++)
-		TreeFree(tagNames[i]);
 	return stArr;
 }
+void Tree::removeTag(char *tagName)
+{
+
+	int status = _TreeRemoveTag(getCtx(), tagName);
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
 	
 
 //////////////////////TreeNode Methods/////////////////
@@ -623,6 +640,14 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 	setAccessory(units, error, help, validation);
 }
 
+EXPORT void *TreeNode::operator new(unsigned int sz)
+{
+	return ::operator new(sz);
+}
+EXPORT void TreeNode::operator delete(void *p)
+{
+	::operator delete(p);
+}
 		
 char *TreeNode::getPath()
 {
@@ -647,6 +672,7 @@ char *TreeNode::getMinPath()
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
+	path[pathLen] = 0;
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
 	return retPath;
@@ -664,6 +690,7 @@ char *TreeNode::getFullPath()
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
+	path[pathLen] = 0;
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
 	return retPath;
@@ -681,6 +708,7 @@ char *TreeNode::getOriginalPartName()
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
+	path[pathLen] = 0;
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
 	return retPath;
@@ -698,6 +726,7 @@ char *TreeNode::getNodeName()
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new TreeException(status);
+	path[pathLen] = 0;
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
 	return retPath;
@@ -1482,7 +1511,7 @@ TreeNode *TreeNode::addNode(char *name, char *usage)
 }
 
 
-void TreeNode::deleteNode(char *name)
+void TreeNode::remove(char *name)
 {
 	int count;
 	TreeNode *delNode = getNode(name);
@@ -1507,7 +1536,7 @@ TreeNode *TreeNode::addDevice(char *name, char *type)
 	return new TreeNode(newNid, tree);
 }
 
-void TreeNode::renameNode(char *newName)
+void TreeNode::rename(char *newName)
 {
 	int status = _TreeRenameNode(tree->getCtx(), nid, newName);
 	if(!(status & 1))
@@ -1525,7 +1554,11 @@ void TreeNode::addTag(char *tagName)
 void TreeNode::removeTag(char *tagName)
 {
 
-	int status = _TreeRemoveTag(tree->getCtx(), tagName);
+	int currNid;
+	int status = _TreeFindNode(tree->getCtx(), tagName, &currNid);
+	if(currNid != nid)
+		throw new TreeException("No such tag for this tree node"); //The tag does not refer to this node
+	status = _TreeRemoveTag(tree->getCtx(), tagName);
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1540,6 +1573,21 @@ void TreeNode::setSubtree(bool isSubtree)
 	if(!(status & 1))
 		throw new TreeException(status);
 }
+
+StringArray *TreeNode::findTags()
+{
+	const int MAX_TAGS = 1024;
+	char *tagNames[MAX_TAGS];
+	void *ctx = 0;
+	int nTags = 0;
+	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindNodeTags(tree->getCtx(), nid, &ctx)))
+		nTags++;
+	StringArray *stArr = new StringArray(tagNames, nTags);
+	return stArr;
+}
+
+
+//////////////////TreePath Methods//////////////////
 
 
 TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
@@ -1619,6 +1667,300 @@ void CachedTree::synch()
 	RTreeSynch();
 }
 
+///////////////TreeNode methods
+
+EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
+{
+	this->numNodes = numNodes;
+	this->nodes = new TreeNode *[numNodes];
+
+	for(int i = 0; i < numNodes; i++)
+		this->nodes[i] = nodes[i];
+}
+EXPORT TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
+{
+	this->numNodes = numNodes;
+	this->nodes = new TreeNode *[numNodes];
+
+	for(int i = 0; i < numNodes; i++)
+		this->nodes[i] = new TreeNode(nids[i], tree);
+}
+EXPORT TreeNodeArray::~TreeNodeArray()
+{
+	if(numNodes > 0)
+	{
+		for(int i = 0; i < numNodes; i++)
+			deleteData(nodes[i]);
+		delete [] nodes;
+	}
+			
+}
+
+
+EXPORT void *TreeNodeArray::operator new(unsigned int sz)
+{
+	return ::operator new(sz);
+}
+EXPORT void TreeNodeArray::operator delete(void *p)
+{
+	::operator delete(p);
+}
+
+EXPORT StringArray *TreeNodeArray::getPath()
+{
+	int i;
+	char **paths = new char *[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		paths[i] = nodes[i]->getPath();
+	}
+
+	StringArray *retData = new StringArray(paths, numNodes);
+	for(i = 0; i < numNodes; i++)
+	{
+		deleteString(paths[i]);
+	}
+	delete [] paths;
+	return  retData;
+}
+EXPORT StringArray *TreeNodeArray::getFullPath()
+{
+	int i;
+	char **paths = new char *[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		paths[i] = nodes[i]->getFullPath();
+	}
+
+	StringArray *retData = new StringArray(paths, numNodes);
+	for(i = 0; i < numNodes; i++)
+	{
+		deleteString(paths[i]);
+	}
+	delete [] paths;
+	return  retData;
+}
+
+EXPORT Int32Array *TreeNodeArray::getNid()
+{
+	int i;
+	int *nids = new int[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		nids[i] = nodes[i]->getNid();
+	}
+
+	Int32Array *retData = new Int32Array(nids, numNodes);
+	delete [] nids;
+	return  retData;
+}
+
+EXPORT Int8Array *TreeNodeArray::isOn()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isOn();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+EXPORT void TreeNodeArray::setOn(Int8Array *info)
+{
+	int i, numInfo;
+	char *infoArray = info->getByteArray(&numInfo);
+	if(numInfo > numNodes)
+		numInfo = numNodes;
+
+	for(i = 0; i < numInfo; i++)
+	{
+		nodes[i]->setOn((infoArray[i])?true:false);
+	}
+	delete [] infoArray;
+}
+
+EXPORT Int8Array *TreeNodeArray::isSetup()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isSetup();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+
+EXPORT Int8Array *TreeNodeArray::isWriteOnce()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isWriteOnce();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
+{
+	int i, numInfo;
+	char *infoArray = info->getByteArray(&numInfo);
+	if(numInfo > numNodes)
+		numInfo = numNodes;
+
+	for(i = 0; i < numInfo; i++)
+	{
+		nodes[i]->setWriteOnce((infoArray[i])?true:false);
+	}
+	delete [] infoArray;
+}
+
+EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isCompressOnPut();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
+{
+	int i, numInfo;
+	char *infoArray = info->getByteArray(&numInfo);
+	if(numInfo > numNodes)
+		numInfo = numNodes;
+
+	for(i = 0; i < numInfo; i++)
+	{
+		nodes[i]->setCompressOnPut((infoArray[i])?true:false);
+	}
+	delete [] infoArray;
+}
+
+EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isNoWriteModel();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
+{
+	int i, numInfo;
+	char *infoArray = info->getByteArray(&numInfo);
+	if(numInfo > numNodes)
+		numInfo = numNodes;
+
+	for(i = 0; i < numInfo; i++)
+	{
+		nodes[i]->setNoWriteModel((infoArray[i])?true:false);
+	}
+	delete [] infoArray;
+}
+
+EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
+{
+	int i;
+	char *info = new char[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		info[i] = nodes[i]->isNoWriteShot();
+	}
+
+	Int8Array *retData = new Int8Array(info, numNodes);
+	delete [] info;
+	return  retData;
+}
+
+EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
+{
+	int i, numInfo;
+	char *infoArray = info->getByteArray(&numInfo);
+	if(numInfo > numNodes)
+		numInfo = numNodes;
+
+	for(i = 0; i < numInfo; i++)
+	{
+		nodes[i]->setNoWriteShot((infoArray[i])?true:false);
+	}
+	delete [] infoArray;
+}
+
+EXPORT Int32Array *TreeNodeArray::getLength()
+{
+	int i;
+	int *sizes = new int[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		sizes[i] = nodes[i]->getLength();
+	}
+
+	Int32Array *retData = new Int32Array(sizes, numNodes);
+	delete [] sizes;
+	return  retData;
+}
+EXPORT Int32Array *TreeNodeArray::getCompressedLength()
+{
+	int i;
+	int *sizes = new int[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		sizes[i] = nodes[i]->getCompressedLength();
+	}
+
+	Int32Array *retData = new Int32Array(sizes, numNodes);
+	delete [] sizes;
+	return  retData;
+}
+
+EXPORT StringArray *TreeNodeArray::getUsage()
+{
+	int i;
+	const char **usages = new const char *[numNodes];
+	for(i = 0; i < numNodes; i++)
+	{
+		usages[i] = nodes[i]->getUsage();
+	}
+
+	StringArray *retData = new StringArray((char **)usages, numNodes);
+	delete [] usages;
+	return  retData;
+}
+
+
+
+////////////////End TreeNodeArray methods/////////////////////
+
+
+
+
+
+
+
 void MDSplus::setActiveTree(Tree *tree)
 {
 	TreeSwitchDbid(tree->getCtx());
@@ -1645,3 +1987,4 @@ ostream &operator<<(ostream &stream, TreeNode *treeNode)
 {
 	return stream << treeNode->getPath();
 }
+

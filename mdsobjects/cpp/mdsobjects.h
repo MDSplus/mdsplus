@@ -115,6 +115,7 @@ extern "C" {
 using namespace std;
 
 namespace MDSplus  {
+EXPORT void deleteString(char *str);
 
 class Tree;
 void setActiveTree(Tree *tree);
@@ -226,6 +227,8 @@ protected:
 		
 		int refCount;
 		virtual void *convertToDsc() = 0;
+		void *operator new(unsigned int sz);
+		void operator delete(void *p);
 		Data()
 		{
 			changed = true;
@@ -265,6 +268,7 @@ protected:
 
 		virtual double * getDoubleArray(int *numElements);
 		virtual Data *getDimensionAt(int dimIdx);
+		virtual int getSize() {return 1;}
 
 		virtual Data *getUnits()
 		{
@@ -632,6 +636,15 @@ protected:
 		{
 			delete [] ptr;
 		}
+		virtual int getSize() 
+		{
+			int retSize = 1;
+			for(int i = 0; i < nDims; i++)
+				retSize *= dims[i];
+			return retSize;
+		}
+
+
 		virtual int *getShape(int *numDims);
 		
 
@@ -1531,6 +1544,11 @@ public:
 	public:
 		TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 
+		//Force new and delete in dll for windows
+		void *operator new(unsigned int sz);
+		void operator delete(void *p);
+
+
 		Tree *getTree(){return tree;}
 		void setTree(Tree *tree) {this->tree = tree;}
 		char *getPath();
@@ -1619,15 +1637,17 @@ public:
 
 		void acceptSegment(Array *data, Data *start, Data *end, Data *times);
 		void acceptRow(Data *data, _int64 time, bool isLast);
+		StringArray *findTags();
 
 //////////Edit methods////////////////
 		TreeNode *addNode(char *name, char *usage);
-		void deleteNode(char *name);
-		void renameNode(char *newName);
+		void remove(char *name);
+		void rename(char *newName);
 		TreeNode *addDevice(char *name, char *type);
 		void addTag(char *tagName);
 		void removeTag(char *tagName);
 		void setSubtree(bool isSubtree);
+
 	};
 
 
@@ -1674,277 +1694,29 @@ public:
 		int numNodes;
 
 	public:
-		TreeNodeArray(TreeNode **nodes, int numNodes)
-		{
-			this->numNodes = numNodes;
-			this->nodes = new TreeNode *[numNodes];
+		void *operator new(unsigned int sz);
+		void operator delete(void *p);
 
-			for(int i = 0; i < numNodes; i++)
-				this->nodes[i] = nodes[i];
-		}
-		TreeNodeArray(int *nids, int numNodes, Tree *tree)
-		{
-			this->numNodes = numNodes;
-			this->nodes = new TreeNode *[numNodes];
-
-			for(int i = 0; i < numNodes; i++)
-				this->nodes[i] = new TreeNode(nids[i], tree);
-		}
-		~TreeNodeArray()
-		{
-			if(numNodes > 0)
-			{
-			    for(int i = 0; i < numNodes; i++)
-			        deleteData(nodes[i]);
-			    delete [] nodes;
-			}
-			    	
-		}
-
-		StringArray *getPath()
-		{
-			int i;
-			char **paths = new char *[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				paths[i] = nodes[i]->getPath();
-			}
-
-			StringArray *retData = new StringArray(paths, numNodes);
-			for(i = 0; i < numNodes; i++)
-			{
-				delete [] paths[i];
-			}
-			delete [] paths;
-			return  retData;
-		}
-		StringArray *getFullPath()
-		{
-			int i;
-			char **paths = new char *[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				paths[i] = nodes[i]->getFullPath();
-			}
-
-			StringArray *retData = new StringArray(paths, numNodes);
-			for(i = 0; i < numNodes; i++)
-			{
-				delete [] paths[i];
-			}
-			delete [] paths;
-			return  retData;
-		}
-
-		Int32Array *getNid()
-		{
-			int i;
-			int *nids = new int[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				nids[i] = nodes[i]->getNid();
-			}
-
-			Int32Array *retData = new Int32Array(nids, numNodes);
-			delete [] nids;
-			return  retData;
-		}
-
-		Int8Array *isOn()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isOn();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-		void setOn(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setOn((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
-
-		Int8Array *isSetup()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isSetup();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-
-		Int8Array *isWriteOnce()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isWriteOnce();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-		void setWriteOnce(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setWriteOnce((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
-
-		Int8Array *isCompressOnPut()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isCompressOnPut();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-		void setCompressOnPut(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setCompressOnPut((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
-
-		Int8Array *isNoWriteModel()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isNoWriteModel();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-		void setNoWriteModel(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setNoWriteModel((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
-
-		Int8Array *isNoWriteShot()
-		{
-			int i;
-			char *info = new char[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				info[i] = nodes[i]->isNoWriteShot();
-			}
-
-			Int8Array *retData = new Int8Array(info, numNodes);
-			delete [] info;
-			return  retData;
-		}
-
-		void setNoWriteShot(Int8Array *info)
-		{
-			int i, numInfo;
-			char *infoArray = info->getByteArray(&numInfo);
-			if(numInfo > numNodes)
-				numInfo = numNodes;
-
-			for(i = 0; i < numInfo; i++)
-			{
-				nodes[i]->setNoWriteShot((infoArray[i])?true:false);
-			}
-			delete [] infoArray;
-		}
-
-		Int32Array *getLength()
-		{
-			int i;
-			int *sizes = new int[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				sizes[i] = nodes[i]->getLength();
-			}
-
-			Int32Array *retData = new Int32Array(sizes, numNodes);
-			delete [] sizes;
-			return  retData;
-		}
-		Int32Array *getCompressedLength()
-		{
-			int i;
-			int *sizes = new int[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				sizes[i] = nodes[i]->getCompressedLength();
-			}
-
-			Int32Array *retData = new Int32Array(sizes, numNodes);
-			delete [] sizes;
-			return  retData;
-		}
-
-		StringArray *getUsage()
-		{
-			int i;
-			const char **usages = new const char *[numNodes];
-			for(i = 0; i < numNodes; i++)
-			{
-				usages[i] = nodes[i]->getUsage();
-			}
-
-			StringArray *retData = new StringArray((char **)usages, numNodes);
-			delete [] usages;
-			return  retData;
-		}
+		TreeNodeArray(TreeNode **nodes, int numNodes);
+		TreeNodeArray(int *nids, int numNodes, Tree *tree);
+		~TreeNodeArray();
+		StringArray *getPath();
+		StringArray *getFullPath();
+		Int32Array *getNid();
+		Int8Array *isOn();
+		void setOn(Int8Array *info);
+		Int8Array *isSetup();
+		Int8Array *isWriteOnce();
+		void setWriteOnce(Int8Array *info);
+		Int8Array *isCompressOnPut();
+		void setCompressOnPut(Int8Array *info);
+		Int8Array *isNoWriteModel();
+		void setNoWriteModel(Int8Array *info);
+		Int8Array *isNoWriteShot();
+		void setNoWriteShot(Int8Array *info);
+		Int32Array *getLength();
+		Int32Array *getCompressedLength();
+		StringArray *getUsage();
 	};
 
 
@@ -1975,6 +1747,9 @@ extern "C" void TreeRestoreContext(void *ctx);
 
 		~Tree();
 
+		void *operator new(unsigned int sz);
+		void operator delete(void *p);
+
 		static void lock();
 		static void unlock();
 		static void setCurrent(char *treeName, int shot);
@@ -1990,7 +1765,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		TreeNode *getNode(TreePath *path);
 		TreeNode *addNode(char *name, char *usage);
 		TreeNode *addDevice(char *name, char *type);
-		void deleteNode(char *name);
+		void remove(char *name);
 
 		TreeNodeArray *getNodeWild(char *path, int usageMask);
 		TreeNodeArray *getNodeWild(char *path);
@@ -2008,7 +1783,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 		void createPulse(int shot);
 		void deletePulse(int shot);
 		StringArray *findTags(char *wild);
-
+		void removeTag(char *tagName);
 	};
 
 /////////////////End Class Tree /////////////////////
@@ -2062,6 +1837,10 @@ EXPORT void deleteNativeArray(long *array);
 EXPORT void deleteNativeArray(float *array);
 EXPORT void deleteNativeArray(double *array);
 EXPORT void deleteNativeArray(char **array);
-
+EXPORT void deleteTreeNode(TreeNode *node);
+EXPORT void deleteTree(Tree *tree);
+EXPORT void deleteTreeNodeArray(TreeNodeArray *nodeArray);
 }
+
+
 #endif

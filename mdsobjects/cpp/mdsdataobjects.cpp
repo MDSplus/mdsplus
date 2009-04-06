@@ -124,6 +124,15 @@ extern "C" void *createApdData(int nData, char **dataPtrs, Data *unitsData,
 
 
 ///////////////////Data methods implementation////////////////////////
+EXPORT void *Data::operator new(unsigned int sz)
+{
+	return ::operator new(sz);
+}
+EXPORT void Data::operator delete(void *p)
+{
+	::operator delete(p);
+}
+
 Data *Data::data()
 {
 	if(!hasChanged() && !dataCache)
@@ -812,8 +821,7 @@ EXPORT Data *Uint8Array::deserialize()
 }
 
 
-
-//Required in Windows Debug configuation to propely de-allocate native arrays
+//Required in Windows Debug configuation to propely de-allocate native arrays and strings
 EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
@@ -821,3 +829,4 @@ EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
+EXPORT void MDSplus::deleteString(char *str){delete[] str;}
