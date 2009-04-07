@@ -1618,7 +1618,6 @@ public:
 
 		int getDepth();
 		bool containsVersions();
-		char **getTags(int *numRetTags);
 
 		void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
 		void putSegment(Array *data, int ofs);
@@ -1643,6 +1642,8 @@ public:
 		TreeNode *addNode(char *name, char *usage);
 		void remove(char *name);
 		void rename(char *newName);
+		void move(TreeNode *parent, char *newName);
+		void move(TreeNode *parent);
 		TreeNode *addDevice(char *name, char *type);
 		void addTag(char *tagName);
 		void removeTag(char *tagName);

@@ -1346,31 +1346,6 @@ int TreeNode::getDepth()
 }
 	
 
-char **TreeNode::getTags(int *numRetTags)
-{
-	const int MAX_TAGS = 128;
-	
-	char *tags[MAX_TAGS];
-	int numTags;
-	void *ctx = 0;
-	resolveNid();
-	for(numTags = 0; numTags < MAX_TAGS; numTags++)
-	{
-		tags[numTags] = _TreeFindNodeTags(tree->getCtx(), nid, &ctx);
-		if(!tags[numTags]) break;
-	}
-	TreeFindTagEnd(&ctx);
-	*numRetTags = numTags;
-	char **retTags = new char *[numTags];
-	for(int i = 0; i < numTags; i++)
-	{
-		retTags[i] = new char(strlen(tags[i])+1);
-		strcpy(retTags[i], tags[i]);
-		TreeFree(tags[i]);
-	}
-	return retTags;
-}
-
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
 	resolveNid();
@@ -1544,6 +1519,23 @@ void TreeNode::rename(char *newName)
 		throw new TreeException(status);
 }
 
+void TreeNode::move(TreeNode *parent, char *newName)
+{
+	char *parentPath = parent->getFullPath();
+	char *newPath = new char[strlen(newName) + strlen(parentPath) + 2];
+	sprintf(newPath, "%s:%s", parentPath, newName);
+	rename(newPath);
+	delete [] parentPath;
+	delete [] newPath;
+}
+
+
+void TreeNode::move(TreeNode *parent)
+{
+	char *name = getNodeName();
+	move(parent, name);
+	delete [] name;
+}
 
 void TreeNode::addTag(char *tagName)
 {
