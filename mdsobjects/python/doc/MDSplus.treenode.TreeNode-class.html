@@ -47,8 +47,6 @@
     <td>
       <table cellpadding="0" cellspacing="0">
         <!-- hide/show private -->
-        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
-    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
             >]&nbsp;|&nbsp;<a href="MDSplus.treenode.TreeNode-class.html"
@@ -81,18 +79,27 @@
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Instance Methods</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-InstanceMethods"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">various</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#__getattr__" class="summary-sig-name">__getattr__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Implements value=node.attribute</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__getattr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">Data</span>
@@ -105,6 +112,25 @@
       Initialze TreeNode</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#__setattr__" class="summary-sig-name">__setattr__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Implements node.attribute=value</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__setattr__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -131,34 +157,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#__getattr__" class="summary-sig-name">__getattr__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">name</span>)</span><br />
-      Attributes defined:</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__getattr__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#__setattr__" class="summary-sig-name">__setattr__</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#addDevice" class="summary-sig-name">addDevice</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">name</span>,
-        <span class="summary-sig-arg">value</span>)</span><br />
-      Attributes which can be set:</td>
+        <span class="summary-sig-arg">model</span>)</span><br />
+      Add device descendant.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__setattr__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addDevice">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -168,14 +176,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#restoreContext" class="summary-sig-name">restoreContext</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Restore tree context.</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#addNode" class="summary-sig-name">addNode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">usage</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">ANY</code><code class="variable-quote">'</code></span>)</span><br />
+      Add node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.restoreContext">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addNode">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -185,14 +195,56 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getClass" class="summary-sig-name">getClass</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return MDSplus class name of this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#addTag" class="summary-sig-name">addTag</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Add a tagname to this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getClass">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addTag">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#beginSegment" class="summary-sig-name">beginSegment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">end</span>,
+        <span class="summary-sig-arg">dimension</span>,
+        <span class="summary-sig-arg">initialValueArray</span>,
+        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">-1</span>)</span><br />
+      Begin a record segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginSegment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#beginTimestampedSegment" class="summary-sig-name">beginTimestampedSegment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">array</span>,
+        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">-1</span>)</span><br />
+      Allocate space for a timestamped segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginTimestampedSegment">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -206,10 +258,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isCompressOnPut" class="summary-sig-name">isCompressOnPut</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if node is set to compress on put</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#containsVersions" class="summary-sig-name">containsVersions</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if this node contains data versions</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressOnPut">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.containsVersions">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -219,15 +271,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setCompressOnPut" class="summary-sig-name">setCompressOnPut</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set compress on put state of this node</td>
+          <td><span class="summary-sig"><a name="delete"></a><span class="summary-sig-name">delete</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Delete this node from the tree</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setCompressOnPut">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.delete">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -237,14 +288,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Int32</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getConglomerateElt" class="summary-sig-name">getConglomerateElt</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return index of this node in a conglomerate</td>
+          <td><span class="summary-sig"><a name="deleteData"></a><span class="summary-sig-name">deleteData</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Delete data from this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getConglomerateElt">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.deleteData">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -254,14 +305,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Int32</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumElts" class="summary-sig-name">getNumElts</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return number of nodes in this conglomerate</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#doMethod" class="summary-sig-name">doMethod</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">method</span>,
+        <span class="summary-sig-arg">arg</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Execute method on conglomerate element</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumElts">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.doMethod">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -271,14 +324,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">TreeNodeArray</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getConglomerateNodes" class="summary-sig-name">getConglomerateNodes</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return TreeNodeArray of conglomerate elements</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getBrother" class="summary-sig-name">getBrother</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return sibling of this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getConglomerateNodes">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getBrother">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -288,213 +341,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getOriginalPartName" class="summary-sig-name">getOriginalPartName</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return the original part name of node in conglomerate</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOriginalPartName">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getDtype" class="summary-sig-name">getDtype</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return the name of the data type stored in this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDtype">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isEssential" class="summary-sig-name">isEssential</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if successful action completion is essential</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isEssential">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setEssential" class="summary-sig-name">setEssential</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set essential state of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setEssential">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getFullPath" class="summary-sig-name">getFullPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return full path of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getFullPath">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getMinPath" class="summary-sig-name">getMinPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return shortest path string for this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMinPath">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getPath" class="summary-sig-name">getPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return path of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getPath">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">String</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNodeName" class="summary-sig-name">getNodeName</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return node name</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNodeName">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isIncludedInPulse" class="summary-sig-name">isIncludedInPulse</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this subtree is to be included in pulse file</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isIncludedInPulse">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setIncludedInPulse" class="summary-sig-name">setIncludedInPulse</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set include in pulse state of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setIncludedInPulse">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Int32</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getDepth" class="summary-sig-name">getDepth</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get depth of this node in the tree</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDepth">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isChild" class="summary-sig-name">isChild</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this is a child node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isChild">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -502,23 +349,6 @@
       Return first child of this node.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getChild">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Int32</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumChildren" class="summary-sig-name">getNumChildren</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return number of children nodes.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumChildren">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -545,14 +375,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">String</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isMember"></a><span class="summary-sig-name">isMember</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this is a member node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getClass" class="summary-sig-name">getClass</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return MDSplus class name of this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isMember">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getClass">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -562,14 +392,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getMember"></a><span class="summary-sig-name">getMember</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return first member node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getCompressedLength" class="summary-sig-name">getCompressedLength</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return compressed data length of this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMember">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getCompressedLength">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -579,14 +409,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Int32</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getNumMembers"></a><span class="summary-sig-name">getNumMembers</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return number of members</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getConglomerateElt" class="summary-sig-name">getConglomerateElt</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return index of this node in a conglomerate</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumMembers">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getConglomerateElt">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -596,14 +426,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNodeArray</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getMembers"></a><span class="summary-sig-name">getMembers</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return TreeNodeArray of this nodes members</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getConglomerateNodes" class="summary-sig-name">getConglomerateNodes</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return TreeNodeArray of conglomerate elements</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMembers">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getConglomerateNodes">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -613,14 +443,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Data</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getNumDescendants"></a><span class="summary-sig-name">getNumDescendants</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return number of first level descendants (children and members)</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getData" class="summary-sig-name">getData</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return data</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumDescendants">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getData">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -630,11 +460,28 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Int32</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getDescendants"></a><span class="summary-sig-name">getDescendants</span>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getDepth" class="summary-sig-name">getDepth</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get depth of this node in the tree</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDepth">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">TreeNodeArray</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getDescendants" class="summary-sig-name">getDescendants</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Return TreeNodeArray of first level descendants (children and 
       members).</td>
           <td align="right" valign="top">
@@ -648,14 +495,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">String</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getParent"></a><span class="summary-sig-name">getParent</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return parent of this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getDtype" class="summary-sig-name">getDtype</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the name of the data type stored in this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getParent">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDtype">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -665,14 +512,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">String</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getBrother"></a><span class="summary-sig-name">getBrother</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return sibling of this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getFullPath" class="summary-sig-name">getFullPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return full path of this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getBrother">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getFullPath">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -682,11 +529,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getLength"></a><span class="summary-sig-name">getLength</span>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getLength" class="summary-sig-name">getLength</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Return uncompressed data length of this node</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getLength">source&nbsp;code</a></span>
@@ -699,14 +546,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getCompressedLength"></a><span class="summary-sig-name">getCompressedLength</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return compressed data length of this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getMember" class="summary-sig-name">getMember</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return first member node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getCompressedLength">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMember">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -716,11 +563,45 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">TreeNodeArray</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getNid"></a><span class="summary-sig-name">getNid</span>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getMembers" class="summary-sig-name">getMembers</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return TreeNodeArray of this nodes members</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMembers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">String</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getMinPath" class="summary-sig-name">getMinPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return shortest path string for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMinPath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNid" class="summary-sig-name">getNid</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Return node index</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNid">source&nbsp;code</a></span>
@@ -733,14 +614,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">String</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isNoWriteModel"></a><span class="summary-sig-name">isNoWriteModel</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if data storage to model is disabled for this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNodeName" class="summary-sig-name">getNodeName</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return node name</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteModel">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNodeName">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -750,15 +631,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Int32</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setNoWriteModel" class="summary-sig-name">setNoWriteModel</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set no write model state for this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumChildren" class="summary-sig-name">getNumChildren</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return number of children nodes.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteModel">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumChildren">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -768,14 +648,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isNoWriteShot"></a><span class="summary-sig-name">isNoWriteShot</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if data storage to pulse file is disabled for this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumDescendants" class="summary-sig-name">getNumDescendants</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return number of first level descendants (children and members)</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteShot">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumDescendants">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -785,15 +665,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Int32</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setNoWriteShot" class="summary-sig-name">setNoWriteShot</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set no write shot state for this node</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumElts" class="summary-sig-name">getNumElts</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return number of nodes in this conglomerate</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteShot">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumElts">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -803,14 +682,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isWriteOnce"></a><span class="summary-sig-name">isWriteOnce</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if node is set write once</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getNumMembers" class="summary-sig-name">getNumMembers</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return number of members</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isWriteOnce">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumMembers">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -820,389 +699,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setWriteOnce" class="summary-sig-name">setWriteOnce</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Set write once state of node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setWriteOnce">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="isOn"></a><span class="summary-sig-name">isOn</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return True if node is turned on, False if not.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isOn">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setOn" class="summary-sig-name">setOn</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">flag</span>)</span><br />
-      Turn node on or off</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setOn">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getOwnerId"></a><span class="summary-sig-name">getOwnerId</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Get id/gid value of account which wrote data to this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOwnerId">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getData"></a><span class="summary-sig-name">getData</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return data</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getData">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#putData" class="summary-sig-name">putData</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">data</span>)</span><br />
-      Store data</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putData">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="deleteData"></a><span class="summary-sig-name">deleteData</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Delete data from this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.deleteData">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getTimeInserted"></a><span class="summary-sig-name">getTimeInserted</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return time data was written</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTimeInserted">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="doMethod"></a><span class="summary-sig-name">doMethod</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">method</span>,
-        <span class="summary-sig-arg">arg</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Execute method on conglomerate element</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.doMethod">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getStatus"></a><span class="summary-sig-name">getStatus</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return action completion status</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getStatus">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getUsage"></a><span class="summary-sig-name">getUsage</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return usage of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getUsage">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getTags"></a><span class="summary-sig-name">getTags</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return tags of this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTags">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="containsVersions"></a><span class="summary-sig-name">containsVersions</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this node contains data versions</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.containsVersions">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="isSegmented"></a><span class="summary-sig-name">isSegmented</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this node contains segmented records</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSegmented">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="__setNode"></a><span class="summary-sig-name">__setNode</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">qualifier</span>,
-        <span class="summary-sig-arg">flag</span>,
-        <span class="summary-sig-arg">reversed</span>=<span class="summary-sig-default">False</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__setNode">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="beginSegment"></a><span class="summary-sig-name">beginSegment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">start</span>,
-        <span class="summary-sig-arg">end</span>,
-        <span class="summary-sig-arg">dimension</span>,
-        <span class="summary-sig-arg">initialValueArray</span>,
-        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">-1</span>)</span><br />
-      Begin a record segment</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginSegment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="putSegment"></a><span class="summary-sig-name">putSegment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">data</span>,
-        <span class="summary-sig-arg">idx</span>)</span><br />
-      Load a segment in a node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putSegment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="updateSegment"></a><span class="summary-sig-name">updateSegment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">start</span>,
-        <span class="summary-sig-arg">end</span>,
-        <span class="summary-sig-arg">dim</span>,
-        <span class="summary-sig-arg">idx</span>)</span><br />
-      Update a segment</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.updateSegment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="beginTimestampedSegment"></a><span class="summary-sig-name">beginTimestampedSegment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">array</span>,
-        <span class="summary-sig-arg">idx</span>=<span class="summary-sig-default">-1</span>)</span><br />
-      Allocate space for a timestamped segment</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginTimestampedSegment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="putTimestampedSegment"></a><span class="summary-sig-name">putTimestampedSegment</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">array</span>,
-        <span class="summary-sig-arg">timestampArray</span>)</span><br />
-      Load a timestamped segment</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putTimestampedSegment">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="putRow"></a><span class="summary-sig-name">putRow</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">bufsize</span>,
-        <span class="summary-sig-arg">array</span>,
-        <span class="summary-sig-arg">timestamp</span>)</span><br />
-      Load a timestamped segment row</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putRow">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -1219,15 +716,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">String</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getSegmentStart"></a><span class="summary-sig-name">getSegmentStart</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idx</span>)</span><br />
-      return start of segment</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getOriginalPartName" class="summary-sig-name">getOriginalPartName</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the original part name of node in conglomerate</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentStart">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOriginalPartName">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1237,15 +733,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getSegmentEnd"></a><span class="summary-sig-name">getSegmentEnd</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idx</span>)</span><br />
-      return end of segment</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getOwnerId" class="summary-sig-name">getOwnerId</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get id/gid value of account which wrote data to this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentEnd">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOwnerId">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1255,15 +750,31 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Dimension</span>
+      <span class="summary-type">TreeNode</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getSegmentDim" class="summary-sig-name">getSegmentDim</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idx</span>)</span><br />
-      Return dimension of segment</td>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getParent" class="summary-sig-name">getParent</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return parent of this node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentDim">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getParent">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">String</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getPath" class="summary-sig-name">getPath</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return path of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getPath">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1291,11 +802,116 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Dimension</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="getTree"></a><span class="summary-sig-name">getTree</span>(<span class="summary-sig-arg">self</span>)</span><br />
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getSegmentDim" class="summary-sig-name">getSegmentDim</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      Return dimension of segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentDim">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getSegmentEnd" class="summary-sig-name">getSegmentEnd</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      return end of segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentEnd">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Data</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getSegmentStart" class="summary-sig-name">getSegmentStart</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      return start of segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentStart">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getStatus" class="summary-sig-name">getStatus</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return action completion status</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getStatus">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Uint64</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getTimeInserted" class="summary-sig-name">getTimeInserted</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return time data was written</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTimeInserted">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">ndarray</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getTags" class="summary-sig-name">getTags</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return tags of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTags">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Tree</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getTree" class="summary-sig-name">getTree</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Return Tree associated with this node</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTree">source&nbsp;code</a></span>
@@ -1308,11 +924,542 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">str</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="setTree"></a><span class="summary-sig-name">setTree</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#getUsage" class="summary-sig-name">getUsage</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return usage of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getUsage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isChild" class="summary-sig-name">isChild</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if this is a child node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isChild">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isCompressible" class="summary-sig-name">isCompressible</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if node contains data which can be compressed</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressible">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isCompressOnPut" class="summary-sig-name">isCompressOnPut</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if node is set to compress on put</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressOnPut">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isDoNotCompress" class="summary-sig-name">isDoNotCompress</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true of compression is disabled for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isDoNotCompress">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isEssential" class="summary-sig-name">isEssential</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if successful action completion is essential</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isEssential">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isIncludedInPulse" class="summary-sig-name">isIncludedInPulse</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if this subtree is to be included in pulse file</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isIncludedInPulse">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isMember" class="summary-sig-name">isMember</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if this is a member node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isMember">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isNoWriteModel" class="summary-sig-name">isNoWriteModel</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if data storage to model is disabled for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteModel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isNoWriteShot" class="summary-sig-name">isNoWriteShot</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if data storage to pulse file is disabled for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteShot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isOn" class="summary-sig-name">isOn</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return True if node is turned on, False if not.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isOn">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isSegmented" class="summary-sig-name">isSegmented</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if this node contains segmented records</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSegmented">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isSetup" class="summary-sig-name">isSetup</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if data is setup information.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSetup">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#isWriteOnce" class="summary-sig-name">isWriteOnce</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true if node is set write once</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isWriteOnce">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#move" class="summary-sig-name">move</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parent</span>,
+        <span class="summary-sig-arg">newname</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Move node to another location in the tree and optionally rename the 
+      node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.move">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#putData" class="summary-sig-name">putData</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Store data</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putData">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#putRow" class="summary-sig-name">putRow</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bufsize</span>,
+        <span class="summary-sig-arg">array</span>,
+        <span class="summary-sig-arg">timestamp</span>)</span><br />
+      Load a timestamped segment row</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putRow">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#putSegment" class="summary-sig-name">putSegment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      Load a segment in a node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putSegment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#putTimestampedSegment" class="summary-sig-name">putTimestampedSegment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">array</span>,
+        <span class="summary-sig-arg">timestampArray</span>)</span><br />
+      Load a timestamped segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putTimestampedSegment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#removeTag" class="summary-sig-name">removeTag</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tag</span>)</span><br />
+      Remove a tagname from this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.removeTag">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#rename" class="summary-sig-name">rename</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">newname</span>)</span><br />
+      Rename node this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.rename">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#restoreContext" class="summary-sig-name">restoreContext</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Restore tree context.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.restoreContext">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setCompressOnPut" class="summary-sig-name">setCompressOnPut</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set compress on put state of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setCompressOnPut">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setDoNotCompress" class="summary-sig-name">setDoNotCompress</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set do not compress state of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setDoNotCompress">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setEssential" class="summary-sig-name">setEssential</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set essential state of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setEssential">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setIncludedInPulse" class="summary-sig-name">setIncludedInPulse</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set include in pulse state of this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setIncludedInPulse">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setNoWriteModel" class="summary-sig-name">setNoWriteModel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set no write model state for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteModel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setNoWriteShot" class="summary-sig-name">setNoWriteShot</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Set no write shot state for this node</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteShot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setOn" class="summary-sig-name">setOn</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Turn node on or off</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setOn">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setSubtree" class="summary-sig-name">setSubtree</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">flag</span>)</span><br />
+      Enable/Disable node as a subtree</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setSubtree">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setTree" class="summary-sig-name">setTree</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">tree</span>)</span><br />
       Set Tree associated with this node</td>
           <td align="right" valign="top">
@@ -1326,66 +1473,36 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isCompressible"></a><span class="summary-sig-name">isCompressible</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if node contains data which can be compressed</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressible">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="isDoNotCompress"></a><span class="summary-sig-name">isDoNotCompress</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true of compression is disabled for this node</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isDoNotCompress">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="isSetup"></a><span class="summary-sig-name">isSetup</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return true if this node's data was written to the model</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSetup">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="setDoNotCompress"></a><span class="summary-sig-name">setDoNotCompress</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#setWriteOnce" class="summary-sig-name">setWriteOnce</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">flag</span>)</span><br />
-      Set do not compress state of this node</td>
+      Set write once state of node</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setDoNotCompress">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setWriteOnce">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.treenode.TreeNode-class.html#updateSegment" class="summary-sig-name">updateSegment</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">start</span>,
+        <span class="summary-sig-arg">end</span>,
+        <span class="summary-sig-arg">dim</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      Update a segment</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.updateSegment">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1466,17 +1583,6 @@
       <code><a href="MDSplus.mdsdata.Data-class.html#units_of">units_of</a></code>,
       <code><a href="MDSplus.mdsdata.Data-class.html#value_of">value_of</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.mdsdata.Data-class.html">mdsdata.Data</a></code></b> (private):
-      <code><a href="MDSplus.mdsdata.Data-class.html#_getDescriptor" onclick="show_private();">_getDescriptor</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_getError" onclick="show_private();">_getError</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_getHelp" onclick="show_private();">_getHelp</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_getUnits" onclick="show_private();">_getUnits</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_getValidation" onclick="show_private();">_getValidation</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_setError" onclick="show_private();">_setError</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_setHelp" onclick="show_private();">_setHelp</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_setUnits" onclick="show_private();">_setUnits</a></code>,
-      <code><a href="MDSplus.mdsdata.Data-class.html#_setValidation" onclick="show_private();">_setValidation</a></code>
-      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__getattribute__</code>,
@@ -1493,17 +1599,8 @@
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Static Methods</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-StaticMethods"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
 </tr>
   <tr>
     <td colspan="2" class="summary">
@@ -1513,9 +1610,6 @@
       <code><a href="MDSplus.mdsdata.Data-class.html#execute">execute</a></code>,
       <code><a href="MDSplus.mdsdata.Data-class.html#getTdiVar">getTdiVar</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.mdsdata.Data-class.html">mdsdata.Data</a></code></b> (private):
-      <code><a href="MDSplus.mdsdata.Data-class.html#_isScalar" onclick="show_private();">_isScalar</a></code>
-      </p></div>
     </td>
   </tr>
 </table>
@@ -1524,17 +1618,8 @@
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Instance Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-InstanceVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Variables</span></td>
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
@@ -1558,17 +1643,8 @@
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Properties</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-Properties"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
 </tr>
   <tr>
     <td colspan="2" class="summary">
@@ -1590,19 +1666,216 @@
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Method Details</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-MethodDetails"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="__getattr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getattr__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+    <br /><em class="fname">(Qualification operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__getattr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Implements value=node.attribute</p>
+  <p>Attributes defined:</p>
+  <ul>
+    <li>
+      brother               - TreeNode,Next node in tree
+    </li>
+    <li>
+      child                 - TreeNode,First ancestor
+    </li>
+    <li>
+      children_nids         - TreeNodeArray, Children nodes
+    </li>
+    <li>
+      mclass                - Uint8, Internal numeric MDSplus descriptor 
+      class
+    </li>
+    <li>
+      class_str             - String, Name of MDSplus descriptor class
+    </li>
+    <li>
+      compressible          - Bool, Flag indicating node contains 
+      compressible data
+    </li>
+    <li>
+      compress_on_put       - Bool, Flag indicating automatic compression
+    </li>
+    <li>
+      conglomerate_elt      - Int32, Index of node in a conglomerate
+    </li>
+    <li>
+      conglomerate_nids     - TreeNodeArray, Nodes in same conglomerate
+    </li>
+    <li>
+      data_in_nci           - Uint32, Flag indicating data stored in nci 
+      record
+    </li>
+    <li>
+      descendants           - TreeNodeArray, One level descendants of this 
+      node
+    </li>
+    <li>
+      depth                 - Int32, Level of node from the top node of the
+      tree
+    </li>
+    <li>
+      disabled              - Bool, Opposite of on flag
+    </li>
+    <li>
+      do_not_compress       - Bool, Flag indicating data should not be 
+      compressed
+    </li>
+    <li>
+      dtype                 - Uint8, Internal numeric MDSplus data type
+    </li>
+    <li>
+      dtype_str             - String, Name of MDSplus data type
+    </li>
+    <li>
+      essential             - Bool, Flag indicating node is essential, used
+      for actions
+    </li>
+    <li>
+      fullpath              - String, Full absolute path of node in tree
+    </li>
+    <li>
+      include_in_pulse      - Bool, Flag indicating node should be included
+      in pulse
+    </li>
+    <li>
+      is_child              - Bool, Flag indicating node is a child node
+    </li>
+    <li>
+      is_member             - Bool, Flag indicating node is a member bnode
+    </li>
+    <li>
+      length                - Int32, Length of data in bytes (uncompressed)
+    </li>
+    <li>
+      member                - TreeNode, First member of this node
+    </li>
+    <li>
+      member_nids           - TreeNodeArray, Members nodes
+    </li>
+    <li>
+      minpath               - String, Minimum length string representing 
+      path to node
+    </li>
+    <li>
+      nid_number            - Int32, Internal index to node in tree
+    </li>
+    <li>
+      nid_reference         - Bool, Flag indicating that data contains 
+      references to nodes
+    </li>
+    <li>
+      node_name             - String, This nodes name
+    </li>
+    <li>
+      no_write_model        - Bool, Flag indicating that data cannot be 
+      written into model
+    </li>
+    <li>
+      no_write_shot         - Bool, Flag indicating that data cannot be 
+      written into shot
+    </li>
+    <li>
+      number_of_children    - Int32, Number of children of this node
+    </li>
+    <li>
+      number_of_descentants - Int32, Numer of first level descendants
+    </li>
+    <li>
+      number_of elts        - Int32, Number of nodes in this conglomerate
+    </li>
+    <li>
+      number_of_members     - Int32, Number of members of this node
+    </li>
+    <li>
+      on                    - Bool, Flag indicating if this node is turned 
+      on
+    </li>
+    <li>
+      original_part_name    - String, Original node name when conglomerate 
+      was created
+    </li>
+    <li>
+      owner_id              - Int32, Id/gid of account which stored the 
+      data
+    </li>
+    <li>
+      parent                - TreeNode, Parent of this node
+    </li>
+    <li>
+      parent_disabled       - Bool, Flag indicating parent is turned off
+    </li>
+    <li>
+      path                  - String, Path to this node
+    </li>
+    <li>
+      path_reference        - Bool, Flag indicating that data contains 
+      references to nodes
+    </li>
+    <li>
+      record                - Data, Contents of this node
+    </li>
+    <li>
+      rfa                   - Int64, Byte offset to this node
+    </li>
+    <li>
+      rlength               - Int32, Data length in bytes (compressed)
+    </li>
+    <li>
+      segmented             - Bool, Flag indicating node contains segmented
+      records
+    </li>
+    <li>
+      setup_information     - Bool, Flag indicating node contains setup 
+      information
+    </li>
+    <li>
+      status                - Int32, Completion status of action
+    </li>
+    <li>
+      tags                  - StringArray, List of tagnames for this node
+    </li>
+    <li>
+      time_inserted         - Uint64, Time data was inserted
+    </li>
+    <li>
+      usage                 - String, Usage of this node
+    </li>
+    <li>
+      versions              - Bool, Flag indicating that data contains 
+      versions
+    </li>
+    <li>
+      write_once            - Bool, Flag indicating that data can only be 
+      written if node is empty.
+    </li>
+  </ul>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of attribute</li>
+    </ul></dd>
+    <dt>Returns: various</dt>
+        <dd>Value of attribute</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1638,6 +1911,72 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="__setattr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setattr__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__setattr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Implements node.attribute=value</p>
+  <p>Attributes which can be set:</p>
+  <ul>
+    <li>
+      compress_on_put  - Bool, Flag indicating whether data should be 
+      compressed when written
+    </li>
+    <li>
+      do_not_compress  - Bool, Flag to disable compression
+    </li>
+    <li>
+      essential        - Bool, Flag indicating successful action completion
+      required
+    </li>
+    <li>
+      include_in_pulse - Bool, Flag to include in pulse
+    </li>
+    <li>
+      no_write_model   - Bool, Flag to disable writing in model
+    </li>
+    <li>
+      no_write_shot    - Bool, Flag to disable writing in pulse file
+    </li>
+    <li>
+      record           - Data, Data contents of node
+    </li>
+    <li>
+      subtree          - Bool, Set node to be subtree or not (edit mode 
+      only)
+    </li>
+    <li>
+      tag              - str, Add tag to node (edit mode only)
+    </li>
+    <li>
+      write_once       - Bool, Flag to only allow writing to empty node
+    </li>
+  </ul>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of attribute</li>
+        <li><strong class="pname"><code>value</code></strong> (various) - Value for attribute</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+    <dt>Overrides:
+        object.__setattr__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="__str__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1662,124 +2001,254 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="__getattr__"></a>
+<a name="addDevice"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getattr__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">name</span>)</span>
-    <br /><em class="fname">(Qualification operator)</em>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__getattr__">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Attributes defined:</p>
-  <p>brother               - TreeNode,Next node in tree child
-  - TreeNode,First ancestor children_nids         - TreeNodeArray, Children
-  nodes mclass                - Uint8, Internal numeric MDSplus descriptor 
-  class class_str             - String, Name of MDSplus descriptor class 
-  compressible          - Bool, Flag indicating node contains compressible 
-  data compress_on_put       - Bool, Flag indicating automatic compression 
-  conglomerate_elt      - Int32, Index of node in a conglomerate 
-  conglomerate_nids     - TreeNodeArray, Nodes in same conglomerate 
-  data_in_nci           - Uint32, Flag indicating data stored in nci record
-  descendants           - TreeNodeArray, One level descendants of this node
-  depth                 - Int32, Level of node from the top node of the 
-  tree disabled              - Bool, Opposite of on flag do_not_compress
-  - Bool, Flag indicating data should not be compressed dtype
-  - Uint8, Internal numeric MDSplus data type dtype_str             - 
-  String, Name of MDSplus data type essential             - Bool, Flag 
-  indicating node is essential, used for actions fullpath              - 
-  String, Full absolute path of node in tree include_in_pulse      - Bool, 
-  Flag indicating node should be included in pulse is_child              - 
-  Bool, Flag indicating node is a child node is_member             - Bool, 
-  Flag indicating node is a member bnode length                - Int32, 
-  Length of data in bytes (uncompressed) member                - TreeNode, 
-  First member of this node member_nids           - TreeNodeArray, Members 
-  nodes minpath               - String, Minimum length string representing 
-  path to node nid_number            - Int32, Internal index to node in 
-  tree nid_reference         - Bool, Flag indicating that data contains 
-  references to nodes node_name             - String, This nodes name 
-  no_write_model        - Bool, Flag indicating that data cannot be written
-  into model no_write_shot         - Bool, Flag indicating that data cannot
-  be written into shot number_of_children    - Int32, Number of children of
-  this node number_of_descentants - Int32, Numer of first level descendants
-  number_of elts        - Int32, Number of nodes in this conglomerate 
-  number_of_members     - Int32, Number of members of this node on
-  - Bool, Flag indicating if this node is turned on original_part_name    -
-  String, Original node name when conglomerate was created owner_id
-  - Int32, Id/gid of account which stored the data parent                - 
-  TreeNode, Parent of this node parent_disabled       - Bool, Flag 
-  indicating parent is turned off path                  - String, Path to 
-  this node path_reference        - Bool, Flag indicating that data 
-  contains references to nodes record                - Data, Contents of 
-  this node rfa                   - Int64, Byte offset to this node rlength
-  - Int32, Data length in bytes (compressed) segmented             - Bool, 
-  Flag indicating node contains segmented records setup_information     - 
-  Bool, Flag indicating node contains setup information status
-  - Int32, Completion status of action tags                  - StringArray,
-  List of tagnames for this node time_inserted         - Uint64, Time data 
-  was inserted usage                 - String, Usage of this node versions
-  - Bool, Flag indicating that data contains versions write_once
-  - Bool, Flag indicating that data can only be written if node is 
-  empty.</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="__setattr__"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setattr__</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addDevice</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">name</span>,
-        <span class="sig-arg">value</span>)</span>
+        <span class="sig-arg">model</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.__setattr__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addDevice">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Attributes which can be set:</p>
-  <p>compress_on_put  - Bool, Flag indicating whether data should be 
-  compressed when written do_not_compress  - Bool, Flag to disable 
-  compression essential        - Bool, Flag indicating successful action 
-  completion required include_in_pulse - Bool, Flag to include in pulse 
-  no_write_model   - Bool, Flag to disable writing in model no_write_shot
-  - Bool, Flag to disable writing in pulse file record           - Data, 
-  Data contents of node write_once       - Bool, Flag to only allow writing
-  to empty node</p>
+  <p>Add device descendant.</p>
   <dl class="fields">
-    <dt>Overrides:
-        object.__setattr__
-    </dt>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Node name of device. 1-12 characters, no path delimiters</li>
+        <li><strong class="pname"><code>model</code></strong> (str) - Type of device to add</li>
+    </ul></dd>
+    <dt>Returns: TreeNode</dt>
+        <dd>Head node of device</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="restoreContext"></a>
+<a name="addNode"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">restoreContext</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addNode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">usage</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">ANY</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.restoreContext">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addNode">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Restore tree context. Used by internal functions.</p>
+  <p>Add node</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Node name of new node to add</li>
+        <li><strong class="pname"><code>usage</code></strong> (str) - Usage of the new node. If omitted set to ANY.</li>
+    </ul></dd>
+    <dt>Returns: TreeNode</dt>
+        <dd>New now added</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addTag"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addTag</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.addTag">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a tagname to this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tag</code></strong> (str) - tagname for this node</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="beginSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">beginSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">end</span>,
+        <span class="sig-arg">dimension</span>,
+        <span class="sig-arg">initialValueArray</span>,
+        <span class="sig-arg">idx</span>=<span class="sig-default">-1</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Begin a record segment</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> (Data) - Index of first row of data</li>
+        <li><strong class="pname"><code>end</code></strong> (Data) - Index of last row of data</li>
+        <li><strong class="pname"><code>dimension</code></strong> (Dimension) - Dimension information of segment</li>
+        <li><strong class="pname"><code>initialValueArray</code></strong> (Array) - Initial data array. Defines shape of segment</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="beginTimestampedSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">beginTimestampedSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">array</span>,
+        <span class="sig-arg">idx</span>=<span class="sig-default">-1</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.beginTimestampedSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Allocate space for a timestamped segment</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>array</code></strong> (Array) - Initial data array to define shape of segment</li>
+        <li><strong class="pname"><code>idx</code></strong> (int) - Optional segment index. Defaults to -1 meaning next segment.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="containsVersions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">containsVersions</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.containsVersions">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if this node contains data versions</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if node contains versions</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="doMethod"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">doMethod</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">method</span>,
+        <span class="sig-arg">arg</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.doMethod">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Execute method on conglomerate element</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>method</code></strong> (str) - method name to perform</li>
+        <li><strong class="pname"><code>arg</code></strong> (Data) - Optional argument for method</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getBrother"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getBrother</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getBrother">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return sibling of this node</p>
+  <dl class="fields">
+    <dt>Returns: TreeNode</dt>
+        <dd>Sibling of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getChild"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getChild</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getChild">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return first child of this node.</p>
+  <dl class="fields">
+    <dt>Returns: TreeNode</dt>
+        <dd>Return first child of this node or None if it has no children.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getChildren"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getChildren</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getChildren">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return TreeNodeArray of children nodes.</p>
+  <dl class="fields">
+    <dt>Returns: TreeNodeArray</dt>
+        <dd>Children of this node</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1804,48 +2273,24 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="isCompressOnPut"></a>
+<a name="getCompressedLength"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isCompressOnPut</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getCompressedLength</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressOnPut">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getCompressedLength">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return true if node is set to compress on put</p>
+  <p>Return compressed data length of this node</p>
   <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>True if compress on put</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="setCompressOnPut"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setCompressOnPut</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setCompressOnPut">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Set compress on put state of this node</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the compress on put characteristic</li>
-    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Compress data length of this node</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1871,28 +2316,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="getNumElts"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNumElts</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumElts">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return number of nodes in this conglomerate</p>
-  <dl class="fields">
-    <dt>Returns: Int32</dt>
-        <dd>Number of nodes in this conglomerate or 0 if not in a 
-          conglomerate.</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="getConglomerateNodes"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1914,224 +2337,24 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="getOriginalPartName"></a>
+<a name="getData"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOriginalPartName</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getData</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOriginalPartName">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getData">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return the original part name of node in conglomerate</p>
+  <p>Return data</p>
   <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>Original part name of this node when conglomerate was first 
-          instantiated.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getDtype"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDtype</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDtype">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return the name of the data type stored in this node</p>
-  <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>MDSplus data type name of data stored in this node.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="isEssential"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isEssential</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isEssential">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return true if successful action completion is essential</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>True if this node is marked essential.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="setEssential"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setEssential</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setEssential">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Set essential state of this node</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the essential characteristic. This is used on action
-          nodes when phases are dispacted.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getFullPath"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getFullPath</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getFullPath">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return full path of this node</p>
-  <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>full path specification of this node.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getMinPath"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMinPath</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMinPath">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return shortest path string for this node</p>
-  <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>shortest path designation depending on the current node default 
-          and whether the node has tag names or not.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getPath"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getPath</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getPath">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return path of this node</p>
-  <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>Path to this node.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getNodeName"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNodeName</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNodeName">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return node name</p>
-  <dl class="fields">
-    <dt>Returns: String</dt>
-        <dd>Node name of this node. 1 to 12 characters</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="isIncludedInPulse"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isIncludedInPulse</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isIncludedInPulse">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return true if this subtree is to be included in pulse file</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>True if subtree is to be included in pulse file creation.</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="setIncludedInPulse"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setIncludedInPulse</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setIncludedInPulse">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Set include in pulse state of this node</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the include in pulse characteristic. If true and 
-          this node is the top node of a subtree the subtree will be 
-          included in the pulse.</li>
-    </ul></dd>
+    <dt>Returns: Data</dt>
+        <dd>data stored in this node</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2157,45 +2380,194 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="isChild"></a>
+<a name="getDescendants"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isChild</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDescendants</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isChild">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDescendants">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return true if this is a child node</p>
+  <p>Return TreeNodeArray of first level descendants (children and 
+  members).</p>
   <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>True if this is a child node instead of a member node.</dd>
+    <dt>Returns: TreeNodeArray</dt>
+        <dd>First level descendants of this node</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="getChild"></a>
+<a name="getDtype"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getChild</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getDtype</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getChild">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getDtype">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return first child of this node.</p>
+  <p>Return the name of the data type stored in this node</p>
   <dl class="fields">
-    <dt>Returns:</dt>
-        <dd>Return first child of this node or None if it has no children.</dd>
+    <dt>Returns: String</dt>
+        <dd>MDSplus data type name of data stored in this node.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getFullPath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getFullPath</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getFullPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return full path of this node</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+        <dd>full path specification of this node.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getLength"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getLength</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getLength">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return uncompressed data length of this node</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>Uncompressed data length of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMember"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMember</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMember">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return first member node</p>
+  <dl class="fields">
+    <dt>Returns: TreeNode</dt>
+        <dd>First member of thie node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMembers"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMembers</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMembers">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return TreeNodeArray of this nodes members</p>
+  <dl class="fields">
+    <dt>Returns: TreeNodeArray</dt>
+        <dd>members of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMinPath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMinPath</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getMinPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return shortest path string for this node</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+        <dd>shortest path designation depending on the current node default 
+          and whether the node has tag names or not.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNid"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNid</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNid">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return node index</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>Internal node index of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNodeName"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNodeName</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNodeName">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return node name</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+        <dd>Node name of this node. 1 to 12 characters</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2220,148 +2592,178 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="getChildren"></a>
+<a name="getNumDescendants"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getChildren</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNumDescendants</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getChildren">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumDescendants">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return TreeNodeArray of children nodes.</p>
+  <p>Return number of first level descendants (children and members)</p>
   <dl class="fields">
-    <dt>Returns: TreeNodeArray</dt>
-        <dd>Children of this node</dd>
+    <dt>Returns: int</dt>
+        <dd>total number of first level descendants of this node</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="setNoWriteModel"></a>
+<a name="getNumElts"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setNoWriteModel</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNumElts</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteModel">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumElts">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Set no write model state for this node</p>
+  <p>Return number of nodes in this conglomerate</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the no write in model characteristic. If true then 
-          no data can be stored in this node in the model.</li>
-    </ul></dd>
+    <dt>Returns: Int32</dt>
+        <dd>Number of nodes in this conglomerate or 0 if not in a 
+          conglomerate.</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="setNoWriteShot"></a>
+<a name="getNumMembers"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setNoWriteShot</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNumMembers</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteShot">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getNumMembers">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Set no write shot state for this node</p>
+  <p>Return number of members</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the no write in shot characteristic. If true then no
-          data can be stored in this node in a shot file.</li>
-    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>number of members</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="setWriteOnce"></a>
+<a name="getOriginalPartName"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setWriteOnce</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOriginalPartName</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setWriteOnce">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOriginalPartName">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Set write once state of node</p>
+  <p>Return the original part name of node in conglomerate</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the write once characteristic. If true then data can
-          only be written if the node is empty.</li>
-    </ul></dd>
+    <dt>Returns: String</dt>
+        <dd>Original part name of this node when conglomerate was first 
+          instantiated.</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="setOn"></a>
+<a name="getOwnerId"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">setOn</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">flag</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOwnerId</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setOn">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getOwnerId">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Turn node on or off</p>
+  <p>Get id/gid value of account which wrote data to this node</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the on characteristic. If true then the node is 
-          turned on. If false the node is turned off.</li>
-    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Return user id of last account used to write data to this node</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="putData"></a>
+<a name="getParent"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">putData</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">data</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getParent</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putData">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getParent">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Store data</p>
+  <p>Return parent of this node</p>
+  <dl class="fields">
+    <dt>Returns: TreeNode</dt>
+        <dd>Parent of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getPath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getPath</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getPath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return path of this node</p>
+  <dl class="fields">
+    <dt>Returns: String</dt>
+        <dd>Path to this node.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return segment</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>data</code></strong> (Data) - Data to store in this node.</li>
+        <li><strong class="pname"><code>idx</code></strong> (int) - The index of the segment to return. Indexes start with 0.</li>
     </ul></dd>
+    <dt>Returns: Signal | None</dt>
+        <dd>Data segment</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2391,29 +2793,933 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="getSegment"></a>
+<a name="getSegmentEnd"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSegment</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSegmentEnd</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">idx</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegment">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentEnd">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return segment</p>
+  <p>return end of segment</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idx</code></strong> (int) - The index of the segment to return. Indexes start with 0.</li>
+        <li><strong class="pname"><code>idx</code></strong> (int) - segment index to query</li>
     </ul></dd>
-    <dt>Returns: Signal | None</dt>
-        <dd>Data segment</dd>
+    <dt>Returns: Data</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSegmentStart"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSegmentStart</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getSegmentStart">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>return start of segment</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idx</code></strong> (int) - segment index to query</li>
+    </ul></dd>
+    <dt>Returns: Data</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getStatus"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getStatus</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getStatus">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return action completion status</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>action completion status stored by dispatcher if this node is a 
+          dispacted action. Low bit set is success.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getTimeInserted"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTimeInserted</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTimeInserted">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return time data was written</p>
+  <dl class="fields">
+    <dt>Returns: Uint64</dt>
+        <dd>time data was written to this node as Uint64. Use answer.date to 
+          retrieve date/time string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getTags"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTags</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTags">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return tags of this node</p>
+  <dl class="fields">
+    <dt>Returns: ndarray</dt>
+        <dd>Tag names pointing to this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getTree"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getTree</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getTree">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Tree associated with this node</p>
+  <dl class="fields">
+    <dt>Returns: Tree</dt>
+        <dd>Tree associated with this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getUsage"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getUsage</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.getUsage">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return usage of this node</p>
+  <dl class="fields">
+    <dt>Returns: str</dt>
+        <dd>usage of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isChild"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isChild</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isChild">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if this is a child node</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if this is a child node instead of a member node.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isCompressible"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isCompressible</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressible">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if node contains data which can be compressed</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True of this node contains compressible data</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isCompressOnPut"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isCompressOnPut</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isCompressOnPut">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if node is set to compress on put</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if compress on put</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isDoNotCompress"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isDoNotCompress</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isDoNotCompress">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true of compression is disabled for this node</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if this node has compression disabled</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isEssential"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isEssential</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isEssential">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if successful action completion is essential</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if this node is marked essential.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isIncludedInPulse"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isIncludedInPulse</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isIncludedInPulse">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if this subtree is to be included in pulse file</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if subtree is to be included in pulse file creation.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isMember"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isMember</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isMember">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if this is a member node</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if this is a member node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isNoWriteModel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isNoWriteModel</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteModel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if data storage to model is disabled for this node</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>Return True if storing data in this node in the model tree is 
+          disabled</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isNoWriteShot"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isNoWriteShot</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isNoWriteShot">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if data storage to pulse file is disabled for this 
+  node</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>Return True if storing data in this node in the pulse tree is 
+          disabled</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isOn"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isOn</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isOn">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return True if node is turned on, False if not.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>Return True if node is turned on</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isSegmented"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isSegmented</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSegmented">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if this node contains segmented records</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if node contains segmented records</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isSetup"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isSetup</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isSetup">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if data is setup information.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if data is setup information (originally written in the 
+          model)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isWriteOnce"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isWriteOnce</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.isWriteOnce">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return true if node is set write once</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>Return True if data overwrite in this node is disabled</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="move"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">move</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">parent</span>,
+        <span class="sig-arg">newname</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.move">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Move node to another location in the tree and optionally rename the 
+  node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>parent</code></strong> (TreeNode) - New parent of this node</li>
+        <li><strong class="pname"><code>newname</code></strong> (str) - Optional new node name of this node. 1-12 characters, no path 
+          delimiters.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putData"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putData</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putData">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Store data</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>data</code></strong> (Data) - Data to store in this node.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putRow"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putRow</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bufsize</span>,
+        <span class="sig-arg">array</span>,
+        <span class="sig-arg">timestamp</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putRow">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Load a timestamped segment row</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bufsize</code></strong> (int) - number of rows in segment</li>
+        <li><strong class="pname"><code>array</code></strong> (Array or Scalar) - data for this row</li>
+        <li><strong class="pname"><code>timestamp</code></strong> (Uint64) - Timestamp of this row</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">data</span>,
+        <span class="sig-arg">idx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Load a segment in a node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>data</code></strong> (Array or Scalar) - data to load into segment</li>
+        <li><strong class="pname"><code>idx</code></strong> (int) - index into segment to load data</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="putTimestampedSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">putTimestampedSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">array</span>,
+        <span class="sig-arg">timestampArray</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.putTimestampedSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Load a timestamped segment</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>array</code></strong> (Array) - Data to load into segment</li>
+        <li><strong class="pname"><code>timestampArray</code></strong> (Uint64Array) - Array of time stamps</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="removeTag"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeTag</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.removeTag">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove a tagname from this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tag</code></strong> (str) - Tagname to remove from this node</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rename"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rename</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">newname</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.rename">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Rename node this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>newname</code></strong> (str) - new name of this node. 1-12 characters, no path delimiters.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="restoreContext"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">restoreContext</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.restoreContext">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Restore tree context. Used by internal functions.</p>
+  <dl class="fields">
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setCompressOnPut"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setCompressOnPut</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setCompressOnPut">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set compress on put state of this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the compress on put characteristic</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setDoNotCompress"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setDoNotCompress</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setDoNotCompress">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set do not compress state of this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - True do disable compression, False to enable compression</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setEssential"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setEssential</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setEssential">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set essential state of this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the essential characteristic. This is used on action
+          nodes when phases are dispacted.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setIncludedInPulse"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setIncludedInPulse</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setIncludedInPulse">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set include in pulse state of this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the include in pulse characteristic. If true and 
+          this node is the top node of a subtree the subtree will be 
+          included in the pulse.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setNoWriteModel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setNoWriteModel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteModel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set no write model state for this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the no write in model characteristic. If true then 
+          no data can be stored in this node in the model.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setNoWriteShot"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setNoWriteShot</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setNoWriteShot">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set no write shot state for this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the no write in shot characteristic. If true then no
+          data can be stored in this node in a shot file.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setOn"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setOn</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setOn">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Turn node on or off</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the on characteristic. If true then the node is 
+          turned on. If false the node is turned off.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setSubtree"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setSubtree</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setSubtree">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Enable/Disable node as a subtree</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - True to make node a subtree reference. Node must be a child node 
+          with no descendants.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setTree"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setTree</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tree</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setTree">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set Tree associated with this node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tree</code></strong> (Tree) - Tree instance to associated with this node</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setWriteOnce"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setWriteOnce</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">flag</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.setWriteOnce">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set write once state of node</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>flag</code></strong> (bool) - State to set the write once characteristic. If true then data can
+          only be written if the node is empty.</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="updateSegment"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">updateSegment</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">end</span>,
+        <span class="sig-arg">dim</span>,
+        <span class="sig-arg">idx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreeNode.updateSegment">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Update a segment</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>start</code></strong> (Data) - index of first row of segment</li>
+        <li><strong class="pname"><code>end</code></strong> (Data) - index of last row of segment</li>
+        <li><strong class="pname"><code>dim</code></strong> (Dimension) - Dimension of segment</li>
+        <li><strong class="pname"><code>idx</code></strong> (int) - Index of segment</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
   </dl>
 </td></tr></table>
 </div>
@@ -2446,7 +3752,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Mar 12 12:11:41 2009
+    Generated by Epydoc 3.0.1 on Tue Apr  7 16:54:31 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
