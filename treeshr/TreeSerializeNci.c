@@ -8,6 +8,7 @@
 void TreeSerializeNciOut(NCI *in, char *out)
 {
   char *ptr = out;
+  memset(out,0,42);
   LoadInt(in->flags,ptr);                           ptr += 4;
   *ptr = in->flags2;                                ptr += 1;
                                                     ptr += 1;

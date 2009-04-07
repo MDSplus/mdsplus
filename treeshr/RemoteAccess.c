@@ -1716,10 +1716,11 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   else
   {
 #ifdef HAVE_VXWORKS_H
-    copy(filename_old, filename_new);
-    remove(filename_old);
+    status = copy(filename_old, filename_new);
+    if (status != -1)
+      remove(filename_old);
 #else
-    rename(filename_old, filename_new);
+    status = rename(filename_old, filename_new);
 #endif
   }
   free(tmp_old);
