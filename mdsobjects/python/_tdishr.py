@@ -7,7 +7,7 @@ class TdiException(Exception):
 
 def restoreContext():
     from tree import Tree
-    if hasattr(Tree,'_activeTree'):
+    if hasattr(Tree,'_activeTree') and Tree._activeTree is not None:
         Tree._activeTree.restoreContext()
         
 def TdiCompile(expression,args=None):

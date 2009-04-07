@@ -23,8 +23,10 @@ MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
 __MdsGetMsg.argtypes=[_C.c_int]
 __MdsGetMsg.restype=_C.c_char_p
+__LibConvertDateString=MdsShr.LibConvertDateString
+__LibConvertDateString.argtypes=[_C.c_char_p,_C.POINTER(_C.c_ulonglong)]
 
-def MdsException(Exception):
+class MdsException(Exception):
     pass
 
 def MdsGetMsg(status,default=None):
@@ -55,3 +57,11 @@ def MdsCopyDxXd(desc):
 
 def MdsFree1Dx(value):
     MdsShr.MdsFree1Dx(_C.pointer(value),_C.c_void_p(0))
+
+def DateToQuad(date):
+    from numpy import array,uint64
+    ans=_C.c_ulonglong(0)
+    status = __LibConvertDateString(date,ans)
+    if not (status & 1):
+        raise MdsException,"Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,)
+    return ans.value

@@ -497,7 +497,7 @@ class Data(object):
     def getByte(self):
         """Convert this data into a byte. Implemented at this class level by returning TDI
         data(BYTE(this)). If data() fails or the returned class is not scalar,
-        generated an exception.
+        generate an exception.
         @rtype: Int8
         @raise TypeError: Raised if data is not a scalar value
         """
@@ -507,8 +507,8 @@ class Data(object):
         return ans
 
     def getShort(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
-        data(WORD(this)).If data() fails or the returned class is not scalar, generated
+        """Convert this data into a short. Implemented at this class level by returning TDI
+        data(WORD(this)).If data() fails or the returned class is not scalar, generate
         an exception.
         @rtype: Int16
         @raise TypeError: Raised if data is not a scalar value
@@ -519,8 +519,8 @@ class Data(object):
         return ans
     
     def getInt(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
-        data(LONG(this)).If data() fails or the returned class is not scalar, generated
+        """Convert this data into a int. Implemented at this class level by returning TDI
+        data(LONG(this)).If data() fails or the returned class is not scalar, generate
         an exception.
         @rtype: Int32
         @raise TypeError: Raised if data is not a scalar value
@@ -531,9 +531,9 @@ class Data(object):
         return ans
 
     def getLong(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
+        """Convert this data into a long. Implemented at this class level by returning TDI
         data(QUADWORD(this)).If data() fails or the returned class is not scalar,
-        generated an exception.
+        generate an exception.
         @rtype: Int64
         @raise TypeError: if data is not a scalar value
         """
@@ -543,9 +543,9 @@ class Data(object):
         return ans
 
     def getFloat(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
+        """Convert this data into a float32. Implemented at this class level by returning TDI
         data(F_FLOAT(this)).If data() fails or the returned class is not scalar,
-        generated an exception.
+        generate an exception.
         @rtype: Float32
         @raise TypeError: Raised if data is not a scalar value
         """
@@ -555,9 +555,9 @@ class Data(object):
         return ans
 
     def getDouble(self):
-        """Convert this data into a byte. Implemented at this class level by returning TDI
+        """Convert this data into a float64. Implemented at this class level by returning TDI
         data(FT_FLOAT(this)). If data() fails or the returned class is not scalar,
-        generated an exception.
+        generate an exception.
         @rtype: Float64
         @raise TypeError: Raised if data is not a scalar value
         """
@@ -584,7 +584,7 @@ class Data(object):
         return Data.execute('byte($)',self)
 
     def getShortArray(self):
-        """Convert this data into a byte array. Implemented at this class level by
+        """Convert this data into a short array. Implemented at this class level by
         returning TDI data(WORD(this)). If data() fails or the returned class is not
         array, generates an exception. In Java and C++ will return a 1 dimensional
         array using row-first ordering if a multidimensional array.
@@ -593,7 +593,7 @@ class Data(object):
         return Data.execute('word($)',self)
 
     def getIntArray(self):
-        """Convert this data into a byte array. Implemented at this class level by
+        """Convert this data into a int array. Implemented at this class level by
         returning TDI data (LONG(this)). If data() fails or the returned class is not
         array, generates an exception. In Java and C++ will return a 1 dimensional
         array using row-first ordering if a multidimensional array.
@@ -602,7 +602,7 @@ class Data(object):
         return Data.execute('long($)',self)
 
     def getLongArray(self):
-        """Convert this data into a byte array. Implemented at this class level by
+        """Convert this data into a long array. Implemented at this class level by
         returning TDI data(QUADWORD(this)). If data() fails or the returned class is
         not array, generates an exception. In Java and C++ will return a 1 dimensional
         array using row-first ordering if a multidimensional array.

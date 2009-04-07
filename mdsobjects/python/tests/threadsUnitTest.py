@@ -9,8 +9,8 @@ class threadJob(Thread):
         """Run test1.test() function"""
         #return TextTestRunner(verbosity=0).run(treeUnitTest.suite())
         self.result=treeUnitTest.suite().run(TestResult())
-        del treeUnitTest.local_data.pulse
-        del treeUnitTest.local_data.model
+        #del treeUnitTest.thread_data.pulse
+        #del treeUnitTest.thread_data.model
 
 class threadTest(TestCase):
 
@@ -18,7 +18,7 @@ class threadTest(TestCase):
         numsuccessful=0
         threads=list()
         for i in range(10):
-            threads.append(threadJob())
+            threads.append(threadJob())            
         for t in threads:
             t.start()
         for t in threads:

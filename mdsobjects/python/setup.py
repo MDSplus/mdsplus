@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, Extension, find_packages
-version='0.2'
+version='0.3'
 setup(name='MDSplus',
       version=version,
       description='MDSplus Python Objects',
