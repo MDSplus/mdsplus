@@ -218,7 +218,7 @@ Tree::Tree(char *name, int shot, char *mode)
 	this->shot = shot;
 	ctx = 0;
 	int len = strlen(mode);
-	char *upMode = new char[len];
+	char *upMode = new char[len+1];
 	for(int i = 0; i < len; i++)
 		upMode[i] = toupper(mode[i]);
 	upMode[len] = 0;
@@ -240,6 +240,7 @@ Tree::Tree(char *name, int shot, char *mode)
 	}
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
+	delete [] upMode;
 }
 
 
@@ -1583,6 +1584,8 @@ StringArray *TreeNode::findTags()
 	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindNodeTags(tree->getCtx(), nid, &ctx)))
 		nTags++;
 	StringArray *stArr = new StringArray(tagNames, nTags);
+	for(int i = 0; i < nTags; i++)
+	    TreeFree(tagNames[i]);
 	return stArr;
 }
 
