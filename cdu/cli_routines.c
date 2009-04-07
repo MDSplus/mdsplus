@@ -988,7 +988,9 @@ int   cli_get_value(		/* Return: status			*/
        }
     else
        {
-        sts = str_copy_dx(dsc_ret,val->valA_substring);
+	 char *tmp=strcpy(memset(malloc(sizeof(struct descriptor)),0,sizeof(struct descriptor)),val->valA_substring);
+        sts = str_copy_dx(dsc_ret,tmp);
+	free(tmp);
         val->valA_substring = 0;
        }
 

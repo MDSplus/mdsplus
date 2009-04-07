@@ -271,9 +271,7 @@ int   str_copy_dx(			/* Return: status		*/
        {
         dsc = source;
         p = dsc->dscA_pointer;
-        k = p ? strlen(p) : 0;
-        if (k > dsc->dscW_length)
-            k = dsc->dscW_length;
+	for (k=0, p=dsc->dscA_pointer; p && k < dsc->dscW_length && p[k]!='\0'; k++); 
        }
     else
        {
