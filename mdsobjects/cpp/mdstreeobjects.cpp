@@ -246,7 +246,7 @@ Tree::Tree(char *name, int shot, char *mode)
 
 Tree::~Tree()
 {
-    _TreeClose(ctx, name, shot);
+    _TreeClose(&ctx, name, shot);
     delete [] name;
 }
 
