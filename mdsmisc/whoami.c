@@ -3,6 +3,7 @@
 #include <string.h>
 #if defined(WIN32)
 #include <io.h>
+#include <windows.h>
 #elif !defined(HAVE_VXWORKS_H)
 #include <pwd.h>
 #endif
@@ -30,7 +31,7 @@ struct descriptor *whoami() {
       ans.pointer = passStruct->pw_name;
 #endif
 #endif
-    ans.length=strlen(ans.pointer);
+    ans.length=(unsigned short)strlen(ans.pointer);
   }
   return &ans;
 }
