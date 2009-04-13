@@ -603,12 +603,14 @@ int TreeSetTemplateNci(NCI *nci)
 
 int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
-  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), readonly ? 1 : 2,0);
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, 
+	  offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT,0);
 }
 
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 {
-  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), 0,0);
+  return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, 
+	  offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), MDS_IO_LOCK_NONE,0);
 }
 #ifdef OLD_LOCK_CODE
 #ifdef _WIN32

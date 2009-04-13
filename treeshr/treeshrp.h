@@ -17,6 +17,11 @@
 #define _int64 long long
 #define _int64u long long
 #endif
+#define MDS_IO_LOCK_RD  0x01
+#define MDS_IO_LOCK_WRT 0x02
+#define MDS_IO_LOCK_NONE 0x00
+#define MDS_IO_LOCK_NOWAIT 0x08
+#define MDS_IO_LOCK_MASK 0x03
 
 /********************************************
   NCI

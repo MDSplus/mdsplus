@@ -918,7 +918,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
   }
   if (fd != -1 && is_tree && edit_flag)
   {
-    if (!(MDS_IO_LOCK(fd,1,1,10,0) & 1))
+    if (!(MDS_IO_LOCK(fd,1,1,MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,0) & 1))
     {
       MDS_IO_CLOSE(fd);
       fd = -2;

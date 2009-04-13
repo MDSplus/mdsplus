@@ -749,7 +749,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 	if (status == -1) {status=0; goto error_exit;}
 	info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec,O_RDWR,0);
 	if (info_ptr->channel == -1) {status=0; goto error_exit;}
-	status=MDS_IO_LOCK(info_ptr->channel,1,1,10,0);
+	status=MDS_IO_LOCK(info_ptr->channel,1,1,MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,0);
 	status=1;
 	
 	(*dblist)->modified = 0;	

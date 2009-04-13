@@ -13,7 +13,7 @@
 #include <windows.h>
 #include <io.h>
 #define write _write
-#define lseek _lseek
+#define lseek _lseeki64
 #else
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
@@ -1035,12 +1035,14 @@ STATIC_ROUTINE int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *
 #define MDS_IO_RENAME_K 9
 #define MDS_IO_READ_X_K 10
 
+
 #define MDS_IO_O_CREAT  0x00000040
 #define MDS_IO_O_TRUNC  0x00000200
 #define MDS_IO_O_EXCL   0x00000080
 #define MDS_IO_O_WRONLY 0x00000001
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
+
 
 STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_t mode, int *sock, int *enhanced)
 {
@@ -1430,10 +1432,10 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
     else
 #endif
     if (FDS[fd-1].socket == -1 || (!FDS[fd-1].enhanced)) {
-      MDS_IO_LOCK(fd, offset, count, 1, deleted);
+      MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_RD, deleted);
       MDS_IO_LSEEK(fd, offset, SEEK_SET);
       ans = MDS_IO_READ(fd, buff, count);
-      MDS_IO_LOCK(fd, offset, count, 0, deleted);
+      MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
     }
     else {
       ans = io_read_x_remote(fd,offset,buff,count, deleted);
@@ -1497,30 +1499,37 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
     if (FDS[fd-1].socket == -1)
     {
-      int mode=mode_in &  0x3;
-      int nowait=mode_in & 0x8;
+      int mode=mode_in &  MDS_IO_LOCK_MASK;
+      int nowait=mode_in & MDS_IO_LOCK_NOWAIT;
 #if defined (_WIN32)
-      int LockStart = (int)(offset >= 0 ? offset : lseek(FDS[fd-1].fd,0,SEEK_END));
-      int LockSize = size;
+      offset = ((offset >= 0) && (nowait==0)) ? offset : (lseek(FDS[fd-1].fd,0,SEEK_END));
+
       if (mode > 0)
       {
+  	    char buff[1];
+	    int n;
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
-  	    status = LockFile(h, LockStart, 0, LockSize, 0);
-        if (status == 0)
-        {
-          int errornum = GetLastError();
-          if (errornum == ERROR_LOCK_VIOLATION)
-            status = TreeSUCCESS;
+		n=read(FDS[fd-1].fd,buff,1);
+		if (n>=0) {
+  	      status = LockFile(h, (int)(offset & 0xffffffff),(int)(offset >> 32), size, 0);
+          if (status == 0)
+          {
+            int errornum = GetLastError();
+            if (errornum == ERROR_LOCK_VIOLATION)
+              status = TreeSUCCESS;
+            else
+              status = TreeFAILURE;
+          }
           else
-            status = TreeFAILURE;
-        }
-        else
-          status = TreeSUCCESS;
+            status = TreeSUCCESS;
+		} else {
+			status = TreeFAILURE;
+		}
       }
       else
       {
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
-	      status = UnlockFile(h,LockStart, 0, LockSize, 0);
+	      status = UnlockFile(h,(int)(offset & 0xffffffff),(int)(offset >> 32), size,0);
         if (status == 0)
         {
           int errornum = GetLastError();
