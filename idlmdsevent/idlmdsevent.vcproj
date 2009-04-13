@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="idlmdsevent"
 	ProjectGUID="{F0BA4B34-0A1C-4619-B371-B63885711FF5}"
+	RootNamespace="idlmdsevent"
 	>
 	<Platforms>
 		<Platform
@@ -72,7 +73,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib $(IDL_DIR)\bin\bin.x86\idl.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot;"
 				OutputFile="$(OutDir)/idlmdsevent.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
