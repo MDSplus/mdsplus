@@ -138,6 +138,7 @@ _TreeWriteTree
 TreeGetCurrentShotId
 TreeSetCurrentShotId
 TreeSetDbi
+_TreeSetDbi
 TreeSetDbiItm
 TreeSetViewDate
 TreeSetXNci
