@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="mdsmisc"
 	ProjectGUID="{99D744ED-08F0-4733-BF64-88138339F835}"
+	RootNamespace="mdsmisc"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -144,6 +145,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
 				OutputFile="$(OutDir)/mdsmisc.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="mdsmisc.def"
@@ -218,6 +220,10 @@
 			</File>
 			<File
 				RelativePath="step_resample.c"
+				>
+			</File>
+			<File
+				RelativePath=".\whoami.c"
 				>
 			</File>
 		</Filter>
