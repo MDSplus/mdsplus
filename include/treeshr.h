@@ -545,6 +545,8 @@ extern EXPORT void _TreeRestoreContext(void **dbid, void *ctx);
 extern EXPORT int TreeRundownTree(struct descriptor *treenam, int *shotid, int single_tree, int force_exit);
 extern EXPORT void *TreeSaveContext();
 extern EXPORT void *_TreeSaveContext(void *dbid);
+extern EXPORT int TreeSetDbi(struct dbi_itm *itmlst);
+extern EXPORT int _TreeSetDbi(void *dbid, struct dbi_itm *itmlst);
 extern EXPORT int TreeSetNci(int nid, struct nci_itm *itmlst);
 extern EXPORT int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
 extern EXPORT int TreeSetDefault(char *path, int *nid);
