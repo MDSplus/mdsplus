@@ -738,8 +738,9 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
         if (num != (external_pages*512)) goto error_exit;
 	status = TreeWriteNci(info_ptr);
 	if ((status & 1) == 0) goto error_exit;
-	status = MDS_IO_CLOSE(info_ptr->channel);
-	info_ptr->channel=0;
+	if (info_ptr->channel>-1)
+	  status = MDS_IO_CLOSE(info_ptr->channel);
+	info_ptr->channel=-2;
 	status = MDS_IO_REMOVE(info_ptr->filespec);
 	if (status == -1) {status=0;goto error_exit;}
         status = MDS_IO_CLOSE(ntreefd);
