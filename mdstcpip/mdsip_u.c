@@ -85,6 +85,9 @@ typedef void *pthread_mutex_t;
 #define O_RANDOM 0
 #endif
 
+#ifdef HAVE_WINDOWS_H
+#define lseek _lseeki64
+#endif
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2
 #define MDS_IO_LSEEK_K  3
@@ -692,9 +695,18 @@ int main(int argc, char **argv)
    int mode = mode_in & 0x3;
    int nowait = mode_in & 0x8;
 #if defined (_WIN32)
-   if (mode > 0)
-     status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
+   offset = ((offset >= 0) && (nowait==0)) ? offset : (_lseeki64(fd,0,SEEK_END));
+   if (mode > 0) {
+     char buf[1];
+	 int n;
+	 n=read(fd,buf,1);
+	 if (n==0) {
+       status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
 		(GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
+	 } else {
+	   status = TreeFAILURE;
+	 }
+   }
    else
      status = UnlockFile((HANDLE)_get_osfhandle(fd),(int)offset, (int)(offset >> 32), size, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 #elif defined (HAVE_VXWORKS_H)
@@ -1254,7 +1266,7 @@ static void ProcessMessage(Client *c, Message *message)
         message->h.dims[3] = tmp;
 #endif
         offset = (off_t)*(_int64 *)&message->h.dims[2];
-      	ans = (_int64)lseek(fd,offset,whence);
+      	ans = lseek(fd,offset,whence);
         ans_d.pointer = (char *)&ans;
         SendResponse(c, 1, (struct descriptor *)&ans_d);
 	      break;
