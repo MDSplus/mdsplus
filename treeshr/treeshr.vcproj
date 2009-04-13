@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib"
 				OutputFile="$(OutDir)/treeshr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -168,7 +168,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib"
 				OutputFile="$(OutDir)/treeshr.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
