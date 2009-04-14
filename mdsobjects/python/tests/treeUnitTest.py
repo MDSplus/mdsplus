@@ -166,7 +166,7 @@ class treeTests(TestCase):
         mhdtree=thread_data.t2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
         self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
-        self.assertEqual(ip.length,308)
+        self.assertEqual(ip.length,168)
         self.assertEqual(ip.length,ip.getLength())
         self.assertEqual(ip.no_write_shot,False)
         self.assertEqual(ip.no_write_shot,ip.isNoWriteShot())
