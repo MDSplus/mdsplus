@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite
 from mdsdata import *
-from scalar import *
-from array import *
+from mdsscalar import *
+from mdsarray import *
 from compound import *
 import numpy
 

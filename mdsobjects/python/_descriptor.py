@@ -1,5 +1,5 @@
-from scalar import makeScalar,Scalar
-from array import makeArray,Array,StringArray
+from mdsscalar import makeScalar,Scalar
+from mdsarray import makeArray,Array,StringArray
 from _mdsdtypes import *
 from _mdsclasses import *
 from mdsdata import makeData,EmptyData

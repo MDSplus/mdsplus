@@ -66,14 +66,14 @@ def makeData(value):
     if isinstance(value,Data):
         return value
     if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
-        from scalar import makeScalar
+        from mdsscalar import makeScalar
         return makeScalar(value)
     if isinstance(value,tuple) or (isinstance(value,numpy.ndarray) and isinstance(value.dtype,numpy.object)) or isinstance(value,list):
         from apd import Apd,List
         apd = Apd(tuple(value),DTYPE_LIST)
         return List(apd)
     if isinstance(value,numpy.ndarray):
-        from array import makeArray
+        from mdsarray import makeArray
         return makeArray(value)
     if isinstance(value,dict):
         from apd import Dictionary
@@ -210,7 +210,7 @@ class Data(object):
         Return boolean
         @rtype: Bool
         """
-        from array import Array
+        from mdsarray import Array
         from compound import Compound
         if isinstance(self,Array):
             return self._value!=0
@@ -262,7 +262,7 @@ class Data(object):
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        from array import Array
+        from mdsarray import Array
         ans = Data.execute('$[$]',self,y)
         if isinstance(ans,Array):
             if ans.shape[0]==0:
@@ -490,7 +490,7 @@ class Data(object):
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        from scalar import Scalar
+        from mdsscalar import Scalar
         return isinstance(x,Scalar)
     _isScalar=staticmethod(_isScalar)
     

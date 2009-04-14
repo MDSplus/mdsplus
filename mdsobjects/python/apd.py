@@ -1,5 +1,5 @@
 from mdsdata import Data
-from scalar import String
+from mdsscalar import String
 from _mdsdtypes import DTYPE_LIST,DTYPE_DICTIONARY
 
 class Apd(Data):
@@ -87,7 +87,7 @@ class Dictionary(dict,Data):
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd):
-                from scalar import Scalar
+                from mdsscalar import Scalar
                 import numpy
                 for idx in range(0,len(value),2):
                     key=value[idx]

@@ -36,7 +36,7 @@ def MdsGetMsg(status,default=None):
 
 def MdsDecompress(value):
     from _descriptor import descriptor_xd
-    from array import makeArray
+    from mdsarray import makeArray
     xd=descriptor_xd()
     status = MdsShr.MdsDecompress(_C.pointer(value),_C.pointer(xd))
     if (status & 1) == 1:

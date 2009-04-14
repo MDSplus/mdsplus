@@ -18,9 +18,9 @@ def test(quiet=False):
     for i in range(len(trees)):
 	os.putenv(trees[i]+"_path","alcdata-archives.psfc.mit.edu::/cmod/trees/archives/~i~h/~g~f/~e~d/~t;alcdata-models.psfc.mit.edu::/cmod/trees/models/~t")
     Print("Beginning tree operations\n\n\n")
-    pulse=Tree('cmod',1080326005)
+    pulse=Tree('cmod',1080326005,'Readonly')
     Print(pulse)
-    model=Tree('cmod',-1)
+    model=Tree('cmod',-1,'Readonly')
     Print(model)
     ip=pulse.getNode('\\ip')
     Print(ip)

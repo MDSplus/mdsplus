@@ -2,8 +2,8 @@ from unittest import TestCase,TestSuite
 from tree import Tree
 from treenode import TreeNode
 from mdsdata import makeData,Data
-from scalar import Uint32
-from array import makeArray
+from mdsscalar import Uint32
+from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
 import threading

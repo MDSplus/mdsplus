@@ -182,7 +182,7 @@ def TreeGetPath(n):
     return ans
 
 def TreeFindNodeTags(n):
-    from array import makeArray
+    from mdsarray import makeArray
     ctx=_C.c_void_p(0)
     tags=list()
     done=False
@@ -200,7 +200,7 @@ def TreeFindNodeTags(n):
     return tags
 
 def TreeFindTagWild(tree,wild):
-    from array import makeArray
+    from mdsarray import makeArray
     nid=_C.c_int(0)
     ctx=_C.c_void_p(0)
     tags=list()
@@ -458,7 +458,7 @@ def TreeSetVersionDate(date):
         raise TreeException,MdsGetMsg(status)
 
 def TreeGetVersionDate():
-    from scalar import Uint64
+    from mdsscalar import Uint64
     dt=_C.c_ulonglong(0)
     status = __TreeGetViewDate(dt)
     if not (status & 1):

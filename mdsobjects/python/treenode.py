@@ -1,6 +1,6 @@
 from mdsdata import Data,makeData
-from scalar import Uint8
-from array import Int32Array
+from mdsscalar import Uint8
+from mdsarray import Int32Array
 from tree import Tree
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
@@ -91,7 +91,7 @@ class TreeNode(Data):
          @rtype: various
          """
 
-        from scalar import String
+        from mdsscalar import String
         if name.lower() == 'nid':
             try:
                 return self.__dict__['nid']
@@ -1047,7 +1047,7 @@ class TreeNodeArray(Data):
             self.tree=tree
 
     def __getitem__(self,n):
-        """Return TreeNode from array. array[n]
+        """Return TreeNode from mdsarray. array[n]
         @param n: Index into array beginning with index 0
         @type n: int
         @return: node
