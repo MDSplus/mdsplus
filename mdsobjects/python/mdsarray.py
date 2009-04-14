@@ -2,7 +2,7 @@ import numpy,copy
 from types import NotImplementedType
 from mdsdata import Data,makeData
 from _mdsdtypes import *
-from scalar import Scalar
+from mdsscalar import Scalar
 
 def makeArray(value):
     if isinstance(value,Array):
