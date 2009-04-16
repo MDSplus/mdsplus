@@ -606,7 +606,8 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[3] == null)
                 {
-                    devices[3] = device = new RFXPCSetupSetup();
+                    //devices[3] = device = new RFXPCSetupSetup();
+                    devices[3] = device = new RFXPC4SetupSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -3882,7 +3883,8 @@ System.out.println("Print Done");
             case 2:
                 return new RFXAxiControlSetup();
             case 3:
-                return new RFXPCSetupSetup();
+                //return new RFXPCSetupSetup();
+                return new RFXPC4SetupSetup();
             case 4:
                 return new RFXPMSetupSetup();
             case 5:
