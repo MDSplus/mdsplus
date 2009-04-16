@@ -88,6 +88,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
 
         jPanel1.add(jPanel2);
 
+        deviceField2.setDisplayEvaluated(true);
         deviceField2.setEditable(false);
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Enabled Units: ");
@@ -96,6 +97,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         deviceField2.setTextOnly(true);
         jPanel3.add(deviceField2);
 
+        deviceField3.setDisplayEvaluated(true);
         deviceField3.setEditable(false);
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Window");
@@ -105,6 +107,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
+        deviceField4.setDisplayEvaluated(true);
         deviceField4.setEditable(false);
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Connection");
