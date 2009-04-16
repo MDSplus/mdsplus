@@ -5,7 +5,7 @@ public class DeviceWaveDisplayBeanInfo extends SimpleBeanInfo
 {
     public Image getIcon(int kind)
     {
-        return loadImage("DeviceWaveDisplay.gif");
+        return loadImage("DeviceWave.gif");
     }
 
     public BeanDescriptor getBeanDescriptor()

@@ -1,5 +1,4 @@
 import java.beans.*;
-import javax.swing.*;
 import java.awt.*;
 
 public class DeviceLabelBeanInfo extends SimpleBeanInfo
@@ -18,7 +17,7 @@ public class DeviceLabelBeanInfo extends SimpleBeanInfo
 
     public BeanDescriptor getBeanDescriptor()
     {
-        return new BeanDescriptor(DeviceField.class, DeviceLabelCustomizer.class);
+        return new BeanDescriptor(DeviceLabel.class, DeviceLabelCustomizer.class);
     }
     public PropertyDescriptor [] getPropertyDescriptors()
     {

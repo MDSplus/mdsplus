@@ -1,7 +1,7 @@
 /*
  * DEMOADCSetup.java
  *
- * Created on 16 marzo 2009, 9.13
+ * Created on 16 marzo 2009, 15.51
  */
 
 
@@ -26,22 +26,155 @@ public class DEMOADCSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceChannel1 = new DeviceChannel();
+        deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
-        deviceChannel2 = new DeviceChannel();
+        jPanel2 = new javax.swing.JPanel();
+        deviceField1 = new DeviceField();
+        deviceField2 = new DeviceField();
+        deviceDispatch1 = new DeviceDispatch();
+        jPanel3 = new javax.swing.JPanel();
+        deviceChoice1 = new DeviceChoice();
+        deviceField3 = new DeviceField();
+        deviceField4 = new DeviceField();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel4 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
+        deviceField6 = new DeviceField();
+        jPanel5 = new javax.swing.JPanel();
+        deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
+        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
+        jPanel7 = new javax.swing.JPanel();
+        deviceField11 = new DeviceField();
+        deviceField12 = new DeviceField();
 
-        getContentPane().add(deviceChannel1, java.awt.BorderLayout.CENTER);
+        setDeviceProvider("localhost");
+        setDeviceTitle("ADC for MDSplus Tutorial");
+        setDeviceType("DEMOADC");
+        setHeight(250);
+        setWidth(700);
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.add(deviceChannel2);
+        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Name: ");
+        deviceField1.setOffsetNid(1);
+        deviceField1.setTextOnly(true);
+        jPanel2.add(deviceField1);
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Comment: ");
+        deviceField2.setNumCols(20);
+        deviceField2.setOffsetNid(2);
+        deviceField2.setTextOnly(true);
+        jPanel2.add(deviceField2);
+        jPanel2.add(deviceDispatch1);
+
+        jPanel1.add(jPanel2);
+
+        deviceChoice1.setChoiceIntValues(new int[] {(int)1000,(int)5000,(int)10000,(int)50000,(int)100000});
+        deviceChoice1.setChoiceItems(new String[] {"1000", "5000", "10000", "50000", "100000"});
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Clock. Freq. (Hz):");
+        deviceChoice1.setOffsetNid(3);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice1);
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("PTS:");
+        deviceField3.setNumCols(4);
+        deviceField3.setOffsetNid(5);
+        jPanel3.add(deviceField3);
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Trig. Source: ");
+        deviceField4.setNumCols(20);
+        deviceField4.setOffsetNid(4);
+        jPanel3.add(deviceField4);
+
+        jPanel1.add(jPanel3);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Start Idx: ");
+        deviceField5.setOffsetNid(7);
+        jPanel4.add(deviceField5);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("End Idx: ");
+        deviceField6.setOffsetNid(8);
+        jPanel4.add(deviceField6);
+
+        jTabbedPane1.addTab("Chan 1", jPanel4);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Start Idx: ");
+        deviceField7.setOffsetNid(11);
+        jPanel5.add(deviceField7);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("End Idx: ");
+        deviceField8.setOffsetNid(12);
+        jPanel5.add(deviceField8);
+
+        jTabbedPane1.addTab("Chan 2", jPanel5);
+
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Start Idx: ");
+        deviceField9.setOffsetNid(15);
+        jPanel6.add(deviceField9);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("End Idx: ");
+        deviceField10.setOffsetNid(16);
+        jPanel6.add(deviceField10);
+
+        jTabbedPane1.addTab("Chan 3", jPanel6);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("Start Idx: ");
+        deviceField11.setOffsetNid(19);
+        jPanel7.add(deviceField11);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("End Idx: ");
+        deviceField12.setOffsetNid(20);
+        jPanel7.add(deviceField12);
+
+        jTabbedPane1.addTab("Chan 4", jPanel7);
+
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private DeviceChannel deviceChannel1;
-    private DeviceChannel deviceChannel2;
+    private DeviceButtons deviceButtons1;
+    private DeviceChoice deviceChoice1;
+    private DeviceDispatch deviceDispatch1;
+    private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
+    private DeviceField deviceField2;
+    private DeviceField deviceField3;
+    private DeviceField deviceField4;
+    private DeviceField deviceField5;
+    private DeviceField deviceField6;
+    private DeviceField deviceField7;
+    private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -26,11 +26,10 @@ Java-Bean: True
 Name: DeviceWaveDisplay.class
 Java-Bean: True
 
-Name: DeviceSlider.class
-Java-Bean: True
-
-
 Name: DeviceLabel.class
 Java-Bean: True
+
+
+
 
 

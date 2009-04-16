@@ -1,5 +1,4 @@
 import java.beans.*;
-import javax.swing.*;
 import java.awt.*;
 
 public class DeviceTableBeanInfo extends SimpleBeanInfo

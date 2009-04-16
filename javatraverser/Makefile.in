@@ -33,6 +33,7 @@ RFXPoloidalSetup.java\
 RFXToroidalSetup.java\
 RFXPMSetupSetup.java\
 RFXPCSetupSetup.java \
+RFXPC4SetupSetup.java \
 RFXPVSetupSetup.java \
 RFXTFSetupSetup.java \
 RFXABUnitsSetup.java \

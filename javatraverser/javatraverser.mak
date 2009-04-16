@@ -85,6 +85,10 @@ DeviceField.java\
 DeviceFieldBeanInfo.java\
 DeviceFieldCustomizer.java\
 DeviceOk.java\
+DeviceLabel.java\
+DeviceLabelBeanInfo.java\
+DeviceLabelCustomizer.java\
+DeviceOk.java\
 DeviceOkBeanInfo.java\
 DeviceReset.java\
 DeviceResetBeanInfo.java\
@@ -242,6 +246,7 @@ GIFS = DeviceApply.gif \
        DeviceButtons.gif \
        DeviceDispatch.gif \
        DeviceSetup.gif \
+	   DeviceLabel.gif \
        device.gif \
        structure.gif \
        window.gif \
