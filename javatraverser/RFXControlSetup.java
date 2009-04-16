@@ -2627,7 +2627,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField11315.setNumCols(80);
         deviceField11315.setLabelString("Y:");
         deviceField11315.setOffsetNid(1513);
-        deviceChannel37.setLabelString("Simulink Wave 26");
+        deviceChannel37.setLabelString("PCAT 4 Current");
         deviceChannel37.setOffsetNid(1513);
         deviceChannel37.setInSameLine(true);
         deviceChannel37.setUpdateIdentifier("");
@@ -2640,7 +2640,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField11317.setNumCols(80);
         deviceField11317.setLabelString("Y:");
         deviceField11317.setOffsetNid(1509);
-        deviceChannel38.setLabelString("Simulink Wave 25");
+        deviceChannel38.setLabelString("PCAT 3 Current");
         deviceChannel38.setOffsetNid(1509);
         deviceChannel38.setInSameLine(true);
         deviceChannel38.setUpdateIdentifier("");
@@ -2653,7 +2653,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField11319.setNumCols(80);
         deviceField11319.setLabelString("Y:");
         deviceField11319.setOffsetNid(1505);
-        deviceChannel39.setLabelString("Simulink Wave 24");
+        deviceChannel39.setLabelString("PCAT 2 Current");
         deviceChannel39.setOffsetNid(1505);
         deviceChannel39.setInSameLine(true);
         deviceChannel39.setUpdateIdentifier("");
@@ -2666,7 +2666,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField113111.setNumCols(80);
         deviceField113111.setLabelString("Y:");
         deviceField113111.setOffsetNid(1501);
-        deviceChannel310.setLabelString("Simulink Wave 23");
+        deviceChannel310.setLabelString("PCAT 1 Current");
         deviceChannel310.setOffsetNid(1501);
         deviceChannel310.setInSameLine(true);
         deviceChannel310.setUpdateIdentifier("");

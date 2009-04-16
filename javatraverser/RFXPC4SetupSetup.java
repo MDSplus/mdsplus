@@ -112,6 +112,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Connection");
         deviceField4.setOffsetNid(2);
+        deviceField4.setTextOnly(true);
         jPanel4.add(deviceField4);
 
         deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
