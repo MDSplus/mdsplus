@@ -84,6 +84,7 @@ public class ParameterSetting
     JMenuItem revertModelItem;
     JMenuItem compareItem;
     JDialog changedD;
+    JComboBox currFFC;
 
     String rtIp;
     Socket rtSock;
@@ -989,6 +990,21 @@ public class ParameterSetting
             }
         });
         jp1.add(mhdControlB);
+        JPanel jp2 = new JPanel();
+        jp2.add(new JLabel("MHD FF:"));
+        jp2.add(currFFC = new JComboBox(new String[] {"DISABLED", "ENABLED"}));
+        jp1.add(jp2);
+        if(isRt)
+            currFFC.setEnabled(false);
+        else
+        {
+            currFFC.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setCurrFFState();
+                }
+            });
+        }
         jp.add(jp1);
 
         jp1 = new JPanel();
@@ -1679,6 +1695,7 @@ public class ParameterSetting
         }
         updateDeviceNids();
         saveSetup(currSetupHash, currSetupOnHash);
+        getCurrFFState();
 
         if (isRt)
             setTitle("RFX Parameters -- RT --    shot: " + getShot());
@@ -1686,6 +1703,7 @@ public class ParameterSetting
             setTitle("RFX Parameters  shot: " + shot);
     }
 
+    
     void saveSetup(Hashtable setupHash, Hashtable setupOnHash)
     {
         for (int i = 0; i < NUM_SETUP; i++)
@@ -1761,6 +1779,9 @@ public class ParameterSetting
             timesIsCB,
             timesChopperCB,
             timesInverterCB;
+        
+        JCheckBox currFFCB;
+
         JCheckBox[] checkBoxes = new JCheckBox[NUM_SETUP-1];
         JCheckBox mhdDecoupingCheckBox;
         JCheckBox[] timeCheckBoxes = new JCheckBox[13];
@@ -1786,6 +1807,7 @@ public class ParameterSetting
             jp.add(checkBoxes[11] = viCB = new JCheckBox("VI", true));
             jp.add(checkBoxes[12] = pelletCB = new JCheckBox("Pellet", true));
             jp.add(checkBoxes[13] = diagTimesCB = new JCheckBox("Diag. times", true));
+            jp.add(currFFCB = new JCheckBox("MHD FF", true));
             jp1.add(jp);
 
             jp = new JPanel();
@@ -1880,6 +1902,10 @@ public class ParameterSetting
                 timesInverterCB.isSelected()};
         }
 
+        boolean currFFSelected()
+        {
+            return currFFCB.isSelected();
+        }
         void setEnabledDevicesForSavingConfiguration()
         {
             for (int i = 0; i < NUM_SETUP-1; i++)
@@ -2013,6 +2039,12 @@ public class ParameterSetting
                     boolean[] selectedTimes = loadSelected.getSelectedTimes();
                     applySetup(currSetupHash, currSetupOnHash, selectedDevices,
                                selectedTimes);
+                    
+                    if(loadSelected.currFFSelected())
+                    {
+                        loadCurrFF(currLoadShot);
+                    }
+                    
                     checkVersions();
                    loadSelected.setVisible(false);
 
@@ -2116,6 +2148,8 @@ public class ParameterSetting
         if (timeSelect[10]) saveSetup(0, is_mask, setupHash, setupOnHash);
         if (timeSelect[11]) saveSetup(0, chopper_mask, setupHash, setupOnHash);
         if (timeSelect[12]) saveSetup(0, inverter_mask, setupHash, setupOnHash);
+        
+        
     }
 
     void writeSetupToFile(String fileName)
@@ -2266,14 +2300,16 @@ public class ParameterSetting
                                     }
                                 });
                             }
-                            else //Going to receive the list of modified nids
+                            else if(currIdx == -1)//Going to receive the list of modified nids
                             {
                                 int numModifiedNids = dis.readInt();
                                 modifiedNids = new int[numModifiedNids];
                                 for(int i = 0; i < numModifiedNids; i++)
                                     modifiedNids[i] = dis.readInt();
-
+                                getCurrFFState();
                             }
+                            else //currIdx == -2. Notified and of applyToModel
+                               getCurrFFState();
                         }
                     }
                     catch (Exception exc)
@@ -3712,6 +3748,10 @@ System.out.println("Print Done");
             true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
         getSetupForModel(applyHash, applyOnHash, allSelectedDevices,
                          allSelectedTimes);
+        
+       applyOnHash.put("\\MHD_AC::CURR_FF", new Boolean(currFFC.getSelectedIndex() == 1));
+       applyOnHash.put("\\MHD_BC::CURR_FF", new Boolean(currFFC.getSelectedIndex() == 1));
+
         applyToModel(applyHash, applyOnHash);
     }
 
@@ -3745,6 +3785,8 @@ System.out.println("Print Done");
         notifyChangedRt(modifiedSetupHash, modifiedSetupOnHash);
         applySetup(modifiedSetupHash, modifiedSetupOnHash);
         applyTimes();
+        notifyApplySetupFinishedRt();
+
         
         //Write Ref. Shot
         try {
@@ -4132,7 +4174,27 @@ System.out.println("Print Done");
         }
         return nidsV;
     }
-
+    
+    void notifyApplySetupFinishedRt()
+    {
+        if (rtDos != null)
+        {
+            try
+            {
+                rtDos.writeInt(-2);
+                rtDos.flush();
+            }
+            catch (Exception exc)
+            {
+                rtDos = null;
+                handleNotRt();
+            }
+        }
+    }
+    
+            
+            
+            
     void notifyChangedRt(Hashtable modifiedSetupHash, Hashtable modifiedSetupOnHash)
     {
         Vector nidsV = getModifiedNidsV(modifiedSetupHash, modifiedSetupOnHash);
@@ -4418,8 +4480,92 @@ System.out.println("Print Done");
             rfx.putData(nid2, data, 0);
         }catch(Exception exc) {System.err.println("Error copying" + pathStr1 + " into " + pathStr2 + ": " + exc);}
     }
+    private void getCurrFFState()
+    {
+        boolean on1, on2;
+        try {
+            NidData nid1D = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
+            NidData nid2D = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
+            on1 = rfx.isOn(nid1D, 0);
+            on2 = rfx.isOn(nid2D, 0);
+        }catch(Exception exc) {System.out.println("Cannot get state of currFF"); return;}
+        if(on1 != on2)
+            JOptionPane.showMessageDialog(this, "Different FF setting for AC and BC");
+        currFFC.setSelectedIndex(on1?1:0);
+    }
+    
+    private void setCurrFFState()
+    {
+        int idx = currFFC.getSelectedIndex();
+        try {
+            NidData nid1D = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
+            NidData nid2D = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
+            rfx.setOn(nid1D, idx != 0, 0);
+            rfx.setOn(nid2D, idx != 0, 0);
+        }catch(Exception exc) {System.out.println("Cannot set state of currFF"); return;}
+    }
 
 
+    void loadCurrFF(int ffShot)
+    {
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", ffShot);
+            rfx.open();
+            NidData ffNid1 = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
+            NidData ffNid2 = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
+            boolean currFFOn = rfx.isOn(ffNid1,0);
+            if(currFFOn)
+            {
+                 Data ffCurr[] = new Data[192];
+                int idx = 0;
+                for(int i = 1; i <= 4; i++)
+                {
+                    for(int j = 1; j <= 9; j++)
+                    {
+                        NidData nid = rfx.resolve(new PathData("\\MHD_AC::CURR_FF:I0"+j+i), 0);
+                        ffCurr[idx++] = rfx.getData(nid, 0);
+                    }
+                    for(int j = 10; j <= 48; j++)
+                     {
+                        NidData nid = rfx.resolve(new PathData("\\MHD_AC::CURR_FF:I"+j+i), 0);
+                        ffCurr[idx++] = rfx.getData(nid, 0);
+                    }
+                }
+                rfx.close(0);
+                rfx = new Database("MHD_FF", 100);
+                rfx.open();
+                idx = 0;
+                for(int i = 1; i <= 4; i++)
+                {
+                    for(int j = 1; j <= 9; j++)
+                    {
+                        NidData nid = rfx.resolve(new PathData("\\CURR_FF:I0"+j+i), 0);
+                        rfx.putData(nid, ffCurr[idx++], 0);
+                    }
+                    for(int j = 10; j <= 48; j++)
+                     {
+                        NidData nid = rfx.resolve(new PathData("\\CURR_FF:I"+j+i), 0);
+                        rfx.putData(nid, ffCurr[idx++], 0);
+                    }
+                }
+            }
+            rfx.close(0);
+            rfx = new Database("rfx", shot);
+            rfx.open();
+            ffNid1 = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
+            ffNid2 = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
+            rfx.setOn(ffNid1, currFFOn, 0);
+            rfx.setOn(ffNid2, currFFOn, 0);
+            getCurrFFState();
+        }catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(ParameterSetting.this, "Error loadingh MHD FF configuration: "+ exc,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    
     public static void main(String args[])
     {
         ParameterSetting parameterS;
