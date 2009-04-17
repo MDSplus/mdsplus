@@ -4507,6 +4507,7 @@ System.out.println("Print Done");
         try {
             rfx.close(0);
             rfx = new Database("rfx", -1);
+            rfx.open();
             NidData ffNid1 = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
             NidData ffNid2 = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
             rfx.setOn(ffNid1, ffOn, 0);
