@@ -4564,7 +4564,7 @@ System.out.println("Print Done");
                 }
             }
             rfx.close(0);
-            Data cleanExpr = Data.fromExpr("tcl(clean mhd_ff/shot=100/override)");
+            Data cleanExpr = Data.fromExpr("tcl(\"clean mhd_ff/shot=100/override\")");
             rfx.evaluateData(cleanExpr, 0);
             rfx = new Database("rfx", shot);
             rfx.open();
