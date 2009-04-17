@@ -3749,11 +3749,8 @@ System.out.println("Print Done");
         getSetupForModel(applyHash, applyOnHash, allSelectedDevices,
                          allSelectedTimes);
         
-       applyOnHash.put("\\MHD_AC::CURR_FF", new Boolean(currFFC.getSelectedIndex() == 1));
-       applyOnHash.put("\\MHD_BC::CURR_FF", new Boolean(currFFC.getSelectedIndex() == 1));
-
         applyToModel(applyHash, applyOnHash);
-    }
+     }
 
 
     void applyToModel(Hashtable applyHash, Hashtable applyOnHash)
@@ -3785,6 +3782,7 @@ System.out.println("Print Done");
         notifyChangedRt(modifiedSetupHash, modifiedSetupOnHash);
         applySetup(modifiedSetupHash, modifiedSetupOnHash);
         applyTimes();
+        applyCurrFFToModel(currFFC.getSelectedIndex() == 1);
         notifyApplySetupFinishedRt();
 
         
@@ -4504,7 +4502,20 @@ System.out.println("Print Done");
             rfx.setOn(nid2D, idx != 0, 0);
         }catch(Exception exc) {System.out.println("Cannot set state of currFF"); return;}
     }
-
+    void applyCurrFFToModel(boolean ffOn)
+    {
+        try {
+            rfx.close(0);
+            rfx = new Database("rfx", -1);
+            NidData ffNid1 = rfx.resolve(new PathData("\\MHD_AC::CURR_FF"), 0);
+            NidData ffNid2 = rfx.resolve(new PathData("\\MHD_BC::CURR_FF"), 0);
+            rfx.setOn(ffNid1, ffOn, 0);
+            rfx.setOn(ffNid2, ffOn, 0);
+            rfx.close(0);
+            rfx = new Database("rfx", shot);
+            rfx.open();
+        }catch(Exception exc) {System.out.println("Cannot set state of currFF in model"); return;}
+    }
 
     void loadCurrFF(int ffShot)
     {
