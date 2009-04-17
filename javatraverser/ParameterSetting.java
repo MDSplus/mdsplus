@@ -1843,6 +1843,7 @@ public class ParameterSetting
                         checkBoxes[i].setSelected(false);
                     for(int i = 0; i < 13; i++)
                         timeCheckBoxes[i].setSelected(false);
+                    currFFCB.setSelected(false);
                 }
             });
             jp.add(deselectAllB);
