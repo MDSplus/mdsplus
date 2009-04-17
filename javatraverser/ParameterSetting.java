@@ -1969,7 +1969,7 @@ public class ParameterSetting
                 }
                 catch (Exception exc)
                 {
-                    System.err.println("Internal error in setEnabledTimes: " +
+                    System.err.println("Internal error in setEnabledTimes for " +currPath +": " +
                                        exc);
                 }
             }
