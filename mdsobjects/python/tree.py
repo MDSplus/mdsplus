@@ -11,23 +11,23 @@ class Tree(object):
         @rtype: None
         """
         try:
-            Tree.lock()
-            from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFree
-            if self.close:
-		if isinstance(self,CachedTree):
-		    RtreeCloseAll(self.ctx)
-		else:
-                    TreeCloseAll(self.ctx)
-                if hasattr(self,"ctx") and self.ctx is not None:
-                    TreeFree(self.ctx)
-                self.ctx=None
-        except:
-	    pass
-        finally:
+            if hasattr(self,"lock"):
+                self.lock()
             try:
-		Tree.unlock()
+                from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFree
+                if self.close:
+                    if isinstance(self,CachedTree):
+                        RtreeCloseAll(self.ctx)
+                    else:
+                        TreeCloseAll(self.ctx)
+                    if hasattr(self,"ctx") and self.ctx is not None:
+                        TreeFree(self.ctx)
+                self.ctx=None
             except:
-		pass
+                pass
+        finally:
+            if hasattr(self,"unlock"):
+                self.unlock()
         return
 
     def __getattr__(self,name):
