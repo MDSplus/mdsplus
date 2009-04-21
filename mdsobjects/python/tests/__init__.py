@@ -40,16 +40,14 @@ class cleanup(TestCase):
 def test_all(*arg):
     warnings.filterwarnings("ignore","tmpnam",RuntimeWarning,__name__)
     dir=os.tmpnam()
-    while dir.endswith("."):
-        dir=dir[0:len(dir)-1]
     print "Creating trees in %s" % (dir,)
     cleanup.dir=dir
     try:
       os.mkdir(dir)
     except:
       pass
-    Data.execute('setenv("pytree_path='+dir+'")')
-    Data.execute('setenv("pytreesub_path='+dir+'")')
+    Data.execute('setenv("pytree_path='+dir.replace('\\','\\\\')+'")')
+    Data.execute('setenv("pytreesub_path='+dir.replace('\\','\\\\')+'")')
     tests=list()
     tests.append(treeUnitTest.suite())
     tests.append(threadsUnitTest.suite())
