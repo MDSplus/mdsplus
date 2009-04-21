@@ -166,7 +166,7 @@ class treeTests(TestCase):
         mhdtree=thread_data.t2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
         self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
-        self.assertEqual(ip.length,168)
+        self.assertEqual(ip.length,int(Data.execute('getnci($,"LENGTH")',ip)))
         self.assertEqual(ip.length,ip.getLength())
         self.assertEqual(ip.no_write_shot,False)
         self.assertEqual(ip.no_write_shot,ip.isNoWriteShot())
@@ -207,10 +207,16 @@ class treeTests(TestCase):
         return
 
     def finish(self):
-        return
-        thread_data.t1.deletePulse(thread_data.shot1)
-        thread_data.t1.deletePulse(thread_data.shot2)
-
+        try:
+          thread_data.t1.deletePulse(thread_data.shot1)
+        except:
+          pass
+        try:
+          thread_data.t1.deletePulse(thread_data.shot2)
+        except:
+          pass
+        thread_data.t1.__del__()
+        thread_data.t2.__del__()
 
 def suite():
     tests = ['editTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','finish']
