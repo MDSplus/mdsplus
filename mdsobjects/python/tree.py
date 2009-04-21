@@ -11,11 +11,23 @@ class Tree(object):
         @rtype: None
         """
         try:
-            if self.close == 1:
-                    tc=TreeCtxCleanup(self.ctx)
-                    tc.start()
+            Tree.lock()
+            from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFree
+            if self.close:
+		if isinstance(self,CachedTree):
+		    RtreeCloseAll(self.ctx)
+		else:
+                    TreeCloseAll(self.ctx)
+                if hasattr(self,"ctx") and self.ctx is not None:
+                    TreeFree(self.ctx)
+                self.ctx=None
         except:
-            pass
+	    pass
+        finally:
+            try:
+		Tree.unlock()
+            except:
+		pass
         return
 
     def __getattr__(self,name):
@@ -72,14 +84,13 @@ class Tree(object):
         from _treeshr import TreeOpen,TreeOpenNew,TreeOpenReadOnly,TreeGetContext,TreeException
         try:
             Tree.lock()
+            self.close=False
             if len(args)==2:
                 self.ctx=TreeOpen(args[0],args[1])
-                self.close=1
+                self.close=True
             elif len(args)==0:
-                self.close=0
                 try:
                     self.ctx=TreeGetContext()
-                    self.close=0
                 except:
                     try:
                         self.ctx=Tree._activeTree.ctx
@@ -88,19 +99,16 @@ class Tree(object):
             elif len(args)==3:
                 if args[2].upper()=='NORMAL':
                     self.ctx=TreeOpen(args[0],args[1])
-                    self.close=1
                 elif args[2].upper()=='EDIT':
                     self.ctx=TreeOpen(args[0],args[1])
-                    self.close=1
                     self.edit()
                 elif args[2].upper()=='NEW':
                     self.ctx=TreeOpenNew(args[0],args[1])
-                    self.close=1
                 elif args[2].upper()=='READONLY':
                     self.ctx=TreeOpenReadOnly(args[0],args[1])
-                    self.close=1
                 else:
                     raise TreeException,'Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".'
+                self.close=True
             else:
                 raise TypeError,"Tree() takes 0,2 or 3 arguments (%d given)" % (len(args),)
         finally:
@@ -561,37 +569,11 @@ class Tree(object):
         finally:
             Tree.unlock()
 
-class TreeCtxCleanup(Thread):
-    """Internal use only. Close trees and free tree ctx in thread when tree instance is deleted"""
-    def __init__(self,ctx):
-        Thread.__init__(self)
-        self.ctx=ctx
-
-    def run(self):
-        from _treeshr import TreeCloseAll,TreeFree,TreeException
-        if hasattr(self,'ctx'):
-            try:
-                Tree.lock()
-                TreeCloseAll(self.ctx)
-            finally:
-                try:
-                    Tree.unlock()
-                    TreeFree(self.ctx)
-                except:
-                    pass
-        
 class CachedTree(Tree):
     """MDSplus tree with cached data updating"""
 
     initialized=False
 
-    def __del__(self):
-        try:
-            tc=CachedTreeCtxCleanup(self.ctx)
-            tc.start()
-        except:
-            pass
-        return
 
     def __init__(self,tree,shot):
         """Initialize CachedTree instance.
@@ -604,6 +586,7 @@ class CachedTree(Tree):
         try:
             Tree.lock()
             self.ctx=RTreeOpen(tree,shot)
+            self.close=True
             Tree._activeTree=self
         finally:
             Tree.unlock()
@@ -647,23 +630,3 @@ class CachedTree(Tree):
         RTreeSynch()
     synch=staticmethod(synch)
     
-
-class CachedTreeCtxCleanup(Thread):
-    """Internal use only. Close trees and free tree ctx in thread when tree instance is deleted"""
-    def __init__(self,ctx):
-        Thread.__init__(self)
-        self.ctx=ctx
-
-    def run(self):
-        from _treeshr import RTreeCloseAll,TreeFree,TreeException
-        if hasattr(self,'ctx'):
-            try:
-                Tree.lock()
-                RTreeCloseAll(self.ctx)
-            finally:
-                try:
-                    Tree.unlock()
-                    TreeFree(self.ctx)
-                except:
-                    pass
-        
