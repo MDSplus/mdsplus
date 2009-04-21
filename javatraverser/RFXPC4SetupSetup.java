@@ -173,7 +173,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         jTabbedPane1.addTab("Wave 1", deviceChannel1);
 
         deviceChannel2.setLabelString("");
-        deviceChannel2.setOffsetNid(6);
+        deviceChannel2.setOffsetNid(18);
         deviceChannel2.setShowState(false);
         deviceChannel2.setShowVal("");
         deviceChannel2.setUpdateIdentifier("");
@@ -219,7 +219,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         jTabbedPane1.addTab("Wave 2", deviceChannel2);
 
         deviceChannel3.setLabelString("");
-        deviceChannel3.setOffsetNid(6);
+        deviceChannel3.setOffsetNid(30);
         deviceChannel3.setShowState(false);
         deviceChannel3.setShowVal("");
         deviceChannel3.setUpdateIdentifier("");
@@ -265,7 +265,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         jTabbedPane1.addTab("Wave 3", deviceChannel3);
 
         deviceChannel4.setLabelString("");
-        deviceChannel4.setOffsetNid(6);
+        deviceChannel4.setOffsetNid(42);
         deviceChannel4.setShowState(false);
         deviceChannel4.setShowVal("");
         deviceChannel4.setUpdateIdentifier("");
