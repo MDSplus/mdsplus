@@ -517,6 +517,7 @@ extern EXPORT int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
 extern EXPORT int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
 extern EXPORT int TreeGetStackSize();
 extern EXPORT int _TreeGetStackSize(void *dbid);
+extern EXPORT int TreeGetViewDate(_int64 *date);
 extern EXPORT int TreeIsOn(int nid);
 extern EXPORT int _TreeIsOn(void *dbid, int nid);
 extern EXPORT int TreeIsOpen();
