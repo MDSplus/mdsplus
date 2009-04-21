@@ -39,7 +39,9 @@ class cleanup(TestCase):
 
 def test_all(*arg):
     warnings.filterwarnings("ignore","tmpnam",RuntimeWarning,__name__)
-    dir='./pytree'
+    dir=os.tmpnam()
+    while dir.endswith("."):
+        dir=dir[0:len(dir)-1]
     print "Creating trees in %s" % (dir,)
     cleanup.dir=dir
     try:
