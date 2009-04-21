@@ -425,6 +425,7 @@ int TreePutNci(TREE_INFO *info, int node_num, NCI *nci, int flush)
 
   else
     memcpy(info->edit->nci + (node_num - info->edit->first_in_mem),nci,sizeof(*nci));
+  TreeUnLockNci(info,0,node_num);
   return status;
 }
 

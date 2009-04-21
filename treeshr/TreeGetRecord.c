@@ -367,7 +367,7 @@ int TreeSetViewDate(_int64 *date)
   return TreeSUCCESS;
 }
 
-_int64 TreeGetViewDate(_int64 *date)
+int TreeGetViewDate(_int64 *date)
 {
   *date= ViewDate;
   return TreeSUCCESS;

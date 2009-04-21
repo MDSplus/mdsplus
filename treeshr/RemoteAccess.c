@@ -1499,36 +1499,47 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
     LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
     if (FDS[fd-1].socket == -1)
     {
+	  OVERLAPPED overlapped;
       int mode=mode_in &  MDS_IO_LOCK_MASK;
       int nowait=mode_in & MDS_IO_LOCK_NOWAIT;
 #if defined (_WIN32)
+	  int flags;
       offset = ((offset >= 0) && (nowait==0)) ? offset : (lseek(FDS[fd-1].fd,0,SEEK_END));
-
+	  overlapped.Offset=(int) (offset & 0xffffffff);
+	  overlapped.OffsetHigh=(int)(offset >> 32);
+	  overlapped.hEvent=0;
       if (mode > 0)
       {
-  	    char buff[1];
-	    int n;
+  	    //char buff[1];
+	    //int n;
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
-		n=read(FDS[fd-1].fd,buff,1);
-		if (n>=0) {
-  	      status = LockFile(h, (int)(offset & 0xffffffff),(int)(offset >> 32), size, 0);
-          if (status == 0)
-          {
-            int errornum = GetLastError();
-            if (errornum == ERROR_LOCK_VIOLATION)
-              status = TreeSUCCESS;
-            else
-              status = TreeFAILURE;
-          }
-          else
-            status = TreeSUCCESS;
-		} else {
-			status = TreeFAILURE;
-		}
+		//n=read(FDS[fd-1].fd,buff,1);
+		//if (n>=0) {
+  	     // status = LockFile(h, (int)(offset & 0xffffffff),(int)(offset >> 32), size, 0);
+         // if (status == 0)
+         // {
+         //   int errornum = GetLastError();
+         //   if (errornum == ERROR_LOCK_VIOLATION)
+         //     status = TreeSUCCESS;
+         //   else
+          //    status = TreeFAILURE;
+         // }
+         // else
+         //   status = TreeSUCCESS;
+		//} else {
+		//	status = TreeFAILURE;
+		//}
+		flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0))? 0 : LOCKFILE_EXCLUSIVE_LOCK;
+		if (nowait)
+		  flags |= LOCKFILE_FAIL_IMMEDIATELY;
+		status = UnlockFileEx(h,0,size,0,&overlapped);
+		status = LockFileEx(h,flags,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
       }
       else
       {
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
+		status = UnlockFileEx(h,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+		/*
 	      status = UnlockFile(h,(int)(offset & 0xffffffff),(int)(offset >> 32), size,0);
         if (status == 0)
         {
@@ -1537,6 +1548,7 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
         }
         else
           status = TreeSUCCESS;
+		  */
       }
 #elif defined (HAVE_VXWORKS_H)
         status = TreeSUCCESS;
