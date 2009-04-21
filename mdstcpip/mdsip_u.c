@@ -105,6 +105,12 @@ typedef void *pthread_mutex_t;
 #define MDS_IO_O_WRONLY 0x00000001
 #define MDS_IO_O_RDONLY 0x00004000
 #define MDS_IO_O_RDWR   0x00000002
+
+#define MDS_IO_LOCK_RD  0x01
+#define MDS_IO_LOCK_WRT 0x02
+#define MDS_IO_LOCK_NONE 0x00
+#define MDS_IO_LOCK_NOWAIT 0x08
+#define MDS_IO_LOCK_MASK 0x03
 #ifndef MSG_DONTWAIT
 #define MSG_DONTWAIT 0
 #endif
@@ -692,23 +698,27 @@ int main(int argc, char **argv)
 
  static int lock_file(int fd, _int64 offset,  int size, int mode_in, int *deleted) {
    int status;
-   int mode = mode_in & 0x3;
-   int nowait = mode_in & 0x8;
+   int mode=mode_in &  MDS_IO_LOCK_MASK;
+   int nowait=mode_in & MDS_IO_LOCK_NOWAIT;
 #if defined (_WIN32)
-   offset = ((offset >= 0) && (nowait==0)) ? offset : (_lseeki64(fd,0,SEEK_END));
+   OVERLAPPED overlapped;
+   int flags;
+   offset = ((offset >= 0) && (nowait==0)) ? offset : (lseek(fd,0,SEEK_END));
+   overlapped.Offset=(int) (offset & 0xffffffff);
+   overlapped.OffsetHigh=(int)(offset >> 32);
+   overlapped.hEvent=0;
    if (mode > 0) {
-     char buf[1];
-	 int n;
-	 n=read(fd,buf,1);
-	 if (n==0) {
-       status = ( (LockFile((HANDLE)_get_osfhandle(fd), (int)offset, (int)(offset >> 32), size, 0) == 0) && 
-		(GetLastError() != ERROR_LOCK_VIOLATION) ) ? TreeFAILURE : TreeSUCCESS;
-	 } else {
-	   status = TreeFAILURE;
-	 }
+	   HANDLE h = (HANDLE)_get_osfhandle(fd);
+	   flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0))? 0 : LOCKFILE_EXCLUSIVE_LOCK;
+	   if (nowait)
+		   flags |= LOCKFILE_FAIL_IMMEDIATELY;
+	   status = UnlockFileEx(h,0,size,0,&overlapped);
+	   status = LockFileEx(h,flags,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
    }
-   else
-     status = UnlockFile((HANDLE)_get_osfhandle(fd),(int)offset, (int)(offset >> 32), size, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
+   else {
+	   HANDLE h = (HANDLE)_get_osfhandle(fd);
+	   status = UnlockFileEx(h,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+   }
 #elif defined (HAVE_VXWORKS_H)
    status = TreeSUCCESS;
 #else
