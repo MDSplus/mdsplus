@@ -450,7 +450,10 @@ class descriptor_xd(_C.Structure):
     value=property(_getValue)
 
     def __del__(self):
-        MdsFree1Dx(self)
+	try:
+          MdsFree1Dx(self)
+        except:
+          pass
         
 class descriptor_r(_C.Structure):
     if os.name=='nt':
