@@ -11,8 +11,10 @@ class Tree(object):
         @rtype: None
         """
         try:
-            if hasattr(self,"lock"):
+            try:
                 self.lock()
+            except:
+                pass
             try:
                 from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFree
                 if self.close:
@@ -26,8 +28,10 @@ class Tree(object):
             except:
                 pass
         finally:
-            if hasattr(self,"unlock"):
+            try:
                 self.unlock()
+            except:
+                pass
         return
 
     def __getattr__(self,name):
