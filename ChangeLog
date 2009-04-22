@@ -1,6 +1,134 @@
 Version 2.2-1
 
 
+2009-04-22 14:51  twf
+
+	* mdsobjects/cpp/mdsdataobjects.cpp,
+	mdsobjects/cpp/mdstreeobjects.cpp, include/mdsobjects.h:
+	
+	operator new needs size_t to compile on fc10
+
+2009-04-22 09:49  twf
+
+	* mdsobjects/python/makedoc.sh:
+	
+	Move array.py and scalar.py to mdsarray.py and mdsscalar.py
+
+2009-04-22 09:48  twf
+
+	* mdsobjects/python/doc/: MDSplus.mdsarray-module.html,
+	MDSplus.mdsarray-pysrc.html, MDSplus.mdsarray.Array-class.html,
+	MDSplus.mdsarray.Float32Array-class.html,
+	MDSplus.mdsarray.Float64Array-class.html,
+	MDSplus.mdsarray.Int128Array-class.html,
+	MDSplus.mdsarray.Int16Array-class.html,
+	MDSplus.mdsarray.Int32Array-class.html,
+	MDSplus.mdsarray.Int64Array-class.html,
+	MDSplus.mdsarray.Int8Array-class.html,
+	MDSplus.mdsarray.StringArray-class.html,
+	MDSplus.mdsarray.Uint128Array-class.html,
+	MDSplus.mdsarray.Uint16Array-class.html,
+	MDSplus.mdsarray.Uint32Array-class.html,
+	MDSplus.mdsarray.Uint64Array-class.html,
+	MDSplus.mdsarray.Uint8Array-class.html,
+	MDSplus.mdsscalar-module.html, MDSplus.mdsscalar-pysrc.html,
+	MDSplus.mdsscalar.Float32-class.html,
+	MDSplus.mdsscalar.Float64-class.html,
+	MDSplus.mdsscalar.Int128-class.html,
+	MDSplus.mdsscalar.Int16-class.html,
+	MDSplus.mdsscalar.Int32-class.html,
+	MDSplus.mdsscalar.Int64-class.html,
+	MDSplus.mdsscalar.Int8-class.html,
+	MDSplus.mdsscalar.Scalar-class.html,
+	MDSplus.mdsscalar.String-class.html,
+	MDSplus.mdsscalar.Uint128-class.html,
+	MDSplus.mdsscalar.Uint16-class.html,
+	MDSplus.mdsscalar.Uint32-class.html,
+	MDSplus.mdsscalar.Uint64-class.html,
+	MDSplus.mdsscalar.Uint8-class.html,
+	toc-MDSplus.mdsarray-module.html,
+	toc-MDSplus.mdsscalar-module.html:
+	
+	New Doc
+
+2009-04-22 09:47  twf
+
+	* mdsobjects/python/doc/: MDSplus.array-module.html,
+	MDSplus.array-pysrc.html, MDSplus.array.Array-class.html,
+	MDSplus.array.Float32Array-class.html,
+	MDSplus.array.Float64Array-class.html,
+	MDSplus.array.Int128Array-class.html,
+	MDSplus.array.Int16Array-class.html,
+	MDSplus.array.Int32Array-class.html,
+	MDSplus.array.Int64Array-class.html,
+	MDSplus.array.Int8Array-class.html,
+	MDSplus.array.StringArray-class.html,
+	MDSplus.array.Uint128Array-class.html,
+	MDSplus.array.Uint16Array-class.html,
+	MDSplus.array.Uint32Array-class.html,
+	MDSplus.array.Uint64Array-class.html,
+	MDSplus.array.Uint8Array-class.html, MDSplus.scalar-module.html,
+	MDSplus.scalar-pysrc.html, MDSplus.scalar.Float32-class.html,
+	MDSplus.scalar.Float64-class.html,
+	MDSplus.scalar.Int128-class.html, MDSplus.scalar.Int16-class.html,
+	MDSplus.scalar.Int32-class.html, MDSplus.scalar.Int64-class.html,
+	MDSplus.scalar.Int8-class.html, MDSplus.scalar.Scalar-class.html,
+	MDSplus.scalar.String-class.html,
+	MDSplus.scalar.Uint128-class.html,
+	MDSplus.scalar.Uint16-class.html, MDSplus.scalar.Uint32-class.html,
+	MDSplus.scalar.Uint64-class.html, MDSplus.scalar.Uint8-class.html,
+	MDSplus.tree.CachedTreeCtxCleanup-class.html,
+	MDSplus.tree.TreeCtxCleanup-class.html,
+	toc-MDSplus.array-module.html, toc-MDSplus.scalar-module.html:
+	
+	New documentation
+
+2009-04-22 09:43  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd-pysrc.html, MDSplus.apd.Apd-class.html,
+	MDSplus.apd.BulkFetch-class.html,
+	MDSplus.apd.Dictionary-class.html, MDSplus.apd.List-class.html,
+	MDSplus.compound-module.html, MDSplus.compound-pysrc.html,
+	MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.ident-module.html,
+	MDSplus.ident-pysrc.html, MDSplus.ident.Ident-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata-pysrc.html,
+	MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html, MDSplus.tree-module.html,
+	MDSplus.tree-pysrc.html, MDSplus.tree.CachedTree-class.html,
+	MDSplus.tree.Tree-class.html, MDSplus.treenode-module.html,
+	MDSplus.treenode-pysrc.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, api-objects.txt,
+	class-tree.html, help.html, identifier-index.html,
+	module-tree.html, redirect.html, toc-MDSplus.tree-module.html,
+	toc-everything.html, toc.html:
+	
+	new doc
+
+2009-04-22 09:33  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-1
+
 2009-04-21 16:52  twf
 
 	* mdsobjects/python/tests/__init__.py:
