@@ -1,5 +1,579 @@
-Version 2.2-0
+Version 2.2-1
 
+
+2009-04-21 16:52  twf
+
+	* mdsobjects/python/tests/__init__.py:
+	
+	Use tmpnam
+
+2009-04-21 16:51  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Fix __del__ function again
+
+2009-04-21 16:22  twf
+
+	* mdsobjects/python/tests/__init__.py:
+	
+	Use tmpnam for directory
+
+2009-04-21 16:21  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Only try to lock and unlock if object still has them
+
+2009-04-21 15:34  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix locking on windows
+
+2009-04-21 15:33  twf
+
+	* mdsobjects/cpp/cpp.vcproj:
+	
+	Add cpp project
+
+2009-04-21 15:32  twf
+
+	* mdsobjects/python/tests/treeUnitTest.py:
+	
+	cleanup the trees and use length from getnci
+
+2009-04-21 14:37  twf
+
+	* mdsobjects/python/tests/__init__.py:
+	
+	Use subdirectory for test trees and use setenv to define
+	environment vars
+
+2009-04-21 14:36  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Fix __del__ method
+
+2009-04-21 14:35  twf
+
+	* include/treeshr.h:
+	
+	Add TreeGetViewDate
+
+2009-04-21 13:00  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Use LockFileEx instead of LockFile
+
+2009-04-21 12:44  manduchi
+
+	* javatraverser/RFXPC4SetupSetup.java:
+	
+	Fix propagate
+
+2009-04-21 12:19  twf
+
+	* treeshr/: RemoteAccess.c, TreeGetRecord.c, TreeSetNci.c:
+	
+	Fix declaration of TreeGetViewDate
+
+2009-04-21 11:31  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	Catch exceptions during cleanup
+
+2009-04-17 10:05  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fixed getRecord with dbid == 0
+	CVS----------------------------------------------------------------
+	------
+
+2009-04-17 08:14  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	curr ff
+
+2009-04-17 08:09  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	curr ff
+
+2009-04-17 07:56  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	curr ff
+
+2009-04-17 07:52  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	cur ff
+
+2009-04-17 07:43  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	curr ff
+
+2009-04-17 07:39  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Fix curr FF
+
+2009-04-17 07:26  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Report curr FF in Parameter Setting
+
+2009-04-16 09:53  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	4 PCAT signals
+
+2009-04-16 09:17  manduchi
+
+	* javatraverser/: RFXControlSetup.java, RFXPC4SetupSetup.java:
+	
+	Multiple PCAT waveforms
+
+2009-04-16 09:05  manduchi
+
+	* tdi/RfxDevices/RFXPC4Setup__add.fun:
+	
+	Setup separate waveforms for PCAT
+
+2009-04-16 09:02  manduchi
+
+	* javatraverser/RFXPC4SetupSetup.java:
+	
+	Display evaluated fields
+
+2009-04-16 03:42  manduchi
+
+	* javatraverser/DeviceCustomizer.java:
+	
+	More error message in DeviceCustomizer
+
+2009-04-16 03:38  manduchi
+
+	* javatraverser/: DEMOADCSetup.java, DeviceBeansManifest.mf,
+	DeviceLabelBeanInfo.java, DeviceTableBeanInfo.java,
+	DeviceWaveDisplayBeanInfo.java, Makefile.in, RFXPC4SetupSetup.java,
+	javatraverser.mak:
+	
+	Added New PCAT for for RFX
+
+2009-04-15 14:26  jas
+
+	* tdi/MitDevices/Dt196AOSendFiles.fun:
+	
+	typo
+
+2009-04-15 14:23  jas
+
+	* tdi/MitDevices/Dt196AOSendFiles.fun:
+	
+	use ifconfig to get board IP address
+
+2009-04-14 13:19  twf
+
+	* mdsobjects/python/tests/__init__.py:
+	
+	add cleanup
+
+2009-04-14 11:59  twf
+
+	* mdsobjects/python/tests/treeUnitTest.py:
+	
+	Fix test
+
+2009-04-14 11:12  twf
+
+	* mdsobjects/python/mdsarray.py:
+	
+	rename scalar module to mdsscalar
+
+2009-04-14 11:10  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _mdsshr.py,
+	_treeshr.py, apd.py, mdsdata.py, treenode.py,
+	doc/examples/test1.py, tests/dataUnitTest.py,
+	tests/treeUnitTest.py:
+	
+	rename scalar and array modules to mdsscalar and mdsarray
+
+2009-04-14 11:09  twf
+
+	* mdsobjects/python/: array.py, mdsarray.py, mdsscalar.py,
+	scalar.py:
+	
+	rename the modules from array and scalar to mdsarray and mdsscalar
+
+2009-04-14 09:41  twf
+
+	* include/mdsobjects.h:
+	
+	cpp mdsobjects include
+
+2009-04-14 09:40  twf
+
+	* mdsobjects/cpp/mdsobjects.h:
+	
+	Move mdsobjects to /include
+
+2009-04-13 15:28  twf
+
+	* idlmdsevent/idlmdsevent.vcproj:
+	
+	Use quotes in idl_dir
+
+2009-04-13 15:28  twf
+
+	* include/config.h_win32:
+	
+	Remove timezone struct definition
+
+2009-04-13 15:27  twf
+
+	* Setup/Setup.vdproj, mdsplus.sln:
+	
+	Add MDSobjectsCppShr
+
+2009-04-13 15:26  twf
+
+	* mdsdcl/mdsdclshr.def:
+	
+	Add set_hyphen entry point
+
+2009-04-13 15:24  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix locking on windows
+
+2009-04-13 15:24  twf
+
+	* treeshr/: RemoteAccess.c, TreeAddNode.c, TreeCreatePulseFile.c,
+	TreeOpen.c, TreePutRecord.c, TreeSetNci.c, treeshrp.h:
+	
+	Fix locking on Windows
+
+2009-04-13 10:33  twf
+
+	* include/treeshr.h:
+	
+	Add TreeSetDbi and _TreeSetDbi
+
+2009-04-13 10:32  twf
+
+	* mdsmisc/mdsmisc.vcproj:
+	
+	add whoami
+
+2009-04-13 10:32  twf
+
+	* mdsmisc/whoami.c:
+	
+	Fix for windows
+
+2009-04-13 10:30  twf
+
+	* treeshr/treeshr.vcproj:
+	
+	Add wsock32.lib
+
+2009-04-13 10:29  twf
+
+	* treeshr/TreeShr.def:
+	
+	Add _TreeSetDbi
+
+2009-04-13 10:29  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Do not close fd 0. Instead set channel to -2 and check for it. Also
+	check tree read length
+
+2009-04-13 10:28  twf
+
+	* treeshr/TreeAddNode.c:
+	
+	Do not close fd 0. Instead set channel to -2 and check for it
+
+2009-04-13 10:27  twf
+
+	* mdsobjects/cpp/cpp.vcproj:
+	
+	Add mdsobjects cpp
+
+2009-04-10 16:55  twf
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Fix call to _TreeClose
+
+2009-04-09 07:57  manduchi
+
+	* tdi/RfxDevices/bRadMax.fun:
+	
+	The function compute the maximum radial field
+
+2009-04-07 16:58  twf
+
+	* cdu/cli_routines.c:
+	
+	fix valgrind warnings
+
+2009-04-07 16:55  twf
+
+	* mdsobjects/python/: _mdsshr.py, _tdishr.py, _treeshr.py,
+	array.py, makedoc.sh, mdsdata.py, scalar.py, setup.py, tree.py,
+	treenode.py, tests/__init__.py, tests/threadsUnitTest.py,
+	tests/treeUnitTest.py:
+	
+	Add tree edit features
+
+2009-04-07 16:55  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd-pysrc.html, MDSplus.apd.Apd-class.html,
+	MDSplus.apd.BulkFetch-class.html,
+	MDSplus.apd.Dictionary-class.html, MDSplus.apd.List-class.html,
+	MDSplus.array-module.html, MDSplus.array-pysrc.html,
+	MDSplus.array.Array-class.html,
+	MDSplus.array.Float32Array-class.html,
+	MDSplus.array.Float64Array-class.html,
+	MDSplus.array.Int128Array-class.html,
+	MDSplus.array.Int16Array-class.html,
+	MDSplus.array.Int32Array-class.html,
+	MDSplus.array.Int64Array-class.html,
+	MDSplus.array.Int8Array-class.html,
+	MDSplus.array.StringArray-class.html,
+	MDSplus.array.Uint128Array-class.html,
+	MDSplus.array.Uint16Array-class.html,
+	MDSplus.array.Uint32Array-class.html,
+	MDSplus.array.Uint64Array-class.html,
+	MDSplus.array.Uint8Array-class.html, MDSplus.compound-module.html,
+	MDSplus.compound-pysrc.html, MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.ident-module.html,
+	MDSplus.ident-pysrc.html, MDSplus.ident.Ident-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata-pysrc.html,
+	MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html, MDSplus.scalar-module.html,
+	MDSplus.scalar-pysrc.html, MDSplus.scalar.Float32-class.html,
+	MDSplus.scalar.Float64-class.html,
+	MDSplus.scalar.Int128-class.html, MDSplus.scalar.Int16-class.html,
+	MDSplus.scalar.Int32-class.html, MDSplus.scalar.Int64-class.html,
+	MDSplus.scalar.Int8-class.html, MDSplus.scalar.Scalar-class.html,
+	MDSplus.scalar.String-class.html,
+	MDSplus.scalar.Uint128-class.html,
+	MDSplus.scalar.Uint16-class.html, MDSplus.scalar.Uint32-class.html,
+	MDSplus.scalar.Uint64-class.html, MDSplus.scalar.Uint8-class.html,
+	MDSplus.tree-module.html, MDSplus.tree-pysrc.html,
+	MDSplus.tree.CachedTree-class.html,
+	MDSplus.tree.CachedTreeCtxCleanup-class.html,
+	MDSplus.tree.Tree-class.html,
+	MDSplus.tree.TreeCtxCleanup-class.html,
+	MDSplus.treenode-module.html, MDSplus.treenode-pysrc.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, api-objects.txt,
+	class-tree.html, help.html, identifier-index.html,
+	module-tree.html, toc-MDSplus.apd-module.html,
+	toc-MDSplus.array-module.html, toc-MDSplus.compound-module.html,
+	toc-MDSplus.ident-module.html, toc-MDSplus.mdsdata-module.html,
+	toc-MDSplus.scalar-module.html, toc-MDSplus.tree-module.html,
+	toc-MDSplus.treenode-module.html, toc-everything.html, toc.html:
+	
+	New documentation. Includes tree editing features
+
+2009-04-07 14:26  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Add edit functions
+
+2009-04-07 12:39  twf
+
+	* cdu/cli_routines.c, mdsshr/dasutil_routines4.c:
+	
+	Remove valgrind warnings
+
+2009-04-07 11:34  twf
+
+	* treeshr/: RemoteAccess.c, TreeSerializeNci.c:
+	
+	remove some valgrind warnings
+
+2009-04-07 09:55  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Implemented move() in addition to rename()
+
+2009-04-07 03:58  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Mem leaks
+
+2009-04-06 12:04  manduchi
+
+	* mdsobjects/cpp/mdsdataobjects.cpp:
+	
+	Const char
+
+2009-04-06 09:49  manduchi
+
+	* mdsobjects/cpp/: mdsdataobjects.cpp, mdsobjects.h,
+	mdstreeobjects.cpp:
+	
+	Tree editing support
+
+2009-04-03 15:08  twf
+
+	* tdi/dblogin.fun:
+	
+	Use whomi in dblogin if username is missing or zero length
+
+2009-04-03 14:50  twf
+
+	* tdi/whoami.fun:
+	
+	Add whomi function
+
+2009-04-03 14:48  twf
+
+	* mdsmisc/: Makefile.in, MdsMisc.exports, mdsmisc.def, whoami.c:
+	
+	Add whoami function
+
+2009-04-01 09:41  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	New methods for Tree
+
+2009-03-31 13:49  twf
+
+	* treeshr/TreeAddNode.c:
+	
+	Use _TreeFindNode in _TreeAddNode
+
+2009-03-31 11:25  jas
+
+	* tdi/MitDevices/dt196__store.fun:
+	
+	typo in error message expression
+
+2009-03-30 09:25  manduchi
+
+	* include/cacheshr.h, cacheshr/CachedTreeshr.c:
+	
+	Define RTreeFlushNodeShot for additional parameters
+
+2009-03-30 09:18  manduchi
+
+	* include/cacheshr.h:
+	
+	Pass exp name and shot to RTreeFLushNode
+
+2009-03-30 09:18  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Pass exp name and shot to RTreeFlushNode
+
+2009-03-30 07:57  manduchi
+
+	* mdsobjects/cpp/: mdsobjects.h, mdstreeobjects.cpp:
+	
+	Added Edit Methods
+
+2009-03-30 07:48  manduchi
+
+	* mdsobjects/java/: mdsdata/ActionData.java, mdsdata/ApdData.java,
+	mdsdata/ArrayData.java, mdsdata/ByteArray.java,
+	mdsdata/ByteData.java, mdsdata/CallData.java,
+	mdsdata/CompoundData.java, mdsdata/ConditionData.java,
+	mdsdata/ConglomData.java, mdsdata/Data.java,
+	mdsdata/DataException.java, mdsdata/DependencyData.java,
+	mdsdata/DimensionData.java, mdsdata/DispatchData.java,
+	mdsdata/DoubleArray.java, mdsdata/DoubleData.java,
+	mdsdata/EventData.java, mdsdata/FloatArray.java,
+	mdsdata/FloatData.java, mdsdata/FunctionData.java,
+	mdsdata/IdentData.java, mdsdata/IntArray.java,
+	mdsdata/IntData.java, mdsdata/LongArray.java,
+	mdsdata/LongData.java, mdsdata/MethodData.java,
+	mdsdata/NidData.java, mdsdata/ParamData.java,
+	mdsdata/PathData.java, mdsdata/ProcedureData.java,
+	mdsdata/ProgramData.java, mdsdata/RangeData.java,
+	mdsdata/RoutineData.java, mdsdata/ScalarData.java,
+	mdsdata/ShortArray.java, mdsdata/ShortData.java,
+	mdsdata/SignalData.java, mdsdata/SlopeData.java,
+	mdsdata/StringArray.java, mdsdata/StringData.java,
+	mdsdata/SyntaxException.java, mdsdata/WindowData.java,
+	mdsdata/WithErrorData.java, mdsdata/WithUnitsData.java,
+	mdstree/ActiveTreeNode.java, mdstree/CachedTree.java,
+	mdstree/CachedTreeNode.java, mdstree/DataStreamConsumer.java,
+	mdstree/DataStreamProducer.java, mdstree/MdsTree.java,
+	mdstree/SegmentedTreeNode.java, mdstree/Tree.java,
+	mdstree/TreeException.java, mdstree/TreeNode.java:
+	
+	New Java EA - generated mdsobjects java implementation
+
+2009-03-30 02:55  manduchi
+
+	* javatraverser/: HMSPECTROSetup.java, Makefile.in,
+	RFXDnbiSetup.java:
+	
+	Added devices
+
+2009-03-27 09:14  manduchi
+
+	* javatraverser/RFXTimesSetup.java:
+	
+	Rename OPEN_PTSO label
+
+2009-03-26 14:24  twf
+
+	* devscripts/MakeRpm:
+	
+	Make rpmmacros file automatically
+
+2009-03-25 16:52  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-0
 
 2009-03-25 16:51  twf
 
