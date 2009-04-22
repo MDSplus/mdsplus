@@ -124,7 +124,7 @@ extern "C" void *createApdData(int nData, char **dataPtrs, Data *unitsData,
 
 
 ///////////////////Data methods implementation////////////////////////
-EXPORT void *Data::operator new(unsigned int sz)
+EXPORT void *Data::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }

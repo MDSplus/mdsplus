@@ -227,7 +227,7 @@ protected:
 		
 		int refCount;
 		virtual void *convertToDsc() = 0;
-		void *operator new(unsigned int sz);
+		void *operator new(size_t sz);
 		void operator delete(void *p);
 		Data()
 		{
@@ -1545,7 +1545,7 @@ public:
 		TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 
 		//Force new and delete in dll for windows
-		void *operator new(unsigned int sz);
+		void *operator new(size_t sz);
 		void operator delete(void *p);
 
 
@@ -1695,7 +1695,7 @@ public:
 		int numNodes;
 
 	public:
-		void *operator new(unsigned int sz);
+		void *operator new(size_t sz);
 		void operator delete(void *p);
 
 		TreeNodeArray(TreeNode **nodes, int numNodes);
@@ -1748,7 +1748,7 @@ extern "C" void TreeRestoreContext(void *ctx);
 
 		~Tree();
 
-		void *operator new(unsigned int sz);
+		void *operator new(size_t sz);
 		void operator delete(void *p);
 
 		static void lock();

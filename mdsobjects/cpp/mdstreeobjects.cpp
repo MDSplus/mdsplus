@@ -250,7 +250,7 @@ Tree::~Tree()
     delete [] name;
 }
 
-EXPORT void *Tree::operator new(unsigned int sz)
+EXPORT void *Tree::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
@@ -641,7 +641,7 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 	setAccessory(units, error, help, validation);
 }
 
-EXPORT void *TreeNode::operator new(unsigned int sz)
+EXPORT void *TreeNode::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
@@ -1692,7 +1692,7 @@ EXPORT TreeNodeArray::~TreeNodeArray()
 }
 
 
-EXPORT void *TreeNodeArray::operator new(unsigned int sz)
+EXPORT void *TreeNodeArray::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
