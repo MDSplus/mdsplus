@@ -27,10 +27,12 @@ def makeScalar(value):
     raise TypeError,'Cannot make Scalar out of '+str(type(value))
 
 class Scalar(Data):
-    
+   
     def __new__(cls,value=0):
         try:
-            if len(value) > 1:
+            import numpy
+            from mdsarray import Array
+            if (isinstance(value,Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
                 exec "from mdsarray import "+cls.__name__+"Array"
                 return eval(cls.__name__+"Array(value)")
         except:
