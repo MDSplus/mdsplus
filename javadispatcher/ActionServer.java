@@ -286,8 +286,12 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     
     protected void processAbortedNoSynch(Action action)
     {
+
+        //System.out.println("-----------------> Aborted action "+ action);
+
         action.setServerAddress(this.ip_address);
-        Enumeration listeners = server_listeners.elements();
+
+	Enumeration listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
             ServerListener listener = (ServerListener)listeners.nextElement();

@@ -28,7 +28,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         {
             int status = 1;
 
-            //System.out.println("Action : "+me);
+            //System.out.println("-------------- Action : "+me);
                         
             switch(me.mode)
             {
@@ -45,8 +45,16 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 break;                
                 case MdsMonitorEvent.MonitorServerDisconnected :                    
                     ServerInfo si = serversInfo.get(me.server_address);
-                    String serverClass = si.getClassName();
-                    String msg = "Disconnect from server class "+serverClass+" address :"+me.server_address;                    
+                    String msg;
+                    if(si != null)
+                    {
+                        String serverClass = si.getClassName();
+                        msg = "Disconnect from server class "+serverClass+" address :"+me.server_address;
+                    }
+                    else
+                    {
+                        msg = "Disconnect from server class address :"+me.server_address;                        
+                    }
                     JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
                     serversInfoPanel.updateServerState(me.server_address, false);
                 break;
@@ -88,9 +96,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                 serversInfoPanel.updateServersInfoAction(me);                    
                             }
                         });
-                    
-                        
-                        
+                                           
                             int idx = getIndex(me, executing_list.size());
                             if(idx == ACTION_NOT_FOUND)
                             {
@@ -100,6 +106,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                 JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
+                            
                             if(idx == -1)
                                 executing_list.addElement(me);
                             else

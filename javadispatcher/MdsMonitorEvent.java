@@ -3,19 +3,28 @@ import java.text.*;
 
 class MdsMonitorEvent extends MdsServerEvent
 {
-    static final int MonitorBuildBegin =1;
-    static final int MonitorBuild      =2;
-    static final int MonitorBuildEnd   =3;
-    static final int MonitorCheckin    =4;
-    static final int MonitorDispatched =5;
-    static final int MonitorDoing      =6;
-    static final int MonitorDone       =7;
+    static final int MonitorBeginSequence = 1;
+    static final int MonitorBuildBegin    = 2;
+    static final int MonitorBuild         = 3;
+    static final int MonitorBuildEnd      = 4;
+    static final int MonitorCheckin       = 5;
+    static final int MonitorDispatched    = 6;
+    static final int MonitorDoing         = 7;
+    static final int MonitorDone          = 8;
+    static final int MonitorEndPhase             = 9;
+    static final int MonitorStartPhase           = 10;
+    static final int MonitorEndSequence          = 11;
 
-    static final int MonitorServerConnected      = 8;
-    static final int MonitorServerDisconnected   = 9;
-    static final int MonitorEndPhase             = 10;
-    static final int MonitorStartPhase           = 11;
-
+    static final int MonitorServerConnected      = 12;
+    static final int MonitorServerDisconnected   = 13;
+    
+    /*
+    static final int MonitorServerConnected      = 10;
+    static final int MonitorServerDisconnected   = 11;
+    static final int MonitorEndPhase             = 12;
+    static final int MonitorStartPhase           = 13;
+    static final int MonitorEndSequence          = 9;
+    */
 
     String tree;
     long   shot;
@@ -76,7 +85,7 @@ class MdsMonitorEvent extends MdsServerEvent
         super(source, id, flags, status);
         date = new Date();
         try
-        {
+        {            
             StringTokenizer buf = new StringTokenizer(data);
 
             tree   = new String(buf.nextToken());
@@ -108,9 +117,9 @@ class MdsMonitorEvent extends MdsServerEvent
         }
         catch (NumberFormatException e)
         {
+            System.out.println(data);
             e.printStackTrace();
-            System.out.println(e);
-            throw(new Exception("Bad monitor event data"));
+            throw(new Exception("Bad monitor event data" + e));
         }
     }
 
@@ -132,6 +141,7 @@ class MdsMonitorEvent extends MdsServerEvent
     {
         switch(mode_id)
         {
+            case MonitorBeginSequence 	    : return "MonitorBeginSequence";
             case MonitorBuildBegin          : return "MonitorBuildBegin";
             case MonitorBuild               : return "MonitorBuild";
             case MonitorBuildEnd            : return "MonitorBuildEnd";
@@ -143,6 +153,7 @@ class MdsMonitorEvent extends MdsServerEvent
             case MonitorServerDisconnected  : return "MonitorServerDisconnected";
             case MonitorEndPhase            : return "MonitorEndPhase";
             case MonitorStartPhase          : return "MonitorStartPhase";
+            case MonitorEndSequence 	    : return "MonitorEndSequence";
         }
         return "";
     }

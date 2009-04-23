@@ -124,6 +124,11 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
         }
     }
     
+    public synchronized void beginSequence(MonitorEvent event)
+    {
+    }
+
+//    public synchronized void buildBegin(MonitorEvent event)
     public  void buildBegin(MonitorEvent event)
     {
     }
@@ -135,13 +140,18 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
     public  void buildEnd(MonitorEvent event)
     {
     }
+    
+//    public synchronized void dispatched(MonitorEvent event)
     public  void dispatched(MonitorEvent event)
     {
     }
+    
+//    public synchronized void doing(MonitorEvent event)
     public  void doing(MonitorEvent event)
     {
     }
-    public  synchronized void done(MonitorEvent event)
+    
+    public synchronized void done(MonitorEvent event)
     {
         communicate( event, jDispatcher.MONITOR_DONE );
     }
@@ -153,6 +163,10 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
     public  void connect(MonitorEvent event)
     {
     }
+    
+    public synchronized void endSequence(MonitorEvent event)
+    {
+    }
 
     public  void endPhase(MonitorEvent event)
     {
@@ -161,7 +175,6 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
     public  void startPhase(MonitorEvent event)
     {
     }
-
 
 }
 

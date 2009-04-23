@@ -7,15 +7,17 @@ class jDispatcher
 {
     static boolean verbose = true;
 
-    static final int MONITOR_BUILD_BEGIN = 1;
-    static final int MONITOR_BUILD = 2;
-    static final int MONITOR_BUILD_END = 3;
-    static final int MONITOR_DISPATCHED = 5;
-    static final int MONITOR_DOING = 6;
-    static final int MONITOR_DONE = 7;
-
-    static final int MONITOR_START_PHASE = 8;
-    static final int MONITOR_END_PHASE = 9;
+    static final int MONITOR_BEGIN_SEQUENCE = 1;
+    static final int MONITOR_BUILD_BEGIN = 2;
+    static final int MONITOR_BUILD = 3;
+    static final int MONITOR_BUILD_END = 4;
+    static final int MONITOR_CHECKIN = 5;
+    static final int MONITOR_DISPATCHED = 6;
+    static final int MONITOR_DOING = 7;
+    static final int MONITOR_DONE = 8;
+    static final int MONITOR_START_PHASE = 9;
+    static final int MONITOR_END_PHASE = 10;
+    static final int MONITOR_END_SEQUENCE = 11;
 
 
     static final int TdiUNKNOWN_VAR = 0xfd380f2;
@@ -171,6 +173,7 @@ class jDispatcher
     public void setTree(String tree, int shot)
     {
         this.tree = tree;
+        this.shot = shot;
         Enumeration server_list = servers.elements();
         while (server_list.hasMoreElements())
             ( (Server) server_list.nextElement()).setTree(tree, shot);
@@ -423,14 +426,21 @@ class jDispatcher
     protected void fireMonitorEvent(Action action, int mode)
     {
         String server;
-        MonitorEvent event = new MonitorEvent(this, tree, shot,
+	    
+	System.out.println("----------- fireMonitorEvent SHOT "+shot);
+ 
+	MonitorEvent event = new MonitorEvent(this, tree, shot,
                                               (curr_phase == null) ? "NONE" :
                                               curr_phase.phase_name, action);
+        
         Enumeration monitor_list = monitors.elements();
         while (monitor_list.hasMoreElements()) {
             MonitorListener curr_listener = (MonitorListener) monitor_list.
                 nextElement();
             switch (mode) {
+                case MONITOR_BEGIN_SEQUENCE:
+                    curr_listener.beginSequence(event);
+                    break;
                 case MONITOR_BUILD_BEGIN:
                     curr_listener.buildBegin(event);
                     break;
@@ -448,6 +458,9 @@ class jDispatcher
                     break;
                 case MONITOR_DONE:
                     curr_listener.done(event);
+                    break;
+                case MONITOR_END_SEQUENCE:
+                    curr_listener.endSequence(event);
                     break;
                 case MONITOR_START_PHASE:
                     event.eventId = MonitorEvent.START_PHASE_EVENT;
@@ -727,7 +740,8 @@ class jDispatcher
                             currAction.setStatus(Action.ABORTED,
                                              Action.ServerCANT_HAPPEN,
                                              verbose);
-                            fireMonitorEvent(action, MONITOR_DONE);
+                            //???? Cesare fireMonitorEvent(action, MONITOR_DONE);
+                            fireMonitorEvent(currAction, MONITOR_DONE);
                         }
                     }
                     System.out.println("------------- FINE DELLA FASE --------------------- ");
@@ -803,14 +817,16 @@ class jDispatcher
         Enumeration server_list = servers.elements();
         while (server_list.hasMoreElements())
             ( (Server) server_list.nextElement()).beginSequence(shot);
+        fireMonitorEvent((Action)null, MONITOR_BEGIN_SEQUENCE);
     }
 
     public synchronized void endSequence(int shot)
-    {
+    {        
         Enumeration server_list = servers.elements();
         while (server_list.hasMoreElements())
             ( (Server) server_list.nextElement()).endSequence(shot);
         clearTables();
+        fireMonitorEvent((Action)null, MONITOR_END_SEQUENCE);
     }
 
     public synchronized void abortPhase()

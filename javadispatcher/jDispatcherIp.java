@@ -266,6 +266,7 @@ class jDispatcherIp
             System.exit(0);
         }
 
+        System.out.println("Start dispatcher on port " + port);
         jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher,
             treeName);
         dispatcherIp.start();
@@ -313,6 +314,7 @@ class jDispatcherIp
                 break;
             try {
                 int monitor_port_int = Integer.parseInt(monitor_port);
+                System.out.println("Start monitor server on port " + monitor_port_int);
                 MdsMonitor monitor = new MdsMonitor(monitor_port_int);
                 dispatcher.addMonitorListener(monitor);
                 monitor.start();
