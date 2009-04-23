@@ -27,6 +27,17 @@ def makeScalar(value):
     raise TypeError,'Cannot make Scalar out of '+str(type(value))
 
 class Scalar(Data):
+    
+    def __new__(cls,value=0):
+        try:
+            if len(value) > 1:
+                exec "from mdsarray import "+cls.__name__+"Array"
+                return eval(cls.__name__+"Array(value)")
+        except:
+            pass
+
+        return super(Scalar,cls).__new__(cls,value)
+        
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Scalar':
             raise TypeError,"cannot create 'Scalar' instances"
