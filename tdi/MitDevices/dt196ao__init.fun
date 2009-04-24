@@ -63,7 +63,7 @@ public fun DT196AO__INIT(as_is _nid, optional _method)
     _chan_nid = DevHead(_nid) + _chan_offset;
     if (DevIsOn(_chan_nid))
     {
-      _sig = getnci(_chan_nid, "RECORD");
+      _sig = if_error(getnci(_chan_nid, "RECORD"), build_signal([0., 0.], *, [0., 1.]));
       _knots_x = dim_of(_sig);
       _knots_y = data(_sig);
       _fit = DevNodeRef(_nid,_chan_offset+_DT196AO_AO_FIT);
