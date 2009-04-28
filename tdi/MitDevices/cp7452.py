@@ -1,62 +1,55 @@
-class CP7452(object):
+from MDSplus import Device,Data
+
+class CP7452(Device):
     """Adlink CP7452 DIO"""
-    def __init__(self,node):
-        self.node=node
-        return
+
+    part_names=(':NODE',':BOARD',':COMMENT','.DIGITAL_OUTS',
+               '.DIGITAL_OUTS:DO0','.DIGITAL_OUTS:DO1','.DIGITAL_OUTS:DO2','.DIGITAL_OUTS:DO3',
+               '.DIGITAL_INS',
+               '.DIGITAL_INS:DI0','.DIGITAL_INS:DI1','.DIGITAL_INS:DI2','.DIGITAL_INS:DI3',
+               ':INIT_ACTION',':STORE_ACTION')
 
     def init(self,arg):
-        from MDSplus import Data
-        nids=self.node.conglomerate_nids
+        """Initialize digital outputs of CP7452 cpci board.
+        Connects to the host and for each of the DIGITAL_OUTS nodes which are turned on, write the value to the digital output.
+        """
         try:
-            host=str(nids[1].record.data())
+            host=str(self.node.record.data())
         except:
             host='local'
-        if Data.execute('mdsconnect($)',host) != 0:
-            print "Connected to: "+host
-        else:
+        if Data.execute('mdsconnect($)',host) == 0:
             raise Exception,"Error connecting to host: "+host
-        board=int(nids[2].record)
+        board=int(self.board.record)
         for i in range(4):
-            do_nid=nids[i+5]
+            do_nid=self.__getattr__('digital_outs_do%d'%(i,))
             if do_nid.on:
                 try:
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
                     exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DO%d\\\",\\\"r+\\\"); write(_lun,\\\"%x\\\"); fclose(_lun)")' % (board,i,int(do_nid.record))
-                    print exp
                     Data.execute(exp)
                 except Exception,e:
                     print "Error outputing to DO%d\n\t%s" % (i,str(e),)
         return 1
 
     def store(self,arg):
-        from MDSplus import Data
-        nids=self.node.conglomerate_nids
+        """Stores the digital input values into the tree.
+        Connects to the host and for each of the DIGITAL_INS nodes which are turned on, read the digital input and store the value in the node.
+        """
         try:
-            host=str(nids[1].record.data())
+            host=str(self.node.record.data())
         except:
             host='local'
-        if Data.execute('mdsconnect($)',host) != 0:
-            print "Connected to: "+host
-        else:
+        if Data.execute('mdsconnect($)',host) == 0:
             raise Exception,"Error connecting to host: "+host
-        board=int(nids[2].record)
+        board=int(self.board.record)
         for i in range(4):
-            do_nid=nids[i+10]
-            if do_nid.on:
+            di_nid=self.__getattr__('digital_ins_di%d'%(i,1))
+            if di_nid.on:
                 try:
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
                     exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DI%d\\\",\\\"r\\\"); _ans=read(_lun); fclose(_lun),_ans")' % (board,i)
-                    print exp
                     value=eval('0x'+str(Data.execute(exp)))
-                    do_nid.record=value
+                    di_nid.record=value
                 except Exception,e:
                     print "Error inputting from DI%d\n\t%s" % (i,str(e),)
         return 1
-
-    def ORIGINAL_PART_NAME(self,arg):
-        names=('',':NODE',':BOARD',':COMMENT','.DIGITAL_OUTS',
-               '.DIGITAL_OUTS:DO0','.DIGITAL_OUTS:DO1','.DIGITAL_OUTS:DO2','.DIGITAL_OUTS:DO3',
-               '.DIGITAL_INS',
-               '.DIGITAL_INS:DI0','.DIGITAL_INS:DI1','.DIGITAL_INS:DI2','.DIGITAL_INS:DI3',
-               ':INIT_ACTION',':STORE_ACTION',)
-        return names[int(self.node.conglomerate_elt-1)]
