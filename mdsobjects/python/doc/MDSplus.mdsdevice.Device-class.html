@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>MDSplus.treenode.TreePath</title>
+  <title>MDSplus.mdsdevice.Device</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -40,8 +40,8 @@
     <td width="100%">
       <span class="breadcrumbs">
         Package&nbsp;MDSplus ::
-        <a href="MDSplus.treenode-module.html">Module&nbsp;treenode</a> ::
-        Class&nbsp;TreePath
+        <a href="MDSplus.mdsdevice-module.html">Module&nbsp;mdsdevice</a> ::
+        Class&nbsp;Device
       </span>
     </td>
     <td>
@@ -49,26 +49,73 @@
         <!-- hide/show private -->
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="MDSplus.treenode.TreePath-class.html"
+            >]&nbsp;|&nbsp;<a href="MDSplus.mdsdevice.Device-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class TreePath</h1><p class="nomargin-top"><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreePath">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class Device</h1><p class="nomargin-top"><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-  object --+        
-           |        
-<a href="MDSplus.mdsdata.Data-class.html">mdsdata.Data</a> --+    
-               |    
-        <a href="MDSplus.treenode.TreeNode-class.html">TreeNode</a> --+
-                   |
-                  <strong class="uidshort">TreePath</strong>
+   object --+        
+            |        
+ <a href="MDSplus.mdsdata.Data-class.html">mdsdata.Data</a> --+    
+                |    
+<a href="MDSplus.treenode.TreeNode-class.html">treenode.TreeNode</a> --+
+                    |
+                   <strong class="uidshort">Device</strong>
 </pre>
 
 <hr />
-<p>Class to represent an MDSplus node reference (path).</p>
+<p>Used for device support classes. Provides ORIGINAL_PART_NAME method 
+  and allows referencing of subnodes as conglomerate node attributes.</p>
+  <p>Use this class as a superclass for device support classes. When 
+  creating a device support class include a class attribute called 
+  part_names as a tuple of strings of the node names of the devices members
+  (not including the head node). You can also include a part_dict class 
+  attribute consisting of a dict() instance whose keys are attribute names 
+  and whose values are nid offsets. If you do not provide a part_dict 
+  attribute then one will be created from the part_names attribute where 
+  the part names are converted to lowercase and the colons and periods are 
+  replaced with underscores.</p>
+  <p>Sample usage1:</p>
+<pre class="literalblock">
+  from MDSplus import Device
+
+  class mydev(Device):
+      part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+
+      def init(self,arg):
+          knob1=self.settings_knob1.record
+          return 1
+
+      def store(self,arg):
+          from MDSplus import Signal
+          self.signals_channel_1=Signal(32,None,42)
+</pre>
+  <p>Sample usage2:</p>
+<pre class="literalblock">
+  from MDSplus import Device
+
+  class mydev(Device):
+      part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+      part_dict={'knob1':5,'chan1':7}
+
+      def init(self,arg):
+          knob1=self.knob1.record
+          return 1
+
+      def store(self,arg):
+          from MDSplus import Signal
+          self.chan1=Signal(32,None,42)
+</pre>
+  <p>If you need to reference attributes using computed names you can do 
+  something like:</p>
+<pre class="literalblock">
+   for i in range(16):
+       self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
+</pre>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -80,16 +127,15 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">Data</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreePath-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">path</span>,
-        <span class="summary-sig-arg">tree</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Initialze TreeNode</td>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>)</span><br />
+      Initialize a Device instance</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreePath.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -99,14 +145,71 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
+      <span class="summary-type">str</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="MDSplus.treenode.TreePath-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      String: x.__str__() &lt;==&gt; str(x)</td>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#ORIGINAL_PART_NAME" class="summary-sig-name">ORIGINAL_PART_NAME</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">arg</span>)</span><br />
+      Method to return the original part name.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreePath.__str__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.ORIGINAL_PART_NAME">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#PART_NAME" class="summary-sig-name">PART_NAME</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">arg</span>)</span><br />
+      Method to return the original part name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.ORIGINAL_PART_NAME">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">TreeNode</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#__getattr__" class="summary-sig-name">__getattr__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Return TreeNode of subpart if name matches mangled node name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__getattr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#__setattr__" class="summary-sig-name">__setattr__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set value into device subnode if name matches a mangled subpart node 
+      name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__setattr__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -116,9 +219,8 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.treenode.TreeNode-class.html">TreeNode</a></code></b>:
-      <code><a href="MDSplus.treenode.TreeNode-class.html#__getattr__">__getattr__</a></code>,
-      <code><a href="MDSplus.treenode.TreeNode-class.html#__setattr__">__setattr__</a></code>,
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.treenode.TreeNode-class.html">treenode.TreeNode</a></code></b>:
+      <code><a href="MDSplus.treenode.TreeNode-class.html#__str__">__str__</a></code>,
       <code><a href="MDSplus.treenode.TreeNode-class.html#addDevice">addDevice</a></code>,
       <code><a href="MDSplus.treenode.TreeNode-class.html#addNode">addNode</a></code>,
       <code><a href="MDSplus.treenode.TreeNode-class.html#addTag">addTag</a></code>,
@@ -272,7 +374,6 @@
       <code>__delattr__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>
       </p>
@@ -287,6 +388,24 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Static Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Device subclass instance</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">cls</span>,
+        <span class="summary-sig-arg">node</span>)</span><br />
+      Create class instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__new__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.mdsdata.Data-class.html">mdsdata.Data</a></code></b>:
@@ -308,7 +427,7 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.treenode.TreeNode-class.html">TreeNode</a></code></b>:
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="MDSplus.treenode.TreeNode-class.html">treenode.TreeNode</a></code></b>:
       <code><a href="MDSplus.treenode.TreeNode-class.html#nid">nid</a></code>,
       <code><a href="MDSplus.treenode.TreeNode-class.html#tree">tree</a></code>
       </p>
@@ -347,6 +466,37 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="__new__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">node</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__new__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create class instance. Initialize part_dict class attribute if 
+  necessary.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>node</code></strong> (TreeNode) - Not used</li>
+    </ul></dd>
+    <dt>Returns: Device subclass instance</dt>
+        <dd>Instance of the device subclass</dd>
+    <dt>Overrides:
+        object.__new__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -355,54 +505,145 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">path</span>,
-        <span class="sig-arg">tree</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">node</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreePath.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Initialze TreeNode</p>
+  <p>Initialize a Device instance</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>n</code></strong> - Index of the node in the tree.</li>
-        <li><strong class="pname"><code>tree</code></strong> - Tree associated with this node</li>
+        <li><strong class="pname"><code>node</code></strong> (TreeNode) - Conglomerate node of this device</li>
     </ul></dd>
-    <dt>Returns: Data</dt>
+    <dt>Returns: None</dt>
     <dt>Raises:</dt>
     <dd><ul class="nomargin-top">
         <li><code><strong class='fraise'>TypeError</strong></code> - Raised if attempting to create an instance of Data</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
 </div>
-<a name="__str__"></a>
+<a name="ORIGINAL_PART_NAME"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
-    <br /><em class="fname">(Informal representation operator)</em>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ORIGINAL_PART_NAME</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">arg</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="MDSplus.treenode-pysrc.html#TreePath.__str__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.ORIGINAL_PART_NAME">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>String: x.__str__() &lt;==&gt; str(x)</p>
+  <p>Method to return the original part name. Will return blank string if 
+  part_name class attribute not defined or node used to create instance is 
+  the head node or past the end of part_names tuple.</p>
   <dl class="fields">
-    <dt>Returns: string</dt>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>arg</code></strong> (Use None) - Not used. Placeholder for do method argument</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>Part name of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="PART_NAME"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">PART_NAME</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">arg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.ORIGINAL_PART_NAME">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Method to return the original part name. Will return blank string if 
+  part_name class attribute not defined or node used to create instance is 
+  the head node or past the end of part_names tuple.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>arg</code></strong> (Use None) - Not used. Placeholder for do method argument</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>Part name of this node</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__getattr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getattr__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+    <br /><em class="fname">(Qualification operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__getattr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return TreeNode of subpart if name matches mangled node name.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - part name. Node path with colons and periods replaced by 
+          underscores.</li>
+    </ul></dd>
+    <dt>Returns: TreeNode</dt>
+        <dd>TreeNode of device part</dd>
     <dt>Overrides:
-        object.__str__
+        <a href="MDSplus.treenode.TreeNode-class.html#__getattr__">treenode.TreeNode.__getattr__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__setattr__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setattr__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__setattr__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set value into device subnode if name matches a mangled subpart node 
+  name. Otherwise assign value to class instance attribute.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (str) - Name of attribute or device subpart</li>
+        <li><strong class="pname"><code>value</code></strong> (varied) - Value of the attribute or device subpart</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+    <dt>Overrides:
+        object.__setattr__
     </dt>
   </dl>
 </td></tr></table>
@@ -436,7 +677,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Apr 28 14:34:54 2009
+    Generated by Epydoc 3.0.1 on Tue Apr 28 14:34:53 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

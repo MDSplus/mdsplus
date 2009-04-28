@@ -50,7 +50,8 @@ def test_all(*arg):
     Data.execute('setenv("pytreesub_path='+dir.replace('\\','\\\\')+'")')
     tests=list()
     tests.append(treeUnitTest.suite())
-    tests.append(threadsUnitTest.suite())
+    if os.getenv('TEST_THREADS') is not None:
+	tests.append(threadsUnitTest.suite())
     tests.append(dataUnitTest.suite())
     tests.append(TestSuite([cleanup('cleanup')]))
     ans = TestSuite(tests)

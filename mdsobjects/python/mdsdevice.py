@@ -9,7 +9,7 @@ class Device(TreeNode):
     not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores.
 
-    Sample usage1:
+    Sample usage1::
     
        from MDSplus import Device
 
@@ -24,7 +24,7 @@ class Device(TreeNode):
                from MDSplus import Signal
                self.signals_channel_1=Signal(32,None,42)
 
-    Sample usage2:
+    Sample usage2::
 
        from MDSplus import Device
 
@@ -40,13 +40,19 @@ class Device(TreeNode):
                from MDSplus import Signal
                self.chan1=Signal(32,None,42)
                
-    If you need to reference attributes using computed names you can do something like:
+    If you need to reference attributes using computed names you can do something like::
 
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
     
     def __fix_part(name):
+        """Replace colons and periods in node path names by underscores. Used internally.
+        @param name: relative node path name of device part
+        @type name: str
+        @return: name with colons and periods replaced by underscores
+        @rtype: str
+        """
         name=name[1:].lower()
         name=name.replace(':','_')
         name=name.replace('.','_')
@@ -54,6 +60,14 @@ class Device(TreeNode):
     __fix_part=staticmethod(__fix_part)
 
     def __new__(cls,node):
+        """Create class instance. Initialize part_dict class attribute if necessary.
+        @param node: Not used
+        @type node: TreeNode
+        @return: Instance of the device subclass
+        @rtype: Device subclass instance
+        """
+        if cls.__name__ == 'Device':
+            raise TypeError,"Cannot create instances of Device class"
         if hasattr(cls,'part_names') and not hasattr(cls,'part_dict'):
             cls.part_dict=dict()
             for i in range(len(cls.part_names)):
@@ -64,6 +78,11 @@ class Device(TreeNode):
         return super(Device,cls).__new__(cls,node)
 
     def __init__(self,node):
+        """Initialize a Device instance
+        @param node: Conglomerate node of this device
+        @type node: TreeNode
+        @rtype: None
+        """
         try:
             self.nids=node.conglomerate_nids.nid_number
             self.head=int(self.nids[0])
@@ -73,29 +92,44 @@ class Device(TreeNode):
         self.nid=node.nid
 
     def ORIGINAL_PART_NAME(self,arg):
+        """Method to return the original part name.
+        Will return blank string if part_name class attribute not defined or node used to create instance is the head node or past the end of part_names tuple.
+        @param arg: Not used. Placeholder for do method argument
+        @type arg: Use None
+        @return: Part name of this node
+        @rtype: str
+        """
         name = ""
         if self.nid != self.head:
             try:
                 name = self.part_names[self.nid-self.head-1].upper()
             except:
-                raise
+                pass
         return name
-
     PART_NAME=ORIGINAL_PART_NAME
 
     def __getattr__(self,name):
+        """Return TreeNode of subpart if name matches mangled node name.
+        @param name: part name. Node path with colons and periods replaced by underscores.
+        @type name: str
+        @return: TreeNode of device part
+        @rtype: TreeNode
+        """
         try:
-            return self.__dict__[name]
+            return TreeNode(self.part_dict[name]+self.head,self.tree)
         except:
-            if name != 'part_dict':
-                return TreeNode(self.part_dict[name]+self.head,self.tree)
-            else:
-                raise
+            raise AttributeError
 
     def __setattr__(self,name,value):
+        """Set value into device subnode if name matches a mangled subpart node name. Otherwise assign value to class instance attribute.
+        @param name: Name of attribute or device subpart
+        @type name: str
+        @param value: Value of the attribute or device subpart
+        @type value: varied
+        @rtype: None
+        """
         try:
-            node=TreeNode(self.part_dict[name]+self.head,self.tree)
-            node.record=value
+            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
         except KeyError:
             self.__dict__[name]=value
             
