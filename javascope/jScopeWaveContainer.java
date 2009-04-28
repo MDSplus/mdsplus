@@ -777,8 +777,12 @@ remove 28/06/2005
                             WaveContainerEvent.START_UPDATE,
                             "Start Evaluate column " + (i + 1) + " row " +
                             (j + 1));
-                        dispatchWaveContainerEvent(wce);
-                        ( (MdsWaveInterface) wave_all[k].wi).StartEvaluate();
+                        try
+                        {
+                            dispatchWaveContainerEvent(wce);
+                            ( (MdsWaveInterface) wave_all[k].wi).StartEvaluate();
+                        }
+                        catch(Exception exc){}
                     }
                 }
             }
@@ -868,7 +872,7 @@ remove 28/06/2005
         }
         catch (Exception e)
         {
-            //e.printStackTrace();
+            e.printStackTrace();
             RepaintAllWave();
             //throw (e);
         }
