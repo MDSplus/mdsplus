@@ -100,6 +100,7 @@ class DTDO32(Device):
             self.SendFiles(hostname, hostboard, board)
             Dt200WriteMaster(hostboard, 'set.ao32 %d DO_CLK  %s %d %s' % (board, clock_src, clock_div, clock_edge), 1) 
             Dt200WriteMaster(hostboard, 'set.ao32 %d DO_TRG %s %s' % (board, trig_src, trig_edge), 1)
+            Dt200WriteMaster(hostboard, 'set.ao32 %d DO_MODE %s' % (board, mode), 1)
             commit = '0x22' 
             print "set.ao32.data %d commit %s" % (board, commit)        
             Dt200WriteMaster(hostboard, 'set.ao32.data %d commit %s' % (board, commit), 1)        
