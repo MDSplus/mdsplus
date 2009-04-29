@@ -64,7 +64,7 @@ public class jScope
 
     private JMenuItem print_i, page_i, properties_i;
     private String propertiesFilePath = null;
-
+ 
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
@@ -528,7 +528,7 @@ public class jScope
         aboutScreen = null;
     }
 
-    public jScope(int spos_x, int spos_y)
+    public jScope(int spos_x, int spos_y, String propFile)
     {
 
         if (num_scope == 0)
@@ -544,6 +544,9 @@ public class jScope
                 }
             });
         }
+        
+        this.setPropertiesFile(propFile);
+        
         jScopeCreate(spos_x, spos_y);
 
     }
@@ -1421,12 +1424,20 @@ public class jScope
         return null;
     }
 
-
-
-    public void InitProperties()
+    public void setPropertiesFile(String propFile)
     {
-        String f_name = System.getProperty("user.home") + File.separator +
+        propertiesFilePath = propFile;
+    }
+
+    public void InitProperties( )
+    {
+        String f_name = propertiesFilePath;
+        if(f_name == null)
+        {
+            f_name = System.getProperty("user.home") + File.separator +
             "jScope" + File.separator + "jScope.properties";
+        }
+        
         try
         {
             if (jScope.is_debug)
@@ -1497,7 +1508,7 @@ public class jScope
                     fos.close();
                     pis.close();
                 }
-            }
+            }             
         }
 
         catch (FileNotFoundException e)
@@ -1927,7 +1938,7 @@ public class jScope
 
         if (conf_file == null || conf_file.length() == 0)
             return;
-        int pPos = conf_file.indexOf('.');
+        int pPos = conf_file.lastIndexOf('.');
         int sPos = conf_file.lastIndexOf(File.separatorChar);
         if ( pPos == -1 || pPos <  sPos  )
                 conf_file = conf_file + ".jscp";
@@ -2932,7 +2943,7 @@ remove 28/06/2005
 
     protected jScope buildNewScope(int x, int y)
     {
-        return new jScope(x, y);
+        return new jScope(x, y, propertiesFilePath);
     }
 
     public void startScope(String file)
@@ -2959,7 +2970,8 @@ remove 28/06/2005
     public static void main(String args[])
     {
         String file = null;
-
+        String propertiesFile = null;
+ 
         jScope win = null;
 
         Properties props = System.getProperties();
@@ -2970,8 +2982,22 @@ remove 28/06/2005
             Waveform.is_debug = true;
         }
 
+        if (args.length != 0)
+        {
+            for( int i = 0; i < args.length; i++)
+            {
+                if( args[i].equals("-fp"))
+                {
+                    if( i+1 < args.length )
+                        propertiesFile = args[i+1];
+                    i++;
+                } else { 
+                    file = new String(args[i]);
+                }
+            }
+        }    
         if (IsNewJVMVersion())
-            win = new jScope(100, 100);
+            win = new jScope(100, 100, propertiesFile);
         else
         {
             System.out.println(
@@ -2981,9 +3007,10 @@ remove 28/06/2005
 
         win.pack();
         win.setSize(750, 550);
-        if (args.length == 1)
-            file = new String(args[0]);
 
+ 
+                
+        
         win.num_scope++;
         win.startScope(file);
     }
