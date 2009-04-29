@@ -10,3 +10,5 @@ MitDevices
 
 """
 from cp7452 import CP7452
+from dtao32 import DTAO32
+from dtdo32 import DTDO32

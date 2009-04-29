@@ -47,7 +47,7 @@ class DTAO32(object):
 
     def init(self,arg):
         from MDSplus import Data
-        from Dt200WriteMaster import *
+        from MitDevices import Dt200WriteMaster
         import numpy
         
         nids=self.node.conglomerate_nids
@@ -135,9 +135,9 @@ class DTAO32(object):
         return 1
 
     def WriteWaveform(self, host, board, chan, wave):
-        import os
+        from os import popen
         if chan == 1:
-            pipe = os.popen('mkdir -p /tmp/%s/ao32cpci.%d' % (host, board));
+            pipe = popen('mkdir -p /tmp/%s/ao32cpci.%d' % (host, board));
             pipe.close()
         file = '/tmp/%s/ao32cpci.%d/f.%2.2d' % (host, board, chan)
         f = open(file, 'wb')
@@ -145,15 +145,15 @@ class DTAO32(object):
         f.close()
 
     def SendFiles(self, host, hostboard, board):
-        import os
-        from Dt200WriteMaster import *
+        from os import popen
+        from MitDevices import Dt200WriteMaster
         cmd = '(cd /tmp/%s; tar -czf /tmp/%s.%d.tgz *)' % (host, host, board,)
         print cmd
-        pipe = os.popen(cmd)
+        pipe = popen(cmd)
         pipe.close()
         cmd = 'curl -s -T /tmp/%s.%d.tgz -u ftp: ftp://%s/' %(host, board, host)
         print cmd
-        pipe = os.popen(cmd)
+        pipe = popen(cmd)
         pipe.close()
         cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/ao32cpci.%d/' % (host, board, host, board,)
         print cmd
