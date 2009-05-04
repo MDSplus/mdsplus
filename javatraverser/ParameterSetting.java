@@ -510,7 +510,7 @@ public class ParameterSetting
             jp.add(applyToModelB);
         }
 			
-		
+	jp.add(residualI2tPMLabel = new JLabel());	
         setupJp.add(jp, "North");
         jp = new JPanel();
         jp.setLayout(new GridLayout(1, 4));
@@ -2074,6 +2074,7 @@ public class ParameterSetting
                         }*/
                         //Report saved shot
                         refShotLabel.setText(refShotLabelText + currLoadShot);
+                        i2tEvaluateResidualPrePulse();
                      }
                 }
             });
@@ -2473,6 +2474,7 @@ public class ParameterSetting
                                     break;
                                 case LEAVE_SECONDARY:
                                     doingShot = false;
+                                    i2tEvaluateResidualPostPulse();
                                     if (!isRt)
                                         setTitle("RFX Parameters     shot: " +
                                                  getShot());
@@ -4581,8 +4583,9 @@ System.out.println("Print Done");
         }
     }
     
-    void i2tEvaluateResidualPrePulse() throws Exception
-	{
+    void i2tEvaluateResidualPrePulse()
+    {
+        try {
 		if( rfx == null ) 
 		{
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('PRE_PULSE')"), 0 );
@@ -4592,10 +4595,18 @@ System.out.println("Print Done");
 				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : con questa impostazione di PM superato il valore di i2t (23e9) giornaliero ammesso",
                     "Error", JOptionPane.ERROR_MESSAGE);
 		}
-	}
+        }catch(Exception exc)
+        {
+            JOptionPane.showMessageDialog(ParameterSetting.this, "Error Evalating Residual I2T Magnetizing",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            
+        }
+    }
 	
-    void i2tEvaluateResidualPostPulse() throws Exception
-	{
+    void i2tEvaluateResidualPostPulse()
+    
+    {
+        try {
 		if( rfx != null )
 		{			
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('POST_PULSE')"), 0 );
@@ -4605,9 +4616,13 @@ System.out.println("Print Done");
 				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : Superato il valore di i2t (23e9) giornaliero ammesso sessione da SOSPENDERE",
                     "Error", JOptionPane.ERROR_MESSAGE);
 		}
-	}
-	
-	
+	}catch (Exception exc)
+        {
+            JOptionPane.showMessageDialog(ParameterSetting.this, "Error Evalating Residual I2T Magnetizing",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            
+        }
+    }
 	
     public static void main(String args[])
     {
