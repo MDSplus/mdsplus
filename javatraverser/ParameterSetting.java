@@ -118,6 +118,8 @@ public class ParameterSetting
     int maxPMAT, maxPCATParallel, maxPCATSeries, maxTFAT, maxTCCH, maxTCAC,
         maxPMVoltage, maxFillVoltage, maxPuffVoltage;
     JTextArea messageArea;
+	
+	JLabel residualI2tPMLabel;
 
     WarningDialog checkedWd, configWd, limitsWd, versionWd;
 
@@ -490,9 +492,6 @@ public class ParameterSetting
         jp.add(buttons[14]);
 
 
-
-
-
         if (!isRt && isOnline)
         {
             applyToModelB = new JButton("Apply To Model");
@@ -510,6 +509,8 @@ public class ParameterSetting
             });
             jp.add(applyToModelB);
         }
+			
+		
         setupJp.add(jp, "North");
         jp = new JPanel();
         jp.setLayout(new GridLayout(1, 4));
@@ -4580,7 +4581,34 @@ System.out.println("Print Done");
         }
     }
     
-    
+    void i2tEvaluateResidualPrePulse() throws Exception
+	{
+		if( rfx == null ) 
+		{
+			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('PRE_PULSE')"), 0 );
+			float out = msgData.getFloat();
+			residualI2tPMLabel.setText( ""+out );
+			if( out < 0 )
+				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : con questa impostazione di PM superato il valore di i2t (23e9) giornaliero ammesso",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+    void i2tEvaluateResidualPostPulse() throws Exception
+	{
+		if( rfx != null )
+		{			
+			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('POST_PULSE')"), 0 );
+			float out = msgData.getFloat();
+			residualI2tPMLabel.setText( ""+out );
+			if( out < 0 )
+				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : Superato il valore di i2t (23e9) giornaliero ammesso sessione da SOSPENDERE",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	
+	
     public static void main(String args[])
     {
         ParameterSetting parameterS;
