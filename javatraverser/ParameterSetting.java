@@ -4587,7 +4587,7 @@ System.out.println("Print Done");
 		{
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('PRE_PULSE')"), 0 );
 			float out = msgData.getFloat();
-			residualI2tPMLabel.setText( ""+out );
+			residualI2tPMLabel.setText( "Residual I2t PM = "+out+" A2s" );
 			if( out < 0 )
 				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : con questa impostazione di PM superato il valore di i2t (23e9) giornaliero ammesso",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -4600,7 +4600,7 @@ System.out.println("Print Done");
 		{			
 			Data msgData = rfx.evaluateData( Data.fromExpr("I2t_PM('POST_PULSE')"), 0 );
 			float out = msgData.getFloat();
-			residualI2tPMLabel.setText( ""+out );
+			residualI2tPMLabel.setText( "Residual I2t PM = "+out+" A2s" );
 			if( out < 0 )
 				JOptionPane.showMessageDialog(ParameterSetting.this, "ATTENZIONE : Superato il valore di i2t (23e9) giornaliero ammesso sessione da SOSPENDERE",
                     "Error", JOptionPane.ERROR_MESSAGE);
