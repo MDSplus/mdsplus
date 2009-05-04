@@ -18,6 +18,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 extern void FreeDescrip(struct descriptor *desc);
 extern int TdiData();
 extern int TdiCompile();
+extern int TdiDecompile();
 
 static void report(char *msg)
 {	
@@ -167,11 +168,11 @@ JNIEXPORT jint JNICALL Java_Database_openNew
   (JNIEnv *env, jobject obj)
 {
   int status;
-  jfieldID name_fid, readonly_fid, editable_fid, shot_fid;
+  jfieldID name_fid, shot_fid;
   jclass cls = (*env)->GetObjectClass(env, obj);
   const char *name;
   jobject jname;
-  int is_editable, is_readonly, shot;
+  int shot;
 static char buf[1000];
  
 /* //printf("Parte Open\n");*/
