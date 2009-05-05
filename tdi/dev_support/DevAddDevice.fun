@@ -16,6 +16,7 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
 	return(_stat);
      }
      fun private DevAddPythonDevice(in _path, in _type) {
+        if (getenv("PyLib") == "") abort();
     	_models = MdsDevices();
     	_model = UPCASE(_type)//'\000';
     	for (_idx=0; _idx<size(_models); _idx++, _idx++) if (UPCASE(_models[_idx])==_model) break;
