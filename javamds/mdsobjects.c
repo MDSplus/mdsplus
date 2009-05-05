@@ -78,8 +78,6 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
   EMPTYXD(ca_xd);
   int is_ca = 0;
 
-//printf("DescripToObject\n");
-
 
   if(!desc)
     {
@@ -403,11 +401,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 	                  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Window;");
 					break;   
 				case DTYPE_FUNCTION: cls = (*env)->FindClass(env, "MDSplus/Function"); 
-
-//printf("cls: %x\n", cls);
-
 	                constr = (*env)->GetStaticMethodID(env, cls, "getData", "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Function;");
-//printf("constr: %x\n", constr);
 					break;   
 				case DTYPE_CONGLOM: cls = (*env)->FindClass(env, "MDSplus/Conglom");
 	                constr = (*env)->GetStaticMethodID(env, cls, "getData", "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Conglom;");
@@ -590,7 +584,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	struct descriptor *unitsDscPtr, *helpDscPtr, *validationDscPtr, *errorDscPtr; 
 
     
-//	printf("Parte ObjectTodescrip %x\n", obj);
+//	printf("ObjectTodescrip %x\n", obj);
 	
 	if(!obj)
       {
@@ -1286,24 +1280,19 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree
 	jfieldID ctx1Fid, ctx2Fid;
 	jclass cls;
 	
-	printf("EDIT TREE\n");
 	name = (*env)->GetStringUTFChars(env, jname, 0);
-	printf("%s %d\n", name, shot);
 	if(isNew)
 		status = _TreeOpenNew(&ctx, (char *)name, shot);
 	else
 		status = _TreeOpenEdit(&ctx, (char *)name, shot);
-	printf("status: %d\n", status);
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 	if(!(status & 1))
 	{
 		throwMdsException(env, status);
 		return;
 	}
-	printf("status: %d\n", status);
 	ctx1 = getCtx1(ctx);
 	ctx2 = getCtx2(ctx);
-	printf("%x %x\n", ctx1, ctx2);
     cls = (*env)->GetObjectClass(env, jobj);
 	ctx1Fid = (*env)->GetFieldID(env, cls, "ctx1", "I");
 	ctx2Fid = (*env)->GetFieldID(env, cls, "ctx2", "I");
@@ -1410,7 +1399,6 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 		numNids++;
 	_TreeFindNodeEnd(ctx, &wildCtx);
 
-	//printf("%s\n", MdsGetMsg(status));
 
 	nids = malloc(numNids * sizeof(int));
 	wildCtx = 0;
@@ -1419,9 +1407,6 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 		_TreeFindNodeWild(ctx, (char *)path,&nids[i],&wildCtx, usage);
 	}
 	_TreeFindNodeEnd(ctx, &wildCtx);
-
-printf("TREENODEWILD HA TROVATO %d NODI\n", numNids);
-
 
 	(*env)->ReleaseStringUTFChars(env, jpath, path);
 	jnids = (*env)->NewIntArray(env, numNids);
@@ -1643,6 +1628,7 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
 	wild = (*env)->GetStringUTFChars(env, jwild, 0);
 	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindTagWild(ctx, (char *)wild, &nidOut, &wildCtx)))
 		nTags++;
+	TreeFindTagEnd(&wildCtx);
 
 	(*env)->ReleaseStringUTFChars(env, jwild, wild);
 
@@ -1652,7 +1638,6 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
 	for(i = 0; i < nTags; i++)
 	{
 		(*env)->SetObjectArrayElement(env, jtags, i, (jobject)(*env)->NewStringUTF(env, tagNames[i]));
-		TreeFree(tagNames[i]);
 	}
 
 	return jtags;
