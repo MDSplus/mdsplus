@@ -944,7 +944,7 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        self.__setNode('no_write_model',flag)
+        self.__setNode('nomodel_write',flag)
         return
 
     def setNoWriteShot(self,flag):
@@ -953,7 +953,7 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        self.__setNode('no_write_shot',flag)
+        self.__setNode('noshot_write',flag)
         return
 
     def setOn(self,flag):
