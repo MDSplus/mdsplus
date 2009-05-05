@@ -235,7 +235,7 @@ class Tree(object):
             TreeDeleteNodeInitialize(self)
             nodes=self.getNodeWild(wild)
             for node in nodes:
-                TreeDeleteNode(self,node.nid_number)
+                TreeDeleteNode(self,int(node.nid_number))
             TreeDeleteNodeExecute(self)
         finally:
             Tree.unlock()
