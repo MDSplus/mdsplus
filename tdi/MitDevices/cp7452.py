@@ -1,13 +1,25 @@
-from MDSplus import Device,Data
+from MDSplus import Device,Data,Action,Dispatch,Method
 
 class CP7452(Device):
     """Adlink CP7452 DIO"""
 
-    part_names=(':NODE',':BOARD',':COMMENT','.DIGITAL_OUTS',
-               '.DIGITAL_OUTS:DO0','.DIGITAL_OUTS:DO1','.DIGITAL_OUTS:DO2','.DIGITAL_OUTS:DO3',
-               '.DIGITAL_INS',
-               '.DIGITAL_INS:DI0','.DIGITAL_INS:DI1','.DIGITAL_INS:DI2','.DIGITAL_INS:DI3',
-               ':INIT_ACTION',':STORE_ACTION')
+    parts=[{'path':':NODE','type':'text','options':('noshot_write',)},
+          {'path':':BOARD','type':'numeric','value':1,'options':('no_write_shot',)},
+          {'path':':COMMENT','type':'text'},
+          {'path':'.DIGITAL_OUTS','type':'structure'}]
+    for i in range(4):
+        parts.append({'path':'.DIGITAL_OUTS:DO%d'%(i,),'type':'numeric','value':0,'options':('no_write_shot',)})
+    parts.append({'path':'.DIGITAL_INS','type':'structure'})
+    for i in range(4):
+        parts.append({'path':'.DIGITAL_INS:DI%d'%(i,),'type':'numeric','options':('no_write_model','write_once')})
+    parts.append({'path':':INIT_ACTION','type':'action',
+                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                 'options':('no_write_shot',)})
+    parts.append({'path':':STORE_ACTION','type':'action',
+                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                 'options':('no_write_shot',)})
+    del i
+
 
     def init(self,arg):
         """Initialize digital outputs of CP7452 cpci board.
