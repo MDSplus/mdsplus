@@ -16,6 +16,7 @@ MDSplus.mdsdata.makeData	MDSplus.mdsdata-module.html#makeData
 MDSplus.mdsdata.evaluate	MDSplus.mdsdata-module.html#evaluate
 MDSplus.mdsdata.getDimension	MDSplus.mdsdata-module.html#getDimension
 MDSplus.mdsdevice	MDSplus.mdsdevice-module.html
+MDSplus.mdsdevice.makeData	MDSplus.mdsdata-module.html#makeData
 MDSplus.mdsscalar	MDSplus.mdsscalar-module.html
 MDSplus.mdsscalar.makeData	MDSplus.mdsdata-module.html#makeData
 MDSplus.mdsscalar.getDimension	MDSplus.mdsdata-module.html#getDimension
@@ -4008,6 +4009,7 @@ MDSplus.mdsdata.Data.getLong	MDSplus.mdsdata.Data-class.html#getLong
 MDSplus.treenode.TreeNode.setCompressOnPut	MDSplus.treenode.TreeNode-class.html#setCompressOnPut
 MDSplus.mdsdata.Data.serialize	MDSplus.mdsdata.Data-class.html#serialize
 MDSplus.treenode.TreeNode.restoreContext	MDSplus.treenode.TreeNode-class.html#restoreContext
+MDSplus.mdsdevice.Device.Add	MDSplus.mdsdevice.Device-class.html#Add
 MDSplus.treenode.TreeNode.addNode	MDSplus.treenode.TreeNode-class.html#addNode
 MDSplus.mdsdata.Data.__and__	MDSplus.mdsdata.Data-class.html#__and__
 MDSplus.mdsdata.Data.__float__	MDSplus.mdsdata.Data-class.html#__float__
@@ -4031,7 +4033,6 @@ MDSplus.treenode.TreeNode.getNodeName	MDSplus.treenode.TreeNode-class.html#getNo
 MDSplus.mdsdata.Data.__lshift__	MDSplus.mdsdata.Data-class.html#__lshift__
 MDSplus.treenode.TreeNode.setEssential	MDSplus.treenode.TreeNode-class.html#setEssential
 MDSplus.mdsdata.Data.setError	MDSplus.mdsdata.Data-class.html#setError
-MDSplus.mdsdevice.Device.__fix_part	MDSplus.mdsdevice.Device-class.html#__fix_part
 MDSplus.mdsdata.Data.__eq__	MDSplus.mdsdata.Data-class.html#__eq__
 MDSplus.treenode.TreeNode.getNumMembers	MDSplus.treenode.TreeNode-class.html#getNumMembers
 MDSplus.mdsdata.Data.getDouble	MDSplus.mdsdata.Data-class.html#getDouble
