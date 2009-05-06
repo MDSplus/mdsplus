@@ -987,6 +987,7 @@ mdsip_xio/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
 mdsobjects/cpp/Makefile
+mdsobjects/java/Makefile
 mdsmisc/Makefile
 mdsshr/Makefile 
 mdssql/Makefile
