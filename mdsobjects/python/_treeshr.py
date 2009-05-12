@@ -98,6 +98,8 @@ __TreeGetSegmentLimits=__TreeShr._TreeGetSegmentLimits
 __TreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __TreeGetSegmentInfo=__TreeShr._TreeGetSegmentInfo
 __TreeGetSegmentInfo.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_int)]
+__TreeStartConglomerate=__TreeShr._TreeStartConglomerate
+__TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int]
 
 
 __RTreeShr=_load_library('CacheShr')
@@ -254,7 +256,17 @@ def TreeDoMethod(n,method,arg=None):
         raise TreeException,MdsGetMsg(status)
     return None
 
-    
+def TreeStartConglomerate(tree,num):
+    """Start a conglomerate in a tree."""
+    try:
+        tree.lock()
+        status=__TreeStartConglomerate(tree.ctx,num)
+    finally:
+        tree.unlock()
+    if not (status & 1):
+        raise TreeException,MdsGetMsg(status)
+    return None
+
 def TreeTurnOn(n):
     """Turn on a tree node."""
     try:
