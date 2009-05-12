@@ -3,7 +3,7 @@ from compound import *
 from _treeshr import TreeStartConglomerate
 
 class Device(TreeNode):
-    """Used for device support classes. Provides ORIGINAL_PART_NAME method and allows referencing of subnodes as conglomerate node attributes.
+    """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called part_names
     as a tuple of strings of the node names of the devices members (not including the head node). You can also include a part_dict
@@ -11,14 +11,24 @@ class Device(TreeNode):
     not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
     device with that node as the node in the Device subclass instance. The Device class also supports the part_name and original_part_name
-    attributes which is the same as doing devinstance.PART_NAME(None).
+    attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
 
     Sample usage1::
     
        from MDSplus import Device
 
-       class mydev(Device):
-           part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+       class MYDEV(Device):
+           parts=[{'path':':COMMENT','type':'text'},
+                  {'path':':INIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options':('no_write_shot',)},
+                  {'path':':STORE_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options':('no_write_shot',)},
+                  {'path':'.SETTINGS','type':'structure'},
+                  {'path':'.SETTINGS:KNOB1','type':'numeric'},
+                  {'path':'.SIGNALS','type':'structure'},
+                  {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
 
            def init(self,arg):
                knob1=self.settings_knob1.record
@@ -32,8 +42,18 @@ class Device(TreeNode):
 
        from MDSplus import Device
 
-       class mydev(Device):
-           part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+           parts=[{'path':':COMMENT','type':'text'},
+                  {'path':':INIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                  'options':('no_write_shot',)},
+                  {'path':':STORE_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                  'options':('no_write_shot',)},
+                  {'path':'.SETTINGS','type':'structure'},
+                  {'path':'.SETTINGS:KNOB1','type':'numeric'},
+                  {'path':'.SIGNALS','type':'structure'},
+                  {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
+
            part_dict={'knob1':5,'chan1':7}
 
            def init(self,arg):
@@ -132,6 +152,16 @@ class Device(TreeNode):
             super(Device,self).__setattr__(name,value)
 
     def Add(cls,tree,path):
+        """Used to add a device instance to an MDSplus tree.
+        This method is invoked when a device is added to the tree when using utilities like mdstcl and the traverser.
+        For this to work the device class name (uppercase only) and the package name must be returned in the MdsDevices tdi function.
+        Also the Device subclass must include the parts attribute which is a list or tuple containing one dict instance per subnode of the device.
+        The dict instance should include a 'path' key set to the relative node name path of the subnode. a 'type' key set to the usage string of
+        the subnode and optionally a 'value' key or a 'valueExpr' key containing a value to initialized the node or a string containing python
+        code which when evaluated during the adding of the device after the subnode has been created produces a data item to store in the node.
+        And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
+        on (i.e. write_once).
+        """
         TreeStartConglomerate(tree,len(cls.parts)+1)
         head=tree.addNode(path,'DEVICE')
         head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
