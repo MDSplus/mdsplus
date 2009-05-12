@@ -58,6 +58,16 @@ class Scalar(Data):
 
     value=property(_getValue)
 
+    def __int__(self):
+        """Integer: x.__int__() <==> int(x)
+        @rtype: int"""
+        return self._value.__int__()
+
+    def __long__(self):
+        """Long: x.__long__() <==> long(x)
+        @rtype: int"""
+        return self.__value.__long__()
+
     def _unop(self,op):
         return makeData(getattr(self.value,op)())
 
