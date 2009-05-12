@@ -25,6 +25,9 @@ class CP7452(Device):
         """Initialize digital outputs of CP7452 cpci board.
         Connects to the host and for each of the DIGITAL_OUTS nodes which are turned on, write the value to the digital output.
         """
+        import os
+        from MDSplus import Uint32
+        debug=os.getenv("DEBUG_DEVICES")
         try:
             host=str(self.node.record.data())
         except:
@@ -37,7 +40,9 @@ class CP7452(Device):
             if do_nid.on:
                 try:
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
-                    exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DO%d\\\",\\\"r+\\\"); write(_lun,\\\"%x\\\"); fclose(_lun)")' % (board,i,int(do_nid.record))
+                    exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DO%d\\\",\\\"r+\\\"); write(_lun,\\\"%x\\\"); fclose(_lun)")' % (board,i,int(Uint32(do_nid.record.data()).data()))
+                    if debug:
+                        print exp
                     Data.execute(exp)
                 except Exception,e:
                     print "Error outputing to DO%d\n\t%s" % (i,str(e),)
@@ -47,6 +52,8 @@ class CP7452(Device):
         """Stores the digital input values into the tree.
         Connects to the host and for each of the DIGITAL_INS nodes which are turned on, read the digital input and store the value in the node.
         """
+        import os
+        debug=os.getenv("DEBUG_DEVICES")
         try:
             host=str(self.node.record.data())
         except:
@@ -60,6 +67,8 @@ class CP7452(Device):
                 try:
                     exp='MdsValue("_lun=fopen(\\\"/sys/module/cp7452_drv/parameters/format\\\",\\\"r+\\\"); write(_lun,\\\"1\\\"); fclose(_lun);'
                     exp=exp+'_lun=fopen(\\\"/dev/cp7452.%d/DI%d\\\",\\\"r\\\"); _ans=read(_lun); fclose(_lun),_ans")' % (board,i)
+                    if debug:
+                        print exp
                     value=eval('0x'+str(Data.execute(exp)))
                     di_nid.record=value
                 except Exception,e:
