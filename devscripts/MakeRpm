@@ -16,7 +16,7 @@ version=`devscripts/GetRelease version $tag`
 release=`devscripts/GetRelease release $tag`
 if (test "$XIO" = "")
 then
-    if (test "$GLOBUS_LOCATION" = "")
+    if (test "$GLOBUS_KIT" = "")
 	then
 	globuskit=
 	enableglobus=
