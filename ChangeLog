@@ -1,5 +1,371 @@
-Version 2.2-1
+Version 2.2-2
 
+
+2009-05-13 13:31  twf
+
+	* devscripts/MakeRpm:
+	
+	Use GLOBUS_KIT environment variable to make a globus version
+
+2009-05-12 15:24  twf
+
+	* mdsobjects/python/mdsscalar.py:
+	
+	Change __int__ and __long__ to use numpy behavior not tdi
+
+2009-05-12 15:23  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	Add more documentation
+
+2009-05-12 15:23  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Add TreeAddConglomerate
+
+2009-05-12 14:46  twf
+
+	* tdi/MitDevices/cp7452.py:
+	
+	Make do's unsigned so python will convert to hex correctly
+
+2009-05-06 15:08  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd-pysrc.html, MDSplus.apd.Apd-class.html,
+	MDSplus.apd.BulkFetch-class.html,
+	MDSplus.apd.Dictionary-class.html, MDSplus.apd.List-class.html,
+	MDSplus.compound-module.html, MDSplus.compound-pysrc.html,
+	MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.ident-module.html,
+	MDSplus.ident-pysrc.html, MDSplus.ident.Ident-class.html,
+	MDSplus.mdsarray-module.html, MDSplus.mdsarray-pysrc.html,
+	MDSplus.mdsarray.Array-class.html,
+	MDSplus.mdsarray.Float32Array-class.html,
+	MDSplus.mdsarray.Float64Array-class.html,
+	MDSplus.mdsarray.Int128Array-class.html,
+	MDSplus.mdsarray.Int16Array-class.html,
+	MDSplus.mdsarray.Int32Array-class.html,
+	MDSplus.mdsarray.Int64Array-class.html,
+	MDSplus.mdsarray.Int8Array-class.html,
+	MDSplus.mdsarray.StringArray-class.html,
+	MDSplus.mdsarray.Uint128Array-class.html,
+	MDSplus.mdsarray.Uint16Array-class.html,
+	MDSplus.mdsarray.Uint32Array-class.html,
+	MDSplus.mdsarray.Uint64Array-class.html,
+	MDSplus.mdsarray.Uint8Array-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata-pysrc.html,
+	MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html,
+	MDSplus.mdsdevice-module.html, MDSplus.mdsdevice-pysrc.html,
+	MDSplus.mdsdevice.Device-class.html, MDSplus.mdsscalar-module.html,
+	MDSplus.mdsscalar-pysrc.html, MDSplus.mdsscalar.Float32-class.html,
+	MDSplus.mdsscalar.Float64-class.html,
+	MDSplus.mdsscalar.Int128-class.html,
+	MDSplus.mdsscalar.Int16-class.html,
+	MDSplus.mdsscalar.Int32-class.html,
+	MDSplus.mdsscalar.Int64-class.html,
+	MDSplus.mdsscalar.Int8-class.html,
+	MDSplus.mdsscalar.Scalar-class.html,
+	MDSplus.mdsscalar.String-class.html,
+	MDSplus.mdsscalar.Uint128-class.html,
+	MDSplus.mdsscalar.Uint16-class.html,
+	MDSplus.mdsscalar.Uint32-class.html,
+	MDSplus.mdsscalar.Uint64-class.html,
+	MDSplus.mdsscalar.Uint8-class.html, MDSplus.tree-module.html,
+	MDSplus.tree-pysrc.html, MDSplus.tree.CachedTree-class.html,
+	MDSplus.tree.Tree-class.html, MDSplus.treenode-module.html,
+	MDSplus.treenode-pysrc.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, api-objects.txt,
+	class-tree.html, help.html, identifier-index.html,
+	module-tree.html:
+	
+	New Device class docs
+
+2009-05-06 13:17  twf
+
+	* Makefile.in, configure, configure.in:
+	
+	Add mdsobjects/java
+
+2009-05-05 14:57  twf
+
+	* tdi/dev_support/DevAddDevice.fun:
+	
+	Fix if pylib not defined
+
+2009-05-05 14:53  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	support for add method in device
+
+2009-05-05 14:52  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix set no write model and no write shot
+
+2009-05-05 14:51  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Fix delete node
+
+2009-05-05 14:51  twf
+
+	* tdi/MitDevices/: MitDevices.fun, cp7452.py:
+	
+	put add in python
+
+2009-05-05 14:49  twf
+
+	* tdi/dev_support/DevAddDevice.fun:
+	
+	Support adding python devices using python Add method
+
+2009-05-05 14:48  twf
+
+	* tdi/Py.fun:
+	
+	Return 0 on exception. exception text in public _py_exception
+
+2009-05-05 05:15  manduchi
+
+	* mdsobjects/java/: Makefile.in, TestMdsObjects.java:
+	
+	Java mdsobjects
+
+2009-05-05 05:05  manduchi
+
+	* javamds/: Makefile.in, mdsobjects.c:
+	
+	Support for Java mdsobjects
+
+2009-05-04 16:49  twf
+
+	* xtreeshr/Makefile.in:
+	
+	Use compiler to link to avoid __fixunsdfdi undefined reference
+
+2009-05-04 13:12  manduchi
+
+	* javamds/: JavaTrav.c, MDSPlus_Data.h, MDSplus_CachedTree.h,
+	MDSplus_CachedTreeNode.h, MDSplus_Tree.h, MDSplus_TreeNode.h,
+	javamds.dsp, mdsobjects.c:
+	
+	Added support for java mdsobjects
+
+2009-05-04 13:10  manduchi
+
+	* mdsobjects/java/MDSplus/: Action.java, Apd.java, Array.java,
+	CachedTree.java, CachedTreeNode.java, Call.java, Compound.java,
+	Condition.java, Conglom.java, Data.java, DataStreamConsumer.java,
+	DataStreamProducer.java, Dependency.java, Device.java,
+	Dimension.java, Dispatch.java, Empty.java, Float32.java,
+	Float32Array.java, Float64.java, Float64Array.java, Function.java,
+	Ident.java, Int16.java, Int16Array.java, Int32.java,
+	Int32Array.java, Int64.java, Int64Array.java, Int8.java,
+	Int8Array.java, MdsException.java, Method.java, Procedure.java,
+	Program.java, Range.java, Routine.java, Scalar.java, Signal.java,
+	String.java, StringArray.java, Tree.java, TreeNode.java,
+	TreeNodeArray.java, TreePath.java, Uint16.java, Uint16Array.java,
+	Uint32.java, Uint32Array.java, Uint64.java, Uint64Array.java,
+	Uint8.java, Uint8Array.java, Window.java:
+	
+	First version of Java MDSplus object
+
+2009-05-04 05:07  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Residual I2T
+
+2009-05-04 04:48  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Modifica alla label
+
+2009-05-04 04:44  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Aggiunto check e visualizzazione sul valore di I2t del
+	magnetizzante
+
+2009-04-29 15:59  jas
+
+	* tdi/MitDevices/dtdo32.py:
+	
+	missed a command
+
+2009-04-29 15:16  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding new ao/do 32 devices
+
+2009-04-29 15:11  jas
+
+	* tdi/MitDevices/: __init__.py, dtao32.py, dtdo32.py,
+	dtdo32__add.fun:
+	
+	fix up imports of dtao32, and add dtdo32
+
+2009-04-29 13:29  manduchi
+
+	* javascope/jScope.java:
+	
+	Add jScope argument option -fp <properties file path>
+
+2009-04-28 14:58  twf
+
+	* tdi/MitDevices/cp7452.py:
+	
+	Make it subclass of Device
+
+2009-04-28 14:35  twf
+
+	* mdsobjects/python/: makedoc.sh, mdsdevice.py,
+	doc/MDSplus.apd-module.html, doc/MDSplus.apd-pysrc.html,
+	doc/MDSplus.apd.Apd-class.html,
+	doc/MDSplus.apd.BulkFetch-class.html,
+	doc/MDSplus.apd.Dictionary-class.html,
+	doc/MDSplus.apd.List-class.html, doc/MDSplus.compound-module.html,
+	doc/MDSplus.compound-pysrc.html,
+	doc/MDSplus.compound.Action-class.html,
+	doc/MDSplus.compound.Call-class.html,
+	doc/MDSplus.compound.Compound-class.html,
+	doc/MDSplus.compound.Conglom-class.html,
+	doc/MDSplus.compound.Dependency-class.html,
+	doc/MDSplus.compound.Dimension-class.html,
+	doc/MDSplus.compound.Dispatch-class.html,
+	doc/MDSplus.compound.Function-class.html,
+	doc/MDSplus.compound.MetaClass-class.html,
+	doc/MDSplus.compound.Method-class.html,
+	doc/MDSplus.compound.Procedure-class.html,
+	doc/MDSplus.compound.Program-class.html,
+	doc/MDSplus.compound.Range-class.html,
+	doc/MDSplus.compound.Routine-class.html,
+	doc/MDSplus.compound.Signal-class.html,
+	doc/MDSplus.compound.Window-class.html,
+	doc/MDSplus.ident-module.html, doc/MDSplus.ident-pysrc.html,
+	doc/MDSplus.ident.Ident-class.html,
+	doc/MDSplus.mdsarray-module.html, doc/MDSplus.mdsarray-pysrc.html,
+	doc/MDSplus.mdsarray.Array-class.html,
+	doc/MDSplus.mdsarray.Float32Array-class.html,
+	doc/MDSplus.mdsarray.Float64Array-class.html,
+	doc/MDSplus.mdsarray.Int128Array-class.html,
+	doc/MDSplus.mdsarray.Int16Array-class.html,
+	doc/MDSplus.mdsarray.Int32Array-class.html,
+	doc/MDSplus.mdsarray.Int64Array-class.html,
+	doc/MDSplus.mdsarray.Int8Array-class.html,
+	doc/MDSplus.mdsarray.StringArray-class.html,
+	doc/MDSplus.mdsarray.Uint128Array-class.html,
+	doc/MDSplus.mdsarray.Uint16Array-class.html,
+	doc/MDSplus.mdsarray.Uint32Array-class.html,
+	doc/MDSplus.mdsarray.Uint64Array-class.html,
+	doc/MDSplus.mdsarray.Uint8Array-class.html,
+	doc/MDSplus.mdsdata-module.html, doc/MDSplus.mdsdata-pysrc.html,
+	doc/MDSplus.mdsdata.Data-class.html,
+	doc/MDSplus.mdsdata.EmptyData-class.html,
+	doc/MDSplus.mdsscalar-module.html,
+	doc/MDSplus.mdsscalar-pysrc.html,
+	doc/MDSplus.mdsscalar.Float32-class.html,
+	doc/MDSplus.mdsscalar.Float64-class.html,
+	doc/MDSplus.mdsscalar.Int128-class.html,
+	doc/MDSplus.mdsscalar.Int16-class.html,
+	doc/MDSplus.mdsscalar.Int32-class.html,
+	doc/MDSplus.mdsscalar.Int64-class.html,
+	doc/MDSplus.mdsscalar.Int8-class.html,
+	doc/MDSplus.mdsscalar.Scalar-class.html,
+	doc/MDSplus.mdsscalar.String-class.html,
+	doc/MDSplus.mdsscalar.Uint128-class.html,
+	doc/MDSplus.mdsscalar.Uint16-class.html,
+	doc/MDSplus.mdsscalar.Uint32-class.html,
+	doc/MDSplus.mdsscalar.Uint64-class.html,
+	doc/MDSplus.mdsscalar.Uint8-class.html,
+	doc/MDSplus.tree-module.html, doc/MDSplus.tree-pysrc.html,
+	doc/MDSplus.tree.CachedTree-class.html,
+	doc/MDSplus.tree.Tree-class.html, doc/MDSplus.treenode-module.html,
+	doc/MDSplus.treenode-pysrc.html,
+	doc/MDSplus.treenode.CachedTreeNode-class.html,
+	doc/MDSplus.treenode.TreeNode-class.html,
+	doc/MDSplus.treenode.TreeNodeArray-class.html,
+	doc/MDSplus.treenode.TreePath-class.html, doc/api-objects.txt,
+	doc/class-tree.html, doc/help.html, doc/identifier-index.html,
+	doc/module-tree.html, doc/redirect.html, doc/toc-everything.html,
+	doc/toc.html, tests/__init__.py, doc/MDSplus.mdsdevice-module.html,
+	doc/MDSplus.mdsdevice-pysrc.html,
+	doc/MDSplus.mdsdevice.Device-class.html,
+	doc/toc-MDSplus.mdsdevice-module.html:
+	
+	Add Device documentation
+
+2009-04-28 13:29  twf
+
+	* mdsobjects/python/: __init__.py, mdsdevice.py:
+	
+	Add Device class
+
+2009-04-28 11:40  manduchi
+
+	* javascope/jScopeWaveContainer.java:
+	
+	Fic uncatched exception in signal evalutaion routine
+
+2009-04-24 15:05  jas
+
+	* tdi/MitDevices/: Dt200WriteMaster.py, dt196ao__init.fun,
+	dtao32.py, dtao32__add.fun:
+	
+	support for dtao32
+
+2009-04-23 15:45  twf
+
+	* mdsobjects/python/mdsscalar.py:
+	
+	Only make arrays out of lists, numpy.arrays and Arrays
+
+2009-04-23 14:19  twf
+
+	* mdsobjects/python/mdsscalar.py:
+	
+	Support ScalarType(array) constructor (i.e. Float32([1,2,3,4]))
+
+2009-04-23 11:08  manduchi
+
+	* javadispatcher/: ActionServer.java, MdsActionsMonitor.java,
+	MdsMonitor.java, MdsMonitorEvent.java, MonitorListener.java,
+	jDispatchMonitor.java, jDispatcher.java, jDispatcherIp.java:
+	
+	Update per versionamento dei pulse file di RFX
+
+2009-04-22 14:52  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-1
 
 2009-04-22 14:51  twf
 
