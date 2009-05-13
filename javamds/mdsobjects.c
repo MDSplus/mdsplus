@@ -2193,7 +2193,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
 	FreeDescrip(dataD);
-	(*env)->ReleaseIntArrayElements(env, jtimes, (long *)times, 0);
+	(*env)->ReleaseIntArrayElements(env, jtimes, (jint *)times, 0);
 	if(!(status & 1))
 		throwMdsException(env, status);
 }
