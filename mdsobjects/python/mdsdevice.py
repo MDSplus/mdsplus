@@ -70,15 +70,7 @@ class Device(TreeNode):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
     
-    def __new__(cls,node):
-        """Create class instance. Initialize part_dict class attribute if necessary.
-        @param node: Not used
-        @type node: TreeNode
-        @return: Instance of the device subclass
-        @rtype: Device subclass instance
-        """
-        if cls.__name__ == 'Device':
-            raise TypeError,"Cannot create instances of Device class"
+    def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
                 cls.part_names=list()
@@ -92,6 +84,18 @@ class Device(TreeNode):
                     except:
                         pass
             cls.initialized=True
+    __class_init__=classmethod(__class_init__)
+
+    def __new__(cls,node):
+        """Create class instance. Initialize part_dict class attribute if necessary.
+        @param node: Not used
+        @type node: TreeNode
+        @return: Instance of the device subclass
+        @rtype: Device subclass instance
+        """
+        if cls.__name__ == 'Device':
+            raise TypeError,"Cannot create instances of Device class"
+        cls.__class_init__();
         return super(Device,cls).__new__(cls,node)
 
     def __init__(self,node):
@@ -162,8 +166,10 @@ class Device(TreeNode):
         And finally the dict instance can contain an 'options' key which should contain a list or tuple of strings of node attributes which will be turned
         on (i.e. write_once).
         """
+        cls.__class_init__()
         TreeStartConglomerate(tree,len(cls.parts)+1)
         head=tree.addNode(path,'DEVICE')
+        head=cls(head)
         head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
         for elt in cls.parts:
