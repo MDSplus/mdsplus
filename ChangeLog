@@ -1,6 +1,30 @@
 Version 2.2-2
 
 
+2009-05-13 14:32  twf
+
+	* javamds/mdsobjects.c:
+	
+	Fix call argument cast
+
+2009-05-13 14:10  twf
+
+	* javamds/: MDSPlus_Data.h, MDSplus_Data.h:
+	
+	Rename MDSPlus_Data.h
+
+2009-05-13 13:45  twf
+
+	* mdsobjects/java/Makefile.in:
+	
+	Fix misspelled mdsobjects.jar in install
+
+2009-05-13 13:33  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-2
+
 2009-05-13 13:31  twf
 
 	* devscripts/MakeRpm:
