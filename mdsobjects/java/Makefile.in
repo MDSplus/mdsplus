@@ -85,7 +85,7 @@ install:
                 @MAKEBINDIR@mkdirhier @exec_prefix@/java/classes; \
                 chmod -R 755 @exec_prefix@/java; \
         fi;
-	$(INSTALL) -m 644  @MAKEJAVADIR@classes/mdsonjects.jar @exec_prefix@/java/classes
+	$(INSTALL) -m 644  @MAKEJAVADIR@classes/mdsobjects.jar @exec_prefix@/java/classes
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
