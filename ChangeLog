@@ -1,6 +1,18 @@
 Version 2.2-2
 
 
+2009-05-14 12:14  twf
+
+	* xtreeshr/Makefile.in:
+	
+	Use cflags in link
+
+2009-05-14 11:49  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-2
+
 2009-05-14 11:48  twf
 
 	* xtreeshr/Makefile.in:
