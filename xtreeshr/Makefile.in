@@ -6,7 +6,7 @@ RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@
-LDFLAGS=@LDFLAGS@
+LDFLAGS=@LDFLAGS@ @CFLAGS@
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
