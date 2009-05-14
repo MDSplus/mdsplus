@@ -93,7 +93,7 @@ class DTDO32(Device):
                     times *= clock_rate
                     if len(times) < 2 :
                         raise Exception, "at least 2 times must be specified for channel %d" % (i+1)
-                    self.WriteWaveform(hostname, board, i+1, times)
+                    self.WriteWaveform(hostname, board, i, times)
                 except:
                     print "Zeroing DO waveform channel %d" % (i+1)
         try:
@@ -101,16 +101,21 @@ class DTDO32(Device):
             Dt200WriteMaster(hostboard, 'set.ao32 %d DO_CLK  %s %d %s' % (board, clock_src, clock_div, clock_edge), 1) 
             Dt200WriteMaster(hostboard, 'set.ao32 %d DO_TRG %s %s' % (board, trig_src, trig_edge), 1)
             Dt200WriteMaster(hostboard, 'set.ao32 %d DO_MODE %s' % (board, mode), 1)
-            commit = '0x22' 
-            print "set.ao32.data %d commit %s" % (board, commit)        
-            Dt200WriteMaster(hostboard, 'set.ao32.data %d commit %s' % (board, commit), 1)        
         except:
             raise Exception, "error sending commands to board"
 
         return 1
                         
+    def arm(self,arg):
+        commit = '0x22'
+        try:
+            Dt200WriteMaster(hostboard, 'set.ao32.data %d commit %s' % (board, commit), 1)
+        except:
+            raise Exception, "error sending commit to board"
+
+
     def WriteWaveform(self, host, board, chan, wave):
-        if chan == 1:
+        if chan == 0:
             print "comand is mkdir -p /tmp/%s/do32cpci.%d\n" % (host, board)
             pipe = popen('mkdir -p /tmp/%s/do32cpci.%d' % (host, board));
             pipe.close()
@@ -148,9 +153,9 @@ class DTDO32(Device):
         print cmd
         pipe = popen(cmd)
         pipe.close()
-#        cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/do32cpci.%d/' % (host, board, host, board,)
-#        print cmd
-#        pipe = popen(cmd)
-#        pipe.close()        
+        cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/do32cpci.%d/' % (host, board, host, board,)
+        print cmd
+        pipe = popen(cmd)
+        pipe.close()        
         Dt200WriteMaster(hostboard, '/ffs/unpack_d_waves %s %d' %(host, board), 1)
 
