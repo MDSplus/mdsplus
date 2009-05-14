@@ -324,7 +324,8 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
     status = check(is_numeric ||
 		   (nci->dtype == DTYPE_SLOPE) ||
 		   (nci->dtype == DTYPE_RANGE) ||
-		   (nci->dtype == DTYPE_WITH_UNITS) || is_expression);
+		   (nci->dtype == DTYPE_WITH_UNITS) ||
+		   (nci->dtype == DTYPE_DIMENSION) || is_expression);
     break;
    default:
     status = TreeNORMAL;
