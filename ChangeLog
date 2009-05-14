@@ -1,6 +1,52 @@
 Version 2.2-2
 
 
+2009-05-14 11:48  twf
+
+	* xtreeshr/Makefile.in:
+	
+	Use cflags on link
+
+2009-05-14 09:09  twf
+
+	* tdi/MitDevices/: a12__add.fun, a12py__add.fun:
+	
+	Remove obsolete example fun's
+
+2009-05-14 08:27  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Allow DTYPE_DIMENSION in an axis node
+
+2009-05-14 03:24  manduchi
+
+	* javatraverser/LASER_NDRTSetup.java:
+	
+	Device setup for new neodimium thomshon laser with real time
+	trigger facilities
+
+2009-05-14 03:21  manduchi
+
+	* tdi/RfxDevices/: LASER_NDRT__add.fun, LASER_NDRT__check.fun,
+	LASER_NDRT__dump.fun, LASER_NDRT__init.fun, LASER_NDRT__reset.fun,
+	LASER_NDRT__store.fun, LASER_NDRT__trigger.fun:
+	
+	Routines for new version of thomshon neodimium laser with real time
+	trigger facilities
+
+2009-05-13 16:54  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	Make sure class is initialized before attempting Add
+
+2009-05-13 14:33  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-2
+
 2009-05-13 14:32  twf
 
 	* javamds/mdsobjects.c:
