@@ -75,7 +75,7 @@ all:  @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/mdsobjects.jar
 
 clean:
-	@ $(RM) *.class
+	@ $(RM) MDSplus/*.class
 	@ $(RM) @MAKEJAVADIR@classes/mdsobjects.jar
 
 depend: ; @ :
