@@ -1216,7 +1216,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},
 		{0, DbiEND_OF_LIST, 0, 0}};
-	
+
 	status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
 	{
@@ -1225,9 +1225,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
 	}
 
 	treeCls = (*env)->FindClass(env, "MDSplus/Tree");
-	constr = (*env)->GetStaticMethodID(env, treeCls, "getTree", "(Ljava.lang.String;I)LMDSplus/Tree;");
+	constr = (*env)->GetStaticMethodID(env, treeCls, "getTree", "(Ljava/lang/String;I)LMDSplus/Tree;");
 	args[0].l = (*env)->NewStringUTF(env, name);
 	args[1].i = shot;
+
 	return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 		
@@ -1257,6 +1258,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
 		throwMdsException(env, status);
 		return;
 	}
+	TreeSwitchDbid(ctx);
 	ctx1 = getCtx1(ctx);
 	ctx2 = getCtx2(ctx);
     cls = (*env)->GetObjectClass(env, jobj);
@@ -1291,6 +1293,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree
 		throwMdsException(env, status);
 		return;
 	}
+	TreeSwitchDbid(ctx);
 	ctx1 = getCtx1(ctx);
 	ctx2 = getCtx2(ctx);
     cls = (*env)->GetObjectClass(env, jobj);
