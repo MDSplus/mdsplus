@@ -643,6 +643,11 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 	  	  case DTYPE_L:
 		  case DTYPE_LU:
+			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+			    desc->length = sizeof(int);
+			    desc->pointer = (char *)malloc(desc->length);
+			    *(int *)desc->pointer = (*env)->GetIntField(env, obj, datum_fid);
+			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_NID:
 			    datum_fid = (*env)->GetFieldID(env, cls, "nid", "I");
 			    desc->length = sizeof(int);
