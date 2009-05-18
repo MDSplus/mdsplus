@@ -1,6 +1,6 @@
 public fun LASER_NDRT__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'LASER_NDRT', 21, _nidout);
+    DevAddStart(_path, 'LASER_NDRT', 22, _nidout);
     DevAddNode(_path // ':COMMENT',     'TEXT', *, *, _nid);
     DevAddNode(_path // ':IP_ADDRESS',  'TEXT', *, *, _nid);
     DevAddNode(_path // ':PORT',	'NUMERIC', *, *, _nid);
@@ -22,5 +22,6 @@ public fun LASER_NDRT__add(in _path, out _nidout)
 
     DevAddAction(_path//':INIT_ACTION',  'INIT',  'INIT', 50,'THOMSON_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddAction(_path//':STORE_ACTION', 'STORE', 'STORE', 70,'THOMSON_SERVER', getnci(_path, 'fullpath'), _nid);
+    DevAddAction(_path//':DUMP_ACTION', 'ABNORMAL', 'DUMP', 10,'THOMSON_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
 }

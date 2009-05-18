@@ -26,10 +26,10 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
     private _K_EXT_10_DT	= 1;
     private _K_EXT_RT		= 2;
 
-    private _K_N7_AMP		= 0;
-    private _K_N7_AMP_PH	= 1;
-    private _K_RATIO_DOM_SEC	= 2;
-    private _K_RATIO_DOM_SEC_PH	= 3;
+    private _K_N7_AMP		= 1;
+    private _K_N7_AMP_PH	= 2;
+    private _K_RATIO_DOM_SEC	= 3;
+    private _K_RATIO_DOM_SEC_PH	= 4;
 
 
     private _ASCII_MODE = 0;
@@ -61,7 +61,7 @@ write(*, _port);
     _ip_rt = if_error(data(DevNodeRef(_nid, _N_RT_ADDRESS)), _error = 1);
     if(_error)
     {
-	DevLogErr(_nid, "Missing IP address"); 
+	DevLogErr(_nid, "Missing REAL TIME node IP address"); 
 	abort();
     }
 write(*, _ip_rt);
@@ -207,13 +207,83 @@ write(*, _ip_rt);
 		}
 	}
 	else  if( _trg_mode == _K_EXT_RT )
-    	{
-		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE0" ) ) != "")
+	{
+
+			_cmd = 'MdsConnect("'//_ip_rt//'")';
+			execute(_cmd);
+		
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxAmp", $)', float(_n7_max_amp)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set N7 max amplitude value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinAmp", $)', float(_n7_min_amp)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set N7 min amplitude value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxPhase", $)', float(_n7_max_ph)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set N7 max phase value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinPhase", $)', float(_n7_min_ph)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set N7 max phase value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_max_ratio)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set max ratio value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_min_ratio)) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set min ratio value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			_status = MdsValue('variables->setIntVariable("feedbackDfluTriggerMode", $)', long( _trg_mode_rt )) ;
+			if(_status == 0)
+			{
+				DevLogErr(_nid, "Error set min ratio value");
+				MdsDisconnect();
+				TCPCloseConnection( _sock);
+				abort();
+			}
+
+			MdsDisconnect();
+
+		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE2" ) ) != "")
 		{
 			TCPCloseConnection( _sock);
 			DevLogErr(_nid, _err_msg); 
 			abort();
 		}
+		
 	}
 
 
