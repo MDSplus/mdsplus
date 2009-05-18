@@ -127,7 +127,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_NID : 
 		  cls = (*env)->FindClass(env, "MDSplus/TreeNode");
-		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(I)LMDSplus/TreeNode;");
 		  args[0].i = *(int *)desc->pointer;
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_QU: 
