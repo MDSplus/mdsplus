@@ -8,6 +8,7 @@ package MDSplus;
  */
 public class Tree {
 
+   
 static final int  DbiNAME = 1,
                 DbiSHOTID = 2,	
                 DbiMODIFIED = 3,
@@ -48,12 +49,14 @@ static final int  TreeUSAGE_ANY  = 0,
     
         private int shot;
 	private java.lang.String name;
+        private java.lang.String mode;
         private int ctx1, ctx2;
         
 	public Tree(java.lang.String name, int shot) throws MdsException
         {
             this.shot = shot;
             this.name = name;
+            mode = "NORMAL";
             openTree(name, shot, false);
 	}
 
@@ -62,6 +65,7 @@ static final int  TreeUSAGE_ANY  = 0,
             this.shot = shot;
             this.name = name;
             java.lang.String upMode = mode.toUpperCase();
+            this.mode = upMode;
             if(upMode.equals("NORMAL"))
                 openTree(name, shot, false);
             if(upMode.equals("READONLY"))
@@ -73,7 +77,10 @@ static final int  TreeUSAGE_ANY  = 0,
             
 	}
 
-
+        public java.lang.String toString()
+        {
+            return("Tree("+ name + ", " +shot + ", " + mode + ")");
+        }
 
 	/**
 	 * Set the oassed tree as the active one
@@ -93,7 +100,9 @@ static final int  TreeUSAGE_ANY  = 0,
 	/**
 	 * Returns the currently opened and active tree
 	 */
- 
+        public java.lang.String getName(){return name;}
+        public int getShot() {return shot;}
+        public java.lang.String getMode() { return mode;}
  	public native static Tree getActiveTree() throws MdsException;
         native void openTree(java.lang.String name, int shot, boolean readonly) throws MdsException;
         native void editTree(java.lang.String name, int shot, boolean isNew) throws MdsException;

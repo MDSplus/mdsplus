@@ -644,7 +644,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	  	  case DTYPE_L:
 		  case DTYPE_LU:
 		  case DTYPE_NID:
-			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+			    datum_fid = (*env)->GetFieldID(env, cls, "nid", "I");
 			    desc->length = sizeof(int);
 			    desc->pointer = (char *)malloc(desc->length);
 			    *(int *)desc->pointer = (*env)->GetIntField(env, obj, datum_fid);
@@ -993,13 +993,9 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile
     int status;
     struct descriptor *dataD;
 	
-
 	dataD = ObjectToDescrip(env, obj);
-
-    
-	
 	status = TdiDecompile(dataD, &outXd MDS_END_ARG);
-    if(!(status & 1)) 
+	if(!(status & 1)) 
     {
        error_msg = (char *)MdsGetMsg(status);
        exc = (*env)->FindClass(env, "MDSplus/MdsException");

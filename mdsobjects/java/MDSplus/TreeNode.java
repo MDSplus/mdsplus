@@ -129,10 +129,6 @@ public class TreeNode extends Data
             return new TreeNode(nid,  help,  units, error, validation);
         }
         
-        public int getInt()
-        {
-            return nid;
-        }
         protected void resolveNid() throws MdsException {}
         static native int getNci(int nid, int ctx1, int ctx2, int nciType) throws MdsException;
         static native long getNciLong(int nid, int ctx1, int ctx2, int nciType) throws MdsException;

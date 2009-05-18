@@ -6,9 +6,28 @@ public class TestMdsObjects
     public static void main(java.lang.String args[])
     {
         try {
-            
+            Tree testTree = new Tree("test", 1);
+            TreeNode testNode = testTree.getNode("\\sig_1");
+            //Data testData = testNode.getData();
+            System.out.println(testNode);
+            //Data testData = testNode.getData();
+            //System.out.println(testData);
+            float[] farr = testNode.getFloatArray();
+ /*           for(int i = 0; i < farr.length; i++)
+                System.out.println(farr[i]);
+            if(true) return;
+  */          
             Tree tree = new Tree("trends", -1, "NEW");
+            
+            System.out.println(Tree.getActiveTree());
+            Tree.setActiveTree(testTree);
+            System.out.println(Tree.getActiveTree());
+            
+            
+            
+            
             TreeNode top = tree.getDefault();
+            TreeNode top1 = new TreeNode(0);
             //java.lang.String dec = top.decompile();
             TreeNode memnode = top.addNode("member", "NUMERIC");
             memnode.addTag("m1");
