@@ -392,7 +392,7 @@ class descriptor(_C.Structure):
                                   buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents))
                 return makeArray(a)
             except TypeError,e:
-                raise TypeError,'Arrays of type '+str(mdsdtypes(self.dtype))+' are unsupported'
+                raise TypeError,'Arrays of type %s are unsupported. Error message was: %s' % (str(mdsdtypes(self.dtype),str(e))
             raise Exception,'Unsupported array type'
         if self.dclass == CLASS_APD:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_apd)).contents
