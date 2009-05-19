@@ -56,7 +56,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceField13 = new DeviceField();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("Neodimium Laser RT");
+        setDeviceTitle("Laser Neodymium Yag  Real Time Trigger");
         setDeviceType("LASER_NDRT");
 
         deviceButtons1.setCheckExpressions(new String[] {});
