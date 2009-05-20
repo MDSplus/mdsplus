@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mdstypes.h>
+#include <errno.h>
 
 #include <treeshr.h>
 #include <ncidef.h>
@@ -1092,7 +1093,37 @@ static int doAction(int nid)
 		free(command);
 		free(expression);
 		if(status & 1) status = TdiEvaluate(&xd1, &xd1 MDS_END_ARG);
+		
+		if(status & 1)
+		{
+			struct descriptor *out = xd1.pointer;
+			printf("type   = %d\n",    out->dtype);
+			printf("value = %d error %d \n",  *(int *)out->pointer, errno);
+			
+			if(!xd1.pointer || xd1.pointer->dtype != DTYPE_L) 
+			{
+				status = 0; break;
+			}
+			// Try to distingush between system error success execution  return  0 code
+			// and error execution should be return a code < 255 
+			// and MDSplus essror code which has this convention odd number success
+			// even number error with a value larger than 255
+			status = *(int *)(xd1.pointer->pointer);
+			if( status != 0  & status < 255)
+			{
+				status = 0;
+			}
+			else
+			{
+				if( status == 0 )
+					status = 1;
+			}				
+		}
+		
+		MdsFree1Dx(&xd1, 0);
+		
 		break;
+		
 	case DTYPE_METHOD:
 		method_d_ptr = (struct descriptor_method *)curr_rec_ptr;
 		if(!method_d_ptr->object || !method_d_ptr->method)
@@ -1112,8 +1143,8 @@ static int doAction(int nid)
 			if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method MDS_END_ARG);
 		} else status = 0;
 		break;
+		
 	case DTYPE_ROUTINE:
-
 		routine_d_ptr = (struct descriptor_routine *)curr_rec_ptr;
 		call_d.image = routine_d_ptr->image;
 		call_d.routine = routine_d_ptr->routine;
@@ -1122,11 +1153,42 @@ static int doAction(int nid)
 		for(i = 0; i < routine_d_ptr->ndesc-3; i++)
 			call_d.arguments[i] = routine_d_ptr->arguments[i];
 		status = TdiEvaluate(&call_d, &xd1 MDS_END_ARG);
+
+		if(status & 1)
+		{
+			
+			struct descriptor *out = xd1.pointer;
+			printf("type   = %d\n",    out->dtype);
+			printf("value = %d\n",  *(int *)out->pointer);
+			
+			if(!xd1.pointer || xd1.pointer->dtype != DTYPE_L) 
+			{
+				status = 0; break;
+			}
+			// Try to distingush between system error success execution  return  0 code
+			// and error execution should be return a code < 255 
+			// and MDSplus essror code which has this convention odd number success
+			// even number error with a value larger than 255
+			status = *(int *)(xd1.pointer->pointer);
+			if( status != 0  & status < 255)
+			{
+				status = 0;
+			}
+			else
+			{
+				if( status == 0 )
+					status = 1;
+			}				
+		}
+	
 		MdsFree1Dx(&xd1, 0);
+	
 		break;
+		
 	case DTYPE_FUNCTION:
 		status = TdiData(curr_rec_ptr, &xd MDS_END_ARG);
 		break;
+	
 	case DTYPE_PROCEDURE:
 		procedure_d_ptr = (struct descriptor_procedure *)curr_rec_ptr;
 		language_d_ptr = procedure_d_ptr->language;
@@ -1158,6 +1220,7 @@ static int doAction(int nid)
 			sprintf(command, "echo \'%s,", currPtr);
 		else
 			sprintf(command, "echo \'%s", currPtr);
+		
 		for(i = 0; i < numArgs; i++)
 		{
 			if(!procedure_d_ptr->arguments[i]) break;
@@ -1173,14 +1236,18 @@ static int doAction(int nid)
 		currPtr = MdsDescrToCstring(language_d_ptr);
 		sprintf(&command[strlen(command)], "\' | %s", currPtr);
 
-		printf("%s\n", command);
-		system(command);
+		printf("Command : %s\n", command);
+		status = system( command );
+		//
+		if( status != 0 )
+			status = 0;
+		else
+			status = 1;			
+		printf("Return status : %d \n", status, errno);
+		
 		free(command);
 		free(decArgs);
-
-
 		break;
-
 
 		default: status = 0;
 	}
@@ -1199,7 +1266,6 @@ JNIEXPORT void JNICALL Java_Database_doAction
 	nid = (*env)->GetIntField(env, jnid, nid_fid);
 	status = doAction(nid);
 	if(!(status & 1))
-
 		RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
