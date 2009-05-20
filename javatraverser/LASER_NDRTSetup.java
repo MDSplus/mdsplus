@@ -61,7 +61,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "dump", "store"});
+        deviceButtons1.setMethods(new String[] {"init", "dump", "pulse", "store"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(8, 0));
@@ -123,6 +123,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceTable1.setNumRows(1);
         deviceTable1.setOffsetNid(9);
         deviceTable1.setPreferredColumnWidth(20);
+		deviceTable1.setUseExpressions(true);
         deviceTable1.setRowNames(new String[] {"Delay_Pulse"});
         jPanel5.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
