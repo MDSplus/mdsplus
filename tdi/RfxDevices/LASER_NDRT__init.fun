@@ -1,6 +1,6 @@
 public fun LASER_NDRT__init(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 21;
+    private _K_CONG_NODES = 23;
 
     private _N_HEAD		= 0;
     private _N_COMMENT		= 1;
@@ -33,6 +33,8 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
 
 
     private _ASCII_MODE = 0;
+	private _MIN_DT = 0.025;
+	
 
 write(*, "LASER Neodimium");
 
@@ -78,16 +80,22 @@ write(*, _ip_rt);
 	    abort();
     	}
 
-	write(*, _n_pulses);
+		write(*, _n_pulses);
 
-    	_delay_pulse = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
+    	_delay_pulses = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
     	if(_error)
     	{
-	    DevLogErr(_nid, "Missing delay between pulse");
-	    abort();
+			DevLogErr(_nid, "Missing delay between pulse");
+			abort();
     	}
+		
+		if( _delay_pulses[0] < _MIN_DT )
+		{
+			_delay_pulses = [ _MIN_DT, zero(9) ];
+			DevPut( _nid, _N_DELAY_PULSE, _delay_pulses );
+		}
 
-	write(*, _delay_pulse );
+		write(*, _delay_pulses );
 
 
     } 
@@ -97,10 +105,32 @@ write(*, _ip_rt);
     	_delay_pulses = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), _error = 1);
     	if( _error || size( _delay_pulses ) < 10 )
     	{
-	    DevLogErr(_nid, "Must be define 10 delay between pulse");
-	    abort();
+			DevLogErr(_nid, "Must be defined 10 delay values");
+			abort();
     	}
-	write(*, _delay_pulse );
+		
+		_checked_delay = [];
+		_to_save = 0;
+		for( _i = 0; _i < size( _delay_pulses ) ; _i++)
+		{
+			if( _delay_pulses[ _i ] < _MIN_DT )
+			{
+				_checked_delay = [ _checked_delay , _MIN_DT ];
+				_to_save = 1;
+			}
+			else
+			{
+				_checked_delay = [ _checked_delay , _delay_pulses[ _i ] ];
+			}
+		}
+		
+		if( _to_save )
+		{
+			_delay_pulses = _checked_delay;
+			DevPut( _nid, _N_DELAY_PULSE, _delay_pulses );			
+		}
+		
+		write(*, _delay_pulses );
 
     } 
     else if( _trg_mode == _K_EXT_RT ) 
@@ -142,7 +172,7 @@ write(*, _ip_rt);
 	    abort();
     	}
 
-    	_min_ratio = if_error(data(DevNodeRef(_nid, _N_MAX_RATIO)), _error = 1);
+    	_min_ratio = if_error(data(DevNodeRef(_nid, _N_MIN_RATIO)), _error = 1);
     	if(_error  )
     	{
 	    DevLogErr(_nid, "Missing min ratio value for trigger evaluation");
@@ -186,7 +216,7 @@ write(*, _ip_rt);
 	if( _trg_mode == _K_EXT_DT )
 	{
 
-		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE0 "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulse))) ) != "")
+		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE_0 "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulses[0]))) ) != "")
 		{
 			TCPCloseConnection( _sock);
 			DevLogErr(_nid, _err_msg); 
@@ -197,9 +227,10 @@ write(*, _ip_rt);
     	{
 		_delta="";
 		for( _i = 0; _i < 10; _i++)
+		{
 		   _delta = _delta//" "//trim(adjustl(_delay_pulses[ _i ]));
-
-		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE1 "//_delta ) ) != "")
+		}
+		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE_1 "//_delta ) ) != "")
 		{
 			TCPCloseConnection( _sock);
 			DevLogErr(_nid, _err_msg); 
@@ -257,7 +288,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_min_ratio)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinRatio", $)', float(_min_ratio)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set min ratio value");
@@ -277,12 +308,13 @@ write(*, _ip_rt);
 
 			MdsDisconnect();
 
-		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE2" ) ) != "")
+		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE_2" ) ) != "")
 		{
 			TCPCloseConnection( _sock);
 			DevLogErr(_nid, _err_msg); 
 			abort();
 		}
+		
 		
 	}
 

@@ -1,4 +1,4 @@
-public fun LASER_ND__store(as_is _nid, optional _method)
+public fun LASER_NDRT__store(as_is _nid, optional _method)
 {
     private _K_CONG_NODES = 21;
 

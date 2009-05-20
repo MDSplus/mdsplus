@@ -26,10 +26,10 @@ public fun LASER_NDRT__check(as_is _nid, optional _method)
     private _K_EXT_10_DT	= 1;
     private _K_EXT_RT		= 2;
 
-    private _K_N7_AMP		= 0;
-    private _K_N7_AMP_PH	= 1;
-    private _K_RATIO_DOM_SEC	= 2;
-    private _K_RATIO_DOM_SEC_PH	= 3;
+    private _K_N7_AMP		= 1;
+    private _K_N7_AMP_PH	= 2;
+    private _K_RATIO_DOM_SEC	= 3;
+    private _K_RATIO_DOM_SEC_PH	= 4;
 
 
     private _ASCII_MODE = 0;
