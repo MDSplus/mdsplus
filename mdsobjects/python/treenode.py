@@ -944,7 +944,7 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        self.__setNode('nomodel_write',flag)
+        self.__setNode('model_write',not flag)
         return
 
     def setNoWriteShot(self,flag):
@@ -953,7 +953,7 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        self.__setNode('noshot_write',flag)
+        self.__setNode('shot_write',not flag)
         return
 
     def setOn(self,flag):
@@ -1058,6 +1058,137 @@ class TreeNodeArray(Data):
 
     def restoreContext(self):
         self.tree.restoreContext()
+
+    def getPath(self):
+        """Return StringArray of node paths
+        @return: Node names
+        @rtype: StringArray
+        """
+        return self.path
+
+    def getFullPath(self):
+        """Return StringArray of full node paths
+        @return: Full node paths
+        @rtype: StringArray
+        """
+        return self.fullpath
+
+    def getNid(self):
+        """Return nid numbers
+        @return: nid numbers
+        @rtype: Int32Array
+        """
+        return self.nids
+
+    def isOn(self):
+        """Return bool array
+        @return: true if node is on
+        @rtype: Int8Array
+        """
+        return self.on
+
+    def setOn(self,flag):
+        """Turn nodes on or off
+        @param flag: True to turn nodes on, False to turn them off
+        @type flag: Bool
+        @rtype: None
+        """
+        for nid in self:
+            nid.setOn(flag)
+
+    def getLength(self):
+        """Return data lengths
+        @return: Array of data lengths
+        @rtype: Int32Array
+        """
+        return self.length
+
+    def getCompressedLength(self):
+        """Return compressed data lengths
+        @return: Array of compressed data lengths
+        @rtype: Int32Array
+        """
+        return self.rlength
+
+    def isSetup(self):
+        """Return array of bool
+        @return: True if setup information
+        @rtype: Uint8Array
+        """
+        return self.setup
+
+    def isWriteOnce(self):
+        """Return array of bool
+        @return: True if node is write once
+        @rtype: Uint8Array
+        """
+        return self.write_once
+    
+
+    def setWriteOnce(self,flag):
+        """Set nodes write once
+        @rtype: None
+        """
+        for nid in self:
+            nid.setWriteOnce(flag)
+
+    def isCompressOnPut(self):
+        """Is nodes set to compress on put
+        @return: state of compress on put flags
+        @rtype: Uint8Array
+        """
+        return self.compress_on_put
+
+    def setCompressOnPut(self,flag):
+        """Set compress on put flag
+        @param flag: True if compress on put, False if not
+        @type flag: bool
+        """
+        for nid in self:
+            nid.setCompressOnPut(flag)
+
+    def isNoWriteModel(self):
+        """True if nodes set to no write model
+        @return: True if nodes set to no write model mode
+        @rtype: Uint8Array
+        """
+        return self.no_write_model
+
+    def setNoWriteModel(self,flag):
+        """Set no write model flag
+        @param flag: True to disallow writing to model
+        @type flag: bool
+        """
+        for nid in self:
+            nid.setNoWriteModel(flag)
+
+    def isNoWriteShot(self):
+        """True if nodes are set no write shot
+        @return: 1 of set no write shot
+        @rtype: Uint8Array()
+        """
+        return self.no_write_shot
+
+    def setNoWriteShot(self,flag):
+        """set no write shot flags
+        @param flag: True if setting no write shot
+        @type flag: bool
+        """
+        for nid in self:
+            nid.setNoWriteShot(flag)
+
+    def getUsage(self):
+        """Get usage of nodes
+        @return: Usage
+        @rtype: StringArray
+        """
+        from mdsarray import makeArray
+        a=list()
+        for nid in self:
+            a.append(str(nid.usage))
+        return makeArray(a)
+
+    
 
     def __getattr__(self,name):
         try:
