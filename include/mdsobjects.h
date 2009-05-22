@@ -322,6 +322,14 @@ protected:
 			validation = inValidation;
 			inValidation->refCount++;
 		}
+		friend ostream & operator << (ostream &outStream, Data data)
+		{
+		    return outStream << data.decompile();
+		}
+		friend ostream & operator << (ostream &outStream, Data *data)
+		{
+		    return outStream << data->decompile();
+		}
 	};
 
 
@@ -844,7 +852,7 @@ protected:
 	};
 
 /////////////////////////COMPOUND DATA//////////////////////////////////
-	class Compound: public Data
+	class EXPORT Compound: public Data
 	{
 	protected:
 		int length;
@@ -1415,7 +1423,7 @@ protected:
 	};
 
 /////////////////////APD///////////////////////
-	class Apd: public Data
+	class EXPORT Apd: public Data
 	{
 	protected:
 		int nDescs;
@@ -1575,9 +1583,7 @@ public:
 
 		void doMethod(char *method);
 		bool isSetup();
-
 		bool isWriteOnce();
-
 		void setWriteOnce(bool flag);
 
 		bool isCompressOnPut();
@@ -1614,7 +1620,7 @@ public:
 
 		int getConglomerateElt();
 		int getNumElts();
-		TreeNodeArray *getConglomerateNids();
+		TreeNodeArray *getConglomerateNodes();
 
 		int getDepth();
 		bool containsVersions();
@@ -1632,7 +1638,7 @@ public:
 		void beginTimestampedSegment(Array *initData);
 		void putTimestampedSegment(Array *data, Int64Array *times);
 
-		void putRow(Data *data, Int64 *time);
+		void putRow(Data *data, Int64 *time, int size = 1024);
 
 		void acceptSegment(Array *data, Data *start, Data *end, Data *times);
 		void acceptRow(Data *data, _int64 time, bool isLast);
@@ -1654,7 +1660,7 @@ public:
 
 
 /////////////////End Class TreeTreeNode///////////////
-	class TreePath : public TreeNode
+	class EXPORT TreePath : public TreeNode
 	{
 		int length;
 		char *ptr;
@@ -1718,15 +1724,13 @@ public:
 		Int32Array *getLength();
 		Int32Array *getCompressedLength();
 		StringArray *getUsage();
+		int getNumNodes() { return numNodes;}
 	};
 
 
 	
 	
 ////////////////Class Tree/////////////////////////////////
-
-extern "C" void *TreeSaveContext();
-extern "C" void TreeRestoreContext(void *ctx);
 
 
 	class EXPORT Tree
