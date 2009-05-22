@@ -68,27 +68,53 @@
 </pre>
 
 <hr />
-<p>Used for device support classes. Provides ORIGINAL_PART_NAME method 
-  and allows referencing of subnodes as conglomerate node attributes.</p>
+<p>Used for device support classes. Provides ORIGINAL_PART_NAME, 
+  PART_NAME and Add methods and allows referencing of subnodes as 
+  conglomerate node attributes.</p>
   <p>Use this class as a superclass for device support classes. When 
   creating a device support class include a class attribute called 
-  part_names as a tuple of strings of the node names of the devices members
-  (not including the head node). You can also include a part_dict class 
-  attribute consisting of a dict() instance whose keys are attribute names 
-  and whose values are nid offsets. If you do not provide a part_dict 
-  attribute then one will be created from the part_names attribute where 
-  the part names are converted to lowercase and the colons and periods are 
-  replaced with underscores. Referencing a part name will return another 
-  instance of the same device with that node as the node in the Device 
-  subclass instance. The Device class also supports the part_name and 
-  original_part_name attributes which is the same as doing 
-  devinstance.PART_NAME(None).</p>
+  &quot;parts&quot; which describe the subnodes of your device 
+  implementation. The parts attribute should be a list or tuple of dict 
+  objects where each dict is a description of each subnode. The dict object
+  should include a minimum of a 'path' key whose value is the relative path
+  of the node (be sure to include the leading period or colon) and a 'type'
+  key whose value is the usage type of the node. In addition you may 
+  optionally specify a 'value' key whose value is the actual value to store
+  into the node when it is first added in the tree. Instead of a 'value' 
+  key, you can provide a 'valueExpr' key whose value is a string which is 
+  python code to be evaluated before writing the result into the node. Use 
+  a valueExpr when you need to include references to other nodes in the 
+  device. Lastly the dict instance may contain an 'options' key whose 
+  values are node options specified as a tuple of strings. Note if you only
+  specify one option include a trailing comma in the tuple.The 
+  &quot;parts&quot; attribute is used to implement the Add and PART_NAME 
+  and ORIGNAL_PART_NAME methods of the subclass.</p>
+  <p>You can also include a part_dict class attribute consisting of a 
+  dict() instance whose keys are attribute names and whose values are nid 
+  offsets. If you do not provide a part_dict attribute then one will be 
+  created from the part_names attribute where the part names are converted 
+  to lowercase and the colons and periods are replaced with underscores. 
+  Referencing a part name will return another instance of the same device 
+  with that node as the node in the Device subclass instance. The Device 
+  class also supports the part_name and original_part_name attributes which
+  is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass 
+  names MUST BE UPPERCASE!</p>
   <p>Sample usage1:</p>
 <pre class="literalblock">
   from MDSplus import Device
 
-  class mydev(Device):
-      part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+  class MYDEV(Device):
+      parts=[{'path':':COMMENT','type':'text'},
+             {'path':':INIT_ACTION','type':'action',
+             'valueExpr':&quot;Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))&quot;,
+             'options':('no_write_shot',)},
+             {'path':':STORE_ACTION','type':'action',
+             'valueExpr':&quot;Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))&quot;,
+             'options':('no_write_shot',)},
+             {'path':'.SETTINGS','type':'structure'},
+             {'path':'.SETTINGS:KNOB1','type':'numeric'},
+             {'path':'.SIGNALS','type':'structure'},
+             {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
 
       def init(self,arg):
           knob1=self.settings_knob1.record
@@ -102,8 +128,18 @@
 <pre class="literalblock">
   from MDSplus import Device
 
-  class mydev(Device):
-      part_names=(':COMMENT',':INIT_ACTION',':STORE_ACTION','.SETTINGS','.SETTINGS:KNOB1','.SIGNALS','.SIGNALS:CHANNEL_1')
+      parts=[{'path':':COMMENT','type':'text'},
+             {'path':':INIT_ACTION','type':'action',
+             'valueExpr':&quot;Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))&quot;,
+             'options':('no_write_shot',)},
+             {'path':':STORE_ACTION','type':'action',
+             'valueExpr':&quot;Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))&quot;,
+             'options':('no_write_shot',)},
+             {'path':'.SETTINGS','type':'structure'},
+             {'path':'.SETTINGS:KNOB1','type':'numeric'},
+             {'path':'.SIGNALS','type':'structure'},
+             {'path':'.SIGNALS:CHANNEL_1','type':'signal','options':('no_write_model','write_once')}]
+
       part_dict={'knob1':5,'chan1':7}
 
       def init(self,arg):
@@ -398,9 +434,26 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="Add"></a><span class="summary-sig-name">Add</span>(<span class="summary-sig-arg">cls</span>,
+          <td><span class="summary-sig"><a name="__class_init__"></a><span class="summary-sig-name">__class_init__</span>(<span class="summary-sig-arg">cls</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.__class_init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="MDSplus.mdsdevice.Device-class.html#Add" class="summary-sig-name">Add</a>(<span class="summary-sig-arg">cls</span>,
         <span class="summary-sig-arg">tree</span>,
-        <span class="summary-sig-arg">path</span>)</span></td>
+        <span class="summary-sig-arg">path</span>)</span><br />
+      Used to add a device instance to an MDSplus tree.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.Add">source&nbsp;code</a></span>
             
@@ -679,6 +732,42 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="Add"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">Add</span>(<span class="sig-arg">cls</span>,
+        <span class="sig-arg">tree</span>,
+        <span class="sig-arg">path</span>)</span>
+    <br /><em class="fname">Class Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="MDSplus.mdsdevice-pysrc.html#Device.Add">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Used to add a device instance to an MDSplus tree. This method is 
+  invoked when a device is added to the tree when using utilities like 
+  mdstcl and the traverser. For this to work the device class name 
+  (uppercase only) and the package name must be returned in the MdsDevices 
+  tdi function. Also the Device subclass must include the parts attribute 
+  which is a list or tuple containing one dict instance per subnode of the 
+  device. The dict instance should include a 'path' key set to the relative
+  node name path of the subnode. a 'type' key set to the usage string of 
+  the subnode and optionally a 'value' key or a 'valueExpr' key containing 
+  a value to initialized the node or a string containing python code which 
+  when evaluated during the adding of the device after the subnode has been
+  created produces a data item to store in the node. And finally the dict 
+  instance can contain an 'options' key which should contain a list or 
+  tuple of strings of node attributes which will be turned on (i.e. 
+  write_once).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -708,7 +797,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed May  6 15:08:20 2009
+    Generated by Epydoc 3.0.1 on Fri May 22 17:02:26 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
