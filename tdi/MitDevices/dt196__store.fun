@@ -132,7 +132,12 @@ public fun dt196__store(as_is _nid, optional _method)
         }
         _status = DevPutSignalNoBounds(_chan_nid, _offset, _coeff, _data, _dim);
         if(!(_status&1)) 
-           write(*, "DT196 Error writing channel "//getnci(_chan_nid, "fullpath")//"\n\t to shot "//string($shot)//"\n/t Status is "//string(_status)//" - "//getmsg(_status);
+           write(*, "DT196 Error writing channel "//
+                    getnci(_chan_nid, "fullpath")//
+                    "\n\t to shot "//string($shot)//
+                    "\n/t Status is "//string(_status)//
+                    " - "//
+                    getmsg(_status));
       }
     }
   }
