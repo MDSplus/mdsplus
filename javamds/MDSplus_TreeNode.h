@@ -379,7 +379,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jboolean, jint);
 
 /*
  * Class:     MDSplus_TreeNode
@@ -387,7 +387,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
  * Signature: (IIILMDSplus/Data;JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jint, jboolean, jint);
 
 /*
  * Class:     MDSplus_TreeNode

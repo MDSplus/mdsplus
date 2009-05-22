@@ -549,28 +549,34 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
       descs_fid,
       opcode_fid,
       dtype_fid,
-      dclass_fid;
-    static DESCRIPTOR_A(template_array, 0, 0, 0, 0);
-    struct descriptor_a *array_d;
+      dclass_fid, 
+	  dims_fid;
+
+	static DESCRIPTOR_A_COEFF(template_array, 0, 0, 0, (unsigned char)255, 0); 
+	ARRAY_COEFF(char, 255) *array_d;
+    static DESCRIPTOR_A(template_apd, 0, 0, 0, 0);
+    struct descriptor_a *apd_d;
+    //struct descriptor_a *array_d;
     static DESCRIPTOR_R(template_rec, 0, 1);
     struct descriptor_r *record_d;
     int i,
       ndescs,
       opcode,
       dtype,
-      dclass;
+      dclass,
+	  nDims;
     jobject jdescs;
     jsize length;
     jbyteArray jbytes;
     jshortArray jshorts;
-    jintArray jints;
+    jintArray jints, jDims;
     jlongArray jlongs;
     jfloatArray jfloats;
     jdoubleArray jdoubles;
 	jobjectArray jobjects;
     jbyte *bytes;
     jshort *shorts;
-    jint *ints;
+    jint *ints, *dims;
     jlong *longs;
     jfloat *floats;
     jdouble *doubles;
@@ -722,9 +728,18 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		}
 		break;
       case CLASS_A:
-		array_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
-		memcpy(array_d, &template_array, sizeof(struct descriptor_a));
+		array_d = malloc(sizeof(template_array));
+		memcpy(array_d, &template_array, sizeof(template_array));
 		array_d->dtype = dtype;
+		dims_fid = (*env)->GetFieldID(env, cls, "dims", "[I");
+		jDims = (*env)->GetObjectField(env, obj, dims_fid);
+		nDims = (*env)->GetArrayLength(env, jDims);
+		dims = (*env)->GetIntArrayElements(env, jDims,0);
+		array_d->dimct = nDims;
+		for(i = 0; i < nDims && i < 255; i++)
+			array_d->m[i] = dims[i];
+		(*env)->ReleaseIntArrayElements(env, jDims, dims, 0);
+
 		switch(dtype) {
 		  case DTYPE_B:
 		  case DTYPE_BU:
@@ -881,16 +896,16 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
         jdescs = (*env)->GetObjectField(env, obj, descs_fid);
 		ndescs = (*env)->GetArrayLength(env, jdescs);
-		array_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
-		memcpy(array_d, &template_array, sizeof(struct descriptor_a));
-		array_d->dtype = dtype;
-		array_d->class = CLASS_APD;
-		array_d->length = sizeof(struct descriptor *);
-		array_d->arsize = array_d->length * ndescs;
-		array_d->pointer = (char *)malloc(sizeof(void *) * ndescs);
+		apd_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
+		memcpy(apd_d, &template_apd, sizeof(struct descriptor_a));
+		apd_d->dtype = dtype;
+		apd_d->class = CLASS_APD;
+		apd_d->length = sizeof(struct descriptor *);
+		apd_d->arsize = apd_d->length * ndescs;
+		apd_d->pointer = (char *)malloc(sizeof(void *) * ndescs);
 		for(i = 0; i < ndescs; i++)
-		 ((struct descriptor **)(array_d->pointer))[i] = ObjectToDescrip(env,(*env)->GetObjectArrayElement(env,jdescs, i));
-		return completeDescr((struct descriptor *)array_d, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
+		 ((struct descriptor **)(apd_d->pointer))[i] = ObjectToDescrip(env,(*env)->GetObjectArrayElement(env,jdescs, i));
+		return completeDescr((struct descriptor *)apd_d, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 	   default:
 			printf("\nUnsupported class: %d\n", dclass);
     }
@@ -2088,7 +2103,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
 
 	FreeDescrip(startD);
 	FreeDescrip(endD);
-	FreeDescrip(endD);
+	FreeDescrip(dimD);
 	FreeDescrip(dataD);
 	if(!(status & 1))
 		throwMdsException(env, status);
@@ -2179,25 +2194,22 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes, jboolean isCached, jint policy)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlong jtime, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
-	_int64 *times;
-	int nTimes;
-
+	_int64 time;
+	
+	time = jtime;
 	dataD = ObjectToDescrip(env, jdata);
-	times =  (_int64 *)(*env)->GetIntArrayElements(env, jtimes,0);
-	nTimes = (*env)->GetArrayLength(env, jtimes);
 
 	if(isCached)
-		status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+		status = _RTreePutTimestampedSegment(ctx, nid, &time, (struct descriptor_a *)dataD, policy);
 	else
-		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
+		status = _TreePutTimestampedSegment(ctx, nid, &time, (struct descriptor_a *)dataD);
 
 	FreeDescrip(dataD);
-	(*env)->ReleaseIntArrayElements(env, jtimes, (jint *)times, 0);
 	if(!(status & 1))
 		throwMdsException(env, status);
 }
@@ -2212,7 +2224,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
  * Signature: (IIILMDSplus/Data;JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jrow, jlong jtime, jboolean isCached, jint policy)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jrow, jlong jtime, jint size, jboolean isCached, jint policy)
 
 {
 	struct descriptor *rowD;
@@ -2221,9 +2233,9 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
 
 	rowD = ObjectToDescrip(env, jrow);
 	if(isCached)
-		status = _RTreePutRow(ctx, nid, PUTROW_BUFSIZE, (_int64*)&jtime, (struct descriptor_a *)rowD, policy);
+		status = _RTreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD, policy);
 	else
-		status = _TreePutRow(ctx, nid, PUTROW_BUFSIZE, (_int64*)&jtime, (struct descriptor_a *)rowD);
+		status = _TreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD);
 	
 	FreeDescrip(rowD);
 	if(!(status & 1))
