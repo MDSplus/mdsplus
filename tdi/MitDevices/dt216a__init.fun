@@ -72,7 +72,7 @@ public fun DT216A__INIT(as_is _nid, optional _method)
     MdsValue('Dt200WriteMaster($, $, 1)', _board, 'set.vin '//_chan+1//' '//_vin);
   }
 
-  MdsValue('Dt216Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
+  MdsValue('Dt216AInit($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
   
   return(1);
 }
