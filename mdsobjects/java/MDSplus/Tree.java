@@ -178,8 +178,10 @@ static final int  TreeUSAGE_ANY  = 0,
         {
             return new TreeNodeArray(getWild(ctx1, ctx2, path, usage), this);
 	}
-
-
+	public TreeNodeArray getNodeWild(java.lang.String path, java.lang.String usage) throws MdsException
+        {
+            return getNodeWild(path, convertUsage(usage));
+	}
 	/**
 	 * Get the TreeNode for the default node.
 	 */

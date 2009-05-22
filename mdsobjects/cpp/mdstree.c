@@ -56,7 +56,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
  int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
  int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
  int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
- int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
+ int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size, int isCached, int isLast, int cachePolicy);
 
 
   int getTreeData(void *dbid, int nid, void **data, int isCached)
@@ -152,7 +152,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 }
 
 #define PUTROW_BUFSIZE 1000
- int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy)
+ int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size, int isCached, int isLast, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -160,12 +160,12 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 	if(isCached)
 	{
 		if(cachePolicy == WRITE_BUFFER)
-			status = _RTreePutRow(dbid, nid, PUTROW_BUFSIZE, time, (struct descriptor_a *)dataXd->pointer, (isLast)?WRITE_LAST:WRITE_BUFFER);
+			status = _RTreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer, (isLast)?WRITE_LAST:WRITE_BUFFER);
 		else
-			status = _RTreePutRow(dbid, nid, PUTROW_BUFSIZE, time, (struct descriptor_a *)dataXd->pointer, cachePolicy);
+			status = _RTreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer, cachePolicy);
 	}
 	else
-		status = _TreePutRow(dbid, nid, PUTROW_BUFSIZE, time, (struct descriptor_a *)dataXd->pointer);
+		status = _TreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer);
 	freeDsc(dataXd);
 	return status;
 }
@@ -292,7 +292,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 	int status;
 
 	if(isCached)
-		status = _RTreePutTimestampedSegment(dbid, nid, (struct descriptor_a *)dataXd->pointer, times, cachePolicy);
+		status = _RTreePutTimestampedSegment(dbid, nid, times, (struct descriptor_a *)dataXd->pointer, cachePolicy);
 	else
 		status = _TreePutTimestampedSegment(dbid, nid, times, (struct descriptor_a *)dataXd->pointer);
 	freeDsc(dataXd);

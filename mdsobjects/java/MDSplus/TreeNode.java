@@ -147,8 +147,8 @@ public class TreeNode extends Data
         static native void putSegment(int nid, int ctx1, int ctx2, Data data, int  offset, boolean isCached, int policy)throws MdsException;
         static native void updateSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, boolean isCached, int policy)throws MdsException;
         static native void beginTimestampedSegment(int nid, int ctx1, int ctx2,Data initData, boolean isCached, int policy)throws MdsException;
-        static native void putTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long[]times, boolean isCached, int policy)throws MdsException;
-        static native void putRow(int nid, int ctx1, int ctx2, Data row, long time, boolean isCached, int policy)throws MdsException;
+        static native void putTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long time, boolean isCached, int policy)throws MdsException;
+        static native void putRow(int nid, int ctx1, int ctx2, Data row, long time, int size, boolean isCached, int policy)throws MdsException;
         static native int getNumSegments(int nid, int ctx1, int ctx2, boolean isCached, int policy)throws MdsException;
         static native void acceptSegment(int nid, int ctx1, int ctx2, Data seg, Data time, boolean isCached, int policy)throws MdsException;
         static native void acceptRow(int nid, int ctx1, int ctx2, Data seg, long time, boolean isCached, int policy)throws MdsException;
@@ -724,10 +724,10 @@ public class TreeNode extends Data
 	 * @param data
 	 * @param times
 	 */
-	public void putTimestampedSegment(Array data, Int64Array times) throws MdsException
+	public void putTimestampedSegment(Data data, long time) throws MdsException
         {
             resolveNid();
-            putTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, times.getLongArray(), isCached(), getCachePolicy());
+            putTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, time, isCached(), getCachePolicy());
 	}
 
 	/**
@@ -736,12 +736,19 @@ public class TreeNode extends Data
 	 * @param row
 	 * @param time
 	 */
-	public void putRow(Data row, long time) throws MdsException
+        
+	public void putRow(Data row, long time, int size) throws MdsException
         {
             resolveNid();
-            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, isCached(), getCachePolicy());
+            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, size, isCached(), getCachePolicy());
 	}
 
+        public void putRow(Data row, long time) throws MdsException
+        {
+            putRow(row, time, 1024);
+        }
+        
+        
 	/**
 	 * Get the num,ber of segments
 	 */

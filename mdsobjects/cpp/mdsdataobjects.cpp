@@ -419,7 +419,8 @@ EXPORT	Data *MDSplus::compile(char *expr, ...)
 
 		va_list v;
 		va_start(v, expr);
-		for(int i = 0; i < MAX_ARGS; i++)
+		int totArgs = va_arg(v, int);
+		for(int i = 0; i < totArgs; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
 			if(currArg == 0)
@@ -826,21 +827,21 @@ double *Array::getDoubleArray(int *numElements)
 	return retArr;
 }
 
-void *TreePath::convertToDsc()
+EXPORT void *TreePath::convertToDsc()
 {
 	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
 }
 
-void *Array::convertToDsc()
+EXPORT void *Array::convertToDsc()
 {
 	return completeConversionToDsc(convertToArrayDsc(clazz, dtype, length, arsize, nDims, dims, ptr));
 }
 
-void *Compound::convertToDsc()
+EXPORT void *Compound::convertToDsc()
 {
 	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, length, ptr, nDescs, (void **)descs));
 }
-void *Apd::convertToDsc()
+EXPORT void *Apd::convertToDsc()
 {
 	return completeConversionToDsc(convertToApdDsc(nDescs, (void **)descs));
 }

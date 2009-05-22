@@ -11,6 +11,10 @@ public class Apd extends Data {
 
 	private Data[] descs;
 
+        public Apd(Data [] descs)
+        {
+            this(descs, null, null, null, null);
+        }
 	public Apd(Data [] descs, Data help, Data units, Data error, Data validation)
         {
             super(help, units, error, validation);

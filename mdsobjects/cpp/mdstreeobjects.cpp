@@ -1,4 +1,4 @@
-#include "mdsobjects.h"
+#include <mdsobjects.h>
 #include <usagedef.h>
 
 //#include "mdstree.h"
@@ -119,7 +119,7 @@ extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, v
 extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
 extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
 extern "C" int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int isCached, int cachePolicy);
-extern "C" int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int isCached, int isLast, int cachePolicy);
+extern "C" int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size, int isCached, int isLast, int cachePolicy);
 extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
 extern "C" int TreeSetViewDate(_int64 *date);
 
@@ -143,7 +143,7 @@ extern "C" int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
 extern "C" int _TreeRenameNode(void *dbid, int nid, char *newname);
 extern "C" int _TreeAddTag(void *dbid, int nid_in, char *tagnam);
 extern "C" int _TreeRemoveTag(void *dbid, char *name);
-extern "C" int _RTreeFlush(void *dbid, int nid);
+extern "C" int _RTreeFlushNode(void *dbid, int nid);
 extern "C" int _TreeSetSubtree(void *dbid, int nid);
 extern "C" int _TreeSetNoSubtree(void *dbid, int nid);
 
@@ -444,7 +444,7 @@ bool Tree::isModified()
 {
 	int modified, len, status;
 	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_MODEL, &modified, &len},
+	{{sizeof(int), DbiMODIFIED, &modified, &len},
 	{0, DbiEND_OF_LIST,0,0}};
 
 	status = _TreeGetDbi(ctx, dbiList);
@@ -457,7 +457,7 @@ bool Tree::isOpenForEdit()
 {
 	int edit, len, status;
 	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_MODEL, &edit, &len},
+	{{sizeof(int), DbiOPEN_FOR_EDIT, &edit, &len},
 	{0, DbiEND_OF_LIST,0,0}};
 
 	status = _TreeGetDbi(ctx, dbiList);
@@ -470,7 +470,7 @@ bool Tree::isReadOnly()
 {
 	int readOnly, len, status;
 	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_MODEL, &readOnly, &len},
+	{{sizeof(int), DbiOPEN_READONLY, &readOnly, &len},
 	{0, DbiEND_OF_LIST,0,0}};
 
 	status = _TreeGetDbi(ctx, dbiList);
@@ -1298,7 +1298,7 @@ int TreeNode::getNumElts()
 }
 
 	
-TreeNodeArray *TreeNode::getConglomerateNids()
+TreeNodeArray *TreeNode::getConglomerateNodes()
 {
 
 	int nNidsLen, retLen;
@@ -1431,11 +1431,11 @@ void TreeNode::putTimestampedSegment(Array *data, Int64Array *times)
 		throw new TreeException(status);
 }
 
-void TreeNode::putRow(Data *data, Int64 *time)
+void TreeNode::putRow(Data *data, Int64 *time, int size)
 {
 	_int64 time64 = time->getLong();
 	resolveNid();
-	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, isCached(), false, getCachePolicy());
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, size, isCached(), false, getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1451,7 +1451,7 @@ void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
 void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 {
 	resolveNid();
-	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, isCached(), false, getCachePolicy());
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, 1024, isCached(), false, getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1461,6 +1461,7 @@ TreeNode *TreeNode::getNode(char *relPath)
 {
 	int defNid;
 	int newNid;
+	resolveNid();
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
 	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
@@ -1477,6 +1478,7 @@ TreeNode *TreeNode::addNode(char *name, char *usage)
 
 	int defNid;
 	int newNid;
+	resolveNid();
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
 	if(status & 1) status = _TreeAddNode(tree->getCtx(), name, &newNid, convertUsage(usage));
@@ -1490,10 +1492,15 @@ TreeNode *TreeNode::addNode(char *name, char *usage)
 void TreeNode::remove(char *name)
 {
 	int count;
+	int defNid;
+	resolveNid();
+	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
 	TreeNode *delNode = getNode(name);
-	int status = _TreeDeleteNodeInitialize(tree->getCtx(), delNode->nid, &count, 1);
+	status = _TreeDeleteNodeInitialize(tree->getCtx(), delNode->nid, &count, 1);
 	delete delNode;
 	if(status & 1)_TreeDeleteNodeExecute(tree->getCtx());
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
 		throw new TreeException(status);
 }
@@ -1503,6 +1510,7 @@ TreeNode *TreeNode::addDevice(char *name, char *type)
 
 	int defNid;
 	int newNid;
+	resolveNid();
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
 	if(status & 1) status = _TreeAddConglom(tree->getCtx(), name, type, &newNid);
@@ -1514,6 +1522,7 @@ TreeNode *TreeNode::addDevice(char *name, char *type)
 
 void TreeNode::rename(char *newName)
 {
+	resolveNid();
 	int status = _TreeRenameNode(tree->getCtx(), nid, newName);
 	if(!(status & 1))
 		throw new TreeException(status);
@@ -1521,6 +1530,7 @@ void TreeNode::rename(char *newName)
 
 void TreeNode::move(TreeNode *parent, char *newName)
 {
+	resolveNid();
 	char *parentPath = parent->getFullPath();
 	char *newPath = new char[strlen(newName) + strlen(parentPath) + 2];
 	sprintf(newPath, "%s:%s", parentPath, newName);
@@ -1532,6 +1542,7 @@ void TreeNode::move(TreeNode *parent, char *newName)
 
 void TreeNode::move(TreeNode *parent)
 {
+	resolveNid();
 	char *name = getNodeName();
 	move(parent, name);
 	delete [] name;
@@ -1539,6 +1550,7 @@ void TreeNode::move(TreeNode *parent)
 
 void TreeNode::addTag(char *tagName)
 {
+	resolveNid();
 	int status = _TreeAddTag(tree->getCtx(), nid, tagName);
 	if(!(status & 1))
 		throw new TreeException(status);
@@ -1547,8 +1559,12 @@ void TreeNode::addTag(char *tagName)
 void TreeNode::removeTag(char *tagName)
 {
 
+	resolveNid();
 	int currNid;
-	int status = _TreeFindNode(tree->getCtx(), tagName, &currNid);
+	char *bTag = new char[strlen(tagName) + 2];
+	sprintf(bTag, "\\%s", tagName);
+	int status = _TreeFindNode(tree->getCtx(), bTag, &currNid);
+	delete [] bTag;
 	if(currNid != nid)
 		throw new TreeException("No such tag for this tree node"); //The tag does not refer to this node
 	status = _TreeRemoveTag(tree->getCtx(), tagName);
@@ -1558,6 +1574,7 @@ void TreeNode::removeTag(char *tagName)
 
 void TreeNode::setSubtree(bool isSubtree)
 {
+	resolveNid();
 	int status;
 	if(isSubtree)
 		status = _TreeSetSubtree(tree->getCtx(), nid);
@@ -1569,6 +1586,7 @@ void TreeNode::setSubtree(bool isSubtree)
 
 StringArray *TreeNode::findTags()
 {
+	resolveNid();
 	const int MAX_TAGS = 1024;
 	char *tagNames[MAX_TAGS];
 	void *ctx = 0;
@@ -1611,7 +1629,7 @@ void TreePath::resolveNid()
 		nid = -1;
 }
 	
-void CachedTreeNode::flush() {_RTreeFlush(tree->getCtx(), getNid());}
+void CachedTreeNode::flush() {_RTreeFlushNode(tree->getCtx(), getNid());}
 
 void CachedTree::open() 
 {
@@ -1651,7 +1669,7 @@ void CachedTreeNode::putLastRow(Data *data, Int64 *time)
 {
 	_int64 time64 = time->getLong();
 	resolveNid();
-	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, true, true, getCachePolicy());
+	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, 1024, true, true, getCachePolicy());
 	if(!(status & 1))
 		throw new TreeException(status);
 }

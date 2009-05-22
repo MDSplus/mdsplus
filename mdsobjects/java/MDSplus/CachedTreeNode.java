@@ -61,6 +61,6 @@ public class CachedTreeNode extends TreeNode
 	 */
 	public void putLastRow(Data row, long time) throws MdsException
         {
-            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, true, WRITE_LAST);
+            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, 1024, true, WRITE_LAST);
 	}
 }
