@@ -5,10 +5,18 @@ from _treeshr import TreeStartConglomerate
 class Device(TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
-    Use this class as a superclass for device support classes. When creating a device support class include a class attribute called part_names
-    as a tuple of strings of the node names of the devices members (not including the head node). You can also include a part_dict
-    class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid offsets. If you do
-    not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
+    Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
+    which describe the subnodes of your device implementation. The parts attribute should be a list or tuple of dict objects where each dict is a
+    description of each subnode. The dict object should include a minimum of a 'path' key whose value is the relative path of the node (be sure to
+    include the leading period or colon) and a 'type' key whose value is the usage type of the node. In addition you may optionally specify a
+    'value' key whose value is the actual value to store into the node when it is first added in the tree. Instead of a 'value' key, you can
+    provide a 'valueExpr' key whose value is a string which is python code to be evaluated before writing the result into the node. Use a valueExpr
+    when you need to include references to other nodes in the device. Lastly the dict instance may contain an 'options' key whose values are
+    node options specified as a tuple of strings. Note if you only specify one option include a trailing comma in the tuple.The "parts" attribute
+    is used to implement the Add and PART_NAME and ORIGNAL_PART_NAME methods of the subclass.
+    
+    You can also include a part_dict class attribute consisting of a dict() instance whose keys are attribute names and whose values are nid
+    offsets. If you do not provide a part_dict attribute then one will be created from the part_names attribute where the part names are converted
     to lowercase and the colons and periods are replaced with underscores. Referencing a part name will return another instance of the same
     device with that node as the node in the Device subclass instance. The Device class also supports the part_name and original_part_name
     attributes which is the same as doing devinstance.PART_NAME(None). NOTE: Device subclass names MUST BE UPPERCASE!
@@ -174,6 +182,8 @@ class Device(TreeNode):
         head.write_once=True
         for elt in cls.parts:
             node=tree.addNode(path+elt['path'],elt['type'])
+        for elt in cls.parts:
+            node=tree.getNode(path+elt['path'])
             if 'value' in elt:
                 node.record=elt['value']
             if 'valueExpr' in elt:
