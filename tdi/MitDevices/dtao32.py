@@ -147,6 +147,7 @@ class DTAO32(Device):
         hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
         hostname = hostname[0].strip()
         
+        self.first = True
         for i in range(32):
             ao_nid=self.__getattr__('output_%2.2d'%(i+1))
             fit='LINEAR'
@@ -173,7 +174,10 @@ class DTAO32(Device):
                 counts = numpy.int16(counts[:max_samples])
                 self.WriteWaveform(hostname, board, i+1, counts)
 
-                self.SendFiles(hostname, hostboard, board)
+        if not self.first:
+            self.SendFiles(hostname, hostboard, board)
+        else:
+            raise Exception, 'No channels defined aborting'
 
         try:
             Dt200WriteMaster(hostboard, 'set.ao32 %d AO_MODE %s' % (board, mode), 1)
@@ -186,7 +190,11 @@ class DTAO32(Device):
     def arm(self, arg):
         try:
             complaint = 'Error reading continuos flag'
-            continuous=nids[self.part_names['CONTINUOUS']].record.data()
+            continuous=int(self.continuous)
+            complaint = "Must specify host board number"
+            hostboard=int(self.hostboard.record)
+            complaint = "board must be an integer"
+            board=int(self.board)
         except Exception,e:
             print "%s\n%s", (complaint, str(e),)
         try:
@@ -198,16 +206,19 @@ class DTAO32(Device):
             Dt200WriteMaster(hostboard, 'set.ao32.data %d commit %s' % (board, commit), 1)
         except:
             raise Exception, 'error sending commands to AO32 board'
-
+        return 1
 
     def help(self, arg):
  	""" Help method to describe the methods and nodes of the DTAO32 module type """
 	help(DTAO32)
+        return 1
 
     def WriteWaveform(self, host, board, chan, wave):
-        if chan == 1:
+        if self.first:
             pipe = os.popen('mkdir -p /tmp/%s/ao32cpci.%d' % (host, board));
             pipe.close()
+	    self.first=False
+
         file = '/tmp/%s/ao32cpci.%d/f.%2.2d' % (host, board, chan)
         f = open(file, 'wb')
         wave.tofile(f)
@@ -222,7 +233,7 @@ class DTAO32(Device):
         print cmd
         pipe = os.popen(cmd)
         pipe.close()
-        cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/ao32cpci.%d/' % (host, board, host, board,)
+        cmd = 'rm -rf /tmp/%s.%d.tgz; rm -rf /tmp/%s/' % (host, board, host,)
         print cmd
         pipe = os.popen(cmd)
         pipe.close()        
