@@ -1949,6 +1949,7 @@ public class ParameterSetting
                     }
                 }
             }
+            currFFCB.setSelected(true);
         }
 
         void setEnabledTimes(Hashtable setupHash)
