@@ -84,7 +84,7 @@ FUN	PUBLIC EVENT_TABLE() {
 		   'HXR_START',		     '57',
                    'MSE_START',		    '123',
 		   'DNB_CHECK', 	    '100',
-                   'MOLVAX_TEST',	    '124',
+                   'MLP_START',	            '124',
                    'START_SCALERS',         '125',
                    'STOP_SCALERS',          '126'
                   ]);
