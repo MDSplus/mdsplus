@@ -1920,9 +1920,10 @@ public class ParameterSetting
                 timeCheckBoxes[i].setSelected(true);
                 timeCheckBoxes[i].setEnabled(true);
             }
+            currFFCB.setSelected(true);
             checkBoxes[0].setSelected(false);
             checkBoxes[0].setEnabled(false);
-            timeCheckBoxes[5].setSelected(false);
+            timeCheckBoxes[5].setSelected(true);
             timeCheckBoxes[5].setEnabled(false);
         }
         
@@ -1981,6 +1982,9 @@ public class ParameterSetting
             enable(nids, pp_mask, 3);
             enable(nids, pr_mask, 4);
             enable(nids, ptso_mask, 5);
+            //MAY 2009 Force PTSO NOT TO BE ENABLED
+            timeCheckBoxes[5].setEnabled(false);
+                    
             enable(nids, ptcb_mask, 6);
             enable(nids, ptct_mask, 7);
             enable(nids, gas_mask, 8);
@@ -2080,7 +2084,8 @@ public class ParameterSetting
             });
         }
         loadSelected.setEnabledDevices(currSetupHash);
-        loadSelected.setEnabledTimes(currSetupHash);
+        //loadSelected.setEnabledTimes(currSetupHash); //May 2009 Use currSetupOnHash for includiong PTSO
+        loadSelected.setEnabledTimes(currSetupOnHash);
         loadSelected.setVisible(true);
     }
 
@@ -3581,10 +3586,10 @@ System.out.println("Print Done");
         else
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", decouplingName + ".dat", -1);
+                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", decouplingName + ".dat", -1);
+                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
             conv.convertMatrix();
         }
         decouplingD.setVisible(false);

@@ -147,17 +147,39 @@ public class LoadPulse
         tree.open();
         BufferedReader br = new BufferedReader(new FileReader(
             confFileName));
-        String basePath;
+        String basePathLine;
         String currPath = "";
         NidData defNid = tree.getDefault(0);
-        while ( (basePath = br.readLine()) != null)
+        while ( (basePathLine = br.readLine()) != null)
         {
             NidData currNid;
-            if(basePath.trim().equals("")) continue;
-            System.out.println(basePath);
+            if(basePathLine.trim().equals("")) continue;
+            System.out.println(basePathLine);
             try
             {
+                
+                StringTokenizer st = new StringTokenizer(basePathLine, " ");
+                String basePath = st.nextToken();
                 currNid = tree.resolve(new PathData(basePath), 0);
+                if(st.hasMoreTokens() && st.nextToken().toUpperCase().equals("STATE")) //If only state has to retrieved
+                {
+                    NodeInfo currInfo = tree.getInfo(currNid, 0);
+                    currPath = currInfo.getFullPath();
+                    System.out.println(currPath);
+                    try
+                    {
+                        nodesV.addElement(new NodeDescriptor(currPath,
+                                null, currInfo.isOn(),
+                                currInfo.isParentOn(),
+                                currInfo.isNoWriteModel() ||
+                                currInfo.isWriteOnce()));
+                    }
+                    catch (Exception exc)
+                    {
+                        System.err.println("Error reading state of " + currPath + ": " + exc);
+                    }
+                    continue;
+                }
                 tree.setDefault(currNid, 0);
                 NidData[] nidsNumeric = tree.getWild(NodeInfo.USAGE_NUMERIC, 0);
                 if (nidsNumeric == null) nidsNumeric = new NidData[0];
@@ -273,6 +295,10 @@ public class LoadPulse
                 }
             }
             try {
+                if(currNode.getPath().equals("\\RFX::TOP.RFX.SETUP:TIMES:OPEN_PTSO_1"))
+                {
+                    int cacca = 1;
+                }
                 setupOnHash.put(currNode.getPath(), new Boolean(currNode.isOn()));
             }
             catch (Exception exc)
