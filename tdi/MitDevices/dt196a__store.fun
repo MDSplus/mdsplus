@@ -93,9 +93,18 @@ public fun dt196a__store(as_is _nid, optional _method)
   _sampls=MdsValue('Dt200GetNumSamples($)',_board);
 
   _vins1 = Mdsvalue('Dt200WriteMaster($, "get.vin  1:32", 1)', _board);
-  _vins2 = Mdsvalue('Dt200WriteMaster($, "get.vin 33:64", 1)', _board);
-  _vins3 = Mdsvalue('Dt200WriteMaster($, "get.vin 65:96", 1)', _board);
-  _vins = compile('['//_vins1//','//_vins2//','//_vins3//']');
+  if(_num_chans > 32) {
+    _vins2 = Mdsvalue('Dt200WriteMaster($, "get.vin 33:64", 1)', _board);
+    if (_num_chans > 64) {
+      _vins3 = Mdsvalue('Dt200WriteMaster($, "get.vin 65:96", 1)', _board);
+      _vins = compile('['//_vins1//','//_vins2//','//_vins3//']');
+    } else {
+      _vins = compile('['//_vins1//','//_vins2//']');
+    } 
+  } else {
+    _vins = compile('['//_vins1//']');
+  }
+
   DevPutValue(  DevHead(_nid) + _DT200_RANGES, _vins); 
 
   /*********************************************************
