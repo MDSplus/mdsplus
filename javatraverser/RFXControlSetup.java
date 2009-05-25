@@ -660,6 +660,7 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceChannel deviceChannel315 = new DeviceChannel();
   DeviceTable deviceTable29 = new DeviceTable();
   DeviceTable deviceTable211 = new DeviceTable();
+  DeviceTable currentControlTable = new DeviceTable();
   DeviceButtons deviceButtons1 = new DeviceButtons();
   public RFXControlSetup() {
     try {
@@ -2752,6 +2753,15 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable211.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
     deviceTable211.setRowNames(null);
     deviceTable211.setPreferredHeight(20);
+    currentControlTable.setOffsetNid(1098);
+    currentControlTable.setLabelString("Plasma Current Control");
+    currentControlTable.setNumCols(8);
+    currentControlTable.setNumRows(1);
+    currentControlTable.setIdentifier("");
+    currentControlTable.setColumnNames(new String[] {"Type", "Kp", "TStart", "TEnd", "VMax", "6", "7", "8"});
+    currentControlTable.setRowNames(null);
+    currentControlTable.setPreferredHeight(20);
+
     jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -3109,6 +3119,7 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel1.add(deviceTable5, null);
     jPanel1.add(deviceTable29, null);
     jPanel1.add(deviceTable211, null);
+    jPanel1.add(currentControlTable, null);
     jScrollPane4.getViewport().add(jPanel5, null);
     jPanel5.add(jPanel6, null);
         jPanel6.add(deviceField20, null);
