@@ -2615,7 +2615,7 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField11313.setNumCols(80);
         deviceField11313.setLabelString("Y:");
         deviceField11313.setOffsetNid(1517);
-        deviceChannel36.setLabelString("Simulink Wave 27");
+        deviceChannel36.setLabelString("Plasma Current reference");
         deviceChannel36.setOffsetNid(1517);
         deviceChannel36.setInSameLine(true);
         deviceChannel36.setUpdateIdentifier("");
