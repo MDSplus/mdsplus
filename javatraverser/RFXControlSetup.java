@@ -2761,6 +2761,7 @@ public class RFXControlSetup extends DeviceSetup {
     currentControlTable.setColumnNames(new String[] {"Type", "Kp", "TStart", "TEnd", "VMax", "6", "7", "8"});
     currentControlTable.setRowNames(null);
     currentControlTable.setPreferredHeight(20);
+    currentControlTable.setUseExpressions(true);
 
     jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
