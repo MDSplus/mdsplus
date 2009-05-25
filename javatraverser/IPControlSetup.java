@@ -75,6 +75,10 @@ public class IPControlSetup extends DeviceSetup {
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
+        deviceWave1.setIdentifier("");
+        deviceWave1.setOffsetNid(10);
+        deviceWave1.setUpdateExpression("");
         getContentPane().add(deviceWave1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
