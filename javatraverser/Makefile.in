@@ -96,7 +96,9 @@ CAENV1731Setup.java \
 CAENV1740Setup.java \
 PLRMSetup.java \
 DPO7054Setup.java \
-L9109Setup.java
+L9109Setup.java \
+LASER_NDRTSetup.java \
+IPControlSetup.java
 
 
 
