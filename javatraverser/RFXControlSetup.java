@@ -2753,7 +2753,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable211.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
     deviceTable211.setRowNames(null);
     deviceTable211.setPreferredHeight(20);
-    currentControlTable.setOffsetNid(1098);
+    currentControlTable.setOffsetNid(1099);
     currentControlTable.setLabelString("Plasma Current Control");
     currentControlTable.setNumCols(8);
     currentControlTable.setNumRows(1);
