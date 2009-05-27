@@ -767,7 +767,7 @@ public class RFXMOPSetup extends DeviceSetup {
     deviceField23.setOffsetNid(98);
     deviceChoice20.setIdentifier("");
     deviceChoice20.setUpdateIdentifier("");
-    deviceChoice20.setChoiceItems(new String[] {"PULSE", "PDC", "GDC", "BAKING", "VAR TEMP", "PUMPING", "TEST"});
+    deviceChoice20.setChoiceItems(new String[] {"PULSE RFP", "PULSE TOKAMAK", "PDC", "GDC", "BAKING", "VAR TEMP", "PUMPING", "TEST"});
     deviceChoice20.setLabelString("Activity:");
     deviceChoice20.setOffsetNid(4);
     deviceChoice20.setChoiceFloatValues(null);
