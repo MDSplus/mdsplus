@@ -312,7 +312,12 @@ public class DeviceField
     if (dataString == null)
       return null;
     if (textOnly)
-      return Tree.dataFromExpr("\"" + dataString + "\"");
+    {
+        if(dataString.trim().startsWith("[")) //If it begins with a [ it is assumed to be an array of strings
+            return Tree.dataFromExpr(dataString);
+        else
+            return Tree.dataFromExpr("\"" + dataString + "\"");
+    }
     else
       return Tree.dataFromExpr(dataString);
   }
