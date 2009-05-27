@@ -40,7 +40,7 @@ public fun RFXMOP__SendMOP(as_is _nid, optional _method)
 	write(*, 'Opc server name: '//_opc_server);
 
 
-	DevNodeCvt(_nid, _N_ACTIVITY, ['PULSE', 'PDC', 'GDC', 'BAKING', 'VAR TEMP', 'PUMPING', 'TEST'], [1,2,3,4,5,6,7], _activity=-1);
+	DevNodeCvt(_nid, _N_ACTIVITY, ['PULSE RFP', 'PULSE TOKAMAK', 'PDC', 'GDC', 'BAKING', 'VAR TEMP', 'PUMPING', 'TEST'], [1,1,2,3,4,5,6,7], _activity=-1);
 	if(_activity < 0 )
 	{
 		DevLogErr(_nid, "Invalid activity");
