@@ -77,7 +77,7 @@ STATIC_CONSTANT EMPTYXD(EMPTY_XD);
 STATIC_ROUTINE  int       compress(
 		               struct descriptor *pcimage,
 		               struct descriptor *pcentry,
-		               int delta,
+		               _int64 delta,
 		               struct descriptor *pwork)
 {
   int       j,
