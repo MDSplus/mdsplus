@@ -103,6 +103,7 @@ extern "C" int TreeFindTagEnd(void *ctx);
 extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 extern "C" void *TreeSwitchDbid(void *dbid);
 extern "C" void RTreeConfigure(int shared, int size);
+extern "C" int _RTreeTerminateSegment(void *dbid, int nid);
 
 extern "C" int getTreeData(void *dbid, int nid, void **data, int isCached);
 extern "C" int putTreeData(void *dbid, int nid, void *data, int isCached, int cachePolicy);
@@ -1631,6 +1632,7 @@ void TreePath::resolveNid()
 	
 void CachedTreeNode::flush() {_RTreeFlushNode(tree->getCtx(), getNid());}
 
+
 void CachedTree::open() 
 {
 	int status;
@@ -1673,6 +1675,17 @@ void CachedTreeNode::putLastRow(Data *data, Int64 *time)
 	if(!(status & 1))
 		throw new TreeException(status);
 }
+
+void CachedTreeNode::terminateSegment()
+{
+	int status;
+	if(cachePolicy == WRITE_BUFFER)
+		
+    status = _RTreeTerminateSegment(tree->getCtx(), getNid());
+	if(!(status & 1))
+		throw new TreeException(status);
+}
+
 
 
 void CachedTree::synch()

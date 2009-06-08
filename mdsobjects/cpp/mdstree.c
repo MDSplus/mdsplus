@@ -123,7 +123,8 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 }
 
 
- int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int isCached, int cachePolicy)
+
+int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int isCached, int cachePolicy)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
@@ -135,7 +136,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 	{
 		status = _RTreeBeginSegment(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer, 
 			(struct descriptor_a *)dataXd->pointer, -1, cachePolicy);
-		if(status & 1) status = _RTreePutSegment(dbid, nid, -1, (struct descriptor_a *)dataXd->pointer, cachePolicy);
+//		if(status & 1) status = _RTreePutSegment(dbid, nid, -1, (struct descriptor_a *)dataXd->pointer, cachePolicy);
 	}
 
 	else
