@@ -430,5 +430,23 @@ public class Data {
         {
             this.validation = validation;
 	}
+        
+        
+        public static Data toData(byte d) {return new Int8(d);}
+        public static Data toData(short d) {return new Int16(d);}
+        public static Data toData(int d) {return new Int32(d);}
+        public static Data toData(long d) {return new Int64(d);}
+        public static Data toData(float d) {return new Float32(d);}
+        public static Data toData(double d) {return new Float64(d);}
+        public static Data toData(java.lang.String d) {return new MDSplus.String(d);}
+        
+        public static Data toData(byte d[]) {return new Int8Array(d);}
+        public static Data toData(short d[]) {return new Int16Array(d);}
+        public static Data toData(int d[]) {return new Int32Array(d);}
+        public static Data toData(long d[]) {return new Int64Array(d);}
+        public static Data toData(float d[]) {return new Float32Array(d);}
+        public static Data toData(double d[]) {return new Float64Array(d);}
+        public static Data toData(java.lang.String d[]) {return new StringArray(d);}
+        
 
 }

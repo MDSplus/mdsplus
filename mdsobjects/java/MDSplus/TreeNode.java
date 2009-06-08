@@ -917,5 +917,18 @@ public class TreeNode extends Data
             setSubtree(nid, tree.getCtx1(), tree.getCtx2(), isSubtree);
 	}
 
-
+        public void putData(byte d) throws MdsException {putData(new Int8(d));}
+        public void putData(short d) throws MdsException {putData(new Int16(d));}
+        public void putData(int d) throws MdsException {putData(new Int32(d));}
+        public void putData(long d) throws MdsException {putData(new Int64(d));}
+        public void putData(float d) throws MdsException {putData(new Float32(d));}
+        public void putData(double d) throws MdsException {putData(new Float64(d));}
+        public void putData(java.lang.String d) throws MdsException {putData(new MDSplus.String(d));}
+        public void putData(byte []d) throws MdsException {putData(new Int8Array(d));}
+        public void putData(short [] d) throws MdsException {putData(new Int16Array(d));}
+        public void putData(int []d) throws MdsException {putData(new Int32Array(d));}
+        public void putData(long []d) throws MdsException {putData(new Int64Array(d));}
+        public void putData(float []d) throws MdsException {putData(new Float32Array(d));}
+        public void putData(double []d) throws MdsException {putData(new Float64Array(d));}
+        public void putData(java.lang.String []d) throws MdsException {putData(new MDSplus.StringArray(d));}
 }

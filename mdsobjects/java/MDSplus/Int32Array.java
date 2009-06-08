@@ -11,7 +11,7 @@ package MDSplus;
 public class Int32Array extends Array 
 {
     int [] datum = new int[0];
-    public Int32Array(short[] inDatum)
+    public Int32Array(int[] inDatum)
     {
         help = null;
         units = null;
