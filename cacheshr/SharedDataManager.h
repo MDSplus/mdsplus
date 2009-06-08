@@ -49,6 +49,7 @@ public:
 	int beginTimestampedSegment(TreeDescriptor treeId, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
 		_int64 start, _int64 end, char *dim, int dimSize, int *retIdx);
 
+	int findSegment(TreeDescriptor treeId, int nid, int *retIdx);
 	int isSegmented(TreeDescriptor treeId, int nid, int *segmented);
 	int getNumSegments(TreeDescriptor treeId, int nid, int *numSegments);
 	int updateSegment(TreeDescriptor treeId, int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);

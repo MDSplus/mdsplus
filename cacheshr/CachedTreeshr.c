@@ -50,6 +50,7 @@ int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimS
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
 int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
 int isSegmented(char *name, int shot, int nid, int *segmented, char *cachePtr);
+int terminateSegment(char *name, int shot, int nid, char *cachePtr);
 int flushTree(char *name, int shot, char *cachePtr);
 int flushNode(char *name, int shot, int nid, char *cachePtr);
 void *setCallback(char *name, int shot, int nid, void *argument, void (* callback)(int, void *), void *cachePtr);
@@ -511,7 +512,7 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 
 
 
-EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid, struct descriptor *dataD, _int64 *timestamps, int writeMode)
+EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid,  _int64 *timestamps, struct descriptor *dataD,int writeMode)
 {
 	int bounds[MAX_BOUND_SIZE];
 	int boundsSize;
@@ -531,9 +532,9 @@ EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid, struct descriptor *d
 										 writeMode, cache);
 	return status;
 }
-EXPORT int RTreePutTimestampedSegment(int nid, struct descriptor *dataD, _int64 *timestamps, int writeMode)
+EXPORT int RTreePutTimestampedSegment(int nid,  _int64 *timestamps, struct descriptor *dataD,int writeMode)
 {
-	return _RTreePutTimestampedSegment(0, nid, dataD, timestamps, writeMode);
+	return _RTreePutTimestampedSegment(0, nid, timestamps, dataD, writeMode);
 }
 
 //Return Shape and type information. The coding is the following:
@@ -719,6 +720,27 @@ EXPORT int _RTreeGetSegmentLimits(void *dbid, int nid, int idx, struct descripto
 	}
 	return 1;
 }
+
+
+EXPORT int _RTreeTerminateSegment(void *dbid, int nid)
+{
+	int status;
+	char name[256];
+	int shot;
+	status = getNameShot(dbid, name, &shot);
+	if(!(status & 1))
+		return status;
+	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	return terminateSegment(name, shot, nid, cache);
+}
+
+EXPORT int RTreeTerminateSegment(int nid)
+{
+	return _RTreeTerminateSegment(0, nid);
+}
+
+
+
 EXPORT int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd)
 {
 	return _RTreeGetSegmentLimits(0, nid, idx, retStart, retEnd);
@@ -1133,7 +1155,7 @@ EXPORT void RTreeConfigure(int shared, int size)
 }
 
 
-EXPORT int _RTreeOpen(void *dbid, char *expName, int shot)
+EXPORT int _RTreeOpen(void **dbid, char *expName, int shot)
 {
 	return _TreeOpen(dbid, expName, shot, 0);
 }

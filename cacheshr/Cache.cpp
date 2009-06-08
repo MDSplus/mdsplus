@@ -43,6 +43,7 @@ extern "C" int appendRow(char *name, int shot, int nid, int *bounds, int boundsS
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 extern "C" int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr);
 extern "C" int discardData(char *name, int shot, int nid, char *cachePtr);
+extern "C" int terminateSegment(char *name, int shot, int nid, char *cachePtr);
 extern "C" int setWarm(char *name, int shot, int nid, int warm, char *cachePtr);
 extern "C" void synch(char *cachePtr);
 
@@ -87,6 +88,11 @@ int beginTimestampedSegment(char *name, int shot, int nid, int idx, int numItems
 	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->beginTimestampedSegment(treeIdx, nid, idx, numItems, shape, shapeSize, data, 
 			dataSize, start, end, dim, dimSize, writeThrough);
+}
+int terminateSegment(char *name, int shot, int nid, char *cachePtr)
+{
+	TreeDescriptor treeIdx(name, shot);
+	return ((Cache *)cachePtr)->terminateSegment(treeIdx, nid);
 }
 
 int updateSegment(char *name, int shot, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, 
@@ -332,6 +338,17 @@ int Cache::updateSegment(TreeDescriptor treeIdx, int nid, int idx, char *start, 
 int Cache::getNumSegments(TreeDescriptor treeIdx, int nid, int *numSegments)
 {
 	return dataManager.getNumSegments(treeIdx, nid, numSegments);
+}
+
+int Cache::terminateSegment(TreeDescriptor treeIdx, int nid)
+{
+	int status, retIdx;
+	status = dataManager.findSegment(treeIdx, nid, &retIdx);
+	if((status & 1))
+	{
+		treeWriter.addPutSegment(treeIdx, nid, retIdx, 1);
+	}
+	return status;
 }
 
 int Cache::appendSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 

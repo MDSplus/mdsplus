@@ -57,6 +57,7 @@ public:
 
 	int flush(TreeDescriptor treeIdx);
 	int flush(TreeDescriptor treeIdx, int nid);
+	int terminateSegment(TreeDescriptor treeIdx, int nid);
 	int discardOldSegments(TreeDescriptor treeIdx, int nid, _int64 timestamp);
 	int discardData(TreeDescriptor treeIdx, int nid);
 

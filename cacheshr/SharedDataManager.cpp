@@ -483,6 +483,36 @@ int SharedDataManager::appendSegmentData(TreeDescriptor treeId, int nid, int *bo
 }
 
 
+int SharedDataManager::findSegment(TreeDescriptor treeId, int nid, int *retIdx)
+{
+	int numSegments;
+	int *shape;
+	int shapeSize;
+	char *segmentData;
+	int segmentSize;
+
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		numSegments = nodeData->getNumSegments();
+		if(numSegments == 0) 
+		{
+			lock.unlock();
+			return 0; //No segments
+		}
+		*retIdx = numSegments - 1;
+		lock.unlock();
+		return 1;
+	}
+}
+
+
+
+
+
+
 int SharedDataManager::appendRow(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, 
 								 _int64 timestamp, int *segmentFilled, int *retIdx, bool *newSegmentCreated)
 {
