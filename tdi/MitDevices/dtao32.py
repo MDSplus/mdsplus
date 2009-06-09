@@ -14,6 +14,7 @@ class DTAO32(Device):
 		Arm(arg)  - Send Commit to the device to arm it
 		Help(arg) - Print this message
 
+                
 	Nodes:
 		HOSTBOARD - the board number of the DT196 host card
 		BOARD - the slot number in the crate of the AO32 card
@@ -74,11 +75,18 @@ class DTAO32(Device):
         parts.append({'path':':OUTPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_shot',)})
         parts.append({'path':':OUTPUT_%2.2d:FIT'%(i+1,),'type':'text','value':'LINEAR', 'options':('no_write_shot',)})
     parts.append({'path':':INIT_ACTION','type':'action',
-                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
                  'options':('no_write_shot',)})
     parts.append({'path':':ARM_ACTION','type':'action',
-                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",
                  'options':('no_write_shot',)})
+    parts.append({'path':':ZERO1_ACTION','type':'action',
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',1,None),Method(None,'ZERO',head))",
+                 'options':('no_write_shot',)})
+    parts.append({'path':':ZERO2_ACTION','type':'action',
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',1,None),Method(None,'ZERO',head))",
+                 'options':('no_write_shot',)})
+
     clock_edges=['RISING', 'FALLING']
     trigger_edges = clock_edges
     trig_sources=[ 'S_PXI_0',
@@ -143,8 +151,16 @@ class DTAO32(Device):
             max_samples=int(self.max_samples)
         except Exception,e:
             print "%s\n%s" % (complaint, str(e),)
+            return 0
 
-        hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+        try:
+	    pipe = os.popen('acqcmd -b %d setAbort' % (hostboard));
+            pipe.close()
+	except Exception, e:
+	    print "error sending abort to host board\n%s" %(str(e),)
+            return 0
+
+	hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
         hostname = hostname[0].strip()
         
         self.first = True
@@ -213,10 +229,37 @@ class DTAO32(Device):
 	help(DTAO32)
         return 1
 
+    def zero(self, arg):
+	""" zero method sets all of the outputs of the DTAO32  module to zero """
+        self.first = True
+        try:
+            complaint = "host board must be an integer"
+            hostboard=int(self.hostboard.record)
+            complaint = "board must be an integer"
+            board = int(self.board.record)
+            complaint = "can not retrieve ip address for board %d" % hostboard
+            hostname = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+            hostname = hostname[0].strip()
+            complaint = "error putting board in immediate mode"
+            Dt200WriteMaster(hostboard, 'set.ao32 %d AO_MODE M_RIM' % (board,), 1)
+            for i in range(32):
+                complaint = "error writing zero for channel %d to card" % (i+1,)  
+                self.WriteWaveform(hostname, board, i+1, numpy.int16(numpy.array([ 0])))
+            complaint, "error sending files to card"
+            self.SendFiles(hostname, hostboard, board);
+
+        except Exception, e:
+            print "%s\n%s" % (complaint, str(e),)
+            return 0
+        return 1
+
     def WriteWaveform(self, host, board, chan, wave):
         if self.first:
-            pipe = os.popen('mkdir -p /tmp/%s/ao32cpci.%d' % (host, board));
-            pipe.close()
+            try:
+                pipe = os.popen('mkdir -p /tmp/%s/ao32cpci.%d; chmod a+rwx /tmp/%s/ao32cpci.%d' % (host, board, host, board));
+                pipe.close()
+            except:
+		pass
 	    self.first=False
 
         file = '/tmp/%s/ao32cpci.%d/f.%2.2d' % (host, board, chan)

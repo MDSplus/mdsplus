@@ -13,10 +13,10 @@ class CP7452(Device):
     for i in range(4):
         parts.append({'path':'.DIGITAL_INS:DI%d'%(i,),'type':'numeric','options':('no_write_model','write_once')})
     parts.append({'path':':INIT_ACTION','type':'action',
-                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",
                  'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-                 'valueExpr':"Action(Dispatch(2,'CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+                 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                  'options':('no_write_shot',)})
     del i
 
