@@ -1018,12 +1018,17 @@ int putRecordInternal(char *name, int shot, int nid, char dataType, int numSampl
 	void *dbid = 0;
 	void *oldDbid = TreeSwitchDbid(0);
 	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1)) return status;
-
+	if(!(status & 1)) 
+	{
+		printf("PUT RECORD INTERNAL ERROR !!!, %s %d\n", name, shot);
+		TreeSwitchDbid(oldDbid);
+		return status;
+	}
 
 	if(size == 0)
 	{
 	    status = _TreePutRecord(dbid, nid, (struct descriptor *)&xd, 0);
+	    TreeSwitchDbid(oldDbid);
 	    return status;
 	}
 	if(dataType) //If scalar or array
@@ -1049,10 +1054,12 @@ int deleteRecordInternal(char *name, int shot, int nid)
 	void *dbid = 0;
 	void *oldDbid = TreeSwitchDbid(0);
 	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1)) return status;
-
+	if(!(status & 1))
+	{
+	    TreeSwitchDbid(oldDbid);
+	    return status;
+        }
 	status = _TreePutRecord(dbid, nid, (struct descriptor *)&xd, 0);
-	return status;
 	TreeSwitchDbid(oldDbid);
 	return status;
 }
@@ -1078,8 +1085,11 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	void *dbid = 0;
 	void *oldDbid = TreeSwitchDbid(0);
 	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1)) return status;
-
+	if(!(status & 1))
+	{
+	    TreeSwitchDbid(oldDbid);
+	    return status;
+	}
 	memcpy(shape, inShape, shapeSize);
 
 	//Return Shape and type information. The coding is the following:
@@ -1091,7 +1101,11 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 
 //first build whiole segment description
 	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &fullDataXd);
-	if(!(status & 1)) return status;
+	if(!(status & 1)) 
+	{
+	    TreeSwitchDbid(oldDbid);
+	    return status;
+	}
 
 //then build actual data segment (possibly incomplete)
 	if(isTimestamped)
@@ -1114,7 +1128,11 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	}
 	
 	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &dataXd);
-	if(!(status & 1)) return status;
+	if(!(status & 1))
+	{
+	    TreeSwitchDbid(oldDbid);
+	    return status;
+	}
 	if(isTimestamped)
 	{
 		timesD.pointer = dim;
@@ -1123,7 +1141,11 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 		startD.pointer = start;
 		endD.pointer = end;
 		status = _TreeBeginSegment(dbid, nid, &startD, &endD, (struct descriptor *)&timesD, (struct descriptor_a *)dataXd.pointer, -1);
-		if(!(status & 1)) return status;
+		if(!(status & 1))
+		{
+		    TreeSwitchDbid(oldDbid);
+ 		    return status;
+		}
 		MdsFree1Dx(&dataXd, 0);
 	}
 	else
@@ -1145,6 +1167,7 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 		MdsFree1Dx(&dataXd, 0);
 		MdsFree1Dx(&fullDataXd, 0);
 	}
+	TreeSwitchDbid(oldDbid);
 	return status;
 }
 

@@ -2,7 +2,7 @@
 #define TREEDESCRIPTOR_H
 
 #include <string.h>
-
+#include <ctype.h>
 class TreeDescriptor {
 	char name[64];
 	int shot;
@@ -14,8 +14,12 @@ public:
 	}
 	TreeDescriptor(char *name, int shot)
 	{
-		strncpy(this->name, name, 63);
-		this->name[63] = 0;
+		int len = strlen(name);
+		if(len > 63) len = 63;
+		for(int i = 0; i < len; i++)
+		    this->name[i] = toupper(name[i]);
+ 		//strncpy(this->name, name, 63);
+		this->name[len] = 0;
 		this->shot = shot;
 	}
 	int getShot() {return shot;}
