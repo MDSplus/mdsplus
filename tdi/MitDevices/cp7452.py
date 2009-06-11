@@ -47,6 +47,7 @@ class CP7452(Device):
                 except Exception,e:
                     print "Error outputing to DO%d\n\t%s" % (i,str(e),)
         return 1
+    INIT=init
 
     def store(self,arg):
         """Stores the digital input values into the tree.
@@ -74,3 +75,4 @@ class CP7452(Device):
                 except Exception,e:
                     print "Error inputting from DI%d\n\t%s" % (i,str(e),)
         return 1
+    STORE=store

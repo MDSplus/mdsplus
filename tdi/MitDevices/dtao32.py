@@ -281,4 +281,7 @@ class DTAO32(Device):
         pipe = os.popen(cmd)
         pipe.close()        
         Dt200WriteMaster(hostboard, '/ffs/unpack_waves %s %d' %(host, board), 1)
+    INIT=init
+    ARM=arm
+    ZERO=zero
 
