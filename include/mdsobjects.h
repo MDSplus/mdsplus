@@ -322,10 +322,6 @@ protected:
 			validation = inValidation;
 			inValidation->refCount++;
 		}
-		friend ostream & operator << (ostream &outStream, Data data)
-		{
-		    return outStream << data.decompile();
-		}
 		friend ostream & operator << (ostream &outStream, Data *data)
 		{
 		    return outStream << data->decompile();
@@ -1690,6 +1686,7 @@ public:
 		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
 		void flush();
 		void putLastRow(Data *data, Int64 *time);
+		void terminateSegment();
 	};
 
 
