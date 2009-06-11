@@ -71,16 +71,19 @@ STATIC_ROUTINE int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *
       nid_dsc.pointer = (char *)&nid;
       status = TdiData(pmethod->method, &method_d MDS_END_ARG);
       if (status & 1) status = TdiGetNid(pmethod->object, &nid);
-      arglist[0] = (int *)(long)ndesc;
+      arglist[0] = (int *)(long)ndesc+1;
       arglist[1] = (int *)&nid_dsc;
       arglist[2] = (int *)&method_d;
 
       /*** skip timeout,method,object ***/
       for (j = 3; j < ndesc; ++j) arglist[j] = (int *)pmethod->arguments[j-3];
-	  arglist[ndesc] = MdsEND_ARG;
+      arglist[ndesc] = (int *)out_ptr;
+      arglist[ndesc+1] = MdsEND_ARG;
       if (status & 1) {
 	    status = (long)LibCallg(arglist, TreeDoMethod);
-	    status = TdiPutLong(&status, out_ptr);
+	    if (!(status & 1)) {
+	      status = TdiPutLong(&status, out_ptr);
+	    }
       }
       StrFree1Dx(&method_d);
       break; 
