@@ -277,11 +277,11 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   EMPTYXD(xd);
   EMPTYXD(out_xd);
   jobject ris;
+
   cls = (*env)->GetObjectClass(env, jnid);
   nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   status = TreeGetRecord(nid, &xd);
-
   /*
  printf("\nletti %d bytes\n", xd.l_length);
 */

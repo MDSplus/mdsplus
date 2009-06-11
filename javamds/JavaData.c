@@ -474,6 +474,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	    opcode_fid = (*env)->GetFieldID(env, cls, "opcode", "I");
 	    opcode = 0;
 	    switch(record_d->length) {
+	      case 0: break;
 	      case 1 : opcode = *( unsigned char *)record_d->pointer; break;
 	      case 2 : opcode = *( unsigned short *)record_d->pointer; break;
 	      default: opcode = *( unsigned int *)record_d->pointer; break;
