@@ -55,7 +55,9 @@ public fun DT200__INIT(as_is _nid, optional _method)
   MdsValue('Dt200Init($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
 
   /* now arm the hardware */
-  MdsValue('Dt200WriteMaster($,"setArm")', _board);
+  _status = MdsValue('Dt200WriteMaster($,"set.Arm", 1)', _board);
+  if (_status == "/bin/sh: set.Arm: not found")
+    MdsValue('Dt200WriteMaster($,"setArm")', _board);
   
   return(1);
 }

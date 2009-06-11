@@ -22,6 +22,8 @@ public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
     }
   }
   Dt200WriteMaster(_board, "setModeTriggeredContinuous "//_preTrig//" "//_postTrig);
-  Dt200WriteMaster(_board, "setArm");
+  _status = Dt200WriteMaster(_board, "set.Arm", 1);
+  if (_status == "/bin/sh: set.Arm: not found")
+    Dt200WriteMaster(_board, "setArm");
   return(1);
 }
