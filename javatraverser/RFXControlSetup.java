@@ -559,6 +559,7 @@ public class RFXControlSetup extends DeviceSetup {
     DeviceTable deviceTable111 = new DeviceTable();
     DeviceTable deviceTable112 = new DeviceTable();
     DeviceField deviceField73 = new DeviceField();
+    DeviceField modeSwitchField = new DeviceField();
     JPanel jPanel610 = new JPanel();
     JPanel jPanel611 = new JPanel();
     JPanel jPanel612 = new JPanel();
@@ -2434,6 +2435,10 @@ public class RFXControlSetup extends DeviceSetup {
         deviceField73.setLabelString("Derivative Cutoff freq (Hz):");
         deviceField73.setNumCols(5);
         deviceField73.setIdentifier("");
+        modeSwitchField.setOffsetNid(1263);
+        modeSwitchField.setLabelString("Mode Switch Level: ");
+        modeSwitchField.setNumCols(5);
+        modeSwitchField.setIdentifier("");
     jPanel610.setLayout(gridLayout16);
         deviceField4114.setOffsetNid(1461);
         deviceField4114.setLabelString("End Time (s):");
@@ -3213,6 +3218,7 @@ public class RFXControlSetup extends DeviceSetup {
     jTabbedPane1.add(jScrollPane6,  "Lock Control");
         jTabbedPane1.add(jScrollPane5,   "Mode Control 1");
     jScrollPane5.getViewport().add(jPanel42, null);
+        jPanel44.add(modeSwitchField, null);
         jPanel44.add(deviceField73, null);
         jPanel44.add(deviceField35, null);
     jPanel44.add(deviceField34, null);
