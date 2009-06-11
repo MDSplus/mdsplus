@@ -579,7 +579,7 @@ write(*,'RFXControl__add');
 
     DevAddNode(_path // '.PARAMETERS:PAR215_NAME', 'TEXT', "ModeControlDerivativeCutOff", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR215_VAL', 'NUMERIC',100., *, _nid);
-    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "Spare", *, _nid);
+    DevAddNode(_path // '.PARAMETERS:PAR216_NAME', 'TEXT', "ModeControlSwitchLevel", *, _nid);
     DevAddNode(_path // '.PARAMETERS:PAR216_VAL', 'NUMERIC', 0, *, _nid);
 
 
