@@ -64,7 +64,7 @@ function replace_input, qry, idx, val, debug=debug
 
   sz = size(val)
   if (sz(n_elements(sz)-2) eq 7) then begin
-      ans =  strmid(qry, 0, idx-1)+'"'+STRING(val)+'"'+strmid(qry, idx, strlen(qry)-idx)
+      ans =  strmid(qry, 0, idx-1)+'"'+STRING(val[0])+'"'+strmid(qry, idx, strlen(qry)-idx)
       if (debug) then $
         print, "replace_input - string ("+ans+")"
   endif else begin
@@ -179,6 +179,7 @@ if (debug) then $
   print, "        IDXs: ",idxs
 for i = 0, num_inputs-1 do begin
     if (debug) then begin
+      help, i
       print, 'About to replace input  - i = ', i, 'idxs(i) = ', idxs(i)
       help, idxs, query
     endif
@@ -188,6 +189,7 @@ for i = 0, num_inputs-1 do begin
     if (debug) then begin
       print, "After query replace IDXs "
       help, idxs
+      help, query
     endif
     idxs = idxs + (strlen(query)-old_len)
     if (debug) then begin
