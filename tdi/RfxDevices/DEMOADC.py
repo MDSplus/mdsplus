@@ -1,26 +1,46 @@
-class DEMOADC(object):
-    """A Demo 4 Channel, 16 but digfitizer"""
-#Python instance constructor
-    def __init__(self,node):
-#The class is intialized passing the reference to the root node of the device instance, and it is recorded in the instance
-        self.node=node
-#definition of offsets of the various nodes composing the device subtree, just to make the code clearer
-   	self.N_HEAD = 0
-    	self.N_NAME = 1
-	self.N_COMMENT = 2
-	self.N_CLOCK_FREQ = 3
-	self.N_TRIG_SOURCE = 4
-	self.N_PTS = 5
-	self.N_CHANNEL_0 = 6
-#number of nodes for each channel
-	self.K_NODES_PER_CHANNEL = 4
-#offsets of channel subtree components with respect to the channel root
-	self.N_CHAN_START_IDX = 1
-	self.N_CHAN_END_IDX = 2
-	self.N_CHAN_DATA = 3
-        return
+from MDSplus import Device,Data,Action,Dispatch,Method
 
+class DEMOADC(Device):
+    """A Demo 4 Channel, 16 but digitizer"""
+#This class inherits from the generic Device class
+#Class Device provides the basic methods required by MDSplus, in particular the Add metod
+#called when a new instance of this device has to be created in a tree in editing
+#it is therefore only necessary to add here the device specific methods such as init and store
+#It is however necessary to define the structure of the device, so that the superclass' Add method can 
+#build the appropiate device subtree. This information is specified as a list of dictionaries
+#every element of the list specifies a node of the subtree associated with the device. The mandatory dictionary items
+#for each node are: 
+#  - path : the path name relative to the subtree root of the node
+#  - type : the type (usage) of the node, which can be either 'text', 'numeric', 'signal', 'action', 'structure'
+#optional dictionary items formeach node are:
+#  - value : initial value forn that node
+#  - valueExpr : initial value when specified as an expression
+#  - options : a (list of) NCI options for the tree node, such as 'no_write_model', 'no_write_shot', 'compress_on_put'
+#field parts will contain the list of dictionaries, and will be used by Device superclass.
+#
+#in the following methods, defice fields are referred by the syntax: self.<field_name>, where field_name is derived by the 
+#path of the corresponding tree node relative to the subtree (as specified by the corresponding path dictionary item), where #letters are lowercase and the dots and colons are replaced by underscores (except the first one). 
+#For example, tree node :NAME is accessed by field self.name and .CHANNEL_1:DATA by field self.channel_1_data
+#All there firlds are TreeNode instances and therefore all TreeNode methods such as Data() or putData() can be used.
 
+    parts=[{'path':':NAME','type':'text'}, {'path':':COMMENT','type':'text'},
+	{'path':':CLOCK_FREQ','type':'numeric', 'value':10000},
+   	{'path':':TRIG_SOURCE','type':'numeric', 'value':0},
+   	{'path':':PTS','type':'numeric', 'value':1000}]
+    for i in range(4):
+	parts.append({'path':'.CHANNEL_%d'%(i),'type':'structure'})
+	parts.append({'path':'.CHANNEL_%d:START_IDX'%(i),'type':'numeric', 'value':0})
+	parts.append({'path':'.CHANNEL_%d:END_IDX'%(i),'type':'numeric', 'value':1000})
+	parts.append({'path':'.CHANNEL_%d:DATA'%(i),'type':'signal', 'options':('no_write_model','compress_on_put')})
+
+    parts.append({'path':':INIT_ACTION','type':'action',
+	'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'init',head))",
+	'options':('no_write_shot',)})
+    parts.append({'path':':STORE_ACTION','type':'action',
+	'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'store',head))",
+	'options':('no_write_shot',)})
+    del i
+  
 ######################################INIT#################################################################
 #init method, called to configure the ADC device. It will read configuration from the corresponding subtree
 #and it will download configuration to the device
@@ -57,16 +77,13 @@ class DEMOADC(object):
 
 #deviceLib is the ctype DLL object which allows to call library routines
 
-	#the node field is a TreeNode object. We get its integer nid (node identifier) via method getNid()
-	baseNid = self.node.getNid()
-	#we will add offsets to baseNid to identify nodes containing configuration data.
 
 #in the following, we'll get data items in two steps (on the same line):
 #1) instantiate a TreeNode object, passing the integer nid to the constructor
 #2) read and evaluate (in the case the content is an expression) its content via TreeNode.data() method 
 #all data access operation will be but in a try block in order to check for missing or wrong configuration data
 	try:
-   	    name = TreeNode(baseNid + self.N_NAME).data()
+   	    name = self.name.data()
 #we expect to get a string in name
 	except:
 	    print 'Missing Name in device'
@@ -76,7 +93,7 @@ class DEMOADC(object):
 #read the clock frequency and convert to clock mode. We use a dictionary for the conversion, and assume 
 	clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
 	try:
-	    clockFreq = TreeNode(baseNid + self.N_CLOCK_FREQ).data()
+	    clockFreq = self.clock_freq.data()
 	    clockMode = clockDict[clockFreq]
 	except:
 	    print 'Missing or invalid clock frequency'
@@ -84,7 +101,7 @@ class DEMOADC(object):
 
 #read Post Trigger Samples and check for consistency
 	try:
-	    pts = TreeNode(baseNid + self.N_PTS).data()
+	    pts = self.pts.data()
 	except:
 	    print 'Missing or invalid Post Trigger Samples'
 	    return 0
@@ -110,13 +127,10 @@ class DEMOADC(object):
 	    print 'Cannot link to device library'
 	    return 0
 
-#the node field is a TreeNode object. We get its integer nid (node identifier) via method getNid()
-	baseNid = self.node.getNid()
-#we will add offsets to baseNid to identify nodes containing configuration data.
 
 #get name
 	try:
-   	    name = TreeNode(baseNid + self.N_NAME).data()
+   	    name = self.name.data()
 #we expect to get a string in name
 	except:
 	    print 'Missing Name in device'
@@ -146,7 +160,7 @@ class DEMOADC(object):
 
 #read PostTriggerSamples
 	try:
-	    pts = TreeNode(baseNid + self.N_PTS).data()
+	    pts = self.pts.data()
 	except:
 	    print 'Missing or invalid Post Trigger Samples'
 	    return 0
@@ -155,8 +169,8 @@ class DEMOADC(object):
 	endIdx = []
 	try :
 	    for chan in range(0,4):
-		currStartIdx = TreeNode(baseNid + self.N_CHANNEL_0 + chan * self.K_NODES_PER_CHANNEL + self.N_CHAN_START_IDX).data()
-		currEndIdx = TreeNode(baseNid + self.N_CHANNEL_0 + chan * self.K_NODES_PER_CHANNEL + self.N_CHAN_END_IDX).data()
+		currStartIdx = self.__getattr__('channel_%d_start_idx'%(chan)).data()
+		currEndIdx = self.__getattr__('channel_%d_end_idx'%(chan)).data()
 		startIdx.append(currStartIdx)
 		endIdx.append(currEndIdx)
 	except:
@@ -173,13 +187,13 @@ class DEMOADC(object):
 #we read the time associated with the trigger. It is specified in the TRIG_SOURCE field of the device tree structure.
 #it will be required in order to associate the correct time with each acquired sample
 	try:
-	    trigTime = TreeNode(baseNid + self.N_TRIG_SOURCE).data()
+	    trigTime = self.trig_source.data()
 	except:
 	    print 'Missing or invalid Post Trigger Samples'
 	    return 0
 #we need clock frequency as well
 	try:
-	    clockFreq = TreeNode(baseNid + self.N_CLOCK_FREQ).data()
+	    clockFreq = self.clock_freq.data()
 	    clockPeriod = 1./clockFreq
 	except:
 	    print 'Missing or invalid clock frequency'
@@ -240,7 +254,7 @@ class DEMOADC(object):
 
 #write the signal in the tree 
     	    try:
-    		TreeNode(baseNid + self.N_CHANNEL_0 + chan * self.K_NODES_PER_CHANNEL + self.N_CHAN_DATA).putData(signal)
+		self.__getattr__('channel_%d_data'%(chan)).putData(signal)
             except:
     		print 'Cannot write Signal in the tree' 
  		return 0
