@@ -385,19 +385,12 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	if (po)
 	{
           memcpy(po,pi,sizeof(struct descriptor_a));
-          if (pi->aflags.coeff) {
-	    int offset;
-	    int a0;
-	    set_offset(offset);
-	    set_a0(a0);
-	    po->a0 = po->pointer + (a0 - offset);
-	  }
-	  /*	  {
+          if (pi->aflags.coeff)
+	  {
             int a0;
             set_a0(a0);
             po->a0 = (char *)a0;
           }
-	  */
           for (i=0;i<pi->dimct;i++)
           {
             if (pi->aflags.coeff)
@@ -732,7 +725,7 @@ STATIC_ROUTINE int copy_dx_rec( struct descriptor *in_ptr,char *out_ptr,unsigned
           out_ptr += 16;
           if (inp->aflags.coeff)
 	  {
-            int a0 = offset(inp->a0);
+            int a0 = (char *)inp->a0-(char *)0;
             LoadInt(a0,out_ptr);
             out_ptr += 4;
             for (j=0;j<inp->dimct;j++)
