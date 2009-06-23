@@ -389,7 +389,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	  {
             int a0;
             set_a0(a0);
-            po->a0 = (char *)a0;
+            po->a0 = (char *)0+a0;
           }
           for (i=0;i<pi->dimct;i++)
           {
