@@ -116,11 +116,12 @@ class mdsdtypes:
     def fromNumpy(cls,value):
         if not mdsdtypes.m_to_n_types:
             for d in mdsdtypes.numpytypes:
-                mdsdtypes.m_to_n_types.setdefault((mdsdtypes.numpytypes[d])().dtype,d)
+                mdsdtypes.m_to_n_types.setdefault(str((mdsdtypes.numpytypes[d])().dtype),d)
         if str(value.dtype)[1:2]=='S':
             return DTYPE_T
         try:
-            return mdsdtypes.m_to_n_types[value.dtype]
-        except:
+            return mdsdtypes.m_to_n_types[str(value.dtype)]
+        except KeyError:
+            print mdsdtypes.m_to_n_types
             raise TypeError, 'Cannot convert '+str(value.dtype)+' to mdsplus type'
     fromNumpy=classmethod(fromNumpy)

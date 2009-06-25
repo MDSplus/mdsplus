@@ -111,7 +111,16 @@ class Data(object):
         """Return raw part of object
         @rtype: Data"""
         return Data.execute('raw_of($)',self)
-
+    
+    def getDimensionAt(self,idx=0):
+        """Return dimension of object
+        @param idx: Index of dimension
+        @type idx: int
+        @rtype: Data"""
+        return Data.execute('dim_of($,$)',(self,idx))
+    
+    dim_of=getDimensionAt
+    
     def _getUnits(self):
         return Data.execute('units($)',self)
 
