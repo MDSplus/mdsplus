@@ -8,7 +8,7 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC 
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@
+LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
