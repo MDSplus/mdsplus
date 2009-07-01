@@ -365,7 +365,7 @@ EXPORT  int EventTrigger(char *name, char *buf, int size)
 	}
 	
 }
-EXPORT int EventTriggerAndWait(const char *name, char *buf, int size)
+EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 {
 	try {
 		checkEventManager();

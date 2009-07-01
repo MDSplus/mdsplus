@@ -43,8 +43,11 @@ static void configure()
 	char *addrPtr, *addrPtr1;
 	struct EventDescr *currEventDescr;
 	int i;
-	if(eventDescrHead) return;
 
+	static int initialized = 0;
+
+	if(initialized) return;
+	initialized = 1;
 
 	confFilename = TranslateLogical("mdsevent_conf");
 	confF = fopen(confFilename, "r");
@@ -101,9 +104,9 @@ static void propagateEvent(char *name, char *buf, int size, char wait)
 
 	expr = malloc(strlen(name) + 512);
 	if(wait)
-		sprintf(expr, "rtevents->EventTriggerAndWait(\"%s\", $1, val(%d))", name, size);
+		sprintf(expr, "RtEventsShr->EventTriggerAndWait(\"%s\", $1, val(%d))", name, size);
 	else
-		sprintf(expr, "rtevents->EventTrigger(\"%s\", $1, val(%d))", name, size);
+		sprintf(expr, "RtEventsShr->EventTrigger(\"%s\", $1, val(%d))", name, size);
 
 	candidateD.length = strlen(name);
 	candidateD.pointer = name;
