@@ -16,7 +16,7 @@ CXXSOURCES = \
 	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp
 	
 	
-SOURCES = 
+SOURCES = MdsEvents.c
 
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = RtEventsShr.exports
