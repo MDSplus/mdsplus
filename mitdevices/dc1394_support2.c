@@ -32,6 +32,7 @@ static int width;
 static int height;
 static int bytes;
 static char model[43] = "\0";
+static int needSwap = 0;
 
 static void CleanUp(void *arg)
 {
@@ -44,6 +45,18 @@ static void CleanUp(void *arg)
     d = NULL;
     thread_id = 0;
   if(debug_flag) printf("Done with Cleanup\n");
+}
+
+static void swapbytes(unsigned char *dest, unsigned char *src, unsigned int sz)
+{
+  register int i;
+  register unsigned char t;
+  for (i=0; i<sz; i+=2)
+  {
+     t=src[i];
+     dest[i]=src[i+1];
+     dest[i+1] = t;
+  }
 }
 
 void *CaptureFrames(void *arg)
@@ -74,6 +87,7 @@ void *CaptureFrames(void *arg)
       if (err!=DC1394_SUCCESS) break;
       if (start_time == 0) start_time = frame->timestamp;
       frame_times[i] = (frame->timestamp-start_time)/1E6;
+      needSwap = ((frame->data_depth==16) && !frame->little_endian);
       memcpy(&buf[i*framesize], frame->image, framesize);
       err = dc1394_capture_enqueue(camera, frame);
       if (err!=DC1394_SUCCESS) break;
@@ -363,7 +377,10 @@ int dc1394ReadFrames(char *data)
     {
       if (next_frame > 0) 
 	{
-	  memcpy(data, buf, framesize*next_frame);
+          if (needSwap)
+            swapbytes(data, buf, framesize*next_frame);
+          else
+	    memcpy(data, buf, framesize*next_frame);
 	  status = 1;
 	}
       else
