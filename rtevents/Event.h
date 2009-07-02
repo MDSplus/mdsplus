@@ -3,7 +3,7 @@
 #include "EventManager.h"
 extern "C" void EventReset();
 //Facade class for Event Managent
-class Event
+class EXPORT Event
 {
 	EventManager *evManager;
 	SharedMemManager *memManager;
@@ -15,19 +15,19 @@ public:
 		memManager = evManager->getMemManager();
 	}
 
-	void *addListener(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), bool copyBuf = true, int retDataSize = 0)
+	void *addListener(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg = 0, bool copyBuf = true, int retDataSize = 0)
 	{
-		return evManager->addListener(eventName, 0, callback, memManager, copyBuf, retDataSize);
+		return evManager->addListener(eventName, 0, callback, memManager, callbackArg, copyBuf, retDataSize);
 	}
 
-	void *addListener(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), ThreadAttributes *tAttr, bool copyBuf = true, int retDataSize = 0)
+	void *addListener(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), ThreadAttributes *tAttr, void *callbackArg = 0, bool copyBuf = true, int retDataSize = 0)
 	{
-		return evManager->addListener(eventName, tAttr, callback, memManager, copyBuf, retDataSize);
+		return evManager->addListener(eventName, tAttr, callback, memManager, callbackArg, copyBuf, retDataSize);
 	}
 
-	void *addListenerGlobal(const char *eventName, void (*callback)(char *, char *, int, bool, int, char *, int), int retDataSize = 0)
+	void *addListenerGlobal(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg = 0, int retDataSize = 0)
 	{
-		void *addr = evManager->addListener(eventName, 0, callback, memManager, true, retDataSize);
+		void *addr = evManager->addListener(eventName, 0, callback, memManager, callbackArg, true, retDataSize);
 		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
 		int msgSize = strlen(eventName) + 16;
 		char *msg = new char[msgSize];
@@ -94,10 +94,7 @@ public:
 		memManager->deallocate(buf, size);
 	}
 
-	void reset()
-	{
-		EventReset();
-	}
+	void reset();
 };
 
 #endif

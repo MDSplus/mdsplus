@@ -13,6 +13,7 @@ class TCPServer:public Runnable
 	MessageManager *manager;
 	Thread thread;
 
+
 public:
 	TCPServer(MessageManager *manager, int sock, int port)
 	{

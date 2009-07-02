@@ -7,13 +7,15 @@
 #include "SystemSpecific.h"
 extern char *TranslateLogical(char *);
 
-extern void *EventAddListener(char *name,  void (*callback)(char *, char *, int, char, int retSize, char *retData, int type));
-extern void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, char, int retSize, char *retData, int type));
+extern void EventWait(char *name, char *buf, int size, int *retSize);
+extern void EventReset();
+extern void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, char, int, char *, int), void *callbackArg);
+extern void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, char, int, char*, int), void *callbackArg);
 extern void EventRemoveListener(void *eventHandler);
 extern int EventTrigger(char *name, char *buf, int size);
 extern int EventTriggerAndWait(char *name, char *buf, int size);
+extern int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs);
 extern void EventClean();
-extern void EventReset();
 
 ////Structures used to record for each event the list of IP addresses for that event
 #define MAX_IP 256
@@ -127,19 +129,25 @@ static void propagateEvent(char *name, char *buf, int size, char wait)
 
 
 
-EXPORT void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int))
+EXPORT void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg)
 {
-	return EventAddListener(name,  (void (*)(char *, char *, int, char, int retSize, char *retData, int type))callback);
+	return EventAddListener(name,  (void (*)(char *, char *, int, void *, char, int retSize, char *retData, int type))callback, callbackArg);
 }
 
 EXPORT int MdsEventTrigger(char *name, char *buf, int size)
 {
 	propagateEvent(name, buf, size, 0);
-	return EventTrigger(name, buf, size);
+	return (EventTrigger(name, buf, size)==0)?1:0;
 }
 
 EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 {
 	propagateEvent(name, buf, size, 1);
-	return EventTriggerAndWait(name, buf, size);
+	return (EventTriggerAndWait(name, buf, size)==0)?1:0;
 }
+
+extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
+{
+	EventWait(name, buf, size, retSize;
+}
+

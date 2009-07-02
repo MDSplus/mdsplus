@@ -14,7 +14,7 @@
 #define TCP_PORT 4000 
 #define UDP_PORT 4001 
 
-static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type);
+static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
 //internal listener registers) for which another
@@ -852,7 +852,7 @@ static NetworkManager *udpMsgManager;
 static int numExtAddresses;
 
 
-static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type)
+static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type)
 {
 //printf("EVENT CALLBACK %s\n", name);
 
@@ -916,7 +916,7 @@ static void eventCallback(char *name, char *buf, int bufSize, bool isSynch, int 
 }
 
 
-static void registerEventCallback(char *name, char *buf, int bufSize, bool isSynch, int retSize, char *retData, int type)
+static void registerEventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type)
 {
 printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 

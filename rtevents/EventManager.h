@@ -19,7 +19,7 @@ class EXPORT EventManager
 	
 public:
 	void initialize();
-	void *addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char *, int), SharedMemManager *memManager, bool copyBuf = false, int retDataSize = 0);
+	void *addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, void *, bool, int, char *, int), SharedMemManager *memManager, void *callbackArg = 0, bool copyBuf = false, int retDataSize = 0);
 	void removeListener(void *eventAddr,  SharedMemManager *memManager);
 	void trigger(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true);
 	bool triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, Timeout *timeout = 0);
@@ -34,15 +34,17 @@ public:
 
 class EventRunnable: public Runnable
 {
-	void (*callback)(char *, char *, int, bool, int, char*, int);
+	void (*callback)(char *, char *, int, void *, bool, int, char*, int);
+	void *callbackArg;
 	bool copyBuf;
 	RetEventDataDescriptor *retDataDescr;
 public:
-	EventRunnable(void (*callback)(char *, char *, int, bool, int, char *, int), bool copyBuf, RetEventDataDescriptor *retDataDescr)
+	EventRunnable(void (*callback)(char *, char *, int, void *, bool, int, char *, int), bool copyBuf, RetEventDataDescriptor *retDataDescr, void *callbackArg)
 	{
 		this->callback = callback;
 		this->copyBuf = copyBuf;
 		this->retDataDescr = retDataDescr;
+		this->callbackArg = callbackArg;
 	}
 	virtual void run(void *arg)
 	{
@@ -60,14 +62,14 @@ public:
 			int retSize = retDataDescr->getSize();
 			if(retSize > 0)
 				retBuf = new char[retSize];
-			callback(evName, buf, dataSize, eh->isSynch(), (eh->isCollect())?retSize:0, (eh->isCollect())?retBuf:0, eh->getType());
+			callback(evName, buf, dataSize, callbackArg, eh->isSynch(), (eh->isCollect())?retSize:0, (eh->isCollect())?retBuf:0, eh->getType());
 			memcpy(retDataDescr->getData(), retBuf, retSize);
 			delete [] retBuf;
 			delete [] buf;
 			delete [] evName;
 		}
 		else
-			callback(eh->getName(), (char *)eh->getDataBuffer(), eh->getDataSize(), eh->isSynch(), 
+			callback(eh->getName(), (char *)eh->getDataBuffer(), eh->getDataSize(), callbackArg, eh->isSynch(), 
 			(eh->isCollect())?retDataDescr->getSize():0, (eh->isCollect())?retDataDescr->getData():0, eh->getType());
 	}
 };
@@ -99,8 +101,8 @@ public:
 #define EVENT_ID 2 //Used in global lock for event structure initialization
 #define EVENT_SIZE 10000 //Total size of shared memory used for event management
 
-extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, bool, int retSize, char *retData, int type));
-extern "C" EXPORT void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool, int retSize, char *retData, int type));
+extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
+extern "C" EXPORT void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
 extern "C" EXPORT void EventRemoveListener(void *eventHandler);
 extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
 extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);

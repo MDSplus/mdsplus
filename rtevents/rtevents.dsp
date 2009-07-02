@@ -97,6 +97,10 @@ SOURCE=.\AllocationManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Event.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\EventConnector.cpp
 # End Source File
 # Begin Source File

@@ -87,7 +87,7 @@ void EventManager::initialize()
 	lock.initialize();
 }
 	
-void *EventManager::addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, bool, int, char*, int), SharedMemManager *memManager, bool copyBuf, int retDataSize)
+void *EventManager::addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, void *, bool, int, char*, int), SharedMemManager *memManager, void *callbackArg, bool copyBuf, int retDataSize)
 {
 	//NOTE: EventHandlers are never deallocated
 	bool isNewHandler = false;
@@ -102,7 +102,7 @@ void *EventManager::addListener(const char *eventName, ThreadAttributes *threadA
 		isNewHandler = true;
 	}
 	RetEventDataDescriptor *retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
-	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, retDataDescr), currHandler, memManager);
+	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, retDataDescr, callbackArg), currHandler, memManager);
 
 	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier, retDataDescr);
 	addIntListener(retAddr);
@@ -284,126 +284,5 @@ EventManager *EventManager::getEventManager()
 {
 	checkEventManager();
 	return eventManager;
-}
-
-//////////////////////////External C Interface/////////////////////
-
-EXPORT void EventReset()
-{
-	GlobalLock eventLock;
-	eventLock.initialize(EVENT_ID);
-	eventLock.lock();
-	bool firstCreated = memManager.initialize(EVENT_ID, EVENT_SIZE);
-	memManager.reset();
-	eventManager = (EventManager *)memManager.allocate(sizeof(EventManager));
-	eventManager->initialize();
-	eventLock.unlock();
-	eventLock.dispose();
-}
-
-
-
-EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, bool, int, char *, int))
-{
-	try {
-		checkEventManager();
-		void *handl = eventManager->addListener(name, NULL, callback, &memManager);
-		int nameLen = strlen(name)+1;
-		char *msg = new char[nameLen];
-		strcpy(msg, name);
-
-		//Except when registering to supervisor event (i.e. by EvenConnector), signal this registration
-		if(strcmp(name, "@@@EVENT_MANAGER@@@"))
-			eventManager->triggerAndWait("@@@EVENT_MANAGER@@@", msg, nameLen, 0, &memManager, false);
-		delete [] msg;
-		return handl;
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-		return NULL;
-	}
-}
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, bool, int, char*, int))
-{
-	try {
-		checkEventManager();
-		void *handl = eventManager->addListener(name, NULL, callback, &memManager);
-		return handl;
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-		return NULL;
-	}
-}
-EXPORT void EventRemoveListener(void *eventHandler)
-{
-	if(!eventManager)
-		return;
-	try {
-		eventManager->removeListener(eventHandler, &memManager);
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-	}
-	
-}
-
-EXPORT  int EventTrigger(char *name, char *buf, int size)
-{
-	try {
-		checkEventManager();
-		eventManager->trigger(name, buf, size, 0, &memManager);
-		return 0;
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-		return -1;
-	}
-	
-}
-EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
-{
-	try {
-		checkEventManager();
-		eventManager->triggerAndWait(name, buf, size, 0, &memManager, true);
-		return 0;
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-		return -1;
-	}
-}
-
-EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs)
-{
-	try {
-		checkEventManager();
-		Timeout *timout = new Timeout(millisecs);
-		eventManager->triggerAndWait(name,  buf, size, 0, &memManager, true, timout);
-		delete timout;
-		return 0;
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-		return -1;
-	}
-}
-
-EXPORT void EventClean()
-{
-	try {
-		checkEventManager();
-		eventManager->clean(100, &memManager);
-	}
-	catch(SystemException *exc)
-	{
-		printf("%s\n", exc->what());
-	}
 }
 
