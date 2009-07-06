@@ -49,7 +49,7 @@
 int get_file_count( int dbType )
 {
 	void 				 *dbptr;	// generic pointer to struct's
-	char 				 ch, dbFileName[16];
+	char 				 dbFileName[16];
 	int					 dbFileSize, entrySize, i, numOfEntries;
 	int 				 *FileIsMapped;
 	extern struct MODULE *CTSdb;
@@ -96,9 +96,9 @@ int get_file_count( int dbType )
 		if( (i + entrySize) > dbFileSize )	// make sure we don't fall off the end ...
 			break;
 
-		sprintf(&ch, "%.1s", (char *)(dbptr+i));
+		//		sprintf(&ch, "%.1s", (char *)(dbptr+i));
 
-		if( ch == ' ' )						// we're done, so out'a here
+		if( *(char *)(dbptr+i) == ' ' )						// we're done, so out'a here
 			break;
 
 		++numOfEntries;
