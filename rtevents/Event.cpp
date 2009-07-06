@@ -1,5 +1,5 @@
 #include "SharedMemManager.h"
-#include "event.h"
+#include "Event.h"
 
 extern "C" EXPORT void EventWait(char *name, char *buf, int size, int *retSize);
 extern "C" EXPORT void EventReset();

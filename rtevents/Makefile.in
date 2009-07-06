@@ -12,7 +12,7 @@ LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
-	AllocationManager.cpp EventManager.cpp RelativePointer.cpp \
+	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
 	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp
 	
 	

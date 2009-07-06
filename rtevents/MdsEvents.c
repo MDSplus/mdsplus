@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ipdesc.h>
 #include <mdsdescrip.h>
@@ -148,6 +149,6 @@ EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 
 extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
 {
-	EventWait(name, buf, size, retSize;
+	EventWait(name, buf, size, retSize);
 }
 
