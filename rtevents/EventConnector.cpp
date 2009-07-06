@@ -993,14 +993,15 @@ public:
 		
 int main(int argc, char *argv[])
 {
+	Event ev;
+	//ev.reset();
 	if(argc != 2)
 	{
 		printf("Usage: EventConnector <configuration file>\n");
 		exit(0);
 	}
 	readExtAddresses(argv[1]);
-	EventReset();
-	Event ev;
+
 	extEventManager = new ExternalEventManager();
 	EventMessageReceiver messageReceiver(extEventManager, msgManager);
 

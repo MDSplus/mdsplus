@@ -22,6 +22,7 @@ void Event::reset()
 	memManager->reset();
 	evManager = (EventManager *)memManager->allocate(sizeof(EventManager));
 	evManager->initialize();
+//	evManager = EventManager::getEventManager();
 	eventLock.unlock();
 	eventLock.dispose();
 }

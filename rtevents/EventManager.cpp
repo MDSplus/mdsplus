@@ -256,7 +256,7 @@ static SharedMemManager memManager;
 
 static void checkEventManager()
 {
-	if(!eventManager) //If event struct not yet set-up fior this process
+	if(!eventManager) //If event struct not yet set-up for this process
 	{
 		GlobalLock eventLock;
 		eventLock.initialize(EVENT_ID);
