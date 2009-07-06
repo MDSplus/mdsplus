@@ -185,15 +185,7 @@ SOURCE=.\Lock.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\MessageManager.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\MessageReceiver.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\MessageSender.h
 # End Source File
 # Begin Source File
 
