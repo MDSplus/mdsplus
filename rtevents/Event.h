@@ -11,8 +11,8 @@ class EXPORT Event
 public:
 	Event()
 	{
-		evManager = EventManager::getEventManager();
 		memManager = evManager->getMemManager();
+		evManager = EventManager::getEventManager();
 	}
 
 	void *addListener(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg = 0, bool copyBuf = true, int retDataSize = 0)
