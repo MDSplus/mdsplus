@@ -735,8 +735,11 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
     the attributes are just a memory reference
     away.
 		*********************************************/
+	  if (version == 0)
 
 		memcpy(nci,info->edit->nci +  node_num - info->edit->first_in_mem, sizeof(NCI));
+	  else
+	    status=TreeFAILURE;
 	}
 
 	return status;
