@@ -321,6 +321,7 @@ STATIC_ROUTINE int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, 
   /***********************************
     Return the node
   ************************************/
+    memset(node_ptr,0,sizeof(*node_ptr));
 
     *node_ptrptr = node_ptr;
   }
