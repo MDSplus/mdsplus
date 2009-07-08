@@ -14,6 +14,29 @@
 #define TCP_PORT 4000 
 #define UDP_PORT 4001 
 
+class ExternalEventManager;
+
+static ExternalEventManager *extEventManager;
+static NetworkAddress *extAddresses[512];
+static NetworkAddress *udpExtAddresses[512];
+static NetworkManager *msgManager;
+static NetworkManager *udpMsgManager;
+static int numExtAddresses;
+
+static IPAddress *getMulticastAddr(char *eventName)
+{
+	int len = strlen(eventName);
+	unsigned int hash = 0;
+	for(int i = 0; i < len; i++)
+		hash += eventName[i];
+	char multicastAddrStr[64];
+	sprintf(multicastAddrStr, "225.0.0.%d", hash%256);
+	return new IPAddress(multicastAddrStr, UDP_PORT);
+}
+
+
+
+
 static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type);
 
 //Class InternalPending describes an event received from outside (and therefore for which an 
@@ -315,6 +338,7 @@ public:
 	InternalPending *intPendingHead;
 	ExternalPending *extPendingHead;
 	ExternalListener *extListenerHead;
+	ExternalListener *extMulticastListener;
 	ExternalEvent *nxt, *prv;
 	
 	ExternalEvent(const char *name, int retSize)
@@ -325,6 +349,7 @@ public:
 		intPendingHead = NULL;
 		extPendingHead = NULL;
 		extListenerHead = NULL;
+		extMulticastListener = NULL;
 		nxt = prv = NULL;
 	}
 	//Check if the callback has been triggered by the reception of an external event.
@@ -417,20 +442,35 @@ public:
 	//SendEvent sends a message describing the event. 
 	void sendAsynchEvent(char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
 	{
-		if(isUdp) printf("UDP\n");
-		ExternalListener *currListener = extListenerHead;
-		EventMessage msg(eventName, buf, bufSize, false, false, 0);
 		int msgLen;
+		EventMessage msg(eventName, buf, bufSize, false, false, 0);
 		char *msgBuf = msg.serialize(msgLen, msgManager);
-		while(currListener)
+		if(isUdp)
 		{
-			IPAddress currAddr((IPAddress *)currListener->addr);
-			if(isUdp)
-				currAddr.setPort(UDP_PORT);
-			else
-				currAddr.setPort(TCP_PORT);
-			msgManager->sendMessage(&currAddr, msgBuf, msgLen);
-			currListener = currListener->nxt;
+			printf("UDP\n");
+			ExternalListener *multicastListener = extMulticastListener;
+			if(!multicastListener)
+			{
+				printf("INTERNAL ERROR: Missing Multicast Address\n");
+				return;
+			}
+			IPAddress currAddr((IPAddress *)extMulticastListener->addr);
+			msgManager->sendMessage(&currAddr,  msgBuf, msgLen);
+		}
+		else
+		{
+			ExternalListener *currListener = extListenerHead;
+			while(currListener)
+			{
+				IPAddress currAddr((IPAddress *)currListener->addr);
+/*				if(isUdp)
+					currAddr.setPort(UDP_PORT);
+				else
+*/					currAddr.setPort(TCP_PORT);
+
+				msgManager->sendMessage(&currAddr, msgBuf, msgLen);
+				currListener = currListener->nxt;
+			}
 		}
 		delete [] msgBuf;
 	}
@@ -509,6 +549,12 @@ public:
 		if(extListenerHead)
 			extListenerHead->prv = newListener;
 		extListenerHead = newListener;
+
+		if(!extMulticastListener)
+		{
+			extMulticastListener = new ExternalListener(getMulticastAddr(eventName));
+		}
+
 	}
 	void removeExternalListeners(NetworkAddress *addr)
 	{
@@ -529,6 +575,7 @@ public:
 			currListener = currListener->nxt;
 		}
 	}
+
 };
 
 //Top structure class
@@ -622,19 +669,7 @@ public:
 			extEvent->sendSynchEvent(buf, bufSize, isCollect, msgManager, retSems, waitIds, numSems);
 		lock.unlock();
 	}
-/*	void addExternalPending(char *name, UnnamedSemaphore * &retSem, unsigned int &retId)
-	{
-		lock.lock();
-		ExternalEvent *extEvent = findEvent(name);
-		if(!extEvent)
-		{
-			printf("INTERNALE ERROR: received event message with no event structure!!");
-		}
-		else
-			extEvent->addExternalPending(retSem, retId);
-		lock.unlock();
-	}
-*/	void removeExternalPending(const char *name, unsigned int id)
+	void removeExternalPending(const char *name, unsigned int id)
 	{
 		lock.lock();
 		ExternalEvent *extEvent = findEvent(name);
@@ -724,6 +759,7 @@ public:
 		}
 		lock.unlock();
 	}
+
 };
 
 //Class TrigWaitRunnable provides trigger and wait for a given event on a separate thread
@@ -845,12 +881,6 @@ public:
 };
 
 
-static ExternalEventManager *extEventManager;
-static NetworkAddress *extAddresses[512];
-static NetworkAddress *udpExtAddresses[512];
-static NetworkManager *msgManager;
-static NetworkManager *udpMsgManager;
-static int numExtAddresses;
 
 
 static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type)
@@ -935,6 +965,7 @@ printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 	}
 	delete [] msg;
 	delete evMessage;
+	((UDPNetworkManager*)udpMsgManager)->join(getMulticastAddr(name));
 }
 
 static void trim(char *line)
