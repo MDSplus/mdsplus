@@ -946,7 +946,6 @@ static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool is
 	}
 }
 
-
 static void registerEventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type)
 {
 printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
