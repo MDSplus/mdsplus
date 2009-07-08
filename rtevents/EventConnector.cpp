@@ -962,9 +962,9 @@ printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 			printf("Error Sending registration message: %s\n", exc->what());
 		}
 	}
+	((UDPNetworkManager*)udpMsgManager)->join(getMulticastAddr(evMessage->name));
 	delete [] msg;
 	delete evMessage;
-	((UDPNetworkManager*)udpMsgManager)->join(getMulticastAddr(evMessage->name));
 }
 
 static void trim(char *line)
