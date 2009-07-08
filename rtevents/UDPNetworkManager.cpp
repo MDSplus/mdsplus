@@ -144,4 +144,33 @@ unsigned int UDPNetworkManager::toNative(unsigned int n)
 	return ntohl(n);
 }
 
+void UDPNetworkManager::join(IPAddress *addr)
+{
+    struct ip_mreq ipMreq;
+
+	ipMreq.imr_multiaddr.s_addr = inet_addr(addr->ipAddress);
+    ipMreq.imr_interface.s_addr = INADDR_ANY;
+    if(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0)
+    {	
+  	   	printf("Error setting socket options in udpStartReceiver\n");
+#ifdef HAVE_WINDOWS_H
+		int error = WSAGetLastError();
+		switch(error)
+		{
+			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
+			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
+			case WSAEADDRINUSE: printf("WSAEADDRINUSE\n"); break;
+			case WSAEINTR : printf("WSAEINTR\n"); break;
+			case WSAEINPROGRESS: printf("WSAEINPROGRESS\n"); break;
+			case WSAEALREADY: printf("WSAEALREADY\n"); break;
+			case WSAEADDRNOTAVAIL: printf("WSAEADDRNOTAVAIL\n"); break;
+			case WSAEAFNOSUPPORT: printf("WSAEAFNOSUPPORT\n"); break;
+			case WSAECONNREFUSED : printf("WSAECONNREFUSED\n"); break;
+			case WSAEFAULT : printf("WSAEFAULT\n"); break;
+			default: printf("BOH\n");
+		}
+#endif
+    }
+}
+
 

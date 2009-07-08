@@ -417,6 +417,7 @@ public:
 	//SendEvent sends a message describing the event. 
 	void sendAsynchEvent(char *buf, int bufSize, NetworkManager *msgManager, bool isUdp)
 	{
+		if(isUdp) printf("UDP\n");
 		ExternalListener *currListener = extListenerHead;
 		EventMessage msg(eventName, buf, bufSize, false, false, 0);
 		int msgLen;
@@ -590,7 +591,7 @@ public:
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
 		{
-			printf("INTERNALE ERROR: received event message with no event structure!!");
+			printf("INTERNAL ERROR: received event message with no event structure!!");
 		}
 		else
 			extEvent->signalExternalTermination(id, bufSize, buf);
@@ -602,7 +603,7 @@ public:
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
 		{
-			printf("INTERNALE ERROR: received event message with no event structure!!");
+			printf("INTERNAL ERROR: received event message with no event structure!!");
 		}
 		else
 			extEvent->sendAsynchEvent(buf, bufSize, msgManager, isUdp);
@@ -615,7 +616,7 @@ public:
 		ExternalEvent *extEvent = findEvent(name);
 		if(!extEvent)
 		{
-			printf("INTERNALE ERROR: received event message with no event structure!!");
+			printf("INTERNAL ERROR: received event message with no event structure!!");
 		}
 		else
 			extEvent->sendSynchEvent(buf, bufSize, isCollect, msgManager, retSems, waitIds, numSems);
@@ -854,7 +855,7 @@ static int numExtAddresses;
 
 static void eventCallback(char *name, char *buf, int bufSize, void *arg, bool isSynch, int retSize, char *retData, int type)
 {
-//printf("EVENT CALLBACK %s\n", name);
+//printf("EVENT CALLBACK %s %d\n", name, type);
 
 //The Event has been triggered as response from an external message.
 	if(extEventManager->isExternalEvent(name, buf, bufSize))

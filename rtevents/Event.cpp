@@ -156,7 +156,7 @@ EXPORT void EventWait(char *name, char *buf, int size, int *retSize)
 	sem.initialize(0);
 	Event ev;
 	WaitDescr waitDsc;
-	waitDsc.sem = &sem;http://www.repubblica.it/2009/07/sezioni/spettacoli_e_cultura/trailer-classifica/trailer-classifica/trailer-classifica.html?ref=hpspr1
+	waitDsc.sem = &sem;
 	waitDsc.size = size;
 	waitDsc.retSize = retSize;
 	waitDsc.buf = buf;

@@ -37,6 +37,7 @@ public:
 	virtual bool connectReceiver(NetworkAddress *addr, NetworkReceiver *receiver);
 	virtual unsigned int fromNative(unsigned int n);
 	virtual unsigned int toNative(unsigned int n);
+	void join(IPAddress *addr);
 };
 
 

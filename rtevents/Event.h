@@ -1,7 +1,14 @@
 #ifndef EVENT_H
 #define EVENT_H
 #include "EventManager.h"
-extern "C" void EventReset();
+////////////////Extern C Interface////////////////
+extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
+extern "C" EXPORT void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
+extern "C" EXPORT void EventRemoveListener(void *eventHandler);
+extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
+extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);
+extern "C" EXPORT void EventClean();
+extern "C" EXPORT void EventReset();
 //Facade class for Event Managent
 class EXPORT Event
 {
@@ -96,5 +103,5 @@ public:
 
 	void reset();
 };
+#endif /*EVENTMANAGER_H_*/
 
-#endif

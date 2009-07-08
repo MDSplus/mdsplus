@@ -92,12 +92,6 @@ public:
 	RetEventDataDescriptor *getRetDataDescr(){return retDataDescr;}
 };
 
-
-
-
-
-
-////////////////Extern C Interface////////////////
 #define EVENT_ID 2 //Used in global lock for event structure initialization
 #define EVENT_SIZE 10000 //Total size of shared memory used for event management
 
@@ -108,4 +102,8 @@ extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
 extern "C" EXPORT  int EventTriggerAndWait(char *name, char *buf, int size);
 extern "C" EXPORT void EventClean();
 extern "C" EXPORT void EventReset();
-#endif /*EVENTMANAGER_H_*/
+
+#endif
+
+
+

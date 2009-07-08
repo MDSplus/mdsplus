@@ -209,4 +209,4 @@ unsigned int TCPNetworkManager::toNative(unsigned int n)
 }
 
 
-bool IPAddress::initialized;
+EXPORT bool IPAddress::initialized;

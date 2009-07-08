@@ -80,7 +80,8 @@ public:
 			if (addr != 0xffffffff)
     			hp = gethostbyaddr((const char *) &addr, (int) sizeof(addr), AF_INET);
 		}
-		memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
+		if(hp != NULL)
+			memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 		sin.sin_port = htons( port );
 #endif
 	}
@@ -160,6 +161,11 @@ public:
 		int colonIdx;
 		int len = strlen(addrStr);
 		for(colonIdx = 0;colonIdx < len && addrStr[colonIdx] != ':'; colonIdx++);
+		if(colonIdx == len)
+		{
+			strncpy(ipAddress, addrStr, 511);
+			port = -1;
+		}
 		if(colonIdx < len - 1)
 		{
 			addrStr[colonIdx] = 0;
