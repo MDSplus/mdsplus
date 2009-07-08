@@ -964,7 +964,7 @@ printf("REGISTER EVENT CALLBACK %s %s\n", name, buf);
 	}
 	delete [] msg;
 	delete evMessage;
-	((UDPNetworkManager*)udpMsgManager)->join(getMulticastAddr(name));
+	((UDPNetworkManager*)udpMsgManager)->join(getMulticastAddr(evMessage->name));
 }
 
 static void trim(char *line)
