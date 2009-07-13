@@ -68,7 +68,7 @@ def makeData(value):
     if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
         from mdsscalar import makeScalar
         return makeScalar(value)
-    if isinstance(value,tuple) or (isinstance(value,numpy.ndarray) and isinstance(value.dtype,numpy.object)) or isinstance(value,list):
+    if isinstance(value,tuple) or isinstance(value,list):
         from apd import Apd,List
         apd = Apd(tuple(value),DTYPE_LIST)
         return List(apd)
