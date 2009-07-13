@@ -9,6 +9,7 @@ from apd import Apd,Dictionary,List
 from compound import *
 from _mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
 import numpy as _N
+
 import ctypes as _C
 import os
 
@@ -74,9 +75,9 @@ class descriptor(_C.Structure):
 
         if isinstance(value,_N.ndarray):
             if str(value.dtype)[1:2]=='S':
-                for i in range(len(value)):
-                    value[i]=value[i].ljust(value.itemsize)
-            a=descriptor_a(value)
+                for i in range(len(value.flat)):
+                    value.flat[i]=value.flat[i].ljust(value.itemsize)
+            a=descriptor_a(value.T)
             self.length=10000
             self.dtype=DTYPE_DSC
             self.pointer=_C.cast(_C.pointer(a),_C.POINTER(descriptor))
@@ -377,7 +378,7 @@ class descriptor(_C.Structure):
             if descr.coeff:
                 shape=list()
                 for i in range(descr.dimct):
-                    shape.append(descr.coeff_and_bounds[i])
+                    shape.append(descr.coeff_and_bounds[descr.dimct-i-1])
             else:
                 shape=[descr.arsize/descr.length,]
             if self.dtype == DTYPE_T:
