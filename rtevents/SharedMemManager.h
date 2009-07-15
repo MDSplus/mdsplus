@@ -81,7 +81,7 @@ public:
 			memLock->unlock();
 
 
-printf("ALLOCATED %d bytes %x\n", size, retBuf);
+//printf("ALLOCATED %d bytes %x\n", size, retBuf);
 
 		return retBuf;
 	}
@@ -94,7 +94,7 @@ printf("ALLOCATED %d bytes %x\n", size, retBuf);
 //		if(!isLocked)
 			memLock->unlock();
 
-printf("DEALLOCATED %d bytes at %x\n", size, buf);
+//printf("DEALLOCATED %d bytes at %x\n", size, buf);
 	}
 	
 	//Global lock: to be used when building linked structures in shared memory 
