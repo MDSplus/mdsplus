@@ -13,6 +13,7 @@
 #include <stdio.h>
 #define TCP_PORT 4000 
 #define UDP_PORT 4001 
+#define STATE_PORT 4002 
 
 class ExternalEventManager;
 
@@ -21,6 +22,12 @@ static NetworkAddress *extAddresses[512];
 static NetworkAddress *udpExtAddresses[512];
 static NetworkManager *msgManager;
 static NetworkManager *udpMsgManager;
+
+///State management
+static NetworkManager *stateMsgManager;
+SharedMemManager eventMemManager;
+
+
 static int numExtAddresses;
 
 static IPAddress *getMulticastAddr(char *eventName)
@@ -1020,6 +1027,49 @@ public:
 	}
 };
 
+#define GET_STATE 1
+#define CLEAN_EVENTS 2
+class StateMessageReceiver:public NetworkReceiver
+{
+public:
+	void messageReceived(NetworkAddress *addr, char *buf, int size)
+	{
+		if(size != 1)
+		{
+			printf("Unexpected State Request message size: %d\n", size);
+			return;
+		}
+		switch(buf[0]) {
+		case GET_STATE: {
+			SharedMemState *currState = eventMemManager.getState();
+			int currSize;
+			char *serState = currState->serialize(currSize);
+			stateMsgManager->sendMessage(addr, serState, currSize);
+			delete currState;
+			delete [] serState;
+			Event ev;
+			EventState *evState = ev.getState();
+			serState = evState->serialize(currSize);
+			stateMsgManager->sendMessage(addr, serState, currSize);
+			delete evState;
+			delete []serState;
+			break;}
+		case CLEAN_EVENTS: {
+			Event ev;
+			ev.clean();
+			break;}
+		default:
+			printf("Unexpected State Request message code: %d\n", buf[0]);
+		}
+
+	}
+	void connectionTerminated(NetworkAddress *addr){}
+};
+
+
+
+
+
 		
 		
 int main(int argc, char *argv[])
@@ -1042,6 +1092,13 @@ int main(int argc, char *argv[])
 
 	Thread checkerThread;
 	//checkerThread.start(new OrphanChecker, 0);
+
+//Set-up state server
+	StateMessageReceiver stateReceiver;
+	eventMemManager.initialize(EVENT_ID, EVENT_SIZE);
+	stateMsgManager = new TCPNetworkManager();
+	stateMsgManager->connectReceiver(new IPAddress(STATE_PORT), &stateReceiver);
+
 
 	UnnamedSemaphore sem;
 	sem.initialize(0);

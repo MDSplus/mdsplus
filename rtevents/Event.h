@@ -101,6 +101,9 @@ public:
 		memManager->deallocate(buf, size);
 	}
 
+	EventState *getState() {return evManager->getState();}
+	SharedMemState *getMemState() {return memManager->getState();}
+
 	void reset();
 };
 #endif /*EVENTMANAGER_H_*/

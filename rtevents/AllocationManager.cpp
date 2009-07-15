@@ -217,3 +217,30 @@ void AllocationManager::initialize(int size)
 		}
 		printf("\n\n");
 	}
+
+
+	SharedMemState *AllocationManager::getState(int size)
+	{
+		SharedMemState *state = new SharedMemState(size);
+		FreeDescriptor *currDsc;
+		FreeDescriptor *freeDscHead = reinterpret_cast<FreeDescriptor *>(freeListHead.getAbsAddress());
+		currDsc = freeDscHead;
+		while(currDsc)
+		{
+			_int64 currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
+			_int64 currDataOffset = reinterpret_cast<char *>(currDsc->getStartAddr()) - reinterpret_cast<char *>(&freeListHead);
+			state->addFreeDescr(currOffset, currDataOffset, currDsc->getSize());
+			currDsc = currDsc->getNext();
+		}
+
+		FreeDescriptor *unusedDscHead = reinterpret_cast<FreeDescriptor *>(unusedListHead.getAbsAddress());
+		currDsc = unusedDscHead;
+		while(currDsc)
+		{
+			_int64 currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
+			state->addUnusedDescr(currOffset);
+			currDsc = currDsc->getNext();
+		}
+		return state;
+	}
+

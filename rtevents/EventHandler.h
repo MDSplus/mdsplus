@@ -73,6 +73,8 @@ public:
 	int getType(){return type;}
 	void lockData(){lock.lock();}
 	void unlockData() {lock.unlock();}
+	int getNumRegistered();
+	int getNumPending();
 };
 
 class WaitLockTerminator: public Runnable

@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include "SystemSpecific.h"
 #include "RelativePointer.h"
-//Class FreeSpaceManager supervises memory allocation within a shared segment. 
+#include "SharedMemState.h"
+//Class AllocationManager supervises memory allocation within a shared segment. 
 //The first two elements of this segment will hold a pointer (_int64 offset to segment start) to the list of FreeDescriptor elements describing free space
 //within the segment, and a pointer (_int64 offset to segment start) to the list of currently unused FreedDescriptor elements. FreeDescriptor elements
 //are allocated from the segment as any other memory element
@@ -20,6 +21,9 @@ class EXPORT AllocationManager
 		RelativePointer startAddr;
 		int size;
 		RelativePointer next;
+		_int64 getStartOffset() {return startAddr.getOffset();}
+		_int64 getNextOffset() {return next.getOffset();}
+		int getSize() {return size;}
 		char *getStartAddr()
 		{
 			return reinterpret_cast<char *>(startAddr.getAbsAddress());
@@ -75,6 +79,7 @@ public:
 
 	//Dump the content of the managed memory
 	void print();
+	SharedMemState *getState(int size);
 };
 
 #endif /*ALLOCATIONMANAGER_H_*/

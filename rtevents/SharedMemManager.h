@@ -74,21 +74,27 @@ public:
 	
 	char *allocate(int size)
 	{
-		if(!isLocked)
+	//	if(!isLocked)
 			memLock->lock();
 		char *retBuf = allocationManager->allocateShared(size);
-		if(!isLocked)
+	//	if(!isLocked)
 			memLock->unlock();
+
+
+printf("ALLOCATED %d bytes %x\n", size, retBuf);
+
 		return retBuf;
 	}
 	
 	void deallocate(char *buf, int size)
 	{
-		if(!isLocked)
+//		if(!isLocked)
 			memLock->lock();
 		allocationManager->deallocateShared(buf, size);
-		if(!isLocked)
+//		if(!isLocked)
 			memLock->unlock();
+
+printf("DEALLOCATED %d bytes at %x\n", size, buf);
 	}
 	
 	//Global lock: to be used when building linked structures in shared memory 
@@ -107,6 +113,14 @@ public:
 	char *getFirstBuffer()
 	{
 		return allocationManager->getFirstBuffer();
+	}
+
+	SharedMemState *getState()
+	{
+		memLock->lock();
+		SharedMemState *retState = allocationManager->getState(size);
+		memLock->unlock();
+		return retState;
 	}
 };
 

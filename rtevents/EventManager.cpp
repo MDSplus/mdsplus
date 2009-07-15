@@ -101,7 +101,8 @@ void *EventManager::addListener(const char *eventName, ThreadAttributes *threadA
 		currHandler->setNext((EventHandler *)eventHead.getAbsAddress());
 		isNewHandler = true;
 	}
-	RetEventDataDescriptor *retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
+	RetEventDataDescriptor *retDataDescr;
+	retDataDescr = (RetEventDataDescriptor *)currHandler->addRetBuffer(retDataSize, memManager);
 	Notifier *currNotifier = (Notifier *)currHandler->addListener(threadAttr, new EventRunnable(callback, copyBuf, retDataDescr, callbackArg), currHandler, memManager);
 
 	ListenerAddress *retAddr = new ListenerAddress(currHandler, currNotifier, retDataDescr);
@@ -248,6 +249,20 @@ void EventManager::clean(const char *eventName, int milliSecs, SharedMemManager 
 		currHandler = currHandler->getNext();
 	}
 }
+
+
+EventState *EventManager::getState()
+{
+	EventState *evState = new EventState;
+	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
+	while(currHandler)
+	{
+		evState->addEvent(currHandler->getName(), currHandler->getNumRegistered(), currHandler->getNumPending());
+		currHandler = currHandler->getNext();
+	}
+	return evState;
+}
+
 
 static EventManager *eventManager = 0;
 static SharedMemManager memManager;

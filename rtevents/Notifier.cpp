@@ -48,9 +48,14 @@ void Notifier::synchTrigger()
 void Notifier::watchdogTrigger()
 {
 	try {
-		synch = true;
+		//synch = true;
 		watchdogSem.post();
 	}catch(SystemException *exc){}
+}
+
+bool Notifier::isPending()
+{
+	return synch;
 }
 
 

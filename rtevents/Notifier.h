@@ -41,6 +41,7 @@ void synchTrigger();
 void watchdogTrigger();
 bool waitTermination(Timeout &);
 void waitTermination();
+bool isPending();
 void dispose(bool semaphoresOnly, SharedMemManager *memManager);
 bool isOrphan();
 };

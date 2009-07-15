@@ -33,7 +33,11 @@ void *EventHandler::addRetBuffer(int size, SharedMemManager *memManager)
 	lock.lock();
 	RetEventDataDescriptor *dataDescr = (RetEventDataDescriptor *)memManager->allocate(sizeof(RetEventDataDescriptor));
 	dataDescr->initialize();
-	void *data = memManager->allocate(size);
+	void *data;
+	if(size > 0)
+		data = memManager->allocate(size);
+	else
+		data = 0;
 	dataDescr->setData(data, size);
 	dataDescr->setNext(retDataHead.getAbsAddress());
 	if(retDataHead.getAbsAddress())
@@ -270,6 +274,37 @@ void EventHandler::watchdogTrigger()
 	}
 	lock.unlock();
 }
+
+int EventHandler::getNumRegistered()
+{
+	int numNotifiers = 0;
+	lock.lock();
+	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
+//First pass: asynchronous triggers
+	while(currNotifier)
+	{
+		numNotifiers++;
+		currNotifier = currNotifier->getNext();
+	}
+	lock.unlock();
+	return numNotifiers;
+}
+int EventHandler::getNumPending()
+{
+	int numPending = 0;
+	lock.lock();
+	Notifier *currNotifier = (Notifier *)notifierHead.getAbsAddress();
+//First pass: asynchronous triggers
+	while(currNotifier)
+	{
+		if(currNotifier->isPending())
+			numPending++;
+		currNotifier = currNotifier->getNext();
+	}
+	lock.unlock();
+	return numPending;
+}
+
 
 bool EventHandler::corresponds(const char *inName)
 {

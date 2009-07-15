@@ -11,6 +11,10 @@ extern "C" EXPORT int EventTriggerAndWait(char *name, char *buf, int size);
 extern "C" EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs);
 extern "C" EXPORT void EventClean();
 
+extern "C" EXPORT char *EventGetSerializedState(int *size);
+extern "C" EXPORT char *EventGetSerializedMemState(int *size);
+
+
 //////////////////////////External C Interface/////////////////////
 
 void Event::reset()
@@ -165,4 +169,34 @@ EXPORT void EventWait(char *name, char *buf, int size, int *retSize)
 	sem.wait();
 	ev.removeListener(evHandler);
 	sem.dispose();
+}
+
+
+char *EventGetSerializedState(int *size)
+{
+	Event ev;
+	EventState *evState = ev.getState();
+	int serSize;
+	char *ser = evState->serialize(serSize);
+	char *outSer = (char *)malloc(serSize);
+	memcpy(outSer, ser, serSize);
+	delete evState;
+	delete[]ser;
+	*size = serSize;
+	return outSer;
+}
+
+
+char *EventGetSerializedMemState(int *size)
+{
+	Event ev;
+	SharedMemState *evState = ev.getMemState();
+	int serSize;
+	char *ser = evState->serialize(serSize);
+	char *outSer = (char *)malloc(serSize);
+	memcpy(outSer, ser, serSize);
+	delete evState;
+	delete[]ser;
+	*size = serSize;
+	return outSer;
 }

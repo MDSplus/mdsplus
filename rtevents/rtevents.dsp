@@ -217,6 +217,10 @@ SOURCE=.\SharedMemory.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SharedMemState.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\SystemException.h
 # End Source File
 # Begin Source File

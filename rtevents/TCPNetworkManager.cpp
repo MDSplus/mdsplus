@@ -37,7 +37,8 @@ void TCPHandler::run(void *arg)
 		if(readFromSocket(sock, 4, (char *)&readLen) == -1)
 		{
 			printf("Socket communication terminated\n");
-			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
+//			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
+			msgReceiver->connectionTerminated((NetworkAddress *)addr);
 			return;
 		}
 		len = ntohl(readLen);
@@ -45,11 +46,13 @@ void TCPHandler::run(void *arg)
 		if(readFromSocket(sock, len, buf) == -1)
 		{
 			printf("Socket communication terminated\n");
-			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
+//			msgReceiver->connectionTerminated((NetworkAddress *)&currAddr);
+			msgReceiver->connectionTerminated((NetworkAddress *)addr);
 			return;
 		}
 		printf("Message received\n");
-		msgReceiver->messageReceived((NetworkAddress *)&currAddr, buf, len);
+//		msgReceiver->messageReceived((NetworkAddress *)&currAddr, buf, len);
+		msgReceiver->messageReceived((NetworkAddress *)addr, buf, len);
 		delete [] buf;
 	}
 }

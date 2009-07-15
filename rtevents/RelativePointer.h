@@ -20,7 +20,7 @@ class EXPORT RelativePointer
 	_int64 offset;
 
 public:
-
+	_int64 getOffset() {return offset;}
 	void *getAbsAddress()
 	{
 		if(!offset)

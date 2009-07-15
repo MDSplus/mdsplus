@@ -18,6 +18,12 @@ extern int EventTriggerAndWait(char *name, char *buf, int size);
 extern int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs);
 extern void EventClean();
 
+extern char *EventGetSerializedState(int *size);
+extern char *EventGetSerializedMemState(int *size);
+
+
+
+
 ////Structures used to record for each event the list of IP addresses for that event
 #define MAX_IP 256
 #define MAX_LINE 1024
@@ -150,5 +156,44 @@ EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
 {
 	EventWait(name, buf, size, retSize);
+}
+
+
+extern void MdsEventClean()
+{
+	EventClean();
+}
+
+
+EXPORT struct descriptor_xd *MdsEventGetState()
+{
+	static EMPTYXD(xd);
+	DESCRIPTOR_A(stateD, 1, DTYPE_B, 0, 0); 
+	char *state;
+	int size;
+
+	state = EventGetSerializedState(&size);
+	stateD.pointer = state;
+	stateD.arsize = size;
+
+	MdsCopyDxXd((struct descriptor *)&stateD, &xd);
+	free(state);
+	return &xd;
+}
+
+EXPORT struct descriptor_xd *MdsEventGetMemState()
+{
+	static EMPTYXD(xd);
+	DESCRIPTOR_A(stateD, 1, DTYPE_B, 0, 0); 
+	char *state;
+	int size;
+
+	state = EventGetSerializedMemState(&size);
+	stateD.pointer = state;
+	stateD.arsize = size;
+
+	MdsCopyDxXd((struct descriptor *)&stateD, &xd);
+	free(state);
+	return &xd;
 }
 
