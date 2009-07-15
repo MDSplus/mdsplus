@@ -153,13 +153,13 @@ EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 	return (EventTriggerAndWait(name, buf, size)==0)?1:0;
 }
 
-extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
+EXPORT extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
 {
 	EventWait(name, buf, size, retSize);
 }
 
 
-extern void MdsEventClean()
+EXPORT extern void MdsEventClean()
 {
 	EventClean();
 }

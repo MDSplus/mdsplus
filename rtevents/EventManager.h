@@ -94,7 +94,7 @@ public:
 	RetEventDataDescriptor *getRetDataDescr(){return retDataDescr;}
 };
 
-#define EVENT_ID 2 //Used in global lock for event structure initialization
+#define EVENT_ID 3 //Used in global lock for event structure initialization
 #define EVENT_SIZE 100000 //Total size of shared memory used for event management
 
 extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
