@@ -152,6 +152,7 @@ DoubleArray.java\
 DoubleData.java\
 Editor.java\
 EventData.java\
+EventMonitor.java\
 ExprEditor.java\
 FloatArray.java\
 FloatData.java\
