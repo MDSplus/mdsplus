@@ -288,9 +288,15 @@ int       main(int argc, String *argv)
                                   {"Shrink", Shrink},
                                   {"Expand", Expand}};
   MrmType   class;
-  static XrmOptionDescRec options[] = {{"-defaults", "*defaults", XrmoptionSepArg, NULL}};
-  static XtResource resources[] = {{"defaults", "Defaults", XtRString, sizeof(String), 0, XtRString,
-				    "*"}};
+  typedef struct {
+    String defaultfile;
+    Boolean icon_update;
+  } AppResourcesRec;
+  static AppResourcesRec appRes;
+  static XrmOptionDescRec options[] = {{"-defaults", "*defaults", XrmoptionSepArg, NULL},
+				       {"-icon_update","*icon_update",XrmoptionNoArg,"True"}};
+  static XtResource resources[] = {{"defaults", "Defaults", XtRString, sizeof(String), XtOffsetOf(AppResourcesRec,defaultfile), XtRString,"*"},
+				   {"icon_update","Icon_update",XtRBoolean,sizeof(Boolean), XtOffsetOf(AppResourcesRec,icon_update), XtRImmediate,(XtPointer)False}};
   Cursor    cursor;
   int       r;
   int       c;
@@ -298,6 +304,7 @@ int       main(int argc, String *argv)
   XmString  deffile;
   MrmHierarchy drm_hierarchy;
   char *printers = GetPrinterList();
+
   MrmInitialize();
 
 #ifndef _NO_DXm
@@ -309,7 +316,8 @@ int       main(int argc, String *argv)
   MrmRegisterNames(register_list, XtNumber(register_list));
   TopWidget = XtVaAppInitialize(&AppContext, "DwScope", options, XtNumber(options), &argc, argv, fallback_resources,
 				XmNallowShellResize, 1, XmNminWidth, 320, XmNminHeight, 100, NULL);
-  XtGetApplicationResources(TopWidget, &defaultfile, resources, XtNumber(resources), (Arg *) NULL, 0);
+  XtGetApplicationResources(TopWidget, &appRes, resources, XtNumber(resources), (Arg *) NULL, 0);
+  defaultfile=appRes.defaultfile;
   defaultfile = strlen(defaultfile) ? XtNewString(defaultfile) : XtNewString("my.scope");
   XtAppAddActions(AppContext, actions, XtNumber(actions));
   XtAugmentTranslations(TopWidget, XtParseTranslationTable("#augment <ResizeRequest> : Resize() \n\
@@ -322,6 +330,9 @@ int       main(int argc, String *argv)
     { printf("Problem loading UID\n");
       exit(1);
     }
+  if (appRes.icon_update) {
+    XmToggleButtonGadgetSetState(XtNameToWidget(TopWidget,"*disable_icon_updates"),False,False);
+  }
   SetupEventInput(AppContext,TopWidget);
   SetDirMask(XtNameToWidget(TopWidget,"*file_dialog"),&defaultfile,0);
 
