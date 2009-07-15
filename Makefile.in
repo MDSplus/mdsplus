@@ -23,8 +23,8 @@ PARTS = \
 	xtreeshr \
 	cacheshr \
 	mdsobjects/cpp \
-	rtevents \
         @MDSTCPIP@ \
+	rtevents \
         dwscope \
         mdslibidl \
         cdu     \
