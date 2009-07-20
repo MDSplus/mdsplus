@@ -352,14 +352,14 @@ object nidOptionMenu : user_defined procedure XmdsCreateNidOptionMenu {
     arguments {
         XmdsNnid = DEVICE_NID;
         XmdsNvalueStrings = string_table(
-	compound_string("352"),
-	compound_string("353"),
-	compound_string("354"),
-	compound_string("355"),
-	compound_string("356"),
-	compound_string("357"),
-	compound_string("358"),
-	compound_string("359"));
+	compound_string("384"),
+	compound_string("385"),
+	compound_string("386"),
+	compound_string("387"),
+	compound_string("388"),
+	compound_string("389"),
+	compound_string("390"),
+	compound_string("391"));
         XmNlabelString = compound_string("Trigger Mode:");
         XmdsNputOnApply = true;
         XmdsNnidOffset = DC1394A_TRIG_MODE;
