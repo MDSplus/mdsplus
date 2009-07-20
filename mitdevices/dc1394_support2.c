@@ -309,7 +309,7 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
   if (debug > 0)
     printf("shutter set, now the gain\n");
    /* and the gain */
-  if (dc1394_feature_set_mode(camera, DC1394_FEATURE_GAIN, (gain-=0)?DC1394_FEATURE_MODE_AUTO : DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS) {
+  if (dc1394_feature_set_mode(camera, DC1394_FEATURE_GAIN, (gain==0)?DC1394_FEATURE_MODE_AUTO : DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS) {
     fprintf(stderr, "unable to set gain to auto\n");
   }
   if (gain != 0) {

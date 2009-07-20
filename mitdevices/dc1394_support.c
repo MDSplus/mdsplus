@@ -244,7 +244,7 @@ int dc1394Init(int cam, int width, int height, int max_frames, int trigger_mode,
      }
    }
   if (debug > 0)
-    fprintf(stderr, "shutter set, now the gain\n");
+    fprintf(stderr, "shutter set, now the gain to %d\n", gain);
    /* and the gain */
    if (gain == 0) {
      if (dc1394_auto_on_off(Cameras[cam].handle, camera_nodes[0], FEATURE_GAIN, 1) != DC1394_SUCCESS) {
