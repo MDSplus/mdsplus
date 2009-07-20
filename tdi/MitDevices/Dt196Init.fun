@@ -21,9 +21,13 @@ public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       write (*, "don't forget about the clock divider");
     }
   }
-  Dt200WriteMaster(_board, "setModeTriggeredContinuous "//_preTrig//" "//_postTrig);
-  _status = Dt200WriteMaster(_board, "set.Arm", 1);
-  if (_status == "/bin/sh: set.Arm: not found")
+  _ans = Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig, 1);
+  if (extract(0,6,_ans) != 'ACQ32:') {
+     Dt200WriteMaster(_board, "setModeTriggeredContinuous "//_preTrig//" "//_postTrig);
+  }
+  _ans = Dt200WriteMaster(_board, "set.arm", 1);
+  if (extract(0,6,_ans) != 'ACQ32:') {
     Dt200WriteMaster(_board, "setArm");
+  }
   return(1);
 }
