@@ -1354,9 +1354,22 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
       //	LockMdsShrMutex(&msgIdMutex,&msgIdMutex_initialized);
         { 
 		char keypath[PATH_MAX];
+		int tries=0;
 		setKeyPath(keypath,msgKey);
 		/* this will block.. until the first writer! */
-		msgId = open(keypath, O_RDONLY);
+		msgId=-1;
+		while (msgId == -1) {
+		  msgId = open(keypath, O_RDONLY);
+		  if (msgId == -1) {
+		    printf("readMessage - Error opening %s for read!!!!",keypath);
+		    perror("readMessage - Unable to open message pipe");
+		    tries=tries+1;
+		    sleep(1);
+		    if (tries > 5) {
+		      exit(-1);
+		    }
+		  }
+		}
 	}
     //	UnlockMdsShrMutex(&msgIdMutex);
 #endif
