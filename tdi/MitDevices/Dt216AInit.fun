@@ -23,7 +23,7 @@ public fun Dt216AInit(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, 
       }
     }
   }
-  Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig//" "//_trigSrc, 1);
+  Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig//" "//_trigSrc//" rising", 1);
   Dt200WriteMaster(_board, "setArm");
   return(1);
 }

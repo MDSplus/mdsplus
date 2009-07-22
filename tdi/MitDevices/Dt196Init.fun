@@ -21,7 +21,7 @@ public fun Dt196Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       write (*, "don't forget about the clock divider");
     }
   }
-  _ans = Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig, 1);
+  _ans = Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig//" "//_trigSrc//" rising", 1);
   if (extract(0,6,_ans) != 'ACQ32:') {
      Dt200WriteMaster(_board, "setModeTriggeredContinuous "//_preTrig//" "//_postTrig);
   }
