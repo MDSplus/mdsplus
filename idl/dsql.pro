@@ -89,7 +89,7 @@ function BreakupStringAnswer, str, count
 		  str(i) = leftover+str(i)
 		  leftover = ''
 		endif
-		tmp = strsplit(str(i), string(1b), /extract)
+		tmp = strsplit(str(i), string(1b), /extract,/preserve)
 		if strpos(str(i), string(1b), /reverse_search) ne strlen(str(i))-1 then begin
 			leftover = tmp[n_elements(tmp)-1]
             if(n_elements(tmp) gt 1) then $
@@ -98,7 +98,7 @@ function BreakupStringAnswer, str, count
 			  tmp = leftover
 			  leftover = ''
 			endelse
-		endif
+		endif else tmp=tmp(0:n_elements(tmp)-2)
 		if (i eq 0) then begin
 			answer = tmp
 		endif else begin
