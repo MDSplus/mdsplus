@@ -221,7 +221,7 @@ def TreeFindTagWild(tree,wild):
     return tags
 
 def TreeGetRecord(n):
-    """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
+    """Get record from MDSplus tree. Accepts path, TreeNode or integer and the value"""
     value=descriptor_xd()
     status=__TreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
     if (status & 1):
