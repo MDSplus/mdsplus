@@ -1087,6 +1087,7 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	status = _TreeOpen(&dbid, name, shot, 0);
 	if(!(status & 1))
 	{
+		printf("OPEN FAILED!! \n");
 	    TreeSwitchDbid(oldDbid);
 	    return status;
 	}

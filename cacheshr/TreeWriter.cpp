@@ -106,6 +106,7 @@ void TreeWriter::run(void *arg)
 	TreeDescriptor writeTreeIdx;
 	char dataType;
 	int numSamples;
+	int count = 0;
 	while(1)
 	{
 		lock.lock();
@@ -126,7 +127,7 @@ void TreeWriter::run(void *arg)
 			NidHolder *newHead = nidHead->nxt;
 			delete nidHead;
 			nidHead = newHead;
-//			printf("TREE WRITER %d\n", writeTreeIdx.getShot());
+			//printf("TREE WRITER %d\n", count++);
 			working = true;
 			lock.unlock();	
 			

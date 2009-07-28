@@ -50,6 +50,7 @@ SEM_ID *LockManager::semaphores;
 	}
 	else
 	{
+printf("BUM\n");
 		bool created = lock.initialize(); //Will always return true since the lock is local
 		if(created)
 		{

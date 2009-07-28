@@ -8,6 +8,7 @@ typedef unsigned long long _int64;
 #define WRITE_BACK 2
 #define WRITE_BUFFER 3
 #define WRITE_LAST 4
+#define WRITE_LAST 4
 #define UPDATE_FLUSH 5
 
 
@@ -389,6 +390,7 @@ int Cache::appendTimestampedSegmentData(TreeDescriptor treeIdx, int nid, int *bo
 int Cache::appendRow(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, _int64 timestamp, int writeMode)
 {
+static int count;
 	int status, segmentFilled, retIdx;
 	bool newSegmentCreated;
 	status = dataManager.appendRow(treeIdx, nid, bounds, boundsSize, data, dataSize, timestamp, &segmentFilled, 
@@ -399,6 +401,7 @@ int Cache::appendRow(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSiz
 			treeWriter.addPutTimestampedSegment(treeIdx, nid, retIdx, 0);
 		else if((writeMode == WRITE_BUFFER &&segmentFilled)|| writeMode == WRITE_LAST)
 		{
+//printf("APPEND %d\n", count++);
 			treeWriter.addPutTimestampedSegment(treeIdx, nid, 0, 1);
 		}
 		else if(writeMode == WRITE_BACK && newSegmentCreated)
