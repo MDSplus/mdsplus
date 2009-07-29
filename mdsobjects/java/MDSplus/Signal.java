@@ -24,6 +24,10 @@ public class Signal extends Compound
         {
             this(data, raw, dimensions, null, null, null, null);
 	}
+	public Signal(Data data, Data raw, Data dimension)
+        {
+            this(data, raw, new Data[]{dimension}, null, null, null, null);
+	}
         public Signal(Data help, Data units, Data error, Data validation)
         {
             super(help, units, error, validation);
