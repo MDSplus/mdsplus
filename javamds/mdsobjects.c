@@ -681,6 +681,19 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_T:
+			  datum_fid = (*env)->GetFieldID(env, cls, "datum", "Ljava/lang/String;");
+			    java_string =(*env)->GetObjectField(env, obj, datum_fid);
+			    string = (*env)->GetStringUTFChars(env, java_string, 0);
+			    desc->length = strlen(string);
+                if (desc->length > 0)
+			    {
+			      desc->pointer = (char *)malloc(desc->length);
+			      memcpy(desc->pointer, string, desc->length);
+                }
+                else
+                   desc->pointer = 0;
+			    (*env)->ReleaseStringUTFChars(env, java_string, string);
+				return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_PATH:
 			  datum_fid = (*env)->GetFieldID(env, cls, "path", "Ljava/lang/String;");
 			    java_string =(*env)->GetObjectField(env, obj, datum_fid);
@@ -1044,8 +1057,12 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile
 JNIEXPORT jobject JNICALL Java_MDSplus_Data_cloneData
   (JNIEnv *env, jobject jobj)
 {
-	struct descriptor *descr =  ObjectToDescrip(env, jobj);
-	jobject retObj = DescripToObject(env, descr, 0, 0, 0, 0);
+
+	
+	struct descriptor *descr;
+	jobject retObj;
+	descr =  ObjectToDescrip(env, jobj);
+	retObj = DescripToObject(env, descr, 0, 0, 0, 0);
 	FreeDescrip(descr);
 	return retObj;
 }
@@ -1121,9 +1138,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData
 	jclass exc;
 	int status;
 
-	struct descriptor *descr =  ObjectToDescrip(env, jobj);
 
-	//printDecompiled(descr);
+	struct descriptor *descr;
+	descr =  ObjectToDescrip(env, jobj);
+
+	printDecompiled(descr);
 	status = TdiData(descr, &xd MDS_END_ARG);
 	if(!(status & 1))
     {
@@ -1132,7 +1151,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData
        (*env)->ThrowNew(env, exc, error_msg);
        return NULL;
     }
-//	printDecompiled(xd.pointer);
+	printDecompiled(xd.pointer);
 	retObj = DescripToObject(env, xd.pointer, 0,0,0,0);
 	MdsFree1Dx(&xd, 0);
 	FreeDescrip(descr);
@@ -2231,7 +2250,6 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
 	struct descriptor *rowD;
 	int status;
 	void *ctx;
-	printf("PUT ROW 1\n");
 	ctx = getCtx(ctx1, ctx2);
 
 	rowD = ObjectToDescrip(env, jrow);
