@@ -15,8 +15,8 @@ public class CachedTree extends Tree
 	public CachedTree(java.lang.String name, int shot, boolean isShared, int cacheDim) throws MdsException
         {
             super(name, shot);
-            cachedTreeOpen(name, shot);
             cacheConfigure(isShared, cacheDim);
+            cachedTreeOpen(name, shot);
         }
 	public CachedTree(java.lang.String name, int shot, boolean isShared) throws MdsException
         {

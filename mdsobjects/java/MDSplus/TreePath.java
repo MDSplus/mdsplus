@@ -37,7 +37,7 @@ public class TreePath extends TreeNode
         this(path, null, null, null, null);
     }
 
-    public static TreePath getData(java.lang.String path,  Data help, Data units, Data error, Data validation) throws MdsException
+    public static Data getData(java.lang.String path,  Data help, Data units, Data error, Data validation) throws MdsException
     {
         return new TreePath(path,  help,  units, error, validation);
     }

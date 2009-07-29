@@ -57,7 +57,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
   jmethodID constr;
   int i, length, count, status;
   unsigned int opcode;
-  jobject obj, exc, curr_obj;
+  jobject obj, exc, curr_obj, ris;
   jvalue args[8];
   jbyteArray jbytes;
   jshortArray jshorts;
@@ -199,7 +199,9 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		  buf[desc->length] = 0;
 		  args[0].l = (*env)->NewStringUTF(env, buf);
 		  free(buf);
-		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  ris = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		  return ris;
+		  //return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
 		case DTYPE_MISSING: 
 			cls = (*env)->FindClass(env, "MDSplus/Int32Array");
@@ -680,7 +682,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_T:
 		  case DTYPE_PATH:
-			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "Ljava/lang/String;");
+			  datum_fid = (*env)->GetFieldID(env, cls, "path", "Ljava/lang/String;");
 			    java_string =(*env)->GetObjectField(env, obj, datum_fid);
 			    string = (*env)->GetStringUTFChars(env, java_string, 0);
 			    desc->length = strlen(string);
@@ -692,7 +694,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
                 else
                    desc->pointer = 0;
 			    (*env)->ReleaseStringUTFChars(env, java_string, string);
-			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
+				return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_IDENT:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "Ljava/lang/String;");
 			    java_string =(*env)->GetObjectField(env, obj, datum_fid);
@@ -1265,7 +1267,6 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
 	jfieldID ctx1Fid, ctx2Fid;
 	jclass cls;
 	
-
 	name = (*env)->GetStringUTFChars(env, jname, 0);
 	status = _TreeOpen(&ctx, (char *)name, shot, readonly?1:0);
 	(*env)->ReleaseStringUTFChars(env, jname, name);
@@ -1960,7 +1961,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
 	jobject retObj;
 
 	void *ctx = getCtx(ctx1, ctx2);
-	
+
 	if(!isCached)
 		status = _TreeGetRecord(ctx, nid, &xd);
 	else
@@ -2229,7 +2230,9 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
 {
 	struct descriptor *rowD;
 	int status;
-	void *ctx = getCtx(ctx1, ctx2);
+	void *ctx;
+	printf("PUT ROW 1\n");
+	ctx = getCtx(ctx1, ctx2);
 
 	rowD = ObjectToDescrip(env, jrow);
 	if(isCached)
@@ -2590,7 +2593,7 @@ JNIEXPORT void JNICALL Java_MDSplus_CachedTree_cachedTreeOpen
 {
 	int status, ctx1, ctx2;
 	const char *name;
-	void *ctx;		   
+	void *ctx = 0;		   
 	jfieldID ctx1Fid, ctx2Fid;
 	jclass cls;
 	
