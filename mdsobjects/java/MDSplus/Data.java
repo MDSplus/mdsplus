@@ -101,6 +101,24 @@ public class Data {
             this.validation = validation;
         }
 
+        public static Data Data(byte d){return new Int8(d);}
+        public static Data Data(short d){return new Int16(d);}
+        public static Data Data(int d){return new Int32(d);}
+        public static Data Data(long d){return new Int64(d);}
+        public static Data Data(float d){return new Float32(d);}
+        public static Data Data(double d){return new Float64(d);}
+        public static Data Data(java.lang.String d){return new MDSplus.String(d);}
+        public static Data Data(byte[] d){return new Int8Array(d);}
+        public static Data Data(short []d){return new Int16Array(d);}
+        public static Data Data(int[] d){return new Int32Array(d);}
+        public static Data Data(long[]d){return new Int64Array(d);}
+        public static Data Data(float[] d){return new Float32Array(d);}
+        public static Data Data(double[] d){return new Float64Array(d);}
+        public static Data Data(java.lang.String d[]){return new MDSplus.StringArray(d);}
+         
+        
+        
+        
         static {
             try {
               System.loadLibrary("JavaMds");
