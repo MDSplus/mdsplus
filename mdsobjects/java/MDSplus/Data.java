@@ -101,7 +101,7 @@ public class Data {
             this.validation = validation;
         }
 
-        
+        public double[]toDouble()throws Exception {return getDoubleArray();}
         
         
         static {
