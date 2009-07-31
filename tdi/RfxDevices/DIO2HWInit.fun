@@ -168,6 +168,21 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		}
 	}
 
+/*Set initial value of Event registers */
+    	for(_i = 1; _i <= 16; _i++)
+	{
+		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),
+				val(byte(0)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+	}
+
 
 
 /* Close device */

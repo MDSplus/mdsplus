@@ -111,21 +111,38 @@ public fun DIO2HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	
 
 /* Set event if trigger mode == event */
+	
 	if(_trig_mode == 0)
 	{
+		_status = 1;
 		for(_i = 0; _i < size(_event); _i++)
 		{
-			_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(2 * _channel + 1 + _i)), val(byte(_event[_i])),
-				val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
-			if(_status != 0)
+		    _found = 0;
+		    for(_ev = 1; (_ev <=16) && (!_found); _ev++)
+		    { 
+			_ev_code = byte(0);
+			_ev_chan = byte(0);
+			_ev_trig = byte(0);
+			_status1 = DIO2->DIO2_EC_GetEventDecoder(val(_handle), val(byte(_ev)), 
+				ref(_ev_code), ref(_ev_chan), ref(_ev_trig));
+			if((_ev_code == 0) || (_ev_code == _event[_i]))
 			{
-				if(_nid != 0)
-					DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
-				else
-					write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
-				return(0);
+			    _found = 1;
+			    _ev_chan = _ev_chan | (1 << _channel);
+			    _status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_ev)), val(byte(_event[_i])),
+				val(byte(_ev_chan)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
 			}
+		    }
 		}
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting phase timing in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting phase timing in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+
 	}
 	
 
