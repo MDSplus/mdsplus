@@ -71,15 +71,20 @@ public fun DIO2__init(as_is _nid, optional _method)
     			DevLogErr(_nid, "Invalid Synch Event specification");
  			abort();
 		}
-		_synch_event = TimingDecodeEvent(_synch_ev_name);
-		if(_synch_event == 0)
+		_synch_event = [];
+		for(_i = 0; _i < size(_synch_ev_name); _i++)
 		{
-    			DevLogErr(_nid, "Invalid Synch Event specification");
- 			abort();
+			_curr_event = TimingDecodeEvent(_synch_ev_name[_i]);
+			if(_curr_event == 0)
+			{
+    				DevLogErr(_nid, "Invalid synch event ");
+ 				abort();
+			}
+			_synch_event = [_synch_event, _curr_event];
 		}
 	}
 	else
-		_synch_event = 0;
+		_synch_event = [];
 
 
 
@@ -90,9 +95,9 @@ public fun DIO2__init(as_is _nid, optional _method)
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
 	    _status = MdsValue('DIO2HWInit(0, $1, $2, $3, $4)', _board_id, _ext_clock, _rec_event, _synch_event);
-		MdsDisconnect();
 		if(_status == 0)
 		{
+			MdsDisconnect();
 			DevLogErr(_nid, "Error Initializing recorder in DIO2 device: seet CPCI console for details");
 			abort();
 		}
@@ -134,12 +139,10 @@ write(*, "working on channel "//_channel_mask);
 				}
 				if(_remote != 0)
 				{
-					_cmd = 'MdsConnect("'//_ip_addr//'")';
-					execute(_cmd);
 					_status = MdsValue('DIO2HWSetClockChan(0, $1, $2, $3, $4)', _board_id, _c, _frequency, _duty_cycle);
-					MdsDisconnect();
 					if(_status == 0)
 					{
+						MdsDisconnect();
 						DevLogErr(_nid, "Error Initializing clock channel in DIO2 device: see CPCI console for details");
 						abort();
 					}
@@ -250,13 +253,11 @@ write(*, "     got the delay "//_delay//" and the durration "//_duration);
 
 				if(_remote != 0)
 				{
-					_cmd = 'MdsConnect("'//_ip_addr//'")';
-					execute(_cmd);
 					_status = MdsValue('DIO2HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)', _board_id, _c, _trig_mode, _cyclic,
 						_init_level_1, _init_level_2, _delay, _duration, _event);
-					MdsDisconnect();
 					if(_status == 0)
 					{
+						MdsDisconnect();
 						DevLogErr(_nid, "Error Initializing pulse channel in DIO2 device: see CPCI console for details");
 						abort();
 					}
@@ -336,13 +337,11 @@ write(*, "  Should be all done setting up this chan for pulse");
 
 				if(_remote != 0)
 				{
-					_cmd = 'MdsConnect("'//_ip_addr//'")';
-					execute(_cmd);
 					_status = MdsValue('DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7)', _board_id, _c, _trig_mode, _frequency,
 						_delay, _duration, _event);
-					MdsDisconnect();
 					if(_status == 0)
 					{
+						MdsDisconnect();
 						DevLogErr(_nid, "Error Initializing gclock channel in DIO2 device: see CPCI console for details");
 						abort();
 					}
@@ -427,13 +426,12 @@ write(*, "  Should be all done setting up this chan for pulse");
 
 				if(_remote != 0)
 				{
-					_cmd = 'MdsConnect("'//_ip_addr//'")';
-					execute(_cmd);
+
 					_status = MdsValue('DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)', _board_id, _c, _trig_mode, 
 						_frequency_1, _frequency_2, _delay, _duration, _event);
-					MdsDisconnect();
 					if(_status == 0)
 					{
+						MdsDisconnect();
 						DevLogErr(_nid, "Error Initializing dclock channel in DIO2 device: see CPCI console for details");
 						abort();
 					}
@@ -475,9 +473,7 @@ write(*, "  Should be all done setting up this chan for pulse");
 
 	if(_remote != 0)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
-		_status = MdsValue('DIO2HWStartChan(0, $1, $2, $3)', _board_id, _channel_mask, _synch_event);
+		_status = MdsValue('DIO2HWStartChan(0, $1, $2, $3)', _board_id, _channel_mask, size(_synch_event));
 		MdsDisconnect();
 		if(_status == 0)
 		{
@@ -487,7 +483,7 @@ write(*, "  Should be all done setting up this chan for pulse");
 	}
 	else
 	{
-		_status = DIO2HWStartChan(_nid, _board_id, _channel_mask, _synch_event);
+		_status = DIO2HWStartChan(_nid, _board_id, _channel_mask, size(_synch_event));
 		if(_status == 0)
 		abort();
 	}

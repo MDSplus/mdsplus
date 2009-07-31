@@ -124,6 +124,38 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Set synch event if defined */
+	for(_i = 0; _i < size(_synch_event); _i++)
+	{
+		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_i+1)), val(byte(_synch_event[_i])),
+			val(byte(255)), val(byte(_DIO2_EC_START_TRIGGER)));
+
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+	}
+/* Initialize remaining event register */	     	
+    	for(_i = size(_synch_event) + 1; _i <= 16; _i++)
+	{
+		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),
+				val(byte(0)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+	}
+
+    
+
+/* OLD VERSION *****************
 	if(_synch_event != 0)
 	{
 		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(10)), val(byte(_synch_event)),
@@ -138,6 +170,7 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}		
+***************************/
 
 /* Configure Outputs: channel i: output, channel i + 1 corresponding trigger */
 	for(_c = 0; _c < 8; _c++)
@@ -164,21 +197,6 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 				DevLogErr(_nid, "Error setting input configuration in DIO2 device, board ID = "// _board_id);
 			else
 				write(*, "Error setting input configuration  in DIO2 device, board ID = "// _board_id);
-			return(0);
-		}
-	}
-
-/*Set initial value of Event registers */
-    	for(_i = 1; _i <= 16; _i++)
-	{
-		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),
-				val(byte(0)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
-			else
-				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
 			return(0);
 		}
 	}
