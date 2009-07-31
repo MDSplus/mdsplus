@@ -73,6 +73,53 @@ extern int TdiDecompile();
 
 static int cacheIsShared = 1, cacheSize = 200000;
 
+struct TreeDescr
+{
+	char *name;
+	int shot;
+	void *dbid;
+	struct TreeDescr *nxt;
+};
+
+static struct TreeDescr *treeDescrHead;
+static void *getDbid(char *name, int shot)
+{
+	struct TreeDescr *currDescr = treeDescrHead;
+	while(currDescr)
+	{
+		if(currDescr->shot == shot && !strcmp(currDescr->name, name))
+			return currDescr->dbid;
+		currDescr = currDescr->nxt;
+	}
+	return 0;
+}
+
+static void setDbid(char *name, int shot, void *dbid)
+{
+	int i;
+	struct TreeDescr *currDescr = treeDescrHead;
+	while(currDescr)
+	{
+		if(currDescr->shot == shot && !strcmp(currDescr->name, name))
+		{
+			currDescr->dbid = dbid;
+			return;
+		}
+	}
+	currDescr = (struct TreeDescr *)malloc(sizeof(struct TreeDescr));
+	currDescr->name = malloc(strlen(name)+1);
+	strcpy(currDescr->name, name);
+	for(i = 0; i < strlen(name); i++)
+		currDescr->name[i] = toupper(currDescr->name[i]);
+	currDescr->shot = shot;
+	currDescr->dbid = dbid;
+	currDescr->nxt = treeDescrHead;
+	treeDescrHead = currDescr;
+}
+
+
+
+
 
 
 static struct descriptor *rebuildDataDescr(char dataType, int numSamples, char *data, int dataLen, struct descriptor *descr, 
@@ -1015,20 +1062,21 @@ int putRecordInternal(char *name, int shot, int nid, char dataType, int numSampl
 	struct descriptor descr;
 	DESCRIPTOR_A(descrA, 0, 0, 0, 0);
 	struct descriptor *retDescr;
+
 	void *dbid = 0;
-	void *oldDbid = TreeSwitchDbid(0);
-	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1)) 
+	//void *oldDbid = TreeSwitchDbid(0);
+	//status = _TreeOpen(&dbid, name, shot, 0);
+
+    dbid = getDbid(name, shot);
+	if(!dbid) 
 	{
-		printf("PUT RECORD INTERNAL ERROR !!!, %s %d\n", name, shot);
-		TreeSwitchDbid(oldDbid);
-		return status;
+		printf("PUT RECORD INTERNAL ERROR: No dibid for %s %d\n", name, shot);
+		return 0;
 	}
 
 	if(size == 0)
 	{
 	    status = _TreePutRecord(dbid, nid, (struct descriptor *)&xd, 0);
-	    TreeSwitchDbid(oldDbid);
 	    return status;
 	}
 	if(dataType) //If scalar or array
@@ -1043,7 +1091,6 @@ int putRecordInternal(char *name, int shot, int nid, char dataType, int numSampl
 		status = _TreePutRecord(dbid, nid, (struct descriptor *)&xd, 0);
 	    MdsFree1Dx(&xd, 0);
 	}
-	TreeSwitchDbid(oldDbid);
 	return status;
 }
 
@@ -1051,16 +1098,16 @@ int deleteRecordInternal(char *name, int shot, int nid)
 {
 	int status;
 	EMPTYXD(xd);
+//	void *oldDbid = TreeSwitchDbid(0);
+//	status = _TreeOpen(&dbid, name, shot, 0);
 	void *dbid = 0;
-	void *oldDbid = TreeSwitchDbid(0);
-	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1))
+	dbid = getDbid(name, shot);
+	if(!dbid)
 	{
-	    TreeSwitchDbid(oldDbid);
-	    return status;
-        }
+		printf("DELETE RECORD INTERNAL ERROR: No dibid for %s %d\n", name, shot);
+		return 0;
+    }
 	status = _TreePutRecord(dbid, nid, (struct descriptor *)&xd, 0);
-	TreeSwitchDbid(oldDbid);
 	return status;
 }
 
@@ -1083,14 +1130,12 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	int shape[512];
 
 	void *dbid = 0;
-	void *oldDbid = TreeSwitchDbid(0);
-	status = _TreeOpen(&dbid, name, shot, 0);
-	if(!(status & 1))
+	dbid = getDbid(name, shot);
+	if(!dbid)
 	{
-		printf("OPEN FAILED!! \n");
-	    TreeSwitchDbid(oldDbid);
-	    return status;
-	}
+		printf("PUT SEGMENT INTERNAL ERROR: No dibid for %s %d\n", name, shot);
+		return 0;
+    }
 	memcpy(shape, inShape, shapeSize);
 
 	//Return Shape and type information. The coding is the following:
@@ -1104,7 +1149,6 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &fullDataXd);
 	if(!(status & 1)) 
 	{
-	    TreeSwitchDbid(oldDbid);
 	    return status;
 	}
 
@@ -1131,7 +1175,6 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 	status = rebuildFromDataTypeAndShape(data, shape, shapeSize, &dataXd);
 	if(!(status & 1))
 	{
-	    TreeSwitchDbid(oldDbid);
 	    return status;
 	}
 	if(isTimestamped)
@@ -1144,7 +1187,6 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 		status = _TreeBeginSegment(dbid, nid, &startD, &endD, (struct descriptor *)&timesD, (struct descriptor_a *)dataXd.pointer, -1);
 		if(!(status & 1))
 		{
-		    TreeSwitchDbid(oldDbid);
  		    return status;
 		}
 		MdsFree1Dx(&dataXd, 0);
@@ -1168,7 +1210,6 @@ int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize
 		MdsFree1Dx(&dataXd, 0);
 		MdsFree1Dx(&fullDataXd, 0);
 	}
-	TreeSwitchDbid(oldDbid);
 	return status;
 }
 
@@ -1181,7 +1222,9 @@ EXPORT void RTreeConfigure(int shared, int size)
 
 EXPORT int _RTreeOpen(void **dbid, char *expName, int shot)
 {
-	return _TreeOpen(dbid, expName, shot, 0);
+	int status = _TreeOpen(dbid, expName, shot, 0);
+	setDbid(expName, shot, *dbid);
+	return status;
 }
 
 EXPORT int _RTreeClose(void *dbid, char *expName, int shot)
@@ -1190,7 +1233,10 @@ EXPORT int _RTreeClose(void *dbid, char *expName, int shot)
 }
 EXPORT int RTreeOpen(char *expName, int shot)
 {
-	return TreeOpen(expName, shot, 0);
+	void *dbid;
+	int status = _TreeOpen(&dbid, expName, shot, 0);
+	setDbid(expName, shot, dbid);
+	return status;
 }
 
 EXPORT int RTreeClose(char *expName, int shot)

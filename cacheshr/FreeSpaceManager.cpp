@@ -181,7 +181,7 @@ printf("FreeSpaceManager::initialize %d\n", size);
 	void FreeSpaceManager::freeShared(char *addr, int size, LockManager *lock)
 	{
 
-		//printf("FREE SHARED %d\n", size);
+	//	printf("FREE SHARED %d\n", size);
 		
 		
 		FreeDescriptor *currDsc, *prevDsc;

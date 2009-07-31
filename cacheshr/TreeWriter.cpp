@@ -159,7 +159,6 @@ void TreeWriter::run(void *arg)
 					break;
 				case TREEWRITER_PUT_SEGMENT_DISCARD:
 //printf("PUT SEGMENT DISCARD\n");
-
 					status = dataManager->getSegmentLimits(writeTreeIdx, writeNid, 0, &start, &startSize, 
 						&end, &endSize, &isTimestamped);
 					status = dataManager->getSegmentData(writeTreeIdx, writeNid, 0, &dim, &dimSize, 
