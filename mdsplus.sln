@@ -1503,13 +1503,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cacheshr", "cacheshr\caches
 		{2A17EA39-3217-4F9B-A794-4B3C80B40744} = {2A17EA39-3217-4F9B-A794-4B3C80B40744}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp", "mdsobjects\cpp\cpp.vcproj", "{41A04396-0358-4B15-AA70-A98527827069}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MDSobjectsCppShr", "mdsobjects\cpp\cpp.vcproj", "{41A04396-0358-4B15-AA70-A98527827069}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2A17EA39-3217-4F9B-A794-4B3C80B40744} = {2A17EA39-3217-4F9B-A794-4B3C80B40744}
 		{D5CFEB70-0478-48EB-97B6-44BCC3EE19BA} = {D5CFEB70-0478-48EB-97B6-44BCC3EE19BA}
 		{50026EB5-651F-46F8-9D68-167B03705CC1} = {50026EB5-651F-46F8-9D68-167B03705CC1}
 		{5A4F3EDD-D5B9-4C41-BBA9-DFEFE6AA92CE} = {5A4F3EDD-D5B9-4C41-BBA9-DFEFE6AA92CE}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "javaobjects", "mdsobjects\java\java.vcproj", "{02A1CB34-AA0D-49D9-B470-031FB1E74902}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1922,6 +1924,16 @@ Global
 		{41A04396-0358-4B15-AA70-A98527827069}.Release|Win32.ActiveCfg = Release|Win32
 		{41A04396-0358-4B15-AA70-A98527827069}.Release|Win32.Build.0 = Release|Win32
 		{41A04396-0358-4B15-AA70-A98527827069}.Release|x86.ActiveCfg = Release|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Debug|Win32.ActiveCfg = Debug|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Debug|Win32.Build.0 = Debug|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Debug|x86.ActiveCfg = Debug|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Win32.ActiveCfg = Release|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Win32.Build.0 = Release|Win32
+		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
