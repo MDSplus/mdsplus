@@ -1632,7 +1632,7 @@ void TreePath::resolveNid()
 	
 void CachedTreeNode::flush() {_RTreeFlushNode(tree->getCtx(), getNid());}
 
-CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize)
+CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize):Tree(name,shot)
 {
 	RTreeConfigure(cacheShared, cacheSize);
 	this->shot = shot;

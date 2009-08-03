@@ -1799,6 +1799,7 @@ public:
 		bool cacheShared;
 		int cacheSize;
 	public:
+		CachedTree(char *name,int shot,bool shared,int size);
 		CachedTree(char *name, int shot):Tree(name, shot)
 		{
 			cacheShared = false;
