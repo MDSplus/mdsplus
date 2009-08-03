@@ -18,7 +18,10 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
   char *from_d = NULL;
   char *to_d = NULL;
   int lstatus;
-  status = _TreeOpenEdit(&dbid1, tree, shot);
+  char *tree_list=strcpy(malloc(strlen(tree)+4),tree);
+  strcat(tree_list,",\"\"");
+  status = _TreeOpen(&dbid1, tree_list, shot,1);
+  free(tree_list);
   if (status & 1)
   {
     int stv;
@@ -38,7 +41,7 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
           status = TreeOpenNciW(dblist2->tree_info, 1);
           if (status & 1)
           {
-            dblist2->tree_info->edit->first_in_mem = dblist1->tree_info->edit->first_in_mem;
+            dblist2->tree_info->edit->first_in_mem = dblist2->tree_info->header->nodes;
             status = TreeOpenDatafileW(dblist2->tree_info, &stv, 1);
             if (status & 1)
             {
