@@ -87,7 +87,29 @@ struct descriptor_xd	sig[1], uni[1], dat[1];
 struct TdiCatStruct		cats[2];
         ddim.pointer = (char *)&dim;
 	status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
-	if (!(status & 1)) goto baddat;
+	if (!(status & 1)) {
+	  if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_DICTIONARY) {
+	    int idx;
+	    int check;
+	    DESCRIPTOR_LONG(ans,&check);
+	    ARRAY(struct descriptor *) *apd = (void *)dat[0].pointer;
+	    for (idx=0;idx<((apd->arsize/apd->length)-1);idx+=2) {
+	      if ((TdiEq(apd->pointer[idx],list[1],&ans MDS_END_ARG) & 1) == 1 && check == 1) {
+		status=MdsCopyDxXd(apd->pointer[idx+1],out_ptr);
+		break;
+	      }
+            }
+	  } else if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_LIST) {
+	    int idx;
+	    int stat;
+	    ARRAY(struct descriptor *) *apd = (void *)dat[0].pointer;
+	    stat=TdiGetLong(list[1],&idx);
+	    if (stat & 1 && idx < apd->arsize/apd->length) {
+	      status=MdsCopyDxXd(apd->pointer[idx],out_ptr);
+	    }
+	  }
+	  goto baddat;
+	}
 	psig = (struct descriptor_signal *)sig[0].pointer;
 	pdat = (array_coeff *)dat[0].pointer;
 	stride[0] = len = pdat->length;
