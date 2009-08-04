@@ -26,9 +26,10 @@ int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDED_ATTRI
 static int GetNamedAttributesIndex(TREE_INFO *info_ptr, _int64 offset, NAMED_ATTRIBUTES_INDEX *index);
 int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc);
 extern _int64 TreeTimeInserted();
+static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+			      struct descriptor *dimension,struct descriptor_a *initialValue, int idx, int rows_filled);
 int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
-			     struct descriptor *dimension,
-			     struct descriptor_a *initialValue, int idx);
+			     struct descriptor *dimension,struct descriptor_a *initialValue, int idx);
 
 int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
 		     struct descriptor *dimension,
@@ -36,9 +37,24 @@ int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
   return  _TreeBeginSegment(DBID, nid, start, end, dimension, initialValue, idx);
 }
 
-int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
+			     struct descriptor *dimension,struct descriptor_a *initialValue, int idx, int rows_filled);
+
+int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end, 
+		     struct descriptor *dimension,
+		     struct descriptor_a *initialValue, int idx, int rows_filled) {
+  return  _TreeMakeSegment(DBID, nid, start, end, dimension, initialValue, idx,rows_filled);
+}
+
+int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 		      struct descriptor *dimension,
-		      struct descriptor_a *initialValue, int idx) {
+		      struct descriptor_a *initialValue, int idx, int rows_filled) {
+  return __TreeBeginSegment(dbid,nid,start,end,dimension,initialValue,idx,rows_filled);
+}
+
+static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+		      struct descriptor *dimension,
+		      struct descriptor_a *initialValue, int idx, int rows_filled) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID       *nid_ptr = (NID *)&nid;
   int       status;
@@ -171,12 +187,14 @@ old array is same size.
     segment_header.dtype=initialValue->dtype;
     segment_header.dimct=initialValue->dimct;
     segment_header.length=initialValue->length;
-    segment_header.next_row=0;
     if (initialValue->dimct == 1)
       segment_header.dims[0]=initialValue->arsize/initialValue->length;
     else {
       memcpy(segment_header.dims,a_coeff->m,initialValue->dimct*sizeof(int));
     }
+    //    rows_filled=(rows_filled < 0) ? 0 : 
+    //  ((rows_filled > segment_header.dims[initialValue->dimct]) ? segment_header.dims[initialValue->dimct] : rows_filled);
+    segment_header.next_row=rows_filled;
     status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
     if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
       memset(&segment_index,0,sizeof(segment_index));
@@ -1502,14 +1520,25 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
   return status;
  }
 
- int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx);
+static int __TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled);
+
+int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx) {
+  return __TreeBeginTimestampedSegment(dbid, nid, initialValue, idx, 0);
+}
 
  int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx) {
    return _TreeBeginTimestampedSegment(DBID, nid, initialValue, idx);
  }
 
+int _TreeMakeTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
+  return __TreeBeginTimestampedSegment(dbid, nid, initialValue, idx, rows_filled);
+}
 
- int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx) {
+int TreeMakeTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
+   return _TreeMakeTimestampedSegment(DBID, nid, initialValue, idx, rows_filled);
+ }
+
+static int __TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
    PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
    NID       *nid_ptr = (NID *)&nid;
    int       status;
@@ -1639,7 +1668,7 @@ old array is same size.
      segment_header.dtype=initialValue->dtype;
      segment_header.dimct=initialValue->dimct;
      segment_header.length=initialValue->length;
-     segment_header.next_row=0;
+     segment_header.next_row=rows_filled;
      segment_header.data_offset=-1;
      segment_header.dim_offset=-1;
      if (initialValue->dimct == 1)
