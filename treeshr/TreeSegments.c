@@ -29,7 +29,9 @@ extern _int64 TreeTimeInserted();
 static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 			      struct descriptor *dimension,struct descriptor_a *initialValue, int idx, int rows_filled);
 int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
-			     struct descriptor *dimension,struct descriptor_a *initialValue, int idx);
+		      struct descriptor *dimension,struct descriptor_a *initialValue, int idx) {
+  return __TreeBeginSegment(dbid,nid,start,end,dimension,initialValue,idx,0);
+}
 
 int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
 		     struct descriptor *dimension,
@@ -37,19 +39,16 @@ int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
   return  _TreeBeginSegment(DBID, nid, start, end, dimension, initialValue, idx);
 }
 
-int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
-			     struct descriptor *dimension,struct descriptor_a *initialValue, int idx, int rows_filled);
+int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+		      struct descriptor *dimension,
+		      struct descriptor_a *initialValue, int idx, int rows_filled) {
+  return __TreeBeginSegment(dbid,nid,start,end,dimension,initialValue,idx,rows_filled);
+}
 
 int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end, 
 		     struct descriptor *dimension,
 		     struct descriptor_a *initialValue, int idx, int rows_filled) {
   return  _TreeMakeSegment(DBID, nid, start, end, dimension, initialValue, idx,rows_filled);
-}
-
-int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
-		      struct descriptor *dimension,
-		      struct descriptor_a *initialValue, int idx, int rows_filled) {
-  return __TreeBeginSegment(dbid,nid,start,end,dimension,initialValue,idx,rows_filled);
 }
 
 static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
