@@ -321,7 +321,7 @@ object rightButtonMenu : XmPopupMenu widget {
          managed XmPushButton pushButton1;
          managed XmPushButton pushButton2;
          managed XmPushButton pushButton3;
-         managed XmPushButton pushButton16;
+         /*managed XmPushButton pushButton16;*/
          managed XmPushButton pushButton17;
          managed XmPushButton pushButton21;
          managed XmPushButton pushButton22;
@@ -1300,7 +1300,7 @@ object pulldownMenu2 : XmPulldownMenu widget {
          managed XmPushButton pushButton6;
          managed XmPushButton pushButton7;
          managed XmPushButton pushButton8;
-         managed XmPushButton pushButton9;
+         /*managed XmPushButton pushButton9;*/
          managed XmPushButton pushButton10;
          managed XmPushButton pushButton14;
          managed XmPushButton pushButton11;
