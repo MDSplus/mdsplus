@@ -23,6 +23,11 @@ from treenode import TreeNode,TreePath,TreeNodeArray
 from mdsscalar import Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,String,Uint128,Uint16,Uint32,Uint64,Uint8
 from tree import Tree,CachedTree
 from mdsdevice import Device
+try:
+	from widgets import *
+except:
+	pass
+from event import Event
 #tdoc=TextDoc()
 #__doc__=__doc__+tdoc.docmodule(Apd)+tdoc.docclass(Apd)
 #__doc__=__doc__+tdoc.docmodule(Array)
