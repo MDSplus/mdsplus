@@ -25,10 +25,29 @@ __MdsGetMsg.argtypes=[_C.c_int]
 __MdsGetMsg.restype=_C.c_char_p
 __LibConvertDateString=MdsShr.LibConvertDateString
 __LibConvertDateString.argtypes=[_C.c_char_p,_C.POINTER(_C.c_ulonglong)]
+__MDSWfevent=MdsShr.MDSWfevent
+__MDSWfevent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p,_C.POINTER(_C.c_int)]
+__MDSEvent=MdsShr.MDSEvent
+__MDSEvent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p]
 
 class MdsException(Exception):
     pass
 
+def MDSWfevent(event):
+    import numpy as _N
+    buffer=_N.uint8(0).repeat(repeats=4096)
+    numbytes=_C.c_int(0)
+    status=__MDSWfevent(event,len(buffer),buffer.ctypes.data,numbytes)
+    if (status & 1) == 1:
+        return buffer[range(numbytes.value)]
+    else:
+        raise MdsException,MdsGetMsg(status)
+
+def MDSEvent(event,buffer):
+    status=__MDSEvent(event,len(buffer),buffer.ctypes.data)
+    if not ((status & 1) == 1):
+        raise MdsException,MdsGetMsg(status)
+    
 def MdsGetMsg(status,default=None):
     if status==0 and not default is None:
         return default
