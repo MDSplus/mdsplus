@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glade-catalog name="MDSplus Widgets" library="MDSplus" domain="glade-3" depends="gtk+"  language="python">
+    <glade-widget-classes>
+        <glade-widget-class
+            title="MDSplus Expression"
+            name="MDSplusExpr"
+            icon-name="textview"
+            generic-name="MDSplusExpr">
+            <properties>
+              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+                   <spec>glade_standard_int_spec</spec>
+                   <tooltip>The offset from the head node of a device</tooltip>
+              </property>
+              <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
+                   <spec>glade_standard_boolean_spec</spec>
+                   <tooltip>If true, apply event will compile and store the value</tooltip>
+              </property>
+            </properties>
+        </glade-widget-class>
+        <glade-widget-class
+            title="MDSplus OnOff"
+            name="MDSplusOnOff"
+            icon-name="textview"
+            generic-name="MDSplusOnOff">
+            <properties>
+              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+                   <spec>glade_standard_int_spec</spec>
+                   <tooltip>The offset from the head node of a device</tooltip>
+              </property>
+              <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
+                   <spec>glade_standard_boolean_spec</spec>
+                   <tooltip>If true, apply event will compile and store the value</tooltip>
+              </property>
+            </properties>
+        </glade-widget-class>
+        <glade-widget-class
+            title="MDSplus Ok Buttons"
+            name="MDSplusOkButtons"
+            icon-name="hbuttonbox"
+            generic-name="MDSplusOkButtons">
+            <properties>
+            </properties>
+        </glade-widget-class>
+    </glade-widget-classes>
+    <glade-widget-group name="MDSplusWidgets"
+        title="MDSplusWidgets">
+        <glade-widget-class-ref name="MDSplusOkButtons"/>
+        <glade-widget-class-ref name="MDSplusOnOff"/>
+        <glade-widget-class-ref name="MDSplusExpr"/>
+    </glade-widget-group>
+</glade-catalog>
