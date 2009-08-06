@@ -2,6 +2,7 @@ from mdsdata import Data,makeData
 from mdsscalar import Uint8
 from mdsarray import Int32Array
 from tree import Tree
+import threading
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -644,6 +645,56 @@ class TreeNode(Data):
             return l[0]
         else:
             return None
+
+    def doSetup(self):
+        import os,gtk
+        from widgets import MDSplusWidget
+        headnode=self.conglomerate_nids[0]
+        devtype=str(headnode.record.model).lower()
+        try:
+            window=gtk.glade.XML(os.getenv("MDSPLUS_DEVICE_PATH","/home/twf/mdsplus/mdsobjects/python")+os.sep+devtype+".glade").get_widget(devtype)
+            window.device_node=self
+            window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
+            MDSplusWidget.resetAll(window)
+        except Exception,e:
+            raise Exception,"No setup available, %s" % (str(e),)
+        window.connect("destroy",self.onSetupWindowClose)
+        window.show_all()
+        self.startGtkThread()
+
+    def onSetupWindowClose(self,window):
+        import gtk
+        windows=[toplevel for toplevel in gtk.window_list_toplevels()
+                 if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
+        if len(windows) == 1:
+            gtk.main_quit()
+            
+
+    def startGtkThread(cls):
+        class gtkMain(threading.Thread):
+            def run(self):
+                import gtk
+                gtk.gdk.threads_init()
+                print "about to start gtk.main()"
+                #gtk.gdk.threads_enter()
+                gtk.main()
+                print "done with gtk.main()"
+                #gtk.gdk.threads_leave()
+
+        try:
+            running=cls.gtkThread.isAlive()
+        except:
+            running=False
+        if not running:
+            cls.gtkThread=gtkMain()
+            cls.gtkThread.start()
+    startGtkThread=classmethod(startGtkThread)
+
+    def waitForSetups(cls):
+        import gtk
+        #gtk.main()
+        cls.gtkThread.join()
+    waitForSetups=classmethod(waitForSetups)
 
     def getStatus(self):
         """Return action completion status
