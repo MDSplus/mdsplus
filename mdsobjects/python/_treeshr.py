@@ -693,7 +693,7 @@ def TreeGetDbi(tree,itemname):
     except KeyError:
         raise KeyError,'Item name must be one of %s' % (str(itemlist.keys()),)
     if item[1]==str:
-        ans=_C.c_char_p('x'.rjust(item[2],'x'))
+        ans=_C.c_char_p('x'.rjust(item[2]))
         retlen=_C.c_int(0)
         itmlst=DBI_ITM_CHAR(item[0],item[2],ans,retlen)
     else:
