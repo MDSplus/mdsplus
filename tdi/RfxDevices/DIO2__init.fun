@@ -66,7 +66,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 	if(_synch)
 	{
 		_synch_ev_name =if_error(data(DevNodeRef(_nid, _N_SYNCH_EVENT)),'');
-		if(_synch_ev_name == '')
+		if(_synch_ev_name[0] == '')
 		{
     			DevLogErr(_nid, "Invalid Synch Event specification");
  			abort();
@@ -74,7 +74,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 		_synch_event = [];
 		for(_i = 0; _i < size(_synch_ev_name); _i++)
 		{
-			_curr_event = TimingDecodeEvent(_synch_ev_name[_i]);
+			_curr_event = TimingDecodeEvent(_synch_ev_name[_i])[0];
 			if(_curr_event == 0)
 			{
     				DevLogErr(_nid, "Invalid synch event ");
