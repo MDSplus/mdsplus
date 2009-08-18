@@ -30,6 +30,12 @@ class Event(Thread):
             self.__class__.run(self)
 
     def setevent(event,buffer):
+        """Issue an MDSplus event
+        @param event: event name
+        @type event: str
+        @param buffer: data buffer
+        @type buffer: numpy.uint8 array
+        """
         from _mdsshr import MDSEvent
         MDSEvent(event,buffer)
     setevent=staticmethod(setevent)

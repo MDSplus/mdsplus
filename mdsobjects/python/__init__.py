@@ -23,6 +23,7 @@ from treenode import TreeNode,TreePath,TreeNodeArray
 from mdsscalar import Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,String,Uint128,Uint16,Uint32,Uint64,Uint8
 from tree import Tree,CachedTree
 from mdsdevice import Device
+from connection import Connection
 try:
 	from widgets import *
 except:
