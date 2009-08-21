@@ -1,0 +1,656 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "EventConnector"=.\RTEVENTS\EventConnector\EventConnector-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "WaveDisplay"=.\javascope\WaveDisplay-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "cacheshr"=.\cacheshr\cacheshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "cdu"=.\cdu\cdu-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "cdushr"=.\cdu\cdushr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "icons"=.\icons\icons-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "idlmdsevent"=.\idlmdsevent\idlmdsevent-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "idlsql"=.\idlsql\idlsql-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "jWebTree"=.\javatraverser\jWebTree-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name javamds
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name javascope
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name javatraverser
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "javadispatcher"=.\javadispatcher\javadispatcher-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name javascope
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name javatraverser
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "javamds"=.\javamds\javamds-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "javascope"=.\javascope\javascope-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "javatraverser"=.\javatraverser\javatraverser-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "math"=.\math\math-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "matlab"=.\matlab\matlab-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsdcl"=.\mdsdcl\mdsdcl-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsdclshr"=.\mdsdcl\mdsdclshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsip"=.\mdstcpip\mdsip-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name servershr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsip_service"=.\mdstcpip\mdsip_service-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsipshr"=.\mdstcpip\mdsipshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdsiptest"=.\mdstcpip\mdsiptest-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsjet"=.\mdsjet\mdsjet-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdslib"=.\mdslib\mdslib-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdslib_client"=.\mdslib\mdslib_client-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdslibidl"=.\mdslibidl\mdslibidl-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mdsobjects"=.\mdsobjects\cpp\mdsobjects-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdsshr"=.\mdsshr\mdsshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "mdssql"=.\mdssql\mdssql-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "remcam"=.\remcam\remcam-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "rtevents"=.\rtevents\rtevents-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "servershr"=.\servershr\servershr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "setevent"=.\setevent\setevent-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tcl_commands"=.\tcl\tcl_commands-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name cdushr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsdclshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name servershr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tdishr"=.\tdishr\tdishr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name treeshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tdishrext"=.\tdic\tdishrext-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsipshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "tditest"=.\tditest\tditest-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name tdishr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "treeshr"=.\treeshr\treeshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wfevent"=.\wfevent\wfevent-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mdsshr
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "xtreeshr"=.\xtreeshr\xtreeshr-64.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
