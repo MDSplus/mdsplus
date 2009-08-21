@@ -24,11 +24,13 @@ public fun Py(in _cmd) {
      }
      PyCall("Py_Initialize");
      public _PyInit=1;
-     PyCall("PyRun_SimpleString","from MDSplus import *");
+     /* PyCall("PyRun_SimpleString","from MDSplus import *");*/
    }
    for (_i=0;_i<size(_cmd);_i++) {
        public _py_exception="";
+       PyCall("PyRun_SimpleString",_cmd[_i]); /*
        PyCall("PyRun_SimpleString","try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
+*/
        if (public _py_exception != "") return(0);
    }
    return(1);

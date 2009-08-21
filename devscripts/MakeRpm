@@ -39,6 +39,7 @@ mkdir -p $HOME/rpm/RPMS
 mkdir -p $HOME/rpm/SOURCES
 mkdir -p $HOME/rpm/SPECS
 mkdir -p $HOME/rpm/SRPMS
+rm -Rf $HOME/rpm/BUILD/*
 tar zcf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar.gz --exclude CVS mdsplus$globuskit-$version 
 echo "s/#GLOBUS#/$globuskit/g" > tmp.sed
 echo "s+#ENABLEGLOBUS#+$enableglobus+g" >> tmp.sed

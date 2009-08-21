@@ -61,64 +61,68 @@
 #            . $HOME/myscript.csh
 #
 #
-if (test "$MDSPLUS_DIR" = "")
-then
-  MDSPLUS_DIR=/usr/local/mdsplus
-  if ( test -r /etc/.mdsplus_dir )
+set_symbol()
+{
+# $1 - symbol name
+# $2 - symbol value
+# $3 - append (>) or prepend (<) or set ()
+# $4 - delimiter
+  temp_sym_old_value=${!1}
+  if [ -z "$temp_sym_old_value" ]
   then
-    MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
-  fi
-fi
-export MDSPLUS_DIR
-if ( test "$temp_sym_name" != "") 
-then
-  eval temp_sym_old_value=$`echo $temp_sym_name`
-  if ( test "$temp_sym_old_value" = "" )
-  then
-    eval $temp_sym_name='`echo $temp_sym_value`'
-    export $temp_sym_name
+    eval $1=\"${2}\"
   else
-    if echo $temp_sym_old_value | grep $temp_sym_value > /dev/null ; then
-      :
+    if [ $2 = \"\" ]
+    then
+      do_it=1
     else
-      case $temp_direction in
+      echo $temp_sym_old_value | /bin/grep `eval echo $2` > /dev/null
+      do_it=$?
+    fi
+    if [ $do_it != 0 ]
+    then
+      case $3 in
       '>')
-        eval $temp_sym_name='`echo ${temp_sym_old_value}${temp_delim}${temp_sym_value}`'
-        export $temp_sym_name;;
+        eval $1=\"$temp_sym_old_value\"\"$4\"\"$2\";;
       '<')
-        eval $temp_sym_name='`echo ${temp_sym_value}${temp_delim}${temp_sym_old_value}`'
-        export $temp_sym_name;;
+        eval $1=\"$2\"\"$4\"\"$temp_sym_old_value\";;
+      '')
+	eval $1=\"${2}\";;
       *)
-        echo bad direction - $temp_direction;;
+        echo bad direction - set_symbol $1 $2 $3 $4;;
       esac
     fi
   fi
-  unset temp_sym_name
-  unset temp_sym_old_value
-  unset temp_direction
-  unset temp_delim
-else
-  if ( test "$temp_file" = "") 
+  unset temp_sym_old_value do_it
+}
+
+include ()
+{
+  if [ -r $1 ]
   then
-    if ( test "$setup_file" != "" )
-    then
-      temp_file=$setup_file
-    else 
-      if ( test -r ./envsyms ) 
-      then
-        temp_file=envsyms
-      else
-        if ( test -r $MDSPLUS_DIR/etc/envsyms )
-        then
-          temp_file=$MDSPLUS_DIR/etc/envsyms
-        else 
-          temp_file=asdjklasdjasdjlkasd
-        fi
-      fi
-    fi
+    if [ ! -z "$verify_setup" ]; then echo Processing $1; fi
+    eval `/bin/awk -f - $1 <<EOF
+{
+  if ((NF > 0) && (\\$1 !~ /^#.*/) && (NF < 3) && (\\$1 != "source") && (\\$1 != ".") && (\\$1 != "include")) 
+    print "set_symbol \\'" \\$1 "\\' \\'" \\$2 "\\'; export \\'" \\$1 "\\';";
+  else if ((NF > 0) && (\\$1 == "source")) print "" ;
+  else if ((NF > 0) && (\\$1 == ".")) print \\$0 ";" ;
+  else if ((NF > 0) && (\\$1 == "include")) print \\$0 ";";
+  else if ((NF > 0) && (\\$1 !~ /^#.*/)) print "set_symbol \\'" \\$1 "\\' \\'" \\$2 "\\' \\'" substr(\\$3,1,1) "\\' \\'" substr(\\$3,2) "\\'; export \\'" \\$1 "\\';"
+}
+EOF
+`
   fi
-  if ( test -r $temp_file ) 
+}
+
+if [ -z "$MDSPLUS_DIR" ]
+then
+  MDSPLUS_DIR=/usr/local/mdsplus
+  if [ -r /etc/.mdsplus_dir ]
   then
+<<<<<<< setup.sh
+    MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
+=======
     if ( test -r ./setup.sh )
     then
       temp_setup_script=./setup.sh
@@ -164,5 +168,14 @@ else
     unset awkcmd
   else
     unset temp_file
+>>>>>>> 1.18
   fi
 fi
+export MDSPLUS_DIR
+if [ -r ./envsyms ]
+then
+  include ./envsyms 
+else
+  include $MDSPLUS_DIR/etc/envsyms
+fi
+unset include set_symbol
