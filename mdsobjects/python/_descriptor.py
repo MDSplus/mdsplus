@@ -2,7 +2,7 @@ from mdsscalar import makeScalar,Scalar
 from mdsarray import makeArray,Array,StringArray
 from _mdsdtypes import *
 from _mdsclasses import *
-from mdsdata import makeData,EmptyData
+from mdsdata import makeData,EmptyData,Data
 from treenode import TreeNode,TreePath,TreeNodeArray
 from ident import Ident
 from apd import Apd,Dictionary,List
@@ -30,6 +30,20 @@ class descriptor(_C.Structure):
         return descriptor.__next_idx
     
     def __init__(self,value=None):
+        if isinstance(value,descriptor):
+            self.dtype=value.dtype
+            self.dclass=value.dclass
+            self.length=value.length
+            self.pointer=value.pointer
+            print self
+
+        if isinstance(value,descriptor_a):
+            self.dtype=DTYPE_DSC
+            self.dclass=CLASS_S
+            self.length=100000
+            self.pointer=_C.cast(_C.pointer(value),_C.POINTER(descriptor))
+            return
+        
         self.dclass=CLASS_S
         if value is None or isinstance(value,EmptyData):
             self.length=0
@@ -386,8 +400,12 @@ class descriptor(_C.Structure):
             if self.dtype == DTYPE_NID:
                 self.dtype=DTYPE_L
                 nids=makeArray(_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
-                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents)))
+                                          buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents)))
                 return TreeNodeArray(nids)
+            if self.dtype == DTYPE_F:
+                return makeArray(Data.execute("float($)",(descr,)))
+            if self.dtype == DTYPE_D or self.dtype == DTYPE_G:
+                return makeArray(Data.execute("FT_FLOAT($)",(descr,)))
             try:
                 a=_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
                                   buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents))

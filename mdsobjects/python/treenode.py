@@ -954,7 +954,8 @@ class TreeNode(Data):
         """Restore tree context. Used by internal functions.
         @rtype: None
         """
-        self.tree.restoreContext()
+        if self.tree is not None:
+            self.tree.restoreContext()
 
     def setCompressOnPut(self,flag):
         """Set compress on put state of this node

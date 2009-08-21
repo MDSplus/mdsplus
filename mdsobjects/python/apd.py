@@ -144,12 +144,9 @@ class List(list,Data):
     """list class"""
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,Apd):
+            if isinstance(value,Apd) or isinstance(value,list) or isinstance(value,tuple):
                 for idx in range(len(value)):
-                    self.append(value[idx])
-            elif isinstance(value,list) or isinstance(value,tuple):
-                for idx in range(len(value)):
-                    self.append(value[idx])
+                    super(List,self).append(value[idx])
             else:
                 raise TypeError,'Cannot create List from type: '+str(type(value))
 
@@ -162,68 +159,3 @@ class List(list,Data):
     def __str__(self):
         return list.__str__(self)
  
-class BulkFetch(List):
-    """Build list of expression to evaluate"""
-
-    def __init__(self,value=None):
-        if value is not None:
-            List.__init__(self,value)
-
-    def addItem(self,name,expression,*args):
-        self.append(Dictionary({'name':name,'exp':str(expression),'args':args}))
-
-    def insertItem(self,beforename, name,expression,*args):
-        d=Dictionary({'name':name,'exp':str(expression),'args':args})
-        n = 0
-        for item in self:
-            if item['name'] == beforename:
-                self.insert(n,d)
-                return
-            else:
-                n=n+1
-                
-    def delItem(self,name):
-        n = 0
-        for item in self:
-            if item['name'] == name:
-                self.remove(item)
-
-    def get(self,host=None):
-        if host is None:
-            ans=Dictionary()
-            for val in self:
-                name=val['name']
-                try:
-                    ans[name]=Dictionary({'value':Data.execute('data('+val['exp']+')',val['args'])})
-                except Exception,e:
-                    ans[name]=Dictionary({'error':str(e)})
-            return ans
-        else:
-	    
-            self.serialize().setTdiVar('_fetch')
-            Data.execute("mdsconnect('"+str(host)+"')")
-            ans=Data.execute("mdsvalue('public _fetch=$,Py(\"BulkFetch.remote()\"),public _ans',public _fetch)")
-	    if isinstance(ans,String):
-		raise Exception("Error fetching data: "+ans)
-	    else:
-                return ans.deserialize()
-
-    def remote():
-        BulkFetch(Data.getTdiVar('_fetch').deserialize()).get().serialize().setTdiVar('_ans')
-    remote=staticmethod(remote)
-
-    def getItem(d,name):
-        if name in d:
-            if 'value' in d[name]:
-                return d[name]['value']
-        return None
-    getItem=staticmethod(getItem)
-
-    def getError(d,name):
-        if name in d:
-            if 'error' in d[name]:
-                return d[name]['error']
-        return None
-    getError=staticmethod(getError)
-
-                    

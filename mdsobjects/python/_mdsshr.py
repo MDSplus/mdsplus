@@ -49,6 +49,7 @@ def MDSEvent(event,buffer):
         raise MdsException,MdsGetMsg(status)
     
 def MdsGetMsg(status,default=None):
+    status=int(status)
     if status==0 and not default is None:
         return default
     return __MdsGetMsg(status)
