@@ -10,6 +10,9 @@
 #elif defined(_WIN32)
 #include <io.h>
 #define read _read
+#define write _write
+#define fileno _fileno
+#define isatty _isatty
 #else
 #ifdef HAVE_MALLOC_H
 #include        <malloc.h>
