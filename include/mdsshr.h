@@ -64,4 +64,5 @@ EXPORT extern void pthread_setspecific(pthread_key_t  buffer_key, void *p);
 EXPORT extern void pthread_key_create(pthread_key_t *buffer_key,void *d2);
 EXPORT extern void pthread_mutex_lock(void **mutex);
 EXPORT extern void pthread_mutex_unlock(void **mutex);
+EXPORT extern int pthread_mutex_init(void **mutex, void *);
 #endif

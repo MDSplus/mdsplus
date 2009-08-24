@@ -38,9 +38,6 @@ void pthread_setspecific(pthread_key_t buffer_key, void *p)
 }
 
 void pthread_key_create(pthread_key_t *buffer_key,void *d2){*buffer_key=TlsAlloc();}
-extern void pthread_mutex_init(HANDLE *mutex);
-extern void pthread_mutex_lock(HANDLE *mutex);
-extern void pthread_mutex_unlock(HANDLE *mutex);
 #endif
 #ifdef HAVE_VXWORKS_H
 #define HANDLE void*

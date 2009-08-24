@@ -1,6 +1,7 @@
 #include "mdsip.h"
 #include <config.h>
 #include <STATICdef.h>
+#include <mdsshr.h>
 
 int CloseSocket(SOCKET s);
 extern int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob);
