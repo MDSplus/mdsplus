@@ -2,6 +2,7 @@
 #include        <stdio.h>
 #include        <string.h>
 #include        <time.h>
+#include		<config.h>
 
 /********************************************************************
 * DASUTIL.H --
@@ -39,7 +40,7 @@ int cmd_lookup(
 		/*======================================================
 		 * dasmsg, ipcsmsg, etc.:
 		 *=====================================================*/
-int dasmsg(
+EXPORT extern int dasmsg(
         int   sts,	/* <r> Status code: 0=nomsg 1=nomsg(vms only)	*/
         char  fmt[],	/* <r> Format string for sprintf		*/
         ...		/* <r> Parameters, as required by fmt[]		*/
@@ -189,11 +190,11 @@ struct descriptor  {
 
 #define NIL           (void *)0
 
-int   str_copy_dx(			/* Return: status		*/
+EXPORT extern int   str_copy_dx(			/* Return: status		*/
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,void  *source			/* <r> source: c-string or dsc	*/
    );
-int   str_free1_dx(			/* Returns: status		*/
+EXPORT extern int   str_free1_dx(			/* Returns: status		*/
     struct descriptor  *dsc		/* <m> descriptor to free	*/
    );
 int   str_trim(				/* Return: status		*/
@@ -211,11 +212,11 @@ int   str_replace(			/* Return: status		*/
    ,int   offsetEnd			/* <r> end pos <0-based>	*/
    ,void  *replaceString		/* <r> replacement: c-str or dsc*/
    );
-int   str_append(			/* Return: status		*/
+EXPORT extern int   str_append(			/* Return: status		*/
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,void  *source			/* <r> source: c-string or dsc	*/
    );
-char  *str_concat(		/* Returns: ptr to null-terminated string*/
+EXPORT extern char  *str_concat(		/* Returns: ptr to null-terminated string*/
     struct descriptor  *dsc_dest	/* <w> Destination string dsc	*/
    ,...				/* <r> source strings: dsc or c-string	*/
    );
@@ -396,8 +397,8 @@ int   show_timer();
 
 char  *nodename();
 
-char  *pgmname();
-void  set_pgmname(
+EXPORT extern char  *pgmname();
+EXPORT extern void  set_pgmname(
     char  *name
    );
 char  *procname(
