@@ -28,6 +28,7 @@
 #else
 #include <config.h>
 #include <time.h>
+#include <sys/types.h>
 
 EXPORT extern int LibAddx();
 EXPORT extern void  *LibCallg();

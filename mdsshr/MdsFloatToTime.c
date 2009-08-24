@@ -8,11 +8,11 @@
 
 void MdsFloatToTime(double floatTime, _int64u *outTime)
 {
-	_int64 baseTime, currTime;
+	_int64u baseTime, currTime;
 
 	baseTime = 1000000000;
 	baseTime *= (24 * 3600);
-	currTime = (__int64)(floatTime / 1E-9);
+	currTime = (_int64u)(floatTime / 1E-9);
 	*outTime = baseTime + currTime;
 }
 
