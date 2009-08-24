@@ -27,8 +27,6 @@
 
 #else
 #include <config.h>
-#include <time.h>
-#include <sys/types.h>
 
 EXPORT extern int LibAddx();
 EXPORT extern void  *LibCallg();
@@ -57,6 +55,6 @@ EXPORT extern int LibSubx();
 EXPORT extern int LibSysAscTim();
 EXPORT extern int LibTraverseTree();
 EXPORT extern int LibWait();
-EXPORT extern int LibTimeToVMSTime(time_t *time_in,_int64 *time_out);
+EXPORT extern int LibTimeToVMSTime();
 
 #endif
