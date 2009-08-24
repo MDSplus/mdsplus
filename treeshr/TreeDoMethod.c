@@ -149,7 +149,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       DBID=dbid;
       return status;
     }   
-    StrConcat(&method, conglom_ptr->model, &underunder, method_ptr MDS_END_ARG);
+    StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
     for (i=0;i<method.length;i++) method.pointer[i] = __tolower(method.pointer[i]);
     /*
     lib$establish(TREE$DO_METHOD_HANDLER);
