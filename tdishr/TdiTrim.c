@@ -103,7 +103,7 @@ STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
                 str2.pointer = name_ptr;
 	        total = (unsigned short)(str1.length + str2.length);
 		status = MdsGet1DxS(&total, &dtype, out_ptr);
-		if (status & 1) status = StrConcat(out_ptr->pointer, &str1, &str2 MDS_END_ARG);
+		if (status & 1) status = StrConcat((struct descriptor *)out_ptr->pointer, (struct descriptor *)&str1, &str2 MDS_END_ARG);
 	}
 	else if (status & 1) status = TdiINV_OPC;
 	return status;

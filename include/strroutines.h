@@ -22,6 +22,7 @@
 
 #else
 #include <config.h>
+#include <mdsdescrip.h>
 EXPORT extern int StrAppend();
 EXPORT extern int StrCaseBlindCompare();
 EXPORT extern int StrCompare();

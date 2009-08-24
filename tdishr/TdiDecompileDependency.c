@@ -48,7 +48,7 @@ struct descriptor	*pwhich=0;
 
 	switch (pin->dtype) {
 	case DTYPE_EVENT :
-		status = StrConcat(pout, pout, &LEFT_ANGLE, pin, &RIGHT_ANGLE MDS_END_ARG);
+		status = StrConcat((struct descriptor *)pout, (struct descriptor *)pout, &LEFT_ANGLE, pin, &RIGHT_ANGLE MDS_END_ARG);
 		break;
 	case DTYPE_NID :
 		{

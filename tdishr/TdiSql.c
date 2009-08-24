@@ -321,7 +321,7 @@ int 	rblob;
 				if (dst == 0) { /* // && (rblob || (pda->SQLTYPE & ~1) != SQL_TYPE_SEGMENT_ID)) { */
 					name.pointer = SYB_dbcolname(dbproc,j+1) ;
 					name.length = strlen(name.pointer);
-					status = StrConcat(dst = (struct descriptor *)&madeup, &dunderscore, &name MDS_END_ARG);
+					status = StrConcat(dst = (struct descriptor *)&madeup, (struct descriptor *)&dunderscore, &name MDS_END_ARG);
 					if (!(status & 1)) break;
 					dst->dtype = DTYPE_IDENT;
 				}
@@ -588,7 +588,7 @@ STATIC_CONSTANT DESCRIPTOR(zero, "\0");
 	  if ((status & 1) && (SYB_dbdata == 0)) TDISQL_LINKCPTR("dbdata", &SYB_dbdata);
 	}        
         if (status & 1) status = TdiData(list[0], &dtext MDS_END_ARG);
-        status = StrConcat(&dtext, &dtext, &zero MDS_END_ARG); 
+        status = StrConcat((struct descriptor *)&dtext, (struct descriptor *)&dtext, &zero MDS_END_ARG); 
 
         /* see if the last argument is "/date" */
         if (status & 1) {

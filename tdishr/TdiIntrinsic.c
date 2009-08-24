@@ -352,7 +352,7 @@ TdiRefStandard(TdiIntrinsic)
                 body.pointer = cur-nbody;
                 post.length = (unsigned short)npost;
                 post.pointer = cur;
-			StrConcat(message, message, &compile_err, &pre, &hilite, &body, &hilite, &post, &newline MDS_END_ARG);
+			StrConcat((struct descriptor *)message, (struct descriptor *)message, &compile_err, &pre, &hilite, &body, &hilite, &post, &newline MDS_END_ARG);
 		}
 	}
 
@@ -379,7 +379,7 @@ struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
 	struct descriptor dmsg = {0,DTYPE_T,CLASS_S,0};
         dmsg.pointer = MdsGetMsg(mess_stat);
         dmsg.length = strlen(dmsg.pointer);
-		StrConcat(message, &dmsg, &newline, message MDS_END_ARG);
+		StrConcat((struct descriptor *)message, &dmsg, &newline, message MDS_END_ARG);
 	}
 	if (message->length) {
 		if (option & 2) printf("%.*s", message->length, message->pointer);
