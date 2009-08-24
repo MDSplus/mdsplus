@@ -4,6 +4,7 @@
 #define NULL 0
 #endif
 #include <STATICdef.h>
+#include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
 #include <stdlib.h>
 

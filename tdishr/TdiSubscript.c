@@ -66,6 +66,8 @@ extern int TdiNint();
 extern int TdiDataWithUnits();
 extern int TdiWindowOf();
 extern int TdiSubtract();
+extern int TdiEq();
+extern int TdiGetLong();
 
 typedef struct {int x[2];} quadw;
 
@@ -89,7 +91,7 @@ struct TdiCatStruct		cats[2];
 	status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
 	if (!(status & 1)) {
 	  if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_DICTIONARY) {
-	    int idx;
+	    unsigned int idx;
 	    int check;
 	    DESCRIPTOR_LONG(ans,&check);
 	    ARRAY(struct descriptor *) *apd = (void *)dat[0].pointer;
@@ -100,7 +102,7 @@ struct TdiCatStruct		cats[2];
 	      }
             }
 	  } else if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_LIST) {
-	    int idx;
+	    unsigned int idx;
 	    int stat;
 	    ARRAY(struct descriptor *) *apd = (void *)dat[0].pointer;
 	    stat=TdiGetLong(list[1],&idx);

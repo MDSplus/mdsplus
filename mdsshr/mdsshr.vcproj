@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="mdsshr"
 	ProjectGUID="{D5CFEB70-0478-48EB-97B6-44BCC3EE19BA}"
+	RootNamespace="mdsshr"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -46,7 +48,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../include"
-				PreprocessorDefinitions="_WIN32;HAVE_WINDOWS_H;WIN32;_DEBUG;_WINDOWS"
+				PreprocessorDefinitions="_WIN32;HAVE_WINDOWS_H;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Debug/mdsshr.pch"
@@ -77,10 +79,12 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libcd.lib"
-				ModuleDefinitionFile=".\MdsShr.def"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdsshr.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdsshr.lib"
 			/>
 			<Tool
@@ -100,9 +104,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -175,6 +176,8 @@
 				ModuleDefinitionFile=".\MdsShr.def"
 				SubSystem="2"
 				SetChecksum="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdsshr.lib"
 			/>
 			<Tool
@@ -196,9 +199,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -206,29 +206,53 @@
 	<References>
 	</References>
 	<Files>
-		<File
-			RelativePath="..\include\config.h_win32"
+		<Filter
+			Name="Includes"
 			>
-			<FileConfiguration
-				Name="Debug|Win32"
+			<File
+				RelativePath="..\include\config.h.in"
 				>
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Creating config.h"
-					CommandLine="copy ..\include\config.h_win32 ..\include\config.h&#x0D;&#x0A;"
-					Outputs="..\include\config.h"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32"
+			</File>
+			<File
+				RelativePath="..\include\config.h_win32"
 				>
-				<Tool
-					Name="VCCustomBuildTool"
-					CommandLine="copy ..\include\config.h_win32 ..\include\config.h&#x0D;&#x0A;"
-					Outputs="..\include\config.h"
-				/>
-			</FileConfiguration>
-		</File>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Creating config.h"
+						CommandLine="copy ..\include\config.h_win32 ..\include\config.h&#x0D;&#x0A;"
+						Outputs="..\include\config.h"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="copy ..\include\config.h_win32 ..\include\config.h&#x0D;&#x0A;"
+						Outputs="..\include\config.h"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\include\libroutines.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\mdsshr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\mdsshrthreadsafe.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\strroutines.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\dasutil_routines4.c"
 			>

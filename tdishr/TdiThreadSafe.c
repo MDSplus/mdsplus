@@ -1,9 +1,12 @@
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
+#include <libroutines.h>
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
 #include <stdlib.h>
+#include <mdsshr.h>
+#include <strroutines.h>
 STATIC_THREADSAFE  pthread_mutex_t mutex;
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;

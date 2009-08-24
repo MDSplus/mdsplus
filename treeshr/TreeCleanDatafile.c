@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
+#include <mdsshr.h>
 #include <ncidef.h>
 #include "treeshrp.h"
 

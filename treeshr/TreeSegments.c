@@ -14,18 +14,13 @@ extern void *DBID;
 
 typedef ARRAY_COEFF(char,8) A_COEFF_TYPE;
 static int PutNamedAttributesIndex(TREE_INFO *info, NAMED_ATTRIBUTES_INDEX *index, _int64 *offset);
-int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, _int64 *offset, int *length);
 static int PutSegmentHeader(TREE_INFO *info_ptr, SEGMENT_HEADER *hdr, _int64 *offset);
 static int PutSegmentIndex(TREE_INFO *info_ptr, SEGMENT_INDEX   *idx, _int64 *offset);
-int TreePutExtendedAttributes(TREE_INFO *info_ptr, EXTENDED_ATTRIBUTES *att, _int64 *offset);
 static int PutInitialValue(TREE_INFO *info_ptr, int *dims, struct descriptor_a *array, _int64 *offset);
 static int PutDimensionValue(TREE_INFO *info_ptr, int ndims, int *dims, _int64 *offset);
 static int GetSegmentHeader(TREE_INFO *info_ptr, _int64 offset,SEGMENT_HEADER *hdr);
 static int GetSegmentIndex(TREE_INFO *info_ptr, _int64 offset, SEGMENT_INDEX *idx);
-int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDED_ATTRIBUTES *att);
 static int GetNamedAttributesIndex(TREE_INFO *info_ptr, _int64 offset, NAMED_ATTRIBUTES_INDEX *index);
-int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc);
-extern _int64 TreeTimeInserted();
 static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 			      struct descriptor *dimension,struct descriptor_a *initialValue, int idx, int rows_filled);
 int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end,
@@ -440,7 +435,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     int rows_to_insert;
     int bytes_per_row;
     int rows_in_segment;
-    int bytes_to_insert;
+    unsigned int bytes_to_insert;
 #ifdef WORDS_BIGENDIAN
     unsigned char *buffer,*bptr;
 #endif
@@ -572,7 +567,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)
   {
-    int       stv;
     NCI       local_nci;
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
@@ -584,7 +578,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     if (!(status & 1))
       return status;
     if (info_ptr->data_file == 0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+      open_status = TreeOpenDatafileR(info_ptr);
     else
       open_status = 1;
     if (!(open_status & 1)) {
@@ -605,7 +599,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
   return status;
 }
 
-int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment, struct descriptor_xd *dim);
 int TreeGetSegment(int nid, int idx, struct descriptor_xd *segment, struct descriptor_xd *dim) {
   return _TreeGetSegment(DBID, nid, idx, segment, dim);
 }
@@ -630,7 +623,6 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)
   {
-    int       stv;
     NCI       local_nci;
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
@@ -642,7 +634,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
     if (!(status & 1))
       return status;
     if (info_ptr->data_file == 0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+      open_status = TreeOpenDatafileR(info_ptr);
     else
       open_status = 1;
     if (!(open_status & 1)) {
@@ -760,7 +752,6 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)
   {
-    int       stv;
     NCI       local_nci;
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
@@ -772,7 +763,7 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
     if (!(status & 1))
       return status;
     if (info_ptr->data_file==0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+      open_status = TreeOpenDatafileR(info_ptr);
     else
       open_status = 1;
     if (!(open_status & 1)) {
@@ -1084,7 +1075,6 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)
   {
-    int       stv;
     NCI       local_nci;
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
@@ -1115,7 +1105,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     if (!(status & 1))
       return status;
     if (info_ptr->data_file == 0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+      open_status = TreeOpenDatafileR(info_ptr);
     else
       open_status = 1;
     if (!(open_status & 1)) {
@@ -2042,7 +2032,6 @@ old array is same size.
    return status;
  }
 
-int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
 
 int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {
   return _TreeGetSegmentedRecord(DBID,nid,data);
@@ -2082,7 +2071,7 @@ int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct desc
      while (data && data->dtype==DTYPE_DSC) data=(struct descriptor_a *)data->pointer;
      if (data) {
        if (data->class == CLASS_A) {
-         int i,length;
+         int i;
          initValue.arsize=data->arsize*bufsize;
          initValue.pointer=initValue.a0=malloc(initValue.arsize);
          memset(initValue.pointer,0,initValue.arsize);
@@ -2148,7 +2137,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims
   nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
   if (info_ptr)
   {
-    int       stv;
     NCI       local_nci;
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
@@ -2160,7 +2148,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims
     if (!(status & 1))
       return status;
     if (info_ptr->data_file == 0)
-      open_status = TreeOpenDatafileR(info_ptr, &stv, 0);
+      open_status = TreeOpenDatafileR(info_ptr);
     else
       open_status = 1;
     if (!(open_status & 1)) {

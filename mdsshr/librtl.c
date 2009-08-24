@@ -1,6 +1,7 @@
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
+#include <strroutines.h>
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
 #include <mdsshr.h>
@@ -20,7 +21,7 @@
 #include <STATICdef.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
-
+int LibTimeToVMSTime(time_t *time_in,_int64 *time_out);  
 #ifndef HAVE_VXWORKS_H
 STATIC_CONSTANT _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
 #else
@@ -41,6 +42,8 @@ void TranslateLogicalFree(char *value);
 #pragma warning (disable : 4100 4201 4115 4214 4514)
 #include <windows.h>
 #include <process.h>
+#define putenv _putenv
+#define tzset _tzset
 
 #define RTLD_LAZY 0
 
@@ -213,7 +216,7 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
 		arglist[(int)(arglist[0]++)] = tok;
   }
   arglist[((int)arglist[0])] = (char *)0;
-  status = LibCallg(arglist,_spawnlp);
+  status = (char *)LibCallg(arglist,_spawnlp)-(char *)0;
   /*if (status != 0) perror("Error doing spawn"); */
   free(cmd_c);
 
@@ -232,7 +235,7 @@ void *LibCallg(void **arglist, FARPROC *routine)
 {
   int a_idx;
 
-  unsigned int retval;
+  void *retval;
   for (a_idx=*(int *)arglist; a_idx > 0; a_idx--)
   {
 
@@ -248,10 +251,6 @@ void *LibCallg(void **arglist, FARPROC *routine)
   return retval;
 }
 #define ETIMEDOUT 42
-
-int pthread_mutex_init(HANDLE *mutex);
-void pthread_mutex_lock(HANDLE *mutex);
-void pthread_mutex_unlock(HANDLE *mutex);
 
 
 void pthread_detach(HANDLE *thread)
@@ -1396,7 +1395,7 @@ int LibEstablish()
 
 #define SEC_PER_DAY (60*60*24)
 
-STATIC_ROUTINE int parsedate(char *asctim, void *dummy)
+STATIC_ROUTINE time_t parsedate(char *asctim, void *dummy)
 {
   return time(0);
 }
@@ -1473,7 +1472,7 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
       tim=0;
       asc_time=time_out;
     }
-    
+  
 #ifndef HAVE_VXWORKS_H
 	{
     struct tm tm = {0,0,0,0,0,0,0,0,0};
@@ -1565,7 +1564,6 @@ time_t LibCvtTim(int *time_in,double *t)
     _int64 time_local;
     double time_d;
     struct tm *tmval;
-    time_t time_int;
     time_t dummy=0;
     memcpy(&time_local,time_in,sizeof(time_local));
     time_local = (*(_int64 *)time_in - addin);
@@ -1582,7 +1580,7 @@ time_t LibCvtTim(int *time_in,double *t)
     //    bintim = (long)t_out;
   }
   else
-    bintim = (long)(t_out = time(0));
+    bintim = (long)(t_out = (double)time(0));
 #else
   bintim = t_out = time(0);
 #endif

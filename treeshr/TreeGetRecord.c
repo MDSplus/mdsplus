@@ -26,9 +26,7 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static _int64 ViewDate = -1;
-int TreeOpenDatafileR(TREE_INFO *info);
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
-int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
 
 int MdsSerializeDscIn(char *in, struct descriptor_xd *out_dsc_ptr);
 

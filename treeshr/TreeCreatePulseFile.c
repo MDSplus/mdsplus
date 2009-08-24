@@ -47,6 +47,7 @@ extern char *MaskReplace();
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
+STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
 #include <fcntl.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -57,7 +58,6 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
-STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it);
 #endif
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
@@ -264,7 +264,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
         free(path);
         if (dstfile)
         {
-          status = MdsCopyFile(srcfile,dstfile,itype != 0);
+          status = _CopyFile(srcfile,dstfile,itype != 0);
           free(dstfile);
         }
         else
@@ -281,22 +281,22 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   return status;
 }
 
-STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it)
+STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 {
   int status = TreeFAILURE;
 
   int src_fd = MDS_IO_OPEN(src,O_RDONLY | O_BINARY | O_RANDOM, 0);
   if (src_fd != -1)
   {
-    off_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
+    __int64 src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
     int dst_fd = MDS_IO_OPEN(dst,O_RDWR | O_CREAT | O_TRUNC, 0664);
     if ((dst_fd != -1) && (src_len != -1))
     {
       MDS_IO_LSEEK(src_fd, 0, SEEK_SET);
-      if (lock_it) MDS_IO_LOCK(src_fd,0,src_len,MDS_IO_LOCK_RD,0);
+      if (lock_it) MDS_IO_LOCK(src_fd,0,(int)src_len,MDS_IO_LOCK_RD,0);
       if (src_len > 0)
       {
-        void *buff = malloc(src_len);
+        void *buff = malloc((int)src_len);
         size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)src_len);
         if (bytes_read == (size_t)src_len)
 	{
@@ -309,7 +309,7 @@ STATIC_ROUTINE int MdsCopyFile(char *src, char *dst, int lock_it)
       }
       else if (src_len == 0)
           status = TreeSUCCESS;
-      if (lock_it) MDS_IO_LOCK(src_fd,0,src_len,MDS_IO_LOCK_NONE,0);
+      if (lock_it) MDS_IO_LOCK(src_fd,0,(int)src_len,MDS_IO_LOCK_NONE,0);
       MDS_IO_CLOSE(dst_fd);
     }
     MDS_IO_CLOSE(src_fd);

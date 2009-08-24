@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #endif
 #include <STATICdef.h>
+#include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
 #define CREATE_STS_TEXT
 #include        "mdsdcldef.h"
@@ -19,6 +20,7 @@
 #include        <io.h>
 #include        <libroutines.h>
 #define isatty(a) _isatty(a)
+#define fileno _fileno
 #elif defined(HAVE_VXWORKS_H)
 #include 	<time.h>
 #else

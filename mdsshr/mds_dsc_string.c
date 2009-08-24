@@ -2,6 +2,7 @@
 #include        <mdsdescrip.h>
 #include        <usagedef.h>
 #include        <STATICdef.h>
+#include		<mdsshr.h>
 
 #define checkString(S)  if (id==S)  return #S ;
 

@@ -21,26 +21,26 @@
 #define StrUpcase str$upcase
 
 #else
-
-extern int StrAppend();
-extern int StrCaseBlindCompare();
-extern int StrCompare();
-extern int StrConcat();
-extern int StrCopyDx();
-extern int StrCopyR();
-extern int StrElement();
-extern int StrFindFirstInSet();
-extern int StrFindFirstNotInSet();
-extern int StrFree1Dx();
-extern int StrGet1Dx();
-extern int StrLenExtr();
-extern int StrMatchWild();
-extern int StrPosition();
-extern int StrReplace();
-extern int StrRight();
-extern int StrTranslate();
-extern int StrTrim();
-extern int StrUpcase();
+#include <config.h>
+EXPORT extern int StrAppend();
+EXPORT extern int StrCaseBlindCompare();
+EXPORT extern int StrCompare();
+EXPORT extern int StrConcat();
+EXPORT extern int StrCopyDx();
+EXPORT extern int StrCopyR();
+EXPORT extern int StrElement();
+EXPORT extern int StrFindFirstInSet();
+EXPORT extern int StrFindFirstNotInSet();
+EXPORT extern int StrFree1Dx();
+EXPORT extern int StrGet1Dx();
+EXPORT extern int StrLenExtr();
+EXPORT extern unsigned int StrMatchWild();
+EXPORT extern int StrPosition();
+EXPORT extern int StrReplace();
+EXPORT extern int StrRight();
+EXPORT extern int StrTranslate();
+EXPORT extern int StrTrim();
+EXPORT extern int StrUpcase();
 
 #endif
 

@@ -355,7 +355,7 @@ int				stack[64];
 		Choose an index between l and r.
 		***********************************/
 		ran = (ran * 211 + 1663) % 7875;
-                i = l + (r - l + 1) * ran / 7875; 
+                i = (int)(l + (r - l + 1) * ran / 7875); 
 		keep = *(ndx+i);
 		pkeep = pinput+len*keep;
 		*(ndx+i) = *(ndx+l);

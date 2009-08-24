@@ -26,32 +26,36 @@
 #define LibWait lib$wait
 
 #else
+#include <config.h>
+#include <time.h>
 
-extern int LibAddx();
-extern void  *LibCallg();
-extern int LibConvertDateString();
-extern int LibCreateVmZone();
-extern int LibEmul();
-extern int LibEstablish();
-extern int LibFindFile();
-extern int LibFindFileEnd();
-extern int LibFindFileRecurseCaseBlind();
-extern int LibFindImageSymbol();
-extern char *LibFindImageSymbolErrString();
-extern char *LibFindImageSymbolErrStr();
-extern int LibFindVmZone();
-extern int LibFreeVm();
-extern int LibGetVm();
-extern int LibInsertTree();
-extern int LibLookupTree();
-extern int LibResetVmZone();
-extern int LibSFree1Dd();
-extern int LibShowVmZone();
-extern int LibSigToRet();
-extern int LibSpawn();
-extern int LibSubx();
-extern int LibSysAscTim();
-extern int LibTraverseTree();
-extern int LibWait();
+EXPORT extern int LibAddx();
+EXPORT extern void  *LibCallg();
+EXPORT extern int LibConvertDateString();
+EXPORT extern int LibCreateVmZone();
+EXPORT extern int LibDeleteVmZone();
+EXPORT extern int LibEmul();
+EXPORT extern int LibEstablish();
+EXPORT extern int LibFindFile();
+EXPORT extern int LibFindFileEnd();
+EXPORT extern int LibFindFileRecurseCaseBlind();
+EXPORT extern int LibFindImageSymbol();
+EXPORT extern char *LibFindImageSymbolErrString();
+EXPORT extern char *LibFindImageSymbolErrStr();
+EXPORT extern int LibFindVmZone();
+EXPORT extern int LibFreeVm();
+EXPORT extern int LibGetVm();
+EXPORT extern int LibInsertTree();
+EXPORT extern int LibLookupTree();
+EXPORT extern int LibResetVmZone();
+EXPORT extern int LibSFree1Dd();
+EXPORT extern int LibShowVmZone();
+EXPORT extern int LibSigToRet();
+EXPORT extern int LibSpawn();
+EXPORT extern int LibSubx();
+EXPORT extern int LibSysAscTim();
+EXPORT extern int LibTraverseTree();
+EXPORT extern int LibWait();
+EXPORT extern int LibTimeToVMSTime(time_t *time_in,_int64 *time_out);
 
 #endif

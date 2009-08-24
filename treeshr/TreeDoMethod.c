@@ -31,6 +31,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <STATICdef.h>
 #include <ncidef.h>
 #include "treeshrp.h"
+#include <mdsshr.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include <tdimessages.h>
@@ -172,7 +173,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	if (ans->class == CLASS_XD) {
 	  DESCRIPTOR_LONG(status_d,0);
 	  status_d.pointer=(char *)&status;
-	  MdsCopyDxXd(&status_d,ans);
+	  MdsCopyDxXd(&status_d,(struct descriptor_xd *)ans);
 	} else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer)) {
 	  *(int *)ans->pointer = status;
 	}

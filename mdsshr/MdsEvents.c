@@ -14,13 +14,13 @@ int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
 int MDSEvent(char *evname){}
 #elif (defined(HAVE_WINDOWS_H))
+#define NO_WINDOWS_H
 #include <process.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include "../mdstcpip/mdsip.h"
-#define NO_WINDOWS_H
 #include "mdsshrthreadsafe.h"
 extern char *TranslateLogical(char *);
 STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);

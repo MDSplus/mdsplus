@@ -12,15 +12,15 @@ void MdsFloatToTime(double floatTime, _int64u *outTime)
 
 	baseTime = 1000000000;
 	baseTime *= (24 * 3600);
-	currTime = floatTime / 1E-9;
+	currTime = (__int64)(floatTime / 1E-9);
 	*outTime = baseTime + currTime;
 }
 
 void MdsFloatToDelta(double floatTime, _int64u *outTime)
 {
-	_int64 baseTime, currTime;
+	_int64 currTime;
 
-	currTime = floatTime / 1E-9;
+	currTime = (_int64)(floatTime / 1E-9);
 	*outTime = currTime;
 }
 

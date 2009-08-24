@@ -14,6 +14,9 @@
 #include <io.h>
 #define write _write
 #define lseek _lseeki64
+#define open _open
+#define close _close
+#define read _read
 #else
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
@@ -128,7 +131,6 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
   int status;
   struct addrinfo *res;
   struct addrinfo hints;
-  struct sockaddr_in *in;
   STATIC_THREADSAFE struct addr_list {
     char *host;
     struct sockaddr_in sockaddr;
@@ -1253,7 +1255,7 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 	return pos;
     }
 #endif
-    pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,(off_t)offset,whence) : io_lseek_remote(fd,offset,whence);
+    pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,offset,whence) : io_lseek_remote(fd,offset,whence);
     UnlockMdsShrMutex(&IOMutex);
     return pos;
   }
@@ -1348,7 +1350,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
 
 STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_t count, int *deleted)
 {
-  _int64 ret = -1;
+  ssize_t ret = -1;
   int info[] = {0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
@@ -1376,7 +1378,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
 	*deleted = sts == 3;
       ret = (ssize_t)ret_i;
       if (ret)
-	memcpy(buff,dptr, ret);
+	memcpy(buff,dptr, (size_t)ret);
     }
     if (msg)
       free(msg);

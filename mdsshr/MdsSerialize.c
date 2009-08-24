@@ -25,7 +25,8 @@
 #define set_a0(ans)       swap(int,&in_ptr[16],ans)
 #define m()         (&in_ptr[20])
 #define LoadChar(in,outp)  (outp)[0] = ((char *)&in)[0]
-#define FixLength(a) if (a.length == 0) MdsFixDscLength(&a)
+#define FixLength(a) if (a.length == 0) MdsFixDscLength((struct descriptor *)&a)
+void MdsFixDscLength(struct descriptor *in);
 #ifdef WORDS_BIGENDIAN
 #define LoadShort(in,outp) (outp)[0] = ((char *)&in)[1]; (outp)[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   (outp)[0] = ((char *)&in)[3]; (outp)[1] = ((char *)&in)[2]; \

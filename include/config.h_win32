@@ -9,6 +9,9 @@
 #undef RETSIGTYPE 
 #define RETSIGTYPE void
 
+/* Define if you have sys <sys/types.h> header file. */
+#define HAVE_SYS_TYPES_H 1
+
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
 #undef size_t
 typedef unsigned int size_t;
@@ -194,6 +197,11 @@ typedef unsigned int size_t;
 #define _pointer_int int
 #endif
 
+#ifdef HAVE_WINDOWS_H
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 #define BLOCK_ALL 0xfffff
 

@@ -267,7 +267,7 @@ nid_to_tree_nidx(pino, nid, info, nidx)
 typedef char NODE_NAME[12];
 
 #ifdef HAVE_WINDOWS_H
-#pragma pack(1)
+#pragma pack(push,1)
 #else
 PACK_START
 #endif
@@ -480,7 +480,7 @@ typedef struct record_header
 }         RECORD_HEADER;
 
 #ifdef HAVE_WINDOWS_H
-#pragma pack(4)
+#pragma pack(pop)
 #else
 PACK_STOP
 #endif
@@ -744,12 +744,15 @@ extern char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath);
 extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
-
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 extern _int64 RfaToSeek(unsigned char *rfa);
 void SeekToRfa(_int64 seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
 extern int TreeCloseFiles(TREE_INFO *info);
+extern int TreeCopyExtended(PINO_DATABASE *dbid1, PINO_DATABASE *dbid2, int nid, NCI *nci);
 extern int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes);
 extern int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr);
 extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci,unsigned int version);
@@ -764,12 +767,22 @@ extern int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *
 tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info,int nid);
+extern int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
+extern int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc);
+extern int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDED_ATTRIBUTES *att);
+extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
+extern int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
+extern int TreeOpenDatafileR(TREE_INFO *info);
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
+extern int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, _int64 *offset, int *length);
+extern int TreePutExtendedAttributes(TREE_INFO *info_ptr, EXTENDED_ATTRIBUTES *att, _int64 *offset);
 extern void TreeSerializeNciIn(char *in, struct nci *out);
 extern void TreeSerializeNciOut(struct nci *in, char *out);
+extern _int64 TreeTimeInserted();
+extern int TreeSetTemplateNci(NCI *nci);
 extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted);
 extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
 extern int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 where);

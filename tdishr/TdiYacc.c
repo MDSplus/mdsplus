@@ -53,10 +53,20 @@
 #include <tdimessages.h>
 #include <mds_stdarg.h>
 
-#ifdef HAVE_VXWORKS_H
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
+#ifdef ERROR
 #undef ERROR
 #endif
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+#ifdef TEXT
+#undef TEXT
+#endif
+#ifdef CONST
+#undef CONST
+#endif
+#ifdef IN
+#undef IN
+#endif
 
 extern unsigned short
 	OpcAbort,
@@ -114,7 +124,7 @@ typedef union 	{struct marker mark;} YYSTYPE;
 #ifdef __cplusplus
 #  include <stdio.h>
 #  include <yacc.h>
-#endif	/* __cplusplus */ 
+#endif	/* __cplusplus */
 # define ERROR 257
 # define IDENT 258
 # define POINT 259

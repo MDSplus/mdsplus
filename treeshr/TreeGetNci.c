@@ -44,7 +44,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
 #define set_retlen(length) if (itm->buffer_length < (int)length) { status = TreeBUFFEROVF; break; } else retlen=length
 
-static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
+static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
 static int OpenNciR(TREE_INFO *info);
 
@@ -324,7 +324,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 		  break;
 	  case NciPATH:
 		  if (node_exists)
-			  string = GetPath(dblist, node, 0);
+			  string = getPath(dblist, node, 0);
 		  else
 			  string = strcpy(malloc(sizeof(NODE_NAME)+1),nonode);
 		  break;
@@ -437,7 +437,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 					  string=temp;
 					  strcpy(string,&part[1]);
 				  }
-				  path_string = GetPath(dblist, node, 1);
+				  path_string = getPath(dblist, node, 1);
 				  if (strlen(path_string) <= strlen(string))
 				  {
 					  temp = path_string;
@@ -519,7 +519,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   return status;
 }
 
-static char *GetPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
+static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs)
 {
 	char *string = malloc(256*12);
 	char *part = malloc(256*12);

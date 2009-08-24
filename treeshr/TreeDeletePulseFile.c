@@ -141,7 +141,6 @@ STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot)
     path = malloc(pathlen+1);
     for (itype=0;itype<3 && (status & 1);itype++)
     {
-      struct stat stat_info;
       char *sfile = 0;
       char *dfile = 0;
       char *type = types[itype];
