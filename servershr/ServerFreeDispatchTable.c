@@ -34,6 +34,7 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 #include <stdlib.h>
 #include <servershr.h>
 #include "servershrp.h"
+#include <treeshr.h>
 
 int ServerFreeDispatchTable( void *vtable)
 { 

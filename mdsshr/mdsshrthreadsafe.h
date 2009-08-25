@@ -5,7 +5,6 @@
 #include <windows.h>
 #endif
 #define pthread_mutex_t HANDLE
-#define pthread_key_t int
 #define pthread_once_t int
 #define PTHREAD_ONCE_INIT 0
 #else

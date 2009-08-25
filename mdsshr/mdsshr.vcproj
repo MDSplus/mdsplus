@@ -142,7 +142,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../include,../ipcs/include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -237,7 +237,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\include\dasutil.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\libroutines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MdsShr.def"
 				>
 			</File>
 			<File
@@ -246,6 +254,14 @@
 			</File>
 			<File
 				RelativePath=".\mdsshrthreadsafe.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\mdstypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\release.h"
 				>
 			</File>
 			<File
@@ -311,10 +327,6 @@
 		</File>
 		<File
 			RelativePath=".\MdsSerialize.c"
-			>
-		</File>
-		<File
-			RelativePath=".\MdsShr.def"
 			>
 		</File>
 		<File

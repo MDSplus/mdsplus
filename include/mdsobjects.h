@@ -1669,10 +1669,10 @@ public:
 	
 	
 /////////////////CachedTreeNode/////////////////////////////
-#define WRITE_THROUGH 1
-#define WRITE_BACK 2
-#define WRITE_BUFFER 3
-#define WRITE_LAST 4
+#define MDS_WRITE_THROUGH 1
+#define MDS_WRITE_BACK 2
+#define MDS_WRITE_BUFFER 3
+#define MDS_WRITE_LAST 4
 
 	class EXPORT CachedTreeNode: public TreeNode
 	{
@@ -1682,7 +1682,7 @@ public:
 		virtual int getCachePolicy() { return cachePolicy;}
 
 	public:
-		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = WRITE_BUFFER;}
+		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BUFFER;}
 		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
 		void flush();
 		void putLastRow(Data *data, Int64 *time);

@@ -33,7 +33,7 @@ static void FillRefs(struct descriptor *src, int *ans, int *idx)
      (src->dtype == DTYPE_PATH))
     if (src->class == CLASS_A) {
       struct descriptor_a *aptr = (struct descriptor_a *)src;
-      int i;
+      unsigned int i;
       for (i=0; i<aptr->arsize/aptr->length; i++) {
         ans[*idx]=GetNid(((struct descriptor *)aptr->pointer)+i);
         (*idx)++;
@@ -45,7 +45,6 @@ static void FillRefs(struct descriptor *src, int *ans, int *idx)
     }
   else if (src->class == CLASS_R) {
     struct descriptor_r *rptr = (struct descriptor_r *)src;
-    struct descriptor *ptr;
     int count = 0;
     int i;
     for (i=0; i<rptr->ndesc; i++)
@@ -67,7 +66,6 @@ static int CountRefs(struct descriptor *src)
       return 1;
   else if (src->class == CLASS_R) {
     struct descriptor_r *rptr = (struct descriptor_r *)src;
-    struct descriptor *ptr;
     int count = 0;
     int i;
     for (i=0; i<rptr->ndesc; i++)

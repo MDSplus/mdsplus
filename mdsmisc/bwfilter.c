@@ -15,7 +15,6 @@ int bwfilter( float *w_cut_in, int *order_in, int *num, float *in, float *out)
   double	w_cut = (double)*w_cut_in,omega_cut;
   int		upto, i, j, k;
   int		in_idx = 0, out_idx;
-  double	time;
   double   x_current[max_order+1], y_filtered[max_order+1];
   double	sum_c, sum_d;
 
@@ -79,7 +78,7 @@ int bwfilter( float *w_cut_in, int *order_in, int *num, float *in, float *out)
       sum_d += -d[j] * y_filtered[j];
     }
     y_filtered[0] = sum_c + sum_d;
-    out[out_idx] = y_filtered[0];
+    out[out_idx] = (float)y_filtered[0];
 
     for (i = M; i >= 1; i--)
     {

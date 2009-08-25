@@ -1,6 +1,7 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <string.h>
+#include <mdsshr.h>
 
 //Conversion to Float/Doublee to 64 bit int.
 

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="idlsql"
 	ProjectGUID="{44D2A307-38B4-45F9-BE7F-9800B4D099B3}"
 	RootNamespace="idlsql"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -46,8 +47,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SQL_DIR)\DevTools\Include,$(IDL_DIR)\external,..\include"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;DBNTWIN32"
+				AdditionalIncludeDirectories="&quot;$(IDL_DIR)\external&quot;;..\include"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;DBNTWIN32;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Debug/idlsql.pch"
@@ -73,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot; ..\ntwdblib.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ..\ntwdblib.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot;"
 				OutputFile="$(OutDir)/idlsql.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -81,6 +82,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/idlsql.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/idlsql.lib"
 			/>
 			<Tool
@@ -100,9 +103,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -141,7 +141,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\include;&quot;$(IDL_DIR)\external&quot;"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;DBNTWIN32"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;DBNTWIN32;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -175,6 +175,8 @@
 				ModuleDefinitionFile=".\IdlSql.def"
 				ProgramDatabaseFile=".\Release/idlsql.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/idlsql.lib"
 			/>
 			<Tool
@@ -194,9 +196,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

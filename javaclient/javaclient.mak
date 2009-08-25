@@ -3,8 +3,14 @@ MdsPlusException.java MdsPlusJavascriptEvent.java
 
 CLASSES = $(SOURCES:.java=.class)
 
-all : ..\java\classes\MDSplus.jar
+all : ..\java\classes ..\java\classes\MDSplus.jar
 	rem done
+
+..\java\classes : ..\java
+	- mkdir ..\java\classes
+	
+..\java :
+	- mkdir ..\java
 
 ..\java\classes\MDSplus.jar : MdsPlus.class
 	"$(JDK_DIR)\bin\jar.exe" -cf ..\java\classes\MDSplus.jar $(CLASSES)

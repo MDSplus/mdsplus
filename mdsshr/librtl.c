@@ -258,7 +258,7 @@ void pthread_detach(HANDLE *thread)
 	return;
 }
 
-int pthread_cond_init(HANDLE *cond)
+int pthread_cond_init(HANDLE *cond, void *def)
 {
   *cond = CreateEvent(NULL,TRUE,FALSE,NULL);
   return (*cond == NULL);
@@ -353,26 +353,28 @@ int pthread_exit(int status)
 	return status;
 }
 
-int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param)
+int pthread_create(pthread_t *thread, void *dummy, void *(*rtn)(void *), void *rtn_param)
 {
-  *thread = _beginthread( rtn, 0, rtn_param);
+  *thread = (pthread_t)_beginthread( (void (*)(void *))rtn, 0, rtn_param);
   return *thread == 0;
 }
 void pthread_cleanup_pop(){}
 void pthread_cleanup_push(){}
 
-void pthread_mutex_lock(HANDLE *mutex)
+int pthread_mutex_lock(HANDLE *mutex)
 {
+	int status;
 #ifdef ___DEBUG_IT
    printf("Trying to lock mutex %p\n",*mutex);
 #endif
-   WaitForSingleObject(*mutex,INFINITE);
+   status = WaitForSingleObject(*mutex,INFINITE);
 #ifdef ___DEBUG_IT
    printf("Locked mutex %p\n",*mutex);
 #endif
+   return status;
 }
 
-void pthread_mutex_unlock(HANDLE *mutex)
+int pthread_mutex_unlock(HANDLE *mutex)
 {
 	int status;
 #ifdef ___DEBUG_IT
@@ -382,6 +384,7 @@ void pthread_mutex_unlock(HANDLE *mutex)
 #ifdef ___DEBUG_IT
 	printf("Unlocked mutex %p with status=%d\n",*mutex,status);
 #endif
+	return status;
 }
 
 void pthread_cancel(HANDLE thread)

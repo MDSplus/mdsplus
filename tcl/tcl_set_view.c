@@ -3,6 +3,8 @@
 #include        "tclsysdef.h"
 #include        <ncidef.h>
 #include        <usagedef.h>
+#include <strroutines.h>
+#include <libroutines.h>
 
 /**********************************************************************
 * TCL_SET_VIEW.C --

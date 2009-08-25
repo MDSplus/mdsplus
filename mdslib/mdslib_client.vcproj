@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="mdslib_client"
 	ProjectGUID="{CA150538-191A-4ACA-BB03-10D19447E4EA}"
+	RootNamespace="mdslib_client"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -46,7 +48,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../include"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_CLIENT_ONLY"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_CLIENT_ONLY;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -80,6 +82,8 @@
 				ModuleDefinitionFile=".\MdsLib.def"
 				ProgramDatabaseFile=".\mdslib_client/Release/mdslib_client.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdslib_client.lib"
 			/>
 			<Tool
@@ -99,9 +103,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -140,7 +141,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../include"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CLIENT_ONLY"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CLIENT_ONLY;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\mdslib_client/Debug/mdslib_client.pch"
@@ -174,6 +175,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdslib_client.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdslib_client.lib"
 			/>
 			<Tool
@@ -193,9 +196,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

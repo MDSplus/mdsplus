@@ -23,8 +23,7 @@ extern int  sys$asctim();
 extern int LibSysAscTim();
 #endif
 
-
-
+static int doFull(nid,nodeUsage,version);
 	/****************************************************************
 	 * MdsOwner:
 	 ****************************************************************/
@@ -71,7 +70,6 @@ static char  *MdsDatime(	/* Return: ptr to date+time string	*/
 int   TclDirectory()
    {
     unsigned int   usage;
-    char  *p;
     char  *tagnam;
     char  textLine[128];
     static char  fmtTotal[] = "Total of %d node%s.";
@@ -255,7 +253,7 @@ int   TclDirectory()
    }
 
 
-int doFull(nid,nodeUsage,version) 
+static int doFull(nid,nodeUsage,version) 
 {
   static char  fmtConglom2[] = "      Original element name: %s%s";
   char  *pathnam;

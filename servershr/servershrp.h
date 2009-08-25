@@ -4,21 +4,6 @@
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 typedef void *pthread_t;
-extern int pthread_lock_global_np();
-extern int pthread_unlock_global_np();
-extern int pthread_cond_signal();
-extern int pthread_cancel();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
-extern int pthread_mutex_init();
-extern int pthread_cond_init();
-extern int pthread_cond_wait();
-extern int pthread_create();
-extern int pthread_cleanup_push();
-extern int pthread_cleanup_pop();
-extern int pthread_detach();
-extern BOOL pthread_mutex_destroy();
-extern BOOL pthread_cond_destroy();
 #define close closesocket
 #else
 #include <pthread.h>

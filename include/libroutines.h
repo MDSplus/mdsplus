@@ -44,6 +44,8 @@ EXPORT extern char *LibFindImageSymbolErrStr();
 EXPORT extern int LibFindVmZone();
 EXPORT extern int LibFreeVm();
 EXPORT extern int LibGetVm();
+EXPORT extern int libgetvm_();
+EXPORT extern int libfreevm_();
 EXPORT extern int LibInsertTree();
 EXPORT extern int LibLookupTree();
 EXPORT extern int LibResetVmZone();

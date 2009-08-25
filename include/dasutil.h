@@ -197,15 +197,15 @@ EXPORT extern int   str_copy_dx(			/* Return: status		*/
 EXPORT extern int   str_free1_dx(			/* Returns: status		*/
     struct descriptor  *dsc		/* <m> descriptor to free	*/
    );
-int   str_trim(				/* Return: status		*/
+EXPORT extern int   str_trim(				/* Return: status		*/
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,void  *optsrc			/* <r:opt> source: cstring or dsc */
    );
-int   str_prefix(
+EXPORT extern int   str_prefix(
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,void  *prefix			/* <r> Prefix: cstring or dsc	*/
    );
-int   str_replace(			/* Return: status		*/
+EXPORT extern int   str_replace(			/* Return: status		*/
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,void  *source			/* <r> Source: c-string or dsc	*/
    ,int   offsetStart			/* <r> start pos <0-based>	*/
@@ -220,13 +220,13 @@ EXPORT extern char  *str_concat(		/* Returns: ptr to null-terminated string*/
     struct descriptor  *dsc_dest	/* <w> Destination string dsc	*/
    ,...				/* <r> source strings: dsc or c-string	*/
    );
-int   str_element(			/* Returns: status		*/
+EXPORT extern int   str_element(			/* Returns: status		*/
     struct descriptor  *dsc_ret		/* <w> return string		*/
    ,int   ielement			/* <r> element num, 0-based	*/
    ,char  delimiter			/* <r> delimiter character	*/
    ,void  *source			/* <r> source: dsc or c-string	*/
    );
-char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
+EXPORT extern char  *str_dupl_char(			/* Returns: dsc_ret->dscA_pointer */
     struct descriptor  *dsc_ret		/* <w> Destination string	*/
    ,int   icnt				/* <r> duplication count	*/
    ,char  c				/* <r> character to duplicate	*/

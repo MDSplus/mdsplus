@@ -84,6 +84,7 @@ struct _mdsdcl_ctrl  {
 	/***************************************************************
 	 * Function prototypes:
 	 ***************************************************************/
+#include <mdsshr.h>
 int   mdsdcl_dcl_parse(			/* Returns CLI_STS_xxx status	*/
     void  *command			/* <r:opt> command string	*/
    ,struct _mdsdcl_ctrl  *ctrl		/* <m> control structure	*/
@@ -91,11 +92,6 @@ int   mdsdcl_dcl_parse(			/* Returns CLI_STS_xxx status	*/
    );
 int   mdsdcl_do_command(
     void  *command		/* <r:opt> command -- cstring or dsc	*/
-   );
-int   MdsMsg(			/* Return: sts provided by user		*/
-    int   sts			/* <r> status code			*/
-   ,char  fmt[]			/* <r> format statement			*/
-   , ...			/* <r:opt> arguments to fmt[]		*/
    );
 int   mdsdcl_initialize(		/* Return: status		*/
     struct _mdsdcl_ctrl  *ctrl		/* <m> the control structure	*/

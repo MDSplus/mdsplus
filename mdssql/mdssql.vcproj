@@ -143,7 +143,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\include"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;MDSSQL_EXPORTS;DBNTWIN32"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_USRDLL;MDSSQL_EXPORTS;_CRT_SECURE_NO_WARNINGS;DBNTWIN32"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"

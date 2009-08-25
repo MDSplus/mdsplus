@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	          strcat(newpath,mpath);
 	        }
 	      }
-	      RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,newpath,strlen(newpath)); 
+	      RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,newpath,(DWORD)strlen(newpath)); 
 	      free(path);
 	      free(newpath);
 	    }

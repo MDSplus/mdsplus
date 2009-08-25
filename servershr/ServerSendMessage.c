@@ -34,6 +34,7 @@ int ServerSendMessage();
 #include <string.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
+#include <mdsshr.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>

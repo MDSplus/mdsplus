@@ -83,7 +83,7 @@ int sig_elements;
   MdsFree1Dx(&answer,0);
   while (sig->dtype == DTYPE_DSC) sig = (struct descriptor_signal *)sig->pointer;
   while (x->dtype == DTYPE_DSC) x = (struct descriptor *)x->pointer;
-  return_on_error(TdiData(sig,&xd1 MDS_END_ARG),(struct descriptor *)&bad_sig_in);
+  return_on_error(TdiData(sig,&xd1 MDS_END_ARG),((struct descriptor *)&bad_sig_in));
   return_on_error(TdiCvt(&xd1,&float_dsc, &sig_y_xd MDS_END_ARG),(struct descriptor *)&bad_sig_in);
   sig_y = (struct descriptor_a *)sig_y_xd.pointer;
   if (sig_y->class != CLASS_A) return (struct descriptor *)&bad_sig_in;

@@ -1695,7 +1695,7 @@ void CachedTreeNode::putLastRow(Data *data, Int64 *time)
 void CachedTreeNode::terminateSegment()
 {
 	int status;
-	if(cachePolicy == WRITE_BUFFER)
+	if(cachePolicy == MDS_WRITE_BUFFER)
 		
     status = _RTreeTerminateSegment(tree->getCtx(), getNid());
 	if(!(status & 1))

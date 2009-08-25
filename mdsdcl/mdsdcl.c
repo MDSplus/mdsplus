@@ -1,6 +1,7 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        "mdsdcl.h"
+extern void set_hyphen(int);
 
 /*********************************************************************
 * MDSDCL.C --

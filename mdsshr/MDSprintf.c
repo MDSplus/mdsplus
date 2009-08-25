@@ -43,6 +43,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <STATICdef.h>
+#include <mdsshr.h>
 
 		/*=====================================================
 		 * Static variables ...

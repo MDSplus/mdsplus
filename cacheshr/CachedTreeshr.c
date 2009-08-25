@@ -96,7 +96,7 @@ static void *getDbid(char *name, int shot)
 
 static void setDbid(char *name, int shot, void *dbid)
 {
-	int i;
+	unsigned int i;
 	struct TreeDescr *currDescr = treeDescrHead;
 	while(currDescr)
 	{

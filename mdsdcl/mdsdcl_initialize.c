@@ -9,6 +9,7 @@
 #ifdef _WIN32
 #include <io.h>
 #define isatty(a) _isatty(a)
+#define fileno _fileno
 #endif
 
 /***********************************************************************

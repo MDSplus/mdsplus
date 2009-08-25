@@ -2,6 +2,7 @@
 #include        <mds_stdarg.h>
 #include        <mdsshr.h>
 #include        <usagedef.h>
+extern int TdiDecompile();
 
 /**********************************************************************
 * TCL_SHOW_DATA.C --
@@ -469,7 +470,7 @@ int TclShowData()
                {
                 str_free1_dx(&out_line);
                 sts = CvtDxT((struct descriptor *) (&data),1);
-                if (sts & 1 == 0)
+                if ((sts & 1) == 0)
                   TclTextOut("   Error displaying data");
                }
             else

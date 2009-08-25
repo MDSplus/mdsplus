@@ -10,10 +10,11 @@
 #include        <starlet.h>
 #define TdiIdentOf    TDI$IDENT_OF
 #endif
-
+#include <strroutines.h>
+extern int TdiData();
 extern char *ServerGetInfo(int full, char *server);
 extern int ServerFreeDispatchTable();
-extern int StrAppend();
+
 
 /**********************************************************************
 * TCL_DISPATCH.C --

@@ -203,6 +203,14 @@
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="Includes"
+			>
+			<File
+				RelativePath=".\mdsip.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\adler32.c"
 			>

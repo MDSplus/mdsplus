@@ -82,7 +82,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 
 	xdPtr = (struct descriptor_xd *)convertDataToDsc(data);
 	if(isCached)
-		status = _RTreePutRecord(dbid, nid, (struct descriptor *)xdPtr, WRITE_BACK);
+		status = _RTreePutRecord(dbid, nid, (struct descriptor *)xdPtr, MDS_WRITE_BACK);
 	else
 		status = _TreePutRecord(dbid, nid, (struct descriptor *)xdPtr, 0);
 	freeDsc(xdPtr);	
@@ -160,8 +160,8 @@ int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *e
 
 	if(isCached)
 	{
-		if(cachePolicy == WRITE_BUFFER)
-			status = _RTreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer, (isLast)?WRITE_LAST:WRITE_BUFFER);
+		if(cachePolicy == MDS_WRITE_BUFFER)
+			status = _RTreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer, (isLast)?MDS_WRITE_LAST:MDS_WRITE_BUFFER);
 		else
 			status = _RTreePutRow(dbid, nid, size, time, (struct descriptor_a *)dataXd->pointer, cachePolicy);
 	}

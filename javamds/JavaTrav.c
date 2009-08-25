@@ -12,7 +12,11 @@
 #include <treeshr.h>
 #include <ncidef.h>
 #include <libroutines.h>
+#include <strroutines.h>
 #include <usagedef.h>
+#ifdef HAVE_WINDOWS_H
+#define putenv _putenv
+#endif
 
 struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
 jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
@@ -1109,7 +1113,7 @@ static int doAction(int nid)
 			// and MDSplus essror code which has this convention odd number success
 			// even number error with a value larger than 255
 			status = *(int *)(xd1.pointer->pointer);
-			if( status != 0  & status < 255)
+			if( status != 0  && status < 255)
 			{
 				status = 0;
 			}
@@ -1170,7 +1174,7 @@ static int doAction(int nid)
 			// and MDSplus essror code which has this convention odd number success
 			// even number error with a value larger than 255
 			status = *(int *)(xd1.pointer->pointer);
-			if( status != 0  & status < 255)
+			if( status != 0  && status < 255)
 			{
 				status = 0;
 			}

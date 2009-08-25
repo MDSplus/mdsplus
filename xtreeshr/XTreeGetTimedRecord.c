@@ -6,6 +6,7 @@
 #include <mdsshr.h>
 #include <string.h>
 #include <stdlib.h>
+#include <treeshr.h>
 
 extern unsigned short OpcExtFunction;
 

@@ -2,6 +2,10 @@
 #include        <stdio.h>
 #include        <string.h>
 #include        "dasutil.h"
+#include <config.h>
+#ifdef HAVE_WINDOWS_H
+#define fileno _fileno
+#endif
 
 /**********************************************************************
 *

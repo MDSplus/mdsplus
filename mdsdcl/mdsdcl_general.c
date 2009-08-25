@@ -1,11 +1,15 @@
 #include        <stdio.h>
+#include	    <config.h>
 #include        "mdsdcl.h"
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
 #include        <time.h>
 #endif
-
+#if defined(HAVE_WINDOWS_H)
+#define putenv _putenv
+#endif
+extern void set_hyphen(int);
 /**********************************************************************
 * MDSDCL_GENERAL.C --
 *

@@ -1,5 +1,8 @@
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <strroutines.h>
+extern int TdiDecompile();
+extern int TdiSortVal();
 
 /**********************************************************************
 * TCL_SHOW_ATTRIBUTE.C --
@@ -14,8 +17,6 @@
 	 * TclShowAttribute:
 	 ***************************************************************/
 int TclShowAttribute() {
-  int   shot;
-  char  text[80];
   int status;
   int nid;
   EMPTYXD(xd);

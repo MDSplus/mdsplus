@@ -48,6 +48,12 @@ typedef int ssize_t;
 typedef int mode_t;
 typedef int socklen_t;
 typedef void *pthread_mutex_t;
+#define getpid _getpid
+#define open _open
+#define close _close
+#define read _read
+#define write _write
+#define putenv _putenv
 #define MSG_DONTWAIT 0
 #else
 #ifndef SOCKET_ERROR
@@ -186,6 +192,8 @@ static int DoMessage(SOCKET s);
 static void ConvertFloat(int nbytes, int in_type, char in_length, char *in_ptr, int out_type, char out_length, char *out_ptr);
 static void PrintHelp(char *option);
 static void SetMode(char modein, char *mode);
+extern void ZeroFD();
+extern void SetCloseOnExec();
 
 extern int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,struct sockaddr_in *,char *), int (*DoMessage_in)(SOCKET s));
 extern Message *GetMdsMsg(int sock, int *status);
@@ -279,7 +287,7 @@ static int SpawnWorker(SOCKET sock)
   return pinfo.dwProcessId;
 }
 
-static unsigned long hService;
+static SERVICE_STATUS_HANDLE hService;
 int ServiceMain(int,char**);
 static SERVICE_STATUS serviceStatus;
 
@@ -618,7 +626,6 @@ int main(int argc, char **argv)
   extern fd_set FdActive();
   struct timeval timeout = {1,0};
   int error_count=0;
-  int status;
   fd_set readfds;
   readfds = FdActive();
   while (!shut)
@@ -863,7 +870,6 @@ static void AddClient(SOCKET sock,struct sockaddr_in *sin,char *dn)
     time_t tim;
     int m_status;
     int user_compression_level;
-    double start;
     SetCloseOnExec(sock);
     pid = getpid();
     m.h.msglen = sizeof(MsgHdr);
@@ -1265,12 +1271,12 @@ static void ProcessMessage(Client *c, Message *message)
     case MDS_IO_LSEEK_K:
       {
         int fd = message->h.dims[1];
-        int tmp;
         off_t offset;
         int whence = message->h.dims[4];
       	_int64 ans;
         struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
 #ifdef _big_endian
+	    int tmp;
         tmp = message->h.dims[2];
         message->h.dims[2] = message->h.dims[3];
         message->h.dims[3] = tmp;
@@ -1375,15 +1381,14 @@ static void ProcessMessage(Client *c, Message *message)
     case MDS_IO_READ_X_K:
       {
         int fd = message->h.dims[1];
-        int tmp;
         off_t offset;
         void *buf = malloc(message->h.dims[4]);
         size_t num = (size_t)message->h.dims[4];
-      	_int64 ans;
-	ssize_t nbytes;
+	    ssize_t nbytes;
         struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
         int deleted;
 #ifdef _big_endian
+        int tmp;
         tmp = message->h.dims[2];
         message->h.dims[2] = message->h.dims[3];
         message->h.dims[3] = tmp;

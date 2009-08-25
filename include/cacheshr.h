@@ -1,9 +1,9 @@
 #include <mdsdescrip.h>
 
-#define WRITE_THROUGH 1
-#define WRITE_BACK 2
-#define WRITE_BUFFER 3
-#define WRITE_LAST 4
+#define MDS_WRITE_THROUGH 1
+#define MDS_WRITE_BACK 2
+#define MDS_WRITE_BUFFER 3
+#define MDS_WRITE_LAST 4
 
 extern int RTreeOpen(char *expName, int shot);
 extern int RTreeClose(char *expName, int shot);
