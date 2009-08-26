@@ -398,24 +398,26 @@ static pthread_mutex_t socket_mutex;
 
 static void lock_socket_list()
 {
-
+#ifndef _CLIENT_ONLY
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
   }
   pthread_mutex_lock(&socket_mutex);
+#endif
 }
 
 static void unlock_socket_list()
 {
-
+#ifndef _CLIENT_ONLY
   if(!socket_mutex_initialized)
   {
     socket_mutex_initialized = 1;
     pthread_mutex_init(&socket_mutex, pthread_mutexattr_default);
   }
   pthread_mutex_unlock(&socket_mutex);
+#endif
 }
 
 static void PushSocket(int socket)
