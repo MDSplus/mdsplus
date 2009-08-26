@@ -57,6 +57,8 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 	- del/q/f/s docs
 	- rmdir docs
 ..\java\classes\MindTerm.jar : MindTerm.jar
+	- mkdir ..\java
+	- mkdir ..\java\classes
 	copy MindTerm.jar ..\java\classes\MindTerm.jar
 
 jScope.class : $(SOURCES)
