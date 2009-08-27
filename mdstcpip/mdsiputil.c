@@ -243,7 +243,11 @@ static SOCKET ConnectToPort(char *host, char *service)
 #ifdef _WIN32
 	static char user[128];
 	int bsize=128;
+#ifdef _NI_RT_
+	char *user_p = "Windows User";
+#else
 	char *user_p = GetUserName(user,&bsize) ? user : "Windows User";
+#endif
 #elif __MWERKS__
         static char user[128];
         int bsize=128;
