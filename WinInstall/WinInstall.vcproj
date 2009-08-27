@@ -159,7 +159,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="WinInstall.exe.manifest"
 				EmbedManifest="true"
 			/>
 			<Tool
@@ -188,24 +187,6 @@
 			>
 			<File
 				RelativePath="WinInstall.c"
-				>
-			</File>
-			<File
-				RelativePath=".\WinInstall.exe.manifest"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc"
-			>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-			>
-			<File
-				RelativePath=".\WinInstall.rc"
 				>
 			</File>
 		</Filter>
