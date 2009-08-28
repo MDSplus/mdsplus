@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="WaveDisplay"
 	ProjectGUID="{18515822-B059-46F4-BA47-2A2DE97F07EE}"
+	RootNamespace="WaveDisplay"
 	Keyword="MakeFileProj"
 	TargetFrameworkVersion="131072"
 	>
@@ -17,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\WaveDisplay___Win32_Debug"
-			IntermediateDirectory=".\WaveDisplay___Win32_Debug"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
