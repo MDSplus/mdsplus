@@ -1,6 +1,7 @@
 from treenode import TreeNode
 from compound import *
 from _treeshr import TreeStartConglomerate
+from mdsarray import makeArray
 
 class Device(TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
