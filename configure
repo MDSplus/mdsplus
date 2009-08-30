@@ -3212,6 +3212,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "gfortran"); then
          FFLAGS="$FFLAGS -fno-range-check"
          LOC="loc"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         LOC="loc"
        fi
        FOR_LDFLAGS="-lg2c"
        FFLAGS="$FFLAGS -fpic -fno-backslash";
@@ -3240,6 +3243,11 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
          LOC="%loc"
        elif (test "$F77" = "gfortran"); then
          FFLAGS="$FFLAGS -fno-range-check";
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
          FORLD="$F77"
          LOC="loc"
          FOR_LDFLAGS="-lg2c"
