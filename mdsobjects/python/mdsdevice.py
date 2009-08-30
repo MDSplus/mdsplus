@@ -105,7 +105,7 @@ class Device(TreeNode):
         if cls.__name__ == 'Device':
             raise TypeError,"Cannot create instances of Device class"
         cls.__class_init__();
-        return super(Device,cls).__new__(cls,node)
+        return super(Device,cls).__new__(cls)
 
     def __init__(self,node):
         """Initialize a Device instance

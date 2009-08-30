@@ -38,7 +38,7 @@ class Scalar(Data):
         except:
             pass
 
-        return super(Scalar,cls).__new__(cls,value)
+        return super(Scalar,cls).__new__(cls)
         
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Scalar':
