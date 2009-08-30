@@ -246,7 +246,8 @@ HUP_TO_INETD=""
 UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
-GCCLIB=""
+GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
+
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -332,7 +333,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_inc_dir="/usr/include/java";
        jni_md_inc_dir="/usr/include/java/`uname -m`";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
-*86*linux*) 
+*86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
        if ( uname -m | grep 64 > /dev/null ) 
@@ -397,7 +398,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
-       echo "---------------------------------- linux -------------"
        CAMSHR="camshr";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
@@ -487,7 +487,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
        LIBPATH="LIBPATH";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
-       GCCLIB="`gcc -print-libgcc-file-name`"; 
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
