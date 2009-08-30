@@ -76,7 +76,6 @@ extern struct CRATE		*CRATEdb;
 //-------------------------------------------------------------------------
 extern int  cli_get_value();
 extern int  cli_present();
-extern int  StrMatchWild();
 
 //-------------------------------------------------------------------------
 // helper routine
