@@ -333,7 +333,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="/usr/include/java/`uname -m`";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 *86*linux*) 
-       CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-gcc -fno-strict-aliasing";
        FORLD="$F77";
        if ( uname -m | grep 64 > /dev/null ) 
        then
@@ -393,7 +393,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="$jdk_dir/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -shared-gcc -fno-strict-aliasing";
        echo "---------------------------------- linux -------------"
        CAMSHR="camshr";
        if (test "$F77" = "g77"); then
