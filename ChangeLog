@@ -1,5 +1,1508 @@
-Version 2.2-2
+Version 2.2-4
 
+
+2009-08-30 12:03  twf
+
+	* javatraverser/PLRMSetup.class:
+	
+	Remove the class from cvs
+
+2009-08-30 12:00  twf
+
+	* configure, configure.in:
+	
+	Link to libgcc.a
+
+2009-08-30 11:42  twf
+
+	* mdsobjects/python/: mdsdevice.py, mdsscalar.py:
+	
+	do not call object.__new__ with arguments
+
+2009-08-30 10:05  twf
+
+	* configure, configure.in:
+	
+	use correct options for gnu compiler if installed as f95
+
+2009-08-30 09:17  twf
+
+	* camshr/verbs.c:
+	
+	Take out StrMatchWild declaration
+
+2009-08-30 09:14  twf
+
+	* gen_device/Makefile.in:
+	
+	Add CFLAGS to gen_device link
+
+2009-08-30 09:02  twf
+
+	* configure, configure.in:
+	
+	Add -shared-libgcc
+
+2009-08-30 08:48  twf
+
+	* configure, configure.in:
+	
+	Add -shared-gcc
+
+2009-08-28 13:02  twf
+
+	* javascope/WaveDisplay.vcproj:
+	
+	Use different intermediate directory
+
+2009-08-28 10:53  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	Import makeArray
+
+2009-08-27 11:15  twf
+
+	* WinInstall/WinInstall.vcproj:
+	
+	No longer need manifest file
+
+2009-08-27 08:42  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Fix for NI real time
+
+2009-08-26 15:18  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Dont use mutexes if client only
+
+2009-08-26 13:40  twf
+
+	* mdsplus.sln, javascope/javascope.mak, mdsobjects/cpp/cpp.vcproj,
+	tdishr/tdishr.vcproj:
+	
+	Fix for vs2008
+
+2009-08-26 11:41  twf
+
+	* html-old/: Dirlis.doc, VSS5F8.tmp, blank.gif, circle.gif,
+	index.html, index.html-old, index2.shtml, mdsplus6.JPG,
+	mdsplus_logo.jpg, MDSCON2000/MDSCON 2000.ppt, MDSCON2000/MdsEvents
+	internals.doc, MDSCON2000/RFX MdsPlus collaboration.ppt,
+	MDSCON2000/nstx.doc, ccl/refman/ccl.pdf, faq/faqs.html,
+	ga_jschachter/mdslib.shtml, ga_jschachter/mdsplus-class1.pdf,
+	ga_jschachter/mdsplus-class2.pdf, gettingstarted/New Bitmap
+	Image.bmp, gettingstarted/Outline.html,
+	gettingstarted/actions.html, gettingstarted/adddiagnostic.html,
+	gettingstarted/commandinterfaces-orig.html,
+	gettingstarted/commandinterfaces.html, gettingstarted/cropped.THN,
+	gettingstarted/cropped.jpg, gettingstarted/datatypes.html,
+	gettingstarted/datatypestable.html,
+	gettingstarted/events-cmod.html, gettingstarted/events.html,
+	gettingstarted/expressioneval.html, gettingstarted/faqs.html,
+	gettingstarted/graphicinterfaces.html,
+	gettingstarted/idlinterface.html, gettingstarted/image017.JPG,
+	gettingstarted/image24M.JPG, gettingstarted/image2O3.JPG,
+	gettingstarted/image30P.JPG, gettingstarted/image37E.JPG,
+	gettingstarted/image3DF.JPG, gettingstarted/image4QS.JPG,
+	gettingstarted/image57N.JPG, gettingstarted/image57N.JPG.BAK,
+	gettingstarted/image740.JPG, gettingstarted/image84V.JPG,
+	gettingstarted/image89T.JPG, gettingstarted/image8FK.JPG,
+	gettingstarted/image8HD.JPG, gettingstarted/image8UB.JPG,
+	gettingstarted/image95V.JPG, gettingstarted/image95V.JPG.BAK,
+	gettingstarted/image9PA.JPG, gettingstarted/imageA2V.JPG,
+	gettingstarted/imageA96.JPG, gettingstarted/imageAFJ.JPG,
+	gettingstarted/imageBRD.JPG, gettingstarted/imageCTA.JPG,
+	gettingstarted/imageD9K.JPG, gettingstarted/imageDJE.JPG,
+	gettingstarted/imageDSF.JPG, gettingstarted/imageFQF.JPG,
+	gettingstarted/imageFVJ.JPG, gettingstarted/imageG5N.JPG,
+	gettingstarted/imageGAM.JPG, gettingstarted/imageGGI.JPG,
+	gettingstarted/imageGVL.JPG, gettingstarted/imageHFT.JPG,
+	gettingstarted/imageHS7.JPG, gettingstarted/imageIR2.JPG,
+	gettingstarted/imageIVO.JPG, gettingstarted/imageL2N.JPG,
+	gettingstarted/imageL3F.JPG, gettingstarted/imageLMF.JPG,
+	gettingstarted/imageMBD.JPG, gettingstarted/imageN02.JPG,
+	gettingstarted/imageNCL.JPG, gettingstarted/imageNH2.JPG,
+	gettingstarted/imagePQS.JPG, gettingstarted/imageQD6.JPG,
+	gettingstarted/imageR06.JPG, gettingstarted/imageR2D.JPG,
+	gettingstarted/imageR5A.JPG, gettingstarted/imageRF8.JPG,
+	gettingstarted/imageRMN.JPG, gettingstarted/imageS6E.JPG,
+	gettingstarted/imageSC8.JPG, gettingstarted/imageSEE.JPG,
+	gettingstarted/imageSRT.JPG, gettingstarted/imageTCB.JPG,
+	gettingstarted/imageVC2.JPG, gettingstarted/introduction.html,
+	gettingstarted/logbook.html, gettingstarted/methods.html,
+	gettingstarted/newtree.html,
+	gettingstarted/table_of_contents-old.html,
+	gettingstarted/table_of_contents.html,
+	gettingstarted/traverser01.THN, gettingstarted/traverser01.jpg,
+	gettingstarted/treedata-old.html, gettingstarted/treedata.html,
+	gettingstarted/untitled.THN, gettingstarted/untitled.jpg,
+	gettingstarted/untitledcropd.THN, gettingstarted/untitledcropd.jpg,
+	gettingstarted/untitledcropd2.THN,
+	gettingstarted/untitledcropd2.jpg,
+	gettingstarted/appendix/example01.html,
+	gettingstarted/appendix/faqs.html,
+	gettingstarted/appendix/glossary.html, glossary/glossary.pdf,
+	idlinterface/refman/mdsplus_idl.html, images/MDS plu1.doc,
+	images/MDS plus.doc, images/R_mdsplus6.JPG, images/R_mdsplus6.THN,
+	images/mds.gif.doc, images/mdsplus.THN, images/mdsplus.bmp,
+	images/mdsplus2.JPG, images/mdsplus2.THN, images/mdsplus2.bmp,
+	images/mdsplus3.JPG, images/mdsplus3.THN, images/mdsplus3.bmp,
+	images/mdsplus4.JPG, images/mdsplus4.THN, images/mdsplus4.bmp,
+	images/mdsplus5.JPG, images/mdsplus5.THN, images/mdsplus5.bmp,
+	images/mdsplus6.JPG, images/mdsplus6.THN, images/mdsplus6.bmp,
+	images/test.BMP, javascope/ReadMe.html, javascope/data_popup.jpg,
+	javascope/data_setup.jpg, javascope/frame_popup.jpg,
+	javascope/image_setup.jpg, javascope/jScope.jpg,
+	logbook/refman/logbook.pdf, mdsdataaccess/refman/daqrtl.pdf,
+	mdsdatatypes/descriptors.html,
+	mdsdatatypes/file_tree_node_structures.html,
+	mdsdatatypes/mdsplus_datastructures.html,
+	mdsdcl/refman/command_overview.pdf,
+	mdsdcl/refman/command_overview.ps, mdslib/mdslib.html,
+	mdsplus/L6810.html, mdsplus/L8100.html, mdsplus/L8501.html,
+	mdsplus/MPB_ENCODER.GIF, mdsplus/a14.gif, mdsplus/a14.html,
+	mdsplus/alcc.gif, mdsplus/b5910.html, mdsplus/devices.html,
+	mdsplus/index.html, mdsplus/install_kits.html, mdsplus/j221.gif,
+	mdsplus/j221.html, mdsplus/l6810.gif, mdsplus/l8100.gif,
+	mdsplus/l8501.gif, mdsplus/mdsplus-coding.htm,
+	mdsplus/mdsplus_idl.html, mdsplus/mdsplus_internals.html,
+	mdsplus/mdsplus_jet.html, mdsplus/mdsplus_trouble.html,
+	mdsplus/mpb_encoder.html, mdsplus/references.html,
+	mdsplus/scope-big.gif, mdsplus/scope-icon.gif,
+	mdsplus/scope-setup.gif, mdsplus/scope-small.gif,
+	mdsplus/scope.html, mdsplus/test.html, mdsplus/tr16.gif,
+	mdsplus/tr16.html, mdsplus/traverser-big.gif,
+	mdsplus/traverser-small.gif, mdsplus/traverser.html,
+	mdsplus/HtmlDocuments/WS_FTP.LOG, mdsplus/HtmlDocuments/index.htm,
+	mdsplus/HtmlDocuments/GarchingPapers/Figure1.gif,
+	mdsplus/HtmlDocuments/GarchingPapers/Figure2.gif,
+	mdsplus/HtmlDocuments/GarchingPapers/Figure3.gif,
+	mdsplus/HtmlDocuments/GarchingPapers/Figure4.gif,
+	mdsplus/HtmlDocuments/GarchingPapers/MDSplusWeb.html,
+	mdsplus/HtmlDocuments/GarchingPapers/WS_FTP.LOG,
+	mdsplus/Jet/jet-mdsplus.html, mdsplus/MdsPlusJava/AllNames.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlus.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusDescriptor.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusEvent.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusEventAst.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusEvents.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusException.html,
+	mdsplus/MdsPlusJava/MdsPlus.MdsPlusJavascriptEvent.html,
+	mdsplus/MdsPlusJava/Package-MdsPlus.html,
+	mdsplus/MdsPlusJava/Package-java.html,
+	mdsplus/MdsPlusJava/Package-java.io.html,
+	mdsplus/MdsPlusJava/Package-java.lang.html,
+	mdsplus/MdsPlusJava/Package-java.net.html,
+	mdsplus/MdsPlusJava/java.io.BufferedInputStream.html,
+	mdsplus/MdsPlusJava/java.io.BufferedOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.ByteArrayInputStream.html,
+	mdsplus/MdsPlusJava/java.io.ByteArrayOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.DataInput.html,
+	mdsplus/MdsPlusJava/java.io.DataInputStream.html,
+	mdsplus/MdsPlusJava/java.io.DataOutput.html,
+	mdsplus/MdsPlusJava/java.io.DataOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.EOFException.html,
+	mdsplus/MdsPlusJava/java.io.File.html,
+	mdsplus/MdsPlusJava/java.io.FileDescriptor.html,
+	mdsplus/MdsPlusJava/java.io.FileInputStream.html,
+	mdsplus/MdsPlusJava/java.io.FileNotFoundException.html,
+	mdsplus/MdsPlusJava/java.io.FileOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.FilenameFilter.html,
+	mdsplus/MdsPlusJava/java.io.FilterInputStream.html,
+	mdsplus/MdsPlusJava/java.io.FilterOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.IOException.html,
+	mdsplus/MdsPlusJava/java.io.InputStream.html,
+	mdsplus/MdsPlusJava/java.io.InterruptedIOException.html,
+	mdsplus/MdsPlusJava/java.io.LineNumberInputStream.html,
+	mdsplus/MdsPlusJava/java.io.OutputStream.html,
+	mdsplus/MdsPlusJava/java.io.PipedInputStream.html,
+	mdsplus/MdsPlusJava/java.io.PipedOutputStream.html,
+	mdsplus/MdsPlusJava/java.io.PrintStream.html,
+	mdsplus/MdsPlusJava/java.io.PushbackInputStream.html,
+	mdsplus/MdsPlusJava/java.io.RandomAccessFile.html,
+	mdsplus/MdsPlusJava/java.io.SequenceInputStream.html,
+	mdsplus/MdsPlusJava/java.io.StreamTokenizer.html,
+	mdsplus/MdsPlusJava/java.io.StringBufferInputStream.html,
+	mdsplus/MdsPlusJava/java.io.UTFDataFormatException.html,
+	mdsplus/MdsPlusJava/java.lang.AbstractMethodError.html,
+	mdsplus/MdsPlusJava/java.lang.ArithmeticException.html,
+	mdsplus/MdsPlusJava/java.lang.ArrayIndexOutOfBoundsException.html,
+	mdsplus/MdsPlusJava/java.lang.ArrayStoreException.html,
+	mdsplus/MdsPlusJava/java.lang.Boolean.html,
+	mdsplus/MdsPlusJava/java.lang.Character.html,
+	mdsplus/MdsPlusJava/java.lang.Class.html,
+	mdsplus/MdsPlusJava/java.lang.ClassCastException.html,
+	mdsplus/MdsPlusJava/java.lang.ClassCircularityError.html,
+	mdsplus/MdsPlusJava/java.lang.ClassFormatError.html,
+	mdsplus/MdsPlusJava/java.lang.ClassLoader.html,
+	mdsplus/MdsPlusJava/java.lang.ClassNotFoundException.html,
+	mdsplus/MdsPlusJava/java.lang.CloneNotSupportedException.html,
+	mdsplus/MdsPlusJava/java.lang.Cloneable.html,
+	mdsplus/MdsPlusJava/java.lang.Compiler.html,
+	mdsplus/MdsPlusJava/java.lang.Double.html,
+	mdsplus/MdsPlusJava/java.lang.Error.html,
+	mdsplus/MdsPlusJava/java.lang.Exception.html,
+	mdsplus/MdsPlusJava/java.lang.ExceptionInInitializerError.html,
+	mdsplus/MdsPlusJava/java.lang.Float.html,
+	mdsplus/MdsPlusJava/java.lang.IllegalAccessError.html,
+	mdsplus/MdsPlusJava/java.lang.IllegalAccessException.html,
+	mdsplus/MdsPlusJava/java.lang.IllegalArgumentException.html,
+	mdsplus/MdsPlusJava/java.lang.IllegalMonitorStateException.html,
+	mdsplus/MdsPlusJava/java.lang.IllegalThreadStateException.html,
+	mdsplus/MdsPlusJava/java.lang.IncompatibleClassChangeError.html,
+	mdsplus/MdsPlusJava/java.lang.IndexOutOfBoundsException.html,
+	mdsplus/MdsPlusJava/java.lang.InstantiationError.html,
+	mdsplus/MdsPlusJava/java.lang.InstantiationException.html,
+	mdsplus/MdsPlusJava/java.lang.Integer.html,
+	mdsplus/MdsPlusJava/java.lang.InternalError.html,
+	mdsplus/MdsPlusJava/java.lang.InterruptedException.html,
+	mdsplus/MdsPlusJava/java.lang.LinkageError.html,
+	mdsplus/MdsPlusJava/java.lang.Long.html,
+	mdsplus/MdsPlusJava/java.lang.Math.html,
+	mdsplus/MdsPlusJava/java.lang.NegativeArraySizeException.html,
+	mdsplus/MdsPlusJava/java.lang.NoClassDefFoundError.html,
+	mdsplus/MdsPlusJava/java.lang.NoSuchFieldError.html,
+	mdsplus/MdsPlusJava/java.lang.NoSuchMethodError.html,
+	mdsplus/MdsPlusJava/java.lang.NoSuchMethodException.html,
+	mdsplus/MdsPlusJava/java.lang.NullPointerException.html,
+	mdsplus/MdsPlusJava/java.lang.Number.html,
+	mdsplus/MdsPlusJava/java.lang.NumberFormatException.html,
+	mdsplus/MdsPlusJava/java.lang.Object.html,
+	mdsplus/MdsPlusJava/java.lang.OutOfMemoryError.html,
+	mdsplus/MdsPlusJava/java.lang.Process.html,
+	mdsplus/MdsPlusJava/java.lang.Runnable.html,
+	mdsplus/MdsPlusJava/java.lang.Runtime.html,
+	mdsplus/MdsPlusJava/java.lang.RuntimeException.html,
+	mdsplus/MdsPlusJava/java.lang.SecurityException.html,
+	mdsplus/MdsPlusJava/java.lang.SecurityManager.html,
+	mdsplus/MdsPlusJava/java.lang.StackOverflowError.html,
+	mdsplus/MdsPlusJava/java.lang.String.html,
+	mdsplus/MdsPlusJava/java.lang.StringBuffer.html,
+	mdsplus/MdsPlusJava/java.lang.StringIndexOutOfBoundsException.html,
+	mdsplus/MdsPlusJava/java.lang.System.html,
+	mdsplus/MdsPlusJava/java.lang.Thread.html,
+	mdsplus/MdsPlusJava/java.lang.ThreadDeath.html,
+	mdsplus/MdsPlusJava/java.lang.ThreadGroup.html,
+	mdsplus/MdsPlusJava/java.lang.Throwable.html,
+	mdsplus/MdsPlusJava/java.lang.UnknownError.html,
+	mdsplus/MdsPlusJava/java.lang.UnsatisfiedLinkError.html,
+	mdsplus/MdsPlusJava/java.lang.VerifyError.html,
+	mdsplus/MdsPlusJava/java.lang.VirtualMachineError.html,
+	mdsplus/MdsPlusJava/java.lang.Win32Process.html,
+	mdsplus/MdsPlusJava/java.net.ContentHandler.html,
+	mdsplus/MdsPlusJava/java.net.ContentHandlerFactory.html,
+	mdsplus/MdsPlusJava/java.net.DatagramPacket.html,
+	mdsplus/MdsPlusJava/java.net.DatagramSocket.html,
+	mdsplus/MdsPlusJava/java.net.InetAddress.html,
+	mdsplus/MdsPlusJava/java.net.MalformedURLException.html,
+	mdsplus/MdsPlusJava/java.net.ProtocolException.html,
+	mdsplus/MdsPlusJava/java.net.ServerSocket.html,
+	mdsplus/MdsPlusJava/java.net.Socket.html,
+	mdsplus/MdsPlusJava/java.net.SocketException.html,
+	mdsplus/MdsPlusJava/java.net.SocketImpl.html,
+	mdsplus/MdsPlusJava/java.net.SocketImplFactory.html,
+	mdsplus/MdsPlusJava/java.net.URL.html,
+	mdsplus/MdsPlusJava/java.net.URLConnection.html,
+	mdsplus/MdsPlusJava/java.net.URLEncoder.html,
+	mdsplus/MdsPlusJava/java.net.URLStreamHandler.html,
+	mdsplus/MdsPlusJava/java.net.URLStreamHandlerFactory.html,
+	mdsplus/MdsPlusJava/java.net.UnknownHostException.html,
+	mdsplus/MdsPlusJava/java.net.UnknownServiceException.html,
+	mdsplus/MdsPlusJava/packages.html, mdsplus/MdsPlusJava/tree.html,
+	mdsplus/MdsPlusJava/images/OpenBookIcon.gif,
+	mdsplus/MdsPlusJava/images/blue-ball-small.gif,
+	mdsplus/MdsPlusJava/images/blue-ball.gif,
+	mdsplus/MdsPlusJava/images/class-index.gif,
+	mdsplus/MdsPlusJava/images/constructor-index.gif,
+	mdsplus/MdsPlusJava/images/constructors.gif,
+	mdsplus/MdsPlusJava/images/cyan-ball-small.gif,
+	mdsplus/MdsPlusJava/images/cyan-ball.gif,
+	mdsplus/MdsPlusJava/images/error-index.gif,
+	mdsplus/MdsPlusJava/images/exception-index.gif,
+	mdsplus/MdsPlusJava/images/green-ball-small.gif,
+	mdsplus/MdsPlusJava/images/green-ball.gif,
+	mdsplus/MdsPlusJava/images/interface-index.gif,
+	mdsplus/MdsPlusJava/images/magenta-ball-small.gif,
+	mdsplus/MdsPlusJava/images/magenta-ball.gif,
+	mdsplus/MdsPlusJava/images/method-index.gif,
+	mdsplus/MdsPlusJava/images/methods.gif,
+	mdsplus/MdsPlusJava/images/package-index.gif,
+	mdsplus/MdsPlusJava/images/red-ball-small.gif,
+	mdsplus/MdsPlusJava/images/red-ball.gif,
+	mdsplus/MdsPlusJava/images/variable-index.gif,
+	mdsplus/MdsPlusJava/images/variables.gif,
+	mdsplus/MdsPlusJava/images/yellow-ball-small.gif,
+	mdsplus/MdsPlusJava/images/yellow-ball.gif,
+	mdsplus/classes/Complaint.class,
+	mdsplus/classes/JTraverserApplet.class,
+	mdsplus/classes/JTraverserComplaint.class,
+	mdsplus/classes/JTraverserNciDialog.class,
+	mdsplus/classes/JTraverserTreeControls.class,
+	mdsplus/classes/JTraverserTreeNode.class,
+	mdsplus/classes/JTraverserTreePanel.class,
+	mdsplus/classes/MdsJavascript.class,
+	mdsplus/classes/MdsPlusClientServer.class,
+	mdsplus/classes/MdsPlusServerDaemon.class,
+	mdsplus/classes/MyTreeNode.class,
+	mdsplus/classes/MyTreePanel.class, mdsplus/classes/NciDialog.class,
+	mdsplus/classes/Reloader.class, mdsplus/classes/TreeApplet.class,
+	mdsplus/classes/TreeControls.class,
+	mdsplus/classes/TreeFrame.class, mdsplus/classes/WS_FTP.LOG,
+	mdsplus/classes/classes.list, mdsplus/classes/cmodstate.cab,
+	mdsplus/classes/cmodstate.zip, mdsplus/classes/index.htm,
+	mdsplus/classes/java.tar, mdsplus/classes/readme.txt,
+	mdsplus/classes/scope.cab, mdsplus/classes/scope.zip,
+	mdsplus/classes/MdsPlus/MdsPlus.class,
+	mdsplus/classes/MdsPlus/MdsPlusDescriptor.class,
+	mdsplus/classes/MdsPlus/MdsPlusEvent.class,
+	mdsplus/classes/MdsPlus/MdsPlusEvents.class,
+	mdsplus/classes/MdsPlus/MdsPlusException.class,
+	mdsplus/classes/MdsPlus/MdsPlusJavascriptEvent.class,
+	mdsplus/classes/MdsPlus/WS_FTP.LOG,
+	mdsplus/classes/Save/MdsPlus.class,
+	mdsplus/classes/Save/MdsPlusDescriptor.class,
+	mdsplus/classes/Save/MdsPlusEvent.class,
+	mdsplus/classes/Save/MdsPlusEvents.class,
+	mdsplus/classes/Save/MdsPlusException.class,
+	mdsplus/classes/Save/MdsPlusJavascriptEvent.class,
+	mdsplus/classes/Save/WS_FTP.LOG, mdsplus/classes/Source/index.htm,
+	mdsplus/classes/Source/CmodState/CmodState.java,
+	mdsplus/classes/Source/CmodState/WS_FTP.LOG,
+	mdsplus/classes/Source/MdsPlus/MdsPlus.java,
+	mdsplus/classes/Source/MdsPlus/WS_FTP.LOG,
+	mdsplus/classes/Source/Scope/CModComplain.java,
+	mdsplus/classes/Source/Scope/CModSetup.java,
+	mdsplus/classes/Source/Scope/CModSetupExpand.java,
+	mdsplus/classes/Source/Scope/CModSetupInfo.java,
+	mdsplus/classes/Source/Scope/CModUseGlobal.java,
+	mdsplus/classes/Source/Scope/CModWaveformData.java,
+	mdsplus/classes/Source/Scope/DualRelativeLayout.java,
+	mdsplus/classes/Source/Scope/RedirectedButton.java,
+	mdsplus/classes/Source/Scope/RedirectedCheckboxMenuItem.java,
+	mdsplus/classes/Source/Scope/RedirectedMenuItem.java,
+	mdsplus/classes/Source/Scope/Slider.java,
+	mdsplus/classes/Source/Scope/WaveformButton3PopupMenu.java,
+	mdsplus/classes/Source/Scope/WaveformCanvas.java,
+	mdsplus/classes/Source/Scope/WaveformCrosshairs.java,
+	mdsplus/classes/Source/Scope/WaveformData.java,
+	mdsplus/classes/Source/Scope/WaveformGridInfo.java,
+	mdsplus/classes/Source/Scope/WaveformPoint.java,
+	mdsplus/classes/Source/Scope/WideList.java,
+	mdsplus/classes/Source/Scope/scope.java,
+	mdsplus/classes/Source/Scope/scopeApplet.java,
+	mdsplus/classes/Source/Scope/scopeCustomizeWindow.java,
+	mdsplus/classes/Source/Scope/scopeFrame.java,
+	mdsplus/classes/Source/Scope/scopePanels.java,
+	mdsplus/classes/iconpics/WS_FTP.LOG,
+	mdsplus/classes/iconpics/action_usage.bmp,
+	mdsplus/classes/iconpics/action_usage.gif,
+	mdsplus/classes/iconpics/axis_usage.bmp,
+	mdsplus/classes/iconpics/axis_usage.gif,
+	mdsplus/classes/iconpics/close.gif,
+	mdsplus/classes/iconpics/dblptr.gif,
+	mdsplus/classes/iconpics/device_usage.bmp,
+	mdsplus/classes/iconpics/device_usage.gif,
+	mdsplus/classes/iconpics/dispatch_usage.bmp,
+	mdsplus/classes/iconpics/dispatch_usage.gif,
+	mdsplus/classes/iconpics/excl.gif,
+	mdsplus/classes/iconpics/file.gif,
+	mdsplus/classes/iconpics/grnode.gif,
+	mdsplus/classes/iconpics/no.gif,
+	mdsplus/classes/iconpics/numeric_usage.bmp,
+	mdsplus/classes/iconpics/numeric_usage.gif,
+	mdsplus/classes/iconpics/open.gif,
+	mdsplus/classes/iconpics/phone.gif,
+	mdsplus/classes/iconpics/ppen.gif,
+	mdsplus/classes/iconpics/signal_usage.bmp,
+	mdsplus/classes/iconpics/signal_usage.gif,
+	mdsplus/classes/iconpics/structure_usage.bmp,
+	mdsplus/classes/iconpics/structure_usage.gif,
+	mdsplus/classes/iconpics/task_usage.bmp,
+	mdsplus/classes/iconpics/task_usage.gif,
+	mdsplus/classes/iconpics/text_usage.bmp,
+	mdsplus/classes/iconpics/text_usage.gif,
+	mdsplus/classes/iconpics/tree_usage.bmp,
+	mdsplus/classes/iconpics/tree_usage.gif,
+	mdsplus/classes/iconpics/unknown_usage.bmp,
+	mdsplus/classes/iconpics/unknown_usage.gif,
+	mdsplus/classes/iconpics/url.gif,
+	mdsplus/classes/iconpics/window_usage.bmp,
+	mdsplus/classes/iconpics/yes.gif,
+	mdsplus/classes/iconpics/ylnode.gif,
+	mdsplus/classes/jcx/ThreedPanel.class,
+	mdsplus/classes/jcx/TreeNode.class,
+	mdsplus/classes/jcx/TreePanel.class,
+	mdsplus/classes/jcx/WS_FTP.LOG, mdsplus/devices/L6810.html,
+	mdsplus/devices/L8100.html, mdsplus/devices/L8501.html,
+	mdsplus/devices/MPB_ENCODER.GIF, mdsplus/devices/WS_FTP.LOG,
+	mdsplus/devices/a14.gif, mdsplus/devices/a14.html,
+	mdsplus/devices/b5910.html, mdsplus/devices/j221.gif,
+	mdsplus/devices/j221.html, mdsplus/devices/l6810.gif,
+	mdsplus/devices/l8100.gif, mdsplus/devices/l8501.gif,
+	mdsplus/devices/mpb_encoder.html, mdsplus/devices/tr16.gif,
+	mdsplus/devices/tr16.html,
+	mdsplus/internals/MDSplus-port-status.html,
+	mdsplus/internals/MDSplus-port-status.html-old,
+	mdsplus/internals/coding_conventions.html,
+	mdsplus/internals/descriptors.html,
+	mdsplus/internals/file_tree_node_structures.html,
+	mdsplus/internals/index.html,
+	mdsplus/internals/internals_meeting.html,
+	mdsplus/internals/libmdsshr.html, mdsplus/internals/mdsdclshr.html,
+	mdsplus/internals/mdslib.html,
+	mdsplus/internals/mdsplus_datastructures.html,
+	mdsplus/internals/mdsplus_shimages_cmdtables.html,
+	mdsplus/internals/mdsplus_shimages_device.html,
+	mdsplus/internals/mdsplus_shimages_other.htm,
+	mdsplus/internals/mdsplus_shimages_other.html,
+	mdsplus/internals/mdsplus_shimages_primary.html,
+	mdsplus/internals/mdsplus_shimages_primary_port.html,
+	mdsplus/internals/mdsrtlprv.html, mdsplus/internals/mdsshr.html,
+	mdsplus/internals/p2hnext.gif, mdsplus/internals/p2hup.gif,
+	mdsplus/internals/porting_info.html,
+	mdsplus/internals/servershr.html, mdsplus/internals/tdishr.html,
+	mdsplus/internals/treeshr.html, mdsplus/internals/xmdsshr.html,
+	mdsplus/monterey-9605-jas/WS_FTP.LOG,
+	mdsplus/monterey-9605-jas/index.htm,
+	mdsplus/monterey-9605-jas/p2hgraph.gif,
+	mdsplus/monterey-9605-jas/p2hnext.gif,
+	mdsplus/monterey-9605-jas/p2hprev.gif,
+	mdsplus/monterey-9605-jas/p2htext.gif,
+	mdsplus/monterey-9605-jas/p2hup.gif,
+	mdsplus/monterey-9605-jas/sld001.htm,
+	mdsplus/monterey-9605-jas/sld001.jpg,
+	mdsplus/monterey-9605-jas/sld002.htm,
+	mdsplus/monterey-9605-jas/sld002.jpg,
+	mdsplus/monterey-9605-jas/sld003.htm,
+	mdsplus/monterey-9605-jas/sld003.jpg,
+	mdsplus/monterey-9605-jas/sld004.htm,
+	mdsplus/monterey-9605-jas/sld004.jpg,
+	mdsplus/monterey-9605-jas/sld005.htm,
+	mdsplus/monterey-9605-jas/sld005.jpg,
+	mdsplus/monterey-9605-jas/sld006.htm,
+	mdsplus/monterey-9605-jas/sld006.jpg,
+	mdsplus/monterey-9605-jas/sld007.htm,
+	mdsplus/monterey-9605-jas/sld007.jpg,
+	mdsplus/monterey-9605-jas/sld008.htm,
+	mdsplus/monterey-9605-jas/sld008.jpg,
+	mdsplus/monterey-9605-jas/sld009.htm,
+	mdsplus/monterey-9605-jas/sld009.jpg,
+	mdsplus/monterey-9605-jas/sld010.htm,
+	mdsplus/monterey-9605-jas/sld010.jpg,
+	mdsplus/monterey-9605-jas/sld011.htm,
+	mdsplus/monterey-9605-jas/sld011.jpg,
+	mdsplus/monterey-9605-jas/sld012.htm,
+	mdsplus/monterey-9605-jas/sld012.jpg,
+	mdsplus/monterey-9605-jas/sld013.htm,
+	mdsplus/monterey-9605-jas/sld013.jpg,
+	mdsplus/monterey-9605-jas/sld014.htm,
+	mdsplus/monterey-9605-jas/sld014.jpg,
+	mdsplus/monterey-9605-jas/sld015.htm,
+	mdsplus/monterey-9605-jas/sld015.jpg,
+	mdsplus/monterey-9605-jas/sld016.htm,
+	mdsplus/monterey-9605-jas/sld016.jpg,
+	mdsplus/monterey-9605-jas/sld017.htm,
+	mdsplus/monterey-9605-jas/sld017.jpg,
+	mdsplus/monterey-9605-jas/sld018.htm,
+	mdsplus/monterey-9605-jas/sld018.jpg,
+	mdsplus/monterey-9605-jas/sld019.htm,
+	mdsplus/monterey-9605-jas/sld019.jpg,
+	mdsplus/monterey-9605-jas/sld020.htm,
+	mdsplus/monterey-9605-jas/sld020.jpg,
+	mdsplus/monterey-9605-jas/sld021.htm,
+	mdsplus/monterey-9605-jas/sld021.jpg,
+	mdsplus/monterey-9605-jas/sld022.htm,
+	mdsplus/monterey-9605-jas/sld022.jpg,
+	mdsplus/monterey-9605-jas/sld023.htm,
+	mdsplus/monterey-9605-jas/sld023.jpg,
+	mdsplus/monterey-9605-jas/sld024.htm,
+	mdsplus/monterey-9605-jas/sld024.jpg,
+	mdsplus/monterey-9605-jas/sld025.htm,
+	mdsplus/monterey-9605-jas/sld025.jpg,
+	mdsplus/monterey-9605-jas/sld026.htm,
+	mdsplus/monterey-9605-jas/sld026.jpg,
+	mdsplus/monterey-9605-jas/sld027.htm,
+	mdsplus/monterey-9605-jas/sld027.jpg,
+	mdsplus/monterey-9605-jas/tsld001.htm,
+	mdsplus/monterey-9605-jas/tsld002.htm,
+	mdsplus/monterey-9605-jas/tsld003.htm,
+	mdsplus/monterey-9605-jas/tsld004.htm,
+	mdsplus/monterey-9605-jas/tsld005.htm,
+	mdsplus/monterey-9605-jas/tsld006.htm,
+	mdsplus/monterey-9605-jas/tsld007.htm,
+	mdsplus/monterey-9605-jas/tsld008.htm,
+	mdsplus/monterey-9605-jas/tsld009.htm,
+	mdsplus/monterey-9605-jas/tsld010.htm,
+	mdsplus/monterey-9605-jas/tsld011.htm,
+	mdsplus/monterey-9605-jas/tsld012.htm,
+	mdsplus/monterey-9605-jas/tsld013.htm,
+	mdsplus/monterey-9605-jas/tsld014.htm,
+	mdsplus/monterey-9605-jas/tsld015.htm,
+	mdsplus/monterey-9605-jas/tsld016.htm,
+	mdsplus/monterey-9605-jas/tsld017.htm,
+	mdsplus/monterey-9605-jas/tsld018.htm,
+	mdsplus/monterey-9605-jas/tsld019.htm,
+	mdsplus/monterey-9605-jas/tsld020.htm,
+	mdsplus/monterey-9605-jas/tsld021.htm,
+	mdsplus/monterey-9605-jas/tsld022.htm,
+	mdsplus/monterey-9605-jas/tsld023.htm,
+	mdsplus/monterey-9605-jas/tsld024.htm,
+	mdsplus/monterey-9605-jas/tsld025.htm,
+	mdsplus/monterey-9605-jas/tsld026.htm,
+	mdsplus/monterey-9605-jas/tsld027.htm,
+	mdsplus/monterey-9605-twf/WS_FTP.LOG,
+	mdsplus/monterey-9605-twf/index.htm,
+	mdsplus/monterey-9605-twf/p2hgraph.gif,
+	mdsplus/monterey-9605-twf/p2hnext.gif,
+	mdsplus/monterey-9605-twf/p2hprev.gif,
+	mdsplus/monterey-9605-twf/p2htext.gif,
+	mdsplus/monterey-9605-twf/p2hup.gif,
+	mdsplus/monterey-9605-twf/sld001.htm,
+	mdsplus/monterey-9605-twf/sld001.jpg,
+	mdsplus/monterey-9605-twf/sld002.htm,
+	mdsplus/monterey-9605-twf/sld002.jpg,
+	mdsplus/monterey-9605-twf/sld003.htm,
+	mdsplus/monterey-9605-twf/sld003.jpg,
+	mdsplus/monterey-9605-twf/sld004.htm,
+	mdsplus/monterey-9605-twf/sld004.jpg,
+	mdsplus/monterey-9605-twf/sld005.htm,
+	mdsplus/monterey-9605-twf/sld005.jpg,
+	mdsplus/monterey-9605-twf/sld006.htm,
+	mdsplus/monterey-9605-twf/sld006.jpg,
+	mdsplus/monterey-9605-twf/sld007.htm,
+	mdsplus/monterey-9605-twf/sld007.jpg,
+	mdsplus/monterey-9605-twf/sld008.htm,
+	mdsplus/monterey-9605-twf/sld008.jpg,
+	mdsplus/monterey-9605-twf/sld009.htm,
+	mdsplus/monterey-9605-twf/sld009.jpg,
+	mdsplus/monterey-9605-twf/sld010.htm,
+	mdsplus/monterey-9605-twf/sld010.jpg,
+	mdsplus/monterey-9605-twf/sld011.htm,
+	mdsplus/monterey-9605-twf/sld011.jpg,
+	mdsplus/monterey-9605-twf/sld012.htm,
+	mdsplus/monterey-9605-twf/sld012.jpg,
+	mdsplus/monterey-9605-twf/sld013.htm,
+	mdsplus/monterey-9605-twf/sld013.jpg,
+	mdsplus/monterey-9605-twf/sld014.htm,
+	mdsplus/monterey-9605-twf/sld014.jpg,
+	mdsplus/monterey-9605-twf/sld015.htm,
+	mdsplus/monterey-9605-twf/sld015.jpg,
+	mdsplus/monterey-9605-twf/sld016.htm,
+	mdsplus/monterey-9605-twf/sld016.jpg,
+	mdsplus/monterey-9605-twf/sld017.htm,
+	mdsplus/monterey-9605-twf/sld017.jpg,
+	mdsplus/monterey-9605-twf/sld018.htm,
+	mdsplus/monterey-9605-twf/sld018.jpg,
+	mdsplus/monterey-9605-twf/sld019.htm,
+	mdsplus/monterey-9605-twf/sld019.jpg,
+	mdsplus/monterey-9605-twf/sld020.htm,
+	mdsplus/monterey-9605-twf/sld020.jpg,
+	mdsplus/monterey-9605-twf/sld021.htm,
+	mdsplus/monterey-9605-twf/sld021.jpg,
+	mdsplus/monterey-9605-twf/sld022.htm,
+	mdsplus/monterey-9605-twf/sld022.jpg,
+	mdsplus/monterey-9605-twf/sld023.htm,
+	mdsplus/monterey-9605-twf/sld023.jpg,
+	mdsplus/monterey-9605-twf/sld024.htm,
+	mdsplus/monterey-9605-twf/sld024.jpg,
+	mdsplus/monterey-9605-twf/tsld001.htm,
+	mdsplus/monterey-9605-twf/tsld002.htm,
+	mdsplus/monterey-9605-twf/tsld003.htm,
+	mdsplus/monterey-9605-twf/tsld004.htm,
+	mdsplus/monterey-9605-twf/tsld005.htm,
+	mdsplus/monterey-9605-twf/tsld006.htm,
+	mdsplus/monterey-9605-twf/tsld007.htm,
+	mdsplus/monterey-9605-twf/tsld008.htm,
+	mdsplus/monterey-9605-twf/tsld009.htm,
+	mdsplus/monterey-9605-twf/tsld010.htm,
+	mdsplus/monterey-9605-twf/tsld011.htm,
+	mdsplus/monterey-9605-twf/tsld012.htm,
+	mdsplus/monterey-9605-twf/tsld013.htm,
+	mdsplus/monterey-9605-twf/tsld014.htm,
+	mdsplus/monterey-9605-twf/tsld015.htm,
+	mdsplus/monterey-9605-twf/tsld016.htm,
+	mdsplus/monterey-9605-twf/tsld017.htm,
+	mdsplus/monterey-9605-twf/tsld018.htm,
+	mdsplus/monterey-9605-twf/tsld019.htm,
+	mdsplus/monterey-9605-twf/tsld020.htm,
+	mdsplus/monterey-9605-twf/tsld021.htm,
+	mdsplus/monterey-9605-twf/tsld022.htm,
+	mdsplus/monterey-9605-twf/tsld023.htm,
+	mdsplus/monterey-9605-twf/tsld024.htm,
+	mdsplus/protected/WS_FTP.LOG, mdsplus/protected/dwscope.html,
+	mdsplus/protected/dwscope_icon.gif, mdsplus/ps/GarchingTalk.ps,
+	mdsplus/ps/ccl.ps, mdsplus/ps/cmod_daq.ps,
+	mdsplus/ps/command_overview.ps, mdsplus/ps/daqrtl.pdf,
+	mdsplus/ps/daqrtl.ps, mdsplus/ps/garching_paper_jas.ps,
+	mdsplus/ps/garching_paper_twf.ps, mdsplus/ps/glossary.ps,
+	mdsplus/ps/index.html, mdsplus/ps/logbook.ps,
+	mdsplus/ps/london_paper.ps, mdsplus/ps/mdsplus_daq.ps,
+	mdsplus/ps/mdsplus_sql.ps,
+	mdsplus/ps/poster_hyannis-10-may-1990.ps, mdsplus/ps/ws_ftp.log,
+	mdsplus/scope/RightMenu.GIF, mdsplus/scope/WS_FTP.LOG,
+	mdsplus/scope/alcc.gif, mdsplus/scope/javalogo52x88.gif,
+	mdsplus/scope/popup_scope.html, mdsplus/scope/redball.gif,
+	mdsplus/scope/scope.cab, mdsplus/scope/scope.html,
+	mdsplus/scope/scope.zip, mdsplus/scope/scopeAbout.html,
+	mdsplus/scope/scopeHelp.html, mdsplus/scope/scopeHelpMouse.html,
+	mdsplus/scope/scopeHelpOverview.html,
+	mdsplus/scope/scopeHelpRightMenu.html, mdsplus/wavelet/WS_FTP.LOG,
+	mdsplus/wavelet/redbutton.gif, mdsplus/wavelet/reference.html,
+	mdsplus/wavelet/wavebutton.gif, mdssql/mdsplus_sql.pdf,
+	mdssql/mdsplus_sql.ps, netscape pop up windows/faq.html, netscape
+	pop up windows/popup_smu8.html, pppl_tcl/TCL_examples.html,
+	pppl_tcl/TCL_index.html, pppl_tcl/tcl_0.html, pppl_tcl/tcl_1.html,
+	pppl_tcl/tcl_2.html, pppl_tcl/tcl_3.html, pppl_tcl/tcl_4.html,
+	pppl_tcl/tcl_5.html, scope/S-FIG1.GIF, scope/S-FIG2.GIF,
+	scope/S-FIG3.GIF, scope/S-FIG4.GIF, scope/S-FIG5.GIF,
+	scope/S-FIG6.GIF, scope/S-FIG7.GIF, scope/S-FIG8.GIF,
+	scope/S-FIG9.GIF, scope/scope.html, scope/scope_nstx_feb99.pdf,
+	scopepad/scopes_info/X_imageVJ3.GIF,
+	scopepad/scopes_info/X_imageVJ3.THN,
+	scopepad/scopes_info/global_settings.gif.doc,
+	scopepad/scopes_info/imageCML.JPG,
+	scopepad/scopes_info/imageFIT.JPG,
+	scopepad/scopes_info/imageJ4C.JPG,
+	scopepad/scopes_info/imageO4U.JPG,
+	scopepad/scopes_info/imagePA6.txt,
+	scopepad/scopes_info/imageREO.JPG,
+	scopepad/scopes_info/imageVJ3.JPG,
+	scopepad/scopes_info/imageVT3.JPG,
+	scopepad/scopes_info/more_features.html,
+	scopepad/scopes_info/plasmas_scope.jpg.JPG,
+	scopepad/scopes_info/psfc_scope.html,
+	scopepad/scopes_info/psfc_scope01.html,
+	scopepad/scopes_info/quirks.html,
+	scopepad/scopes_info/scope_panel_setup01.doc, tdi/Doc2.doc,
+	tdi/TDI_A1.HTML, tdi/TDI_A2.HTML, tdi/TDI_B1.HTML, tdi/TDI_B2.HTML,
+	tdi/TDI_C1.HTML, tdi/TDI_C2.HTML, tdi/TDI_D1.HTML, tdi/TDI_D2.HTML,
+	tdi/TDI_E1.HTML, tdi/TDI_E2.HTML, tdi/TDI_F.HTML, tdi/TDI_GH.HTML,
+	tdi/TDI_I1.HTML, tdi/TDI_I2.HTML, tdi/TDI_INDEX.HTML,
+	tdi/TDI_JKL.HTML, tdi/TDI_M1.HTML, tdi/TDI_M2.HTML,
+	tdi/TDI_NO.HTML, tdi/TDI_PQ.HTML, tdi/TDI_R.HTML, tdi/TDI_S1.HTML,
+	tdi/TDI_S2.HTML, tdi/TDI_TOP.HTML, tdi/TDI_TU.HTML,
+	tdi/TDI_VWXYZ.HTML, tdi/TdiShr.html, tdi/index.html, tdi/ip.gif,
+	tdi/scope.gif, tdi/sld001.gif, tdi/tdi_descriptors.html,
+	tdi/tdi_examples.html, tdi/tdi_grouped.html,
+	tdi/tdi_misc_help.html, tdi/tdi_shape.html, tdi/tdi_tutorial.html,
+	tdi/psfc-tdi/Doc2.doc, tdi/psfc-tdi/build_signal.doc,
+	tdi/psfc-tdi/chart1/index.htm, tdi/psfc-tdi/chart1/p2hgraph.gif,
+	tdi/psfc-tdi/chart1/p2hnext.gif, tdi/psfc-tdi/chart1/p2hprev.gif,
+	tdi/psfc-tdi/chart1/p2htext.gif, tdi/psfc-tdi/chart1/p2hup.gif,
+	tdi/psfc-tdi/chart1/sld001.gif, tdi/psfc-tdi/chart1/sld001.htm,
+	tdi/psfc-tdi/chart1/tsld001.htm, tdi/psfc-tdi/chart2/index.htm,
+	tdi/psfc-tdi/chart2/p2hgraph.gif, tdi/psfc-tdi/chart2/p2hnext.gif,
+	tdi/psfc-tdi/chart2/p2hprev.gif, tdi/psfc-tdi/chart2/p2htext.gif,
+	tdi/psfc-tdi/chart2/p2hup.gif, tdi/psfc-tdi/chart2/sld001.gif,
+	tdi/psfc-tdi/chart2/sld001.htm, tdi/psfc-tdi/chart2/tsld001.htm,
+	tdi/psfc-tdi/chart3/index.htm, tdi/psfc-tdi/chart3/p2hgraph.gif,
+	tdi/psfc-tdi/chart3/p2hnext.gif, tdi/psfc-tdi/chart3/p2hprev.gif,
+	tdi/psfc-tdi/chart3/p2htext.gif, tdi/psfc-tdi/chart3/p2hup.gif,
+	tdi/psfc-tdi/chart3/sld001.gif, tdi/psfc-tdi/chart3/sld001.htm,
+	tdi/psfc-tdi/chart3/tsld001.htm, traverser/T-FIG1.GIF,
+	traverser/T-FIG10.GIF, traverser/T-FIG11.GIF,
+	traverser/T-FIG12.GIF, traverser/T-FIG13.GIF,
+	traverser/T-FIG14.GIF, traverser/T-FIG15.GIF,
+	traverser/T-FIG16.GIF, traverser/T-FIG17.GIF,
+	traverser/T-FIG18A.GIF, traverser/T-FIG18B.GIF,
+	traverser/T-FIG18C.GIF, traverser/T-FIG19.GIF,
+	traverser/T-FIG2.GIF, traverser/T-FIG20.GIF, traverser/T-FIG3.GIF,
+	traverser/T-FIG4.GIF, traverser/T-FIG5.GIF, traverser/T-FIG6.GIF,
+	traverser/T-FIG7.GIF, traverser/T-FIG8.GIF, traverser/T-FIG9.GIF,
+	traverser/traverser.html, traverser/traverser_feb99.pdf,
+	traverser/tutorial/imageG5N.JPG,
+	traverser/tutorial/traverser01.jpg,
+	traverser/tutorial/traverser01.jpg.BAK,
+	traverser/tutorial/treedata.html, traverser/tutorial/tutorial.html,
+	traverser/tutorial/tutorial.html.BAK:
+	
+	Obsolete html
+
+2009-08-26 09:45  twf
+
+	* html/README.TXT, html/heading.shtml, html/index.html,
+	html/index.php, html/index.xml, html/installations.html,
+	html/mdsplus_css.css, html/menu.shtml, html/search.shtml,
+	html/template.shtml, html/toc.php,
+	html/documentation/glossary.shtml, html/documentation/index.shtml,
+	html/documentation/index.xml, html/documentation/menu.shtml,
+	html/documentation/beginners/Cartman.gif,
+	html/documentation/beginners/S-FIG1.GIF,
+	html/documentation/beginners/S-FIG2.GIF,
+	html/documentation/beginners/S-FIG3.GIF,
+	html/documentation/beginners/S-FIG4.GIF,
+	html/documentation/beginners/S-FIG5.GIF,
+	html/documentation/beginners/S-FIG6.GIF,
+	html/documentation/beginners/S-FIG7.GIF,
+	html/documentation/beginners/S-FIG8.GIF,
+	html/documentation/beginners/S-FIG9.GIF,
+	html/documentation/beginners/T-FIG1.GIF,
+	html/documentation/beginners/T-FIG10.GIF,
+	html/documentation/beginners/T-FIG11.GIF,
+	html/documentation/beginners/T-FIG12.GIF,
+	html/documentation/beginners/T-FIG13.GIF,
+	html/documentation/beginners/T-FIG14.GIF,
+	html/documentation/beginners/T-FIG15.GIF,
+	html/documentation/beginners/T-FIG16.GIF,
+	html/documentation/beginners/T-FIG17.GIF,
+	html/documentation/beginners/T-FIG18A.GIF,
+	html/documentation/beginners/T-FIG18B.GIF,
+	html/documentation/beginners/T-FIG18C.GIF,
+	html/documentation/beginners/T-FIG19.GIF,
+	html/documentation/beginners/T-FIG2.GIF,
+	html/documentation/beginners/T-FIG20.GIF,
+	html/documentation/beginners/T-FIG3.GIF,
+	html/documentation/beginners/T-FIG4.GIF,
+	html/documentation/beginners/T-FIG5.GIF,
+	html/documentation/beginners/T-FIG6.GIF,
+	html/documentation/beginners/T-FIG7.GIF,
+	html/documentation/beginners/T-FIG8.GIF,
+	html/documentation/beginners/T-FIG9.GIF,
+	html/documentation/beginners/advanced.shtml,
+	html/documentation/beginners/advanced_contents.shtml,
+	html/documentation/beginners/beginners.html,
+	html/documentation/beginners/blank.gif,
+	html/documentation/beginners/circle.gif,
+	html/documentation/beginners/concepts.shtml,
+	html/documentation/beginners/concepts_contents.shtml,
+	html/documentation/beginners/datatypes.shtml,
+	html/documentation/beginners/datatypes_contents.shtml,
+	html/documentation/beginners/expressions.shtml,
+	html/documentation/beginners/expressions_contents.shtml,
+	html/documentation/beginners/glossary.shtml,
+	html/documentation/beginners/glossary_contents.shtml,
+	html/documentation/beginners/graphictools.shtml,
+	html/documentation/beginners/graphictools_contents.shtml,
+	html/documentation/beginners/idl_language_details.shtml,
+	html/documentation/beginners/index.shtml,
+	html/documentation/beginners/index.xml,
+	html/documentation/beginners/index_contents.shtml,
+	html/documentation/beginners/intro.shtml,
+	html/documentation/beginners/intro_contents.shtml,
+	html/documentation/beginners/matlab_language_details.shtml,
+	html/documentation/beginners/menu.shtml,
+	html/documentation/beginners/readwrite.shtml,
+	html/documentation/beginners/readwrite_contents.shtml,
+	html/documentation/beginners/scope.html,
+	html/documentation/beginners/traverser.html,
+	html/documentation/beginners/tree-example.gif,
+	html/documentation/beginners/tree-with-caption.gif,
+	html/documentation/beginners/trees.shtml,
+	html/documentation/beginners/trees_contents.shtml,
+	html/documentation/beginners/tutorials.shtml,
+	html/documentation/beginners/tutorials_contents.shtml,
+	html/documentation/beginners/ga_jschachter/mdslib.shtml,
+	html/documentation/beginners/ga_jschachter/mdsplus-class1.pdf,
+	html/documentation/beginners/ga_jschachter/mdsplus-class2.pdf,
+	html/documentation/pppl_tcl/TCL_examples.html,
+	html/documentation/pppl_tcl/TCL_index.html,
+	html/documentation/pppl_tcl/tcl_0.html,
+	html/documentation/pppl_tcl/tcl_1.html,
+	html/documentation/pppl_tcl/tcl_2.html,
+	html/documentation/pppl_tcl/tcl_3.html,
+	html/documentation/pppl_tcl/tcl_4.html,
+	html/documentation/pppl_tcl/tcl_5.html,
+	html/documentation/reference/TCL_examples.html,
+	html/documentation/reference/TCL_index.html,
+	html/documentation/reference/browser.php,
+	html/documentation/reference/c.shtml,
+	html/documentation/reference/c2.shtml,
+	html/documentation/reference/ccl.pdf,
+	html/documentation/reference/ccl.shtml,
+	html/documentation/reference/f.shtml,
+	html/documentation/reference/idl.shtml,
+	html/documentation/reference/index.shtml,
+	html/documentation/reference/index.xml,
+	html/documentation/reference/internals.shtml,
+	html/documentation/reference/matlab.shtml,
+	html/documentation/reference/mdsplus_idl.html,
+	html/documentation/reference/menu.shtml,
+	html/documentation/reference/php.shtml,
+	html/documentation/reference/python.shtml,
+	html/documentation/reference/realtime.shtml,
+	html/documentation/reference/shot_display.php,
+	html/documentation/reference/tcl.shtml,
+	html/documentation/reference/tcl_0.html,
+	html/documentation/reference/tcl_1.html,
+	html/documentation/reference/tcl_2.html,
+	html/documentation/reference/tcl_3.html,
+	html/documentation/reference/tcl_4.html,
+	html/documentation/reference/tcl_5.html,
+	html/documentation/reference/tdi.shtml,
+	html/documentation/reference/tdi/TDI_A1.HTML,
+	html/documentation/reference/tdi/TDI_A2.HTML,
+	html/documentation/reference/tdi/TDI_B1.HTML,
+	html/documentation/reference/tdi/TDI_B2.HTML,
+	html/documentation/reference/tdi/TDI_C1.HTML,
+	html/documentation/reference/tdi/TDI_C2.HTML,
+	html/documentation/reference/tdi/TDI_D1.HTML,
+	html/documentation/reference/tdi/TDI_D2.HTML,
+	html/documentation/reference/tdi/TDI_E1.HTML,
+	html/documentation/reference/tdi/TDI_E2.HTML,
+	html/documentation/reference/tdi/TDI_F.HTML,
+	html/documentation/reference/tdi/TDI_GH.HTML,
+	html/documentation/reference/tdi/TDI_I1.HTML,
+	html/documentation/reference/tdi/TDI_I2.HTML,
+	html/documentation/reference/tdi/TDI_INDEX.HTML,
+	html/documentation/reference/tdi/TDI_JKL.HTML,
+	html/documentation/reference/tdi/TDI_M1.HTML,
+	html/documentation/reference/tdi/TDI_M2.HTML,
+	html/documentation/reference/tdi/TDI_NO.HTML,
+	html/documentation/reference/tdi/TDI_PQ.HTML,
+	html/documentation/reference/tdi/TDI_R.HTML,
+	html/documentation/reference/tdi/TDI_S1.HTML,
+	html/documentation/reference/tdi/TDI_S2.HTML,
+	html/documentation/reference/tdi/TDI_TOP.HTML,
+	html/documentation/reference/tdi/TDI_TU.HTML,
+	html/documentation/reference/tdi/TDI_VWXYZ.HTML,
+	html/documentation/reference/tdi/TdiShr.html,
+	html/documentation/reference/tdi/ip.gif,
+	html/documentation/reference/tdi/scope.gif,
+	html/documentation/reference/tdi/sld001.gif,
+	html/documentation/reference/tdi/tdi_descriptors.html,
+	html/documentation/reference/tdi/tdi_examples.html,
+	html/documentation/reference/tdi/tdi_grouped.html,
+	html/documentation/reference/tdi/tdi_misc_help.html,
+	html/documentation/reference/tdi/tdi_shape.html,
+	html/documentation/reference/tdi/tdi_tutorial.html,
+	html/documentation/tutorial/Action1.jpg,
+	html/documentation/tutorial/Action2.jpg,
+	html/documentation/tutorial/Action3.jpg,
+	html/documentation/tutorial/AddDevice.jpg,
+	html/documentation/tutorial/AddTag.jpg,
+	html/documentation/tutorial/CompositeWaveDisplay.html,
+	html/documentation/tutorial/ConnectionEvent.html,
+	html/documentation/tutorial/ConnectionListener.html,
+	html/documentation/tutorial/CreateATree.htm,
+	html/documentation/tutorial/CreateATree.shtml,
+	html/documentation/tutorial/DataAccess.html,
+	html/documentation/tutorial/DataAccess.shtml,
+	html/documentation/tutorial/DataProvider.html,
+	html/documentation/tutorial/DeviceSetup.htm,
+	html/documentation/tutorial/DeviceSetup.swf,
+	html/documentation/tutorial/Devices.html,
+	html/documentation/tutorial/Devices.shtml,
+	html/documentation/tutorial/EditServer.jpg,
+	html/documentation/tutorial/Embarrased.jpg,
+	html/documentation/tutorial/Events.html,
+	html/documentation/tutorial/Events.shtml,
+	html/documentation/tutorial/ExperimentSequence.html,
+	html/documentation/tutorial/ExperimentSequence.shtml,
+	html/documentation/tutorial/FrameData.html,
+	html/documentation/tutorial/InitAction.jpg,
+	html/documentation/tutorial/LetsStart.htm,
+	html/documentation/tutorial/LetsStart.shtml,
+	html/documentation/tutorial/MDSplusTutorial.htm,
+	html/documentation/tutorial/MdsLibC.html,
+	html/documentation/tutorial/ModifyData.jpg,
+	html/documentation/tutorial/SetupData.jpg,
+	html/documentation/tutorial/SignalText.jpg,
+	html/documentation/tutorial/StoreAction.jpg,
+	html/documentation/tutorial/Summary.htm,
+	html/documentation/tutorial/Title.htm,
+	html/documentation/tutorial/Undefined.jpg,
+	html/documentation/tutorial/UpdateEvent.html,
+	html/documentation/tutorial/UpdateEventListener.html,
+	html/documentation/tutorial/UsageError.jpg,
+	html/documentation/tutorial/WaveData.html,
+	html/documentation/tutorial/action_icon.gif,
+	html/documentation/tutorial/data_setup.jpg,
+	html/documentation/tutorial/frame_popup.jpg,
+	html/documentation/tutorial/image_setup.jpg,
+	html/documentation/tutorial/index.shtml,
+	html/documentation/tutorial/index.xml,
+	html/documentation/tutorial/jScope.html,
+	html/documentation/tutorial/jScope.jpg,
+	html/documentation/tutorial/jScope1.jpg,
+	html/documentation/tutorial/jTraverser1.jpg,
+	html/documentation/tutorial/jTraverser2.jpg,
+	html/documentation/tutorial/jTraverser3.jpg,
+	html/documentation/tutorial/jTraverser4.jpg,
+	html/documentation/tutorial/menu.shtml,
+	html/documentation/tutorial/popup.jpg,
+	html/documentation/users/10.shtml,
+	html/documentation/users/11.shtml,
+	html/documentation/users/3.shtml, html/documentation/users/4.shtml,
+	html/documentation/users/5.shtml, html/documentation/users/6.shtml,
+	html/documentation/users/7.shtml, html/documentation/users/8.shtml,
+	html/documentation/users/9.shtml,
+	html/documentation/users/datatypes.shtml,
+	html/documentation/users/dt_action.shtml,
+	html/documentation/users/dt_call.shtml,
+	html/documentation/users/dt_conglom.shtml,
+	html/documentation/users/dt_dimension.shtml,
+	html/documentation/users/dt_dispatch.shtml,
+	html/documentation/users/dt_float.shtml,
+	html/documentation/users/dt_function.shtml,
+	html/documentation/users/dt_ident.shtml,
+	html/documentation/users/dt_integer.shtml,
+	html/documentation/users/dt_method.shtml,
+	html/documentation/users/dt_nid_path.shtml,
+	html/documentation/users/dt_param.shtml,
+	html/documentation/users/dt_range.shtml,
+	html/documentation/users/dt_routine.shtml,
+	html/documentation/users/dt_signal.shtml,
+	html/documentation/users/dt_text.shtml,
+	html/documentation/users/dt_window.shtml,
+	html/documentation/users/dt_with_error.shtml,
+	html/documentation/users/dt_with_units.shtml,
+	html/documentation/users/glossary.shtml,
+	html/documentation/users/index.shtml,
+	html/documentation/users/index.xml,
+	html/documentation/users/menu.shtml,
+	html/documentation/users/tree_syntax.shtml,
+	html/documentation/users/trees.shtml, html/images/favicon.ico,
+	html/images/mdsplus_logo.jpg, html/intro/approach_contents.html,
+	html/intro/capabilities.shtml,
+	html/intro/capabilities_content.html, html/intro/favicon.ico,
+	html/intro/image001.gif, html/intro/image002.gif,
+	html/intro/index.shtml, html/intro/index.xml,
+	html/intro/menu.shtml, html/intro/philosophy.shtml,
+	html/intro/platforms.shtml, html/intro/platforms_contents.html,
+	html/javascope/ReadMe.html, html/javascope/about_jscope.jpg,
+	html/javascope/data_popup.jpg, html/javascope/data_setup.jpg,
+	html/javascope/frame_popup.jpg, html/javascope/image_setup.jpg,
+	html/javascope/jScope.jpg, html/javascope/popup.jpg,
+	html/links/index.shtml, html/links/index.xml,
+	html/links/menu.shtml, html/projects/2.shtml,
+	html/projects/3.shtml, html/projects/hdf5.shtml,
+	html/projects/index.shtml, html/projects/index.xml,
+	html/projects/menu.shtml, html/software/chroot.shtml,
+	html/software/cvsweb.cgi, html/software/cvsweb.conf,
+	html/software/download.php, html/software/downloads.html,
+	html/software/downloads.shtml, html/software/index.shtml,
+	html/software/index.xml, html/software/menu.shtml,
+	html/software/shared_apps.shtml, html/software/tools.shtml,
+	html/software/css/cvsweb.css, html/software/icons/back.gif,
+	html/software/icons/binary.gif, html/software/icons/dir.gif,
+	html/software/icons/miniback.gif, html/software/icons/minidir.gif,
+	html/software/icons/minigraph.png,
+	html/software/icons/minitext.gif, html/software/icons/text.gif,
+	javatraverser/PLRMSetup.class:
+	
+	Remove html from repository. obsolete
+
+2009-08-25 17:03  twf
+
+	* rtevents/SystemSpecific.h:
+	
+	Fix for linux to be compatible with vs2008 fixes
+
+2009-08-25 16:46  twf
+
+	* mdsplus.sln, tditest/tditest.vcproj, wfevent/wfevent.vcproj:
+	
+	VS2008 fixes
+
+2009-08-25 16:43  twf
+
+	* mdsmisc/boxsmooth.c, mdsmisc/bwfilter.c, mdsmisc/getreferences.c,
+	mdsmisc/mdsmisc.vcproj, mdsmisc/resample.c,
+	mdsobjects/cpp/cpp.vcproj, mdsobjects/cpp/mdstree.c,
+	mdsobjects/cpp/mdstreeobjects.cpp, javamds/JavaTrav.c,
+	javamds/javamds.vcproj, javascope/WaveDisplay.vcproj,
+	javascope/javascope.vcproj, javadispatcher/javadispatcher.vcproj,
+	math/math.vcproj, matlab/matlab.vcproj, mdsdcl/mdsdcl.c,
+	mdsdcl/mdsdcl.vcproj, mdsdcl/mdsdcl_general.c,
+	mdsdcl/mdsdcl_initialize.c, mdsdcl/mdsdclshr.vcproj,
+	tdic/tdishrext.vcproj, cacheshr/CachedTreeshr.c,
+	cacheshr/SharedDataManager.cpp, cacheshr/cacheshr.vcproj,
+	icons/icons.vcproj, idlmdsevent/idlmdsevent.vcproj,
+	idlsql/idlsql.vcproj, javaclient/javaclient.mak,
+	javaclient/javaclient.vcproj, mdsobjects/java/java.vcproj,
+	mdsobjects/java/javaobjects.mak:
+	
+	VS2008 fixes
+
+2009-08-25 16:40  twf
+
+	* include/cacheshr.h, include/dasutil.h, include/libroutines.h,
+	include/mdsdcldef.h, include/mdsobjects.h, include/mdsshr.h,
+	WinInstall/WinInstall.c, WinInstall/WinInstall.vcproj,
+	treeshr/treeshr.vcproj, mdsshr/MDSprintf.c,
+	mdsshr/MdsFloatToTime.c, mdsshr/librtl.c, mdsshr/mdsshr.vcproj,
+	mdsshr/mdsshrthreadsafe.h, tdishr/tdishr.vcproj,
+	xtreeshr/XTreeGetTimedRecord.c, xtreeshr/xtreeshr.vcproj,
+	mdstcpip/mdsip.vcproj, mdstcpip/mdsip_service.vcproj,
+	mdstcpip/mdsip_u.c, mdstcpip/mdsipshr.vcproj, mdslib/mdslib.vcproj,
+	mdslib/mdslib_client.vcproj, remcam/remcam.vcproj,
+	tcl/tcl_commands.vcproj, tcl/tcl_directory.c, tcl/tcl_dispatch.c,
+	tcl/tcl_set_view.c, tcl/tcl_setshow_attribute.c,
+	tcl/tcl_show_data.c, cdu/cdushr.vcproj, cdu/dasutil_routines1.c,
+	servershr/ServerFreeDispatchTable.c, servershr/ServerSendMessage.c,
+	servershr/servershr.vcproj, servershr/servershrp.h,
+	mdssql/mdssql.vcproj, mdslibidl/mdslibidl.vcproj,
+	setevent/setevent.vcproj:
+	
+	VS2008 fixes
+
+2009-08-25 15:04  twf
+
+	* javatraverser/: jWebTree.dsp, jWebTree.mak, jWebTree.vcproj,
+	javatraverser.vcproj:
+	
+	Obsolete jwebtree
+
+2009-08-24 17:24  twf
+
+	* cdu/dasutil_routines3.c:
+	
+	Remove compile warnings in VS2008
+
+2009-08-24 17:24  twf
+
+	* cdu/: cdu.vcproj, cdushr.vcproj:
+	
+	VC 2008
+
+2009-08-24 17:20  twf
+
+	* include/dasutil.h:
+	
+	Not included with VS2008 express
+
+2009-08-24 16:44  twf
+
+	* icons/: afxres.h, winres.h:
+	
+	Not included with VS2008 express
+
+2009-08-24 16:34  twf
+
+	* WinInstall/WinInstall.rc:
+	
+	Include manifest
+
+2009-08-24 16:26  twf
+
+	* ntwdblib.lib, ntwdblib.dll:
+	
+	Fix binary copy
+
+2009-08-24 16:20  twf
+
+	* mdstcpip/: mdsip.vcproj, mdsip_service.vcproj, mdsip_socket_io.c,
+	mdsipshr.vcproj, mdsiptest.vcproj:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 16:19  twf
+
+	* mdsobjects/python/doc/: MDSplus.connection-module.html,
+	MDSplus.connection-pysrc.html,
+	MDSplus.connection.Connection-class.html,
+	MDSplus.connection.Connection.GetMany-class.html,
+	MDSplus.connection.Connection.PutMany-class.html,
+	MDSplus.event-module.html, MDSplus.event-pysrc.html,
+	MDSplus.event.Event-class.html, toc-MDSplus.connection-module.html,
+	toc-MDSplus.event-module.html:
+	
+	Add event and connection documentation
+
+2009-08-24 16:16  twf
+
+	* ntwdblib.dll, ntwdblib.lib:
+	
+	Add sqlserver libraries for windows
+
+2009-08-24 16:15  twf
+
+	* include/mdsshr.h, mdssql/mdssql.vcproj,
+	mdsshr/MdsShrThreadSafe.c, mdsshr/librtl.c:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:49  twf
+
+	* tdishr/TdiSql.c:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:46  twf
+
+	* treeshr/TreeCreatePulseFile.c:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:43  twf
+
+	* tdishr/TdiDecompile.c, tdishr/TdiDecompileDependency.c,
+	tdishr/TdiDecompileR.c, tdishr/TdiIntrinsic.c, tdishr/TdiTrim.c,
+	tdishr/TdiYacc.c, include/strroutines.h:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:27  twf
+
+	* treeshr/: TreeCreatePulseFile.c, TreeDoMethod.c:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:21  twf
+
+	* include/libroutines.h:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:14  twf
+
+	* mdsshr/MdsFloatToTime.c, include/libroutines.h:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:10  twf
+
+	* include/: strroutines.h, mdsshr.h:
+	
+	Fix compile warnings in VS2008
+
+2009-08-24 15:06  twf
+
+	* include/config.h.in, include/config.h_win32,
+	include/libroutines.h, include/mdsshr.h, include/strroutines.h,
+	mdsshr/MdsEvents.c, mdsshr/MdsFloatToTime.c, mdsshr/MdsSerialize.c,
+	mdsshr/MdsShrThreadSafe.c, mdsshr/librtl.c,
+	mdsshr/mds_dsc_string.c, mdsshr/mdsmsg.c, mdsshr/mdsshr.vcproj,
+	treeshr/RemoteAccess.c, treeshr/TreeCleanDatafile.c,
+	treeshr/TreeCreatePulseFile.c, treeshr/TreeDeletePulseFile.c,
+	treeshr/TreeDoMethod.c, treeshr/TreeGetNci.c,
+	treeshr/TreeGetRecord.c, treeshr/TreeSegments.c,
+	treeshr/TreeShr.def, treeshr/treeshr.vcproj, treeshr/treeshrp.h,
+	tdishr/TdiArray.c, tdishr/TdiSort.c, tdishr/TdiSubscript.c,
+	tdishr/TdiThreadSafe.c, tdishr/TdiYacc.c, tdishr/tdishr.vcproj,
+	tdishr/tdithreadsafe.h:
+	
+	Fix compile warnings in VS2008
+
+2009-08-21 17:45  twf
+
+	* mdsobjects/cpp/mdsobjects.vcproj:
+	
+	Add cpp objects
+
+2009-08-21 17:18  twf
+
+	* rtevents/rtevents.vcproj:
+	
+	Add rtevents project
+
+2009-08-21 12:21  twf
+
+	* mdsplus-64.dsw, WinInstall/WinInstall-64.vcproj,
+	cacheshr/cacheshr-64.dsp, cacheshr/cacheshr-64.vcproj,
+	cdu/cdu-64.dsp, cdu/cdu-64.vcproj, cdu/cdushr-64.dsp,
+	cdu/cdushr-64.vcproj, icons/icons-64.dsp, icons/icons-64.vcproj,
+	idlmdsevent/idlmdsevent-64.dsp, idlmdsevent/idlmdsevent-64.vcproj,
+	idlsql/idlsql-64.dsp, idlsql/idlsql-64.vcproj,
+	javaclient/javaclient-64.vcproj, javaclient/javascope-64.dsp,
+	javadispatcher/javadispatcher-64.dsp,
+	javadispatcher/javadispatcher-64.vcproj, javamds/javamds-64.dsp,
+	javamds/javamds-64.vcproj, javascope/WaveDisplay-64.dsp,
+	javascope/WaveDisplay-64.vcproj, javascope/jScope-64.dsp,
+	javascope/javascope-64.dsp, javascope/javascope-64.vcproj,
+	javatraverser/jTraverser-64.dsp, javatraverser/jWebTree-64.dsp,
+	javatraverser/jWebTree-64.vcproj,
+	javatraverser/javatraverser-64.dsp,
+	javatraverser/javatraverser-64.vcproj, math/math-64.dsp,
+	math/math-64.vcproj, matlab/matlab-64.dsp, matlab/matlab-64.vcproj,
+	mdsdcl/mdsdcl-64.dsp, mdsdcl/mdsdcl-64.vcproj,
+	mdsdcl/mdsdclshr-64.dsp, mdsdcl/mdsdclshr-64.vcproj,
+	mdsjet/mdsjet-64.dsp, mdsjet/mdsjet-64.vcproj,
+	mdslib/mdslib-64.dsp, mdslib/mdslib-64.vcproj,
+	mdslib/mdslib_client-64.dsp, mdslib/mdslib_client-64.vcproj,
+	mdslibidl/mdslibidl-64.dsp, mdslibidl/mdslibidl-64.vcproj,
+	mdsmisc/mdsmisc-64.vcproj, mdsshr/mdsshr-64.dsp,
+	mdsshr/mdsshr-64.vcproj, mdssql/mdssql-64.dsp,
+	mdssql/mdssql-64.vcproj, mdstcpip/mdsip-64.dsp,
+	mdstcpip/mdsip-64.vcproj, mdstcpip/mdsip_globus-64.vcproj,
+	mdstcpip/mdsip_service-64.dsp, mdstcpip/mdsip_service-64.vcproj,
+	mdstcpip/mdsipshr-64.dsp, mdstcpip/mdsipshr-64.vcproj,
+	mdstcpip/mdsipshr_globus-64.vcproj, mdstcpip/mdsiptest-64.dsp,
+	mdstcpip/mdsiptest-64.vcproj, remcam/remcam-64.dsp,
+	remcam/remcam-64.vcproj, rtevents/rtevents-64.dsp,
+	servershr/servershr-64.dsp, servershr/servershr-64.vcproj,
+	setevent/setevent-64.dsp, setevent/setevent-64.vcproj,
+	tcl/tcl_commands-64.dsp, tcl/tcl_commands-64.vcproj,
+	tdic/tdishrext-64.dsp, tdic/tdishrext-64.vcproj,
+	tdishr/tdishr-64.dsp, tdishr/tdishr-64.vcproj,
+	tditest/tditest-64.dsp, tditest/tditest-64.vcproj,
+	treeshr/treeshr-64.dsp, treeshr/treeshr-64.vcproj,
+	wfevent/wfevent-64.dsp, wfevent/wfevent-64.vcproj,
+	xtreeshr/xtreeshr-64.dsp, xtreeshr/xtreeshr-64.vcproj:
+	
+	restart 64-bit windows attempt
+
+2009-08-21 09:26  twf
+
+	* mdsplus-64.dsw:
+	
+	64-bit windows
+
+2009-08-21 09:22  twf
+
+	* cacheshr/cacheshr-64.vcproj, cdu/cdu-64.vcproj,
+	cdu/cdushr-64.vcproj, icons/icons-64.vcproj,
+	idlmdsevent/idlmdsevent-64.vcproj, idlsql/idlsql-64.vcproj,
+	javaclient/javaclient-64.vcproj,
+	javadispatcher/javadispatcher-64.vcproj, javamds/javamds-64.vcproj,
+	javascope/javascope-64.vcproj, javascope/WaveDisplay-64.vcproj,
+	javatraverser/javatraverser-64.vcproj,
+	javatraverser/jWebTree-64.vcproj, math/math-64.vcproj,
+	matlab/matlab-64.vcproj, mdsdcl/mdsdcl-64.vcproj,
+	mdsdcl/mdsdclshr-64.vcproj, mdsjet/mdsjet-64.vcproj,
+	mdslibidl/mdslibidl-64.vcproj, mdslib/mdslib-64.vcproj,
+	mdslib/mdslib_client-64.vcproj, mdsmisc/mdsmisc-64.vcproj,
+	mdsshr/mdsshr-64.vcproj, mdssql/mdssql-64.vcproj,
+	mdstcpip/mdsip-64.vcproj, mdstcpip/mdsip_globus-64.vcproj,
+	mdstcpip/mdsip_service-64.vcproj, mdstcpip/mdsipshr-64.vcproj,
+	mdstcpip/mdsipshr_globus-64.vcproj, mdstcpip/mdsiptest-64.vcproj,
+	remcam/remcam-64.vcproj, servershr/servershr-64.vcproj,
+	setevent/setevent-64.vcproj, tcl/tcl_commands-64.vcproj,
+	tdic/tdishrext-64.vcproj, tdishr/tdishr-64.vcproj,
+	tditest/tditest-64.vcproj, treeshr/treeshr-64.vcproj,
+	wfevent/wfevent-64.vcproj, WinInstall/WinInstall-64.vcproj,
+	xtreeshr/xtreeshr-64.vcproj:
+	
+	project 64-bit windows
+
+2009-08-21 09:14  twf
+
+	* setup.sh:
+	
+	revert
+
+2009-08-21 09:12  twf
+
+	* setup.sh, cacheshr/cacheshr-64.dsp, devscripts/MakeRpm,
+	html/software/download.php, html/software/downloads.html,
+	javatraverser/PLRMSetup.class, tdi/Py.fun,
+	tdi/MitDevices/cp7452.py, trees/main_model.characteristics,
+	trees/main_model.datafile, cdu/cdu-64.dsp, cdu/cdushr-64.dsp,
+	icons/icons-64.dsp, idlmdsevent/idlmdsevent-64.dsp,
+	idlsql/idlsql-64.dsp, javaclient/javascope-64.dsp,
+	javadispatcher/javadispatcher-64.dsp, javamds/javamds-64.dsp,
+	javascope/javascope-64.dsp, javascope/jScope-64.dsp,
+	javascope/WaveDisplay-64.dsp, javatraverser/javatraverser-64.dsp,
+	javatraverser/jTraverser-64.dsp, javatraverser/jWebTree-64.dsp,
+	math/math-64.dsp, matlab/matlab-64.dsp, mdsdcl/mdsdcl-64.dsp,
+	mdsdcl/mdsdclshr-64.dsp, mdsjet/mdsjet-64.dsp,
+	mdslibidl/mdslibidl-64.dsp, mdslib/mdslib-64.dsp,
+	mdslib/mdslib_client-64.dsp, mdsshr/mdsshr-64.dsp,
+	mdssql/mdssql-64.dsp, mdstcpip/mdsip-64.dsp,
+	mdstcpip/mdsip_service-64.dsp, mdstcpip/mdsipshr-64.dsp,
+	mdstcpip/mdsiptest-64.dsp, remcam/remcam-64.dsp,
+	rtevents/rtevents-64.dsp, servershr/servershr-64.dsp,
+	setevent/setevent-64.dsp, tcl/tcl_commands-64.dsp,
+	tdic/tdishrext-64.dsp, tdishr/tdishr-64.dsp,
+	tditest/tditest-64.dsp, treeshr/treeshr-64.dsp,
+	wfevent/wfevent-64.dsp, xtreeshr/xtreeshr-64.dsp:
+	
+	project 64-bit windows
+
+2009-08-21 08:55  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd-pysrc.html, MDSplus.apd.Apd-class.html,
+	MDSplus.apd.Dictionary-class.html, MDSplus.apd.List-class.html,
+	MDSplus.compound-module.html, MDSplus.compound-pysrc.html,
+	MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.ident-module.html,
+	MDSplus.ident-pysrc.html, MDSplus.ident.Ident-class.html,
+	MDSplus.mdsarray-module.html, MDSplus.mdsarray-pysrc.html,
+	MDSplus.mdsarray.Array-class.html,
+	MDSplus.mdsarray.Float32Array-class.html,
+	MDSplus.mdsarray.Float64Array-class.html,
+	MDSplus.mdsarray.Int128Array-class.html,
+	MDSplus.mdsarray.Int16Array-class.html,
+	MDSplus.mdsarray.Int32Array-class.html,
+	MDSplus.mdsarray.Int64Array-class.html,
+	MDSplus.mdsarray.Int8Array-class.html,
+	MDSplus.mdsarray.StringArray-class.html,
+	MDSplus.mdsarray.Uint128Array-class.html,
+	MDSplus.mdsarray.Uint16Array-class.html,
+	MDSplus.mdsarray.Uint32Array-class.html,
+	MDSplus.mdsarray.Uint64Array-class.html,
+	MDSplus.mdsarray.Uint8Array-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata-pysrc.html,
+	MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html,
+	MDSplus.mdsdevice-module.html, MDSplus.mdsdevice-pysrc.html,
+	MDSplus.mdsdevice.Device-class.html, MDSplus.mdsscalar-module.html,
+	MDSplus.mdsscalar-pysrc.html, MDSplus.mdsscalar.Float32-class.html,
+	MDSplus.mdsscalar.Float64-class.html,
+	MDSplus.mdsscalar.Int128-class.html,
+	MDSplus.mdsscalar.Int16-class.html,
+	MDSplus.mdsscalar.Int32-class.html,
+	MDSplus.mdsscalar.Int64-class.html,
+	MDSplus.mdsscalar.Int8-class.html,
+	MDSplus.mdsscalar.Scalar-class.html,
+	MDSplus.mdsscalar.String-class.html,
+	MDSplus.mdsscalar.Uint128-class.html,
+	MDSplus.mdsscalar.Uint16-class.html,
+	MDSplus.mdsscalar.Uint32-class.html,
+	MDSplus.mdsscalar.Uint64-class.html,
+	MDSplus.mdsscalar.Uint8-class.html, MDSplus.tree-module.html,
+	MDSplus.tree-pysrc.html, MDSplus.tree.CachedTree-class.html,
+	MDSplus.tree.Tree-class.html, MDSplus.treenode-module.html,
+	MDSplus.treenode-pysrc.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, api-objects.txt,
+	class-tree.html, help.html, identifier-index.html,
+	module-tree.html, redirect.html, toc-MDSplus.apd-module.html,
+	toc-everything.html, toc.html:
+	
+	Add documentation for event and connection
+
+2009-08-21 08:54  twf
+
+	* mdsobjects/python/: _descriptor.py, _mdsshr.py, apd.py,
+	treenode.py:
+	
+	Only restore context if the node has a tree
+
+2009-08-21 08:53  twf
+
+	* mdsobjects/python/makedoc.sh:
+	
+	Add connection and event
+
+2009-08-21 08:53  twf
+
+	* mdsobjects/python/: __init__.py, connection.py:
+	
+	Add Connection.GetMant and PutMany
+
+2009-08-20 12:32  twf
+
+	* tdi/MitDevices/: a12__init.fun, a12__part_name.fun,
+	a12__stop.fun, a12__store.fun, a12__trigger.fun:
+	
+	Remove the tdi versions of the a12. They were for testing only.
+
+2009-08-18 14:12  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	Add descriptor_a constructor with no value for connection class
+
+2009-08-18 14:10  twf
+
+	* mdsobjects/python/: __init__.py, connection.py, event.py:
+	
+	Add event and connection classes
+
+2009-08-10 11:04  jas
+
+	* tdi/RfxDevices/DIO2__init.fun:
+	
+	a few changes to new event allocation / sync event stuff - still
+	does not work though
+
+2009-08-06 14:01  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Fix string handling
+
+2009-08-06 14:00  twf
+
+	* mdsobjects/python/_mdsshr.py:
+	
+	Add event routines
+
+2009-08-06 14:00  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add device setup support
+
+2009-08-06 13:59  twf
+
+	* mdsobjects/python/setup.py:
+	
+	Add widgets
+
+2009-08-06 13:58  twf
+
+	* mdsobjects/python/__init__.py:
+	
+	Add widgets and event
+
+2009-08-06 13:58  twf
+
+	* mdsobjects/python/widgets/: __init__.py, mdsplusWidgets.xml,
+	mdsplusexpr.py, mdsplusokbuttons.py, mdsplusonoff.py,
+	mdspluswidget.py:
+	
+	Add setup widgets
+
+2009-08-06 13:57  twf
+
+	* mdsobjects/python/event.py:
+	
+	Add Event class
+
+2009-08-05 13:35  jas
+
+	* tdi/MitDevices/dt196ao__zero.fun:
+	
+	new zero method for ao
+
+2009-08-05 11:19  twf
+
+	* traverser/traverser.uil:
+	
+	Remove display nci menu items
+
+2009-08-05 11:18  twf
+
+	* traverser/GetNciString.c:
+	
+	Fix segfault
+
+2009-08-04 15:59  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add TreeMakeSegment and TreeMakeTimestampedSegment
+
+2009-08-04 15:51  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add TreeMakeSegment and TreeMakeTimestampedSegment
+
+2009-08-04 14:23  twf
+
+	* tdishr/TdiSubscript.c:
+	
+	Add list and dictionary support to subscripting
+
+2009-08-03 16:58  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-2
 
 2009-08-03 16:44  twf
 
