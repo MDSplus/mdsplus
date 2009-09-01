@@ -79,6 +79,8 @@ class Device(TreeNode):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
     
+    gtkThread = None
+    
     def __class_init__(cls):
         if not hasattr(cls,'initialized'):
             if hasattr(cls,'parts'):
@@ -194,4 +196,48 @@ class Device(TreeNode):
                     exec 'node.'+option+'=True'
     Add=classmethod(Add)
 
+
+    def dw_setup(self,*args):
+        try:
+            from widgets import MDSplusWidget
+            from mdsdata import Data
+            import os,gtk,inspect,gobject,threading
+
+            gtk.gdk.threads_init()
+            
+            class gtkMain(threading.Thread):
+                def run(self):
+                    gtk.main()
+                        
+            window=gtk.glade.XML(os.path.dirname(inspect.getsourcefile(self.__class__))+os.sep+self.__class__.__name__+'.glade').get_widget(self.__class__.__name__.lower())
+            window.device_node=self
+            window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
+            MDSplusWidget.resetAll(window)
+        except Exception,e:
+            print e
+            raise Exception,"No setup available, %s" % (str(e),)
+        window.connect("destroy",self.onSetupWindowClose)
+        window.show_all()
+        if Device.gtkThread is None or not Device.gtkThread.isAlive():
+            if Device.gtkThread is None:
+                Device.release_lock=True
+            else:
+                Device.release_lock=False
+            Device.gtkThread=gtkMain()
+            Device.gtkThread.start()
+            if Device.release_lock:
+                Data.execute("build_call(8,getenv('PyLib'),'PyEval_ReleaseLock')")
+        return 1
+    DW_SETUP=dw_setup
+
+    def onSetupWindowClose(self,window):
+        import gtk
+        windows=[toplevel for toplevel in gtk.window_list_toplevels()
+                 if toplevel.get_property('type') == gtk.WINDOW_TOPLEVEL]
+        if len(windows) == 1:
+            gtk.main_quit()
+            
+    def waitForSetups(cls):
+        Device.gtkThread.join()
+    waitForSetups=classmethod(waitForSetups)
 
