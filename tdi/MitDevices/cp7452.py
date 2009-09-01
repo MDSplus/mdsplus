@@ -76,9 +76,3 @@ class CP7452(Device):
                     print "Error inputting from DI%d\n\t%s" % (i,str(e),)
         return 1
     STORE=store
-
-    def dw_setup(self,*args):
-        from os import spawnlp,P_NOWAIT
-        spawnlp(P_NOWAIT,'py_dw_setup.py','pw_dw_setup.py',self.tree.tree,str(self.tree.shot),str(self.nid_number))
-        return 1
-    DW_SETUP=dw_setup
