@@ -153,7 +153,7 @@ class Connection(object):
             exp="TreeClose($,$)"
         else:
             raise TypeError,"closeTree takes zero or two arguments (%d given)" % (len(args),)
-        status=self.value(exp,arglist=args)
+        status=self.get(exp,arglist=args)
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
@@ -169,7 +169,7 @@ class Connection(object):
         @type shot: int
         @rtype: None
         """
-        status=self.value("TreeOpen($,$)",tree,shot)
+        status=self.get("TreeOpen($,$)",tree,shot)
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
@@ -191,7 +191,7 @@ class Connection(object):
             putexp=putexp+",$"
             pargs.append(args[i])
         putexp=putexp+")"
-        status=self.value(putexp,arglists=pargs)
+        status=self.get(putexp,arglists=pargs)
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
@@ -199,7 +199,7 @@ class Connection(object):
         """Return an instance of a Connection.PutMany class. See the Connection.PutMany documentation for further information."""
         return Connection.PutMany(connection=self)
 
-    def value(self,exp,*args,**kwargs):
+    def get(self,exp,*args,**kwargs):
         """Evaluate and expression on the remote server
         @param exp: TDI expression to be evaluated
         @type exp: str
@@ -226,7 +226,7 @@ class Connection(object):
         @type path: str
         @rtype: None
         """
-        status=self.value("TreeSetDefault($)",path)
+        status=self.get("TreeSetDefault($)",path)
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
@@ -287,7 +287,7 @@ class Connection(object):
                         self.result[name]=Dictionary({'error':str(e)})
                 return self.result
             else:
-                ans=self.connection.value("public __getManyIn__=$,Py('Connection.__processGetMany__()'),public __getManyOut__",self.serialize())
+                ans=self.connection.get("public __getManyIn__=$,Py('Connection.__processGetMany__()'),public __getManyOut__",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error fetching data: "+ans)
             self.result=ans.deserialize()
@@ -363,7 +363,7 @@ class Connection(object):
             """
             super(Connection.PutMany,self).append(Dictionary({'node':str(node),'exp':str(exp),'args':args}))
 
-        def get(self,node):
+        def getStatus(self,node):
             """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
             @param node: Node name. Must match exactly the node name used in the append() or insert() methods.
             @type node: str
@@ -402,7 +402,7 @@ class Connection(object):
                         self.result[node]=str(e)
                 return self.result
             else:
-                ans=self.connection.value("public __putManyIn__=$,Py('Connection.__processPutMany__()'),public __putManyOut__",self.serialize())
+                ans=self.connection.get("public __putManyIn__=$,Py('Connection.__processPutMany__()'),public __putManyOut__",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error putting any data: "+ans)
             self.result=ans.deserialize()
