@@ -24,10 +24,6 @@ from mdsscalar import Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,Strin
 from tree import Tree,CachedTree
 from mdsdevice import Device
 from connection import Connection
-try:
-	from widgets import *
-except:
-	pass
 from event import Event
 #tdoc=TextDoc()
 #__doc__=__doc__+tdoc.docmodule(Apd)+tdoc.docclass(Apd)
