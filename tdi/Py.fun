@@ -1,14 +1,16 @@
 public fun Py(in _cmd) {
-   fun PyCall(in _routine,optional in _arg) {
-      if (allocated(public _PyInit)) 
-        _GIL=build_call(51,getenv("PyLib"),"PyGILState_Ensure");
+   fun PyCall(in _routine,_locked, optional in _arg) {
+      if (_locked) {
+        _GIL=build_call(51,getenv("PyLib"),"PyGILState_Ensure"); 
+      }
       if (present(_arg)) {
         _ans=build_call(8,getenv("PyLib"),_routine,_arg);
       } else {
         _ans=build_call(8,getenv("PyLib"),_routine);
       }
-      if (allocated(public _PyInit)) 
+      if (_locked) { 
         build_call(51,getenv("PyLib"),"PyGILState_Release",val(_GIL));
+      }
       return(_ans);
    }
 
@@ -22,16 +24,16 @@ public fun Py(in _cmd) {
      if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
 	dl->dlopen('lib'//getenv("PyLib")//'.so',val(258));
      }
-     PyCall("Py_Initialize");
+     PyCall("Py_Initialize",0);
+     PyCall("PyEval_InitThreads",1);
      public _PyInit=1;
-     /* PyCall("PyRun_SimpleString","from MDSplus import *");*/
+     PyCall("PyRun_SimpleString",1,"from MDSplus import *");
    }
    for (_i=0;_i<size(_cmd);_i++) {
        public _py_exception="";
-       PyCall("PyRun_SimpleString",_cmd[_i]); /*
-       PyCall("PyRun_SimpleString","try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
-*/
+       PyCall("PyRun_SimpleString",1,"try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
        if (public _py_exception != "") return(0);
    }
    return(1);
 }
+
