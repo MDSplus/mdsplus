@@ -13,7 +13,6 @@ class MDSplusExpr(MDSplusWidget,gtk.Entry):
         try:
             self.set_text(self.record.decompile())
         except Exception,e:
-            print "error getting data for %s:%s" % (str(self.node),e)
             self.set_text("")
         
     def getValue(self):
