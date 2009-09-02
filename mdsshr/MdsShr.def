@@ -115,3 +115,6 @@ MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
 MdsPutEnv
+MDSUdpEventAst
+MDSUdpEvent
+MDSUdpEventCan

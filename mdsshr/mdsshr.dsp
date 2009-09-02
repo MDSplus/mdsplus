@@ -187,5 +187,9 @@ SOURCE=.\MdsShrThreadSafe.c
 
 SOURCE=.\MdsXdRoutines.c
 # End Source File
+# Begin Source File
+
+SOURCE=.\UdpEvents.c
+# End Source File
 # End Target
 # End Project
