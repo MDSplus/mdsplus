@@ -198,18 +198,26 @@ class Device(TreeNode):
 
 
     def dw_setup(self,*args):
+        """Bring up a glade setup interface if one exists in the same package as the one providing the device subclass
+
+        The gtk.main() procedure must be run in a separate thread to avoid locking the main program. If this method
+        is invoked via the Py() TDI function, care must be made to do unlock the python thread lock the first time
+        a gtkMain thread is created. This thread unlocking has to be done in the Py TDI function after the GIL state
+        has been restored. This method sets a public TDI variable, _PyReleaseThreadLock, which is inspected in the Py
+        function and if defined, the Py function will release the thread lock. This locking scheme was arrived at
+        after several days of trial and error and seems to work with at least Python versions 2.4 and 2.6.
+        """
         try:
             from widgets import MDSplusWidget
             from mdsdata import Data
             from mdsscalar import Int32
             import os,gtk,inspect,gobject,threading
 
-            gtk.gdk.threads_init()
-            
             class gtkMain(threading.Thread):
                 def run(self):
                     gtk.main()
                         
+            gtk.gdk.threads_init()
             window=gtk.glade.XML(os.path.dirname(inspect.getsourcefile(self.__class__))+os.sep+self.__class__.__name__+'.glade').get_widget(self.__class__.__name__.lower())
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
@@ -217,17 +225,14 @@ class Device(TreeNode):
         except Exception,e:
             print e
             raise Exception,"No setup available, %s" % (str(e),)
+
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()
         if Device.gtkThread is None or not Device.gtkThread.isAlive():
             if Device.gtkThread is None:
-                Device.release_lock=True
-            else:
-                Device.release_lock=False
+                Int32(1).setTdiVar("_PyReleaseThreadLock");
             Device.gtkThread=gtkMain()
             Device.gtkThread.start()
-            if Device.release_lock:
-                Int32(1).setTdiVar("_PyReleaseThreadLock");
         return 1
     DW_SETUP=dw_setup
 
