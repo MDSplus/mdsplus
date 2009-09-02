@@ -141,19 +141,23 @@ class Connection(object):
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
-    def closeTree(self,*args):
-        """Close an MDSplus tree on the remote server
-        @param args: you can optionally include a tree and shot number if omitted all trees open are closed.
-        @type args: str and int
+    def closeAllTrees(self):
+        """Close all open MDSplus trees
         @rtype: None
         """
-        if len(args) == 0:
-            exp="TreeClose()"
-        elif len(args) == 2:
-            exp="TreeClose($,$)"
-        else:
-            raise TypeError,"closeTree takes zero or two arguments (%d given)" % (len(args),)
-        status=self.get(exp,arglist=args)
+        status=self.get("TreeClose()")
+        if not ((status & 1)==1):
+            raise MdsException,MdsGetMsg(status)
+
+    def closeTree(self,tree,shot):
+        """Close an MDSplus tree on the remote server
+        @param tree: tree name
+        @type tree: str
+        @param shot: shot number
+        @type shot: int
+        @rtype: None
+        """
+        status=self.get("TreeClose($,$)",arglist=(tree,shot))
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
