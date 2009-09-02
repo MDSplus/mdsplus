@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/tcp.h>
+#include <errno.h>
 #endif
 
 #endif
@@ -50,15 +51,15 @@ static int eventTopIdx = 0;
 static void *eventInfos[MAX_EVENTS];
 static int sendSocket = 0;
 #else
-STATIC_THREADSAFE pthread_mutex_t eventIdMutex;
-STATIC_THREADSAFE int eventIdMutex_initialized = 0;
-STATIC_THREADSAFE unsigned long *sendEventMutex;
-STATIC_THREADSAFE int sendEventMutex_initialized = 0;
-STATIC_THREADSAFE unsigned long *getSocketMutex;
-STATIC_THREADSAFE int getSocketMutex_initialized = 0;
-STATIC_THREADSAFE int eventTopIdx = 0; 
-STATIC_THREADSAFE void *eventInfos[MAX_EVENTS];
-STATIC_THREADSAFE int sendSocket = 0;
+static pthread_mutex_t eventIdMutex;
+static int eventIdMutex_initialized = 0;
+static pthread_mutex_t sendEventMutex;
+static int sendEventMutex_initialized = 0;
+static pthread_mutex_t getSocketMutex;
+static int getSocketMutex_initialized = 0;
+static int eventTopIdx = 0; 
+static void *eventInfos[MAX_EVENTS];
+static int sendSocket = 0;
 #endif
 
 struct EventInfo {
@@ -83,8 +84,11 @@ struct EventInfo {
 extern int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param);
 #endif
 
-
+#ifdef HAVE_WINDOWS_H
 static void handleMessage(void *arg)
+#else
+static void *handleMessage(void *arg)
+#endif
 {
 	int recBytes;
 	char recBuf[MAX_MSG_LEN];
@@ -228,7 +232,8 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 {
 
     struct sockaddr_in serverAddr;
-	BOOL flag = TRUE;
+	char flag = 1;
+	int intFlag = 1;
 	int udpSocket;
 	char ipAddress[64]; 
     struct ip_mreq ipMreq;
@@ -253,7 +258,11 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 //Allow multiple connections
-    if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(BOOL)) == SOCKET_ERROR)
+#ifdef HAVE_WINDOWS_H
+   if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(char)) == SOCKET_ERROR)
+#else
+   if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &intFlag, sizeof(int)) < 0)
+#endif
 	{   
 		printf("Cannot set REUSEADDR option\n");
 #ifdef HAVE_WINDOWS_H
@@ -272,6 +281,8 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 			case WSAEFAULT : printf("WSAEFAULT\n"); break;
 			default: printf("BOH\n");
 		}
+#else
+	perror("\n");
 #endif
 		return 0;
 	}
