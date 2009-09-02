@@ -201,6 +201,7 @@ class Device(TreeNode):
         try:
             from widgets import MDSplusWidget
             from mdsdata import Data
+            from mdsscalar import Int32
             import os,gtk,inspect,gobject,threading
 
             gtk.gdk.threads_init()
@@ -226,7 +227,7 @@ class Device(TreeNode):
             Device.gtkThread=gtkMain()
             Device.gtkThread.start()
             if Device.release_lock:
-                Data.execute("build_call(8,getenv('PyLib'),'PyEval_ReleaseLock')")
+                Int32(1).setTdiVar("_PyReleaseThreadLock");
         return 1
     DW_SETUP=dw_setup
 
