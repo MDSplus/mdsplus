@@ -32,8 +32,8 @@
 //int MDSEvent(char *evname){}
 
 #define MULTICAST_EVENT_PORT 4000
-#define MAX_MSG_LEN 256
-#define MAX_EVENTS 1000000 /*Maximum number of events handedl by a single process*/
+#define MAX_MSG_LEN 4096
+#define MAX_EVENTS 1000000 /*Maximum number of events handled by a single process*/
 
 
 
