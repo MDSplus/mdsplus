@@ -81,7 +81,7 @@ struct EventInfo {
 ***********************/
 
 #ifdef HAVE_WINDOWS_H
-extern int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param);
+extern int pthread_create(pthread_t  *thread, void *dummy, void (*rtn)(void *), void *rtn_param);
 #endif
 
 #ifdef HAVE_WINDOWS_H
@@ -238,7 +238,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	char ipAddress[64]; 
     struct ip_mreq ipMreq;
 	struct EventInfo *currInfo;
-	unsigned long thread;
+	pthread_t  thread;
 	int error;
 
 	initialize();
