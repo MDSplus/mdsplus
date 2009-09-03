@@ -26,6 +26,7 @@
 #include <mdsshr.h>
 #include "libroutines.h"
 #include "mdsshrthreadsafe.h"
+#include <string.h>
 
 //int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 //int MDSEventCan(void *eventid) {}
