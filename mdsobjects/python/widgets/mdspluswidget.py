@@ -85,8 +85,15 @@ class MDSplusWidget(object):
 
     def apply(self):
         if self.putOnApply:
-            self.node.value=self.value
-            self.reset(self)
+            try:
+                v=self.value
+                try:
+                    self.node.record=v
+                except Exception,e:
+                    print "Error storing a value of %s (type %s) into node %s, error=%s" % (str(v),str(type(v)),self.node.fullpath,e)
+            except:
+                pass
+            self.reset()
 
     def handleReset(self,obj,top):
         if self.get_toplevel()  == top:
