@@ -1,8 +1,7 @@
 #include <config.h>
 #include <STATICdef.h>
-
 extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-extern int MDSUdpEvent(char *name, int bufLen, char *buf);	
+extern int MDSUdpEvent(char *name, int bufLen, char *buf);      
 extern int MDSUdpEventCan(int id);
 
 #define _GNU_SOURCE /* glibc2 needs this */
@@ -48,6 +47,7 @@ STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event source
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 STATIC_THREADSAFE unsigned int threadID;
 STATIC_CONSTANT int zero = 0;
+
 
 STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
   int status;
@@ -107,7 +107,7 @@ STATIC_ROUTINE void EventThreadProc(struct event_struct *event)
 	
 }
 
-int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
+int old_MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
 {
   struct event_struct *event = (struct event_struct *)malloc(sizeof(struct event_struct));
 
@@ -132,8 +132,8 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
   {
 	int status = ERROR_PIPE_BUSY;
 	int num;
-	status = MDSUdpEventAst(eventnam_in, astadr, astprm, eventid);
-    /* Local stuff 
+
+    /* Local stuff */
     
     *eventid = (int)event;
     event->eventnam = eventnam;
@@ -153,7 +153,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(void *,int,char *), void *astp
     if (event->event == NULL) return(0);
     event->thread = _beginthread( (void(*)(void *))EventThreadProc, 0, (void *)event);
     status = event->thread != -1;
-*/  }
+  }
   else
     free(eventnam);
   return status;
@@ -181,7 +181,7 @@ STATIC_ROUTINE int canEventRemote(int eventid)
     return status;
 }
 
-int MDSEventCan(int eventid) 
+int old_MDSEventCan(int eventid) 
 {
   int use_local;
   if(eventid < 0) return 0;
@@ -242,9 +242,9 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
   return 1;
 }
 
-int MDSEvent(char *evname_in, int data_len, char *data)
+int old_MDSEvent(char *evname_in, int data_len, char *data)
 {
-  int use_local, status = 1;
+  int use_local;
   char *evname;
   size_t i,j;
   initializeLocalRemote(0, &use_local);
@@ -257,12 +257,8 @@ int MDSEvent(char *evname_in, int data_len, char *data)
   evname[j]=0;
   if(num_send_servers > 0)
     sendRemoteEvent(evname, data_len, data);
-  if(use_local)
-	status = MDSUdpEvent(evname_in, data_len, data);	
-	  
-/*	Local stuff  
-	  
-	  HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
+  if(use_local){
+    HANDLE handle = OpenEvent(EVENT_ALL_ACCESS,0,evname);
 	if (handle != NULL) {
 		char pipename[256];
 		int	status;
@@ -287,9 +283,8 @@ int MDSEvent(char *evname_in, int data_len, char *data)
 		CloseHandle(handle);
 	}
   }
-*/
   free(evname);
-  return status;
+  return 1;
 
 }
 
@@ -1899,7 +1894,7 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
     return(1);
 }
 
-int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
+int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
   int status = 1;
   unsigned int i, j, use_local;    
@@ -1919,10 +1914,9 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
     eventAstRemote(eventnam, astadr, astprm, eventid);
   if(use_local)
   {
-	status = MDSUdpEventAst(eventnam_in, astadr, astprm, eventid);
-    /* Local stuff 
+    /* Local stuff */
 
-    // First check wether the same name is already in use 
+    /* First check wether the same name is already in use */
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name))
@@ -1933,15 +1927,15 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
       name_already_in_use = 0;
 
 
-    // define internal event dispatching structure 
+    /* define internal event dispatching structure */ 
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 	 private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	break;
-    if(i == MAX_ACTIVE_EVENTS) // if no previous MdsEventAst to that event made by the process 
+    if(i == MAX_ACTIVE_EVENTS) /* if no previous MdsEventAst to that event made by the process */
     {
       for(i = 0; i < MAX_ACTIVE_EVENTS && private_info[i].active; i++);
-      if(i == MAX_ACTIVE_EVENTS) // if no free private event slot found 
+      if(i == MAX_ACTIVE_EVENTS) /* if no free private event slot found */
       {
         fprintf(stderr,"No more active event slots available. Ignoring event\n");
         status = 0;
@@ -1956,7 +1950,8 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
     UnlockMdsShrMutex(&privateMutex);
 
 
-     if(*eventid == -1) //if no external event receivers 
+    /* *eventid = i; */
+    if(*eventid == -1) /* if no external event receivers */
 	*eventid = i;
     else
 	setLocalId(*eventid, i);
@@ -1969,7 +1964,7 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 
     setHandle();
 
-    // lock shared memory region 
+    /* lock shared memory region */
     getLock();
 
     if(!shared_info)
@@ -1982,9 +1977,9 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
       }
     }
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
-// Find first free SharedEventInfo slot
+/* Find first free SharedEventInfo slot */
     for(i = 0; i < MAX_ACTIVE_EVENTS && shared_info[i].nameid != -1; i++);
-    if(i == MAX_ACTIVE_EVENTS)// If no free SharedEventInfo slot foud 
+    if(i == MAX_ACTIVE_EVENTS) /* If no free SharedEventInfo slot foud */
     {
       fprintf(stderr,"Global event table full. Event ignored.\n");
       releaseLock();
@@ -1993,14 +1988,14 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
       goto cleanup;
     }
     shared_info[i].msgkey = msgKey;
-// Check wether the same name previously used 
+/* Check wether the same name previously used */
     for(j = 0; j < MAX_EVENTNAMES; j++)
       if(shared_name[j].refcount > 0 && !strcmp(shared_name[j].name, eventnam))
 	break;
-    if(j == MAX_EVENTNAMES) // if the name is not yet active 
+    if(j == MAX_EVENTNAMES) /* if the name is not yet active */
     {
       for(j = 0; j < MAX_EVENTNAMES && shared_name[j].refcount > 0; j++);
-      if(j == MAX_EVENTNAMES) // If event names slot full 
+      if(j == MAX_EVENTNAMES) /* If event names slot full */
       {
         fprintf(stderr,"Global event name table full. Event ignored.\n");
 	releaseLock();
@@ -2029,9 +2024,6 @@ int MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
  cleanup:
   free(eventnam);
   return status;
-  */
-  }
-  return status;	
 }
 
 STATIC_ROUTINE int canEventRemote(int eventid)
@@ -2059,7 +2051,7 @@ STATIC_ROUTINE int canEventRemote(int eventid)
 }
 
 	
-int MDSEventCan(int eventid)
+int old_MDSEventCan(int eventid)
 {
     int i, j, k, curr_id, prev_id, use_local, local_eventid, name_in_use;
     struct PrivateEventInfo *evinfo;
@@ -2070,17 +2062,15 @@ int MDSEventCan(int eventid)
     if(num_receive_servers > 0)
 	canEventRemote(eventid);
     if(!use_local) return 1;
-	return MDSUdpEventCan(eventid);
 
-	/* local stuff 
     if(num_receive_servers > 0)
     	local_eventid = getLocalId(eventid);
      else
 	local_eventid = eventid;
     deleteId(eventid);
-
+/* local stuff */
     evinfo = &private_info[local_eventid];
-    if(!shared_info) return 0; //must follow MdsEventAst 
+    if(!shared_info) return 0; /*must follow MdsEventAst */
     name_in_use = 0;
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
@@ -2090,7 +2080,7 @@ int MDSEventCan(int eventid)
     {
       getLock();
 
-// deactivate corresponding SharedEventInfo slot 
+/* deactivate corresponding SharedEventInfo slot */
       LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
       for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
       {
@@ -2098,11 +2088,11 @@ int MDSEventCan(int eventid)
 		&& !strcmp(evinfo->name, shared_name[shared_info[i].nameid].name))
 	    break;
       }
-      if(i < MAX_ACTIVE_EVENTS) // if corresponding slot found 
+      if(i < MAX_ACTIVE_EVENTS) /* if corresponding slot found */
       {
 	shared_name[shared_info[i].nameid].refcount--;
 
-// Remove shared info from list 
+/* Remove shared info from list */
 	if(shared_name[shared_info[i].nameid].refcount == 0)
 	    shared_name[shared_info[i].nameid].first_id = -1;
 	else
@@ -2125,7 +2115,6 @@ int MDSEventCan(int eventid)
     UnlockMdsShrMutex(&privateMutex);
     evinfo->active = 0;
     return 0;
-*/
 }
 
 
@@ -2204,7 +2193,7 @@ void RemoveAllDeadQueues() {
   return;
 }
 
-int MDSEvent(char *evname_in, int data_len, char *data)
+int old_MDSEvent(char *evname_in, int data_len, char *data)
 {
   int i, j, name_idx, curr_id, use_local;
   unsigned int u;
@@ -2221,9 +2210,9 @@ int MDSEvent(char *evname_in, int data_len, char *data)
   if(num_send_servers > 0)
     sendRemoteEvent(evname, data_len, data);
   if(use_local)
-		status = MDSUdpEvent(evname_in, data_len, data);	
+  {
 
-/* Local stuff 
+/* Local stuff */
     getLock();
     if(!shared_info)
     {
@@ -2235,7 +2224,7 @@ int MDSEvent(char *evname_in, int data_len, char *data)
       }
     }
 
-    // Search event name in the event name list 
+    /* Search event name in the event name list */
     LockMdsShrMutex(&sharedMutex,&sharedMutex_initialized);
     RemoveAllDeadQueues();
     for(name_idx = 0; name_idx < MAX_EVENTNAMES && (shared_name[name_idx].refcount == 0 
@@ -2251,7 +2240,6 @@ int MDSEvent(char *evname_in, int data_len, char *data)
   }
  cleanup2:
   free(evname);
-*/
   return status;
 }
 		    
@@ -2355,5 +2343,25 @@ void RemoveMessages()
 	
 #endif
 
+int MDSEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
+  if ( getenv("mds_event_server") || (getenv("UDP_EVENTS")==0))
+    return old_MDSEventAst(eventName,astadr,astprm,eventid);
+  else
+    return MDSUdpEventAst(eventName,astadr,astprm,eventid);
+}
+
+int MDSEvent(char *name, int bufLen, char *buf) {
+  if (getenv("mds_event_target") || (getenv("UDP_EVENTS")==0))
+    return old_MDSEvent(name,bufLen,buf);
+  else
+    return MDSUdpEvent(name,bufLen,buf);
+}
+
+int MDSEventCan(int id) {
+  if (getenv("mds_event_server") || (getenv("UDP_EVENTS")==0))
+    return old_MDSEventCan(id);
+  else
+    return MDSUdpEventCan(id);
+}
 
 
