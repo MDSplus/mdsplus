@@ -2343,18 +2343,36 @@ void RemoveMessages()
 	
 #endif
 
-int MDSEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
+int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
+  char *eventName=malloc(strlen(eventNameIn)+1);
+  int i,j,status;
+  for (i=0,j=0;i<strlen(eventNameIn);i++) 
+  {
+    if (eventNameIn[i] != 32)
+      eventName[j++]=toupper(eventNameIn[i]);
+  }
+  eventName[j]=0;
   if ( getenv("mds_event_server") || (getenv("UDP_EVENTS")==0))
-    return old_MDSEventAst(eventName,astadr,astprm,eventid);
+    status = old_MDSEventAst(eventName,astadr,astprm,eventid);
   else
-    return MDSUdpEventAst(eventName,astadr,astprm,eventid);
+    status = MDSUdpEventAst(eventName,astadr,astprm,eventid);
+  free(eventName);
+  return status;
 }
 
-int MDSEvent(char *name, int bufLen, char *buf) {
+int MDSEvent(char *eventNameIn, int bufLen, char *buf) {
+  char *eventName=malloc(strlen(eventNameIn)+1);
+  int i,j,status;
+  for (i=0,j=0;i<strlen(eventNameIn);i++) 
+  {
+    if (eventNameIn[i] != 32)
+      eventName[j++]=toupper(eventNameIn[i]);
+  }
+  eventName[j]=0;
   if (getenv("mds_event_target") || (getenv("UDP_EVENTS")==0))
-    return old_MDSEvent(name,bufLen,buf);
+    status = old_MDSEvent(eventName,bufLen,buf);
   else
-    return MDSUdpEvent(name,bufLen,buf);
+    status = MDSUdpEvent(eventName,bufLen,buf);
 }
 
 int MDSEventCan(int id) {
