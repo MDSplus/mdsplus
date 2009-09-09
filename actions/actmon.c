@@ -183,6 +183,7 @@ int       main(int argc, String *argv)
   Widget top;
   Widget main;
   int zeros[] = {0,0};
+  XInitThreads();
   MrmInitialize();
   MrmRegisterNames(callbacks, XtNumber(callbacks));
   top = XtVaAppInitialize(&app_ctx, "ActMon", options, XtNumber(options), &argc, argv, NULL,
