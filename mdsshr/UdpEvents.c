@@ -4,6 +4,7 @@
 #include <stdio.h>
 #else
 
+#include <stdlib.h>
 #ifdef HAVE_VXWORKS_H
 #include <vxWorks.h>
 #include <sockLib.h>
@@ -26,7 +27,6 @@
 #include <mdsshr.h>
 #include "libroutines.h"
 #include "mdsshrthreadsafe.h"
-#include <string.h>
 
 //int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 //int MDSEventCan(void *eventid) {}
