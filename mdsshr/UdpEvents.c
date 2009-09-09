@@ -204,7 +204,7 @@ static struct EventInfo * getEventInfo(int id)
 
 static int getSocket()
 {
-	LockMdsShrMutex(&eventIdMutex,&getSocketMutex_initialized);
+	LockMdsShrMutex(&getSocketMutex,&getSocketMutex_initialized);
 	if(!sendSocket)
 	{
 		if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
