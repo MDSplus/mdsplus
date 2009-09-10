@@ -221,7 +221,7 @@ class Device(TreeNode):
             window=gtk.glade.XML(os.path.dirname(inspect.getsourcefile(self.__class__))+os.sep+self.__class__.__name__+'.glade').get_widget(self.__class__.__name__.lower())
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
-            MDSplusWidget.resetAll(window)
+            MDSplusWidget.doToAll(window,"reset")
         except Exception,e:
             print e
             raise Exception,"No setup available, %s" % (str(e),)
