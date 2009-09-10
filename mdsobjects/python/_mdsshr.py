@@ -75,6 +75,14 @@ def MdsCopyDxXd(desc):
     else:
         raise MdsException,MdsGetMsg(status)
 
+def MdsCompareXd(value1,value2):
+    from _descriptor import descriptor
+    if not isinstance(value1,descriptor):
+        value1=descriptor(value1)
+    if not isinstance(value2,descriptor):
+        value2=descriptor(value2)
+    return MdsShr.MdsCompareXd(_C.pointer(value1),_C.pointer(value2))
+
 def MdsFree1Dx(value):
     MdsShr.MdsFree1Dx(_C.pointer(value),_C.c_void_p(0))
 
