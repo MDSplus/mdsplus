@@ -47,7 +47,7 @@ class descriptor(_C.Structure):
         self.dclass=CLASS_S
         if value is None or isinstance(value,EmptyData):
             self.length=0
-            self.dtype=DTYPE_MISSING
+            self.dtype=DTYPE_DSC
             self.pointer=None
             return
         if isinstance(value,_N.generic):
