@@ -108,6 +108,32 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
        case NciSTATUS:
 	nci.status = *(unsigned int *) itm_ptr->pointer;
 	break;
+      case NciUSAGE:
+	{
+	  NODE     *node_ptr;
+	  int       node_idx;
+	  int       numext;
+	  int       pages_needed;
+	  int       pages_allocated;
+	  int       i;
+	  int       status;
+	  int      *new_external_ptr;
+
+/**************************************************
+ First we must check to make sure we are editting
+ a valid tree.
+**************************************************/
+
+	  if (!(IS_OPEN_FOR_EDIT(dblist)))
+	    return TreeNOEDIT;
+
+	  nid_to_node(dblist, nid_ptr, node_ptr);
+	  if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer) {
+	    node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
+	    dblist->modified = 1;
+	  }
+	  return TreeNORMAL;
+	}
        default:
 	status = TreeILLEGAL_ITEM;
 	break;
@@ -694,3 +720,15 @@ int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
   return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,MDS_IO_LOCK_NONE,0);
 }
 
+int _TreeSetUsage(void *dbid, int nid_in, unsigned char usage) {
+   NCI_ITM itm[] = {{0,0,0,0},{0,0,0,0}};
+  itm[0].buffer_length = (short)sizeof(usage);
+  itm[0].code = (short)NciUSAGE;
+  itm[0].pointer = (void *)&usage;
+  return _TreeSetNci(dbid, nid_in, itm);
+}
+
+int TreeSetUsage(int nid_in, unsigned char usage) {
+  return _TreeSetUsage(DBID, nid_in, usage);
+}
+ 
