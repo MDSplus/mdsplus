@@ -19,11 +19,7 @@ class MDSplusExpr(MDSplusWidget,gtk.Entry):
         if self.get_text()=="":
             return None
         else:
-            try:
-                return self.node.compile(self.get_text())
-            except:
-                print "Problem compiling expression '%s' used for %s" % (self.get_text(),self.node.node_name)
-                raise
+            return self.node.compile(self.get_text())
 
     value=property(getValue)
     
