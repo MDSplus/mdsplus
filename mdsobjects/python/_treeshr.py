@@ -176,6 +176,17 @@ def TreeSetDefault(ctx,n):
     else:
         raise TreeException,MdsGetMsg(status)
     
+def TreeSetUsage(ctx,n,usage):
+    """Set node usage"""
+    try:
+        status = __TreeShr._TreeSetUsage(ctx,_C.c_int(n),_C.c_byte(usage))
+    except:
+        raise TreeException,"Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus."
+    if (status & 1):
+        return
+    else:
+        raise TreeException,MdsGetMsg(status)
+    
 def TreeGetPath(n):
     p=__TreeGetPath(n.tree.ctx,n.nid)
     ans=_C.cast(p,_C.c_char_p).value
