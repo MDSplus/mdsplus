@@ -201,6 +201,8 @@ class TreeNode(Data):
             self.setEssential(value)
         elif uname=="SUBTREE":
             self.setSubtree(value)
+        elif uname=="USAGE":
+            self.setUsage(value)
         elif uname=="TAG":
             self.addTag(value)
         elif uname in nciAttributes:
@@ -334,6 +336,23 @@ class TreeNode(Data):
         finally:
             Tree.unlock()
         return
+
+    def compare(self,value):
+        """Returns True if this node contains the same data as specified in the value argument
+        @param value: Value to compare contents of the node with
+        @type value: Data
+        @rtype: Bool
+        """
+        from _mdsshr import MdsCompareXd
+        try:
+            oldval=self.record
+        except:
+            oldval=None
+        status = MdsCompareXd(oldval,value)
+        if status == 1:
+            return True
+        else:
+            return False
 
     def containsVersions(self):
         """Return true if this node contains data versions
@@ -986,6 +1005,19 @@ class TreeNode(Data):
         """
         from _treeshr import TreeSetSubtree
         TreeSetSubtree(self,flag)
+
+    def setUsage(self,usage):
+        """Set the usage of a node
+        @param usage: Usage string.
+        @type flag: str
+        @rtype: None
+        """
+        from _treeshr import TreeSetUsage
+        try:
+            usagenum=usage_table[usage.upper()]
+        except KeyError:
+            raise KeyError,'Invalid usage specified. Use one of %s' % (str(usage_table.keys()),)
+        TreeSetUsage(self.tree.ctx,self.nid,usagenum)
     
     def setTree(self,tree):
         """Set Tree associated with this node
