@@ -1,17 +1,5 @@
 import gobject
 
-class EventSender(gobject.GObject):
-    def __init__(self):
-        self.__gobject_init__()
-
-gobject.type_register(EventSender)
-
-gobject.signal_new("mdsplus_widget_reset",EventSender,gobject.SIGNAL_RUN_FIRST,
-                   gobject.TYPE_NONE,(gobject.TYPE_PYOBJECT,))
-
-gobject.signal_new("mdsplus_widget_apply",EventSender,gobject.SIGNAL_RUN_FIRST,
-                   gobject.TYPE_NONE,(gobject.TYPE_PYOBJECT,))
-
 class MDSplusWidget(object):
 
 
@@ -19,20 +7,21 @@ class MDSplusWidget(object):
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
         'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,0,gobject.PARAM_READWRITE),
         }
-    sender=EventSender()
+    #sender=EventSender()
 
-    def resetAll(cls,top):
-        cls.sender.emit("mdsplus_widget_reset",top)
-    resetAll=classmethod(resetAll)
+    def doToAll(cls,obj,method):
+        status = True
+        if hasattr(obj,"get_children"):
+            for child in obj.get_children():
+                status = status and MDSplusWidget.doToAll(child,method)
+                if isinstance(child,MDSplusWidget):
+                    try:
+                        child.__getattribute__(method)()
+                    except Exception,e:
+                        status = False
+        return status
+    doToAll=classmethod(doToAll)
     
-    def applyAll(cls,top):
-        cls.sender.emit("mdsplus_widget_apply",top)
-    applyAll=classmethod(applyAll)
-    
-    def __init__(self):
-        MDSplusWidget.sender.connect("mdsplus_widget_apply",self.handleApply)
-        MDSplusWidget.sender.connect("mdsplus_widget_reset",self.handleReset)
-
     def reset(self):
         pass
     
@@ -86,14 +75,13 @@ class MDSplusWidget(object):
     def apply(self):
         if self.putOnApply:
             try:
-                v=self.value
-                try:
-                    self.node.record=v
-                except Exception,e:
-                    print "Error storing a value of %s (type %s) into node %s, error=%s" % (str(v),str(type(v)),self.node.fullpath,e)
-            except:
-                pass
-            self.reset()
+                value=self.value
+                if self.node.compare(value) != 1:
+                    self.node.record=self.value
+                self.reset()
+            except Exception,e:
+                self.popupError(e)
+                raise
 
     def handleReset(self,obj,top):
         if self.get_toplevel()  == top:
@@ -103,3 +91,23 @@ class MDSplusWidget(object):
         if self.get_toplevel() == top:
             self.apply()
 
+    def errorWindow(self,msg):
+        import gtk
+        window=gtk.Dialog(title="Error")
+        window.connect("destroy",self.closeErrorWindow)
+        window.set_modal(True)
+        text=gtk.Label(msg)
+        button=gtk.Button(stock=gtk.STOCK_CLOSE)
+        button.connect("clicked",self.closeErrorWindow)
+        window.vbox.add(text)
+        window.vbox.add(button)
+        window.show_all()
+
+    def closeErrorWindow(self,button):
+        button.get_toplevel().destroy()
+
+    def popupError(self,msg):
+        if 'TreeINVDTPUSG' in str(msg):
+            msg="Invalid data type for a %s node" % (self.node.usage.lower(),)
+        self.errorWindow(("Error writing to node: %s\n"+
+                              "Error message is:      %s") % (self.node.node_name,msg))
