@@ -10,17 +10,17 @@ class MDSplusOkButtons(gtk.HButtonBox):
     __gtype_name__ = 'MDSplusOkButtons'
     
     def do_apply(self):
-        MDSplusWidget.applyAll(self.get_toplevel())
+        return MDSplusWidget.doToAll(self.get_toplevel(),"apply")
         
     def do_reset(self):
-        MDSplusWidget.resetAll(self.get_toplevel())
+        return MDSplusWidget.doToAll(self.get_toplevel(),"reset")
 
     def closeTop(self):
         self.get_toplevel().destroy()
         
     def ok_pressed(self,button):
-        self.do_apply()
-        self.closeTop()
+        if self.do_apply():
+            self.closeTop()
 
     def apply_pressed(self,button):
         self.do_apply()
