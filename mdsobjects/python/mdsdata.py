@@ -433,6 +433,20 @@ class Data(object):
     @type: descriptor
     """
     
+    def compare(self,value):
+        """Compare this data with argument
+        @param value: data to compare to
+        @type value: Data
+        @return: Return True if the value and this Data object contain the same data
+        @rtype: Bool
+        """
+        from _mdsshr import MdsCompareXd
+        status = MdsCompareXd(self,value)
+        if status == 1:
+            return True
+        else:
+            return False
+
     def compile(expr, *args):
         """Static method (routine in C++) which compiles the expression (via TdiCompile())
         and returns the object instance correspondind to the compiled expression.
