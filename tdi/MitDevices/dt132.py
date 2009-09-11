@@ -146,6 +146,7 @@ class DT132(Device):
             if (clock_src == 'INT_CLOCK'):
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
             else:
+                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")                
                 clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
             pre_trig=self.check('int(self.pre_trig*1024)', "Must specify pre trigger samples")
             post_trig=self.check('int(self.post_trig*1024)', "Must specify post trigger samples")
@@ -174,7 +175,7 @@ class DT132(Device):
             if clock_src == 'INT_CLOCK' :
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
             else:
-                UUT.uut.acqcmd("-- setExternalClock --fout %d DI0" % clock_freq)
+                 UUT.uut.acqcmd("-- setExternalClock --fin %d --fout %d DI0" % (clock_freq/1000, clock_freq/1000,))
             UUT.setPrePostMode(pre_trig, post_trig)
             UUT.set_arm()
             return  1
@@ -238,6 +239,8 @@ class DT132(Device):
             vins = self.getVins(UUT)
             self.ranges.record = vins
             (tot, pre, post, run) = UUT.get_numSamples()
+            pre = int(pre)
+            post = int(post)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
         
             clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
