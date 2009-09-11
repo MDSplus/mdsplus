@@ -204,7 +204,7 @@ static int Refresh()
       if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1)
       {
         struct descriptor_dispatch *dispatch = (struct descriptor_dispatch *)xd.pointer;
-        if (dispatch->pointer[0] == TreeSCHED_SEQ)
+        if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ))
         {
           static struct descriptor phase_d = {sizeof(int), DTYPE_L, CLASS_S, 0};
           static DESCRIPTOR(phase_lookup,"PHASE_NUMBER_LOOKUP($)");

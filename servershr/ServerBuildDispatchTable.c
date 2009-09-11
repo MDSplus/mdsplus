@@ -222,7 +222,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
         if (TdiDispatchOf(&niddsc, &xd MDS_END_ARG) & 1)
         {
           struct descriptor_dispatch *dispatch = (struct descriptor_dispatch *)xd.pointer;
-          if (dispatch->pointer[0] == TreeSCHED_SEQ)
+          if (dispatch->pointer && (dispatch->pointer[0] == TreeSCHED_SEQ))
           {
             struct descriptor server = {sizeof(actions->server),DTYPE_T,CLASS_S,0};
             static DESCRIPTOR(phase_lookup,"PHASE_NUMBER_LOOKUP($)");
