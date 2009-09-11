@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="mdsshr"
 	ProjectGUID="{D5CFEB70-0478-48EB-97B6-44BCC3EE19BA}"
 	RootNamespace="mdsshr"
@@ -335,6 +335,10 @@
 		</File>
 		<File
 			RelativePath=".\MdsXdRoutines.c"
+			>
+		</File>
+		<File
+			RelativePath=".\UdpEvents.c"
 			>
 		</File>
 	</Files>
