@@ -222,6 +222,11 @@ class Dispatch(Compound):
     """
     fields=('ident','phase','when','completion')
     __metaclass__=MetaClass
+
+    def __init__(self,*args,**kwargs):
+        if 'dispatch_type' not in kwargs:
+            kwargs['dispatch_type']=2
+        super(Dispatch,self).__init__(args=args,opcode=kwargs['dispatch_type'])
     
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
