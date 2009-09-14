@@ -5,7 +5,8 @@
 #define MAX_SEM_COUNT 256
 class EXPORT UnnamedSemaphore
 {
-	char semName[64];
+	LPSTR semName;
+
 public:
 	void initialize(int initVal)
 	{
@@ -18,7 +19,7 @@ public:
 		_int64 uniqueId = reinterpret_cast<_int64>(this);
 		while(true) 
 		{
-			sprintf(semName, "%x", uniqueId);
+			sprintf((char *)semName, "%x", uniqueId);
 			HANDLE semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, semName);
 			if(semHandle == 0)
 				throw new SystemException("Error initializing semaphore", GetLastError());

@@ -1,6 +1,5 @@
 #ifdef HAVE_WINDOWS_H
 #include <winsock.h>
-#include <windows.h>
 #include <stdio.h>
 #else
 
@@ -29,6 +28,7 @@
 #include "libroutines.h"
 #include "mdsshrthreadsafe.h"
 
+
 //int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 //int MDSEventCan(void *eventid) {}
 //int MDSEvent(char *evname){}
@@ -49,9 +49,12 @@ static unsigned long *sendEventMutex;
 static int sendEventMutex_initialized = 0;
 static unsigned long *getSocketMutex;
 static int getSocketMutex_initialized = 0;
+static unsigned long *getPortMutex;
+static int getPortMutex_initialized = 0;
 static int eventTopIdx = 0; 
 static void *eventInfos[MAX_EVENTS];
 static int sendSocket = 0;
+static int udpPort = -1;
 #else
 static pthread_mutex_t eventIdMutex;
 static int eventIdMutex_initialized = 0;
@@ -59,9 +62,12 @@ static pthread_mutex_t sendEventMutex;
 static int sendEventMutex_initialized = 0;
 static pthread_mutex_t getSocketMutex;
 static int getSocketMutex_initialized = 0;
+static pthread_mutex_t getPortMutex;
+static int getPortMutex_initialized = 0;
 static int eventTopIdx = 0; 
 static void *eventInfos[MAX_EVENTS];
 static int sendSocket = 0;
+static int udpPort = -1;
 #endif
 
 struct EventInfo {
@@ -219,6 +225,32 @@ static int getSocket()
 }
 
 
+static int getPort()
+{
+	char *portStr;
+	struct servent *serverInfo;
+	LockMdsShrMutex(&getPortMutex,&getPortMutex_initialized);
+	if(udpPort == -1)
+	{
+		portStr = getenv("mdsevent_port");
+		if(portStr)
+		{
+			sscanf(portStr, "%d", &udpPort);
+		}
+		else
+		{
+			serverInfo = getservbyname("mdsplus_event", "udp");
+			if(serverInfo)
+				udpPort = serverInfo->s_port;
+			else
+				udpPort = MULTICAST_EVENT_PORT;
+		}
+	}
+    UnlockMdsShrMutex(&getPortMutex);
+	return udpPort;
+}
+
+
 static void getMulticastAddr(char *eventName, char *retIp)
 {
 	int i;
@@ -256,7 +288,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 #ifdef HAVE_WXWORKS_H
     serverAddr.sin_len = (u_char)sizeof(struct sockaddr_in);
 #endif
-    serverAddr.sin_port = htons(MULTICAST_EVENT_PORT);
+    serverAddr.sin_port = htons(getPort());
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 //Allow multiple connections
@@ -364,7 +396,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
 	bzero((char *)&sin, sizeof(struct sockaddr_in));
 	
 	sin.sin_family = AF_INET;
-	sin.sin_port = htons( MULTICAST_EVENT_PORT );
+	sin.sin_port = htons( getPort() );
 	sin.sin_len = (u_char)(sizeof(struct sockaddr_in));
 
       	if(((sin.sin_addr.s_addr = inet_addr(multiIp)) == ERROR) &&
@@ -383,7 +415,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
 	}
 	if(hp != NULL)
 		memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
-	sin.sin_port = htons( MULTICAST_EVENT_PORT );
+	sin.sin_port = htons( getPort() );
 #endif
 	nameLen = strlen(evName);
 	if(bufLen < MAX_MSG_LEN - (4 + 4 + nameLen))

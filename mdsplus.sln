@@ -1475,6 +1475,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MDSobjectsCppShr", "mdsobje
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "javaobjects", "mdsobjects\java\java.vcproj", "{02A1CB34-AA0D-49D9-B470-031FB1E74902}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtevents", "rtevents\rtevents.vcproj", "{70571434-ABCB-4148-958B-B01BFD255F5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -1886,6 +1888,16 @@ Global
 		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Win32.ActiveCfg = Release|Win32
 		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|Win32.Build.0 = Release|Win32
 		{02A1CB34-AA0D-49D9-B470-031FB1E74902}.Release|x86.ActiveCfg = Release|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Debug|Win32.Build.0 = Debug|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Debug|x86.ActiveCfg = Debug|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Release|Win32.ActiveCfg = Release|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Release|Win32.Build.0 = Release|Win32
+		{70571434-ABCB-4148-958B-B01BFD255F5B}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

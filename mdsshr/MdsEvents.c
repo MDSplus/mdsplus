@@ -2373,6 +2373,7 @@ int MDSEvent(char *eventNameIn, int bufLen, char *buf) {
     status = old_MDSEvent(eventName,bufLen,buf);
   else
     status = MDSUdpEvent(eventName,bufLen,buf);
+  return status;
 }
 
 int MDSEventCan(int id) {

@@ -11,15 +11,15 @@ public:
 
 	void initialize(int id, int initVal)
 	{
-		char name[64];
-		sprintf(name, "REALTIME_SEM_%d", id);
+		LPSTR name;
+		sprintf((char *)name, "REALTIME_SEM_%d", id);
 		semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, name);
 		if(semHandle == 0)
 			throw new SystemException("Error initializing semaphore", GetLastError());
 	}
 	void initialize(char *name, int initVal)
 	{
-		semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, name);
+		semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, (LPCSTR)name);
 		if(semHandle == 0)
 			throw new SystemException("Error initializing semaphore", GetLastError());
 	}

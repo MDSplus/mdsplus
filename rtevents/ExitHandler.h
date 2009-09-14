@@ -6,19 +6,10 @@
 
 class EXPORT ExitHandler
 {
-	static Lock *lock;
-	static void checkLock()
-	{
-		if(!lock) 
-		{
-			lock = new Lock();
-			lock->initialize();
-		}
-	}
 public:
+
 	static int handlerIdx;
 	static void atExit(Runnable *inHandl);
 	static void dispose();
 };
-
 #endif

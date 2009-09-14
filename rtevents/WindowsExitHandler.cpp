@@ -1,11 +1,21 @@
 #include <Windows.h>
 #include <signal.h>
 #include "ExitHandler.h"
+#include "SystemSpecific.h"
 
 #define MAX_HANDLERS 64
 static Runnable *exitHandlers[MAX_HANDLERS];
 int ExitHandler::handlerIdx = -1;
-Lock *ExitHandler::lock;
+
+static Lock *lock;
+static void checkLock()
+{
+	if(!lock) 
+	{
+		lock = new Lock();
+		lock->initialize();
+	}
+}
 
 static void winHandler(int reason)
 {

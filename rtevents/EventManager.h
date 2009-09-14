@@ -1,6 +1,7 @@
 #ifndef EVENTMANAGER_H_
 #define EVENTMANAGER_H_
 #include "SystemSpecific.h"
+#include "ExitHandler.h"
 #include "EventHandler.h"
 #include "SharedMemManager.h"
 #include "Lock.h"

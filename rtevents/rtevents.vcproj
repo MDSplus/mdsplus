@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9,00"
 	Name="rtevents"
 	ProjectGUID="{70571434-ABCB-4148-958B-B01BFD255F5B}"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -48,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../include"
-				PreprocessorDefinitions="HAVE_WINDOWS_H;WIN32;_DEBUG;_WINDOWS;_USRDLL;RTEVENTS_EXPORTS"
+				PreprocessorDefinitions="HAVE_WINDOWS_H;WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;RTEVENTS_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -73,13 +74,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\mdsshr\Debug\mdsshr.lib ..\mdstcpip\Debug\mdsipshr.lib odbc32.lib odbccp32.lib wsock32.lib"
+				AdditionalDependencies="..\Debug\mdsshr.lib ..\Debug\mdsipshr.lib odbc32.lib odbccp32.lib wsock32.lib"
 				OutputFile="../Debug/RtEventsShr.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/RtEventsShr.pdb"
-				ImportLibrary=".\Debug/RtEventsShr.lib"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				ImportLibrary="..\Debug/RtEventsShr.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -101,9 +104,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -172,6 +172,8 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/rtevents.pdb"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary=".\Release/rtevents.lib"
 				TargetMachine="1"
 			/>
@@ -194,9 +196,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

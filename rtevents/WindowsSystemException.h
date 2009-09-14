@@ -8,8 +8,8 @@ class EXPORT SystemException
 public:
 	SystemException(char *msg, int errNo)
 	{
-		char sysMsg[512];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, errNo, 0, sysMsg, 512, 0);
+		LPSTR sysMsg;
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, errNo, 0, (LPSTR)sysMsg, 512, 0);
 		sprintf(this->msg, "%s %s", msg, sysMsg);
 		this->msg[1023] = 0;
 	}
