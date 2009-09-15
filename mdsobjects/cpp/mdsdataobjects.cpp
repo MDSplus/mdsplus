@@ -39,6 +39,7 @@ extern "C" {
 	void * convertToUnits(void *dsc, void *unitsDsc);
 	void * convertToError(void *dsc, void *errorDsc);
 
+	void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen);
 }
 
 
@@ -826,6 +827,18 @@ double *Array::getDoubleArray(int *numElements)
 	*numElements = size;
 	return retArr;
 }
+
+char *Uint64::getDate()
+{
+	char dateBuf[512];
+	int bufLen;
+	convertTimeToAscii((_int64 *)ptr, dateBuf, 512, &bufLen);
+	char *retDate = new char[bufLen+1];
+	dateBuf[bufLen] = 0;
+	strcpy(retDate, dateBuf);
+	return retDate;
+}
+
 
 EXPORT void *TreePath::convertToDsc()
 {

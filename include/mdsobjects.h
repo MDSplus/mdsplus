@@ -352,7 +352,7 @@ protected:
 		virtual void *convertToDsc();
 	}; //ScalarData
 
-	class Int8 : public Scalar
+	class  EXPORT Int8 : public Scalar
 	{
 	public:
 		Int8(char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -372,7 +372,7 @@ protected:
 		double getDouble() {return (double)ptr[0];}
 	};
 
-	class Uint8 : public Scalar
+	class  EXPORT Uint8 : public Scalar
 	{
 	public:
 		Uint8(unsigned char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -393,7 +393,7 @@ protected:
 	};
 
 
-	class Int16 : public Scalar
+	class  EXPORT Int16 : public Scalar
 	{
 	public:
 		Int16(short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -413,7 +413,7 @@ protected:
 		double getDouble() {return (double)(*(short *)ptr);}
 	};
 
-	class Uint16 : public Scalar
+	class  EXPORT Uint16 : public Scalar
 	{
 	public:
 		Uint16(unsigned short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -433,7 +433,7 @@ protected:
 		double getDouble() {return (double)(*(short *)ptr);}
 	};
 
-	class Int32 : public Scalar
+	class  EXPORT Int32 : public Scalar
 	{
 	public:
 		Int32(int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -453,7 +453,7 @@ protected:
 		double getDouble() {return (double)(*(int *)ptr);}
 	};
 
-	class Uint32 : public Scalar
+	class  EXPORT Uint32 : public Scalar
 	{
 	public:
 		Uint32(unsigned int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -473,7 +473,7 @@ protected:
 		double getDouble() {return (double)(*(int *)ptr);}
 	};
 
-	class Int64 : public Scalar
+	class EXPORT Int64 : public Scalar
 	{
 	public:
 		Int64(_int64 val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -494,7 +494,7 @@ protected:
 	};
 
 
-	class Uint64 : public Scalar
+	class EXPORT Uint64 : public Scalar
 	{
 	public:
 #ifdef HAVE_WINDOWS_H
@@ -524,11 +524,12 @@ protected:
 		_int64 getLong() {return (_int64)(*(_int64 *)ptr);}
 		float getFloat() {return (float)(*(_int64 *)ptr);}
 		double getDouble() {return (double)(*(_int64 *)ptr);}
+		char *getDate();
 	};
 
 
 
-	class Float32 : public Scalar
+	class  EXPORT Float32 : public Scalar
 	{
 	public:
 		Float32(float val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -549,7 +550,7 @@ protected:
 	};
 
 
-	class Float64 : public Scalar
+	class  EXPORT Float64 : public Scalar
 	{
 	public:
 		Float64(double val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -570,7 +571,7 @@ protected:
 	};
 
 
-	class String : public Scalar
+	class  EXPORT String : public Scalar
 	{
 	public:
 		String(char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -1823,6 +1824,34 @@ public:
 		static void synch();
 	};
 
+/////////////////End CachedTree///////
+/////////////Class Event///////////
+	class EXPORT Event
+	{
+
+	public:
+		char *eventName;
+		Data *eventData;
+		int eventId;
+		_int64 eventTime;
+		Event(char *evName);
+		~Event();
+		virtual void run() {}
+		Data *getData()
+		{
+			if(eventData)
+				eventData->refCount++;
+			return eventData;
+		}
+		Uint64 *getTime()
+		{
+			return new Uint64(eventTime);
+		}
+		char *getName() { return eventName;}
+		static void setevent(char *evName, Data *data);
+	};
+//////////////End Class Event//////////////
+//////////////Support functions////////
 EXPORT void deleteData(Data *);
 EXPORT Data *deserialize(char *serialized, int size);
 EXPORT	Data *compile(char *expr, ...);

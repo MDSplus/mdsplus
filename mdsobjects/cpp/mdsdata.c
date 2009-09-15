@@ -6,6 +6,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include <libroutines.h>
+#include <strroutines.h>
 #include <opcopcodes.h>
 #include <mdstypes.h>
 extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
@@ -27,6 +28,8 @@ extern void *convertDataToDsc(void *data);
 extern void convertTime(int *time, char *retTime);
 extern char * serializeData(void *dsc, int *retSize, void **retDsc);
 extern void *deserializeData(char *serialized, int size);
+
+extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen);
 
 
 #ifdef HAVE_WINDOWS_H
@@ -643,3 +646,23 @@ extern void *deserializeData(char *serialized, int size)
 	return xdPtr;
 }
 
+extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen)
+{
+	struct descriptor dateDsc = {0, DTYPE_T, CLASS_D, 0};
+	short len;
+	int status = LibSysAscTim(&len, &dateDsc, (int *)timePtr);
+	if(len > bufLen)
+		len = bufLen;
+	if(len > 0)
+		memcpy(dateBuf, dateDsc.pointer, len);
+	StrFree1Dx(&dateDsc);
+	*retLen = len;
+}
+
+
+extern _int64 convertAsciiToTime(char *ascTime)
+{
+	_int64 time;
+	LibConvertDateString("now", &time);
+	return time;
+}

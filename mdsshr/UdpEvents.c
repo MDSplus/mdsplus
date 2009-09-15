@@ -233,7 +233,7 @@ static int getPort()
 	if(udpPort == -1)
 	{
 		portStr = getenv("mdsevent_port");
-		if(portStr)
+		if(portStr) 
 		{
 			sscanf(portStr, "%d", &udpPort);
 		}
