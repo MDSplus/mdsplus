@@ -107,7 +107,7 @@ class DT132(Device):
              16:'11111111000000001111111100000000',
              32:'11111111111111111111111111111111',
              }
-    wires = [ 'fpga','mezz','rio','pxi','lemo', 'none']
+    wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
     
     del i
     
@@ -148,8 +148,8 @@ class DT132(Device):
             else:
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")                
                 clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
-            pre_trig=self.check('int(self.pre_trig*1024)', "Must specify pre trigger samples")
-            post_trig=self.check('int(self.post_trig*1024)', "Must specify post trigger samples")
+            pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
+            post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
             UUT.set_abort()
             UUT.clear_routes()
             
@@ -158,14 +158,14 @@ class DT132(Device):
                 try:
                     wire = eval('str(self.di%1.1d_wire.record)' %i)
                     if wire not in self.wires :
-                        print "DI%d:wire must be in %s",str(self.wires)
+                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
                     bus = eval('str(self.di%1.1d_bus.record)' % i)
                     if bus not in self.wires :
-                        print "DI%d:bus must be in %s",str(self.wires)
+                        print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
                 except:
                     bus = ''
@@ -279,7 +279,8 @@ class DT132(Device):
                             inc = 1
                         if debug:
                             print "build the command"
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getMinPath(), int(start), int(end), int(inc), chan+1)
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
+                        command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
                         UUT.uut.acq2sh(command)
