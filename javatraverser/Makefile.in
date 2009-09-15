@@ -98,7 +98,8 @@ PLRMSetup.java \
 DPO7054Setup.java \
 L9109Setup.java \
 LASER_NDRTSetup.java \
-IPControlSetup.java
+IPControlSetup.java \
+EQU_GAINSetup.java
 
 
 
