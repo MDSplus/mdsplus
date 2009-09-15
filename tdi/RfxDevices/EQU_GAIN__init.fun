@@ -26,7 +26,7 @@ public fun EQU_GAIN__init(as_is _nid, optional _method)
 
    write(*, "INIT EQU_GAIN");
 
-   DevNodeCvt(_nid, _N_ACQ_SIGNALS, ['INTEGRAL', 'LINEAR', "ALL"],[0,1,2], _acq_signal = _INVALID);
+   DevNodeCvt(_nid, _N_ACQ_SIGNALS, ['INTEGRAL', 'LINEAR', "INT. & LIN."],[0,1,2], _acq_signal = _INVALID);
    if( _acq_signal == _INVALID)
    {
 	    DevLogErr(_nid, "Missing acquisition signal modality"); 
@@ -36,14 +36,14 @@ public fun EQU_GAIN__init(as_is _nid, optional _method)
 
  
    _lin_adc = if_error(getnci(getnci(DevNodeRef(_nid, _N_LIN_ADC), 'record'), 'fullpath'), "");
-   if(_adc == "" && _acq_signal != 0)
+   if( _lin_adc == "" && _acq_signal != 0)
    {
 	    DevLogErr(_nid, "Missing Linear Acquisition device module path"); 
 	    abort();
    }
  
    _int_adc = if_error(getnci(getnci(DevNodeRef(_nid, _N_INT_ADC), 'record'), 'fullpath'), "");
-   if(_adc == "" && _acq_signal != 1)
+   if( _int_adc == "" && _acq_signal != 1)
    {
 	    DevLogErr(_nid, "Missing Linear Acquisition device module path"); 
 	    abort();
