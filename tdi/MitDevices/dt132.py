@@ -183,6 +183,8 @@ class DT132(Device):
         except Exception,e:
             print "%s\n" % (str(e),)
             return 0
+
+    INIT=init
         
     def getVins(self, UUT):
         vins = UUT.uut.acq2sh('get.vin 1:32')
@@ -312,6 +314,8 @@ class DT132(Device):
             return 0
                 
         return 1
+
+    STORE=store
 
     def help(self, arg):
         """ Help method to describe the methods and nodes of the DTAO32 module type """
