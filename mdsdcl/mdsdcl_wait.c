@@ -79,6 +79,7 @@ int   mdsdcl_wait()		/* Return:  status			*/
         MdsMsg(0,"--> invalid time string");
         return(CLI_STS_BADLINE);
        }
+    if (hr < 0) hr=-hr;
     sec = (int)fsec;
     millisec = (int)((fsec - (float)sec) * 1000.);
     nsec = sec + 60*(min + 60*(hr + 24*day));
