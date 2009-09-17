@@ -1,7 +1,7 @@
 public fun EM_EQU_TEST_NEW__add(in _path, out _nidout)
 {
 
-    DevAddStart(_path, 'EM_FLU_TEST_NEW', 43, _nidout);
+    DevAddStart(_path, 'EM_EQU_TEST_NEW', 55, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 
     DevAddNode(_path // ':DECODER',     'TEXT', *, *, _nid);
