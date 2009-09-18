@@ -30,6 +30,7 @@ MDSplus/Device.java\
 MDSplus/Dimension.java\
 MDSplus/Dispatch.java\
 MDSplus/Empty.java\
+MDSplus/Event.java \
 MDSplus/Float32.java\
 MDSplus/Float32Array.java\
 MDSplus/Float64.java\
@@ -66,7 +67,8 @@ MDSplus/Uint64.java\
 MDSplus/Uint64Array.java\
 MDSplus/Uint8.java\
 MDSplus/Uint8Array.java\
-MDSplus/Window.java
+MDSplus/Window.java 
+
 
 
 GIFS = 
