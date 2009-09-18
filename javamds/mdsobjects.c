@@ -3,11 +3,12 @@
 #include "MDSplus_TreeNode.h"
 #include "MDSplus_CachedTreeNode.h"
 #include "MDSplus_CachedTree.h"
+#include "MDSplus_Event.h"
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #include <mdstypes.h>
-#include  <mdsshr.h>
+#include <mdsshr.h>
 #include <string.h>
 #include <stdlib.h>
 #include <libroutines.h>
@@ -15,6 +16,8 @@
 #include <dbidef.h>
 #include <treeshr.h>
 #include <cacheshr.h>
+#include <libroutines.h>
+#include "..\mdsshr\mdsshrthreadsafe.h"
 
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
 
@@ -957,6 +960,70 @@ static void FreeDescrip(struct descriptor *desc)
   }
   free((char *)desc);
 }   
+
+/*
+ * Class:     MDSplus_Data
+ * Method:    serialize
+ * Signature: ()[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize
+  (JNIEnv *env, jobject obj)
+{
+	EMPTYXD(xd);
+	jclass exc;
+	int status;
+	char *errorMsg;
+	struct descriptor_a *arrPtr;
+	struct descriptor *dscPtr = ObjectToDescrip(env, obj);
+	jbyteArray jserialized;
+	status = MdsSerializeDscOut(dscPtr, &xd);
+	if(!(status & 1))
+	{
+       errorMsg = (char *)MdsGetMsg(status);
+       exc = (*env)->FindClass(env, "MDSplus/MdsException");
+       (*env)->ThrowNew(env, exc, errorMsg);
+       return NULL;
+	}
+	arrPtr = (struct descriptor_a *)xd.pointer;
+	if(arrPtr->dtype != DTYPE_B && arrPtr->dtype != DTYPE_BU)
+	{
+		printf("FATAL ERROR: MdsSerializeDscOut returned a wrong type");
+		exit(0);
+	}
+	jserialized = (*env)->NewByteArray(env, arrPtr->arsize);
+	(*env)->SetByteArrayRegion(env, jserialized, 0, arrPtr->arsize, arrPtr->pointer);
+	MdsFree1Dx(&xd, 0);
+	FreeDescrip(dscPtr);
+	return jserialized;
+}
+
+
+/*
+ * Class:     MDSplus_Data
+ * Method:    deserialize
+ * Signature: ([B)LMDSplus/Data;
+ */
+JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
+  (JNIEnv *env, jclass cls, jbyteArray jserialized)
+{
+	EMPTYXD(xd);
+	jclass exc;
+	char *errorMsg;
+	jobject retObj;
+	int dim = (*env)->GetArrayLength(env, jserialized);
+	char  *serialized = (*env)->GetByteArrayElements(env, jserialized, JNI_FALSE);
+	int status = MdsSerializeDscIn(serialized, &xd);
+	if(!(status & 1))
+	{
+       errorMsg = (char *)MdsGetMsg(status);
+       exc = (*env)->FindClass(env, "MDSplus/MdsException");
+       (*env)->ThrowNew(env, exc, errorMsg);
+       return NULL;
+	}
+	retObj = DescripToObject(env, xd.pointer, 0, 0, 0, 0);
+	MdsFree1Dx(&xd, 0);
+	return retObj;
+}
 
 
 #define MAX_ARGS 256
@@ -2655,5 +2722,159 @@ JNIEXPORT void JNICALL Java_MDSplus_CachedTree_cacheSynch
   (JNIEnv *env, jclass cls)
 {
 	RTreeSynch();
+}
+
+
+static JavaVM *jvm;
+
+static JNIEnv *getJNIEnv()
+{
+	JNIEnv *jEnv;
+	int retVal;
+   	retVal = (*jvm)->AttachCurrentThread(jvm, (void **)&jEnv, NULL);
+    if (retVal) 
+        printf("AttachCurrentThread error %d\n", retVal);
+    return jEnv;
+}
+static void releaseJNIEnv()
+{
+    (*jvm)->DetachCurrentThread(jvm);
+}
+
+static void handleEvent(void *objPtr, int dim ,char *buf)
+{
+	jmethodID mid;
+	JNIEnv *env;
+	jclass cls;
+	jvalue args[2];
+	jbyteArray jbuf;
+	_int64 time;
+	jobject obj = (jobject) objPtr;
+
+	env = getJNIEnv();
+	cls = (*env)->GetObjectClass(env, obj);
+	if(!cls) printf("Error getting class for MDSplus.Event\n");
+	mid = (*env)->GetMethodID(env, cls,  "intRun", "([BJ)V");
+	if(!mid) printf("Error getting method intRun for MDSplus.Event\n");
+	jbuf = (*env)->NewByteArray(env, dim);
+	(*env)->SetByteArrayRegion(env, jbuf, 0, dim, buf);
+	args[0].l = jbuf;
+	LibConvertDateString("now", &time);
+	args[1].j = time;
+	(*env)->CallVoidMethodA(env, obj, mid, args);
+	(*env)->ReleaseByteArrayElements(env, jbuf, buf, 0);
+	releaseJNIEnv();
+}
+
+//Record eventObj instances retrieved by NewGlobalref. They will be released then the event is disposed
+//(indexed by eventId)
+struct EventDescr {
+	jobject eventObj;
+	int eventId;
+	struct EventDescr *nxt;
+};
+#ifdef HAVE_WINDOWS_H
+static unsigned long *eventMutex;
+static int eventMutex_initialized = 0;
+#else
+static pthread_mutex_t eventMutex;
+static int eventMutex_initialized = 0;
+#endif
+
+static struct EventDescr *eventDescrHead = 0;
+static void addEventDescr(jobject eventObj, int eventId)
+{
+	struct EventDescr *newDescr = malloc(sizeof(struct EventDescr));
+	LockMdsShrMutex(&eventMutex,&eventMutex_initialized);
+	newDescr->eventId = eventId;
+	newDescr->eventObj = eventObj;
+	newDescr->nxt = eventDescrHead;
+	eventDescrHead = newDescr;
+    UnlockMdsShrMutex(&eventMutex);
+}
+
+static jobject releaseEventDescr(int eventId)
+{
+	jobject retObj = 0;
+	struct EventDescr *currDescr, *prevDescr;
+	LockMdsShrMutex(&eventMutex,&eventMutex_initialized);
+	currDescr = eventDescrHead;
+	prevDescr = eventDescrHead;
+	while(currDescr && currDescr->eventId != eventId)
+	{
+		prevDescr = currDescr;
+		currDescr = currDescr->nxt;
+	}
+	if(currDescr)
+	{
+		if(prevDescr != currDescr)
+			prevDescr->nxt = currDescr->nxt;
+		else
+			eventDescrHead = currDescr->nxt;
+		retObj = currDescr->eventObj;
+		free((char *)currDescr);
+	}
+    UnlockMdsShrMutex(&eventMutex);
+	return retObj;
+}
+
+
+
+
+/*
+ * Class:     MDSplus_Event
+ * Method:    registerEvent
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT int JNICALL Java_MDSplus_Event_registerEvent
+  (JNIEnv *env, jobject obj, jstring jevent)
+{
+	const char *event;
+	int eventId = -1, status;
+	jobject eventObj = (*env)->NewGlobalRef(env, obj);
+	if(jvm == 0)
+	{
+		status = (*env)->GetJavaVM(env, &jvm);
+		if (status) 
+			printf("GetJavaVM error %d\n", status);
+	}
+	event = (*env)->GetStringUTFChars(env, jevent, 0);
+	//make sure this Event instance will not be released by the garbage collector
+	status = MDSEventAst((char *)event, handleEvent, (void *)eventObj, &eventId); 
+	addEventDescr(eventObj, eventId);
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
+	if(!(status & 1))
+		return -1;
+	return eventId;
+}
+
+/*
+ * Class:     MDSplus_Event
+ * Method:    unregisterEvent
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent
+  (JNIEnv *env, jobject obj, jint eventId)
+{
+	jobject delObj = releaseEventDescr(eventId);
+	MDSEventCan(eventId);
+	//Allow Garbage Collector reclaim the Event object
+	(*env)->DeleteGlobalRef(env, delObj);
+}
+
+/*
+ * Class:     MDSplus_Event
+ * Method:    sendEvent
+ * Signature: (Ljava/lang/String;[B)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Event_sendEvent
+  (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
+{
+	int dim = (*env)->GetArrayLength(env, jbuf);
+	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
+	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
+
+	MDSEvent((char *)event, dim, buf);
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
 }
 

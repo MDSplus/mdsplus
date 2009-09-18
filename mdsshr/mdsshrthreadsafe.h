@@ -30,5 +30,5 @@ typedef struct _thread_static {
 } MdsShrThreadStatic;
 
 extern MdsShrThreadStatic *MdsShrGetThreadStatic();
-extern void LockMdsShrMutex(pthread_mutex_t *, int *);
-extern void UnlockMdsShrMutex(pthread_mutex_t *);
+EXPORT  void LockMdsShrMutex(pthread_mutex_t *, int *);
+EXPORT void UnlockMdsShrMutex(pthread_mutex_t *);

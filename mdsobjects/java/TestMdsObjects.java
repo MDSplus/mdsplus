@@ -3,15 +3,68 @@ import MDSplus.*;
 
 public class TestMdsObjects 
 {
+   static class MyEvent extends Event {
+       java.lang.String message;
+        public MyEvent(java.lang.String name, java.lang.String message)throws MdsException 
+        {
+            super(name);
+            this.message = message;
+        }
+        public void run()
+        {
+            System.out.println("Ricevuto Evento "+ getData() + "  " + message);
+        }
+    }
     public static void main(java.lang.String args[])
     {
-        try {
+         try {
            // Function f = new Function(38, new Data[]{new Int32(2), new Int32(3)});
           //System.out.println(f);
            /*Tree t = new Tree("test", 1, "EDIT");
            t.addNode("DATA1", "ANY");
            t.write();
            if(true) return;*/
+            
+            
+           Event event = new MyEvent("CACCA", "PIPPO");
+           //Event event1 = new MyEvent("CACCA", "PLUTO");
+           //Event event2 = new MyEvent("CACCA", "TOPOLINO");
+           (new Thread(){ 
+               public void run()
+               {
+                   for(int i = 0; i < 10000; i++)
+                   {
+                       Event.setevent("CACCA", new Int32(i));
+                         try {
+                            Thread.currentThread().sleep(10);
+                        }catch(InterruptedException exc){}
+                   }
+               }
+           }).start();
+            
+            try {
+                Thread.currentThread().sleep(1000);
+            }catch(InterruptedException exc){}
+           System.out.println("*****************");
+           event.dispose();
+           event = new MyEvent("CACCA", "PLUTO");
+            try {
+                Thread.currentThread().sleep(1000);
+            }catch(InterruptedException exc){}
+           
+           System.out.println("*****************");
+           event.dispose();
+           event = new MyEvent("CACCA", "TOPOLINO");
+            try {
+                Thread.currentThread().sleep(1000);
+            }catch(InterruptedException exc){}
+           
+           if(true)
+               return;
+           
+           
+           
+           
            Tree t = new Tree("test", 1);
            TreeNode n = t.getNode("DATA1");
            n.deleteData();

@@ -166,6 +166,9 @@ public class Data {
 
         native String evaluateData();
         
+        native byte[] serialize();
+        static native Data deserialize(byte[] serialized);
+        
 	/**
 	 * Convert this data into a byte. Implemented at this class level by returning TDI
 	 * data(BYTE(this)). If data() fails or the returned class is not scalar,

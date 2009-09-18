@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="cacheshr"
 	ProjectGUID="{50026EB5-651F-46F8-9D68-167B03705CC1}"
 	RootNamespace="cacheshr"
@@ -82,7 +82,7 @@
 				ProgramDatabaseFile=".\Debug/cacheshr.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\Debug/cacheshr.lib"
+				ImportLibrary="..\Debug/cacheshr.lib"
 				TargetMachine="1"
 			/>
 			<Tool
