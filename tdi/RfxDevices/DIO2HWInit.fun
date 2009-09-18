@@ -29,9 +29,11 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	private _DIO2_IO_INT_ENABLE	=	0x1;
 	private _DIO2_IO_INT_DISABLE	=	0x0;
 
+	private _NO_EVENT = -1;
 
+	if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
 
-	write(*, 'DIO2HWInit', _board_id, _ext_clock, _rec_event, _synch_event);
+	write(*, 'DIO2HWInit', _board_id, _ext_clock, _rec_event, _synch_event );
 
 
 /* Initialize Library if the first time */

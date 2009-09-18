@@ -4,7 +4,7 @@ public fun DIO2__init(as_is _nid, optional _method)
     private _N_BOARD_ID = 1;
     private _N_SW_MODE = 2;
     private _N_IP_ADDR = 3;
-	private _N_COMMENT = 4;
+    private _N_COMMENT = 4;
     private _N_CLOCK_SOURCE = 5;
     private _N_REC_START_EV = 6;
 
@@ -33,7 +33,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 
 	private _LARGE_TIME = 1E6;
     private _INVALID = 10E20;
-
+    private _NO_EVENT = -1;   	
 
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
@@ -84,7 +84,7 @@ public fun DIO2__init(as_is _nid, optional _method)
 		}
 	}
 	else
-		_synch_event = [];
+		_synch_event = [ _NO_EVENT ];
 
 
 
