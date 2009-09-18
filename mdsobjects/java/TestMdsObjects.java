@@ -12,9 +12,33 @@ public class TestMdsObjects
         }
         public void run()
         {
-            System.out.println("Ricevuto Evento "+ getData() + "  " + message);
+            System.out.println("Ricevuto Evento "+ getData() + "  " + message + " " + getTime().getDate());
         }
     }
+   
+   static void testRows()
+   {
+       try {
+            Tree tree = new Tree("test",1);
+            TreeNode sig=tree.getNode("\\sig_1");
+            sig.deleteData();
+            long startsec = System.currentTimeMillis();
+            float []data = new float[1000];
+            for(int i = 1; i <=4020; i++)
+            {
+		for(int j=0;j<1000;j++)
+                    data[j] = i*10000 + j;
+                sig.putRow(new Float32Array(data), (long)i);
+            }
+       }catch(Exception exc)
+       {
+           System.err.println("Error in testRow: " + exc);
+       }
+       System.out.println("FINITO");
+   }
+   
+   
+   
     public static void main(java.lang.String args[])
     {
          try {
@@ -24,7 +48,8 @@ public class TestMdsObjects
            t.addNode("DATA1", "ANY");
            t.write();
            if(true) return;*/
-            
+           //testRows();
+           //if(true) return;
             
            Event event = new MyEvent("CACCA", "PIPPO");
            //Event event1 = new MyEvent("CACCA", "PLUTO");
@@ -172,4 +197,16 @@ public class TestMdsObjects
             System.out.println("Error: " + exc);
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

@@ -151,4 +151,10 @@ public class Uint64 extends Scalar
     {
         return new double[]{(double)datum};
     }
+    
+   public java.lang.String getDate()
+   {
+       return Data.convertToDate(datum);
+   }
+   
 }

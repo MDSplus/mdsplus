@@ -165,6 +165,22 @@ JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize
 JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
   (JNIEnv *, jclass, jbyteArray);
 
+/*
+ * Class:     MDSplus_Data
+ * Method:    convertToDate
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     MDSplus_Data
+ * Method:    getTime
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

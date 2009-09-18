@@ -4,6 +4,7 @@ public class Event
 { 
     long time = 0;
     Data data = null;
+    byte[] dataBuf;
     java.lang.String name;
     boolean disposed = false;
     int eventId;
@@ -27,6 +28,7 @@ public class Event
     public java.lang.String getName() {return name;}
     public Uint64 getTime() {return new Uint64(time);}
     public Data getData() { return data;}
+    public byte []  getRaw() { return dataBuf;}
     public void run(){}
     public void dispose()
     {   
@@ -36,16 +38,18 @@ public class Event
     }
     static public void setevent(java.lang.String evName, Data data)
     {
-        sendEvent(evName, (data == null)?new byte[0]:data.serialize());
+        seteventRaw(evName, (data == null)?new byte[0]:data.serialize());
     }
     void intRun(byte []buf, long time)
     {
+        this.time = time;
+        dataBuf = buf;
         if(buf.length == 0)
             data = null;
         else data = Data.deserialize(buf);
         run();
     }
-    static native void sendEvent(java.lang.String evName, byte[] buf);
+    static public native void seteventRaw(java.lang.String evName, byte[] buf);
     native int registerEvent(java.lang.String name);
     native void unregisterEvent(int eventId);
 }

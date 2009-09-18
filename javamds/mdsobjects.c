@@ -17,6 +17,7 @@
 #include <treeshr.h>
 #include <cacheshr.h>
 #include <libroutines.h>
+#include <strroutines.h>
 #include "..\mdsshr\mdsshrthreadsafe.h"
 
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
@@ -2864,10 +2865,10 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent
 
 /*
  * Class:     MDSplus_Event
- * Method:    sendEvent
+ * Method:    seteventRaw
  * Signature: (Ljava/lang/String;[B)V
  */
-JNIEXPORT void JNICALL Java_MDSplus_Event_sendEvent
+JNIEXPORT void JNICALL Java_MDSplus_Event_seteventRaw
   (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
 {
 	int dim = (*env)->GetArrayLength(env, jbuf);
@@ -2877,4 +2878,44 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_sendEvent
 	MDSEvent((char *)event, dim, buf);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
 }
+
+/*
+ * Class:     MDSplus_Data
+ * Method:    convertToDate
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate
+  (JNIEnv *env, jclass cls, jlong time)
+{
+	struct descriptor dateDsc = {0, DTYPE_T, CLASS_D, 0};
+	short len;
+	jstring jdate;
+	char *date;
+
+
+	int status = LibSysAscTim(&len, &dateDsc, (int *)&time);
+	date = malloc(dateDsc.length+1);
+	memcpy(date, dateDsc.pointer, dateDsc.length);
+	date[dateDsc.length] = 0;
+	jdate = (*env)->NewStringUTF(env, (const char *)date);
+	free(date);
+	StrFree1Dx(&dateDsc);
+	return jdate;
+}
+
+
+/*
+ * Class:     MDSplus_Data
+ * Method:    getTime
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
+  (JNIEnv *env, jclass cls)
+{
+	_int64 time;
+	LibConvertDateString("now", &time);
+	return (long)time;
+}
+
+
 

@@ -453,6 +453,7 @@ public class Data {
         public static Data toData(float d[]) {return new Float32Array(d);}
         public static Data toData(double d[]) {return new Float64Array(d);}
         public static Data toData(java.lang.String d[]) {return new StringArray(d);}
-        
-
+        //MDSplus time support
+        static native java.lang.String convertToDate(long time);
+        static native long getTime();
 }

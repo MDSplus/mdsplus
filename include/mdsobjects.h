@@ -1832,11 +1832,18 @@ public:
 	public:
 		char *eventName;
 		Data *eventData;
+		char *eventBuf;
+		int eventBufSize;
 		int eventId;
 		_int64 eventTime;
 		Event(char *evName);
 		~Event();
 		virtual void run() {}
+		char *getRaw(int *size)
+		{
+			*size = eventBufSize;
+			return eventBuf;
+		}
 		Data *getData()
 		{
 			if(eventData)
@@ -1849,6 +1856,7 @@ public:
 		}
 		char *getName() { return eventName;}
 		static void setevent(char *evName, Data *data);
+		static void seteventRaw(char *evName, int bufLen, char *buf);
 	};
 //////////////End Class Event//////////////
 //////////////Support functions////////

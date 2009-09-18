@@ -22,6 +22,9 @@ extern "C" {
 extern "C" void eventAst(void *arg, int len, char *buf)
 {
 	Event *ev = (Event *)arg;
+	ev->eventBufSize = len;
+	ev->eventBuf = new char[len];
+	memcpy(ev->eventBuf, buf, len);
 	ev->eventData = deserialize(buf, len);
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
@@ -32,6 +35,8 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 Event::Event(char *evName)
 {
 	eventData = 0;
+	eventBufSize = 0;
+	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
 	strcpy(eventName, evName);
 	eventId = -1;
@@ -51,5 +56,9 @@ void Event::setevent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
+	MDSEvent(evName, bufLen, buf);
+}
+void Event::seteventRaw(char *evName, int bufLen, char *buf)
+{
 	MDSEvent(evName, bufLen, buf);
 }
