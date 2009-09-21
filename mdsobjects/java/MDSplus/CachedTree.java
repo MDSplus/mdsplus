@@ -18,9 +18,14 @@ public class CachedTree extends Tree
             cacheConfigure(isShared, cacheDim);
             cachedTreeOpen(name, shot);
         }
-	public CachedTree(java.lang.String name, int shot, boolean isShared) throws MdsException
+	public CachedTree(java.lang.String name, int shot) throws MdsException
         {
             this(name, shot, false, 1000000);
+	}
+
+	public CachedTree(java.lang.String name, int shot, int size) throws MdsException
+        {
+            this(name, shot, false, size);
 	}
 
 	/**

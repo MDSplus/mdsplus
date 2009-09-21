@@ -37,6 +37,33 @@ public class TestMdsObjects
        System.out.println("FINITO");
    }
    
+   /* This test uses the cached version: it writes data in local cache and flushes it to disk at the end
+    * This may improve performence when storing many small rows. When storing large rows, the advantages of 
+    * memory cache are lost (in any case we have large I/O on disk and there is the risk of filling memory */
+   static void testRowsMem()
+   {
+       try {
+            CachedTree tree = new CachedTree("test",1);
+            CachedTreeNode sig=tree.getCachedNode("\\sig_1");
+            sig.deleteData();
+            float []data = new float[10]; //Use a small row
+            for(int i = 1; i <=4020; i++)
+            {
+		for(int j=0;j<10;j++)
+                    data[j] = i*10000 + j;
+                if(i < 4020 - 1)
+                    sig.putRow(new Float32Array(data), (long)i);
+                else
+                    sig.putLastRow(new Float32Array(data), (long)i);
+            }
+            tree.synch();
+       }catch(Exception exc)
+       {
+           System.err.println("Error in testRow: " + exc);
+       }
+       System.out.println("FINITO");
+   }
+   
    
    
     public static void main(java.lang.String args[])
@@ -48,8 +75,8 @@ public class TestMdsObjects
            t.addNode("DATA1", "ANY");
            t.write();
            if(true) return;*/
-           //testRows();
-           //if(true) return;
+           testRowsMem();
+           if(true) return;
             
            Event event = new MyEvent("CACCA", "PIPPO");
            //Event event1 = new MyEvent("CACCA", "PLUTO");
