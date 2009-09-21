@@ -92,13 +92,14 @@ public fun DIO2__init(as_is _nid, optional _method)
 /* Setup event recording */
 	if(_remote != 0)
 	{
+	
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		execute(_cmd);
+		_status = execute(_cmd);
 	    _status = MdsValue('DIO2HWInit(0, $1, $2, $3, $4)', _board_id, _ext_clock, _rec_event, _synch_event);
 		if(_status == 0)
 		{
 			MdsDisconnect();
-			DevLogErr(_nid, "Error Initializing recorder in DIO2 device: seet CPCI console for details");
+			DevLogErr(_nid, "Error Initializing recorder in DIO2 device: see CPCI console for details");
 			abort();
 		}
 	}
@@ -470,6 +471,10 @@ write(*, "  Should be all done setting up this chan for pulse");
 			}
 		}
 	}
+
+	write(*, 'FINITO', _synch_event);
+    if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
+	write(*, 'FINITO', _synch_event);
 
 	if(_remote != 0)
 	{
