@@ -33,8 +33,10 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 	if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
 
+/*
 	write(*, 'DIO2HWInit', _board_id, _ext_clock, _rec_event, _synch_event );
-
+*/
+	write(*, 'DIO2HWInit');
 
 /* Initialize Library if the first time */
     _first = 0;
@@ -50,9 +52,10 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		return(0);
 	}
 /* Reset module */
- /*       if(_first) 
+/*******
+       if(_first) 
 		DIO2->DIO2_Reset(val(_handle));
-*/
+*******/
 	_status = DIO2->DIO2_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
 
 
@@ -126,6 +129,7 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Set synch event if defined */
+
 	for(_i = 0; _i < size(_synch_event); _i++)
 	{
 		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_i+1)), val(byte(_synch_event[_i])),
@@ -140,9 +144,12 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
-/* Initialize remaining event register */	     	
+/* Initialize remaining event register */
+
+    	
     	for(_i = size(_synch_event) + 1; _i <= 16; _i++)
 	{
+
 		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),
 				val(byte(0)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
 		if(_status != 0)
@@ -154,7 +161,6 @@ public fun DIO2HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
-
     
 
 /* OLD VERSION *****************
