@@ -55,7 +55,9 @@ public class TestMdsObjects
                     sig.putRow(new Float32Array(data), (long)i);
                 else
                     sig.putLastRow(new Float32Array(data), (long)i);
+//The last time it is necessary to call putLastRow method                
             }
+//This method must be called before exiting in order to allow all pending data to be written on disk            
             tree.synch();
        }catch(Exception exc)
        {

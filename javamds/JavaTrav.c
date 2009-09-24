@@ -471,7 +471,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jfieldID nid_fid;
   jclass cls = (*env)->GetObjectClass(env, jnid);
   jmethodID constr;
-  jvalue args[21];
+  jvalue args[22];
   static  int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len, conglomerate_nids,
     owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len, name_len, fullpath_len, 
 	minpath_len, original_part_name_len, conglomerate_elt, conglomerate_elt_len, path_len;
@@ -514,7 +514,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   minpath[minpath_len] = 0;
   path[path_len] = 0;
   cls = (*env)->FindClass(env, "NodeInfo");
-  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
+  constr = (*env)->GetStaticMethodID(env, cls, "getNodeInfo", "(ZZZZZZZZZLjava/lang/String;IIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)LNodeInfo;");
   args[0].z = (nci_flags & NciM_STATE) == 0;
   args[1].z = (nci_flags & NciM_PARENT_STATE) == 0;
   args[2].z = (nci_flags & NciM_SETUP_INFORMATION) != 0;
@@ -523,6 +523,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[5].z = (nci_flags & NciM_COMPRESS_ON_PUT) != 0;
   args[6].z = (nci_flags & NciM_NO_WRITE_MODEL) != 0;
   args[7].z = (nci_flags & NciM_NO_WRITE_SHOT) != 0;
+  args[8].z = (nci_flags & NciM_ESSENTIAL) != 0;
 
 
   if(time_inserted[0] || time_inserted[1])
@@ -532,18 +533,18 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   }
   else 
 	  strcpy(time_str, "???");
-  args[8].l =  (*env)->NewStringUTF(env, time_str);
-  args[9].i = owner_id;
-  args[10].i = dtype;
-  args[11].i = class;
-  args[12].i = length;
-  args[13].i = (int)usage;
-  args[14].l = (*env)->NewStringUTF(env, name);
-  args[15].l = (*env)->NewStringUTF(env, fullpath);
-  args[16].l = (*env)->NewStringUTF(env, minpath);
-  args[17].l = (*env)->NewStringUTF(env, path);
-  args[18].i = conglomerate_nids;
-  args[19].i = conglomerate_elt;
+  args[9].l =  (*env)->NewStringUTF(env, time_str);
+  args[10].i = owner_id;
+  args[11].i = dtype;
+  args[12].i = class;
+  args[13].i = length;
+  args[14].i = (int)usage;
+  args[15].l = (*env)->NewStringUTF(env, name);
+  args[16].l = (*env)->NewStringUTF(env, fullpath);
+  args[17].l = (*env)->NewStringUTF(env, minpath);
+  args[18].l = (*env)->NewStringUTF(env, path);
+  args[19].i = conglomerate_nids;
+  args[20].i = conglomerate_elt;
 
 
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);

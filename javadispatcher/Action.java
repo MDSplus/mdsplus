@@ -11,6 +11,7 @@ class Action
     int status;
     int timestamp;
     boolean manual = false;
+    boolean essential = false;
     static final int NOT_DISPATCHED = 1;
     static final int DISPATCHED = 2;
     static final int DOING = 3;
@@ -23,7 +24,7 @@ class Action
 
 
 
-    public Action(ActionData action, int nid, String name, boolean on, String server_address)
+    public Action(ActionData action, int nid, String name, boolean on, boolean essental, String server_address)
     {
         this.action = action;
         this.nid = nid;
@@ -32,6 +33,7 @@ class Action
         dispatch_status = NOT_DISPATCHED;
         status = 0;
         this.server_address = server_address;
+        this.essential = essential;
     }
 
   //public int getTimestamp() {return timestamp; }
@@ -44,6 +46,7 @@ class Action
     public synchronized int getStatus() {return status; }
     public synchronized boolean isManual() {return manual; }
     public synchronized void setManual(boolean manual) {this.manual = manual; }
+    public synchronized boolean isEssential() { return essential;}
     synchronized void setStatus(int status) {this.status = status; }
 
     public synchronized String getServerAddress(){return server_address;}

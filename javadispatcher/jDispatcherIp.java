@@ -194,6 +194,13 @@ class jDispatcherIp
                 else
                     throw new Exception("Invalid Command");
             }
+            else if (first_part.equals("CHECK")) 
+            {
+                if(dispatcher.checkEssential())
+                    return 1;
+                else
+                    return 0;
+            }
             else
                 throw new Exception("Invalid Command");
             return -1;
@@ -352,7 +359,34 @@ class jDispatcherIp
                 dispatcherIp.start();
          */
 
-        try {
+        i = 1;
+        while (true) 
+        {
+            String phaseName = properties.getProperty("jDispatcher.phase_" +
+                i +
+                ".name");
+            if (phaseName == null)
+                break;
+            Vector currSynchNumbers = new Vector();
+            String currSynchStr = properties.getProperty("jDispatcher.phase_" +
+            i +
+            ".synch_seq_numbers");
+            if(currSynchStr != null)
+            {
+                StringTokenizer st = new StringTokenizer(currSynchStr, " ,");
+                while(st.hasMoreTokens())
+                {
+                    try {
+                        currSynchNumbers.addElement(new Integer(st.nextToken()));
+                    }catch(Exception exc)
+                    {
+                        System.out.println("WARNING: Invalid Syncronization number for phase " + phaseName);
+                    }
+                }
+            }
+            dispatcher.addSynchNumbers(phaseName, currSynchNumbers);
+         }
+         try {
             dispatcherIp.getListenThread().join();
         }
         catch (InterruptedException exc) {}

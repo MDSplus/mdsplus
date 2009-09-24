@@ -28,6 +28,15 @@ Ensures action dispatching to servers, keeping load balancing.
         server_vect.addElement(server);
         server.addServerListener(this);
     }
+    
+    public String getActServer(String serverClass)
+    {
+        Vector serverV = (Vector)servers.get(serverClass.toUpperCase());
+        if(serverV == null || serverV.size() == 0)
+            return default_server.getServerClass();
+        return serverClass;
+    }
+    
     public boolean enqueueAction(Action action)
     {
         String server_class;
