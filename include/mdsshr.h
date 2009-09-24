@@ -18,7 +18,11 @@ EXPORT extern MdsCOMPRESSIBLE;
 #else
 #define MdsCOMPRESSIBLE 3
 #endif
+#ifndef HAVE_VXWORKS_H
 #include <config.h>
+#else
+#define EXPORT
+#endif
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 EXPORT extern int MdsCmprs(int *nitems, struct descriptor_a *items, struct descriptor_a *pack, int *bit);
