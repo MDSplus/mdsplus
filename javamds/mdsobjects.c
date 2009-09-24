@@ -18,7 +18,7 @@
 #include <cacheshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include "..\mdsshr\mdsshrthreadsafe.h"
+#include "../mdsshr/mdsshrthreadsafe.h"
 
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
 
