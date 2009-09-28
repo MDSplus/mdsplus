@@ -152,6 +152,7 @@ write(*, 'Trig time : ', _trig_time);
 
 	for(_i = 1; _i < _num_chan; _i++)
 	{
+
 		_N_CHAN_NID = _N_CHANNEL_0 + _i * _K_NODES_PER_CHANNEL;
 
 		_ch_full_scale = data(DevNodeRef(_nid, ( _N_CHAN_NID + _N_CHAN_FULL_SCALE)));
