@@ -20,11 +20,37 @@ public fun NI6071E__init(as_is _nid, optional _method)
 
 	private _N_CHANNEL_0= 16;
 	private _N_CHAN_DATA = 1;
-    _device_id = if_error(WORD(data(DevNodeRef(_nid, _N_DEVICE_ID))),(DevLogErr(_nid, "Missing Devices ID number"); return (0);));
-    _channels = if_error(WORD(DevNodeRef(_nid, _N_CHANNELS)),(DevLogErr(_nid, "Missing channels definition"); return (0);));
-    _channels_1 = if_error(WORD(DevNodeRef(_nid, _N_CHANNELS_1)),(DevLogErr(_nid, "Missing channels definition"); return (0);));
-    _num_channels = WORD(size(_channels));
-    _num_channels_1 = WORD(size(_channels_1));
+
+
+	_error = 0;
+
+        _device_id = if_error(WORD(DevNodeRef(_nid, _N_DEVICE_ID)), _error = 1);
+	if( _error )
+	{
+	   DevLogErr(_nid, "Missing Devices ID number"); 
+	   return (0);
+	}
+
+
+        _channels = if_error(WORD(data(DevNodeRef(_nid, _N_CHANNELS))), _error = 1);
+	if( _error )
+	{
+	   DevLogErr(_nid, "Missing channels definition"); 
+	   return (0);
+	}
+
+
+        _channels_1 = if_error(WORD(DevNodeRef(_nid, _N_CHANNELS_1)),);
+	if( _error )
+	{
+	   DevLogErr(_nid, "Missing channels 1 definition");
+	   return (0);
+	}
+
+
+
+        _num_channels = WORD(size(_channels));
+        _num_channels_1 = WORD(size(_channels_1));
 	 DevNodeCvt(_nid, _N_TRIG_SLOPE, ['RISING', 'FALLING'], [0,1], _trig_slope=0);
 	_trig_level = if_error( WORD(data(DevNodeRef(_nid, _N_TRIG_LEVEL))), WORD(0));
 	_scan_rate = if_error( FT_FLOAT(data(DevNodeRef(_nid, _N_SCAN_RATE))), 1000);
@@ -61,6 +87,9 @@ write(*, 'Device ID: ', _device_id);
 		}
 	/* Wait channels to be recorded. Add 2 seconds to wait time */
 		_wait_time = _scan_number_1 /_scan_rate_1 + 2.;
+
+write("wait time ", _wait_time );
+
 		wait(_wait_time);
 
 		_tree_status = 1;
@@ -102,7 +131,8 @@ write(*, 'Device ID: ', _device_id);
 /* proceede with the triggered channels */
 
 
-
+	if(_scan_number > 0)
+	{
 
 	_status =  NI_6071E->NI6071init(WORD(_device_id),
 							  WORD(1),
@@ -121,6 +151,7 @@ write(*, 'Device ID: ', _device_id);
 	{
 		DevLogErr(_nid, NI6071E_ErrorToString( _status ));
 		Abort();
+	}
 	}
 	return(1);
 }

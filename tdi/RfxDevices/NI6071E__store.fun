@@ -24,10 +24,11 @@ public fun NI6071E__store(as_is _nid, optional _method)
 
 
 	_tree_status = 1;
+
 	_error = 0;
 	
 	
-    _device_id = if_error(WORD(DevNodeRef(_nid, _N_DEVICE_ID)), _error = 1);
+    	_device_id = if_error(WORD(DevNodeRef(_nid, _N_DEVICE_ID)), _error = 1);
 	if( _error )
 	{
 		DevLogErr(_nid, "Missing Devices ID number"); 
@@ -35,26 +36,29 @@ public fun NI6071E__store(as_is _nid, optional _method)
 	}
 	
 	
-    _channels = if_error(WORD(data(DevNodeRef(_nid, _N_CHANNELS))), _error = 1);
+    	_channels = if_error(WORD(data(DevNodeRef(_nid, _N_CHANNELS))), _error = 1);
 	if( _error )
 	{
 		DevLogErr(_nid, "Missing channels definition"); 
 		return (0);
 	}
 	
+
 	_num_channels = size(_channels);
 	_scan_rate = if_error(FT_FLOAT(data(DevNodeRef(_nid, _N_SCAN_RATE))), 1000);
 	_scan_number = if_error(INT(data(DevNodeRef(_nid, _N_SCAN_NUMBER))), 1000);
 	_ch_range = if_error(WORD(data(DevNodeRef(_nid, _N_CH_RANGE))), 5);
 	 DevNodeCvt(_nid, _N_CH_POLARITY, ['BIPOLAR', 'UNIPOLAR'], [0,1], _ch_polarity=0);
 	_trig_time = if_error(FT_FLOAT(data(DevNodeRef(_nid, _N_TRIG_SOURCE))), 0.0);
-	
-	if(_scan_number == 0)
+
+
+	if( _scan_number == 0 )
 	{
-	    return(1);
+            write(*, "Zero channels to acquire");
+	    return (0);
 	}
-	
-	
+
+
 	_status = NI_6071E->NI6071prepareToRead(WORD(_device_id), 
 									 INT(_scan_number), 
 									 WORD(_num_channels),
