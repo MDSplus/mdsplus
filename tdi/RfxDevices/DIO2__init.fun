@@ -471,10 +471,8 @@ write(*, "  Should be all done setting up this chan for pulse");
 			}
 		}
 	}
-
-	write(*, 'FINITO', _synch_event);
-    if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
-	write(*, 'FINITO', _synch_event);
+    
+	if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
 
 	if(_remote != 0)
 	{
@@ -492,7 +490,7 @@ write(*, "  Should be all done setting up this chan for pulse");
 		if(_status == 0)
 		abort();
 	}
-write(*, 'FINITO');
+
 	return(1);
 }
 			
