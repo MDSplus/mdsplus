@@ -20,7 +20,7 @@ public fun LASER_NDRT__store(as_is _nid, optional _method)
     private _N_MIN_RATIO	= 15;
     private _N_OSC		= 16;
     private _N_AMP		= 17;
-    private _N_TOTAL		= 18;
+    private _N_SLAB		= 18;
 
     private _K_EXT_DT		= 0;
     private _K_EXT_10_DT	= 1;
@@ -89,6 +89,7 @@ write(*, _delay_pulse );
 		abort();
 	}
 
+
 	if((_err_msg = TCPSendCommand( _sock, "ND_DUMP") ) != "")
 	{
 		TCPCloseConnection( _sock);
@@ -150,7 +151,8 @@ write(*, _delay_pulse );
 		if(! _status )
 		{
 			DevLogErr(_nid, 'Error writing data in pulse file');
-		}	}
+		}	
+	}
 
 
 /* STORE TOTAL SIGNAL */

@@ -20,7 +20,7 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
     private _N_MIN_RATIO	= 15;
     private _N_OSC		= 16;
     private _N_AMP		= 17;
-    private _N_TOTAL		= 18;
+    private _N_SLAB		= 18;
 
     private _K_EXT_DT		= 0;
     private _K_EXT_10_DT	= 1;
@@ -178,7 +178,6 @@ write(*, _ip_rt);
 	    DevLogErr(_nid, "Missing min ratio value for trigger evaluation");
 	    abort();
     	}
-
     } else {
 
 	    DevLogErr(_nid, "Invalid trigger mode");
@@ -216,7 +215,7 @@ write(*, _ip_rt);
 	if( _trg_mode == _K_EXT_DT )
 	{
 
-		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE_0 "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulses[0]))) ) != "")
+		if((_err_msg = TCPSendCommand( _sock, "ND_CHARGE "//trim(adjustl(_n_pulses))//" "//trim(adjustl(_delay_pulses[0]))) ) != "")
 		{
 			TCPCloseConnection( _sock);
 			DevLogErr(_nid, _err_msg); 
@@ -239,6 +238,7 @@ write(*, _ip_rt);
 	}
 	else  if( _trg_mode == _K_EXT_RT )
 	{
+
 
 			_cmd = 'MdsConnect("'//_ip_rt//'")';
 			execute(_cmd);
@@ -317,7 +317,6 @@ write(*, _ip_rt);
 		
 		
 	}
-
 
 	TCPCloseConnection( _sock);
 
