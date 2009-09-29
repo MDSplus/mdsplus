@@ -230,7 +230,97 @@ int LibWait(float *secs)
   Sleep(msec);
   return 1;
 }
+void *LibCallg(void **arglist, void * (*routine)())
+{
+  switch (*(long *)arglist & 0xff)
+  {
+    case 0:  return (*routine)();
+    case 1:  return (*routine)(arglist[1]);
+    case 2:  return (*routine)(arglist[1],arglist[2]);
+    case 3:  return (*routine)(arglist[1],arglist[2],arglist[3]);
+    case 4:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4]);
+    case 5:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5]);
+    case 6:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6]);
+    case 7:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7]);
+    case 8:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8]);
+    case 9:  return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9]);
+    case 10: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10]);
+    case 11: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11]);
+    case 12: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12]);
+    case 13: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13]);
+    case 14: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14]);
+    case 15: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15]);
+    case 16: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16]);
+    case 17: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17]);
+    case 18: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18]);
+    case 19: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19]);
+    case 20: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20]);
+    case 21: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21]);
+    case 22: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22]);
+    case 23: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23]);
+    case 24: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24]);
+    case 25: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25]);
+    case 26: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26]);
+    case 27: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27]);
+    case 28: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28]);
+    case 29: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29]);
+    case 30: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30]);
+    case 31: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31]);
+    case 32: return (*routine)(arglist[1],arglist[2],arglist[3],arglist[4],arglist[5],arglist[6],arglist[7],arglist[8],
+                    arglist[9],arglist[10],arglist[11],arglist[12],arglist[13],arglist[14],arglist[15],arglist[16],
+                    arglist[17],arglist[18],arglist[19],arglist[20],arglist[21],arglist[22],arglist[23],arglist[24],
+                    arglist[25],arglist[26],arglist[27],arglist[28],arglist[29],arglist[30],arglist[31],arglist[32]);
+    default: printf("Error - currently no more than 32 arguments supported on external calls\n");
+  }
+  return 0;
+}
 
+/*
 void *LibCallg(void **arglist, FARPROC *routine)
 {
   int a_idx;
@@ -250,6 +340,7 @@ void *LibCallg(void **arglist, FARPROC *routine)
 
   return retval;
 }
+*/
 #define ETIMEDOUT 42
 
 

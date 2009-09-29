@@ -13,8 +13,6 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-typedef unsigned int size_t;
 
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS

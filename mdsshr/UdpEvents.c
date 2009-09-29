@@ -1,3 +1,4 @@
+#include <config.h>
 #ifdef HAVE_WINDOWS_H
 #include <winsock.h>
 #include <stdio.h>

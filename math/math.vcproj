@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="math"
 	ProjectGUID="{61C6DDA9-EB30-45DF-A585-2E53CBF08FA5}"
+	RootNamespace="math"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -82,7 +83,6 @@
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/MdsMath.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -174,7 +174,6 @@
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/MdsMath.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

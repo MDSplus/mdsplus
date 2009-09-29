@@ -20,11 +20,15 @@ int main(int argc, char **argv)
 		unsigned long path_len;
 	    if (RegQueryValueEx(key,"PATH",0,&valtype,NULL,&path_len) == ERROR_SUCCESS)
 	    {
-	      char *path = malloc(path_len + strlen(mdsplusdir) + 1);
+	      char *path = malloc(path_len + 3 * strlen(mdsplusdir) + 1000);
 	      path[0] = 0;
 	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
 	      if (path[0])
 	        strcat(path,";");
+			strcat(path,mdsplusdir);
+			strcat(path,"\\bin_x86_64;");
+			strcat(path,mdsplusdir);
+			strcat(path,"\\bin_x86;");
 			strcat(path,mdsplusdir);
 	        RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,path,(DWORD)strlen(path)); 
 			free(path);
@@ -48,7 +52,7 @@ int main(int argc, char **argv)
 	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
 	      for (mpath = strtok(path,";");mpath;mpath=strtok(0,";"))
 	      {
-	        if (strcmp(mpath,mdsplusdir))
+	        if (strlen(mpath) >= strlen(mdsplusdir) && strncmp(mpath,mdsplusdir,strlen(mdsplusdir)))
 	        {
 	          if (newpath[0])
 	            strcat(newpath,";");

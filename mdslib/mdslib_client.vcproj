@@ -11,14 +11,17 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../Release"
-			IntermediateDirectory=".\mdslib_client/Release"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -55,10 +58,6 @@
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\mdslib_client/Release/mdslib_client.pch"
 				AssemblerListingLocation=".\mdslib_client/Release/"
-				ObjectFile=".\mdslib_client/Release/"
-				ProgramDataBaseFileName=".\mdslib_client/Release/"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
 				CompileAs="0"
 			/>
 			<Tool
@@ -75,16 +74,100 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="$(OutDir)/mdslib_client.dll"
+				AdditionalDependencies="wsock32.lib"
 				LinkIncremental="1"
+				ModuleDefinitionFile=".\MdsLib.def"
+				ProgramDatabaseFile=".\mdslib_client/Release/mdslib_client.pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\mdslib_client/Release/mdslib_client.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="../include"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;_CLIENT_ONLY;_CRT_SECURE_NO_WARNINGS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\mdslib_client/Release/mdslib_client.pch"
+				AssemblerListingLocation=".\mdslib_client/Release/"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib"
+				LinkIncremental="1"
 				ModuleDefinitionFile=".\MdsLib.def"
 				ProgramDatabaseFile=".\mdslib_client/Release/mdslib_client.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdslib_client.lib"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,8 +193,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../Debug"
-			IntermediateDirectory=".\mdslib_client/Debug"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -146,10 +229,6 @@
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\mdslib_client/Debug/mdslib_client.pch"
 				AssemblerListingLocation=".\mdslib_client/Debug/"
-				ObjectFile=".\mdslib_client/Debug/"
-				ProgramDataBaseFileName=".\mdslib_client/Debug/"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 				CompileAs="0"
 			/>
@@ -167,10 +246,93 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile="$(OutDir)/mdslib_client.dll"
+				AdditionalDependencies="wsock32.lib"
 				LinkIncremental="2"
+				ModuleDefinitionFile=".\MdsLib.def"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(IntDir)/mdslib_client.pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\mdslib_client/Debug/mdslib_client.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../include"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;_CLIENT_ONLY;_CRT_SECURE_NO_WARNINGS"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\mdslib_client/Debug/mdslib_client.pch"
+				AssemblerListingLocation=".\mdslib_client/Debug/"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib"
+				LinkIncremental="2"
 				ModuleDefinitionFile=".\MdsLib.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdslib_client.pdb"
@@ -178,6 +340,7 @@
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/mdslib_client.lib"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
