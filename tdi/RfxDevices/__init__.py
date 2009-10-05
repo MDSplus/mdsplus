@@ -11,4 +11,5 @@ RfxDevices
 """
 from CAENV1740 import CAENV1740
 from DEMOADC import DEMOADC
+from DIO4 import DIO4
 
