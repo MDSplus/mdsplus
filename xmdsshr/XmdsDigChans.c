@@ -133,7 +133,7 @@ Widget XmdsCreateDigChans(Widget parent,String name,ArgList args,Cardinal argcou
     MrmFetchWidgetOverride(drm_hierarchy,"channels",parent,name,args,argcount,&channels_w,&class);
   else
     MrmFetchWidgetOverride(drm_hierarchy,"channels_1",parent,name,args,argcount,&channels_w,&class);
-  XtVaSetValues(XtNameToWidget(channels_w,"this_is_a_DigChans_widget"),XmNuserData,info.put_on_apply,NULL);
+  XtVaSetValues(XtNameToWidget(channels_w,"this_is_a_DigChans_widget"),XmNuserData, (char *)0+info.put_on_apply,NULL);
   rowcol_w = XtNameToWidget(channels_w,"*c_rowcol");
   for (i = 0; i < info.channels; i++)
   {
@@ -191,9 +191,11 @@ void XmdsDigChansReset(Widget w)
   XtVaGetValues(rowcol_w,XmNnumChildren,&num,XmNchildren,&chan_w,NULL);
   for (i = 0; i < num; i++)
   {
+    XtPointer userdata;
     int nid;
-    XtVaGetValues(chan_w[i],XmNuserData,&nid,NULL);
-    XmToggleButtonGadgetSetState(XtNameToWidget(chan_w[i],"*on_off_button"),XmdsIsOn(nid),FALSE);
+    XtVaGetValues(chan_w[i],XmNuserData,&userdata,NULL);
+    nid=(char *)userdata - (char *)0;
+    XmToggleButtonGadgetSetState(XtNameToWidget(chan_w[i],"*on_off_button"),XmdsIsOn((int)nid),FALSE);
   }
   XmdsResetAllXds(rowcol_w);
 }
@@ -210,10 +212,12 @@ int XmdsDigChansPut(Widget w)
   {
     for (i = 0; i < num; i++)
     {
-      int nid;
+      XtPointer user_data;
+      int       nid;
       int num_ctls;
       Widget *children;
-      XtVaGetValues(chan_w[i],XmNnumChildren,&num_ctls,XmNchildren,&children,XmNuserData,&nid,NULL);
+      XtVaGetValues(chan_w[i],XmNnumChildren,&num_ctls,XmNchildren,&children,XmNuserData,&user_data,NULL);
+      nid=(char *)user_data - (char *)0;
       if (XmToggleButtonGadgetGetState(children[1]))
 	TreeTurnOn(nid);
       else
@@ -229,7 +233,7 @@ int XmdsDigChansPut(Widget w)
 
 int XmdsDigChansApply(Widget w)
 {
-  int PutOnApply;
+  XtPointer PutOnApply;
   XtVaGetValues(XtNameToWidget(w,"this_is_a_DigChans_widget"),XmNuserData,&PutOnApply,NULL);
   return PutOnApply ? XmdsDigChansPut(w) : 1;
 }

@@ -141,7 +141,7 @@ Widget XmdsCreateInput(Widget parent,char *name,ArgList args,int argcount)
 void XmdsInputSetNid(Widget w,int nid)
 {
   WidgetList children;
-  int user_data;
+  XtPointer user_data;
   XtVaGetValues(w, XtNchildren, &children, NULL);
   XtVaSetValues(children[START_IDX],XmdsNnid,nid,NULL);
   XtVaSetValues(children[END_IDX],XmdsNnid,nid,NULL);
@@ -157,17 +157,21 @@ void XmdsInputSetNid(Widget w,int nid)
 void XmdsInputReset(Widget w)
 {
   WidgetList children;
-  static int nid;
+  XtPointer userdata;
+  int nid;
   char *path;
   XmString label;
 
   XtVaGetValues(w, XtNchildren, &children, NULL);
   XmdsResetAllXds(w);
-  XtVaGetValues(children[ON_OFF],XmNuserData,&nid,NULL);
-  XmToggleButtonSetState(children[ON_OFF],(TreeIsOn(nid) & 1),(Boolean) 0);
-  XtVaGetValues(children[IDX_TIME],XmNuserData,&nid,NULL);
+  XtVaGetValues(children[ON_OFF],XmNuserData,&userdata,NULL);
+  nid=(char *)userdata - (char *)0;
+  XmToggleButtonSetState(children[ON_OFF],(TreeIsOn((int)nid) & 1),(Boolean) 0);
+  XtVaGetValues(children[IDX_TIME],XmNuserData,&userdata,NULL);
+  nid=(char *)userdata - (char *)0;
   XmToggleButtonSetState(children[IDX_TIME],XmdsGetNidBooleanValue(nid, 1) & 1,(Boolean) 0);
-  XtVaGetValues(children[PATH],XmNuserData,&nid,NULL);
+  XtVaGetValues(children[PATH],XmNuserData,&userdata,NULL);
+  nid=(char *)userdata - (char *)0;
   label = XmStringCreateSimple(path = TreeGetMinimumPath(0,nid));
   TreeFree(path);
   XtVaSetValues(children[PATH],XmNlabelString,label,NULL);
@@ -177,11 +181,14 @@ void XmdsInputReset(Widget w)
 void XmdsInputPut(Widget w)
 {
   WidgetList children;
-  int nid;
+  XtPointer userdata;
+  int       nid;
   XtVaGetValues(w, XtNchildren, &children, NULL);
-  XtVaGetValues(children[ON_OFF],XmNuserData,&nid,NULL);
+  XtVaGetValues(children[ON_OFF],XmNuserData,&userdata,NULL);
+  nid=(char *)userdata - (char *)0;
   XmdsSetState(nid,children[ON_OFF]);
-  XtVaGetValues(children[IDX_TIME],XmNuserData,&nid,NULL);
+  XtVaGetValues(children[IDX_TIME],XmNuserData,&userdata,NULL);
+  nid=(char *)userdata - (char *)0;
   XmdsPutNidToggleButton(children[IDX_TIME],nid,1 & XmdsGetNidBooleanValue(nid, 1));
   XmdsExprPut(children[START_IDX]);
   XmdsExprPut(children[END_IDX]);
