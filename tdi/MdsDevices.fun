@@ -94,5 +94,6 @@ fun public MdsDevices() {
 	'T4012\0',	 'MitDevices\0',		
 	'UMCCD\0',	 'MitDevices\0',		
 	'U_OF_M_SPECT\0',	 'MitDevices\0',
-	'DEMOADC\0',		'RfxDevices\0']);
+	'DEMOADC\0',		'RfxDevices\0',
+	'DIO4\0', 		'RfxDevices\0']);
 }
