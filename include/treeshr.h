@@ -602,8 +602,8 @@ extern EXPORT int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd
 extern EXPORT int _TreeGetSegmentLimits(void *dbid, int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
 extern EXPORT int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
 extern EXPORT int _TreeGetSegment(void *dbid, int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
-extern EXPORT int TreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row);
-extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row);
+extern EXPORT int TreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
+extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
 
 
 extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value);

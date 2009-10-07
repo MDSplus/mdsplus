@@ -350,7 +350,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 	_int64 *times;
 	int nTimes, i;
 	char dtype, dimct;
-	int dims[64], segItems, nextRow, oldLen;
+	int dims[64], nextRow, oldLen;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	struct descriptor_a *timesD;
 	Array_bounds_type *arrD;
@@ -395,7 +395,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 			}
 			else //Last Segment: keep track of the fact that it may be partially filled
 			{
-				status = (dbid)?_TreeGetSegmentInfo(dbid, nid, &dtype, &dimct, dims, &segItems, &nextRow):TreeGetSegmentInfo(nid, &dtype, &dimct, dims, &segItems, &nextRow);
+				status = (dbid)?_TreeGetSegmentInfo(dbid, nid, currIdx, &dtype, &dimct, dims, &nextRow):TreeGetSegmentInfo(nid, currIdx, &dtype, &dimct, dims, &nextRow);
 				if(status & 1)
 				{
 					arrD = (Array_bounds_type *)dataXd.pointer;

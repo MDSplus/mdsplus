@@ -96,8 +96,6 @@ __TreeGetSegment=__TreeShr._TreeGetSegment
 __TreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __TreeGetSegmentLimits=__TreeShr._TreeGetSegmentLimits
 __TreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-__TreeGetSegmentInfo=__TreeShr._TreeGetSegmentInfo
-__TreeGetSegmentInfo.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_int)]
 __TreeStartConglomerate=__TreeShr._TreeStartConglomerate
 __TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int]
 
@@ -133,8 +131,6 @@ __RTreeGetSegment=__RTreeShr._RTreeGetSegment
 __RTreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __RTreeGetSegmentLimits=__RTreeShr._RTreeGetSegmentLimits
 __RTreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-__RTreeGetSegmentInfo=__RTreeShr._RTreeGetSegmentInfo
-__RTreeGetSegmentInfo.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_int),_C.POINTER(_C.c_int),_C.POINTER(_C.c_int)]
 __RTreeDiscardOldSegments=__RTreeShr._RTreeDiscardOldSegments
 __RTreeDiscardOldSegments.argtypes=[_C.c_void_p,_C.c_int,_C.c_int64]
 __RTreeDiscardData=__RTreeShr._RTreeDiscardData

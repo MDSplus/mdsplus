@@ -2111,13 +2111,13 @@ int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct desc
    return status;
  }
 
-int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row);
+int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
 
-int TreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row) {
-  return _TreeGetSegmentInfo(DBID, nid, dtype, dimct, dims, idx, next_row);
+int TreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row) {
+  return _TreeGetSegmentInfo(DBID, nid, idx, dtype, dimct, dims, next_row);
 }
 
-int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *idx, int *next_row) {
+int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID       *nid_ptr = (NID *)&nid;
   int       status=TreeFAILURE;
@@ -2163,13 +2163,31 @@ int _TreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims
       status = TreeFAILURE;
     }
     else {
-      *dtype = segment_header.dtype;
-      *dimct = segment_header.dimct;
-      memcpy(dims,segment_header.dims,sizeof(segment_header.dims));
-      *idx = segment_header.idx;
-      *next_row = segment_header.next_row;
+      SEGMENT_INDEX index;
+      status = GetSegmentIndex(info_ptr, segment_header.index_offset, &index);
+      while ((status &1) != 0 && idx < index.first_idx && index.previous_offset > 0)
+	status = GetSegmentIndex(info_ptr, index.previous_offset, &index);
+      if ((status&1) != 0 && idx >= index.first_idx && idx < index.first_idx + SEGMENTS_PER_INDEX) {
+	SEGMENT_INFO *sinfo=&index.segment[idx % SEGMENTS_PER_INDEX];
+	if (sinfo->start == -1) {
+	  status = TreeFAILURE;
+	}
+	else {
+	  *dtype = segment_header.dtype;
+	  *dimct = segment_header.dimct;
+	  memcpy(dims,segment_header.dims,sizeof(segment_header.dims));
+	  dims[segment_header.dimct-1]=sinfo->rows;
+	  if (idx == segment_header.idx)
+	    *next_row = segment_header.next_row;
+	  else
+	    *next_row = sinfo->rows;
+	}
+      } else {
+	status = TreeFAILURE;
+      }
     }
     TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
+
