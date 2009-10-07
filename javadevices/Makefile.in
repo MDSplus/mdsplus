@@ -10,7 +10,8 @@ JAR = @JAR@
 RMIC = @RMIC@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-DEVICES = DIO4Setup.java\
+DEVICES = ParameterSetting.java \
+DIO4Setup.java\
 TRCHSetup.java\
 ADC265Setup.java\
 E1463Setup.java\
@@ -126,9 +127,9 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
-@MAKEJAVADIR@classes/jDevices.jar: DIO4Setup.class
+@MAKEJAVADIR@classes/jDevices.jar: ParameterSetting.class
 	$(JAR) c0f $@ *.class $(GIFS)
 
-DIO4Setup.class: 	$(DEVICES)
+ParameterSetting.class: 	$(DEVICES)
 	$(JAVAC) -g $(DEVICES)
 

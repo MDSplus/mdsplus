@@ -36,6 +36,7 @@ DataListener.java\
 Database.java\
 DatabaseException.java\
 DependencyData.java\
+DeviceChannel.java\
 DeviceField.java\
 DeviceChoice.java\
 DeviceDispatch.java\
@@ -48,7 +49,9 @@ DeviceReset.java\
 DeviceControl.java\
 DeviceApply.java\
 DeviceCancel.java\
+DeviceLabel.java\
 DeviceSetup.java\
+DeviceTable.java\
 DeviceWave.java\
 DeviceWaveDisplay.java\
 DeviceWaveDisplayCustomizer.java\
@@ -127,8 +130,6 @@ jTraverser.java\
 DecompileTree.java\
 CompileTree.java \
 LoadPulse.java \
-ParameterSetting.java \
-TestParameterSetting.java \
 Convert.java
 
 
