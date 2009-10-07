@@ -10,7 +10,8 @@ JAR = @JAR@
 RMIC = @RMIC@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
-DEVICES = TRCHSetup.java\
+DEVICES = DIO4Setup.java\
+TRCHSetup.java\
 ADC265Setup.java\
 E1463Setup.java\
 VMEWavesSetup.java\
