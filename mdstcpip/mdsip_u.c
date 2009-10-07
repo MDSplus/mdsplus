@@ -1508,7 +1508,8 @@ static void ExecuteMessage(Client *c)
     evname = malloc(c->descrip[1]->length + 1);
     memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
     evname[c->descrip[1]->length] = 0;
-#ifndef HAVE_VXWORKS_H
+    
+ #ifndef HAVE_VXWORKS_H
     status = MDSEventAst(evname,(void (*)(void *,int,char *))ClientEventAst,newe,&newe->eventid);
 #endif
     free(evname); 

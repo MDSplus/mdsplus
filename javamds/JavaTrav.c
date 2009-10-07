@@ -129,9 +129,9 @@ JNIEXPORT jint JNICALL Java_Database_open
   int is_editable, is_readonly, shot;
 static char buf[1000];
 
-/* 
-printf("Parte Open\n");
-*/
+ 
+//printf("Parte Open\n");
+
 
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
@@ -156,9 +156,9 @@ printf("Parte Open\n");
   (*env)->ReleaseStringUTFChars(env, jname, name);
   //printf("APERTO: %s\n", MdsGetMsg(status));
  }
-/*
-  printf("Aperto\n");
-*/
+
+  //printf("Aperto %d\n", status);
+
 /*//report(MdsGetMsg(status));*/
 //sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))

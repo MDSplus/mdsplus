@@ -214,6 +214,8 @@ int _TreeClose(void **dbid, char *tree, int shot)
   PINO_DATABASE *db;
   PINO_DATABASE *prev_db;
   status = TreeNOT_OPEN;
+  
+  //printf("TREE CLOSE\n");
   if (dblist && *dblist)
   {
     if (tree)

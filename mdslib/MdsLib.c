@@ -17,7 +17,7 @@ bottom of this file for configuring fortran entry points.
 #define MDSLIB_NO_PROTOS
 #include "mdslib.h"
 SOCKET mdsSocket=INVALID_SOCKET;
-#define NDESCRIP_CACHE 256
+#define NDESCRIP_CACHE 1024
 static struct descriptor *descrs[NDESCRIP_CACHE];
 #ifndef _CLIENT_ONLY
 extern int TreeOpen();

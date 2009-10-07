@@ -981,6 +981,7 @@ javadispatcher/Makefile
 javamds/Makefile 
 javascope/Makefile
 javatraverser/Makefile
+javadevices/Makefile
 manpages/Makefile
 math/Makefile 
 math/csint.f 
