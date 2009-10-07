@@ -111,20 +111,25 @@ class DIO4(Device):
 	  return 0
       else:
         status = Data.execute("DIO4HWInit(0, $1, $2, $3, $4)", boardId, clockSource, recStartEv, Int32Array(synchEvents))
+	print 'status = ' + status
 	if status == 0:
       	  Data.excute('DevLogErr', [getNid(), 'Cannot execute HW initialization'])
 	  return 0
+
+      trigModeDict = {'EVENT':0, 'RISING_EDGE':1, 'FALLING_EDGE':2, 'SOFTWARE':3}
 		
 #Channels Setup
       channelMask = 0
       huge = Data.execute('HUGE(0)')
       for c in range(8):
+        print 'CHANNEL ' + str(c)
         if getattr(self, 'channel_%d'%(c+1)).isOn():
+	  print 'IS ON ' + str(c)
   	  channelMask = channelMask | (1 << c)
 	  function = getattr(self, 'channel_%d_function'%(c+1)).data()
 	  if function == 'CLOCK': #Clock Generation
 	    try :
-	      frequency = getattr(self,'channel_%d_frequency'%(c+1)).data()
+	      frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
 	      dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
 	    except:
      	      Data.excute('DevLogErr', [getNid(), 'Invalid clock parameters for channel %d'%(c+1)])
@@ -141,7 +146,6 @@ class DIO4(Device):
       	        Data.excute('DevLogErr', [getNid(), 'Cannot execute HW clock setup'])
 	        return 0
 	  elif function == 'PULSE':   #Trigger Generation
-	    trigModeDict = {'EVENT':0, 'RISING_EDGE':1, 'FALLING_EDGE':2, 'SOFTWARE':3}
 	    try:
 	      trigMode = getattr(self,'channel_%d_trig_mode'%(c+1)).data() 
 	      trigModeCode = trigModeDict[trigMode]
@@ -220,7 +224,7 @@ class DIO4(Device):
 	          return 0
 	      else: #no events
 	        events = [-1]
-	      frequency = getattr(self,'channel_%d_frequency'%(c+1)).data()
+	      frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
 	      duration = getattr(self,'channel_%d_duration'%(c+1)).data()
 	      delay = getattr(self,'channel_%d_delay'%(c+1)).data()
 	      dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
@@ -332,7 +336,10 @@ class DIO4(Device):
       	    Data.excute('DevLogErr', [getNid(), 'Invalif function for channel %d'%(c+1)])
 	    return 0
 #End channel settings                  		   
-	    
+      print 'CANALI SETTATI'
+      print channelMask
+      print synchEvents    
+      print swMode    
       if swMode == 'REMOTE':
         status = Data.execute('MdsValue("DIO4HWStartChan(0, $1, $2, $3)", $1,$2,$3)', boardId, channelMask, Int32Array(synchEvents)) 
 	Data.execute('MdsDisconnect()')
@@ -340,7 +347,9 @@ class DIO4(Device):
       	  Data.excute('DevLogErr', [getNid(), 'Cannot start DIO4 device. See CPCI console for details'])
 	  return 0
       else:
-        status = Data.execute("DIO4HWStartChan(0, $1, $2, $3,)",boardId, channelMask, Int32Array(synchEvents)) 
+        print 'FACCIO START'
+        status = Data.execute("DIO4HWStartChan(0, $1, $2, $3)",boardId, channelMask, Int32Array(synchEvents))
+	print 'START FATTO: status: ' + str(status) 
 	if status == 0:
       	  Data.excute('DevLogErr', [getNid(), 'Cannot start DIO4 Device'])
 	  return 0
@@ -401,4 +410,58 @@ class DIO4(Device):
             setattr(self, 'channel_%d.trig_2'%(c+1), Data.compile(trigPath+'+$1', phaseCounts[1]))
       return 1
     
-    
+####################################################End Store method #######################################
+
+ 
+    def trigger(self, arg):
+      try:
+      	boardId = self.board_id.data()
+      except: 
+      	Data.excute('DevLogErr', [getNid(), 'Invalid Board ID specification'])
+	return 0
+	
+      print 'TRIGGER'
+ #Software Mode
+      try:
+      	swMode = self.sw_mode.data()
+      except: 
+      	Data.excute('DevLogErr', [getNid(), 'Invalid Software Mode'])
+	return 0
+      if swMode == 'REMOTE':
+        try:
+	  ipAddr = self.ip_addr.data()
+        except: 
+      	  Data.excute('DevLogErr', [getNid(), 'Invalid Remote IP Address'])
+	  return 0
+ 
+      if swMode == 'REMOTE':
+        status = Data.execute('MdsConnect("'+ ipAddr + '")')
+	if status == 0:
+	  Data.execute('MdsDisconnect()')
+      	  Data.excute('DevLogErr', [getNid(), 'Cannot Connect to CPCI crate'])
+	  return 0
+      channelMask = 0
+      for c in range(8):
+        if getattr(self, 'channel_%d'%(c+1)).isOn():
+	  function = getattr(self, 'channel_%d_function'%(c+1)).data()
+	  trigMode = getattr(self,'channel_%d_trig_mode'%(c+1)).data() 
+          if (function == 'PULSE' or function == 'DCLOCK' or function == 'GCLOCK') and trigMode == 'SOFTWARE':
+	    channelMask = channelMask | (1 << c)
+	    
+      if swMode == 'REMOTE':
+        status = Data.execute('MdsValue("DIO4HWTrigger(0, $1, $2)", $1,$2)', boardId, channelMask) 
+	Data.execute('MdsDisconnect()')
+	if status == 0:
+      	  Data.excute('DevLogErr', [getNid(), 'Cannot start DIO4 device. See CPCI console for details'])
+	  return 0
+      else:
+        print 'FACCIO TRIGGER' + str(c)
+        status = Data.execute("DIO4HWTrigger(0, $1, $2)",boardId, channelMask)
+	print 'TRIGGER FATTO: status: ' + str(status) 
+	if status == 0:
+      	  Data.excute('DevLogErr', [getNid(), 'Cannot start DIO4 Device'])
+	  return 0
+      return 1
+       
+          
+  
