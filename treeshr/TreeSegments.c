@@ -17,7 +17,7 @@ static int PutNamedAttributesIndex(TREE_INFO *info, NAMED_ATTRIBUTES_INDEX *inde
 static int PutSegmentHeader(TREE_INFO *info_ptr, SEGMENT_HEADER *hdr, _int64 *offset);
 static int PutSegmentIndex(TREE_INFO *info_ptr, SEGMENT_INDEX   *idx, _int64 *offset);
 static int PutInitialValue(TREE_INFO *info_ptr, int *dims, struct descriptor_a *array, _int64 *offset);
-static int PutDimensionValue(TREE_INFO *info_ptr, int ndims, int *dims, _int64 *offset);
+static int PutDimensionValue(TREE_INFO *info_ptr, _int64 *timestamps, int rows_filled, int ndims,  int *dims, _int64 *offset);
 static int GetSegmentHeader(TREE_INFO *info_ptr, _int64 offset,SEGMENT_HEADER *hdr);
 static int GetSegmentIndex(TREE_INFO *info_ptr, _int64 offset, SEGMENT_INDEX *idx);
 static int GetNamedAttributesIndex(TREE_INFO *info_ptr, _int64 offset, NAMED_ATTRIBUTES_INDEX *index);
@@ -1396,11 +1396,11 @@ static int PutInitialValue(TREE_INFO *info,int *dims, struct descriptor_a *array
   return status;
 }
 
-static int PutDimensionValue(TREE_INFO *info,int ndims, int *dims, _int64 *offset) {
-  int status;
+static int PutDimensionValue(TREE_INFO *info, _int64 *timestamps, int rows_filled, int ndims, int *dims, _int64 *offset) {
+  int status = 1;
   int length=sizeof(_int64);
   _int64 loffset;
-  unsigned char *buffer;
+  unsigned char *buffer = 0;
   if (*offset == -1) {
     TreeLockDatafile(info,0,0);
     loffset=0;
@@ -1411,11 +1411,19 @@ static int PutDimensionValue(TREE_INFO *info,int ndims, int *dims, _int64 *offse
     loffset=*offset;
     MDS_IO_LSEEK(info->data_file->put,*offset,SEEK_SET);
   }
-  length=length*dims[ndims-1];
-  buffer=malloc(length);
-  memset(buffer,0,length);
-  status = (MDS_IO_WRITE(info->data_file->put,buffer,length) == length) ? TreeSUCCESS : TreeFAILURE;
-  free(buffer);
+  length=length*dims[ndims-1] - (sizeof(_int64)*rows_filled);
+  if (length > 0) {
+    buffer=malloc(length);
+    memset(buffer,0,length);
+  }
+  if (rows_filled > 0) {
+    status = (MDS_IO_WRITE(info->data_file->put,timestamps,rows_filled*sizeof(_int64)) == (rows_filled * sizeof(_int64))) ? TreeSUCCESS : TreeFAILURE;
+  }
+  if (status & 1 && length > 0) {
+    status = (MDS_IO_WRITE(info->data_file->put,buffer,length) == length) ? TreeSUCCESS : TreeFAILURE;
+  }
+  if (buffer)
+    free(buffer);
   TreeUnLockDatafile(info,0,loffset);
   return status;
 }
@@ -1509,25 +1517,25 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
   return status;
  }
 
-static int __TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled);
+static int __TreeBeginTimestampedSegment(void *dbid, int nid, _int64 *timestamps, struct descriptor_a *initialValue, int idx, int rows_filled);
 
 int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx) {
-  return __TreeBeginTimestampedSegment(dbid, nid, initialValue, idx, 0);
+  return __TreeBeginTimestampedSegment(dbid, nid, 0, initialValue, idx, 0);
 }
 
  int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx) {
    return _TreeBeginTimestampedSegment(DBID, nid, initialValue, idx);
  }
 
-int _TreeMakeTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
-  return __TreeBeginTimestampedSegment(dbid, nid, initialValue, idx, rows_filled);
+int _TreeMakeTimestampedSegment(void *dbid, int nid, _int64 *timestamps, struct descriptor_a *initialValue, int idx, int rows_filled) {
+  return __TreeBeginTimestampedSegment(dbid, nid, timestamps, initialValue, idx, rows_filled);
 }
 
-int TreeMakeTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
-   return _TreeMakeTimestampedSegment(DBID, nid, initialValue, idx, rows_filled);
+int TreeMakeTimestampedSegment(int nid, _int64 *timestamps, struct descriptor_a *initialValue, int idx, int rows_filled) {
+   return _TreeMakeTimestampedSegment(DBID, nid, timestamps, initialValue, idx, rows_filled);
  }
 
-static int __TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, int rows_filled) {
+static int __TreeBeginTimestampedSegment(void *dbid, int nid, _int64 *timestamps, struct descriptor_a *initialValue, int idx, int rows_filled) {
    PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
    NID       *nid_ptr = (NID *)&nid;
    int       status;
@@ -1666,7 +1674,7 @@ old array is same size.
        memcpy(segment_header.dims,a_coeff->m,initialValue->dimct*sizeof(int));
      }
      status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
-     status = PutDimensionValue(info_ptr,initialValue->dimct, segment_header.dims,&segment_header.dim_offset);
+     status = PutDimensionValue(info_ptr,timestamps, rows_filled, initialValue->dimct, segment_header.dims,&segment_header.dim_offset);
      if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
        memset(&segment_index,0,sizeof(segment_index));
        segment_index.previous_offset=segment_header.index_offset;
