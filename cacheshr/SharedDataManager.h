@@ -55,6 +55,7 @@ public:
 	int updateSegment(TreeDescriptor treeId, int nid, int idx, char *start, int startLen, char *end, int endLen, char *dim, int dimLen);
 	int getSegmentLimits(TreeDescriptor treeId, int nid, int idx, char **start, int *startSize, char **end, int *endSize, bool *timestamped);
 	int getSegmentInfo(TreeDescriptor treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize);
+	int getSegmentInfo(TreeDescriptor treeIdx, int nid, int idx, int **shape, int *shapeSize, int *currDataSize);
 	int getSegmentData(TreeDescriptor treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize, char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
 	int getSegmentDataAndShapeCopy(TreeDescriptor treeId, int nid, int idx, char **data, int *dataSize, char **shape, 

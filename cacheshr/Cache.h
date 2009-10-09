@@ -46,6 +46,7 @@ public:
 	int getSegmentLimits(TreeDescriptor treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
 	int getSegmentData(TreeDescriptor treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 		int *shapeSize, int *currDataSize, bool *timestamped, int *actSamples);
+	int getSegmentInfo(TreeDescriptor treeIdx, int nid, int idx, int **shape, int *shapeSize, int *currDataSize);
 	int getSegmentInfo(TreeDescriptor treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize);
 	int isSegmented(TreeDescriptor treeIdx, int nid, int *segmented);
 	int	appendSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 

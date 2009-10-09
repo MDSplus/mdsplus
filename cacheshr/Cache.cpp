@@ -30,7 +30,8 @@ extern "C" int getNumSegments(char *name, int shot, int nid, int *numSegments, c
 extern "C" int getSegmentLimits(char *name, int shot, int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
 extern "C" int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
-extern "C" int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
+extern "C" int getSegmentInfo(char *name, int shot, int nid, int idx, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
+extern "C" int getLastSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
 extern "C" int isSegmented(char *name, int shot, int nid, int *segmented, char *cachePtr);
 extern "C" int flushTree(char *name, int shot, char *cachePtr);
 extern "C" int flushNode(char *name, int shot, int nid, char *cachePtr);
@@ -128,7 +129,13 @@ int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimS
 	*timestamped = (boolTimestamped)?1:0;
 	return status;
 }
-int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
+int getSegmentInfo(char *name, int shot, int nid, int idx, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
+{
+	TreeDescriptor treeIdx(name, shot);
+	return ((Cache *)cachePtr)->getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
+}
+
+int getLastSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr)
 {
 	TreeDescriptor treeIdx(name, shot);
 	return ((Cache *)cachePtr)->getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
@@ -423,6 +430,11 @@ int Cache::getSegmentLimits(TreeDescriptor treeIdx, int nid, int idx, char **sta
 int Cache::getSegmentInfo(TreeDescriptor treeIdx, int nid, int **shape, int *shapeSize, int *currDataSize)
 {
 	return dataManager.getSegmentInfo(treeIdx, nid, shape, shapeSize, currDataSize);
+}
+
+int Cache::getSegmentInfo(TreeDescriptor treeIdx, int nid, int idx, int **shape, int *shapeSize, int *currDataSize)
+{
+	return dataManager.getSegmentInfo(treeIdx, nid, idx, shape, shapeSize, currDataSize);
 }
 
 int Cache::getSegmentData(TreeDescriptor treeIdx, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,

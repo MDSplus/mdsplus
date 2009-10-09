@@ -48,7 +48,8 @@ int getNumSegments(char *name, int shot, int nid, int *numSegments, char *cacheP
 int getSegmentLimits(char *name, int shot, int nid, int idx, char **start, int *startSize, char **end, int *endSize,char *timestamped, char *cachePtr);
 int getSegmentData(char *name, int shot, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,char **shape, 
 							  int *shapeSize, int *currDataSize, char *timestamped, char *cachePtr);
-int getSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
+int getSegmentInfo(char *name, int shot, int idx, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
+int getLastSegmentInfo(char *name, int shot, int nid, int **shape, int *shapeSize, int *currDataSize, char *cachePtr);
 int isSegmented(char *name, int shot, int nid, int *segmented, char *cachePtr);
 int terminateSegment(char *name, int shot, int nid, char *cachePtr);
 int flushTree(char *name, int shot, char *cachePtr);
@@ -794,7 +795,7 @@ EXPORT int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStar
 }
 
 
-EXPORT int _RTreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
+EXPORT int _RTreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
 {
 	int *shape, shapeSize, currDataSize, i, nItems, dataSize, status;
 	char name[256];
@@ -804,7 +805,40 @@ EXPORT int _RTreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, i
 	if(!(status & 1))
 		return status;
 	if(!cache) cache = getCache(cacheIsShared, cacheSize);
-	getSegmentInfo(name, shot, nid, &shape, &shapeSize, &currDataSize, cache);
+	getSegmentInfo(name, shot, nid, idx, &shape, &shapeSize, &currDataSize, cache);
+//Return Shape and type information. The coding is the following:
+//1) data type
+//2) item size in bytes
+//3) number of dimensions 
+//4) total dimension in bytes 
+//The remaining elements are the dimension limits
+	*dtype = shape[0];
+	*dimct = shape[2];
+	nItems = 1;
+	for(i = 0; i < shape[2]; i++)
+	{
+	    nItems *= shape[4+i];
+	    dims[i] = shape[4+i];
+	}
+	dataSize = nItems * shape[1];
+	*leftItems = currDataSize/shape[1];
+	if(*leftItems == 0)
+	    *leftRows = 0;
+	else
+	    *leftRows = *leftItems/(nItems / shape[4 + shape[2]-1]);
+	return 1;
+}
+EXPORT int _RTreeGetLastSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
+{
+	int *shape, shapeSize, currDataSize, i, nItems, dataSize, status;
+	char name[256];
+	int shot;
+
+	status = getNameShot(dbid, name, &shot);
+	if(!(status & 1))
+		return status;
+	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	getLastSegmentInfo(name, shot, nid, &shape, &shapeSize, &currDataSize, cache);
 //Return Shape and type information. The coding is the following:
 //1) data type
 //2) item size in bytes
@@ -828,9 +862,13 @@ EXPORT int _RTreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, i
 	return 1;
 }
 
-EXPORT int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
+EXPORT int RTreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
 {
-	return _RTreeGetSegmentInfo(0, nid, dtype, dimct, dims, leftItems, leftRows);
+	return _RTreeGetSegmentInfo(0, nid, idx, dtype, dimct, dims, leftItems, leftRows);
+}
+EXPORT int RTreeGetLastSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows)
+{
+	return _RTreeGetLastSegmentInfo(0, nid, dtype, dimct, dims, leftItems, leftRows);
 }
 
 

@@ -681,6 +681,33 @@ int SharedDataManager::getSegmentInfo(TreeDescriptor treeIdx, int nid, int **sha
 }
 
 
+int SharedDataManager::getSegmentInfo(TreeDescriptor treeIdx, int nid, int idx, int **shape, int *shapeSize, int *currDataSize)
+{
+	Segment *segment;
+	lock.lock();
+	SharedMemNode *node = sharedTree.find(treeIdx, nid);
+	if(node)
+	{
+		SharedMemNodeData *nodeData = node->getData();
+		if(!nodeData->isSegmented())
+		{
+			lock.unlock();
+			return 0;
+		}
+		int numSegments = nodeData->getNumSegments();
+		if(idx >= numSegments)
+			idx = numSegments - 1;
+		segment = nodeData->getSegmentAt(idx);
+		segment->getShape(reinterpret_cast<char **>(shape), shapeSize);
+		*currDataSize = segment->getCurrDataSize();
+		lock.unlock();
+		return 1;
+	}
+	lock.unlock();
+	return 0;
+}
+
+
 
 
 int SharedDataManager::getSegmentData(TreeDescriptor treeId, int nid, int idx, char **dim, int *dimSize, char **data, int *dataSize,
