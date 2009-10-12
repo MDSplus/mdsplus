@@ -7,7 +7,7 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
     private _N_DECODER 			= 2;
     private _N_CARD_01 			= 6;
     private _K_NUM_CARD 		= 12;
-    private _K_NODES_PER_CARD 		= 3;
+    private _K_NODES_PER_CARD 		= 4;
     private _N_CARD_GAIN  		= 1;
     private _N_CARD_ADC_LIN  		= 2;
     private _N_CARD_ADC_INT  		= 3;
