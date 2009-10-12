@@ -89,7 +89,7 @@ public fun DEQUTestValues(in _expr, in _npoints, in _value, in _mode)
 
 	    case (3) return ( make_signal(_m2 * _x1 + _q2,, _x1) );
 		
-		case (5) return ( _deriva );
+		case (4) return ( _deriva );
 
     }
  
