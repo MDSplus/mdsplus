@@ -43,6 +43,7 @@ RFXChopperSetupSetup.java \
 RFXInverterSetupSetup.java \
 RFXFeedforwardSetupSetup.java \
 RFXPRConfigSetup.java \
+RFXPRConfigV1Setup.java \
 TR10Setup.java \
 K3115Setup.java \
 DIO2Setup.java \
@@ -108,7 +109,8 @@ RFXPolControlSetup.java \
 RFXAxiControlSetup.java \
 RFXTorControlSetup.java \
 RFXAxiToroidalControlSetup.java \
-RFXMHDSetup.java
+RFXMHDSetup.java \
+EDAM_CPCISetupV1Setup.java
 
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
