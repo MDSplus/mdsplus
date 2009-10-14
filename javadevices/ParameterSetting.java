@@ -168,7 +168,7 @@ public class ParameterSetting
         32, 33},
         inverter_mask = new int[]
         {
-        34, 35, 36, 37, 41, 42, 43, 44};
+        34, 35, 36, 37, 40, 41, 42, 43, 44};
 
     JFileChooser chooser = new JFileChooser();
 
