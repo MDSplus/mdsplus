@@ -42,7 +42,7 @@ public fun DEQUTestValues(in _expr, in _npoints, in _value, in _mode)
    
     regLin( _x, _y, _m, _q);
 		
-	_gain = - _m / 500.;
+	_gain = - _m / 1000.;
 
 	_deriv_start = data(build_path("\\DEQU_RAW_T::DEQU_SETUP.AUTO_ZERO:DELAY")) + data(build_path("\\DEQU_RAW_T::DEQU_SETUP.AUTO_ZERO:DURATION"));
 
@@ -55,7 +55,7 @@ public fun DEQUTestValues(in _expr, in _npoints, in _value, in _mode)
 		
     regLin( _x1[ 10 : _len - 40 ], _y1[ 10: _len - 40], _m2, _q2);
 	
-	_deriva = _m2 / 500.;
+	_deriva = _m2 / 1000.;
 
    }
    else
