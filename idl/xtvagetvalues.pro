@@ -54,12 +54,9 @@ pro XtVaGetValues,id,r1,v1,r2,v2,r3,v3,r4,v4,r5,v5,r6,v6,r7,v7,r8,v8,r9,v9,r10,v
       w = id
   endif else begin
     top=0l
-    print, 'about to call widget_stub lookup'
     rec = MdsValue('idl->IDL_WidgetStubLookup(val($))', id)
-    print, 'back from widgetstub lookup - ', rec
     if rec ne 0 then begin
       top = 0l
-      print, 'about to call getstubids'
       junk = MdsValue('_top=0l, _w = 0l, idl->IDL_WidgetGetStubIds(val($), ref(_top), ref(_w))', rec)
       top = mdsvalue('_top')
       w = mdsvalue('_w')

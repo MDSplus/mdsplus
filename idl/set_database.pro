@@ -446,7 +446,7 @@ pro set_database, dbname, status=status, quiet=quiet,debug=debug, reset=reset, f
   status = mdsvalue("dblogin($, $, $)", host, user, pass, socket=!MDSDB_SOCKET)
   if (not status) then begin
       if not (keyword_set(quiet)) then begin
-          Message, mdsvalue('MdsShr->cstring_to_dsc:dsc(val(MdsSql->GetDBMsgText()))'), /continue
+          Message, mdsvalue('MdsShr->cstring_to_dsc:dsc(val(build_call(51,"MdsSql","GetDBMsgText")))'), /continue
           Message, "Error logging on to DbHost "+host, /continue
       endif else begin
           Message, "Error logging on to DbHost "+host, /continue, /noprint
