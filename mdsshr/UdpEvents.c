@@ -29,6 +29,8 @@
 #include "libroutines.h"
 #include "mdsshrthreadsafe.h"
 
+static int releaseEventInfo(void *ptr);
+
 
 //int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 //int MDSEventCan(void *eventid) {}
@@ -134,8 +136,7 @@ static void *handleMessage(void *arg)
 #else
 			close(eventInfo->socket);
 #endif
-			free(eventInfo->eventName);
-			free((char *)eventInfo);
+			releaseEventInfo(eventInfo);
 			return;
 		}
 
@@ -179,9 +180,31 @@ static void initialize()
 
 
 
+static int releaseEventInfo(void *ptr)
+{
+	int i,status=0;
+	LockMdsShrMutex(&eventIdMutex,&eventIdMutex_initialized);
+
+	if(eventTopIdx >= MAX_EVENTS - 1) //If top reached, find some hole
+	{
+		for(i = 0; i < MAX_EVENTS; i++)
+		{
+			if(eventInfos[i] == ptr)
+			{
+			  free(((struct EventInfo *)ptr)->eventName);
+			  free(ptr);
+			  eventInfos[i] = 0;
+			  status=1;
+			}
+		}
+	}
+	UnlockMdsShrMutex(&eventIdMutex);
+	return status;
+}
+
 static int getEventId(void *ptr)
 {
-	int i;
+	int i,ans;
 	LockMdsShrMutex(&eventIdMutex,&eventIdMutex_initialized);
 
 	if(eventTopIdx >= MAX_EVENTS - 1) //If top reached, find some hole
@@ -191,7 +214,7 @@ static int getEventId(void *ptr)
 			if(!eventInfos[i])
 			{
 				eventInfos[i] = ptr;
-				return i;
+				ans = i+1;
 			}
 		}
 		printf("Too Many events!!");
@@ -199,30 +222,31 @@ static int getEventId(void *ptr)
 	}
 	eventInfos[eventTopIdx] = ptr;
 	eventTopIdx++;
-	return eventTopIdx - 1;
+	ans= eventTopIdx;
     UnlockMdsShrMutex(&eventIdMutex);
+    return ans;
 }
 
 
 static struct EventInfo * getEventInfo(int id)
 {
-	return (struct EventInfo *)eventInfos[id];
+	return (id > MAX_EVENTS) ? 0 : (struct EventInfo *)eventInfos[id-1];
 }
 
 
 static int getSocket()
 {
-	LockMdsShrMutex(&getSocketMutex,&getSocketMutex_initialized);
-	if(!sendSocket)
+  LockMdsShrMutex(&getSocketMutex,&getSocketMutex_initialized);
+  if(!sendSocket)
+    {
+      if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
 	{
-		if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
-		{
-			printf("Error creating socket\n");
-			return -1;
-		}
+	  printf("Error creating socket\n");
+	  sendSocket = -1;
 	}
+    }
     UnlockMdsShrMutex(&getSocketMutex);
-	return sendSocket;
+    return sendSocket;
 }
 
 
@@ -373,8 +397,11 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 int MDSUdpEventCan(int eventid) 
 {
 	struct EventInfo *currInfo = getEventInfo(eventid);
-	currInfo->discarded = 1;
-	return 1;
+        if (currInfo) {
+	  currInfo->discarded = 1;
+	  return 1;
+	} else
+	  return 0;
 }
 
 
