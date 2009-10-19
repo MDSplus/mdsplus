@@ -390,7 +390,7 @@ static Boolean Error(Boolean brief, String topic, String *error, struct descript
     topic_d.length = strlen(topic);
     topic_d.pointer = topic;
     TdiDebug(&get_messages,&messages MDS_END_ARG);
-    StrConcat(&messages,&topic_d,&lflf,&messages MDS_END_ARG);
+    StrConcat((struct descriptor *)&messages,&topic_d,&lflf,&messages MDS_END_ARG);
     *error = memcpy(XtMalloc(messages.length+1),messages.pointer,messages.length);
     (*error)[messages.length]='\0';
     StrFree1Dx(&messages);
@@ -591,8 +591,10 @@ static void  EventAst(void *astparam, int dlen, char *data)
 
 void SetupEvent(String event, Boolean *received, int *id)
 {
-  if (*id)
+  if (*id) {
     MDSEventCan(*id);
+    *id=0;
+  }
   if (strlen(event))
   {
     MDSEventAst(event,EventAst,received,id);
@@ -617,8 +619,10 @@ static void  EventAst(void *astparam, int dlen, char *data)
 
 void SetupEvent(String event, Boolean *received, int *id)
 {
-  if (*id)
+  if (*id) {
     MDSEventCan(*id);
+    *id=0;
+  }
   if (strlen(event))
   {
     MDSEventAst(event,EventAst,received,id);

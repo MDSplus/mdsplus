@@ -1133,8 +1133,11 @@ static void /*XtCallbackProc*/ApplyCustomizeWindow(Widget w, XtPointer client_da
           int height = (pane_height - 2 * Rows[c] + (r % 2) * .4999) / Rows[c];
   	  XtVaSetValues(Wave[c][r].w, XtNheight, height, NULL);
         }
-        if ((r >= old_rows[c]) && (r < Rows[c]))
-          UpdateWaveform(0, &Wave[c][r], 0, -1, -1);
+        if ((r >= old_rows[c]) && (r < Rows[c])) {
+          WaveInfo *info=&Wave[c][r];
+          UpdateWaveform(0, info, 0, -1, -1);
+	  SetupEvent(info->_global.global.event ? GlobalWave.event : info->event, &info->received, &info->eventid);
+	}
       }
     }
   }
