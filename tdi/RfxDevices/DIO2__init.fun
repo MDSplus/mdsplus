@@ -35,6 +35,7 @@ public fun DIO2__init(as_is _nid, optional _method)
     private _INVALID = 10E20;
     private _NO_EVENT = -1;   	
 
+
     _board_id=if_error(data(DevNodeRef(_nid, _N_BOARD_ID)), _INVALID);
 
     if(_board_id == _INVALID)
@@ -42,7 +43,6 @@ public fun DIO2__init(as_is _nid, optional _method)
     	DevLogErr(_nid, "Invalid Board ID specification");
  		abort();
     }
-
 
     DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
@@ -88,14 +88,16 @@ public fun DIO2__init(as_is _nid, optional _method)
 
 
 
-
 /* Setup event recording */
 	if(_remote != 0)
 	{
 	
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		_status = execute(_cmd);
+
+
 	    _status = MdsValue('DIO2HWInit(0, $1, $2, $3, $4)', _board_id, _ext_clock, _rec_event, _synch_event);
+
 		if(_status == 0)
 		{
 			MdsDisconnect();

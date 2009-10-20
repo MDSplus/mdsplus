@@ -20,6 +20,13 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 	};
 
 
+	if( getnci( build_path("\\DEQU_RAW_T::CONTROL"), "STATE") == 0 )
+	{
+		write(*,"do/method \\DEQU_RAW_T::CONTROL init"); 
+		_status = tcl("do/method \\DEQU_RAW_T::CONTROL init");	
+	}
+
+
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
 	{
 		_head_channel = _N_CARD_01 + (_i *  _K_NODES_PER_CARD);
@@ -61,8 +68,10 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 
 	write(*,"do/method \\"//_dec//" trigger"); 
 	_status = tcl("do/method \\"//_dec//" trigger");
-
-	wait(4.0);
+	
+	
+	
+	wait(maxval([data(build_path("\\DEQU_RAW_T::CONTROL:POST_TIME")), data(build_path("\\DEQU_SETUP.TR10_ACQ:END_ACQ") )])  + 10. );
 
 
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
@@ -89,6 +98,13 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 			}
 		}
 	}
+	
+	if( getnci( build_path("\\DEQU_RAW_T::CONTROL"), "STATE") == 0 )
+	{
+		write(*,"do/method \\DEQU_RAW_T::CONTROL store"); 
+		_status = tcl("do/method \\DEQU_RAW_T::CONTROL store");	
+	}
+
 
 	return (1);
 }
