@@ -10,7 +10,13 @@ def makeArray(value):
     if isinstance(value,Scalar):
         return makeArray((value._value,))
     if isinstance(value,tuple) | isinstance(value,list):
-        return makeArray(numpy.array(value))
+        try:
+            return makeArray(numpy.array(value))
+        except ValueError:
+            newlist=list()
+            for i in value:
+                newlist.append(makeData(i).data())
+            return makeArray(numpy.array(newlist))
     if isinstance(value,numpy.ndarray):
         if str(value.dtype)[0:2] == '|S':
             return StringArray(value)
