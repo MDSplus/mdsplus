@@ -241,16 +241,16 @@ class descriptor(_C.Structure):
             return
 
         if isinstance(value,Apd):
-            apd_a=descriptor_apd_a()
+            apd_a=(_C.POINTER(descriptor)*len(value.descs))()
             ds=list()
             self.addToCache(ds)
             for i in range(len(value.descs)):
                 ds.append(descriptor(value.descs[i]))
                 if ds[-1].dtype == DTYPE_DSC:
-                    apd_a.dscptrs[i]=ds[-1].pointer
+                    apd_a[i]=ds[-1].pointer
                 else:
-                    apd_a.dscptrs[i]=_C.pointer(ds[-1])
-            apd=descriptor_apd(_C.pointer(apd_a),len(value.descs))
+                    apd_a[i]=_C.pointer(ds[-1])
+            apd=descriptor_apd(_C.cast(_C.pointer(apd_a),_C.POINTER(_C.POINTER(descriptor))),len(value.descs))
             apd.dtype=value.dtype
             self.length=10000
             self.dtype=DTYPE_DSC
@@ -415,10 +415,10 @@ class descriptor(_C.Structure):
             raise Exception,'Unsupported array type'
         if self.dclass == CLASS_APD:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_apd)).contents
-            apd_a=descr.pointer.contents
+            apd_a=_C.cast(descr.pointer,_C.POINTER(_C.POINTER(descriptor)*(descr.arsize/descr.length))).contents
             descs=list()
             for i in range(descr.arsize/descr.length):
-                descs.append(apd_a.dscptrs[i].contents.value)
+                descs.append(apd_a[i].contents.value)
             ans=Apd(tuple(descs),descr.dtype)
             if descr.dtype == DTYPE_DICTIONARY:
                 return Dictionary(ans)
@@ -511,16 +511,13 @@ class descriptor_string(_C.Structure):
         self.dclass=CLASS_S
         self.pointer=string
 
-class descriptor_apd_a(_C.Structure):
-    _fields_=[("dscptrs",_C.POINTER(descriptor)*10000000),]
-
 class descriptor_apd(_C.Structure):
     if os.name=='nt':
-        _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(descriptor_apd_a)),("scale",_C.c_byte),("digits",_C.c_ubyte),
-                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(descriptor_apd_a)),("coeff_and_bounds",_C.c_int * 24)]
+        _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
+                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int * 24)]
     else:
-        _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(descriptor_apd_a)),("scale",_C.c_byte),("digits",_C.c_ubyte),("fill1",_C.c_ushort),
-                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(descriptor_apd_a)),("coeff_and_bounds",_C.c_int * 24)]
+        _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),("fill1",_C.c_ushort),
+                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int * 24)]
 
     def __init__(self,ptr,num):
         self.dclass=CLASS_APD
@@ -549,39 +546,6 @@ class descriptor_apd(_C.Structure):
         else:
             raise AttributeError
         
-#    def __setattr__(self,name,value):
-#        if name == 'binscale':
-#            if value == 0:
-#                self.aflags = self.aflags & ~8
-#            else:
-#                self.aflags = self.aflags | 8
-#            return
-#        if name == 'redim':
-#            if value == 0:
-#                self.aflags = self.aflags & ~16
-#            else:
-#                self.aflags = self.aflags | 16
-#            return
-#        if name == 'column':
-#            if value == 0:
-#                self.aflags = self.aflags & ~32
-#            else:
-#                self.aflags = self.aflags | 32
-#            return
-#        if name == 'coeff':
-#            if value == 0:
-#                self.aflags = self.aflags & ~64
-#            else:
-#                self.aflags = self.aflags | 64
-#            return
-#        if name == 'bounds':
-#            if value == 0:
-#                self.aflags = self.aflags & ~128
-#            else:
-#                self.aflags = self.aflags | 128
-#            return
-#        self.__dict__[name]=value
-#        return
         
     def _getValue(self):
             return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
