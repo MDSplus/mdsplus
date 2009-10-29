@@ -948,7 +948,7 @@ class jDispatcher
         //remove action from dispatched
         String serverClass = getServerClass(action);
         Vector currSeqDispatched = (Vector)totSeqDispatched.get(serverClass);
-        if (!currSeqDispatched.removeElement(action))
+        if ((currSeqDispatched == null) ||  !currSeqDispatched.removeElement(action))
             dep_dispatched.removeElement(action); //The action belongs only to one of the two
         if(!action.isManual())
         {
