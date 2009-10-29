@@ -478,7 +478,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceField2.setTextOnly(true);
         jPanel2.add(deviceField2);
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "HIGHWAY"});
+        deviceChoice2.setChoiceItems(new String[] {"HIGHWAY", "INTERNAL", "EXT-10MHz"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Clock Source:");
         deviceChoice2.setOffsetNid(5);
