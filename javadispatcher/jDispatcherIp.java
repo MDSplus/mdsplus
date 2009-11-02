@@ -383,8 +383,9 @@ class jDispatcherIp
                         System.out.println("WARNING: Invalid Syncronization number for phase " + phaseName);
                     }
                 }
-            }
-            dispatcher.addSynchNumbers(phaseName, currSynchNumbers);
+                dispatcher.addSynchNumbers(phaseName, currSynchNumbers);
+             }
+            i++;
          }
          try {
             dispatcherIp.getListenThread().join();
