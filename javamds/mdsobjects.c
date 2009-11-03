@@ -2345,7 +2345,7 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNumSegments
 	if(isCached)
 		status = _RTreeGetNumSegments(ctx, nid, &numSegments);
 	else
-		return _TreeGetNumSegments(ctx, nid, &numSegments);
+		status = _TreeGetNumSegments(ctx, nid, &numSegments);
 	if(!(status & 1))
 		throwMdsException(env, status);
 	return numSegments;
