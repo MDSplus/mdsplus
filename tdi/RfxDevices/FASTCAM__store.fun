@@ -106,9 +106,9 @@ public fun FASTCAM__store(as_is _nid, optional _method)
     }
 
 	_num_frames--;
-/*
+
 	write(*, "Num frames ", _num_frames);
-*/
+
 	_resolution = if_error( data(DevNodeRef(_nid, _N_RESOLUTION)), _status = _INVALID);
 	if( _status == _INVALID )
 	{
@@ -155,33 +155,19 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
 	write(*, "End time : ", _end_time);
 
-        _resample_source = if_error( data(DevNodeRef(_nid, _N_RES_SOURCE)), _status = _INVALID);
-        if( _status == _INVALID )
+    _resample_source = if_error( data(DevNodeRef(_nid, _N_RES_SOURCE)), _status = _INVALID);
+    if( _status == _INVALID )
 	{
 		_resample_source = _trigs : _trigs + _end_time : 1./_frame_rate;
 	}
-<<<<<<< FASTCAM__store.fun
-
 /*
-=======
-/*
->>>>>>> 1.7
 	write(*, "_resample_source : ", _resample_source);
-<<<<<<< FASTCAM__store.fun
 */
-	
-	
-/*
-
-=======
-*/
->>>>>>> 1.7
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		execute(_cmd);
 	}
-
 
 	if(_remote != 0)
 		_status = MdsValue('FastCamHWTriggered()');
@@ -202,7 +188,7 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 		DevLogErr(_nid, "Error reading FAST CAMERA "//_msg);
 		Abort();
 	}
-*/
+
 
 	if( _acq_mode == 0 || _acq_mode == 2)
 	{
@@ -225,45 +211,24 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 
  /*
 		 write(*, "frame range ", _frameRange);
-<<<<<<< FASTCAM__store.fun
-*/
-=======
  */
->>>>>>> 1.7
 		_totalFrame = size( _frameRange );
 	
 		_frameTimes = [];
 		_imgs = [];
-	    
-		_k = 0;
+	    _k = 0;
+
+
 
 		_k = 0;
-
-
-		write(*, "_frameRange : ", size(_frameRange));
-		write(*, "_resample_source : ", size(_resample_source));
-
 
 		for(_n = 0;  _n < _totalFrame - 1 && _k < size( _resample_source ); _n++ )
 		{			
 							
-write(*, "OK"//_k//size(_resample_source)//size(_frameRange)//_n);
-write(*, "OK",_resample_source[ _k ]);
-write(*, "OK",_frameRange[ _n ]);
 
-			for(;	_k < size( _resample_source ) - 1 &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
-			{
-				write(*, "OK",_k);
-
-<<<<<<< FASTCAM__store.fun
-=======
 		     for(;	_k < (size( _resample_source ) - 1) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
->>>>>>> 1.7
 				;
-			}
 
-				write(*, "OK1",_k);
-		     
 		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] )
 			{
 /*			
@@ -271,12 +236,10 @@ write(*, "OK",_frameRange[ _n ]);
 */			
 				_frameTimes = [ _frameTimes, _frameRange[ _n ]];
 
-/*
 				if(_remote != 0)
 					_data = MdsValue('FastCamHWReadFrame($, $, $)', _n, _v_res, _h_res);
 				else
 					_data = FastCamHWReadFrame( _startFrameIdx, _n, _v_res, _h_res);
-				
 				
 				if( esize( _data ) < 0)
 				{
@@ -285,7 +248,6 @@ write(*, "OK",_frameRange[ _n ]);
 				}
 
 				_imgs = [ _imgs, _data ];
-*/
 				_k++;
 			}
 			
@@ -305,7 +267,7 @@ write(*, "OK",_frameRange[ _n ]);
 			_dim = make_dim(make_window(0, _n_frames - 1, _frameRange[0]), _frameRange );
 	*/
 			_video = compile('build_signal(($VALUE), set_range(`_x_pixel, `_y_pixel, `_n_frames, `_imgs), (`_frameTimes))');
-/*			
+			
 			_video_nid =  DevHead(_nid) + _N_VIDEO;
 			_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
 			if( !(_status & 1) )
@@ -315,10 +277,8 @@ write(*, "OK",_frameRange[ _n ]);
 				DevLogErr(_nid, 'Error writing data in pulse file');
 				abort();
 			}
-*/
 		}
 	}
-
 
 
 	if( _acq_mode == 1 || _acq_mode == 2)
@@ -365,12 +325,11 @@ write(*, "OK",_frameRange[ _n ]);
 		
 		_comp_mode = 0;
 		_help = "Average Intensity";
-		/*
 		if(_remote != 0)
 				_data = MdsValue('FastCamHWReadSignal($, $, $, $, $, $)',_comp_mode , _num_samples, text(_lens_type), float(_aperture), float(_f_distance), text(_filter));
 			else
 				_data = FastCamHWReadSignal(_comp_mode, _num_samples, text(_lens_type), float(_aperture), float(_f_distance), text(_filter));
-		*/
+		
 		_signal_nid =  DevHead(_nid) + _N_DATA;
 		_dim = make_dim(make_window(0, _num_samples - 1, _trigs[0]+_deltaFrameTime), make_range(*,*,_period));
 		_signal = compile('build_param(build_signal(($VALUE), (`_data), (`_dim)),(`_help),)');
@@ -381,7 +340,7 @@ write(*, "OK",_frameRange[ _n ]);
 			abort();
 		}
 	}
-	/*
+	
 
 	if(_remote != 0)
 		MdsValue('FastCamHWClose()');
@@ -390,7 +349,8 @@ write(*, "OK",_frameRange[ _n ]);
 	
 	if( _remote != 0 )
 		MdsDisconnect();
-*/
+
+
 	return( _status );
 }
 			
