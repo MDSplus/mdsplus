@@ -194,7 +194,7 @@ class jDispatcher
     
     int getFirstValidSynch()
     {
-        //return the first synch number greate than or equal to any sequence number
+        //return the first synch number greater than or equal to any sequence number
         for(int idx = 0; idx < synchSeqNumbers.size(); idx++)
         {
             int currSynch = ((Integer)synchSeqNumbers.elementAt(idx)).intValue();
@@ -773,7 +773,11 @@ class jDispatcher
 
         synchSeqNumbers = getValidSynchSeq(phase_name, curr_phase.totSeqNumbers);
         
-        System.out.println("------------- BEGIN PHASE --------------------- ");
+        System.out.println("------------- BEGIN PHASE ---------------------  ");
+        System.out.print("SYNCHRONOUS SEQUENCE NUMBERS: ");
+        for(int i = 0; i < synchSeqNumbers.size(); i++)
+            System.out.print((" " + synchSeqNumbers.elementAt(i)));
+        System.out.println("");
         fireMonitorEvent( (Action)null, MONITOR_START_PHASE);
         
         //GAB CHRISTMAS 2004
