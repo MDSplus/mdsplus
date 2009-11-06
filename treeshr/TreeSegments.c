@@ -2172,6 +2172,8 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
     }
     else {
       SEGMENT_INDEX index;
+      if (idx == -1)
+        idx = segment_header.idx;
       status = GetSegmentIndex(info_ptr, segment_header.index_offset, &index);
       while ((status &1) != 0 && idx < index.first_idx && index.previous_offset > 0)
 	status = GetSegmentIndex(info_ptr, index.previous_offset, &index);
