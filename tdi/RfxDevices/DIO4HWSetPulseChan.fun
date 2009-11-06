@@ -21,7 +21,8 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 
 
 
-
+_s = size(_event);
+write(*, '_event', _event);
 
 /* Initialize Library if the first time */
     if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
@@ -56,6 +57,8 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 			write(*, "Error setting trigger in DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
+
+
 
 /* No Gating */
 	_status = DIO4->DIO4_TC_SetGate(val(_handle), val(byte(_channel + 1)), val(byte(_DIO4_TC_GATE_DISABLED)), val(byte(0)),

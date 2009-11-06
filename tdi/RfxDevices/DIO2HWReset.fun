@@ -12,6 +12,7 @@ public fun DIO2HWReset(in _board_id)
 		write(*, "Error opening DIO2 device, board ID = "// _board_id);
 		return(0);
 	}
+		
 
 	DIO2->DIO2_ResetIOError(val(_handle));
 

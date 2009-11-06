@@ -1,5 +1,6 @@
 public fun DIO4HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event)
 {
+write(*, 'DIO4HWStartChan');
 /* Initialize Library if the first time */
     if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
 

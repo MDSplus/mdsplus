@@ -13,6 +13,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	private _DIO4_ER_INT_DISABLE = 0x0;
 	private _DIO4_ER_INT_ENABLE = 0x1;
 	private _DIO4_EC_START_TRIGGER		=		0x01;
+	private _DIO4_EC_GENERAL_TRIGGER = 0x00;
 	private _DIO4_IO_SIDE_FRONT = 0x00;
 	private _DIO4_IO_SIDE_REAR = 0x01;
 	private _DIO4_IO_TERMINATION_ON = 0x01;
@@ -27,28 +28,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 
-	private _DIO2_ER_START_EVENT_INT_DISABLE	= 0x0;
-	private _DIO2_TC_IO_TRIGGER_RISING	=		0x01;
-	private _DIO2_TC_IO_TRIGGER_FALLING	=		0x02;
-	private _DIO2_TC_TIMING_EVENT		=		0x03;
-	private _DIO2_TC_GATE_DISABLED	=			0x00;
-	private _DIO2_TC_INTERRUPT_DISABLE	=		0x00;
-	private _DIO2_TC_SOURCE_FRONT_REAR	=		0x01;
-	private _DIO2_TC_CYCLIC			=			0x1;
-	private _DIO2_EC_GENERAL_TRIGGER =			0x00;
-	private _DIO2_EC_STOP_TRIGGER		=		0x02;
 
-	private _DIO2_IO_CONNECTION_SOURCE_REGISTER	=		0x00;
-	private _DIO2_IO_CONNECTION_SOURCE_BUFFER	=		0x01;
-	private _DIO2_IO_CONNECTION_SOURCE_PXI_TRIGGER=		0x02;
-	private _DIO2_IO_CONNECTION_SOURCE_TIMING	=		0x03;
-
-	private _DIO2_IO_CONNECTION_SIDE_FRONT		=		0x00;
-	private _DIO2_IO_CONNECTION_SIDE_REAR		=		0x01;
-	private _DIO2_IO_CONNECTION_TERMINATION_ON	=		0x01;
-	private _DIO2_IO_CONNECTION_TERMINATION_OFF	=		0x00;
-	private _DIO2_IO_INT_ENABLE	=	0x1;
-	private _DIO2_IO_INT_DISABLE	=	0x0;
 
 	private _NO_EVENT = -1;
 
@@ -105,32 +85,33 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	if(_status != 0)
 	{
 		if(_nid != 0)
-			DevLogErr(_nid, "Error setting clock source in DIO2 device, board ID = "// _board_id);
+			DevLogErr(_nid, "Error setting clock source in DIO4 device, board ID = "// _board_id);
 		else
-			write(*, "Error setting clock source in DIO2 device, board ID = "// _board_id);
+			write(*, "Error setting clock source in DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
 
 /* Set recorder start event and arm recorder */
 	if(_rec_event != 0)
 	{
-		_status = DIO4->DIO4_ER_SetEventRecorder(val(_handle), val(byte(_rec_event)), val(byte(_DIO2_ER_INT_DISABLE)));
+		write(*, '_rec_event: ', _rec_event);
+		_status = DIO4->DIO4_ER_SetEventRecorder(val(_handle), val(byte(_rec_event)), val(byte(_DIO4_ER_INT_DISABLE)));
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error setting recorder start event in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting recorder start event in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
-
+		write(*, '_rec_event: ', _rec_event);
 		_status = DIO4->DIO4_Cmd_FlushEventRecorder(val(_handle));
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error flushing recorder in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error flushing recorder in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting flushing recorder  in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting flushing recorder  in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 
@@ -138,9 +119,9 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error arming recorder in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error arming recorder in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting arming recorder  in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting arming recorder  in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 	}
@@ -156,9 +137,9 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error setting recorder start event in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting recorder start event in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting recorder start event in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 	}
@@ -169,13 +150,13 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	{
 
 		_status = DIO4->DIO4_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),
-				val(byte(0)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
+				val(byte(0)), val(byte(_DIO4_EC_GENERAL_TRIGGER))); 
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error setting event in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting event in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 	}
@@ -194,9 +175,9 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error setting output configuration in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error setting output configuration in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting output configuration  in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting output configuration  in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 		_status = DIO4->DIO4_IO_SetIOConnectionInput(val(_handle), val(byte(2 * _c + 2)),
@@ -204,9 +185,9 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		if(_status != 0)
 		{
 			if(_nid != 0)
-				DevLogErr(_nid, "Error setting input configuration in DIO2 device, board ID = "// _board_id);
+				DevLogErr(_nid, "Error setting input configuration in DIO4 device, board ID = "// _board_id);
 			else
-				write(*, "Error setting input configuration  in DIO2 device, board ID = "// _board_id);
+				write(*, "Error setting input configuration  in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
 	}
