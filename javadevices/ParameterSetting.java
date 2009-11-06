@@ -15,6 +15,7 @@ import java.awt.print.PrinterException;
 import java.text.*;
 import javax.swing.filechooser.*;
 
+
 /*
 Le tabelle di configurazione rfxConfigHash e rfxConfigOnHash sono aggiornate in:
      - init()
