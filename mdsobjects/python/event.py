@@ -3,12 +3,13 @@ import numpy as _N
 import ctypes as _C
 import os
 import time
+from mdsdata import makeData
 
 class Event(Thread):
     """Thread to wait for event"""
 
-    def __del__(self):
-        self.__active__=True
+    def cancel(self):
+        self.__active__=False
 
     def __init__(self,event):
         """Saves event name and starts wfevent thread
@@ -16,22 +17,20 @@ class Event(Thread):
         @type event: str
         """
         self.event=event
-        Thread.__init__(self)
+        super(Event,self).__init__()
+        self.setDaemon(True)
         self.__active__=True
+        self.subclass_run=self.run
+        self.run=self.event_run
         self.start()
 
-    def __getattribute__(self,name):
-        if name == "run":
-            return super(Event,self).__getattribute__('_event_run')
-        else:
-            return super(Event,self).__getattribute__(name)
-
-    def _event_run(self):
+    def event_run(self):
         from _mdsshr import MDSWfevent
         while self.__active__:
             self.raw=MDSWfevent(self.event)
-            self.time=time.time()
-            self.__class__.run(self)
+            if self.__active__:
+                self.time=time.time()
+                self.subclass_run()
 
     def getData(self):
         """Return data transfered with the event.
@@ -60,7 +59,7 @@ class Event(Thread):
         @param data: data to pass with event
         @type data: Data
         """
-        Event.seteventRaw(event,data.serialize())
+        Event.seteventRaw(event,makeData(data).serialize())
     setevent=staticmethod(setevent)
     
     def seteventRaw(event,buffer):
