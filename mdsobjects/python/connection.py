@@ -291,7 +291,7 @@ class Connection(object):
                         self.result[name]=Dictionary({'error':str(e)})
                 return self.result
             else:
-                ans=self.connection.get("public __getManyIn__=$,Py('Connection.__processGetMany__()'),public __getManyOut__",self.serialize())
+                ans=self.connection.get("GetManyExecute($)",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error fetching data: "+ans)
             self.result=ans.deserialize()
@@ -406,7 +406,7 @@ class Connection(object):
                         self.result[node]=str(e)
                 return self.result
             else:
-                ans=self.connection.get("public __putManyIn__=$,Py('Connection.__processPutMany__()'),public __putManyOut__",self.serialize())
+                ans=self.connection.get("PutManyExecute($)",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error putting any data: "+ans)
             self.result=ans.deserialize()
