@@ -2009,8 +2009,10 @@ static void  RestoreDatabase(String dbname, Widget w)
   {
     XtRealizeWidget(TopWidget);
     RaiseWindows();
-    PreventResize = FALSE;
+/*    PreventResize = FALSE; */
   }
+  PreventResize = FALSE;
+
   XrmDestroyDatabase(scopedb);
 }
 
