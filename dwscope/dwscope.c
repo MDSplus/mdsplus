@@ -1955,9 +1955,10 @@ static void  RestoreDatabase(String dbname, Widget w)
   XtVaSetValues(TopWidget, XtNx, x, XtNy, y, NULL);
   if (XtWidth(MainWidget) != width || XtHeight(MainWidget) != height)
   {
-    XtVaSetValues(MainWidget, XtNwidth, width, XtNheight, height, NULL);
-    XtVaSetValues(TopWidget, XtNwidth, width, XtNheight, height, NULL);
     PreventResize = TRUE;
+    /* XtVaSetValues(MainWidget, XtNwidth, width, XtNheight, height, NULL); */
+    XtVaSetValues(TopWidget, XtNwidth, width, XtNheight, height, NULL);
+    /* PreventResize = TRUE; */
   }
   MenusHeight = 66;
   Columns = min(max(atoi(GetResource(scopedb, "Scope.columns", "1")), 1), MaxCols);
