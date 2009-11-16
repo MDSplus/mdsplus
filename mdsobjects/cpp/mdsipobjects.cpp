@@ -111,6 +111,7 @@ void *putManyObj(char *serializedIn)
 		}
 		deleteData(exprData);
 		deleteData(argsData);
+		deleteData(currArg);
 	}
 	void *resDsc = result->convertToDsc();
 	deleteData(nodeKey);
