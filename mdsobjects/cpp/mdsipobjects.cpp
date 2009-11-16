@@ -112,6 +112,7 @@ void *putManyObj(char *serializedIn)
 			String *errorData = new String((char *)exc->what());
 			result->setItem(nodeNameData, errorData);
 		}
+		delete [] expr;
 		deleteData(exprData);
 		deleteData(argsData);
 		deleteData(currArg);
@@ -121,5 +122,6 @@ void *putManyObj(char *serializedIn)
 	deleteData(exprKey);
 	deleteData(argsKey);
 	deleteData(inArgs);
+	deleteData(results);
 	return resDsc;
 }
