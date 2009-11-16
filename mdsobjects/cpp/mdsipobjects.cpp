@@ -8,6 +8,7 @@ extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void
 
 void *getManyObj(char *serializedIn)
 {
+
 	List *inArgs = (List *)deserialize(serializedIn);
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
 	{

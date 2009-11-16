@@ -1506,7 +1506,7 @@ protected:
 
 		virtual ~Apd()
 		{
-			if(nDescs > 0)
+			if(descsSize > 0)
 			{
 				deleteNativeArray(descs);
 			}
