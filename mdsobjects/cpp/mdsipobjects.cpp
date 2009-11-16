@@ -53,6 +53,7 @@ void *getManyObj(char *serializedIn)
 		deleteData(exprData);
 		delete [] expr;
 		deleteData(argsData);
+		deleteData(currArg);
 	}
 	void *resDsc = result->convertToDsc();
 	deleteData(nameKey);
