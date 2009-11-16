@@ -51,6 +51,7 @@ void *getManyObj(char *serializedIn)
 		}
 		result->setItem(nameData, answDict);
 		deleteData(exprData);
+		deleteData(nameData);
 		delete [] expr;
 		deleteData(argsData);
 		deleteData(currArg);
