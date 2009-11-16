@@ -365,6 +365,20 @@ TreeNode *Tree::getNode(TreePath *path)
 }
 
 	
+TreeNode *Tree::getNode(String *path)
+{
+	int nid, status;
+	char *pathName = path->getString();
+	status = _TreeFindNode(ctx, pathName, &nid);
+	delete[] pathName;
+	if(!(status & 1))
+	{
+		throw new TreeException(status);
+	}
+	return new TreeNode(nid, this);
+}
+
+	
 
 TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 {
@@ -1469,6 +1483,22 @@ TreeNode *TreeNode::getNode(char *relPath)
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
 		throw new TreeException(status);
+	return new TreeNode(newNid, tree);
+}
+
+TreeNode *TreeNode::getNode(String *relPathStr)
+{
+	int defNid;
+	int newNid;
+	resolveNid();
+	char *relPath = relPathStr->getString();
+	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
+	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(!(status & 1))
+		throw new TreeException(status);
+	delete [] relPath;
 	return new TreeNode(newNid, tree);
 }
 

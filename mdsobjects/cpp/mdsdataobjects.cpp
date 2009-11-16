@@ -24,9 +24,9 @@ extern "C" {
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
-	void *convertToApdDsc(int ndescs, void **ptr);
+	void *convertToApdDsc(int type, int ndescs, void **ptr);
 	char * serializeData(void *dsc, int *retSize, void **retDsc);
-	void *deserializeData(char *serialized, int size);
+	void *deserializeData(char *serialized);
 
 	void * convertToByte(void *dsc); 
 	void * convertToShort(void *dsc); 
@@ -121,6 +121,16 @@ extern "C" void *createApdData(int nData, char **dataPtrs, Data *unitsData,
 							   Data *errorData, Data *helpData, Data *validationData)
 {
 	return new Apd(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
+}
+extern "C" void *createListData(int nData, char **dataPtrs, Data *unitsData, 
+							   Data *errorData, Data *helpData, Data *validationData)
+{
+	return new List(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
+}
+extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsData, 
+							   Data *errorData, Data *helpData, Data *validationData)
+{
+	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
 
 
@@ -430,7 +440,7 @@ EXPORT	Data *MDSplus::compile(char *expr, ...)
 		}
 		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
 	}
-EXPORT	Data *MDSplus::compile(char *expr, Tree *tree...)
+EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 	{
 		int nArgs = 0;
 		void *args[MAX_ARGS];
@@ -447,7 +457,7 @@ EXPORT	Data *MDSplus::compile(char *expr, Tree *tree...)
 		setActiveTree(tree);
 		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
 	}
-EXPORT	Data *MDSplus::execute(char *expr, Tree *tree...)
+EXPORT	Data *MDSplus::execute(char *expr, Tree *tree, ...)
 	{
 		int nArgs = 0, i;
 		void *args[MAX_ARGS];
@@ -490,6 +500,14 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 		deleteData(compData);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
+		return evalData;
+	}
+
+EXPORT	Data *MDSplus::executeWithArgs(char *expr, Data **args, int nArgs)
+	{
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		Data *evalData = compData->data();
+		deleteData (compData);
 		return evalData;
 	}
 
@@ -856,13 +874,13 @@ EXPORT void *Compound::convertToDsc()
 }
 EXPORT void *Apd::convertToDsc()
 {
-	return completeConversionToDsc(convertToApdDsc(nDescs, (void **)descs));
+	return completeConversionToDsc(convertToApdDsc(dtype, nDescs, (void **)descs));
 }
 
 
-EXPORT Data *MDSplus::deserialize(char *serialized, int size)
+EXPORT Data *MDSplus::deserialize(char *serialized)
 {
-	void *dscPtr = deserializeData(serialized, size);
+	void *dscPtr = deserializeData(serialized);
 	if(!dscPtr) throw new TreeException("Cannot build Data instance from serialized content");
 	Data *retData = (Data *)convertFromDsc(dscPtr);
 	freeDsc(dscPtr);
@@ -877,7 +895,7 @@ ostream& operator<<(ostream& output, Data *data)
 
 EXPORT Data *Uint8Array::deserialize()
 {
-    return (Data *)deserializeData(ptr, arsize);
+    return (Data *)deserializeData(ptr);
 }
 
 
@@ -889,5 +907,6 @@ EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(Data **array){delete [] array;}
 EXPORT void MDSplus::deleteString(char *str){delete[] str;}
 

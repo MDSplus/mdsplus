@@ -25,7 +25,7 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 	ev->eventBufSize = len;
 	ev->eventBuf = new char[len];
 	memcpy(ev->eventBuf, buf, len);
-	ev->eventData = deserialize(buf, len);
+	ev->eventData = deserialize(buf);
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
 }

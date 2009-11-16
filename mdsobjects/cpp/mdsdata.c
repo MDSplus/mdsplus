@@ -24,12 +24,18 @@ extern void *createCompoundData(int dtype, int length, char *ptr, int nDescs, ch
 								  void *helpData, void *validationData);
 extern void *createApdData(int nData, char **dataPtr, void *unitsData, void *errorData,
 								  void *helpData, void *validationData);
+extern void *createListData(int nData, char **dataPtr, void *unitsData, void *errorData,
+								  void *helpData, void *validationData);
+extern void *createDictionaryData(int nData, char **dataPtr, void *unitsData, void *errorData,
+								  void *helpData, void *validationData);
 extern void *convertDataToDsc(void *data);
 extern void convertTime(int *time, char *retTime);
 extern char * serializeData(void *dsc, int *retSize, void **retDsc);
-extern void *deserializeData(char *serialized, int size);
+extern void *deserializeData(char *serialized);
 
 extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen);
+extern void *getManyObj(char *serializedIn);
+extern void *putManyObj(char *serializedIn);
 
 
 #ifdef HAVE_WINDOWS_H
@@ -141,7 +147,7 @@ void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndes
 	return xdPtr;
 }
 
-void *convertToApdDsc(int ndescs, void **descs)
+void *convertToApdDsc(int type, int ndescs, void **descs)
 {
 	EMPTYXD(emptyXd);
 	struct descriptor_xd **xds = (struct descriptor_xd **)malloc(ndescs * sizeof(struct descriptor_xd *));
@@ -149,6 +155,7 @@ void *convertToApdDsc(int ndescs, void **descs)
 	DESCRIPTOR_APD(apdDsc, DTYPE_DSC, 0, 0);
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
+	apdDsc.dtype = type;
 	apdDsc.arsize = ndescs * sizeof(struct descriptor *);
 	apdDsc.pointer = malloc(ndescs * sizeof(struct descriptor *));
 	for(i = 0; i < ndescs; i++)
@@ -315,8 +322,16 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 					else
 						descs[i] = 0;
 				}
-				retData = createApdData(size, descs, unitsData, errorData, helpData, validationData);
-
+				switch (dscPtr->dtype) {
+					case DTYPE_LIST:
+						retData = createListData(size, descs, unitsData, errorData, helpData, validationData);
+						break;
+					case DTYPE_DICTIONARY:
+						retData = createDictionaryData(size, descs, unitsData, errorData, helpData, validationData);
+						break;
+					default:
+						retData = createApdData(size, descs, unitsData, errorData, helpData, validationData);
+				}
 				free((char *)descs);
 				return retData;
 			}
@@ -369,6 +384,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	int varIdx;
 	int i, status;
 	void *arglist[MAX_ARGS];
+	struct descriptor_xd *arglistXd[MAX_ARGS];
 	void *data;
 	EMPTYXD(xd);
 	struct descriptor exprD = {0, DTYPE_T, CLASS_S, 0};
@@ -379,7 +395,14 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	arglist[1] = &exprD;
 	varIdx = 2;
 	for(i = 0; i < nArgs; i++)
-		arglist[varIdx++] = args[i];
+	{
+		arglistXd[i] = convertDataToDsc(args[i]);
+		if(arglistXd[i]->l_length > 0)
+			arglist[varIdx] = arglistXd[i]->pointer;
+		else
+			arglist[varIdx] = arglistXd[i];
+		varIdx++;
+	}
 	arglist[varIdx++] = &xd;
 	arglist[varIdx++] = MdsEND_ARG;
 	*(int *)&arglist[0] = varIdx-1;
@@ -388,6 +411,8 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 		return NULL;
 	data = convertFromDsc(&xd, tree);
 	MdsFree1Dx(&xd, 0);
+	for(i = 0; i < nArgs; i++)
+		freeDsc(arglistXd[i]);
 	return data;
 }
 
@@ -632,7 +657,7 @@ char * serializeData(void *dsc, int *retSize, void **retDsc)
 
 
 
-extern void *deserializeData(char *serialized, int size)
+extern void *deserializeData(char *serialized)
 {
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *xdPtr;
@@ -666,3 +691,35 @@ extern _int64 convertAsciiToTime(char *ascTime)
 	LibConvertDateString("now", &time);
 	return time;
 }
+
+
+///////////////mdsip support for Connection class///////////
+EXPORT struct descriptor_xd *GetManyExecute(char *serializedIn)
+{
+	static EMPTYXD(xd);
+	struct descriptor_xd *serResult;
+	int status;
+
+	serResult = (struct descriptor_xd *)getManyObj(serializedIn);
+	if(serResult->class == CLASS_XD)
+		status = MdsSerializeDscOut(serResult->pointer, &xd);
+	else
+		status = MdsSerializeDscOut((struct descriptor *)serResult, &xd);
+	freeDsc(serResult);
+	return &xd;
+}
+
+EXPORT struct descriptor_xd *PutManyExecute(char *serializedIn)
+{
+	static EMPTYXD(xd);
+	struct descriptor *serResult;
+	int status;
+
+	serResult = (struct descriptor *)putManyObj(serializedIn);
+
+	status = MdsSerializeDscOut(serResult, &xd);
+	freeDsc(serResult);
+	return &xd;
+}
+
+	
