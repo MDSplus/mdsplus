@@ -122,6 +122,6 @@ void *putManyObj(char *serializedIn)
 	deleteData(exprKey);
 	deleteData(argsKey);
 	deleteData(inArgs);
-	deleteData(results);
+	deleteData(result);
 	return resDsc;
 }
