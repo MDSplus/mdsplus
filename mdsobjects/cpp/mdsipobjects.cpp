@@ -107,6 +107,7 @@ void *putManyObj(char *serializedIn)
 			deleteData(compiledData);
 			String *successData = new String("Success");
 			result->setItem(nodeNameData, successData);
+			delete tree;
 		}catch(MdsException *exc)
 		{
 			String *errorData = new String((char *)exc->what());
@@ -116,6 +117,7 @@ void *putManyObj(char *serializedIn)
 		deleteData(exprData);
 		deleteData(argsData);
 		deleteData(currArg);
+		deleteData(nodeNameData);
 	}
 	void *resDsc = result->convertToDsc();
 	deleteData(nodeKey);
