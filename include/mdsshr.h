@@ -65,6 +65,7 @@ EXPORT extern char *MdsRelease();
 EXPORT extern void MdsFloatToTime(double floatTime, _int64u *outTime);
 EXPORT extern void MdsFloatToDelta(double floatTime, _int64u *outTime);
 EXPORT extern void MdsTimeToFloat(_int64u inTime, float *outFloat);
+EXPORT extern int MdsPutEnv(char *cmd);
 
 #ifdef HAVE_WINDOWS_H
 typedef int pthread_key_t;

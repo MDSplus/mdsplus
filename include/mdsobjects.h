@@ -58,6 +58,10 @@
 #define DTYPE_WITH_UNITS 211 
 #define DTYPE_CALL 212 
 #define DTYPE_WITH_ERROR 213 
+#define DTYPE_LIST 214
+#define DTYPE_TUPLE 215
+#define DTYPE_DICTIONARY 216
+#define DTYPE_POINTER 51
 
 #define DTYPE_DSC	24		
 
@@ -83,6 +87,9 @@
 #define EXPORT __declspec(dllexport)
 #endif
 
+
+
+
 extern "C" char *MdsGetMsg(int status);
 
 /*
@@ -97,7 +104,7 @@ extern "C" {
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
-	void *convertToApdDsc(int ndescs, void **ptr);
+	void *convertToApdDsc(int type, int ndescs, void **ptr);
 	void *deserializeData(char *serialized, int size);
 
 	void * convertToByte(void *dsc); 
@@ -115,6 +122,22 @@ extern "C" {
 using namespace std;
 
 namespace MDSplus  {
+
+//Required for handling dynamic memory allocated in a different DLL on windows
+//in Debug configuration
+EXPORT void deleteNativeArray(char *array);
+EXPORT void deleteNativeArray(short *array);
+EXPORT void deleteNativeArray(int *array);
+EXPORT void deleteNativeArray(long *array);
+EXPORT void deleteNativeArray(float *array);
+EXPORT void deleteNativeArray(double *array);
+EXPORT void deleteNativeArray(char **array);
+
+class Data;
+EXPORT void deleteNativeArray(Data **array);
+	
+	
+	
 EXPORT void deleteString(char *str);
 
 class Tree;
@@ -131,7 +154,7 @@ Tree *getActiveTree();
 		~MdsException()
 		{
 			if(msg)
-				delete [] msg;
+				deleteNativeArray(msg);
 		}
 
 		virtual const char* what() const 
@@ -197,9 +220,10 @@ class EXPORT Data
 {
 		friend EXPORT Data *compile(const char *expr, ...);
 		friend EXPORT Data *compile(const char *expr, Tree *tree...);
+		friend EXPORT Data *executeWithArgs(char *expr, Data **args, int nArgs);
 		friend EXPORT Data *execute(const char *expr, ...);
 		friend EXPORT Data *execute(const char *expr, Tree *tree ...);
-		friend EXPORT Data *deserialize(char *serialized, int size);
+		friend EXPORT Data *deserialize(char *serialized);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
 
@@ -272,6 +296,8 @@ protected:
 
 		virtual Data *getUnits()
 		{
+			if(units)
+				units->refCount++;
 			return units;
 		}
 		virtual void setUnits(Data *inUnits)
@@ -285,6 +311,8 @@ protected:
 		}
 		virtual Data *getError()
 		{
+			if(error)
+				error->refCount++;
 			return error;
 		}
 		virtual void setError(Data *inError)
@@ -298,6 +326,8 @@ protected:
 		}
 		virtual Data *getHelp()
 		{
+			if(help)
+				help->refCount++;
 			return help;
 		}
 		virtual void setHelp(Data *inHelp)
@@ -311,6 +341,8 @@ protected:
 		}
 		virtual Data *getValidation()
 		{
+			if(validation)
+				validation->refCount++;
 			return validation;
 		}
 		virtual void setValidation(Data *inValidation)
@@ -346,7 +378,7 @@ protected:
 
 		~Scalar()
 		{
-			delete [] ptr;
+			deleteNativeArray(ptr);
 		}
 		 
 		virtual void *convertToDsc();
@@ -593,6 +625,14 @@ protected:
 			ptr[length] = 0;
 			setAccessory(units, error, help, validation);
 		}
+
+		char *getString()
+		{
+			char *res = new char[length + 1];
+			memcpy(res, ptr, length);
+			res[length] = 0;
+			return res;
+		}
 	};
 
 
@@ -639,7 +679,7 @@ protected:
 		Array() {clazz = CLASS_A;}
 		~Array()
 		{
-			delete [] ptr;
+			deleteNativeArray(ptr);
 		}
 		virtual int getSize() 
 		{
@@ -914,9 +954,9 @@ protected:
 		virtual ~Compound()
 		{
 			if(length > 0)
-				delete []ptr;
+				deleteNativeArray(ptr);
 			if(nDescs > 0)
-				delete [] descs;
+				deleteNativeArray(descs);
 		}
 
 		virtual void propagateDeletion()
@@ -1420,18 +1460,32 @@ protected:
 	};
 
 /////////////////////APD///////////////////////
+#define DSCS_STEP 64
 	class EXPORT Apd: public Data
 	{
 	protected:
 		int nDescs;
+		int descsSize;
 		Data **descs;
+
+		void resize()
+		{
+			descsSize += DSCS_STEP;
+			Data **newDescs = new Data *[descsSize];
+			for(int i = 0; i < nDescs; i++)
+				newDescs[i] = descs[i];
+			if(descs)
+				deleteNativeArray(descs);
+			descs = newDescs;
+		}
 		
 	public:
 		Apd(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
 		{
 			clazz = CLASS_APD; 
 			dtype = DTYPE_DSC; 
-			nDescs = 0;
+			nDescs = descsSize = 0;
+			descs = 0;
 			setAccessory(units, error, help, validation);
 		}
 		Apd(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -1439,7 +1493,8 @@ protected:
 			clazz = CLASS_APD; 
 			dtype = DTYPE_DSC; 
 			nDescs = nData;
-			this->descs = new Data *[nData];
+			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
+			this->descs = new Data *[descsSize];
 			for(int i = 0; i < nData; i++)
 			{
 				if(descs[i])
@@ -1453,7 +1508,7 @@ protected:
 		{
 			if(nDescs > 0)
 			{
-				delete [] descs;
+				deleteNativeArray(descs);
 			}
 		}
 
@@ -1479,7 +1534,15 @@ protected:
 					return true;
 			return false;
 		}
+		virtual int len()
+		{
+			return nDescs;
+		}
 
+		Data **getDscs()
+		{
+			return descs;
+		}
 		void *convertToDsc();
 		int getDimension() {return nDescs;}
 		Data **getDscArray() {return descs;}
@@ -1492,26 +1555,157 @@ protected:
 		}
 	};
 
+///////////////////LIST///////////////
+	class EXPORT List: public Apd
+	{
 
+	public:
+		List(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
+		{
+			clazz = CLASS_APD; 
+			dtype = DTYPE_LIST; 
+			nDescs = 0;
+			setAccessory(units, error, help, validation);
+		}
+		List(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			clazz = CLASS_APD; 
+			dtype = DTYPE_LIST; 
+			nDescs = nData;
+			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
+			this->descs = new Data *[descsSize];
+			for(int i = 0; i < nData; i++)
+			{
+				if(descs[i])
+					descs[i]->refCount++;
+				this->descs[i] = descs[i];
+			}
+			setAccessory(units, error, help, validation);
+		}
 
-////////////////////Streams//////////////////////
-class DataStreamConsumer
-{
-public:
-	virtual void acceptSegment(Array *data, Data *start, Data *end, Data *times) = 0;
-	virtual void acceptRow(Data *data, _int64 time, bool isLast = false) = 0;
-};
+		void append(Data *data)
+		{
+			if(nDescs == descsSize)
+			    resize();
+			descs[nDescs++] = data;
+			data->refCount++;
+		}
+		
+		void remove(Data *data)
+		{
+			for(int i = 0; i < nDescs; i++)
+			{
+				if(descs[i] == data)
+				{
+					deleteData(descs[i]);
+					for(int j = i; j < nDescs-1; j++)
+						descs[j] = descs[j+1];
+					nDescs--;
+					return;
+				}
+			}
+		}
 
-class DataStreamProducer
-{
-public:
-	virtual void addDataStreamConsumer(DataStreamConsumer *consumer) = 0;
-	virtual void removeDataStreamConsumer(DataStreamConsumer *consumer) = 0;
-};
+		void insert(int idx, Data *data)
+		{
+			if(nDescs == descsSize)
+			    resize();
+			for(int i = nDescs; i > idx; i--)
+				descs[i] = descs[i-1];
+			descs[idx] = data;
+			data->refCount++;
+		}
 
+		Data *getElementAt(int idx)
+		{
+			if(idx < 0 || idx > nDescs) return 0;
+			if(descs[idx])
+				descs[idx]->refCount++;
+			return descs[idx];
+		}
 
+	};
 
+/////Dictionary///////
+	class EXPORT Dictionary: public Apd
+	{
 
+	public:
+		Dictionary(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
+		{
+			clazz = CLASS_APD; 
+			dtype = DTYPE_DICTIONARY; 
+			nDescs = 0;
+			setAccessory(units, error, help, validation);
+		}
+		Dictionary(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			clazz = CLASS_APD; 
+			dtype = DTYPE_DICTIONARY; 
+			nDescs = nData;
+			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
+			this->descs = new Data *[descsSize];
+			for(int i = 0; i < nData; i++)
+			{
+				if(descs[i])
+					descs[i]->refCount++;
+				this->descs[i] = descs[i];
+			}
+			setAccessory(units, error, help, validation);
+		}
+
+		Data *getItem(String *strData)
+		{
+			char *str = strData->getString();
+			for(int i = 0; i < nDescs/2; i++)
+			{
+				char *currStr = descs[2*i]->getString();
+				if(!strcmp(currStr, str))
+				{
+					deleteNativeArray(str);
+					deleteNativeArray(currStr);
+					if(descs[2*i+1])
+						descs[2*i+1]->refCount++;
+					return descs[2*i+1];
+				}
+				deleteNativeArray(currStr);
+			}
+			deleteNativeArray(str);
+			return 0;
+		}
+
+		void setItem(String *strData, Data *data)
+		{
+			char *str = strData->getString();
+			for(int i = 0; i < nDescs/2; i++)
+			{
+				char *currStr = descs[2*i]->getString();
+				if(!strcmp(currStr, str))
+				{
+					deleteNativeArray(str);
+					deleteNativeArray(currStr);
+					deleteData(descs[2*i+1]);
+					descs[2*i+1] = data;
+					data->refCount++;
+					return ;
+				}
+				deleteNativeArray(currStr);
+			}
+			deleteNativeArray(str);
+			if(nDescs+2 > descsSize)
+				resize();
+			descs[nDescs] = strData;
+			strData->refCount++;
+			descs[nDescs + 1] = data;
+			data->refCount++;
+			nDescs+=2;
+		}
+
+		int len()
+		{
+			return nDescs/2;
+		}
+	};
 
 
 
@@ -1530,7 +1724,7 @@ public:
 	class TreeNodeArray;
 
 
-	class  EXPORT TreeNode: public Data, DataStreamConsumer
+	class  EXPORT TreeNode: public Data
 	{
 	friend	ostream &operator<<(ostream &stream, TreeNode *treeNode);
 	protected:
@@ -1562,6 +1756,7 @@ public:
 		char *getNodeName();
 		char *getOriginalPartName();
 		TreeNode *getNode(char *relPath);
+		TreeNode *getNode(String *relPathStr);
 		virtual Data *getData();
 		virtual void putData(Data *data);
 		virtual void deleteData();
@@ -1766,6 +1961,7 @@ public:
 
 		TreeNode *getNode(char *path);
 		TreeNode *getNode(TreePath *path);
+		TreeNode *getNode(String *path);
 		TreeNode *addNode(char *name, char *usage);
 		TreeNode *addDevice(char *name, char *type);
 		void remove(char *name);
@@ -1861,22 +2057,15 @@ public:
 //////////////End Class Event//////////////
 //////////////Support functions////////
 EXPORT void deleteData(Data *);
-EXPORT Data *deserialize(char *serialized, int size);
+EXPORT Data *deserialize(char *serialized);
 EXPORT	Data *compile(char *expr, ...);
-EXPORT	Data *compile(char *expr, Tree *tree...);
-EXPORT	Data *execute(char *expr, Tree *tree...);
+EXPORT	Data *compile(char *expr, Tree *tree, ...);
+EXPORT	Data *execute(char *expr, Tree *tree, ...);
 EXPORT	Data *execute(char *expr, ...);
 Tree *getActiveTree();
 void setActiveTree(Tree *tree);
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
-EXPORT void deleteNativeArray(char *array);
-EXPORT void deleteNativeArray(short *array);
-EXPORT void deleteNativeArray(int *array);
-EXPORT void deleteNativeArray(long *array);
-EXPORT void deleteNativeArray(float *array);
-EXPORT void deleteNativeArray(double *array);
-EXPORT void deleteNativeArray(char **array);
 EXPORT void deleteTreeNode(TreeNode *node);
 EXPORT void deleteTree(Tree *tree);
 EXPORT void deleteTreeNodeArray(TreeNodeArray *nodeArray);
