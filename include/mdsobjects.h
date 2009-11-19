@@ -87,10 +87,8 @@
 #define EXPORT __declspec(dllexport)
 #endif
 
-
-
-
 extern "C" char *MdsGetMsg(int status);
+
 
 /*
 extern "C" {
@@ -151,6 +149,19 @@ Tree *getActiveTree();
 		int status;
 		char *msg;
 	public:
+		MdsException(){}
+		MdsException(char *msg)
+		{
+			this->msg = new char[strlen(msg) + 1];
+			strcpy(this->msg, msg);
+		}
+		MdsException(int status)
+		{
+			char *currMsg = MdsGetMsg(status);
+			this->msg = new char[strlen(currMsg) + 1];
+			strcpy(this->msg, currMsg);
+		}
+
 		~MdsException()
 		{
 			if(msg)
@@ -172,47 +183,6 @@ Tree *getActiveTree();
 
 
 
-	class EXPORT TreeException: public MdsException
-	{
-	public:
-		TreeException(int status)
-		{
-			this->status = status;
-			msg = 0;
-		}
-		TreeException(const char *message)
-		{
-			msg = new char[strlen(message) + 1];
-			strcpy(msg, message);
-		}
-	};
-
-
-
-	class EXPORT DataException: public MdsException
-	{
-	public:
-		DataException(int clazz, int dtype, const char *inMsg)
-		{
-			if(!inMsg)
-			{
-				msg = new char[64];
-				sprintf(msg, "Class = %d Dtype = %d", clazz, dtype);
-			}
-			else
-			{
-				msg = new char[strlen(inMsg) + 64];
-				sprintf(msg, "%s  Class = %d Dtype = %d", inMsg, clazz, dtype);
-			}
-		}
-		DataException(int clazz, int dtype, const string inMsg)
-		{
-			msg = new char[inMsg.length() + 64];
-			sprintf(msg, "%s  Class = %d Dtype = %d", inMsg.c_str(), clazz, dtype);
-		}
-	};
-
-
 
 ////////////////////Data class//////////////////////////////
 
@@ -224,6 +194,7 @@ class EXPORT Data
 		friend EXPORT Data *execute(const char *expr, ...);
 		friend EXPORT Data *execute(const char *expr, Tree *tree ...);
 		friend EXPORT Data *deserialize(char *serialized);
+		friend EXPORT Data *deserialize(Data *serialized);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
 
@@ -250,9 +221,20 @@ protected:
 		}
 		
 		int refCount;
+		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+		{
+			*clazz = this->clazz;
+			*dtype = this->dtype;
+			*length = 0;
+			*nDims = 0;
+			*dims = 0;
+			*ptr = 0;
+		}
+
 		virtual void *convertToDsc() = 0;
 		void *operator new(size_t sz);
 		void operator delete(void *p);
+		virtual bool isEqual(Data *data) {return false;}
 		Data()
 		{
 			changed = true;
@@ -382,6 +364,15 @@ protected:
 		}
 		 
 		virtual void *convertToDsc();
+		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+		{
+			*clazz = this->clazz;
+			*dtype = this->dtype;
+			*length = this->length;
+			*nDims = 0;
+			*dims = 0;
+			*ptr = this->ptr;
+		}
 	}; //ScalarData
 
 	class  EXPORT Int8 : public Scalar
@@ -633,6 +624,14 @@ protected:
 			res[length] = 0;
 			return res;
 		}
+		bool isEqual(Data *data)
+		{
+			if(data->clazz != clazz || data->dtype != dtype) return false;
+			String *dataStr = (String *)data;
+			if (dataStr->length != length) return false;
+			return !strncmp(dataStr->ptr, ptr, length);
+		}
+
 	};
 
 
@@ -688,6 +687,15 @@ protected:
 				retSize *= dims[i];
 			return retSize;
 		}
+		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+		{
+			*clazz = this->clazz;
+			*dtype = this->dtype;
+			*length = this->length;
+			*nDims = this->nDims;
+			*dims = this->dims;
+			*ptr = this->ptr;
+		}
 
 
 		virtual int *getShape(int *numDims);
@@ -735,6 +743,7 @@ protected:
 
 	class EXPORT Uint8Array: public Array
 	{
+	friend Data *MDSplus::deserialize(Data *serializedData);
 	public:
 		Uint8Array(char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
@@ -1606,6 +1615,19 @@ protected:
 			}
 		}
 
+		void remove(int idx)
+		{
+			if(idx < 0 || idx >= nDescs)
+				return;
+			deleteData(descs[idx]);
+			for(int j = idx; j < nDescs-1; j++)
+				descs[j] = descs[j+1];
+			nDescs--;
+		}
+
+
+
+
 		void insert(int idx, Data *data)
 		{
 			if(nDescs == descsSize)
@@ -1656,42 +1678,33 @@ protected:
 
 		Data *getItem(String *strData)
 		{
-			char *str = strData->getString();
 			for(int i = 0; i < nDescs/2; i++)
 			{
-				char *currStr = descs[2*i]->getString();
-				if(!strcmp(currStr, str))
+				if(strData->isEqual(descs[2*i]))
 				{
-					deleteNativeArray(str);
-					deleteNativeArray(currStr);
 					if(descs[2*i+1])
 						descs[2*i+1]->refCount++;
 					return descs[2*i+1];
 				}
-				deleteNativeArray(currStr);
 			}
-			deleteNativeArray(str);
 			return 0;
 		}
 
 		void setItem(String *strData, Data *data)
 		{
-			char *str = strData->getString();
 			for(int i = 0; i < nDescs/2; i++)
 			{
-				char *currStr = descs[2*i]->getString();
-				if(!strcmp(currStr, str))
+				if(strData->isEqual(descs[2*i]))
 				{
-					deleteNativeArray(str);
-					deleteNativeArray(currStr);
+					deleteData(descs[2*i]);
+					descs[2*i] = strData;
+					strData->refCount++;
 					deleteData(descs[2*i+1]);
 					descs[2*i+1] = data;
 					data->refCount++;
 					return ;
 				}
-				deleteNativeArray(currStr);
 			}
-			deleteNativeArray(str);
 			if(nDescs+2 > descsSize)
 				resize();
 			descs[nDescs] = strData;
@@ -2055,6 +2068,88 @@ protected:
 		static void seteventRaw(char *evName, int bufLen, char *buf);
 	};
 //////////////End Class Event//////////////
+
+///////////////remote data access classes ////////////////
+	class Connection;
+	class EXPORT GetMany: public List
+	{
+		Connection *conn;
+		Dictionary *evalRes;
+
+	public:
+		GetMany(Connection *conn)
+		{
+			this->conn = conn;
+			evalRes = 0;
+		}
+		~GetMany()
+		{
+			if(evalRes)
+				deleteData(evalRes);
+		}
+		void append(char *name, char *expr, Data **args, int nArgs);
+		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
+		void insert(char *beforeName, char *name, char *expr, Data **args, int nArgs);
+		void remove(char *name);
+		void execute();
+		Data *get(char *name);
+	};
+
+	class EXPORT PutMany: public List
+	{
+		Connection *conn;
+		Dictionary *evalRes;
+
+	public:
+		PutMany(Connection *conn)
+		{
+			this->conn = conn;
+			evalRes = 0;
+		}
+		~PutMany()
+		{
+			if(evalRes)
+				deleteData(evalRes);
+		}
+		void append(char *name, char *expr, Data **args, int nArgs);
+		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
+		void insert(char *beforeName, char *name, char *expr, Data **args, int nArgs);
+		void remove(char *name);
+		void execute();
+		void getStatus(char *name);
+	};
+
+
+
+
+	class EXPORT Connection 
+	{
+		int sockId;
+	public:
+		Connection(char *mdsipAddr);
+		~Connection();
+		void openTree(char *tree, int shot);
+		void closeAllTrees();
+		void closeTree(char *tree, int shot)
+		{
+			closeAllTrees();
+		}
+		void setDefault(char *path);
+		Data *get(char *expr, Data **args, int nArgs);
+		void put(char *path, char *expr, Data **args, int nArgs);
+		PutMany *putMany()
+		{
+			return new PutMany(this);
+		}
+		GetMany *getMany()
+		{
+			return new GetMany(this);
+		}
+	};
+
+
+
+
 //////////////Support functions////////
 EXPORT void deleteData(Data *);
 EXPORT Data *deserialize(char *serialized);
