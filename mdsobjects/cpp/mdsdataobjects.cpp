@@ -206,7 +206,7 @@ int * Data::getShape(int *numDim)
 	void *retDsc = convertToShape(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot compute shape");
+		throw new MdsException("Cannot compute shape");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -221,7 +221,7 @@ char *Data::getByteArray(int *numElements)
 	void *retDsc = convertToByte(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Byte Array");
+		throw new MdsException("Cannot convert to Byte Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -236,7 +236,7 @@ short * Data::getShortArray(int *numElements)
 	void *retDsc = convertToShort(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Short Array");
+		throw new MdsException("Cannot convert to Short Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -251,7 +251,7 @@ int * Data::getIntArray(int *numElements)
 	void *retDsc = convertToInt(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Int Array");
+		throw new MdsException("Cannot convert to Int Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -266,7 +266,7 @@ _int64 * Data::getLongArray(int *numElements)
 	void *retDsc = convertToLong(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Long Array");
+		throw new MdsException("Cannot convert to Long Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -281,7 +281,7 @@ float * Data::getFloatArray(int *numElements)
 	void *retDsc = convertToFloat(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Float Array");
+		throw new MdsException("Cannot convert to Float Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -296,7 +296,7 @@ double * Data::getDoubleArray(int *numElements)
 	void *retDsc = convertToDouble(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Double Array");
+		throw new MdsException("Cannot convert to Double Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -314,7 +314,7 @@ char *	Data::serialize(int *size)
 	if(!serialized)
 	{
 		freeDsc(dscPtr);
-		throw new TreeException("Cannot serialize Data object");
+		throw new MdsException("Cannot serialize Data object");
 	}
 	char *retSerialized = new char[retSize];
 	memcpy(retSerialized, serialized, retSize);
@@ -333,7 +333,7 @@ char Data::getByte()
 	void *retDsc = convertToByte(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Byte");
+		throw new MdsException("Cannot convert to Byte");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -348,7 +348,7 @@ short Data::getShort()
 	void *retDsc = convertToShort(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Short");
+		throw new MdsException("Cannot convert to Short");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -363,7 +363,7 @@ int Data::getInt()
 	void *retDsc = convertToInt(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Int");
+		throw new MdsException("Cannot convert to Int");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -378,7 +378,7 @@ _int64 Data::getLong()
 	void *retDsc = convertToLong(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Long");
+		throw new MdsException("Cannot convert to Long");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -393,7 +393,7 @@ float Data::getFloat()
 	void *retDsc = convertToFloat(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Float");
+		throw new MdsException("Cannot convert to Float");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -408,7 +408,7 @@ double Data::getDouble()
 	void *retDsc = convertToDouble(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_S)
-		throw new DataException(retData->clazz, retData->dtype, "Cannot convert to Double");
+		throw new MdsException("Cannot convert to Double");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
@@ -496,6 +496,14 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 		}
 		setActiveTree(tree);
 		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree);
+		if(!compData)
+		{
+			char *msg = new char[20 + strlen(expr)];
+			sprintf(msg, "Cannot compile %s", expr);
+			MdsException *exc = new MdsException(msg);
+			delete [] msg;
+			throw exc;
+		}
 		Data *evalData = compData->data();
 		deleteData(compData);
 		for(i = 0; i < nArgs; i++)
@@ -506,6 +514,14 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 EXPORT	Data *MDSplus::executeWithArgs(char *expr, Data **args, int nArgs)
 	{
 		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		if(!compData)
+		{
+			char *msg = new char[20 + strlen(expr)];
+			sprintf(msg, "Cannot compile %s", expr);
+			MdsException *exc = new MdsException(msg);
+			delete [] msg;
+			throw exc;
+		}
 		Data *evalData = compData->data();
 		deleteData (compData);
 		return evalData;
@@ -636,11 +652,11 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 
 	//Check Dimensionality
 	if(getNumDims > nDims)
-		throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::getElementAt"); 
+		throw new MdsException("Invalid passed dimensions in Array::getElementAt"); 
 	for(i = 0; i < getNumDims; i++)
 	{
 		if(getDims[i] < 0 || getDims[i] >= dims[i])
-			throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::getElementAt"); 
+			throw new MdsException("Invalid passed dimensions in Array::getElementAt"); 
 	}
 
 	//Prepare actual row dimensions
@@ -671,14 +687,14 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 	Scalar *scalarData;
 
 	if((data->dtype != dtype) || (data->clazz != CLASS_S && data->clazz != CLASS_A))
-		throw new DataException(clazz, dtype, "Invalid data type in Array::setElementAt"); 
+		throw new MdsException("Invalid data type in Array::setElementAt"); 
 	//Check Dimensionality
 	if(getNumDims > nDims)
-		throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::getElementAt"); 
+		throw new MdsException("Invalid passed dimensions in Array::getElementAt"); 
 	for(i = 0; i < getNumDims; i++)
 	{
 		if(getDims[i] < 0 || getDims[i] >= dims[i])
-			throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::getElementAt"); 
+			throw new MdsException("Invalid passed dimensions in Array::getElementAt"); 
 	}
 
 	//Prepare actual row dimensions
@@ -699,14 +715,14 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 		if(arrayData->nDims != nDims - getNumDims)
 		{
 			delete [] rowDims;
-			throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::setElementAt"); 
+			throw new MdsException("Invalid passed dimensions in Array::setElementAt"); 
 		}
 		for(i = 0; i < arrayData->nDims; i++)
 		{
 			if(arrayData->dims[i] != dims[getNumDims + i])
 			{
 				delete [] rowDims;
-				throw new DataException(clazz, dtype, "Invalid passed dimensions in Array::setElementAt"); 
+				throw new MdsException("Invalid passed dimensions in Array::setElementAt"); 
 			}
 		}
 //Dimensionality check passed: copy passed Array
@@ -881,10 +897,16 @@ EXPORT void *Apd::convertToDsc()
 EXPORT Data *MDSplus::deserialize(char *serialized)
 {
 	void *dscPtr = deserializeData(serialized);
-	if(!dscPtr) throw new TreeException("Cannot build Data instance from serialized content");
+	if(!dscPtr) throw new MdsException("Cannot build Data instance from serialized content");
 	Data *retData = (Data *)convertFromDsc(dscPtr);
 	freeDsc(dscPtr);
 	return retData;
+}
+
+EXPORT Data *MDSplus::deserialize(Data *serializedData)
+{
+	Uint8Array *serializedArr = (Uint8Array *)serializedData;
+	return deserialize(serializedArr->ptr);
 }
 
 ostream& operator<<(ostream& output, Data *data)
