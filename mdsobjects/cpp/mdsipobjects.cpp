@@ -295,10 +295,10 @@ Data *Connection::get(char *expr, Data **args, int nArgs)
 				resData = new Uint32Array((int *)ptr, nDims, retDims);
 				break;
 			case DTYPE_LONGLONG_IP:
-				resData = new Int64Array((__int64 *)ptr, nDims, retDims);
+				resData = new Int64Array((_int64 *)ptr, nDims, retDims);
 				break;
 			case DTYPE_ULONGLONG_IP:
-				resData = new Uint64Array((__int64 *)ptr, nDims, retDims);
+				resData = new Uint64Array((_int64 *)ptr, nDims, retDims);
 				break;
 			case DTYPE_FLOAT_IP:
 				resData = new Float32Array((float *)ptr, nDims, retDims);
@@ -358,6 +358,7 @@ void Connection::put(char *inPath, char *expr, Data **args, int nArgs)
     delete [] path;
 
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
+	delete[] putExpr;
 	if(!(status & 1))
 		throw new MdsException(status);
 	for(argIdx = 0; argIdx < nArgs; argIdx++)

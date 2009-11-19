@@ -8,11 +8,11 @@ exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC -I../../tdishr
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr @LIBS@ @SRBLIB@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lCacheShr @LIBS@ @SRBLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
-	mdsdataobjects.cpp mdstreeobjects.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp
 	
 SOURCES = mdsdata.c mdstree.c
 
