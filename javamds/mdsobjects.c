@@ -4,6 +4,7 @@
 #include "MDSplus_CachedTreeNode.h"
 #include "MDSplus_CachedTree.h"
 #include "MDSplus_Event.h"
+#include "MDSplus_Connection.h"
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
@@ -18,6 +19,7 @@
 #include <cacheshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
+
 #include "../mdsshr/mdsshrthreadsafe.h"
 
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
@@ -492,9 +494,19 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		args[4].l = validationObj;
 		array_d = (struct descriptor_a *)desc;
 		length = array_d->arsize/array_d->length;
-		cls = (*env)->FindClass(env, "MDSplus/Apd"); 
+		switch(desc->dtype) {
+			case DTYPE_LIST:
+				cls = (*env)->FindClass(env, "MDSplus/List"); 
+				break;
+			case DTYPE_DICTIONARY:
+				cls = (*env)->FindClass(env, "MDSplus/Dictionary"); 
+				break;
+			default:
+				cls = (*env)->FindClass(env, "MDSplus/Apd"); 
+				break;
+		}
 		data_cls = (*env)->FindClass(env, "MDSplus/Data");
-		constr = (*env)->GetStaticMethodID(env, cls, "getData", "([LData;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LData;");
+		constr = (*env)->GetStaticMethodID(env, cls, "getData", "([LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
 		jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
 		for(i = 0; i < length; i++)
 		{
@@ -553,6 +565,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     jfieldID
       datum_fid,
       descs_fid,
+	  ndescs_fid,
       opcode_fid,
       dtype_fid,
       dclass_fid, 
@@ -914,7 +927,9 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
       case CLASS_APD:
 		descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
         jdescs = (*env)->GetObjectField(env, obj, descs_fid);
-		ndescs = (*env)->GetArrayLength(env, jdescs);
+		ndescs_fid = (*env)->GetFieldID(env, cls, "nDescs", "I");
+		ndescs = (*env)->GetIntField(env, obj, ndescs_fid);
+		//ndescs = (*env)->GetArrayLength(env, jdescs);
 		apd_d = (struct descriptor_a *)malloc(sizeof(struct descriptor_a));
 		memcpy(apd_d, &template_apd, sizeof(struct descriptor_a));
 		apd_d->dtype = dtype;
@@ -1021,6 +1036,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
        (*env)->ThrowNew(env, exc, errorMsg);
        return NULL;
 	}
+
 	retObj = DescripToObject(env, xd.pointer, 0, 0, 0, 0);
 	MdsFree1Dx(&xd, 0);
 	return retObj;
@@ -1209,8 +1225,6 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData
 
 	struct descriptor *descr;
 	descr =  ObjectToDescrip(env, jobj);
-
-	printDecompiled(descr);
 	status = TdiData(descr, &xd MDS_END_ARG);
 	if(!(status & 1))
     {
@@ -1219,7 +1233,6 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_dataData
        (*env)->ThrowNew(env, exc, error_msg);
        return NULL;
     }
-	printDecompiled(xd.pointer);
 	retObj = DescripToObject(env, xd.pointer, 0,0,0,0);
 	MdsFree1Dx(&xd, 0);
 	FreeDescrip(descr);
@@ -2915,6 +2928,382 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
 	_int64 time;
 	LibConvertDateString("now", &time);
 	return (long)time;
+}
+
+/////////////////////Connection stuff //////////////////////
+///NOTE put it in the end of this source file so that ipdesc.h does not harm
+////////////////////////////////////////////////////////////
+#include <ipdesc.h>
+/*
+ * Class:     MDSplus_Connection
+ * Method:    connectToMds
+ * Signature: (LMDSplus/String;)I
+ */
+JNIEXPORT jint JNICALL Java_MDSplus_Connection_connectToMds
+  (JNIEnv *env, jobject obj , jstring jAddr)
+{
+	const char *addr = (*env)->GetStringUTFChars(env, jAddr, 0);
+	int sockId = ConnectToMds((char *)addr);
+	(*env)->ReleaseStringUTFChars(env, jAddr, addr);
+	return sockId;
+}
+
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    disconnectFromMds
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Connection_disconnectFromMds
+  (JNIEnv *env, jobject obj, jint sockId)
+{
+	DisconnectFromMds(sockId);
+}
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    openTree
+ * Signature: (ILjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Connection_openTree
+  (JNIEnv *env, jobject obj, jint sockId, jstring jname, jint shot)
+{
+	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+	jobject exc;
+	int status = MdsOpen(sockId, (char *)name, shot);
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+	if(!(status & 1))
+	{
+       exc = (*env)->FindClass(env, "MDSplus/MdsException");
+       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	}
+}
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    closeTree
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Connection_closeTree
+  (JNIEnv *env, jobject obj, jint sockId)
+{
+	jobject exc;
+	int status = MdsClose(sockId);
+	if(!(status & 1))
+	{
+       exc = (*env)->FindClass(env, "MDSplus/MdsException");
+       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	}
+}
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    setDefault
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Connection_setDefault
+  (JNIEnv *env, jobject obj, jint sockId, jstring jpath)
+{
+	const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
+	jobject exc;
+	int status = MdsSetDefault(sockId, (char *)path);
+	(*env)->ReleaseStringUTFChars(env, jpath, path);
+}
+
+static int convertType(int mdsType)
+{
+	switch(mdsType) {
+		case DTYPE_B: return DTYPE_CHAR;
+		case DTYPE_BU: return DTYPE_UCHAR;
+		case DTYPE_W: return DTYPE_SHORT;
+		case DTYPE_WU: return DTYPE_USHORT;
+		case DTYPE_L: return DTYPE_LONG;
+		case DTYPE_LU: return DTYPE_ULONG;
+		case DTYPE_Q: return DTYPE_LONGLONG;
+		case DTYPE_QU: return DTYPE_ULONGLONG;
+		case DTYPE_FS: return DTYPE_FLOAT;
+		case DTYPE_FT: return DTYPE_DOUBLE;
+		case DTYPE_T: return DTYPE_CSTRING;
+		default: return -1;
+	}
+}
+
+static char getDType(struct descriptor *dsc)
+{
+	return convertType(dsc->dtype);
+}
+static char getNDims(struct descriptor *dsc)
+{
+	if(dsc->class == CLASS_S)
+		return 0;
+
+	return ((struct descriptor_a *)dsc)->dimct;
+}
+
+static void getDims(struct descriptor *dsc, int *dims)
+{
+	ARRAY_BOUNDS(char *, MAX_DIMS) *arrPtr;
+	int i;
+
+	if(dsc->class != CLASS_A)
+		return;
+	arrPtr = (ARRAY_BOUNDS(char *, 64) *)dsc;
+	for(i = 0; i < arrPtr->dimct; i++)
+		dims[i] = arrPtr->m[i];
+}
+
+static short getLength(struct descriptor *dsc)
+{
+	return dsc->length;
+}
+static void * getPtr(struct descriptor *dsc)
+{
+	if(dsc->class == CLASS_S)
+		return dsc->pointer;
+
+	return ((struct descriptor_a *)dsc)->pointer;
+}
+
+
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    get
+ * Signature: (ILjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
+ */
+JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
+  (JNIEnv *env, jobject obj, jint sockId, jstring jExpr, jobjectArray jargs)
+{
+	const char *expr;
+	jobject exc, currArg, retObj;
+	int nArgs, i, status;
+	struct descriptor **dscs;
+	char dtype, nDims;
+	short length;
+	void *ptr;
+	int dims[MAX_DIMS];
+	int numBytes;
+	void *mem = 0;
+	struct descriptor scalarDsc = {0, 0, CLASS_S, 0};
+	DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
+
+	expr = (*env)->GetStringUTFChars(env, jExpr, 0);
+	nArgs = (*env)->GetArrayLength(env, jargs);
+	status = SendArg(sockId, 0, DTYPE_CSTRING, nArgs+1, strlen(expr), 0, 0, (char *)expr);
+	(*env)->ReleaseStringUTFChars(env, jExpr, expr);
+
+	dscs = (struct descriptor **)malloc(nArgs * sizeof(struct descriptor *));
+	for(i = 0; i < nArgs; i++)
+	{
+		currArg = (*env)->GetObjectArrayElement(env, jargs, i);
+		dscs[i] = ObjectToDescrip(env, currArg);
+
+
+		dtype = getDType(dscs[i]);
+		nDims = getNDims(dscs[i]);
+		length = getLength(dscs[i]);
+		getDims(dscs[i], dims);
+		ptr = getPtr(dscs[i]);
+
+		status = SendArg(sockId, i+1, dtype, nArgs+1, length, nDims, dims, ptr);
+		FreeDescrip(dscs[i]);
+		if(!(status & 1))
+		{
+			free((char *)dscs);
+		    exc = (*env)->FindClass(env, "MDSplus/MdsException");
+		   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+		}
+	}
+	free((char *)dscs);
+	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
+	if(!(status & 1))
+	{
+	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
+	   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	}
+	if(nDims == 0)
+	{
+		scalarDsc.length = numBytes;
+		scalarDsc.pointer = ptr;
+		switch(dtype) {
+			case DTYPE_CHAR:
+				scalarDsc.dtype = DTYPE_B;
+				break;
+			case DTYPE_UCHAR:
+				scalarDsc.dtype = DTYPE_BU;
+				break;
+			case DTYPE_SHORT:
+				scalarDsc.dtype = DTYPE_W;
+				break;
+			case DTYPE_USHORT:
+				scalarDsc.dtype = DTYPE_WU;
+				break;
+			case DTYPE_LONG:
+				scalarDsc.dtype = DTYPE_L;
+				break;
+			case DTYPE_ULONG:
+				scalarDsc.dtype = DTYPE_LU;
+				break;
+			case DTYPE_LONGLONG:
+				scalarDsc.dtype = DTYPE_Q;
+				break;
+			case DTYPE_ULONGLONG:
+				scalarDsc.dtype = DTYPE_QU;
+				break;
+			case DTYPE_FLOAT:
+				scalarDsc.dtype = DTYPE_FS;
+				break;
+			case DTYPE_DOUBLE:
+				scalarDsc.dtype = DTYPE_FT;
+				break;
+			case DTYPE_CSTRING:
+				scalarDsc.dtype = DTYPE_T;
+				break;
+			default: 		
+				exc = (*env)->FindClass(env, "MDSplus/MdsException");
+				(*env)->ThrowNew(env, exc, "Unexpected returned data type in mdsip connection");
+		}
+		retObj = DescripToObject(env, &scalarDsc, 0, 0, 0, 0); 
+	}
+	else //nDims > 0
+	{
+		arrayDsc.length = length;
+		arrayDsc.arsize = numBytes;
+		arrayDsc.pointer = ptr;
+		arrayDsc.dimct = nDims;
+		memcpy(&arrayDsc.m, dims, nDims * sizeof(int));
+		switch(dtype) {
+			case DTYPE_CHAR:
+				arrayDsc.dtype = DTYPE_B;
+				break;
+			case DTYPE_UCHAR:
+				arrayDsc.dtype = DTYPE_BU;
+				break;
+			case DTYPE_SHORT:
+				arrayDsc.dtype = DTYPE_W;
+				break;
+			case DTYPE_USHORT:
+				arrayDsc.dtype = DTYPE_WU;
+				break;
+			case DTYPE_LONG:
+				arrayDsc.dtype = DTYPE_L;
+				break;
+			case DTYPE_ULONG:
+				arrayDsc.dtype = DTYPE_LU;
+				break;
+			case DTYPE_LONGLONG:
+				arrayDsc.dtype = DTYPE_Q;
+				break;
+			case DTYPE_ULONGLONG:
+				arrayDsc.dtype = DTYPE_QU;
+				break;
+			case DTYPE_FLOAT:
+				arrayDsc.dtype = DTYPE_FS;
+				break;
+			case DTYPE_DOUBLE:
+				arrayDsc.dtype = DTYPE_FT;
+				break;
+			default:
+				exc = (*env)->FindClass(env, "MDSplus/MdsException");
+				(*env)->ThrowNew(env, exc, "Unexpected returned data type in mdsip connection");
+		}
+		retObj = DescripToObject(env, (struct descriptor *)&arrayDsc, 0, 0, 0, 0); 
+	}
+	if(mem) FreeMessage(mem);
+	return retObj;
+}
+
+/*
+ * Class:     MDSplus_Connection
+ * Method:    put
+ * Signature: (ILjava/lang/String;Ljava/lang/String;[LMDSplus/Data;)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Connection_put
+  (JNIEnv *env, jobject obj, jint sockId, jstring jPath, jstring jExpr, jobjectArray jArgs)
+{
+  	const char *expr = (*env)->GetStringUTFChars(env, jExpr, 0);
+  	const char *inPath = (*env)->GetStringUTFChars(env, jPath, 0);
+	char *path, *putExpr;
+	jobject exc, currArg, retObj;
+	int nArgs, i, status;
+	struct descriptor **dscs;
+	char dtype, nDims;
+	short length;
+	void *ptr;
+	int dims[MAX_DIMS];
+	int numBytes, varIdx;
+	void *mem = 0;
+
+
+	nArgs = (*env)->GetArrayLength(env, jArgs);
+
+	//Double backslashes!!
+	path = malloc(strlen(inPath)+2);
+	if(inPath[0] == '\\')
+	{
+		path[0] = '\\';
+		strcpy(&path[1], inPath);
+	}
+	else
+		strcpy(path, inPath);
+
+
+	putExpr = malloc(strlen("TreePut(") + strlen(expr) +strlen(path) + 5 + nArgs * 2 + 2);
+	if(nArgs > 0)
+		sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
+	else
+		sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
+	for(varIdx = 0; varIdx < nArgs; varIdx++)
+	{
+		if(varIdx < nArgs - 1)
+			sprintf(&putExpr[strlen(putExpr)], "$,");
+		else
+			sprintf(&putExpr[strlen(putExpr)], "$");
+	}
+	sprintf(&putExpr[strlen(putExpr)], ")");
+
+
+    free(path);
+	(*env)->ReleaseStringUTFChars(env, jExpr, expr);
+	(*env)->ReleaseStringUTFChars(env, jPath, inPath);
+
+	status = SendArg(sockId, 0, DTYPE_CSTRING, nArgs+1, strlen(putExpr), 0, 0, putExpr);
+	free(putExpr);
+
+	dscs = (struct descriptor **)malloc(nArgs * sizeof(struct descriptor *));
+	for(i = 0; i < nArgs; i++)
+	{
+		currArg = (*env)->GetObjectArrayElement(env, jArgs, i);
+		dscs[i] = ObjectToDescrip(env, currArg);
+		dtype = getDType(dscs[i]);
+		nDims = getNDims(dscs[i]);
+		length = getLength(dscs[i]);
+		getDims(dscs[i], dims);
+		ptr = getPtr(dscs[i]);
+		status = SendArg(sockId, i+1, dtype, nArgs+1, length, nDims, dims, ptr);
+		FreeDescrip(dscs[i]);
+		if(!(status & 1))
+		{
+			free((char *)dscs);
+		    exc = (*env)->FindClass(env, "MDSplus/MdsException");
+		   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+		}
+	}
+	free((char *)dscs);
+	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
+	if(!(status & 1))
+	{
+	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
+	   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	}
+	if (status & 1 && dtype == DTYPE_LONG && nDims == 0 && numBytes == sizeof(int))
+		memcpy(&status,ptr,numBytes);
+	if(mem) FreeMessage(mem);
+	if(!(status & 1))
+	{
+	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
+	   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	}
 }
 
 
