@@ -21,6 +21,12 @@ public class Int32 extends Scalar
         dtype = DTYPE_L;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Int32))
+            return false;
+        return((Int32)data).datum == datum;
+    }
     public static Data getData(int datum, Data help, Data units, Data error, Data validation)
     { 
         return new Int32(datum, help, units, error, validation);

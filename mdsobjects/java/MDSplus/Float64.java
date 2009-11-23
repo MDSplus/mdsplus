@@ -22,6 +22,12 @@ public class Float64 extends Scalar
         dtype = DTYPE_DOUBLE;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Float64))
+            return false;
+        return((Float64)data).datum == datum;
+    }
     public static Data getData(double datum, Data help, Data units, Data error, Data validation)
     { 
         return new Float64(datum, help, units, error, validation);

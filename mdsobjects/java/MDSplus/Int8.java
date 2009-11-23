@@ -22,6 +22,12 @@ public class Int8 extends Scalar
         dtype = DTYPE_B;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Int8))
+            return false;
+        return((Int8)data).datum == datum;
+    }
     public static Data getData(byte datum, Data help, Data units, Data error, Data validation) 
     { 
         return new Int8(datum, help, units, error, validation);

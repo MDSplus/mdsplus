@@ -23,6 +23,12 @@ public class Uint32 extends Scalar
         dtype = DTYPE_LU;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Uint32))
+            return false;
+        return((Uint32)data).datum == datum;
+    }
     public static Data getData(int datum, Data help, Data units, Data error, Data validation) 
     { 
         return new Uint32(datum, help, units, error, validation);

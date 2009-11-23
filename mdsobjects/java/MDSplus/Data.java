@@ -64,6 +64,9 @@ public class Data {
     public static final int DTYPE_WITH_UNITS = 211; 
     public static final int DTYPE_CALL = 212; 
     public static final int DTYPE_WITH_ERROR = 213; 
+    public static final int DTYPE_LIST = 214;
+    public static final int DTYPE_TUPLE = 215;
+    public static final int DTYPE_DICTIONARY = 216;
 
     public static final int DTYPE_DSC = 24;		
 

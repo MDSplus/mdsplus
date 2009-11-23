@@ -22,6 +22,12 @@ public class Uint16 extends Scalar
         dtype = DTYPE_WU;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Uint16))
+            return false;
+        return((Uint16)data).datum == datum;
+    }
     public static Data getData(short datum, Data help, Data units, Data error, Data validation)
     { 
         return new Uint16(datum, help, units, error, validation);

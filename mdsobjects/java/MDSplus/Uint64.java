@@ -23,6 +23,12 @@ public class Uint64 extends Scalar
         dtype = DTYPE_QU;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Uint64))
+            return false;
+        return((Uint64)data).datum == datum;
+    }
     public static Data getData(long datum, Data help, Data units, Data error, Data validation) 
     { 
         return new Uint64(datum, help, units, error, validation);

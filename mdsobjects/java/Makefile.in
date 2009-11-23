@@ -21,12 +21,12 @@ MDSplus/CachedTreeNode.java\
 MDSplus/Call.java\
 MDSplus/Compound.java\
 MDSplus/Condition.java\
+MDSplus/Connection.java\
 MDSplus/Conglom.java\
 MDSplus/Data.java\
-MDSplus/DataStreamConsumer.java\
-MDSplus/DataStreamProducer.java\
 MDSplus/Dependency.java\
 MDSplus/Device.java\
+MDSplus/Dictionary.java\
 MDSplus/Dimension.java\
 MDSplus/Dispatch.java\
 MDSplus/Empty.java\
@@ -36,6 +36,7 @@ MDSplus/Float32Array.java\
 MDSplus/Float64.java\
 MDSplus/Float64Array.java\
 MDSplus/Function.java\
+MDSplus/GetMany.java\
 MDSplus/Ident.java\
 MDSplus/Int16.java\
 MDSplus/Int16Array.java\
@@ -45,10 +46,12 @@ MDSplus/Int64.java\
 MDSplus/Int64Array.java\
 MDSplus/Int8.java\
 MDSplus/Int8Array.java\
+MDSplus/List.java\
 MDSplus/MdsException.java\
 MDSplus/Method.java\
 MDSplus/Procedure.java\
 MDSplus/Program.java\
+MDSplus/PutMany.java\
 MDSplus/Range.java\
 MDSplus/Routine.java\
 MDSplus/Scalar.java\

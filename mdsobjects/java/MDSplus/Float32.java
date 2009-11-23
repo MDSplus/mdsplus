@@ -22,6 +22,12 @@ public class Float32 extends Scalar
         dtype = DTYPE_FLOAT;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Float32))
+            return false;
+        return((Float32)data).datum == datum;
+    }
     public static Data getData(float datum, Data help, Data units, Data error, Data validation)
     { 
         return new Float32(datum, help, units, error, validation);

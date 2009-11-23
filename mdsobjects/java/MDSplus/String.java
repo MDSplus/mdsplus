@@ -12,7 +12,7 @@ package MDSplus;
  */
 public class String extends Scalar 
 {
-    java.lang.String datum;
+    java.lang.String datum = "";
 
     public String(java.lang.String datum)
     {
@@ -24,6 +24,12 @@ public class String extends Scalar
         clazz = CLASS_S;
         dtype = DTYPE_T;
         this.datum = datum;
+    }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof String))
+            return false;
+        return((String)data).datum.equals(datum);
     }
     public static Data getData(java.lang.String datum, Data help, Data units, Data error, Data validation)
     { 

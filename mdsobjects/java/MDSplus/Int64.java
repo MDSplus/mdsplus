@@ -22,6 +22,12 @@ public class Int64 extends Scalar
         dtype = DTYPE_Q;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Int64))
+            return false;
+        return((Int64)data).datum == datum;
+    }
     public static Data getData(long datum, Data help, Data units, Data error, Data validation) 
     { 
         return new Int64(datum, help, units, error, validation);

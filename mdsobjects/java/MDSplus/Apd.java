@@ -9,8 +9,13 @@ package MDSplus;
  */
 public class Apd extends Data {
 
-	private Data[] descs;
-
+	protected Data[] descs;
+        protected int nDescs = 0;
+        final static int CHUNK_SIZE = 64;
+        public Apd()
+        {
+            this(new Data[0]);
+        }
         public Apd(Data [] descs)
         {
             this(descs, null, null, null, null);
@@ -21,6 +26,7 @@ public class Apd extends Data {
             clazz = CLASS_APD;
             dtype = DTYPE_DSC;
             this.descs = descs;
+            nDescs = descs.length;
 	}
 
         public static Data getData(Data [] descs, Data help, Data units, Data error, Data validation)
@@ -31,8 +37,8 @@ public class Apd extends Data {
         
 	public Data[] getDescs()
         {
-            Data []retDescs = new Data[descs.length];
-            for(int i = 0; i < descs.length; i++)
+            Data []retDescs = new Data[nDescs];
+            for(int i = 0; i < nDescs; i++)
                 retDescs[i] = descs[i];
             return retDescs;
 	}
@@ -46,6 +52,7 @@ public class Apd extends Data {
             descs = new Data[inDescs.length];
             for(int i = 0; i < inDescs.length; i++)
                 descs[i] = inDescs[i];
+            nDescs = descs.length;
         }
 	/**
 	 * 
@@ -60,13 +67,13 @@ public class Apd extends Data {
         {
             if(descs == null)
             {
-                descs = new Data[newDim];
+                descs = new Data[CHUNK_SIZE];
             }
             else
             {
                 if(newDim <= descs.length) return;
-                Data newDescs[] = new Data[newDim];
-                for(int i = 0; i  < descs.length; i++)
+                Data newDescs[] = new Data[(newDim/CHUNK_SIZE)*CHUNK_SIZE + CHUNK_SIZE];
+                for(int i = 0; i  < nDescs; i++)
                     newDescs[i] = descs[i];
                 descs = newDescs;
             }

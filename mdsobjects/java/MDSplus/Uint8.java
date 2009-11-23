@@ -22,6 +22,12 @@ public class Uint8 extends Scalar {
         dtype = DTYPE_BU;
         this.datum = datum;
     }
+    public boolean equals(Object data)
+    {
+        if(!(data instanceof Uint8))
+            return false;
+        return((Uint8)data).datum == datum;
+    }
     public static Data getData(byte datum, Data help, Data units, Data error, Data validation) 
     { 
         return new Uint8(datum, help, units, error, validation);

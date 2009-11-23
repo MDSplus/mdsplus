@@ -37,6 +37,22 @@ public class Uint32Array extends Array
         System.arraycopy(inDatum, 0, datum, 0, inDatum.length);
         setShape(dims);
     }
+    public boolean equals(Object obj)
+    {
+        if(!(obj instanceof Uint32Array))
+            return false;
+        Uint32Array data = (Uint32Array)obj;
+        if(data.dims.length != dims.length)
+            return false;
+        for(int i = 0; i < dims.length; i++)
+            if(data.dims[i] != dims[i])
+                return false;
+        for(int i = 0; i < datum.length; i++)
+            if(data.datum[i] != datum[i])
+                return false;
+        return true;
+    }
+    
     
     public static Data getData(int []datum, int []dims, Data help, Data units, Data error, Data validation)
     {
