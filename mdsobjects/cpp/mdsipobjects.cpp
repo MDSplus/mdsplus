@@ -14,6 +14,7 @@ extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
 extern "C" int ConnectToMdsEvents(char *host);
 extern "C" void DisconnectFromMds(int sockId);
+extern "C" void FreeMessage(void *m);
 
 
 #define DTYPE_UCHAR_IP   2
@@ -309,7 +310,7 @@ Data *Connection::get(char *expr, Data **args, int nArgs)
 			default: throw new MdsException("Unexpected data type returned by mdsip");
 		}
 	}
-	if(mem) free(mem);
+	if(mem) FreeMessage(mem);
 	return resData;	
 }
 
@@ -372,7 +373,7 @@ void Connection::put(char *inPath, char *expr, Data **args, int nArgs)
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
     if (status & 1 && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
       memcpy(&status,ptr,numBytes);
-    if (mem) free(mem);
+    if (mem) FreeMessage(mem);
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -418,7 +419,7 @@ void GetMany::insert(char * beforeName, char *name, char *expr, Data **args, int
 	{
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->isEqual(nameStr))
+		if(currName->equals(nameStr))
 		{
 			deleteData(currName);
 			deleteData(currDict);
@@ -442,7 +443,7 @@ void GetMany::remove(char *name)
 	{
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->isEqual(nameStr))
+		if(currName->equals(nameStr))
 		{
 			deleteData(currName);
 			deleteData(currDict);
@@ -541,7 +542,7 @@ void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args,
 	{
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->isEqual(nodeNameStr))
+		if(currName->equals(nodeNameStr))
 		{
 			deleteData(currName);
 			deleteData(currDict);
@@ -565,7 +566,7 @@ void PutMany::remove(char *nodeName)
 	{
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(nodeKey);
-		if(currName->isEqual(nodeNameStr))
+		if(currName->equals(nodeNameStr))
 		{
 			deleteData(currName);
 			deleteData(currDict);
@@ -593,7 +594,7 @@ void PutMany::execute()
 }
 
 
-void PutMany::getStatus(char *nodeName)
+void PutMany::checkStatus(char *nodeName)
 {
 	if(!evalRes)
 		throw new MdsException("Data have not written yet");
@@ -604,7 +605,7 @@ void PutMany::getStatus(char *nodeName)
 		throw new MdsException("Missing data item in evaluation list");
 
 	String *successStr = new String("Success");
-	if(!successStr->isEqual(resItem))
+	if(!successStr->equals(resItem))
 	{
 		char *errMsg = resItem->getString();
 		MdsException *exc = new MdsException(errMsg);
