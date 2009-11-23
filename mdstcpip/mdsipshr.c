@@ -211,6 +211,12 @@ int MdsPut(SOCKET sock, char *node, char *expression, ...)  /**** NOTE: NULL ter
   return status;
 }
 
+void FreeMessage(void *m)
+{
+	free(m);
+}
+
+
 int  MdsOpen(SOCKET sock, char *tree, int shot)
 {
   struct descrip treearg;

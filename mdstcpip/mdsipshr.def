@@ -50,3 +50,5 @@ CreateListener
 SetCloseOnExec
 MdsDispatchEvent
 ZeroFD
+FreeMessage
+
