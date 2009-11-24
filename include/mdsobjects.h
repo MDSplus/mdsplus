@@ -234,7 +234,7 @@ protected:
 		virtual void *convertToDsc() = 0;
 		void *operator new(size_t sz);
 		void operator delete(void *p);
-		virtual bool isEqual(Data *data) {return false;}
+		virtual bool equals(Data *data) {return false;}
 		Data()
 		{
 			changed = true;
@@ -624,7 +624,7 @@ protected:
 			res[length] = 0;
 			return res;
 		}
-		bool isEqual(Data *data)
+		bool equals(Data *data)
 		{
 			if(data->clazz != clazz || data->dtype != dtype) return false;
 			String *dataStr = (String *)data;
@@ -1680,7 +1680,7 @@ protected:
 		{
 			for(int i = 0; i < nDescs/2; i++)
 			{
-				if(strData->isEqual(descs[2*i]))
+				if(strData->equals(descs[2*i]))
 				{
 					if(descs[2*i+1])
 						descs[2*i+1]->refCount++;
@@ -1694,7 +1694,7 @@ protected:
 		{
 			for(int i = 0; i < nDescs/2; i++)
 			{
-				if(strData->isEqual(descs[2*i]))
+				if(strData->equals(descs[2*i]))
 				{
 					deleteData(descs[2*i]);
 					descs[2*i] = strData;
@@ -2116,7 +2116,7 @@ protected:
 		void insert(char *beforeName, char *name, char *expr, Data **args, int nArgs);
 		void remove(char *name);
 		void execute();
-		void getStatus(char *name);
+		void checkStatus(char *name);
 	};
 
 

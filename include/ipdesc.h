@@ -47,6 +47,7 @@ extern "C" {
 #ifdef _NO_MDS_PROTO
 extern SOCKET ConnectToMds();
 extern SOCKET ConnectToMdsEvents();
+extern void   FreeMessage(void *m);
 extern int  SendArg();
 extern int  GetAnswerInfo();
 extern int   DisconnectFromMds();
@@ -81,6 +82,7 @@ extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
 extern int   MdsOpen(SOCKET sock, char *tree, int shot);
 extern int   MdsSetDefault(SOCKET sock, char *node);
 extern int   MdsClose(SOCKET sock);
+extern void   FreeMessage(void *m);
 #endif
 #endif
 
