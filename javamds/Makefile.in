@@ -33,7 +33,7 @@ install:
 	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ @libdir@
 
 @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKJNI@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lCacheShr -lpthread $(LIBS)
+	$(LD) -o $@ @LINKJNI@ $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr -lCacheShr -lpthread $(LIBS)
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
