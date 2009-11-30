@@ -18,7 +18,7 @@ public fun IPControl__add(in _path, out _nidout)
     DevAddNode(_cn // ':IPSTAR', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':DELTAIPSTAR', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':DELTARAMPD', 'NUMERIC', *, *, _nid);
-    DevAddNode(_cn // ':POLMAX', 'NUMERIC', *, *, _nid);
+    DevAddNode(_cn // ':POHMMAX', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':TAUZ', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':TAUP', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':WAVE', 'SIGNAL', *, *, _nid);
