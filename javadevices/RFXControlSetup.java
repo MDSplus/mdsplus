@@ -662,6 +662,7 @@ public class RFXControlSetup extends DeviceSetup {
   DeviceTable deviceTable29 = new DeviceTable();
   DeviceTable deviceTable211 = new DeviceTable();
   DeviceTable currentControlTable = new DeviceTable();
+  DeviceTable rfpCurrentControlTable = new DeviceTable();
   DeviceButtons deviceButtons1 = new DeviceButtons();
   public RFXControlSetup() {
     try {
@@ -699,7 +700,7 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel5.setLayout(gridLayout5);
     gridLayout5.setRows(8);
     gridLayout5.setVgap(-5);
-    gridLayout3.setRows(6);
+    gridLayout3.setRows(7);
     jPanel1.setLayout(gridLayout3);
     deviceTable6.setOffsetNid(1091);
     deviceTable6.setLabelString("Axi Feedforward");
@@ -2768,6 +2769,16 @@ public class RFXControlSetup extends DeviceSetup {
     currentControlTable.setPreferredHeight(20);
     currentControlTable.setUseExpressions(true);
 
+    rfpCurrentControlTable.setOffsetNid(1101);
+    rfpCurrentControlTable.setLabelString("RFP Plasma Current Control");
+    rfpCurrentControlTable.setNumCols(8);
+    rfpCurrentControlTable.setNumRows(1);
+    rfpCurrentControlTable.setIdentifier("");
+    rfpCurrentControlTable.setColumnNames(new String[] {"IpStar",  "DeltaIpStar", "DeltaTRampDown", "PohmMax", "Tauz", "Taup", "DeltaTBumpless", "8"});
+    rfpCurrentControlTable.setRowNames(null);
+    rfpCurrentControlTable.setPreferredHeight(20);
+    rfpCurrentControlTable.setUseExpressions(true);
+
     jPanel414.add(deviceField420, null);
     jPanel414.add(deviceField423, null);
     jPanel414.add(deviceField419, null);
@@ -3126,6 +3137,7 @@ public class RFXControlSetup extends DeviceSetup {
     jPanel1.add(deviceTable29, null);
     jPanel1.add(deviceTable211, null);
     jPanel1.add(currentControlTable, null);
+    jPanel1.add(rfpCurrentControlTable, null);
     jScrollPane4.getViewport().add(jPanel5, null);
     jPanel5.add(jPanel6, null);
         jPanel6.add(deviceField20, null);
