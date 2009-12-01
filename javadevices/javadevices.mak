@@ -15,7 +15,6 @@ CAMERASetup.java\
 CHVPSSetup.java\
 CHVPS_SETSetup.java\
 DEQUSetupSetup.java\
-DeviceSetup.java\
 DFLUSetupSetup.java\
 DIO2EncoderSetup.java\
 DIO2Setup.java\
@@ -28,6 +27,7 @@ EM_GAINSetup.java\
 FLU_GAINSetup.java\
 FR10Setup.java\
 IPC901Setup.java\
+IPControlSetup.java\
 J221Setup.java\
 K3115Setup.java\
 L5613Setup.java\
