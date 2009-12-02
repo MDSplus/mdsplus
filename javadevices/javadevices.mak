@@ -88,5 +88,5 @@ XRAYSetup.java
 
 all : $(DEVICES)
 	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar;..\java\classes\jTraverser.jar $(DEVICES)
-	"$(JDK_DIR)\bin\jar" -cf ..\java\classes\jDevices.jar *.class
+	"$(JDK_DIR)\bin\jar" -cf ..\java\classes\jDevices.jar *.class ..\javatraverser\*.class ..\javatraverser\*.gif
 
