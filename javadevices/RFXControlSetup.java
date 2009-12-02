@@ -2774,7 +2774,7 @@ public class RFXControlSetup extends DeviceSetup {
     rfpCurrentControlTable.setNumCols(8);
     rfpCurrentControlTable.setNumRows(1);
     rfpCurrentControlTable.setIdentifier("");
-    rfpCurrentControlTable.setColumnNames(new String[] {"IpStar",  "DeltaIpStar", "DeltaTRampDown", "PohmMax", "Tauz", "Taup", "DeltaTBumpless", "8"});
+    rfpCurrentControlTable.setColumnNames(new String[] {"IpStar",  "DeltaIpStar", "DeltaTRampDown", "PohmMax", "Tauz", "Taup", "DeltaTBumpless", "AAGain"});
     rfpCurrentControlTable.setRowNames(null);
     rfpCurrentControlTable.setPreferredHeight(20);
     rfpCurrentControlTable.setUseExpressions(true);
