@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="rtevents"
 	ProjectGUID="{70571434-ABCB-4148-958B-B01BFD255F5B}"
 	RootNamespace="rtevents"
@@ -74,13 +74,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\Debug\mdsshr.lib ..\Debug\mdsipshr.lib odbc32.lib odbccp32.lib wsock32.lib"
+				AdditionalDependencies="..\win32\Debug\mdsshr.lib ..\win32\Debug\mdsipshr.lib odbc32.lib odbccp32.lib wsock32.lib"
+				OutputFile="..\win32\debug\RtEventsShr.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/RtEventsShr.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary="..\Debug/RtEventsShr.lib"
+				ImportLibrary="..\WIN32\Debug/RtEventsShr.lib"
 				TargetMachine="1"
 			/>
 			<Tool

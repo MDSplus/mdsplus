@@ -5,8 +5,8 @@
 #define MAX_SEM_COUNT 256
 class EXPORT UnnamedSemaphore
 {
-	LPSTR semName;
-
+//	LPSTR semName;
+	char semName[256];
 public:
 	void initialize(int initVal)
 	{
@@ -20,7 +20,7 @@ public:
 		while(true) 
 		{
 			sprintf((char *)semName, "%x", uniqueId);
-			HANDLE semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, semName);
+			HANDLE semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, (LPSTR)semName);
 			if(semHandle == 0)
 				throw new SystemException("Error initializing semaphore", GetLastError());
 			if(GetLastError() == ERROR_ALREADY_EXISTS)
@@ -34,7 +34,7 @@ public:
 	}
 	void  wait() 
 	{
-		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, semName);
+		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
 		if(semHandle == 0) 
 			throw new SystemException("Error opening semaphore", GetLastError());
         int status = WaitForSingleObject( 
@@ -47,7 +47,7 @@ public:
 	
 	int timedWait(Timeout &timeout)
 	{
-		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, semName);
+		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
 		if(semHandle == 0)
 			throw new SystemException("Error opening semaphore", GetLastError());
         int status = WaitForSingleObject( 
@@ -61,7 +61,7 @@ public:
 	
 	void  post() //return 0 if seccessful
 	{
-		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, semName);
+		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
 		if(semHandle == 0)
 			throw new SystemException("Error opening semaphore", GetLastError());
 		if(!ReleaseSemaphore( semHandle, 1, NULL))
@@ -71,7 +71,7 @@ public:
 	
 	bool isZero()
 	{
-		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, semName);
+		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
 		if(semHandle == 0)
 			throw new SystemException("Error opening semaphore", GetLastError());
        int status = WaitForSingleObject( 

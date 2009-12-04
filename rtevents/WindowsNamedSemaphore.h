@@ -11,9 +11,9 @@ public:
 
 	void initialize(int id, int initVal)
 	{
-		LPSTR name;
-		sprintf((char *)name, "REALTIME_SEM_%d", id);
-		semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, name);
+		char name[24];
+		sprintf(name, "REALTIME_SEM_%d", id);
+		semHandle = CreateSemaphore(NULL, initVal, MAX_SEM_COUNT, (LPSTR)name);
 		if(semHandle == 0)
 			throw new SystemException("Error initializing semaphore", GetLastError());
 	}

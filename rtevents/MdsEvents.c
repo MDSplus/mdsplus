@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ipdesc.h>
@@ -6,7 +8,14 @@
 #include <strroutines.h>
 #include <string.h>
 #include "SystemSpecific.h"
-extern char *TranslateLogical(char *);
+#include "../mdsshr/mdsshrthreadsafe.h"
+
+EXPORT void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
+EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size);
+
+
+
+
 
 extern void EventWait(char *name, char *buf, int size, int *retSize);
 extern void EventReset();
@@ -23,133 +32,284 @@ extern char *EventGetSerializedMemState(int *size);
 
 
 
-
-////Structures used to record for each event the list of IP addresses for that event
 #define MAX_IP 256
-#define MAX_LINE 1024
-struct EventDescr 
+//NOTE in the following Client means the entity which registers for an event while Server refers to entities 
+//which receive the mdsip registration message. When an event is issued, the server will receive it on the 
+//local machine and will send a Event mdsip message to the Client.
+
+//Struct ClientIpDescriptor describes the mdsip connections which are used when registering to any event
+//in order to broadcast the registration message
+//It is created only once, at the first event registration and its content is taken from env variable REVENT_MDSIP_LIST
+
+//Struct ServerIpDescriptor describes the open mdsip connections at the server side. Note that the server may not define
+//env variable REVENT_MDSIP_LIST, i.e. it may not register for events.
+//It is used to avoid opening a mdsip connection for every received event registration message
+
+struct IpDescriptor
 {
-	char *eventName;
-	int numIp;
-	SOCKET ids[MAX_IP];
-	struct EventDescr *nxt;
+	char *ipAddr;
+	SOCKET id;
 };
 
-//mdseventip.host format:
-//<event name> : <ip address> [, <ip address>]*
+static struct IpDescriptor clientIpDescriptors[MAX_IP];
+static int numClientIpDescriptors;
 
-//Event descriptor head
-static struct EventDescr *eventDescrHead = 0;
+static struct IpDescriptor serverIpDescriptors[MAX_IP];
+static int numServerIpDescriptors;
 
+
+
+//Struct ClientEventDescriptor describes the single registered event. It is used to keep a reference count
+//which is incremented every time someone registers for the event and decremented upon event deregistration
+//When the reference count goes to zoreo a unregistration message is broadcast
+struct ClientEventDescriptor
+{
+	char *eventName;
+	int refCount;
+	struct ClientEventDescriptor *nxt;
+};
+static struct ClientEventDescriptor *clientEventDescrHead = 0;
+
+
+//Struct ServerEventDescriptor describes an event for which soemone on another computer registered
+//it is updated every time a registration message is received, and is used every time such an event 
+//is issued locally in order to send Event message to inetrested listeners 
+//(i.e. machines where someone registered for the event)
+struct ServerEventDescriptor 
+{
+	char *eventName;
+	char busy;
+	int numIp;
+	char *ipAddrs[MAX_IP];
+	SOCKET ids[MAX_IP];
+	void *eventId;
+	struct ServerEventDescriptor *nxt;
+};
+
+
+static struct ServerEventDescriptor *serverEventDescrHead = 0;
+
+static unsigned long *eventMutex;
+static int eventMutex_initialized = 0;
+static void lock()
+{
+	LockMdsShrMutex(&eventMutex,&eventMutex_initialized);
+
+}
+static void unlock()
+{
+    UnlockMdsShrMutex(&eventMutex);
+}
 
 static void configure()
 {
-	char *confFilename;
-	char line[MAX_LINE];
-	FILE *confF;
-	char *tok;
-	char currAddr[512];
-	char *addrPtr, *addrPtr1;
-	struct EventDescr *currEventDescr;
-	int i;
-
-	static int initialized = 0;
-
-	if(initialized) return;
-	initialized = 1;
-
-	confFilename = TranslateLogical("mdsevent_conf");
-	confF = fopen(confFilename, "r");
-	if(!confF) return;
-
-
-	while(1)
+	char *ipList, *ipList1, *currIp;
+	static char configured = 0;
+	if(configured)
+		return;
+	lock();
+	
+	numClientIpDescriptors = 0;
+	ipList = getenv("REVENT_MDSIP_LIST");
+	if(!ipList)
 	{
-		if(!fgets(line, MAX_LINE, confF)) break;
-		tok = strtok(line, ":");
-		if(!tok) continue;
-		currEventDescr = (struct EventDescr *)malloc(sizeof(struct EventDescr));
-		currEventDescr->eventName = malloc(strlen(tok) + 1);
-		strcpy(currEventDescr->eventName, tok);
-		currEventDescr->numIp = 0;
-		for(i = 0; i < MAX_IP; i++)
-		{
-			tok = strtok(NULL, ",");
-			if(!tok) break;
-			strcpy(currAddr, tok);
-			for(addrPtr = currAddr;  *addrPtr == ' '; addrPtr++);
-			if(!addrPtr) break;
-			for(addrPtr1 = addrPtr; *addrPtr1 && *addrPtr1 != ' '; addrPtr1++);
-			*addrPtr1 = 0;
-			currEventDescr->ids[currEventDescr->numIp] = ConnectToMds(addrPtr);
-			if(currEventDescr->ids[currEventDescr->numIp]) 
-				currEventDescr->numIp++;
-		}
-		currEventDescr->nxt = eventDescrHead;
-		eventDescrHead = currEventDescr;
+		unlock();
+		return;
 	}
-	fclose(confF);
+	ipList1 = malloc(strlen(ipList)+1);
+	strcpy(ipList1, ipList);
+
+
+	currIp = strtok(ipList1, ";" );
+	while( currIp != NULL && numClientIpDescriptors < MAX_IP) 
+	{
+		clientIpDescriptors[numClientIpDescriptors].id = ConnectToMds(currIp);
+		if(clientIpDescriptors[numClientIpDescriptors].id > 0)
+		{
+			clientIpDescriptors[numClientIpDescriptors].ipAddr = malloc(strlen(currIp) + 1);
+			strcpy(clientIpDescriptors[numClientIpDescriptors].ipAddr, currIp);
+			numClientIpDescriptors++;
+		}
+		currIp = strtok(NULL, ";" );
+	}
+	configured = 1;
+	unlock();
+	///CODE FOR FILLING numIps, thisIp and ipDescrs
 }
 
+static void eventHandler(char *evName, char *buf, int size, void *arg);
 
 
-static void propagateEvent(char *name, char *buf, int size, char wait)
+
+static void EventRegisterRemote(char *eventName)
 {
-	struct EventDescr *currEventDescr;
-	int i;
-	char *expr;
-	struct descriptor candidateD = {0, DTYPE_T, CLASS_S, 0};
-	struct descriptor patternD = {0, DTYPE_T, CLASS_S, 0};
-	struct descrip ansarg;
-	struct descrip bufD;
+	int i, status;
+	struct descrip evNameDsc, thisIpDsc;
 
+	struct ClientEventDescriptor *currEventDescr, *prevEventDescr;
+	char *thisIp = getenv("REVENT_THIS_MDSIP");
 	configure();
+	if(!thisIp || !*thisIp || numClientIpDescriptors == 0)
+		return;  //Missing information for managing rempte events
 
-	bufD.dtype = DTYPE_BU;
-	bufD.ndims = 1;
-	bufD.dims[0] = size;
-	bufD.length = 1;
-	bufD.ptr = buf;
 
-	expr = malloc(strlen(name) + 512);
-	if(wait)
-		sprintf(expr, "RtEventsShr->EventTriggerAndWait(\"%s\", $1, val(%d))", name, size);
-	else
-		sprintf(expr, "RtEventsShr->EventTrigger(\"%s\", $1, val(%d))", name, size);
+	thisIpDsc.length = strlen(thisIp);
+	thisIpDsc.ptr = thisIp;
+	thisIpDsc.ndims = 0;
+	thisIpDsc.dtype = DTYPE_CSTRING;
 
-	candidateD.length = strlen(name);
-	candidateD.pointer = name;
-	for(currEventDescr = eventDescrHead; currEventDescr; currEventDescr = currEventDescr->nxt)
+	evNameDsc.length = strlen(eventName);
+	evNameDsc.ptr = eventName;
+	evNameDsc.ndims = 0;
+	evNameDsc.dtype = DTYPE_CSTRING;
+
+	lock();
+	prevEventDescr = currEventDescr = clientEventDescrHead;
+	while(currEventDescr && strcmp(currEventDescr->eventName, eventName))
 	{
-		patternD.length = strlen(currEventDescr->eventName);
-		patternD.pointer = currEventDescr->eventName;
-		if(!StrMatchWild(&candidateD, &patternD))
-			continue;
-		for(i = 0; i < currEventDescr->numIp; i++)
-		{
-			memset(&ansarg, 0, sizeof(ansarg));
-			MdsValue(currEventDescr->ids[i], expr, &bufD, &ansarg, NULL);
-		}
+		prevEventDescr = currEventDescr;
+		currEventDescr = currEventDescr->nxt;
 	}
-	free(expr);
+	if(!currEventDescr)
+	{
+		currEventDescr = (struct ClientEventDescriptor *)malloc(sizeof(struct ClientEventDescriptor));
+		currEventDescr->eventName = malloc(strlen(eventName) + 1);
+		strcpy(currEventDescr->eventName, eventName);
+		currEventDescr->refCount = 1;
+		for(i = 0; i < numClientIpDescriptors; i++)
+		{
+			status = MdsValue(clientIpDescriptors[i].id, "RtEventsShr->EventRegisterExecute($1,$2)", &evNameDsc, &thisIpDsc, NULL);
+		}
+		if(prevEventDescr)
+			prevEventDescr->nxt = currEventDescr;
+		else
+			clientEventDescrHead = currEventDescr;
+	}
+	else //already found: someone already registered fior this event on this machine
+		currEventDescr->refCount++;
+	unlock();
 }
 
+
+
+EXPORT int EventRegisterExecute(char *eventName, char *mdsipAddr)
+{
+	int idx, i;
+	struct ServerEventDescriptor *currDescr, *prevDescr; 
+	lock();
+	//Look for an already open connection
+	currDescr = prevDescr = serverEventDescrHead;
+	while(currDescr && strcmp(currDescr->eventName, eventName))
+	{
+		prevDescr = currDescr;
+		currDescr = currDescr->nxt;
+	}
+	if(!currDescr)
+	{
+		currDescr = (struct ServerEventDescriptor *)malloc(sizeof(struct ServerEventDescriptor));
+		currDescr->eventName = malloc(strlen(eventName) + 1);
+		strcpy(currDescr->eventName, eventName);
+		currDescr->numIp = 0;
+		currDescr->nxt = 0;
+		currDescr->busy = 0;
+		if(prevDescr)
+			prevDescr->nxt = currDescr;
+		else
+			serverEventDescrHead = currDescr;
+		currDescr->eventId = EventAddListener(eventName,  (void (*)(char *, char *, int, void *, char, int , char *, int))eventHandler, (void *)currDescr);
+	}
+	for(idx = 0; idx < currDescr->numIp && strcmp(currDescr->ipAddrs[idx], mdsipAddr); idx++);
+	if(idx == currDescr->numIp && idx < MAX_IP) //Connection not yet open
+	{	
+		for(i = 0; i < numServerIpDescriptors; i++)
+		{
+			if(!strcmp(mdsipAddr, serverIpDescriptors[i].ipAddr))
+				break;
+		}
+		if(i == numServerIpDescriptors && i < MAX_IP)
+		{
+			serverIpDescriptors[i].ipAddr = malloc(strlen(mdsipAddr)+1);
+			strcpy(serverIpDescriptors[i].ipAddr, mdsipAddr);
+			serverIpDescriptors[i].id = ConnectToMds(mdsipAddr);
+			if(serverIpDescriptors[i].id > 0)
+				numServerIpDescriptors++;
+		}
+		currDescr->ipAddrs[idx] = malloc(strlen(mdsipAddr) + 1);
+		strcpy(currDescr->ipAddrs[idx], mdsipAddr);
+		currDescr->ids[idx] = serverIpDescriptors[i].id;
+		currDescr->numIp++;
+	}
+	unlock();
+	return 1;
+}
+
+
+
+static void eventHandler(char *evName, char *buf, int size, void *arg)
+{
+	int i, status;
+	struct descrip evNameDsc, bufDsc;
+	struct descrip bufSizeDsc;
+
+	struct ServerEventDescriptor *currEventDescr;
+	lock();
+	currEventDescr= (struct ServerEventDescriptor *)arg;
+	if(currEventDescr->busy)
+		return; //Do not propagate events received from outside
+
+	evNameDsc.ptr = evName;
+	evNameDsc.length = strlen(evName);
+	evNameDsc.ndims = 0;
+	evNameDsc.dtype = DTYPE_CSTRING;
+
+	bufDsc.ptr = buf;
+	bufDsc.length = 1;
+	bufDsc.ndims = 1;
+	bufDsc.dims[0] = size;
+	bufDsc.dtype = DTYPE_UCHAR;
+
+	bufSizeDsc.ptr = (char *)&size;
+	bufSizeDsc.length = sizeof(int);
+	bufSizeDsc.ndims = 0;
+	bufSizeDsc.dtype = DTYPE_LONG;
+
+	unlock();
+	for(i = 0; i < currEventDescr->numIp; i++)
+		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2)", &evNameDsc, &bufDsc, &bufSizeDsc, NULL);
+}
+
+
+EXPORT int EventTriggerExecute(char *eventName, char *buf, int *bufSize)
+{
+	//Make sure this event will not be propagated outside this computer
+	struct ServerEventDescriptor *currDescr;
+	lock();
+	currDescr = serverEventDescrHead;
+	while(currDescr && strcmp(currDescr->eventName, eventName))
+		currDescr = currDescr->nxt;
+	if(currDescr)
+		currDescr->busy = 1;
+	unlock();
+	MdsEventTriggerAndWait(eventName, buf, *bufSize);
+	currDescr->busy = 0;
+	return 1;
+}
 
 
 EXPORT void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg)
 {
-	return EventAddListener(name,  (void (*)(char *, char *, int, void *, char, int retSize, char *retData, int type))callback, callbackArg);
+	void *id = EventAddListener(name,  (void (*)(char *, char *, int, void *, char, int retSize, char *retData, int type))callback, callbackArg);
+	EventRegisterRemote(name);
+	return id;
 }
 
 EXPORT int MdsEventTrigger(char *name, char *buf, int size)
 {
-	propagateEvent(name, buf, size, 0);
 	return (EventTrigger(name, buf, size)==0)?1:0;
 }
 
 EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 {
-	propagateEvent(name, buf, size, 1);
 	return (EventTriggerAndWait(name, buf, size)==0)?1:0;
 }
 
