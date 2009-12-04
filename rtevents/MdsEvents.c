@@ -254,6 +254,9 @@ static void eventHandler(char *evName, char *buf, int size, void *arg)
 	struct descrip bufSizeDsc;
 
 	struct ServerEventDescriptor *currEventDescr;
+
+PRINTF("event handler %s\n", evName);
+
 	lock();
 	currEventDescr= (struct ServerEventDescriptor *)arg;
 	if(currEventDescr->busy)
