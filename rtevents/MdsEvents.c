@@ -261,7 +261,7 @@ printf("event handler %s\n", evName);
 	MakeDescrip(&bufDsc, DTYPE_UCHAR, 1, &size, buf);
 	MakeDescrip(&bufSizeDsc, DTYPE_LONG, 0,0, (char *)&size);
 	for(i = 0; i < currEventDescr->numIp; i++)
-		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2)", &evNameDsc, &bufDsc, &bufSizeDsc, &resDsc, NULL);
+		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2,$3)", &evNameDsc, &bufDsc, &bufSizeDsc, &resDsc, NULL);
 }
 
 
