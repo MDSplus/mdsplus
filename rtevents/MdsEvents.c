@@ -144,10 +144,11 @@ static void eventHandler(char *evName, char *buf, int size, void *arg);
 static void EventRegisterRemote(char *eventName)
 {
 	int i, status;
-	struct descrip evNameDsc, thisIpDsc;
+	struct descrip evNameDsc, thisIpDsc, resDsc;
 
 	struct ClientEventDescriptor *currEventDescr, *prevEventDescr;
-	char *thisIp = getenv("REVENT_THIS_MDSIP");
+	char thisIp[512];
+	strncpy(thisIp, getenv("REVENT_THIS_MDSIP"), 511);
 	configure();
 	if(!thisIp || !*thisIp || numClientIpDescriptors == 0)
 		return;  //Missing information for managing rempte events
@@ -169,7 +170,9 @@ static void EventRegisterRemote(char *eventName)
 		currEventDescr->refCount = 1;
 		for(i = 0; i < numClientIpDescriptors; i++)
 		{
-			status = MdsValue(clientIpDescriptors[i].id, "RtEventsShr->EventRegisterExecute($1,$2)", &evNameDsc, &thisIpDsc, NULL);
+			status = MdsValue(clientIpDescriptors[i].id, "RtEventsShr->EventRegisterExecute($1,$2)", &evNameDsc, &thisIpDsc, &resDsc, NULL);
+			if(!(status & 1))
+				printf("Error sending event: %s\n", MdsGetMsg(status));
 		}
 		if(prevEventDescr)
 			prevEventDescr->nxt = currEventDescr;
@@ -241,7 +244,7 @@ printf("EVENT REGISTER EXECUTE %s %s\n", eventName, mdsipAddr);
 static void eventHandler(char *evName, char *buf, int size, void *arg)
 {
 	int i, status;
-	struct descrip evNameDsc, bufDsc;
+	struct descrip evNameDsc, bufDsc, resDsc;
 	struct descrip bufSizeDsc;
 
 	struct ServerEventDescriptor *currEventDescr;
@@ -258,7 +261,7 @@ printf("event handler %s\n", evName);
 	MakeDescrip(&bufDsc, DTYPE_UCHAR, 1, &size, buf);
 	MakeDescrip(&bufSizeDsc, DTYPE_LONG, 0,0, (char *)&size);
 	for(i = 0; i < currEventDescr->numIp; i++)
-		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2)", &evNameDsc, &bufDsc, &bufSizeDsc, NULL);
+		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2)", &evNameDsc, &bufDsc, &bufSizeDsc, &resDsc, NULL);
 }
 
 
