@@ -280,8 +280,8 @@ static void ResetWave(Widget w)
         else
           Spline(count + num_knots, x, y, selected, pendown);
         XtVaSetValues(dw, XmdsNcount, count + num_knots, XmdsNxValue, x, XmdsNyValue, y,
-                       XmdsNselections, selected, XmdsNpenDown, pendown, XmdsNxMin, 0, XmdsNxMax, 0, XmdsNyMin, 0, XmdsNyMax, 0,
-                       XmdsNdeleteOnlySelected, 1, NULL);
+                       XmdsNselections, selected, XmdsNpenDown, pendown, XmdsNxMin, (void *)0, XmdsNxMax, (void *)0, XmdsNyMin, (void *)0, XmdsNyMax, (void *)0,
+                       XmdsNdeleteOnlySelected, (void *)1, NULL);
         XtFree((char *)x);
         XtFree((char *)y);
         XtFree(selected);
