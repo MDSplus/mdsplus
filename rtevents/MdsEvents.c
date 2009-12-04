@@ -196,6 +196,8 @@ EXPORT int EventRegisterExecute(char *eventName, char *mdsipAddr)
 {
 	int idx, i;
 	struct ServerEventDescriptor *currDescr, *prevDescr; 
+printf("EVENT REGISTER EXECUTE %s %s\n", eventName, mdsipAddr);
+
 	lock();
 	//Look for an already open connection
 	currDescr = prevDescr = serverEventDescrHead;
@@ -283,6 +285,8 @@ EXPORT int EventTriggerExecute(char *eventName, char *buf, int *bufSize)
 {
 	//Make sure this event will not be propagated outside this computer
 	struct ServerEventDescriptor *currDescr;
+printf("EVENT TRIGGER EXECUTE %s\n", eventName);
+
 	lock();
 	currDescr = serverEventDescrHead;
 	while(currDescr && strcmp(currDescr->eventName, eventName))
