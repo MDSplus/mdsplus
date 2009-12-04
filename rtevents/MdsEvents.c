@@ -152,17 +152,8 @@ static void EventRegisterRemote(char *eventName)
 	if(!thisIp || !*thisIp || numClientIpDescriptors == 0)
 		return;  //Missing information for managing rempte events
 
-
-	thisIpDsc.length = strlen(thisIp);
-	thisIpDsc.ptr = thisIp;
-	thisIpDsc.ndims = 0;
-	thisIpDsc.dtype = DTYPE_CSTRING;
-
-	evNameDsc.length = strlen(eventName);
-	evNameDsc.ptr = eventName;
-	evNameDsc.ndims = 0;
-	evNameDsc.dtype = DTYPE_CSTRING;
-
+	MakeDescrip(&thisIpDsc, DTYPE_CSTRING, 0, 0, thisIp);
+	MakeDescrip(&evNameDsc, DTYPE_CSTRING, 0, 0, eventName);
 	lock();
 	prevEventDescr = currEventDescr = clientEventDescrHead;
 	while(currEventDescr && strcmp(currEventDescr->eventName, eventName))
@@ -261,24 +252,11 @@ printf("event handler %s\n", evName);
 	currEventDescr= (struct ServerEventDescriptor *)arg;
 	if(currEventDescr->busy)
 		return; //Do not propagate events received from outside
-
-	evNameDsc.ptr = evName;
-	evNameDsc.length = strlen(evName);
-	evNameDsc.ndims = 0;
-	evNameDsc.dtype = DTYPE_CSTRING;
-
-	bufDsc.ptr = buf;
-	bufDsc.length = 1;
-	bufDsc.ndims = 1;
-	bufDsc.dims[0] = size;
-	bufDsc.dtype = DTYPE_UCHAR;
-
-	bufSizeDsc.ptr = (char *)&size;
-	bufSizeDsc.length = sizeof(int);
-	bufSizeDsc.ndims = 0;
-	bufSizeDsc.dtype = DTYPE_LONG;
-
 	unlock();
+
+	MakeDescrip(&evNameDsc,DTYPE_CSTRING,0,0,evName);
+	MakeDescrip(&bufDsc, DTYPE_UCHAR, 1, &size, buf);
+	MakeDescrip(&bufSizeDsc, DTYPE_LONG, 0,0, (char *)&size);
 	for(i = 0; i < currEventDescr->numIp; i++)
 		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2)", &evNameDsc, &bufDsc, &bufSizeDsc, NULL);
 }
