@@ -80,8 +80,9 @@ struct ServerEventDescriptor
 	char *eventName;
 	char busy;
 	int numIp;
-	char *ipAddrs[MAX_IP];
-	SOCKET ids[MAX_IP];
+	struct IpDescriptor *clients[MAX_IP];
+//	char *ipAddrs[MAX_IP];
+//	SOCKET ids[MAX_IP];
 	void *eventId;
 	struct ServerEventDescriptor *nxt;
 };
@@ -184,6 +185,16 @@ static void EventRegisterRemote(char *eventName)
 	unlock();
 }
 
+static void checkConnection(struct IpDescriptor *ipDescr)
+{
+	struct descrip resDsc;
+	int status = 0;
+
+	if(ipDescr->id != -1)
+		status = MdsValue(ipDescr->id, "1", &resDsc, NULL);
+	if(!(status & 1))
+		ipDescr->id = ConnectToMds(ipDescr->ipAddr);
+}
 
 
 EXPORT int EventRegisterExecute(char *eventName, char *mdsipAddr)
@@ -214,7 +225,7 @@ printf("EVENT REGISTER EXECUTE %s %s\n", eventName, mdsipAddr);
 			serverEventDescrHead = currDescr;
 		currDescr->eventId = EventAddListener(eventName,  (void (*)(char *, char *, int, void *, char, int , char *, int))eventHandler, (void *)currDescr);
 	}
-	for(idx = 0; idx < currDescr->numIp && strcmp(currDescr->ipAddrs[idx], mdsipAddr); idx++);
+	for(idx = 0; idx < currDescr->numIp && strcmp(currDescr->clients[idx]->ipAddr, mdsipAddr); idx++);
 	if(idx == currDescr->numIp && idx < MAX_IP) //Connection not yet open
 	{	
 		for(i = 0; i < numServerIpDescriptors; i++)
@@ -230,11 +241,10 @@ printf("EVENT REGISTER EXECUTE %s %s\n", eventName, mdsipAddr);
 			if(serverIpDescriptors[i].id > 0)
 				numServerIpDescriptors++;
 		}
-		currDescr->ipAddrs[idx] = malloc(strlen(mdsipAddr) + 1);
-		strcpy(currDescr->ipAddrs[idx], mdsipAddr);
-		currDescr->ids[idx] = serverIpDescriptors[i].id;
+		currDescr->clients[idx] = &serverIpDescriptors[i];
 		currDescr->numIp++;
 	}
+	checkConnection(currDescr->clients[idx]);
 	unlock();
 	return 1;
 }
@@ -261,7 +271,8 @@ printf("event handler %s\n", evName);
 	MakeDescrip(&bufDsc, DTYPE_UCHAR, 1, &size, buf);
 	MakeDescrip(&bufSizeDsc, DTYPE_LONG, 0,0, (char *)&size);
 	for(i = 0; i < currEventDescr->numIp; i++)
-		status = MdsValue(currEventDescr->ids[i], "RtEventsShr->EventTriggerExecute($1,$2,$3)", &evNameDsc, &bufDsc, &bufSizeDsc, &resDsc, NULL);
+		if(currEventDescr->clients[i]->id != -1)
+			status = MdsValue(currEventDescr->clients[i]->id, "RtEventsShr->EventTriggerExecute($1,$2,$3)", &evNameDsc, &bufDsc, &bufSizeDsc, &resDsc, NULL);
 }
 
 
