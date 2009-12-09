@@ -65,7 +65,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
-				AdditionalOptions="..\..\win32\debug\mdsipshr.lib"
+				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				AssemblyDebug="0"
