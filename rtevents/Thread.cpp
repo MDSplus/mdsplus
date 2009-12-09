@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sched.h>
 
 void Thread::start(Runnable *rtn, void *arg, bool deallocate)
 {
@@ -30,10 +31,12 @@ void handlerWithArg(WithArg *withArg)
 	if(withArg->useAttr)
 	{
 		pid_t pid = getpid();
-		int status = sched_setaffinity(pid, CPU_MASK_SIZE * sizeof(int), (const cpu_set_t *)withArg->cpuMask);
+		int status;
+		/* DOES NOT ADHERE TO LINUX STANDARDS 
+		status = sched_setaffinity(pid, CPU_MASK_SIZE * sizeof(int), (const cpu_set_t *)withArg->cpuMask);
 		if(status == -1)
 			printf("Failed to set Thread affinity\n");
-		
+		*/
 		struct sched_param param;
 		param.sched_priority = withArg->priority;
 		status = sched_setscheduler(pid, withArg->policy, &param);

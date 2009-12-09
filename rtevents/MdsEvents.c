@@ -89,8 +89,11 @@ struct ServerEventDescriptor
 
 
 static struct ServerEventDescriptor *serverEventDescrHead = 0;
-
+#ifdef HAVE_WINDOWS_H
 static unsigned long *eventMutex;
+#else
+static pthread_mutex_t eventMutex;
+#endif
 static int eventMutex_initialized = 0;
 static void lock()
 {
