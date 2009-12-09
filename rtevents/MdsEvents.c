@@ -315,6 +315,12 @@ EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size)
 	return (EventTriggerAndWait(name, buf, size)==0)?1:0;
 }
 
+EXPORT void MdsEventRemoveListener(void *eventHandler)
+{
+	EventRemoveListener(eventHandler);
+}
+
+
 EXPORT extern void MdsEventWait(char *name, char *buf, int size, int *retSize)
 {
 	EventWait(name, buf, size, retSize);
