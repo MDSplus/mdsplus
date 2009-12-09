@@ -24,7 +24,9 @@ public:
 
 	void *addListener(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg = 0, bool copyBuf = true, int retDataSize = 0)
 	{
-		return evManager->addListener(eventName, 0, callback, memManager, callbackArg, copyBuf, retDataSize);
+		void *id = evManager->addListener(eventName, 0, callback, memManager, callbackArg, copyBuf, retDataSize);
+		evManager->startWatchdog(memManager);
+		return id;
 	}
 
 	void *addListener(const char *eventName, void (*callback)(char *, char *, int, void *, bool, int, char *, int), ThreadAttributes *tAttr, void *callbackArg = 0, bool copyBuf = true, int retDataSize = 0)

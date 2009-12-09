@@ -301,3 +301,35 @@ EventManager *EventManager::getEventManager()
 	return eventManager;
 }
 
+class WatchdogRunnable:public Runnable
+{
+	SharedMemManager *memManager;
+public:
+	WatchdogRunnable(SharedMemManager *memManager)
+	{
+		this->memManager = memManager;
+	}
+	void run(void *arg)
+	{
+		EventManager *evManager = (EventManager *)arg;
+		Delay *delay = new Delay(1000); //1 sec clean period
+		while(true)
+		{
+			delay->wait();
+			//printf("CLEAN\n");
+			evManager->clean(100, memManager);
+		}
+	}
+};
+
+static bool watchdogStarted = false;
+void EventManager::startWatchdog(SharedMemManager *memManager)
+{
+	if(watchdogStarted)
+		return;
+	watchdogStarted = true;
+	Thread *thread = new Thread;
+	thread->start(new WatchdogRunnable(memManager), this);
+}
+
+

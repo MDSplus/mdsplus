@@ -33,6 +33,7 @@ public:
 	static SharedMemManager *getMemManager();
 	void resizeListener(void *eventAddr,  int newSize, SharedMemManager *memManager);
 	EventState *getState();
+	void startWatchdog(SharedMemManager *memManager);
 };
 
 class EventRunnable: public Runnable
