@@ -7,7 +7,7 @@ public class Event
     byte[] dataBuf;
     java.lang.String name;
     boolean disposed = false;
-    int eventId;
+    long eventId;
     static {
         try {
           System.loadLibrary("JavaMds");
@@ -36,9 +36,9 @@ public class Event
         disposed = true;
         unregisterEvent(eventId); 
     }
-    static public void setevent(java.lang.String evName, Data data)
+    static public void setEvent(java.lang.String evName, Data data)
     {
-        seteventRaw(evName, (data == null)?new byte[0]:data.serialize());
+        setEventRaw(evName, (data == null)?new byte[0]:data.serialize());
     }
     void intRun(byte []buf, long time)
     {
@@ -49,7 +49,7 @@ public class Event
         else data = Data.deserialize(buf);
         run();
     }
-    static public native void seteventRaw(java.lang.String evName, byte[] buf);
-    native int registerEvent(java.lang.String name);
-    native void unregisterEvent(int eventId);
+    static public native void setEventRaw(java.lang.String evName, byte[] buf);
+    native long registerEvent(java.lang.String name);
+    native void unregisterEvent(long eventId);
 }

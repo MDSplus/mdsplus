@@ -53,6 +53,7 @@ MDSplus/Procedure.java\
 MDSplus/Program.java\
 MDSplus/PutMany.java\
 MDSplus/Range.java\
+MDSplus/REvent.java\
 MDSplus/Routine.java\
 MDSplus/Scalar.java\
 MDSplus/Signal.java\
