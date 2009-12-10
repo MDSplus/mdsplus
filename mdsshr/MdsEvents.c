@@ -1,8 +1,8 @@
 #include <config.h>
 #include <STATICdef.h>
-extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-extern int MDSUdpEvent(char *name, int bufLen, char *buf);      
-extern int MDSUdpEventCan(int id);
+//extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
+//extern int MDSUdpEvent(char *name, int bufLen, char *buf);      
+//extern int MDSUdpEventCan(int id);
 
 #define _GNU_SOURCE /* glibc2 needs this */
 #ifdef __sparc__

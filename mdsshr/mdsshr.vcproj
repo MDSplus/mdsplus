@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386 /IMPLIB:&quot;..\WIN32\Debug/MdsShr.lib&quot;  /DEF:&quot;.\MdsShr.def&quot;"
+				AdditionalOptions="/MACHINE:I386 /IMPLIB:&quot;..\WIN32\Debug/MdsShr.lib&quot; "
 				AdditionalDependencies="wsock32.lib ws2_32.lib"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="libcd.lib"
