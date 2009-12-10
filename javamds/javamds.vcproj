@@ -160,7 +160,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(JDK_DIR)\lib\jvm.lib&quot; &quot;..\win32\Debug\cacheshr.lib&quot; &quot;..\win32\Debug\mdsipshr.lib&quot;"
+				AdditionalDependencies="odbc32.lib odbccp32.lib &quot;$(JDK_DIR)\lib\jvm.lib&quot; &quot;..\win32\Debug\mdsshr.lib&quot; &quot;..\win32\Debug\cacheshr.lib&quot; &quot;..\win32\Debug\mdsipshr.lib&quot; &quot;..\win32\Debug\RtEventsShr.lib&quot;"
 				OutputFile="..\win32\Debug\$(ProjectName).dll"
 				ModuleDefinitionFile=".\javamds.def"
 				GenerateDebugInformation="true"

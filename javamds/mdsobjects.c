@@ -4,6 +4,7 @@
 #include "MDSplus_CachedTreeNode.h"
 #include "MDSplus_CachedTree.h"
 #include "MDSplus_Event.h"
+#include "MDSplus_REvent.h"
 #include "MDSplus_Connection.h"
 #include <stdio.h>
 #include <mdsdescrip.h>
@@ -19,9 +20,9 @@
 #include <cacheshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <rtevents.h>
 
 #include "../mdsshr/mdsshrthreadsafe.h"
-
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
 
 
@@ -2755,6 +2756,7 @@ static void releaseJNIEnv()
     (*jvm)->DetachCurrentThread(jvm);
 }
 
+
 static void handleEvent(void *objPtr, int dim ,char *buf)
 {
 	jmethodID mid;
@@ -2780,11 +2782,16 @@ static void handleEvent(void *objPtr, int dim ,char *buf)
 	releaseJNIEnv();
 }
 
+static void handleREvent(char *evName, char *buf, int dim, void *objPtr)
+{
+	handleEvent(objPtr, dim, buf);
+}
+
 //Record eventObj instances retrieved by NewGlobalref. They will be released then the event is disposed
 //(indexed by eventId)
 struct EventDescr {
 	jobject eventObj;
-	int eventId;
+	_int64 eventId;
 	struct EventDescr *nxt;
 };
 #ifdef HAVE_WINDOWS_H
@@ -2796,7 +2803,7 @@ static int eventMutex_initialized = 0;
 #endif
 
 static struct EventDescr *eventDescrHead = 0;
-static void addEventDescr(jobject eventObj, int eventId)
+static void addEventDescr(jobject eventObj, _int64 eventId)
 {
 	struct EventDescr *newDescr = malloc(sizeof(struct EventDescr));
 	LockMdsShrMutex(&eventMutex,&eventMutex_initialized);
@@ -2807,7 +2814,7 @@ static void addEventDescr(jobject eventObj, int eventId)
     UnlockMdsShrMutex(&eventMutex);
 }
 
-static jobject releaseEventDescr(int eventId)
+static jobject releaseEventDescr(_int64 eventId)
 {
 	jobject retObj = 0;
 	struct EventDescr *currDescr, *prevDescr;
@@ -2840,7 +2847,7 @@ static jobject releaseEventDescr(int eventId)
  * Method:    registerEvent
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT int JNICALL Java_MDSplus_Event_registerEvent
+JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent
   (JNIEnv *env, jobject obj, jstring jevent)
 {
 	const char *event;
@@ -2854,8 +2861,8 @@ JNIEXPORT int JNICALL Java_MDSplus_Event_registerEvent
 	}
 	event = (*env)->GetStringUTFChars(env, jevent, 0);
 	//make sure this Event instance will not be released by the garbage collector
-	status = MDSEventAst((char *)event, handleEvent, (void *)eventObj, &eventId); 
-	addEventDescr(eventObj, eventId);
+	status = MDSUdpEventAst((char *)event, handleEvent, (void *)eventObj, &eventId); 
+	addEventDescr(eventObj, (_int64)eventId);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
 	if(!(status & 1))
 		return -1;
@@ -2868,27 +2875,26 @@ JNIEXPORT int JNICALL Java_MDSplus_Event_registerEvent
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent
-  (JNIEnv *env, jobject obj, jint eventId)
+  (JNIEnv *env, jobject obj, jlong eventId)
 {
 	jobject delObj = releaseEventDescr(eventId);
-	MDSEventCan(eventId);
+	MDSUdpEventCan(eventId);
 	//Allow Garbage Collector reclaim the Event object
 	(*env)->DeleteGlobalRef(env, delObj);
 }
 
 /*
  * Class:     MDSplus_Event
- * Method:    seteventRaw
+ * Method:    setEventRaw
  * Signature: (Ljava/lang/String;[B)V
  */
-JNIEXPORT void JNICALL Java_MDSplus_Event_seteventRaw
+JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
   (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
 {
 	int dim = (*env)->GetArrayLength(env, jbuf);
 	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
 	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
-
-	MDSEvent((char *)event, dim, buf);
+	MDSUdpEvent((char *)event, dim, buf);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
 }
 
@@ -2929,6 +2935,81 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
 	LibConvertDateString("now", &time);
 	return (long)time;
 }
+
+
+/*
+ * Class:     MDSplus_REvent
+ * Method:    registerEvent
+ * Signature: (Ljava/lang/String;)I
+ */
+JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent
+  (JNIEnv *env, jobject obj, jstring jevent)
+{
+	const char *event;
+	void *eventId = (void *)-1;
+	int status;
+	jobject eventObj = (*env)->NewGlobalRef(env, obj);
+
+	if(jvm == 0)
+	{
+		status = (*env)->GetJavaVM(env, &jvm);
+		if (status) 
+			printf("GetJavaVM error %d\n", status);
+	}
+	event = (*env)->GetStringUTFChars(env, jevent, 0);
+	//make sure this Event instance will not be released by the garbage collector
+	eventId = MdsEventAddListener((char *)event, handleREvent, (void *)eventObj);
+	addEventDescr(eventObj, (_int64)eventId);
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
+	if(eventId == NULL)
+		return -1;
+	return (jlong)eventId;
+}
+
+/*
+ * Class:     MDSplus_REvent
+ * Method:    unregisterEvent
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent
+  (JNIEnv *env, jobject obj, jlong eventId)
+{
+	jobject delObj = releaseEventDescr(eventId);
+	MdsEventRemoveListener((void *)eventId);
+	//Allow Garbage Collector reclaim the Event object
+	(*env)->DeleteGlobalRef(env, delObj);
+}
+
+/*
+ * Class:     MDSplus_REvent
+ * Method:    setEventRaw
+ * Signature: (Ljava/lang/String;[B)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw
+  (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
+{
+	int dim = (*env)->GetArrayLength(env, jbuf);
+	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
+	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
+	MdsEventTrigger((char *)event, buf, dim);
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
+}
+
+/*
+ * Class:     MDSplus_REvent
+ * Method:    setEventRawAndWait
+ * Signature: (Ljava/lang/String;[B)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait
+  (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
+{
+	int dim = (*env)->GetArrayLength(env, jbuf);
+	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
+	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
+	MdsEventTriggerAndWait((char *)event, buf, dim);
+	(*env)->ReleaseStringUTFChars(env, jevent, event);
+}
+
 
 /////////////////////Connection stuff //////////////////////
 ///NOTE put it in the end of this source file so that ipdesc.h does not harm

@@ -9,27 +9,27 @@ extern "C" {
 #endif
 /*
  * Class:     MDSplus_Event
- * Method:    sendEvent
+ * Method:    setEventRaw
  * Signature: (Ljava/lang/String;[B)V
  */
-JNIEXPORT void JNICALL Java_MDSplus_Event_sendEvent
+JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
   (JNIEnv *, jclass, jstring, jbyteArray);
 
 /*
  * Class:     MDSplus_Event
  * Method:    registerEvent
- * Signature: (Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;)J
  */
-JNIEXPORT jint JNICALL Java_MDSplus_Event_registerEvent
+JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent
   (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     MDSplus_Event
  * Method:    unregisterEvent
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Event_unregisterEvent
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }
