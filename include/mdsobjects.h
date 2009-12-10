@@ -2037,7 +2037,9 @@ protected:
 /////////////Class Event///////////
 	class EXPORT Event
 	{
-
+	protected:
+		virtual void connectToEvents();
+		virtual void disconnectFromEvents();
 	public:
 		char *eventName;
 		Data *eventData;
@@ -2045,6 +2047,7 @@ protected:
 		int eventBufSize;
 		int eventId;
 		_int64 eventTime;
+		Event(){}
 		Event(char *evName);
 		~Event();
 		virtual void run() {}
@@ -2064,9 +2067,28 @@ protected:
 			return new Uint64(eventTime);
 		}
 		char *getName() { return eventName;}
-		static void setevent(char *evName, Data *data);
-		static void seteventRaw(char *evName, int bufLen, char *buf);
+		static void setEvent(char *evName, Data *data);
+		static void setEventRaw(char *evName, int bufLen, char *buf);
 	};
+
+
+	class  EXPORT REvent:public Event
+	{
+		void *reventId;
+	protected:
+		virtual void connectToEvents();
+		virtual void disconnectFromEvents();
+	public:
+		REvent(char *evName);
+		~REvent();
+		static void setEvent(char *evName, Data *data);
+		static void setEventRaw(char *evName, int bufLen, char *buf);
+		static void setEventAndWait(char *evName, Data *data);
+		static void setEventRawAndWait(char *evName, int bufLen, char *buf);
+	};
+
+
+
 //////////////End Class Event//////////////
 
 ///////////////remote data access classes ////////////////

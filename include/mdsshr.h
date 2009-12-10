@@ -53,6 +53,9 @@ EXPORT extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descri
 EXPORT extern int MDSEventAst(char *eventnam, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 EXPORT extern int MDSEventCan(int eventid);
 EXPORT extern int MDSEvent(char *evname, int num_bytes, char *data);
+EXPORT extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
+EXPORT extern int MDSUdpEvent(char *name, int bufLen, char *buf);	
+EXPORT extern int MDSUdpEventCan(int id);
 EXPORT extern int MDSWfevent(char *evname, int buflen, char *data, int *datlen);
 EXPORT extern char  *MdsDtypeString( int  id );
 EXPORT extern char  *MdsClassString( int  id );
