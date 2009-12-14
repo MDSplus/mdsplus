@@ -2179,7 +2179,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	status = GetSegmentIndex(info_ptr, index.previous_offset, &index);
       if ((status&1) != 0 && idx >= index.first_idx && idx < index.first_idx + SEGMENTS_PER_INDEX) {
 	SEGMENT_INFO *sinfo=&index.segment[idx % SEGMENTS_PER_INDEX];
-	if (sinfo->start == -1) {
+	if (sinfo->data_offset == -1) {
 	  status = TreeFAILURE;
 	}
 	else {
