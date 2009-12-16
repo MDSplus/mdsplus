@@ -88,6 +88,8 @@ class descriptor(_C.Structure):
             value=makeData(value)
 
         if isinstance(value,_N.ndarray):
+            if not value.flags.c_contiguous:
+                value=value.copy()
             if str(value.dtype)[1:2]=='S':
                 for i in range(len(value.flat)):
                     value.flat[i]=value.flat[i].ljust(value.itemsize)
