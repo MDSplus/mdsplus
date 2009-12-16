@@ -159,10 +159,8 @@ static char buf[1000];
 
   //printf("Aperto %d\n", status);
 
-/*//report(MdsGetMsg(status));*/
-//sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, MdsGetMsg(status), status);/*//MdsGetMsg(status));*/
+    RaiseException(env, MdsGetMsg(status), status);
 
   
   return 0;
@@ -170,7 +168,7 @@ static char buf[1000];
 }
 
 JNIEXPORT jint JNICALL Java_Database_openNew
-  (JNIEnv *env, jobject obj)
+  (JNIEnv *env, jobject obj)	
 {
   int status;
   jfieldID name_fid, shot_fid;
@@ -189,14 +187,12 @@ static char buf[1000];
   name = (*env)->GetStringUTFChars(env, jname, 0);
   shot = (*env)->GetIntField(env, obj, shot_fid);
 
-/*	printf("PARTE OPEN NEW\n");*/
-	status = TreeOpenNew((char *)name, shot);
-/*	printf("FATTO");*/
+//printf("PARTE OPEN NEW %s %d\n", name, shot);
+   status = TreeOpenNew((char *)name, shot);
+//printf("FATTO %d %s\n", status, MdsGetMsg(status));
   (*env)->ReleaseStringUTFChars(env, jname, name);
-
-sprintf(buf, "%s %d %s %s %s", name, shot, MdsGetMsg(status), getenv("rfx_path"), getenv("LD_LIBRARY_PATH"));
   if(!(status & 1))
-    RaiseException(env, buf, status);/*//MdsGetMsg(status));*/
+    RaiseException(env, MdsGetMsg(status), status);
   return 0;
 
 }
