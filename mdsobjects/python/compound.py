@@ -73,7 +73,7 @@ class Compound(Data):
                 raise TypeError,'args attribute must be a tuple'
         if name in self._fields:
             tmp=list(self.args)
-            while len(tmp) < self._fields[name]:
+            while len(tmp) <= self._fields[name]:
                 tmp.append(None)
             tmp[self._fields[name]]=value
             self.args=tuple(tmp)
@@ -138,7 +138,7 @@ class Compound(Data):
 
     def setArgumentAt(self,idx,value):
         """Set argument at index idx (indexes start at 0)"""
-        return super(type(self),self).__setitem__(idx,value)
+        return super(type(self),self).__setitem__(idx+self._argOffset,value)
 
     def setArguments(self,args):
         """Set arguments
