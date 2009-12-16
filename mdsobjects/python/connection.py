@@ -367,7 +367,7 @@ class Connection(object):
             """
             super(Connection.PutMany,self).append(Dictionary({'node':str(node),'exp':str(exp),'args':args}))
 
-        def getStatus(self,node):
+        def checkStatus(self,node):
             """Return the status of the put for this node. Anything other than 'Success' will raise an exception.
             @param node: Node name. Must match exactly the node name used in the append() or insert() methods.
             @type node: str
