@@ -359,7 +359,7 @@ public class RFXPoloidalSetup extends DeviceSetup {
     //jPanel5.add(deviceField2, null);
         //jPanel5.add(deviceField5);
         jPanel1.add(jPanel4, null);
-        //jPanel1.add(jPanel15);
+        jPanel1.add(jPanel15);
         jPanel15.add(deviceField21);
         jPanel15.add(deviceField20);
         jPanel15.add(deviceField19);
