@@ -2296,22 +2296,25 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlong jtime, jboolean isCached, jint policy)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
-	_int64 time;
+	int numTimes;
+	_int64 *times;
 	
-	time = jtime;
+	numTimes = (*env)->GetArrayLength(env, jtimes);
+	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
 	dataD = ObjectToDescrip(env, jdata);
 
 	if(isCached)
-		status = _RTreePutTimestampedSegment(ctx, nid, &time, (struct descriptor_a *)dataD, policy);
+		status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
 	else
-		status = _TreePutTimestampedSegment(ctx, nid, &time, (struct descriptor_a *)dataD);
+		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
 	FreeDescrip(dataD);
+	(*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
 	if(!(status & 1))
 		throwMdsException(env, status);
 }
