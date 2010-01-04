@@ -13,7 +13,6 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 
 """
 
-#from pydoc import TextDoc
 from apd import Apd,Dictionary,List
 from mdsarray import makeArray,Float32Array,Float64Array,Int128Array,Int16Array,Int32Array,Int64Array,Int8Array,StringArray,Uint128Array,Uint16Array,Uint32Array,Uint64Array,Uint8Array
 from compound import Action,Conglom,Dependency,Dimension,Dispatch,Function,Method,Procedure,Program,Range,Routine,Signal,Window
@@ -25,12 +24,3 @@ from tree import Tree,CachedTree
 from mdsdevice import Device
 from connection import Connection
 from event import Event
-#tdoc=TextDoc()
-#__doc__=__doc__+tdoc.docmodule(Apd)+tdoc.docclass(Apd)
-#__doc__=__doc__+tdoc.docmodule(Array)
-#__doc__=__doc__+tdoc.docmodule(Compound)+tdoc.docclass(Action)+tdoc.docclass(Conglom)
-#__doc__=__doc__+tdoc.docmodule(Ident)+tdoc.docclass(Ident)
-#__doc__=__doc__+tdoc.docmodule(Scalar)
-#__doc__=__doc__+tdoc.docmodule(Tree)+tdoc.docclass(Tree)
-#__doc__=__doc__+tdoc.docmodule(TreeNode)+tdoc.docclass(TreeNode)
-#del tdoc
