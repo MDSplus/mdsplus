@@ -1,5 +1,4 @@
 import gtk
-import gtk.glade
 import gobject
 import inspect
 import os
