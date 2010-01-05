@@ -12,15 +12,13 @@ public fun LASER_NDRT__dump(as_is _nid, optional _method)
     private _N_RT_TRIG_MODE	= 7;
     private _N_NUM_PULSES	= 8;
     private _N_DELAY_PULSE	= 9;
-    private _N_MAX_N7_AMP	= 10;
-    private _N_MIN_N7_AMP	= 11;
-    private _N_MAX_N7_PH	= 12;
-    private _N_MIN_N7_PH	= 13;
-    private _N_MAX_RATIO	= 14;
-    private _N_MIN_RATIO	= 15;
-    private _N_OSC		= 16;
-    private _N_AMP		= 17;
-    private _N_SLAB		= 18;
+    private _N_MAX_AMP		= 10;
+    private _N_MIN_AMP		= 11;
+    private _N_MAX_PHASE	= 12;
+    private _N_MIN_PHASE	= 13;
+    private _N_OSC		= 14;
+    private _N_AMP		= 15;
+    private _N_SLAB		= 16;
 
     private _K_EXT_DT		= 0;
     private _K_EXT_10_DT	= 1;

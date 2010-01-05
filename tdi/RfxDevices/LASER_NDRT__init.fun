@@ -12,15 +12,13 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
     private _N_RT_TRIG_MODE	= 7;
     private _N_NUM_PULSES	= 8;
     private _N_DELAY_PULSE	= 9;
-    private _N_MAX_N7_AMP	= 10;
-    private _N_MIN_N7_AMP	= 11;
-    private _N_MAX_N7_PH	= 12;
-    private _N_MIN_N7_PH	= 13;
-    private _N_MAX_RATIO	= 14;
-    private _N_MIN_RATIO	= 15;
-    private _N_OSC		= 16;
-    private _N_AMP		= 17;
-    private _N_SLAB		= 18;
+    private _N_MAX_AMP		= 10;
+    private _N_MIN_AMP		= 11;
+    private _N_MAX_PHASE	= 12;
+    private _N_MIN_PHASE	= 13;
+    private _N_OSC		= 14;
+    private _N_AMP		= 15;
+    private _N_SLAB		= 16;
 
     private _K_EXT_DT		= 0;
     private _K_EXT_10_DT	= 1;
@@ -33,7 +31,8 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
 
 
     private _ASCII_MODE = 0;
-	private _MIN_DT = 0.025;
+    private _MIN_DT = 0.025;
+    private _MIN_To = -0.025;
 	
 
 write(*, "LASER Neodimium");
@@ -67,6 +66,15 @@ write(*, _port);
 	abort();
     }
 write(*, _ip_rt);
+
+
+    _to = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE	)), _error = 1);
+    if( _error || _t0 < _MIN_To )
+    {
+	DevLogErr(_nid, "Trigger time (To) is missing or less than -25ms "); 
+	abort();
+    }
+write(*, _to);
 
 
     DevNodeCvt(_nid, _N_TRIG_MODE, ['EXT_DT', 'EXT_10_DT', "EXT_RT"], [ _K_EXT_DT, _K_EXT_10_DT, _K_EXT_RT], _trg_mode = 0);
@@ -137,47 +145,42 @@ write(*, _ip_rt);
     {
     	DevNodeCvt(_nid, _N_RT_TRIG_MODE, ['N7_AMP', 'N7_AMP_PH', "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"], [_K_N7_AMP, _K_N7_AMP_PH, _K_RATIO_DOM_SEC, _K_RATIO_DOM_SEC_PH], _trg_mode_rt = 0);
 	
-    	_n7_max_amp = if_error(data(DevNodeRef(_nid, _N_MAX_N7_AMP)), _error = 1);
+    	_max_amp = if_error(data(DevNodeRef(_nid, _N_MAX_AMP)), _error = 1);
     	if(_error  )
     	{
-	    DevLogErr(_nid, "Missing n=7 max amplitude trigger level");
+	    DevLogErr(_nid, "Missing max amplitude level");
 	    abort();
     	}
+	_max_amp = _max_amp * _max_amp * 192.0;
 
-    	_n7_min_amp = if_error(data(DevNodeRef(_nid, _N_MIN_N7_AMP)), _error = 1);
+    	_min_amp = if_error(data(DevNodeRef(_nid, _N_MIN_N7_AMP)), _error = 1);
     	if(_error  )
     	{
-	    DevLogErr(_nid, "Missing n=7 min amplitude trigger level");
+	    DevLogErr(_nid, "Missing min amplitude level");
 	    abort();
     	}
+	_min_amp = _min_amp * _min_amp * 192.0;
 
-    	_n7_max_ph = if_error(data(DevNodeRef(_nid, _N_MAX_N7_PH)), _error = 1);
-    	if(_error  )
-    	{
-	    DevLogErr(_nid, "Missing n=7 max phase value for trigger evaluation");
-	    abort();
-    	}
+	_max_ph = 0;
+ 	_min_ph = 0;
+	if( _trg_mode_rt == _K_N7_AMP_PH || _trg_mode_rt == _K_RATIO_DOM_SEC_PH )
+	{
+    		_max_ph = if_error(data(DevNodeRef(_nid, _N_MAX_PHASE)), _error = 1);
+    		if(_error  )
+    		{
+	    		DevLogErr(_nid, "Missing max phase value");
+	    		abort();
+    		}
+		_max_ph = ( _max_ph + 72 ) * 2. * $PI / 360.;
 
-    	_n7_min_ph = if_error(data(DevNodeRef(_nid, _N_MIN_N7_PH)), _error = 1);
-    	if(_error  )
-    	{
-	    DevLogErr(_nid, "Missing n=7 min phase value for trigger evaluation");
-	    abort();
-    	}
-
-    	_max_ratio = if_error(data(DevNodeRef(_nid, _N_MAX_RATIO)), _error = 1);
-    	if(_error  )
-    	{
-	    DevLogErr(_nid, "Missing max ratio value for trigger evaluation");
-	    abort();
-    	}
-
-    	_min_ratio = if_error(data(DevNodeRef(_nid, _N_MIN_RATIO)), _error = 1);
-    	if(_error  )
-    	{
-	    DevLogErr(_nid, "Missing min ratio value for trigger evaluation");
-	    abort();
-    	}
+    		_min_ph = if_error(data(DevNodeRef(_nid, _N_MIN_PHASE)), _error = 1);
+    		if(_error  )
+    		{
+	    		DevLogErr(_nid, "Missing min phase value");
+	    		abort();
+    		}
+		_min_ph = ( _min_ph + 72 ) * 2. * $PI / 360.;
+	}
     } else {
 
 	    DevLogErr(_nid, "Invalid trigger mode");
@@ -243,7 +246,7 @@ write(*, _ip_rt);
 			_cmd = 'MdsConnect("'//_ip_rt//'")';
 			execute(_cmd);
 		
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxAmp", $)', float(_n7_max_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxAmp", $)', float(_max_amp)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max amplitude value");
@@ -252,7 +255,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinAmp", $)', float(_n7_min_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinAmp", $)', float(_min_amp)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 min amplitude value");
@@ -261,7 +264,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxPhase", $)', float(_n7_max_ph)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxPhase", $)', float(_max_ph)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max phase value");
@@ -270,7 +273,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinPhase", $)', float(_n7_min_ph)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinPhase", $)', float(_min_ph)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max phase value");
@@ -279,7 +282,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_max_ratio)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_max_amp)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set max ratio value");
@@ -288,7 +291,7 @@ write(*, _ip_rt);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinRatio", $)', float(_min_ratio)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinRatio", $)', float(_min_amp)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set min ratio value");
