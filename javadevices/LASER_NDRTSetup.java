@@ -47,13 +47,14 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         jPanel7 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
+        jLabel1 = new javax.swing.JLabel();
         deviceField9 = new DeviceField();
+        jLabel3 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         deviceField10 = new DeviceField();
+        jLabel2 = new javax.swing.JLabel();
         deviceField11 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField12 = new DeviceField();
-        deviceField13 = new DeviceField();
+        jLabel4 = new javax.swing.JLabel();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Laser Neodymium Yag  Real Time Trigger");
@@ -61,10 +62,10 @@ public class LASER_NDRTSetup extends DeviceSetup {
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init", "dump", "pulse", "store"});
+        deviceButtons1.setMethods(new String[] {"init", "dump", "store"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(8, 0));
+        jPanel1.setLayout(new java.awt.GridLayout(7, 0));
 
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -84,6 +85,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceField2.setLabelString("Controller addr");
         deviceField2.setNumCols(25);
         deviceField2.setOffsetNid(2);
+        deviceField2.setTextOnly(true);
         jPanel3.add(deviceField2);
 
         deviceField3.setIdentifier("");
@@ -123,8 +125,8 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceTable1.setNumRows(1);
         deviceTable1.setOffsetNid(9);
         deviceTable1.setPreferredColumnWidth(20);
-		deviceTable1.setUseExpressions(true);
         deviceTable1.setRowNames(new String[] {"Delay_Pulse"});
+        deviceTable1.setUseExpressions(true);
         jPanel5.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(jPanel5);
@@ -140,45 +142,50 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceField5.setLabelString("RT IP addr:");
         deviceField5.setNumCols(20);
         deviceField5.setOffsetNid(4);
+        deviceField5.setTextOnly(true);
         jPanel6.add(deviceField5);
 
         jPanel1.add(jPanel6);
 
         deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Min N7 Amp.:");
+        deviceField8.setLabelString("Amplitude Min :");
+        deviceField8.setNumCols(15);
         deviceField8.setOffsetNid(11);
         jPanel7.add(deviceField8);
 
+        jLabel1.setText("[T]");
+        jPanel7.add(jLabel1);
+
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Max N7 Amp.:");
+        deviceField9.setLabelString("Amplitude Max :");
+        deviceField9.setNumCols(15);
         deviceField9.setOffsetNid(10);
         jPanel7.add(deviceField9);
+
+        jLabel3.setText("[T]");
+        jPanel7.add(jLabel3);
 
         jPanel1.add(jPanel7);
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Min N7 Phase :");
+        deviceField10.setLabelString("Phase Min :");
+        deviceField10.setNumCols(15);
         deviceField10.setOffsetNid(13);
         jPanel8.add(deviceField10);
 
+        jLabel2.setText("[º]");
+        jPanel8.add(jLabel2);
+
         deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Max N7 Phase:");
+        deviceField11.setLabelString("Phase Max :");
+        deviceField11.setNumCols(15);
         deviceField11.setOffsetNid(12);
         jPanel8.add(deviceField11);
 
+        jLabel4.setText("[º]");
+        jPanel8.add(jLabel4);
+
         jPanel1.add(jPanel8);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Min Ratio dom/sec :");
-        deviceField12.setOffsetNid(15);
-        jPanel9.add(deviceField12);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Max ratio dom/sec:");
-        deviceField13.setOffsetNid(14);
-        jPanel9.add(deviceField13);
-
-        jPanel1.add(jPanel9);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -192,8 +199,6 @@ public class LASER_NDRTSetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
-    private DeviceField deviceField12;
-    private DeviceField deviceField13;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -202,6 +207,10 @@ public class LASER_NDRTSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private DeviceTable deviceTable1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -210,7 +219,6 @@ public class LASER_NDRTSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
 
 }
