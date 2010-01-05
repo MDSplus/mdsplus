@@ -462,7 +462,7 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[12] == null)
                 {
-                    devices[14] = device = new RFXDiagTimesSetup();
+                    devices[14] = device = new RFXDiagTimesV1Setup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -3957,7 +3957,7 @@ System.out.println("Print Done");
             case 13:
                 return new PELLETSetup();
             case 14:
-                return new RFXDiagTimesSetup();
+                return new RFXDiagTimesV1Setup();
             case 15:
                 return new RFXMOPSetup();
             case 16:
