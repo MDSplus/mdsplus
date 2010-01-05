@@ -1,14 +1,22 @@
 public fun RFXDiagTimes__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXDiagTimes', 4, _nidout);
+    DevAddStart(_path, 'RFXDiagTimesV1', 11, _nidout);
 
-    DevAddNode(_path // ':ND_TRIGGER', 'NUMERIC', -0.025, *, _nid);
-	tcl('add tag '//_path //':ND_TRIGGER T_ND_TRIGGER');
 
-    DevAddNode(_path // ':ND_PERIOD', 'NUMERIC', -0.05, *, _nid);
-	tcl('add tag ' // _path // ':ND_PERIOD T_ND_PERIOD');
+    _diag = _path//'.DTSR';
+    DevAddNode(_diag , 'STRUCTURE',  *,        *, _nid);
 
-    DevAddNode(_path // ':ND_SEQUENCE', 'NUMERIC', *, *, _nid);
+    DevAddNode(_diag // ':TRIGGER', 'NUMERIC', -0.025, *, _nid);
+    DevAddNode(_diag // ':TRIG_MODE',	'TEXT', 'EXT_DT', *, _nid);
+    DevAddNode(_diag // ':RT_TRIG_MODE','TEXT', 'N7_AMP', *, _nid);
+    DevAddNode(_diag // ':DELAY_PULSE', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_diag // ':AMP_MAX', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_diag // ':AMP_MIN', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_diag // ':PHASE_MAX', 'NUMERIC', 0, *, _nid);
+    DevAddNode(_diag // ':PHASE_MIN', 'NUMERIC', 0, *, _nid);
+
+    DevAddAction(_path//':DTSR_INIT',  'INIT',  'DTSR_INIT', 20,'THOMSON_SERVER', getnci(_path, 'fullpath'), _nid);
+
 
     DevAddEnd();
 }
