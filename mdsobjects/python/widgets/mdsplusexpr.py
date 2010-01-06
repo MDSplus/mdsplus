@@ -3,9 +3,9 @@ import gobject
 
 from mdspluswidget import MDSplusWidget
 
-class MDSplusExpr(MDSplusWidget,gtk.Entry):
+class MDSplusExprFieldWidget(MDSplusWidget,gtk.Entry):
 
-    __gtype_name__ = 'MDSplusExpr'
+    __gtype_name__ = 'MDSplusExprFieldWidget'
 
     __gproperties__ = MDSplusWidget.__gproperties__
     
@@ -30,4 +30,4 @@ class MDSplusExpr(MDSplusWidget,gtk.Entry):
         self.nidOffset = 0
         
 
-gobject.type_register(MDSplusExpr) 
+gobject.type_register(MDSplusExprFieldWidget) 

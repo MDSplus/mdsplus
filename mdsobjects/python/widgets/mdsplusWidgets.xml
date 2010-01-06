@@ -3,9 +3,9 @@
     <glade-widget-classes>
         <glade-widget-class
             title="MDSplus Expression"
-            name="MDSplusExpr"
+            name="MDSplusExprFieldWidget"
             icon-name="textview"
-            generic-name="MDSplusExpr">
+            generic-name="MDSplusExprFieldWidget">
             <properties>
               <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
@@ -62,7 +62,7 @@
         title="MDSplus Widgets">
         <glade-widget-class-ref name="MDSplusOkButtons"/>
         <glade-widget-class-ref name="MDSplusOnOff"/>
-        <glade-widget-class-ref name="MDSplusExpr"/>
+        <glade-widget-class-ref name="MDSplusExprFieldWidget"/>
         <glade-widget-class-ref name="MDSplusPathWidget"/>
     </glade-widget-group>
 </glade-catalog>
