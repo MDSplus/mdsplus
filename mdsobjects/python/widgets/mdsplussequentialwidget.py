@@ -1,12 +1,6 @@
-from gtk import HBox,Entry,Label,Table,EXPAND,FILL,SHRINK
+from gtk import Entry,Label,Table,EXPAND,FILL,SHRINK
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Data,Dispatch
-
-class __label__(HBox):
-    
-    def __init__(self,label):
-        super(__label__,self).__init__(False)
-        self.pack_start(Label(label),False,False,0)
 
 class MDSplusSequentialWidget(Table):
 
@@ -44,12 +38,15 @@ class MDSplusSequentialWidget(Table):
         except Exception,e:
             msg="Invalid sequence specified.\n\n%s" % (e,)
             MDSplusErrorMsg('Invalid Sequence',msg)
-            return None
+            raise
         ans.event=self.event.get_text()
-        try:
-            ans.completion=Data.compile(ans.event)
-        except Exception,e:
-            pass
+        if ans.event == '':
+            ans.event=None
+        else:
+            try:
+                ans.completion=Data.compile(ans.event)
+            except Exception,e:
+                pass
         return ans
         
     def setValue(self,d):
@@ -61,7 +58,10 @@ class MDSplusSequentialWidget(Table):
             self.ident.set_text(self._value.ident.decompile())
             self.phase.set_text(self._value.phase.decompile())
             self.sequence.set_text(self._value.when.decompile())
-            self.event.set_text(self._value.completion.decompile())
+            if self._value.completion is None:
+                self.event.set_text('')
+            else:
+                self.event.set_text(self._value.completion.decompile())
         else:
             self.ident.set_text('')
             self.phase.set_text('')

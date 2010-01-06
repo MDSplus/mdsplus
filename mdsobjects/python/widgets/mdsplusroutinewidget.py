@@ -1,12 +1,6 @@
-from gtk import Table,HBox,Label,Entry,ScrolledWindow,EXPAND,FILL,POLICY_NEVER,POLICY_ALWAYS
+from gtk import Table,Label,Entry,ScrolledWindow,EXPAND,FILL,POLICY_NEVER,POLICY_ALWAYS
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Routine,Data
-
-class __label__(HBox):
-    
-    def __init__(self,label):
-        super(__label__,self).__init__(False)
-        self.pack_start(Label(label),False,False,0)
 
 def adj_changed(adj):
     newstep=adj.upper/8
@@ -23,7 +17,7 @@ class MDSplusRoutineWidget(Table):
         self.argTable=Table(rows=8,columns=2,homogeneous=False)
         for i in range(8):
             self.args.append(Entry())
-            self.argTable.attach(__label__("Arg %d:" % (i+1,)),0,1,i,i+1,0,0)
+            self.argTable.attach(Label("Arg %d:     " % (i+1,)),0,1,i,i+1,0,0)
             self.argTable.attach(self.args[i],1,2,i,i+1,EXPAND|FILL,0)
         self.scrolledWindow=ScrolledWindow()
         self.scrolledWindow.add_with_viewport(self.argTable)
@@ -31,12 +25,12 @@ class MDSplusRoutineWidget(Table):
         adj=self.scrolledWindow.get_vadjustment()
         adj.connect("changed",adj_changed)
         self.timeout=Entry()
-        self.attach(__label__("Library:"),0,1,0,1,0,0)
+        self.attach(Label("Library:"),0,1,0,1,0,0)
         self.attach(self.image,1,2,0,1,EXPAND|FILL,0)
-        self.attach(__label__("Routine:"),0,1,1,2,0,0)
+        self.attach(Label("Routine:"),0,1,1,2,0,0)
         self.attach(self.routine,1,2,1,2,EXPAND|FILL,0)
         self.attach(self.scrolledWindow,0,2,2,3)
-        self.attach(__label__("Timeout:"),0,1,3,4,0,0)
+        self.attach(Label("Timeout:"),0,1,3,4,0,0)
         self.attach(self.timeout,1,2,3,4,EXPAND|FILL,0)
         self.set_row_spacings(5)
         self.value=value
@@ -61,7 +55,7 @@ class MDSplusRoutineWidget(Table):
             except Exception,e:
                 msg="Invalid timeout specified.\n\n%s" % (e,)
                 MDSplusErrorMsg('Invalid Timeout',msg)
-                return None
+                raise
         idx=len(self.args)-1
         found=False
         while idx >= 0:
@@ -75,7 +69,7 @@ class MDSplusRoutineWidget(Table):
                 except Exception,e:
                     msg="Invalid argument specified.\n\n%s" % (e,)
                     MDSplusErrorMsg('Invalid Argument',msg)
-                    return None
+                    raise
                 ans.setArgumentAt(idx,a)
                 found=True
             idx=idx-1
@@ -90,7 +84,7 @@ class MDSplusRoutineWidget(Table):
         if isinstance(self._value,Routine):
             self.image.set_text(self._value.image.decompile())
             self.routine.set_text(self._value.routine.decompile())
-            if self._value.timeout.decompile() == '*':
+            if self._value.timeout is None or self._value.timeout.decompile() == '*':
                 self.timeout.set_text('')
             else:
                 self.timeout.set_text(self._value.timeout.decompile())
@@ -100,6 +94,7 @@ class MDSplusRoutineWidget(Table):
                     arg.set_text('')
                 else:
                     arg.set_text(self._value.getArgumentAt(idx).decompile())
+                idx=idx+1
         else:
             self.image.set_text('')
             self.routine.set_text('')

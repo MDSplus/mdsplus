@@ -2,12 +2,16 @@ from gtk import Window,VBox,HBox,CheckButton,Label,Entry,combo_box_new_text,Butt
 import gobject
 from mdspluswidget import MDSplusWidget
 from mdsplusactionwidget import MDSplusActionWidget
+from mdsplusdispatchwidget import MDSplusDispatchWidget
 from mdsplusmethodwidget import MDSplusMethodWidget
 from mdsplusroutinewidget import MDSplusRoutineWidget
 from mdsplussequentialwidget import MDSplusSequentialWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from mdsplusexpressionwidget import MDSplusExpressionWidget
 from mdsplusdtypeselwidget import MDSplusDtypeSelWidget
+from mdsplusrangewidget import MDSplusRangeWidget
+from mdspluswindowwidget import MDSplusWindowWidget
+from mdspluspathwidget import MDSplusPathWidget
 
 class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
 
@@ -27,7 +31,7 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         self.on=CheckButton(label="On")
         self.parent_on=CheckButton(label="Parent")
         self.parent_on.set_sensitive(False)
-        self.path=Label("")
+        self.path=MDSplusPathWidget()
         hbtags=HBox(homogeneous=False)
         self.tags=Entry()
         self.tags.set_width_chars(60)
@@ -45,18 +49,14 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         hbtags.pack_start(Label("Tags:"),False,False,10)
         hbtags.pack_start(self.tags,False,False,0)
         self.action=MDSplusActionWidget()
-        self.action.set_no_show_all(True)
-        #self.range=MDSplusRangeWidget()
-        #self.window=MDSplusWindowWidget()
+        self.windoww=MDSplusWindowWidget()
         self.sequential=MDSplusSequentialWidget()
-        self.sequential.set_no_show_all(True)
         self.expression=MDSplusExpressionWidget()
-        self.expression.set_no_show_all(True)
         self.method=MDSplusMethodWidget()
-        self.method.set_no_show_all(True)
         self.routine=MDSplusRoutineWidget()
-        self.routine.set_no_show_all(True)
-        self.widgets=(self.action,self.sequential,self.expression,self.method,self.routine)
+        self.dispatch=MDSplusDispatchWidget()
+        self.range=MDSplusRangeWidget()
+        self.widgets=(self.action,self.sequential,self.expression,self.method,self.routine,self.dispatch,self.range,self.windoww)
         apply=Button(stock=STOCK_APPLY)
         cancel=Button(stock=STOCK_CANCEL)
         redo=Button(stock=STOCK_REDO)
@@ -78,11 +78,9 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         vb.pack_start(action_menu,False,False,0)
         vb.pack_start(task_menu,False,False,0)
         vb.pack_start(any_menu,False,False,0)
-        vb.pack_start(self.action,False,False,0)
-        vb.pack_start(self.sequential,False,False,0)
-        vb.pack_start(self.expression,False,False,0)
-        vb.pack_start(self.method,False,False,0)
-        vb.pack_start(self.routine,False,False,0)
+        for w in self.widgets:
+            w.set_no_show_all(True)
+            vb.pack_start(w,False,False,0)
         vb.pack_start(hb2,False,False,20)
         self.add(vb)
         if node is not None:
@@ -104,14 +102,24 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         self.dtype.set_no_show_all(False)
             
     def do_apply(self,button):
-        print self.value
+        try:
+            value=self.value
+            if hasattr(self,'_node'):
+                try:
+                    self.node.record=value
+                except Exception,e:
+                    self.popupError(e)
+                else:
+                    self.value=value
+        except:
+            pass
 
     def do_redo(self,button):
         if not hasattr(self,'_node'):
             self.value=_value
             self.set_dtype()
         else:
-            self.path.set_label("%s - %s" % (str(self.node.tree),self.node.fullpath))
+            self.path.reset()
             self.on.set_active(self.node.disabled==False)
             self.parent_on.set_active(self.node.parent_disabled==False)
             tags = self.node.tags

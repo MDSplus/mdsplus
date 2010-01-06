@@ -1,12 +1,6 @@
-from gtk import Table,HBox,Label,Entry,ScrolledWindow,POLICY_NEVER,POLICY_ALWAYS,EXPAND,FILL
+from gtk import Table,Label,Entry,ScrolledWindow,POLICY_NEVER,POLICY_ALWAYS,EXPAND,FILL
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Method,Data
-
-class __label__(HBox):
-    
-    def __init__(self,label):
-        super(__label__,self).__init__(False)
-        self.pack_start(Label(label),False,False,0)
 
 def adj_changed(adj):
     newstep=adj.upper/8
@@ -23,7 +17,7 @@ class MDSplusMethodWidget(Table):
         self.argTable=Table(rows=8,columns=2,homogeneous=False)
         for i in range(8):
             self.args.append(Entry())
-            self.argTable.attach(__label__("Arg %d:" % (i+1,)),0,1,i,i+1,0,0)
+            self.argTable.attach(Label("Arg %d:       " % (i+1,)),0,1,i,i+1,0,0)
             self.argTable.attach(self.args[i],1,2,i,i+1,EXPAND|FILL,0)
         self.scrolledWindow=ScrolledWindow()
         self.scrolledWindow.add_with_viewport(self.argTable)
@@ -31,12 +25,12 @@ class MDSplusMethodWidget(Table):
         adj=self.scrolledWindow.get_vadjustment()
         adj.connect("changed",adj_changed)
         self.timeout=Entry()
-        self.attach(__label__("Device:"),0,1,0,1,0,0)
+        self.attach(Label("Device:"),0,1,0,1,0,0)
         self.attach(self.device,1,2,0,1,EXPAND|FILL,0)
-        self.attach(__label__("Method:"),0,1,1,2,0,0)
+        self.attach(Label("Method:"),0,1,1,2,0,0)
         self.attach(self.method,1,2,1,2,EXPAND|FILL,0)
         self.attach(self.scrolledWindow,0,2,2,3)
-        self.attach(__label__("Timeout:"),0,1,3,4,0,0)
+        self.attach(Label("Timeout:"),0,1,3,4,0,0)
         self.attach(self.timeout,1,2,3,4,EXPAND|FILL,0)
         self.set_row_spacings(5)
         self.value=value
@@ -53,7 +47,7 @@ class MDSplusMethodWidget(Table):
         except Exception,e:
             msg="Invalid device specified.\n\n%s" % (e,)
             MDSplusErrorMsg('Invalid Device',msg)
-            return None
+            raise
         if self.timeout.get_text() == '' or self.timeout.get_text() == '*':
             ans.timeout=None
         else:
@@ -62,7 +56,7 @@ class MDSplusMethodWidget(Table):
             except Exception,e:
                 msg="Invalid timeout specified.\n\n%s" % (e,)
                 MDSplusErrorMsg('Invalid Timeout',msg)
-                return None
+                raise
         idx=len(self.args)-1
         found=False
         while idx >= 0:
@@ -74,9 +68,9 @@ class MDSplusMethodWidget(Table):
                 try:
                     a=Data.compile(t)
                 except Exception,e:
-                    msg="Invalid argument specified.\n\n%s" % (e,)
+                    msg="Invalid argument (%d) specified.\n\n%s" % (idx+1,e,)
                     MDSplusErrorMsg('Invalid Argument',msg)
-                    return None
+                    raise
                 ans.setArgumentAt(idx,a)
                 found=True
             idx=idx-1
@@ -100,6 +94,7 @@ class MDSplusMethodWidget(Table):
                     arg.set_text('')
                 else:
                     arg.set_text(self._value.getArgumentAt(idx).decompile())
+                idx=idx+1
         else:
             self.method.set_text('')
             self.device.set_text('')

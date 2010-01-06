@@ -18,6 +18,22 @@
             </properties>
         </glade-widget-class>
         <glade-widget-class
+            title="MDSplus Path"
+            name="MDSplusPathWidget"
+            icon-name="textview"
+            generic-name="MDSplusPathWidget">
+            <properties>
+              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+                   <spec>glade_standard_int_spec</spec>
+                   <tooltip>The offset from the head node of a device. Not necessary if widget name matches device part name.</tooltip>
+              </property>
+              <property save="True" query="False" id="useFullPath" default="False" name="useFullPath">
+                   <spec>glade_standard_boolean_spec</spec>
+                   <tooltip>If true, use full path name otherwise use minimum path name.</tooltip>
+              </property>
+            </properties>
+        </glade-widget-class>
+        <glade-widget-class
             title="MDSplus OnOff"
             name="MDSplusOnOff"
             icon-name="textview"
@@ -42,10 +58,11 @@
             </properties>
         </glade-widget-class>
     </glade-widget-classes>
-    <glade-widget-group name="MDSplusWidgets"
-        title="MDSplusWidgets">
+    <glade-widget-group name="MDSplus Widgets"
+        title="MDSplus Widgets">
         <glade-widget-class-ref name="MDSplusOkButtons"/>
         <glade-widget-class-ref name="MDSplusOnOff"/>
         <glade-widget-class-ref name="MDSplusExpr"/>
+        <glade-widget-class-ref name="MDSplusPathWidget"/>
     </glade-widget-group>
 </glade-catalog>

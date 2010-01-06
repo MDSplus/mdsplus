@@ -7,10 +7,12 @@ class MDSplusDtypeSelWidget(object):
             w.hide()
             w.set_no_show_all(True)
         selection=self.dtype.get_model()[self.dtype.get_active()][0].lower()
+        if selection == 'window':
+            selection='windoww'
         try:
             exec 'self.%s.show()' % (selection,)
             exec 'self.%s.set_no_show_all(False)' % (selection,)
-        except:
+        except Exception,e:
             pass
         try:
             self.resize(1,1)
@@ -38,10 +40,9 @@ class MDSplusDtypeSelWidget(object):
 
     def getValue(self):
         selected = self.dtype.get_model()[self.dtype.get_active()][0].lower()
-        try:
-            return eval('self.%s.value' % (selected,))
-        except:
-            return None
+        if selected == 'window':
+            selected='windoww'
+        return eval('self.%s.value' % (selected,))
 
     def setValue(self,d):
         self._value=d

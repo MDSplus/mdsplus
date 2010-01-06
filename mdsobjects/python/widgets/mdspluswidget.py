@@ -56,7 +56,7 @@ class MDSplusWidget(object):
             except AttributeError:
                 print "Top level window must have a device_node attribute of type TreeNode which is element of the device."
                 raise
-            if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset <= 0:
+            if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset < 0:
                 self.setNidOffset(devnode)
             self._node=devnode.parent.__class__(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)
             return self._node
