@@ -47,9 +47,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         jPanel7 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
-        jLabel1 = new javax.swing.JLabel();
         deviceField9 = new DeviceField();
-        jLabel3 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         deviceField10 = new DeviceField();
         jLabel2 = new javax.swing.JLabel();
@@ -148,22 +146,16 @@ public class LASER_NDRTSetup extends DeviceSetup {
         jPanel1.add(jPanel6);
 
         deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Amplitude Min :");
-        deviceField8.setNumCols(15);
+        deviceField8.setLabelString("Amplitude [T]  OR Dom/Sec Min :");
+        deviceField8.setNumCols(12);
         deviceField8.setOffsetNid(11);
         jPanel7.add(deviceField8);
 
-        jLabel1.setText("[T]");
-        jPanel7.add(jLabel1);
-
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Amplitude Max :");
-        deviceField9.setNumCols(15);
+        deviceField9.setLabelString("Amplitude [T]  OR Dom/Sec Max :");
+        deviceField9.setNumCols(12);
         deviceField9.setOffsetNid(10);
         jPanel7.add(deviceField9);
-
-        jLabel3.setText("[T]");
-        jPanel7.add(jLabel3);
 
         jPanel1.add(jPanel7);
 
@@ -207,9 +199,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private DeviceTable deviceTable1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -222,3 +212,4 @@ public class LASER_NDRTSetup extends DeviceSetup {
     // End of variables declaration//GEN-END:variables
 
 }
+
