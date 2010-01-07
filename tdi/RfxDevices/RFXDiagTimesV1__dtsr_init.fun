@@ -45,9 +45,13 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
     _delayPulse = if_error(data(DevNodeRef(_nid, _N_DELAY_PULSE)), (DevLogErr(_nid, 'Cannot resolve delay pulse');abort();));
 	DevPut(_diagTimesNid, _K_DELAY_PULSE, _delayPulse); 
 
- 	
+ 	_decChanNid = getnci(getnci(getnci( DevNodeRef( _diagTimesNid, _K_TRIG_SOURCE ), 'record'), 'parent'), 'nid_number' );
+		
 	if( _trigMode == 'EXT_RT')
 	{
+
+		TreeTurnOff( _decChanNid );
+	
 		_maxAmp = if_error(data(DevNodeRef(_nid, _N_AMP_MAX)), (DevLogErr(_nid, 'Cannot resolve max amplitude');abort();));
 		DevPut(_diagTimesNid, _K_MAX_AMP, _maxAmp); 
 	
@@ -63,6 +67,10 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
 			DevPut(_diagTimesNid, _K_MIN_PHASE, _minPhase); 
 			
 		}
+	}
+	else
+	{
+		TreeTurnOn( _decChanNid );
 	}
 	
     return (1);
