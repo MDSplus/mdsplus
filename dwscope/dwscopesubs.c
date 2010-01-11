@@ -483,10 +483,10 @@ Boolean   ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom t
     XtVaGetValues(w, XmdsNxValStruct, &x, XmdsNcount, &count, NULL);
     if (x && count)
     {
+      *format = 8;
       *type = target;
       *value = (String)memcpy(XtMalloc(count * sizeof(float)),x->addr,count * sizeof(float));
-      *length = count;
-      *format = 8 * sizeof(float);
+      *length = count * 32/(*format);
       status = 1;
     }
   }
@@ -497,10 +497,10 @@ Boolean   ConvertWaveToSelection(Widget w, String prefix, WaveInfo *wave, Atom t
     XtVaGetValues(w, XmdsNyValStruct, &y, XmdsNcount, &count, NULL);
     if (y && count)
     {
+      *format = 8;
       *type = target;
       *value = (String)memcpy(XtMalloc(count * sizeof(float)),y->addr,count * sizeof(float));
-      *length = count;
-      *format = 8 * sizeof(float);
+      *length = count * 32/(*format);
       status = 1;
     }
   }

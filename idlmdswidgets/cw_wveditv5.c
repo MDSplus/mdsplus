@@ -470,7 +470,7 @@ static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, int stub, Atom *s
       x = (float *)value;
     else if (*type == XA_Y_AXIS)
     {
-      int num = *length;
+      int num = *(length)*(*format)/32;
       if (x)
       {
         EventInfo *e;
