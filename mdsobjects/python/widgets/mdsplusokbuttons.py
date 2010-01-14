@@ -1,10 +1,8 @@
-import gtk
+from gtk import HButtonBox,Tooltips,Button,STOCK_OK,STOCK_APPLY,STOCK_REDO,STOCK_CANCEL
 import gobject
-import inspect
-import os
 from mdspluswidget import MDSplusWidget
 
-class MDSplusOkButtons(gtk.HButtonBox):
+class MDSplusOkButtons(HButtonBox):
 
     __gtype_name__ = 'MDSplusOkButtons'
     
@@ -31,14 +29,14 @@ class MDSplusOkButtons(gtk.HButtonBox):
         self.closeTop()
 
     def __init__(self):
-        tip=gtk.Tooltips()
-        ok=gtk.Button(stock=gtk.STOCK_OK)
+        tip=Tooltips()
+        ok=Button(stock=STOCK_OK)
         ok.connect("clicked",self.ok_pressed)
-        apply=gtk.Button(stock=gtk.STOCK_APPLY)
+        apply=Button(stock=STOCK_APPLY)
         apply.connect("clicked",self.apply_pressed)
-        reset=gtk.Button(stock=gtk.STOCK_REDO)
+        reset=Button(stock=STOCK_REDO)
         reset.connect("clicked",self.reset_pressed)
-        cancel=gtk.Button(stock=gtk.STOCK_CANCEL)
+        cancel=Button(stock=STOCK_CANCEL)
         cancel.connect("clicked",self.cancel_pressed)
         self.add(ok)
         self.add(apply)

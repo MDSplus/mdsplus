@@ -29,7 +29,7 @@ class MDSplusExpressionWidget(gtk.ScrolledWindow):
         try:
             return Data.compile(self.get_text())
         except Exception,e:
-            MDSplusErrorMsg('Invalid Expression',str(e))
+            MDSplusErrorMsg('Invalid Expression','Invalid expression specified.\n\n%s\n\n%s' % (self.get_text(),e))
             raise
         
     def setValue(self,d):

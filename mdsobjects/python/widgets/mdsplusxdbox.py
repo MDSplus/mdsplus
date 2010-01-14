@@ -1,4 +1,4 @@
-from gtk import Window,VBox,HBox,CheckButton,Label,Entry,combo_box_new_text,Button,STOCK_APPLY,STOCK_REDO,STOCK_CANCEL
+from gtk import Window,VBox,HBox,CheckButton,Label,Entry,combo_box_new_text,Button,STOCK_OK,STOCK_REDO,STOCK_CANCEL
 import gobject
 from mdspluswidget import MDSplusWidget
 from mdsplusactionwidget import MDSplusActionWidget
@@ -6,7 +6,6 @@ from mdsplusdispatchwidget import MDSplusDispatchWidget
 from mdsplusmethodwidget import MDSplusMethodWidget
 from mdsplusroutinewidget import MDSplusRoutineWidget
 from mdsplussequentialwidget import MDSplusSequentialWidget
-from mdspluserrormsg import MDSplusErrorMsg
 from mdsplusexpressionwidget import MDSplusExpressionWidget
 from mdsplusdtypeselwidget import MDSplusDtypeSelWidget
 from mdsplusrangewidget import MDSplusRangeWidget
@@ -27,11 +26,17 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
     def __init__(self,node=None,value=None):
         Window.__init__(self)
         MDSplusWidget.__init__(self)
+        if node is not None:
+            self.node=node
+        else:
+            self.value=value
         hbtop=HBox(homogeneous=False)
         self.on=CheckButton(label="On")
         self.parent_on=CheckButton(label="Parent")
         self.parent_on.set_sensitive(False)
         self.path=MDSplusPathWidget()
+        if node is not None:
+            self.path._node=self._node
         hbtags=HBox(homogeneous=False)
         self.tags=Entry()
         self.tags.set_width_chars(60)
@@ -57,14 +62,14 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         self.dispatch=MDSplusDispatchWidget()
         self.range=MDSplusRangeWidget()
         self.widgets=(self.action,self.sequential,self.expression,self.method,self.routine,self.dispatch,self.range,self.windoww)
-        apply=Button(stock=STOCK_APPLY)
+        ok=Button(stock=STOCK_OK)
         cancel=Button(stock=STOCK_CANCEL)
         redo=Button(stock=STOCK_REDO)
-        apply.connect("clicked",self.do_apply)
+        ok.connect("clicked",self.do_ok)
         cancel.connect("clicked",self.do_cancel)
         redo.connect("clicked",self.do_redo)
         hb2=HBox()
-        hb2.add(apply)
+        hb2.add(ok)
         hb2.add(redo)
         hb2.add(cancel)
         vb=VBox(homogeneous=False)
@@ -83,13 +88,9 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
             vb.pack_start(w,False,False,0)
         vb.pack_start(hb2,False,False,20)
         self.add(vb)
-        if node is not None:
-            self.node=node
-        else:
-            self.value=value
         self.do_redo(redo)
         self.putOnApply = True
-        self.nidOffset = 0
+        self.nidOffset = -1
 
     def set_dtype(self):
         if hasattr(self,'_node'):
@@ -101,16 +102,20 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
             self.dtype=self.dtype_any
         self.dtype.set_no_show_all(False)
             
-    def do_apply(self,button):
+    def do_ok(self,button):
         try:
             value=self.value
-            if hasattr(self,'_node'):
+            if not self.putOnApply:
+                self.hide()
+            elif hasattr(self,'_node'):
                 try:
                     self.node.record=value
+                    self.hide()
                 except Exception,e:
                     self.popupError(e)
-                else:
-                    self.value=value
+            else:
+                self.value=value
+                self.hide()
         except:
             pass
 
@@ -141,7 +146,7 @@ class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
         self.reset()
 
     def do_cancel(self,button):
-        self.destroy()
+        self.hide()
 
         
 gobject.type_register(MDSplusXdBox) 

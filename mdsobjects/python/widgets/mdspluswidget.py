@@ -5,9 +5,12 @@ class MDSplusWidget(object):
 
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
-        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,0,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
         }
-    #sender=EventSender()
+
+    def __init__(self):
+        self.putOnApply=True
+        self.nidOffset=-1
 
     def doToAll(cls,obj,method):
         status = True
@@ -74,14 +77,15 @@ class MDSplusWidget(object):
 
     def apply(self):
         if self.putOnApply:
+            value=self.value
             try:
-                value=self.value
                 if self.node.compare(value) != 1:
-                    self.node.record=self.value
+                    self.node.record=value
                 self.reset()
             except Exception,e:
                 self.popupError(e)
                 raise
+        return True
 
     def handleReset(self,obj,top):
         if self.get_toplevel()  == top:
