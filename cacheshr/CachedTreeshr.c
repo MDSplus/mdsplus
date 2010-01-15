@@ -1271,7 +1271,7 @@ EXPORT int _RTreeClose(void *dbid, char *expName, int shot)
 }
 EXPORT int RTreeOpen(char *expName, int shot)
 {
-	void *dbid;
+	void *dbid = 0;
 	int status = _TreeOpen(&dbid, expName, shot, 0);
 	setDbid(expName, shot, dbid);
 	return status;
