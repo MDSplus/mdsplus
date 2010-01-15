@@ -1262,6 +1262,7 @@ EXPORT int _RTreeOpen(void **dbid, char *expName, int shot)
 {
 	int status = _TreeOpen(dbid, expName, shot, 0);
 	setDbid(expName, shot, *dbid);
+	TreeSwitchDbid(dbid);
 	return status;
 }
 
