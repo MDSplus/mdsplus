@@ -3,11 +3,6 @@ import gobject
 class MDSplusWidget(object):
 
 
-    __gproperties__= {
-        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
-        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
-        }
-
     def __init__(self):
         self.putOnApply=True
         self.nidOffset=-1
@@ -48,7 +43,7 @@ class MDSplusWidget(object):
                 self.nidOffset=node.conglomerate_elt-1
                 break
         if not found:
-            print "Was unable to find an original part name of /%s/ in the conglomerate" % (self.name.upper(),)
+            raise AttributeError,"Was unable to find an original part name of /%s/ in the conglomerate" % (self.name.upper(),)
 
     def getNode(self):
         try:
@@ -57,8 +52,7 @@ class MDSplusWidget(object):
             try:
                 devnode=self.get_toplevel().device_node
             except AttributeError:
-                print "Top level window must have a device_node attribute of type TreeNode which is element of the device."
-                raise
+                raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
             if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset < 0:
                 self.setNidOffset(devnode)
             self._node=devnode.parent.__class__(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)

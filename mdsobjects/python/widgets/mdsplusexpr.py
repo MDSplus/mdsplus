@@ -4,11 +4,21 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 
-class MDSplusExprFieldWidget(MDSplusWidget,Entry):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        }
+
+
+
+
+class MDSplusExprFieldWidget(props,MDSplusWidget,Entry):
 
     __gtype_name__ = 'MDSplusExprFieldWidget'
-    __gproperties__ = MDSplusWidget.__gproperties__
 
+    __gproperties__ = props.__gproperties__
+    
     def reset(self):
         try:
             self.set_text(self.record.decompile())
@@ -29,10 +39,9 @@ class MDSplusExprFieldWidget(MDSplusWidget,Entry):
             
 gobject.type_register(MDSplusExprFieldWidget) 
 
-class MDSplusExprWidget(MDSplusWidget,ScrolledWindow):
+class MDSplusExprWidget(props,MDSplusWidget,ScrolledWindow):
 
     __gtype_name__ = 'MDSplusExprWidget'
-    __gproperties__ = MDSplusWidget.__gproperties__
     
     def get_text(self):
         return self.buffer.get_text(self.buffer.get_start_iter(),self.buffer.get_end_iter())
@@ -53,7 +62,7 @@ class MDSplusExprWidget(MDSplusWidget,ScrolledWindow):
             try:
                 return self.node.compile(self.get_text())
             except Exception,e:
-                MDSplusErrorMsg('Invalid value','Invalid valu specified.\n\n%s\n\n%s' % (self.get_text(),e))
+                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (self.get_text(),e))
                 raise
 
     value=property(getValue)
@@ -67,3 +76,26 @@ class MDSplusExprWidget(MDSplusWidget,ScrolledWindow):
         self.add(tv)
         
 gobject.type_register(MDSplusExprWidget) 
+
+try:
+    import glade
+
+    class MDSplusExprFieldWidgetAdaptor(glade.get_adaptor_for_type('GtkEntry')):
+        __gtype_name__='MDSplusExprFieldWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+
+    class MDSplusExprWidgetAdaptor(glade.get_adaptor_for_type('GtkScrolledWindow')):
+        __gtype_name__='MDSplusExprWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+except:
+    pass

@@ -4,10 +4,10 @@
         <glade-widget-class
             title="MDSplus Expression Field"
             name="MDSplusExprFieldWidget"
-            icon="textview"
-            generic-name="MDSplusExprFieldWidget">
+            adaptor="MDSplusExprFieldWidgetAdaptor"
+            generic-name="entry">
             <properties>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
@@ -15,15 +15,18 @@
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, apply event will compile and store the value</tooltip>
               </property>
+              <property save="True" query="False" id="text" default="" name="Label" visible="False">
+                   <spec>glade_standard_string_spec</spec>
+              </property>
             </properties>
         </glade-widget-class>
         <glade-widget-class
             title="MDSplus Expression"
             name="MDSplusExprWidget"
-            icon-name="textview"
-            generic-name="MDSplusExprWidget">
+            adaptor="MDSplusExprWidgetAdaptor"
+            generic-name="textview">
             <properties>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
@@ -36,10 +39,10 @@
         <glade-widget-class
             title="MDSplus Path"
             name="MDSplusPathWidget"
-            icon-name="textview"
-            generic-name="MDSplusPathWidget">
+            adaptor="MDSplusPathWidgetAdaptor"
+            generic-name="label">
             <properties>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device. Not necessary if widget name matches device part name.</tooltip>
               </property>
@@ -47,15 +50,19 @@
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, use full path name otherwise use minimum path name.</tooltip>
               </property>
+              <property save="True" query="False" id="label" default="" name="Label" visible="False">
+                   <spec>glade_standard_string_spec</spec>
+              </property>
             </properties>
         </glade-widget-class>
         <glade-widget-class
             title="MDSplus OnOffWidget"
             name="MDSplusOnOffWidget"
+            adaptor="MDSplusOnOffWidgetAdaptor"
             icon-name="checkbox.png"
-            generic-name="MDSplusOnOffWidget">
+            generic-name="checkbutton">
             <properties>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
@@ -67,19 +74,22 @@
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, the path of the node will be displayed with the checkbox</tooltip>
               </property>
+              <property save="True" query="False" id="label" default="" name="Label" visible="False">
+                   <spec>glade_standard_string_spec</spec>
+              </property>
             </properties>
         </glade-widget-class>
         <glade-widget-class
             title="MDSplus NidOptionWidget"
             name="MDSplusNidOptionWidget"
-            icon-name="checkbox.png"
-            generic-name="MDSplusNidOptionWidget">
+            adaptor="MDSplusNidOptionWidgetAdaptor"
+            generic-name="comboboxentry">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, apply event will compile and store the value</tooltip>
               </property>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
@@ -88,18 +98,27 @@
         <glade-widget-class
             title="MDSplus OnOffXdBox Widget"
             name="MDSplusOnOffXdBoxWidget"
-            icon-name="checkbox.png"
-            generic-name="MDSplusOnOffXdBoxWidget">
+            adaptor="MDSplusOnOffXdBoxWidgetAdaptor"
+            generic-name="checkbutton">
             <properties>
-              <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
+              <property save="False" query="False" id="size" default="3" visible="False" name="Number of items">
+                   <spec>glade_standard_int_spec</spec>
+              </property>
+              <property save="False" query="False" id="homogeneous" default="False" visible="False" name="Homogeneous">
+                   <spec>glade_standard_boolean_spec</spec>
+              </property>
+               <property save="False" query="False" id="spacing" default="20" visible="False" name="Spacing">
+                   <spec>glade_standard_int_spec</spec>
+              </property>
+             <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, apply event will compile and store the value</tooltip>
               </property>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
-              <property save="True" query="False" id="buttonLabel" default="-1" name="buttonLabel">
+              <property save="True" query="False" id="buttonLabel" default="Label" name="buttonLabel">
                    <spec>glade_standard_string_spec</spec>
                    <tooltip>The label on the button.</tooltip>
               </property>
@@ -108,14 +127,14 @@
         <glade-widget-class
             title="MDSplus XdBox Button Widget"
             name="MDSplusXdBoxButtonWidget"
-            icon-name="checkbox.png"
-            generic-name="MDSplusXdBoxButtonWidget">
+            adaptor="MDSplusXdBoxButtonWidgetAdaptor"
+            generic-name="button">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, apply event will compile and store the value</tooltip>
               </property>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
@@ -124,22 +143,22 @@
         <glade-widget-class
             title="MDSplus Digitizer Channels Widget"
             name="MDSplusDigChansWidget"
-            icon-name="checkbox.png"
-            generic-name="MDSplusDigChansWidget">
+            adaptor="MDSplusDigChansWidgetAdaptor"
+            generic-name="table">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
                    <spec>glade_standard_boolean_spec</spec>
                    <tooltip>If true, apply event will compile and store the value</tooltip>
               </property>
-              <property save="True" query="False" id="nidOffset" default="-1" name="nidOffset">
+              <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
-              <property save="True" query="False" id="numChannels" default="8" name="numChannels">
+              <property save="True" query="False" id="numChannels" default="8" name="Number of Channels">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The number of channels in the device.</tooltip>
               </property>
-               <property save="True" query="False" id="nodesPerChannel" default="3" name="nodesPerChannel">
+               <property save="True" query="False" id="nodesPerChannel" default="3" name="Nodes Per Channel">
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The number of nodes per channel.</tooltip>
               </property>
@@ -160,9 +179,14 @@
         <glade-widget-class
             title="MDSplus Ok Buttons"
             name="MDSplusOkButtons"
-            icon-name="hbuttonbox"
-            generic-name="MDSplusOkButtons">
+            generic-name="hbuttonbox">
             <properties>
+              <property save="False" query="False" id="size" default="3" visible="False" name="Number of items">
+                   <spec>glade_standard_int_spec</spec>
+               </property>
+              <property save="False" query="False" id="homogeneous" default="False" visible="False" name="Homogeneous">
+                   <spec>glade_standard_boolean_spec</spec>
+              </property>
             </properties>
         </glade-widget-class>
     </glade-widget-classes>

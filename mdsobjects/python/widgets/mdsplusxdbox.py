@@ -12,11 +12,15 @@ from mdsplusrangewidget import MDSplusRangeWidget
 from mdspluswindowwidget import MDSplusWindowWidget
 from mdspluspathwidget import MDSplusPathWidget
 
-class MDSplusXdBox(MDSplusDtypeSelWidget,MDSplusWidget,Window):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        }
+
+class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
 
     __gtype_name__ = 'MDSplusXdBox'
-
-    __gproperties__ = MDSplusWidget.__gproperties__
 
     def inHBox(self,w):
         hb=HBox()

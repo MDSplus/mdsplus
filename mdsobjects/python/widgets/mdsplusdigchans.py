@@ -5,17 +5,24 @@ from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import TreeNode,Data
 
-class MDSplusDigChansWidget(MDSplusWidget,ScrolledWindow):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        'numChannels' : (gobject.TYPE_INT, 'numChannels','number of channels',1,1000,8,gobject.PARAM_READWRITE),
+        'nodesPerChannel' : (gobject.TYPE_INT, 'nodesPerChannel','number of nodes per digitizer channel',3,1000,3,gobject.PARAM_READWRITE),
+        'dataNidOffset' : (gobject.TYPE_INT, 'dataNidOffset','nid offset to digitizer channel data node',0,1000,1,gobject.PARAM_READWRITE),
+        'startIdxNidOffset' : (gobject.TYPE_INT, 'startIdxNidOffset','nid offset to digitizer channel startIdx node',0,1000,2,gobject.PARAM_READWRITE),
+        'endIdxNidOffset' : (gobject.TYPE_INT, 'endIdxNidOffset','nid offset to digitizer channel endIdx node',0,1000,3,gobject.PARAM_READWRITE),
+        }
+
+
+class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
 
     __gtype_name__ = 'MDSplusDigChansWidget'
 
-    __gproperties__ = MDSplusWidget.__gproperties__.copy()
-    __gproperties__['numChannels'] = (gobject.TYPE_INT, 'numChannels','number of channels',1,1000,8,gobject.PARAM_READWRITE)
-    __gproperties__['nodesPerChannel'] = (gobject.TYPE_INT, 'nodesPerChannel','number of nodes per digitizer channel',3,1000,3,gobject.PARAM_READWRITE)
-    __gproperties__['dataNidOffset'] = (gobject.TYPE_INT, 'dataNidOffset','nid offset to digitizer channel data node',0,1000,1,gobject.PARAM_READWRITE)
-    __gproperties__['startIdxNidOffset'] = (gobject.TYPE_INT, 'startIdxNidOffset','nid offset to digitizer channel startIdx node',0,1000,2,gobject.PARAM_READWRITE)
-    __gproperties__['endIdxNidOffset'] = (gobject.TYPE_INT, 'endIdxNidOffset','nid offset to digitizer channel endIdx node',0,1000,3,gobject.PARAM_READWRITE)
-    
+    __gproperties__= props.__gproperties__
+
     def reset(self):
         for channel in self.channels:
             try:
@@ -88,24 +95,30 @@ class MDSplusDigChansWidget(MDSplusWidget,ScrolledWindow):
         import os
         self.table.resize(self.numChannels+1,5)
         self.setupChannels()
-        for chan in range(self.numChannels):
-            channel=self.channels[chan]
-            channel['dataNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.dataNidOffset,self.node.tree)
-            channel['startIdxNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.startIdxNidOffset,self.node.tree)
-            channel['endIdxNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.endIdxNidOffset,self.node.tree)
+        try:
+            import glade
+        except:
+            for chan in range(self.numChannels):
+                channel=self.channels[chan]
+                channel['dataNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.dataNidOffset,self.node.tree)
+                channel['startIdxNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.startIdxNidOffset,self.node.tree)
+                channel['endIdxNode']=TreeNode(self.node.nid+chan*self.nodesPerChannel+self.endIdxNidOffset,self.node.tree)
         self.show_all()
         self.reset()
 
     def setupChannels(self):
         for channel in self.channels:
+            channel['number'].destroy()
             channel['on'].destroy()
             channel['startIdx'].destroy()
             channel['endIdx'].destroy()
         self.channels=list()
+        self.table.resize(self.numChannels+1,5)
         for chan in range(self.numChannels):
             channel=dict()
             self.channels.append(channel)
-            self.table.attach(Label("%d"% (chan+1,)),0,1,chan+1,chan+2,0,0,10,0)
+            channel['number']=Label("%d"% (chan+1,))
+            self.table.attach(channel['number'],0,1,chan+1,chan+2,0,0,10,0)
             channel['on']=CheckButton('')
             self.table.attach(channel['on'],1,2,chan+1,chan+2,0,0,10,0)
             channel['startIdx']=Entry()
@@ -114,6 +127,7 @@ class MDSplusDigChansWidget(MDSplusWidget,ScrolledWindow):
             self.table.attach(channel['endIdx'],3,4,chan+1,chan+2,EXPAND|FILL,0,10,0)
             channel['path']=Label('                   ')
             self.table.attach(channel['path'],4,5,chan+1,chan+2,0,0,10,0)
+        self.show_all()
 
     def __init__(self):
         ScrolledWindow.__init__(self)
@@ -142,6 +156,30 @@ class MDSplusDigChansWidget(MDSplusWidget,ScrolledWindow):
     def show(self):
         self.show_all()
         
-        
-
 gobject.type_register(MDSplusDigChansWidget) 
+
+try:
+    import glade
+
+    class MDSplusDigChansWidgetAdaptor(glade.get_adaptor_for_type('GtkTable')):
+        __gtype_name__='MDSplusDigChansWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+            elif prop == 'startIdxNidOffset':
+                widget.startIdxNidOffset=value
+            elif prop == 'endIdxNidOffset':
+                widget.endIdxNidOffset=value
+            elif prop == 'dataNidOffset':
+                widget.dataNidOffset=value
+            elif prop == 'nodesPerChannel':
+                widget.nodesPerChannel=value
+            elif prop == 'numChannels':
+                if value > 0:
+                    widget.numChannels=value
+                    widget.realize(widget)
+except:
+    pass

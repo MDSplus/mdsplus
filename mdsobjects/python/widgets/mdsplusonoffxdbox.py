@@ -5,13 +5,18 @@ from mdspluswidget import MDSplusWidget
 from mdsplusxdbox import MDSplusXdBox
 from mdspluserrormsg import MDSplusErrorMsg
 
-class MDSplusOnOffXdBoxWidget(MDSplusWidget,HBox):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        'buttonLabel' : (gobject.TYPE_STRING, 'buttonLabel','Label on popup button','',gobject.PARAM_READWRITE),
+        }
+
+class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
 
     __gtype_name__ = 'MDSplusOnOffXdBoxWidget'
+    __gproperties__= props.__gproperties__
 
-    __gproperties__ = MDSplusWidget.__gproperties__.copy()
-    __gproperties__['buttonLabel'] = (gobject.TYPE_STRING, 'buttonLabel','Label on popup button','',gobject.PARAM_READWRITE)
-    
     def reset(self):
         if not hasattr(self,'xdbox'):
             self.xdbox=MDSplusXdBox(self.node)
@@ -47,15 +52,6 @@ class MDSplusOnOffXdBoxWidget(MDSplusWidget,HBox):
     def setButtonLabel(self,button):
         self.button.set_label(self.buttonLabel)
 
-    def set_homogeneous(*args,**kwargs):
-        pass
-
-    def pack_start(*args,**kwargs):
-        pass
-
-    def add(*args,**kwargs):
-        pass
-
     def __init__(self):
         HBox.__init__(self)
         MDSplusWidget.__init__(self)
@@ -65,7 +61,10 @@ class MDSplusOnOffXdBoxWidget(MDSplusWidget,HBox):
         HBox.pack_start(self,self.node_state,False,False,0)
         HBox.pack_start(self,self.button,False,False,0)
         HBox.pack_start(self,Label(''),True,False,0)
-        self.button.connect("clicked",self.popupXd)
+        try:
+            import glade
+        except:
+            self.button.connect("clicked",self.popupXd)
         self.button.connect("realize",self.setButtonLabel)
 
     def show(self):
@@ -74,3 +73,20 @@ class MDSplusOnOffXdBoxWidget(MDSplusWidget,HBox):
         
 
 gobject.type_register(MDSplusOnOffXdBoxWidget) 
+
+try:
+    import glade
+
+    class MDSplusOnOffXdboxWidgetAdaptor(glade.get_adaptor_for_type('GtkHBox')):
+        __gtype_name__='MDSplusOnOffXdBoxWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+            elif prop == 'buttonLabel':
+                widget.buttonLabel=value
+                widget.button.set_label(value)
+except:
+    pass

@@ -5,12 +5,17 @@ from mdspluswidget import MDSplusWidget
 from mdsplusxdbox import MDSplusXdBox
 from mdspluserrormsg import MDSplusErrorMsg
 
-class MDSplusXdBoxButtonWidget(MDSplusWidget,Button):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        }
+
+class MDSplusXdBoxButtonWidget(props,MDSplusWidget,Button):
 
     __gtype_name__ = 'MDSplusXdBoxButtonWidget'
+    __gproperties__=props.__gproperties__
 
-    __gproperties__ = MDSplusWidget.__gproperties__
-    
     def reset(self):
         if not hasattr(self,'xdbox'):
             self.xdbox=MDSplusXdBox(node=self.node)
@@ -27,12 +32,34 @@ class MDSplusXdBoxButtonWidget(MDSplusWidget,Button):
                 MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
 
     def popupXd(self,button):
-        self.xdbox.node=self.getNode()
+        try:
+            self.xdbox.node=self.getNode()
+        except:
+            pass
         self.xdbox.show()
 
     def __init__(self):
         Button.__init__(self)
         MDSplusWidget.__init__(self)
-        self.connect("clicked",self.popupXd)
+        try:
+            import glade
+        except:
+            self.connect("clicked",self.popupXd)
         
 gobject.type_register(MDSplusXdBoxButtonWidget) 
+
+try:
+    import glade
+
+    class MDSplusXdBoxButtonWidgetAdaptor(glade.get_adaptor_for_type('GtkButton')):
+        __gtype_name__='MDSplusXdBoxButtonWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+            elif prop == 'label':
+                widget.set_label(value)
+except:
+    pass

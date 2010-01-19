@@ -5,10 +5,16 @@ from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from mdsplusexpr import MDSplusExprWidget
 
-class MDSplusNidOptionWidget(MDSplusWidget,ComboBox):
+class props(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        }
+
+class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
 
     __gtype_name__ = 'MDSplusNidOptionWidget'
-    __gproperties__ = MDSplusWidget.__gproperties__
+    __gproperties__ = props.__gproperties__
 
     def xdbox_cancel(self,button):
         self.xdbox.set_modal(False)
@@ -41,21 +47,25 @@ class MDSplusNidOptionWidget(MDSplusWidget,ComboBox):
             value=str(self.getNode().makeData(value).decompile())
         return value
     
+    def updateItems(self):
+        m=self.get_model()
+        self.values=list()
+        active=-1
+        idx=0
+        for i in m:
+            item=i[0]
+            j = item.find('|')
+            if j > -1:
+                m[idx][0]=item[0:j]
+                menu_value=item[j+1:]
+                self.values.append(menu_value)
+            idx=idx+1
+        m.append(row=('Computed',))
+
     def reset(self):
         value=self.node_value()
-        m=self.get_model()
         if not hasattr(self,"has_been_initialized"):
-            self.values=list()
-            active=-1
-            idx=0
-            for i in m:
-                item=i[0]
-                j = item.find('|')
-                if j > -1:
-                    m[idx][0]=item[0:j]
-                    menu_value=item[j+1:]
-                    self.values.append(menu_value)
-                idx=idx+1
+            self.updateItems()
             self.connect('event',self.button_press)
             self.xdbox=Window()
             vbox=VBox()
@@ -74,14 +84,16 @@ class MDSplusNidOptionWidget(MDSplusWidget,ComboBox):
             vbox.pack_start(hbox,False,False,20)
             self.xdbox.add(vbox)
             self.has_been_initialized=True
-            m.append(row=('Computed',))
         self.set_active(len(self.values))
-        for idx in range(len(self.values)):
-            val=self.values[idx]
-            if val != '':
-                val=self.getNode().compile(val).decompile()
-            if value == val:
-                self.set_active(idx)
+        try:
+            import glade
+        except:
+            for idx in range(len(self.values)):
+                val=self.values[idx]
+                if val != '':
+                    val=self.getNode().compile(val).decompile()
+                if value == val:
+                    self.set_active(idx)
                 break
         self.expr.set_text(value)
         
@@ -103,3 +115,24 @@ class MDSplusNidOptionWidget(MDSplusWidget,ComboBox):
     value=property(getValue)
 
 gobject.type_register(MDSplusNidOptionWidget) 
+
+try:
+    import glade
+
+    class MDSplusNidOptionWidgetAdaptor(glade.get_adaptor_for_type('GtkComboBox')):
+        __gtype_name__='MDSplusNidOptionWidgetAdaptor'
+
+        def do_set_property(self,widget,prop,value):
+            if prop == 'nidOffset':
+                widget.nidOffset=value
+            elif prop == 'putOnApply':
+                widget.putOnApply=value
+            elif prop == 'items':
+                widget.get_model()
+                for item in value:
+                    widget.append_text(item)
+                widget.updateItems()
+                widget.set_active(len(widget.values))
+
+except:
+    pass
