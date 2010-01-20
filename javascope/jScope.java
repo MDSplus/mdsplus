@@ -2156,8 +2156,6 @@ public class jScope
 
         try
         {
-
-
             wave_panel.SetDataServer(new_srv_item, this);
 
             wave_panel.SetCacheState(new_srv_item.enable_cache);
@@ -2183,6 +2181,9 @@ public class jScope
         {
             JOptionPane.showMessageDialog(null, e.getMessage(), "alert SetDataServer",
                                           JOptionPane.ERROR_MESSAGE);
+
+            setDataServerLabel();
+
         }
         return false;
     }

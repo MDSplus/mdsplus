@@ -1385,12 +1385,18 @@ remove 28/06/2005
                 case DataProvider.LOGIN_ERROR:
                 case DataProvider.LOGIN_CANCEL:
                     server_item = new DataServerItem("Not Connected", null, null,
-                        null, null, null, null, false);
+                        "NotConnectedDataProvider", null, null, null, false);
                     dp = new NotConnectedDataProvider();
             }
 
             if (dp != null)
                 dp.AddConnectionListener( (ConnectionListener) l);
+
+            if( !server_item.class_name.equals("NotConnectedDataProvider") )
+            {
+                //Check data server connection
+                dp.GetShots("0");
+            }
 
             ChangeDataProvider(dp);
             AddAllEvents(l);
@@ -1421,9 +1427,12 @@ remove 28/06/2005
             this.server_item = server_item;
         }
         catch (IOException e)
-        {     
-            server_item = null;
-            dp = null;
+        {
+            this.server_item = new DataServerItem("Not Connected", null, null,
+                          "NotConnectedDataProvider", null, null, null, false);
+            dp = new NotConnectedDataProvider();
+            ChangeDataProvider(dp);
+
             throw (new Exception(e.getMessage()));
         }
     }
