@@ -580,6 +580,7 @@ STATIC_CONSTANT unsigned char noomits[] = {0};
 	return status;
 }
 
+static int use_get_record_fun=1;
 int TdiGetRecord(int nid, struct descriptor *out) {
   static DESCRIPTOR(exp,"_status=TdiGetRecord($,_out),_status");
   static DESCRIPTOR(out_exp,"_out");
@@ -588,10 +589,10 @@ int TdiGetRecord(int nid, struct descriptor *out) {
   DESCRIPTOR_LONG(stat_d,&stat);
   int status;
   static int use_fun=1;
-  if (use_fun) {
+  if (use_get_record_fun) {
     status = TdiExecute(&exp,&nid_d,&stat_d MDS_END_ARG);
-    if (status == TdiUNKNOWN_VAR) {
-      use_fun=0;
+    if (status == TdiUNKNOWN_VAR || status == TdiSYNTAX) {
+      use_get_record_fun=0;
     } else if (status & 1) {
       status = stat;
       if (stat & 1) {
@@ -599,8 +600,12 @@ int TdiGetRecord(int nid, struct descriptor *out) {
       }
     }
   }
-  if (! use_fun) {
+  if (! use_get_record_fun) {
     status = TreeGetRecord(nid,(struct descriptor_xd *)out);
   }
   return status;
+}
+
+void TdiResetGetRecord() {
+  use_get_record_fun=1;
 }

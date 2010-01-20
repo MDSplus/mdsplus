@@ -727,6 +727,7 @@ TdiRefStandard(Tdi1ResetPublic)
 
   LockTdiMutex(&lock,&lock_initialized);
 	_public.head = 0;
+        TdiResetGetRecord();
 	if (_public.data_zone) status = LibResetVmZone(&_public.data_zone);
 	if (_public.head_zone) status = LibResetVmZone(&_public.head_zone);
 	UnlockTdiMutex(&lock);
