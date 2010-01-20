@@ -340,7 +340,7 @@ more:		switch (dtype) {
 		if (key_ptr->item_code == NID_NUMBER) *(int *)hold_ptr = nid;
 		else if (key_ptr->item_code == RECORDIDX) {
 			*(struct descriptor_xd *)hold_ptr = EMPTY_XD;
-			status = TreeGetRecord(nid, (struct descriptor_xd *)hold_ptr);
+			status = TdiGetRecord(nid, (struct descriptor_xd *)hold_ptr);
 		}
 		/********************************
 		Logical results for bit or value.

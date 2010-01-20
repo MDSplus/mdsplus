@@ -90,7 +90,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 			break;
 		case DTYPE_NID :
 			pnid = (int *)list[0]->pointer;
-			status = TreeGetRecord(*pnid, out_ptr);
+			status = TdiGetRecord(*pnid, out_ptr);
 			if (status & 1) status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
 			break;
 		case DTYPE_PATH :
@@ -98,7 +98,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 				char *path = MdsDescrToCstring(list[0]);
 				status = TreeFindNode(path, &nid);
 				MdsFree(path);
-				if (status & 1) status = TreeGetRecord(nid, out_ptr);
+				if (status & 1) status = TdiGetRecord(nid, out_ptr);
 				if (status & 1) status = TdiEvaluate(out_ptr, out_ptr MDS_END_ARG);
 			}
 			break;
