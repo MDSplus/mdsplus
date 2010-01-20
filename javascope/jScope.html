@@ -29,7 +29,7 @@
       <li>&nbsp;<b><u>File</u>:</b></li>
       <li><u>Browse signals:</u> activates a browsing tool for navigating into the structure of
         the pulse file. This option is enabled only if the corresponding data server supports
-        signal browsing, as defined in teh property file.</li>
+        signal browsing, as defined in the property file.</li>
       <li><u>New Window:</u> creates a new jScope windows</li>
       <li><u>Look &amp; Feel</u>: defines the interface aspect of jScope (Motif, Java, Windows,
         Mac)</li>
@@ -44,7 +44,7 @@
       <li><u>Point:</u> in this configuration, a crosshair is present on each panel, and can be
         moved over the waveform.&nbsp; The corresponding point coordinates are displayed&nbsp; on
         a bottom line, and crosshairs on the other panels are moved accordingly to the time
-        coordinates of the selected crosshair. When more tha one waveform is displayed on the same
+        coordinates of the selected crosshair. When more than one waveform is displayed on the same
         panel, clicking the mouse near one waveform, locks the crosshair to the selected waveform
         (as indicated also by the colour of the crosshair). The bottom line indicates which
         waveform is currently selected. Clicking MB2 mouse button when in point mode sets all the
@@ -76,10 +76,10 @@
     - number of vertical and horizontal lines in the grid;<br>
     - appearance of the grid;<br>
     - vertical and horizontal offset, i.e. the dimension of the blank area between the drawn
-    waveform and the panel borderd, when the waveform is autoscaled;<br>
+    waveform and the panel border, when the waveform is autoscaled;<br>
     - reversed image (i.e. black foreground);<br>
     - legend position;<br>
-    - use of color palette (recirculate over shot numbers or over sigan names)</li>
+    - use of color palette (recirculate over shot numbers or over signal names)</li>
   <li><u>Window</u>: defines the number of panels. Panels can then be re-dimensioned by
     dragging the small handles between panels</li>
   <li><u>Printer</u>: to be used for printer selection. It appears only using JDK 1.2.</li>
@@ -99,7 +99,7 @@
     file.</li>
   <li><u>Save all as text...</u>: Saves the currently displayed signals in a textual,
     matlab-compatible format. The produced file begins with three descriptive rows: the first
-    one describes X asis for the&nbsp; signal list, the second one describes the Y axis, and
+    one describes X axis for the&nbsp; signal list, the second one describes the Y axis, and
     the third row reports the shot numbers. In the remaining rows X and Y values for signals
     are saved in ASCII as columns. Successive signals are displayed in successive columns.<br>
     <br>
@@ -130,7 +130,7 @@
     it is defined by its IP address. The current server can be defined at the command line as
     follows: java -Ddata.address=&lt;IP address&gt; jScope. The current server is displayed in
     the bottom line on the right.</li>
-  <li><u>Edit server list</u>: allows to add new servers on the server list. Each data server
+  <li><u>Edit server list</u>: allows adding new servers on the server list. Each data server
     is defined by:<br>
     - <em>name</em>: which appears then in the server list<br>
     -<em>class</em>: the type of the server, selected from a list (based on the content of the
@@ -194,11 +194,11 @@ Most fields have a toggle button associated with them: when selected, the value 
 corresponding field is taken from the global configuration (see before). For the
 definition of the shot field it is also possible to use the bottom shot field. In this
 case a set or a range of shots can be defined: a set is specified by the following syntax:
-[&lt;sho1&gt;, ,shot2&gt;, ...]; a range by: &lt;first_shot&gt;:&lt;last_shot&gt;. Once a
+[&lt;sho1&gt;,shot2&gt;, ...]; a range by: &lt;first_shot&gt;:&lt;last_shot&gt;. Once a
 signal has been added to the list, the corresponding color and type of marker can be set
 first selecting the signal and then using the pull-down menus on the right of the form. <br>
 When a signal in the signal list is selected in the Setup data source popup form, it is
-possible to define the associated marker and color, as well to define wether the
+possible to define the associated marker and color, as well to define whether the
 interpolating line has to be displayed and the marker step, i.e. the number of data points
 for each visible marker. </p>
 
@@ -214,10 +214,10 @@ signals are entered, a new panel is created for each signal. </p>
 
 <p>The other two items <strong>Position legend</strong> and <strong>Remove legend</strong>
 of the Waveform popup menu allow the definition of legend for the signals associated with
-the waveform. The legen can be activated/deactivated and positioned where needed in the
+the waveform. The legend can be activated/deactivated and positioned where needed in the
 waveform window. The associated labels associated with the signals are displayed in the
 legend. If no label is associated with a given signal, the Y-value name is displayed
-istead. </p>
+instead. </p>
 
 <p>The <strong>Signals</strong><i> </i>item of the Waveform popup menu allows a rapid
 activation/deactivation of the currently defined signals. It is useful when dealing with
@@ -242,8 +242,8 @@ It is possible with jScope to look at sequences of frames (usually produced by a
 and to correlate them with other waveforms. Using standard jdk, it is possible to look at
 gif, jpeg and bitmap images. It is also possible to look at other formats by installing
 the standard java extension JAI (Java Advanced Imaging). <br>
-A jScope panel can be connected to a sequence of frames by selecting the is_image check
-box in the data setup dialog. When image mode is selected, the fields of the setu data
+A jScope panel can be connected to a sequence of frames by selecting the isimage check
+box in the data setup dialog. When image mode is selected, the fields of the setup data
 dialog are changed and looks like the following: <br>
 </p>
 
@@ -275,13 +275,13 @@ alt="image_setup.jpg (36233 byte)"> <br>
     <li><u>Keep ratio</u>: maintain original aspect ratio in image resizing.</li>
     <li><u>Flip horizontal, Flip vertical:</u> optional image flip.</li>
   </ul>
-  <p>and the checkboxes indicate wether the corresponding value is taken from the global
+  <p>and the checkboxes indicate whether the corresponding value is taken from the global
   setup. <br>
   Once the frame sequence has been loaded, the first frame of the sequence is displayed.
   When in zoom mode, it is possible to enlarge portions of the image. When in point mode,
   the frame sequence is synchronized with the other displayed waveforms. This means that
   moving the cursor over a waveform will also update the displayed frame accordingly. When
-  in point mode, &lt;ctrl&gt;MB1 click will proceede one frame further (moving in
+  in point mode, &lt;ctrl&gt;MB1 click will proceed one frame further (moving in
   correspondence the cursor over the other waveforms). Conversely, &lt;shift&gt;MB1 click
   will go back one frame. <br>
   When a panel is displaying a frame sequence, the popup menu will look as follows: </p>
@@ -291,8 +291,8 @@ alt="image_setup.jpg (36233 byte)"> <br>
   meaning as when looking at waveforms): <ul>
     <li><u>Start play</u>: start frame animation. When in zoom mode, the cursor is moved over
       the other waveforms, and animation is performed in step for the other frame panels. During
-      animation the item is chenged to stop play for stopping the animation.</li>
-    <li><u>Show profile dialog</u>: enable a popup dialog showing X,Y and Z profiles contered at
+      animation the item is changed to stop play for stopping the animation.</li>
+    <li><u>Show profile dialog</u>: enable a popup dialog showing X,Y and Z profiles centered at
       the selected point (when in point mode).</li>
     <li><u>Autoscale</u>: used to come back to the original frame width after zooming.</li>
     <li><u>Autoscale all images</u>: the same as above, performed on all the frame panels.</li>
@@ -336,7 +336,7 @@ jScope.reversed=false
 jScope.grid_mode=Dotted
 jScope.x_grid=5
 jScope.y_grid=5
-jScope.item_color_0=Blak,java.awt.Color[r=0,g=0,b=0]
+jScope.item_color_0=Black,java.awt.Color[r=0,g=0,b=0]
 jScope.item_color_1=Blue,java.awt.Color[r=0,g=0,b=255]
 jScope.item_color_2=Cyan,java.awt.Color[r=0,g=255,b=255]
 jScope.item_color_3=DarkGray,java.awt.Color[r=64,g=64,b=64]
@@ -397,9 +397,9 @@ jScope.data_server_7.class = DemoDataProvider&nbsp; </small></pre>
     waveforms and the top and bottom limits of the panel.</li>
   <li><u>jScope.vertical_offset</u> defines the dimension of the border between the drawn
     waveforms and the left and right limits of the panel.</li>
-  <li>j<u>Scope.http_proxy_host</u> defines the proxy server to be uased when using HTTP
+  <li>j<u>Scope.http_proxy_host</u> defines the proxy server to be used when using HTTP
     connections.</li>
-  <li><u>jScope.http_proxy_port</u> defines the port of the proxy server to be uased when
+  <li><u>jScope.http_proxy_port</u> defines the port of the proxy server to be used when
     using HTTP connections.</li>
   <li><u>jScope.default_server</u> defined as the index of the default server in the server
     list</li>
@@ -410,7 +410,7 @@ The <em>n</em>th data server is defined by the following properties:
 
 <ul>
   <li><u>jScope.data_server_n.name</u>&nbsp; defines the associated name which will be shown
-    in the sevrer list.</li>
+    in the server list.</li>
   <li><u>jScope.data_server_n.class</u> defines the Java class of the corresponding data
     server</li>
   <li><u>jScope.data_server_n.argument</u> (optional) defines the argument passed to the data
@@ -426,7 +426,7 @@ The <em>n</em>th data server is defined by the following properties:
 <p align="left"><font size="6"><b>How to adapt jScope to a proprietary data acquisition
 system</b></font></p>
 
-<p>Originally developed for MdsPlus, the architectire of jScope is now completely
+<p>Originally developed for MdsPlus, the architecture of jScope is now completely
 independent from a particular data system. This means that jScope can be adapted to every
 data system. </p>
 
@@ -434,7 +434,7 @@ data system. </p>
 to develop the implementation of three Java interfaces. Once such implementations have
 been added to the jScope classes, and the declaration of the new data server has been
 added into the property file, the data server can be used to visualize signals and frame
-sequences with jScope. There is tehrefore no need of chaging any line of code of the core
+sequences with jScope. There is therefore no need of chaging any line of code of the core
 jScope application.</p>
 
 <p>The main interface is <em><strong>DataProvider</strong></em>, which defines a set of
