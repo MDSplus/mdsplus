@@ -146,7 +146,7 @@ static void *handleMessage(void *arg)
                 eventName=currPtr;
 		currPtr += nameLen;
 		bufLen = ntohl(*((unsigned int *)currPtr));
-		currPtr += bufLen;
+		currPtr += sizeof(int);
                 if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
 		  continue;
                 if (strlen(eventInfo->eventName) != nameLen || strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
