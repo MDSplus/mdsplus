@@ -143,18 +143,14 @@ static void *handleMessage(void *arg)
 		currPtr = recBuf;
 		nameLen = ntohl(*((unsigned int *)currPtr));
 		currPtr += sizeof(int);
-		eventName = malloc(nameLen + 1);
-		memcpy(eventName, currPtr, nameLen);
-		eventName[nameLen] = 0;
-		if(strcmp(eventInfo->eventName, eventName)) //Not this event, but sharing the same IP
-		{
-			free(eventName);
-			continue;
-		}
-		free(eventName);
+                eventName=currPtr;
 		currPtr += nameLen;
 		bufLen = ntohl(*((unsigned int *)currPtr));
-		currPtr += sizeof(int);
+		currPtr += bufLen;
+                if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
+		  continue;
+                if (strlen(eventInfo->eventName) != nameLen || strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
+		  continue;
 		eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
 	}
 }
