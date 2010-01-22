@@ -9,6 +9,15 @@ public class TestMdsObjects
             Tree tree = new Tree("test",1);
             TreeNode sig=tree.getNode("\\sig_1");
             sig.deleteData();
+            sig.beginTimestampedSegment(new Int8Array(new byte[]{0,0,0,0}));
+            sig.putTimestampedSegment(new Int8Array(new byte[]{1,2,3,4}), new long[]{1,2,3,4});
+            System.exit(0);
+            
+            
+            
+            
+            
+            
             long startsec = System.currentTimeMillis();
             float []data = new float[1000];
             for(int i = 1; i <=4020; i++)
@@ -20,6 +29,7 @@ public class TestMdsObjects
        }catch(Exception exc)
        {
            System.err.println("Error in testRow: " + exc);
+           System.exit(0);
        }
        System.out.println("FINITO");
    }
@@ -94,7 +104,7 @@ public class TestMdsObjects
     public static void main(java.lang.String args[])
     {
         
-        testConnection();
+        testRows();
       }
     
     
