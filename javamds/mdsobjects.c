@@ -2181,6 +2181,37 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
 
 /*
  * Class:     MDSplus_TreeNode
+ * Method:    makeSegment
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim, 
+	jobject jdata, jboolean isCached, jint policy)
+{
+	struct descriptor *startD, *endD, *dimD, *dataD;
+	int status;
+	void *ctx = getCtx(ctx1, ctx2);
+
+	startD = ObjectToDescrip(env, jstart);
+	endD = ObjectToDescrip(env, jend);
+	dimD = ObjectToDescrip(env, jdim);
+	dataD = ObjectToDescrip(env, jdata);
+
+
+	if(!isCached)
+		status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, 1);
+	else
+		status = _RTreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, policy);
+
+	FreeDescrip(startD);
+	FreeDescrip(endD);
+	FreeDescrip(dimD);
+	FreeDescrip(dataD);
+	if(!(status & 1))
+		throwMdsException(env, status);
+}
+/*
+ * Class:     MDSplus_TreeNode
  * Method:    beginSegment
  * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
  */
@@ -2279,6 +2310,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
 
 	dataD = ObjectToDescrip(env, jdata);
 
+	printDecompiled(dataD);
 	if(isCached)
 		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
 	else
@@ -2289,6 +2321,37 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
 }
 
 
+
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    makeTimestampedSegment
+ * Signature: (IIILMDSplus/Data;[JZI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes, jboolean isCached, jint policy)
+{
+	struct descriptor *dataD;
+	int status;
+	void *ctx = getCtx(ctx1, ctx2);
+	int numTimes;
+	_int64 *times;
+	
+	numTimes = (*env)->GetArrayLength(env, jtimes);
+	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
+	dataD = ObjectToDescrip(env, jdata);
+
+	printDecompiled(dataD);
+
+	if(isCached)
+		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
+		if(status & 1) status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+	else
+		status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, 1);
+	FreeDescrip(dataD);
+	(*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
+	if(!(status & 1))
+		throwMdsException(env, status);
+}
 
 /*
  * Class:     MDSplus_TreeNode
@@ -2308,8 +2371,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
 	dataD = ObjectToDescrip(env, jdata);
 
+	printDecompiled(dataD);
+
 	if(isCached)
-		status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+		status = _RTreeBeginTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
 	else
 		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
