@@ -2182,11 +2182,11 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
 /*
  * Class:     MDSplus_TreeNode
  * Method:    makeSegment
- * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;IZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
   (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim, 
-	jobject jdata, jboolean isCached, jint policy)
+	jobject jdata, jint filledRows, jboolean isCached, jint policy)
 {
 	struct descriptor *startD, *endD, *dimD, *dataD;
 	int status;
@@ -2199,7 +2199,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
 
 
 	if(!isCached)
-		status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, 1);
+		status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
 	else
 		status = _RTreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, policy);
 
@@ -2346,7 +2346,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
 		if(status & 1) status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
 	else
-		status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, 1);
+		status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, numTimes);
 	FreeDescrip(dataD);
 	(*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
 	if(!(status & 1))
