@@ -144,7 +144,7 @@ public class TreeNode extends Data
         static native void doMethod(int nid, int ctx1, int ctx2, java.lang.String method) throws MdsException; 
         static native java.lang.String[] getTags(int nid, int ctx1, int ctx2) throws MdsException;
         static native void beginSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, boolean isCached, int policy)throws MdsException;
-        static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, boolean isCached, int policy)throws MdsException;
+        static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, int filledRows, boolean isCached, int policy)throws MdsException;
         static native void putSegment(int nid, int ctx1, int ctx2, Data data, int  offset, boolean isCached, int policy)throws MdsException;
         static native void updateSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, boolean isCached, int policy)throws MdsException;
         static native void beginTimestampedSegment(int nid, int ctx1, int ctx2,Data initData, boolean isCached, int policy)throws MdsException;
@@ -686,7 +686,7 @@ public class TreeNode extends Data
 	public void makeSegment(Data start, Data end, Data dim, Array initData) throws MdsException
         {
             resolveNid();
-            makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, isCached(), getCachePolicy());
+            makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, dim.getShape()[0], isCached(), getCachePolicy());
 	}
 
 	/**
