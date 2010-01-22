@@ -173,25 +173,19 @@ static void initialize()
 #endif 
 }
 
-
-
-
 static int releaseEventInfo(void *ptr)
 {
 	int i,status=0;
 	LockMdsShrMutex(&eventIdMutex,&eventIdMutex_initialized);
 
-	if(eventTopIdx >= MAX_EVENTS - 1) //If top reached, find some hole
+	for(i = 0; i < eventTopIdx-1; i++)
 	{
-		for(i = 0; i < MAX_EVENTS; i++)
+		if(eventInfos[i] == ptr)
 		{
-			if(eventInfos[i] == ptr)
-			{
-			  free(((struct EventInfo *)ptr)->eventName);
-			  free(ptr);
-			  eventInfos[i] = 0;
-			  status=1;
-			}
+		  free(((struct EventInfo *)ptr)->eventName);
+		  free(ptr);
+		  eventInfos[i] = 0;
+		  status=1;
 		}
 	}
 	UnlockMdsShrMutex(&eventIdMutex);
@@ -213,14 +207,20 @@ static int getEventId(void *ptr)
 				ans = i+1;
 			}
 		}
-		printf("Too Many events!!");
-		return 0;
+                if (i == MAX_EVENTS)
+		{
+			printf("Too Many events!!");
+			ans = 0;
+		}
 	}
-	eventInfos[eventTopIdx] = ptr;
-	eventTopIdx++;
-	ans= eventTopIdx;
-    UnlockMdsShrMutex(&eventIdMutex);
-    return ans;
+        else
+	{
+		eventInfos[eventTopIdx] = ptr;
+		eventTopIdx++;
+		ans= eventTopIdx;
+	}
+	UnlockMdsShrMutex(&eventIdMutex);
+	return ans;
 }
 
 
