@@ -1831,6 +1831,7 @@ protected:
 		bool containsVersions();
 
 		void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
+		void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 		void putSegment(Array *data, int ofs);
 		void updateSegment(Data *start, Data *end, Data *time);
 
@@ -1841,9 +1842,10 @@ protected:
 
 
 		void beginTimestampedSegment(Array *initData);
-		void putTimestampedSegment(Array *data, Int64Array *times);
+		void makeTimestampedSegment(Array *data, _int64 *times);
+		void putTimestampedSegment(Array *data, _int64 *times);
 
-		void putRow(Data *data, Int64 *time, int size = 1024);
+		void putRow(Data *data, _int64 *time, int size = 1024);
 
 		void acceptSegment(Array *data, Data *start, Data *end, Data *times);
 		void acceptRow(Data *data, _int64 time, bool isLast);
