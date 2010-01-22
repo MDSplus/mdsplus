@@ -20,7 +20,7 @@ extern "C" {
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
-	void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
+	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree);
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
@@ -511,7 +511,8 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 		return evalData;
 	}
 
-EXPORT	Data *MDSplus::executeWithArgs(char *expr, Data **args, int nArgs)
+
+EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **args, int nArgs)
 	{
 		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
 		if(!compData)
