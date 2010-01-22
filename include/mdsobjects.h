@@ -190,7 +190,7 @@ class EXPORT Data
 {
 		friend EXPORT Data *compile(const char *expr, ...);
 		friend EXPORT Data *compile(const char *expr, Tree *tree...);
-		friend EXPORT Data *executeWithArgs(char *expr, Data **args, int nArgs);
+		friend EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
 		friend EXPORT Data *execute(const char *expr, ...);
 		friend EXPORT Data *execute(const char *expr, Tree *tree ...);
 		friend EXPORT Data *deserialize(char *serialized);
@@ -2179,6 +2179,7 @@ EXPORT	Data *compile(char *expr, ...);
 EXPORT	Data *compile(char *expr, Tree *tree, ...);
 EXPORT	Data *execute(char *expr, Tree *tree, ...);
 EXPORT	Data *execute(char *expr, ...);
+EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
 Tree *getActiveTree();
 void setActiveTree(Tree *tree);
 //Required for handling dynamic memory allocated in a different DLL on windows

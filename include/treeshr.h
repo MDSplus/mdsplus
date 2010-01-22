@@ -584,6 +584,10 @@ extern EXPORT int TreeBeginSegment(int nid, struct descriptor *start, struct des
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
 extern EXPORT int _TreeBeginSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
+extern EXPORT int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end, 
+							struct descriptor *dim, struct descriptor_a *initialData, int idx, int filled);
+extern EXPORT int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
+							struct descriptor *dim, struct descriptor_a *initialData, int idx, int filled);
 extern EXPORT int TreePutSegment(int nid, int rowidx, struct descriptor_a *data);
 extern EXPORT int _TreePutSegment(void *dbid, int nid, int rowidx, struct descriptor_a *data);
 extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);
@@ -592,6 +596,8 @@ extern EXPORT int TreeBeginTimestampedSegment(int nid, struct descriptor_a *init
 extern EXPORT int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx);
 extern EXPORT int TreePutTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata);
 extern EXPORT int _TreePutTimestampedSegment(void *dbid, int nid, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int TreeMakeTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata, int idx, int filled);
+extern EXPORT int _TreeMakeTimestampedSegment(void *dbid, int nid, _int64 *timestamp, struct descriptor_a *rowdata, int idx, int filled);
 extern EXPORT int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
 extern EXPORT int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
 extern EXPORT int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
