@@ -108,8 +108,10 @@ static void *handleMessage(void *arg)
 	int nameLen, bufLen;
 	char *eventName;
 	char *currPtr;
+	int thisNameLen;
 
 	struct EventInfo *eventInfo = (struct EventInfo *)arg;
+	thisNameLen=strlen(eventInfo->eventName);
 	while(1)
 	{
 #ifdef HAVE_WINDOWS_H
@@ -139,9 +141,12 @@ static void *handleMessage(void *arg)
 			releaseEventInfo(eventInfo);
 			return;
 		}
-
+                if (recBytes < sizeof(int)*2+thisNameLen)
+		  continue;
 		currPtr = recBuf;
 		nameLen = ntohl(*((unsigned int *)currPtr));
+		if (nameLen != thisNameLen)
+		  continue;
 		currPtr += sizeof(int);
                 eventName=currPtr;
 		currPtr += nameLen;
@@ -149,7 +154,7 @@ static void *handleMessage(void *arg)
 		currPtr += sizeof(int);
                 if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
 		  continue;
-                if (strlen(eventInfo->eventName) != nameLen || strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
+                if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
 		  continue;
 		eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
 	}
