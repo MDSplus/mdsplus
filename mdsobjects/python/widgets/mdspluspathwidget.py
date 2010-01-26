@@ -3,6 +3,12 @@ import gobject
 
 from mdspluswidget import MDSplusWidget
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class props(object):
     __gproperties__= {
         'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
@@ -15,13 +21,12 @@ class MDSplusPathWidget(props,MDSplusWidget,Label):
     __gproperties__=props.__gproperties__
     
     def reset(self):
-        try:
-            import glade
+        if guibuilder:
             if self.useFullPath:
                 path="\\top.child.child:node"
             else:
                 path="device:node"
-        except:
+        else:
             if self.useFullPath:
                 path=str(self.node.fullpath)
             else:
@@ -34,9 +39,7 @@ class MDSplusPathWidget(props,MDSplusWidget,Label):
 
 gobject.type_register(MDSplusPathWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusPathWidgetAdaptor(glade.get_adaptor_for_type('GtkLabel')):
         __gtype_name__='MDSplusPathWidgetAdaptor'
 
@@ -46,5 +49,3 @@ try:
             elif prop == 'useFullPath':
                 widget.useFullPath=value
                 widget.reset()
-except:
-    pass

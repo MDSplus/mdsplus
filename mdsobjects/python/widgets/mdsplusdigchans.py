@@ -5,6 +5,12 @@ from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import TreeNode,Data
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class props(object):
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
@@ -124,9 +130,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
             channel['path']=Label('                   ')
             self.table.attach(channel['path'],columns-1,columns,chan+1,chan+2,0,0,10,0)
         self.show_all()
-        try:
-            import glade
-        except:
+        if not guibuilder:
             for chan in range(self.numChannels):
                 chanNidOffset=self.node.nid+chan*self.nodesPerChannel
                 channel=self.channels[chan]
@@ -158,9 +162,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
         
 gobject.type_register(MDSplusDigChansWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusDigChansWidgetAdaptor(glade.get_adaptor_for_type('GtkTable')):
         __gtype_name__='MDSplusDigChansWidgetAdaptor'
 
@@ -184,5 +186,3 @@ try:
                 if value > 0:
                     widget.numChannels=value
                     widget.setupChannels()
-except:
-    pass

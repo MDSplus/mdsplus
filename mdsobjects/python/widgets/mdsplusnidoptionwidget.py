@@ -5,15 +5,19 @@ from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from mdsplusexpr import MDSplusExprWidget
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class props(object):
-    try:
-        import glade
+    if guibuilder:
         __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
         'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
-        #'values' : (gobject.TYPE_STRING, 'values','Value expressions','',gobject.PARAM_READWRITE),
         }
-    except:
+    else:
         __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
         'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
@@ -108,20 +112,13 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
     def reset(self):
         value=self.node_value()
         if not hasattr(self,"has_been_initialized"):
-            try:
-                self.updateItems()
-            except Exception,e:
-                print e
-            try:
-                import glade
-            except:
+            self.updateItems()
+            if not guibuilder:
                 self.connect('event',self.button_press)
             self.has_been_initialized=True
         if hasattr(self,'values'):
             self.set_active(len(self.values))
-            try:
-                import glade
-            except:
+            if not guibuilder:
                 for idx in range(len(self.values)):
                     val=self.values[idx]
                     if val != '':
@@ -157,9 +154,7 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
 
 gobject.type_register(MDSplusNidOptionWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusNidOptionWidgetAdaptor(glade.get_adaptor_for_type('GtkComboBox')):
         __gtype_name__='MDSplusNidOptionWidgetAdaptor'
 
@@ -177,6 +172,3 @@ try:
                     widget.set_active(len(widget.values))
             elif prop == 'values':
                 widget.values=value
-
-except:
-    pass

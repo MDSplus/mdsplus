@@ -4,6 +4,12 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class props(object):
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
@@ -57,9 +63,7 @@ class MDSplusOnOffWidget(props,MDSplusWidget,gtk.CheckButton):
 
 gobject.type_register(MDSplusOnOffWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusOnOffWidgetAdaptor(glade.get_adaptor_for_type('GtkCheckButton')):
         __gtype_name__='MDSplusOnOffWidgetAdaptor'
 
@@ -74,5 +78,3 @@ try:
                     widget.set_label('the.node:path')
                 else:
                     widget.set_label('')
-except:
-    pass

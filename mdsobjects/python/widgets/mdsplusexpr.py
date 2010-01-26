@@ -4,6 +4,12 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class propsExpr(object):
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
@@ -84,9 +90,7 @@ class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
         
 gobject.type_register(MDSplusExprWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusExprFieldWidgetAdaptor(glade.get_adaptor_for_type('GtkEntry')):
         __gtype_name__='MDSplusExprFieldWidgetAdaptor'
 
@@ -104,5 +108,3 @@ try:
                 widget.nidOffset=value
             elif prop == 'putOnApply':
                 widget.putOnApply=value
-except:
-    pass

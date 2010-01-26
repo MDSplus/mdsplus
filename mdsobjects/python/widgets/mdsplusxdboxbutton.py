@@ -5,6 +5,12 @@ from mdspluswidget import MDSplusWidget
 from mdsplusxdbox import MDSplusXdBox
 from mdspluserrormsg import MDSplusErrorMsg
 
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
+
 class props(object):
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
@@ -41,16 +47,12 @@ class MDSplusXdBoxButtonWidget(props,MDSplusWidget,Button):
     def __init__(self):
         Button.__init__(self)
         MDSplusWidget.__init__(self)
-        try:
-            import glade
-        except:
+        if not guibuilder:
             self.connect("clicked",self.popupXd)
         
 gobject.type_register(MDSplusXdBoxButtonWidget) 
 
-try:
-    import glade
-
+if guibuilder:
     class MDSplusXdBoxButtonWidgetAdaptor(glade.get_adaptor_for_type('GtkButton')):
         __gtype_name__='MDSplusXdBoxButtonWidgetAdaptor'
 
@@ -61,5 +63,3 @@ try:
                 widget.putOnApply=value
             elif prop == 'label':
                 widget.set_label(value)
-except:
-    pass

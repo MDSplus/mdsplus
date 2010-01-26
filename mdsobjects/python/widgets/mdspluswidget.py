@@ -1,5 +1,14 @@
 import gobject
 import traceback
+import os
+
+from MDSplus import TreeNode
+
+try:
+    import glade
+    guibuilder=True
+except:
+    guibuilder=False
 
 class MDSplusWidget(object):
 
@@ -17,14 +26,19 @@ class MDSplusWidget(object):
                 if isinstance(child,MDSplusWidget):
                     try:
                         child.__getattribute__(method)()
-                        #if method == 'reset':
-                        #    child.show_all()
                     except Exception,e:
                         traceback.print_exc()
                         print "MDSplusWidget error: %s" % (e,)
                         status = False
         return status
     doToAll=classmethod(doToAll)
+
+    def startTimer(self):
+        self._timer=os.times()
+
+    def getTimer(self):
+        now=os.times()
+        return (now[0]-self._timer[0],now[4]-self._timer[4])
     
     def reset(self):
         pass
@@ -40,16 +54,24 @@ class MDSplusWidget(object):
         
     record=property(getRecord,setRecord)
 
-    def setNidOffset(self,devnode):
-        found=False
-        devnodes=devnode.conglomerate_nids
-        for node in devnodes:
-            if node.original_part_name == self.name.upper():
-                found=True
-                self.nidOffset=node.conglomerate_elt-1
-                break
-        if not found:
-            raise AttributeError,"Was unable to find an original part name of /%s/ in the conglomerate" % (self.name.upper(),)
+    def originalPartNames(self):
+        devnode=self.devnode
+        if not hasattr(devnode,'original_part_names'):
+            devnode.original_part_names=dict()
+            devnodes=devnode.conglomerate_nids
+            for node in devnodes:
+                devnode.original_part_names[str(node.original_part_name)]=node.conglomerate_elt-1
+        return devnode.original_part_names
+
+    def setNidOffset(self):
+        try:
+            node=self.devnode.tree.getNode(str(self.devnode)+self.name.upper())
+            self.nidOffset=node.conglomerate_elt-1
+        except:
+            try:
+                self.nidOffset=self.originalPartNames()[self.name.upper()]
+            except Exception,e:
+                raise AttributeError,"Was unable to find a node or original part name of /%s/ in the conglomerate" % (self.name.upper(),)
 
     def getDevNode(self):
         try:
@@ -58,10 +80,9 @@ class MDSplusWidget(object):
             if self.parent and isinstance(self.parent,MDSplusWidget):
                 return self.parent.getDevNode()
             else:
-                try:
-                    import glade
+                if guibuilder:
                     return None
-                except:
+                else:
                     raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
     devnode=property(getDevNode)
 
@@ -72,14 +93,13 @@ class MDSplusWidget(object):
             try:
                 devnode=self.get_toplevel().device_node
             except AttributeError:
-                try:
-                    import glade
+                if guibuilder:
                     return None
-                except:
+                else:
                     raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
             if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset < 0:
-                self.setNidOffset(devnode)
-            self._node=devnode.parent.__class__(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)
+                self.setNidOffset()
+            self._node=TreeNode(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)
             return self._node
 
     def setNode(self,value):
