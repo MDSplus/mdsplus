@@ -32,7 +32,7 @@ public fun LASER_NDRT__init(as_is _nid, optional _method)
 
     private _ASCII_MODE = 0;
     private _MIN_DT = 0.025;
-    private _MIN_To = -0.025;
+    private _MIN_To = -0.025 - 0.0055;
 	
 
 write(*, "LASER Neodimium");
@@ -69,7 +69,10 @@ write(*, _ip_rt);
 
 
     _to = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE	)), _error = 1);
-    if( _error || _t0 < _MIN_To )
+
+write(*, _to);
+
+    if( _error || _to < _MIN_To )
     {
 	DevLogErr(_nid, "Trigger time (To) is missing or less than -25ms "); 
 	abort();
@@ -151,18 +154,21 @@ write(*, _to);
 	    DevLogErr(_nid, "Missing max amplitude level");
 	    abort();
     	}
-	_max_amp = _max_amp * _max_amp * 192.0;
+	_max_amp_rt = _max_amp * _max_amp * 192.0;
 
-    	_min_amp = if_error(data(DevNodeRef(_nid, _N_MIN_N7_AMP)), _error = 1);
+    	_min_amp = if_error(data(DevNodeRef(_nid, _N_MIN_AMP)), _error = 1);
     	if(_error  )
     	{
 	    DevLogErr(_nid, "Missing min amplitude level");
 	    abort();
     	}
-	_min_amp = _min_amp * _min_amp * 192.0;
+	_min_amp_rt = _min_amp * _min_amp * 192.0;
 
 	_max_ph = 0;
  	_min_ph = 0;
+	_max_ph_rt = 0;
+ 	_min_ph_rt = 0;
+
 	if( _trg_mode_rt == _K_N7_AMP_PH || _trg_mode_rt == _K_RATIO_DOM_SEC_PH )
 	{
     		_max_ph = if_error(data(DevNodeRef(_nid, _N_MAX_PHASE)), _error = 1);
@@ -171,7 +177,7 @@ write(*, _to);
 	    		DevLogErr(_nid, "Missing max phase value");
 	    		abort();
     		}
-		_max_ph = ( _max_ph + 72 ) * 2. * $PI / 360.;
+		_max_ph_rt = ( _max_ph + 72 ) * 2. * $PI / 360.;
 
     		_min_ph = if_error(data(DevNodeRef(_nid, _N_MIN_PHASE)), _error = 1);
     		if(_error  )
@@ -179,7 +185,7 @@ write(*, _to);
 	    		DevLogErr(_nid, "Missing min phase value");
 	    		abort();
     		}
-		_min_ph = ( _min_ph + 72 ) * 2. * $PI / 360.;
+		_min_ph_rt = ( _min_ph + 72 ) * 2. * $PI / 360.;
 	}
     } else {
 
@@ -244,9 +250,17 @@ write(*, _to);
 
 
 			_cmd = 'MdsConnect("'//_ip_rt//'")';
+
+write(*, "max amp", _max_amp, _max_amp_rt);
+write(*, "min amp", _min_amp, _min_amp_rt);
+write(*, "max ph", _max_ph, _max_ph_rt);
+write(*, "min ph", _min_ph, _min_ph_rt);
+write(*, "trig mode RT", _trg_mode_rt );
+
+
 			execute(_cmd);
 		
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxAmp", $)', float(_max_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxAmp", $)', float(_max_amp_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max amplitude value");
@@ -255,7 +269,7 @@ write(*, _to);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinAmp", $)', float(_min_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinAmp", $)', float(_min_amp_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 min amplitude value");
@@ -264,7 +278,7 @@ write(*, _to);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxPhase", $)', float(_max_ph)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxPhase", $)', float(_max_ph_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max phase value");
@@ -273,7 +287,7 @@ write(*, _to);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinPhase", $)', float(_min_ph)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinPhase", $)', float(_min_ph_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set N7 max phase value");
@@ -282,7 +296,7 @@ write(*, _to);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_max_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMaxRatio", $)', float(_max_amp_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set max ratio value");
@@ -291,7 +305,7 @@ write(*, _to);
 				abort();
 			}
 
-			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinRatio", $)', float(_min_amp)) ;
+			_status = MdsValue('variables->setFloatVariable("feedbackDfluMinRatio", $)', float(_min_amp_rt)) ;
 			if(_status == 0)
 			{
 				DevLogErr(_nid, "Error set min ratio value");
