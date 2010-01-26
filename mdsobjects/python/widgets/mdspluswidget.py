@@ -1,4 +1,5 @@
 import gobject
+import traceback
 
 class MDSplusWidget(object):
 
@@ -10,12 +11,17 @@ class MDSplusWidget(object):
     def doToAll(cls,obj,method):
         status = True
         if hasattr(obj,"get_children"):
-            for child in obj.get_children():
-                status = status and MDSplusWidget.doToAll(child,method)
+            for child in obj.get_children():                
+                stat = MDSplusWidget.doToAll(child,method)
+                status = status and stat
                 if isinstance(child,MDSplusWidget):
                     try:
                         child.__getattribute__(method)()
+                        #if method == 'reset':
+                        #    child.show_all()
                     except Exception,e:
+                        traceback.print_exc()
+                        print "MDSplusWidget error: %s" % (e,)
                         status = False
         return status
     doToAll=classmethod(doToAll)
@@ -45,6 +51,20 @@ class MDSplusWidget(object):
         if not found:
             raise AttributeError,"Was unable to find an original part name of /%s/ in the conglomerate" % (self.name.upper(),)
 
+    def getDevNode(self):
+        try:
+            return self.get_toplevel().device_node
+        except AttributeError:
+            if self.parent and isinstance(self.parent,MDSplusWidget):
+                return self.parent.getDevNode()
+            else:
+                try:
+                    import glade
+                    return None
+                except:
+                    raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
+    devnode=property(getDevNode)
+
     def getNode(self):
         try:
             return self._node
@@ -52,7 +72,11 @@ class MDSplusWidget(object):
             try:
                 devnode=self.get_toplevel().device_node
             except AttributeError:
-                raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
+                try:
+                    import glade
+                    return None
+                except:
+                    raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
             if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset < 0:
                 self.setNidOffset(devnode)
             self._node=devnode.parent.__class__(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)

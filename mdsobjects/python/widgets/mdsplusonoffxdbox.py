@@ -18,12 +18,10 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
     __gproperties__= props.__gproperties__
 
     def reset(self):
-        if not hasattr(self,'xdbox'):
-            self.xdbox=MDSplusXdBox(self.node)
-            self.xdbox.putOnApply=False
         self.node_state.set_active(self.node.on)
         self.node_state.set_label('')
-        self.xdbox.reset()
+        if hasattr(self,'xdbox'):
+            self.xdbox.reset()
 
     def apply(self):
         if self.putOnApply:
@@ -37,14 +35,18 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
                         state='off'
                     MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.node.minpath,state,e))
                     raise
-            try:
-                if self.node.compare(self.xdbox.value) != 1:
-                    self.node.record=self.xdbox.value
-                self.reset()
-            except Exception,e:
-                MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
+            if hasattr(self,'xdbox'):
+                try:
+                    if self.node.compare(self.xdbox.value) != 1:
+                        self.node.record=self.xdbox.value
+                    self.reset()
+                except Exception,e:
+                    MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
 
     def popupXd(self,button):
+        if not hasattr(self,'xdbox'):
+            self.xdbox=MDSplusXdBox(self.node)
+            self.xdbox.putOnApply=False
         self.xdbox.node=self.getNode()
         self.xdbox.set_title(self.buttonLabel)
         self.xdbox.show()

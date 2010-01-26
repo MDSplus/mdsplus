@@ -4,7 +4,13 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 
-class props(object):
+class propsExpr(object):
+    __gproperties__= {
+        'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
+        'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
+        }
+
+class propsExprField(object):
     __gproperties__= {
         'putOnApply' : (gobject.TYPE_BOOLEAN, 'putOnApply','put when apply button pressed',True,gobject.PARAM_READWRITE),
         'nidOffset' : (gobject.TYPE_INT, 'nidOffset','Offset of nid in tree',-1,100000,-1,gobject.PARAM_READWRITE),
@@ -13,11 +19,11 @@ class props(object):
 
 
 
-class MDSplusExprFieldWidget(props,MDSplusWidget,Entry):
+class MDSplusExprFieldWidget(propsExprField,MDSplusWidget,Entry):
 
     __gtype_name__ = 'MDSplusExprFieldWidget'
 
-    __gproperties__ = props.__gproperties__
+    __gproperties__ = propsExprField.__gproperties__
     
     def reset(self):
         try:
@@ -39,9 +45,10 @@ class MDSplusExprFieldWidget(props,MDSplusWidget,Entry):
             
 gobject.type_register(MDSplusExprFieldWidget) 
 
-class MDSplusExprWidget(props,MDSplusWidget,ScrolledWindow):
+class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
 
     __gtype_name__ = 'MDSplusExprWidget'
+    __gproperties__ = propsExpr.__gproperties__
     
     def get_text(self):
         return self.buffer.get_text(self.buffer.get_start_iter(),self.buffer.get_end_iter())

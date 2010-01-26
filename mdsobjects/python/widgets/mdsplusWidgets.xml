@@ -93,6 +93,10 @@
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a device</tooltip>
               </property>
+              <property translatable="True" id="values" name="values">
+                   <spec>glade_standard_strv_spec</spec>
+                   <tooltip>The value expressions to match the menu items.</tooltip>
+              </property>
             </properties>
         </glade-widget-class>
         <glade-widget-class
@@ -174,7 +178,11 @@
                    <spec>glade_standard_int_spec</spec>
                    <tooltip>The offset from the head node of a channel to the endIdx ndoe.</tooltip>
               </property>
-          </properties>
+               <property save="True" query="False" id="incNidOffset" default="-1" optional="True" name="incNidOffset">
+                   <spec>glade_standard_int_spec</spec>
+                   <tooltip>The offset from the head node of a channel to the increment node.</tooltip>
+              </property>
+         </properties>
         </glade-widget-class>
         <glade-widget-class
             title="MDSplus Ok Buttons"
