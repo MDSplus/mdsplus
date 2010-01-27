@@ -112,7 +112,6 @@ public class MdsConnection
                         PMET PMdsEvent = new PMET();
                         PMdsEvent.SetEventName( event );
                         PMdsEvent.start();
-                        dispatchUpdateEvent(event);
                     } catch (IOException ex) {
                         Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
                     }
