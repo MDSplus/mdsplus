@@ -914,8 +914,8 @@ remove 28/06/2005
                 {
                     dp.RemoveUpdateEventListener(l, curr_event);
                     dp.AddUpdateEventListener(l, event);
-                    return event;
                 }
+                return event;
             }
         }
         else
@@ -924,7 +924,6 @@ remove 28/06/2005
                 dp.AddUpdateEventListener(l, event);
             return event;
         }
-        return null;
     }
 
     public void SetEvent(UpdateEventListener l, String event) throws
