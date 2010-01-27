@@ -1,69 +1,194 @@
 /* $Id$ */
 import java.io.*;
 import java.net.*;
-import java.awt.*;
+import java.util.Hashtable;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MdsConnection
 {
-    static public int    DEFAULT_PORT = 8000;
-    static public String DEFAULT_USER = "JAVA_USER";
-    static final  int    MAX_NUM_EVENTS = 256;
+        static public int    DEFAULT_PORT = 8000;
+        static public String DEFAULT_USER = "JAVA_USER";
+        static final  int    MAX_NUM_EVENTS = 256;
 
-    String provider;
-    String user;
-    String host;
-    int    port;
-    Socket sock;
-    DataInputStream dis;
-    DataOutputStream dos;
-    public String error;
-    MRT receiveThread;
-    boolean connected;
-    int pending_count = 0;
+        String provider;
+        String user;
+        String host;
+        int    port;
+        Socket sock;
+        DataInputStream dis;
+        DataOutputStream dos;
+        public String error;
+        MRT receiveThread;
+        boolean connected;
+        int pending_count = 0;
 
-    transient Vector   connection_listener = new Vector();
-    transient boolean  event_flags[]       = new boolean[MAX_NUM_EVENTS];
-    transient Vector   event_list          = new Vector();
+        transient Vector   connection_listener = new Vector<EventItem>();
+        transient boolean  event_flags[]       = new boolean[MAX_NUM_EVENTS];
+        transient Vector<EventItem>   event_list          = new Vector<EventItem>();
 
-    static class Item
-    {
-        String  name;
-        int     eventid;
-        Vector  listener = new Vector();
+        transient Hashtable< String, EventItem > hashEventName = new Hashtable< String, EventItem >();
+        transient Hashtable< Integer, EventItem > hashEventId = new Hashtable< Integer, EventItem >();
 
-        Item (String name, int eventid, UpdateEventListener l)
+        ProcessUdpEvent processUdpEvent = null;
+
+
+        static class EventItem
         {
-            this.name = name;
-            this.eventid = eventid;
-            listener.addElement((Object) l);
+            String  name;
+            int     eventid;
+            Vector  listener = new Vector();
+
+            public EventItem (String name, int eventid, UpdateEventListener l)
+            {
+                this.name = name;
+                this.eventid = eventid;
+                listener.addElement((Object) l);
+            }
+
+            public String toString()
+            {
+                return new String("Event name = "+ name + " Event id = " + eventid);
+            }
         }
 
-        public String toString()
+
+        public class ProcessUdpEvent extends Thread
         {
-            return new String("Event name = "+ name + " Event id = " + eventid);
+            static final int DEFAULT_UDP_EVENT_PORT = 4000;
+            static final int DATAGRAM_BUFFER = 100;
+
+            MulticastSocket mSocket;
+            int addrUsed[] = new int[256];
+
+
+            public ProcessUdpEvent()
+            {
+                String portStr = System.getenv("mdsevent_port");
+                if( portStr != null )
+                {
+                    port = Integer.parseInt(portStr);
+                }
+                else
+                {
+                    port = DEFAULT_UDP_EVENT_PORT;
+                }
+
+                try {
+                    mSocket = new MulticastSocket(port);
+                } catch (IOException ex) {
+                    Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            private String getEventFromDatagram( DatagramPacket p )
+            {
+                 byte buf[] = p.getData();
+                 int nameLen = (buf[0]<<24 | (buf[1]&0xff)<<16 | (buf[2]&0xff)<<8 | (buf[3]&0xff) );
+                 return new String( buf, 4, nameLen  );
+            }
+
+            private String getMessageFromDatagram( DatagramPacket p )
+            {
+                 byte buf[] = p.getData();
+                 int nameLen = (buf[0]<<24 | (buf[1]&0xff)<<16 | (buf[2]&0xff)<<8 | (buf[3]&0xff) );
+                 int size = 4 + nameLen;
+                 int msgLen = (buf[size+0]<<24 | (buf[size+1]&0xff)<<16 | (buf[size+2]&0xff)<<8 | (buf[size+3]&0xff) );
+                 return new String( buf, size+4, msgLen  );
+            }
+
+            public void run()
+            {
+                byte buf[] = new byte[DATAGRAM_BUFFER];
+                DatagramPacket p = new DatagramPacket(buf, DATAGRAM_BUFFER);
+
+                while( true )
+                {
+                    try {
+                        mSocket.receive(p);
+                        String event =  getEventFromDatagram(p);
+                        PMET PMdsEvent = new PMET();
+                        PMdsEvent.SetEventName( event );
+                        PMdsEvent.start();
+                        dispatchUpdateEvent(event);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+            private int eventHashCode ( String event )
+            {
+                int i;
+                int hash = 0;
+                for(i = 0; i < event.length(); i++)
+                        hash += event.charAt(i);
+                return  hash%256;
+            }
+
+            public void addEvent( String event )
+            {
+                int hash =  eventHashCode ( event );
+                addrUsed[hash]++;
+                String mAddr = "225.0.0." + hash;
+                try {
+                    mSocket.joinGroup(InetAddress.getByName(mAddr));
+                } catch (IOException ex) {
+                    Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            public void removeEvent( String event )
+            {
+                int hash =  eventHashCode ( event );
+                if(addrUsed[hash] > 0)
+                {
+                    addrUsed[hash]--;
+                    if(addrUsed[hash] == 0)
+                    {
+                        String mAddr = "225.0.0." + hash;
+                        try {
+                            mSocket.leaveGroup(InetAddress.getByName(mAddr));
+                        } catch (IOException ex) {
+                            Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }
         }
-    }
 
 
 
-    class PMET extends Thread //Process Mds Event Thread
-    {
-        int eventid;
-
-
-        public void run()
+        class PMET extends Thread //Process Mds Event Thread
         {
-            setName("Process Mds Event Thread");
-	        dispatchUpdateEvent(eventid);
-        }
+            int eventId = -1;
+            String eventName;
 
-        public void SetEventid(int id)
-        {
-                eventid = id;
+
+            public void run()
+            {
+                setName("Process Mds Event Thread");
+                if( eventName != null )
+                        dispatchUpdateEvent(eventName);
+                else
+                    if( eventId != -1 )
+                        dispatchUpdateEvent(eventId);
+            }
+
+            public void SetEventid(int id)
+            {
+                    eventId = id;
+                    eventName = null;
+            }
+
+            public void SetEventName(String name)
+            {
+                    eventId = -1;
+                    eventName = name;
+            }
         }
-    }
 
 
 	class MRT extends Thread // Mds Receive Thread
@@ -83,9 +208,9 @@ public class MdsConnection
 	                curr_message.Receive(dis);
 	                if(curr_message.dtype == Descriptor.DTYPE_EVENT)
 	                {
-                        PMET PMdsEvent = new PMET();
-                        PMdsEvent.SetEventid(curr_message.body[12]);
-                        PMdsEvent.start();
+                            PMET PMdsEvent = new PMET();
+                            PMdsEvent.SetEventid(curr_message.body[12]);
+                            PMdsEvent.start();
 	                } else {
 	                    pending_count--;
 
@@ -128,11 +253,6 @@ public class MdsConnection
 	        }
 	    }
 
-
-
-
-
-
             public synchronized void waitExited()
             {
 
@@ -169,6 +289,8 @@ public class MdsConnection
         provider = null;
         port = DEFAULT_PORT;
         host = null;
+        processUdpEvent = new ProcessUdpEvent();
+        processUdpEvent.start();
     }
 
     public MdsConnection (String provider)
@@ -180,6 +302,8 @@ public class MdsConnection
         this.provider = provider;
         port = DEFAULT_PORT;
         host = null;
+        processUdpEvent = new ProcessUdpEvent();
+        processUdpEvent.start();
     }
 
     public void setProvider(String provider)
@@ -478,76 +602,86 @@ public class MdsConnection
     }
 
 
-    public synchronized int AddEvent(UpdateEventListener l, String event_name)
+    public synchronized int AddEvent(UpdateEventListener l, String eventName)
     {
        int i, eventid = -1;
-       Item event_item;
+       EventItem eventItem;
 
-        for(i = 0; i < event_list.size() &&
-             !((Item)event_list.elementAt(i)).name.equals(event_name);i++);
-
-        if(i == event_list.size())
-        {
+       if( hashEventName.containsKey(eventName) )
+       {
+           eventItem = hashEventName.get(eventName);
+           if(!eventItem.listener.contains((Object)l))
+                eventItem.listener.addElement(l);
+       }
+       else
+       {
             eventid = getEventId();
-            event_item = new Item(event_name, eventid, l);
-            event_list.addElement((Object)event_item);
-        } else {
-            if(!((Item)event_list.elementAt(i)).listener.contains((Object)l))
-            {
-                ((Item)event_list.elementAt(i)).listener.addElement(l);
-            }
-        }
-
-        return eventid;
+            eventItem = new EventItem(eventName, eventid, l);
+            hashEventName.put(eventName, eventItem);
+            hashEventId.put(new Integer(eventid), eventItem);
+       }
+       return eventid;
     }
 
-    public synchronized int RemoveEvent(UpdateEventListener l, String event_name)
+    public synchronized int RemoveEvent(UpdateEventListener l, String eventName)
     {
         int i, eventid = -1;
-        Item event_item;
+        EventItem eventItem;
 
-
-        for(i = 0; i < event_list.size() &&
-              !((Item)event_list.elementAt(i)).name.equals(event_name);i++);
-        if(i < event_list.size())
+        if( hashEventName.containsKey(eventName) )
         {
-            ((Item)event_list.elementAt(i)).listener.removeElement(l);
-            //System.out.println("Remove listener to event "+((Item)mdsEventList.elementAt(i)));
-            if(((Item)event_list.elementAt(i)).listener.size() == 0)
-            {
-                eventid = ((Item)event_list.elementAt(i)).eventid;
+           eventItem = hashEventName.get(eventName);
+           eventItem.listener.remove(l);
+           if(eventItem.listener.isEmpty())
+           {
+                eventid = eventItem.eventid;
                 event_flags[eventid]  = false;
-               // System.out.println("Remove "+((Item)mdsEventList.elementAt(i)));
-                event_list.removeElementAt(i);
-            }
-        }
-        return eventid;
+                hashEventName.remove(eventName);
+                hashEventId.remove( new Integer(eventid) );
+           }
+
+       }
+       return eventid;
     }
+
 
     public synchronized void dispatchUpdateEvent(int eventid)
     {
-        int i;
 
-        for(i = 0; i < event_list.size() &&
-                        ((Item)event_list.elementAt(i)).eventid != eventid; i++);
-
-        if(i > event_list.size()) return;
-        Item event_item = ((Item)event_list.elementAt(i));
-        Vector event_listener = event_item.listener;
-        UpdateEvent e = new UpdateEvent(this, event_item.name);
-
-        for(i = 0; i < event_listener.size(); i++)
-	        ((UpdateEventListener)event_listener.elementAt(i)).processUpdateEvent(e);
+        if( hashEventId.containsKey(eventid) )
+        {
+            dispatchUpdateEvent(hashEventId.get(eventid));
+        }
     }
 
+    public synchronized void dispatchUpdateEvent(String eventName)
+    {
 
+        if( hashEventName.containsKey(eventName) )
+        {
+            dispatchUpdateEvent(hashEventName.get(eventName));
+        }
+    }
 
+    private void dispatchUpdateEvent(EventItem eventItem)
+    {
+        Vector eventListener = eventItem.listener;
+        UpdateEvent e = new UpdateEvent(this, eventItem.name);
+        for(int i = 0; i < eventListener.size(); i++)
+            ((UpdateEventListener)eventListener.elementAt(i)).processUpdateEvent(e);
+
+    }
 
     public synchronized void MdsSetEvent(UpdateEventListener l, String event)
     {
-       int eventid;
-       if((eventid = AddEvent(l, event)) == -1)
-         return;
+         int eventid;
+         if((eventid = AddEvent(l, event)) == -1)
+              return;
+         
+           if( processUdpEvent != null )
+           {
+               processUdpEvent.addEvent(event);
+           }
 
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
@@ -567,9 +701,14 @@ public class MdsConnection
 
     public synchronized void MdsRemoveEvent(UpdateEventListener l, String event)
     {
-       int eventid;
-       if((eventid = RemoveEvent(l, event)) == -1)
-         return;
+           int eventid;
+           if((eventid = RemoveEvent(l, event)) == -1)
+                return;
+
+           if( processUdpEvent != null )
+           {
+               processUdpEvent.removeEvent(event);
+           }
 
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
