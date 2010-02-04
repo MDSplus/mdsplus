@@ -79,6 +79,12 @@ extern "C" {
 #define MDSplus_TreeNode_DTYPE_CALL 212L
 #undef MDSplus_TreeNode_DTYPE_WITH_ERROR
 #define MDSplus_TreeNode_DTYPE_WITH_ERROR 213L
+#undef MDSplus_TreeNode_DTYPE_LIST
+#define MDSplus_TreeNode_DTYPE_LIST 214L
+#undef MDSplus_TreeNode_DTYPE_TUPLE
+#define MDSplus_TreeNode_DTYPE_TUPLE 215L
+#undef MDSplus_TreeNode_DTYPE_DICTIONARY
+#define MDSplus_TreeNode_DTYPE_DICTIONARY 216L
 #undef MDSplus_TreeNode_DTYPE_DSC
 #define MDSplus_TreeNode_DTYPE_DSC 24L
 #undef MDSplus_TreeNode_TreeNEGATE_CONDITION
@@ -351,6 +357,14 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
 
 /*
  * Class:     MDSplus_TreeNode
+ * Method:    makeSegment
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;IZI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jobject, jint, jboolean, jint);
+
+/*
+ * Class:     MDSplus_TreeNode
  * Method:    putSegment
  * Signature: (IIILMDSplus/Data;IZI)V
  */
@@ -379,12 +393,20 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray, jboolean, jint);
+
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    makeTimestampedSegment
+ * Signature: (IIILMDSplus/Data;[JZI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray, jboolean, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putRow
- * Signature: (IIILMDSplus/Data;JZI)V
+ * Signature: (IIILMDSplus/Data;JIZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
   (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jint, jboolean, jint);

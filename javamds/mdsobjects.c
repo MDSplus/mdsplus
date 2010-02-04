@@ -2352,7 +2352,6 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 	if(!(status & 1))
 		throwMdsException(env, status);
 }
-
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putTimestampedSegment
