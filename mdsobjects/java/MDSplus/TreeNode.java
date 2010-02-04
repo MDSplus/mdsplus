@@ -752,7 +752,6 @@ public class TreeNode extends Data
 	public void putRow(Data row, long time, int size) throws MdsException
         {
             resolveNid();
-            System.out.println("PUTTO");
             putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, size, isCached(), getCachePolicy());
 	}
 

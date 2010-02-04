@@ -21,7 +21,7 @@ static final int  DbiNAME = 1,
                 DbiVERSIONS_IN_MODEL = 10,
                 DbiVERSIONS_IN_PULSE = 11;
 
-static final int  TreeUSAGE_ANY  = 0,
+static public final int  TreeUSAGE_ANY  = 0,
                 TreeUSAGE_NONE = 1 ,
                 TreeUSAGE_STRUCTURE = 1,
                 TreeUSAGE_ACTION = 2,
