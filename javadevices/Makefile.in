@@ -111,7 +111,11 @@ RFXTorControlSetup.java \
 RFXAxiToroidalControlSetup.java \
 RFXMHDSetup.java \
 EDAM_CPCISetupV1Setup.java \
-MCAMERASetup.java
+MCAMERASetup.java \
+HMSPECTROSetup.java \
+RFXDiagTimesSetup.java \
+RFXDiagTimesV1Setup.java \
+MHD_BR_TESTSetup.java
 
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
