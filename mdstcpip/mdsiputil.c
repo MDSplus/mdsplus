@@ -134,7 +134,7 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
     int num;
     int *fds;
     num=mdsipParallelInfo(sock,&fds);
-    if (num > 0) {
+    if (num > 1) {
       int status = SendBytes(sock,bptr,sizeof(MsgHdr),options);
       if (status & 1)
 	return SendParallel(sock,num,fds,bptr+sizeof(MsgHdr),bytes_to_send - sizeof(MsgHdr));
