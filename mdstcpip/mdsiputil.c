@@ -176,7 +176,7 @@ static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
     int num;
     int *fds;
     num=mdsipParallelInfo(sock,&fds);
-    if (num > 0)
+    if (num > 1)
       return GetParallel(sock,num,fds,bptr,bytes_to_recv);
   }
   while (bytes_to_recv > 0 && (tries < 10))
