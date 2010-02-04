@@ -2373,7 +2373,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 	printDecompiled(dataD);
 
 	if(isCached)
-		status = _RTreeBeginTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+		status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
 	else
 		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
