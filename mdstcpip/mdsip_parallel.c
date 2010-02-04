@@ -157,7 +157,7 @@ int mdsipConnectStream() {
 }
 
 int mdsipParallelInfo(int socket,int **fds) {
-  int num=0;
+  int num=1;
   if (socket == 0) {
     num=numStreams;
     *fds=streamFds;

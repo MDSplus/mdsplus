@@ -83,8 +83,7 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
 	}
       }
     }
-    more=0;
-  }   
+  }
   return bytes_sent==bytes_to_send;
 }
 
@@ -123,7 +122,7 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
 	}
       }
     }
-  }   
+  }
   return bytes_recv==bytes_to_recv;
 }
 
