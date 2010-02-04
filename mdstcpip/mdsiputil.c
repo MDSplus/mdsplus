@@ -9,7 +9,7 @@
 #include <pwd.h>
 #endif
 #endif
-
+#define MAX_STREAMS 32
 static unsigned char message_id = 1;
 #ifdef NOCOMPRESSION
 static int CompressionLevel = 0;
@@ -26,6 +26,13 @@ Message *GetMdsMsgOOB(SOCKET sock, int *status);
 #endif
 int SendMdsMsg(SOCKET sock, Message *m, int oob);
 int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m);
+#ifdef _WIN32
+#define MIN_PARALLEL -1
+#define mdsipParallelInfo(a,c) 0
+#else
+#define MIN_PARALLEL 10000
+extern int mdsipParallelInfo(int,int **);
+#endif
 
 extern void SetSocketOptions(SOCKET s, int reuse);
 static int initialized = 0;
@@ -40,9 +47,101 @@ extern void FlushSocket(SOCKET sock);
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif
+
+static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_send) {
+  int more=1;
+  char *sptr[MAX_STREAMS];
+  int remaining[MAX_STREAMS];
+  int i;
+  int bytes_per_stream=bytes_to_send/num;
+  char *eptr=ptr+bytes_to_send;
+  int bytes_sent=0;
+  for (i=0;i<num;i++) {
+    sptr[i]=ptr+i*(bytes_per_stream);
+    remaining[i]=bytes_per_stream;
+  }
+  while (more) {
+    more=0;
+    for (i=0;i<num;i++) {
+      if (remaining[i]>0) {
+	char *s_eptr=ptr+(i+1)*bytes_per_stream;
+	int bytes=(s_eptr>eptr?eptr:s_eptr)-sptr[i];
+	if (bytes > BUFSIZ)
+	  bytes=BUFSIZ;
+	if (bytes <= 0)
+	  remaining[i]=0;
+	else {
+	  send(fds[i],sptr[i],bytes,i<(num-1) ? MSG_DONTWAIT : 0);
+	  bytes_sent+=bytes;
+	  sptr[i]+=bytes;
+	  if (sptr[i]>=eptr)
+	    remaining[i]=0;
+	  else
+	    remaining[i]-=bytes;
+	  if (remaining[i]>0)
+	    more=1;
+	}
+      }
+    }
+    more=0;
+  }   
+  return bytes_sent==bytes_to_send;
+}
+
+static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_recv) {
+  int more=1;
+  char *sptr[MAX_STREAMS];
+  int remaining[MAX_STREAMS];
+  int i;
+  int bytes_per_stream=bytes_to_recv/num;
+  char *eptr=ptr+bytes_to_recv;
+  int bytes_recv=0;
+  for (i=0;i<num;i++) {
+    sptr[i]=ptr+i*(bytes_per_stream);
+    remaining[i]=bytes_per_stream;
+  }
+  while (more) {
+    more=0;
+    for (i=0;i<num;i++) {
+      if (remaining[i]) {
+	char *s_eptr=ptr+(i+1)*bytes_per_stream;
+	int bytes=(s_eptr>eptr?eptr:s_eptr)-sptr[i];
+	if (bytes > BUFSIZ)
+	  bytes=BUFSIZ;
+	if (bytes <= 0)
+	  remaining[i]=0;
+	else {
+	  recv(fds[i],sptr[i],bytes,i<(num-1)?MSG_DONTWAIT:0);
+	  bytes_recv+=bytes;
+	  sptr[i]+=bytes;
+	  if (sptr[i]>=eptr)
+	    remaining[i]=0;
+	  else
+	    remaining[i]-=bytes;
+	  if (remaining[i]>0)
+	    more=1;
+	}
+      }
+    }
+  }   
+  return bytes_recv==bytes_to_recv;
+}
+
 static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
 {
   int tries = 0;
+  if (MIN_PARALLEL > 0 && bytes_to_send > (MIN_PARALLEL + sizeof(MsgHdr))) {
+    int num;
+    int *fds;
+    num=mdsipParallelInfo(sock,&fds);
+    if (num > 0) {
+      int status = SendBytes(sock,bptr,sizeof(MsgHdr),options);
+      if (status & 1)
+	return SendParallel(sock,num,fds,bptr+sizeof(MsgHdr),bytes_to_send - sizeof(MsgHdr));
+      else
+	return status;
+    }
+  }
   while ((bytes_to_send > 0) && (tries < 10))
   {
 	int bytes_sent;
@@ -52,13 +151,13 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
     {
       if (errno != EINTR)
         return 0;
-	  tries++;
+      tries++;
     }
     else
     {
       bytes_to_send -= bytes_sent;
       bptr += bytes_sent;
-	  tries = 0;
+      tries = 0;
     }
   }
   if (tries >= 10)
@@ -70,9 +169,16 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
   return 1;
 }
 
-int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
 {
   int tries = 0;
+  if (MIN_PARALLEL > 0 && bytes_to_recv > MIN_PARALLEL) {
+    int num;
+    int *fds;
+    num=mdsipParallelInfo(sock,&fds);
+    if (num > 0)
+      return GetParallel(sock,num,fds,bptr,bytes_to_recv);
+  }
   while (bytes_to_recv > 0 && (tries < 10))
   {
     int bytes_recv;

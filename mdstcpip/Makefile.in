@@ -24,7 +24,7 @@ else
 endif
 
 SOURCES = \
-	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c $(COMPRESSION_SOURCES)
+	mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c mdsip_parallel.c $(COMPRESSION_SOURCES)
 
 COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 OBJECTS = $(SOURCES:.c=.o)

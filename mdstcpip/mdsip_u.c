@@ -104,6 +104,7 @@ typedef void *pthread_mutex_t;
 #define MDS_IO_REMOVE_K 8
 #define MDS_IO_RENAME_K 9
 #define MDS_IO_READ_X_K 10
+#define MDS_IO_PARALLEL_K 11
 
 #define MDS_IO_O_CREAT  0x00000040
 #define MDS_IO_O_TRUNC  0x00000200
@@ -1417,7 +1418,37 @@ static void ProcessMessage(Client *c, Message *message)
         free(buf);
         break;
       }
+#ifndef HAVE_WINDOWS_H
+    case MDS_IO_PARALLEL_K:
+      {
+	extern int mdsipConnectStreamsStart();
+	extern int mdsipConnectStream();
+	extern int mdsipConnectStreamsEnd();
+	DESCRIPTOR_LONG(ans_d,0);
+	int ans=-1;
+	int status=0;
+	ans_d.pointer = (char *)&ans;
+	if (multi == 0 && IsService == 0) {
+	  switch (message->h.dims[1]) {
+	  case 0:
+	    status=mdsipConnectStreamsStart();
+	    ans=getpid();
+	    break;
+	  case 1:
+	    status=mdsipConnectStream();
+	    break;
+	  case 2:
+	    status=mdsipConnectStreamsEnd();
+	    break;
+	  case 3:
+	    status=mdsipSendStream(message->h.dims[2]);
+	  }
+	}
+	SendResponse(c,status,(struct descriptor *)&ans_d);
+	break;
+      }
     default:
+#endif
       {
         DESCRIPTOR_LONG(status_d,0);
         int status = 0;
