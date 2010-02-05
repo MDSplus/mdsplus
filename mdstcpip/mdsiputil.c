@@ -1,4 +1,8 @@
 #include "mdsip.h"
+#ifdef BUFSIZ
+#undef BUFSIZ
+#define BUFSIZ 65536
+#endif
 #ifndef min
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -49,21 +53,31 @@ extern int MdsDispatchEvent();
 #endif
 
 static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_send) {
+  struct timeval timout = {15,0};
   int more=1;
+  int numb;
+  int mode;
   char *sptr[MAX_STREAMS];
   int remaining[MAX_STREAMS];
   int i;
   int bytes_per_stream=bytes_to_send/num;
   char *eptr=ptr+bytes_to_send;
+  fd_set writefds;
   int bytes_sent=0;
+  int max_fd=-1;
+  int status;
+  FD_ZERO(&writefds);
   for (i=0;i<num;i++) {
+    if (fds[i] > max_fd)
+      max_fd=fds[i];
     sptr[i]=ptr+i*(bytes_per_stream);
     remaining[i]=bytes_per_stream;
+    FD_SET(fds[i],&writefds);
   }
-  while (more) {
+  while (more && ((status = select(max_fd+1,0,&writefds,0,&timout)) > 0)) {
     more=0;
     for (i=0;i<num;i++) {
-      if (remaining[i]>0) {
+      if (remaining[i]>0 && FD_ISSET(fds[i],&writefds)) {
 	char *s_eptr=ptr+(i+1)*bytes_per_stream;
 	int bytes=(s_eptr>eptr?eptr:s_eptr)-sptr[i];
 	if (bytes > BUFSIZ)
@@ -71,7 +85,10 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
 	if (bytes <= 0)
 	  remaining[i]=0;
 	else {
-	  send(fds[i],sptr[i],bytes,i<(num-1) ? MSG_DONTWAIT : 0);
+	  mode = ((bytes_to_send-bytes_sent) > bytes) ? MSG_DONTWAIT : 0;
+	  bytes=send(fds[i],sptr[i],bytes,mode);
+	  if (bytes == -1 && errno == EAGAIN)
+	    bytes=0;
 	  bytes_sent+=bytes;
 	  sptr[i]+=bytes;
 	  if (sptr[i]>=eptr)
@@ -82,13 +99,19 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
 	    more=1;
 	}
       }
+      if (remaining[i]>0)
+	FD_SET(fds[i],&writefds);
+      else
+	FD_CLR(fds[i],&writefds);
     }
   }
-  return bytes_sent==bytes_to_send;
+  return (status > 0) ? bytes_sent==bytes_to_send : 0;
 }
 
 static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_recv) {
+  int mode;
   int more=1;
+  int numb;
   char *sptr[MAX_STREAMS];
   int remaining[MAX_STREAMS];
   int i;
@@ -110,7 +133,7 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
 	if (bytes <= 0)
 	  remaining[i]=0;
 	else {
-	  recv(fds[i],sptr[i],bytes,i<(num-1)?MSG_DONTWAIT:0);
+	  bytes=recv(fds[i],sptr[i],bytes,MSG_WAITALL);
 	  bytes_recv+=bytes;
 	  sptr[i]+=bytes;
 	  if (sptr[i]>=eptr)
