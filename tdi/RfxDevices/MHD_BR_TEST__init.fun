@@ -59,7 +59,7 @@ write(*, "OK");
 	_status = tcl("do/method \\"//_dec//" trigger");
 
 
-	wait(10.0);
+	wait(\MHD_BR_T::CPCI_1_STOP_ACQ + 2);
 
 
 	for(_i = 0; _i < _K_NUM_CARD; _i++)

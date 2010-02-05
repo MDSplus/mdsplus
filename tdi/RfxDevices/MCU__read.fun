@@ -1,4 +1,4 @@
-public fun MCU__store(as_is _nid, optional _method)
+public fun MCU__read(as_is _nid, optional _method)
 {
 	private _N_IP_ADDR		= 2;
 	private _N_COMMENT		= 1;
@@ -89,15 +89,16 @@ _bits = [];
 		abort();
 	}
 
-/*
-	write(* , _lcu_commlink);
-	write(* , _man_position);
-	write(* , _filter_position);
-*/
+	write(* , "");
+	_headers = ["VDC  ", "VDE  ", "VDI  ", "HOR  ", "VUE  ", "VUI  ", "VUC"];
+	write(* , _headers);
+	write(* , 'RS232: ', _bits[0], _bits[1], _bits[2], _bits[3], _bits[4], _bits[5], _bits[6]);
+	write(* , 'MANIPOLATORS: ', _man_position[0], _man_position[1], _man_position[2], _man_position[3], _man_position[4], _man_position[5], _man_position[6]);
+	write(* , 'FILTERS: ', _filter_position[0], _filter_position[1], _filter_position[2], _filter_position[3], _filter_position[4], _filter_position[5], _filter_position[6]);
 
-	DevPut(_nid, _N_MAN_POS,      _man_position);
-	DevPut(_nid, _N_FILTER_POS,   _filter_position);
-	DevPut(_nid, _N_RS232_LINKS,   _bits);
+
+
+
 
 	return(1);
 }

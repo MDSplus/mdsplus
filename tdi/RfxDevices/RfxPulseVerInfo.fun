@@ -132,7 +132,7 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 			
 		   _ver = if_error( data(build_path("\\"//_exp//"::PULSE_VER")),,[]);
 		   _k = 1;
-		   _out = _out//_k//"    "// "Original"//"\n";
+		   _out = _out//_k//"    "//RfxShotDate()// "Original"//"\n";
 		   for( _i = 0; _i < size( _ver ) ; _i += 2 )
 		   {
 			_k++;

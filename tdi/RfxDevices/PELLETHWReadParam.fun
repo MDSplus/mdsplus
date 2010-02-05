@@ -8,7 +8,6 @@ public fun PELLETHWReadParam(in _fd, in _param)
        return( _param );
     else
 	{
-       write(*, "Leggo il parametro ",  _param, _value); 	
        return ( _value );
 	}
 }

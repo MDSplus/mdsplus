@@ -148,7 +148,7 @@ write(*, "_integration_time ", _integration_time);
 		_trig_time = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE)), _status = _INVALID);
 		if( _status == _INVALID )
 		{
-    		DevLogErr(_nid, "Invalid scan number specification");
+    		DevLogErr(_nid, "Invalid trigger source specification");
  			abort();
 		}
 		_delta = _integ_time;

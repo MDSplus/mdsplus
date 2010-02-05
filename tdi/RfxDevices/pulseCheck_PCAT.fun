@@ -69,14 +69,14 @@ public fun pulseCheck_PCAT()
 	   _time = dim_of(build_path("\\RFX::PC_SETUP.WAVE_"//trim(adjustl( _i))//":WAVE"));
 	   
 	   if( sum( not( _timeRef == _time ) ) != 0)
-		   _errorMsg = _errorMsg//"Pcat riferimento "//trim(adjustl( _i))//": Valori differenti nei tempo rispetto al riferimento 1\n";
+		   _errorMsg = _errorMsg//"Pcat riferimento "//trim(adjustl( _i))//": Valori differenti nella base temporale rispetto al riferimento 1\n";
    }
 
 
 	if( len( _errorMsg ) != 0)
 	{
 		write(*, _errorMsg );
-		return ( 0 );
+		return ( 1 );
 	}
    
     return (0);

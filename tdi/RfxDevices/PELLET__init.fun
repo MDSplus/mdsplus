@@ -131,7 +131,6 @@ Set off decoder channel
 					_status = PELLETHWWriteParam( _fd, _param, _values[ _i] );
 				}
 				
-				write (*, _param, _values[ _i] );
 			
 				if( _status < 0)
 				{
