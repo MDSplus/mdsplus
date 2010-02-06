@@ -61,7 +61,6 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
   int remaining[MAX_STREAMS];
   int i;
   int bytes_per_stream=bytes_to_send/num;
-  char *eptr=ptr+bytes_to_send;
   fd_set writefds;
   int bytes_sent=0;
   int max_fd=-1;
@@ -74,38 +73,37 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
     remaining[i]=bytes_per_stream;
     FD_SET(fds[i],&writefds);
   }
+  remaining[num-1]+=bytes_to_send % bytes_per_stream;
   while (more && ((status = select(max_fd+1,0,&writefds,0,&timout)) > 0)) {
     more=0;
     for (i=0;i<num;i++) {
       if (remaining[i]>0 && FD_ISSET(fds[i],&writefds)) {
-	char *s_eptr=ptr+(i+1)*bytes_per_stream;
-	int bytes=(s_eptr>eptr?eptr:s_eptr)-sptr[i];
-	if (bytes > BUFSIZ)
-	  bytes=BUFSIZ;
-	if (bytes <= 0)
-	  remaining[i]=0;
-	else {
-	  mode = ((bytes_to_send-bytes_sent) > bytes) ? MSG_DONTWAIT : 0;
-	  bytes=send(fds[i],sptr[i],bytes,mode);
-	  if (bytes == -1 && errno == EAGAIN)
+	int bytes=(remaining[i] > BUFSIZ) ? BUFSIZ : remaining[i];
+	mode = ((bytes_to_send-bytes_sent) > bytes) ? MSG_DONTWAIT : 0;
+	bytes=send(fds[i],sptr[i],bytes,mode);
+	if (bytes == -1) {
+	  if (errno == EAGAIN)
 	    bytes=0;
-	  bytes_sent+=bytes;
-	  sptr[i]+=bytes;
-	  if (sptr[i]>=eptr)
-	    remaining[i]=0;
-	  else
-	    remaining[i]-=bytes;
-	  if (remaining[i]>0)
-	    more=1;
-	}
+	  else {
+	    perror("failed to send buffer");
+	    return 0;
+	  }
+	} 
+	bytes_sent+=bytes;
+	sptr[i]+=bytes;
+	remaining[i]-=bytes;
       }
-      if (remaining[i]>0)
+      if (remaining[i]>0) {
+	more=1;
 	FD_SET(fds[i],&writefds);
+      }
       else
 	FD_CLR(fds[i],&writefds);
     }
   }
-  return (status > 0) ? bytes_sent==bytes_to_send : 0;
+  if (status < 0)
+    perror("SendParallel select error");
+  return (status >= 0) ? bytes_sent==bytes_to_send : 0;
 }
 
 static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_recv) {
@@ -116,35 +114,33 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
   int remaining[MAX_STREAMS];
   int i;
   int bytes_per_stream=bytes_to_recv/num;
-  char *eptr=ptr+bytes_to_recv;
   int bytes_recv=0;
   for (i=0;i<num;i++) {
     sptr[i]=ptr+i*(bytes_per_stream);
     remaining[i]=bytes_per_stream;
   }
+  remaining[num-1]+=bytes_to_recv % bytes_per_stream;
   while (more) {
     more=0;
     for (i=0;i<num;i++) {
       if (remaining[i]) {
-	char *s_eptr=ptr+(i+1)*bytes_per_stream;
-	int bytes=(s_eptr>eptr?eptr:s_eptr)-sptr[i];
-	if (bytes > BUFSIZ)
-	  bytes=BUFSIZ;
-	if (bytes <= 0)
-	  remaining[i]=0;
-	else {
-	  bytes=recv(fds[i],sptr[i],bytes,MSG_WAITALL);
-	  bytes_recv+=bytes;
-	  sptr[i]+=bytes;
-	  if (sptr[i]>=eptr)
-	    remaining[i]=0;
-	  else
-	    remaining[i]-=bytes;
-	  if (remaining[i]>0)
-	    more=1;
+	int bytes=(remaining[i]>BUFSIZ)?BUFSIZ:remaining[i];
+	bytes=recv(fds[i],sptr[i],bytes,MSG_WAITALL);
+	if (bytes < 0) {
+	  perror("error reading buffer");
+	  return 0;
 	}
+	bytes_recv+=bytes;
+	sptr[i]+=bytes;
+	remaining[i]-=bytes;
+	if (remaining[i]>0)
+	  more=1;
       }
     }
+  }
+  if (bytes_recv != bytes_to_recv) {
+    perror("problem reading data");
+    printf("Expected %d bytes, got %d\n",bytes_to_recv,bytes_recv);
   }
   return bytes_recv==bytes_to_recv;
 }
