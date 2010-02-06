@@ -125,7 +125,7 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
     for (i=0;i<num;i++) {
       if (remaining[i]) {
 	int bytes=(remaining[i]>BUFSIZ)?BUFSIZ:remaining[i];
-	bytes=recv(fds[i],sptr[i],bytes,MSG_WAITALL);
+	bytes=recv(fds[i],sptr[i],bytes,0);
 	if (bytes < 0) {
 	  perror("error reading buffer");
 	  return 0;
