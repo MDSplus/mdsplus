@@ -272,8 +272,8 @@ int main(int argc,char **argv) {
     int option_index = 0;
     static struct option long_options[] = {
       {"streams",1,0,0},
-      {"statisitics",1,0,0},
-      {"help",1,0,0},
+      {"statistics",0,0,0},
+      {"help",0,0,0},
       {0,0,0,0}
     };
     c = getopt_long(argc, argv, "",long_options,&option_index);
