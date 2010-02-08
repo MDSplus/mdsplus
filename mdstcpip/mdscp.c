@@ -38,6 +38,7 @@ static float getSeconds(struct timeval *time) {
   gettimeofday(&now,0);
   ans=(now.tv_sec+now.tv_usec*1E-6)-(time->tv_sec+time->tv_usec*1E-6);
   *time=now;
+  return ans;
 }
 static void printHelp() {
   printf("Usage: mdscp [--help] [-?] [--streams=n] [--statistics] srcfile dstfile\n\n"
@@ -363,8 +364,10 @@ int main(int argc,char **argv) {
       doClose(&inFile);
       doClose(&outFile);
       if (stats) {
-	printf("Time to copy files: %g\n",getSeconds(&time));
+	float secs;
+	printf("Time to copy files: %g\n",secs=getSeconds(&time));
 	printf("Total time to copy files: %g\n",getSeconds(&timeStart));
+	printf("Copy rate is %g MBytes/sec\n",inSize/1e6/secs);
       }
     }
   }
