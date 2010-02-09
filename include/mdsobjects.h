@@ -724,6 +724,7 @@ protected:
 		_int64 *getLongArray(int *numElements);
 		float *getFloatArray(int *numElements);
 		double *getDoubleArray(int *numElements);
+		char **getStringArray(int *numElements);
 
 	};
 	class Int8Array: public Array

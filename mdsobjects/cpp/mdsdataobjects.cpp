@@ -863,6 +863,29 @@ double *Array::getDoubleArray(int *numElements)
 	return retArr;
 }
 
+char **Array::getStringArray(int *numElements)
+{
+	int size = arsize/length;
+	char **retArr = new char*[size];
+	for(int i = 0; i < size; i++)
+		switch(dtype) {
+			case DTYPE_T: 
+				retArr[i] = new char[length+1];
+				memcpy(retArr[i], &ptr[i*length], length);
+				retArr[i][length] = 0;
+				for(int j = length -1; j > 0; j--)
+					if(retArr[i][j] == ' ')
+						retArr[i][j] = 0;
+					else
+						break;
+				break;
+			default: throw new MdsException("Unsupported conversion to char ** array");
+
+		}
+	*numElements = size;
+	return retArr;
+}
+
 char *Uint64::getDate()
 {
 	char dateBuf[512];
