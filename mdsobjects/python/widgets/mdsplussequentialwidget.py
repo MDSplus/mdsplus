@@ -39,9 +39,9 @@ class MDSplusSequentialWidget(Table):
             msg="Invalid sequence specified.\n\n%s" % (e,)
             MDSplusErrorMsg('Invalid Sequence',msg)
             raise
-        ans.event=self.event.get_text()
-        if ans.event == '':
-            ans.event=None
+        ans.completion=self.event.get_text()
+        if ans.completion == '':
+            ans.completion=None
         else:
             try:
                 ans.completion=Data.compile(ans.event)

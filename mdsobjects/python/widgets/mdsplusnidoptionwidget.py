@@ -137,7 +137,7 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
         idx=self.get_active()
         if idx < len(self.values):
             value=self.values[idx]
-        elif hasattr(self.xdbox):
+        elif hasattr(self,'xdbox'):
             value=self.xdbox.expr.get_text()
         else:
             value=self.node_value()

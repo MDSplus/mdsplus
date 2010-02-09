@@ -707,6 +707,15 @@ class Data(object):
         return Data.execute('SerializeIn($)',data)
     deserialize=staticmethod(deserialize)
 
+    def makeData(value):
+        """Return MDSplus data class from value.
+        @param value: Any value
+        @type data: Any
+        @rtype: Data
+        """
+        return makeData(value)
+    makeData=staticmethod(makeData)
+
 class EmptyData(Data):
     """No Value"""
     def __init__(self):

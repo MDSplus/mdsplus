@@ -347,7 +347,7 @@ class TreeNode(Data):
             oldval=self.record
         except:
             oldval=None
-        return oldval.compare(value)
+        return makeData(value).compare(oldval)
 
     def containsVersions(self):
         """Return true if this node contains data versions

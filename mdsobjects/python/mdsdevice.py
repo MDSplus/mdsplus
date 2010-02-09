@@ -211,14 +211,25 @@ class Device(TreeNode):
             from widgets import MDSplusWidget
             from mdsdata import Data
             from mdsscalar import Int32
+            import gtk.glade
             import os,gtk,inspect,gobject,threading
-
+            import sys
             class gtkMain(threading.Thread):
                 def run(self):
                     gtk.main()
+            class MyOut:
+                def __init__(self):
+                    self.content=[]
+                def write(self,string):
+                    self.content.append(string)
                         
             gtk.gdk.threads_init()
+            out=MyOut()
+            sys.stdout = out
+            sys.stderr = out
             window=gtk.glade.XML(os.path.dirname(inspect.getsourcefile(self.__class__))+os.sep+self.__class__.__name__+'.glade').get_widget(self.__class__.__name__.lower())
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
             MDSplusWidget.doToAll(window,"reset")
