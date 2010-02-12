@@ -253,7 +253,7 @@ nid_to_tree_nidx(pino, nid, info, nidx)
       info = pino->tree_info;\
       for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
                info = info->next_info; \
-      info = info->header->nodes >= (int)nid->node ? info : 0; \
+      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
       nidx = info ? nid->node : 0; \
     }
 
