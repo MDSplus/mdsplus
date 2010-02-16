@@ -304,9 +304,11 @@ class DT132(Device):
                                 dim = Dimension(window, axis)
                             else:
                                 dim = Data.Compile('Map($,$)', Dimension(Window(start/inc, end/inc, trigger), clock), Range(start, end, inc))
-                                chan_node.record = eval('Signal(%s:RAW, "", dim)' % chan_node.getPath())
+                                raw = Data.compile('data($)', chan_raw_node)
+                                chan_node.record = eval('Signal(raw, "", dim)' % chan_node.getPath())
                         else:
-                            chan_node.record = Signal(chan_raw_node, "", Dimension(Window(start, end, self.trig_src), clock))
+			    raw = Data.compile('data($)', chan_raw_node)
+                            chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
         
             UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
         except Exception,e :
