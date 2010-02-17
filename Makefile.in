@@ -59,15 +59,13 @@ PARTS = \
 
 all:
 	cdir=`pwd`;\
-	for dir in $(PARTS) ; do\
+	set -e; for dir in $(PARTS) ; do\
 	  echo Making $${dir}; cd $${dir}; $${MAKE:=make} all; cd $$cdir;\
 	done
 
-.IGNORE:
-
 clean:
 	cdir=`pwd`;\
-	for dir in $(PARTS) ; do\
+	set -e; for dir in $(PARTS) ; do\
 	  cd $${dir} && $${MAKE:=make} -i clean; cd $$cdir;\
 	done
 
@@ -87,7 +85,7 @@ full_clean:
 
 depend:
 	cdir=`pwd`;\
-	for dir in $(PARTS) ; do\
+	set -e; for dir in $(PARTS) ; do\
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
@@ -106,7 +104,7 @@ install:
 	mkdirhier @exec_prefix@/local/tdi
 	mkdirhier @exec_prefix@/java
 	cdir=`pwd`;\
-	for dir in $(PARTS) ; do\
+	set -e; for dir in $(PARTS) ; do\
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)

@@ -228,7 +228,7 @@ clean:
 	@ $(RM) @MAKEBINDIR@reboot_dtaq_satelite
 
 install:
-	for uid in $(UIDS) ; do\
+	set -e; for uid in $(UIDS) ; do\
 	  $(INSTALL) -m 644 $${uid} @uiddir@;\
 	done
 	if [ ! -d @libdir@ ] ; then \

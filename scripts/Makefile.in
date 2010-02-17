@@ -18,7 +18,7 @@ clean :
 	@ $(RM) $(SCRIPTS)
 
 install:
-	for script in $(SCRIPTS) ; do\
+	set -e; for script in $(SCRIPTS) ; do\
 	  $(INSTALL) -m 755 $${script} @bindir@;\
 	done
 
