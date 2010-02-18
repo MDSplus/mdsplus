@@ -53,7 +53,7 @@ int get_crate_status( char *crate_name, int *ptr_crate_status )
 					&iosb			// *iosb
 					);
 
-	*ptr_crate_status = (short)SCCdata & 0x0ffff;
+	*ptr_crate_status = (short)((status & 1) ? SCCdata : 0) & 0x0ffff;
 
 	if( MSGLVL(DETAILS) )
 		printf( "gcs(): %.6s  SCCdata = 0x%0x  CamPiow()status = 0x%0x  is %s-LINE\n",
