@@ -170,7 +170,7 @@ int Assign()
 	sprintf( line, "%-32s %-10s %-40s\n", 
 		log_name.pointer, 								// these were entered by the user
 		phy_name.pointer, 
-		comment.pointer
+		comment.pointer ? comment.pointer : ""
 		);
 
 	// check comment field for null string, ie "(null)"
