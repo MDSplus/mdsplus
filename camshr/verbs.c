@@ -93,7 +93,7 @@ static void str_upcase( struct descriptor *in, struct descriptor *out )
 //-------------------------------------------------------------------------
 int Assign()
 {
-	char	line[MODULE_ENTRY];
+	char	line[MODULE_ENTRY+1];
 	int		dbFileSize, fd, i, nullMask, numOfEntries, rc;
 	int		status = SUCCESS;				// assume the best
 
