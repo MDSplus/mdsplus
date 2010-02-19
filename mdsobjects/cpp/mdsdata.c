@@ -207,12 +207,14 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 {
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)ptr;
 	struct descriptor *dscPtr;
-	int i;
+	int i, status;
 	void *unitsData = 0;
 	void *errorData = 0;
 	void *helpData = 0;
 	void *validationData = 0;
 	struct descriptor_r *dscRPtr;
+	EMPTYXD(caXd);
+	int isCa = 0;
 
 
 /*	if(xdPtr->class != CLASS_XD)
@@ -256,21 +258,38 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	switch(dscPtr->class) {
 		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer, unitsData,
 						   errorData, helpData, validationData, tree);
+		case CLASS_CA: 
+			status = TdiData(dscPtr, &caXd MDS_END_ARG);
+			if(!(status & 1)) 
+			{
+				printf("Cannot evaluate CA descriptor\n");
+				return NULL;
+			}
+			isCa = 1;
+
 		case CLASS_A :
 			{
-
 				ARRAY_COEFF(char , 64) *arrDscPtr;
-				arrDscPtr = (void *)dscPtr;
+				if(isCa)
+					arrDscPtr = caXd.pointer;
+				else
+					arrDscPtr = (void *)dscPtr;
 				if(arrDscPtr->dimct > 1)
 				{
-					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct,
+					void *res = createArrayData(arrDscPtr->dtype, arrDscPtr->length, arrDscPtr->dimct,
 						(int *)&arrDscPtr->m, arrDscPtr->pointer, unitsData, errorData, helpData, validationData);
+					if(isCa)
+						MdsFree1Dx(&caXd, 0);
+					return res;
 				}
 				else
 				{
 					int dims = arrDscPtr->arsize/arrDscPtr->length;
-					return createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer,
+					void *res = createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer,
 						unitsData, errorData, helpData, validationData);
+					if(isCa)
+						MdsFree1Dx(&caXd, 0);
+					return res;
 				}
 			}
 		case CLASS_R :
