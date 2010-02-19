@@ -37,6 +37,7 @@ install:
 	$(INSTALL) -m 644  jDispatcher.properties @exec_prefix@/java/classes
 	$(INSTALL) -m 755  @MAKEBINDIR@jDispatcherIp @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@jDispatchMonitor @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@jServer @bindir@
 
 @MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
 
