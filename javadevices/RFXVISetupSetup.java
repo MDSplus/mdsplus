@@ -94,9 +94,11 @@ public class RFXVISetupSetup extends DeviceSetup
     jPanel3.add(deviceField3, null);
     jPanel3.add(deviceField2, null);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
-    jTabbedPane1.add(jPanel5,    "PZ Filling");
+    //jTabbedPane1.add(jPanel6,   "PZ Puffing");
+    jTabbedPane1.add(jPanel6,   "H2 injection");	
+    //jTabbedPane1.add(jPanel5,    "PZ Filling");
+    jTabbedPane1.add(jPanel5,    "He/impurities injection");
     jPanel5.add(deviceWave1,  BorderLayout.CENTER);
-    jTabbedPane1.add(jPanel6,   "PZ Puffing");
     jPanel6.add(deviceWave2,  BorderLayout.CENTER);
   }
 
