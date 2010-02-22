@@ -129,7 +129,7 @@ public class LASER_NDRTSetup extends DeviceSetup {
 
         jPanel1.add(jPanel5);
 
-        deviceChoice2.setChoiceItems(new String[] {"N7_AMP", "N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"});
+        deviceChoice2.setChoiceItems(new String[] {"M1_N7_AMP", "M1_N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH", "M0_N1_AMP", "M0_N1_AMP_PH", "M0_N7_AMP", "M0_N7_AMP_PH"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("RT Trig. Mode:");
         deviceChoice2.setOffsetNid(7);
