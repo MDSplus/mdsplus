@@ -76,6 +76,7 @@ static int udpPort = -1;
 struct EventInfo {
 	int socket;
 	char discarded;
+        pthread_t thread;
 	char *eventName;
 	void *arg;
 	void (*astadr)(void *,int,char *);
@@ -390,7 +391,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	currInfo->arg = astprm;
 	currInfo->astadr = astadr;
 
-	pthread_create(&thread, 0, handleMessage, (void *)currInfo);
+	pthread_create(&currInfo->thread, 0, handleMessage, (void *)currInfo);
 	*eventid = getEventId((void *)currInfo);
 	return 1;
 }
@@ -399,6 +400,11 @@ int MDSUdpEventCan(int eventid)
 {
 	struct EventInfo *currInfo = getEventInfo(eventid);
         if (currInfo) {
+#ifndef HAVE_WINDOWS_H
+	  pthread_cancel(currInfo->thread);
+	  close(currInfo->socket);
+	  releaseEventInfo(currInfo);
+#endif
 	  currInfo->discarded = 1;
 	  return 1;
 	} else
