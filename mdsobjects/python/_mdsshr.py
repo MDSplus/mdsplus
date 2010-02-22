@@ -25,21 +25,23 @@ __MdsGetMsg.argtypes=[_C.c_int]
 __MdsGetMsg.restype=_C.c_char_p
 __LibConvertDateString=MdsShr.LibConvertDateString
 __LibConvertDateString.argtypes=[_C.c_char_p,_C.POINTER(_C.c_ulonglong)]
-__MDSWfevent=MdsShr.MDSWfevent
-__MDSWfevent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p,_C.POINTER(_C.c_int)]
+__MDSWfeventTimed=MdsShr.MDSWfeventTimed
+__MDSWfeventTimed.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p,_C.POINTER(_C.c_int),_C.c_int]
 __MDSEvent=MdsShr.MDSEvent
 __MDSEvent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p]
 
 class MdsException(Exception):
     pass
 
-def MDSWfevent(event):
+def MDSWfeventTimed(event,timeout):
     import numpy as _N
     buffer=_N.uint8(0).repeat(repeats=4096)
     numbytes=_C.c_int(0)
-    status=__MDSWfevent(event,len(buffer),buffer.ctypes.data,numbytes)
+    status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
         return buffer[range(numbytes.value)]
+    elif (status == 0):
+        raise MdsException,"Event %s timed out." % (str(event),)
     else:
         raise MdsException,MdsGetMsg(status)
 

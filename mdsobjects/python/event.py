@@ -11,27 +11,33 @@ class Event(Thread):
     def cancel(self):
         self.__active__=False
 
-    def __init__(self,event):
+    def __init__(self,event,timeout=0):
         """Saves event name and starts wfevent thread
         @param event: name of event to monitor
         @type event: str
         """
         self.event=event
+        self.exception=None
+        self.timeout=timeout
         super(Event,self).__init__()
         self.setDaemon(True)
         self.__active__=True
         self.subclass_run=self.run
         self.run=self.event_run
-        self.start()
+	self.start()
 
     def event_run(self):
-        from _mdsshr import MDSWfevent
+        from _mdsshr import MDSWfeventTimed
         while self.__active__:
-            self.raw=MDSWfevent(self.event)
+            self.exception=None
+            try:
+                self.raw=MDSWfeventTimed(self.event,self.timeout)
+            except Exception,e:
+                self.exception=e
             if self.__active__:
                 self.time=time.time()
                 self.subclass_run()
-
+    
     def getData(self):
         """Return data transfered with the event.
         @rtype: Data
