@@ -12,6 +12,15 @@
 #define USE_PIPED_MESSAGING 1
 #include <limits.h>
 #endif
+
+STATIC_CONSTANT int TIMEOUT = 0;
+
+int MDSSetEventTimeout(int seconds) {
+  int old_timeout=TIMEOUT;
+  TIMEOUT=seconds;
+  return old_timeout;
+}
+
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
@@ -47,7 +56,6 @@ STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event source
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 STATIC_THREADSAFE unsigned int threadID;
 STATIC_CONSTANT int zero = 0;
-
 
 STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
   int status;
@@ -227,19 +235,24 @@ STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
   status = SetEvent(event->event);
 }
 
-int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
+int MDSWfevent(char *evname, int buflen, char *data, int *datlen) {
+  return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
+}
+
+int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeout)
 {
   int eventid;
+  int status;
   struct MDSWfevent_struct event;
   event.event = CreateEvent(NULL, TRUE, FALSE, NULL);
   event.buflen = buflen;
   event.buffer = data;
   event.retlen = datlen;
   MDSEventAst(evname,MDSWfevent_ast,(void *)&event,&eventid);
-  WaitForSingleObject(event.event,INFINITE);
+  status=WaitForSingleObject(event.event,(timeout > 0) ? timeout*1000 : INFINITE);
   MDSEventCan(eventid);
   CloseHandle(event.event);
-  return 1;
+  return (status==WAIT_TIMEOUT)?0:1;
 }
 
 int old_MDSEvent(char *evname_in, int data_len, char *data)
@@ -1872,9 +1885,14 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_unlock(&t->mutex);
 }
 
-int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
+int MDSWfevent(char *evname, int buflen, char *data, int *datlen) {
+  return MDSWfeventTimed(evname,buflen,data,datlen,TIMEOUT);
+}
+
+int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeout)
 {
     int eventid=-1;
+    int status;
     struct wfevent_thread_cond t = {1};
     pthread_mutex_init(&t.mutex,pthread_mutexattr_default);
     pthread_cond_init(&t.cond,pthread_condattr_default);
@@ -1883,7 +1901,14 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
     t.datlen = datlen;
     MDSEventAst(evname, EventHappened, &t, &eventid);
     pthread_mutex_lock(&t.mutex);
-    pthread_cond_wait(&t.cond,&t.mutex);
+    if (timeout>0) {
+      static struct timespec abstime;
+      clock_gettime(CLOCK_REALTIME,&abstime);
+      abstime.tv_sec+=timeout;
+      status=pthread_cond_timedwait(&t.cond,&t.mutex,&abstime);
+    } else {
+      status=pthread_cond_wait(&t.cond,&t.mutex);
+    }
     pthread_mutex_unlock(&t.mutex);
     pthread_mutex_lock(&t.mutex);
     t.active=0;
@@ -1891,7 +1916,7 @@ int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
     pthread_mutex_unlock(&t.mutex);
     pthread_cond_destroy(&t.cond);
     pthread_mutex_destroy(&t.mutex);
-    return(1);
+    return(status==0);
 }
 
 int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
