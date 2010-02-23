@@ -404,8 +404,9 @@ int MDSUdpEventCan(int eventid)
 	  pthread_cancel(currInfo->thread);
 	  close(currInfo->socket);
 	  releaseEventInfo(currInfo);
-#endif
+#else
 	  currInfo->discarded = 1;
+#endif
 	  return 1;
 	} else
 	  return 0;
