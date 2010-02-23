@@ -13,7 +13,7 @@ Program to wait for MDSPlus event from the command line.
 */
 
 static void printhelp(char *cmd) {
-  printf("usage: %s event-name [-d|--data] [-t n|--timeout=n] [-h|--help]\n",cmd);
+  printf("usage: %s event-name [-d|--data] [-D|--serialized] [-t n|--timeout=n] [-h|--help]\n",cmd);
   printf("\n  event-name is the event that you want to wait for."
 	 "\n  -d or --data indicates print event data."
 	 "\n  -D or --serialized indicates interpret data as serialized and print it."
