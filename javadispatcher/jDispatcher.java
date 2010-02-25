@@ -175,6 +175,7 @@ class jDispatcher
         phases.clear();
         dep_dispatched.removeAllElements();
         totSeqDispatched = new Hashtable();
+        actSeqNumbers = new Hashtable();       
         //seq_dispatched.removeAllElements();
         nidDependencies.clear();
         timestamp++;

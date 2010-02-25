@@ -572,8 +572,11 @@ public class jServer
             System.out.println("" + new Date() + ", Doing " + name + " in " +
                                tree + " shot " + shot);
 
-            mdsTree.doAction(nid, 0);
-      
+            try {
+                mdsTree.doAction(nid, 0);
+            }catch(Exception exc) {
+                System.err.println("Exception generated in Action execution");
+            }
          
       
             System.out.println("" + new Date() + ", Done " + name + " in " +
