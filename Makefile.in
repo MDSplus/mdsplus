@@ -43,7 +43,7 @@ PARTS = \
         tcl \
         tdic \
         mdslib \
-        math \
+        @MATH@ \
         wfevent \
         setevent \
         mdsmisc \
