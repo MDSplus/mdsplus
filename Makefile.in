@@ -11,6 +11,13 @@ JAVA_APS = javamds \
 	   javaclient \
 	   mdsobjects/java
 
+MOTIF_APS = xmdsshr \
+	    actions \
+	    dwscope \
+	    @IDLMDSWIDGETS@ \
+            @MITDEVICES@ \
+            traverser
+
 HDF5_APS = hdf5
 
 D3D_PACKAGE = d3dshr
@@ -20,13 +27,11 @@ PARTS = \
         treeshr \
         tdishr \
         tditest \
-        xmdsshr \
 	xtreeshr \
 	cacheshr \
 	mdsobjects/cpp \
         @MDSTCPIP@ \
 	rtevents \
-        dwscope \
         mdslibidl \
         cdu     \
         mdsdcl  \
@@ -37,11 +42,8 @@ PARTS = \
 	servershr \
         tcl \
         tdic \
-        traverser \
         mdslib \
-        actions \
         math \
-        @MITDEVICES@ \
         wfevent \
         setevent \
         mdsmisc \
@@ -50,10 +52,10 @@ PARTS = \
         manpages \
         @D3D_PACKAGE@ \
         @JAVA_APS@ \
+	@MOTIF_APS@ \
 	@MDSSQL@ \
         @IDLSQL@ \
 	@IDLMDSEVENT@ \
-        @IDLMDSWIDGETS@ \
 	@MDSVME@ \
 	@HDF5_APS@
 

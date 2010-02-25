@@ -838,6 +838,15 @@ then
   X_LIBS=`echo $X_LIBS | sed s/lib64/lib/`
 fi
 AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
+AC_MSG_CHECKING(for uil command)
+if ( which $UIL 2>/dev/null )
+then
+  MOTIF_APS="\$(MOTIF_APS)"
+  AC_MSG_RESULT(have uil so openmotif apps will be built.)
+else
+  MOTIF_APS=""
+  AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
+fi
 AC_PATH_PROG(JAVAC,javac,javac,$jdk_dir/bin)
 AC_PATH_PROG(JAR,jar,jar,$jdk_dir/bin)
 AC_PATH_PROG(RMIC,rmic,rmic,$jdk_dir/bin)
@@ -930,6 +939,7 @@ AC_SUBST(MDSVME)
 AC_SUBST(MEMCHKLIB)
 AC_SUBST(MITDEVICES)
 AC_SUBST(MITDEVICESIO_TARGETS)
+AC_SUBST(MOTIF_APS)
 AC_SUBST(MOTIF_LDSHARE)
 AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
