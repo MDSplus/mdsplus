@@ -575,7 +575,7 @@ public class jServer
             try {
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
-                System.err.println("Exception generated in Action execution");
+                System.err.println("Exception generated in Action execution: " + exc);
             }
          
       
