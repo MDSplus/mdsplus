@@ -13483,7 +13483,7 @@ fi
 
           ac_config_commands="$ac_config_commands default-1"
 
-if test JAVA_APS=""
+if test "$JAVA_APS" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13498,7 +13498,7 @@ echo "$as_me: WARNING: Install a Java SDK and reconfigure to build the Java apps
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test LIBREADLINE=""
+if test "$LIBREADLINE" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13515,7 +13515,7 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test MATH=""
+if test "$MATH" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13532,7 +13532,7 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test SYBASE=""
+if test "$SYBASE" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13547,7 +13547,7 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test MOTIF_APS=""
+if test "$MOTIF_APS" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13562,7 +13562,7 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test IDL_INC=""
+if test "$IDL_INC" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
@@ -13577,3 +13577,4 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
+

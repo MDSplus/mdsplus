@@ -1048,7 +1048,7 @@ xmdsshr/Makefile
 xtreeshr/Makefile
 )
 AC_OUTPUT_COMMANDS(make depend)
-if test JAVA_APS=""
+if test "$JAVA_APS" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1057,7 +1057,7 @@ then
   AC_MSG_WARN(Install a Java SDK and reconfigure to build the Java apps.)
   AC_MSG_WARN()
 fi
-if test LIBREADLINE=""
+if test "$LIBREADLINE" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1067,7 +1067,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test MATH=""
+if test "$MATH" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1077,7 +1077,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test SYBASE=""
+if test "$SYBASE" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1086,7 +1086,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test MOTIF_APS=""
+if test "$MOTIF_APS" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1095,7 +1095,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test IDL_INC=""
+if test "$IDL_INC" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
@@ -1104,3 +1104,4 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
+
