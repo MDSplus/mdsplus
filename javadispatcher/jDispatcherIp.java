@@ -106,6 +106,8 @@ class jDispatcherIp
                 String second_part = st.nextToken();
                 if (second_part.equals("PULSE")) {
                     shot = Integer.parseInt(st.nextToken());
+                    if(shot == 0)
+                        shot = getCurrentShot();
                     dispatcher.beginSequence(shot);
                 }
                 else
@@ -125,6 +127,7 @@ class jDispatcherIp
 			if(st.hasMoreTokens())
 		        {
 			    shot = Integer.parseInt(st.nextToken());
+
 			    setCurrentShot(shot);
 			    dispatcher.setTree(currTreeName, shot);
 			} else {
