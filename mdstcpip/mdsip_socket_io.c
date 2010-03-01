@@ -954,7 +954,9 @@ int ConnectToInet(unsigned short port,void (*AddClient_in)(SOCKET,void *,char *)
   SetFD(s);
   if ((status=getpeername(s, (struct sockaddr *)&sin, &n)) < 0)
   {
-    perror("Error getting peer name");
+    char msg[1000];
+	sprintf(msg,"Error getting peer name - status=%d",status);
+    perror(msg);
     exit(0);
   }
   AddClient = AddClient_in;
