@@ -41,7 +41,7 @@ PARTS = \
         @CCL@     \
 	servershr \
         tcl \
-        tdic \
+        @TDIC@ \
         mdslib \
         @MATH@ \
         wfevent \

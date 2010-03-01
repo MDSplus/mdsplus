@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR RMIC CAMSHR CC_LDFLAGS CCL D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GCCLIB GEN_DEVICE GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JDK_DIR JVM JDK_LIVECONNECT LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC VAL MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MATH MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICES MITDEVICESIO_TARGETS MOTIF_APS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN REMCAM SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF DC1394_SUPPORT DC1394_SUPPORT2 LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os F77 FFLAGS LDFLAGS ac_ct_F77 EXEEXT OBJEXT CC CFLAGS CPPFLAGS ac_ct_CC CPP EGREP RANLIB ac_ct_RANLIB X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS UIL JAVAC JAR RMIC CAMSHR CC_LDFLAGS CCL D3D_PACKAGE D3DLIB D3D_FFLAGS DNET_STUB EXPORTS_FILE FEXECLIBDIR FORLD FOR_LDFLAGS GCCLIB GEN_DEVICE GLOBUS_CFLAGS GLOBUS_FLAVOR GLOBUS_LIBS GLOBUS_LOCATION GROFF GROFF_MAN_FLAGS HDF5_INCS HDF5_LIBS HDF5_APS HUP_TO_INETD HUP_TO_XINETD IDL_INC IDL_LIB IDLMDSEVENT IDLMDSWIDGETS IDLSQL JAVA_APS JDK_CFLAGS JDK_DIR JVM JDK_LIVECONNECT LD LDSHARE LDARC LD_LDSHARE LD_LDARC LIBDL LIBDLD LIBM LIBNSL LIBPATH LIBPTHREAD LIBREADLINE LIBRESOLV LIBSOCKET LIBXP LIBXEXT LINKSHARED LINKJNI LINKMODULE LOC VAL MAKEBINDIR MAKELIBDIR MAKESHLIBDIR MAKESHLIBDIR_RULE MAKEUIDDIR MAKEETCDIR MAKEJAVADIR MATH MDSSQL MDSTCPIP MDSVME MEMCHKLIB MITDEVICES MITDEVICESIO_TARGETS MOTIF_APS MOTIF_LDSHARE MOTIF_LDARC MOTIF_LD_LDSHARE MOTIF_LD_LDARC NEED_SEMUN REMCAM SHARETYPE SHARETYPEJNI SHARETYPEMOD SIZEOF_INT_P SRBLIB SRBINCLUDE SYBASE_INC SYBASE_LIB TARGETSYS TAR_EXCLUDE TDIC XM_LIBS uiddir USE_SEMAPHORE_H USE_PIPED_MESSAGING USE_TM_GMTOFF DC1394_SUPPORT DC1394_SUPPORT2 LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -3067,7 +3067,6 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-echo "uiddir=$uiddir --------------------------------------------"
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 MAKEBINDIR="\$(top_srcdir)/bin/"
@@ -6002,6 +6001,14 @@ else
   LIBREADLINE=""
 fi
 
+if test "$LIBREADLINE" = ""
+then
+  echo "$as_me:$LINENO: result: \"libreadline is not available so the build of tdic will be skipped\"" >&5
+echo "${ECHO_T}\"libreadline is not available so the build of tdic will be skipped\"" >&6
+  TDIC=""
+else
+  TDIC="tdic"
+fi
 echo "$as_me:$LINENO: checking for gettimeofday in -lc" >&5
 echo $ECHO_N "checking for gettimeofday in -lc... $ECHO_C" >&6
 if test "${ac_cv_lib_c_gettimeofday+set}" = set; then
@@ -12187,6 +12194,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
+
           ac_config_headers="$ac_config_headers include/config.h"
 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile idlsql/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdsjet/Makefile mdsip_xio/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
@@ -12977,6 +12985,7 @@ s,@SYBASE_INC@,$SYBASE_INC,;t t
 s,@SYBASE_LIB@,$SYBASE_LIB,;t t
 s,@TARGETSYS@,$TARGETSYS,;t t
 s,@TAR_EXCLUDE@,$TAR_EXCLUDE,;t t
+s,@TDIC@,$TDIC,;t t
 s,@XM_LIBS@,$XM_LIBS,;t t
 s,@uiddir@,$uiddir,;t t
 s,@USE_SEMAPHORE_H@,$USE_SEMAPHORE_H,;t t
@@ -13474,3 +13483,97 @@ fi
 
           ac_config_commands="$ac_config_commands default-1"
 
+if test JAVA_APS=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: The development environment for Java applications was not found." >&5
+echo "$as_me: WARNING: The development environment for Java applications was not found." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The build of Java applications will be skipped from the build of MDSplus." >&5
+echo "$as_me: WARNING: The build of Java applications will be skipped from the build of MDSplus." >&2;}
+  { echo "$as_me:$LINENO: WARNING: Install a Java SDK and reconfigure to build the Java apps." >&5
+echo "$as_me: WARNING: Install a Java SDK and reconfigure to build the Java apps." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi
+if test LIBREADLINE=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: The libreadline library was not found" >&5
+echo "$as_me: WARNING: The libreadline library was not found" >&2;}
+  { echo "$as_me:$LINENO: WARNING: The tdic application will be skipped." >&5
+echo "$as_me: WARNING: The tdic application will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: Install the package containing the readline library (perhaps libreadline-devel) and reconfigure to build the tdic application." >&5
+echo "$as_me: WARNING: Install the package containing the readline library (perhaps libreadline-devel) and reconfigure to build the tdic application." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi
+if test MATH=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: To build the math library in MDSplus it is necessary to install the g77 compiler." >&5
+echo "$as_me: WARNING: To build the math library in MDSplus it is necessary to install the g77 compiler." >&2;}
+  { echo "$as_me:$LINENO: WARNING: This code uses special %val and %loc directives which are not available in most other Fortran compilers." >&5
+echo "$as_me: WARNING: This code uses special %val and %loc directives which are not available in most other Fortran compilers." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The math library build will be skipped." >&5
+echo "$as_me: WARNING: The math library build will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi
+if test SYBASE=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: The open sybase software was not found in /usr/local/sybase." >&5
+echo "$as_me: WARNING: The open sybase software was not found in /usr/local/sybase." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The sqlserver interface libraries will be skipped." >&5
+echo "$as_me: WARNING: The sqlserver interface libraries will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi
+if test MOTIF_APS=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: The openmotif development environment was not found." >&5
+echo "$as_me: WARNING: The openmotif development environment was not found." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The openmotif based applications and libraries will be skipped." >&5
+echo "$as_me: WARNING: The openmotif based applications and libraries will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi
+if test IDL_INC=""
+then
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: The IDL application was not found." >&5
+echo "$as_me: WARNING: The IDL application was not found." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&5
+echo "$as_me: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+  { echo "$as_me:$LINENO: WARNING: " >&5
+echo "$as_me: WARNING: " >&2;}
+fi

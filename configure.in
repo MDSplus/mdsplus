@@ -230,7 +230,6 @@ then
 else
   : ${uiddir:=$exec_prefix/uid}
 fi
-echo "uiddir=$uiddir --------------------------------------------"
 MAKEUIDDIR="\$(top_srcdir)/uid/"
 MAKESHLIBDIR="\$(top_srcdir)/lib/"
 MAKEBINDIR="\$(top_srcdir)/bin/"
@@ -607,6 +606,13 @@ AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
 AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline -lcurses",LIBREADLINE="",-lcurses)
+if test "$LIBREADLINE" = ""
+then
+  AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
+  TDIC=""
+else
+  TDIC="tdic"
+fi
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
 AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
 AC_ARG_ENABLE(d3d,
@@ -968,6 +974,7 @@ AC_SUBST(SYBASE_LIB)
 AC_SUBST(host)
 AC_SUBST(TARGETSYS)
 AC_SUBST(TAR_EXCLUDE)
+AC_SUBST(TDIC)
 AC_SUBST(UIL)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
@@ -1041,3 +1048,59 @@ xmdsshr/Makefile
 xtreeshr/Makefile
 )
 AC_OUTPUT_COMMANDS(make depend)
+if test JAVA_APS=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(The development environment for Java applications was not found.)
+  AC_MSG_WARN(The build of Java applications will be skipped from the build of MDSplus.)
+  AC_MSG_WARN(Install a Java SDK and reconfigure to build the Java apps.)
+  AC_MSG_WARN()
+fi
+if test LIBREADLINE=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(The libreadline library was not found)
+  AC_MSG_WARN(The tdic application will be skipped.)
+  AC_MSG_WARN(Install the package containing the readline library (perhaps libreadline-devel) and reconfigure to build the tdic application.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
+if test MATH=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(To build the math library in MDSplus it is necessary to install the g77 compiler.)
+  AC_MSG_WARN(This code uses special %val and %loc directives which are not available in most other Fortran compilers.)
+  AC_MSG_WARN(The math library build will be skipped.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
+if test SYBASE=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(The open sybase software was not found in /usr/local/sybase.)
+  AC_MSG_WARN(The sqlserver interface libraries will be skipped.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
+if test MOTIF_APS=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(The openmotif development environment was not found.)
+  AC_MSG_WARN(The openmotif based applications and libraries will be skipped.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
+if test IDL_INC=""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN(The IDL application was not found.)
+  AC_MSG_WARN(The libraries used for interfacing IDL with MDSplus will be skipped.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
