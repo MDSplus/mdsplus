@@ -57,6 +57,7 @@ EXPORT extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char
 EXPORT extern int MDSUdpEvent(char *name, int bufLen, char *buf);	
 EXPORT extern int MDSUdpEventCan(int id);
 EXPORT extern int MDSWfevent(char *evname, int buflen, char *data, int *datlen);
+EXPORT extern int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen, int timeout);
 EXPORT extern char  *MdsDtypeString( int  id );
 EXPORT extern char  *MdsClassString( int  id );
 EXPORT extern int   MDSprintf( char *fmt , ... );
