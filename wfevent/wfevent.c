@@ -4,7 +4,9 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+#ifndef HAVE_WINDOWS_H
 #include <getopt.h>
+#endif
 
 #define MAXDATA 4096
 
@@ -13,11 +15,19 @@ Program to wait for MDSPlus event from the command line.
 */
 
 static void printhelp(char *cmd) {
+#ifdef HAVE_WINDOWS_H
+	printf("usage: %s event-name [/d] [/D] [/t:n] [/?]\n",cmd);
+  printf("\n  event-name is the event that you want to wait for."
+	 "\n  /d indicates print event data."
+	 "\n  /D indicates interpret data as serialized and print it."
+	 "\n  /t:nnn or is used to specify a timeout in seconds.\n\n");
+#else
   printf("usage: %s event-name [-d|--data] [-D|--serialized] [-t n|--timeout=n] [-h|--help]\n",cmd);
   printf("\n  event-name is the event that you want to wait for."
 	 "\n  -d or --data indicates print event data."
 	 "\n  -D or --serialized indicates interpret data as serialized and print it."
 	 "\n  -t or --timeout is used to specify a timeout in seconds.\n\n");
+#endif
 }
 
 main(int argc, char **argv)
@@ -30,6 +40,28 @@ main(int argc, char **argv)
   char *event;
   int status;
   int serialized=0;
+  int i;
+#ifdef HAVE_WINDOWS_H
+  int optind=argc;
+  for (i=1;i<argc;i++) {
+	  if (argv[i][0]=='/') {
+		  switch (argv[i][1]) {
+			  case '?': printhelp(argv[0]); return 0; break;
+			  case 'd': showdata=1; break;
+			  case 'D': showdata=1;serialized=1; break;
+			  case 't': if (strlen(argv[i])>3 && argv[i][2]==':') timeout=atoi(&argv[i][3]); break;
+			  default: printhelp(argv[0]); return 1; break;
+		  }
+	  } else {
+		  if (optind==argc)
+			  optind=i;
+		  else {
+			  printhelp(argv[0]);
+			  return 1;
+		  }
+	  }
+  }
+#else
   struct option longopts[]={{"data",0,0,'d'},
 			    {"timeout",1,0,'t'},
 			    {"help",0,0,'h'},
@@ -44,6 +76,7 @@ main(int argc, char **argv)
     default: printhelp(argv[0]); return 1;
     }
   }
+#endif
   if (optind==argc) {
     printf("Missing event-name\n");
     printhelp(argv[0]);
