@@ -8,6 +8,7 @@
 #endif
 #ifdef WIN32
 #include <io.h>
+#define MSG_DONTWAIT 0
 #else
 #ifndef HAVE_VXWORKS_H
 #include <pwd.h>
@@ -55,8 +56,6 @@ extern int MdsDispatchEvent();
 static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_send) {
   struct timeval timout = {15,0};
   int more=1;
-  int numb;
-  int mode;
   char *sptr[MAX_STREAMS];
   int remaining[MAX_STREAMS];
   int i;
@@ -79,8 +78,7 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
     for (i=0;i<num;i++) {
       if (remaining[i]>0 && FD_ISSET(fds[i],&writefds)) {
 	int bytes=(remaining[i] > BUFSIZ) ? BUFSIZ : remaining[i];
-	mode = ((bytes_to_send-bytes_sent) > bytes) ? MSG_DONTWAIT : 0;
-	bytes=send(fds[i],sptr[i],bytes,mode);
+	bytes=send(fds[i],sptr[i],bytes,((bytes_to_send-bytes_sent) > bytes) ? MSG_DONTWAIT : 0);
 	if (bytes == -1) {
 	  if (errno == EAGAIN)
 	    bytes=0;
@@ -107,9 +105,7 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
 }
 
 static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_recv) {
-  int mode;
   int more=1;
-  int numb;
   char *sptr[MAX_STREAMS];
   int remaining[MAX_STREAMS];
   int i;
@@ -145,10 +141,10 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
   return bytes_recv==bytes_to_recv;
 }
 
-static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
+int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
 {
   int tries = 0;
-  if (MIN_PARALLEL > 0 && bytes_to_send > (MIN_PARALLEL + sizeof(MsgHdr))) {
+  if (MIN_PARALLEL > 0 && bytes_to_send > (MIN_PARALLEL + (int)sizeof(MsgHdr))) {
     int num;
     int *fds;
     num=mdsipParallelInfo(sock,&fds);
@@ -187,7 +183,7 @@ static int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
   return 1;
 }
 
-static int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
 {
   int tries = 0;
   if (MIN_PARALLEL > 0 && bytes_to_recv > MIN_PARALLEL) {
