@@ -1,3 +1,8 @@
+.SUFFIXES: .java .class
+
+.java.class:
+	"$(JDK_DIR)\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $<
+
 APPLETSOURCES = \
 FtuDataProvider.java        JiVarImpl.java              Signal.java                 WaveformManager.java \
 Base64.java                 Grid.java  SignalCache.java            WaveformMetrics.java \
@@ -49,11 +54,11 @@ CLASSES = $(SOURCES:.java=.class)
 all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\WaveDisplay.jar ..\java\classes\jScope.properties
 	rem done
 
-..\java\classes\jScope.jar : jScope.class CompositeWaveDisplay.class
+..\java\classes\jScope.jar : jScope.class CompositeWaveDisplay.class $(CLASSES)
 	- del/q/f/s docs
 	- mkdir docs
 	copy $(DOCS) docs
-	"$(JDK_DIR)\bin\jar.exe" -cf ..\java\classes\jScope.jar *.class *.html docs
+	"$(JDK_DIR)\bin\jar.exe" -cfm ..\java\classes\jScope.jar manifest.mf *.class *.html docs
 	- del/q/f/s docs
 	- rmdir docs
 ..\java\classes\MindTerm.jar : MindTerm.jar

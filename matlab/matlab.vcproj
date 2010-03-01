@@ -20,8 +20,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -199,8 +199,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -350,7 +350,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmex.lib $(MATLAB_DIR)\extern\lib\win32\microsoft\msvc60\libmx.lib"
+				AdditionalDependencies="wsock32.lib &quot;C:\Program Files\MATLAB\R2008a\extern\lib\win64\microsoft\libmex.lib&quot; &quot;C:\Program Files\MATLAB\R2008a\extern\lib\win64\microsoft\libmx.lib&quot;"
 				OutputFile="$(OutDir)/mdsipmex.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"

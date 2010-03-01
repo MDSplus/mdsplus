@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="javascope"
 	ProjectGUID="{AC9DEDE9-579F-414E-9BA9-39D519B58F76}"
+	RootNamespace="javascope"
 	Keyword="MakeFileProj"
 	TargetFrameworkVersion="131072"
 	>
@@ -20,7 +21,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
+			OutputDirectory="$(SolutionDir)java\classes\"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
@@ -31,31 +32,8 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
-				CleanCommandLine=""
-				Output="..\java\classes\jScope.jar"
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
-			ConfigurationType="0"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
-				CleanCommandLine="del ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\WaveDisplay.jar ..\java\classes\jScope.properties *.class"
-				Output="..\java\classes\jScope.jar"
+				CleanCommandLine="del *.class &quot;$(OutDir)jScope.jar&quot;"
+				Output="$(OutDir)jScope.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -79,6 +57,29 @@
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
 				CleanCommandLine=""
 				Output="..\java\classes\jScope.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)java\classes\"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
+				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
+				CleanCommandLine="del *.class &quot;$(OutDir)jScope.jar&quot;"
+				Output="$(OutDir)jScope.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -336,6 +337,10 @@
 			</File>
 			<File
 				RelativePath=".\LocalDataProvider.java"
+				>
+			</File>
+			<File
+				RelativePath=".\manifest.mf"
 				>
 			</File>
 			<File

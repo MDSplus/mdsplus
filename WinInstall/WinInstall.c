@@ -1,70 +1,78 @@
 #include <windows.h>
 #include <stdio.h>
+
+
+#ifdef _64BIT
+const char *mdspath=";%MDSPLUSDIR%\\bin_x86_64;%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
+#else
+const char *mdspath=";%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
+#endif
+const char *envkey="SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+
+static void AddMdsPath() {
+	DWORD dwReturnValue;
+	HKEY key = NULL;
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,envkey,0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS) {
+		long valtype;
+		unsigned long path_len;
+	    if (RegQueryValueEx(key,"PATH",0,&valtype,NULL,&path_len) == ERROR_SUCCESS){
+			char *path = malloc(path_len + strlen(mdspath) + 1);
+			path[0] = 0;
+			RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
+			if (path[0]) {
+				strcat(path,mdspath);
+				RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,path,(DWORD)strlen(path)); 
+			}
+			free(path);
+		}
+	}
+	if (key != NULL) RegCloseKey(key);
+	SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
+    (LPARAM) "Environment", SMTO_ABORTIFHUNG,
+    5000, &dwReturnValue);
+}
+
+static void RemoveMdsPath() {
+	DWORD dwReturnValue;
+	int found = 0;
+	HKEY key = NULL;
+	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,envkey,0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS) {
+	    long valtype;
+	    unsigned long path_len;
+	    if (RegQueryValueEx(key,"PATH",0,&valtype,NULL,&path_len) == ERROR_SUCCESS) {
+	      char *path;
+	      char *mpath;
+	      path = malloc(path_len);
+	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
+		  while ((mpath=strstr(path,mdspath)) != (char *)0) {
+			  found=1;
+			  mpath[0]='\0';
+			  strcat(path,mpath+strlen(mdspath));
+		  }
+		  if (found)
+			  RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,path,(DWORD)strlen(path));
+	      free(path);
+		}
+	}
+	if (key != NULL) RegCloseKey(key);
+	SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
+    (LPARAM) "Environment", SMTO_ABORTIFHUNG,
+    5000, &dwReturnValue);
+	return;
+}
+
 int main(int argc, char **argv)
 {
-  HKEY key = NULL;
-  char *mdsplusdir;
-  if (argc != 3)
+  if (argc != 2)
   {
 	exit(0);
   }
-  mdsplusdir=strcpy(malloc(strlen(argv[2])+1),argv[2]);
-  if (mdsplusdir[strlen(mdsplusdir)-1] == '"')
-		mdsplusdir[strlen(mdsplusdir)-1] = 0;
   if (strcmp(argv[1],"/Install") == 0)
   {
-	  int status;
-	  if ((status=RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",0,KEY_READ | KEY_WRITE,&key)) == ERROR_SUCCESS)
-	  {		
-		long valtype;
-		unsigned long path_len;
-	    if (RegQueryValueEx(key,"PATH",0,&valtype,NULL,&path_len) == ERROR_SUCCESS)
-	    {
-	      char *path = malloc(path_len + 3 * strlen(mdsplusdir) + 1000);
-	      path[0] = 0;
-	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
-	      if (path[0])
-	        strcat(path,";");
-			strcat(path,mdsplusdir);
-			strcat(path,"\\bin_x86_64;");
-			strcat(path,mdsplusdir);
-			strcat(path,"\\bin_x86;");
-			strcat(path,mdsplusdir);
-	        RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,path,(DWORD)strlen(path)); 
-			free(path);
-	    }
-	  }
+	  RemoveMdsPath();
+	  AddMdsPath();
   }
   else if (strcmp(argv[1],"/Uninstall") == 0)
-  {
-	  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment",0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS)
-	  {
-	    long valtype;
-	    unsigned long path_len;
-	    if (RegQueryValueEx(key,"PATH",0,&valtype,NULL,&path_len) == ERROR_SUCCESS)
-	    {
-	      char *path;
-	      char *newpath;
-	      char *mpath;
-	      path = malloc(path_len);
-	      newpath = malloc(path_len);
-	      newpath[0] = 0;
-	      RegQueryValueEx(key,"PATH",0,&valtype,path,&path_len);
-	      for (mpath = strtok(path,";");mpath;mpath=strtok(0,";"))
-	      {
-	        if (strlen(mpath) >= strlen(mdsplusdir) && strncmp(mpath,mdsplusdir,strlen(mdsplusdir)))
-	        {
-	          if (newpath[0])
-	            strcat(newpath,";");
-	          strcat(newpath,mpath);
-	        }
-	      }
-	      RegSetValueEx(key,"PATH",0,REG_EXPAND_SZ,newpath,(DWORD)strlen(newpath)); 
-	      free(path);
-	      free(newpath);
-	    }
-	  }
-  }
-  if (key) RegCloseKey(key);
+	  RemoveMdsPath();
   return 0;
 }

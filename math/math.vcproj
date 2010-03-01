@@ -11,14 +11,17 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -77,7 +80,7 @@
 				OutputFile="$(OutDir)/MdsMath.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(G77_DIR)/lib"
+				AdditionalLibraryDirectories=""
 				ModuleDefinitionFile=".\MdsMath.def"
 				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
 				SubSystem="2"
@@ -107,9 +110,101 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\Release/math.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				InlineFunctionExpansion="1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				StringPooling="true"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\Release/math.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="odbc32.lib odbccp32.lib libg2c.a libgcc.a"
+				OutputFile="$(OutDir)/MdsMath.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories=""
+				ModuleDefinitionFile=".\MdsMath.def"
+				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory=".\$(ConfigurationName)"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -162,18 +257,109 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="libg2c.a libgcc.a odbc32.lib odbccp32.lib"
 				OutputFile="$(OutDir)/MdsMath.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="$(G77_DIR)/lib"
+				AdditionalLibraryDirectories=""
 				ModuleDefinitionFile=".\MdsMath.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\Debug/math.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\Debug/math.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="/MACHINE:I386"
+				AdditionalDependencies="libg2c.a libgcc.a odbc32.lib odbccp32.lib"
+				OutputFile="$(OutDir)/MdsMath.dll"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories=""
+				ModuleDefinitionFile=".\MdsMath.def"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(IntDir)/MdsMath.pdb"
+				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -219,7 +405,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -243,7 +449,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -267,7 +493,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -291,7 +537,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -315,7 +581,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -339,7 +625,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -363,7 +669,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -387,7 +713,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -411,7 +757,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -435,7 +801,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -459,7 +845,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -483,7 +889,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -507,7 +933,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -531,7 +977,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -555,7 +1021,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -579,7 +1065,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -607,7 +1113,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -631,7 +1157,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -655,7 +1201,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -679,7 +1245,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -703,7 +1289,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -727,7 +1333,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -751,7 +1377,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -775,7 +1421,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -799,11 +1465,55 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling..."
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\toms510.f"
+			>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
 					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
@@ -823,7 +1533,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -847,7 +1577,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -871,7 +1621,27 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"
@@ -890,12 +1660,32 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|x64"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
 					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
 				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="Compiling"
+					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c -g $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					Outputs="$(IntDir)\$(InputName).obj"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|x64"
 				>
 				<Tool
 					Name="VCCustomBuildTool"

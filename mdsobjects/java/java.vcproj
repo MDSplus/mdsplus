@@ -21,7 +21,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
+			OutputDirectory="$(SolutionDir)java\classes\"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
@@ -32,31 +32,8 @@
 				Name="VCNMakeTool"
 				BuildCommandLine="nmake /f &quot;javaobjects.mak&quot;"
 				ReBuildCommandLine="nmake /f &quot;javaobjects.mak&quot; /a"
-				CleanCommandLine=""
-				Output="..\java\classes\MDSobjects.jar"
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
-			ConfigurationType="0"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javaobjects.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javaobjects.mak&quot; /a"
-				CleanCommandLine="del ..\..\java\classes\MDSobjects.jar *.class"
-				Output="..\..\java\classes\MDSobjects.jar"
+				CleanCommandLine="del MDSplus\*.class &quot;$(OutDir)MDSobjects.jar&quot;"
+				Output="&quot;$(OutDir)MDSobjects.jar&quot;"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -80,6 +57,29 @@
 				ReBuildCommandLine="nmake /f &quot;javaobjects.mak&quot; /a"
 				CleanCommandLine=""
 				Output="..\java\classes\MDSobjects.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)java\classes\"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f &quot;javaobjects.mak&quot;"
+				ReBuildCommandLine="nmake /f &quot;javaobjects.mak&quot; /a"
+				CleanCommandLine="del MDSplus\*.class &quot;$(OutDir)MDSobjects.jar&quot;"
+				Output="&quot;$(OutDir)MDSobjects.jar&quot;"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
