@@ -142,41 +142,30 @@ struct dirent *readdir(DIR *dir)
 
 char *index(char *str, char c)
 {
-	unsigned int pos = strcspn(str,&c);
+	char match[2]={c,'\0'};
+	unsigned int pos = strcspn(str,match);
   return (pos == 0) ? ((str[0] == c) ? str : 0) : ((pos == strlen(str)) ? 0 : &str[pos]);
 }
 
-
 STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
 {
-  HKEY regkey1=(HKEY)0;
-  HKEY regkey2=(HKEY)0;
-  HKEY regkey3=(HKEY)0;
+  HKEY regkey=(HKEY)0;
   unsigned char *path = NULL;
   int status1=-1,status2=-1,status3=-1;
-  if ( ((status1 = RegOpenKeyEx((HKEY)where,"SOFTWARE",0,KEY_READ,&regkey1)) == ERROR_SUCCESS) &&
-       ((status2 = RegOpenKeyEx(regkey1,"MIT",0,KEY_READ,&regkey2)) == ERROR_SUCCESS) &&
-       ((status3 = RegOpenKeyEx(regkey2,"MDSplus",0,KEY_READ,&regkey3)) == ERROR_SUCCESS) )
+  if ((status1 = RegOpenKeyEx((HKEY)where,"SOFTWARE\\MIT\\MDSplus",0,KEY_READ,&regkey)) == ERROR_SUCCESS)
   {
     unsigned long valtype;
     unsigned long valsize;
-    if (RegQueryValueEx(regkey3,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
+    if (RegQueryValueEx(regkey,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
     {
       int plen;
-	    valsize += 2;
+	  valsize += 2;
       path = malloc(valsize+1);
-      RegQueryValueEx(regkey3,pathname,0,&valtype,path,&valsize);
-	    plen = strlen(path);
-//	  if (path[plen-1] != '\\')
-//	  {
-//		  path[plen++] = '\\';
-//		  path[plen] = '\0';
-//	  }
+      RegQueryValueEx(regkey,pathname,0,&valtype,path,&valsize);
+	  plen = strlen(path);
     }
   }
-  if (regkey1) RegCloseKey(regkey1);
-  if (regkey2) RegCloseKey(regkey2);
-  if (regkey3) RegCloseKey(regkey3);
+  if (regkey) RegCloseKey(regkey);
   return (char *)path;
 }
 
