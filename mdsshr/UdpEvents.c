@@ -75,8 +75,7 @@ static int udpPort = -1;
 
 struct EventInfo {
 	int socket;
-	char discarded;
-        pthread_t thread;
+	pthread_t thread;
 	char *eventName;
 	void *arg;
 	void (*astadr)(void *,int,char *);
@@ -117,7 +116,10 @@ static void *handleMessage(void *arg)
 	{
 #ifdef HAVE_WINDOWS_H
 		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
+			(struct sockaddr *)&clientAddr, &addrSize)) < 0) 
+				if (WSAGetLastError() == WSAESHUTDOWN){
+					return;
+				} else
 #else
 #ifdef HAVE_VXWORKS_H
 		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
@@ -132,17 +134,7 @@ static void *handleMessage(void *arg)
 			continue;
         }
     	
-		if(eventInfo->discarded)
-		{
-#ifdef HAVE_WINDOWS_H
-			closesocket(eventInfo->socket);
-#else
-			close(eventInfo->socket);
-#endif
-			releaseEventInfo(eventInfo);
-			return;
-		}
-                if (recBytes < sizeof(int)*2+thisNameLen)
+		if (recBytes < (int)(sizeof(int)*2+thisNameLen))
 		  continue;
 		currPtr = recBuf;
 		nameLen = ntohl(*((unsigned int *)currPtr));
@@ -299,7 +291,6 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	char ipAddress[64]; 
     struct ip_mreq ipMreq;
 	struct EventInfo *currInfo;
-	pthread_t  thread;
 	int error;
 
 	initialize();
@@ -387,7 +378,6 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	currInfo->eventName = malloc(strlen(eventName) + 1);
 	strcpy(currInfo->eventName, eventName);
 	currInfo->socket = udpSocket;
-	currInfo->discarded = 0;
 	currInfo->arg = astprm;
 	currInfo->astadr = astadr;
 
@@ -403,10 +393,11 @@ int MDSUdpEventCan(int eventid)
 #ifndef HAVE_WINDOWS_H
 	  pthread_cancel(currInfo->thread);
 	  close(currInfo->socket);
-	  releaseEventInfo(currInfo);
 #else
-	  currInfo->discarded = 1;
+	  shutdown(currInfo->socket,2);
+	  closesocket(currInfo->socket);
 #endif
+	  releaseEventInfo(currInfo);
 	  return 1;
 	} else
 	  return 0;
