@@ -540,7 +540,10 @@ static int va_MdsValue(char *expression, ...)
   }
   else 
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status = 0;
+	}
 #else
   {
     void *arglist[MAXARGS];
@@ -761,7 +764,10 @@ static int va_MdsValue2(char *expression, ...)
   }
   else 
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+	}
 #else
   {
     void *arglist[MAXARGS];
@@ -914,7 +920,10 @@ static int  va_MdsPut(char *pathname, char *expression, ...)
   }
   else
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+  }
 #else
   {
 
@@ -1066,7 +1075,10 @@ static int  va_MdsPut2(char *pathname, char *expression, ...)
   }
   else
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+  }
 #else
   {
 
@@ -1446,11 +1458,11 @@ int  MdsOpen(char *tree, int *shot)
 
 static int  ___MdsOpen(char *tree, int *shot)
 {
+  int status=0;
   if (mdsSocket != INVALID_SOCKET)
   {
 
     long answer;
-    int status;
     int length;
     int d1,d2,d3; /* descriptor numbers passed to MdsValue */
     int dtype_cstring = DTYPE_CSTRING;
@@ -1478,7 +1490,10 @@ static int  ___MdsOpen(char *tree, int *shot)
   }
   else 
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+  }
 #else
   {
 
@@ -1496,7 +1511,7 @@ static int  ___MdsOpen(char *tree, int *shot)
 
   }
 #endif
-  return 1;
+  return status;
 }
 
 static int ___MdsSetSocket(int *newsocket)
@@ -1520,13 +1535,13 @@ int  MdsClose(char *tree, int *shot)
 
 static int  ___MdsClose(char *tree, int *shot)
 {
+  int status=0;
   if (mdsSocket != INVALID_SOCKET)
   {
 
 
     long answer;
     int length;
-    int status;
     int d1,d2,d3; /* descriptor numbers passed to MdsValue */
     int dtype_cstring = DTYPE_CSTRING;
     int dtype_long = DTYPE_LONG;
@@ -1557,7 +1572,10 @@ static int  ___MdsClose(char *tree, int *shot)
   }
   else 
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+  }
 #else
   {
 #ifdef __VMS
@@ -1573,7 +1591,7 @@ static int  ___MdsClose(char *tree, int *shot)
 #endif
   }
 #endif
-  return 1;
+  return status;
 }
 
 #ifdef __VMS
@@ -1589,6 +1607,7 @@ int  MdsSetDefault(char *node)
 
 static int  ___MdsSetDefault(char *node)
 {
+    int status;
 
   if (mdsSocket != INVALID_SOCKET) {
     char *expression = strcpy((char *)malloc(strlen(node)+20),"TreeSetDefault('");
@@ -1600,7 +1619,6 @@ static int  ___MdsSetDefault(char *node)
     int null = 0;
     int dtype_long = DTYPE_LONG;
     int d1 = va_descr(&dtype_long, &answer, &null);
-    int status;
     if (node[0] == '\\') strcat(expression,"\\");
     strcat(expression,node);
     strcat(expression,"')");
@@ -1622,7 +1640,10 @@ static int  ___MdsSetDefault(char *node)
 
   else 
 #ifdef _CLIENT_ONLY
+  {
     printf("Must ConnectToMds first\n");
+	status=0;
+  }
 #else
 
   {
@@ -1641,7 +1662,7 @@ static int  ___MdsSetDefault(char *node)
 #endif
   }
 #endif
-  return 1;
+  return status;
 }
 
 void MdsDisconnect(){___MdsDisconnect();}
