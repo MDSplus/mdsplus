@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="javadevices"
-	ProjectGUID="{FFDA5357-22C9-497B-B85C-61DF99C0F4F8}"
+	ProjectGUID="{FC27DAD5-E46F-4FB1-84A8-2D9923C883CE}"
 	Keyword="MakeFileProj"
 	TargetFrameworkVersion="0"
 	>
