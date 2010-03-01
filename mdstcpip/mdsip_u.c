@@ -269,7 +269,7 @@ static void StartWorker(char **argv)
 
 static void InitWorkerCommunications()
 {
-  HANDLE sharedMemHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(int), ServiceName());
+  HANDLE sharedMemHandle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), ServiceName());
   workerShutdown = (int *)MapViewOfFile(sharedMemHandle, FILE_MAP_WRITE, 0, 0, sizeof(int));
   *workerShutdown = 0;
 }
