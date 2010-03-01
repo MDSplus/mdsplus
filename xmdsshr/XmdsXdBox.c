@@ -510,6 +510,7 @@ static void Destroy(Widget w)
   {
     MdsFree1Dx(xdbw->xdbox.xd, 0);
     XtFree((char *)xdbw->xdbox.xd);
+    xdbw->xdbox.xd=0;
   }
   if (xdbw->xdbox.tag_list) XtFree((char *)xdbw->xdbox.tag_list);
   if (xdbw->xdbox.path) XtFree((char *)xdbw->xdbox.path);
@@ -1151,8 +1152,10 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
       units = (struct descriptor_xd *)XmdsExprGetXd(units_widget);
     if (XtIsManaged(expr_widget))
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
-    else
-      data = &empty_xd;
+    else {
+      data = XtMalloc(sizeof(struct descriptor_xd));
+      memcpy(data,&empty_xd,sizeof(struct descriptor_xd));
+    }
     if (data &&
         units && 
         units->l_length && 
@@ -1798,8 +1801,10 @@ static Boolean Apply(XmdsXdBoxWidget w)
       if (w->xdbox.nid)
       {
 	w->xdbox.on_off = XmToggleButtonGadgetGetState(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.on_off_toggle"));
-	if (w->xdbox.tag_list)
+	if (w->xdbox.tag_list) {
 	  XtFree((char *)w->xdbox.tag_list);
+	  w->xdbox.tag_list=0;
+	}
 	w->xdbox.tag_list = XmTextFieldGetString(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.tag_text"));
 	GenericLoad(w);
       }
@@ -1974,7 +1979,12 @@ static Boolean Put(XmdsXdBoxWidget w)
     }
     else
     {
-      xd = w->xdbox.xd ? w->xdbox.xd : &empty_xd;
+      if (w->xdbox.xd)
+	xd = w->xdbox.xd;
+      else {
+	xd=XtMalloc(sizeof(*xd));
+	memcpy(xd,&empty_xd,sizeof(*xd));
+      }
       node_on = w->xdbox.on_off;
       if (editing)
 	tag_txt = w->xdbox.tag_list;
@@ -2004,11 +2014,10 @@ static Boolean Put(XmdsXdBoxWidget w)
       }
       else
 	XmdsComplain((Widget)w, "Error turning node On/Off");
-      if (w->xdbox.loaded)
-      {
-	MdsFree1Dx(xd, 0);
-	XtFree((char *)xd);
-      }
+      MdsFree1Dx(xd,0);
+      XtFree((char *)xd);
+      if (w->xdbox.xd)
+	w->xdbox.xd=0;
     }
     else
       status = 0;
