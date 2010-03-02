@@ -137,9 +137,11 @@ Widget WriteDialog;
 Widget AddDialog;
 Widget AddDeviceDialog;
 Widget OpenDialog;
-
+int ClosingWindow=0;
 void CloseWindow(Widget w, caddr_t client_data, caddr_t call_data) {
-  exit(0);
+  ClosingWindow=1;
+  CloseTree(w,client_data,call_data);
+  ClosingWindow=0;
 }
 
 /*
@@ -356,7 +358,8 @@ int main(int argc, char **argv)
     
     /* Begin user code block <main_loop> */
     /* End user code block <main_loop> */
-XmAddWMProtocolCallback(TopLevelShell,XmInternAtom(XtDisplay(TopLevelShell),"WM_DELETE_WINDOW",False),CloseWindow,NULL);
+XtVaSetValues(TopLevelShell,XmNdeleteResponse, XmDO_NOTHING, NULL);
+XmAddWMProtocolCallback(TopLevelShell,XmInternAtom(XtDisplay(TopLevelShell),"WM_DELETE_WINDOW",True),(XtCallbackProc)CloseWindow,NULL);
     
     XtAppMainLoop(context);
     

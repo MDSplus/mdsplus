@@ -468,7 +468,7 @@ static void set_default(Widget w, ListTreeItem *item)
   else
     XmdsComplain(w, "Error setting default Nid");
 }
-
+extern int ClosingWindow;
 static void Init(Widget tree)
 {
   ListTreeItem *item;
@@ -486,6 +486,8 @@ static void Init(Widget tree)
       set_default(tree, item);
     }
     ListTreeRefreshOn(tree);
+  } else {
+    if (ClosingWindow) exit(0);
   }
   num_selected = 0;
 }
@@ -735,6 +737,7 @@ AddListTree( Widget w, XtPointer client_data, XtPointer call_data)
 #include <stdlib.h>
 #endif
 
+extern void CloseWindow();
 /* ARGSUSED */
 void
 BxExitCB ARGLIST((w, client, call))
@@ -743,8 +746,7 @@ ARG( XtPointer, client)
 GRAU( XtPointer, call)
 {
     int		*exitValue = (int*)client;
-    
-    exit(*exitValue);
+    CloseWindow(w,client,call);
 }
 
 
