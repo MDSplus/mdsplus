@@ -662,7 +662,7 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS) $(MATH_LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
