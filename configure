@@ -873,6 +873,7 @@ Optional Packages:
  --with-jdk=java-jdk-dir	specify location of java jdk
   --with-xio=globus-location:flavor  use globus xio for mdsip communications
   --with-srb=srb-install-dir  Enable srb capabilities
+ --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -1537,7 +1538,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:1540:" \
+echo "$as_me:1541:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -2899,7 +2900,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:2902:" \
+echo "$as_me:2903:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -3045,6 +3046,41 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 
+
+# Check whether --with-idl or --without-idl was given.
+if test "${with_idl+set}" = set; then
+  withval="$with_idl"
+  IDL_DIR="$withval"
+else
+  IDL_DIR=""
+fi;
+if test "$IDL_DIR" = ""
+then
+  if test -r /usr/local/itt/idl
+  then
+    IDL_DIR="/usr/local/itt/idl"
+  elif test -r /usr/local/rsi/idl
+  then
+    IDL_DIR="/usr/local/rsi/idl"
+  fi
+fi
+echo "$as_me:$LINENO: checking for idl" >&5
+echo $ECHO_N "checking for idl... $ECHO_C" >&6
+if test "$IDL_DIR" != "" -a -r $IDL_DIR
+then
+  IDL_INC="-I$IDL_DIR/external"
+  IDLMDSEVENT="idlmdsevent"
+  IDLMDSWIDGETS="idlmdswidgets"
+  echo "$as_me:$LINENO: result: have idl $IDL_INC" >&5
+echo "${ECHO_T}have idl $IDL_INC" >&6
+else
+  IDL_INC=""
+  IDLMDSEVENT=""
+  IDLMDSWIDGETS=""
+  echo "$as_me:$LINENO: result: no idl" >&5
+echo "${ECHO_T}no idl" >&6
+fi
+
 FORLD=ld
 LD=ld
 LD_LDARC=""
@@ -3100,7 +3136,7 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
-       IDL_LD="-L/usr/local/rsi/idl/bin/bin.hp -lidl";
+       IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
        IS_HP=1;
@@ -3144,7 +3180,7 @@ sparc-sun-solaris2*)
          fi;
        fi;
        FFLAGS="$FFLAGS -PIC";
-       IDL_LD="-L/usr/local/rsi/idl/bin/bin.solaris2.sparc -lidl"
+       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
@@ -8776,25 +8812,6 @@ else
 echo "${ECHO_T}no sybase open/client" >&6
 fi
 
-echo "$as_me:$LINENO: checking for idl" >&5
-echo $ECHO_N "checking for idl... $ECHO_C" >&6
-IDL_DIR="/usr/local/rsi/idl"
-if test -r $IDL_DIR
-then
-        IDL_INC="-I$IDL_DIR/external"
-        IDL_LIB=$IDL_LD
-        IDLMDSEVENT="idlmdsevent"
-	IDLMDSWIDGETS="idlmdswidgets"
-        echo "$as_me:$LINENO: result: have idl $IDL_INC" >&5
-echo "${ECHO_T}have idl $IDL_INC" >&6
-else
-        IDL_INC=""
-        IDL_LIB=""
-        IDLMDSEVENT=""
-        echo "$as_me:$LINENO: result: no idl" >&5
-echo "${ECHO_T}no idl" >&6
-fi
-
 echo "$as_me:$LINENO: checking if idlsql should be built" >&5
 echo $ECHO_N "checking if idlsql should be built... $ECHO_C" >&6
 if test -n "$SYBASE_INC" -a -n "$IDL_INC"
@@ -13562,16 +13579,16 @@ echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
 fi
-if test "$IDL_INC" = ""
+if test "$IDL_DIR" = ""
 then
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
-  { echo "$as_me:$LINENO: WARNING: The IDL application was not found." >&5
-echo "$as_me: WARNING: The IDL application was not found." >&2;}
-  { echo "$as_me:$LINENO: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&5
-echo "$as_me: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The IDL application directory was not found." >&5
+echo "$as_me: WARNING: The IDL application directory was not found." >&2;}
+  { echo "$as_me:$LINENO: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&5
+echo "$as_me: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5
 echo "$as_me: WARNING: " >&2;}
   { echo "$as_me:$LINENO: WARNING: " >&5

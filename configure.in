@@ -208,6 +208,34 @@ else
 AC_PROG_F77
 fi
 
+AC_ARG_WITH(idl,
+	[ --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl],
+	IDL_DIR="$withval",
+	IDL_DIR="")
+if test "$IDL_DIR" = ""
+then
+  if test -r /usr/local/itt/idl
+  then
+    IDL_DIR="/usr/local/itt/idl"
+  elif test -r /usr/local/rsi/idl
+  then
+    IDL_DIR="/usr/local/rsi/idl"
+  fi
+fi
+AC_MSG_CHECKING(for idl)
+if test "$IDL_DIR" != "" -a -r $IDL_DIR
+then
+  IDL_INC="-I$IDL_DIR/external"
+  IDLMDSEVENT="idlmdsevent"
+  IDLMDSWIDGETS="idlmdswidgets"
+  AC_MSG_RESULT(have idl $IDL_INC)
+else
+  IDL_INC=""
+  IDLMDSEVENT=""
+  IDLMDSWIDGETS=""
+  AC_MSG_RESULT(no idl)
+fi
+
 FORLD=ld
 LD=ld
 LD_LDARC=""
@@ -263,7 +291,7 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
-       IDL_LD="-L/usr/local/rsi/idl/bin/bin.hp -lidl";
+       IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
        FEXECLIBDIR="-Wl,-L";
        SHARETYPE=".sl";
        IS_HP=1;
@@ -307,7 +335,7 @@ sparc-sun-solaris2*)
          fi;
        fi;
        FFLAGS="$FFLAGS -PIC";
-       IDL_LD="-L/usr/local/rsi/idl/bin/bin.solaris2.sparc -lidl"
+       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
@@ -804,22 +832,6 @@ else
 fi
 
 dnl Check for Idl
-AC_MSG_CHECKING(for idl)
-IDL_DIR="/usr/local/rsi/idl"
-if test -r $IDL_DIR
-then
-        IDL_INC="-I$IDL_DIR/external"
-        IDL_LIB=$IDL_LD
-        IDLMDSEVENT="idlmdsevent"
-	IDLMDSWIDGETS="idlmdswidgets"
-        AC_MSG_RESULT(have idl $IDL_INC)
-else
-        IDL_INC=""
-        IDL_LIB=""
-        IDLMDSEVENT=""
-        AC_MSG_RESULT(no idl)
-fi
-
 AC_MSG_CHECKING(if idlsql should be built)
 if test -n "$SYBASE_INC" -a -n "$IDL_INC"
 then
@@ -1095,12 +1107,12 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$IDL_INC" = ""
+if test "$IDL_DIR" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()
-  AC_MSG_WARN(The IDL application was not found.)
-  AC_MSG_WARN(The libraries used for interfacing IDL with MDSplus will be skipped.)
+  AC_MSG_WARN(The IDL application directory was not found.)
+  AC_MSG_WARN(The some libraries used for interfacing IDL with MDSplus will be skipped.)
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
