@@ -7944,6 +7944,7 @@ else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
   MATH=""
+  MDSIDLWIDGETS=""
 fi
 echo "$as_me:$LINENO: checking for sigvec structure declaration" >&5
 echo $ECHO_N "checking for sigvec structure declaration... $ECHO_C" >&6

@@ -779,6 +779,7 @@ then
 else
   AC_MSG_RESULT(no, math library skipped)
   MATH=""
+  MDSIDLWIDGETS=""
 fi
 AC_MSG_CHECKING(for sigvec structure declaration)
 AC_TRY_COMPILE([#include <signal.h>],[struct sigvec arg;],
