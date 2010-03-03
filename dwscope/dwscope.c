@@ -174,6 +174,7 @@ static char *GetPrinterList();
 
 static Widget TopWidget;
 static Widget MainWidget;
+static Widget LockScalesWidget=0;
 static Widget DataSetupWidget;
 static Widget DefaultsSetupWidget;
 static Widget Pane[MaxCols];
@@ -330,6 +331,7 @@ int       main(int argc, String *argv)
     { printf("Problem loading UID\n");
       exit(1);
     }
+  LockScalesWidget=XtNameToWidget(MainWidget,"*lockScales");
   if (appRes.icon_update) {
     XmToggleButtonGadgetSetState(XtNameToWidget(TopWidget,"*disable_icon_updates"),False,False);
   }
@@ -2164,7 +2166,8 @@ static void /*XtActionProc*/EqualPanes(Widget w, XEvent *event, String *string, 
 
 static void  GetNewLimits(WaveInfo *info, float **xmin, float **xmax, float **ymin, float **ymax)
 {
-  if (info->update)
+  int lockScales = LockScalesWidget ? XmToggleButtonGetState(LockScalesWidget) : 0;
+  if (info->update && !lockScales)
   {
     static float xminval;
     static float xmaxval;

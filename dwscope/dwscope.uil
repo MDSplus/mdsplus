@@ -1229,6 +1229,7 @@ object
                     };
                 };
             XmToggleButtonGadget updates;
+	    XmToggleButtonGadget lockScales;
             XmRowColumn 
                 {
                 arguments
@@ -1295,6 +1296,16 @@ object
                 };
             };
         };
+    lockScales: XmToggleButtonGadget
+        {
+        arguments
+            {
+            XmNlabelString =
+            compound_string("Lock Scales");
+            XmNset = false;
+            XmNmarginHeight = 0;
+            };
+         };
     crosshairs_start: XmTextField 
         {
         arguments
