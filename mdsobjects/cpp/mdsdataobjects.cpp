@@ -426,28 +426,34 @@ Data *Data::getDimensionAt(int dimIdx)
 EXPORT	Data *MDSplus::compile(char *expr, ...)
 	{
 		int nArgs = 0;
+		int i;
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, expr);
 		int totArgs = va_arg(v, int);
-		for(int i = 0; i < totArgs; i++)
+		for(i = 0; i < totArgs; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
 			if(currArg == 0)
 				break;
 			args[nArgs++] = currArg->convertToDsc();
 		}
-		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
+		return res;
+
 	}
 EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 	{
 		int nArgs = 0;
+		int i;
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, tree);
-		for(int i = 0; i < MAX_ARGS; i++)
+		for(i = 0; i < MAX_ARGS; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
 			if(currArg == 0)
@@ -455,7 +461,10 @@ EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 			args[nArgs++] = currArg->convertToDsc();
 		}
 		setActiveTree(tree);
-		return (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		for(i = 0; i < nArgs; i++)
+		    freeDsc(args[i]);
+		return res;
 	}
 EXPORT	Data *MDSplus::execute(char *expr, Tree *tree, ...)
 	{
@@ -512,9 +521,15 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 	}
 
 
-EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **args, int nArgs)
+EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
 	{
-		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		void *args[MAX_ARGS];
+		int i;
+		int actArgs = (nArgs < MAX_ARGS)?nArgs:MAX_ARGS;
+		for(i = 0; i < actArgs; i++)
+			args[nArgs++] = dataArgs[i]->convertToDsc();
+
+		Data *compData = (Data *)compileFromExprWithArgs(expr, actArgs, (void *)args, 0);
 		if(!compData)
 		{
 			char *msg = new char[20 + strlen(expr)];
@@ -525,6 +540,9 @@ EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **args, int nArgs)
 		}
 		Data *evalData = compData->data();
 		deleteData (compData);
+		for(i = 0; i < actArgs; i++)
+		    freeDsc(args[i]);
+
 		return evalData;
 	}
 
@@ -742,8 +760,8 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 }
 char *Array::getByteArray(int *numElements)
 {
-	char *retArr = new char[arsize/length];
 	int size = arsize/length;
+	char *retArr = new char[arsize/length];
 	for(int i = 0; i < size; i++)
 	{
 		switch(dtype) {
@@ -755,8 +773,8 @@ char *Array::getByteArray(int *numElements)
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
 			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
 			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 		}
 	}
 	*numElements = size;
@@ -776,8 +794,8 @@ short *Array::getShortArray(int *numElements)
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
 			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
 			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
@@ -796,8 +814,8 @@ int *Array::getIntArray(int *numElements)
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
 			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
 			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
@@ -816,8 +834,8 @@ _int64 *Array::getLongArray(int *numElements)
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
 			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
 			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (_int64)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (_int64)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;

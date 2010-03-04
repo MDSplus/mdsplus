@@ -415,7 +415,8 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	varIdx = 2;
 	for(i = 0; i < nArgs; i++)
 	{
-		arglistXd[i] = convertDataToDsc(args[i]);
+//		arglistXd[i] = convertDataToDsc(args[i]);
+		arglistXd[i] = (struct descriptor_xd *)args[i];
 		if(arglistXd[i]->l_length > 0)
 			arglist[varIdx] = arglistXd[i]->pointer;
 		else
@@ -430,8 +431,8 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 		return NULL;
 	data = convertFromDsc(&xd, tree);
 	MdsFree1Dx(&xd, 0);
-	for(i = 0; i < nArgs; i++)
-		freeDsc(arglistXd[i]);
+	//for(i = 0; i < nArgs; i++)
+	//	freeDsc(arglistXd[i]);
 	return data;
 }
 
