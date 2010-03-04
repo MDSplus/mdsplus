@@ -216,7 +216,7 @@ depend:
 
 clean:
 	@ $(RM) $(UIDS)
-	@ $(RM) $(OBJECTS)
+	@ $(RM) $(OBJECTS) mitdevices_msg.o
 	@ $(RM) $(IO_OBJECTS)
 	@ $(RM) *_gen.c
 	@ $(RM) so_locations
