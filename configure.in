@@ -771,16 +771,6 @@ if test $mdsplus_ok = no; then
 		 AC_DEFINE(NEED_SEMUN)
 fi
 AC_MSG_RESULT($mdsplus_ok)
-AC_MSG_CHECKING(for g77 for math lib)
-if ( which /usr/bin/g77 2>/dev/null )
-then
-  AC_MSG_RESULT(yes)
-  MATH="math"
-else
-  AC_MSG_RESULT(no, math library skipped)
-  MATH=""
-  MDSIDLWIDGETS=""
-fi
 AC_MSG_CHECKING(for sigvec structure declaration)
 AC_TRY_COMPILE([#include <signal.h>],[struct sigvec arg;],
 							 mdsplus_ok=yes,mdsplus_ok=no)
@@ -960,7 +950,6 @@ AC_SUBST(MAKESHLIBDIR_RULE)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
-AC_SUBST(MATH)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MDSVME)
@@ -1077,16 +1066,6 @@ then
   AC_MSG_WARN(The libreadline library was not found)
   AC_MSG_WARN(The tdic application will be skipped.)
   AC_MSG_WARN(Install the package containing the readline library (perhaps libreadline-devel) and reconfigure to build the tdic application.)
-  AC_MSG_WARN()
-  AC_MSG_WARN()
-fi
-if test "$MATH" = ""
-then
-  AC_MSG_WARN()
-  AC_MSG_WARN()
-  AC_MSG_WARN(To build the math library in MDSplus it is necessary to install the g77 compiler.)
-  AC_MSG_WARN(This code uses special %val and %loc directives which are not available in most other Fortran compilers.)
-  AC_MSG_WARN(The math library build will be skipped.)
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
