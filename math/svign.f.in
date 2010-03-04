@@ -6,24 +6,22 @@
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Call SVIGP(n,ra,rb,%val(0))
+	Call SVIGP(n,ra,rb,0)
 	End
 !-----------------------------------------------------------------------
-	Subroutine SVIGP(n,ra,rb,iperm)
+	Subroutine SVIGP(n,ra,rb,perm,iperm)
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
-	Integer iperm(*)!modify, [n] vector of permutations
+        Logical perm    !input, true if iperm provided
+        Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
-!		If a NULL address it is not referenced.
 !+Hoare quick sort modified from "Numerical Recipies" with permutations
 !*uses randomizer and not median-of-three
-	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
 	Integer	keep
 	Data	ran/0/
 
-	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n
@@ -97,23 +95,21 @@
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
 !+sort absolute without permutations
-	Call SVIBP(n,ra,rb,%val(0))
+	Call SVIBP(n,ra,rb,0)
 	End
 !-----------------------------------------------------------------------
-	Subroutine SVIBP(n,ra,rb,iperm)
+	Subroutine SVIBP(n,ra,rb,perm,iperm)
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
+        Logical perm    !input, true if iperm provided
 	Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
-!		If a NULL address it is not referenced.
 !+Hoare quick sort modified from "Numerical Recipies" with permutations
-	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
 	Integer	keep,bkeep
 	Data	ran/0/
 
-	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n

@@ -112,24 +112,3 @@
 	Call IW9GET(iwant,igot)
 	End
 !-----------------------------------------------------------------------
-	Subroutine IW9GET(iwant,igot)
-	Integer	iwant	!input, number of integers
-	integer BytesPerInt
-	Integer*@SIZEOF_INT_P@ 	igot(2)	!modify, memory allocation
-        parameter (BytesPerInt = @SIZEOF_INT_P@)
-!		igot must be declared save/static, preset to 0
-!+Allocate simple memory
-	Logical LibGetVm
-	If (igot(2).ne.iwant) Then
-		If (igot(2).ne.0)
-     1	Call LibFreeVm(BytesPerInt*igot(2),
-     1          igot(1)*BytesPerInt+@LOC@(igot(1)),%val(0))
-		igot(2) = 0
-		If (iwant.gt.0) Then
-			If (LibGetVm(BytesPerInt*iwant,igot(1),%val(0))) Then
-				igot(1) = (igot(1) - @LOC@(igot(1)))/BytesPerInt
-				igot(2) = iwant
-			Endif
-		Endif
-	Endif
-	End

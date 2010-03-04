@@ -195,7 +195,7 @@
 	Do j = 2,n-1
 	    dtau = break(j+1) - break(j)
 	    dtaum = break(j) - break(j-1)
-	    c(2,j) = (dtau*secant(j-1) + dtaum*secant(j)) / (dtau + dtaum)
+	    c(2,j)=(dtau*secant(j-1)+dtaum*secant(j))/(dtau+dtaum)
 	Enddo
 ! take parabola using value and slope at 2 and value at 1
 ! expand f=c1+c2*x+c3*x**2, at x2, c1=f2 c2=df/dx2
@@ -257,7 +257,7 @@
 	Do j = 1,ndata
 		igot(i+j) = j
 	Enddo
-	Call SVRGP(ndata,xdata,break,igot(igot(1)+1))
+	Call SVRGP(ndata,xdata,break,1,igot(igot(1)+1))
 	Do j = 1,ndata
 		k = igot(i+j)
 		c(1,k) = fdata(j)

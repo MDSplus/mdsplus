@@ -6,24 +6,22 @@
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Call DSVRGP(n,ra,rb,%val(0))
+	Call DSVRGP(n,ra,rb,0)
 	End
 !-----------------------------------------------------------------------
-	Subroutine DSVRGP(n,ra,rb,iperm)
+	Subroutine DSVRGP(n,ra,rb,perm,iperm)
 	Integer	n	!input, number of elements in array
 	Real*8	ra(*)	!input, [n] vector to be sorted
 	Real*8	rb(*)	!output, [n] vector, may be ra
+        Logical perm    !input, true if iperm provided
 	Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
-!		If a NULL address it is not referenced.
 !+Hoare quick sort modified from "Numerical Recipies" with permutations
 !*uses randomizer and not median-of-three
-	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
 	Real*8	keep
 	Data	ran/0/
 
-	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n
@@ -97,23 +95,22 @@
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
 !+sort absolute without permutations
-	Call DSVRBP(n,ra,rb,%val(0))
+	Call DSVRBP(n,ra,rb,0)
 	End
 !-----------------------------------------------------------------------
-	Subroutine DSVRBP(n,ra,rb,iperm)
+	Subroutine DSVRBP(n,ra,rb,perm,iperm)
 	Integer	n	!input, number of elements in array
 	Real*8	ra(*)	!input, [n] vector to be sorted
 	Real*8	rb(*)	!output, [n] vector, may be ra
+        Logical perm    !input, true if iperm provided
 	Integer iperm(*)!modify, [n] vector of permutations
 !		Normally, iperm is initialized to 1..n
 !		If a NULL address it is not referenced.
 !+Hoare quick sort modified from "Numerical Recipies" with permutations
-	Logical	perm
 	Integer ran,i,j,l,r,jstack,stack(64),kperm
 	Real*8	keep,bkeep
 	Data	ran/0/
 
-	perm = @LOC@(iperm).ne.0
 	jstack = 0
 	l = 1
 	r = n
