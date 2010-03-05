@@ -22,6 +22,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <libroutines.h>
 #include <strroutines.h>
 
+
 #ifdef max
 #undef max
 #endif
@@ -662,7 +663,7 @@ STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER *hdr)
 #endif
 
 
-STATIC_ROUTINE _int64 _TreeGetDatafileSize(void *dbid)
+_int64 _TreeGetDatafileSize(void *dbid)
 {
 	int status;
 	PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
