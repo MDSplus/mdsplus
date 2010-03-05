@@ -241,6 +241,14 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_deleteTreeNode
 JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
   (JNIEnv *, jclass, jint, jint, jstring);
 
+/*
+ * Class:     MDSplus_Tree
+ * Method:    getDatafileSize
+ * Signature: (II)J
+ */
+JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
+  (JNIEnv *, jclass, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

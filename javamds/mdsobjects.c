@@ -1851,6 +1851,19 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
 		throwMdsException(env, status);
 }
 
+/*
+ * Class:     MDSplus_Tree
+ * Method:    getDatafileSize
+ * Signature: (II)J
+ */
+JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
+  (JNIEnv *env, jclass cls, jint ctx1, jint ctx2)
+{
+	int status;
+	void *ctx = getCtx(ctx1, ctx2);
+	return _TreeGetDatafileSize(ctx);
+}
+
 
 ////////////////////////////////TreeNode Stuff////////////////////////
 

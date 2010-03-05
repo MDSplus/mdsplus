@@ -1037,9 +1037,17 @@ protected:
 		}
 		Data *getData(){return descs[0];}
 		Data *getRaw(){return descs[1];}
-		Data *getDimension(){return descs[2];}
+		Data *getDimension()
+		{
+			descs[2]->refCount++;
+			return descs[2];
+		}
 		int genNumDimensions() {return nDescs - 2;}
-		Data *getDimensionAt(int idx) {return descs[2 + idx];}
+		Data *getDimensionAt(int idx) 
+		{	
+			if(descs[2+idx]) descs[2 + idx]->refCount++;
+			return descs[2 + idx];
+		}
 		void setData(Data *data) {assignDescAt(data, 0);}
 		void setRaw(Data *raw){assignDescAt(raw, 1);}
 		void setDimension(Data *dimension) {assignDescAt(dimension, 2);}
@@ -1065,8 +1073,14 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getWindow(){return descs[0];}
-		Data *getAxis(){return descs[1];}
+		Data *getWindow(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getAxis(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
 		void setWindow(Data *window) {assignDescAt(window, 0);}
 		void setAxis(Data *axis){assignDescAt(axis, 1);}
 	};
@@ -1123,7 +1137,11 @@ protected:
 		}
 		char getOpcode() { return *ptr;}
 		int getNumArguments() { return nDescs;}
-		Data *getArgumentAt(int idx) {return descs[idx];}
+		Data *getArgumentAt(int idx) 
+		{
+			if(descs[idx]) descs[idx]->refCount++;
+			return descs[idx];
+		}
 		void setArgAt(Data *arg, int idx) {assignDescAt(arg, idx);}
 	};
 
@@ -1148,10 +1166,27 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getImage(){return descs[0];}
-		Data *getModel(){return descs[1];}
-		Data *getName(){return descs[2];}
-		Data *getQualifiers(){return descs[3];}
+		Data *getImage()
+		{	
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getModel()
+		{
+			if(descs[1])
+				descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getName()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getQualifiers()
+		{
+			if(descs[3]) descs[3]->refCount++;
+			return descs[3];
+		}
 		void setImage(Data *image) {assignDescAt(image, 0);}
 		void setModel(Data *model){assignDescAt(model, 1);}
 		void setName(Data *name) {assignDescAt(name, 2);}
@@ -1178,9 +1213,21 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getBegin(){return descs[0];}
-		Data *getEnding(){return descs[1];}
-		Data *getDeltaVal(){return descs[2];}
+		Data *getBegin()
+		{
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getEnding()
+		{
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getDeltaVal()
+		{
+			if(descs[2]) descs[2]->refCount++;			
+			return descs[2];
+		}
 		void setBegin(Data *begin) {assignDescAt(begin, 0);}
 		void setEnding(Data *ending){assignDescAt(ending, 1);}
 		void setDeltaVal(Data *deltaval) {assignDescAt(deltaval, 2);}
@@ -1208,11 +1255,31 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getDispatch(){return descs[0];}
-		Data *getTask(){return descs[1];}
-		Data *getErrorLogs(){return descs[2];}
-		Data *getCompletionMessage(){return descs[3];}
-		Data *getPerformance(){return descs[4];}
+		Data *getDispatch()
+		{
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getTask()
+		{
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getErrorLogs()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getCompletionMessage()
+		{
+			if(descs[3]) descs[3]->refCount++;
+			return descs[3];
+		}
+		Data *getPerformance()
+		{
+			if(descs[4]) descs[4]->refCount++;
+			return descs[4];
+		}
 		void setDispatch(Data *dispatch) {assignDescAt(dispatch, 0);}
 		void setTask(Data *task){assignDescAt(task, 1);}
 		void setErrorLogs(Data *errorlogs){assignDescAt(errorlogs, 2);}
@@ -1242,10 +1309,24 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getIdent(){return descs[0];}
-		Data *getPhase(){return descs[1];}
-		Data *getWhen(){return descs[2];}
-		Data *getCompletion(){return descs[3];}
+		Data *getIdent(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getPhase(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getWhen()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getCompletion()
+		{
+			if(descs[3]) descs[3]->refCount++;
+			return descs[3];
+		}
 		void setIdent(Data *ident) {assignDescAt(ident, 0);}
 		void setPhase(Data *phase){assignDescAt(phase, 1);}
 		void setWhen(Data *when) {assignDescAt(when, 2);}
@@ -1273,8 +1354,16 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout(){return descs[0];}
-		Data *getProgram(){return descs[1];}
+		Data *getTimeout()
+		{
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getProgram()
+		{
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setProgram(Data *program){assignDescAt(program, 1);}
 	};
@@ -1303,10 +1392,25 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout(){return descs[0];}
-		Data *getImage(){return descs[1];}
-		Data *getRoutine(){return descs[2];}
-		Data *getArgumentAt(int idx){return descs[3 + idx];}
+		Data *getTimeout()
+		{
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getImage(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getRoutine()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getArgumentAt(int idx)
+		{
+			if(descs[3+idx]) descs[3+idx]->refCount++;
+			return descs[3 + idx];
+		}
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setImage(Data *image){assignDescAt(image, 1);}
 		void setRoutine(Data *routine) {assignDescAt(routine, 2);}
@@ -1337,10 +1441,24 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout(){return descs[0];}
-		Data *getLanguage(){return descs[1];}
-		Data *getProcedure(){return descs[2];}
-		Data *getArgumentAt(int idx){return descs[3 + idx];}
+		Data *getTimeout(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getLanguage(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getProcedure()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getArgumentAt(int idx)
+		{
+			if(descs[3+idx]) descs[3+idx]->refCount++;
+			return descs[3 + idx];
+		}
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setLanguage(Data *language){assignDescAt(language, 1);}
 		void seProcedure(Data *procedure) {assignDescAt(procedure, 2);}
@@ -1369,10 +1487,25 @@ protected:
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout(){return descs[0];}
-		Data *getMethod(){return descs[1];}
-		Data *getObject(){return descs[2];}
-		Data *getArgumentAt(int idx){return descs[3 + idx];}
+		Data *getTimeout(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getMethod()
+		{
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getObject()
+		{
+			if(descs[2]) descs[2]->refCount++;
+			return descs[2];
+		}
+		Data *getArgumentAt(int idx)
+		{
+			if(descs[3+idx]) descs[3+idx]->refCount++;
+			return descs[3 + idx];
+		}
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setMethod(Data *method){assignDescAt(method, 1);}
 		void setObject(Data *object) {assignDescAt(object, 2);}
@@ -1400,8 +1533,14 @@ protected:
 			setAccessory(units, error, help, validation);
 		}
 		char getOpcode(){return *ptr;}
-		Data *getArg1(){return descs[0];}
-		Data *getArg2(){return descs[1];}
+		Data *getArg1(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getArg2(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
 		void setOpcode(char opcode)
 		{
 			*ptr = opcode;
@@ -1430,7 +1569,10 @@ protected:
 			setAccessory(units, error, help, validation);
 		}
 		char getOpcode(){return *ptr;}
-		Data *getArg(){return descs[0];}
+		Data *getArg(){
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
 		void setOpcode(char opcode)
 		{
 			*ptr = opcode;
@@ -1461,9 +1603,20 @@ protected:
 		}
 		char getRetType() {return *ptr;}
 		void setRetType(char retType){*ptr = retType;}
-		Data *getImage(){return descs[0];}
-		Data *getRoutine(){return descs[1];}
-		Data *getArgumentAt(int idx){return descs[2 + idx];}
+		Data *getImage()
+		{
+			if(descs[0]) descs[0]->refCount++;
+			return descs[0];
+		}
+		Data *getRoutine(){
+			if(descs[1]) descs[1]->refCount++;
+			return descs[1];
+		}
+		Data *getArgumentAt(int idx)
+		{
+			if(descs[2+idx]) descs[2+idx]->refCount++;
+			return descs[2 + idx];
+		}
 		void setImage(Data *image){assignDescAt(image, 0);}
 		void setRoutine(Data *routine) {assignDescAt(routine, 1);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 2 + idx);}
@@ -1556,7 +1709,11 @@ protected:
 		void *convertToDsc();
 		int getDimension() {return nDescs;}
 		Data **getDscArray() {return descs;}
-		Data *getDescAt(int idx) {return descs[idx];}
+		Data *getDescAt(int idx) 
+		{
+			if(descs[idx]) descs[idx]->refCount++;
+			return descs[idx];
+		}
 		void setDescAt(int idx, Data *data)
 		{
 			descs[idx] = data;
@@ -1999,6 +2156,7 @@ protected:
 		void deletePulse(int shot);
 		StringArray *findTags(char *wild);
 		void removeTag(char *tagName);
+		_int64 getDatafileSize();
 	};
 
 /////////////////End Class Tree /////////////////////

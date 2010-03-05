@@ -621,6 +621,8 @@ extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
 extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
 extern EXPORT int TreeGetCurrentShotId(char *experiment);
 extern EXPORT int TreeSetDbiItm(int code, int value);
+extern EXPORT _int64 TreeGetDatafileSize();
+extern EXPORT _int64 _TreeGetDatafileSize(void *dbid);
 
 #endif
 
