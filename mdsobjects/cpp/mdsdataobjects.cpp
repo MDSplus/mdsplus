@@ -20,7 +20,7 @@ extern "C" {
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
-	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree);
+	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, int *retStatus);
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
@@ -439,9 +439,12 @@ EXPORT	Data *MDSplus::compile(char *expr, ...)
 				break;
 			args[nArgs++] = currArg->convertToDsc();
 		}
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		int status;
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0, &status);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
+		if(!(status & 1))
+			throw new MdsException(status);
 		return res;
 
 	}
@@ -461,9 +464,12 @@ EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 			args[nArgs++] = currArg->convertToDsc();
 		}
 		setActiveTree(tree);
-		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		int status;
+		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, &status);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
+		if(!(status & 1))
+			throw new MdsException(status);
 		return res;
 	}
 EXPORT	Data *MDSplus::execute(char *expr, Tree *tree, ...)
@@ -481,7 +487,10 @@ EXPORT	Data *MDSplus::execute(char *expr, Tree *tree, ...)
 			args[nArgs++] = currArg->convertToDsc();
 		}
 		setActiveTree(tree);
-		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree);
+		int status;
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, &status);
+		if(!(status & 1))
+			throw new MdsException(status);
 		Data *evalData = compData->data();
 		deleteData(compData);
 		for(i = 0; i < nArgs; i++)
@@ -504,7 +513,10 @@ EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree...)
 			args[nArgs++] = currArg->convertToDsc();
 		}
 		setActiveTree(tree);
-		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree);
+		int status;
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, &status);
+		if(!(status & 1))
+			throw new MdsException(status);
 		if(!compData)
 		{
 			char *msg = new char[20 + strlen(expr)];
@@ -529,7 +541,10 @@ EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nAr
 		for(i = 0; i < actArgs; i++)
 			args[nArgs++] = dataArgs[i]->convertToDsc();
 
-		Data *compData = (Data *)compileFromExprWithArgs(expr, actArgs, (void *)args, 0);
+		int status;
+		Data *compData = (Data *)compileFromExprWithArgs(expr, actArgs, (void *)args, 0, &status);
+		if(!(status & 1))
+			throw new MdsException(status);
 		if(!compData)
 		{
 			char *msg = new char[20 + strlen(expr)];
@@ -560,7 +575,10 @@ EXPORT	Data *MDSplus::execute(char *expr, ...)
 				break;
 			args[nArgs++] = currArg->convertToDsc();
 		}
-		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0);
+		int status;
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, 0, &status);
+		if(!(status & 1))
+			throw new MdsException(status);
 		Data *evalData = compData->data();
 		deleteData (compData);
 		for(i = 0; i < nArgs; i++)
@@ -583,7 +601,10 @@ EXPORT	Data *MDSplus::execute(const char *expr, ...)
 				break;
 			args[nArgs++] = currArg->convertToDsc();
 		}
-		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, 0);
+		int status;
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, 0, &status);
+		if(!(status & 1))
+			throw new MdsException(status);
 		Data *evalData = compData->data();
 		deleteData (compData);
 		for(i = 0; i < nArgs; i++)

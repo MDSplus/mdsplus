@@ -398,7 +398,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 
  void freeChar(void *ptr){free(ptr);}
 
- void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree)
+ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
 {
 	int varIdx;
 	int i, status;
@@ -426,7 +426,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 	arglist[varIdx++] = &xd;
 	arglist[varIdx++] = MdsEND_ARG;
 	*(int *)&arglist[0] = varIdx-1;
-	status = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
+	status = *retStatus = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
 	if(!(status & 1))
 		return NULL;
 	data = convertFromDsc(&xd, tree);

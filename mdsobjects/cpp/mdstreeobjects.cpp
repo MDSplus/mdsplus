@@ -105,7 +105,7 @@ extern "C" void *TreeSwitchDbid(void *dbid);
 extern "C" void RTreeConfigure(int shared, int size);
 extern "C" int _RTreeTerminateSegment(void *dbid, int nid);
 
-extern "C" int getTreeData(void *dbid, int nid, void **data, int isCached);
+extern "C" int getTreeData(void *dbid, int nid, void **data, void *tree, int isCached);
 extern "C" int putTreeData(void *dbid, int nid, void *data, int isCached, int cachePolicy);
 extern "C" int deleteTreeData(void *dbid, int nid, int isCached, int cachePolicy);
 extern "C" int doTreeMethod(void *dbid, int nid, char *method);
@@ -150,6 +150,7 @@ extern "C" int _TreeRemoveTag(void *dbid, char *name);
 extern "C" int _RTreeFlushNode(void *dbid, int nid);
 extern "C" int _TreeSetSubtree(void *dbid, int nid);
 extern "C" int _TreeSetNoSubtree(void *dbid, int nid);
+extern "C" _int64 _TreeGetDatafileSize(void *dbid);
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
@@ -207,6 +208,7 @@ Tree::Tree(char *name, int shot)
 	}
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
+	setActiveTree(this);
 }
 
 Tree::Tree(void *dbid, char *name, int shot)
@@ -596,8 +598,13 @@ void Tree::removeTag(char *tagName)
 		throw new MdsException(status);
 }
 
-	
-
+_int64 Tree::getDatafileSize()
+{
+	_int64 size = _TreeGetDatafileSize(getCtx());
+	if(size == -1)
+		throw new MdsException("Cannot retrieve datafile size");
+	return size;
+}
 //////////////////////TreeNode Methods/////////////////
 
 
@@ -650,6 +657,8 @@ void TreeNode::setFlag(int flagOfs, bool val)
 
 TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Data *validation)
 {
+	if(!tree)
+		tree = getActiveTree();
 	if(!tree)
 		throw new MdsException("A Tree instance must be defined when ceating TreeNode instances");
 	this->nid = nid;
@@ -756,7 +765,7 @@ Data *TreeNode::getData()
 {
 	Data *data = 0;
 	resolveNid();
-	int status = getTreeData(tree->getCtx(), nid, (void **)&data, isCached());
+	int status = getTreeData(tree->getCtx(), nid, (void **)&data, tree, isCached());
 	if(!(status & 1))
 	{
 		throw new MdsException(status);

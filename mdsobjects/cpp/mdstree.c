@@ -23,7 +23,7 @@
 
  
 extern void *convertDataToDsc(void *data);
-extern void *convertFromDsc(void *dscPtr);
+extern void *convertFromDsc(void *dscPtr, void *tree);
 extern void freeDsc(void *dscPtr);
 
 /*
@@ -40,7 +40,7 @@ extern int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start
 extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struct descriptor_xd *dim);
 */
 
- int getTreeData(void *dbid, int nid, void **data, int isCached);
+ int getTreeData(void *dbid, int nid, void **data, void *tree, int isCached);
  int putTreeData(void *dbid, int nid, void *data, int isCached);
  int deleteTreeData(void *dbid, int nid, int isCached, int cachePolicy);
  int doTreeMethod(void *dbid, int nid, char *method);
@@ -62,7 +62,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
  int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size, int isCached, int isLast, int cachePolicy);
 
 
-  int getTreeData(void *dbid, int nid, void **data, int isCached)
+  int getTreeData(void *dbid, int nid, void **data, void *tree, int isCached)
 {
 	EMPTYXD(xd);
 	int status;
@@ -73,7 +73,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 		status = _TreeGetRecord(dbid, nid, &xd);
 	if(!(status & 1)) return status;
 
-	*data = convertFromDsc(&xd);
+	*data = convertFromDsc(&xd, tree);
 	MdsFree1Dx(&xd, 0);
 	return status;
 }
