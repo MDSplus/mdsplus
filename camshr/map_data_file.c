@@ -126,6 +126,7 @@ MapData_Exit:
 	if( fd != ERROR )						// still open ...
 		close(fd);							// ... finished with file descriptor
 
+        printf("Error mapping %s\n",FileName);
 	if( MSGLVL(DETAILS) ) {
 		printf( "map_data_file('%s'): ", FileName ); ShowStatus( status );
 	}
