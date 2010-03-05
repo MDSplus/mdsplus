@@ -64,17 +64,17 @@ all:	@MAKEBINDIR@ \
 	@MAKEJAVADIR@ \
 	@MAKEJAVADIR@classes \
 	@MAKEJAVADIR@classes/docs \
-	docs \
 	@MAKEJAVADIR@classes/jScope.jar  \
 	@MAKEJAVADIR@classes/WaveDisplay.jar \
 	@MAKEJAVADIR@classes/jScope.properties \
 	@MAKEJAVADIR@classes/MindTerm.jar
 
-clean: 
-	@ $(RM) *.class
+clean:
+	@ rm -Rf .build
 	@ $(RM) @MAKEBINDIR@jScope
 	@ $(RM) @MAKEJAVADIR@classes/jScope.jar
 	@ $(RM) @MAKEJAVADIR@classes/WaveDisplay.jar
+	@ rm -Rf @MAKEJAVADIR@classes/docs
 
 depend: ; @ :
 
@@ -92,13 +92,14 @@ install:
 
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
-@MAKEJAVADIR@classes/docs : ; mkdir @MAKEJAVADIR@classes/docs
+@MAKEJAVADIR@classes/docs : $(DOCS)
+	if [ ! -d @MAKEJAVADIR@classes/docs ] ; then mkdir @MAKEJAVADIR@classes/docs; fi
+	cp $(DOCS) @MAKEJAVADIR@classes/docs/
+	chmod -R a+r,u+rw @MAKEJAVADIR@classes/docs
+	touch @MAKEJAVADIR@classes/docs
 
-@MAKEJAVADIR@classes/jScope.jar: jScope.class CompositeWaveDisplay.class
-	mkdir docs
-	cp @MAKEJAVADIR@classes/docs/* docs
-	$(JAR) c0f $@ *.class *.html colors1.tbl docs
-	rm -R -f docs
+@MAKEJAVADIR@classes/jScope.jar: @MAKEJAVADIR@classes/docs .build/jScope/jScope.class .build/jScope/CompositeWaveDisplay.class
+	$(JAR) c0f $@ *.html colors1.tbl -C .build/jScope . -C @MAKEJAVADIR@classes docs
 
 @MAKEJAVADIR@classes/jScope.properties: jScope.properties
 	cp jScope.properties ../java/classes
@@ -107,23 +108,23 @@ install:
 	cp MindTerm.jar ../java/classes
 
 @MAKEJAVADIR@classes/WaveDisplay.jar: $(APPLETSOURCES)
-	rm *.class
-	$(JAVAC) -g -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(APPLETSOURCES) 
-	$(JAR) c0f $@ *.class
+	if [ ! -d .build ]; then mkdir .build; fi
+	if [ ! -d .build/WaveDisplay ]; then mkdir .build/WaveDisplay; fi
+	$(JAVAC) -g -d .build/WaveDisplay -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(APPLETSOURCES)
+	$(JAR) c0f $@ -C .build/WaveDisplay .
 
-jScope.class: 	$(SOURCES)
-	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(SOURCES) 
+.build/jScope/jScope.class: 	$(SOURCES)
+	if [ ! -d .build ]; then mkdir .build; fi
+	if [ ! -d .build/jScope ]; then mkdir .build/jScope; fi
+	$(JAVAC) -g  -d .build/jScope -classpath .:$(top_srcdir)/javascope/MindTerm.jar $(SOURCES) 
 
-CompositeWaveDisplay.class: 	$(SOURCES)
-	$(JAVAC) -g  -classpath .:$(top_srcdir)/javascope/MindTerm.jar CompositeWaveDisplay.java
+.build/jScope/CompositeWaveDisplay.class: 	$(SOURCES)
+	if [ ! -d .build ]; then mkdir .build; fi
+	if [ ! -d .build/jScope ]; then mkdir .build/jScope; fi
+	$(JAVAC) -g  -d .build/jScope -classpath .:$(top_srcdir)/javascope/MindTerm.jar CompositeWaveDisplay.java
 
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@jScope : jScope.template
 	cp jScope.template $@
 	chmod a+x $@
-
-docs: $(DOCS) 
-	cp $(DOCS) @MAKEJAVADIR@classes/docs
-	chmod -R a+r,u+rw @MAKEJAVADIR@classes/docs
-	
