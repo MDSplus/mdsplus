@@ -74,6 +74,10 @@ int TreeWriteTree(char *exp_ptr, int shotid)
 {
   return _TreeWriteTree(&DBID, exp_ptr, shotid);
 }
+_int64 TreeGetDatafileSize()
+{
+  return _TreeGetDatafileSize(DBID);
+}
 
 int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
 {
@@ -656,6 +660,21 @@ STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER *hdr)
 #define HeaderOut(in) in
 #define FreeHeaderOut(in)
 #endif
+
+
+STATIC_ROUTINE _int64 _TreeGetDatafileSize(void *dbid)
+{
+	int status;
+	PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
+    TREE_INFO *info = dblist->tree_info;
+	if (!info->data_file)
+      status = TreeOpenDatafileR(info);
+	if(!(status & 1))
+		return -1;
+	return MDS_IO_LSEEK(info->data_file->get,0,SEEK_END);
+}
+
+
 
 int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 {
