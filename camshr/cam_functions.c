@@ -636,7 +636,7 @@ static int JorwayDoIo(
 					int				Enhanced
 					)
 {
-	char		dev_name[5];
+	char		dev_name[7];
 	int			IsDataCommand, scsiDevice;
 	int 		xfer_data_length;
 	int 		status;
@@ -757,7 +757,7 @@ static int Jorway73ADoIo(
 					int				Enhanced
 					)
 {
-	char		dev_name[5];
+	char		dev_name[7];
 	int			IsDataCommand, scsiDevice;
 	int 		xfer_data_length;
 	int 		status;
@@ -1250,7 +1250,7 @@ int CamSetMAXBUF(char *Name, int new)
   int status = CamAssign( Name, &Key );
   if (status & 1)
   {
-    char dev_name[20];
+    char dev_name[7];
     sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
     if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 )
     {
@@ -1273,7 +1273,7 @@ int CamGetMAXBUF(char *Name)
   int status = CamAssign( Name, &Key );
   if (status & 1)
   {
-    char dev_name[20];
+    char dev_name[7];
     sprintf(dev_name, "GK%c%d%02d", Key.scsi_port, Key.scsi_address, Key.crate);
     if( (scsiDevice = get_scsi_device_number( dev_name, &enhanced, &online )) < 0 )
     {

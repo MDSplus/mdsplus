@@ -29,7 +29,7 @@
 //-----------------------------------------------------------
 int get_crate_status( char *crate_name, int *ptr_crate_status )
 {
-	char					controller[10];
+	char					controller[11];
 	short					SCCdata;
 	int						status = SUCCESS;		// optimistic ...
 	TranslatedIosb 			iosb;
