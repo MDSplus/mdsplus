@@ -537,7 +537,7 @@ public class jServer
 //Execute the action. Return the action status.
     int doSimpleAction(String name, String tree, int shot)
     {
-        int status;
+        int status = 1;
         try {
             if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot) {
                 if (mdsTree != null)
@@ -576,12 +576,13 @@ public class jServer
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
                 System.err.println("Exception generated in Action execution: " + exc);
+                status = 0;
             }
          
       
             System.out.println("" + new Date() + ", Done " + name + " in " +
                                tree + " shot " + shot);
-            status = 1;
+            //status = 1;
         }
         catch (Exception exc) {
             System.out.println("" + new Date() + ", Failed " + name + " in " +
