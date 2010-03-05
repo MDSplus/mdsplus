@@ -126,4 +126,5 @@ public class Uint8Array extends Array
     {
         throw new MdsException("Cannot convert byte array to string array");
     }
+    public int getSizeInBytes() {return getSize() * 1;}
 }

@@ -68,7 +68,7 @@ public class StringArray extends Array
         return new String(datum[idx]);
     }
     
-    protected int getSize(){return datum.length;}
+    public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
         java.lang.String newDatum[] = new java.lang.String[newSize];
@@ -114,5 +114,13 @@ public class StringArray extends Array
         System.arraycopy(datum, 0, retStrings, 0, datum.length);
         return retStrings;
     }
-
-}
+    public int getSizeInBytes() 
+    {
+        //find longest string
+        int maxLen = 0;
+        for(int i = 0; i < datum.length; i++)
+            if(datum[i] != null && datum[i].length() > maxLen)
+                maxLen = datum[i].length();
+        return datum.length * maxLen;
+    }
+ }

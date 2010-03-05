@@ -157,4 +157,5 @@ public class Int16 extends Scalar
     {
         return new double[]{(double)datum};
     }
+    public int getSizeInBytes() {return 2;}
 }

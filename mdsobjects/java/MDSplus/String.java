@@ -162,4 +162,5 @@ public class String extends Scalar
     {
         return datum;
     }
+    public int getSizeInBytes() {return (datum == null)?0:datum.length();}
 }

@@ -64,7 +64,7 @@ public class Float64Array extends Array
         return new Float64(datum[idx]);
     }
     
-    protected int getSize(){return datum.length;}
+    public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
         double newDatum[] = new double[newSize];
@@ -126,5 +126,6 @@ public class Float64Array extends Array
     {
         throw new MdsException("Cannot convert byte array to string array");
     }
+    public int getSizeInBytes() {return getSize() * 8;}
 
 }

@@ -373,6 +373,19 @@ public class Data {
         }
 
 
+        public int getSize()
+        {
+            Data data = data();
+            return data.getSize();
+        }
+        
+        public int getSizeInBytes()
+        {
+            Data data = data();
+            return data.getSizeInBytes();
+        }
+        
+        
 	/**
 	 * Return units field. EmptyData is returned if no units
 	 * defined.

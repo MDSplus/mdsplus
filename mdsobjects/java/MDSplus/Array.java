@@ -41,7 +41,7 @@ public abstract class Array extends Data
         dims = new int[newDims.length];
         System.arraycopy(newDims, 0, dims, 0, newDims.length);
     }
-    protected int getSize()
+    public int getSize()
     {
         int size = 1;
         for(int i = 0; i< dims.length; i++)

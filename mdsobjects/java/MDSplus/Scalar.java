@@ -17,4 +17,5 @@ public class Scalar extends Data {
         {
             super(help, units, error, validation);
 	}
+        public int getSize() {return 1;}
 }

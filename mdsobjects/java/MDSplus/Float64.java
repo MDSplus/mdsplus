@@ -157,4 +157,4 @@ public class Float64 extends Scalar
     {
         return new double[]{(double)datum};
     }
-}
+    public int getSizeInBytes() {return 8;}}

@@ -162,5 +162,5 @@ public class Uint64 extends Scalar
    {
        return Data.convertToDate(datum);
    }
-   
+    public int getSizeInBytes() {return 8;}   
 }

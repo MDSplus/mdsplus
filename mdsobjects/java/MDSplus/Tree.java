@@ -126,7 +126,7 @@ static public final int  TreeUSAGE_ANY  = 0,
         public static native void addTreeDevice(int ctx1, int ctx2, java.lang.String name, java.lang.String type) throws MdsException;
         public static native void deleteTreeNode(int ctx1, int ctx2, java.lang.String name) throws MdsException;
         public static native void removeTreeTag(int ctx1, int ctx2, java.lang.String tag) throws MdsException;
-        
+        public static native long getDatafileSize(int ctx1, int ctx2);
         
         
         public int getCtx1(){return ctx1;}
@@ -393,6 +393,13 @@ static public final int  TreeUSAGE_ANY  = 0,
         public void removeTag(java.lang.String tag) throws MdsException
         {
             removeTreeTag(ctx1, ctx2, tag);
+        }
+        public long getDatafileSize() throws MdsException
+        {
+            long size = getDatafileSize(ctx1, ctx2);
+            if(size == -1)
+                throw new MdsException("Cannot get Datafile Size");
+            return size;
         }
 
 }

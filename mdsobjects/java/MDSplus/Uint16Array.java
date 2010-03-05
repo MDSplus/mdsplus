@@ -64,7 +64,7 @@ public class Uint16Array extends Array
         return new Uint16(datum[idx]);
     }
     
-    protected int getSize(){return datum.length;}
+    public int getSize(){return datum.length;}
     protected Array getPortionAt(int startIdx, int []newDims, int newSize) throws MdsException
     {
         short newDatum[] = new short[newSize];
@@ -126,5 +126,6 @@ public class Uint16Array extends Array
     {
         throw new MdsException("Cannot convert byte array to string array");
     }
+    public int getSizeInBytes() {return getSize() * 2;}
 
 }
