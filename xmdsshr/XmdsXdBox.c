@@ -1153,7 +1153,7 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
     if (XtIsManaged(expr_widget))
       data = (struct descriptor_xd *)XmdsExprGetXd(expr_widget);
     else {
-      data = XtMalloc(sizeof(struct descriptor_xd));
+      data = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       memcpy(data,&empty_xd,sizeof(struct descriptor_xd));
     }
     if (data &&
@@ -1891,7 +1891,7 @@ static void GenericGet(XmdsXdBoxWidget w)
       { static struct descriptor tag_d = {0, DTYPE_T, CLASS_S, 0};
         tag_d.length = strlen(tag);
         tag_d.pointer = tag;
-	StrConcat(&tags,&tags,&comma,&tag_d MDS_END_ARG);
+	StrConcat((struct descriptor *)&tags,(struct descriptor *)&tags,&comma,&tag_d MDS_END_ARG);
       }
       if (tags.length)
       {
@@ -1973,6 +1973,7 @@ static Boolean Put(XmdsXdBoxWidget w)
 
     if (w->xdbox.loaded)
     {
+      free_xd=1;
       xd = (struct descriptor_xd *) XmdsXdBoxGetXd((Widget) w);
       node_on = XmToggleButtonGadgetGetState(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.on_off_toggle"));
       if (editing)
@@ -1984,7 +1985,7 @@ static Boolean Put(XmdsXdBoxWidget w)
 	xd = w->xdbox.xd;
       else {
         free_xd=1;
-	xd=XtMalloc(sizeof(*xd));
+	xd=(struct descriptor_xd *)XtMalloc(sizeof(*xd));
 	memcpy(xd,&empty_xd,sizeof(*xd));
       }
       node_on = w->xdbox.on_off;
@@ -2016,8 +2017,10 @@ static Boolean Put(XmdsXdBoxWidget w)
       }
       else
 	XmdsComplain((Widget)w, "Error turning node On/Off");
-      if (free_xd)
+      if (free_xd) {
+        MdsFree1Dx(xd,0);
         XtFree((char *)xd);
+      }
     }
     else
       status = 0;
