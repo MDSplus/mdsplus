@@ -323,6 +323,8 @@ void XmdsResetAllXds(Widget w)
     XmdsXdBoxReset(w);
   else if (XmdsIsNidOptionMenu(w))
     XmdsNidOptionMenuReset(w);
+  else if (XmdsIsXdBoxOnOffButton(w))
+    XmdsXdBoxOnOffButtonReset(w);
   else if (XtIsComposite(w))
   {
     Widget *children;
@@ -355,6 +357,10 @@ Boolean XmdsApplyAllXds(Widget w)
     return XmdsOnOffToggleButtonApply(w);
   else if (XmdsIsXdBox(w))
     return XmdsXdBoxApply(w);
+  else if (XmdsIsNidOptionMenu(w))
+    return XmdsNidOptionMenuApply(w);
+  else if (XmdsIsXdBoxOnOffButton(w))
+    return XmdsXdBoxOnOffButtonApply(w);
   else if (XtIsComposite(w))
   {
     Widget *children;

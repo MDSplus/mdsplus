@@ -1969,6 +1969,7 @@ static Boolean Put(XmdsXdBoxWidget w)
     Boolean node_on;
     Boolean editing = (TreeIsOpen() == TreeOPEN_EDIT);
     char *tag_txt = 0;
+    int free_xd=0;
 
     if (w->xdbox.loaded)
     {
@@ -1982,6 +1983,7 @@ static Boolean Put(XmdsXdBoxWidget w)
       if (w->xdbox.xd)
 	xd = w->xdbox.xd;
       else {
+        free_xd=1;
 	xd=XtMalloc(sizeof(*xd));
 	memcpy(xd,&empty_xd,sizeof(*xd));
       }
@@ -2014,10 +2016,8 @@ static Boolean Put(XmdsXdBoxWidget w)
       }
       else
 	XmdsComplain((Widget)w, "Error turning node On/Off");
-      MdsFree1Dx(xd,0);
-      XtFree((char *)xd);
-      if (w->xdbox.xd)
-	w->xdbox.xd=0;
+      if (free_xd)
+        XtFree((char *)xd);
     }
     else
       status = 0;
