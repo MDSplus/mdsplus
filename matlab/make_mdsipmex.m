@@ -5,10 +5,11 @@
 % Note; if shared, install MdsIpShr library or point $LD_LIBRARY_PATH to shareables
 % Basil P. DUVAL, May 2000
 
-MDSPLUS=getenv('MDSPLUS');
+MDSPLUS=getenv('MDSPLUS_DIR');
 if(length(MDSPLUS)==0)
   disp('shell variable MDSPLUS must point to MDSPLUS distribution before compilation');end
 
+if(findstr(computer,'64')); LIB = 'lib64'; else; LIB = 'lib'; end
 if(exist('debug','var'));DEBUG = '-DDEBUG';else;DEBUG='';end
 
 if(~strcmp(computer,'VMS'));PASSWD = '-DPASSWD';else;PASSWD='mdsipmex.opt';end
@@ -21,7 +22,7 @@ comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip',DEBUG,PASSWD,MD
 for(i=1:length(r))
      comm = sprintf('%s %s/mdstcpip/%s',comm,MDSPLUS,char(r(i)));end
 else
-comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip -L%s/lib -lMdsIpShr',...
-	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS);
+comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip -L%s/%s -lMdsIpShr',...
+	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS,LIB);
 end
 disp(comm);eval(comm);
