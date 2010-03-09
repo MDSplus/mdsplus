@@ -1969,56 +1969,49 @@ static Boolean Put(XmdsXdBoxWidget w)
     Boolean node_on;
     Boolean editing = (TreeIsOpen() == TreeOPEN_EDIT);
     char *tag_txt = 0;
-    int free_xd=0;
 
     if (w->xdbox.loaded)
     {
-      free_xd=1;
       xd = (struct descriptor_xd *) XmdsXdBoxGetXd((Widget) w);
       node_on = XmToggleButtonGadgetGetState(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.on_off_toggle"));
       if (editing)
-	tag_txt = XmTextFieldGetString(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.tag_text"));
+        tag_txt = XmTextFieldGetString(XtNameToWidget(w->xdbox.xdb_dlog,"generic_box.tag_text"));
     }
     else
     {
-      if (w->xdbox.xd)
-	xd = w->xdbox.xd;
-      else {
-        free_xd=1;
-	xd=(struct descriptor_xd *)XtMalloc(sizeof(*xd));
-	memcpy(xd,&empty_xd,sizeof(*xd));
-      }
+      xd = w->xdbox.xd ? w->xdbox.xd : &empty_xd;
       node_on = w->xdbox.on_off;
       if (editing)
-	tag_txt = w->xdbox.tag_list;
+        tag_txt = w->xdbox.tag_list;
     }
     if (xd)
     {
       status = TreeIsOn(nid);
       if (node_on && ((status == TreeOFF) || (status == TreeBOTH_OFF)))
-	status = TreeTurnOn(nid);
+        status = TreeTurnOn(nid);
       else if (!node_on && ((status == TreeON) || (status == TreePARENT_OFF)))
-	status = TreeTurnOff(nid);
+        status = TreeTurnOff(nid);
       else
-	status = 1;
+        status = 1;
       if (status)
       {
-	status = PutIfChanged(nid,xd);
-	if (status)
-	{
-	  if (editing)
-	  {
-	    TreeRemoveNodesTags(nid);
-	    UpdateTags((Widget)w, nid, tag_txt);
-	  }
-	}
-	else
-	  XmdsComplain((Widget)w,"Error Writing Record to Tree");
+        status = PutIfChanged(nid,xd);
+        if (status)
+        {
+          if (editing)
+          {
+            TreeRemoveNodesTags(nid);
+            UpdateTags((Widget)w, nid, tag_txt);
+          }
+        }
+        else
+          XmdsComplain((Widget)w,"Error Writing Record to Tree");
       }
       else
-	XmdsComplain((Widget)w, "Error turning node On/Off");
-      if (free_xd) {
-        MdsFree1Dx(xd,0);
+        XmdsComplain((Widget)w, "Error turning node On/Off");
+      if (w->xdbox.loaded)
+      {
+        MdsFree1Dx(xd, 0);
         XtFree((char *)xd);
       }
     }
