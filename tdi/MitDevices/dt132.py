@@ -51,7 +51,7 @@ class DT132(Device):
     """
     
     parts=[
-        {'path':':HOSTIP','type':'text','value':'192.168.0.254:8106','options':('no_write_shot',)},
+        {'path':':HOSTIP','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARDIP','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
         ]
