@@ -252,10 +252,18 @@ class DT216B(Device):
             clock = self.clock.record
             if debug:
                 print "about to ask it to mdsconnect"
-            UUT.uut.acq2sh("mdsConnect %s" % str(self.hostip.record))
+            status = UUT.uut.acq2sh("mdsConnect %s" % str(self.hostip.record))
+            if debug:
+                print "    ...returned %s" % status
+            if not status.startswith('MDS_SOCK') :
+		raise Exception("DT216B board mdsconnect error", str(self.hostip.record), status) 
             if debug:
                 print "about to ask it to mdsopen"
-            UUT.uut.acq2sh('mdsOpen %s %d'  % (self.boardip.tree.name, self.boardip.tree.shot,))
+            status = UUT.uut.acq2sh('mdsOpen %s %d'  % (self.boardip.tree.name, self.boardip.tree.shot,))
+            if debug:
+                print "    ...returned %s" % status
+            if not status.startswith('OK') :
+                raise Exception("DT216B board mdsopen error %s %d"%(self.boardip.tree.name, self.boardip.tree.shot,), status)
             for chan in range(16):
                 if debug:
                     print "working on channel %d" % chan
@@ -283,7 +291,12 @@ class DT216B(Device):
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
-                        UUT.uut.acq2sh(command)
+                        status = UUT.uut.acq2sh(command)
+                        if debug:
+			    print "    ...returned %s" % status
+#                        if status.startswith('mdsPutChannel ERROR') :
+			if status != command :
+			    raise Exception('DT216B channel %d'%(chan+1), status)
                         if inc > 1 :
                             clk=None
                             delta=None
