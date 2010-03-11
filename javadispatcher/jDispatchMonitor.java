@@ -106,8 +106,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                 JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            
-                            if(idx == -1)
+                            //NOTE: executing_list may be empty in case an error message 
+                            //has been received before a dispatched message
+                            if(idx == -1 || executing_list.size() == 0)
                                 executing_list.addElement(me);
                             else
                                 executing_list.set(idx,me);

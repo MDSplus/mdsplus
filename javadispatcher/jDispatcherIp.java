@@ -128,7 +128,7 @@ class jDispatcherIp
 		        {
 			    shot = Integer.parseInt(st.nextToken());
 
-			    setCurrentShot(shot);
+			    //setCurrentShot(shot);
 			    dispatcher.setTree(currTreeName, shot);
 			} else {
 			    dispatcher.setTree(currTreeName);
