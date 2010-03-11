@@ -27,10 +27,11 @@ class DT216B(Device):
             :wire - string specifying the source of this signal { 'fpga','mezz','rio','pxi','lemo', 'none }
             :bus  - string specifying the destination of this signal { 'fpga','rio','pxi', 'none }
     :ACTIVE_CHANS - number of active channels {2, 4, 8, 16}
-     INT_CLOCK - stored by module (representation of internal clock       
+     INT_CLOCK - stored by module (representation of internal clock
+     MASTER    - points to INT_CLOCK node - needed a node to fill into clock_src       
      TRIG_SRC - reference to DIn line used for trigger (DI3)
      TRIG_EDGE - string {rising, falling} 
-     CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK
+     CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK, or MASTER
      CLOCK_DIV - NOT CURRENTLY IMPLIMENTED 
      CLOCK_EDGE -  string {rising, falling}
      CLOCK_FREQ - frequency for internal clock
@@ -62,6 +63,7 @@ class DT216B(Device):
     parts2=[
         {'path':':ACTIVE_CHANS','type':'numeric','value':16,'options':('no_write_shot',)},        
         {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},       
+        {'path':':MASTER','type':'axis','valueExpr':'head.int_clock', 'options':('no_write_model','write_once')},
         {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
         {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
         {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
@@ -102,10 +104,8 @@ class DT216B(Device):
                    ]
     clock_sources = trig_sources
     clock_sources.append('INT_CLOCK')
+    clock_sources.append('MASTER')
     
-    masks = {8: '11110000000000001111000000000000',
-             16:'11111111000000001111111100000000',
-             }
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
     
     del i
@@ -142,10 +142,10 @@ class DT216B(Device):
                 print "clock_src is %s\n" % clock_src
             if not clock_src in self.clock_sources:
                 raise Exception, "Clock_src must be in %s" % str(self.clock_sources)
-            if (clock_src == 'INT_CLOCK'):
+            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER':
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
             else:
-                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")                
+                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for external clock")                
                 clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
             pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
             post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
@@ -171,8 +171,10 @@ class DT216B(Device):
                 UUT.set_route(line, 'in %s out %s' % (wire, bus,))
             UUT.setChannelCount(active_chans)
 
-            if clock_src == 'INT_CLOCK' :
+            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
+		if clock_src == 'MASTER' :
+		    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
 		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
             UUT.setPrePostMode(pre_trig, post_trig)
