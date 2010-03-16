@@ -187,9 +187,11 @@ void *putManyObj(char *serializedIn)
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
 #ifdef HAVE_WINDOWS_H
-	semH = 0;
+	semH = CreateSemaphore(NULL, 1, 16, NULL);
 #else
-	semInitialized = false;
+	int status = sem_init(&semStruct, 0, 1);
+	if(status != 0)
+		throw new MdsException("Cannot create lock semaphore");
 #endif
 
 	sockId = ConnectToMds(mdsipAddr);
@@ -203,17 +205,18 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 }
 Connection::~Connection()
 {
+#ifdef HAVE_WINDOWS_H
+#else
+	sem_destroy(semStruct);
+#endif
 	DisconnectFromMds(sockId);
 }
 
 #ifdef HAVE_WINDOWS_H
 void Connection::lock() 
 {
-	if(!semH)
-		semH = CreateSemaphore(NULL, 1, 16, NULL);
-	if(!semH)
-		throw new MdsException("Cannot create lock semaphore");
-    WaitForSingleObject(semH, INFINITE);      
+	if(semH)
+		WaitForSingleObject(semH, INFINITE);      
 }
 void Connection::unlock()
 {
@@ -223,13 +226,6 @@ void Connection::unlock()
 #else
 void Connection::lock() 
 {
-	if(!semInitialized)
-	{
-		semInitialized = true;
-		int status = sem_init(&semStruct, 0, 1);
-		if(status != 0)
-			throw new MdsException("Cannot create lock semaphore");
-	}
 	sem_wait(&semStruct);
 }
 void Connection::unlock()
