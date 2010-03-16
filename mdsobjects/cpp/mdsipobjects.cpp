@@ -271,19 +271,29 @@ Data *Connection::get(char *expr, Data **args, int nArgs)
 		if(!ptr)
 			throw new MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
+	lock();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(expr), 0, 0, expr);
 	if(!(status & 1))
+	{
+		unlock();
 		throw new MdsException(status);
+	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
 	{
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
+		{
+			unlock();
 			throw new MdsException(status);
+		}
 	}
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+	unlock();
 	if(!(status & 1))
+	{
 		throw new MdsException(status);
+	}
 	if(nDims == 0)
 	{
 		switch(dtype) {
@@ -408,19 +418,27 @@ void Connection::put(char *inPath, char *expr, Data **args, int nArgs)
 	sprintf(&putExpr[strlen(putExpr)], ")");
     delete [] path;
 
+	lock();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
 	delete[] putExpr;
 	if(!(status & 1))
+	{
+		unlock();
 		throw new MdsException(status);
+	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
 	{
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
+		{
+			unlock();
 			throw new MdsException(status);
+		}
 	}
 
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+	unlock();
     if (status & 1 && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
       memcpy(&status,ptr,numBytes);
     if (mem) FreeMessage(mem);
