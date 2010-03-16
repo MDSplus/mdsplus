@@ -10,6 +10,15 @@
 #include <ncidef.h>
 #include <dbidef.h>
 #include <usagedef.h>
+#ifdef HAVE_WINDOWS_H
+#include <Windows.h>
+#else
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <semaphore.h>
+#endif
 
 
 #ifndef HAVE_WINDOWS_H
@@ -2307,7 +2316,15 @@ protected:
 
 	class EXPORT Connection 
 	{
+#ifdef HAVE_WINDOWS_H
+		HANDLE semH;
+#else
+		sem_t semStruct;
+		bool semInitialized;
+#endif
 		int sockId;
+		void lock();
+		void unlock();
 	public:
 		Connection(char *mdsipAddr);
 		~Connection();

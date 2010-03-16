@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(SolutionDir)\tdishr;$(SolutionDir)\mdsobjects\cpp;$(SolutionDir)\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;HAVE_WINDOWS_H"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				AssemblerListingLocation=".\Debug/"

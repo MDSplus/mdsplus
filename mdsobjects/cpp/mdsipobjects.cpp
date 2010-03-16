@@ -1,5 +1,14 @@
 #include <stdio.h>
 #include "mdsobjects.h"
+#ifdef HAVE_WINDOWS_H
+#include <Windows.h>
+#else
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <errno.h>
+#include <semaphore.h>
+#endif
 using namespace MDSplus;
 
 extern "C"  void *getManyObj(char *serializedIn);
@@ -177,6 +186,12 @@ void *putManyObj(char *serializedIn)
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
+#ifdef HAVE_WINDOWS_H
+	semH = 0;
+#else
+	semInitialized = false;
+#endif
+
 	sockId = ConnectToMds(mdsipAddr);
 	if(sockId <= 0)
 	{
@@ -190,7 +205,42 @@ Connection::~Connection()
 {
 	DisconnectFromMds(sockId);
 }
-			
+
+#ifdef HAVE_WINDOWS_H
+void Connection::lock() 
+{
+	if(!semH)
+		semH = CreateSemaphore(NULL, 1, 16, NULL);
+	if(!semH)
+		throw new MdsException("Cannot create lock semaphore");
+    WaitForSingleObject(semH, INFINITE);      
+}
+void Connection::unlock()
+{
+	if(semH)
+		ReleaseSemaphore(semH, 1, NULL);
+}
+#else
+void Connection::lock() 
+{
+	if(!semInitialized)
+	{
+		semInitialized = true;
+		int status = sem_init(&semStruct, 0, 1);
+		if(status != 0)
+			throw new MdsException("Cannot create lock semaphore");
+	}
+	sem_wait(&semStruct);
+}
+void Connection::unlock()
+{
+	sem_post(&semStruct);
+}
+#endif
+
+
+
+
 void Connection::openTree(char *tree, int shot)
 {
 	int status = MdsOpen(sockId, tree, shot);
