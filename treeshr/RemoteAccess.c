@@ -1050,6 +1050,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
 {
   int fd = -1;
   int try_again = 1;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   while(try_again)
   {
     *sock = RemoteAccessConnect(host, 1);
@@ -1110,6 +1111,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
       try_again = 0;
     }
   }
+  UnlockMdsShrMutex(&IOMutex);
   return fd;
 }
 
@@ -1120,7 +1122,6 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
   char *tmp = ParseFile(filename,&hostpart,&filepart);
   int fd;
   int enhanced=0;
-  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   if (hostpart)
 #ifdef SRB
     if (strcmp(hostpart,"SRB")==0) {
@@ -1148,7 +1149,6 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
 #endif
   }
   free(tmp);
-  UnlockMdsShrMutex(&IOMutex);
   if (fd != -1)
     fd = NewFD(fd,socket,enhanced);
   return fd;
@@ -1160,6 +1160,7 @@ STATIC_ROUTINE int io_close_remote(int fd)
   int info[] = {0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   status = SendArg(sock,MDS_IO_CLOSE_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
@@ -1179,6 +1180,7 @@ STATIC_ROUTINE int io_close_remote(int fd)
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
 
@@ -1187,7 +1189,6 @@ int MDS_IO_CLOSE(int fd)
   int status;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
     if (FDS[fd-1].socket==SRB_SOCKET) {
       status = srbUioClose(FDS[fd-1].fd);
@@ -1197,7 +1198,6 @@ int MDS_IO_CLOSE(int fd)
     status = (FDS[fd-1].socket == -1) ? close(FDS[fd-1].fd) : io_close_remote(fd);
 #endif
     FDS[fd-1].in_use = 0;
-    UnlockMdsShrMutex(&IOMutex);
     return status;
   }
   else
@@ -1210,6 +1210,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
   int info[] = {0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[4]=whence;
   *(_int64 *)(&info[2]) = offset;
@@ -1238,6 +1239,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
 
@@ -1247,7 +1249,6 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
     _int64 pos;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
         pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
@@ -1256,7 +1257,6 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
     }
 #endif
     pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,offset,whence) : io_lseek_remote(fd,offset,whence);
-    UnlockMdsShrMutex(&IOMutex);
     return pos;
   }
   else
@@ -1269,6 +1269,7 @@ STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
   int info[] = {0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[0]=count;
   info[1]=FDS[fd-1].fd;
   status = SendArg(sock,MDS_IO_WRITE_K,0,0,0,sizeof(info)/sizeof(int),info,buff);
@@ -1288,6 +1289,7 @@ STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
 
@@ -1297,7 +1299,6 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
   if (count == 0) return 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
       ans = srbUioWrite(FDS[fd-1].fd,buff,count);
@@ -1311,7 +1312,6 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
 	ans = write(FDS[fd-1].fd,buff,count);
       } else
 	ans = io_write_remote(fd,buff,count);
-    UnlockMdsShrMutex(&IOMutex);
   }
   return ans; 
 }
@@ -1323,6 +1323,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   int info[] = {0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[2]=count;
   status = SendArg(sock,MDS_IO_READ_K,0,0,0,sizeof(info)/sizeof(int),info,0);
@@ -1345,6 +1346,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
 
@@ -1354,6 +1356,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
   int info[] = {0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[4]=count;
   *(_int64 *)(&info[2]) = offset;
@@ -1385,6 +1388,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
   
@@ -1394,7 +1398,6 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
   if (count == 0) return 0; 
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
       ans = srbUioRead(FDS[fd-1].fd,buff,count);
@@ -1408,7 +1411,6 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
       ans = read(FDS[fd-1].fd,buff,count);
     } else
       ans = io_read_remote(fd,buff,count);
-    UnlockMdsShrMutex(&IOMutex);
   }
   return ans; 
 }
@@ -1425,7 +1427,6 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
   ssize_t ans = -1;
   if (count == 0) return 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
       pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
@@ -1442,7 +1443,6 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
     else {
       ans = io_read_x_remote(fd,offset,buff,count, deleted);
     }
-    UnlockMdsShrMutex(&IOMutex);
   }
   return ans; 
 }
@@ -1453,6 +1453,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
   int info[] = {0,0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[4]=size;
   info[5]=mode;
@@ -1483,6 +1484,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
   }
   else
     RemoteAccessDisconnect(sock,1);
+  UnlockMdsShrMutex(&IOMutex);
   return ret;
 }
 
@@ -1498,7 +1500,6 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
       return (status == 0) ? TreeSUCCESS : TreeFAILURE;
     }
 #endif
-    LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
     if (FDS[fd-1].socket == -1)
     {
       int mode=mode_in &  MDS_IO_LOCK_MASK;
@@ -1541,7 +1542,9 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
     }
     else
       status = io_lock_remote(fd,offset,size,mode_in,deleted);
-    UnlockMdsShrMutex(&IOMutex);
+#if !(defined(HAVE_VXWORKS) || defined(HAVE_WINDOWS_H))
+    //ThreadLock(fd,offset,size,mode_in);
+#endif
   }
   return status; 
 }
@@ -1549,7 +1552,9 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
 STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
 {
   int ans = 0;
-  int sock = RemoteAccessConnect(host, 1);
+  int sock;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+  sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
     int info[] = {0};
@@ -1574,6 +1579,7 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
     else
       RemoteAccessDisconnect(sock,1);
   }
+  UnlockMdsShrMutex(&IOMutex);
   return ans;
 }
 
@@ -1583,7 +1589,6 @@ int MDS_IO_EXISTS(char *filename)
   struct stat statbuf;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
   if (strcmp(hostpart,"SRB")==0) {
     status = srbUioStat(filepart, &statbuf);
@@ -1591,7 +1596,6 @@ int MDS_IO_EXISTS(char *filename)
   else
 #endif
   status = hostpart ? io_exists_remote(hostpart,filepart) : (stat(filename,&statbuf) == 0);
-  UnlockMdsShrMutex(&IOMutex);
   free(tmp);
   return status;
 }
@@ -1599,7 +1603,9 @@ int MDS_IO_EXISTS(char *filename)
 STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
 {
   int ans = -1;
-  int sock = RemoteAccessConnect(host, 1);
+  int sock;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+  sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
     int info[] = {0};
@@ -1624,6 +1630,7 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
     else
       RemoteAccessDisconnect(sock,1);
   }
+  UnlockMdsShrMutex(&IOMutex);
   return ans;
 }
 
@@ -1632,7 +1639,6 @@ int MDS_IO_REMOVE(char *filename)
   int status;
   char *hostpart, *filepart;
   char *tmp = ParseFile(filename,&hostpart,&filepart);
-  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
 #ifdef SRB
   if (strcmp(hostpart,"SRB")==0) {
     status = srbUioUnlink(filepart);
@@ -1640,7 +1646,6 @@ int MDS_IO_REMOVE(char *filename)
   else
 #endif
   status = hostpart ? io_remove_remote(hostpart,filepart) : remove(filename);
-  UnlockMdsShrMutex(&IOMutex);
   free(tmp);
   return status;
 }
@@ -1648,7 +1653,9 @@ int MDS_IO_REMOVE(char *filename)
 STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filename_new)
 {
   int ans = -1;
-  int sock = RemoteAccessConnect(host, 1);
+  int sock;
+  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
+  sock = RemoteAccessConnect(host, 1);
   if (sock != -1)
   {
     int info[] = {0};
@@ -1677,6 +1684,7 @@ STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filena
       RemoteAccessDisconnect(sock,1);
     free(names);
   }
+  UnlockMdsShrMutex(&IOMutex);
   return ans;
 }
 
@@ -1700,7 +1708,6 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   } 
 #endif
 
-  LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   if (hostpart_old)
   {
     if (hostpart_new && (strcmp(hostpart_old,hostpart_new)==0))
@@ -1720,6 +1727,5 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   }
   free(tmp_old);
   free(tmp_new);
-  UnlockMdsShrMutex(&IOMutex);
   return status;
 }
