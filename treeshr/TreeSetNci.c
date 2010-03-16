@@ -33,6 +33,7 @@
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
+#include <STATICdef.h>
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -708,16 +709,22 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   }
   return status;
 }
+STATIC_THREADSAFE pthread_mutex_t NCIMutex;
+STATIC_THREADSAFE int NCIMutex_initialized;
 
 int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted)
 {
-  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
+  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 	  nodenum * 42,42,readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT,deleted);
+  LockMdsShrMutex(&NCIMutex,&NCIMutex_initialized);
+  return status;
 }
 
 int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
 {
-  return MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,MDS_IO_LOCK_NONE,0);
+  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,MDS_IO_LOCK_NONE,0);
+  UnlockMdsShrMutex(&NCIMutex);
+  return status;
 }
 
 int _TreeSetUsage(void *dbid, int nid_in, unsigned char usage) {
