@@ -207,7 +207,7 @@ Connection::~Connection()
 {
 #ifdef HAVE_WINDOWS_H
 #else
-	sem_destroy(semStruct);
+	sem_destroy(&semStruct);
 #endif
 	DisconnectFromMds(sockId);
 }
