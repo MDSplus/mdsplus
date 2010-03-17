@@ -2336,6 +2336,10 @@ protected:
 		}
 		void setDefault(char *path);
 		Data *get(char *expr, Data **args, int nArgs);
+		Data *get(char *expr)
+		{
+		    return get(expr, 0, 0);
+		}
 		void put(char *path, char *expr, Data **args, int nArgs);
 		PutMany *putMany()
 		{
