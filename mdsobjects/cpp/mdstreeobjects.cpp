@@ -1378,11 +1378,11 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialDat
 	resolveNid();
 	int numDims;
 	int *shape = initialData->getShape(&numDims);
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = makeTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc(), shape[0], isCached(), getCachePolicy());
 	deleteNativeArray(shape);
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1390,10 +1390,10 @@ void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialDat
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = beginTreeSegment(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc(), isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1401,9 +1401,9 @@ void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialDa
 void TreeNode::putSegment(Array *data, int ofs)
 {
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = putTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), ofs, isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1411,10 +1411,10 @@ void TreeNode::putSegment(Array *data, int ofs)
 void TreeNode::updateSegment(Data *start, Data *end, Data *time)
 {
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = updateTreeSegment(tree->getCtx(), getNid(), start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc(), isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1424,9 +1424,9 @@ int TreeNode::getNumSegments()
 	int numSegments;
 
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = getTreeNumSegments(tree->getCtx(), getNid(), &numSegments, isCached());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 	return  numSegments;
@@ -1436,9 +1436,9 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 {
 	void *startDsc, *endDsc;
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = getTreeSegmentLimits(tree->getCtx(), getNid(), &startDsc, &endDsc, isCached());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 	*start = (Data*)convertFromDsc(startDsc);
@@ -1453,9 +1453,9 @@ Array *TreeNode::getSegment(int segIdx)
 	void *timeDsc;
 	
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc, isCached());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 	Array *retData = (Array *)convertFromDsc(dataDsc);
@@ -1468,9 +1468,9 @@ Array *TreeNode::getSegment(int segIdx)
 void TreeNode::beginTimestampedSegment(Array *initData)
 {
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = beginTreeTimestampedSegment(tree->getCtx(), getNid(), initData->convertToDsc(), isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1482,9 +1482,9 @@ void TreeNode::makeTimestampedSegment(Array *data, _int64 *times)
 	int *shape = data->getShape(&numDims);
 
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = makeTreeTimestampedSegment(tree->getCtx(), getNid(), data->convertToDsc(), times, shape[0], isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	deleteNativeArray(shape);
 	if(!(status & 1))
 		throw new MdsException(status);
@@ -1494,9 +1494,9 @@ void TreeNode::putTimestampedSegment(Array *data, _int64 *times)
 {
 	int nTimesArray;
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = putTreeTimestampedSegment(tree->getCtx(), getNid(), data->convertToDsc(), times, isCached(), getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1504,9 +1504,9 @@ void TreeNode::putTimestampedSegment(Array *data, _int64 *times)
 void TreeNode::putRow(Data *data, _int64 *time, int size)
 {
 	resolveNid();
-	if(tree) tree->lock();
+	//if(tree) tree->lock();
 	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), time, size, isCached(), false, getCachePolicy());
-	if(tree) tree->unlock();
+	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);
 }
