@@ -93,7 +93,7 @@ public class Data {
         // like a function call) a clone of the cache is returned by method data()
 	Data dataCache;
 	boolean changed = true;
-	boolean isImmutable() {return true;}
+	boolean isImmutable() {return false;}
         boolean hasChanged() {return !isImmutable() || changed;}
         public Data(){}
 	public Data(Data help, Data units, Data error, Data validation)
