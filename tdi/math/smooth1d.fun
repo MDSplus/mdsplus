@@ -1,4 +1,4 @@
-public fun smooth1d(as_is _sig, in _width)
+public fun smooth1d(in _sig, in _width)
 {
   _in = fs_float(data(_sig));
   _size = size(_in);
