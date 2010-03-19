@@ -542,7 +542,7 @@ public class Grid
                             {
 
                                 Calendar ca = Calendar.getInstance();
-                                ca.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+                                //ca.setTimeZone(TimeZone.getTimeZone("GMT+00"));
 
                                 ca.setTimeInMillis((long)x_values[i]);
                                 ca.set(ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)+1, 0, 0);

@@ -136,23 +136,33 @@ public class jScope
     BasicArrowButton incShot, decShot;
     int incShotValue = 0;
 
-    public static final int JAVA_TIME = 1, VMS_TIME = 2;
+    public static final int JAVA_TIME = 1, VMS_TIME = 2, EPICS_TIME = 3;
     static int timeMode = JAVA_TIME;
+    static final long VMS_BASE = 0x7c95674beb4000L;
+    //static final long EPICS_BASE = 631062000000L;
+    //static final long EPICS_BASE = 631148400000L;
+    static final long EPICS_BASE = 631152000000L;
+
+
     static int getTimeMode() {return timeMode; }
 
 
     static long convertFromSpecificTime(long inTime)
     {
         if (timeMode == VMS_TIME)
-                return (inTime - 0x7c95674beb4000L) / 10000L;
-        else
+                return (inTime - VMS_BASE) / 10000L;
+        else if(timeMode == EPICS_TIME)
+            return inTime/1000000L + EPICS_BASE;  
+        else 
             return inTime;
     }
 
     static long convertToSpecificTime(long inTime)
     {
         if (timeMode == VMS_TIME)
-                return (inTime*10000L + 0x7c95674beb4000L);
+                return (inTime*10000L + VMS_BASE);
+        else if (timeMode == EPICS_TIME)
+            return (inTime - EPICS_BASE)*1000000L;
         else
             return inTime;
     }
@@ -1668,6 +1678,8 @@ public class jScope
         {
             if(timeConversion.toUpperCase().equals("VMS"))
                 timeMode = VMS_TIME;
+            else if(timeConversion.toUpperCase().equals("EPICS"))
+                timeMode = EPICS_TIME;
             //Add here new time formats
         }
 
