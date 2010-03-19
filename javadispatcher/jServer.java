@@ -467,6 +467,7 @@ public class jServer
             }
             catch (Exception exc) {
                 //Try once to re-establish answer socket
+                System.out.println("Connection to jDispatcher went down:" + exc);
                 updateRetSocket(ip, port);
                 dos = new DataOutputStream( (sock = getRetSocket(ip, port)).
                                            getOutputStream());
