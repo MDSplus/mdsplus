@@ -36,7 +36,6 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
     status = TreeCallHook(GetNci,info,nid_in);\
     if (status && !(status & 1)) break;\
-    if (info->reopen) TreeCloseFiles(info);\
     status = TreeGetNciW(info, node_number, &nci,version);\
     if (status & 1) nci_version = version;\
     if (!(status & 1)) break;\
@@ -697,7 +696,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	      status = MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes, sizeof(nci_bytes),&deleted) ==
 		sizeof(nci_bytes) ? TreeSUCCESS : TreeFAILURE;
 	      if (status & 1 && deleted) {
-		TreeCloseFiles(info);
+		TreeCloseFiles(info,1,0);
 		status = OpenNciR(info);
 	      }
 	    }

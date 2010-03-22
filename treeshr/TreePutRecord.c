@@ -129,8 +129,6 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     TreeSetViewDate(&saved_viewdate);

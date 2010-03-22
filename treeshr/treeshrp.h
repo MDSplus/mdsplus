@@ -645,7 +645,6 @@ typedef struct tree_info
   char      dvi[16];	/* Tree file disk info */
   unsigned short tree_info_w_fid[3];	/* Tree file file id                                */
   unsigned  flush:1;/* Flush I/O's buffers                              */
-  unsigned  reopen:1;  /* Re-open nci and datafile on next access */
   unsigned  rundown:1; /* Doing rundown */
   unsigned  mapped:1;  /* Tree is mapped into memory */
   unsigned  :12;/* Spare bits */
@@ -751,7 +750,7 @@ extern _int64 RfaToSeek(unsigned char *rfa);
 void SeekToRfa(_int64 seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
-extern int TreeCloseFiles(TREE_INFO *info);
+extern int TreeCloseFiles(TREE_INFO *info, int nci, int data);
 extern int TreeCopyExtended(PINO_DATABASE *dbid1, PINO_DATABASE *dbid2, int nid, NCI *nci);
 extern int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes);
 extern int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr);

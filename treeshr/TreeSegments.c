@@ -101,8 +101,6 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
@@ -292,8 +290,6 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
@@ -448,8 +444,6 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
@@ -571,8 +565,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
     SEGMENT_HEADER segment_header;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
     if (!(status & 1))
@@ -627,8 +619,6 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
     SEGMENT_HEADER segment_header;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
     if (!(status & 1))
@@ -756,8 +746,6 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
     SEGMENT_HEADER segment_header;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
     if (!(status & 1))
@@ -882,8 +870,6 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
     int value_length;
     _int64 value_offset;
     NAMED_ATTRIBUTES_INDEX index,current_index;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
@@ -1089,8 +1075,6 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     int numnames=0;
     unsigned int i;
     unsigned int len=strlen(xnciname);
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     if (len == strlen(attnames)) {
       for (i=0;i<len;i++) {
 	if (__tolower(xnciname[i]) != attnames[i])
@@ -1585,8 +1569,6 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, _int64 *timestamps
      status = TreeCallHook(PutData,info_ptr,nid);
      if (status && !(status & 1))
        return status;
-     if (info_ptr->reopen)
-       TreeCloseFiles(info_ptr);
      TreeGetViewDate(&saved_viewdate);
      status = TreeGetNciLw(info_ptr, nidx, &local_nci);
      if (!(status & 1))
@@ -1776,8 +1758,6 @@ old array is same size.
        status = TreeCallHook(PutData,info_ptr,nid);
        if (status && !(status & 1))
 	 return status;
-       if (info_ptr->reopen)
-	 TreeCloseFiles(info_ptr);
        TreeGetViewDate(&saved_viewdate);
        status = TreeGetNciLw(info_ptr, nidx, &local_nci);
        if (!(status & 1))
@@ -2149,8 +2129,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
     _int64    saved_viewdate;
     EXTENDED_ATTRIBUTES attributes;
     SEGMENT_HEADER segment_header;
-    if (info_ptr->reopen)
-      TreeCloseFiles(info_ptr);
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciW(info_ptr, nidx, &local_nci,0);
     if (!(status & 1))

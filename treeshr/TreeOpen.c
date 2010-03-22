@@ -1178,7 +1178,7 @@ void _TreeRestoreContext(void **dbid, void *ctxin)
   }
 }
 
-int TreeCloseFiles(TREE_INFO *info)
+int TreeCloseFiles(TREE_INFO *info, int nci, int data)
 {
   int       status;
   status = TreeNORMAL;
@@ -1186,9 +1186,8 @@ int TreeCloseFiles(TREE_INFO *info)
   {
     if (info->blockid == TreeBLOCKID)
     {
-      info->reopen = 0;
       TreeWait(info);
-      if (info->data_file)
+      if (data && info->data_file)
       {
         MdsFree1Dx(info->data_file->data, NULL);
         if (info->data_file->get)    MDS_IO_CLOSE(info->data_file->get);
@@ -1196,7 +1195,7 @@ int TreeCloseFiles(TREE_INFO *info)
         free(info->data_file);
         info->data_file = NULL;
       }
-      if (info->nci_file)
+      if (nci && info->nci_file)
       {
         if (info->nci_file->get)    MDS_IO_CLOSE(info->nci_file->get);
         if (info->nci_file->put)    MDS_IO_CLOSE(info->nci_file->put);

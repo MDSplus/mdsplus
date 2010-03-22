@@ -70,8 +70,6 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
     status = TreeCallHook(GetNci,info,nid_in);
     if (status && !(status & 1))
       return 0;
-    if (info->reopen)
-      TreeCloseFiles(info);
     if (!info->data_file)
       status = TreeOpenDatafileR(info);
     else
@@ -388,7 +386,7 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
     while (status & 1 && deleted) {
       status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)nci_bytes,42,&deleted) == 42) ? TreeSUCCESS : TreeFAILURE;
       if (status & 1 && deleted) {
-	TreeCloseFiles(info);
+	TreeCloseFiles(info,0,1);
 	status = TreeOpenDatafileR(info);
       }
     }
