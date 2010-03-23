@@ -1178,33 +1178,40 @@ void _TreeRestoreContext(void **dbid, void *ctxin)
   }
 }
 
-int TreeCloseFiles(TREE_INFO *info, int nci, int data)
-{
-  int       status;
-  status = TreeNORMAL;
-  if (info)
-  {
-    if (info->blockid == TreeBLOCKID)
-    {
-      TreeWait(info);
-      if (data && info->data_file)
-      {
-        MdsFree1Dx(info->data_file->data, NULL);
-        if (info->data_file->get)    MDS_IO_CLOSE(info->data_file->get);
-        if (info->data_file->put)    MDS_IO_CLOSE(info->data_file->put);
-        free(info->data_file);
-        info->data_file = NULL;
-      }
-      if (nci && info->nci_file)
-      {
-        if (info->nci_file->get)    MDS_IO_CLOSE(info->nci_file->get);
-        if (info->nci_file->put)    MDS_IO_CLOSE(info->nci_file->put);
-        free(info->nci_file);
-        info->nci_file = NULL;
-      }
-    }
-    else
-      status = TreeINVTREE;
+int TreeReopenDatafile(struct tree_info *info) {
+  int status=1,reopen_get,reopen_put,stv;
+  if (info->data_file) {
+    reopen_get=info->data_file->get > 0;
+    reopen_put=info->data_file->put > 0;
+    if (reopen_get)
+      MDS_IO_CLOSE(info->data_file->get);
+    if (reopen_put)
+      MDS_IO_CLOSE(info->data_file->put);
+    free(info->data_file);
+    info->data_file=0;
+    if (reopen_get)
+      status = TreeOpenDatafileR(info);
+    if (status & 1 && reopen_put)
+      status = TreeOpenDatafileW(info,&stv,0);
+  }
+  return status;
+}
+
+int TreeReopenNci(struct tree_info *info) {
+  int status=1,reopen_get,reopen_put;
+  if (info->nci_file) {
+    reopen_get=info->nci_file->get > 0;
+    reopen_put=info->nci_file->put > 0;
+    if (reopen_get)
+      MDS_IO_CLOSE(info->nci_file->get);
+    if (reopen_put)
+      MDS_IO_CLOSE(info->nci_file->put);
+    free(info->nci_file);
+    info->nci_file=0;
+    if (reopen_get)
+      status = TreeOpenNciR(info);
+    if (status & 1 && reopen_put)
+      status = TreeOpenNciW(info,0);
   }
   return status;
 }

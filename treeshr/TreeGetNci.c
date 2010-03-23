@@ -45,7 +45,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static char *getPath(PINO_DATABASE *dblist, NODE *node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
-static int OpenNciR(TREE_INFO *info);
+int TreeOpenNciR(TREE_INFO *info);
 
 extern void *DBID;
 
@@ -686,7 +686,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 
 	if ((info->edit == 0) || (node_num < info->edit->first_in_mem))	{
 	  if (info->nci_file == NULL)
-	    status = OpenNciR(info);
+	    status = TreeOpenNciR(info);
 	  if (status & 1) {
 	    char nci_bytes[42];
 	    unsigned int n_version=0;
@@ -695,10 +695,8 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	    while (status & 1 && deleted) {
 	      status = MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes, sizeof(nci_bytes),&deleted) ==
 		sizeof(nci_bytes) ? TreeSUCCESS : TreeFAILURE;
-	      if (status & 1 && deleted) {
-		TreeCloseFiles(info,1,0);
-		status = OpenNciR(info);
-	      }
+	      if (status & 1 && deleted)
+                status = TreeReopenNci(info);
 	    }
 	    if (status == TreeSUCCESS)
 	      TreeSerializeNciIn(nci_bytes,nci);
@@ -744,7 +742,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	return status;
 }
 
-static int OpenNciR(TREE_INFO *info)
+int TreeOpenNciR(TREE_INFO *info)
 {
 	int       status;
 	/****************************************************

@@ -647,6 +647,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	SEGMENT_INFO *sinfo=&index.segment[idx % SEGMENTS_PER_INDEX];
         if (sinfo->data_offset > -1) {
 	  int i;
+          int deleted=1;
 	  DESCRIPTOR_A(dim2,8,DTYPE_Q,0,0);
 	  DESCRIPTOR_A_COEFF(ans,0,0,0,8,0);
 	  ans.dtype=segment_header.dtype;
@@ -657,7 +658,11 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	  ans.arsize=ans.length;
 	  for (i=0;i<ans.dimct; i++) ans.arsize *= ans.m[i];
 	  ans.pointer = malloc(ans.arsize);
-          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,0) == (ssize_t)ans.arsize) ? TreeSUCCESS : TreeFAILURE;
+          while (status & 1 && deleted) {
+            status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->data_offset,ans.pointer,ans.arsize,&deleted) == (ssize_t)ans.arsize) ? TreeSUCCESS : TreeFAILURE;
+            if (status & 1 && deleted) 
+              status= TreeReopenDatafile(info_ptr);
+	  }
 	  if (status & 1) {
 #ifdef WORDS_BIGENDIAN
             char *bptr;
@@ -680,9 +685,14 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 #endif
 	    if (sinfo->dimension_offset != -1 && sinfo->dimension_length==0) {
 	      _int64 *tp;
+              int deleted=1;
 	      dim2.arsize=sinfo->rows * sizeof(_int64);
 	      dim2.pointer=malloc(dim2.arsize);
-	      status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,0) == (ssize_t)dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
+              while (status & 1 && deleted) {
+	        status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,dim2.pointer,dim2.arsize,&deleted) == (ssize_t)dim2.arsize) ? TreeSUCCESS : TreeFAILURE;
+                if (status & 1 && deleted) 
+                  status = TreeReopenDatafile(info_ptr);
+              }
 #ifdef WORDS_BIGENDIAN
 	      for (i=0,bptr=dim2.pointer;i<dim2.arsize/dim2.length;i++,bptr+=sizeof(_int64))
 		*(_int64 *)bptr = swapquad(bptr);
@@ -777,7 +787,12 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
 	  int length =sizeof(_int64) * sinfo->rows;
 	  char *buffer=malloc(length),*bptr;
 	  _int64 timestamp;
-          status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,buffer,length,0) == length) ? TreeSUCCESS : TreeFAILURE;
+          int deleted=1;
+          while (status & 1 && deleted) {
+            status = (MDS_IO_READ_X(info_ptr->data_file->get,sinfo->dimension_offset,buffer,length,&deleted) == length) ? TreeSUCCESS : TreeFAILURE;
+            if (status & 1 && deleted) 
+              status = TreeReopenDatafile(info_ptr);
+          }
 	  if (status & 1) {
 	    q_d.pointer=(char *)&timestamp;
 	    timestamp=swapquad(buffer);
@@ -1196,8 +1211,13 @@ int TreePutDsc(TREE_INFO *info, int nid_in, struct descriptor *dsc, _int64 *offs
 
 int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc) {
   char *buffer = malloc(length);
-  int status;
-  status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,length,0) == length) ? TreeSUCCESS : TreeFAILURE;
+  int status=1;
+  int deleted=1;
+  while (status & 1 && deleted) {
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,length,&deleted) == length) ? TreeSUCCESS : TreeFAILURE;
+    if (status & 1 && deleted) 
+      status = TreeReopenDatafile(info);
+  }
   if (status & 1) {
     status = MdsSerializeDscIn(buffer,dsc);
   }
@@ -1417,7 +1437,13 @@ static int GetSegmentHeader(TREE_INFO *info, _int64 offset,SEGMENT_HEADER *hdr) 
   int i;
   unsigned char buffer[2*sizeof(char)+1*sizeof(short)+10*sizeof(int)+3*sizeof(_int64)],*bptr;
   if (offset > -1) {
-    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+    int deleted=1;
+    status=1;
+    while (status & 1 && deleted) {
+      status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),&deleted) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+      if (status & 1 && deleted) 
+        status = TreeReopenDatafile(info);
+    }
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1440,7 +1466,13 @@ static int GetSegmentIndex(TREE_INFO *info, _int64 offset, SEGMENT_INDEX *idx) {
   int i;
   unsigned char buffer[sizeof(_int64)+sizeof(int)+SEGMENTS_PER_INDEX*(6*sizeof(_int64)+4*sizeof(int))],*bptr;
   if (offset > -1) {
-    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+    int deleted=1;
+    status=1;
+    while (status & 1 && deleted) {
+      status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),&deleted) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+      if (status & 1 && deleted) 
+	status = TreeReopenDatafile(info);
+    }
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1467,7 +1499,13 @@ int TreeGetExtendedAttributes(TREE_INFO *info, _int64 offset, EXTENDED_ATTRIBUTE
   int i;
   unsigned char buffer[sizeof(_int64)+FACILITIES_PER_EA*(sizeof(_int64)+sizeof(int))],*bptr;
   if (offset > -1) {
-    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+    int deleted=1;
+    status=1;
+    while (status & 1 && deleted) {
+      status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),&deleted) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+      if (status & 1 && deleted) 
+	status = TreeReopenDatafile(info);
+    }
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1487,7 +1525,13 @@ static int GetNamedAttributesIndex(TREE_INFO *info, _int64 offset, NAMED_ATTRIBU
   int i;
   unsigned char buffer[sizeof(_int64)+NAMED_ATTRIBUTES_PER_INDEX*(sizeof(_int64)+sizeof(int)+NAMED_ATTRIBUTE_NAME_SIZE)],*bptr;
   if (offset > -1) {
-    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),0) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+    int deleted=1;
+    status=1;
+    while (status & 1 && deleted) {
+      status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,sizeof(buffer),&deleted) == sizeof(buffer)) ? TreeSUCCESS : TreeFAILURE;
+      if (status & 1 && deleted) 
+	status = TreeReopenDatafile(info);
+    } 
   }
   if (status == TreeSUCCESS) {
     bptr=buffer;
@@ -1905,7 +1949,12 @@ old array is same size.
    int status=1;
    if (offset1 != -1 && length >= 0) {
      char *data=malloc(length);
-     status = MDS_IO_READ_X(info1->data_file->get,offset1,data,length,0) == length;
+     int deleted=1;
+     while (status & 1 && deleted) {
+       status = MDS_IO_READ_X(info1->data_file->get,offset1,data,length,&deleted) == length;
+       if (status & 1 && deleted)
+         status = TreeReopenDatafile(info1);
+     }
      if (status) {
        *offset2 = MDS_IO_LSEEK(info2->data_file->put,0,SEEK_END);
        status = MDS_IO_WRITE(info2->data_file->put,data,length) == length;

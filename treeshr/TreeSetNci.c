@@ -248,7 +248,7 @@ int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci)
 	char nci_bytes[42];
 	status = TreeLockNci(info,0,node_num,&deleted);
 	if (status & 1 && deleted) {
-	  TreeCloseFiles(info,1,0);
+	  status = TreeReopenNci(info);
 	}
 	else {
 	  if (!(status & 1)) return status;

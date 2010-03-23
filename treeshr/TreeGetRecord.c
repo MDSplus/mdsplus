@@ -302,7 +302,12 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
     {
       RECORD_HEADER hdr;
       _int64 rfa_l = RfaToSeek(rfa);
-      status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)&hdr,12,0) == 12) ? TreeSUCCESS : TreeFAILURE;
+      int deleted=1;
+      while (status & 1 && deleted) {
+        status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)&hdr,12,&deleted) == 12) ? TreeSUCCESS : TreeFAILURE;
+        if (status & 1 && deleted)
+	  status = TreeReopenDatafile(info);
+      }
       if (status & 1) {
 	unsigned int partlen = min(swapshort((char *)&hdr.rlength)-10, buffer_space);
 	int nidx = swapint((char *)&hdr.node_number);
@@ -312,7 +317,12 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
 	  status = 0;
 	  break;
 	}
-	status = ((unsigned int)MDS_IO_READ_X(info->data_file->get,rfa_l+12,(void *)bptr,partlen,0) == partlen) ? TreeSUCCESS : TreeFAILURE;
+        deleted=1;
+        while (status & 1 && deleted) {
+	  status = ((unsigned int)MDS_IO_READ_X(info->data_file->get,rfa_l+12,(void *)bptr,partlen,&deleted) == partlen) ? TreeSUCCESS : TreeFAILURE;
+          if (status & 1 && deleted)
+	    status = TreeReopenDatafile(info);
+        }
 	if (status & 1) {
 	  bptr += partlen;
 	  buffer_space -= partlen;
@@ -327,7 +337,12 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
     if (flags & NciM_NON_VMS)
     {
       _int64 rfa_l = RfaToSeek(rfa);
-      status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)record,*buffer_size,0) == *buffer_size) ? TreeSUCCESS : TreeFAILURE;
+      int deleted=1;
+      while (status & 1 && deleted) {
+        status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)record,*buffer_size,&deleted) == *buffer_size) ? TreeSUCCESS : TreeFAILURE;
+        if (status & 1 && deleted) 
+	  status = TreeReopenDatafile(info);
+      }
       *retsize = *buffer_size;
     }
     else
@@ -338,8 +353,13 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
       unsigned int      bytes_remaining;
       unsigned int      partlen = (blen % (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
       _int64 rfa_l = RfaToSeek(rfa);
+      int deleted=1;
       rfa_l -= blen - (partlen ? partlen : (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
-      status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)buffer,blen,0) == blen) ? TreeSUCCESS : TreeFAILURE;
+      while (status & 1 && deleted) {
+        status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)buffer,blen,&deleted) == blen) ? TreeSUCCESS : TreeFAILURE;
+        if (status & 1 && deleted)
+          status = TreeReopenDatafile(info);
+      }
       *nodenum = swapint((char *)&((RECORD_HEADER *)buffer)->node_number);
       for (bptr_in = buffer, bptr = record + *buffer_size, bytes_remaining=*buffer_size; bytes_remaining;)
       {
@@ -385,10 +405,8 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
     rfa_l+=sizeof(RECORD_HEADER);
     while (status & 1 && deleted) {
       status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)nci_bytes,42,&deleted) == 42) ? TreeSUCCESS : TreeFAILURE;
-      if (status & 1 && deleted) {
-	TreeCloseFiles(info,0,1);
-	status = TreeOpenDatafileR(info);
-      }
+      if (status & 1 && deleted)
+        status = TreeReopenDatafile(info);
     }
     if (status & 1) {
       TreeSerializeNciIn(nci_bytes,v_nci);
