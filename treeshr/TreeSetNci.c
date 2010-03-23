@@ -707,6 +707,19 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   }
   return status;
 }
+#ifdef HAVE_WINDOWS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
+#ifdef HAVE_VXWORKS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
+
+
+
 STATIC_THREADSAFE pthread_mutex_t NCIMutex;
 STATIC_THREADSAFE int NCIMutex_initialized;
 
