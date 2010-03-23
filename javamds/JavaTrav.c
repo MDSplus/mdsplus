@@ -497,7 +497,6 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   nid = (*env)->GetIntField(env, jnid, nid_fid);
   conglomerate_nids = 0;
 
-
   status = TreeGetNci(nid, nci_list);
   if(!(status & 1))
    {
@@ -758,8 +757,8 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
 	  jclass cls = (*env)->GetObjectClass(env, jnid);
 	  jmethodID constr;
 	  jvalue args[1];
-	  static int num_nids_len, num_nids, nids_len;
-	  int *nids;
+	  static int num_nids_len, num_nids, nids_len = 0;
+	  int *nids = 0;
 
 	  struct nci_itm nci_list1[] = 
 	  {{4, NciNUMBER_OF_CHILDREN, &num_nids, &num_nids_len},

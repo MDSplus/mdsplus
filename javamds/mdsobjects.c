@@ -1859,9 +1859,13 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
 JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
   (JNIEnv *env, jclass cls, jint ctx1, jint ctx2)
 {
-	int status;
+	int status, size;
 	void *ctx = getCtx(ctx1, ctx2);
-	return _TreeGetDatafileSize(ctx);
+
+	printf("GET DATAFILE SIZE\n");
+	size =  _TreeGetDatafileSize(ctx);
+	printf("SIZE: %d\n", size);
+	return size;
 }
 
 
@@ -2353,7 +2357,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
 	dataD = ObjectToDescrip(env, jdata);
 
-	printDecompiled(dataD);
+	//printDecompiled(dataD);
 
 	if(isCached)
 		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
