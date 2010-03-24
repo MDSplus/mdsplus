@@ -1859,12 +1859,11 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
 JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
   (JNIEnv *env, jclass cls, jint ctx1, jint ctx2)
 {
-	int status, size;
+	int status;
+	_int64 size;
 	void *ctx = getCtx(ctx1, ctx2);
 
-	printf("GET DATAFILE SIZE\n");
 	size =  _TreeGetDatafileSize(ctx);
-	printf("SIZE: %d\n", size);
 	return size;
 }
 
