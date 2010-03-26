@@ -93,6 +93,9 @@ class DT216B(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                   'options':('no_write_shot',)})
+    parts.append({'path':':WAIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAIT',head))",
+                  'options':('no_write_shot',)})
     
     clock_edges=['rising', 'falling']
     trigger_edges = clock_edges
@@ -334,4 +337,13 @@ class DT216B(Device):
         """ Help method to describe the methods and nodes of the DT216B module type """
         help(DT216B)
         return 1
+
+    HELP=help
+
+    def wait(self, arg):
+	""" Wait method for dt216b module  - not yet impimented"""
+	print "Wait method not yet implimented"
+	return 1
+
+    WAIT=wait
 
