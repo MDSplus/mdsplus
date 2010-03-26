@@ -1,5 +1,6 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 from Dt200WriteMaster import Dt200WriteMaster
+from tempfile import *
 import acq200
 import transport
 
@@ -27,10 +28,11 @@ class DT196B(Device):
             :wire - string specifying the source of this signal { 'fpga','mezz','rio','pxi','lemo', 'none }
             :bus  - string specifying the destination of this signal { 'fpga','rio','pxi', 'none }
     :ACTIVE_CHANS - number of active channels {32, 64, 96}
-     INT_CLOCK - stored by module (representation of internal clock       
+     INT_CLOCK - stored by module (representation of internal clock
+     MASTER    - points to INT_CLOCK node - needed a node to fill into clock_src       
      TRIG_SRC - reference to DIn line used for trigger (DI3)
      TRIG_EDGE - string {rising, falling} 
-     CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK
+     CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK, or MASTER
      CLOCK_DIV - NOT CURRENTLY IMPLIMENTED 
      CLOCK_EDGE -  string {rising, falling}
      CLOCK_FREQ - frequency for internal clock
@@ -62,6 +64,7 @@ class DT196B(Device):
     parts2=[
         {'path':':ACTIVE_CHANS','type':'numeric','value':96,'options':('no_write_shot',)},        
         {'path':':INT_CLOCK','type':'axis','options':('no_write_model','write_once')},       
+        {'path':':MASTER','type':'axis','valueExpr':'head.int_clock', 'options':('no_write_model','write_once')},
         {'path':':TRIG_SRC','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
         {'path':':TRIG_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
         {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
@@ -90,6 +93,9 @@ class DT196B(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                   'options':('no_write_shot',)})
+    parts.append({'path':':WAIT_ACTION','type':'action',
+                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAIT',head))",
+                  'options':('no_write_shot',)})
     
     clock_edges=['rising', 'falling']
     trigger_edges = clock_edges
@@ -102,6 +108,7 @@ class DT196B(Device):
                    ]
     clock_sources = trig_sources
     clock_sources.append('INT_CLOCK')
+    clock_sources.append('MASTER')
     
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
     
@@ -125,9 +132,9 @@ class DT196B(Device):
         try:
             boardip=self.check( 'str(self.boardip.record)', "Must specify a board ipaddress")
             UUT = acq200.Acq200(transport.factory(boardip))
-            active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32, 64, 96)")
+            active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
             if active_chans not in (32,64,96) :
-                print "active chans must be in (2, 4,8, 16 )"
+                print "active chans must be in (32, 64, 96 )"
                 active_chans = 96
             trig_src=self.check('self.trig_src.record.getOriginalPartName().getString()[1:]', "Trig source must be a string")
             print "trig_src is %s\n" % trig_src
@@ -139,10 +146,10 @@ class DT196B(Device):
                 print "clock_src is %s\n" % clock_src
             if not clock_src in self.clock_sources:
                 raise Exception, "Clock_src must be in %s" % str(self.clock_sources)
-            if (clock_src == 'INT_CLOCK'):
+            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER':
                 clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
             else:
-                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")                
+                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for external clock")                
                 clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
             pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
             post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
@@ -168,12 +175,15 @@ class DT196B(Device):
                 UUT.set_route(line, 'in %s out %s' % (wire, bus,))
             UUT.setChannelCount(active_chans)
 
-            if clock_src == 'INT_CLOCK' :
+            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
+		if clock_src == 'MASTER' :
+		    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
 		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
             UUT.setPrePostMode(pre_trig, post_trig)
-            UUT.set_arm()
+            mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
+            UUT.set_arm() 
             return  1
 
         except Exception,e:
@@ -183,10 +193,10 @@ class DT196B(Device):
     INIT=init
         
     def getVins(self, UUT):
-        vins1 = UUT.uut.acq2sh('get.vin 1:32')
-        vins2 = UUT.uut.acq2sh('get.vin 33:64')
-        vins3 = UUT.uut.acq2sh('get.vin 65:96')
-        ans = eval('makeArray([%s, %s, %s])' % (vins1, vins2, vins3,))
+        vin1 = UUT.uut.acq2sh('get.vin 1:32')
+        vin2 = UUT.uut.acq2sh('get.vin 33:64')
+        vin3 = UUT.uut.acq2sh('get.vin 65:96')
+        ans = eval('makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
         return ans
 
         
@@ -224,14 +234,8 @@ class DT196B(Device):
 
             complete = 0
             tries = 0
-            while not complete and tries < 60 :
-                if UUT.get_state().split()[-1] == "ST_POSTPROCESS" :
-                    tries +=1
-                    sleep(1)
-                else:
-                    complete=1
-            if UUT.get_state().split()[-1] != "ST_STOP" :
-                raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
+	    if UUT.get_state().split()[-1] == "ST_RUN" :
+		raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
             if debug:
                 print "about to get the vins\n"
             vins = self.getVins(UUT)
@@ -250,14 +254,19 @@ class DT196B(Device):
 
             clock = self.clock.record
             if debug:
-                print "about to ask it to mdsconnect"
-            UUT.uut.acq2sh("mdsConnect %s" % str(self.hostip.record))
-            if debug:
-                print "about to ask it to mdsopen"
-            UUT.uut.acq2sh('mdsOpen %s %d'  % (self.boardip.tree.name, self.boardip.tree.shot,))
-            for chan in range(96):
-                if debug:
-                    print "working on channel %d" % chan
+                print "about to start the script"
+
+            (fd,fname) = mkstemp('.sh')
+            f=open(fname, 'w')
+            f.write("#!/bin/sh\n")
+            f.write("touch /tmp/starting_%d\n" % self.boardip.tree.shot)
+	    f.write("acqcmd --until ST_STOP\n")
+            f.write("mdsConnect %s\n" %str(self.hostip.record))
+            cmd = "mdsValue \"job_start('%s', %d)\"" % (self.path, self.tree.shot)
+            cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
+	    f.write("%s\n"%( cmd,))
+            f.write("mdsOpen %s %d\n" % (self.boardip.tree.name, self.boardip.tree.shot,))
+            for chan in range(96) :
                 chan_node = eval('self.input_%2.2d' % (chan+1,))
                 chan_raw_node = eval('self.input_%2.2d_raw' % (chan+1,))
                 if chan_node.on :
@@ -278,11 +287,11 @@ class DT196B(Device):
                             inc = 1
                         if debug:
                             print "build the command"
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d\n" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
-                        UUT.uut.acq2sh(command)
+			f.write(command)
                         if inc > 1 :
                             clk=None
                             delta=None
@@ -306,7 +315,18 @@ class DT196B(Device):
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
-            UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
+	    f.write('mdsClose %s\n' % (self.boardip.tree.name,))
+            f.write("touch /tmp/finished_%d\n" % self.boardip.tree.shot)
+            cmd = "mdsValue \"job_finish('%s', %d)\"" % (self.path, self.tree.shot)
+            cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
+            f.write("%s\n"%( cmd,))
+	    f.write("rm $0\n")
+            f.close()
+            cmd = 'curl -s -T %s ftp://%s/%s' %(fname, boardip, 'post_shot.sh')
+            pipe = os.popen(cmd)
+            pipe.close()
+	    UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
+	    UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
         except Exception,e :
             print "Error storing DT196B Device\n%s" % ( str(e), )
             return 0
@@ -319,4 +339,13 @@ class DT196B(Device):
         """ Help method to describe the methods and nodes of the DT196B module type """
         help(DT196B)
         return 1
+
+    HELP=help
+
+    def wait(self, arg):
+	""" Wait method for dt196b module  - not yet impimented"""
+	print "Wait method not yet implimented"
+	return 1
+
+    WAIT=wait
 
