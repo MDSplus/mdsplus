@@ -55,8 +55,8 @@ install:
 @MAKEBINDIR@job_output : job_output
 	cp  job_output @MAKEBINDIR@job_output
 
-@MAKEBINDIR@job_queue : job_queue
-	cp  job_queue @MAKEBINDIR@job_queue
+@MAKEBINDIR@job_que : job_que
+	cp  job_que @MAKEBINDIR@job_que
 
 @MAKEBINDIR@job_start : job_start
 	cp  job_start @MAKEBINDIR@job_start
