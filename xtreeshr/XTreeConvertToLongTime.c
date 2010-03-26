@@ -41,8 +41,15 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
 	status = TdiFloat(&xd, &xd MDS_END_ARG);
 	if(!(status & 1))
 		return status;
-	
-	MdsFloatToTime(*(float *)xd.pointer->pointer, retTime);
+
+	if(xd.pointer->dtype == DTYPE_DOUBLE)
+		MdsFloatToTime(*(double *)xd.pointer->pointer, retTime);
+	else
+		MdsFloatToTime(*(float *)xd.pointer->pointer, retTime);
+
+//	MdsFloatToTime(*(float *)xd.pointer->pointer, retTime);
+
+
 	MdsFree1Dx(&xd, 0);
 	return status;
 }
