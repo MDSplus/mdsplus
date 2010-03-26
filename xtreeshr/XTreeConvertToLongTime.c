@@ -74,8 +74,10 @@ EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, _int64u *retTime)
 	status = TdiFloat(&xd, &xd MDS_END_ARG);
 	if(!(status & 1))
 		return status;
-	
-	MdsFloatToDelta(*(float *)xd.pointer->pointer, retTime);
+	if(xd.pointer->dtype == DTYPE_DOUBLE)
+		MdsFloatToDelta(*(double *)xd.pointer->pointer, retTime);
+	else
+		MdsFloatToDelta(*(float *)xd.pointer->pointer, retTime);
 	MdsFree1Dx(&xd, 0);
 	return status;
 }
