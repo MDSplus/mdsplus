@@ -1,5 +1,6 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
 from Dt200WriteMaster import Dt200WriteMaster
+from tempfile import *
 import acq200
 import transport
 
@@ -178,7 +179,8 @@ class DT216B(Device):
             else:
 		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
             UUT.setPrePostMode(pre_trig, post_trig)
-            UUT.set_arm()
+            mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
+            UUT.set_arm() 
             return  1
 
         except Exception,e:
@@ -227,14 +229,8 @@ class DT216B(Device):
 
             complete = 0
             tries = 0
-            while not complete and tries < 60 :
-                if UUT.get_state().split()[-1] == "ST_POSTPROCESS" :
-                    tries +=1
-                    sleep(1)
-                else:
-                    complete=1
-            if UUT.get_state().split()[-1] != "ST_STOP" :
-                raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
+	    if UUT.get_state().split()[-1] == "ST_RUN" :
+		raise Exception, "Device not Triggered \n device returned -%s-" % UUT.get_state().split()[-1]
             if debug:
                 print "about to get the vins\n"
             vins = self.getVins(UUT)
@@ -253,22 +249,19 @@ class DT216B(Device):
 
             clock = self.clock.record
             if debug:
-                print "about to ask it to mdsconnect"
-            status = UUT.uut.acq2sh("mdsConnect %s" % str(self.hostip.record))
-            if debug:
-                print "    ...returned %s" % status
-            if not status.startswith('MDS_SOCK') :
-		raise Exception("DT216B board mdsconnect error", str(self.hostip.record), status) 
-            if debug:
-                print "about to ask it to mdsopen"
-            status = UUT.uut.acq2sh('mdsOpen %s %d'  % (self.boardip.tree.name, self.boardip.tree.shot,))
-            if debug:
-                print "    ...returned %s" % status
-            if not status.startswith('OK') :
-                raise Exception("DT216B board mdsopen error %s %d"%(self.boardip.tree.name, self.boardip.tree.shot,), status)
-            for chan in range(16):
-                if debug:
-                    print "working on channel %d" % chan
+                print "about to start the script"
+
+            (fd,fname) = mkstemp('.sh')
+            f=open(fname, 'w')
+            f.write("#!/bin/sh\n")
+            f.write("touch /tmp/starting_%d\n" % self.boardip.tree.shot)
+	    f.write("acqcmd --until ST_STOP\n")
+            f.write("mdsConnect %s\n" %str(self.hostip.record))
+            cmd = "mdsValue \"job_start('%s', %d)\"" % (self.path, self.tree.shot)
+            cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
+	    f.write("%s\n"%( cmd,))
+            f.write("mdsOpen %s %d\n" % (self.boardip.tree.name, self.boardip.tree.shot,))
+            for chan in range(16) :
                 chan_node = eval('self.input_%2.2d' % (chan+1,))
                 chan_raw_node = eval('self.input_%2.2d_raw' % (chan+1,))
                 if chan_node.on :
@@ -289,16 +282,11 @@ class DT216B(Device):
                             inc = 1
                         if debug:
                             print "build the command"
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d\n" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
-                        status = UUT.uut.acq2sh(command)
-                        if debug:
-			    print "    ...returned %s" % status
-#                        if status.startswith('mdsPutChannel ERROR') :
-			if status != command :
-			    raise Exception('DT216B channel %d'%(chan+1), status)
+			f.write(command)
                         if inc > 1 :
                             clk=None
                             delta=None
@@ -322,7 +310,18 @@ class DT216B(Device):
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
                             chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
-            UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
+	    f.write('mdsClose %s\n' % (self.boardip.tree.name,))
+            f.write("touch /tmp/finished_%d\n" % self.boardip.tree.shot)
+            cmd = "mdsValue \"job_finish('%s', %d)\"" % (self.path, self.tree.shot)
+            cmd = cmd.replace('\\', '\\\\\\\\\\\\\\')
+            f.write("%s\n"%( cmd,))
+	    f.write("rm $0\n")
+            f.close()
+            cmd = 'curl -s -T %s ftp://%s/%s' %(fname, boardip, 'post_shot.sh')
+            pipe = os.popen(cmd)
+            pipe.close()
+	    UUT.uut.acq2sh("chmod a+rx /home/ftp/post_shot.sh")
+	    UUT.uut.acq2sh("/home/ftp/post_shot.sh&")
         except Exception,e :
             print "Error storing DT216B Device\n%s" % ( str(e), )
             return 0
