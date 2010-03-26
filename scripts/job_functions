@@ -1,0 +1,22 @@
+set_mds_logs()
+{
+  if [ "x$MDS_LOGS" = "x" ]; then
+    MDS_LOGS="/var/log/mdsplus";
+  fi
+}
+
+job_file_spec()
+{
+  set_mds_logs
+  FILE=$1
+  SHOT=$2
+  LOG="$MDS_LOGS/$FILE.$2.log"
+  echo $LOG
+}
+cumulative_log_spec()
+{
+  set_mds_logs
+  FILE=$1
+  LOG="$MDS_LOGS/$FILE.log"
+  echo $LOG
+}

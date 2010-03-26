@@ -1,0 +1,16 @@
+# file: /usr/local/mdsplus/bin/job_finish
+#
+# shell script to signal completion of async daq task.
+#
+# called by job_finish.fun
+#
+# param 1 = tree_path
+# param 2 = shot number
+#
+#
+. `dirname $0`/job_functions
+job_output $1 $2 "FINISHED >>>>>>>>> `date`"
+cumulative_name=$(cumulative_log_spec $1 $2)
+lock_name=$(job_file_spec $1 $2)
+cat $lock_name >> $cumulative_name
+rm -f $lock_name 

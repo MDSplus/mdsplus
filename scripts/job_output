@@ -1,0 +1,31 @@
+# file: /usr/local/mdsplus/bin/job_output
+#
+# shell script to spawn a batch job for automatic intershot analysis.
+#
+# called by job_que.fun
+#
+# procedure:
+#  build a log file name from the base file name
+#    (logs go to /var/mdsplus/log)
+#  insert a status line for this shot
+#  invoke the job with the shot number as $1 redirecting stdout and err
+#    to the end of the log file
+#  insert a done status line for this shot
+#
+# param 1 = tree_path
+# param 2 = shot number
+# param 3 = message to output
+#
+. `dirname $0`/job_functions
+#
+lock_file=$(job_file_spec $1 $2)
+if [ ! -e $lock_file ]
+then
+  job_que $1 $2
+fi
+if [ -e $lock_file ]
+then
+  echo $3 >> $lock_file
+else
+  echo "No lock file found/created"
+fi
