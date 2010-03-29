@@ -343,9 +343,16 @@ class DT196B(Device):
     HELP=help
 
     def wait(self, arg):
-	""" Wait method for dt196b module  - not yet impimented"""
-	print "Wait method not yet implimented"
-	return 1
+        """ 
+           Wait method for dt216b module  
+           wait for the device to complete
+           asynchronous data acquisition tasks
+        """
+
+        cmd = "job_wait %s %d" % (str(self.path).replace('\\','\\\\'), self.tree.shot,)
+        pipe = os.popen(cmd)
+        pipe.close()
+        return 1
 
     WAIT=wait
 
