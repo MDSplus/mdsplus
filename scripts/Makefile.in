@@ -15,7 +15,7 @@ SCRIPTS = \
 	@MAKEBINDIR@job_output \
 	@MAKEBINDIR@job_que \
 	@MAKEBINDIR@job_start \
-        @MAKEBINDIR@job_wait  
+	@MAKEBINDIR@job_wait  
 
 
 all : @MAKEBINDIR@ \
@@ -44,9 +44,6 @@ install:
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
 
-@MAKEBINDIR@remote_submit : remote_submit
-	cp remote_submit @MAKEBINDIR@remote_submit
-
 @MAKEBINDIR@job_finish : job_finish
 	cp  job_finish @MAKEBINDIR@job_finish
 
@@ -63,5 +60,5 @@ install:
 	cp  job_start @MAKEBINDIR@job_start
 
 @MAKEBINDIR@job_wait : job_wait
-        cp  job_wait @MAKEBINDIR@job_wait
+	cp  job_wait @MAKEBINDIR@job_wait
 
