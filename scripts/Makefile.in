@@ -14,7 +14,8 @@ SCRIPTS = \
 	@MAKEBINDIR@job_functions \
 	@MAKEBINDIR@job_output \
 	@MAKEBINDIR@job_que \
-	@MAKEBINDIR@job_start 
+	@MAKEBINDIR@job_start \
+        @MAKEBINDIR@job_wait  
 
 
 all : @MAKEBINDIR@ \
@@ -61,4 +62,6 @@ install:
 @MAKEBINDIR@job_start : job_start
 	cp  job_start @MAKEBINDIR@job_start
 
+@MAKEBINDIR@job_wait : job_wait
+        cp  job_wait @MAKEBINDIR@job_wait
 

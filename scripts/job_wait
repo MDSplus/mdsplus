@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# file: /usr/local/mdsplus/bin/job_wait
+#
+# shell script to signal existance of async daq task.
+#
+# called by job_que.fun
+#
+# param 1 = tree_path
+# param 2 = shot number
+# 
+#
+. `dirname $0`/job_functions
+#
+file=$(job_file_spec $1 $2)
+lockfile -1 $file
+rm -f $file
