@@ -154,7 +154,7 @@ install:
 	$(CC) -o $@ @CC_LDFLAGS@ $(SERVER_OBJECTS) $(LDFLAGS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr
 
 makefile-header:  
-	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
 
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
