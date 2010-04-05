@@ -56,7 +56,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
                 except Exception,e:
                     channel['path'].set_label('')
 
-    def applyPart(self,channel,field):
+    def applyPart(self,channel,field,idx):
         value=channel[field].get_text()
         if value == '':
             value=None
@@ -87,10 +87,10 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
                             state='off'
                         MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (channel['dataNode'].minpath,state,e))
                         raise
-                self.applyPart(channel,'startIdx')
-                self.applyPart(channel,'endIdx')
+                self.applyPart(channel,'startIdx',idx)
+                self.applyPart(channel,'endIdx',idx)
                 if self.incNidOffset > -1:
-                    self.applyPart(channel,'inc')
+                    self.applyPart(channel,'inc',idx)
 
     def adj_changed(self,adj):
         newstep=adj.upper/self.numChannels
