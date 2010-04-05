@@ -49,12 +49,21 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
                 except Exception,e:
                     MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
 
+    def xd_state_changed(self,button):
+        self.node_state.set_active(self.xdbox.on.get_active())
+
+    def node_state_changed(self,button):
+        self.xdbox.on.set_active(self.node_state.get_active())
+        
     def popupXd(self,button):
         if not hasattr(self,'xdbox'):
             self.xdbox=MDSplusXdBox(self.node)
             self.xdbox.putOnApply=False
+            self.xdbox.on.connect('toggled',self.xd_state_changed)
+            self.node_state.connect('toggled',self.node_state_changed)
         self.xdbox.node=self.getNode()
         self.xdbox.set_title(self.buttonLabel)
+        self.xdbox.on.set_active(self.node_state.get_active())
         self.xdbox.show()
 
     def setButtonLabel(self,button):
