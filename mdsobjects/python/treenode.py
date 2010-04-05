@@ -343,11 +343,16 @@ class TreeNode(Data):
         @type value: Data
         @rtype: Bool
         """
+        from _mdsshr import MdsCompareXd
         try:
             oldval=self.record
         except:
             oldval=None
-        return makeData(value).compare(oldval)
+        status = MdsCompareXd(makeData(oldval),makeData(value))
+        if status == 1:
+            return True
+        else:
+            return False
 
     def containsVersions(self):
         """Return true if this node contains data versions
