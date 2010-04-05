@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
 <!--Generated with glade3 3.2.2 on Tue Mar  9 14:19:27 2010 by jas@cmodws44.psfc.mit.edu-->
 <glade-interface>
-  <requires lib="MDSplus Widgets"/>
   <widget class="GtkWindow" id="dt196b">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="title" translatable="yes">DT196B Setup</property>
@@ -258,10 +257,14 @@ DI5</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="items" translatable="yes">8
 16
-32</property>
+32
+64
+96</property>
                 <property name="values" translatable="yes">8
 16
-32</property>
+32
+64
+96</property>
               </widget>
               <packing>
                 <property name="left_attach">1</property>
