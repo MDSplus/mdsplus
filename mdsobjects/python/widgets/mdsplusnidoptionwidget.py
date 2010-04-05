@@ -46,14 +46,17 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
         self.xdbox.expr.set_text(self.node_value())
 
     def button_press(self,cb,event):
-        if event.type == KEY_RELEASE:
-            #if self.get_model()[self.get_active()][0] == "Computed":
-            if self.get_active_text() == "Computed":
-                if not hasattr(self,'xdbox'):
-                    self.initXdbox()
-                self.get_toplevel().set_focus(None)
-                self.xdbox.set_modal(True)
-                self.xdbox.show_all()
+        if self.get_active_text() == "Computed":
+            if self.get_property('popup-shown'):
+                self.popup_xd=True
+            else:
+                if self.popup_xd:
+                    if not hasattr(self,'xdbox'):
+                        self.initXdbox()
+                    self.get_toplevel().set_focus(None)
+                    self.xdbox.set_modal(False)
+                    self.xdbox.show_all()
+                    self.popup_xd=False
 
     def node_value(self):
         value=self.record
@@ -113,9 +116,10 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
         value=self.node_value()
         if not hasattr(self,"has_been_initialized"):
             self.updateItems()
-            if not guibuilder:
-                self.connect('event',self.button_press)
             self.has_been_initialized=True
+            if not guibuilder:
+                self.popup_xd=True
+                self.connect('event',self.button_press)
         if hasattr(self,'values'):
             self.set_active(len(self.values))
             if not guibuilder:
@@ -132,7 +136,7 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
                         break
         if hasattr(self,'xdbox'):
             self.xdbox.expr.set_text(value)
-        
+
     def getValue(self):
         idx=self.get_active()
         if idx < len(self.values):
