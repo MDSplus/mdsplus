@@ -914,6 +914,11 @@ STATIC_CONSTANT unsigned char omits[] = {
 	case DTYPE_PROGRAM :
 	case DTYPE_ROUTINE :
         case DTYPE_L :
+	case DTYPE_LU :
+	case DTYPE_W :
+	case DTYPE_WU :
+	case DTYPE_B :
+	case DTYPE_BU :
 		MdsFree1Dx(out_ptr,NULL);
 		*out_ptr = tmp;
 		return status;
