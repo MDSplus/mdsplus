@@ -70,7 +70,7 @@ class DT196B(Device):
         {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
         {'path':':CLOCK_DIV','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':CLOCK_EDGE','type':'text','value':'rising','options':('no_write_shot',)},
-        {'path':':CLOCK_FREQ','type':'numeric','value':1000000,'options':('no_write_shot',)},
+        {'path':':CLOCK_FREQ','type':'numeric','value':100000,'options':('no_write_shot',)},
         {'path':':PRE_TRIG','type':'numeric','value':0,'options':('no_write_shot',)},
         {'path':':POST_TRIG','type':'numeric','value':128,'options':('no_write_shot',)},
         {'path':':SEGMENTS','type':'numeric','value':1,'options':('no_write_shot',)},
@@ -94,7 +94,7 @@ class DT196B(Device):
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
                   'options':('no_write_shot',)})
     parts.append({'path':':WAIT_ACTION','type':'action',
-                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAIT',head))",
+                  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',60,None),Method(None,'WAIT',head))",
                   'options':('no_write_shot',)})
     
     clock_edges=['rising', 'falling']

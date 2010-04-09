@@ -225,8 +225,8 @@ MASTER</property>
 &lt;DEVTOP&gt;:di3
 &lt;DEVTOP&gt;:di4
 &lt;DEVTOP&gt;:di5
-&lt;DEVTOP&gt;:INT_CLOCK
-&lt;DEVTOP&gt;:MASTER</property>
+&lt;DEVTOP&gt;:int_clock
+&lt;DEVTOP&gt;:master</property>
               </widget>
               <packing>
                 <property name="left_attach">1</property>
