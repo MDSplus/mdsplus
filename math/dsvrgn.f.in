@@ -4,9 +4,10 @@
 !-----------------------------------------------------------------------
 	Subroutine DSVRGN(n,ra,rb)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Call DSVRGP(n,ra,rb,0)
+	Real*8	ra(*)	!input, [n] vector to be sorted
+	Real*8	rb(*)	!output, [n] vector, may be ra sort without permutations
+        Logical perm /0/
+	Call DSVRGP(n,ra,rb,perm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine DSVRGP(n,ra,rb,perm,iperm)

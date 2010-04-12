@@ -6,7 +6,8 @@
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Call SVRGP(n,ra,rb,0)
+	Logical perm /0/
+	Call SVRGP(n,ra,rb,perm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine SVRGP(n,ra,rb,perm,iperm)
