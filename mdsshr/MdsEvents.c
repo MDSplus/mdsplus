@@ -1146,7 +1146,7 @@ STATIC_ROUTINE int sendMessage(char *evname, int key, int data_len, char *data)
     /* opening with O_NONBLOCK will error if its not already open, 
       so this should take care of zombie Msgs, I don't know how to deal with
       stalls. */
-    if (status == -1 && kill(msgKey,0) == -1 && errno == ESRCH) {
+    if (status == -1) {
       removeDeadMsg(key);
       printf("Removed dead message pipe %d, error %d\n", key, errno);
       return 0;
@@ -1242,8 +1242,8 @@ STATIC_ROUTINE void releaseMessages()
     /* I think it is true that when msgId is set so is msgKey */
     close(msgId);
     setKeyPath(keypath,msgKey);
-    if (kill(msgKey,0) == -1 && errno == ESRCH)
-      unlink(keypath);
+    /* if (kill(msgKey,0) == -1 && errno == ESRCH) */
+    unlink(keypath);
 
 #else
     pthread_join(local_thread, &dummy);
