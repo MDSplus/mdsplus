@@ -5,6 +5,7 @@ service mdsip
 {
         socket_type     = stream
         instances       = UNLIMITED
+        per_source      = UNLIMITED
         cps             = 1000 5
 	wait            = no
         user            = root

@@ -7,6 +7,7 @@ service mdsip
         wait            = no
         cps             = 1000 5
         instances       = UNLIMITED
+        per_source      = UNLIMITED
         user            = root
         server          = /usr/local/mdsplus/bin/mdsipd
         server_args     = mdsip /var/log/mdsplus/mdsipd
