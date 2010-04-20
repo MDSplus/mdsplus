@@ -258,7 +258,8 @@ unsigned char	omits[] = {DTYPE_PATH,0};
         if (reset_ctx)
         {
           while(TreeClose(0,0) & 1);
-	  TreeSwitchDbid(ctx);
+	  TreeFreeDbid(TreeSwitchDbid(ctx));
+          
         }
 	return status;
 }
