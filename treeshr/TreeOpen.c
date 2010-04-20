@@ -1380,6 +1380,15 @@ void *TreeSwitchDbid(void *dbid)
   return old_dbid;
 }
 
+void TreeFreeDbid(void *dbid) {
+  PINO_DATABASE *db=(PINO_DATABASE *)dbid;
+  if (db) {
+    if (db->next) 
+      TreeFreeDbid(db->next);
+    free(db);
+  }
+}
+
 struct descriptor *TreeFileName(char *tree, int shot)
 {
   static struct descriptor ans_dsc={0, DTYPE_T, CLASS_D, 0};
