@@ -6,7 +6,7 @@
 	Integer	n	!input, number of elements in array
 	Real*8	ra(*)	!input, [n] vector to be sorted
 	Real*8	rb(*)	!output, [n] vector, may be ra sort without permutations
-        Logical perm /0/
+        Logical perm /.false./
 	Call DSVRGP(n,ra,rb,perm)
 	End
 !-----------------------------------------------------------------------
