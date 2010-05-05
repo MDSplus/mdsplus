@@ -8782,10 +8782,17 @@ _ACEOF
 
 fi
 
-echo "$as_me:$LINENO: checking for SYBASE open/client" >&5
-echo $ECHO_N "checking for SYBASE open/client... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking for SYBASE open/client or freetds" >&5
+echo $ECHO_N "checking for SYBASE open/client or freetds... $ECHO_C" >&6
 : ${SYBASE=/usr/local/sybase}
-if test -r "$SYBASE/lib${SYB64}/libsybdb.a"
+if test -r "/usr/lib${SYB64}/libsybdb.so"
+then
+        SYBASE_INC="-DSYBASE"
+        SYBASE_LIB="-lsybdb"
+        SYBASE="SYBASE"
+        echo "$as_me:$LINENO: result: have freetds" >&5
+echo "${ECHO_T}have freetds" >&6
+elif test -r "$SYBASE/lib${SYB64}/libsybdb.a"
 then
         SYBASE_INC="-I$SYBASE/include -DSYBASE"
         SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
