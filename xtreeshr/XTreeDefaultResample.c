@@ -602,7 +602,9 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
 	DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
 
-	if(inSignalD->dimensions[0]->class == CLASS_R && inSignalD->dimensions[0]->dtype == DTYPE_RANGE && 
+//Removed Range management due to the inaccurate reconstruction of TDISHR
+
+/*	if(inSignalD->dimensions[0]->class == CLASS_R && inSignalD->dimensions[0]->dtype == DTYPE_RANGE && 
 		((struct descriptor_range *)inSignalD->dimensions[0])->begin && 
 		((struct descriptor_range *)inSignalD->dimensions[0])->ending && 
 		((struct descriptor_range *)inSignalD->dimensions[0])->deltaval)
@@ -611,7 +613,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		return rangeResample(startD, endD, deltaD, inSignalD->data, (struct descriptor_range *)inSignalD->dimensions[0], 
 			dataD->dtype, mode, outSignalXd); 
 	}
-
+*/
 	if(startD)
 	{
 		status = XTreeConvertToLongTime(startD, &start64);
