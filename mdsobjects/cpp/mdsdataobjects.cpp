@@ -448,7 +448,7 @@ EXPORT	Data *MDSplus::compile(char *expr, ...)
 		return res;
 
 	}
-EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
+/*EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 	{
 		int nArgs = 0;
 		int i;
@@ -472,6 +472,7 @@ EXPORT	Data *MDSplus::compile(char *expr, Tree *tree, ...)
 			throw new MdsException(status);
 		return res;
 	}
+	*/
 EXPORT	Data *MDSplus::execute(char *expr, Tree *tree, ...)
 	{
 		int nArgs = 0, i;

@@ -1,4 +1,4 @@
-SHELL=/bin/sh
+lsSHELL=/bin/sh
 CC=@CC@
 LD=g++
 top_srcdir=@top_srcdir@
@@ -12,7 +12,7 @@ LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lCacheShr @LIBS@ @SRBLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
-	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp
 	
 SOURCES = mdsdata.c mdstree.c
 

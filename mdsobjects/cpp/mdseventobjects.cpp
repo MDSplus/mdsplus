@@ -28,7 +28,6 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 	ev->eventBufSize = len;
 	ev->eventBuf = new char[len];
 	memcpy(ev->eventBuf, buf, len);
-	ev->eventData = deserialize(buf);
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
 }
@@ -45,6 +44,14 @@ void Event::disconnectFromEvents()
 {
 	MDSUdpEventCan(eventId);
 }
+
+Data *Event::getData()
+{
+    return deserialize(eventBuf);
+
+}
+
+
 void REvent::connectToEvents()
 {
 	reventId = MdsEventAddListener(eventName,  reventAst, this);
