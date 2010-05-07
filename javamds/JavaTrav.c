@@ -1041,6 +1041,7 @@ static int doAction(int nid)
 {
 	extern int TdiEvaluate();
 	int status;
+	int retStatus = 0;
 	EMPTYXD(xd);
 	EMPTYXD(xd1);
 	struct descriptor_program *program_d_ptr;
@@ -1053,6 +1054,7 @@ static int doAction(int nid)
 	struct descriptor expr_d = {0, DTYPE_T, CLASS_S, 0};
 	int method_nid, i;
 	struct descriptor nid_d = {sizeof(int), DTYPE_NID, CLASS_S, 0};
+	struct descriptor retStatus_d = {sizeof(int), DTYPE_L, CLASS_S, (char *)&retStatus};
 	char type = DTYPE_L;
 	DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
 	struct descriptor *decArgs;
@@ -1132,7 +1134,9 @@ static int doAction(int nid)
 			break;
 		}
 		if(method_d_ptr->object->dtype == DTYPE_NID)
-			status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method MDS_END_ARG);
+		{
+			status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+		}
 		else if(method_d_ptr->object->dtype == DTYPE_PATH)
 		{
 			path = malloc(method_d_ptr->object->length + 1);
@@ -1140,7 +1144,7 @@ static int doAction(int nid)
 			path[method_d_ptr->object->length] = 0;
 			status = TreeFindNode(path, &method_nid);
 			free(path);
-			if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method MDS_END_ARG);
+			if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method, &retStatus_d MDS_END_ARG);
 		} else status = 0;
 		break;
 		
