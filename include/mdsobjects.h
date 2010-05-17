@@ -2212,7 +2212,6 @@ protected:
 		virtual void disconnectFromEvents();
 	public:
 		char *eventName;
-		Data *eventData;
 		char *eventBuf;
 		int eventBufSize;
 		int eventId;
@@ -2226,19 +2225,14 @@ protected:
 			*size = eventBufSize;
 			return eventBuf;
 		}
-		Data *getData()
-		{
-			if(eventData)
-				eventData->refCount++;
-			return eventData;
-		}
 		Uint64 *getTime()
 		{
 			return new Uint64(eventTime);
 		}
 		char *getName() { return eventName;}
-		static void setEvent(char *evName, Data *data);
+	    Data *getData();
 		static void setEventRaw(char *evName, int bufLen, char *buf);
+		static void setEvent(char *evName, Data *evData);
 	};
 
 
