@@ -63,7 +63,6 @@ void REvent::disconnectFromEvents()
 
 Event::Event(char *evName)
 {
-	eventData = 0;
 	eventBufSize = 0;
 	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
@@ -73,7 +72,6 @@ Event::Event(char *evName)
 }
 REvent::REvent(char *evName)
 {
-	eventData = 0;
 	eventBufSize = 0;
 	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
@@ -85,16 +83,11 @@ REvent::REvent(char *evName)
 
 Event::~Event()
 {
-	if(eventData)
-		deleteData(eventData);
 	delete [] eventName;
 	if(eventId != -1)
 		disconnectFromEvents();
 		
 }
-
-
-
 
 
 void Event::setEvent(char *evName, Data *evData)
