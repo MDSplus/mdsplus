@@ -46,6 +46,7 @@ public class IPControlSetup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
+        deviceChoice1 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
@@ -138,6 +139,15 @@ public class IPControlSetup extends DeviceSetup {
         deviceField1.setTextOnly(true);
         jPanel2.add(deviceField1);
 
+        deviceChoice1.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2});
+        deviceChoice1.setChoiceItems(new String[] {"OFF", "TOKAMAK", "RFP"});
+        deviceChoice1.setConvert(true);
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Type");
+        deviceChoice1.setOffsetNid(24);
+        deviceChoice1.setUpdateIdentifier("");
+        jPanel2.add(deviceChoice1);
+
         jPanel1.add(jPanel2);
 
         deviceField2.setIdentifier("");
@@ -166,6 +176,7 @@ public class IPControlSetup extends DeviceSetup {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
+    private DeviceChoice deviceChoice1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
