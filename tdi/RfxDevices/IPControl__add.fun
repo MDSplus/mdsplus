@@ -1,6 +1,6 @@
 public fun IPControl__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'IPControl',24, _nidout);
+    DevAddStart(_path, 'IPControl',25, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':TSTART', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':TEND', 'NUMERIC', *, *, _nid);
@@ -26,6 +26,7 @@ public fun IPControl__add(in _path, out _nidout)
     DevAddNode(_cn // ':MAX_X', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':MIN_Y', 'NUMERIC', *, *, _nid);
     DevAddNode(_cn // ':MAX_Y', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':TYPE', 'NUMERIC', *, *, _nid);
     DevAddEnd();
 }
 

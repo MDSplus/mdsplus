@@ -12,6 +12,7 @@ class DIO4(Device):
       {'path':':REC_TIMES', 'type':'numeric'},
       {'path':':SYNCH', 'type':'text', 'value':'NO'},
       {'path':':SYNCH_EVENT', 'type':'text'}]
+    print 'CACCACCCA'	
     for i in range(8):
       parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
       parts.append({'path':'.CHANNEL_%d:FUNCTION'%(i+1), 'type':'text', 'value':'CLOCK'})
@@ -49,7 +50,7 @@ class DIO4(Device):
       try:
       	boardId = self.board_id.data()
       except: 
-      	Data.excute('DevLogErr', [getNid(), 'Invalid Board ID specification'])
+      	Data.excute('DevLogErr($1,$2)', getNid(), 'Invalid Board ID specification')
 	return 0
 	
       
@@ -200,7 +201,7 @@ class DIO4(Device):
 	      		cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
 	      if status == 0:
 	        Data.execute('MdsDisconnect()')
-      	        Data.excute('DevLogErr', [getNid(), 'Cannot execute remote HW pulse setup. See CPCI console for details'])
+      	        Data.execute('DevLogErr($1, $2)', getNid(), 'Cannot execute remote HW pulse setup. See CPCI console for details')
 	        return 0
             else:
 	      print 'before'
