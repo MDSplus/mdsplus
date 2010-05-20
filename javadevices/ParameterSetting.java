@@ -4160,7 +4160,7 @@ System.out.println("Print Done");
     }
     float getRTransfer()
     {
-        NidData unitsNid = new NidData(nids[18].getInt() + 20);
+        NidData unitsNid = new NidData(nids[19].getInt() + 20);
         try {
             Data configData = rfx.evaluateData(unitsNid, 0);
 
