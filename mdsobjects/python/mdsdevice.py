@@ -1,6 +1,6 @@
 from treenode import TreeNode
 from compound import *
-from _treeshr import TreeStartConglomerate
+from _treeshr import TreeStartConglomerate, TreeEndConglomerate
 from mdsarray import makeArray
 
 class Device(TreeNode):
@@ -194,6 +194,7 @@ class Device(TreeNode):
             if 'options' in elt:
                 for option in elt['options']:
                     exec 'node.'+option+'=True'
+        TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
 
