@@ -98,7 +98,8 @@ __TreeGetSegmentLimits=__TreeShr._TreeGetSegmentLimits
 __TreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __TreeStartConglomerate=__TreeShr._TreeStartConglomerate
 __TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int]
-
+__TreeEndConglomerate=__TreeShr._TreeEndConglomerate
+__TreeEndConglomerate.argtypes=[_C.c_void_p]
 
 __RTreeShr=_load_library('CacheShr')
 __RTreeOpen=__RTreeShr._RTreeOpen
@@ -268,6 +269,17 @@ def TreeStartConglomerate(tree,num):
     try:
         tree.lock()
         status=__TreeStartConglomerate(tree.ctx,num)
+    finally:
+        tree.unlock()
+    if not (status & 1):
+        raise TreeException,MdsGetMsg(status)
+    return None
+
+def TreeEndConglomerate(tree):
+    """End a conglomerate in a tree."""
+    try:
+        tree.lock()
+        status=__TreeEndConglomerate(tree.ctx)
     finally:
         tree.unlock()
     if not (status & 1):
