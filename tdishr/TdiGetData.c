@@ -582,21 +582,29 @@ STATIC_CONSTANT unsigned char noomits[] = {0};
 
 static int use_get_record_fun=1;
 int TdiGetRecord(int nid, struct descriptor *out) {
-  static DESCRIPTOR(exp,"_status=TdiGetRecord($,_out),_status");
-  static DESCRIPTOR(out_exp,"_out");
-  DESCRIPTOR_LONG(nid_d,&nid);
-  int stat;
-  DESCRIPTOR_LONG(stat_d,&stat);
   int status;
   static int use_fun=1;
   if (use_get_record_fun) {
-    status = TdiExecute(&exp,&nid_d,&stat_d MDS_END_ARG);
+    int stat;
+    short opcode=162; /* external function */
+    DESCRIPTOR_LONG(stat_d,&stat);
+    static DESCRIPTOR(getrec_d,"TdiGetRecord");
+    DESCRIPTOR_LONG(nid_d,(char *)&nid);
+    DESCRIPTOR(var_d,"_out");
+    DESCRIPTOR_R(getrec,DTYPE_FUNCTION,4);
+    getrec.pointer=(char *)&opcode;
+    getrec.dscptrs[0]=0;
+    getrec.dscptrs[1]=(struct descriptor *)&getrec_d;
+    getrec.dscptrs[2]=(struct descriptor *)&nid_d;
+    getrec.dscptrs[3]=(struct descriptor *)&var_d;
+    var_d.dtype=DTYPE_IDENT;
+    status = TdiEvaluate(&getrec,&stat_d MDS_END_ARG);
     if (status == TdiUNKNOWN_VAR || status == TdiSYNTAX) {
       use_get_record_fun=0;
     } else if (status & 1) {
       status = stat;
       if (stat & 1) {
-        TdiExecute(&out_exp,out MDS_END_ARG);
+        status = TdiGetIdent(&var_d,out);
       }
     }
   }
