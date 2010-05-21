@@ -263,6 +263,7 @@ int ccl_show_data()
          first=0;
          outline[chars++]=c;
       }
+      outline[chars]='\0';
     } else
       chars += sprintf(&outline[chars],format,(Mem == 24) ? d32[i-1] : d16[i-1]);
     if (chars > 72)
