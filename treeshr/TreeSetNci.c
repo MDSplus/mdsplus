@@ -37,6 +37,10 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
+#else
+#ifndef HAVE_VXWORKS_H
+#include <pthread.h>
+#endif
 #endif
 #include <string.h>
 #include <stdlib.h>
