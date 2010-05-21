@@ -119,7 +119,7 @@ static int ParseQualifiers()
         int j;
         for (j=0;j<value.length;j++)
 	{
-          if (value.pointer[value.length-j-1] != '0' || value.pointer[j] != '1')
+          if (value.pointer[value.length-j-1] != '0' && value.pointer[value.length-j-1] != '1')
 	  {
             printf("BADDATA: bad value for /DATA with /BINARY. Number must be specified in binary.\n");
             return 0;
@@ -248,11 +248,23 @@ int ccl_show_data()
       chars = sprintf(outline,"%06d ",i); 
     if (octal)
       format = (Mem == 24) ? " %#011o" : " %#06ho";
-    else if (hex || binary)
+    else if (hex)
       format = (Mem == 24) ? " %#011x" : " %#06hx";
     else
       format = (Mem == 24) ? " %11d"  : " %6hd";
-    chars += sprintf(&outline[chars],format,(Mem == 24) ? d32[i-1] : d16[i-1]);
+    if (binary) {
+      int j,mask,first=1;
+      for (j=Mem-1;j>=0;j--) {
+         char c;
+         mask=1<<j;
+         c=((Mem == 24) ? d32[i-1] : d16[i-1]) & mask ? '1' : '0';
+         if (c=='0' && first)
+           continue;
+         first=0;
+         outline[chars++]=c;
+      }
+    } else
+      chars += sprintf(&outline[chars],format,(Mem == 24) ? d32[i-1] : d16[i-1]);
     if (chars > 72)
     {
       printf("%s\n",outline);
