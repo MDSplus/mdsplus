@@ -747,7 +747,9 @@ int AddCrate()
 	}
 
 	if( numOfEntries ) {		// 1 or more
-		if( lookup_entry(CRATE_DB, phy_name.pointer) >= 0 ) {			// duplicate !
+                char pname[7];
+                sprintf(pname,"%.6s",phy_name.pointer);
+		if( lookup_entry(CRATE_DB, pname) >= 0 ) {			// duplicate !
 			if( MSGLVL(IMPORTANT) )
 				fprintf( stderr, "duplicate crate name '%.6s' -- not allowed\n", phy_name.pointer );
 
