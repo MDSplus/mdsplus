@@ -527,6 +527,20 @@ class TreeNode(Data):
         """
         return self.nid
 
+    def getNode(self,path):
+        """Return tree node where path is relative to this node
+        @param path: Path relative to this node
+        @type path: str
+        @return: node matching path
+        @rtype: TreeNode
+        """
+        if path[0] == '\\':
+            return self.tree.getNode(path)
+        else:
+            if path[0] != ':' and path[0] != '.':
+                path='.'+path
+            return self.tree.getNode(self.fullpath+path)
+
     def getNodeName(self):
         """Return node name
         @return: Node name of this node. 1 to 12 characters
@@ -534,6 +548,20 @@ class TreeNode(Data):
         """
         return self.node_name
     
+    def getNodeWild(self,path):
+        """Return tree nodes where path is relative to this node
+        @param path: Path relative to this node
+        @type path: str
+        @return: node matching path
+        @rtype: TreeNodeArray
+        """
+        if path[0] == '\\':
+            return self.tree.getNode(path)
+        else:
+            if path[0] != ':' and path[0] != '.':
+                path=':'+path
+            return self.tree.getNodeWild(self.fullpath+path)
+
     def getNumChildren(self):
         """Return number of children nodes.
         @return: Number of children
