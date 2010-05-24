@@ -73,7 +73,7 @@ class Tree(object):
                     raise AttributeError,'No such attribute: '+name
         return ans
 
-    def __init__(self,*args):
+    def __init__(self, tree=None, shot=-1, mode='NORMAL'):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
         'Normal','Edit','New','ReadOnly'.
@@ -88,11 +88,8 @@ class Tree(object):
         from _treeshr import TreeOpen,TreeOpenNew,TreeOpenReadOnly,TreeGetContext,TreeException
         try:
             Tree.lock()
-            self.close=False
-            if len(args)==2:
-                self.ctx=TreeOpen(args[0],args[1])
-                self.close=True
-            elif len(args)==0:
+            if tree is None:
+                self.close=False
                 try:
                     self.ctx=TreeGetContext()
                 except:
@@ -100,21 +97,19 @@ class Tree(object):
                         self.ctx=Tree._activeTree.ctx
                     except:
                         raise TreeException,'tree not open'
-            elif len(args)==3:
-                if args[2].upper()=='NORMAL':
-                    self.ctx=TreeOpen(args[0],args[1])
-                elif args[2].upper()=='EDIT':
-                    self.ctx=TreeOpen(args[0],args[1])
+            else:
+                self.close=True
+                if mode.upper() == 'NORMAL':
+                    self.ctx=TreeOpen(tree,shot)
+                elif mode.upper() == 'EDIT':
+                    self.ctx=TreeOpen(tree,shot)
                     self.edit()
-                elif args[2].upper()=='NEW':
-                    self.ctx=TreeOpenNew(args[0],args[1])
-                elif args[2].upper()=='READONLY':
-                    self.ctx=TreeOpenReadOnly(args[0],args[1])
+                elif mode.upper() == 'NEW':
+                    self.ctx=TreeOpenNew(tree,shot)
+                elif mode.upper() == 'READONLY':
+                    self.ctx=TreeOpenReadOnly(tree,shot)
                 else:
                     raise TreeException,'Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".'
-                self.close=True
-            else:
-                raise TypeError,"Tree() takes 0,2 or 3 arguments (%d given)" % (len(args),)
         finally:
             Tree.unlock()
         Tree.setActiveTree(self)
