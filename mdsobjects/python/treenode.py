@@ -538,7 +538,7 @@ class TreeNode(Data):
             return self.tree.getNode(path)
         else:
             if path[0] != ':' and path[0] != '.':
-                path='.'+path
+                path=':'+path
             return self.tree.getNode(self.fullpath+path)
 
     def getNodeName(self):
