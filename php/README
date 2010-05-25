@@ -1,5 +1,17 @@
 To build the MDSPLUS PHP extension you should perform the following steps.
 
+The build.sh script can be used to build and install the MDSplus php extension.
+If you have a recent php-devel package installed it should contain a php-config
+utility which can be used to locate the php include files necessary and the
+directory where php extensions should be installed. If not, you may need to
+edit the build.sh script to reflect the location of various php related directories
+on your system. There are also some definitions of where to find the MDSplus includes
+and libraries in this script. If you MDSplus installation is non-standard then you
+may need to edit the script and change these definitions.
+
+If there is no php-devel package available for your platform you may need to follow
+the instructions below:
+
 1) Download the source distribution for PHP. (This extension has only been tested
 on PHP Version 4.3.7 on RHE Linux.)
 
