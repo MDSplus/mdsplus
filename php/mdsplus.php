@@ -1,6 +1,6 @@
 <?
 if(!extension_loaded('mdsplus')) {
-	dl('mdsplus' . PHP_SHLIB_SUFFIX);
+	dl('mdsplus.' . PHP_SHLIB_SUFFIX);
 }
 $module = 'mdsplus';
 $functions = get_extension_funcs($module);
