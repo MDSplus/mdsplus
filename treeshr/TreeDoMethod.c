@@ -39,6 +39,7 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <strroutines.h>
 #include <mds_stdarg.h>
 #include <string.h>
+#include <librtl_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -68,6 +69,25 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   return (char *)LibCallg(arglist,_TreeDoMethod)-(char *)0;
 }
 
+int TreeDoFun(struct descriptor *funname,int nargs, struct descriptor **args, struct descriptor_xd *out_ptr) {
+  int status;
+  static void       (*TdiEvaluate)()=0;
+  int i;
+  short OpcExtFunction=162;
+  STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
+  STATIC_CONSTANT DESCRIPTOR(tdievaluate,"TdiEvaluate");
+  DESCRIPTOR_FUNCTION(fun,&OpcExtFunction,255);
+  void *call_arglist[]={(void *)3,(void *)&fun,(void *)out_ptr,MdsEND_ARG};
+  fun.ndesc=nargs+2;
+  fun.arguments[0]=0;
+  fun.arguments[1]=funname;
+  for (i=0;i<nargs;i++)
+    fun.arguments[2+i]=args[i];
+  if ((status=TdiEvaluate?1:LibFindImageSymbol(&tdishr,&tdievaluate,&TdiEvaluate))&1)
+    status = (char *)LibCallg(call_arglist,TdiEvaluate)-(char *)0;
+  return status;
+}
+
 int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
   va_list   incrmtr;
@@ -80,6 +100,13 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 		      {4, NciCONGLOMERATE_NIDS, (unsigned char *)&head_nid, 0},
 		      {0, NciEND_OF_LIST, 0, 0}};
   void       (*addr)();
+  static void       (*TdiExecute)()=0;
+  static void       (*TdiEvaluate)()=0;
+  STATIC_CONSTANT DESCRIPTOR(close,"$)");
+  STATIC_CONSTANT DESCRIPTOR(arg,"$,");
+  STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
+  STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
+  STATIC_CONSTANT DESCRIPTOR(tdievaluate,"TdiEvaluate");
   static struct descriptor_xd xd = {0, 0, CLASS_XD, 0, 0};
   static    DESCRIPTOR(underunder, "__");
   static struct descriptor_d method = {0, DTYPE_T, CLASS_D, 0};
@@ -116,21 +143,18 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       /**** Try python class ***/
       struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
       STATIC_CONSTANT DESCRIPTOR(open,"PyDoMethod(");
-      STATIC_CONSTANT DESCRIPTOR(close,"$)");
-      STATIC_CONSTANT DESCRIPTOR(arg,"$,");
-      STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
-      STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
       StrCopyDx(&exp, &open);
       for (i=1;i<nargs-1;i++) StrAppend(&exp,&arg);
       StrAppend(&exp,&close);
-      status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
+      if (TdiExecute == 0)
+	status = LibFindImageSymbol(&tdishr,&tdiexecute,&TdiExecute);
       if (status & 1) {
 	for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
 	nargs += 2;
 	arglist[0] = arglist_nargs(nargs);
-	arglist[1] = &exp;
+	arglist[1] = &exp;;
 	arglist[nargs] = MdsEND_ARG;
-	status = (char *)LibCallg(arglist,addr)-(char *)0;
+	status = (char *)LibCallg(arglist,TdiExecute)-(char *)0;
 	if (status & 1) {
 	  STATIC_CONSTANT DESCRIPTOR(getstat,"public _method_status");
 	  int stat;
@@ -139,10 +163,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  arglist[1]=&getstat;
 	  arglist[2]=&stat_d;
 	  arglist[3]=MdsEND_ARG;
-	  status = (char *)LibCallg(arglist,addr) - (char *)0;
+	  status = (char *)LibCallg(arglist,TdiExecute) - (char *)0;
 	  if (status & 1) status=stat;
 	}
-	if (status == TdiUNKNOWN_VAR)
+	if (status == TdiUNKNOWN_VAR || status == LibINVSTRDES)
 	  status = TreeNOMETHOD;
       }
       StrFree1Dx(&exp);
@@ -182,30 +206,9 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     else
     {
       /**** Try tdi fun ***/
-      struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
-      STATIC_CONSTANT DESCRIPTOR(open,"(");
-      STATIC_CONSTANT DESCRIPTOR(close,"$)");
-      STATIC_CONSTANT DESCRIPTOR(arg,"$,");
-      STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
-      STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
-      StrCopyDx(&exp, &method);
-      StrAppend(&exp,&open);
-      for (i=1;i<nargs-1;i++) StrAppend(&exp,&arg);
-      StrAppend(&exp,&close);
-      status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
-      if (status & 1)
-      {
-        for (i=nargs;i>0;i--) arglist[i+1] = arglist[i];
-        nargs += 2;
-	arglist[0] = arglist_nargs(nargs);
-        arglist[1] = &exp;
-        arglist[nargs] = MdsEND_ARG;
-        status = (char *)LibCallg(arglist,addr)-(char *)0;
-        if (status == TdiUNKNOWN_VAR)
-          status = TreeNOMETHOD;
-      }
-      StrFree1Dx(&exp);
-      /*      status = TreeNOMETHOD; */
+      status = TreeDoFun((struct descriptor *)&method,nargs-1,(struct descriptor **)&arglist[1],(struct descriptor_xd *)arglist[nargs]);
+      if (status == TdiUNKNOWN_VAR)
+	  status = TreeNOMETHOD;
     }
   }
   else
