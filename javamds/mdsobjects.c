@@ -94,6 +94,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 
   if(desc->class == CLASS_XD)
     return DescripToObject(env, ((struct descriptor_xd *)desc)->pointer, helpObj, unitsObj, errorObj, validationObj);
+  memset(&args,0,sizeof(args));
   switch(desc->class) {
     case CLASS_S:
 //printf("CLASS_S\n");
@@ -2150,6 +2151,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_doMethod
 	void *ctx = getCtx(ctx1, ctx2);
 	struct descriptor nidD = {sizeof(int), DTYPE_NID, CLASS_S, 0};
 	struct descriptor methodD = {0, DTYPE_T, CLASS_S, 0};
+        EMPTYXD(xd);
 
 
 	method = (*env)->GetStringUTFChars(env, jmethod, 0);
@@ -2158,7 +2160,8 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_doMethod
 	nidD.pointer = (char *)&nid;
 	
 	
-	status = _TreeDoMethod(ctx, &nidD, &methodD);
+	status = _TreeDoMethod(ctx, &nidD, &methodD, &xd MDS_END_ARG);
+        MdsFree1Dx(&xd,0);
 	(*env)->ReleaseStringUTFChars(env, jmethod, method);
 	if(!(status & 1))
 		throwMdsException(env, status);
