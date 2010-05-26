@@ -70,6 +70,8 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         deviceField24 = new DeviceField();
         deviceWave4 = new DeviceWave();
 
+        deviceField25 = new DeviceField();
+
         setDeviceProvider("localhost");
         setDeviceTitle("PCAT Setup");
         setDeviceType("RFXPC4Setup");
@@ -100,7 +102,7 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         deviceField3.setDisplayEvaluated(true);
         deviceField3.setEditable(false);
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Window");
+        deviceField3.setLabelString("Window:");
         deviceField3.setNumCols(5);
         deviceField3.setOffsetNid(4);
         jPanel3.add(deviceField3);
@@ -110,21 +112,31 @@ public class RFXPC4SetupSetup extends DeviceSetup {
         deviceField4.setDisplayEvaluated(true);
         deviceField4.setEditable(false);
         deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Connection");
+        deviceField4.setLabelString("Connection:");
         deviceField4.setOffsetNid(2);
         deviceField4.setTextOnly(true);
         jPanel4.add(deviceField4);
 
+/*
         deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control:");
         deviceChoice1.setOffsetNid(3);
         deviceChoice1.setUpdateIdentifier("");
         jPanel4.add(deviceChoice1);
+*/
+        deviceField25.setDisplayEvaluated(true);
+        deviceField25.setEditable(false);
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("Control:");
+        deviceField25.setOffsetNid(3);
+        deviceField25.setTextOnly(true);
+        jPanel4.add(deviceField25);
 
         jPanel1.add(jPanel4);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
 
         deviceChannel1.setLabelString("");
         deviceChannel1.setOffsetNid(6);
@@ -310,7 +322,9 @@ public class RFXPC4SetupSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Wave 4", deviceChannel4);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+//      getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(deviceChannel1, java.awt.BorderLayout.CENTER);
+
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -338,6 +352,9 @@ public class RFXPC4SetupSetup extends DeviceSetup {
     private DeviceField deviceField22;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
+
+    private DeviceField deviceField25;
+
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;

@@ -25,6 +25,8 @@ public class RFXPMSetupSetup extends DeviceSetup {
   DeviceField deviceField3 = new DeviceField();
   DeviceField deviceField4 = new DeviceField();
   DeviceField deviceField6 = new DeviceField();
+  DeviceField deviceField7 = new DeviceField();
+
   DeviceChoice deviceChoice1 = new DeviceChoice();
   //DeviceField deviceField5 = new DeviceField();
   public RFXPMSetupSetup() {
@@ -80,6 +82,7 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceWave1.setUpdateExpression("");
     deviceButtons1.setCheckExpressions(new String[] {"(maxval(_wave) *  \\POLOIDAL:PM_ENABLED) <= _imax"});
     deviceButtons1.setCheckMessages(new String[] {"Total magnetizing current above limit"});
+/*
     deviceChoice1.setChoiceIntValues(null);
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setOffsetNid(3);
@@ -87,6 +90,15 @@ public class RFXPMSetupSetup extends DeviceSetup {
     deviceChoice1.setChoiceItems(new String[] {"CURRENT", "VOLTAGE", "OPEN LOOP"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
+*/
+    deviceField7.setOffsetNid(3);
+    deviceField7.setTextOnly(true);
+    deviceField7.setLabelString("Control:");
+    deviceField7.setNumCols(8);
+    deviceField7.setIdentifier("");
+    deviceField7.setEditable(false);
+    deviceField7.setDisplayEvaluated(true);
+
     /*
     deviceField5.setOffsetNid(13);
     deviceField5.setLabelString("PTCB Voltage");
@@ -103,7 +115,8 @@ public class RFXPMSetupSetup extends DeviceSetup {
     jPanel4.add(deviceField2, null);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField6, null);
-    jPanel3.add(deviceChoice1, null);
+//    jPanel3.add(deviceChoice1, null);
+    jPanel3.add(deviceField7, null);
     jPanel3.add(deviceField4, null);
     this.getContentPane().add(deviceWave1, BorderLayout.CENTER);
   }

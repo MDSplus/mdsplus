@@ -121,9 +121,9 @@ public class ParameterSetting
     int maxPMAT, maxPCATParallel, maxPCATSeries, maxTFAT, maxTCCH, maxTCAC,
         maxPMVoltage, maxFillVoltage, maxPuffVoltage;
     JTextArea messageArea;
-	
+/*	
 	JLabel residualI2tPMLabel;
-
+*/
     WarningDialog checkedWd, configWd, limitsWd, versionWd;
 
     boolean doingShot = false;
@@ -512,8 +512,10 @@ public class ParameterSetting
             });
             jp.add(applyToModelB);
         }
-			
+
+/*		
 	jp.add(residualI2tPMLabel = new JLabel());	
+*/		
         setupJp.add(jp, "North");
         jp = new JPanel();
         jp.setLayout(new GridLayout(1, 4));
@@ -1696,6 +1698,7 @@ public class ParameterSetting
         }
         catch (Exception exc)
         {
+			exc.printStackTrace();
             System.err.println("Error opening device");
             System.exit(0);
         }
@@ -2132,7 +2135,7 @@ public class ParameterSetting
                         }*/
                         //Report saved shot
                         refShotLabel.setText(refShotLabelText + currLoadShot);
-                        i2tEvaluateResidualPrePulse();
+//                        i2tEvaluateResidualPrePulse();
                      }
                 }
             });
@@ -2533,7 +2536,7 @@ public class ParameterSetting
                                     break;
                                 case LEAVE_SECONDARY:
                                     doingShot = false;
-                                    i2tEvaluateResidualPostPulse();
+ //                                   i2tEvaluateResidualPostPulse();
                                     if (!isRt)
                                         setTitle("RFX Parameters     shot: " +
                                                  getShot());
@@ -4644,6 +4647,7 @@ System.out.println("Print Done");
         }
     }
     
+	/*
     void i2tEvaluateResidualPrePulse()
     {
         try {
@@ -4684,6 +4688,7 @@ System.out.println("Print Done");
             
         }
     }
+	*/
 	
     public static void main(String args[])
     {
