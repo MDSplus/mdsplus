@@ -1042,7 +1042,11 @@ RenameNode( Widget w, XtPointer client_data, XtPointer call_data)
 static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method, Widget parent)
 {
   /*  LibEstablish(LibSigToRet); */
-  return TreeDoMethod(niddsc, method, parent MDS_END_ARG);
+  EMPTYXD(xd);
+  int status;
+  status = TreeDoMethod(niddsc, method, parent, &xd MDS_END_ARG);
+  MdsFree1Dx(&xd,0);
+  return status;
 }
 
 static int setup_device(Widget parent, int nid)
