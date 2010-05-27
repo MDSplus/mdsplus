@@ -56,7 +56,11 @@ TdiRefStandard(Tdi1Compile)
 EMPTYXD(tmp);
 struct descriptor		*text_ptr;
 STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
-
+static int recursing=0;
+        if (recursing == 1) {
+	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported");
+          return 0;
+        }
 	status = TdiEvaluate(list[0],&tmp MDS_END_ARG);
 	text_ptr = tmp.pointer;
 	if (status & 1 && text_ptr->dtype != DTYPE_T) status = TdiINVDTYDSC;
@@ -89,6 +93,11 @@ STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
                   pthread_mutex_lock(&yacc_mutex);
 #endif
 #endif
+	        if (recursing == 1) {
+        	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported\n");
+          	  return 0;
+        	}
+                recursing=1;
 		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
 
 		  /****************************************
@@ -116,6 +125,7 @@ STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
 			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
 		  }
 		  LibResetVmZone(&TdiRefZone.l_zone);
+                  recursing=0;
 #ifndef HAVE_WINDOWS_H
 #ifndef HAVE_VXWORKS_H
                   pthread_mutex_unlock(&yacc_mutex);
