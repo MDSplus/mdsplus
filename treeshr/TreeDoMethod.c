@@ -144,6 +144,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
       struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
       STATIC_CONSTANT DESCRIPTOR(open,"PyDoMethod(");
       StrCopyDx(&exp, &open);
+      if (nargs==4 && method_ptr->length == strlen("DW_SETUP") && strncmp(method_ptr->pointer,"DW_SETUP",strlen("DW_SETUP")) == 0) {
+        arglist[3]=arglist[4];
+        nargs--;
+      }
       for (i=1;i<nargs-1;i++) StrAppend(&exp,&arg);
       StrAppend(&exp,&close);
       if (TdiExecute == 0)
