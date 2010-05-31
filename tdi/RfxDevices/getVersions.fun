@@ -112,13 +112,13 @@ public fun getVersions()
     _nid = getnci("\\MHD_BR::CONTROL:VERSION", "NID_NUMBER");
     TreeShr->TreePutRecord(val(_nid),xd(_mhd_br_ver),val(0));
 
-    write(*, _dequ_ver);
-    write(*, _dflu_ver);
-    write(*, _eda1_ver);
-    write(*, _eda3_ver);
-    write(*, _mhd_ac_ver);
-    write(*, _mhd_bc_ver);
-    write(*, _mhd_br_ver);
+    write(*,"DEQU_VME ", _dequ_ver);
+    write(*,"DFLU_VME ", _dflu_ver);
+    write(*,"EDA1_VME ", _eda1_ver);
+    write(*,"EDA3_VME ", _eda3_ver);
+    write(*,"MHD_AC_VME ", _mhd_ac_ver);
+    write(*,"MHD_BC_VME ", _mhd_bc_ver);
+    write(*,"MHD_BR_VME ", _mhd_br_ver);
     
     return (1);
 }

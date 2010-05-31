@@ -81,6 +81,9 @@ public fun ParameterSettingCheck()
 	/*
 	Controllo sui riferimenti dei PCAT 
 	*/
+	/*
+	27-5-2010 Taliercio
+	Rimosso il check del pcat adesso si usa solo la prima forma d'onda
 	
 	_pcWavePath = "\\RFX::PC_SETUP.WAVE_1.WAVE";
 	_data = data( build_path( _pcWavePath ) );
@@ -97,7 +100,8 @@ public fun ParameterSettingCheck()
 			_msg = _msg//" Riferimenti dei PCAT NON uguali #";
 			_i = 5;
 		}		
-	}	
+	}
+	*/
 
 	return ( _msg );
 }

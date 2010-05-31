@@ -1,4 +1,4 @@
-public fun XRAY__zero(as_is _nid, optional _method)
+public fun SXC__zero(as_is _nid, optional _method)
 {
 
 	private _K_CONG_NODES = 190;
@@ -68,7 +68,7 @@ public fun XRAY__zero(as_is _nid, optional _method)
 
 	if(_status != 0)
     {
-       _expr = "XrayHWZero(0, $)";  
+       _expr = "SxcHWZero(0, $)";  
 
        _errors = MdsValue(_expr, _chan_id, 0);
 	
