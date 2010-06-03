@@ -25,18 +25,31 @@ public fun Py(in _cmd, optional in _nolock) {
        write(*,"Please define PyLib to be the name of your python library, i.e. 'python2.4'\n\n\n");
        abort();
      }
-     if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
-	dl->dlopen('lib'//getenv("PyLib")//'.so',val(258));
+     if (MdsShr->LibFindImageSymbol(descr('MdsMisc'),descr('PyCall'),ref(_sym)) == 1) {
+       MdsMisc->PyCall("from MDSplus import *",val(1));
+       public _PyInit=2;
+     } else {
+       if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
+	  dl->dlopen('lib'//getenv("PyLib")//'.so',val(258));
+       }
+       PyCall("Py_Initialize",0);
+       PyCall("PyEval_InitThreads",0);
+       public _PyInit=1;
+       PyCall("PyRun_SimpleString",1,"from MDSplus import *");
      }
-     PyCall("Py_Initialize",0);
-     PyCall("PyEval_InitThreads",0);
-     public _PyInit=1;
-     PyCall("PyRun_SimpleString",1,"from MDSplus import *");
    }
    for (_i=0;_i<size(_cmd);_i++) {
        _locked=!present(_nolock);
        public _py_exception="";
-       PyCall("PyRun_SimpleString",_locked,"try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
+       if (public _PyInit==1) {
+         PyCall("PyRun_SimpleString",_locked,"try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
+       } else {
+         MdsMisc->PyCall("try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")",val(_locked));
+         if (ALLOCATED(public _PyReleaseThreadLock)) {
+           MdsMisc->PyReleaseThreadLock();
+           deallocate(public _PyReleaseThreadLock);
+         }
+       }
        if (public _py_exception != "") return(0);
    }
    return(1);
