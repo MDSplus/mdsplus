@@ -1,11 +1,14 @@
 #ifndef  CALLBACK_MANAGER_H
 #define CALLBACK_MANAGER_H
-#include "Notifier.h"
+#include <Notifier.h>
 
-class CallbackManager
+
+class CallbackManager:Runnable
 {
 	_int64 next, prev;
 	Notifier notifier;
+	int nid;
+	void (*callback)(int, void *);
 
 public:
 	void setNext(char *nxt)
@@ -34,12 +37,15 @@ public:
 		return (CallbackManager *)((char *)this + prev);
 	}
 
+	void run(void *arg)
+	{
+		callback(nid, arg);
+	}
 	void initialize(int nid, void *argument, void (*callback)(int, void *))
 	{
-	    notifier.initialize(nid, argument, callback);
+		notifier.initialize(NULL, this, argument);
 	}
 
-	
 
 	void dispose()
 	{
@@ -47,13 +53,10 @@ public:
 	}
 	void callCallback()
 	{
-		notifier.notify();
-		if(!notifier.isMulticast()) //individual notification only if multicast notification is not supported
-		{
-			CallbackManager *nxt = getNext();
-			if(nxt)
-				nxt->callCallback();
-		}
+		notifier.trigger();
+		CallbackManager *nxt = getNext();
+		if(nxt)
+			nxt->callCallback();
 	}
 
 };

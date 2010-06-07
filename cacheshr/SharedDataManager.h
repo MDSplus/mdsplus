@@ -1,14 +1,13 @@
 
 #ifndef SHARED_DATA_MANAGER_H
 #define SHARED_DATA_MANAGER_H
+#include "SimpleAllocationManager.h"
+#include <Thread.h>
 #include "SharedMemNode.h"
-#include "FreeSpaceManager.h"
-#include "LockManager.h"
-#include "SharedMemManager.h"
 #include "SharedMemTree.h"
 #include "CallbackManager.h"
-#include "Event.h"
-#include "Thread.h"
+#include "SemEvent.h"
+
 
 #include <string.h>
 #include <stdlib.h>
@@ -30,16 +29,14 @@ private:
 public:
     static char *startAddress; //Initial address of the associetd Memory Zone
 	static int size;		//The size in bytes of the associated Shared Memory Zone
-	static FreeSpaceManager freeSpaceManager; //The manager of free space
-	static SharedMemManager sharedMemManager; //The manager of shared memory allocation
-	static LockManager lock;   //Global lock, used when managing nodes
+	static SimpleAllocationManager allocationManager; //The manager of shared memory allocation
+	static Lock lock;   //Global lock, used when managing nodes
 	static SharedMemTree sharedTree; //ID tree
 	static bool initialized;
 
 public:
 	
-	SharedDataManager(bool isShared, int size = DEFAULT_SIZE);
-	FreeSpaceManager *getFreeSpaceManager() { return &freeSpaceManager;}
+	SharedDataManager(int size = DEFAULT_SIZE);
 	
 
 	int setData(TreeDescriptor treeId, int nid, char dataType, int numSamples, char *data, int size); //Write data indexed by nid
@@ -88,7 +85,7 @@ public:
 	void setWarm(TreeDescriptor treeId, int nid, bool warm);
 	bool isWarm(TreeDescriptor treeId, int nid);
 	void setDirty(TreeDescriptor treeId, int nid, bool isDirty);
-	Event *getDataEvent(TreeDescriptor treeId, int nid);
+	SemEvent *getDataEvent(TreeDescriptor treeId, int nid);
 
 	int getSerializedSize(TreeDescriptor treeId, int nid);
 	void getSerialized(TreeDescriptor treeId, int nid, char *serialized);

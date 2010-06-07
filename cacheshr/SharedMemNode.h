@@ -91,10 +91,10 @@ public:
 
 	SharedMemNodeData *getData() { return &data;}
 
-	void free(FreeSpaceManager *fsm, LockManager *lock)
+	void free(SimpleAllocationManager *fsm)
 	{
-		data.free(fsm, lock);
-		fsm->freeShared(reinterpret_cast<char *>(this), sizeof(SharedMemNode), lock);
+		data.free(fsm);
+		fsm->deallocateShared(reinterpret_cast<char *>(this), sizeof(SharedMemNode));
 	}
 
 

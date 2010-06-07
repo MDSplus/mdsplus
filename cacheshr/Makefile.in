@@ -13,18 +13,9 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
 	Cache.cpp\
-	ChannelFactory.cpp\
-	CoherencyManager.cpp\
-	CommunicationChannel.cpp\
-	FreeSpaceManager.cpp\
-	Notifier.cpp\
 	SharedDataManager.cpp\
-	SharedMemManager.cpp\
 	SharedMemTree.cpp\
-	TCPChannel.cpp\
-	Thread.cpp\
-	TreeWriter.cpp\
-	UDPChannel.cpp
+	TreeWriter.cpp
 	
 SOURCES = CachedTreeshr.c
 
@@ -54,7 +45,7 @@ install:
 
 
 @MAKESHLIBDIR@libCacheShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr -lRtEventsShr
 
 @MAKELIBDIR@libCacheShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

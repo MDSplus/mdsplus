@@ -3,7 +3,6 @@
 
 #include "SharedDataManager.h"
 #include "TreeWriter.h"
-#include "CoherencyManager.h"
 
 #define FLUSH_PUT_RECORD 1
 #define FLUSH_BEGIN_SEGMENT 2
@@ -25,15 +24,14 @@ class Cache
 	SharedDataManager dataManager;
 	TreeWriter treeWriter;
 	NidChain *chainHead, *chainTail;
-	CoherencyManager *cManager;
 	bool inQueue(TreeDescriptor treeIdx, int nid, int idx, int mode);
-	LockManager queueLock;
+	Lock queueLock;
 
 	void insertInQueue(TreeDescriptor treeIdx, int nid, char mode, int idx);
 
 public:
 	Cache();
-	Cache(bool isShared, int size);
+	Cache(int size);
 	int putRecord(TreeDescriptor treeIdx, int nid, char dataType, int numSamples, char *data, int size, int writeThrough);
 	int getRecord(TreeDescriptor treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size);
 	int beginSegment(TreeDescriptor treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, 
@@ -64,9 +62,7 @@ public:
 
 	void * setCallback(TreeDescriptor treeIdx, int nid, void *argument, void (* callback)(int, void *));
 	int clearCallback(TreeDescriptor treeIdx, int nid, char *callbackManager);	
-	void setWarm(TreeDescriptor treeIdx, int nid, bool warm);
 	void synch();
-	void startServer();
 };
 
 #endif

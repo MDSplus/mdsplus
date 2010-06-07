@@ -1,10 +1,9 @@
 #ifndef TREE_WRITER_H
 #define TREE_WRITER_H
 
-#include "LockManager.h"
 #include "SharedDataManager.h"
-#include "Thread.h"
-#include "Event.h"
+#include <Thread.h>
+#include "SemEvent.h"
 
 #define TREEWRITER_PUT_RECORD 1
 #define TREEWRITER_PUT_SEGMENT 2
@@ -25,11 +24,11 @@ struct NidHolder
 
 class TreeWriter:Runnable
 {
-	LockManager lock;
+	Lock lock;
 	NidHolder *nidHead;
 	Thread worker;
-	Event nidEvent;
-	Event synchEvent;
+	SemEvent nidEvent;
+	SemEvent synchEvent;
 	bool synchWaiting;
 	bool workerWaiting;
 	bool working;

@@ -1,6 +1,5 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
-#include "FreeSpaceManager.h"
 static	void swapBytes(char *buf, int size);
 
 class Segment
@@ -43,7 +42,8 @@ public:
 		nxt = -reinterpret_cast<_int64>(this);
 	}
 
-	void free(FreeSpaceManager *fsm, LockManager *lock)
+//	void free(FreeSpaceManager *fsm, LockManager *lock)
+	void free(SimpleAllocationManager *fsm)
 	{
 		char *currPtr;
 		int currSize;
@@ -52,27 +52,28 @@ public:
 		if(startSize > 0) 
 		{
 			getStart(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize, lock);
+//			fsm->freeShared((char *)currPtr, currSize, lock);
+			fsm->deallocateShared((char *)currPtr, currSize);
 		}
 		if(endSize > 0)
 		{
 			getEnd(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize, lock);
+			fsm->deallocateShared((char *)currPtr, currSize);
 		}
 		if(shapeSize > 0)
 		{
 			getShape(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize, lock);
+			fsm->deallocateShared((char *)currPtr, currSize);
 		}
 		if(dataSize > 0)
 		{
 			getData(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize, lock);
+			fsm->deallocateShared((char *)currPtr, currSize);
 		}
 		if(dimSize > 0)
 		{
 			getDim(&currPtr, &currSize);
-			fsm->freeShared((char *)currPtr, currSize, lock);
+			fsm->deallocateShared((char *)currPtr, currSize);
 		}
 	}
 
@@ -240,7 +241,8 @@ public:
 		memcpy(&serialized[2 + 1 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize + 4], currPtr, dimSize);
 	}
 
-	void initialize(char *serialized, FreeSpaceManager *fsm, LockManager *lock)
+//	void initialize(char *serialized, SharedMemManager *fsm, LockManager *lock)
+	void initialize(char *serialized, SimpleAllocationManager *fsm)
 	{
 		char *currPtr;
 		bool forceConversion = ((*(short *)serialized) != 1);
@@ -248,14 +250,14 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3], 4);
 		dataSize = *(int *)&serialized[3];
-		currPtr = fsm->allocateShared(dataSize, lock);
+		currPtr = fsm->allocateShared(dataSize);
 		memcpy(currPtr, &serialized[3+4], dataSize);		
 		setData(currPtr, dataSize);
 
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize], 4);
 		shapeSize = *(int *)&serialized[3 + 4 + dataSize];
-		currPtr = fsm->allocateShared(shapeSize, lock);
+		currPtr = fsm->allocateShared(shapeSize);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4], shapeSize);		
 		setShape(currPtr, shapeSize);
 		for(int i = 0; i < shapeSize/4; i++)
@@ -264,14 +266,14 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize], 4);
 		startSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize];
-		currPtr = fsm->allocateShared(startSize, lock);
+		currPtr = fsm->allocateShared(startSize);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4], startSize);		
 		setStart(currPtr, startSize);
 
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize], 4);
 		endSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize];
-		currPtr = fsm->allocateShared(endSize, lock);
+		currPtr = fsm->allocateShared(endSize);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4 + startSize + 4], startSize);		
 //Timestamped segments record direct 8 - byte timestamp for end time
 		if(timestamped)
@@ -281,7 +283,7 @@ public:
 		if(forceConversion)
 			swapBytes(&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize], 4);
 		dimSize = *(int *)&serialized[3 + 4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize];
-		currPtr = fsm->allocateShared(dimSize, lock);
+		currPtr = fsm->allocateShared(dimSize);
 		memcpy(currPtr, &serialized[3+4 + dataSize + 4 + shapeSize + 4 + startSize + 4 + endSize + 4], dimSize);		
 //Timestamped segments record direct 8 - byte timestamp array for dimension
 		if(timestamped)

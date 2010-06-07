@@ -29,7 +29,7 @@
 
 #define MAX_BOUND_SIZE 512
 
-char *getCache(int isShared, int size);
+char *getCache(int size);
 int putRecord(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
 int getRecord(char *name, int shot, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 int putRecordInternal(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size);
@@ -64,7 +64,6 @@ int appendRow(char *name, int shot, int nid, int *bounds, int boundsSize, char *
 										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
 int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr);
 int discardData(char *name, int shot, int nid, char *cachePtr);
-int setWarm(char *name, int shot, int nid, int warm, char *cachePtr);
 void synch(char *cachePtr);
 extern int TdiCompile();
 extern int TdiData();
@@ -287,7 +286,7 @@ static int intBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *
 	if(!(status & 1))
 		return status;
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 //Only native arrays can be defined
 	if(initialValue->class != CLASS_A)
 		return NOT_A_NATIVE_TYPE;
@@ -327,7 +326,7 @@ EXPORT int _RTreePutSegment(void *dbid, int nid, int segIdx, struct descriptor *
 	if(!(status & 1))
 		return status;
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 	getDataTypeAndShape(dataD, bounds, &boundsSize);
 	status = appendSegmentData(name, shot, nid, bounds, boundsSize, dataD->pointer, bounds[3], -1, segIdx,  writeMode, cache);
@@ -448,7 +447,7 @@ EXPORT int _RTreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
 	
 
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 //Only native arrays can be defined
 	if(initialValue->class != CLASS_A)
 		return NOT_A_NATIVE_TYPE;
@@ -517,7 +516,7 @@ EXPORT int _RTreeUpdateSegment(void *dbid, int nid, struct descriptor *start, st
 	if(!(status & 1))
 		return status;
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	if(start) MdsSerializeDscOut(start, &startSerXd);
 	if(end) MdsSerializeDscOut(end, &endSerXd);
 	if(dimension)
@@ -571,7 +570,7 @@ EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid,  _int64 *timestamps,
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 	getDataTypeAndShape(dataD, bounds, &boundsSize);
 
@@ -605,7 +604,7 @@ EXPORT int _RTreePutRow(void *dbid, int nid, int bufSize, _int64 *timestamp, str
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 
 	getDataTypeAndShape((struct descriptor *)rowD, bounds, &boundsSize);
@@ -646,7 +645,7 @@ EXPORT int _RTreeGetNumSegments(void *dbid, int nid, int *numSegments)
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	status =  getNumSegments(name, shot, nid, numSegments, cache);
 	if(!(status & 1))
 	{
@@ -678,7 +677,7 @@ EXPORT int _RTreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *
 		return status;
 
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	status = getSegmentData(name, shot, nid, idx, &dim, &dimSize, &data, &dataSize, (char **)&shape, &shapeSize, 
 		&currDataSize, &timestamped, cache);
 	if(!(status & 1)) 
@@ -741,7 +740,7 @@ EXPORT int _RTreeGetSegmentLimits(void *dbid, int nid, int idx, struct descripto
 	if(!(status & 1))
 		return status;
 
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 	status = getSegmentLimits(name, shot, nid, idx, &start, &startSize, &end, &endSize, &timestamped, cache);
 	if(!(status & 1))
@@ -778,7 +777,7 @@ EXPORT int _RTreeTerminateSegment(void *dbid, int nid)
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return terminateSegment(name, shot, nid, cache);
 }
 
@@ -804,7 +803,7 @@ EXPORT int _RTreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char 
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	getSegmentInfo(name, shot, nid, idx, &shape, &shapeSize, &currDataSize, cache);
 //Return Shape and type information. The coding is the following:
 //1) data type
@@ -837,7 +836,7 @@ EXPORT int _RTreeGetLastSegmentInfo(void *dbid, int nid, char *dtype, char *dimc
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	getLastSegmentInfo(name, shot, nid, &shape, &shapeSize, &currDataSize, cache);
 //Return Shape and type information. The coding is the following:
 //1) data type
@@ -882,7 +881,7 @@ EXPORT int _RTreeDiscardOldSegments(void *dbid, int nid, _int64 timestamp)
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return discardOldSegments(name, shot, nid, timestamp, cache);
 }
 EXPORT int RTreeDiscardOldSegments(int nid, _int64 timestamp)
@@ -899,7 +898,7 @@ EXPORT int _RTreeDiscardData(void *dbid, int nid)
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return discardData(name, shot, nid, cache);
 }
 EXPORT int RTreeDiscardData(int nid)
@@ -923,7 +922,7 @@ EXPORT int _RTreePutRecord(void *dbid, int nid, struct descriptor *descriptor_pt
 	status = getNameShot(dbid, name, &shot);
 	if(!(status & 1))
 		return status;
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 	//Manage Empty descriptor
 	if(descriptor_ptr->class == CLASS_XD && ((struct descriptor_xd *)descriptor_ptr)->l_length == 0)
@@ -964,7 +963,7 @@ EXPORT int _RTreeFlush(void *dbid)
 	int shot, status;
 
 	status = getNameShot(dbid, name, &shot);
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return flushTree(name, shot, cache);
 }
 
@@ -979,7 +978,7 @@ EXPORT int _RTreeFlushNode(void *dbid, int nid)
 	int shot, status;
 
 	status = getNameShot(dbid, name, &shot);
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return flushNode(name, shot, nid, cache);
 }
 EXPORT int RTreeFlushNode(int nid)
@@ -989,7 +988,7 @@ EXPORT int RTreeFlushNode(int nid)
 
 EXPORT int RTreeFlushNodeShot(char *expName, int shot, int nid)
 {
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return flushNode(expName, shot, nid, cache);
 }
 
@@ -1000,7 +999,7 @@ EXPORT char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callb
 	int shot, status;
 
 	status = getNameShot(dbid, name, &shot);
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return setCallback(name, shot, nid, argument, callback, cache);
 }
 EXPORT char *RTreeSetCallback(int nid, void *argument, void (*callback)(int, void *))
@@ -1014,7 +1013,7 @@ EXPORT int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr)
 	int shot, status;
 
 	status = getNameShot(dbid, name, &shot);
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	return clearCallback(name, shot, nid, callbackDescr, cache);
 }
 EXPORT int RTreeClearCallback(int nid, char *callbackDescr)
@@ -1023,20 +1022,6 @@ EXPORT int RTreeClearCallback(int nid, char *callbackDescr)
 }
 
 
-EXPORT int _RTreeSetWarm(void *dbid, int nid, int warm)
-{
-	char name[256];
-	int shot, status;
-
-	status = getNameShot(dbid, name, &shot);
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
-	return setWarm(name, shot, nid, warm, cache);
-}
-
-EXPORT int RTreeSetWarm(int nid, int warm)
-{
-	return _RTreeSetWarm(0, nid, warm);
-}
 
 
 
@@ -1056,7 +1041,7 @@ EXPORT int _RTreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr)
 	status = getNameShot(dbid, name, &shot);
 
 //printf("RTreeGetRecord\n");
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 
 
@@ -1285,7 +1270,7 @@ EXPORT int RTreeClose(char *expName, int shot)
 
 EXPORT void RTreeSynch()
 {
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 	synch(cache);
 }
 
@@ -1293,14 +1278,14 @@ EXPORT void RTreeSynch()
 #ifdef HAVE_WINDOWS_H
 EXPORT void RTreeCacheReset()
 {
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 }
 #else 
 #ifdef HAVE_VXWORKS_H
 EXPORT void RTreeCacheReset()
 {
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
 
 }
 #else
@@ -1315,7 +1300,7 @@ EXPORT void RTreeCacheReset()
 		sprintf(buf, "/mdscachex%d", i);
 		sem_unlink(buf);
     }
-	if(!cache) cache = getCache(cacheIsShared, cacheSize);
+	if(!cache) cache = getCache(cacheSize);
  }
 
 

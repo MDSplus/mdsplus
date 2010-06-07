@@ -24,13 +24,13 @@ public:
 
 */
 //Initialize shared data and return header
-void SharedMemTree::initialize(FreeSpaceManager *freeSpaceManager, void **headerPtr, LockManager *lock)
+void SharedMemTree::initialize(SimpleAllocationManager *freeSpaceManager, void **headerPtr)
 {
 printf("SharedMemTree::initialize\n");
 	SharedMemNodeData dummyData;
 	this->freeSpaceManager = freeSpaceManager;
 	header = 0;
-	header = allocateMemNode(lock);
+	header = allocateMemNode();
 	header->setData(&dummyData);   
 	header->setLeftChild(0);
 	header->setRightChild(0);
@@ -38,7 +38,7 @@ printf("SharedMemTree::initialize\n");
 }
 
 //
-void SharedMemTree::map(FreeSpaceManager *freeSpaceManager, void *header)
+void SharedMemTree::map(SimpleAllocationManager *freeSpaceManager, void *header)
 {
 printf("SharedMemTree::map\n");
 	this->freeSpaceManager = freeSpaceManager;
@@ -47,9 +47,9 @@ printf("SharedMemTree::map\n");
 
 
 
-SharedMemNode   *SharedMemTree::allocateMemNode(LockManager *lock)
+SharedMemNode   *SharedMemTree::allocateMemNode()
 {
-	return (SharedMemNode *)freeSpaceManager->allocateShared(sizeof(SharedMemNode), lock); 
+	return (SharedMemNode *)freeSpaceManager->allocateShared(sizeof(SharedMemNode)); 
 }
 
 int SharedMemTree::compare(SharedMemNode*n1, SharedMemNodeData *n2)
@@ -66,7 +66,7 @@ int SharedMemTree::compare(SharedMemNode*n1, TreeDescriptor treeId, int nid)
 
 
 
-void SharedMemTree::insert(SharedMemNodeData *nodeData, LockManager *lock)
+void SharedMemTree::insert(SharedMemNodeData *nodeData)
 {
 	current = parent = grand = header;
 	while(current && compare(current, nodeData)!= 0)
@@ -87,7 +87,7 @@ void SharedMemTree::insert(SharedMemNodeData *nodeData, LockManager *lock)
 	}
 	else
 	{
-		current = allocateMemNode(lock);
+		current = allocateMemNode();
 		current->setLeftChild(0);
 		current->setRightChild(0);
 		current->isValid = true;
@@ -115,7 +115,7 @@ SharedMemNode * SharedMemTree::find(TreeDescriptor treeId, int nid)
 
 }
 
-void SharedMemTree::remove(TreeDescriptor treeId, int nid, LockManager *lock)
+void SharedMemTree::remove(TreeDescriptor treeId, int nid)
 {
 	SharedMemNode *curr1, *prev1;
 	current = parent = grand = header;
@@ -187,7 +187,7 @@ void SharedMemTree::remove(TreeDescriptor treeId, int nid, LockManager *lock)
 				curr1->setRightChild(current->rightChild());
 			curr1->setLeftChild(current->leftChild());
 		}
-		current->free(freeSpaceManager, lock);
+		current->free(freeSpaceManager);
 	}
 }
 

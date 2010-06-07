@@ -3,10 +3,9 @@
 #define MAX_NODES 128 //Maximum number of nodes containing a copy of this cache
 
 #include <stdio.h>
-#include "LockManager.h"
 #include "CallbackManager.h"
 #include "Segment.h"
-#include "Event.h"
+#include "SemEvent.h"
 #include "TreeDescriptor.h"
 class SharedMemNodeData
 {
@@ -36,7 +35,7 @@ class SharedMemNodeData
 		char ownerIdx;    //Index of the owner node address
 		int ownerTimestamp; //Ownership timestamp
 		bool eventActive;
-		Event dataEvent;
+		SemEvent dataEvent;
 
 	SharedMemNodeData()
 	{
@@ -176,7 +175,7 @@ class SharedMemNodeData
 		return currSegment;
 	}
 
-	void discardOldSegments(_int64 timestamp, FreeSpaceManager *fsm, LockManager *lock)
+	void discardOldSegments(_int64 timestamp, SimpleAllocationManager *fsm)
 	{
 		if(numSegments == 0) 
 			return;
@@ -193,8 +192,8 @@ class SharedMemNodeData
 			if(*endTimePtr < timestamp) 
 			{
 				setFirstSegment(currSegment->getNext());
-				currSegment->free(fsm, lock);
-				fsm->freeShared((char *)currSegment, sizeof(Segment), lock);
+				currSegment->free(fsm);
+				fsm->deallocateShared((char *)currSegment, sizeof(Segment));
 				currSegment = getFirstSegment();
 				numSegments--;
 			}
@@ -205,7 +204,7 @@ class SharedMemNodeData
 			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
 	}
 
-	void discardFirstSegment(FreeSpaceManager *fsm, LockManager *lock)
+	void discardFirstSegment(SimpleAllocationManager *fsm)
 	{
 		if(numSegments == 0) 
 			return;
@@ -214,8 +213,8 @@ class SharedMemNodeData
 
 		setFirstSegment(currSegment->getNext());
 		numSegments--;
-		currSegment->free(fsm, lock);
-		fsm->freeShared((char *)currSegment, sizeof(Segment), lock);
+		currSegment->free(fsm);
+		fsm->deallocateShared((char *)currSegment, sizeof(Segment));
 
 	}
 
@@ -377,7 +376,7 @@ class SharedMemNodeData
 		this->dirty = isDirty;
 	}
 
-	Event *getDataEvent()
+	SemEvent *getDataEvent()
 	{
 		if(!eventActive)
 		{
@@ -406,7 +405,7 @@ class SharedMemNodeData
 //segment
 	
 
-	void initialize(char *serialized, FreeSpaceManager *fsm, LockManager *lock)
+	void initialize(char *serialized, SimpleAllocationManager *fsm)
 	{
 		bool forceConversion = *(short *)serialized != 1;
 		segmented = (serialized[2])?true:false;
@@ -423,8 +422,8 @@ class SharedMemNodeData
 				if(forceConversion)
 					swapBytes((char *)&currSize, 4);
 				currOfs += 4;
-				Segment * currSegment = (Segment*)fsm->allocateShared(currSize, lock);
-				currSegment->initialize(&serialized[currOfs], fsm, lock);
+				Segment * currSegment = (Segment*)fsm->allocateShared(currSize);
+				currSegment->initialize(&serialized[currOfs], fsm);
 				appendSegment(currSegment);
 				currOfs += currSize;
 			}
@@ -440,7 +439,7 @@ class SharedMemNodeData
 				swapBytes((char *)&dataSize, 4);
 			if(dataSize > 0)
 			{
-				char *currPtr = fsm->allocateShared(dataSize, lock);
+				char *currPtr = fsm->allocateShared(dataSize);
 				memcpy(currPtr, &serialized[12], dataSize);
 //If dataType != 0, stored data are not serialized, so they need endianity conversion
 				if(dataType != 0 && forceConversion)
@@ -461,7 +460,7 @@ class SharedMemNodeData
 
 
 
-	void free(FreeSpaceManager *fsm, LockManager *lock)
+	void free(SimpleAllocationManager *fsm)
 	{
 		Segment **segments = new Segment *[numSegments];
 		if(segmented)
@@ -471,11 +470,11 @@ class SharedMemNodeData
 			for(i = 0; i < numSegments; i++)
 			{
 				segments[i] = currSegment;
-				currSegment->free(fsm, lock);
+				currSegment->free(fsm);
 				currSegment = currSegment->getNext();
 			}
 			for(i = 0; i < numSegments; i++)
-				fsm->freeShared((char *)segments[i], sizeof(Segment), lock);
+				fsm->deallocateShared((char *)segments[i], sizeof(Segment));
 			numSegments = 0;
 			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
 		}
@@ -486,7 +485,7 @@ class SharedMemNodeData
 			if(dataSize > 0)
 			{
 				getData(&currPtr, &currSize);
-				fsm->freeShared((char *)currPtr, currSize, lock);
+				fsm->deallocateShared((char *)currPtr, currSize);
 			}
 			dataSize = 0;
 		}

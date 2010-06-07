@@ -12,7 +12,7 @@ typedef unsigned long long _int64;
 #define UPDATE_FLUSH 5
 
 
-extern "C" char *getCache(int isShared, int size);
+extern "C" char *getCache(int size);
 extern "C" int putRecord(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size, int writeThrough, char *cachePtr);
 extern "C" int getRecord(char *name, int shot, int nid, char *dataType, int *numSamples, char **data, int *size, char *cachePtr);
 extern "C" int putRecordInternal(char *name, int shot, int nid, char dataType, int numSamples, char *data, int size);
@@ -46,17 +46,15 @@ extern "C" int appendRow(char *name, int shot, int nid, int *bounds, int boundsS
 extern "C" int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr);
 extern "C" int discardData(char *name, int shot, int nid, char *cachePtr);
 extern "C" int terminateSegment(char *name, int shot, int nid, char *cachePtr);
-extern "C" int setWarm(char *name, int shot, int nid, int warm, char *cachePtr);
 extern "C" void synch(char *cachePtr);
 
 static char *cache = 0;
 
-char *getCache(int isShared, int size)
+char *getCache(int size)
 {
 	if(!cache)
 	{
-		cache = (char *)new Cache((bool)isShared, size);
-		((Cache *)cache)->startServer();
+		cache = (char *)new Cache(size);
 	}
 	return cache;
 }
@@ -208,12 +206,6 @@ int discardData(char *name, int shot, int nid, char *cachePtr)
 }
 
 
-int setWarm(char *name, int shot, int nid, int warm, char *cachePtr)
-{
-	TreeDescriptor treeIdx(name, shot);
-	((Cache *)cachePtr)->setWarm(treeIdx, nid, (bool)warm);
-	return 1;
-}
 
 void synch(char *cachePtr)
 {
@@ -231,7 +223,7 @@ Cache::Cache():dataManager(true)
 
 }
 
-Cache::Cache(bool isShared, int size):dataManager(isShared, size)
+Cache::Cache(int size):dataManager(size)
 {
 	queueLock.initialize();
 	treeWriter.setDataManager(&dataManager);
@@ -279,7 +271,6 @@ int Cache::putRecord(TreeDescriptor treeIdx, int nid, char dataType, int numSamp
 
 		insertInQueue(treeIdx, nid, FLUSH_PUT_RECORD, 0);
 	}
-	cManager->checkWrite(treeIdx, nid);
 	return 1;
 }
 
@@ -287,7 +278,6 @@ int Cache::putRecord(TreeDescriptor treeIdx, int nid, char dataType, int numSamp
 
 int Cache::getRecord(TreeDescriptor treeIdx, int nid, char *dataType, int *numSamples, char **data, int *size)
 {
-	cManager->checkRead(treeIdx, nid);
 	return dataManager.getData(treeIdx, nid, dataType, numSamples, data, size);
 }
 
@@ -558,14 +548,3 @@ int Cache::clearCallback(TreeDescriptor treeIdx, int nid, char *callbackDescr)
 }
 
 
-
-void Cache::startServer()
-{
-	cManager = new CoherencyManager(&dataManager);
-	cManager->startServer();
-}
-
-void Cache::setWarm(TreeDescriptor treeIdx, int nid, bool warm)
-{
-	dataManager.setWarm(treeIdx, nid, warm);
-}
