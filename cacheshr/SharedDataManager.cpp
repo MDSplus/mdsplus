@@ -1,6 +1,3 @@
-#ifndef HAVE_WINDOWS_H
-typedef unsigned long long _int64;
-#endif
 
 #include "SharedDataManager.h"
 #define CACHESHR_MID 1

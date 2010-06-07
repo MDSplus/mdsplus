@@ -4,9 +4,6 @@ extern "C" int putRecordInternal(char *name, int shot, int nid, char dataType, i
 extern "C" int putSegmentInternal(char *name, int shot, int nid, char *start, int startSize, char *end, int endSize, 
 					   char *dim, int dimSize, char *data, int dataSize, int *shape, int shapeSize, int currDataSize,
 					   int isTimestamped, int actSamples, int updateOnly);
-#ifndef HAVE_WINDOWS_H
-typedef unsigned long long _int64;
-#endif
 
 #include "TreeWriter.h"
 
