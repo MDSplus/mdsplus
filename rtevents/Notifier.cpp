@@ -125,6 +125,22 @@ void Notifier::dispose(bool semaphoresOnly, SharedMemManager *memManager)
 		terminatorThread->start(new NotifierTerminator(this, memManager), (void *)terminatorThread);
 	}
 }
+void Notifier::dispose() //Only local
+{
+	notified->dispose();
+	watchdogNotified->dispose();
+	triggerSem.post();
+	watchdogSem.post();
+	thread->join(); //wait for actual termination of the underlying thread, once awakened
+	watchdogThread->join();
+	delete thread;
+	delete watchdogThread;
+	//delete notified;
+	//delete watchdogNotified;
+	triggerSem.dispose();
+	replySem.dispose();
+	watchdogSem.dispose();
+}
 
 //Check for orphan 
 bool Notifier::isOrphan()

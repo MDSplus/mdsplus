@@ -1,6 +1,6 @@
 #ifndef STATE_H_
 #define STATE_H_
-
+#include <string.h>
 class State
 {
 	bool isBigEndian()

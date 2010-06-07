@@ -13,7 +13,7 @@
 class Notified;
 class WatchdogNotified;
 
-class  Notifier
+class  EXPORT Notifier
 {
 	friend class Notified;
 	friend class WatchdogNotified;
@@ -43,6 +43,7 @@ bool waitTermination(Timeout &);
 void waitTermination();
 bool isPending();
 void dispose(bool semaphoresOnly, SharedMemManager *memManager);
+void dispose();
 bool isOrphan();
 };
 
