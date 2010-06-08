@@ -28,10 +28,10 @@ PARTS = \
         tdishr \
         tditest \
 	xtreeshr \
-	cacheshr \
-	mdsobjects/cpp \
         @MDSTCPIP@ \
 	rtevents \
+        cacheshr \
+        mdsobjects/cpp \
         mdslibidl \
         cdu     \
         mdsdcl  \
