@@ -138,8 +138,6 @@ __RTreeDiscardData=__RTreeShr._RTreeDiscardData
 __RTreeDiscardData.argtypes=[_C.c_void_p,_C.c_int]
 __RTreeFlushNode=__RTreeShr._RTreeFlushNode
 __RTreeFlushNode.argtypes=[_C.c_void_p,_C.c_int]
-__RTreeSetWarm=__RTreeShr._RTreeSetWarm
-__RTreeSetWarm.argtypes=[_C.c_void_p,_C.c_int,_C.c_int]
 __RTreeGetRecord=__RTreeShr._RTreeGetRecord
 __RTreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
 
