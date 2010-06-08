@@ -26,7 +26,7 @@ public fun Py(in _cmd, optional in _nolock) {
        abort();
      }
      if (MdsShr->LibFindImageSymbol(descr('MdsMisc'),descr('PyCall'),ref(_sym)) == 1) {
-       MdsMisc->PyCall("from MDSplus import *",val(1));
+       MdsMisc->PyCall("from MDSplus import Tree as ___TDI___Tree",val(1));
        public _PyInit=2;
      } else {
        if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
@@ -35,7 +35,7 @@ public fun Py(in _cmd, optional in _nolock) {
        PyCall("Py_Initialize",0);
        PyCall("PyEval_InitThreads",0);
        public _PyInit=1;
-       PyCall("PyRun_SimpleString",1,"from MDSplus import *");
+       PyCall("PyRun_SimpleString",1,"from MDSplus import Tree as ___TDI___Tree");
      }
    }
    for (_i=0;_i<size(_cmd);_i++) {
