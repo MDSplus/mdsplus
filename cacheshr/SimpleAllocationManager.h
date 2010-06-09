@@ -14,7 +14,7 @@ public:
 	//Free buffer
 	void deallocateShared(char *addr, int size)
 	{
-		free((void *)size);
+		free((void *)addr);
 	}
 	
 
