@@ -197,11 +197,14 @@ Tree *getActiveTree();
 
 class EXPORT Data 
 {
-		friend EXPORT Data *compile(const char *expr, ...);
-		friend EXPORT Data *compile(const char *expr, Tree *tree...);
-		friend EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
-		friend EXPORT Data *execute(const char *expr, ...);
-		friend EXPORT Data *execute(const char *expr, Tree *tree ...);
+		friend EXPORT Data *compile(const char *expr);
+		friend EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
+		friend EXPORT Data *compile(const char *expr, Tree *tree);
+		friend EXPORT Data *compileWithArgs(const char *expr, Tree *tree, int nArgs ...);
+		friend EXPORT Data *execute(const char *expr);
+		friend EXPORT Data *executeWithArgs(const char *expr, int nArgs ...);
+		friend EXPORT Data *execute(const char *expr, Tree *tree);
+		friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
 		friend EXPORT Data *deserialize(char *serialized);
 		friend EXPORT Data *deserialize(Data *serialized);
 		friend EXPORT void deleteData(Data *);
@@ -2060,7 +2063,7 @@ protected:
 		virtual int getCachePolicy() { return cachePolicy;}
 
 	public:
-		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BUFFER;}
+		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BACK;}
 		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
 		void flush();
 		void putLastRow(Data *data, Int64 *time);
@@ -2180,11 +2183,7 @@ protected:
 		int cacheSize;
 	public:
 		CachedTree(char *name,int shot,bool shared,int size);
-		CachedTree(char *name, int shot):Tree(name, shot)
-		{
-			cacheShared = false;
-			cacheSize = DEFAULT_CACHE_SIZE;
-		}
+		CachedTree(char *name, int shot);
 
 		virtual void open();
 
@@ -2351,11 +2350,14 @@ protected:
 //////////////Support functions////////
 EXPORT void deleteData(Data *);
 EXPORT Data *deserialize(char *serialized);
-EXPORT	Data *compile(char *expr, ...);
-EXPORT	Data *compile(char *expr, Tree *tree, ...);
-EXPORT	Data *execute(char *expr, Tree *tree, ...);
-EXPORT	Data *execute(char *expr, ...);
-EXPORT Data *executeWithArgs(const char *expr, Data **args, int nArgs);
+EXPORT Data *compile(const char *expr);
+EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
+EXPORT Data *compile(const char *expr, Tree *tree);
+EXPORT Data *compileWithArgs(const char *expr, Tree *tree, int nArgs ...);
+EXPORT Data *execute(const char *expr);
+EXPORT Data *executeWithArgs(const char *expr, int nArgs ...);
+EXPORT Data *execute(const char *expr, Tree *tree);
+EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
 Tree *getActiveTree();
 void setActiveTree(Tree *tree);
 //Required for handling dynamic memory allocated in a different DLL on windows
