@@ -23,7 +23,7 @@ extern int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descripto
 extern int RTreeGetNumSegments(int nid, int *numSegments);
 extern int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
-extern int RTreeGetSegmentInfo(int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
+extern int RTreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
 extern int RTreeDiscardOldSegments(int nid, _int64 timestamp);
 extern int RTreeDiscardData(int nid);
 extern int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeMode);
@@ -53,7 +53,7 @@ extern int _RTreePutRow(void *dbid, int nid, int bufSize, _int64 *timestamp, str
 extern int _RTreeGetNumSegments(void *dbid, int nid, int *numSegments);
 extern int _RTreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int _RTreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
-extern int _RTreeGetSegmentInfo(void *dbid, int nid, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
+extern int _RTreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
 extern int _RTreeDiscardOldSegments(void *dbid, int nid, _int64 timestamp);
 extern int _RTreeDiscardData(void *dbid, int nid);
 extern int _RTreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int writeMode);
