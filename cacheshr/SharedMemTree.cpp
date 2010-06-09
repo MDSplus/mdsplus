@@ -23,7 +23,7 @@ public:
 //Initialize shared data and return header
 void SharedMemTree::initialize(SimpleAllocationManager *freeSpaceManager, void **headerPtr)
 {
-printf("SharedMemTree::initialize\n");
+//printf("SharedMemTree::initialize\n");
 	SharedMemNodeData dummyData;
 	this->freeSpaceManager = freeSpaceManager;
 	header = 0;

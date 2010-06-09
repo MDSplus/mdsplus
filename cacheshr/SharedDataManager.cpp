@@ -327,6 +327,14 @@ int SharedDataManager::appendSegmentData(TreeDescriptor treeId, int nid, int *bo
 
 	lock.lock();
 	SharedMemNode *node = sharedTree.find(treeId, nid);
+	if(!node)
+	{
+		SharedMemNodeData nodeData;
+		nodeData.setNid(treeId, nid);
+		nodeData.setSegmented(true);
+		sharedTree.insert(&nodeData);
+		node = sharedTree.find(treeId, nid);
+	}
 	if(node)
 	{
 		SharedMemNodeData *nodeData = node->getData();
