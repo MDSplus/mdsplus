@@ -167,7 +167,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	{
 		status = _RTreeBeginSegment(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer, 
 			(struct descriptor_a *)dataXd->pointer, -1, cachePolicy);
-//		if(status & 1) status = _RTreePutSegment(dbid, nid, -1, (struct descriptor_a *)dataXd->pointer, cachePolicy);
+		if(status & 1) status = _RTreePutSegment(dbid, nid, -1, (struct descriptor_a *)dataXd->pointer, cachePolicy);
 	}
 
 	else

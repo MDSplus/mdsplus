@@ -91,9 +91,9 @@ void *getManyObj(char *serializedIn)
 		Data *currAnsw;
 		try {
 			if(argsData && argsData->len() > 0)
-				currAnsw = executeWithArgs(expr, argsData->getDscs(), argsData->len());
+				currAnsw = executeWithArgs(expr, 2, argsData->getDscs(), argsData->len());
 			else
-				currAnsw = execute(expr, (Data *)NULL);
+				currAnsw = execute(expr);
 
 			answDict->setItem(valueKey, currAnsw);
 			dataReported = true;

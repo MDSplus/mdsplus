@@ -1733,6 +1733,21 @@ CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize):Tr
 	this->cacheShared = cacheShared;
 	this->cacheSize = cacheSize;
 }
+CachedTree::CachedTree(char *name, int shot):Tree(name,shot)
+{
+	RTreeConfigure(false, 20000);
+	this->shot = shot;
+	ctx = 0;
+	int status = _RTreeOpen(&ctx, name, shot);
+	if(!(status & 1))
+	{
+		throw new MdsException(status);
+	}
+	this->name = new char[strlen(name) + 1];
+	strcpy(this->name, name);
+	this->cacheShared = false;
+	this->cacheSize = 20000;
+}
 
 
 void CachedTree::open() 
