@@ -42,9 +42,9 @@ public fun Py(in _cmd, optional in _nolock) {
        _locked=!present(_nolock);
        public _py_exception="";
        if (public _PyInit==1) {
-         PyCall("PyRun_SimpleString",_locked,"try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")");
+         PyCall("PyRun_SimpleString",_locked,"try:\n    "//_cmd[_i]//"\nexcept Exception,___TDI___exception:\n    from MDSplus import String as ___TDI___String\n    ___TDI___String(___TDI___exception).setTdiVar(\"_py_exception\")");
        } else {
-         MdsMisc->PyCall("try:\n    "//_cmd[_i]//"\nexcept Exception,exception:\n    String(exception).setTdiVar(\"_py_exception\")",val(_locked));
+         MdsMisc->PyCall("try:\n    "//_cmd[_i]//"\nexcept Exception,___TDI___exception:\n    from MDSplus import String as ___TDI___String\n    ___TDI___String(___TDI___exception).setTdiVar(\"_py_exception\")",val(_locked));
          if (ALLOCATED(public _PyReleaseThreadLock)) {
            MdsMisc->PyReleaseThreadLock();
            deallocate(public _PyReleaseThreadLock);
