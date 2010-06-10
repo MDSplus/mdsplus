@@ -636,7 +636,7 @@ class TreeNode(Data):
         if num > 0 and idx < num:
             try:
                 Tree.lock()
-                self.restoreContexT()
+                self.restoreContext()
                 ans = Data.execute('getSegment($,$)',self.nid,idx)
             finally:
                 Tree.unlock()
