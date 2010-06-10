@@ -115,7 +115,8 @@ MCAMERASetup.java \
 HMSPECTROSetup.java \
 RFXDiagTimesSetup.java \
 RFXDiagTimesV1Setup.java \
-MHD_BR_TESTSetup.java
+MHD_BR_TESTSetup.java\
+EDA3VmeConfigAdd.java
 
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
