@@ -116,7 +116,7 @@ HMSPECTROSetup.java \
 RFXDiagTimesSetup.java \
 RFXDiagTimesV1Setup.java \
 MHD_BR_TESTSetup.java\
-EDA3VmeConfigAdd.java\
+EDA3VmeConfigSetup.java\
 MCUSetup.java
 
 
