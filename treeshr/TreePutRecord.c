@@ -137,9 +137,10 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
     else
       open_status = 1;
     if (local_nci.flags2 & NciM_EXTENDED_NCI) {
+      int ext_status;
       extended_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
-      status = TreeGetExtendedAttributes(info_ptr,extended_offset,&attributes);
-      if (!(status & 1)) {
+      ext_status = TreeGetExtendedAttributes(info_ptr,extended_offset,&attributes);
+      if (!(ext_status & 1)) {
 	local_nci.flags2 &= ~NciM_EXTENDED_NCI;
       } else {
 	extended=1;
