@@ -197,22 +197,22 @@ old array is same size.
     /*****
 	  If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment.
     ****/
-    if (segment_header.idx > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
+    if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
       EMPTYXD(xd_data);
       EMPTYXD(xd_dim);
-      sinfo = &segment_index.segment[idx - 1];
+      sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1];
       status = _TreeGetSegment(dbid, nid, idx-1, &xd_data, &xd_dim);
       if (status & 1) {
 	int length;
 	segment_header.data_offset=sinfo->data_offset;
-	status = TreePutDsc(info_ptr,nid,xd_data.pointer,&sinfo->data_offset,&sinfo->rows);
+	status = TreePutDsc(info_ptr,nid,xd_data.pointer,&sinfo->data_offset,&length);
 	/*** flag compressed segment by setting high bit in the rows field. ***/
-	sinfo->rows |= 0x80000000;
+	sinfo->rows = length | 0x80000000;
       }
     }
     status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
     if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
-      memset(&segment_index,0,sizeof(segment_index));
+      memset(&segment_index,-1,sizeof(segment_index));
       segment_index.previous_offset=segment_header.index_offset;
       segment_header.index_offset=-1;
       segment_index.first_idx=idx;
@@ -1756,21 +1756,53 @@ old array is same size.
      /*****
 	  If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment.
      ****/
-     if (segment_header.idx > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
+     if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
        EMPTYXD(xd_data);
        EMPTYXD(xd_dim);
-       sinfo = &segment_index.segment[idx - 1];
+       sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1];
        status = _TreeGetSegment(dbid, nid, idx-1, &xd_data, &xd_dim);
        if (status & 1) {
 	 int length;
-	 segment_header.data_offset=sinfo->data_offset;
-	 segment_header.dim_offset=sinfo->dimension_offset;
-	 status = TreePutDsc(info_ptr,nid,xd_data.pointer,&sinfo->data_offset,&sinfo->rows);
-	 status = TreePutDsc(info_ptr,nid,xd_dim.pointer,&sinfo->dimension_offset,&sinfo->dimension_length);
-         sinfo->start = ((_int64 *)xd_dim.pointer->pointer)[0];
-	 sinfo->end = ((_int64 *)xd_dim.pointer->pointer)[sinfo->rows-1];
-	 /*** flag compressed segment by setting high bit in the rows field. ***/
-	 sinfo->rows |= 0x80000000;
+         int rows;
+	 A_COEFF_TYPE *data_a = (A_COEFF_TYPE *)xd_data.pointer;
+	 A_COEFF_TYPE *dim_a = (A_COEFF_TYPE *)xd_dim.pointer;
+         rows = (initialValue->dimct == 1) ? initialValue->arsize/initialValue->length : ((A_COEFF_TYPE *)initialValue)->m[initialValue->dimct-1];
+	 if (data_a && data_a->class == CLASS_A && data_a->pointer && data_a->arsize >= initialValue->arsize &&
+	     dim_a && dim_a->class == CLASS_A && dim_a->pointer && dim_a->arsize >= (rows * sizeof(_int64)) &&
+	     dim_a->dimct == 1 && dim_a->length == sizeof(_int64) && dim_a->dtype == DTYPE_Q) {
+	   segment_header.data_offset=sinfo->data_offset;
+	   segment_header.dim_offset=sinfo->dimension_offset;
+	   status = TreePutDsc(info_ptr,nid,xd_data.pointer,&sinfo->data_offset,&length);
+	   status = TreePutDsc(info_ptr,nid,xd_dim.pointer,&sinfo->dimension_offset,&sinfo->dimension_length);
+	   sinfo->start = ((_int64 *)dim_a->pointer)[0];
+	   sinfo->end = ((_int64 *)dim_a->pointer)[(dim_a->arsize/dim_a->length)-1];
+	   /*** flag compressed segment by setting high bit in the rows field. ***/
+	   sinfo->rows = length | 0x80000000;
+	 }
+	 else {
+	   if (!data_a)
+	     printf("data_a null\n");
+	   else if (data_a->class != CLASS_A)
+	     printf("data_a is not CLASS_A, class=%d\n",data_a->class);
+	   else if (!data_a->pointer)
+	     printf("data_a's pointer is null\n");
+	   else if (data_a->arsize < initialValue->arsize)
+	     printf("data_a->arsize (%d) < initialValue->arsize (%d)\n",data_a->arsize,initialValue->arsize);
+	   else if (!dim_a)
+	     printf("dim_a null\n");
+	   else if (dim_a->class != CLASS_A)
+	     printf("dim_a is not CLASS_A, class=%d\n",dim_a->class);
+	   else if (!dim_a->pointer)
+	     printf("dim_a's pointer is null\n");
+	   else if (dim_a->arsize < (rows * sizeof(_int64)))
+	     printf("dim_a->arsize (%d) < (rows (%d) * sizeof(_int64))",dim_a->arsize,rows);
+	   else if (dim_a->dimct != 1)
+	     printf("dim_a->dimct (%d) != 1\n",dim_a->dimct);
+	   else if (dim_a->length != sizeof(_int64))
+	     printf("dim_a->length (%d) != sizeof(_int64)\n",dim_a->length);
+	   else if (dim_a->dtype != DTYPE_Q)
+	     printf("dim_a->dtype (%d) != DTYPE_Q\n",dim_a->dtype);
+	 }
        }
        MdsFree1Dx(&xd_data,0);
        MdsFree1Dx(&xd_dim,0);
@@ -1778,7 +1810,7 @@ old array is same size.
      status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
      status = PutDimensionValue(info_ptr,timestamps, rows_filled, initialValue->dimct, segment_header.dims,&segment_header.dim_offset);
      if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
-       memset(&segment_index,0,sizeof(segment_index));
+       memset(&segment_index,-1,sizeof(segment_index));
        segment_index.previous_offset=segment_header.index_offset;
        segment_header.index_offset=-1;
        segment_index.first_idx=idx;
