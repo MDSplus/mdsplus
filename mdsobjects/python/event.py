@@ -79,3 +79,30 @@ class Event(Thread):
         MDSEvent(event,buffer)
     seteventRaw=staticmethod(seteventRaw)
 
+    def wfevent(event):
+	"""Wait for an event
+	@param event: event name
+	@rtype: Data
+	"""
+	class wfevent_handler(Event):
+            def run(self):
+                self.cancel()
+
+        c=wfevent_handler(event)
+        c.join()
+        return c.getData()
+    wfevent=staticmethod(wfevent)
+
+    def wfeventRaw(event):
+	"""Wait for an event
+	@param event: event name
+	@rtype: Data
+	"""
+	class wfevent_handler(Event):
+            def run(self):
+                self.cancel()
+
+        c=wfevent_handler(event)
+        c.join()
+        return c.getRaw()
+    wfeventRaw=staticmethod(wfeventRaw)
