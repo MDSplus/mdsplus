@@ -176,7 +176,7 @@ class DT216B(Device):
             UUT.setChannelCount(active_chans)
 
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
-                UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
+                UUT.uut.acqcmd("setInternalClock %d DO1" % clock_freq)
 		if clock_src == 'MASTER' :
 		    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
