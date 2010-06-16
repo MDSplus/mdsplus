@@ -1892,13 +1892,12 @@ old array is same size.
    nid_to_tree_nidx(dblist, nid_ptr, info_ptr, nidx);
    if (info_ptr) {
        int stv;
-       int rows_to_insert;
+       int rows_to_insert=-1;
        int bytes_per_row;
        int rows_in_segment;
        int bytes_to_insert;
 #ifdef WORDS_BIGENDIAN
-       unsigned char *buffer,*bptr;
-       char tstamp[8];
+       unsigned char *buffer,*bptr,*times;
 #endif
        _int64 offset;
        NCI       local_nci;
@@ -1930,16 +1929,13 @@ old array is same size.
 	 TreeUnLockNci(info_ptr,0,nidx);
 	 return TreeNOSEGMENTS;
        }
-       /*** See if the node currently has an segment header record. If not, make an empty segment header and flag that
-	    a new one needs to be written.
-       ***/
        if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY]==-1) {
 	 status = TreeNOSEGMENTS;
        } else if (((status = GetSegmentHeader(info_ptr, attributes.facility_offset[SEGMENTED_RECORD_FACILITY],&segment_header))&1)==0) {
 	 status=status;
        } else if (data->dtype != segment_header.dtype) {
 	 status = TreeINVDTYPE;
-       } else if (!(data->dimct == 1 && segment_header.dimct == 1) && (data->dimct != segment_header.dimct-1)) {
+       } else if (a_coeff->dimct == 1 && !((a_coeff->dimct == segment_header.dimct) || (a_coeff->dimct == segment_header.dimct-1))) {
 	 status = TreeINVSHAPE;
        } else if (a_coeff->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(segment_header.dimct-1)*sizeof(int)) != 0) {
 	 status = TreeINVSHAPE;
@@ -1957,7 +1953,7 @@ old array is same size.
        } else {
 	 rows_to_insert = (data->dimct == 1) ? data->arsize/data->length : a_coeff->m[a_coeff->dimct-1];
        }
-       if (rows_to_insert != 1) {
+       if (rows_to_insert <= 0) {
 	 TreeUnLockNci(info_ptr,0,nidx);
 	 return TreeINVSHAPE;
        }
@@ -1970,6 +1966,7 @@ old array is same size.
        offset=segment_header.data_offset+startIdx*bytes_per_row;
 #ifdef WORDS_BIGENDIAN
        buffer=memcpy(malloc(bytes_to_insert),data->pointer,bytes_to_insert);
+       times=malloc(sizeof(_int64)*rows_to_insert);
        if (segment_header.length > 1 && data->dtype != DTYPE_T && data->dtype != DTYPE_IDENT && data->dtype != DTYPE_PATH) {
 	 switch (segment_header.length) {
 	 case 2: 
@@ -1990,15 +1987,17 @@ old array is same size.
        MDS_IO_LSEEK(info_ptr->data_file->put,offset,SEEK_SET);
        status = (MDS_IO_WRITE(info_ptr->data_file->put,buffer,bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
        MDS_IO_LSEEK(info_ptr->data_file->put,segment_header.dim_offset+startIdx*sizeof(_int64),SEEK_SET);
-       LoadQuad(*timestamp,tstamp);
-       status = (MDS_IO_WRITE(info_ptr->data_file->put,tstamp,sizeof(_int64)) == sizeof(_int64)) ? TreeSUCCESS : TreeFAILURE;
+       for (i=0,bptr=times;i<rows_to_insert;i++,bptr+=sizeof(_int64))
+	 LoadQuad(timestamp[i],bptr);
+       status = (MDS_IO_WRITE(info_ptr->data_file->put,times,sizeof(_int64)*rows_to_insert) == (sizeof(_int64) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
+       free(times);
        free(buffer);
 #else
        TreeLockDatafile(info_ptr,0,offset);
        MDS_IO_LSEEK(info_ptr->data_file->put,offset,SEEK_SET);
        status = (MDS_IO_WRITE(info_ptr->data_file->put,data->pointer,bytes_to_insert) == bytes_to_insert) ? TreeSUCCESS : TreeFAILURE;
        MDS_IO_LSEEK(info_ptr->data_file->put,segment_header.dim_offset+startIdx*sizeof(_int64),SEEK_SET);
-       status = (MDS_IO_WRITE(info_ptr->data_file->put,timestamp,sizeof(_int64)) == sizeof(_int64)) ? TreeSUCCESS : TreeFAILURE;
+       status = (MDS_IO_WRITE(info_ptr->data_file->put,timestamp,sizeof(_int64)*rows_to_insert) == (sizeof(_int64) * rows_to_insert)) ? TreeSUCCESS : TreeFAILURE;
 #endif
        TreeUnLockDatafile(info_ptr,0,offset);
        segment_header.next_row=startIdx+bytes_to_insert/bytes_per_row;
