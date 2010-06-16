@@ -309,17 +309,8 @@ class TreeNode(Data):
         @type initialValueArray: Array
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('BeginSegment($,$,$,$,$,$)',self.nid,start,end,dimension,initialValue,idx)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from _treeshr import TreeBeginSegment
+        TreeBeginSegment(self,start,end,dimension,initialValue,idx)
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
@@ -329,17 +320,8 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('BeginTimestampedSegment($,$,$)',self.nid,array,idx)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error beginning timestampd segment:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from _treeshr import TreeBeginTimestampedSegment
+        TreeBeginTimestampedSegment(self,array,idx)
 
     def compare(self,value):
         """Returns True if this node contains the same data as specified in the value argument
@@ -638,13 +620,8 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            try:
-                Tree.lock()
-                self.restoreContext()
-                ans = Data.execute('getSegment($,$)',self.nid,idx)
-            finally:
-                Tree.unlock()
-            return ans
+            from _treeshr import TreeGetSegment
+            return TreeGetSegment(self,idx)
         else:
             return None
 
@@ -669,13 +646,12 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            try:
-                Tree.lock()
-                self.restoreContext()
-                l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
-            finally:
-                Tree.unlock()
-            return l[1]
+            from _treeshr import TreeGetSegmentLimits
+            limits=TreeGetSegmentLimits(self,idx)
+            if limits is not None:
+                return limits[1]
+            else:
+                return None
         else:
             return None
 
@@ -687,13 +663,12 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            try:
-                Tree.lock()
-                self.restoreContext()
-                l=Data.execute('getSegmentLimits($,$)',self.nid,idx)
-            finally:
-                Tree.unlock()
-            return l[0]
+            from _treeshr import TreeGetSegmentLimits
+            limits=TreeGetSegmentLimits(self,idx)
+            if limits is not None:
+                return limits[0]
+            else:
+                return None
         else:
             return None
 
@@ -869,17 +844,8 @@ class TreeNode(Data):
         @type timestamp: Uint64
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('putRow($,$,$,$)',self.nid,bufsize,timestamp,array)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error putting timestamped row:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from _treeshr import TreePutRow
+        TreePutRow(self,bufsize,array,timestamp)
                 
     def putSegment(self,data,idx):
         """Load a segment in a node
@@ -889,37 +855,34 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('PutSegment($,$,$)',self.nid,idx,data)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error putting segment:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from __treeshr import TreePutSegment
+        TreePutSegment(self,data,idx)
 
-    def putTimestampedSegment(self,array,timestampArray):
+    def putTimestampedSegment(self,timestampArray,array):
         """Load a timestamped segment
-        @param array: Data to load into segment
-        @type array: Array
         @param timestampArray: Array of time stamps
         @type timestampArray: Uint64Array
+        @param array: Data to load into segment
+        @type array: Array
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('putTimestampedSegment($,$,$)',self.nid,timestampArray,array)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error putting timestampd segment:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from _treeshr import TreePutTimestampedSegment
+        TreePutTimestampedSegment(self,timestampArray,array)
+
+    def makeTimestampedSegment(self,timestampArray,array,idx,rows_filled):
+        """Load a timestamped segment
+        @param timestampArray: Array of time stamps
+        @type timestampArray: Uint64Array
+        @param array: Data to load into segment
+        @type array: Array
+        @param idx: Segment number
+        @param idx: int
+        @param rows_filled: Number of rows of segment filled with data
+        @type rows_filled: int
+        @rtype: None
+        """
+        from _treeshr import TreeMakeTimestampedSegment
+        TreeMakeTimestampedSegment(self,timestampArray,array,idx,rows_filled)
 
     def removeTag(self,tag):
         """Remove a tagname from this node
@@ -1087,17 +1050,8 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        try:
-            Tree.lock()
-            self.restoreContext()
-            status=Data.execute('TreeShr->TreeUpdateSegment(val($),descr($),descr($),descr($),val($))',self.nid,start,end,dim,idx)
-            if not (status & 1)==1:
-                from _treeshr import TreeException
-                from _descriptor import MdsGetMsg
-                raise TreeException,'Error beginning segment:'+MdsGetMsg(int(status))
-        finally:
-            Tree.unlock()
-        return
+        from _treeshr import TreeUpdateSegment
+        TreeUpdateSegment(self,start,end,dim,idx)
 
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""

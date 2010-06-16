@@ -82,12 +82,14 @@ __TreeBeginSegment=__TreeShr._TreeBeginSegment
 __TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int]
 __TreeBeginTimestampedSegment=__TreeShr._TreeBeginTimestampedSegment
 __TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
+__TreeMakeTimestampedSegment=__TreeShr._TreeMakeTimestampedSegment
+__TreeMakeTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_void_p,_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
 __TreeUpdateSegment=__TreeShr._TreeUpdateSegment
 __TreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
 __TreePutSegment=__TreeShr._TreePutSegment
 __TreePutSegment.argtpes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_a)]
 __TreePutTimestampedSegment=__TreeShr._TreePutTimestampedSegment
-__TreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.POINTER(_C.c_int64)]
+__TreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_void_p,_C.POINTER(descriptor_a)]
 __TreePutRow=__TreeShr._TreePutRow
 __TreePutRow.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(_C.c_int64),_C.POINTER(descriptor_a)]
 __TreeGetNumSegments=__TreeShr._TreeGetNumSegments
@@ -232,6 +234,40 @@ def TreeGetRecord(n):
     status=__TreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
     if (status & 1):
         return value.value
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+
+def TreeGetSegment(n,idx):
+    """Get segment from MDSplus node."""
+    value=descriptor_xd()
+    dim=descriptor_xd()
+    status=__TreeGetSegment(n.tree.ctx,n.nid,idx,_C.pointer(value),_C.pointer(dim))
+    if (status & 1):
+        from compound import Signal
+        return Signal(value.value,None,dim.value)
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+
+def TreeGetSegmentLimits(n,idx):
+    """Get segment from MDSplus node."""
+    start=descriptor_xd()
+    end=descriptor_xd()
+    status=__TreeGetSegmentLimits(n.tree.ctx,n.nid,idx,_C.pointer(start),_C.pointer(end))
+    if (status & 1):
+        try:
+            start=start.value.evaluate()
+        except:
+            start=None
+        try:
+            end=end.value.evaluate()
+        except:
+            end=None
+        if start is not None or end is not None:
+            return (start,end,)
+        else:
+            return None
     else:
         raise TreeException,MdsGetMsg(status)
     return None
@@ -517,6 +553,106 @@ def TreeGetNumSegments(n):
         raise TreeException,MdsGetMsg(status)
     return None
 
+def TreePutTimestampedSegment(n,timestampArray,value):
+    """Put a timestampedsegment"""
+    from mdsarray import makeArray,Int64Array
+    timestampArray=Int64Array(timestampArray)
+    value=makeArray(value)
+    try:
+        n.tree.lock()
+        status=__TreePutTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestampArray).pointer,_C.pointer(descriptor_a(value)))
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status;
+    else:
+        raise TreeException,MdsGetMsg(status)
+
+def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
+    """Put a segment"""
+    from mdsarray import makeArray,Int64Array
+    timestamps=Int64Array(timestamps)
+    value=makeArray(value)
+    try:
+        n.tree.lock()
+        status=__TreeMakeTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestamps).pointer,_C.pointer(descriptor_a(value)),idx,rows_filled)
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status;
+    else:
+        raise TreeException,MdsGetMsg(status)
+
+def TreePutSegment(n,value,idx):
+    """Put a segment"""
+    try:
+        n.tree.lock()
+        status=__TreePutSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)))
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status;
+    else:
+        raise TreeException,MdsGetMsg(status)
+
+def TreePutRow(n,bufsize,array,timestamp):
+    """Begin a segment."""
+    from mdsdata import makeData
+    from mdsarray import makeArray
+    try:
+        n.tree.lock()
+        array=makeArray(array)
+        status=__TreePutRow(n.tree.ctx,n.nid,bufsize,_C.pointer(_C.c_int64(int(timestamp))),
+                             _C.pointer(descriptor_a(array)))
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+
+def TreeBeginTimestampedSegment(n,value,idx):
+    """Begin a segment"""
+    try:
+        n.tree.lock()
+        status=__TreeBeginTimestampedSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(value)),idx)
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status;
+    else:
+        raise TreeException,MdsGetMsg(status)
+
+def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
+    """Begin a segment."""
+    try:
+        n.tree.lock()
+        status=__TreeBeginSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
+                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),
+                                   idx)
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+
+def TreeUpdateSegment(n,start,end,dimension,idx):
+    """Update a segment."""
+    try:
+        n.tree.lock()
+        status=__TreeUpdateSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
+                                    _C.pointer(descriptor(dimension)),idx)
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+    
 def RTreePutRecord(n,value):
     """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
     try:
@@ -565,7 +701,7 @@ def RTreePutSegment(n,value,idx):
         n.tree.lock()
         status=__RTreePutSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)),n.cachePolicy)
     finally:
-        n.treee.unlock()
+        n.tree.unlock()
     if (status & 1):
         return status;
     else:
@@ -577,7 +713,7 @@ def RTreePutTimestampedSegment(n,value,timestampArray):
         n.tree.lock()
         status=__RTreePutTimestampedSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)),descriptor_a(timestampArray).pointer,n.cachePolicy)
     finally:
-        n.treee.unlock()
+        n.tree.unlock()
     if (status & 1):
         return status;
     else:
