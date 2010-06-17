@@ -40,6 +40,7 @@ public class EDA3VmeConfigSetup extends DeviceSetup {
         deviceField7 = new DeviceField();
         deviceField9 = new DeviceField();
         deviceField8 = new DeviceField();
+        deviceField15 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
         deviceField10 = new DeviceField();
@@ -119,6 +120,12 @@ public class EDA3VmeConfigSetup extends DeviceSetup {
         deviceField8.setOffsetNid(13);
         jPanel4.add(deviceField8);
 
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("rVesselTuning");
+        deviceField15.setNumCols(4);
+        deviceField15.setOffsetNid(18);
+        jPanel4.add(deviceField15);
+
         jPanel1.add(jPanel4);
 
         deviceField11.setIdentifier("");
@@ -181,7 +188,7 @@ public class EDA3VmeConfigSetup extends DeviceSetup {
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("VME IP:");
         deviceField14.setNumCols(30);
-        deviceField14.setOffsetNid(18);
+        deviceField14.setOffsetNid(19);
         deviceField14.setTextOnly(true);
         jPanel7.add(deviceField14);
 
@@ -200,6 +207,7 @@ public class EDA3VmeConfigSetup extends DeviceSetup {
     private DeviceField deviceField12;
     private DeviceField deviceField13;
     private DeviceField deviceField14;
+    private DeviceField deviceField15;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
