@@ -1,6 +1,6 @@
 public fun EDA3VmeConfig__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'EDA3VmeConfig', 20, _nidout);
+    DevAddStart(_path, 'EDA3VmeConfig', 21, _nidout);
     DevAddNode(_path // ':DELTA_T', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':THETA_NOM', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':TAU_VTHETA', 'NUMERIC', *, *, _nid);
@@ -18,6 +18,7 @@ public fun EDA3VmeConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':DELTAVTORTR', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':DELTATBT1', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':DELTATBT2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':TUNING1', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VME_IP', 'TEXT', *, *, _nid);
     DevAddAction(_path //':INIT_ACTION', 'INIT', 'INIT', 50,'VME_SERVER', getnci(_path, 'fullpath'), _nid);
     DevAddEnd();

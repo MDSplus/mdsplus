@@ -18,7 +18,8 @@ public fun EDA3VmeConfig__init(as_is _nid, optional _method)
     private _N_DELTAVTORTR = 15;
     private _N_DELTATBT1  = 16;
     private _N_DELTATBT2 = 17;
-    private _N_VME_IP = 18;
+    private _N_TUNING1 = 18;
+    private _N_VME_IP = 19;
 
     private _ERROR = 1E38;
 
@@ -36,7 +37,7 @@ public fun EDA3VmeConfig__init(as_is _nid, optional _method)
 
     _vals = [];
   
-    for(_i = 0; _i < 18; _i++)
+    for(_i = 0; _i < 19; _i++)
     {
         _curr_val = if_error(data(DevNodeRef(_nid, _N_DELTA_T+_i)), _ERROR);
         if(_curr_val == _ERROR)
