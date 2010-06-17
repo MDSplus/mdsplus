@@ -102,6 +102,20 @@ public fun ParameterSettingCheck()
 		}		
 	}
 	*/
+	
+	/*
+	Controllo PCAT per controllo in corrente
+	Se il controllo di corrente e' attivo segnalo se PCAT non sono nulli
+	*/
+
+	_pcWavePath = "\\RFX::PC_SETUP.WAVE_1.WAVE";
+	_data = data( build_path( _pcWavePath ) );
+	_modePath = "\\RFX::IP_CONTROL:TYPE";
+	_mode = data( build_path( _modePath ) );
+
+
+	if( _mode == 2 && abs(maxval(_data)) > 1 )
+			_msg = _msg//" Controllo di corrente RFP ATTIVO e riferimento di PCAT non NULLO #";
 
 	return ( _msg );
 }
