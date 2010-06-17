@@ -37,7 +37,7 @@ public fun EDA3VmeConfig__init(as_is _nid, optional _method)
 
     _vals = [];
   
-    for(_i = 0; _i < 19; _i++)
+    for(_i = 0; _i < 18; _i++)
     {
         _curr_val = if_error(data(DevNodeRef(_nid, _N_DELTA_T+_i)), _ERROR);
         if(_curr_val == _ERROR)
