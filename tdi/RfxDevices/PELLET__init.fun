@@ -46,6 +46,8 @@ public fun PELLET__init(as_is _nid, optional _method)
 
 	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
 
+write(*, _name);
+
 	if( _status )
 	{
 		DevLogErr(_nid, "Missing rs232 name");
@@ -55,6 +57,7 @@ public fun PELLET__init(as_is _nid, optional _method)
 
 	_tok0 = trim(element(0, ":", _name));
 	_tok1 = trim(element(1, ":", _name));
+
 
 	
 	if( len(_tok0) != 0 && len(_tok1) != 0 )

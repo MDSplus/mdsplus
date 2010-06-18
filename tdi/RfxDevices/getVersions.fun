@@ -1,5 +1,7 @@
 public fun getVersions()
 {
+
+
     _status = MdsConnect("150.178.34.45");
     if(_status == 0)
     {
@@ -12,9 +14,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_DEQU", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_dequ_ver),val(0));
+    _statusDEQU0 = TreeShr->TreePutRecord(val(_nid),xd(_dequ_ver),val(0));
     _nid = getnci("\\DEQU_RAW::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_dequ_ver),val(0));
+    _statusDEQU1 = TreeShr->TreePutRecord(val(_nid),xd(_dequ_ver),val(0));
 	
     _status = MdsConnect("150.178.34.46");
     if(_status == 0)
@@ -28,9 +30,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_DFLU", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_dflu_ver),val(0));
+    _statusDFLU0 = TreeShr->TreePutRecord(val(_nid),xd(_dflu_ver),val(0));
     _nid = getnci("\\DFLU_RAW::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_dflu_ver),val(0));
+    _statusDFLU1 = TreeShr->TreePutRecord(val(_nid),xd(_dflu_ver),val(0));
 
 	_status = MdsConnect("150.178.34.30");
     if(_status == 0)
@@ -44,9 +46,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_EDA1", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_eda1_ver),val(0));
+    _statusEDA10 = TreeShr->TreePutRecord(val(_nid),xd(_eda1_ver),val(0));
     _nid = getnci("\\EDA1::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_eda1_ver),val(0));
+    _statusEDA11 = TreeShr->TreePutRecord(val(_nid),xd(_eda1_ver),val(0));
 
 	_status = MdsConnect("150.178.34.31");
     if(_status == 0)
@@ -60,9 +62,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_EDA3", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_eda3_ver),val(0));
+    _statusEDA30 = TreeShr->TreePutRecord(val(_nid),xd(_eda3_ver),val(0));
     _nid = getnci("\\EDA3::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_eda3_ver),val(0));
+    _statusEDA31 = TreeShr->TreePutRecord(val(_nid),xd(_eda3_ver),val(0));
 	
     _status = MdsConnect("150.178.34.29");
     if(_status == 0)
@@ -76,9 +78,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_MHD_AC", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_ac_ver),val(0));
+    _statusMHD_AC0 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_ac_ver),val(0));
     _nid = getnci("\\MHD_AC::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_ac_ver),val(0));
+    _statusMHD_AC1 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_ac_ver),val(0));
 	
     _status = MdsConnect("150.178.34.28");
     if(_status == 0)
@@ -92,9 +94,9 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_MHD_BC", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_bc_ver),val(0));
+    _statusMHD_BC0 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_bc_ver),val(0));
     _nid = getnci("\\MHD_BC::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_bc_ver),val(0));
+    _statusMHD_BC1 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_bc_ver),val(0));
 	
 	_status = MdsConnect("150.178.34.27");
     if(_status == 0)
@@ -108,18 +110,20 @@ public fun getVersions()
 		MdsDisconnect();
     }
     _nid = getnci("\\VERSIONS:VME_MHD_BR", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_br_ver),val(0));
+    _statusMHD_BR0 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_br_ver),val(0));
     _nid = getnci("\\MHD_BR::CONTROL:VERSION", "NID_NUMBER");
-    TreeShr->TreePutRecord(val(_nid),xd(_mhd_br_ver),val(0));
+    _statusMHD_BR1 = TreeShr->TreePutRecord(val(_nid),xd(_mhd_br_ver),val(0));
 
-    write(*,"DEQU_VME ", _dequ_ver);
-    write(*,"DFLU_VME ", _dflu_ver);
-    write(*,"EDA1_VME ", _eda1_ver);
-    write(*,"EDA3_VME ", _eda3_ver);
-    write(*,"MHD_AC_VME ", _mhd_ac_ver);
-    write(*,"MHD_BC_VME ", _mhd_bc_ver);
-    write(*,"MHD_BR_VME ", _mhd_br_ver);
-    
+/*
+	
+    write(*,"DEQU_VME ", _dequ_ver,_statusDEQU0,_statusDEQU1,getenv('rfx_path'));
+    write(*,"DFLU_VME ", _dflu_ver,_statusDFLU0,_statusDFLU1);
+    write(*,"EDA1_VME ", _eda1_ver, _statusEDA10,_statusEDA11);
+    write(*,"EDA3_VME ", _eda3_ver, _statusEDA30,_statusEDA31);
+    write(*,"MHD_AC_VME ", _mhd_ac_ver,_statusMHD_AC0,_statusMHD_AC1);
+    write(*,"MHD_BC_VME ", _mhd_bc_ver, _statusMHD_AC0,_statusMHD_AC1);
+    write(*,"MHD_BR_VME ", _mhd_br_ver, _statusMHD_BR0, _statusMHD_BR1);
+*/  
     return (1);
 }
 

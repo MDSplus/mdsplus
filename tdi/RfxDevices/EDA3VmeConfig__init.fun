@@ -45,11 +45,10 @@ public fun EDA3VmeConfig__init(as_is _nid, optional _method)
 	      DevLogErr(_nid, 'Invalid value for parameter  '// _i);
 		abort();
 	  }
-   	  _vals = [_vals, _currVal];
-	  write(*, _vals);
+   	  _vals = [_vals, _curr_val];
     }
-
-    _status = MdsValue('variables->setFloatArray($1, $2, $3)', 'fControlParams', float(_vals), size(_vals));
+    write(*, _vals);
+    _status = MdsValue('variables->setFloatArray($1, $2, $3)', 'fControlParamsPtr', float(_vals), size(_vals));
     if(_status == *)
     {
 	  DevLogErr(_nid, 'Cannot write parameters to VME');
