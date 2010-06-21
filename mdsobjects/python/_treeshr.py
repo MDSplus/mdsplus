@@ -16,6 +16,8 @@ __TreeClose=__TreeShr._TreeClose
 __TreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
 __TreeFindNode=__TreeShr._TreeFindNode
 __TreeFindNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int)]
+TreeFreeDbid=__TreeShr.TreeFreeDbid
+TreeFreeDbid.argtypes=[_C.c_void_p]
 __TreeGetPath=__TreeShr._TreeGetPath
 __TreeGetPath.argtypes=[_C.c_void_p,_C.c_int]
 __TreeGetPath.restype=_C.c_void_p
@@ -572,7 +574,7 @@ def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
     """Put a segment"""
     from mdsarray import makeArray,Int64Array
     timestamps=Int64Array(timestamps)
-    value=makeArray(value)
+    value=makeArray(value).data().transpose()
     try:
         n.tree.lock()
         status=__TreeMakeTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestamps).pointer,_C.pointer(descriptor_a(value)),idx,rows_filled)
@@ -616,7 +618,7 @@ def TreeBeginTimestampedSegment(n,value,idx):
     """Begin a segment"""
     try:
         n.tree.lock()
-        status=__TreeBeginTimestampedSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(value)),idx)
+        status=__TreeBeginTimestampedSegment(n.tree.ctx,n.nid,_C.pointer(descriptor_a(value)),idx)
     finally:
         n.tree.unlock()
     if (status & 1):

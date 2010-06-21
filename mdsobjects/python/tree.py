@@ -16,14 +16,17 @@ class Tree(object):
             except:
                 pass
             try:
-                from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFree
+                from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFreeDbid,TreeRestoreContext
                 if self.close:
                     if isinstance(self,CachedTree):
                         RtreeCloseAll(self.ctx)
                     else:
                         TreeCloseAll(self.ctx)
                     if hasattr(self,"ctx") and self.ctx is not None:
-                        TreeFree(self.ctx)
+                        TreeFreeDbid(self.ctx)
+                    if Tree._activeTree == self:
+                        Tree._activeTree = None
+                        TreeRestoreContext(None)
                 self.ctx=None
             except:
                 pass
