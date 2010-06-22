@@ -104,8 +104,8 @@ ifdef modules
 	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
 endif
 
-@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)
-	$(AR) -cr $@ mdsiputil.o mdsip_socket_io.o $(COMPRESSION_OBJECTS)
+@MAKELIBDIR@libMdsIpUtil.a : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
+	$(AR) -cr $@ mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
