@@ -230,6 +230,8 @@ class Dispatch(Compound):
             kwargs['dispatch_type']=2
         kwargs['opcode']=kwargs['dispatch_type']
         super(Dispatch,self).__init__(args=args,params=kwargs)
+        if self.completion is None:
+           self.completion = None
     
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
