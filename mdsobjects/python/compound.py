@@ -13,6 +13,8 @@ class Compound(Data):
             raise TypeError,"Cannot create instances of class Compound"
         if 'args' in params:
             args=params['args']
+        if 'params' in params:
+            params=params['params']
         exec 'self._dtype=DTYPE_'+self.__class__.__name__.upper()
         if 'opcode' in params:
             self._opcode=params['opcode']
@@ -226,7 +228,8 @@ class Dispatch(Compound):
     def __init__(self,*args,**kwargs):
         if 'dispatch_type' not in kwargs:
             kwargs['dispatch_type']=2
-        super(Dispatch,self).__init__(args=args,opcode=kwargs['dispatch_type'])
+        kwargs['opcode']=kwargs['dispatch_type']
+        super(Dispatch,self).__init__(args=args,params=kwargs)
     
 class Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
