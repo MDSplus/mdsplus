@@ -38,7 +38,7 @@ Function MDSDECOMPILE,node_name,QUIET=QUIET,STATUS=STATUS,INFO=INFO
 ;
 nid=1L
 IF NOT KEYWORD_SET(INFO) THEN INFO = 0
-nid = mdsvalue('_rec=getnci($,"RECORD")',node_name,status=status,/quiet)
+nid = mdsvalue('_rec=getnci($,"RECORD"),1',node_name,status=status,/quiet)
 IF NOT STATUS AND NOT KEYWORD_SET(QUIET) THEN message,mdsgetmsg(status),INFO=INFO
 IF STATUS THEN BEGIN
   cmd = 'decompile(`_rec)'
