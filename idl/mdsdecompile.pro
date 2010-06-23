@@ -38,11 +38,11 @@ Function MDSDECOMPILE,node_name,QUIET=QUIET,STATUS=STATUS,INFO=INFO
 ;
 nid=1L
 IF NOT KEYWORD_SET(INFO) THEN INFO = 0
-nid = mdsvalue('getnci($,"NID_NUMBER")',node_name,status=status,/quiet)
-IF NOT STATUS AND NOT KEYWORD_SET(QUIET) THEN message,"Error finding node",INFO=INFO
+nid = mdsvalue('_rec=getnci($,"RECORD")',node_name,status=status,/quiet)
+IF NOT STATUS AND NOT KEYWORD_SET(QUIET) THEN message,mdsgetmsg(status),INFO=INFO
 IF STATUS THEN BEGIN
-  cmd = 'DECOMPILE(`GETNCI($,"RECORD"))'
+  cmd = 'decompile(`_rec)'
   IF NOT KEYWORD_SET(QUIET) THEN QUIET = 0
-  RETURN,mdsvalue(cmd,node_name,QUIET=QUIET,STATUS=STATUS)
+  RETURN,mdsvalue(cmd,QUIET=QUIET,STATUS=STATUS)
 ENDIF ELSE RETURN,''
 END
