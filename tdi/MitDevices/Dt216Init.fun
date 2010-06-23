@@ -8,17 +8,6 @@ public fun Dt216Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       _mask = _mask//'0';
     }
   }
-  if (_preTrig == 0) {
-   Dt200WriteMaster(_board, 'set.trig '//_trigSrc//' falling', 1);
-   Dt200WriteMaster(_board, 'set.event0 none;get.event0', 1);
-   Dt200WriteMaster(_board, 'set.event1 none;get.event0', 1);
-  } else {
-    if (_preTrig < 64*1024) {
-      write(*, 'Pre trig must be either 0 or > 64K');
-      _preTrig = 1024*64L;
-    }
-    Dt200WriteMaster(_board, 'set.event event0 '//_trigSrc//' falling;get.event event0', 1);
-  }
   Dt200WriteMaster(_board, "setChannelMask "//_mask);
   if (_clockSource == 'MASTER') {
     Dt200WriteMaster(_board, "setInternalClock "//long(_clockFreq)//" DO1");
@@ -34,10 +23,16 @@ public fun Dt216Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
       }
     }
   }
-  Dt200WriteMaster(_board, "setModeTriggeredContinuous "//_preTrig//" "//_postTrig);
-  _status = Dt200WriteMaster(_board, "set.Arm", 1);
-  if (_status == "/bin/sh: set.Arm: not found")
-    Dt200WriteMaster(_board, "setArm");
-
+  if (_preTrig == 0) {
+     Dt200WriteMaster(_board, 'set.trig '//_trigSrc//' rising', 1);
+     Dt200WriteMaster(_board, 'set.event0 none', 1);
+     Dt200WriteMaster(_board, 'setMode GATED_TRANSIENT '//_postTrig);
+  } else {
+     Dt200WriteMaster(board, 'set.trig none', 1);
+     Dt200WriteMaster(board, 'set.event0 '//_trigSrc//' rising', 1);
+     Dt200WriteMaster(board, 'setModTriggeredContinuous '//_preTrig//' '//_postTrig);
+  }
+/*  Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig//" "//_trigSrc//" rising", 1); */
+  Dt200WriteMaster(_board, "setArm");
   return(1);
 }
