@@ -151,6 +151,7 @@ extern "C" int _RTreeFlushNode(void *dbid, int nid);
 extern "C" int _TreeSetSubtree(void *dbid, int nid);
 extern "C" int _TreeSetNoSubtree(void *dbid, int nid);
 extern "C" _int64 _TreeGetDatafileSize(void *dbid);
+extern "C" void TreeFreeDbid(void *);
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
@@ -208,7 +209,7 @@ Tree::Tree(char *name, int shot)
 	}
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
-	setActiveTree(this);
+	//setActiveTree(this);
 }
 
 Tree::Tree(void *dbid, char *name, int shot)
@@ -252,7 +253,9 @@ Tree::Tree(char *name, int shot, char *mode)
 
 Tree::~Tree()
 {
-    _TreeClose(&ctx, name, shot);
+    int status = _TreeClose(&ctx, name, shot);
+    if(status & 1)
+    	TreeFreeDbid(ctx);
     delete [] name;
 }
 
