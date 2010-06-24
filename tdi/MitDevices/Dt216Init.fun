@@ -24,15 +24,18 @@ public fun Dt216Init(IN _board, IN _activeChans, IN _trigSrc, IN _clockSource, I
     }
   }
   if (_preTrig == 0) {
+     write(*, "_preTrig is zero");
      Dt200WriteMaster(_board, 'set.trig '//_trigSrc//' rising', 1);
      Dt200WriteMaster(_board, 'set.event0 none', 1);
      Dt200WriteMaster(_board, 'setMode GATED_TRANSIENT '//_postTrig);
   } else {
-     Dt200WriteMaster(board, 'set.trig none', 1);
-     Dt200WriteMaster(board, 'set.event0 '//_trigSrc//' rising', 1);
-     Dt200WriteMaster(board, 'setModTriggeredContinuous '//_preTrig//' '//_postTrig);
+     write(*, "_preTrig is NOT zero");
+     Dt200WriteMaster(_board, 'set.trig none', 1);
+     Dt200WriteMaster(_board, 'set.event0 '//_trigSrc//' rising', 1);
+     Dt200WriteMaster(_board, 'setModeTriggeredContinuous '//_preTrig//' '//_postTrig);
   }
 /*  Dt200WriteMaster(_board, "set.pre_post_mode "//_preTrig//" "//_postTrig//" "//_trigSrc//" rising", 1); */
   Dt200WriteMaster(_board, "setArm");
+  write(*, "Dt216Init is done");
   return(1);
 }
