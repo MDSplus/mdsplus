@@ -182,7 +182,14 @@ class DT196B(Device):
             else:
 		if (clock_div != 1) :        
 		    UUT.uut.acqcmd("setExternalClock %s %d D02" % (clock_src, clock_div,))
+#
+# the following is not generic
+# the clock is output on d2 and comes from DI0
+#
+		    UUT.set_route('d2', 'in fpga out pxi')
 		    UUT.uut.acqcmd('-- setDIO --1-----')
+                    UUT.uut.acq2sh('set.ext_clk DI0')
+
 		else :
                     UUT.uut.acqcmd("setExternalClock %s" % clock_src)
 
