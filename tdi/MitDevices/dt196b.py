@@ -180,7 +180,12 @@ class DT196B(Device):
 		if clock_src == 'MASTER' :
 		    UUT.uut.acqcmd('-- setDIO -1-----')
             else:
-		UUT.uut.acqcmd("setExternalClock %s" % clock_src)
+		if (clock_div != 1) :        
+		    UUT.uut.acqcmd("setExternalClock %s %d D02" % (clock_src, clock_div,))
+		    UUT.uut.acqcmd('-- setDIO --1-----')
+		else :
+                    UUT.uut.acqcmd("setExternalClock %s" % clock_src)
+
             UUT.setPrePostMode(pre_trig, post_trig)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             UUT.set_arm() 
