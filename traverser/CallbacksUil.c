@@ -1051,7 +1051,7 @@ static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method
 
 static int setup_device(Widget parent, int nid)
 {
-  static DESCRIPTOR(const method, "DW_SETUP");
+  static DESCRIPTOR(const method, "dw_setup");
   struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
   volatile int status;
   niddsc.pointer = (char *)&nid;
