@@ -55,7 +55,7 @@ JiSlabIterator.java         SetupDataDialog.java        WaveformEvent.java      
 Frames.java                 JiVar.java                  SetupDefaults.java          WaveformListener.java	NotConnectedDataProvider.java\
 SignalsBoxDialog.java	    SignalBox.java		MdsDataClient.java	    MdsIOException.java		SetupWaveformParams.java \
 TSDataProvider.java	    AsdexDataProvider.java	WaveformEditor.java	    WaveformEditorListener.java MdsplusParser.java \
-ASCIIDataProvider.java      ImageTransferable.java
+ASCIIDataProvider.java      ImageTransferable.java ColorMapDialog.java  ColorMap.java
 
 CLASSES = $(SOURCES:.java=.class)
 
