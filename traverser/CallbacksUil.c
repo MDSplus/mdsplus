@@ -29,6 +29,7 @@
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialog.h>
 #include <Xmds/XmdsCallbacks.h>
+#include <tdimessages.h>
 /*
  * Standard includes for builtins.
  */
@@ -1045,13 +1046,15 @@ static int DoMethodNoSignal(struct descriptor *niddsc, struct descriptor *method
   EMPTYXD(xd);
   int status;
   status = TreeDoMethod(niddsc, method, parent, &xd MDS_END_ARG);
+  if (status == TdiEXTRA_ARG)
+    status = TreeDoMethod(niddsc, method, &xd MDS_END_ARG);
   MdsFree1Dx(&xd,0);
   return status;
 }
 
 static int setup_device(Widget parent, int nid)
 {
-  static DESCRIPTOR(const method, "dw_setup");
+  static DESCRIPTOR(const method,"DW_SETUP");
   struct descriptor niddsc = {4, DTYPE_NID, CLASS_S, 0};
   volatile int status;
   niddsc.pointer = (char *)&nid;
