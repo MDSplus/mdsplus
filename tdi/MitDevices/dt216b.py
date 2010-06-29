@@ -245,7 +245,7 @@ class DT216B(Device):
             if debug:
                 print "pre = %d, post = %d" % (pre, post, )
             clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string") 
-            if clock_src == 'INT_CLOCK' :
+            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
             else:
                 self.clock.record = self.clock_src
