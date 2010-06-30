@@ -106,7 +106,7 @@ public fun dc1394a__init(as_is _nid, optional in _method)
   _yoffset = if_error(data(DevNodeRef(_nid, _DC1394A_YOFFSET)), 0);
 
   _trig_mode = if_error(data(DevNodeRef(_nid, _DC1394A_TRIG_MODE)), 384);
-  _trig_mode = max(min(_trig_mode,  _DC1394_TRIGGER_MODE_15),  _DC1394_TRIGGER_MODE_1);
+  _trig_mode = max(min(_trig_mode,  _DC1394_TRIGGER_MODE_15),  _DC1394_TRIGGER_MODE_0);
  
   _iso_speed = if_error(DevNodeRef(_nid, _DC1394A_ISO_SPEED), _DC1394_ISO_SPEED_400);
   _iso_speed = max(min(_iso_speed,  _DC1394_ISO_SPEED_3200),  _DC1394_ISO_SPEED_100);
