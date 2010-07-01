@@ -597,6 +597,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	char *outData;
 	struct descriptor_a *dataD;
 	EMPTYXD(shapeXd);
+	EMPTYXD(dataXd);
 
 	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0); 
 	DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
@@ -652,11 +653,25 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		end64 = timebase64[numTimebaseSamples - 1];
 
 //Get shapes(dimensions) for data
-	dataD = (struct descriptor_a *)inSignalD->data;
+	if (inSignalD->data->class == CLASS_A) {
+	  dataD = (struct descriptor_a *)inSignalD->data;
+	} else {
+	  status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
+	  if (status & 1)
+	    dataD = (struct descriptor_a *)dataXd.pointer;
+	  else
+	    return status;
+	}
 	status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
-	if(!(status & 1)) return status;;
+	if(!(status & 1)) {
+	  MdsFree1Dx(&dataXd,0);
+	  return status;
+	}
 	status = TdiData(&shapeXd, &shapeXd MDS_END_ARG);
-	if(!(status & 1)) return status;
+	if(!(status & 1)) {
+	  MdsFree1Dx(&dataXd,0);
+	  return status;
+	}
 	arrayD = (struct descriptor_a *)shapeXd.pointer;
 	numDims = arrayD->arsize/arrayD->length;
 	dims = (int *)arrayD->pointer;
@@ -723,6 +738,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		free((char *)timebaseFloat);
 	free((char *)outData);
 	MdsFree1Dx(&shapeXd, 0);
+	MdsFree1Dx(&dataXd, 0);
 	
 
 	
