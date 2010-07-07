@@ -12,6 +12,6 @@ RfxDevices
 from CAENV1740 import CAENV1740
 from DEMOADC import DEMOADC
 from DIO4 import DIO4
+from SIS3820 import SIS3820
 from EXADC import EXADC
-
 
