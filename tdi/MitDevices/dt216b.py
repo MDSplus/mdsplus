@@ -276,7 +276,7 @@ class DT216B(Device):
                         except:
                             start = pre
                         try:
-			    end =  eval("int(self.input_%2.2d_end_idx"%(chan+1))
+			    end =  eval("int(self.input_%2.2d_end_idx)"%(chan+1))
                         except:
                             end = post
                         try:
@@ -285,7 +285,7 @@ class DT216B(Device):
                             inc = 1
                         if debug:
                             print "build the command"
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d\n" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d\n" % (chan_node.getFullPath(), int(start), int(end-start+1), int(inc), chan+1)
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
