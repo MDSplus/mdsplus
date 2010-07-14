@@ -1272,6 +1272,34 @@ int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *
   return status;
 }
 
+static int GetCompressedSegmentRows(TREE_INFO *info,_int64 offset, int *rows) {
+  int length = 60;
+  unsigned char buffer[60];
+  int status=1;
+  int deleted=1;
+  while (status & 1 && deleted) {
+    status = (MDS_IO_READ_X(info->data_file->get,offset,buffer,length,&deleted) == length) ? TreeSUCCESS : TreeFAILURE;
+    if (status & 1 && deleted) 
+      status = TreeReopenDatafile(info);
+  }
+  if (status & 1) {
+    if (buffer[3]==CLASS_CA) {
+      unsigned char dimct=buffer[11];
+      if (dimct==1) {
+        int arsize=swapint(buffer+12);
+        *rows=arsize/swapshort(buffer);
+      } else {
+        *rows=swapint(buffer+16+dimct*4);
+      }
+      return 1;
+    }
+    else
+      return 0;
+  }
+  return status;
+}
+
+
 static int PutSegmentHeader(TREE_INFO *info, SEGMENT_HEADER *hdr, _int64 *offset) {
   int status;
   _int64 loffset;
@@ -2330,7 +2358,9 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	  dims[segment_header.dimct-1]=sinfo->rows;
 	  if (idx == segment_header.idx)
 	    *next_row = segment_header.next_row;
-	  else
+	  else if (sinfo->rows < 1) {
+	    status = GetCompressedSegmentRows(info_ptr, sinfo->data_offset, next_row);
+          } else
 	    *next_row = sinfo->rows;
 	}
       } else {
