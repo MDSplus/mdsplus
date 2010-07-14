@@ -8,7 +8,7 @@ class SIS3820(Device):
 		{'path':':IP_ADDR', 'type':'text'},
 		{'path':':OP_MODE', 'type':'text', 'value':'MULTI CHANNEL SCALER'},
 		{'path':':LNE_MODE', 'type':'text', 'value':'INTERNAL 10MHZ'},
-		{'path':':LNE_SOURCE', 'type':'text'},
+		{'path':':LNE_SOURCE', 'type':'numeric'},
 		{'path':':SCAN_COUNT', 'type':'numeric'}]
 
 	for i in range(0, 32):
