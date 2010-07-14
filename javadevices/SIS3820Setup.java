@@ -140,7 +140,6 @@ public class SIS3820Setup extends DeviceSetup {
         deviceField4.setLabelString("LNE Source");
         deviceField4.setNumCols(20);
         deviceField4.setOffsetNid(6);
-        deviceField4.setTextOnly(true);
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
