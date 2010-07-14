@@ -2093,22 +2093,29 @@ old array is same size.
      for (i=0;i<SEGMENTS_PER_INDEX;i++) {
        SEGMENT_INFO *sinfo=&index.segment[i];
        int length;
-       status = DataCopy(info1, info2, sinfo->start_offset,sinfo->start_length,&sinfo->start_offset);
-       status = DataCopy(info1, info2, sinfo->end_offset,sinfo->end_length,&sinfo->end_offset);
-       if (sinfo->dimension_length == 0) {
-	 length = sinfo->rows * sizeof(_int64);
-       } else {
-	 length = sinfo->dimension_length;
+       if (sinfo->data_offset != -1 && sinfo->rows < 0) {
+	 length = sinfo->rows & 0x7fffffff;
+	 status = DataCopy(info1, info2, sinfo->data_offset,length,&sinfo->data_offset);
+	 status = DataCopy(info1, info2, sinfo->dimension_offset,sinfo->dimension_length,&sinfo->dimension_offset);
        }
-       status = DataCopy(info1, info2, sinfo->dimension_offset,length,&sinfo->dimension_offset);
-       length=rowlen*sinfo->rows;
-       status = DataCopy(info1, info2, sinfo->data_offset, length, &sinfo->data_offset);
-       if (header->idx == (index.first_idx+i)) {
-	 *data_offset=sinfo->data_offset;
-	 if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
-	   *dim_offset=sinfo->dimension_offset;
+       else {
+	 status = DataCopy(info1, info2, sinfo->start_offset,sinfo->start_length,&sinfo->start_offset);
+	 status = DataCopy(info1, info2, sinfo->end_offset,sinfo->end_length,&sinfo->end_offset);
+	 if (sinfo->dimension_length == 0) {
+	   length = sinfo->rows * sizeof(_int64);
 	 } else {
-	   *dim_offset=-1;
+	   length = sinfo->dimension_length;
+	 }
+	 status = DataCopy(info1, info2, sinfo->dimension_offset,length,&sinfo->dimension_offset);
+	 length=rowlen*sinfo->rows;
+	 status = DataCopy(info1, info2, sinfo->data_offset, length, &sinfo->data_offset);
+	 if (header->idx == (index.first_idx+i)) {
+	   *data_offset=sinfo->data_offset;
+	   if (sinfo->dimension_offset != -1 && sinfo->dimension_length == 0) {
+	     *dim_offset=sinfo->dimension_offset;
+	   } else {
+	     *dim_offset=-1;
+	   }
 	 }
        }
      }
