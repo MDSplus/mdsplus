@@ -809,7 +809,7 @@ static void display_data(Widget w, int nid, int count)
   args[2].value = y;
   if (count == 0) {
       XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data", args, XtNumber(args)-2));
-      XtVaGetValues(w, XmNx, &x, XmNy, &y, 0);
+      XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
   }
   else {
     x += 20;
@@ -867,7 +867,7 @@ static void modify_data(Widget w, int nid, int count)
   args[2].value = y;
   if (count == 0) {
       XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Modify Data", args, XtNumber(args)));
-      XtVaGetValues(w, XmNx, &x, XmNy, &y, 0);
+      XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
   }
   else {
     x += 20;
@@ -1180,7 +1180,7 @@ static void display_nci(Widget bu, int nid, int count)
   args[4].value = y;
   if (count == 0) {
     XtManageChild(w = XmCreateInformationDialog(BxFindTopShell(bu), "Display Nci", args, XtNumber(args)-2));
-    XtVaGetValues(w, XmNx, &x, XmNy, &y, 0);
+    XtVaGetValues(w, XmNx, &x, XmNy, &y, NULL);
   }
   else {
     x += 20;
@@ -1264,7 +1264,7 @@ static void AskCreate(Widget w, char *tree, int shot)
   treeid->shot = shot;
   treeid->tree = (char *)malloc(strlen(tree)+1);
   strcpy(treeid->tree, tree);
-  XtVaSetValues(ask_dlog, XmNuserData, (XtPointer)treeid, 0);
+  XtVaSetValues(ask_dlog, XmNuserData, (XtPointer)treeid, NULL);
   XtManageChild(ask_dlog);
 }
 
@@ -1656,7 +1656,7 @@ void ModifyTags(Widget w, XtPointer client_data, XmListCallbackStruct *reason)
     if (!XtIsManaged(tagsw)) {
       if (num_selected == 1) {
 	int nid = get_nid(selections[0]);
-	XtVaSetValues(tagsw, XmNuserData, nid, 0);
+	XtVaSetValues(tagsw, XmNuserData, nid, NULL);
         TagsReset(tagsw, nid);
 	XtManageChild(tagsw); 
       }

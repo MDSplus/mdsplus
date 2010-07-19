@@ -102,11 +102,11 @@ Widget XmdsCreateOnOffToggleButton(Widget parent,String name,ArgList args,Cardin
     path_c = TreeGetMinimumPath(0,info->nid+info->nid_offset);
     path = XmStringCreateSimple(path_c);
     TreeFree(path_c);
-    XtVaSetValues(w,XmNlabelString,path,0);
+    XtVaSetValues(w,XmNlabelString,path,NULL);
     XmStringFree(path);
   }
   else if (info->label)
-    XtVaSetValues(w,XmNlabelString,info->label,0);
+    XtVaSetValues(w,XmNlabelString,info->label,NULL);
 
   XtAddCallback(w,XmNdestroyCallback,(XtCallbackProc)Destroy,info);
   XmdsOnOffToggleButtonReset(w);

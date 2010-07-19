@@ -430,7 +430,7 @@ static void /*XtCallbackProc*/Restore(Widget w, int *option, XmFileSelectionBoxC
               XmString dirmask;
               XtRemoveAllCallbacks(w,XmNokCallback);
               XtAddCallback(w,XmNokCallback,(XtCallbackProc)Restore,0);
-              XtVaGetValues(w,XmNdirMask,&dirmask,0);
+              XtVaGetValues(w,XmNdirMask,&dirmask,NULL);
               XmFileSelectionDoSearch(w, dirmask);
               XtVaSetValues(w, XmNdialogTitle, title, XmNselectionLabelString, label, XmNtextString, deffile, NULL);
               XtManageChild(w);
@@ -480,7 +480,7 @@ static void /*XtCallbackProc*/Save(Widget w, int *option, XmFileSelectionBoxCall
               XmString dirmask;
               XtRemoveAllCallbacks(w,XmNokCallback);
               XtAddCallback(w,XmNokCallback,(XtCallbackProc)Save,0);
-              XtVaGetValues(w,XmNdirMask,&dirmask,0);
+              XtVaGetValues(w,XmNdirMask,&dirmask,NULL);
               XmFileSelectionDoSearch(w, dirmask);
               XtVaSetValues(w, XmNdialogTitle, title, XmNselectionLabelString, label, XmNtextString, deffile, NULL);
               XtManageChild(w);
