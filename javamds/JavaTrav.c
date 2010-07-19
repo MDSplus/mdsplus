@@ -51,13 +51,13 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	putenv(log_string);
 	printf("\n%s\n", getenv("device_beans_path"));
 	status = TreeOpenNew("device_beans", 1);
-	printf(MdsGetMsg(status));
+	printf("%s\n",MdsGetMsg(status));
 	if(!(status & 1)) return &xd;
 	status = TreeAddNode("Boh", &nid, TreeUSAGE_STRUCTURE);
-	printf(MdsGetMsg(status));
+	printf("%s\n",MdsGetMsg(status));
 	TreeSetDefaultNid(nid);
 	status = TreeAddConglom("TEST", deviceName, &nid);
-	printf(MdsGetMsg(status));
+	printf("%s\n",MdsGetMsg(status));
 	if(status & 1) status = TreeGetNci(nid, nci_list);
 	if(!(status & 1) || conglomerate_nids == 0) 
 	{
@@ -75,7 +75,7 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	dsc.length = strlen(names);
 	dsc.pointer = names;
 	MdsCopyDxXd(&dsc, &xd);
-	printf(names);
+	printf("%s\n",names);
 	free(names);
 	return &xd;
 }

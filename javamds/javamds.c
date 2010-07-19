@@ -180,7 +180,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 			break;
 		case QUADWORD:
 			expanded_in = malloc(strlen(in) + 16);
-			sprintf(expanded_in, in);
+			sprintf(expanded_in, "%s",in);
 			in_d.length = strlen(expanded_in);
 			in_d.pointer = expanded_in;
 			break;
