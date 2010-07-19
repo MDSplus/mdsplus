@@ -24,7 +24,7 @@ clean:
 	@ $(RM) @MAKEBINDIR@mdsccl
 
 depend:
-	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 install:
 	if [ ! -d @libdir@ ] ; then \
