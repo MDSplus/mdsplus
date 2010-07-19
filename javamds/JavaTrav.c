@@ -1037,7 +1037,8 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
 }
   
   
-static int doAction(int nid)
+//static int doAction(int nid)
+int doAction(int nid)
 {
 	extern int TdiEvaluate();
 	int status;
