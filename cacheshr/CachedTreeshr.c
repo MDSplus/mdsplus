@@ -105,6 +105,7 @@ static void setDbid(char *name, int shot, void *dbid)
 			currDescr->dbid = dbid;
 			return;
 		}
+		currDescr = currDescr->nxt;
 	}
 	currDescr = (struct TreeDescr *)malloc(sizeof(struct TreeDescr));
 	currDescr->name = malloc(strlen(name)+1);

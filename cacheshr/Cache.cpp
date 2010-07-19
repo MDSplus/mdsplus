@@ -215,7 +215,7 @@ Cache::Cache():dataManager(true)
 	queueLock.initialize();
 	treeWriter.setDataManager(&dataManager);
 	treeWriter.start();
-	chainHead = chainTail = 0;
+	chainHead = 0;
 
 }
 
@@ -224,7 +224,7 @@ Cache::Cache(int size):dataManager(size)
 	queueLock.initialize();
 	treeWriter.setDataManager(&dataManager);
 	treeWriter.start();
-	chainHead = chainTail = 0;
+	chainHead = 0;
 
 }
 
@@ -236,9 +236,10 @@ void Cache::insertInQueue(TreeDescriptor treeIdx, int nid, char mode, int idx)
 		NidChain *newNid = new NidChain;
 		newNid->nid = nid;
 		newNid->treeIdx = treeIdx;
+      NidChain *chainTail;    
+      for(chainTail = chainHead; chainTail && chainTail->nxt; chainTail = chainTail->nxt);
 		if(chainTail)
 			chainTail->nxt = newNid;
-		chainTail = newNid;
 		newNid->nxt = 0;
 		newNid->idx = idx;
 		newNid->mode = mode;
