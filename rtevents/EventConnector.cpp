@@ -990,7 +990,7 @@ static void readExtAddresses(char *fileName)
 		exit(0);
 	}
 	char line[512];
-	fgets(line, 512, confFile);
+	char *s = fgets(line, 512, confFile);
 	trim(line);
 	if(!strcmp(line, "TCP") || !strcmp(line, "tcp"))
 	{

@@ -159,7 +159,7 @@ Tree *getActiveTree();
 		char *msg;
 	public:
 		MdsException(){}
-		MdsException(char *msg)
+		MdsException(const char *msg)
 		{
 			this->msg = new char[strlen(msg) + 1];
 			strcpy(this->msg, msg);
@@ -609,7 +609,7 @@ protected:
 	class  EXPORT String : public Scalar
 	{
 	public:
-		String(char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
 			dtype = DTYPE_T;
@@ -618,7 +618,7 @@ protected:
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
 		}
-		String(char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_S;
 			dtype = DTYPE_T;
@@ -2328,12 +2328,12 @@ protected:
 			closeAllTrees();
 		}
 		void setDefault(char *path);
-		Data *get(char *expr, Data **args, int nArgs);
-		Data *get(char *expr)
+		Data *get(const char *expr, Data **args, int nArgs);
+		Data *get(const char *expr)
 		{
 		    return get(expr, 0, 0);
 		}
-		void put(char *path, char *expr, Data **args, int nArgs);
+		void put(const char *path, char *expr, Data **args, int nArgs);
 		PutMany *putMany()
 		{
 			return new PutMany(this);

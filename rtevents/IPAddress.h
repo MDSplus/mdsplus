@@ -184,7 +184,7 @@ public:
 	int getPort() { return port;}
 	void print()
 	{
-	    printf("%s\t%d\t%x\n", &ipAddress[0], port, sin.sin_addr);
+	  printf("%s\t%d\t%x\n", &ipAddress[0], port, *(int *)&sin.sin_addr);
 	}
 };
 

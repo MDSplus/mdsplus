@@ -212,7 +212,7 @@ void AllocationManager::initialize(int size)
 		currDsc = freeDscHead;
 		while(currDsc)
 		{
-			printf("FreeDescriptor: StartAddress: %d(%x)\t size = %d\n", currDsc->getStartAddr(), currDsc->getStartAddr(), currDsc->size);
+			printf("FreeDescriptor: StartAddress: %p\t size = %d\n", currDsc->getStartAddr(), currDsc->size);
 			currDsc = currDsc->getNext();
 		}
 		printf("\n\n");
