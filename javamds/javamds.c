@@ -736,7 +736,7 @@ int createWindow(char *name, int idx)
 	return 0;
 }
 
-void clearWindow(char *name, int idx)
+int clearWindow(char *name, int idx)
 {
 	jclass cls;
 	jmethodID mid;
@@ -745,13 +745,13 @@ void clearWindow(char *name, int idx)
 	if(env == 0)
 	{
 		printf("\nJava virtual machine not set!!\n");
-		return;
+		return -1;
 	}
 	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
-		return;
+		return -1;
 	}	
 	if(jobjects[idx] != 0)
 	{
@@ -763,25 +763,25 @@ void clearWindow(char *name, int idx)
 		if (mid == 0)
 		{
 			printf("\nCannot find method setTitle in CompositeWaveDisplay!\n");
-			return;
+			return -1;
 		}
 		(*env)->CallVoidMethod(env, jobjects[idx], mid, jstr);
 		mid = (*env)->GetMethodID(env, cls, "removeAllSignals","()V");
 		if (mid == 0)
 		{
 			printf("\nCannot find method removeAllSignals in CompositeWaveDisplay!\n");
-			return;
+			return -1;
 		}
 		(*env)->CallVoidMethod(env, jobjects[idx], mid);
 	}
 	else
 	{
 		printf("\nWindow %d not created!!\n", idx);
-		return;
+		return -1;
 	}
 }
 
-void addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row, int column,
+int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row, int column,
 			   char *colour, char *name, int inter, int marker)
 {
 	jstring jname, jcolour;
@@ -794,7 +794,7 @@ void addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row
 	if(env == 0)
 	{
 		printf("\nJava virtual machine not set!!\n");
-		return;
+		return -1;
 	}
 	jinter = inter;
 	jx = (*env)->NewFloatArray(env,  num_points);
@@ -813,17 +813,18 @@ void addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row
 	if(cls == 0)
 	{
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
-		return;
+		return -1;
 	}
 	mid = (*env)->GetMethodID(env,  cls, "addSignal",
 		"([F[FIILjava/lang/String;Ljava/lang/String;ZI)V");
     if (mid == 0)
 	{
 		printf("\nCannot find method addSignal in CompositeWaveDisplay classes!\n");
-		return;
+		return -1;
 	}
 
     (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour, jinter, marker);
+    return 0;
 }
 void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column,
 			   char *colour, char *name)
