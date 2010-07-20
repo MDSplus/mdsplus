@@ -360,8 +360,12 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             }
         }
     }
-
     public static CompositeWaveDisplay createWindow(String title)
+    {
+    	return createWindow(title, false);
+    }
+
+    public static CompositeWaveDisplay createWindow(String title, boolean enableLiveUpdate)
     {
        if(title != null)
             f = new JFrame(title);
@@ -387,6 +391,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         CompositeWaveDisplay cwd = new CompositeWaveDisplay(false);
         cwd.init();
+	if(enableLiveUpdate)
+	    cwd.enableLiveUpdate();
         f.getContentPane().add(cwd);
         return cwd;
     }
@@ -484,7 +490,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 		       }
 		    });
 
-        liveUpdate = new JCheckBox("Live Update", true);
+        liveUpdate = new JCheckBox("Live Update", false);
         liveUpdate.addChangeListener(new ChangeListener ()
         {
             public void stateChanged(ChangeEvent e)
@@ -492,6 +498,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                 setLiveUpdate(liveUpdate.isSelected(), false);
             }
         });
+	//liveUpdate.setSelected(false);
+	liveUpdate.setVisible(false);
 
 
         pointer_mode = new ButtonGroup();
@@ -557,10 +565,15 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         appendThread = new AppendThread(100);
         appendThread.start();
 
-        setEnabledMode(false);
-        wave_container.SetMode(Waveform.MODE_WAIT);
+        setEnabledMode(true);
+        wave_container.SetMode(Waveform.MODE_ZOOM);
 
 
+    }
+
+    public void enableLiveUpdate()
+    {
+     	liveUpdate.setVisible(true);
     }
 
     private int currentMode = Waveform.MODE_ZOOM;
