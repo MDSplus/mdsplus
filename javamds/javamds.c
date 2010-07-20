@@ -662,7 +662,7 @@ JNIEXPORT void JNICALL Java_LocalDataProvider_unregisterEvent
 
 
 
-/* CompositeWaveDisplay management routines for using 
+/* CompositeWaveDisplay management routines for using
 jScope panels outside java application */
 #ifdef HAVE_WINDOWS_H
 #define PATH_SEPARATOR ';'
@@ -673,14 +673,14 @@ jScope panels outside java application */
 JNIEnv *env = 0;
 static jobject jobjects[1024];
 
-int createWindow(char *name, int idx)
+int createWindow(char *name, int idx, int enableLiveUpdate)
 {
 	jint res;
 	jclass cls;
 	jmethodID mid;
 	jstring jstr;
 	char classpath[2048], *curr_classpath;
-
+	jvalue args[2];
 
 	JavaVM *jvm;
 	JavaVMInitArgs vm_args;
@@ -722,7 +722,7 @@ int createWindow(char *name, int idx)
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
 		return -1;
 	}	
-	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;)LCompositeWaveDisplay;");
+	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;Z)LCompositeWaveDisplay;");
 	if(mid == 0)
 	{
 		printf("\nCannot find main\n");
@@ -732,7 +732,11 @@ int createWindow(char *name, int idx)
 		jstr = (*env)->NewStringUTF(env, name);
 	else
 		jstr = (*env)->NewStringUTF(env, "");
-	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+	args[0].l = jstr;
+	args[1].z = enableLiveUpdate;
+
+//	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+	jobjects[idx] = (*env)->CallStaticObjectMethodA(env, cls, mid, args);
 	return 0;
 }
 
