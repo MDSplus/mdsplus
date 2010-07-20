@@ -443,6 +443,7 @@ int Cache::discardOldSegments(TreeDescriptor treeIdx, int nid, _int64 timestamp)
 
 int Cache::discardData(TreeDescriptor treeIdx, int nid)
 {
+  discardQueue(treeIdx, nid);
 	return dataManager.discardData(treeIdx, nid);
 }
 
@@ -466,6 +467,38 @@ void Cache::synch()
 int Cache::flush(TreeDescriptor treeIdx)
 {
 	return flush(treeIdx, -1);
+}
+
+
+void Cache::discardQueue(TreeDescriptor treeIdx, int nid)
+{
+	NidChain *currChainNid, *prevChainNid;
+	currChainNid = prevChainNid = chainHead;
+	queueLock.lock();
+	while(currChainNid)	
+	{
+		if(currChainNid->treeIdx == treeIdx && currChainNid->nid == nid)
+		{
+			if(currChainNid == chainHead)
+			{
+				chainHead = currChainNid->nxt;
+				delete currChainNid;
+				currChainNid = prevChainNid = chainHead;
+			}
+			else
+			{
+				prevChainNid->nxt = currChainNid->nxt;
+				delete currChainNid;
+				currChainNid = prevChainNid->nxt;
+			}
+    }
+    else //Skip this descriptor
+		{
+			prevChainNid = currChainNid;
+			currChainNid = currChainNid->nxt;
+		}
+  }
+	queueLock.unlock();
 }
 
 int Cache::flush(TreeDescriptor treeIdx, int nid) 

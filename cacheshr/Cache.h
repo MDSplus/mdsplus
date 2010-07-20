@@ -26,7 +26,7 @@ class Cache
 	NidChain *chainHead;
 	bool inQueue(TreeDescriptor treeIdx, int nid, int idx, int mode);
 	Lock queueLock;
-
+  void discardQueue(TreeDescriptor treeIdx, int nid);
 	void insertInQueue(TreeDescriptor treeIdx, int nid, char mode, int idx);
 
 public:
