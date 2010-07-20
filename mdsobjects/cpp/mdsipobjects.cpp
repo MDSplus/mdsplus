@@ -249,7 +249,7 @@ void Connection::closeAllTrees()
 	if(!(status & 1))
 		throw new MdsException(status);
 }
-Data *Connection::get(char *expr, Data **args, int nArgs)
+Data *Connection::get(const char *expr, Data **args, int nArgs)
 {
 	char clazz, dtype, nDims;
 	short length;
@@ -268,7 +268,7 @@ Data *Connection::get(char *expr, Data **args, int nArgs)
 			throw new MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 	lock();
-	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(expr), 0, 0, expr);
+	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen((char *)expr), 0, 0, (char *)expr);
 	if(!(status & 1))
 	{
 		unlock();
@@ -370,7 +370,7 @@ Data *Connection::get(char *expr, Data **args, int nArgs)
 	return resData;	
 }
 
-void Connection::put(char *inPath, char *expr, Data **args, int nArgs)
+void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 {
 	char clazz, dtype, nDims;
 	short length;
