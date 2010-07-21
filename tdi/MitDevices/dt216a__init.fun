@@ -69,7 +69,8 @@ public fun DT216A__INIT(as_is _nid, optional _method)
   for (_chan=0; _chan < 16; _chan++) {
     _chan_offset = _chan * _DT200_NODES_PER_AI + _DT200_AI_CHANS;
     _vin = if_error(data(DevNodeRef(_nid, _chan_offset+_DT200_AI_VIN)),10);
-    MdsValue('Dt200WriteMaster($, $, 1)', _board, 'set.vin '//_chan+1//' '//_vin);
+    _vinstr = (_vin < 2.6) ? fformat(_vin, 3,1) : text(int(_vin));
+    MdsValue('Dt200WriteMaster($, $, 1)', _board, 'set.vin '//_chan+1//' '//_vinstr);
   }
 
   MdsValue('Dt216AInit($,$,$,$,$,$,$)', _board, _activeChans, _trigSource, _clockSource, _clockFreq, _preTrig, _postTrig);
