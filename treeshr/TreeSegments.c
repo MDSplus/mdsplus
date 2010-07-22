@@ -597,7 +597,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr,0,nidx);
       return open_status;
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
@@ -609,7 +608,6 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num) {
     }
     else
       *num=segment_header.idx+1;
-    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
@@ -651,7 +649,6 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr,0,nidx);
       return open_status;
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
@@ -761,7 +758,6 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
         status = TreeFAILURE;
       }
     }
-    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
@@ -805,7 +801,6 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr,0,nidx);
       return open_status;
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
@@ -875,7 +870,6 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
 	status = TreeFAILURE;
       }
     }
-    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
@@ -1093,7 +1087,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
   return status;
 }
 
- int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
+int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
 
 int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value) {
   return _TreeGetXNci(DBID, nid, xnciname, value);
@@ -1155,7 +1149,6 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr,0,nidx);
       return open_status;
     }
     if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
@@ -1221,7 +1214,6 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
       } else
 	status = TreeFAILURE;
     }
-    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
@@ -2329,7 +2321,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
     else
       open_status = 1;
     if (!(open_status & 1)) {
-      TreeUnLockNci(info_ptr,0,nidx);
       return open_status;
     } 
    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
@@ -2367,7 +2358,6 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	status = TreeFAILURE;
       }
     }
-    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
