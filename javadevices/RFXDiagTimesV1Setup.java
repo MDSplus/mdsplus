@@ -77,8 +77,9 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
         deviceField1.setOffsetNid(2);
         jPanel3.add(deviceField1);
 
-        deviceChoice2.setChoiceItems(new String[] {"N7_AMP", "N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"});
-        deviceChoice2.setIdentifier("rtTriggerMode");
+        //deviceChoice2.setChoiceItems(new String[] {"N7_AMP", "N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"});
+        deviceChoice2.setChoiceItems(new String[] {"M1_N7_AMP", "M1_N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH", "M0_N1_AMP", "M0_N1_AMP_PH", "M0_N7_AMP", "M0_N7_AMP_PH"});
+		deviceChoice2.setIdentifier("rtTriggerMode");
         deviceChoice2.setLabelString("Real Time Trigger Mode : ");
         deviceChoice2.setOffsetNid(4);
         deviceChoice2.setUpdateIdentifier("");
