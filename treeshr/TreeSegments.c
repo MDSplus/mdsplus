@@ -209,6 +209,8 @@ old array is same size.
 	/*** flag compressed segment by setting high bit in the rows field. ***/
 	sinfo->rows = length | 0x80000000;
       }
+      MdsFree1Dx(&xd_data,0);
+      MdsFree1Dx(&xd_dim,0);
     }
     status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
     if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
