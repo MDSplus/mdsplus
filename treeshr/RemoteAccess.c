@@ -1435,10 +1435,12 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
     else
 #endif
     if (FDS[fd-1].socket == -1 || (!FDS[fd-1].enhanced)) {
+      LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
       MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_RD, deleted);
       MDS_IO_LSEEK(fd, offset, SEEK_SET);
       ans = MDS_IO_READ(fd, buff, count);
       MDS_IO_LOCK(fd, offset, count, MDS_IO_LOCK_NONE, deleted);
+      UnlockMdsShrMutex(&IOMutex);
     }
     else {
       ans = io_read_x_remote(fd,offset,buff,count, deleted);
