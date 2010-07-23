@@ -132,8 +132,20 @@ STATIC_ROUTINE void buffer_key_alloc()
    pthread_key_create(&buffer_key, buffer_destroy);
 }
 
+#ifndef HAVE_WINDOWS_H
+#ifndef HAVE_VXWORKS_H
+pthread_mutex_t  initMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+#endif
+
+
 void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 {
+#ifndef HAVE_WINDOWS_H
+#ifndef HAVE_VXWORKS_H
+  pthread_mutex_lock(&initMutex);
+#endif
+#endif
   if(!*initialized)
   {
 #ifndef HAVE_WINDOWS_H
@@ -157,7 +169,13 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 #endif
     *initialized = 1;
   }
+#ifndef HAVE_WINDOWS_H
+#ifndef HAVE_VXWORKS_H
+  pthread_mutex_unlock(&initMutex);
+#endif
+#endif
   pthread_mutex_lock(mutex);
+
 }
 
 void UnlockMdsShrMutex(pthread_mutex_t *mutex)
