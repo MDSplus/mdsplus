@@ -3,6 +3,11 @@
 #include <mdstypes.h>
 #include <config.h>
 
+int MAIN__( )
+{ return(0);
+}
+
+
 #if SIZEOF_INT_P == 8
 typedef _int64 INTEGER;
 #else
