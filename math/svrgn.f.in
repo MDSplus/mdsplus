@@ -4,10 +4,10 @@
 !-----------------------------------------------------------------------
 	Subroutine SVRGN(n,ra,rb)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-	Logical perm /.false./
-	Call SVRGP(n,ra,rb,perm)
+	Real	ra(*)	!input, [n] vector to be sorted
+	Real	rb(*)	!output, [n] vector, may be ra sort without permutations
+	Integer iperm(1)
+	Call SVRGP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine SVRGP(n,ra,rb,perm,iperm)
@@ -93,10 +93,11 @@
 !-----------------------------------------------------------------------
 	Subroutine SVRBN(n,ra,rb)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra
+	Real	ra(*)	!input, [n] vector to be sorted
+	Real	rb(*)	!output, [n] vector, may be ra
+        Integer iperm(1)
 !+sort absolute without permutations
-	Call SVRBP(n,ra,rb,0)
+	Call SVRBP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine SVRBP(n,ra,rb,perm,iperm)

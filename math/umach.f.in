@@ -5,7 +5,8 @@
 	Integer Function IMACH(i)
 	Integer	i	!input, item number
 !+machine-dependent integer parameters
-	Integer	mach(12)/
+	Integer	mach(12)
+	Data mach /
      1 32,		!bits per integer storage unit
      2 4,		!characters per integer
      3 2,		!integer base

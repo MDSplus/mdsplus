@@ -6,8 +6,8 @@
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra sort without permutations
-        Logical perm /.false./
-	Call SVIGP(n,ra,rb,perm)
+	Integer iperm(1)
+	Call SVIGP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine SVIGP(n,ra,rb,perm,iperm)
@@ -95,8 +95,9 @@
 	Integer	n	!input, number of elements in array
 	Integer	ra(*)	!input, [n] vector to be sorted
 	Integer	rb(*)	!output, [n] vector, may be ra
+        Integer iperm(1)
 !+sort absolute without permutations
-	Call SVIBP(n,ra,rb,0)
+	Call SVIBP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine SVIBP(n,ra,rb,perm,iperm)

@@ -6,8 +6,8 @@
 	Integer	n	!input, number of elements in array
 	Real*8	ra(*)	!input, [n] vector to be sorted
 	Real*8	rb(*)	!output, [n] vector, may be ra sort without permutations
-        Logical perm /.false./
-	Call DSVRGP(n,ra,rb,perm)
+	Integer iperm(1)
+	Call DSVRGP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine DSVRGP(n,ra,rb,perm,iperm)
@@ -93,10 +93,11 @@
 !-----------------------------------------------------------------------
 	Subroutine DSVRBN(n,ra,rb)
 	Integer	n	!input, number of elements in array
-	Integer	ra(*)	!input, [n] vector to be sorted
-	Integer	rb(*)	!output, [n] vector, may be ra
+	Real*8	ra(*)	!input, [n] vector to be sorted
+	Real*8	rb(*)	!output, [n] vector, may be ra
+        Integer iperm(1)
 !+sort absolute without permutations
-	Call DSVRBP(n,ra,rb,0)
+	Call DSVRBP(n,ra,rb,.false.,iperm)
 	End
 !-----------------------------------------------------------------------
 	Subroutine DSVRBP(n,ra,rb,perm,iperm)
