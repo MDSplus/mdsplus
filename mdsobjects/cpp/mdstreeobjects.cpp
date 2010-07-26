@@ -629,31 +629,28 @@ int TreeNode::getFlag(int flagOfs)
 
 	resolveNid();
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
+
+printf("GETFLAG: %x\n", nciFlags);
 	if(!(status & 1))
 		throw new MdsException(status);
 	return (nciFlags & flagOfs)?true:false;
 }
 
-void TreeNode::setFlag(int flagOfs, bool val)
+void TreeNode::setFlag(int flagOfs, bool flag)
 {
 	int nciFlags;
+	int status;
 	int nciFlagsLen = sizeof(int);
-	struct nci_itm nciList[] =  {{4, NciGET_FLAGS, &nciFlags, &nciFlagsLen},
-		{NciEND_OF_LIST, 0, 0, 0}};
-
+	struct nci_itm setNciList[] =  {{4, NciSET_FLAGS, &nciFlags, &nciFlagsLen},
+		{0, NciEND_OF_LIST, 0, 0}};
+	struct nci_itm clearNciList[] =  {{4, NciCLEAR_FLAGS, &nciFlags, &nciFlagsLen},
+		{0, NciEND_OF_LIST, 0, 0}};
 	resolveNid();
-	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
-	if(!(status & 1))
-	{
-		Tree::unlock();
-		throw new MdsException(status);
-	}
-	if(val)
-		nciFlags |= flagOfs;
+	nciFlags = flagOfs;
+	if(flag)
+	    status = _TreeSetNci(tree->getCtx(), nid, setNciList);
 	else
-		nciFlags &= ~flagOfs;
-
-	status = _TreeSetNci(tree->getCtx(), nid, nciList);
+	    status = _TreeSetNci(tree->getCtx(), nid, clearNciList);
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -1374,6 +1371,16 @@ int TreeNode::getDepth()
 
 	return depth;
 }
+#ifdef HAVE_WINDOWS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
+#ifdef HAVE_VXWORKS_H
+#define pthread_mutex_t int
+static void LockMdsShrMutex(){}
+static void UnlockMdsShrMutex(){}
+#endif
 	
 
 void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
