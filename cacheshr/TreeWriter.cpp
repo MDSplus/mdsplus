@@ -93,6 +93,7 @@ void TreeWriter::synch()
 	if(synchWaiting)
 	{
 		synchEvent.wait();
+		printf("FINE WAIT\n");
 	}
 }
 
@@ -197,6 +198,7 @@ void TreeWriter::run(void *arg)
 			if(!nidHead && synchWaiting)
 			{
 				synchEvent.signal();
+				printf("SIGNAL\n");
 			}
 			lock.unlock();
 		}

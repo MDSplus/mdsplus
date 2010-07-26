@@ -1727,7 +1727,7 @@ void TreePath::resolveNid()
 	
 void CachedTreeNode::flush() {_RTreeFlushNode(tree->getCtx(), getNid());}
 
-CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize):Tree(name,shot)
+CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize)
 {
 	RTreeConfigure(cacheShared, cacheSize);
 	this->shot = shot;
@@ -1742,7 +1742,7 @@ CachedTree::CachedTree(char *name, int shot, bool cacheShared, int cacheSize):Tr
 	this->cacheShared = cacheShared;
 	this->cacheSize = cacheSize;
 }
-CachedTree::CachedTree(char *name, int shot):Tree(name,shot)
+CachedTree::CachedTree(char *name, int shot)
 {
 	RTreeConfigure(false, 20000);
 	this->shot = shot;
@@ -1758,6 +1758,9 @@ CachedTree::CachedTree(char *name, int shot):Tree(name,shot)
 	this->cacheSize = 20000;
 }
 
+CachedTree::~CachedTree()
+{
+}
 
 void CachedTree::open() 
 {
