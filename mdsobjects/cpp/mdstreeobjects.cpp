@@ -630,7 +630,6 @@ int TreeNode::getFlag(int flagOfs)
 	resolveNid();
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 
-printf("GETFLAG: %x\n", nciFlags);
 	if(!(status & 1))
 		throw new MdsException(status);
 	return (nciFlags & flagOfs)?true:false;
