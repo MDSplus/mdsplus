@@ -1,3 +1,5 @@
+#include <mdsdescrip.h>
+#include <mdsshr.h>
 #ifdef XIO
 #include "globus_common.h"
 #include "gssapi.h"
@@ -47,7 +49,7 @@ static char *urlencode(char *in)
 }
 
 #ifdef XIO
-int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, char **aux)
+int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, struct descriptor_xd *aux)
 {
   globus_xio_driver_t                     tcp_driver;
   globus_xio_driver_t                     gsi_driver;
@@ -119,12 +121,16 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   if (ans && strlen(ans) > 4) 
   {
     if (strncmp(ans,"yes",3)==0)
-    {
+    { 
+      struct descriptor accnt = {0,DTYPE_T,CLASS_S,0};
       status = GLOBUS_SUCCESS;
-      *aux=malloc(strlen(ans)-4);
+      accnt.pointer=malloc(strlen(ans)-4);
       if (strlen(ans) > 5)
-	strncpy(*aux,&ans[4],strlen(ans)-4);
-      (*aux)[strlen(ans)-5]=0;
+	strncpy(accnt.pointer,&ans[4],strlen(ans)-4);
+      accnt.pointer=[strlen(ans)-5]=0;
+      accnt.length=strlen(accnt.pointer);
+      MdsCopyXdDx(&accnt,aux);
+      free(accnt.pointer);
     }	    
   }
   if (ans)
@@ -154,7 +160,7 @@ static int callback(char *ptr, size_t size, size_t nmemb, struct _buf *buf)
   return size*nmemb;
 }
 
-int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, char **aux)
+int roam_check_access(char *host, int https, char *resource, char *permit, char *dn, struct descriptor_xd *aux)
 {
   CURL *ctx=curl_easy_init();
   CURLcode status;
@@ -168,7 +174,6 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   free(res);
   free(perm);
   free(uname);
-  *aux=(char *)0;  
   curl_easy_setopt(ctx,CURLOPT_NOSIGNAL,1);
   curl_easy_setopt(ctx,CURLOPT_TIMEOUT,15);
   curl_easy_setopt(ctx,CURLOPT_WRITEFUNCTION,callback);
@@ -183,10 +188,13 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
     {
       if (buf.size > 4)
       {
-        *aux=malloc(buf.size-4);
+        struct descriptor accnt = {0, DTYPE_T, CLASS_S, 0};
+        accnt.pointer=malloc(buf.size-4);
         if (buf.size > 5)
-	  strncpy(*aux,&buf.ptr[4],buf.size-4);
-	(*aux)[buf.size-4]=0;
+	  strncpy(accnt.pointer,&buf.ptr[4],buf.size-4);
+	accnt.pointer[buf.size-4]=0;
+        accnt.length=strlen(accnt.pointer);
+        MdsCopyDxXd(&accnt,aux);
       }
     }
     else
@@ -198,8 +206,6 @@ int roam_check_access(char *host, int https, char *resource, char *permit, char 
   }
   if (buf.ptr)
     free(buf.ptr);
-  if (*aux == (char *)0)
-    (*aux)=strcpy(malloc(1),"");
   return status;
 }
 #endif
