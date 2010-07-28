@@ -43,8 +43,10 @@ public fun bRadCheck(in _save, optional _debug)
 	write(*, "CHECK Saturazioni correnti PR");
 
 	
+	/*
+	_PrMaxCurrent = 330;
+	*/
 	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
-	
 	_level = _PrMaxCurrent * 0.9;
 	_satDuration = 0.01;
 
@@ -143,14 +145,9 @@ public fun bRadCheck(in _save, optional _debug)
 		{
 		
 /*
-	Sonde alto-basso: 8mT (allarme) e 12 mT (intervento).
-	Sonde alto-basso: 8mT (allarme) e 9 mT (intervento).
+	Sonde alto-basso: 5mT (allarme) e 9 mT (intervento).
 **/
-/*
-			_lW = 0.008; 
-			_lF = 0.012;
-*/
-			_lW = 0.008; 
+			_lW = 0.005; 
 			_lF = 0.009;
 			_dW = _dF = 0.03;
 	
