@@ -1796,9 +1796,9 @@ CachedTreeNode *CachedTree::getCachedNode(char *path)
 }
 
 
-void CachedTreeNode::putLastRow(Data *data, Int64 *time)
+void CachedTreeNode::putLastRow(Data *data, _int64 *time)
 {
-	_int64 time64 = time->getLong();
+	_int64 time64 = *time;
 	resolveNid();
 	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time64, 1024, true, true, MDS_WRITE_LAST);
 	if(!(status & 1))
