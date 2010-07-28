@@ -1,4 +1,7 @@
 #include "Cache.h"
+#ifndef HAVE_WINDOWS_H
+#include <pthread.h>
+#endif
 
 #define WRITE_THROUGH 1
 #define WRITE_BACK 2
@@ -45,13 +48,21 @@ extern "C" int terminateSegment(char *name, int shot, int nid, char *cachePtr);
 extern "C" void synch(char *cachePtr);
 
 static char *cache = 0;
-
+#ifndef HAVE_WINDOWS_H
+static pthread_mutex_t  initMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 char *getCache(int size)
 {
+#ifndef HAVE_WINDOWS_H
+  pthread_mutex_lock(&initMutex);
+#endif
 	if(!cache)
 	{
 		cache = (char *)new Cache(size);
 	}
+#ifndef HAVE_WINDOWS_H
+  pthread_mutex_unlock(&initMutex);
+#endif
 	return cache;
 }
 
