@@ -13,6 +13,7 @@ extern unsigned short OpcCompile;
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <tdimessages.h>
+#include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
 #ifndef HAVE_WINDOWS_H
@@ -56,8 +57,7 @@ TdiRefStandard(Tdi1Compile)
 EMPTYXD(tmp);
 struct descriptor		*text_ptr;
 STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
-static int recursing=0;
-        if (recursing == 1) {
+        if (TdiThreadStatic()->compiler_recursing == 1) {
 	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported");
           return 0;
         }
@@ -93,11 +93,11 @@ static int recursing=0;
                   pthread_mutex_lock(&yacc_mutex);
 #endif
 #endif
-	        if (recursing == 1) {
+	        if (TdiThreadStatic()->compiler_recursing == 1) {
         	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported\n");
           	  return 0;
         	}
-                recursing=1;
+                TdiThreadStatic()->compiler_recursing=1;
 		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
 
 		  /****************************************
@@ -125,7 +125,7 @@ static int recursing=0;
 			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
 		  }
 		  LibResetVmZone(&TdiRefZone.l_zone);
-                  recursing=0;
+                  TdiThreadStatic()->compiler_recursing=0;
 #ifndef HAVE_WINDOWS_H
 #ifndef HAVE_VXWORKS_H
                   pthread_mutex_unlock(&yacc_mutex);
