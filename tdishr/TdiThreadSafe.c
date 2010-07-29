@@ -41,6 +41,7 @@ ThreadStatic *TdiThreadStatic()
     p->TdiVar_new_narg_d.dtype = DTYPE_L;
     p->TdiVar_new_narg_d.class = CLASS_S;
     p->TdiVar_new_narg_d.pointer = (char *)&p->TdiVar_new_narg;
+    p->compiler_recursing=0;
     pthread_setspecific(buffer_key,(void *)p);
   }
   return p;
