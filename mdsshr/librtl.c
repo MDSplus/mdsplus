@@ -891,9 +891,11 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   {
     for ( ; ; )
     {
-      xpid = wait(&sts);
+      xpid = waitpid(pid,&sts,0);
       if (xpid == pid)
-      break;
+        break;
+      else if (xpid == -1)
+        perror("Error during wait call");
     }
   }
   free(cmdstring);
