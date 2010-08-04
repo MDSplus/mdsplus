@@ -35,6 +35,7 @@ extern int IsRoprand();
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
+#include "tdithreadsafe.h"
 #include <tdimessages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
@@ -46,7 +47,6 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 STATIC_CONSTANT struct descriptor tdiItoXSpecial;
 struct descriptor *TdiItoXSpecial = &tdiItoXSpecial;
-extern struct descriptor *TdiRANGE_PTRS[3];
 extern unsigned short OpcItoX;
 extern unsigned short OpcVector;
 extern unsigned short OpcValue;
@@ -123,9 +123,9 @@ FUNCTION(255/3)		vec[3];
 unsigned char			omits[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
         dk0.pointer = (char *)&k0;
         dk1.pointer = (char *)&k1;
-        keep[0] = TdiRANGE_PTRS[0];
-        keep[1] = TdiRANGE_PTRS[1];
-        keep[2] = TdiRANGE_PTRS[2];
+        keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
+        keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
+        keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
 	/************************************************************
 	Remove and save outer WITH_UNITS.
 	8-Apr-1991 allow BUILD_WITH_UNITS(BUILD_DIM(,range),units).
@@ -416,9 +416,9 @@ select:
 		else if (arg1) {
 		struct descriptor_range *rptr = (struct descriptor_range *)list[1];
 			MdsFree1Dx(out_ptr, NULL);
-			TdiRANGE_PTRS[0] = &dk0;
-			TdiRANGE_PTRS[1] = &dk1;
-			TdiRANGE_PTRS[2] = flag ? 0 : dimen.pointer;
+			TdiThreadStatic()->TdiRANGE_PTRS[0] = &dk0;
+			TdiThreadStatic()->TdiRANGE_PTRS[1] = &dk1;
+			TdiThreadStatic()->TdiRANGE_PTRS[2] = flag ? 0 : dimen.pointer;
 		/******************************************************
 		* For subscripts of signals, want range step to be all.
 		******************************************************/
@@ -432,9 +432,9 @@ select:
 				status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
 			}
 			else	status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
-			TdiRANGE_PTRS[0] = keep[0];
-			TdiRANGE_PTRS[1] = keep[1];
-			TdiRANGE_PTRS[2] = keep[2];
+			TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
+			TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
+			TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
 			arg1 = cats[0].in_dtype != DTYPE_MISSING;
 		}
 		else	status = TdiDtypeRange(&dk0, &dk1, out_ptr MDS_END_ARG);

@@ -12,7 +12,6 @@
 	NEED faster code for longs and maybe floats.
 */
 
-struct descriptor *TdiRANGE_PTRS[3] = {0,0,0};
 
 extern unsigned short OpcValue;
 
@@ -20,6 +19,7 @@ extern unsigned short OpcValue;
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
+#include "tdithreadsafe.h"
 #include <tdimessages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
@@ -78,9 +78,9 @@ struct TdiCatStruct		cats[4];
 	DESCRIPTOR_RANGE(range, 0, 0, 0);
                 range.begin = &dx0;
                 range.ending = &dx1;
-		if (!TdiRANGE_PTRS[2]) return TdiNULL_PTR;
-		if (new[0] == 0 && new[1] == 0) return TdiItoX(TdiRANGE_PTRS[2], out_ptr MDS_END_ARG);
-		status = TdiXtoI(TdiRANGE_PTRS[2], TdiItoXSpecial, &limits MDS_END_ARG);
+		if (!TdiThreadStatic()->TdiRANGE_PTRS[2]) return TdiNULL_PTR;
+		if (new[0] == 0 && new[1] == 0) return TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2], out_ptr MDS_END_ARG);
+		status = TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], TdiItoXSpecial, &limits MDS_END_ARG);
 		if (status & 1) {
 			dx0 = *limits.pointer;
 			dx0.class = CLASS_S;
@@ -89,22 +89,22 @@ struct TdiCatStruct		cats[4];
 
 			dat[0] = dat[1] = EMPTY_XD;
 			if (new[0]) {
-				status = TdiXtoI(TdiRANGE_PTRS[2], new[0], &dat[0] MDS_END_ARG);
+				status = TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[0], &dat[0] MDS_END_ARG);
 				range.begin = dat[0].pointer;
 			}
 		}
 		if (new[1] && status & 1) {
-			status = TdiXtoI(TdiRANGE_PTRS[2], new[1], &dat[1] MDS_END_ARG);
+			status = TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[1], &dat[1] MDS_END_ARG);
 			range.ending = dat[1].pointer;
 		}
-		if (status & 1) status = TdiItoX(TdiRANGE_PTRS[2], &range, out_ptr MDS_END_ARG);
+		if (status & 1) status = TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2], &range, out_ptr MDS_END_ARG);
 		MdsFree1Dx(&dat[1], NULL);
 		MdsFree1Dx(&dat[0], NULL);
 		MdsFree1Dx(&limits, NULL);
 		return status;
 	}
-	if (new[0] == 0) new[0] = TdiRANGE_PTRS[0];
-	if (new[1] == 0) new[1] = TdiRANGE_PTRS[1];
+	if (new[0] == 0) new[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
+	if (new[1] == 0) new[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
 	if (new[2] == 0) nnew = 2;
 
 	/******************************************

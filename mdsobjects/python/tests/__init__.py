@@ -5,7 +5,7 @@ MDSplus tests
 Tests of MDSplus
 
 """
-from unittest import TestCase,TestSuite,TextTestRunner
+from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 import treeUnitTest
 import threadsUnitTest
 import dataUnitTest
@@ -36,6 +36,8 @@ class cleanup(TestCase):
             except Exception,e:
              print e
         return
+    def runTest(self):
+        self.cleanup()
 
 def test_all(*arg):
     warnings.filterwarnings("ignore","tmpnam",RuntimeWarning,__name__)
@@ -46,14 +48,23 @@ def test_all(*arg):
       os.mkdir(dir)
     except:
       pass
-    Data.execute('setenv("pytree_path='+dir.replace('\\','\\\\')+'")')
-    Data.execute('setenv("pytreesub_path='+dir.replace('\\','\\\\')+'")')
+    if (str(Data.execute('getenv("TEST_DISTRIBUTED_TREES")')) == ""):
+	hostpart=""
+    else:
+        hostpart="localhost::" 
+    Data.execute('setenv("pytree_path='+hostpart+dir.replace('\\','\\\\')+'")')
+    Data.execute('setenv("pytreesub_path='+hostpart+dir.replace('\\','\\\\')+'")')
+    print Data.execute('getenv("pytree_path")')
     tests=list()
     tests.append(treeUnitTest.suite())
+    #tests=TestSuite()
+    #tests.addTest(treeUnitTest.treeTests())
     if os.getenv('TEST_THREADS') is not None:
-	tests.append(threadsUnitTest.suite())
+        tests.append(threadsUnitTest.suite())
+	#tests.addTest(threadsUnitTest.threadTest())
     tests.append(dataUnitTest.suite())
+    #tests.addTest(dataUnitTest.dataTests())
     tests.append(TestSuite([cleanup('cleanup')]))
-    ans = TestSuite(tests)
-    return ans
+    #tests.addTest(cleanup())
+    return TestSuite(tests)
 

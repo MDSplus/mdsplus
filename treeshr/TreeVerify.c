@@ -39,11 +39,11 @@ static int nodecount;
 static int countnodes(NODE *node);
 static int countfree(NODE *node);
 
-extern void *DBID;
+extern void **TreeCtx();
 
 int TreeVerify()
 {
-  return _TreeVerify(DBID);
+  return _TreeVerify(*TreeCtx());
 }
 
 int _TreeVerify(void *dbid)

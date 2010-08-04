@@ -1,40 +1,29 @@
 from mdsdata import Data,makeData
-from threading import RLock,Thread
+from threading import RLock,Thread,local
+thread_data=local()
+
 class Tree(object):
     """Open an MDSplus Data Storage Hierarchy"""
 
     _lock=RLock()
     _activeTree=None
-
     def __del__(self):
         """Delete Tree instance
         @rtype: None
         """
         try:
-            try:
-                self.lock()
-            except:
-                pass
-            try:
-                from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFreeDbid,TreeRestoreContext
-                if self.close:
-                    if isinstance(self,CachedTree):
-                        RtreeCloseAll(self.ctx)
-                    else:
-                        TreeCloseAll(self.ctx)
-                    if hasattr(self,"ctx") and self.ctx is not None:
-                        TreeFreeDbid(self.ctx)
-                    if Tree._activeTree == self:
-                        Tree._activeTree = None
-                        TreeRestoreContext(None)
-                self.ctx=None
-            except:
-                pass
-        finally:
-            try:
-                self.unlock()
-            except:
-                pass
+            from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFreeDbid,TreeRestoreContext
+            if self.close:
+                if isinstance(self,CachedTree):
+                    status=RtreeCloseAll(self.ctx)
+                else:
+                    status=TreeCloseAll(self.ctx)
+                if (status & 1):
+                    TreeFreeDbid(ctx)
+                if Tree.getActiveTree() == self:
+                    Tree.setActiveTree(None)
+        except:
+            pass
         return
 
     def __getattr__(self,name):
@@ -76,6 +65,15 @@ class Tree(object):
                     raise AttributeError,'No such attribute: '+name
         return ans
 
+    def usePrivateCtx(cls,on=True):
+        global thread_data
+        from _treeshr import TreeUsePrivateCtx
+        if not hasattr(thread_data,"activeTree"):
+            thread_data.activeTree=None
+        thread_data.private=on
+        TreeUsePrivateCtx(on)
+    usePrivateCtx=classmethod(usePrivateCtx)
+
     def __init__(self, tree=None, shot=-1, mode='NORMAL'):
         """Create a Tree instance. Specify a tree and shot and optionally a mode.
         If providing the mode argument it should be one of the following strings:
@@ -89,32 +87,28 @@ class Tree(object):
         @type mode: str
         """
         from _treeshr import TreeOpen,TreeOpenNew,TreeOpenReadOnly,TreeGetContext,TreeException
-        try:
-            Tree.lock()
-            if tree is None:
-                self.close=False
+        if tree is None:
+            self.close=False
+            try:
+                self.ctx=TreeGetContext()
+            except:
                 try:
-                    self.ctx=TreeGetContext()
+                    self.ctx=Tree.getActiveTree().ctx
                 except:
-                    try:
-                        self.ctx=Tree._activeTree.ctx
-                    except:
-                        raise TreeException,'tree not open'
+                    raise TreeException,'tree not open'
+        else:
+            self.close=True
+            if mode.upper() == 'NORMAL':
+                self.ctx=TreeOpen(tree,shot)
+            elif mode.upper() == 'EDIT':
+                self.ctx=TreeOpen(tree,shot)
+                self.edit()
+            elif mode.upper() == 'NEW':
+                self.ctx=TreeOpenNew(tree,shot)
+            elif mode.upper() == 'READONLY':
+                self.ctx=TreeOpenReadOnly(tree,shot)
             else:
-                self.close=True
-                if mode.upper() == 'NORMAL':
-                    self.ctx=TreeOpen(tree,shot)
-                elif mode.upper() == 'EDIT':
-                    self.ctx=TreeOpen(tree,shot)
-                    self.edit()
-                elif mode.upper() == 'NEW':
-                    self.ctx=TreeOpenNew(tree,shot)
-                elif mode.upper() == 'READONLY':
-                    self.ctx=TreeOpenReadOnly(tree,shot)
-                else:
-                    raise TreeException,'Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".'
-        finally:
-            Tree.unlock()
+                raise TreeException,'Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".'
         Tree.setActiveTree(self)
         return
 
@@ -216,6 +210,7 @@ class Tree(object):
             except:
                 status = TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
         finally:
+            pass
             Tree.unlock()
         if not (status & 1):
             raise TreeException,"Error creating pulse: %s" % (MdsGetMsg(status),)
@@ -299,13 +294,20 @@ class Tree(object):
             Tree.unlock()
         return tags
 
-    def getActiveTree(cls):
+    def getActiveTree():
         """Get active tree.
         @return: Current active tree
         @rtype: Tree
         """
-        return cls._activeTree
-    getActiveTree=classmethod(getActiveTree)
+        global thread_data
+        if not hasattr(thread_data,"activeTree"):
+            thread_data.activeTree=None
+            thread_data.private=False
+        if thread_data.private:
+          return thread_data.activeTree
+        else:
+          return Tree._activeTree
+    getActiveTree=staticmethod(getActiveTree)
     
     def getCurrent(treename):
         """Return current shot for specificed treename
@@ -417,7 +419,9 @@ class Tree(object):
     def lock(cls):
         """Internal use only. Thread synchronization locking.
         """
-        cls._lock.acquire()
+        from _treeshr import TreeUsingPrivateCtx
+        if not TreeUsingPrivateCtx():
+            cls._lock.acquire()
     lock=classmethod(lock)
 
     def quit(self):
@@ -440,10 +444,25 @@ class Tree(object):
         from _treeshr import TreeRemoveTag
         TreeRemoveTag(self,tag)
 
+
+    def _setActiveTree(tree):
+        global thread_data
+        if not hasattr(thread_data,"activeTree"):
+            thread_data.activeTree=None
+            thread_data.private=False
+        if thread_data.private:
+          old = thread_data.activeTree
+          thread_data.activeTree=tree
+        else:
+          old=Tree._activeTree
+          Tree._activeTree=tree
+        return old
+    _setActiveTree=staticmethod(_setActiveTree)
+
     def restoreContext(self):
         """Internal use only. Use internal context associated with this tree."""
         from _treeshr import TreeRestoreContext
-        Tree._activeTree=self
+        Tree._setActiveTree(self)
         return TreeRestoreContext(self.ctx)
 
     def setActiveTree(cls,tree):
@@ -453,8 +472,7 @@ class Tree(object):
         @return: Previous active tree
         @rtype: Tree
         """
-        old=cls._activeTree
-        cls._activeTree=tree
+        old = cls._setActiveTree(tree)
         tree.restoreContext()
         return old
     setActiveTree=classmethod(setActiveTree)
@@ -541,7 +559,9 @@ class Tree(object):
     def unlock(cls):
         """Internal use only. Thread synchronization locking.
         """
-        cls._lock.release()
+        from _treeshr import TreeUsingPrivateCtx
+        if not TreeUsingPrivateCtx():
+            cls._lock.release()
     unlock=classmethod(unlock)
 
     def versionsInModelEnabled(self):
@@ -589,7 +609,7 @@ class CachedTree(Tree):
             Tree.lock()
             self.ctx=RTreeOpen(tree,shot)
             self.close=True
-            Tree._activeTree=self
+            Tree.setActiveTree(self)
         finally:
             Tree.unlock()
         return

@@ -398,6 +398,10 @@ class dataTests(TestCase):
         self.assertEqual(int(Int64(255)),255)
         self.assertEqual(int(Float32(255)),255)
         self.assertEqual(int(Float64(255)),255)
+
+    def runTest(self):
+        self.basicBinaryOperators()
+        self.mathFunctions()
         
 
 def suite():

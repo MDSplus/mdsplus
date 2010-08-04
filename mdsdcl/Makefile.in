@@ -19,6 +19,7 @@ mdsdcl_get_input.c		\
 mdsdcl_initialize.c	\
 mdsdcl_insert_symbols.c	\
 mdsdcl_tables.c		\
+MdsdclThreadSafe.c	\
 mdsdcl_macros.c		\
 mdsdcl_set_command.c	\
 mdsdcl_show_vm.c        \

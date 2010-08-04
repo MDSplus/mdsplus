@@ -51,7 +51,7 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
 extern int SetNciRemote();
 extern int TreeFlushOffRemote();
@@ -59,11 +59,11 @@ extern int TreeFlushResetRemote();
 extern int TreeTurnOnRemote();
 extern int TreeTurnOffRemote();
 
-int TreeSetNci(int nid, NCI_ITM *nci_itm_ptr) { return _TreeSetNci(DBID, nid, nci_itm_ptr);}
-int TreeFlushOff(int nid) { return _TreeFlushOff(DBID, nid);}
-int TreeFlushReset(int nid) { return _TreeFlushReset(DBID, nid);}
-int TreeTurnOn(int nid) { return _TreeTurnOn(DBID, nid);}
-int TreeTurnOff(int nid) { return _TreeTurnOff(DBID, nid);}
+int TreeSetNci(int nid, NCI_ITM *nci_itm_ptr) { return _TreeSetNci(*TreeCtx(), nid, nci_itm_ptr);}
+int TreeFlushOff(int nid) { return _TreeFlushOff(*TreeCtx(), nid);}
+int TreeFlushReset(int nid) { return _TreeFlushReset(*TreeCtx(), nid);}
+int TreeTurnOn(int nid) { return _TreeTurnOn(*TreeCtx(), nid);}
+int TreeTurnOff(int nid) { return _TreeTurnOff(*TreeCtx(), nid);}
 
 int TreeGetNciLw(TREE_INFO *info, int node_num, NCI *nci);
 
@@ -751,6 +751,6 @@ int _TreeSetUsage(void *dbid, int nid_in, unsigned char usage) {
 }
 
 int TreeSetUsage(int nid_in, unsigned char usage) {
-  return _TreeSetUsage(DBID, nid_in, usage);
+  return _TreeSetUsage(*TreeCtx(), nid_in, usage);
 }
  

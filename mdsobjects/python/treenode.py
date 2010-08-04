@@ -152,7 +152,7 @@ class TreeNode(Data):
         self.__dict__['nid']=int(n);
         if tree is None:
             try:
-                self.tree=Tree._activeTree
+                self.tree=Tree.getActiveTree()
             except:
                 self.tree=Tree()
         else:
@@ -214,7 +214,6 @@ class TreeNode(Data):
 
     def __setNode(self,qualifier,flag,reversed=False):
         """For internal use only"""
-        self.restoreContext()
         if flag is True or flag is False:
             if reversed is True:
                 flag = not flag
@@ -228,12 +227,12 @@ class TreeNode(Data):
         try:
             Tree.lock()
             self.restoreContext()
-            cmd='tcl("set node \\'+self.fullpath+switch+qualifier+'")'
+            cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
             status = Data.compile(cmd).evaluate()
             if not (status & 1):
                 from _descriptor import MdsGetMsg
                 from _treeshr import TreeException
-                msg=MdsGetMsg(int(status))
+                msg="Error executing command: %s, returned error: %s" % (cmd,str(MdsGetMsg(int(status))))
                 if 'TreeFAILURE' in msg:
                     raise TreeException,'Error writing to tree, possibly file protection problem'
                 else:
@@ -1058,7 +1057,7 @@ class TreePath(TreeNode):
     def __init__(self,path,tree=None):
         self.tree_path=makeData(path);
         if tree is None:
-            self.tree=Tree._activeTree
+            self.tree=Tree.getActiveTree()
         else:
             self.tree=tree
         return
@@ -1071,7 +1070,7 @@ class TreeNodeArray(Data):
     def __init__(self,nids,tree=None):
         self.nids=nids
         if tree is None:
-            self.tree=Tree._activeTree
+            self.tree=Tree.getActiveTree()
         else:
             self.tree=tree
 

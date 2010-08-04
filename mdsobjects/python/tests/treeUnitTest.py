@@ -6,27 +6,25 @@ from mdsscalar import Uint32
 from mdsarray import makeArray
 from numpy import array,int32
 from compound import Signal,Range
-import threading
 import random
-
-thread_data=threading.local()
 
 class treeTests(TestCase):
 
-    def editTrees(self):
+    shot=0
+
+    def setUp(self):
+        from threading import Lock
+        l=Lock()
+        l.acquire()
         try:
-            Tree.lock()
-            if hasattr(treeTests,'shot'):
-                thread_data.shot1=treeTests.shot
-                thread_data.shot2=treeTests.shot+1
-            else:
-                thread_data.shot1=1
-                thread_data.shot2=2
-            treeTests.shot=thread_data.shot2+1
+            if self.shot == treeTests.shot:
+                self.shot=treeTests.shot+1
+                treeTests.shot=treeTests.shot+2
         finally:
-            shot1=thread_data.shot1
-            Tree.unlock()
-        pytree=Tree('pytree',thread_data.shot1,'new')
+            l.release()
+
+    def editTrees(self):
+        pytree=Tree('pytree',self.shot,'new')
         pytree_top=pytree.default
         subtree=pytree_top.addNode('pytreesub','subtree')
         for i in range(10):
@@ -37,9 +35,9 @@ class treeTests(TestCase):
             node=pytree_top.addNode('child%02d' % (i,),'structure')
             node.addNode('text','text')
             node.addNode('child','structure')
-        pytreesub=Tree('pytreesub',thread_data.shot1,'new')
-        if pytreesub.shot != thread_data.shot1 or thread_data.shot1 != shot1:
-            raise Exception,"Shot number changed! tree.shot=%d, thread.shot=%d, shot=%d" % (pytreesub.shot, thread_data.shot1, shot1)
+        pytreesub=Tree('pytreesub',self.shot,'new')
+        if pytreesub.shot != self.shot:
+            raise Exception,"Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot)
         pytreesub_top=pytreesub.default
         node=pytreesub_top.addNode('.rog','structure')
         for i in range(10):
@@ -54,7 +52,8 @@ class treeTests(TestCase):
         node.compress_on_put=True
         node.record=Signal(Range(2.,2000.,2.),None,Range(1.,1000.))
         ip=pytreesub_top.addNode('ip','signal')
-        ip.record=Data.compile("""Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))""")
+        rec=Data.compile("""Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))""")
+        ip.record=rec
         ip.tag='MAG_PLASMA_CURRENT'
         ip.tag='MAGNETICS_PLASMA_CURRENT'
         ip.tag='MAG_IP'
@@ -67,38 +66,38 @@ class treeTests(TestCase):
         pytreesub.write()
 
     def openTrees(self):
-        thread_data.t1=Tree('pytree',thread_data.shot1)
-        thread_data.t1.getNode('.pytreesub').include_in_pulse=True
-        self.assertEqual(str(thread_data.t1),'Tree("PYTREE",'+str(thread_data.shot1)+',"Normal")')
-        thread_data.t1.createPulse(thread_data.shot2)
-        Tree.setCurrent('pytree',thread_data.shot2)
-        thread_data.t2=Tree('pytree',thread_data.shot2)
-        self.assertEqual(str(thread_data.t2),'Tree("PYTREE",'+str(thread_data.shot2)+',"Normal")')
+        self.pytree=Tree('pytree',self.shot)
+        self.pytree.getNode('.pytreesub').include_in_pulse=True
+        self.assertEqual(str(self.pytree),'Tree("PYTREE",'+str(self.shot)+',"Normal")')
+        self.pytree.createPulse(self.shot+1)
+        Tree.setCurrent('pytree',self.shot+1)
+        self.pytree2=Tree('pytree',self.shot+1)
+        self.assertEqual(str(self.pytree2),'Tree("PYTREE",'+str(self.shot+1)+',"Normal")')
         return
 
     def getNode(self):
-        ip=thread_data.t2.getNode('\\ip')
+        ip=self.pytree.getNode('\\ip')
         self.assertEqual(str(ip),'\\PYTREESUB::IP')
         return
 
     def setDefault(self):
-        ip=thread_data.t2.getNode('\\ip')
-        thread_data.t2.setDefault(ip)
-        self.assertEqual(str(thread_data.t2.getDefault()),'\\PYTREESUB::IP')
-        self.assertEqual(str(thread_data.t1.getDefault()),'\\PYTREE::TOP')
+        ip=self.pytree2.getNode('\\ip')
+        self.pytree2.setDefault(ip)
+        self.assertEqual(str(self.pytree2.getDefault()),'\\PYTREESUB::IP')
+        self.assertEqual(str(self.pytree.getDefault()),'\\PYTREE::TOP')
         return
 
     def nodeLinkage(self):
-        top=TreeNode(0,thread_data.t1)
-        members=thread_data.t1.getNodeWild(':*')
+        top=TreeNode(0,self.pytree)
+        members=self.pytree.getNodeWild(':*')
         self.assertEqual((members==top.member_nids).all(),True)
         self.assertEqual((members==top.getMembers()).all(),True)
         self.assertEqual(top.member.nid_number,members[0].nid_number)
         member=top.member
-        for idx in range(1,len(member)):
-            self.assertEqual(member.brother.nid_number,member[idx].nid_number)
+        for idx in range(1,len(members)):
+            self.assertEqual(member.brother.nid_number,members[idx].nid_number)
             member=member.brother
-        children=thread_data.t1.getNodeWild('.*')
+        children=self.pytree.getNodeWild('.*')
         self.assertEqual((children==top.children_nids).all(),True)
         self.assertEqual((children==top.getChildren()).all(),True)
         self.assertEqual(top.child.nid_number,children[0].nid_number)
@@ -106,7 +105,7 @@ class treeTests(TestCase):
         for idx in range(1,len(children)):
             self.assertEqual(child.brother.nid_number,children[idx].nid_number)
             child=child.brother
-        self.assertEqual(top.child.nid_number,thread_data.t1.getNode(str(top.child)).nid_number)
+        self.assertEqual(top.child.nid_number,self.pytree.getNode(str(top.child)).nid_number)
         self.assertEqual(top.child.child.parent.nid_number,top.child.nid_number)
         x=array(int32(0)).repeat(len(members)+len(children))
         x[0:len(members)]=members.nid_number.data()
@@ -120,7 +119,7 @@ class treeTests(TestCase):
         self.assertEqual(top.number_of_members,len(members))
         self.assertEqual(top.number_of_children,len(children))
         self.assertEqual(top.number_of_descendants,len(x))
-        devs=thread_data.t2.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
+        devs=self.pytree2.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         dev=devs[0].conglomerate_nids
         self.assertEqual((dev.nid_number==devs[0].getConglomerateNodes().nid_number).all(),True)
         self.assertEqual((dev.conglomerate_elt==makeArray(array(range(len(dev)))+1)).all(),True)
@@ -133,7 +132,7 @@ class treeTests(TestCase):
         self.assertEqual(top.member.is_member,True)
         self.assertEqual(top.child.is_child,top.child.isChild())
         self.assertEqual(top.child.is_member,top.child.isMember())
-        ip=thread_data.t2.getNode('\\ip')
+        ip=self.pytree2.getNode('\\ip')
         self.assertEqual(ip.fullpath,"\\PYTREE::TOP.PYTREESUB:IP")
         self.assertEqual(ip.fullpath,ip.getFullPath())
         self.assertEqual(ip.minpath,"\\IP")
@@ -145,9 +144,14 @@ class treeTests(TestCase):
         return
 
     def nciInfo(self):
-        ip=thread_data.t2.getNode('\\ip')
+        ip=self.pytree2.getNode('\\ip')
         self.assertEqual(ip.getUsage(),'SIGNAL')
         self.assertEqual(ip.usage,ip.getUsage())
+        if ip.getClass() != 'CLASS_R':
+            print "ip.nid=%d" % (ip.nid,)
+            print "Error with ip in %s" % (str(ip.tree),)
+            from os import _exit
+            _exit(1)
         self.assertEqual(ip.getClass(),'CLASS_R')
         self.assertEqual(ip.class_str,'CLASS_R')
         self.assertEqual(ip.compressible,False)
@@ -163,7 +167,7 @@ class treeTests(TestCase):
         self.assertEqual(ip.dtype_str,ip.getDtype())
         self.assertEqual(ip.essential,False)
         self.assertEqual(ip.essential,ip.isEssential())
-        mhdtree=thread_data.t2.getNode('\\PYTREESUB::TOP')
+        mhdtree=self.pytree2.getNode('\\PYTREESUB::TOP')
         self.assertEqual(mhdtree.include_in_pulse,True)
         self.assertEqual(mhdtree.include_in_pulse,mhdtree.isIncludedInPulse())
         self.assertEqual(ip.length,int(Data.execute('getnci($,"LENGTH")',ip)))
@@ -174,7 +178,7 @@ class treeTests(TestCase):
         self.assertEqual(ip.no_write_model,ip.isNoWriteModel())
         self.assertEqual(ip.write_once,False)
         self.assertEqual(ip.write_once,ip.isWriteOnce())
-        devs=thread_data.t2.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
+        devs=self.pytree2.getNodeWild('\\PYTREESUB::TOP.***','DEVICE')
         dev=devs[0].conglomerate_nids
         self.assertEqual(dev[3].original_part_name,':COMMENT')
         self.assertEqual(dev[3].original_part_name,dev[3].getOriginalPartName())
@@ -197,7 +201,7 @@ class treeTests(TestCase):
         return
 
     def getData(self):
-        ip=thread_data.t2.getNode('\\ip')
+        ip=self.pytree2.getNode('\\ip')
         self.assertEqual(str(ip.record),'Build_Signal(Build_With_Units(\\MAG_ROGOWSKI.SIGNALS:ROG_FG + 2100. * \\BTOR, "ampere"), *, DIM_OF(\\BTOR))')
         self.assertEqual(str(ip.record),str(ip.getData()))
         self.assertEqual(ip.segmented,ip.isSegmented())
@@ -207,18 +211,18 @@ class treeTests(TestCase):
         return
 
     def finish(self):
-        try:
-          thread_data.t1.deletePulse(thread_data.shot1)
-        except:
-          pass
-        try:
-          thread_data.t1.deletePulse(thread_data.shot2)
-        except:
-          pass
-        thread_data.t1.__del__()
-        thread_data.t2.__del__()
+        self.pytree.deletePulse(self.shot+1)
+        self.pytree.deletePulse(self.shot)
+
+    def runTest(self):
+        self.editTrees()
+        self.openTrees()
+        self.getNode()
+        self.setDefault()
+        self.nodeLinkage()
+        self.nciInfo()
+        self.getData()
+        self.finish()
 
 def suite():
-    tests = ['editTrees','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','finish']
-    return TestSuite(map(treeTests,tests))
-
+    return treeTests()

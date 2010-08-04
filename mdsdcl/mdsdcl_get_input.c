@@ -7,6 +7,7 @@
 #include        <ssdef.h>
 #include        <time.h>
 #endif
+#include "mdsdclthreadsafe.h"
 
 /**********************************************************************
 * MDSDCL_GET_INPUT.C --
@@ -20,8 +21,6 @@
 *************************************************************************/
 
 
-extern struct _mdsdcl_ctrl  MDSDCL_COMMON;
-static struct _mdsdcl_ctrl *ctrl = &MDSDCL_COMMON;
 
 
 
@@ -33,6 +32,7 @@ static int   closeIndirectLevel()
     int   i;
     struct _mdsdcl_io  *io;
     struct _mdsdcl_macro  *macro;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     if (!ctrl->depth)
         return(CLI_STS_EOF);
@@ -66,6 +66,7 @@ int   mdsdcl_openIndirectLevel(		/* Return: status		*/
     char  *p				/* <r> addr in cmdline		*/
    )
    {
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
     int   i,k;
     char  *p2;
     FILE  *fp;
@@ -133,6 +134,7 @@ static int   readInputLine(	/* Return: status			*/
     struct _mdsdcl_io  *io;
     struct _mdsdcl_macro  *macro;
     static char  line[1024];
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     io = ctrl->ioLevel + ctrl->depth;
     fp = io->fp;
@@ -306,6 +308,7 @@ static int   really_get_input(		/* Return: status		*/
     int   sts;
     char  *p;
     struct _mdsdcl_io  *io;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
 		/*--------------------------------------------------------
 		 * Get full string with no comments or continuation-chars.
@@ -370,6 +373,7 @@ int   mdsdcl_get_input_nosymbols(	/* Return: status		*/
 	 ****************************************************************/
 int   mdsdcl_close_indirect_all()
    {
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
     for ( ; ctrl->depth ; )
         closeIndirectLevel();
 

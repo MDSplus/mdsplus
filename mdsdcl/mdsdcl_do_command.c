@@ -4,6 +4,8 @@
 #include        <ssdef.h>
 #include        <lib$routines.h>
 #endif
+#include <STATICdef.h>
+#include "mdsdclthreadsafe.h"
 
 /*********************************************************************
 * MDSDCL_DO_COMMAND.C --
@@ -24,8 +26,6 @@
 **********************************************************************/
 
 
-struct _mdsdcl_ctrl  MDSDCL_COMMON;
-static struct _mdsdcl_ctrl *ctrl = &MDSDCL_COMMON;
 
 #ifdef vms
 extern sys$setast();
@@ -42,6 +42,7 @@ static void  displayCmdline(
    )
    {
     int   i;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     if (!nonblank(cmdline))
         return;
@@ -51,7 +52,8 @@ static void  displayCmdline(
     return;
    }
 
-
+STATIC_THREADSAFE pthread_mutex_t mdsdclMutex;
+STATIC_THREADSAFE int             mdsdclMutex_initialized=0;
 
 	/****************************************************************
 	 * mdsdcl_do_command:
@@ -67,6 +69,7 @@ int mdsdcl_do_command(
     struct _mdsdcl_io  *io;
     static char  doMacro[12];
     static DYNAMIC_DESCRIPTOR(dsc_cmd);
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 #ifdef vms
     extern int   MDSDCL$MSG_TO_RET();
     extern int   MDSDCL$OUT_OF_BAND_AST();
@@ -75,19 +78,14 @@ int mdsdcl_do_command(
 	/*---------------------------------------------------------------
 	 * Executable:
 	 *--------------------------------------------------------------*/
-#ifdef vms
-    lib$establish(MDSDCL$MSG_TO_RET);
-    sys$setast(1);
-/*    smg$set_out_of_band_asts(&ctrl->pasteboard_id,&0x4000008,
-/*                        MDSDCL$OUT_OF_BAND_AST,ctrl);	/*  */
-#endif
 
+    LockMdsShrMutex(&mdsdclMutex,&mdsdclMutex_initialized);
     if (!ctrl->tbladr[0])  mdsdcl_initialize(ctrl);
     tblidx = ctrl->tables;
 
     if (!doMacro[0])
        {			/* first time ...			*/
-        sprintf(doMacro,"DO %cMACRO ","/");
+        sprintf(doMacro,"DO %cMACRO ",'/');
        }
 
     io = ctrl->ioLevel + ctrl->depth;
@@ -114,10 +112,13 @@ int mdsdcl_do_command(
 				/* 25-Feb-03: ignore blank lines -- TRG	*/
         if (~stsParse & 1)
            {
-            if ((stsParse == CLI_STS_EOF) || (stsParse == CLI_STS_NOCOMD))
+	     if ((stsParse == CLI_STS_EOF) || (stsParse == CLI_STS_NOCOMD)) {
+	        UnlockMdsShrMutex(&mdsdclMutex);
+                return(stsParse);
+	     }	else if (stsParse == MDSDCL_STS_INDIRECT_EOF) {
+	        UnlockMdsShrMutex(&mdsdclMutex);
                 return(stsParse);	/*--------------------> return	*/
-            if (stsParse == MDSDCL_STS_INDIRECT_EOF)
-                return(stsParse);	/*--------------------> return	*/
+	     }
            }
 
         io = ctrl->ioLevel + ctrl->depth;
@@ -138,6 +139,7 @@ int mdsdcl_do_command(
                                 dsc_cmd.dscA_pointer);
                     mdsdcl_close_indirect_all();
                    }
+		 UnlockMdsShrMutex(&mdsdclMutex);
                 return(sts);		/*--------------------> return	*/
                }
            }
@@ -162,6 +164,7 @@ int mdsdcl_do_command(
 
     if (~sts & 1)
         mdsdcl_close_indirect_all();
+    UnlockMdsShrMutex(&mdsdclMutex);
 
     return(sts);			/*--------------------> return	*/
    }
@@ -173,5 +176,5 @@ int mdsdcl_do_command(
 	 ***************************************************************/
 struct _mdsdcl_ctrl  *mdsdcl_ctrl_address()
    {
-    return(ctrl);
+     return(&MdsdclGetThreadStatic()->ctrl);
    }

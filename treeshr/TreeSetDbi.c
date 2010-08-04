@@ -44,11 +44,11 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
 extern int SetDbiRemote();
 
-int TreeSetDbi(DBI_ITM *dbi_itm_ptr) { return _TreeSetDbi(DBID, dbi_itm_ptr);}
+int TreeSetDbi(DBI_ITM *dbi_itm_ptr) { return _TreeSetDbi(*TreeCtx(), dbi_itm_ptr);}
 
 int       _TreeSetDbi(void *dbid, DBI_ITM *dbi_itm_ptr)
 {

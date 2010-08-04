@@ -65,18 +65,18 @@ static int GetVmForTree(TREE_INFO *info,int nomap);
 static int MapTree(char *tree, int shot, TREE_INFO *info, int edit_flag, int remote);
 static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtreetop);
 
-void *DBID = NULL;
+extern void **TreeCtx();
 
-int TreeClose(char *tree, int shot) { return _TreeClose(&DBID,tree,shot); }
-int TreeEditing() { return _TreeEditing(DBID);}
-int TreeGetStackSize() { return _TreeGetStackSize(DBID);}
-int TreeIsOpen() { return _TreeIsOpen(DBID);}
-int TreeOpen(char *tree, int shot, int read_only) { return _TreeOpen(&DBID,tree,shot,read_only);}
-int TreeSetStackSize(int size) { return _TreeSetStackSize(&DBID, size);}
-void TreeRestoreContext(void *ctx) { _TreeRestoreContext(&DBID,ctx); }
-void *TreeSaveContext() { return _TreeSaveContext(DBID);}
-int TreeOpenEdit(char *tree, int shot) { return _TreeOpenEdit(&DBID,tree,shot);}
-int TreeOpenNew(char *tree, int shot) { return _TreeOpenNew(&DBID, tree, shot);}
+int TreeClose(char *tree, int shot) { return _TreeClose(TreeCtx(),tree,shot); }
+int TreeEditing() { return _TreeEditing(*TreeCtx());}
+int TreeGetStackSize() { return _TreeGetStackSize(*TreeCtx());}
+int TreeIsOpen() { return _TreeIsOpen(*TreeCtx());}
+int TreeOpen(char *tree, int shot, int read_only) { return _TreeOpen(TreeCtx(),tree,shot,read_only);}
+int TreeSetStackSize(int size) { return _TreeSetStackSize(TreeCtx(), size);}
+void TreeRestoreContext(void *ctx) { _TreeRestoreContext(TreeCtx(),ctx); }
+void *TreeSaveContext() { return _TreeSaveContext(*TreeCtx());}
+int TreeOpenEdit(char *tree, int shot) { return _TreeOpenEdit(TreeCtx(),tree,shot);}
+int TreeOpenNew(char *tree, int shot) { return _TreeOpenNew(TreeCtx(), tree, shot);}
 
 static char *TreePath( char *tree, char *tree_lower_out )
 {
@@ -1073,7 +1073,7 @@ static int GetVmForTree(TREE_INFO *info,int nomap)
   info->vm_pages = info->alq;
   if (nomap)
   {
-    info->vm_addr = malloc(info->vm_pages*512);
+    info->vm_addr = memset(malloc(info->vm_pages*512),0,info->vm_pages*512);
     if (info->vm_addr)
       info->section_addr[0] = info->vm_addr;
     else
@@ -1347,10 +1347,16 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
             (info->node + 1)->INFO.TREE_INFO.child = 0;
             bitassign(1,info->edit->nci->flags,NciM_INCLUDE_IN_PULSE);
             info->tags = malloc(512);
+	    if (info->tags)
+	      memset(info->tags,0,512);
             info->edit->tags_pages = 1;
             info->tag_info = malloc(sizeof(TAG_INFO)*512);
+	    if (info->tag_info)
+	      memset(info->tag_info,0,sizeof(TAG_INFO)*512);
             info->edit->tag_info_pages = sizeof(TAG_INFO);
             info->external = malloc(512);
+	    if (info->external)
+	      memset(info->external,0,512);
             info->edit->external_pages = 1;
 	    info->edit->first_in_mem = 0;
             info->header->version = 1;
@@ -1375,8 +1381,8 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
 
 void *TreeSwitchDbid(void *dbid)
 {
-  void *old_dbid = DBID;
-  DBID = dbid;
+  void *old_dbid = *TreeCtx();
+  *TreeCtx() = dbid;
   return old_dbid;
 }
 

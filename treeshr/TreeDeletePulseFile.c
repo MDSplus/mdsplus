@@ -49,7 +49,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
-extern void *DBID;
+extern void **TreeCtx();
 STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot);
 
 #if defined(_WIN32)
@@ -60,7 +60,7 @@ STATIC_ROUTINE int DeleteFile(char *src);
 
 int       TreeDeletePulseFile(int shotid, int allfiles)
 {
-  return _TreeDeletePulseFile(DBID, shotid, allfiles);
+  return _TreeDeletePulseFile(*TreeCtx(), shotid, allfiles);
 }
 
 int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)

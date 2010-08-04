@@ -36,6 +36,7 @@
 #include <mdsshr.h>
 #include <ncidef.h>
 #include "treeshrp.h"
+#include "treethreadsafe.h"
 #include <treeshr.h>
 #include <usagedef.h>
 #include <ncidef.h>
@@ -74,14 +75,11 @@ int TreeFixupNid(NID *nid, unsigned char *tree, struct descriptor *path);
 static int FixupPath();
 static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr,NCI *previous_nci);
 static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descriptor_xd *data_dsc_ptr);
-static int compress_utility;
-static char nid_reference;
-static char path_reference;
 static NCI TemplateNci;
 
 extern int PutRecordRemote();
 
-extern void *DBID;
+extern void **TreeCtx();
 
 _int64 TreeTimeInserted() {
   _int64 ans;
@@ -90,7 +88,7 @@ _int64 TreeTimeInserted() {
 }
 
 int       TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update) {
-  return _TreePutRecord(DBID,nid,descriptor_ptr,utility_update);}
+  return _TreePutRecord(*TreeCtx(),nid,descriptor_ptr,utility_update);}
 
 int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int utility_update)
 {
@@ -107,7 +105,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   EXTENDED_ATTRIBUTES attributes;
   int extended = 0;
   _int64 extended_offset;
-  compress_utility = utility_update == 2;
+  int compress_utility = utility_update == 2;
 #if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
@@ -196,14 +194,14 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
           unsigned char tree = (unsigned char)nid_ptr->tree;
           int compressible;
           int data_in_altbuf;
-          nid_reference = 0;
-          path_reference = 0;
+          TreeGetThreadStatic()->nid_reference = 0;
+          TreeGetThreadStatic()->path_reference = 0;
 	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data,TreeFixupNid,&tree,FixupPath,0,
             (compress_utility || (nci->flags & NciM_COMPRESS_ON_PUT)) && !(nci->flags & NciM_DO_NOT_COMPRESS),
             &compressible,&nci->length,&nci->DATA_INFO.DATA_LOCATION.record_length,&nci->dtype,&nci->class,
             (nci->flags & NciM_VERSIONS || extended) ? 0 : sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),nci->DATA_INFO.DATA_IN_RECORD.data,&data_in_altbuf);
-          bitassign(path_reference,nci->flags,NciM_PATH_REFERENCE);
-          bitassign(nid_reference,nci->flags,NciM_NID_REFERENCE);
+          bitassign(TreeGetThreadStatic()->path_reference,nci->flags,NciM_PATH_REFERENCE);
+          bitassign(TreeGetThreadStatic()->nid_reference,nci->flags,NciM_NID_REFERENCE);
           bitassign(compressible,nci->flags,NciM_COMPRESSIBLE);
           bitassign_c(data_in_altbuf,nci->flags2,NciM_DATA_IN_ATT_BLOCK);
         }
@@ -347,17 +345,17 @@ int TreeFixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
         TreeFree(path_c);
       }
     
-    path_reference = 1;
+    TreeGetThreadStatic()->path_reference = 1;
     status = 1;
   }
   else
-    nid_reference = 1;
+    TreeGetThreadStatic()->nid_reference = 1;
   return status;
 }
 
 static int FixupPath()
 {
-  path_reference = 1;
+  TreeGetThreadStatic()->path_reference = 1;
   return 0;
 }
 

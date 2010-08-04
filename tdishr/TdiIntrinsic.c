@@ -218,12 +218,11 @@ TdiRefStandard(TdiIntrinsic)
   int				stat1 = 1;
   struct descriptor		*dsc_ptr;
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
-  int *recursion_count = &(TdiThreadStatic())->TdiIntrinsic_recursion_count;
   tmp = emptyxd;
-  *recursion_count = *recursion_count + 1;
+  TdiThreadStatic()->TdiIntrinsic_recursion_count = TdiThreadStatic()->TdiIntrinsic_recursion_count + 1;
   if (narg < fun_ptr->m1)		status = TdiMISS_ARG;
   else if (narg > fun_ptr->m2)	status = TdiEXTRA_ARG;
-  else if (*recursion_count > 1800) status = TdiRECURSIVE;
+  else if (TdiThreadStatic()->TdiIntrinsic_recursion_count > 1800) status = TdiRECURSIVE;
   else 
   {
     int list_size = narg * sizeof(struct descriptor *);
@@ -363,8 +362,8 @@ TdiRefStandard(TdiIntrinsic)
 
 	if (out_ptr) MdsFree1Dx(out_ptr, NULL);
 notmp:	MdsFree1Dx(&tmp, NULL);
-done:	*recursion_count = 0;
-	(TdiThreadStatic())->TdiIntrinsic_mess_stat = status;
+done:	TdiThreadStatic()->TdiIntrinsic_recursion_count = 0;
+	TdiThreadStatic()->TdiIntrinsic_mess_stat = status;
 	return status;
 }
 /*--------------------------------------------------------------

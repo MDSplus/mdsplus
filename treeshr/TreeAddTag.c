@@ -37,7 +37,7 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
 #ifdef min
 #undef min
@@ -51,7 +51,7 @@ extern void *DBID;
 
 int TreeAddTag(int nid, char *tagnam)
 {
-  return _TreeAddTag(DBID, nid, tagnam);
+  return _TreeAddTag(*TreeCtx(), nid, tagnam);
 }
 
 int _TreeAddTag(void *dbid, int nid_in, char *tagnam)

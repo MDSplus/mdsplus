@@ -72,12 +72,12 @@ int TclSetNode()
            }
         if (!(status & 1)) goto error;
            {
-            static int set_flags;
-            static int clear_flags;
-            static DYNAMIC_DESCRIPTOR(dsc_path);
-            static NCI_ITM get_itmlst[] =  { {0,NciPATH,(unsigned char *) &dsc_path,0}, {0,NciEND_OF_LIST}};
-            static NCI_ITM set_itmlst[] =  { {0,NciSET_FLAGS,(unsigned char *) &set_flags,0}, {0,NciEND_OF_LIST}};
-            static NCI_ITM clear_itmlst[] =  { {0,NciCLEAR_FLAGS,(unsigned char *) &clear_flags,0}, {0,NciEND_OF_LIST}};
+            int set_flags;
+            int clear_flags;
+            DYNAMIC_DESCRIPTOR(dsc_path);
+            NCI_ITM get_itmlst[] =  { {0,NciPATH,(unsigned char *) &dsc_path,0}, {0,NciEND_OF_LIST}};
+            NCI_ITM set_itmlst[] =  { {0,NciSET_FLAGS,(unsigned char *) &set_flags,0}, {0,NciEND_OF_LIST}};
+            NCI_ITM clear_itmlst[] =  { {0,NciCLEAR_FLAGS,(unsigned char *) &clear_flags,0}, {0,NciEND_OF_LIST}};
             set_flags = 0;
             clear_flags = 0;
             switch (cli_present("WRITE_ONCE"))

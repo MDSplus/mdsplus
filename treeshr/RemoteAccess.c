@@ -976,11 +976,12 @@ STATIC_ROUTINE char *ParseFile(char *filename, char **hostpart, char **filepart)
   }
   return tmp;
 }
-
+#define LOCKFDS  LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
+#define UNLOCKFDS  UnlockMdsShrMutex(&FdsMutex); 
 STATIC_ROUTINE int NewFD(int fd,int socket,int enhanced)
 {
   int idx;
-  LockMdsShrMutex(&FdsMutex,&FdsMutex_initialized);
+  LOCKFDS
   for (idx=0; idx<ALLOCATED_FDS && FDS[idx].in_use; idx++);
   if (idx == ALLOCATED_FDS)
     FDS = realloc(FDS,sizeof(struct fd_info_struct)*(++ALLOCATED_FDS));
@@ -988,18 +989,26 @@ STATIC_ROUTINE int NewFD(int fd,int socket,int enhanced)
   FDS[idx].socket=socket;
   FDS[idx].fd = fd;
   FDS[idx].enhanced = enhanced;
-  UnlockMdsShrMutex(&FdsMutex);
+  UNLOCKFDS
   return idx+1;
 }
 
 int MDS_IO_SOCKET(int fd)
 {
-  return (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].socket : -1;
+  int ans;
+  LOCKFDS
+  ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].socket : -1;
+  UNLOCKFDS
+  return ans;
 }
 
 int MDS_IO_FD(int fd)
 {
-  return (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].fd : -1;
+  int ans;
+  LOCKFDS
+  ans = (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) ? FDS[fd-1].fd : -1;
+  UNLOCKFDS
+  return ans;
 }
 
 STATIC_THREADSAFE int (*MDS_SEND_ARG)() = 0;
@@ -1187,6 +1196,7 @@ STATIC_ROUTINE int io_close_remote(int fd)
 int MDS_IO_CLOSE(int fd)
 {
   int status;
+  LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
@@ -1198,10 +1208,13 @@ int MDS_IO_CLOSE(int fd)
     status = (FDS[fd-1].socket == -1) ? close(FDS[fd-1].fd) : io_close_remote(fd);
 #endif
     FDS[fd-1].in_use = 0;
+    UNLOCKFDS
     return status;
   }
-  else
-    return -1; 
+  else {
+    UNLOCKFDS
+    return -1;
+  } 
 }
 
 STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
@@ -1247,20 +1260,25 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
     _int64 pos;
+  LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
         pos = srbUioSeek(FDS[fd-1].fd,offset,whence);
         UnlockMdsShrMutex(&IOMutex);
+	UNLOCKFDS
 	return pos;
     }
 #endif
     pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,offset,whence) : io_lseek_remote(fd,offset,whence);
+    UNLOCKFDS
     return pos;
   }
-  else
+  else {
+    UNLOCKFDS
     return -1;
+  }
 }
 
 STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
@@ -1297,6 +1315,7 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
   int ans = -1;
   if (count == 0) return 0;
+  LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
@@ -1313,6 +1332,7 @@ int MDS_IO_WRITE(int fd, void *buff, size_t count)
       } else
 	ans = io_write_remote(fd,buff,count);
   }
+  UNLOCKFDS
   return ans; 
 }
  
@@ -1395,7 +1415,8 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
 ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 {
   ssize_t ans = -1;
-  if (count == 0) return 0; 
+  if (count == 0) return 0;
+  LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
@@ -1412,6 +1433,7 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
     } else
       ans = io_read_remote(fd,buff,count);
   }
+  UNLOCKFDS
   return ans; 
 }
 #ifdef SRB
@@ -1426,6 +1448,7 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
 {
   ssize_t ans = -1;
   if (count == 0) return 0;
+  LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use) {
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
@@ -1446,6 +1469,7 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
       ans = io_read_x_remote(fd,offset,buff,count, deleted);
     }
   }
+  UNLOCKFDS
   return ans; 
 }
 
@@ -1493,12 +1517,14 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
 int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
 {
   int status = TreeFAILURE;
+  LOCKFDS
   if (deleted) *deleted=0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
 #ifdef SRB
     if (FDS[fd-1].socket == SRB_SOCKET) {
       status = srbUioLock(FDS[fd-1].fd, offset, size, mode_in);
+      UNLOCKFDS
       return (status == 0) ? TreeSUCCESS : TreeFAILURE;
     }
 #endif
@@ -1548,6 +1574,7 @@ int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
     //ThreadLock(fd,offset,size,mode_in);
 #endif
   }
+  UNLOCKFDS
   return status; 
 }
 

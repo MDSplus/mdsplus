@@ -42,7 +42,7 @@ extern int MdsCopyDxXd();
 extern char * FindTagWildRemote();
 extern int FindTagEndRemote();
 
-extern void *DBID;
+extern void **TreeCtx();
 typedef struct tag_search
 {
   int       next_tag;
@@ -63,13 +63,13 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
 
 char *TreeFindTagWild(char *wild, int *nidout, void **ctx_inout)
 {
-  return _TreeFindTagWild(DBID, wild, nidout, ctx_inout);
+  return _TreeFindTagWild(*TreeCtx(), wild, nidout, ctx_inout);
 }
 
 int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descriptor_xd *name)
 {
   int status;
-  char *ans = _TreeFindTagWild(DBID, wild, nidout, ctx_inout);
+  char *ans = _TreeFindTagWild(*TreeCtx(), wild, nidout, ctx_inout);
   if (ans)
     {
       static struct descriptor tag = {0, DTYPE_T, CLASS_S, 0};

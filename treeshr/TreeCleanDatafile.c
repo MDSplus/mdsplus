@@ -7,7 +7,7 @@
 #include <ncidef.h>
 #include "treeshrp.h"
 
-extern void *DBID;
+extern void **TreeCtx();
 
 
 STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
@@ -128,12 +128,12 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
 
 int TreeCleanDatafile(char *tree, int shot)
 {
-  return RewriteDatafile(&DBID, tree, shot, 0);
+  return RewriteDatafile(TreeCtx(), tree, shot, 0);
 }
 
 int TreeCompressDatafile(char *tree, int shot)
 {
-  return RewriteDatafile(&DBID, tree, shot, 1);
+  return RewriteDatafile(TreeCtx(), tree, shot, 1);
 }
 
 int _TreeCleanDatafile(void **dbid, char *tree, int shot)

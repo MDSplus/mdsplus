@@ -53,90 +53,63 @@ extern void TdiYyReset();
 	Thus no recursion because the yy's are built into LEX and YACC.
 	IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
+STATIC_THREADSAFE  int yacc_mutex_initialized = 0;
+STATIC_THREADSAFE  pthread_mutex_t yacc_mutex;
 TdiRefStandard(Tdi1Compile)
-EMPTYXD(tmp);
-struct descriptor		*text_ptr;
-STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
-        if (TdiThreadStatic()->compiler_recursing == 1) {
-	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported");
-          return 0;
-        }
-	status = TdiEvaluate(list[0],&tmp MDS_END_ARG);
-	text_ptr = tmp.pointer;
-	if (status & 1 && text_ptr->dtype != DTYPE_T) status = TdiINVDTYDSC;
-	if (status & 1) {
-                if (text_ptr->length > 0)
-		{
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
-#if !defined(PTHREAD_MUTEX_RECURSIVE)
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif
-
-		  STATIC_THREADSAFE  int yacc_mutex_initialized = 0;
-                  STATIC_THREADSAFE  pthread_mutex_t yacc_mutex;
-
-                  if(!yacc_mutex_initialized)
-                  {
-                    pthread_mutexattr_t m_attr;
-                    pthread_mutexattr_init(&m_attr);
-#ifndef __sun
-#ifdef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
-    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#else
-    pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#endif
-#endif
-	            yacc_mutex_initialized = 1;
-	            pthread_mutex_init(&yacc_mutex, &m_attr);
-                  }
-                  pthread_mutex_lock(&yacc_mutex);
-#endif
-#endif
-	        if (TdiThreadStatic()->compiler_recursing == 1) {
-        	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported\n");
-          	  return 0;
-        	}
-                TdiThreadStatic()->compiler_recursing=1;
-		  if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
-
-		  /****************************************
-		  In case we bomb out, probably not needed.
-		  ****************************************/
-		  TdiRefZone.l_status = TdiBOMB;
-                  if (TdiRefZone.a_begin) free(TdiRefZone.a_begin);
-                  TdiRefZone.a_begin = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length),text_ptr->pointer,text_ptr->length);
-		  TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
-		  TdiRefZone.l_ok = 0;
-		  TdiRefZone.l_narg = narg - 1;
-		  TdiRefZone.l_iarg = 0;
-		  TdiRefZone.a_list = &list[0];
-		  if (status & 1) {
-                        TdiYyReset();
-			if (TdiYacc() && TdiRefZone.l_status & 1) status = TdiSYNTAX;
-			else status = TdiRefZone.l_status;
-		  }
-
-		  /************************
-		  Move from temporary zone.
-		  ************************/
-		  if (status & 1) {
-			if (TdiRefZone.a_result == 0) MdsFree1Dx(out_ptr, NULL);
-			else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
-		  }
-		  LibResetVmZone(&TdiRefZone.l_zone);
-                  TdiThreadStatic()->compiler_recursing=0;
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
-                  pthread_mutex_unlock(&yacc_mutex);
-#endif
-#endif
-                }
-                else
-                  MdsFree1Dx(out_ptr,NULL);
+  EMPTYXD(tmp);
+  struct descriptor		*text_ptr;
+  STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
+  LockMdsShrMutex(&yacc_mutex,&yacc_mutex_initialized);
+  if (TdiThreadStatic()->compiler_recursing == 1) {
+    fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported");
+    return 0;
+  }
+  status = TdiEvaluate(list[0],&tmp MDS_END_ARG);
+  text_ptr = tmp.pointer;
+  if (status & 1 && text_ptr->dtype != DTYPE_T) status = TdiINVDTYDSC;
+  if (status & 1) {
+    if (text_ptr->length > 0)
+      {
+	if (TdiThreadStatic()->compiler_recursing == 1) {
+	  fprintf(stderr,"Error: Recursive calls to TDI Compile is not supported\n");
+	  return 0;
 	}
-	MdsFree1Dx(&tmp, NULL);
-	return(status);
+	TdiThreadStatic()->compiler_recursing=1;
+	if (!TdiRefZone.l_zone) status = LibCreateVmZone(&TdiRefZone.l_zone,0,0,0,0,0,0,0,0,0,&compile_zone);
+	
+	/****************************************
+		  In case we bomb out, probably not needed.
+	****************************************/
+	TdiRefZone.l_status = TdiBOMB;
+	if (TdiRefZone.a_begin) free(TdiRefZone.a_begin);
+	TdiRefZone.a_begin = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length),text_ptr->pointer,text_ptr->length);
+	TdiRefZone.a_end = TdiRefZone.a_cur + text_ptr->length;
+	TdiRefZone.l_ok = 0;
+	TdiRefZone.l_narg = narg - 1;
+	TdiRefZone.l_iarg = 0;
+	TdiRefZone.a_list = &list[0];
+	if (status & 1) {
+	  TdiYyReset();
+	  if (TdiYacc() && TdiRefZone.l_status & 1) status = TdiSYNTAX;
+	  else status = TdiRefZone.l_status;
+	}
+	
+	/************************
+		  Move from temporary zone.
+	************************/
+	if (status & 1) {
+	  if (TdiRefZone.a_result == 0) MdsFree1Dx(out_ptr, NULL);
+	  else status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
+	}
+	LibResetVmZone(&TdiRefZone.l_zone);
+	TdiThreadStatic()->compiler_recursing=0;
+      }
+    else
+      MdsFree1Dx(out_ptr,NULL);
+  }
+  MdsFree1Dx(&tmp, NULL);
+  UnlockMdsShrMutex(&yacc_mutex,&yacc_mutex_initialized);
+  return(status);
 }
 /*-------------------------------------------------------
 	Compile and evaluate an expression.

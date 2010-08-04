@@ -44,11 +44,11 @@
 
 static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr, NODE *child_ptr);
 
-extern void *DBID;
+extern void **TreeCtx();
 
 int TreeRenameNode(int nid, char *newname)
 {
-  return _TreeRenameNode(DBID, nid, newname);
+  return _TreeRenameNode(*TreeCtx(), nid, newname);
 }
 
 int       _TreeRenameNode(void *dbid, int nid, char *newname)

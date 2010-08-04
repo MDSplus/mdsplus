@@ -3,11 +3,11 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
-int TreeSetDefault(char *path, int *nid) { return _TreeSetDefault(DBID,path,nid);}
-int TreeSetDefaultNid(int nid_in) { return _TreeSetDefaultNid(DBID,nid_in);}
-int TreeGetDefaultNid(int *nid_in) { return _TreeGetDefaultNid(DBID,nid_in);}
+int TreeSetDefault(char *path, int *nid) { return _TreeSetDefault(*TreeCtx(),path,nid);}
+int TreeSetDefaultNid(int nid_in) { return _TreeSetDefaultNid(*TreeCtx(),nid_in);}
+int TreeGetDefaultNid(int *nid_in) { return _TreeGetDefaultNid(*TreeCtx(),nid_in);}
 
 int _TreeSetDefault(void *dbid, char *path, int *nid)
 {

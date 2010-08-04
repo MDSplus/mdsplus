@@ -32,52 +32,52 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define node_to_node_number(node_ptr) node_ptr - dblist->tree_info->node
 #define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
-extern void *DBID;
+extern void **TreeCtx();
 STATIC_ROUTINE int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr);
 STATIC_ROUTINE int TreeWriteNci(TREE_INFO *info);
 
 int TreeAddNode(char *name, int *nid_out, char usage)
 {
-  return _TreeAddNode(DBID, name, nid_out, usage);
+  return _TreeAddNode(*TreeCtx(), name, nid_out, usage);
 }
 
 int TreeAddConglom(char *path, char *congtype, int *nid)
 {
-  return _TreeAddConglom(DBID, path, congtype, nid);
+  return _TreeAddConglom(*TreeCtx(), path, congtype, nid);
 }
 
 int TreeEndConglomerate()
 {
-  return _TreeEndConglomerate(DBID);
+  return _TreeEndConglomerate(*TreeCtx());
 }
 
 int TreeQuitTree(char *exp_ptr, int shotid)
 {
-  return _TreeQuitTree(&DBID, exp_ptr, shotid);
+  return _TreeQuitTree(TreeCtx(), exp_ptr, shotid);
 }
 
 int TreeSetNoSubtree(int nid)
 {
-  return _TreeSetNoSubtree(DBID, nid);
+  return _TreeSetNoSubtree(*TreeCtx(), nid);
 }
 
 int TreeSetSubtree(int nid)
 {
-  return _TreeSetSubtree(DBID, nid);
+  return _TreeSetSubtree(*TreeCtx(), nid);
 }
 
 int TreeStartConglomerate(int size)
 {
-  return _TreeStartConglomerate(DBID, size);
+  return _TreeStartConglomerate(*TreeCtx(), size);
 }
 
 int TreeWriteTree(char *exp_ptr, int shotid)
 {
-  return _TreeWriteTree(&DBID, exp_ptr, shotid);
+  return _TreeWriteTree(TreeCtx(), exp_ptr, shotid);
 }
 _int64 TreeGetDatafileSize()
 {
-  return _TreeGetDatafileSize(DBID);
+  return _TreeGetDatafileSize(*TreeCtx());
 }
 
 int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
@@ -501,15 +501,15 @@ int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
     status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
   if (status & 1)
   {
-    void *old_dbid = DBID;
+    void *old_dbid = *TreeCtx();
     expdsc.length = strlen(exp);
     expdsc.pointer = exp;
     arglist[1] = &expdsc;
     arglist[2] = &statdsc;
     arglist[3] = MdsEND_ARG;
-    DBID = dbid;
+    *TreeCtx() = dbid;
     status = (char *)LibCallg(arglist,addr) - (char *)0;
-    DBID = old_dbid;
+    *TreeCtx() = old_dbid;
     if (status & 1)
     {
       status = addstatus;
@@ -762,14 +762,13 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 	if (info_ptr->channel>-1)
 	  status = MDS_IO_CLOSE(info_ptr->channel);
 	info_ptr->channel=-2;
-	status = MDS_IO_REMOVE(info_ptr->filespec);
-	if (status == -1) {status=0;goto error_exit;}
+	MDS_IO_REMOVE(info_ptr->filespec);
         status = MDS_IO_CLOSE(ntreefd);
-	if (status == -1) {status=0; goto error_exit;}
+	if (status == -1) {status=4; goto error_exit;}
         status = MDS_IO_RENAME(nfilenam,info_ptr->filespec);
-	if (status == -1) {status=0; goto error_exit;}
+	if (status == -1) {status=6; goto error_exit;}
 	info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec,O_RDWR,0);
-	if (info_ptr->channel == -1) {status=0; goto error_exit;}
+	if (info_ptr->channel == -1) {status=8; goto error_exit;}
 	status=MDS_IO_LOCK(info_ptr->channel,1,1,MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,0);
 	status=1;
 	

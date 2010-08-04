@@ -62,11 +62,11 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
-extern void *DBID;
+extern void **TreeCtx();
 
 int       TreeCreatePulseFile(int shotid, int numnids_in, int *nids_in)
 {
-  return _TreeCreatePulseFile(DBID, shotid, numnids_in, nids_in);
+  return _TreeCreatePulseFile(*TreeCtx(), shotid, numnids_in, nids_in);
 }
 
 int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)

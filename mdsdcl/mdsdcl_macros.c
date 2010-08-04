@@ -2,6 +2,7 @@
 #include        <stdlib.h>
 #include        <string.h>
 #include        "mdsdcl.h"
+#include        "mdsdclthreadsafe.h"
 #ifdef vms
 #include        <lib$routines.h>
 #include        <ssdef.h>
@@ -25,8 +26,6 @@
 ***********************************************************************/
 
 
-extern struct _mdsdcl_ctrl  MDSDCL_COMMON;
-static struct _mdsdcl_ctrl *ctrl = &MDSDCL_COMMON;
 
 #define INCR           32	/* allocate in chunks			*/
 #define MIN_LINES      4	/* minimum num lines allocated		*/
@@ -42,6 +41,7 @@ static struct _mdsdcl_macro  *find_macro( /* Return: addr of struct	*/
    {
     int   i;
     struct _mdsdcl_macro  *m;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     m = ctrl->macro.list;
     for (i=0 ; i<ctrl->macro.numMacros ; i++)
@@ -59,6 +59,7 @@ static struct _mdsdcl_macro  *find_macro( /* Return: addr of struct	*/
 static void  expand_macro_list()	/* Return: void			*/
    {
     int   nbytes;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     nbytes = ctrl->macro.maxMacros * sizeof(struct _mdsdcl_macro) + INCR;
     if (ctrl->macro.list)
@@ -81,6 +82,7 @@ static struct _mdsdcl_macro  *get_macro( /* Return: addr of struct	*/
    )
    {
     struct _mdsdcl_macro  *m;
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     if (m = find_macro(name))
         return(m);			/*--------------------> return	*/
@@ -234,6 +236,7 @@ int   mdsdcl_show_macro()		/* Return: status		*/
     int   sts;
     struct _mdsdcl_macro  *m;
     static DYNAMIC_DESCRIPTOR(dsc_name);
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     sts = cli_get_value("MACRO",&dsc_name);
     if (sts & 1)
@@ -288,6 +291,7 @@ int   mdsdcl_do_macro()		/* Return: status			*/
     static char  fmt1[] = "No such command: '%s'";
     static char  fmt2[] = "Macro '%s' is already in use";
     static char  fmt3[] = "Exceeded MAX_DEPTH for indirect files & macros";
+    struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
     sts = cli_get_value("NAME",&dsc_util);
     if (~sts & 1)

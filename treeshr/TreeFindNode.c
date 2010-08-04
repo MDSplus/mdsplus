@@ -8,7 +8,7 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
 #ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -28,16 +28,16 @@ STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nidin);
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
 
 
-int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(DBID,path,outnid); }
+int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(*TreeCtx(),path,outnid); }
 int TreeFindNodeWild(char *path, int *nid_out, void **ctx_inout, int usage_mask) {
-  return _TreeFindNodeWild(DBID, path, nid_out, ctx_inout, usage_mask); }
-int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(DBID, ctx_in); }
-char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(DBID, nid_in, ctx_ptr); }
-char *TreeAbsPath(char *inpath) { return _TreeAbsPath(DBID, inpath); }
+  return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask); }
+int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(*TreeCtx(), ctx_in); }
+char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr); }
+char *TreeAbsPath(char *inpath) { return _TreeAbsPath(*TreeCtx(), inpath); }
 int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)DBID;
+  PINO_DATABASE *dblist = (PINO_DATABASE *)*TreeCtx();
   NODE *nodeptr;
-  return _TreeFindTag(DBID, dblist->default_node, (short)strlen(treename), treename, (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
+  return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename), treename, (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
 }
 
 #define isident(b) ( ((*(b) >= 'A') && (*(b) <= 'Z')) || \
@@ -1204,7 +1204,7 @@ STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 
 int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr)
 {
-  static SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
+  SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
   int       status;
   NODE     *node_ptr;
   int       ctxidx;

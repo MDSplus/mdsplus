@@ -1,5 +1,6 @@
 from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 from threading import Thread,enumerate
+from tree import Tree
 import treeUnitTest
 
 
@@ -7,10 +8,10 @@ class threadJob(Thread):
     """Thread to execute the treeTests"""
     def run(self):
         """Run test1.test() function"""
-        #return TextTestRunner(verbosity=0).run(treeUnitTest.suite())
-        self.result=treeUnitTest.suite().run(TestResult())
-        #del treeUnitTest.thread_data.pulse
-        #del treeUnitTest.thread_data.model
+        Tree.usePrivateCtx()
+        #self.result = TextTestRunner(verbosity=0).run(treeUnitTest.treeTests())
+        self.result=TestResult()
+        treeUnitTest.suite().run(self.result)
 
 class threadTest(TestCase):
 
@@ -18,7 +19,9 @@ class threadTest(TestCase):
         numsuccessful=0
         threads=list()
         for i in range(10):
-            threads.append(threadJob())            
+            t=threadJob()
+            t.shot=i*2+3
+            threads.append(t)            
         for t in threads:
             t.start()
         for t in threads:
@@ -27,6 +30,9 @@ class threadTest(TestCase):
                 numsuccessful=numsuccessful+1
         self.assertEqual(numsuccessful,10)
         return
+
+    def runTest(self):
+        self.tenThreads()
                 
 def suite():
     return TestSuite([threadTest('tenThreads')])

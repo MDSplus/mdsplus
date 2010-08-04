@@ -104,7 +104,17 @@ __TreeStartConglomerate=__TreeShr._TreeStartConglomerate
 __TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int]
 __TreeEndConglomerate=__TreeShr._TreeEndConglomerate
 __TreeEndConglomerate.argtypes=[_C.c_void_p]
-
+try:
+    _TreeUsePrivateCtx=__TreeShr.TreeUsePrivateCtx
+    _TreeUsePrivateCtx.argtypes=[_C.c_int]
+    def TreeUsePrivateCtx(onoff):
+        return _TreeUsePrivateCtx(onoff)
+    _TreeUsingPrivateCtx=__TreeShr.TreeUsingPrivateCtx
+    def TreeUsingPrivateCtx():
+        return _TreeUsingPrivateCtx() == 1
+except Exception,e:
+    def TreeUsingPrivateCtx():
+        return False
 __RTreeShr=_load_library('CacheShr')
 __RTreeOpen=__RTreeShr._RTreeOpen
 __RTreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p]
@@ -511,12 +521,13 @@ def RTreeClose(ctx,tree,shot):
 
 def TreeCloseAll(ctx):
     if ctx is not None:
-        status = __TreeClose(_C.pointer(ctx),None,0)
+        status1 = status = __TreeClose(_C.pointer(ctx),None,0)
         while (status & 1) == 1:
             try:
                 status = __TreeClose(_C.pointer(ctx),None,0)
             except:
                 status = 0
+        return status1
 
 def TreeSetVersionDate(date):
     from _mdsshr import DateToQuad

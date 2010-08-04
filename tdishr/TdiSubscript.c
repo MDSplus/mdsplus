@@ -36,6 +36,7 @@
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
+#include "tdithreadsafe.h"
 #include <tdimessages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
@@ -44,8 +45,6 @@
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern struct descriptor *TdiRANGE_PTRS[3];
-extern struct descriptor *TdiSELF_PTR;
 extern unsigned short OpcValue;
 
 extern int TdiGetArgs();
@@ -80,7 +79,7 @@ register int			j, len;
 int				stride[MAXDIM+1], *px[MAXDIM], count[MAXDIM];
 struct descriptor_signal	*psig;
 struct descriptor_dimension *pdim;
-struct descriptor		*keeps = TdiSELF_PTR;
+struct descriptor		*keeps = TdiThreadStatic()->TdiSELF_PTR;
 array_coeff			*pdat, *pdi=0;
 array_coeff			arr = *(array_coeff *)&coeff0;
 struct descriptor	        ddim = {sizeof(dim),DTYPE_L,CLASS_S,0};
@@ -151,7 +150,7 @@ struct TdiCatStruct		cats[2];
 			pdim = (struct descriptor_dimension *)psig;
 			if (psig && dim < psig->ndesc-2 && 
                            (pdim = (struct descriptor_dimension *)psig->dimensions[dim]) != 0) {
-				TdiSELF_PTR = (struct descriptor *)psig;
+				TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)psig;
 				status = TdiCull(psig, &ddim, dim+1 < narg ? list[dim+1] : 0, &xx[dim] MDS_END_ARG);
 				if (status & 1) status = TdiXtoI(pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
 				if (status & 1) status = TdiItoX(pdim, ii[dim].pointer, &xx[dim] MDS_END_ARG);
@@ -177,7 +176,7 @@ struct TdiCatStruct		cats[2];
                                   }
                                   MdsFree1Dx(&xd, NULL);
                                 }
-			TdiSELF_PTR = keeps;
+			TdiThreadStatic()->TdiSELF_PTR = keeps;
 				if (status & 1 && bounded) pin += pdat->m[dim*2+dimct] * stride[dim];
 				highdim = dim + 1;
 			}
@@ -195,16 +194,16 @@ struct TdiCatStruct		cats[2];
 				if (status & 1) status = TdiUbound(pdat, &ddim, &dright MDS_END_ARG);
 				if (dim+1 < narg && list[dim+1]) {
 				struct descriptor *keep[3];
-                                        keep[0] = TdiRANGE_PTRS[0];
-                                        keep[1] = TdiRANGE_PTRS[1];
-                                        keep[2] = TdiRANGE_PTRS[2];
-					TdiRANGE_PTRS[0] = (struct descriptor *)&dleft;
-					TdiRANGE_PTRS[1] = (struct descriptor *)&dright;
-					TdiRANGE_PTRS[2] = 0;
+                                        keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
+                                        keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
+                                        keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
+					TdiThreadStatic()->TdiRANGE_PTRS[0] = (struct descriptor *)&dleft;
+					TdiThreadStatic()->TdiRANGE_PTRS[1] = (struct descriptor *)&dright;
+					TdiThreadStatic()->TdiRANGE_PTRS[2] = 0;
 					if (status & 1) status = TdiData(list[dim+1], &ii[dim] MDS_END_ARG);
-					TdiRANGE_PTRS[0] = keep[0];
-					TdiRANGE_PTRS[1] = keep[1];
-					TdiRANGE_PTRS[2] = keep[2];
+					TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
+					TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
+					TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
 					if (status & 1) status = TdiLong(&ii[dim], &ii[dim] MDS_END_ARG);
 					if (status & 1) status = TdiIcull(left, right, ii[dim].pointer);
 					if (status == -1) status = TdiRecull(&ii[dim]);
@@ -307,9 +306,9 @@ struct descriptor		range[2] = {
 array_coeff			*pa;
 char				*abase, *po=0;
 int				*pindex=0;
-        keep[0] = TdiRANGE_PTRS[0];
-        keep[1] = TdiRANGE_PTRS[1];
-        keep[2] = TdiRANGE_PTRS[2];
+        keep[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
+        keep[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
+        keep[2] = TdiThreadStatic()->TdiRANGE_PTRS[2];
         range[0].pointer = (char *)&left;
         range[1].pointer = (char *)&right;
 	/*************************
@@ -337,13 +336,13 @@ int				*pindex=0;
 	Get subscript expression B and its signality.
 	Must have default ranges defined before get.
 	********************************************/
-	TdiRANGE_PTRS[0] = &range[0];
-	TdiRANGE_PTRS[1] = &range[1];
-	TdiRANGE_PTRS[2] = 0;
+	TdiThreadStatic()->TdiRANGE_PTRS[0] = &range[0];
+	TdiThreadStatic()->TdiRANGE_PTRS[1] = &range[1];
+	TdiThreadStatic()->TdiRANGE_PTRS[2] = 0;
 	if (status & 1) status = TdiGetArgs(opcode, 1, &list[1], sig, uni, dat, cats);
-	TdiRANGE_PTRS[0] = keep[0];
-	TdiRANGE_PTRS[1] = keep[1];
-	TdiRANGE_PTRS[2] = keep[2];
+	TdiThreadStatic()->TdiRANGE_PTRS[0] = keep[0];
+	TdiThreadStatic()->TdiRANGE_PTRS[1] = keep[1];
+	TdiThreadStatic()->TdiRANGE_PTRS[2] = keep[2];
 	if (uni[0].pointer) MdsFree1Dx(&uni[0], NULL);
 	uni[0].pointer = (struct descriptor *)pwu->units;
 

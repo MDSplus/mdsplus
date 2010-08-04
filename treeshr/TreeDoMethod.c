@@ -48,7 +48,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 #define arglist_nargs(nargs) (void *)((char *)0+(nargs));
-extern void *DBID;
+extern void **TreeCtx();
 
 int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
 {
@@ -58,7 +58,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
   va_list   incrmtr;
   count(nargs);
   arglist[0] = arglist_nargs(nargs+2);
-  arglist[1] = DBID;
+  arglist[1] = *TreeCtx();
   arglist[2] = nid_dsc;
   arglist[3] = method_ptr;
   va_start(incrmtr, method_ptr);
@@ -139,7 +139,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     if (conglom_ptr->dtype != DTYPE_CONGLOM)
       return TreeNOT_CONGLOM;
     if (conglom_ptr->image && conglom_ptr->image->length == strlen("__python__") && strncmp(conglom_ptr->image->pointer,"__python__",strlen("__python__"))==0) {
-      void *dbid=DBID;
+      void *dbid=*TreeCtx();
       /**** Try python class ***/
       struct descriptor exp = {0, DTYPE_T, CLASS_D, 0};
       STATIC_CONSTANT DESCRIPTOR(open,"PyDoMethod(");
@@ -174,7 +174,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  status = TreeNOMETHOD;
       }
       StrFree1Dx(&exp);
-      DBID=dbid;
+      *TreeCtx()=dbid;
       return status;
     }   
     StrConcat((struct descriptor *)&method, conglom_ptr->model, (struct descriptor *)&underunder, method_ptr MDS_END_ARG);
@@ -191,10 +191,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     */
     if (status & 1)
     {
-      void *old_dbid = DBID;
-      DBID = dbid;
+      void *old_dbid = *TreeCtx();
+      *TreeCtx() = dbid;
       status = (char *)LibCallg(arglist, addr) - (char *)0;
-      DBID = old_dbid;
+      *TreeCtx() = old_dbid;
       if (arglist[nargs])
       {
         struct descriptor *ans = (struct descriptor *)arglist[nargs];

@@ -36,12 +36,12 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern void *DBID;
+extern void **TreeCtx();
 
 static void      _RemoveTagIdx(PINO_DATABASE *dblist, int tagidx);
 
-int TreeRemoveTag(char *name) { return _TreeRemoveTag(DBID, name); }
-int TreeRemoveNodesTags(int nid) { return _TreeRemoveNodesTags(DBID, nid);}
+int TreeRemoveTag(char *name) { return _TreeRemoveTag(*TreeCtx(), name); }
+int TreeRemoveNodesTags(int nid) { return _TreeRemoveNodesTags(*TreeCtx(), nid);}
 
 int       _TreeRemoveNodesTags(void *dbid, int nid)
 {

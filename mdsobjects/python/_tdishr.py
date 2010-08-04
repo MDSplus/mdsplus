@@ -7,8 +7,9 @@ class TdiException(Exception):
 
 def restoreContext():
     from tree import Tree
-    if hasattr(Tree,'_activeTree') and Tree._activeTree is not None:
-        Tree._activeTree.restoreContext()
+    t=Tree.getActiveTree()
+    if t is not None:
+      t.restoreContext()
         
 def TdiCompile(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
