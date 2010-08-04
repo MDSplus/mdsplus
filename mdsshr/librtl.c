@@ -1362,7 +1362,13 @@ int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *star
   return StrFree1Dx(&tmp);
 }
 
-pthread_mutex_t VmMutex;
+
+#ifndef HAVE_WINDOWS_H
+STATIC_THREADSAFE pthread_mutex_t VmMutex;
+#else
+STATIC_THREADSAFE HANDLE VmMutex;
+#endif
+
 int VmMutex_initialized=0;
 
 int LibCreateVmZone(ZoneList **zone)
