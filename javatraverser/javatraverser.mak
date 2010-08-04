@@ -184,5 +184,5 @@ all : $(SOURCES_DATA) $(SOURCES_ARRAY) $(SOURCES_TRAV)
 	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar $(SOURCES_ARRAY)
 	"$(JDK_DIR)\bin\javac" -classpath .;..\java\classes\jScope.jar $(SOURCES_TRAV)
 	"$(JDK_DIR)\bin\jar" -cmf DeviceBeansManifest.mf ..\java\classes\DeviceBeans.jar *.class *.gif
-	"$(JDK_DIR)\bin\jar" -cmf manifest.mf ..\java\classes\jTraverser.jar *.class *.gif
+	"$(JDK_DIR)\bin\jar" -cf ..\java\classes\jTraverser.jar *.class *.gif
 

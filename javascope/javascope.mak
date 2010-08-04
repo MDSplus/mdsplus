@@ -58,7 +58,7 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 	- del/q/f/s docs
 	- mkdir docs
 	copy $(DOCS) docs
-	"$(JDK_DIR)\bin\jar.exe" -cfm ..\java\classes\jScope.jar manifest.mf *.class *.html docs
+	"$(JDK_DIR)\bin\jar.exe" -cf ..\java\classes\jScope.jar  *.class *.html docs
 	- del/q/f/s docs
 	- rmdir docs
 ..\java\classes\MindTerm.jar : MindTerm.jar
