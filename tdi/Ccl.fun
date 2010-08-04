@@ -1,9 +1,6 @@
 public fun Ccl(in _command, optional out _output)
 {
-  if (!allocated(public _ccl$$initialized))
-  {
-    public _ccl$$initialized = Mdsdcl->mdsdcl_do_command('set command ccl_commands/def_file="*.ccl"');
-  }
+  Mdsdcl->mdsdcl_do_command('set command ccl_commands/def_file="*.ccl"');
   if (present(_output))
   {
     tcl_commands->TclSaveOut();
