@@ -1090,6 +1090,17 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             if(signals1DVector.size() > 0 ) signals1DVector.clear();
             if(signals2DVector.size() > 0 ) signals2DVector.clear();
 	}
+	/**
+	 * Remove all signals added to the panels.
+	 */
+	public void removeAllSignals(int row, int col)
+	{
+	    if(wave_container != null)
+	    {
+	    	MultiWaveform wave = (MultiWaveform)wave_container.getGridComponent(row, col);
+	    	wave.Erase();
+	    }
+ 	}
 
 
     /**
