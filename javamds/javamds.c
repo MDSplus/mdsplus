@@ -669,9 +669,9 @@ jScope panels outside java application */
 #else
 #define PATH_SEPARATOR ':'
 #endif
-
+#define MAX_WINDOWS 10000
 JNIEnv *env = 0;
-static jobject jobjects[1024];
+static jobject jobjects[MAX_WINDOWS];
 
 int createWindow(char *name, int idx, int enableLiveUpdate)
 {
@@ -736,8 +736,14 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
 	args[1].z = enableLiveUpdate;
 
 //	jobjects[idx] = (*env)->CallStaticObjectMethod(env, cls, mid, jstr);
+	if(idx == -1) //Find the first free Object Slot
+	{
+	    for(idx = 0; idx < MAX_WINDOWS; idx++)
+		if(!jobjects[idx])
+		    break;
+	}
 	jobjects[idx] = (*env)->CallStaticObjectMethodA(env, cls, mid, args);
-	return 0;
+	return idx;
 }
 
 int clearWindow(char *name, int idx)
@@ -860,6 +866,33 @@ int showWindow(int obj_idx, int x, int y, int width, int height)
 		return -1;
 	}
     (*env)->CallVoidMethod(env, jobj, mid, x,y,width,height);
+    return 0;
+}
+
+int removeAllSignals(int obj_idx, int x, int y)
+{
+	jclass cls;
+	jmethodID mid;
+	jobject jobj = jobjects[obj_idx];
+
+	if(env == 0)
+	{
+		printf("\nJava virtual machine not set!!\n");
+		return -1;
+	}
+	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	if(cls == 0)
+	{
+		printf("\nCannot find jScope classes!\n");
+		return -1;
+	}
+	mid = (*env)->GetMethodID(env, cls, "removeAllSignals", "(II)V");
+    	if (mid == 0)
+	{
+		printf("\nCannot find jScope classes!\n");
+		return -1;
+	}
+    	(*env)->CallVoidMethod(env, jobj, mid, x,y);
     return 0;
 }
 
