@@ -382,8 +382,14 @@ class Tree(object):
                     nids=Data.compile('getnci($,"NID_NUMBER",$)',name,usage).evaluate()
             else:
                 nids=Data.compile('getnci($,"NID_NUMBER")',(name,)).evaluate()
-        finally:
-            Tree.unlock()
+        except Exception,e:
+	    if 'TreeNNF' in str(e):
+                from mdsarray import makeArray
+		nids=makeArray([])
+	    else:
+                Tree.unlock()
+	        raise
+        Tree.unlock()
         return TreeNodeArray(nids,self)
 
     def getVersionDate():
