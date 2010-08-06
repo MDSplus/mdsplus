@@ -673,7 +673,14 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 	//Otherwise return an array
 	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
 }
-
+void Data::plot()
+{
+		Data *dim = getDimensionAt(0);
+		Scope *scope = new Scope("");
+		scope->plot(this, dim);
+		delete scope;
+		deleteData(dim);
+}
 
 void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 {
