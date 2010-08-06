@@ -180,7 +180,7 @@ int a14___store(struct descriptor *niddsc, InStoreStruct *setup)
   static DESCRIPTOR(time_str,"seconds");
   static DESCRIPTOR_WITH_UNITS(time,&dimension,&time_str);
   static DESCRIPTOR_SIGNAL_1(signal,&volts,&counts,&time);
-  static DESCRIPTOR(post_ext,"_A14_ADJUST=A14_ADJUST($3,$4),BUILD_DIM(BUILD_WINDOW($5+$1+_A14_ADJUST,$5+$2+_A14_ADJUST,$3),$4)");
+  static DESCRIPTOR(post_ext,"_A14_ADJUST=A14_ADJUST($3,$4),BUILD_DIM(BUILD_WINDOW($5+$1+_A14_ADJUST,$5+$2+_A14_ADJUST,$3),a14_clock_divide($4,$6))");
   static DESCRIPTOR(post_int,
          "_A14_ADJUST=A14_ADJUST($3,* : * : $4),BUILD_DIM(BUILD_WINDOW($5+$1+_A14_ADJUST,$5+$2+_A14_ADJUST,$3),* : * : $4)");
   static DESCRIPTOR(burst_time_ext,"$1 : ($1 + ($2 - .5) * SLOPE_OF($3) * ($4)) : SLOPE_OF($3) * ($4)");
@@ -277,8 +277,12 @@ int a14___store(struct descriptor *niddsc, InStoreStruct *setup)
           case 1:  
                    if (setup->dimension)
                      MdsCopyDxXd(setup->dimension,&dimension);
-                   else if (setup->ext_clock_in)
-                     TdiCompile(&post_ext,&start_d,&end_d,&trigger_nid_dsc,setup->ext_clock_in,(sr.mode==0)?&zero_d :&one_d, &dimension MDS_END_ARG);
+                   else if (setup->ext_clock_in) {
+		     static const int clock_divides[] = {1,2,4,10,20,40,100,1};
+		     int clock_divide_l = clock_divides[sr.clock_speed];
+		     DESCRIPTOR_LONG(clock_divide,&clock_divide_l);
+                     TdiCompile(&post_ext,&start_d,&end_d,&trigger_nid_dsc,setup->ext_clock_in,(sr.mode==0)?&zero_d :&one_d, &clock_divide, &dimension MDS_END_ARG);
+		   }
                    else
                      TdiCompile(&post_int,&start_d,&end_d,&trigger_nid_dsc,&dt_dsc,(sr.mode==0)?&zero_d :&one_d, &dimension MDS_END_ARG);
                    break;
