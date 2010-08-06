@@ -195,7 +195,7 @@ class Connection(object):
             putexp=putexp+",$"
             pargs.append(args[i])
         putexp=putexp+")"
-        status=self.get(putexp,arglists=pargs)
+        status=self.get(putexp,arglist=pargs)
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
