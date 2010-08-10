@@ -18,7 +18,7 @@ if test "$NOF77"
 then
 :;
 else
-AC_PROG_F77
+AC_PROG_F77([g77 gfortran f90 f95])
 fi
 
 dnl Check out the compiler
