@@ -15,6 +15,7 @@ from dtao32 import DTAO32
 from dtdo32 import DTDO32
 from dt132  import DT132
 from dt216b import DT216B
+from dt196  import DT196
 from dt196b import DT196B
 import acq200
 import transport
