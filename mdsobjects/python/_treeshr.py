@@ -303,7 +303,7 @@ def TreeSetTimeContext(begin,end,delta):
 
 def TreeDoMethod(n,method,arg=None):
     """Do a method of an MDSplus device. Accepts path, TreeNode or integer and the value"""
-    status=__TreeDoMethod(n.tree.ctx,_C.pointer(descriptor(n)),_C.pointer(descriptor(method)),_C.pointer(descriptor(arg)),0)
+    status=__TreeDoMethod(n.tree.ctx,_C.pointer(descriptor(n)),_C.pointer(descriptor(method)),_C.pointer(descriptor(arg)),0xffffffff)
     if (status & 1):
         return status
     else:
