@@ -56,6 +56,8 @@ class TreeNode(Data):
          - is_child              - Bool, Flag indicating node is a child node
          - is_member             - Bool, Flag indicating node is a member bnode
          - length                - Int32, Length of data in bytes (uncompressed)
+         - local_path            - str, path to node relative to top of tree containing this node
+         - local_tree            - str, Name of tree containing this node
          - member                - TreeNode, First member of this node
          - member_nids           - TreeNodeArray, Members nodes
          - minpath               - String, Minimum length string representing path to node
@@ -118,6 +120,10 @@ class TreeNode(Data):
             return self.number_of_members+self.number_of_children
         if name.lower() == 'segmented':
             return self.getNumSegments().value > 0
+        if name.lower() == 'local_tree':
+            return self.getLocalTree()
+        if name.lower() == 'local_path':
+            return self.getLocalPath()
         if name.upper() in nciAttributes:
             from _tdishr import TdiException
             try:
@@ -483,6 +489,35 @@ class TreeNode(Data):
         @rtype: int
         """
         return self.length
+
+    def getLocalTree(self):
+        """Return tree containing this node
+        @return: Name of tree containing this node
+        @rtype: str
+        """
+        top=self
+        while top.nid & 0xffffff:
+            top=top.parent
+        if top.node_name == 'TOP':
+            return self.tree.tree
+        else:
+            return top.node_name
+
+    def getLocalPath(self):
+        """Return path relative to top of local tree
+        @return: Path relative to top of local tree
+        @rtype: str
+        """
+        path=''
+        top=self
+        while top.nid & 0xffffff:
+            if top.is_member:
+                delim=':'
+            else:
+                delim='.'
+            path=delim + top.node_name + path
+            top=top.parent
+        return path
 
     def getMember(self):
         """Return first member node
