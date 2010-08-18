@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>MDSplus.mdsscalar.String</title>
+  <title>MDSplus.connection.GetMany</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
 </head>
 <body bgcolor="white" text="black" link="blue" vlink="#204080"
@@ -29,31 +29,58 @@
     <td width="100%">
       <font size="-1"><b class="breadcrumbs">
         Package&nbsp;MDSplus ::
-        <a href="MDSplus.mdsscalar-module.html">Module&nbsp;mdsscalar</a> ::
-        Class&nbsp;String
+        <a href="MDSplus.connection-module.html">Module&nbsp;connection</a> ::
+        Class&nbsp;GetMany
       </b></font></br>
     </td>
     <td><table cellpadding="0" cellspacing="0">
-      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="MDSplus.mdsscalar.String-class.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
+      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="MDSplus.connection.GetMany-class.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
     </table></td>
 </tr></table>
 
 <!-- =========== START OF CLASS DESCRIPTION =========== -->
-<h2 class="class">Type String</h2>
+<h2 class="class">Type GetMany</h2>
 
 <pre class="base-tree">
 <a href="__builtin__.object-class.html"><code>object</code></a> --+        
          |        
       <a href="MDSplus.mdsdata.Data-class.html"><code>Data</code></a> --+    
              |    
-        <a href="MDSplus.mdsscalar.Scalar-class.html"><code>Scalar</code></a> --+
+<a href="__builtin__.object-class.html"><code>object</code></a> --+   |    
+         |   |    
+      <a href="__builtin__.list-class.html"><code>list</code></a> --+    
+             |    
+          <a href="MDSplus.apd.List-class.html"><code>List</code></a> --+
                  |
-                <b>String</b>
+                <b>GetMany</b>
 </pre><br />
 
 <hr/>
 
-String
+<p>Build a list of expressions to evaluate</p>
+<p>To reduce the number of network transactions between you and the 
+remote system you can use the GetMany class to specify a list of 
+expressions to be evaluated and then send that list to the remote system 
+in one network transation. The remote system will then evaluate all of 
+the expressions and return the answer in one response.</p>
+<p>To use the GetMany class you can create an instance using the 
+getMany() method of a Connection instance. You then use the 
+GetMany.append(name,expression[,args]) method to add expressions to the 
+list. Once the list is complete you then use the GetMany.execute() method 
+to execute the expressions on the remote host and retrieve the answers. 
+This will return a dictionary instance with the names assigned to the 
+expressions as the key. Each name will have a dictionary instance 
+containing the result of the execution of the expression. If this 
+dictionary has an 'error' key then its value will be an error string, 
+otherwise the dictionary should have a 'value' key containing the 
+result.</p>
+<p>The GetMany instance can be executed multiple times. For instance, if 
+you want to get the same information from many different trees you could 
+use the Connection.openTeee(tree,shot) method between executions of the 
+same GetMany instance.</p>
+NOTE: MDSplus can currently only address objects less than 4 
+gigabytes. Therefore the maximum size of the expression list with 
+arguments and the result dictionary is approximately 4 gigatypes.
 <hr/>
 
 
@@ -61,81 +88,216 @@ String
 <table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="summary">
   <th colspan="2">Method Summary</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.String-class.html#__add__" class="summary-sig-name"><code>__add__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Add: x.__add__(y) &lt;==&gt; x+y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.String-class.html#__radd__" class="summary-sig-name"><code>__radd__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Reverse add: x.__radd__(y) &lt;==&gt; y+x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        String
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.String-class.html#__str__" class="summary-sig-name"><code>__str__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-String: x.__str__() &lt;==&gt; str(x)</td></tr>
-<tr bgcolor="#e8f0f8" class="group">
-  <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from Scalar</th></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#__init__" class="summary-sig-name"><code>__init__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>value</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#__init__" class="summary-sig-name"><code>__init__</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>value</span>,
+          <span class=summary-sig-arg>connection</span>)</span></code>
+<br />
+GetMany instance initialization.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        None
+</font></td>
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#append" class="summary-sig-name"><code>append</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>name</span>,
+          <span class=summary-sig-arg>exp</span>,
+          <span class="summary-sig-vararg">*args</span>)</span></code>
+<br />
+Append expression to the list.</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#__getattr__" class="summary-sig-name"><code>__getattr__</code></a>(<span class=summary-sig-arg>self</span>,
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#execute" class="summary-sig-name"><code>execute</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Execute the list.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        Scalar or Array
+</font></td>
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#get" class="summary-sig-name"><code>get</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>name</span>)</span></code>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        int
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#__int__" class="summary-sig-name"><code>__int__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
-Integer: x.__int__() &lt;==&gt; int(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        int
+Get the result of an expression identified by name from the last 
+invokation of the execute() method.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        None
 </font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#__long__" class="summary-sig-name"><code>__long__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#insert" class="summary-sig-name"><code>insert</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>beforename</span>,
+          <span class=summary-sig-arg>name</span>,
+          <span class=summary-sig-arg>exp</span>,
+          <span class="summary-sig-vararg">*args</span>)</span></code>
 <br />
-Long: x.__long__() &lt;==&gt; long(x)</td></tr>
+Insert an expression in the list before the one named in the 
+beforename argument.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        None
+</font></td>
+  <td><code><span class="summary-sig"><a href="MDSplus.connection.GetMany-class.html#remove" class="summary-sig-name"><code>remove</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>name</span>)</span></code>
+<br />
+Remove first occurrence of expression identified by its name from the 
+list.</td></tr>
+<tr bgcolor="#e8f0f8" class="group">
+  <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from List</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        string
+</font></td>
+  <td><code><span class="summary-sig"><a href="MDSplus.apd.List-class.html#__str__" class="summary-sig-name"><code>__str__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Return string representation</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#__new__" class="summary-sig-name"><code>__new__</code></a>(<span class=summary-sig-arg>cls</span>,
+  <td><code><span class="summary-sig"><a href="MDSplus.apd.List-class.html#toApd" class="summary-sig-name"><code>toApd</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+</td></tr>
+<tr bgcolor="#e8f0f8" class="group">
+  <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from list</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__add__" class="summary-sig-name"><code>__add__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__add__(y) &lt;==&gt; x+y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__contains__" class="summary-sig-name"><code>__contains__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__contains__(y) &lt;==&gt; y in x</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__delitem__" class="summary-sig-name"><code>__delitem__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__delitem__(y) &lt;==&gt; del x[y]</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__delslice__" class="summary-sig-name"><code>__delslice__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>i</span>,
+          <span class=summary-sig-arg>j</span>)</span></code>
+<br />
+Use of negative indices is not supported.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__eq__" class="summary-sig-name"><code>__eq__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__eq__(y) &lt;==&gt; x==y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__ge__" class="summary-sig-name"><code>__ge__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__ge__(y) &lt;==&gt; x&gt;=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__getattribute__" class="summary-sig-name"><code>__getattribute__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+x.__getattribute__('name') &lt;==&gt; x.name</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__getitem__" class="summary-sig-name"><code>__getitem__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__getitem__(y) &lt;==&gt; x[y]</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__getslice__" class="summary-sig-name"><code>__getslice__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>i</span>,
+          <span class=summary-sig-arg>j</span>)</span></code>
+<br />
+Use of negative indices is not supported.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__gt__" class="summary-sig-name"><code>__gt__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__gt__(y) &lt;==&gt; x&gt;y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__hash__" class="summary-sig-name"><code>__hash__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
+<br />
+x.__hash__() &lt;==&gt; hash(x)</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__iadd__" class="summary-sig-name"><code>__iadd__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__iadd__(y) &lt;==&gt; x+=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__imul__" class="summary-sig-name"><code>__imul__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__imul__(y) &lt;==&gt; x*=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__iter__" class="summary-sig-name"><code>__iter__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
+<br />
+x.__iter__() &lt;==&gt; iter(x)</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__le__" class="summary-sig-name"><code>__le__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__le__(y) &lt;==&gt; x&lt;=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__len__" class="summary-sig-name"><code>__len__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
+<br />
+x.__len__() &lt;==&gt; len(x)</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__lt__" class="summary-sig-name"><code>__lt__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__lt__(y) &lt;==&gt; x&lt;y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__mul__" class="summary-sig-name"><code>__mul__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>n</span>)</span></code>
+<br />
+x.__mul__(n) &lt;==&gt; x*n</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__ne__" class="summary-sig-name"><code>__ne__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__ne__(y) &lt;==&gt; x!=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__new__" class="summary-sig-name"><code>__new__</code></a>(<span class=summary-sig-arg>T</span>,
+          <span class=summary-sig-arg>S</span>,
+          <span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+T.__new__(S, ...) -&gt; a new object with type S, a subtype of T</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__repr__" class="summary-sig-name"><code>__repr__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
+<br />
+x.__repr__() &lt;==&gt; repr(x)</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__reversed__" class="summary-sig-name"><code>__reversed__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+L.__reversed__() -- return a reverse iterator over the list</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__rmul__" class="summary-sig-name"><code>__rmul__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>n</span>)</span></code>
+<br />
+x.__rmul__(n) &lt;==&gt; n*x</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__setitem__" class="summary-sig-name"><code>__setitem__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>i</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+x.__setitem__(i, y) &lt;==&gt; x[i]=y</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#__setslice__" class="summary-sig-name"><code>__setslice__</code></a>(<span class=summary-sig-arg>x</span>,
+          <span class=summary-sig-arg>i</span>,
+          <span class=summary-sig-arg>j</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+Use of negative indices is not supported.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#count" class="summary-sig-name"><code>count</code></a>(<span class=summary-sig-arg>L</span>,
           <span class=summary-sig-arg>value</span>)</span></code>
 <br />
-    <i>(Static method)</i>
-</td></tr>
+L.count(value) -&gt; integer -- return number of occurrences of 
+value</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#all" class="summary-sig-name"><code>all</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#extend" class="summary-sig-name"><code>extend</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+L.extend(iterable) -- extend list by appending elements from the 
+iterable</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#any" class="summary-sig-name"><code>any</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#index" class="summary-sig-name"><code>index</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+L.index(value, [start, [stop]]) -&gt; integer -- return first index of 
+value</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#argmax" class="summary-sig-name"><code>argmax</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class="summary-sig-vararg">*axis</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#pop" class="summary-sig-name"><code>pop</code></a>(<span class=summary-sig-arg>L</span>,
+          <span class=summary-sig-arg>index</span>)</span></code>
+<br />
+L.pop([index]) -&gt; item -- remove and return item at index (default 
+last)</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#argmin" class="summary-sig-name"><code>argmin</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class="summary-sig-vararg">*axis</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#reverse" class="summary-sig-name"><code>reverse</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+L.reverse() -- reverse *IN PLACE*</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#argsort" class="summary-sig-name"><code>argsort</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>axis</span>,
-          <span class=summary-sig-arg>kind</span>,
-          <span class=summary-sig-arg>order</span>)</span></code>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#astype" class="summary-sig-name"><code>astype</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>type</span>)</span></code>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#byteswap" class="summary-sig-name"><code>byteswap</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsscalar.Scalar-class.html#clip" class="summary-sig-name"><code>clip</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>,
-          <span class=summary-sig-arg>z</span>)</span></code>
-</td></tr>
+  <td><code><span class="summary-sig"><a href="__builtin__.list-class.html#sort" class="summary-sig-name"><code>sort</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
+<br />
+L.sort(cmp=None, key=None, reverse=False) -- stable sort *IN PLACE*; 
+cmp(x, y) -&gt; -1, 0, 1</td></tr>
 <tr bgcolor="#e8f0f8" class="group">
   <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from Data</th></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
@@ -155,12 +317,6 @@ And: x.__and__(y) &lt;==&gt; x&amp;y</td></tr>
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Divide: x.__div__(y) &lt;==&gt; x/y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__eq__" class="summary-sig-name"><code>__eq__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Equals: x.__eq__(y) &lt;==&gt; x==y</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__float__" class="summary-sig-name"><code>__float__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
@@ -172,70 +328,33 @@ Float: x.__float__() &lt;==&gt; float(x)</td></tr>
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Floordiv: x.__floordiv__(y) &lt;==&gt; x//y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
+<tr><td align="right" valign="top" width="15%"><font size="-1">        int
 </font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__ge__" class="summary-sig-name"><code>__ge__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
+  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__int__" class="summary-sig-name"><code>__int__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
-Greater or equal: x.__ge__(y) &lt;==&gt; x&gt;=y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__getitem__" class="summary-sig-name"><code>__getitem__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Subscript: x.__getitem__(y) &lt;==&gt; x[y]</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__gt__" class="summary-sig-name"><code>__gt__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Greater than: x.__gt__(y) &lt;==&gt; x&gt;y</td></tr>
+Integer: x.__int__() &lt;==&gt; int(x)</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__invert__" class="summary-sig-name"><code>__invert__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
 Binary not: x.__invert__() &lt;==&gt; ~x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
+<tr><td align="right" valign="top" width="15%"><font size="-1">        long
 </font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__le__" class="summary-sig-name"><code>__le__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
+  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__long__" class="summary-sig-name"><code>__long__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
-Less than or equal: x.__le__(y) &lt;==&gt; x&lt;=y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__len__" class="summary-sig-name"><code>__len__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Length: x.__len__() &lt;==&gt; len(x)</td></tr>
+Convert this object to python long</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__lshift__" class="summary-sig-name"><code>__lshift__</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Lrft binary shift: x.__lshift__(y) &lt;==&gt; x&lt;&lt;y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Bool
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__lt__" class="summary-sig-name"><code>__lt__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Less than: x.__lt__(y) &lt;==&gt; x&lt;y</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mod__" class="summary-sig-name"><code>__mod__</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Modulus: x.__mod__(y) &lt;==&gt; x%y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mul__" class="summary-sig-name"><code>__mul__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Multiply: x.__mul__(y) &lt;==&gt; x*y</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__ne__" class="summary-sig-name"><code>__ne__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Not equal: x.__ne__(y) &lt;==&gt; x!=y</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__neg__" class="summary-sig-name"><code>__neg__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
@@ -259,15 +378,16 @@ Or: x.__or__(y) &lt;==&gt; x|y</td></tr>
 Unary plus: x.__pos__() &lt;==&gt; +x</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
+  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__radd__" class="summary-sig-name"><code>__radd__</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>y</span>)</span></code>
+<br />
+Reverse add: x.__radd__(y) &lt;==&gt; y+x</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
+</font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rdiv__" class="summary-sig-name"><code>__rdiv__</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Reverse divide: x.__rdiv__(y) &lt;==&gt; y/x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        string
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#decompile" class="summary-sig-name"><code>__repr__</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
-<br />
-Return string representation</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__rfloordiv__" class="summary-sig-name"><code>__rfloordiv__</code></a>(<span class=summary-sig-arg>self</span>,
@@ -286,12 +406,6 @@ Reverse left binary shift: x.__rlshift__(y) &lt;==&gt; y&lt;&lt;x</td></tr>
           <span class=summary-sig-arg>y</span>)</span></code>
 <br />
 Reverse modulus: x.__rmod__(y) &lt;==&gt; y%x</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__mul__" class="summary-sig-name"><code>__rmul__</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>y</span>)</span></code>
-<br />
-Multiply: x.__mul__(y) &lt;==&gt; x*y</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Data
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#__or__" class="summary-sig-name"><code>__ror__</code></a>(<span class=summary-sig-arg>self</span>,
@@ -381,14 +495,6 @@ Return dimension of object</td></tr>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#evaluate" class="summary-sig-name"><code>evaluate</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
 Return the result of TDI evaluate(this).</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">        Data
-</font></td>
-  <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#execute" class="summary-sig-name"><code>execute</code></a>(<span class=summary-sig-arg>expr</span>,
-          <span class="summary-sig-vararg">*args</span>)</span></code>
-<br />
-Execute and expression inserting optional arguments into the 
-expression before evaluating    <i>(Static method)</i>
-</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">        Int8
 </font></td>
   <td><code><span class="summary-sig"><a href="MDSplus.mdsdata.Data-class.html#getByte" class="summary-sig-name"><code>getByte</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
@@ -554,14 +660,6 @@ Return value part of object</td></tr>
 <br />
 x.__delattr__('name') &lt;==&gt; del x.name</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__getattribute__" class="summary-sig-name"><code>__getattribute__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
-<br />
-x.__getattribute__('name') &lt;==&gt; x.name</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__hash__" class="summary-sig-name"><code>__hash__</code></a>(<span class=summary-sig-arg>x</span>)</span></code>
-<br />
-x.__hash__() &lt;==&gt; hash(x)</td></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="__builtin__.object-class.html#__reduce__" class="summary-sig-name"><code>__reduce__</code></a>(<span class="summary-sig-vararg">...</span>)</span></code>
 <br />
 helper for pickle</td></tr>
@@ -581,10 +679,6 @@ x.__setattr__('name', value) &lt;==&gt; x.name = value</td></tr>
 <tr bgcolor="#70b0f0" class="summary">
   <th colspan="2">Property Summary</th></tr>
 <tr bgcolor="#e8f0f8" class="group">
-  <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from Scalar</th></tr>
-<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><b><a href="MDSplus.mdsscalar.Scalar-class.html#mdsdtype"><code>mdsdtype</code></a></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
-  <td><b><a href="MDSplus.mdsscalar.Scalar-class.html#value"><code>value</code></a></b></td></tr><tr bgcolor="#e8f0f8" class="group">
   <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Inherited from Data</th></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><b><a href="MDSplus.mdsdata.Data-class.html#descriptor"><code>descriptor</code></a></b></td></tr><tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
@@ -600,58 +694,157 @@ x.__setattr__('name', value) &lt;==&gt; x.name = value</td></tr>
   <th colspan="2">Instance Method Details</th></tr>
 </table>
 
-<a name="__add__"></a>
+<a name="__init__"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__add__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Addition operator)</i>
+  <h3><span class="sig"><span class="sig-name">__init__</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>value</span>=<span class=sig-default>None</span>,
+          <span class=sig-arg>connection</span>=<span class=sig-default>None</span>)</span>
+    <br /><i>(Constructor)</i>
   </h3>
-  Add: x.__add__(y) &lt;==&gt; x+y
+  GetMany instance initialization.
   <dl><dt></dt><dd>
-    <dl><dt><b>Returns:</b></dt>
-      <dd>
-        Data
-      </dd>
-    </dl>
     <dl><dt><b>Overrides:</b></dt>
-      <dd><a href="MDSplus.mdsdata.Data-class.html#__add__"><code>MDSplus.mdsdata.Data.__add__</code></a></dd>
+      <dd><a href="MDSplus.apd.List-class.html#__init__"><code>MDSplus.apd.List.__init__</code></a></dd>
     </dl>
   </dd></dl>
 </td></tr></table>
 
-<a name="__radd__"></a>
+<a name="append"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__radd__</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>y</span>)</span>
-    <br /><i>(Right-side addition operator)</i>
+  <h3><span class="sig"><span class="sig-name">append</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>name</span>,
+          <span class=sig-arg>exp</span>,
+          <span class="sig-vararg">*args</span>)</span>
   </h3>
-  Reverse add: x.__radd__(y) &lt;==&gt; y+x
+  Append expression to the list.
   <dl><dt></dt><dd>
+    <dl><dt><b>Parameters:</b></dt>
+      <dd><code><b>name</b></code> -
+         name to assign to the expression for identifying it in the 
+        result dictionary.
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      <dd><code><b>exp</b></code> -
+         expression to be evaluated with placeholders for optional 
+        arguments
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      <dd><code><b>args</b></code> -
+         optional arguments to replace placeholders in the 
+        expression
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=Data)</i>
+      </dd>
+    </dl>
     <dl><dt><b>Returns:</b></dt>
       <dd>
-        Data
+        None
       </dd>
     </dl>
     <dl><dt><b>Overrides:</b></dt>
-      <dd><a href="MDSplus.mdsdata.Data-class.html#__radd__"><code>MDSplus.mdsdata.Data.__radd__</code></a></dd>
+      <dd><a href="__builtin__.list-class.html#append"><code>__builtin__.list.append</code></a></dd>
     </dl>
   </dd></dl>
 </td></tr></table>
 
-<a name="__str__"></a>
+<a name="execute"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
-  <h3><span class="sig"><span class="sig-name">__str__</span>(<span class=sig-arg>self</span>)</span>
-    <br /><i>(Informal representation operator)</i>
+  <h3><span class="sig"><span class="sig-name">execute</span>(<span class=sig-arg>self</span>)</span>
   </h3>
-  String: x.__str__() &lt;==&gt; str(x)
+  Execute the list. Send the list to the remote server for evaluation 
+  and return the answer as a dict instance.
   <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="get"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">get</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>name</span>)</span>
+  </h3>
+  Get the result of an expression identified by name from the last 
+  invokation of the execute() method.
+  <dl><dt></dt><dd>
+    <dl><dt><b>Parameters:</b></dt>
+      <dd><code><b>name</b></code> -
+         name associated with an expression.
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      </dd>
+    </dl>
     <dl><dt><b>Returns:</b></dt>
       <dd>
-        String
+        result of the expression evaluation.
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=Scalar or Array)</i>
+      </dd>
+    </dl>
+  </dd></dl>
+</td></tr></table>
+
+<a name="insert"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">insert</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>beforename</span>,
+          <span class=sig-arg>name</span>,
+          <span class=sig-arg>exp</span>,
+          <span class="sig-vararg">*args</span>)</span>
+  </h3>
+  Insert an expression in the list before the one named in the 
+  beforename argument.
+  <dl><dt></dt><dd>
+    <dl><dt><b>Parameters:</b></dt>
+      <dd><code><b>beforename</b></code> -
+         Insert the expression before this one
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      <dd><code><b>name</b></code> -
+         Name to associate with the result of this expression
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      <dd><code><b>exp</b></code> -
+         TDI expression to be evaluated with optional placeholders for 
+        the arguments
+      <dd><code><b>args</b></code> -
+         Optional arguments to replace placeholders in the 
+        expression
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=Data)</i>
+      </dd>
+    </dl>
+    <dl><dt><b>Returns:</b></dt>
+      <dd>
+        None
       </dd>
     </dl>
     <dl><dt><b>Overrides:</b></dt>
-      <dd><a href="MDSplus.mdsdata.Data-class.html#decompile"><code>MDSplus.mdsdata.Data.decompile</code></a></dd>
+      <dd><a href="__builtin__.list-class.html#insert"><code>__builtin__.list.insert</code></a></dd>
+    </dl>
+  </dd></dl>
+</td></tr></table>
+
+<a name="remove"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">remove</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>name</span>)</span>
+  </h3>
+  Remove first occurrence of expression identified by its name from 
+  the list.
+  <dl><dt></dt><dd>
+    <dl><dt><b>Parameters:</b></dt>
+      <dd><code><b>name</b></code> -
+         Name of expression to be removed.
+        <br /><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (type=str)</i>
+      </dd>
+    </dl>
+    <dl><dt><b>Returns:</b></dt>
+      <dd>
+        None
+      </dd>
+    </dl>
+    <dl><dt><b>Overrides:</b></dt>
+      <dd><a href="__builtin__.list-class.html#remove"><code>__builtin__.list.remove</code></a></dd>
     </dl>
   </dd></dl>
 </td></tr></table>
@@ -676,7 +869,7 @@ x.__setattr__('name', value) &lt;==&gt; x.name = value</td></tr>
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Wed Aug 18 13:35:32 2010</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Wed Aug 18 13:35:31 2010</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>
