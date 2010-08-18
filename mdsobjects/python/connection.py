@@ -3,25 +3,26 @@ import numpy as _N
 from _descriptor import descriptor,descriptor_a
 from _mdsshr import _load_library,MdsException,MdsGetMsg
 from mdsdata import makeData,Data
-from mdsscalar import Scalar
-from mdsarray import Array
+from mdsscalar import *
+from mdsarray import *
 from _mdsdtypes import *
 from apd import List,Dictionary
+__MdsIpShr=_load_library('MdsIpShr')
+ConnectToMds=__MdsIpShr.ConnectToMds
+ConnectToMds.argtypes=[_C.c_char_p]
+GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
+GetAnswerInfoTS.argtypes=[_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
+                            _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
+MdsIpFree=__MdsIpShr.MdsIpFree
+MdsIpFree.argtypes=[_C.c_void_p]
+SendArg=__MdsIpShr.SendArg
+SendArg.argtypes=[_C.c_int,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
 
 class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""
-    __MdsIpShr=_load_library('MdsIpShr')
-    __ConnectToMds=__MdsIpShr.ConnectToMds
-    __ConnectToMds.argtypes=[_C.c_char_p]
-    __MdsOpen=__MdsIpShr.MdsOpen
-    __MdsOpen.argtypes=[_C.c_int,_C.c_char_p,_C.c_int]
-    __GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
-    __GetAnswerInfoTS.argtypes=[_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
-                                _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
-    __mdsipFree=__MdsIpShr.MdsIpFree
-    __mdsipFree.argtypes=[_C.c_void_p]
-    __SendArg=__MdsIpShr.SendArg
-    __SendArg.argtypes=[_C.c_int,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
+
+    dtype_to_scalar={DTYPE_BU:Uint8,DTYPE_WU:Uint16,DTYPE_LU:Uint32,DTYPE_QU:Uint64,DTYPE_B:Int8,DTYPE_W:Int16,
+                     DTYPE_L:Int32,DTYPE_Q:Int64,DTYPE_FLOAT:Float32,DTYPE_DOUBLE:Float64,DTYPE_T:String}
 
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
@@ -66,7 +67,7 @@ class Connection(object):
         numbytes=_C.c_ulong(0)
         ans=_C.c_void_p(0)
         mem=_C.c_void_p(0)
-        status=self.__GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
+        status=GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
         dtype=dtype.value
         if dtype == DTYPE_F:
             dtype = DTYPE_FLOAT
@@ -77,12 +78,10 @@ class Connection(object):
         elif dtype == DTYPE_DC:
             dtype = DTYPE_DOUBLE_COMPLEX
         if ndims.value == 0:
-            val=descriptor()
-            val.dtype=dtype
-            val.dclass=1
-            val.length=length.value
-            val.pointer=_C.cast(ans,_C.POINTER(descriptor))
-            ans=val.value
+            if dtype == DTYPE_T:
+                ans=String(_C.cast(ans,_C.POINTER(_C.c_char*length.value)).contents.value)
+            else:
+                ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(mdsdtypes.ctypes[dtype])).contents.value)
         else:
             val=descriptor_a()
             val.dtype=dtype
@@ -102,14 +101,17 @@ class Connection(object):
             ans=val.value
         if not ((status & 1) == 1):
             if mem.value is not None:
-                self.__mdsipFree(mem)
-            raise MdsException,MdsGetMsg(status)
+                MdsIpFree(mem)
+            if isinstance(ans,String):
+                raise MdsException,str(ans)
+            else:
+                raise MdsException,MdsGetMsg(status)
         if mem.value is not None:
-            self.__mdsipFree(mem)
+            MdsIpFree(mem)
         return ans
         
     def __init__(self,hostspec):
-        self.socket=self.__ConnectToMds(hostspec)
+        self.socket=ConnectToMds(hostspec)
         if self.socket == -1:
             raise Exception,"Error connecting to %s" % (hostspec,)
         self.hostspec=hostspec
@@ -137,7 +139,7 @@ class Connection(object):
         if not isinstance(val,Scalar) and not isinstance(val,Array):
             val=makeData(val.data())
         valInfo=self.__inspect__(val)
-        status=self.__SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
+        status=SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
             raise MdsException,MdsGetMsg(status)
 
@@ -217,7 +219,10 @@ class Connection(object):
             args=kwargs['arglist']
         num=len(args)+1
         idx=0
-        self.__sendArg__(exp,idx,num)
+        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp))
+        if not ((status & 1)==1):
+            raise MdsException,MdsGetMsg(status)
+        #self.__sendArg__(exp,idx,num)
         for arg in args:
             idx=idx+1
             self.__sendArg__(arg,idx,num)

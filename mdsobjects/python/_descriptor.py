@@ -377,7 +377,7 @@ class descriptor(_C.Structure):
                         arglist.append(ans.dscptrs[i].contents.value)
                     else:
                         arglist.append(None)
-                return eval(str(mdsdtypes(self.dtype))[6:].lower().capitalize()+'(args=tuple(arglist),opcode=opcode)')
+                return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](args=tuple(arglist),opcode=opcode)
             if self.dtype in (DTYPE_ACTION,DTYPE_PROCEDURE,DTYPE_DISPATCH,DTYPE_DIMENSION,DTYPE_METHOD,DTYPE_CONGLOM,DTYPE_SIGNAL,DTYPE_PROGRAM,
                               DTYPE_ROUTINE,DTYPE_WINDOW):
                 arglist=list()
@@ -387,7 +387,7 @@ class descriptor(_C.Structure):
                     else:
                         arglist.append(None)
                 arglist=tuple(arglist)
-                return eval(str(mdsdtypes(self.dtype))[6:].lower().capitalize()+'(arglist)')
+		return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](arglist)
             raise Exception,"%s is not yet supported" % str(mdsdtypes(ans.dtype))
         if self.dclass == CLASS_A:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_a)).contents

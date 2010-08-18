@@ -24,8 +24,7 @@ def makeArray(value):
             return makeArray(value.__array__(numpy.uint8))
         if str(value.dtype) == 'object':
             raise TypeError,'cannot make Array out of an numpy.ndarray of dtype object'
-        exec 'ans='+str(value.dtype).capitalize()+'Array(value)'
-        return ans
+        return globals()[str(value.dtype).capitalize()+'Array'](value)
     if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
         return makeArray(numpy.array(value).reshape(1))
     raise TypeError,'Cannot make Array out of '+str(type(value))
@@ -38,18 +37,11 @@ class Array(Data):
         if self.__class__.__name__ == 'StringArray':
             self._value=numpy.array(value).__array__(numpy.string_)
             return
-        exec 'self._value=numpy.array(value).__array__(numpy.'+self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()+')'
+	self._value=numpy.array(value).__array__(numpy.__dict__[self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()])
         return
-
-
-#    def __getitem__(self,y):
-#        """Subscript: x.__getitem__(y) <==> x[y]
-#        @rtype: Data"""
-#        return makeData(self.value.__getitem__(y))
     
     def __getattr__(self,name):
-        exec 'ans=self._value.'+name
-        return ans
+        return self._value.__getattribute__(name)
 
     def _getValue(self):
         """Return the numpy ndarray representation of the array"""

@@ -1,7 +1,5 @@
 from mdsdata import Data,makeData
-from _mdsdtypes import DTYPE_ACTION,DTYPE_CALL,DTYPE_CONGLOM,DTYPE_DEPENDENCY,DTYPE_DIMENSION
-from _mdsdtypes import DTYPE_DISPATCH,DTYPE_FUNCTION,DTYPE_METHOD,DTYPE_PROCEDURE,DTYPE_PROGRAM
-from _mdsdtypes import DTYPE_RANGE,DTYPE_ROUTINE,DTYPE_SIGNAL,DTYPE_WINDOW
+from _mdsdtypes import *
 
 
 class Compound(Data):
@@ -15,7 +13,7 @@ class Compound(Data):
             args=params['args']
         if 'params' in params:
             params=params['params']
-        exec 'self._dtype=DTYPE_'+self.__class__.__name__.upper()
+        self._dtype=mdsdtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
         if 'opcode' in params:
             self._opcode=params['opcode']
         try:

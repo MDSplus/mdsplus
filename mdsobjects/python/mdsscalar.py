@@ -12,8 +12,7 @@ def makeScalar(value):
         if isinstance(value,numpy.bool_):
             return makeScalar(int(value))
         else:
-            exec 'ans='+value.__class__.__name__.capitalize()+'(value)'
-            return ans
+	    return globals()[value.__class__.__name__.capitalize()](value)
     if isinstance(value,int):
         return Int32(value)
     if isinstance(value,long):
@@ -31,10 +30,9 @@ class Scalar(Data):
     def __new__(cls,value=0):
         try:
             import numpy
-            from mdsarray import Array
-            if (isinstance(value,Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
-                exec "from mdsarray import "+cls.__name__+"Array"
-                return eval(cls.__name__+"Array(value)")
+            import mdsarray
+            if (isinstance(value,mdsarray.Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
+		return mdsarray.__dict__[cls.__name__+'Array'](value)
         except:
             pass
 
@@ -46,11 +44,10 @@ class Scalar(Data):
         if self.__class__.__name__ == 'String':
             self._value=numpy.string_(value)
             return
-        exec 'self._value=numpy.'+self.__class__.__name__.lower()+'(value)'
+        self._value=numpy.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
-        exec 'ans=self.value.'+name
-        return ans
+        return self._value.__getattribute__(name)
 
     def _getValue(self):
         """Return the numpy scalar representation of the scalar"""
