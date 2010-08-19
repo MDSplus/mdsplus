@@ -3,6 +3,8 @@ from mdsdata import *
 from mdsscalar import *
 from mdsarray import *
 from compound import *
+from _tdishr import TdiException
+from treenode import TreeNode
 import numpy
 
 class dataTests(TestCase):
@@ -358,26 +360,6 @@ class dataTests(TestCase):
         return
 
     def mathFunctions(self):
-        self.assertEqual(abs(Uint8(255)),Uint8(255))
-        self.assertEqual(abs(Uint16(255)),Uint16(255))
-        self.assertEqual(abs(Uint32(255)),Uint32(255))
-        self.assertEqual(abs(Uint64(255)),Uint64(255))
-        self.assertEqual(abs(Int8(-10)),Int8(10))
-        self.assertEqual(abs(Int16(-10)),Int16(10))
-        self.assertEqual(abs(Int32(-10)),Int32(10))
-        self.assertEqual(abs(Int64(-10)),Int64(10))
-        self.assertEqual(abs(Float32(-10)),Float32(10))
-        self.assertEqual(abs(Float64(-10)),Float64(10))
-        self.assertEqual((abs(Uint8Array([254,255]))==Uint8Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint16Array([254,255]))==Uint16Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint32Array([254,255]))==Uint32Array([254,255])).all(),True)
-        self.assertEqual((abs(Uint64Array([254,255]))==Uint64Array([254,255])).all(),True)
-        self.assertEqual((abs(Int8Array([-10,-20]))==Int8Array([10,20])).all(),True)
-        self.assertEqual((abs(Int16Array([-10,-20]))==Int16Array([10,20])).all(),True)
-        self.assertEqual((abs(Int32Array([-10,-20]))==Int32Array([10,20])).all(),True)
-        self.assertEqual((abs(Int64Array([-10,-20]))==Int64Array([10,20])).all(),True)
-        self.assertEqual((abs(Float32Array([-10,-20]))==Float32Array([10,20])).all(),True)
-        self.assertEqual((abs(Float64Array([-10,-20]))==Float64Array([10,20])).all(),True)
         self.assertEqual(float(Uint8(255)),255.)
         self.assertEqual(float(Uint16(255)),255.)
         self.assertEqual(float(Uint32(255)),255.)
@@ -399,13 +381,125 @@ class dataTests(TestCase):
         self.assertEqual(int(Float32(255)),255)
         self.assertEqual(int(Float64(255)),255)
 
+    def tdiFunctions(self):
+        def doUnaryArray(expression,ans):
+            self.assertEqual(((Data.execute(expression))==ans).all(),True)
+
+        """Test abort"""
+        try:
+            Data.execute('abort()')
+            self.fail("Abort did not signal an error")
+        except Exception,e:
+            self.assertEqual(type(e),TdiException)
+            self.assertEqual(str(e),'%TDI-E-TdiABORT, Program requested abort')
+
+        """Test abs"""
+        self.assertEqual(abs(Uint8(255)),Uint8(255))
+        self.assertEqual(abs(Uint16(255)),Uint16(255))
+        self.assertEqual(abs(Uint32(255)),Uint32(255))
+        self.assertEqual(abs(Uint64(255)),Uint64(255))
+        self.assertEqual(abs(Int8(-10)),Int8(10))
+        self.assertEqual(abs(Int16(-10)),Int16(10))
+        self.assertEqual(abs(Int32(-10)),Int32(10))
+        self.assertEqual(abs(Int64(-10)),Int64(10))
+        self.assertEqual(abs(Float32(-10)),Float32(10))
+        self.assertEqual(abs(Float64(-10)),Float64(10))
+        self.assertEqual((abs(Uint8Array([254,255]))==Uint8Array([254,255])).all(),True)
+        self.assertEqual((abs(Uint16Array([254,255]))==Uint16Array([254,255])).all(),True)
+        self.assertEqual((abs(Uint32Array([254,255]))==Uint32Array([254,255])).all(),True)
+        self.assertEqual((abs(Uint64Array([254,255]))==Uint64Array([254,255])).all(),True)
+        self.assertEqual((abs(Int8Array([-10,-20]))==Int8Array([10,20])).all(),True)
+        self.assertEqual((abs(Int16Array([-10,-20]))==Int16Array([10,20])).all(),True)
+        self.assertEqual((abs(Int32Array([-10,-20]))==Int32Array([10,20])).all(),True)
+        self.assertEqual((abs(Int64Array([-10,-20]))==Int64Array([10,20])).all(),True)
+        self.assertEqual((abs(Float32Array([-10,-20]))==Float32Array([10,20])).all(),True)
+        self.assertEqual((abs(Float64Array([-10,-20]))==Float64Array([10,20])).all(),True)
+        self.assertEqual(Data.execute('execute("abs(cmplx(3.0,4.0))")'),Float32(5.0))
+        """Test abs1"""
+        self.assertEqual(Data.execute('execute("abs1(cmplx(3.0,4.0))")'),Float32(7.0))
+        """Test abssq"""
+        self.assertEqual(Data.execute('execute("abssq(cmplx(3.0,4.0))")'),Float32(25.0))
+        """Test accumulate"""
+        self.assertEqual((Data.execute('execute("ACCUMULATE([1,2,3])")')==Int32Array([1,3,6])).all(),True)
+        """ Known to be broken in both documenation and/or implementation
+        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,6]])")')==Int32Array([[1,6,15],[3,10,21]])).all(),True)
+        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,5]],0)")')==Int32Array([[1,3,5],[3,7,11]])).all(),True)
+        self.assertEqual((Data.execute('execute("ACCUMULATE([[1,3,5],[2,4,5]],1)")')==Int32Array([[1,4,9],[2,6,12]])).all(),True)
+        """
+        """Test achar"""
+        self.assertEqual(str(Data.execute('achar(88)')),'X')
+        """Test ACOS"""
+        self.assertEqual(Data.execute('abs(acos(.54030231)-1.)<.0000001'),Uint8(1))
+        """Test ACOSD"""
+        self.assertEqual(Data.execute('abs(acosd(0.5)<60.0)<.0000001'),Uint8(1))
+        """Test Add"""
+        self.assertEqual((Data.execute('[2,3,4]+5.0')==Float32Array([7,8,9])).all(),True)
+        """Test ADJUSTL"""
+        self.assertEqual(str(Data.execute('adjustl(" WORD")')),"WORD ")
+        """Test ADJUSTR"""
+        self.assertEqual(str(Data.execute('adjustr("WORD ")'))," WORD")
+        """Test AIMAG"""
+        self.assertEqual(Data.execute('execute("AIMAG(CMPLX(2.0,3.0))")'),Float32(3.0))
+        """Test AINT"""
+        self.assertEqual(Data.execute('aint(2.783)'),Float32(2.0))
+        self.assertEqual(Data.execute('aint(-2.783)'),Float32(-2.0))
+        """Test ALL"""
+        self.assertEqual(Data.execute('ALL([$TRUE,$FALSE,$TRUE])'),Uint8(0))
+        """ Documenation and/or implementation known to be broken
+        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],all(_b ne _c,0)')==Uint8Array([1,0,0])).all(),True)
+        self.assertEqual((Data.execute('all(_b ne _c,1)')==Uint8Array([0,0])).all().True)
+        """
+        """Test allocated"""
+        self.assertEqual(Data.execute('allocated("_xyz")'),Uint8(0))
+        self.assertEqual(Data.execute('_xyz=0,allocated("_xyz")'),Uint8(1))
+        self.assertEqual(Data.execute('allocated(_xyz)'),Uint8(1))
+        """Test AND"""
+        self.assertEqual((Data.execute('[0,0,1,1] && [0,1,0,1]')==Uint8Array([0,0,0,1])).all(),True)
+        """Test AND_NOT"""
+        self.assertEqual((Data.execute('[0,0,1,1] AND_NOT [0,1,0,1]')==Uint8Array([0,0,1,0])).all(),True)
+        """Test ANINT"""
+        self.assertEqual(Data.execute('ANINT(2.783)'),Float32(3.0))
+        """Test ANY"""
+        self.assertEqual(Data.execute('any([$TRUE,$FALSE,$TRUE])'),Uint8(1))
+        """ Documentation and/or Implementation known to be broken
+        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],any(_b ne _c,0)')==Uint8Array([1,0,1])).all(),True)
+        self.assertEqual((Data.execute('_b=[1,3,5],_c=[[0,3,5],[2,4,6],[7,4,8]],any(_b ne _c,1)')==Uint8Array([1,1])).all(),True)
+        """
+        """Test ARG"""
+        self.assertEqual(Data.execute('execute("abs(arg(cmplx(3.0,4.0)) - .9272952) < .000001")'),Uint8(1))
+        """Test ARGD"""
+        self.assertEqual(Data.execute('execute("abs(argd(cmplx(3.0,4.0)) - 53.1301) < .000001")'),Uint8(1))
+
+        """Test arg_of"""
+        self.assertEqual(Data.execute('arg_of(gub->foo(42,43))'),Int32(42))
+        self.assertEqual(Data.execute('arg_of(pub->foo(42,43),1)'),Int32(43))
+        self.assertEqual(Data.execute('arg_of(execute("Test"))'),String("Test"))
+        self.assertEqual(Data.execute('arg_of(1+3,1)'),Int32(3))
+        """Test Array"""
+        doUnaryArray('array(10)*0',Float32Array([range(10)])*0.0)
+        doUnaryArray('array(10,0)*0',Int32Array([range(10)])*0)
+        doUnaryArray('array(10,0BU)*0BU',Uint8Array([range(10)])*Uint8(0))
+        """Test ASIN"""
+        self.assertEqual(Data.execute('abs(asin(0.84147098) - 1.0) < .000001'),Uint8(1))
+        """Test ASIND"""
+        self.assertEqual(Data.execute('abs(asind(.5) - 30.0) < .000001'),Uint8(1))
+        """Test as_is"""
+        self.assertEqual(Data.execute('public fun as_is_test(as_is _n){return(kind(_n));},as_is_test($)',TreeNode(42,None)),Uint8(192))
+        """Test atan"""
+        self.assertEqual(Data.execute('abs(atan(1.5574077)-1.0) < .000001'),Uint8(1))
+        """Test atan2"""
+        self.assertEqual(Data.execute('abs(atan2(1.5574077,1.0) - 1.0) < .000001'),Uint8(1))
+
+        doUnaryArray('zero(100)',Float32Array([range(100)])*0.0)
+
     def runTest(self):
         self.basicBinaryOperators()
         self.mathFunctions()
+        self.tdiFunctions()
         
 
 def suite():
-    tests = ['basicBinaryOperators','mathFunctions']
+    tests = ['basicBinaryOperators','mathFunctions','tdiFunctions']
     return TestSuite(map(dataTests,tests))
 
 def test():
