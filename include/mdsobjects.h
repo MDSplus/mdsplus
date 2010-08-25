@@ -146,7 +146,6 @@ EXPORT void deleteNativeArray(Data **array);
 	
 	
 EXPORT void deleteString(char *str);
-
 class Tree;
 void setActiveTree(Tree *tree);
 Tree *getActiveTree();
@@ -194,7 +193,6 @@ Tree *getActiveTree();
 
 
 ////////////////////Data class//////////////////////////////
-
 class EXPORT Data 
 {
 		friend EXPORT Data *compile(const char *expr);
@@ -352,6 +350,7 @@ protected:
 		{
 		    return outStream << data->decompile();
 		}
+		virtual void plot();
 	};
 
 
@@ -2063,7 +2062,7 @@ protected:
 		virtual int getCachePolicy() { return cachePolicy;}
 
 	public:
-		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BACK;}
+		CachedTreeNode(int nid, Tree *tree):TreeNode(nid, tree){cachePolicy = MDS_WRITE_BUFFER;}
 		void setCachePolicy(int cachePolicy) {this->cachePolicy = cachePolicy;}
 		void flush();
 		void putLastRow(Data *data, _int64 *time);
@@ -2346,6 +2345,42 @@ protected:
 		}
 	};
 
+	class EXPORT Scope 
+	{
+		int idx;
+		void show(int x, int y, int width, int height)
+		{
+			char expr[256];
+			sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
+			Data *ris = execute(expr);
+			deleteData(ris);
+		}
+	public:
+		Scope(char *name, int x = 100, int y = 100, int width = 400, int height = 400)
+		{
+			char *expr = new char[64+strlen(name)];
+			sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);
+			Data *ris = execute(expr);
+			idx = ris->getInt();
+			deleteData(ris);
+			delete [] expr;
+			show(x,y,width, height);
+		}
+		void plot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black")
+		{
+			char expr[256];
+			sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+			Data *ris = executeWithArgs(expr, 2, x, y);
+			deleteData(ris);
+		}
+		void oplot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black")
+		{
+			char expr[256];
+			sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+			Data *ris = executeWithArgs(expr, 2, x, y);
+			deleteData(ris);
+		}
+	};
 
 
 
