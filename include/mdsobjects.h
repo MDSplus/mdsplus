@@ -2348,38 +2348,11 @@ protected:
 	class EXPORT Scope 
 	{
 		int idx;
-		void show(int x, int y, int width, int height)
-		{
-			char expr[256];
-			sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
-			Data *ris = execute(expr);
-			deleteData(ris);
-		}
+		void show(int x, int y, int width, int height);
 	public:
-		Scope(char *name, int x = 100, int y = 100, int width = 400, int height = 400)
-		{
-			char *expr = new char[64+strlen(name)];
-			sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);
-			Data *ris = execute(expr);
-			idx = ris->getInt();
-			deleteData(ris);
-			delete [] expr;
-			show(x,y,width, height);
-		}
-		void plot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black")
-		{
-			char expr[256];
-			sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
-			Data *ris = executeWithArgs(expr, 2, x, y);
-			deleteData(ris);
-		}
-		void oplot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black")
-		{
-			char expr[256];
-			sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
-			Data *ris = executeWithArgs(expr, 2, x, y);
-			deleteData(ris);
-		}
+		Scope(char *name, int x = 100, int y = 100, int width = 400, int height = 400);
+		void plot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black");
+		void oplot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black");
 	};
 
 

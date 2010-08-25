@@ -946,6 +946,37 @@ EXPORT Data *Uint8Array::deserialize()
     return (Data *)deserializeData(ptr);
 }
 
+EXPORT void Scope::show(int x, int y, int width, int height)
+{
+	char expr[256];
+	sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
+	Data *ris = execute(expr);
+	deleteData(ris);
+}
+EXPORT Scope::Scope(char *name, int x, int y, int width, int height)
+{
+	char *expr = new char[64+strlen(name)];
+	sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);
+	Data *ris = execute(expr);
+	idx = ris->getInt();
+	deleteData(ris);
+	delete [] expr;
+	show(x,y,width, height);
+}
+EXPORT void Scope::plot(Data *x, Data *y , int row, int col, char *color)
+{
+	char expr[256];
+	sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	Data *ris = executeWithArgs(expr, 2, x, y);
+	deleteData(ris);
+}
+EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, char *color)
+{
+	char expr[256];
+	sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	Data *ris = executeWithArgs(expr, 2, x, y);
+	deleteData(ris);
+}
 
 //Required in Windows Debug configuation to propely de-allocate native arrays and strings
 EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
