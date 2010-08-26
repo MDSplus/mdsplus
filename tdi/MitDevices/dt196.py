@@ -6,53 +6,18 @@ import transport
 from time import sleep
 import os
 import numpy
+import array
+from xml.marshal.generic import dumps, loads, load 
+
 
 class DT196(Device):
     """
     D-Tacq ACQ196  96 channel transient recorder
     
-    Methods:
-    Add() - add a DT196B device to the tree open for edit
-    Init(arg) - initialize the DT196B device 
-                write setup parameters and waveforms to the device
-    Store(arg) - store the data acquired by the device
-    Help(arg) - Print this message
-    
-    Nodes:
-    
-    :HOSTIP - mdsip address of the host storing the data.  Usually 192.168.0.254:8106
-     BOARDIP'- ip addres sof the card as a string something like 192.168.0.40
-     COMMENT - user comment string
-     DI[0-5] - time(s) of the signal on this internal wire (trig reference or clock reference)
-            :wire - string specifying the source of this signal { 'fpga','mezz','rio','pxi','lemo', 'none }
-            :bus  - string specifying the destination of this signal { 'fpga','rio','pxi', 'none }
-    :ACTIVE_CHANS - number of active channels {32, 64, 96}
-     INT_CLOCK - stored by module (representation of internal clock
-     MASTER    - points to INT_CLOCK node - needed a node to fill into clock_src       
-     TRIG_SRC - reference to DIn line used for trigger (DI3)
-     TRIG_EDGE - string {rising, falling} 
-     CLOCK_SRC - reference to line (DIn) used for clock or INT_CLOCK, or MASTER
-     CLOCK_DIV - NOT CURRENTLY IMPLIMENTED 
-     CLOCK_EDGE -  string {rising, falling}
-     CLOCK_FREQ - frequency for internal clock
-     PRE_TRIG - pre trigger samples MUST BE ZERO FOR NOW
-     POST_TRIG - post trigger samples
-     SEGMENTS - number of segments to store data in NOT IMPLIMENTED FOR NOW
-     CLOCK - Filled in by store place for module to store clock information
-     RANGES - place for module to store calibration information 
-     STATUS_CMDS - array of shell commands to send to the module to record firmware version  etc
-     BOARD_STATUS - place for module to store answers for STATUS_CMDS as signal
-     INPUT_[01-96] - place for module to store data in volts (reference to INPUT_NN:RAW)
-                  :RAW - place for module to store raw data in volts for each channel
-                  START_IDX - first sample to store for this channel
-                  END_IDX - last sample to store for this channel
-                  INC - decimation factor for this channel
-     INIT_ACTION - dispatching information for INIT
-     STORE_ACTION - dispatching information for STORE
     """
     
     parts=[
-        {'path':':NOE','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
+        {'path':':NODE','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARD','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
         ]
@@ -63,7 +28,7 @@ class DT196(Device):
         parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
 
     parts2=[
-        {'path':':CLOCK_SRC','type':'numeric','valueExpr':'head.int_clock','options':('no_write_shot',)},
+        {'path':':CLOCK_SRC','type':'text','value':'INT','options':('no_write_shot',)},
         {'path':':CLOCK_DIV','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':DAQ_MEM','type':'numeric','value':512,'options':('no_write_shot',)},
         {'path':':ACTIVE_CHANS','type':'numeric','value':96,'options':('no_write_shot',)},
@@ -95,13 +60,44 @@ class DT196(Device):
                    'DI5',
                    ]
     clock_sources = trig_sources
-    clock_sources.append('INT_CLOCK')
+    clock_sources.append('INT')
     clock_sources.append('MASTER')
     
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
     
     del i
-    
+#ACQ32:getNumSamples=65541 pre=0 post=65541 elapsed=61445
+    def getPreTrig(self,str) :
+	parts = str.split('=')
+        pre_trig = int(parts[2].split(' ')[0])
+	return pre_trig
+
+    def getPostTrig(self,str) :
+        parts = str.split('=')
+        post_trig = int(parts[3].split(' ')[0])
+        return post_trig
+
+    def readRawData(self, name, start, end, inc) :
+
+        f = open(name, mode='rb')
+        #try:
+        f.seek(start*2)
+        binValues = array.array('H')
+        binValues.read(f,end-start)
+        ans = numpy.array(binValues, dtype=numpy.int16)
+        f.close()
+# use the numpy reader
+# and shape as 2d  then subscript the dim
+# to get the inc
+
+        #except Exception,e:
+        #    try:
+        #        f.close()
+        #    except:
+        #        pass
+        #    raise e
+        return ans
+
     def check(self, expression, message):
         try:
             ans = eval(expression)
@@ -118,7 +114,7 @@ class DT196(Device):
 
         debug=os.getenv("DEBUG_DEVICES")
         try:
-	    boardip=str(self.boardip.record)
+	    boardip=str(self.node.record)
         except:
 	    try:
 		boardip = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
@@ -131,10 +127,10 @@ class DT196(Device):
             if active_chans not in (32,64,96) :
                 print "active chans must be in (32, 64, 96 )"
                 active_chans = 96
-            trig_src=self.check("str(self.trig_src)", "Could not read trigger source")
+            trig_src=self.check("str(self.trig_src.record)", "Could not read trigger source")
             if not trig_src in self.trig_sources:
                 raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
-            clock_src=self.check("str(self.clock_src)", "Could not read trigger source")
+            clock_src=self.check("str(self.clock_src.record)", "Could not read clock source")
             if not clock_src in self.clock_sources:
                 raise Exception, "clock_src must be in %s" % str(self.clock_sources)
             pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
@@ -169,7 +165,7 @@ class DT196(Device):
                 UUT.set_route(line, 'in %s out %s' % (wire, bus,))
             UUT.setChannelCount(active_chans)
 
-            if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
+            if clock_src == 'INT' or clock_src == 'MASTER' :
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
 		if clock_src == 'MASTER' :
 		    UUT.uut.acqcmd('-- setDIO -1-----')
@@ -195,12 +191,16 @@ class DT196(Device):
             (fd,fname) = mkstemp('.sh')
             f=open(fname, 'w')
             f.write("#!/bin/sh\n")
-	    f.write("storeftp.sh %s %d %s\n" % (self.comment.tree.name, self.comment.tree.shot, self.path,))
-	    f.close
-            cmd = 'chmod a+x %s;curl -s -T %s ftp://%s/%s' %(fname, fname, boardip, 'post_shot.sh')
+	    f.write("storeftp.sh %s %d %s\n" % (self.local_tree, self.tree.shot, self.local_path,))
+	    f.write("rm -f $0\n")
+            f.flush()
+	    f.close()
+            cmd = 'curl -s -T %s ftp://%s/%s' %( fname, boardip, 'post_shot.sh')
+            print cmd
             pipe = os.popen(cmd)
             pipe.close()
 	    UUT.uut.acq2sh('mv /home/ftp/post_shot.sh /etc/postshot.d/')
+            UUT.uut.acq2sh('chmod a+x /etc/postshot.d/post_shot.sh')
             UUT.set_arm() 
             return  1
 
@@ -210,21 +210,84 @@ class DT196(Device):
 
     INITFTP=initftp
         
-    def getVins(self, UUT):
-        vin1 = UUT.uut.acq2sh('get.vin 1:32')
-        vin2 = UUT.uut.acq2sh('get.vin 33:64')
-        vin3 = UUT.uut.acq2sh('get.vin 65:96')
-        ans = eval('makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
-        return ans
+    def storeftp(self, arg):
 
+        debug=os.getenv("DEBUG_DEVICES")
+
+ 	path = self.local_path
+        tree = self.local_tree
+        shot = self.tree.shot
+        CPCIDataDir = os.getenv('CPCI_DATA_DIR')
+	if not CPCIDataDir:
+	    raise 'CPCI_DATA_DIR environment variable must be defined'
+        dataDir="%s/%s/%s/%s"%(CPCIDataDir, tree, shot, path,)
+        try :
+	    settingsf = open("%s/settings.xml"%(dataDir,), "r")
+	except :
+	    raise Exception,"Could not open Settings file %s/settings.xml"%(dataDir,)
+        try :
+            settings = load(settingsf)
+        except:
+            settingsf.close()
+	    raise Exception, "Could not parse XML settings"
+        settingsf.close()
+        numSampsStr = settings['getNumSamples']
+	preTrig = self.getPreTrig(numSampsStr)
+        postTrig = self.getPostTrig(numSampsStr)
+        vins = eval('makeArray([%s])' % settings['get.vin'])
+        chanMask = settings['getChannelMask'].split('=')[-1]
+	if settings['get.extClk'] == 'none' :
+	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
+            #intClock=int(intClikStr)
+	    intClock=1e6
+            delta=1./float(intClock)
+	else:
+	    delta = 0
         
-    def getInternalClock(self, UUT):
-        clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
-        print "clock_str is -%s-" % clock_str
-        return eval('int(%s)' % clock_str)
-        
-        help(DT196B)
-        return 1
+        trigExpr = 'self.%s'% str(self.trig_src.record)
+        trig_src = eval(trigExpr.lower())
+#
+# now store each channel
+#
+	for chan in range(96):
+	    if debug:
+		print "working on channel %d" % chan
+	    chan_node = eval('self.input_%2.2d' % (chan+1,))
+            if chan_node.on :
+                if debug:
+                    print "it is on so ..."
+                if chanMask[chan:chan+1] == '1' :
+                    try:
+			start = max(eval('int(self.input_%2.2d:start_idx)'%(chan+1,)), preTrig)
+                    except:
+                        start = preTrig
+                    try:
+                        end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
+                    except:
+                        end = postTrig
+                    try:
+                        inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
+                    except:
+                        inc = 1
+#
+# could do the coeffs
+#
+		    chanFileName="%s/%2.2d"%(dataDir, chan+1,)
+                    buf = self.readRawData(chanFileName, start, end, inc)
+#                    try:
+#                        buf = self.readRawData(chanFileName, start, end, inc)
+#                    except:
+#			print "Error Reading Channel %d"%(chan+1,)
+		    if delta != 0 :
+			axis = Range(None, None, delta/inc)
+		    else:
+			clockExpr = 'self.%s'% str(self.clock_src.record)
+			clock_src = eval(clockExpr.lower())
+                        axis = clock_src
 
-    HELP=help
-
+		    if inc == 1:
+			dim = Dimension(Window(start, end, trig_src ), axis)
+                    else:
+			dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
+                    dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim) 
+                    exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
