@@ -10,6 +10,7 @@ if(length(MDSPLUS)==0)
   disp('shell variable MDSPLUS must point to MDSPLUS distribution before compilation');end
 
 if(findstr(computer,'64')); LIB = 'lib64'; else; LIB = 'lib'; end
+
 if(exist('debug','var'));DEBUG = '-DDEBUG';else;DEBUG='';end
 
 if(~strcmp(computer,'VMS'));PASSWD = '-DPASSWD';else;PASSWD='mdsipmex.opt';end
