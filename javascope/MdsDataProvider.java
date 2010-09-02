@@ -1575,6 +1575,57 @@ public class MdsDataProvider
         return false;
     }
 
+
+    private static boolean isPortAvailable(int port)
+    {
+        try {
+
+            ServerSocket srv = new ServerSocket(port);
+
+            srv.close();
+            srv = null;
+            return true;
+
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private int checkLocalPort( JFrame f, String serverName , String portStr )
+    {
+
+        int port = Integer.parseInt(portStr);
+
+        if( ! isPortAvailable( port ) )
+        {
+                 Object[] options =
+                    {
+                    "Yes",
+                    "No"};
+                int opt = JOptionPane.showOptionDialog(f,
+                    "Is jScope already connected to "+ serverName +" mdsip server ",
+                    "Warning",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+                switch (opt)
+                {
+                    case JOptionPane.YES_OPTION:
+                        return 1;
+                    case JOptionPane.NO_OPTION:
+                        JOptionPane.showMessageDialog(f, "The local port "+port+" on which mdsip server "+ serverName +" is configured is bind by other service.\n Change the tunneling local port of the " + serverName + " mdsip server with an available port",
+                                                      "alert",
+                                                      JOptionPane.ERROR_MESSAGE);
+
+                        return 2;
+                }
+       }
+
+        return 0;
+    }
+
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
 
@@ -1592,24 +1643,33 @@ public class MdsDataProvider
                 remote_port = st.nextToken();
 
             is_tunneling = true;
+            int checkOnPort;
 
-            try
+            if ( ( checkOnPort = checkLocalPort( f, server_item.name, server_item.tunnel_port  ) ) == 0 )
             {
-                ssh_tunneling = new SshTunneling(f, this, ip, remote_port,
-                                                 server_item.user,
-                                                 server_item.tunnel_port);
-                ssh_tunneling.start();
-                tunnel_provider = "127.0.0.1:" + server_item.tunnel_port;
+                try
+                {
+                    ssh_tunneling = new SshTunneling(f, this, ip, remote_port,
+                                                     server_item.user,
+                                                     server_item.tunnel_port);
+                    ssh_tunneling.start();
+                }
+                catch (Throwable exc)
+                {
+                    if (exc instanceof NoClassDefFoundError)
+                        JOptionPane.showMessageDialog(f, "The MindTerm.jar library is required for ssh tunneling.You can download it from \nhttp://www.appgate.com/mindterm/download.php\n"+exc,
+                                                      "alert",
+                                                      JOptionPane.ERROR_MESSAGE);
+                    return DataProvider.LOGIN_ERROR;
+                }
             }
-            catch (Throwable exc)
+            else
             {
-                if (exc instanceof NoClassDefFoundError)
-                    JOptionPane.showMessageDialog(f, "The MindTerm.jar library is required for ssh tunneling.You can download it from \nhttp://www.appgate.com/mindterm/download.php\n"+exc,
-                                                  "alert",
-                                                  JOptionPane.ERROR_MESSAGE);
-                return DataProvider.LOGIN_ERROR;
+                if( checkOnPort == 2 )
+                    return DataProvider.LOGIN_ERROR;
             }
         }
+        tunnel_provider = "127.0.0.1:" + server_item.tunnel_port;
         return DataProvider.LOGIN_OK;
     }
 
