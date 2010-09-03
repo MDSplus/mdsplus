@@ -453,7 +453,7 @@ public class Data {
             this.validation = validation;
 	}
 
-        public Data getDimension()
+        public Data getDimensionAt(int idx)
         {
             return Data.execute("DIM_OF($)", new Data[]{this});
         }
@@ -461,7 +461,7 @@ public class Data {
         {
             Scope scope = new Scope("", 100, 100, 200, 200);
             try {
-                scope.plot(getDimension(), this, 1, 1, "black");
+                scope.plot(getDimensionAt(0), this, 1, 1, "black");
             }catch(Exception exc){System.err.println("Cannot plot data: " + exc);}
         }
         

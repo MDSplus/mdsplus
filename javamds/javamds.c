@@ -716,13 +716,13 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
 			return -1;
 		}
 	}
-	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	cls = (*env)->FindClass(env, "jScope/CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
 		return -1;
 	}	
-	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;Z)LCompositeWaveDisplay;");
+	mid = (*env)->GetStaticMethodID(env, cls, "createWindow", "(Ljava/lang/String;Z)LjScope/CompositeWaveDisplay;");
 	if(mid == 0)
 	{
 		printf("\nCannot find main\n");
@@ -757,7 +757,7 @@ int clearWindow(char *name, int idx)
 		printf("\nJava virtual machine not set!!\n");
 		return -1;
 	}
-	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	cls = (*env)->FindClass(env, "jScope/CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
@@ -819,7 +819,7 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row,
 		jcolour = (*env)->NewStringUTF(env,  colour);
 	else
 		jcolour = (*env)->NewStringUTF(env,  "black");
-	cls = (*env)->FindClass(env,  "CompositeWaveDisplay");
+	cls = (*env)->FindClass(env,  "jScope/CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
@@ -853,7 +853,7 @@ int showWindow(int obj_idx, int x, int y, int width, int height)
 		printf("\nJava virtual machine not set!!\n");
 		return -1;
 	}
-	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	cls = (*env)->FindClass(env, "jScope/CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find jScope classes!\n");
@@ -880,7 +880,7 @@ int removeAllSignals(int obj_idx, int x, int y)
 		printf("\nJava virtual machine not set!!\n");
 		return -1;
 	}
-	cls = (*env)->FindClass(env, "CompositeWaveDisplay");
+	cls = (*env)->FindClass(env, "jScope/CompositeWaveDisplay");
 	if(cls == 0)
 	{
 		printf("\nCannot find jScope classes!\n");

@@ -411,7 +411,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             this.enqueueUpdateSignal(null, CompositeWaveDisplay.CMND_STOP, null, null);
             this.appendThread.join(1000);
             w.dispose();
-            System.out.println("EXIT");
         } catch (Exception exc){}
     }
 

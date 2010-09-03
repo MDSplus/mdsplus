@@ -427,7 +427,7 @@ double Data::getDouble()
 
 Data *Data::getDimensionAt(int dimIdx)
 {
-	return executeWithArgs("DIM_OF($)[$]", 2, this, new Int32(dimIdx));
+	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
 
