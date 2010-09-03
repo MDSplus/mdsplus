@@ -1,5 +1,6 @@
 import java.util.*;
 import java.awt.event.*;
+import jScope.*;
 
 class ActionServer implements Server, MdsServerListener, ConnectionListener
 {

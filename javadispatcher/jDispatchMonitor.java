@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import jScope.*;
 
 public class jDispatchMonitor extends JFrame implements MdsServerListener,
                                                         ConnectionListener
@@ -888,7 +889,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 {
                     Object[] options = { "DISCONNECT", "CANCEL" };
                     int val = JOptionPane.showOptionDialog(null,
-                                                "Dispatch monitor is already connected to "+mds_server.provider,
+                                                "Dispatch monitor is already connected to "+mds_server.getProvider(),
                                                 "Warning",
                                                 JOptionPane.DEFAULT_OPTION,
                                                 JOptionPane.WARNING_MESSAGE,
@@ -968,7 +969,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     private void setWindowTitle()
     {
         if(mds_server != null && mds_server.connected)
-            setTitle("jDispatchMonitor - Connected to "+ mds_server.provider+" receive on port "+mds_server.rcv_port);
+            setTitle("jDispatchMonitor - Connected to "+ mds_server.getProvider()+" receive on port "+mds_server.rcv_port);
         else
             setTitle("jDispatchMonitor - Not Connected");
     }
@@ -1273,7 +1274,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             if(e.getID() == ConnectionEvent.LOST_CONNECTION)
             {
                  // do the following on the gui thread
-                ShowMessage alert = new ShowMessage(e.info);
+                ShowMessage alert = new ShowMessage(e.getInfo());
                 SwingUtilities.invokeLater(alert);
                 setWindowTitle();
                 mds_server = null;

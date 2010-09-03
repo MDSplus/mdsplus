@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.util.*;
+import jScope.*;
 
 class MdsServer extends MdsConnection
 {

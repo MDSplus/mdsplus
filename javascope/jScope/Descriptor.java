@@ -3,7 +3,7 @@ package jScope;
 /* $Id$ */
 import java.io.*;
 
-class Descriptor
+public class Descriptor
 {
     public    static final byte MAX_DIM                 = 8;
     public    static final byte DTYPE_UBYTE             = 2;
@@ -94,7 +94,7 @@ class Descriptor
     public int getStatus() {return status;}
     public int getInt() {return int_data[0];}
 
-    static byte[] dataToByteArray(Object o)
+    public static byte[] dataToByteArray(Object o)
     {
         byte b[] = null;
         try

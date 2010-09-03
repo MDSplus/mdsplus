@@ -39,7 +39,7 @@ public class ConnectionEvent extends AWTEvent
         this.current_size = current_size;
         this.info = info;
     }
-
+    public String getInfo() { return info;}
     public ConnectionEvent(Object source, int total_size, int current_size) 
     {
         super(source, 0);

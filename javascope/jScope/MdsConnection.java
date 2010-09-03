@@ -17,16 +17,16 @@ public class MdsConnection
         static public String DEFAULT_USER = "JAVA_USER";
         static final  int    MAX_NUM_EVENTS = 256;
 
-        String provider;
-        String user;
-        String host;
-        int    port;
-        Socket sock;
-        DataInputStream dis;
-        DataOutputStream dos;
+        protected String provider;
+        protected String user;
+        protected String host;
+        protected int    port;
+        protected Socket sock;
+        protected DataInputStream dis;
+        protected DataOutputStream dos;
         public String error;
         MRT receiveThread;
-        boolean connected;
+        public boolean connected;
         int pending_count = 0;
 
         transient Vector   connection_listener = new Vector<EventItem>();
@@ -37,6 +37,8 @@ public class MdsConnection
         transient Hashtable< Integer, EventItem > hashEventId = new Hashtable< Integer, EventItem >();
 
         ProcessUdpEvent processUdpEvent = null;
+
+        public String getProvider() { return provider;}
 
 
         static class EventItem

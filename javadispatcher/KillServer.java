@@ -1,4 +1,5 @@
 import java.util.*;
+import jScope.*;
 
 public class KillServer extends MdsConnection
 {

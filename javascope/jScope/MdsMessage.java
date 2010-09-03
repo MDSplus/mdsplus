@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.zip.*;
 
 
-class MdsMessage extends Object
+public class MdsMessage extends Object
 {
     public    static final int    HEADER_SIZE          = 48;
     public    static final int    SUPPORTS_COMPRESSION = (int)0x8000;

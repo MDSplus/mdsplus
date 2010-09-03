@@ -14,7 +14,7 @@ frame_popup.jpg  image_setup.jpg  jScope.jpg       popup.jpg CompositeWaveDispla
 
 APPLETSOURCES = \
 jScope/FtuDataProvider.java        jScope/JiVarImpl.java              jScope/Signal.java                 jScope/WaveformManager.java \
-jScope/Base64.java                 jScope/Grid.java  SignalCache.java jScope/WaveformMetrics.java \
+jScope/Base64.java                 jScope/Grid.java                   jScope/SignalCache.java jScope/WaveformMetrics.java \
 jScope/JetDataProvider.java        jScope/MdsAccess.java   \
 jScope/JetMdsDataProvider.java     jScope/MdsConnection.java          jScope/TwuAccess.java \
 jScope/ConnectionEvent.java        jScope/JiDataSource.java           jScope/MdsDataProvider.java        jScope/TwuDataProvider.java  \
@@ -52,7 +52,7 @@ jScope/Descriptor.java             jScope/JiNcVarInt.java             jScope/Ssh
 jScope/FontSelection.java          jScope/JiNcVarShort.java           jScope/RowColumnContainer.java     jScope/WaveformContainer.java      jScope/jScopeWavePopup.java \
 jScope/FrameData.java              jScope/JiSlab.java                 jScope/RowColumnLayout.java           \
 jScope/JiSlabIterator.java         jScope/SetupDataDialog.java        jScope/WaveformEvent.java          jScope/DemoAccess.java		        jScope/UniversalDataProvider.java\
-jScope/Frames.java                 jScope/JiVar.java                  SjScope/etupDefaults.java          jScope/WaveformListener.java	    jScope/NotConnectedDataProvider.java\
+jScope/Frames.java                 jScope/JiVar.java                  jScope/SetupDefaults.java          jScope/WaveformListener.java	    jScope/NotConnectedDataProvider.java\
 jScope/SignalsBoxDialog.java	   jScope/SignalBox.java		      jScope/MdsDataClient.java	         jScope/MdsIOException.java		    jScope/SetupWaveformParams.java \
 jScope/TSDataProvider.java	       jScope/AsdexDataProvider.java	  jScope/WaveformEditor.java	     jScope/WaveformEditorListener.java jScope/MdsplusParser.java \
 jScope/ASCIIDataProvider.java      jScope/ImageTransferable.java      jScope/ColorMapDialog.java         jScope/ColorMap.java				jScope.java
