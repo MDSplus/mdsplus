@@ -1,3 +1,8 @@
+
+import jScope.TWUProperties;
+import jScope.TWUSignal;
+import jScope.FakeTWUProperties;
+
 // -------------------------------------------------------------------------------------------------
 // TestTWUSignalProperties
 //

@@ -1,4 +1,8 @@
+package jScope;
+
 /* $Id$ */
+import jScope.ConnectionEvent;
+import jScope.ConnectionListener;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -1330,8 +1334,8 @@ public class MdsDataProvider
         String limitsExpr;
         if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
         {
-            long maxSpecific = jScope.convertToSpecificTime((long)max);
-            long minSpecific = jScope.convertToSpecificTime((long)min);
+            long maxSpecific = jScopeFacade.convertToSpecificTime((long)max);
+            long minSpecific = jScopeFacade.convertToSpecificTime((long)min);
 
             long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
@@ -1776,7 +1780,7 @@ public class MdsDataProvider
        {
            this.longArray = longArray;
            for(int i = 0; i < longArray.length; i++)
-               longArray[i] = jScope.convertFromSpecificTime(longArray[i]);
+               longArray[i] = jScopeFacade.convertFromSpecificTime(longArray[i]);
 
            isDouble = false;
            isLong = true;

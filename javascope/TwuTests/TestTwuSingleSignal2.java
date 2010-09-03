@@ -13,6 +13,10 @@
 // 
 // -------------------------------------------------------------------------------------------------
 
+import jScope.TwuSingleSignal;
+import jScope.TWUProperties;
+import jScope.TWUFetchOptions;
+import jScope.FakeTWUProperties;
 import java.lang.InterruptedException;
 
 class TestTwuSingleSignal2
