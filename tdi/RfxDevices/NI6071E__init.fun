@@ -21,6 +21,8 @@ public fun NI6071E__init(as_is _nid, optional _method)
 	private _N_CHANNEL_0= 16;
 	private _N_CHAN_DATA = 1;
 
+	private _N_TRIG_MODE = 146;
+
 
 	_error = 0;
 
@@ -61,6 +63,9 @@ public fun NI6071E__init(as_is _nid, optional _method)
 	_ch_range = if_error(FT_FLOAT(data(DevNodeRef(_nid, _N_CH_RANGE))), 5.0);
 	 DevNodeCvt(_nid, _N_CH_POLARITY, ['BIPOLAR', 'UNIPOLAR'], [0,1], _ch_polarity=0);
 	 DevNodeCvt(_nid, _N_CH_DRIVER_AIS, ['TO_GRD', 'NOT_TO_GRD'], [0,1], _ch_driver_ais=0);
+
+	 DevNodeCvt(_nid, _N_TRIG_MODE, ['MASTER', 'SLAVE'], [1,2], _trig_mode=0);
+
 
 /* First initialize and acquire immediate channels */
 	if(_scan_number_1 > 0)
@@ -135,7 +140,7 @@ write("wait time ", _wait_time );
 	{
 
 	_status =  NI_6071E->NI6071init(WORD(_device_id),
-							  WORD(1),
+							  WORD(_trig_mode),
 							  WORD(_trig_slope),
 							  INT(_trig_level),
 							  _scan_rate,
