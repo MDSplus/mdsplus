@@ -407,7 +407,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 
 
 /* Implementation of the native methods for LocalProvider class in jScope */
-JNIEXPORT void JNICALL Java_LocalDataProvider_UpdateNative(JNIEnv *env, jobject obj, jstring exp, jlong shot)
+JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_UpdateNative(JNIEnv *env, jobject obj, jstring exp, jlong shot)
 {
     const char *exp_char;
     error_message[0] = 0;
@@ -417,14 +417,14 @@ JNIEXPORT void JNICALL Java_LocalDataProvider_UpdateNative(JNIEnv *env, jobject 
     (*env)->ReleaseStringUTFChars(env, exp, exp_char);
 } 
 
-JNIEXPORT jstring JNICALL Java_LocalDataProvider_ErrorString(JNIEnv *env, jobject obj)
+JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_ErrorString(JNIEnv *env, jobject obj)
 {
     if(!error_message[0])
 		return NULL;
     return (*env)->NewStringUTF(env, error_message);
 }  
 
-JNIEXPORT jstring JNICALL Java_LocalDataProvider_GetString(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jstring JNICALL Java_jScope_LocalDataProvider_GetString(JNIEnv *env, jobject obj, jstring in)
 {
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     char *out_char = MdsGetString((char *)in_char);
@@ -436,7 +436,7 @@ JNIEXPORT jstring JNICALL Java_LocalDataProvider_GetString(JNIEnv *env, jobject 
     	return (*env)->NewStringUTF(env, out_char);
 }
 
-JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jfloatArray jarr;
     float zero = 0.;
@@ -456,7 +456,7 @@ JNIEXPORT jfloatArray JNICALL Java_LocalDataProvider_GetFloatArrayNative(JNIEnv 
     return jarr;
 }
 
-JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetDoubleArrayNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jdoubleArray jarr;
     float zero = 0.;
@@ -476,7 +476,7 @@ JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetDoubleArrayNative(JNIEn
     return jarr;
 }
 
-JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetLongArrayNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(JNIEnv *env, jobject obj, jstring in)
 {
     jlongArray jarr;
     float zero = 0.;
@@ -496,7 +496,7 @@ JNIEXPORT jdoubleArray JNICALL Java_LocalDataProvider_GetLongArrayNative(JNIEnv 
     return jarr;
 }
 
-JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv *env, jobject obj, jstring in)
 {
     jintArray jarr;
     float zero = 0.;
@@ -520,7 +520,7 @@ JNIEXPORT jintArray JNICALL Java_LocalDataProvider_GetIntArray(JNIEnv *env, jobj
 	free((char *)out_ptr);
    return jarr;
 }
-JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *env, jobject obj, jstring in)
 {
     jbyteArray jarr;
     float zero = 0.;
@@ -542,7 +542,7 @@ JNIEXPORT jbyteArray JNICALL Java_LocalDataProvider_GetByteArray(JNIEnv *env, jo
 }
 
 
-JNIEXPORT jfloat JNICALL Java_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jfloat JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
 {
     float ris;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
@@ -552,7 +552,7 @@ JNIEXPORT jfloat JNICALL Java_LocalDataProvider_GetFloatNative(JNIEnv *env, jobj
     return ris;
 }
 
-JNIEXPORT void JNICALL Java_LocalDataProvider_SetEnvironmentSpecific(JNIEnv *env, jobject obj, 
+JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_SetEnvironmentSpecific(JNIEnv *env, jobject obj, 
 																	 jstring in, jstring jdefNode)
 {
 	int status, nid;
@@ -627,7 +627,7 @@ static void handleEvent(void *nameIdx, int dim ,char *buf)
 
 
 
-JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
+JNIEXPORT jint JNICALL Java_jScope_LocalDataProvider_registerEvent
   (JNIEnv *env, jobject obj, jstring jevent , jint idx)
 
 {
@@ -653,7 +653,7 @@ JNIEXPORT jint JNICALL Java_LocalDataProvider_registerEvent
 }
 	
 
-JNIEXPORT void JNICALL Java_LocalDataProvider_unregisterEvent
+JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_unregisterEvent
   (JNIEnv *env, jobject obj, jint evId)
 {
 
