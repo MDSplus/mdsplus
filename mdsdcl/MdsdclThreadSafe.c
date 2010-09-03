@@ -1,3 +1,7 @@
+#ifdef HAVE_WINDOWS_H
+#include <winsock2.h>
+#endif
+
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif

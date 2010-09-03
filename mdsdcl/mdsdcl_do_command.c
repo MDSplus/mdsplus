@@ -1,3 +1,7 @@
+#ifdef HAVE_WINDOWS_H
+#include        <winsock2.h>
+#endif
+
 #include        <stdio.h>
 #include        "mdsdcl.h"
 #ifdef vms

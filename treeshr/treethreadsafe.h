@@ -37,7 +37,7 @@ typedef struct _thread_static {
 
 extern TreeThreadStatic *TreeGetThreadStatic();
 extern void **TreeCtx();
-extern int TreeUsePrivateCtx(int onoff);
+extern EXPORT int TreeUsePrivateCtx(int onoff);
 #ifdef HAVE_VXWORKS_H
 #define NULL 0
 extern void LockTreeMutex(int *, int *);
