@@ -186,7 +186,7 @@ void *convertToApdDsc(int type, int ndescs, void **descs)
 	return xdPtr;
 }
 
-void *evaluateData(void *dscPtr, int isEvaluate)
+void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 {
 	EMPTYXD(emptyXd);
 	int status;
@@ -197,6 +197,7 @@ void *evaluateData(void *dscPtr, int isEvaluate)
 		status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
 	else
 		status = TdiData(dscPtr, xdPtr MDS_END_ARG);
+	*retStatus = status;
 	if(!(status & 1))
 		return 0;
 	return (void *)xdPtr;

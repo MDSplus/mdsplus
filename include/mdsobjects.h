@@ -102,7 +102,7 @@ extern "C" char *MdsGetMsg(int status);
 /*
 extern "C" {
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
-	void *evaluateData(void *dscPtr, int isEvaluate);
+	void *evaluateData(void *dscPtr, int isEvaluate, int *status);
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);

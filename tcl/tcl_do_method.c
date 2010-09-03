@@ -95,7 +95,9 @@ int TclDoMethod()
                 arglist[argc+4] = MdsEND_ARG;
                 arglist[0] = (argc + 4)+(char *)0;
 #endif
-                sts = (char *)LibCallg(arglist,TreeDoMethod)-(char *)0;
+
+printf("ADESSO CHIAMO DO METHOD\n");				
+				sts = (char *)LibCallg(arglist,TreeDoMethod)-(char *)0;
                 if (sts & 1) sts = dometh_stat;
                }
             str_free1_dx(&arg);

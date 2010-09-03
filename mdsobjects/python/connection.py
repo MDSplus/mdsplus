@@ -299,7 +299,8 @@ class Connection(object):
                 ans=self.connection.get("GetManyExecute($)",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error fetching data: "+ans)
-            self.result=ans.deserialize()
+            self.result=ans.deserialize(ans)
+#            self.result=ans.deserialize()
             return self.result
 
         def get(self,name):
@@ -414,7 +415,8 @@ class Connection(object):
                 ans=self.connection.get("PutManyExecute($)",self.serialize())
 	    if isinstance(ans,str):
 		raise Exception("Error putting any data: "+ans)
-            self.result=ans.deserialize()
+#            self.result=ans.deserialize()
+            self.result=ans.deserialize(ans)
             return self.result
         
         def insert(self,beforenode, node,exp,*args):

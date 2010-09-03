@@ -120,7 +120,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath=".\WaveDisplay.java"
+				RelativePath=".\jScope\WaveDisplay.java"
 				>
 			</File>
 		</Filter>

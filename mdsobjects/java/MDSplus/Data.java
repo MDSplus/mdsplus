@@ -452,7 +452,18 @@ public class Data {
         {
             this.validation = validation;
 	}
-        
+
+        public Data getDimension()
+        {
+            return Data.execute("DIM_OF($)", new Data[]{this});
+        }
+        public void plot()
+        {
+            Scope scope = new Scope("", 100, 100, 200, 200);
+            try {
+                scope.plot(getDimension(), this, 1, 1, "black");
+            }catch(Exception exc){System.err.println("Cannot plot data: " + exc);}
+        }
         
         public static Data toData(byte d) {return new Int8(d);}
         public static Data toData(short d) {return new Int16(d);}

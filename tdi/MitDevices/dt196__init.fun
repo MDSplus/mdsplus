@@ -14,6 +14,9 @@ public fun DT196__INIT(as_is _nid, optional _method)
    _DT200_POST_TRIG=27;
    _DT200_PRE_TRIG=28;
 
+  GOTO CICCIO;
+  return (0);
+
   _node = if_error(data(DevNodeRef(_nid,_DT200_NODE)), "");
   if (Len(_node) <= 0) {
      _node = 'local';

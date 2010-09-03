@@ -13,6 +13,9 @@ public fun DT196A__INIT(as_is _nid, optional _method)
    _DT200_TRIG_SRC=26;
    _DT200_POST_TRIG=27;
    _DT200_PRE_TRIG=28;
+return23412<<>>(1);
+
+
 
   _node = if_error(data(DevNodeRef(_nid,_DT200_NODE)), "");
   if (Len(_node) <= 0) {

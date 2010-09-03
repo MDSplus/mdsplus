@@ -13,9 +13,10 @@ using namespace MDSplus;
 
 
 extern "C" {
+	char * MdsGetMsg(int status);
 
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
-	void *evaluateData(void *dscPtr, int isEvaluate);
+	void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus);
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
@@ -155,7 +156,11 @@ Data *Data::data()
 		return dataCache->clone();
 
 	void *dscPtr = convertToDsc();
-	void *evalPtr = evaluateData(dscPtr, 0);
+	int retStatus;
+	void *evalPtr = evaluateData(dscPtr, 0, &retStatus);
+	if(!(retStatus & 1))
+		throw new MdsException(MdsGetMsg(retStatus));
+
 	if(dataCache)
 		deleteData(dataCache);
 	dataCache = (Data *)convertFromDsc(evalPtr);
@@ -167,7 +172,10 @@ Data *Data::data()
 Data *Data::evaluate()
 {
 	void *dscPtr = convertToDsc();
-	void *evalPtr = evaluateData(dscPtr, 1);
+	int retStatus;
+	void *evalPtr = evaluateData(dscPtr, 1, &retStatus);
+	if(!(retStatus & 1))
+		throw new MdsException(MdsGetMsg(retStatus));
 	Data *retData = (Data *)convertFromDsc(evalPtr);
 	freeDsc(dscPtr);
 	freeDsc(evalPtr);
@@ -494,13 +502,19 @@ Data *Data::getDimensionAt(int dimIdx)
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, getActiveTree(), &status);
+		Tree *actTree = 0;
+		try {
+			actTree = getActiveTree();
+		}catch(MdsException *exc){actTree = 0;}
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
 		if(!(status & 1))
 			throw new MdsException(status);
 		Data *evalData = compData->data();
 		deleteData(compData);
 		for(int i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
+		if(actTree)
+			delete(actTree);
 		return evalData;
 	}
 
@@ -519,7 +533,8 @@ Data *Data::getDimensionAt(int dimIdx)
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
 		}
-		setActiveTree(tree);
+		if(tree)
+			setActiveTree(tree);
 		int status;
 		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, &status);
 		if(!(status & 1))
