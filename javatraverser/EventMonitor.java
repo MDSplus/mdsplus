@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
-
+import jScope.*;
 
 public class EventMonitor extends JPanel
 {

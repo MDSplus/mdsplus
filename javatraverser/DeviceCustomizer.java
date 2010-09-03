@@ -2,7 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
-
+import jScope.*;
 public class DeviceCustomizer extends Panel
 {
 

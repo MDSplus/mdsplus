@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.table.*;
 import java.util.*;
 import java.text.*;
-
+import jScope.*;
 
 public class DeviceWave extends DeviceComponent
 {
