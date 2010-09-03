@@ -24,3 +24,5 @@ from tree import Tree,CachedTree
 from mdsdevice import Device
 from connection import Connection
 from event import Event
+from _tdishr import TdiException
+from scope import Scope

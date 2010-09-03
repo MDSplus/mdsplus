@@ -686,6 +686,24 @@ class Data(object):
         """
         return True
 
+    def plot(self,title='',scope=None,row=1,col=1):
+        """Plot this data item
+        @param title: Title of Scope. Used if scope argument is not provided
+        @type title: str
+        @param scope: Optional Scope object if adding this to an existing Scope
+        @type scope: Scope
+        @param row: Row in existing Scope to plot this data
+        @type row: int
+        @param col: Column in existing Scope
+        @type col: int
+        @rtype: None
+        """
+        from scope import Scope
+        if scope is None:
+            scope=Scope(title)
+        scope.plot(self,self.dim_of(0),row,col)
+        scope.show()
+
     def sind(self):
         """Return sin() of data assuming data is in degrees
         @rtype: Float32Array
