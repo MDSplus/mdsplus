@@ -117,9 +117,11 @@ public class ParameterSetting
     Hashtable currSetupOnHash = new Hashtable();
 
     JTextField maxPMATF, maxPCATParallelF, maxPCATSeriesF, maxTFATF, maxTCCHF,
-        maxTCACF, maxPMVoltageF, maxFillVoltageF, maxPuffVoltageF;
+        maxTCACF, maxPMVoltageF, maxFillVoltageF, maxPuffVoltageF, maxTempRoomF, maxTempSaddleF,
+        maxTempMagnetizingF, maxPOhmF, maxPrTimeF, maxTempTorF, maxI2TF;
     int maxPMAT, maxPCATParallel, maxPCATSeries, maxTFAT, maxTCCH, maxTCAC,
-        maxPMVoltage, maxFillVoltage, maxPuffVoltage;
+        maxPMVoltage, maxFillVoltage, maxPuffVoltage, maxTempRoom, maxTempSaddle,
+        maxTempMagnetizing, maxPOhm, maxPrTime, maxTempTor, maxI2T;
     JTextArea messageArea;
 /*	
 	JLabel residualI2tPMLabel;
@@ -1426,18 +1428,10 @@ public class ParameterSetting
         limitsJp.setLayout(new BorderLayout());
         JPanel limitsListJp = new JPanel();
 
-        limitsListJp.setLayout(new GridLayout(9, 1));
+        limitsListJp.setLayout(new GridLayout(16, 1));
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. PMAT per unita' (A): "));
         jp.add(maxPMATF = new JTextField("" + maxPMAT, 10));
-        limitsListJp.add(jp);
-        jp = new JPanel();
-        jp.add(new JLabel("Tensione Max. PCAT in Parallelo: "));
-        jp.add(maxPCATParallelF = new JTextField("" + maxPCATParallel, 10));
-        limitsListJp.add(jp);
-        jp = new JPanel();
-        jp.add(new JLabel("Tensione Max. PCAT in serie: "));
-        jp.add(maxPCATSeriesF = new JTextField("" + maxPCATSeries, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
         jp.add(new JLabel("Corrente Max. TFAT per unita' (A): "));
@@ -1452,8 +1446,28 @@ public class ParameterSetting
         jp.add(maxTCACF = new JTextField("" + maxTCAC, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
+        jp.add(new JLabel("Tensione Max. PCAT in serie: "));
+        jp.add(maxPCATSeriesF = new JTextField("" + maxPCATSeries, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Tensione Max. PCAT in Parallelo: "));
+        jp.add(maxPCATParallelF = new JTextField("" + maxPCATParallel, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
         jp.add(new JLabel("Tensione di picco Max. avvolgimento magnetizzante: "));
         jp.add(maxPMVoltageF = new JTextField("" + maxPMVoltage, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Temperatura Max. Camera (C): "));
+        jp.add(maxTempRoomF = new JTextField("" + maxTempRoom, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Temperatura Max. Bobine a sella (C): "));
+        jp.add(maxTempSaddleF = new JTextField("" + maxTempSaddle, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Temperatura Max. Bobine magnetizzanti (C): "));
+        jp.add(maxTempMagnetizingF = new JTextField("" + maxTempMagnetizing, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
         jp.add(new JLabel("Tensione Max. Valvole Filling (V): "));
@@ -1463,6 +1477,23 @@ public class ParameterSetting
         jp.add(new JLabel("Tensione Max. Valvole Puffing (V): "));
         jp.add(maxPuffVoltageF = new JTextField("" + maxPuffVoltage, 10));
         limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("POhm. Max (MW): "));
+        jp.add(maxPOhmF = new JTextField("" + maxPOhm, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Tempo Max. accensione pr (ms): "));
+        jp.add(maxPrTimeF = new JTextField("" + maxPrTime, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Temperatura Max. bobine toroidali (C): "));
+        jp.add(maxTempTorF = new JTextField("" + maxTempTor, 10));
+        limitsListJp.add(jp);
+        jp = new JPanel();
+        jp.add(new JLabel("Limite I2T (MA2s): "));
+        jp.add(maxI2TF = new JTextField("" + maxI2T, 10));
+        limitsListJp.add(jp);
+
         getLimits();
 
         limitsJp.add(limitsListJp, "Center");
@@ -1532,6 +1563,13 @@ public class ParameterSetting
             maxPMVoltage = Integer.parseInt(br.readLine());
             maxFillVoltage = Integer.parseInt(br.readLine());
             maxPuffVoltage = Integer.parseInt(br.readLine());
+            maxTempRoom = Integer.parseInt(br.readLine());
+            maxTempSaddle = Integer.parseInt(br.readLine());
+            maxTempMagnetizing = Integer.parseInt(br.readLine());
+            maxPOhm = Integer.parseInt(br.readLine());
+            maxPrTime = Integer.parseInt(br.readLine());
+            maxTempTor = Integer.parseInt(br.readLine());
+            maxI2T = Integer.parseInt(br.readLine());
             br.close();
         }
         catch (Exception exc)
@@ -1546,6 +1584,14 @@ public class ParameterSetting
             maxPMVoltage = 35000;
             maxFillVoltage = 120;
             maxPuffVoltage = 120;
+            maxTempRoom = 100;
+            maxTempSaddle = 60;
+            maxTempMagnetizing = 35;
+            maxPOhm = 80;
+            maxPrTime = 650;
+            maxTempTor = 50;
+            maxI2T = 5;
+
         }
         maxPMATF.setText("" + maxPMAT);
         maxPCATParallelF.setText("" + maxPCATParallel);
@@ -1556,6 +1602,13 @@ public class ParameterSetting
         maxPMVoltageF.setText("" + maxPMVoltage);
         maxFillVoltageF.setText("" + maxFillVoltage);
         maxPuffVoltageF.setText("" + maxPuffVoltage);
+        maxTempRoomF.setText("" + maxTempRoom);
+        maxTempSaddleF.setText("" + maxTempSaddle);
+        maxTempMagnetizingF.setText("" + maxTempMagnetizing);
+        maxPOhmF.setText("" + maxPOhm);
+        maxPrTimeF.setText("" + maxPrTime);
+        maxTempTorF.setText("" + maxTempTor);
+        maxI2TF.setText("" + maxI2T);
     }
 
     void saveLimits()
@@ -1571,6 +1624,13 @@ public class ParameterSetting
             maxPMVoltage = Integer.parseInt(maxPMVoltageF.getText());
             maxFillVoltage = Integer.parseInt(maxFillVoltageF.getText());
             maxPuffVoltage = Integer.parseInt(maxPuffVoltageF.getText());
+            maxTempRoom = Integer.parseInt(maxTempRoomF.getText());
+            maxTempSaddle = Integer.parseInt(maxTempSaddleF.getText());
+            maxTempMagnetizing = Integer.parseInt(maxTempMagnetizingF.getText());
+            maxPOhm = Integer.parseInt(maxPOhmF.getText());
+            maxPrTime = Integer.parseInt(maxPrTimeF.getText());
+            maxTempTor = Integer.parseInt(maxTempTorF.getText());
+            maxI2T = Integer.parseInt(maxI2TF.getText());
         }
         catch (Exception exc)
         {
@@ -1598,6 +1658,20 @@ public class ParameterSetting
             bw.write("" + maxFillVoltage);
             bw.newLine();
             bw.write("" + maxPuffVoltage);
+            bw.newLine();
+            bw.write("" + maxTempRoom);
+            bw.newLine();
+            bw.write("" + maxTempSaddle);
+            bw.newLine();
+            bw.write("" + maxTempMagnetizing);
+            bw.newLine();
+            bw.write("" + maxPOhm);
+            bw.newLine();
+            bw.write("" + maxPrTime);
+            bw.newLine();
+            bw.write("" + maxTempTor);
+            bw.newLine();
+            bw.write("" + maxI2T);
             bw.newLine();
             bw.close();
         }
