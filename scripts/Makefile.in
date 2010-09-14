@@ -15,7 +15,8 @@ SCRIPTS = \
 	@MAKEBINDIR@job_output \
 	@MAKEBINDIR@job_que \
 	@MAKEBINDIR@job_start \
-	@MAKEBINDIR@job_wait  
+	@MAKEBINDIR@job_wait \
+	@MAKEBINDIR@MonitorCpciData.py  
 
 
 all : @MAKEBINDIR@ \
@@ -61,4 +62,8 @@ install:
 
 @MAKEBINDIR@job_wait : job_wait
 	cp  job_wait @MAKEBINDIR@job_wait
+
+@MAKEBINDIR@MonitorCpciData.py
+	cp MonitorCpciData.py @MAKEBINDIR@MonitorCpciData.py
+
 
