@@ -48,13 +48,12 @@ host=192.168.0.254
 settings.sh > /tmp/settings.xml
 echo $tree $shot $path > /tmp/$tree.$shot.$path
 ftp $host <<EOF
-cd pub
 put /tmp/$tree.$shot.$path triggers/$tree.$shot.$path 
-ls mkdir-$tree
+mkdir $tree
 cd $tree
-ls mkdir-$shot
+mkdir $shot
 cd $shot
-ls mkdir-$path
+mkdir $path
 cd $path
 lcd /tmp
 put settings.xml
