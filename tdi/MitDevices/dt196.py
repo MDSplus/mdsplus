@@ -1,7 +1,9 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
+from time import sleep
 from tempfile import *
 import acq200
 import transport
+from Dt200WriteMaster import Dt200WriteMaster
 
 from time import sleep
 import os
@@ -66,7 +68,6 @@ class DT196(Device):
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
     
     del i
-#ACQ32:getNumSamples=65541 pre=0 post=65541 elapsed=61445
     def getPreTrig(self,str) :
 	parts = str.split('=')
         pre_trig = int(parts[2].split(' ')[0])
@@ -115,13 +116,18 @@ class DT196(Device):
         debug=os.getenv("DEBUG_DEVICES")
         try:
 	    boardip=str(self.node.record)
+            if len(boardip) == 0 :
+              raise Exception, "boardid record empty"
         except:
 	    try:
-		boardip = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+		boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
 	    except:
 		raise Exception, "could not get board ip from either tree or hub"
 
 	try:
+	    path = self.local_path
+            tree = self.local_tree
+            shot = self.tree.shot
             UUT = acq200.Acq200(transport.factory(boardip))
             active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
             if active_chans not in (32,64,96) :
@@ -143,9 +149,22 @@ class DT196(Device):
 		except:
 		    clock_div = 1
 
-            UUT.set_abort()
-            UUT.clear_routes()
-            
+#
+# now create the post_shot ftp command file
+#
+            fname = "/home/mdsftp/scratch/%s_%s_%s.sh" % (tree, shot, path)
+            fd=open(fname, 'w')
+            fd.write("#!/bin/sh\n")
+	    fd.write("curl -u mdsftp:mdsftp ftp://192.168.0.254/storeftp.sh > /tmp/storeftp.sh\n")
+            fd.write("chmod a+x /tmp/storeftp.sh\n")
+            fd.write("mkdir -p /etc/postshot.d\n")
+	    fd.write("echo /tmp/storeftp.sh %s %d %s > /etc/postshot.d/post_shot.sh\n" % (self.local_tree, self.tree.shot, self.local_path,))
+	    fd.write("echo rm -f \$0 >> /etc/postshot.d/post_shot.sh\n")
+            fd.write("chmod a+x /etc/postshot.d/post_shot.sh\n")
+            fd.write("acqcmd setAbort\n")
+            for dx in ['d0', 'd1', 'd2', 'd3', 'd4', 'd5' ] :
+                fd.write("set.route " + dx + " in fpga\n")
+
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
@@ -162,46 +181,39 @@ class DT196(Device):
                         bus = ''
                 except:
                     bus = ''
-                UUT.set_route(line, 'in %s out %s' % (wire, bus,))
-            UUT.setChannelCount(active_chans)
+                fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
+                fd.write("acqcmd  setChannelMask " + '1' * active_chans+"\n")
 
             if clock_src == 'INT' or clock_src == 'MASTER' :
-                UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
-		if clock_src == 'MASTER' :
-		    UUT.uut.acqcmd('-- setDIO -1-----')
-            else:
-		if (clock_div != 1) :        
-		    UUT.uut.acqcmd("setExternalClock %s %d D02" % (clock_src, clock_div,))
+                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
+                if clock_src == 'MASTER' :
+                    fd.write("acqcmd '-- setDIO -1-----'\n")
+# NOTE existing modules may have clock_div filled in with the desired freq even
+#      though it is external clock.
+#      for now IGNORE
+#
+#            else:
+#                if (clock_div != 1) :
+#                    fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
 #
 # the following is not generic
 # the clock is output on d2 and comes from DI0
 #
-		    UUT.set_route('d2', 'in fpga out pxi')
-		    UUT.uut.acqcmd('-- setDIO --1-----')
-                    UUT.uut.acq2sh('set.ext_clk DI0')
+                    fd.write("set.route d2 in fpga out pxi\n")
+                    fd.write("acqcmd '-- setDIO --1-----'\n")
+                    fd.write("set.ext_clk DI0\n")
+                else :
+                    fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
-		else :
-                    UUT.uut.acqcmd("setExternalClock %s" % clock_src)
+            fd.write("set.pre_post_mode %d %d\n" %(pre_trig,post_trig,))
 
-            UUT.setPrePostMode(pre_trig, post_trig)
-#            mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
-#
-# now create the post_shot ftp command file
-#
-            (fd,fname) = mkstemp('.sh')
-            f=open(fname, 'w')
-            f.write("#!/bin/sh\n")
-	    f.write("storeftp.sh %s %d %s\n" % (self.local_tree, self.tree.shot, self.local_path,))
-	    f.write("rm -f $0\n")
-            f.flush()
-	    f.close()
-            cmd = 'curl -s -T %s ftp://%s/%s' %( fname, boardip, 'post_shot.sh')
-            print cmd
-            pipe = os.popen(cmd)
-            pipe.close()
-	    UUT.uut.acq2sh('mv /home/ftp/post_shot.sh /etc/postshot.d/')
-            UUT.uut.acq2sh('chmod a+x /etc/postshot.d/post_shot.sh')
-            UUT.set_arm() 
+            fd.write("acqcmd setArm\n")
+            fd.flush()
+	    fd.close()
+            fname = "%s_%s_%s.sh" % (tree, shot, path)
+            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
+            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
+	    UUT.uut.acq2sh(cmd)
             return  1
 
         except Exception,e:
@@ -291,3 +303,40 @@ class DT196(Device):
 			dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
                     dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim) 
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
+	return 1
+
+    STOREFTP=storeftp
+
+    def waitftp(self, arg) :
+        try:
+            boardip=str(self.node.record)
+        except:
+            try:
+                boardip = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+            except:
+                raise Exception, "could not get board ip from either tree or hub"
+
+        UUT = acq200.Acq200(transport.factory(boardip))
+        state = UUT.get_state()
+	state = state[2:]
+        if state == 'ST_ARM' or state == 'ST_RUN' :
+            raise  Exeption, "device Not triggered"
+		
+	for chan in range(96):
+	    chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
+            if chan_node.on :
+		max_chan = chan_node
+        tries = 0
+	while tries < 60 :
+	    try:
+		sz = len(max_chan)
+                if sz > 0:
+        	  break
+	    except:
+		sleep(3)
+		tries = tries+1
+        if tries == 60:
+	    raise  Exeption, "device Not triggered"
+
+	return 1
+    WAITFTP=waitftp
