@@ -111,12 +111,6 @@ class DT132(Device):
     
     del i
     
-    def check(self, expression, message):
-        try:
-            ans = eval(expression)
-            return ans
-        except:
-            raise Exception, message
         
     def init(self, arg):
         """
@@ -127,43 +121,61 @@ class DT132(Device):
 
         debug=os.getenv("DEBUG_DEVICES")
         try:
-            boardip=self.check( 'str(self.boardip.record)', "Must specify a board ipaddress")
-            UUT = acq200.Acq200(transport.factory(boardip))
-            active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (1,2, 4, 8, 16, 32)")
+            error="Must specify a board ipaddress"
+            boardip=str(self.boardip.record)
+            error=None
+            error="Must specify active chans as int in (8,16,32)"
+            active_chans = int(self.active_chans)
+            error=None
             if active_chans not in (8,16,32) :
                 print "active chans must be in (8, 16, 32)"
                 active_chans = 32
-            trig_src=self.check('self.trig_src.record.getOriginalPartName().getString()[1:]', "Trig source must be a string")
-            print "trig_src is %s\n" % trig_src
+            error="Trig source must be a string"
+            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            error=None
+            if debug:
+                print "trig_src is %s\n" % trig_src
             if not trig_src in self.trig_sources:
                 raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
-            trig_edge=self.check('self.trig_edge.record.getString()', 'Trig edge must be a string')
-            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
+            error='Trig edge must be a string'
+            trig_edge=self.trig_edge.record.getString()
+            error=None
+            error="Clock source must be a string"
+            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            error=None
             if debug:
                 print "clock_src is %s\n" % clock_src
             if not clock_src in self.clock_sources:
                 raise Exception, "Clock_src must be in %s" % str(self.clock_sources)
             if (clock_src == 'INT_CLOCK'):
-                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")
+                error="Must specify a frequency for internal clock"
+                clock_freq = int(self.clock_freq)
+                error=None
             else:
-                clock_freq = self.check('int(self.clock_freq)', "Must specify a frequency for internal clock")                
-                clock_div = self.check('int(self.clock_div)', "Must specify a divisor for external clock")
-            pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
-            post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
+                error="Must specify a frequency for external clock"
+                clock_freq = int(self.clock_freq)
+                error="Must specify a divisor for external clock"
+                clock_div = int(self.clock_div)
+                error=None
+            error="Must specify pre trigger samples"
+            pre_trig=int(self.pre_trig.data()*1024)
+            error="Must specify post trigger samples"
+            post_trig=int(self.post_trig.data()*1024)
+            UUT = acq200.Acq200(transport.factory(boardip))
             UUT.set_abort()
             UUT.clear_routes()
             
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
-                    wire = eval('str(self.di%1.1d_wire.record)' %i)
+                    wire = str(self.__getattr__('di%1.1d_wire.record)' %i))
                     if wire not in self.wires :
                         print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
-                    bus = eval('str(self.di%1.1d_bus.record)' % i)
+                    bus = str(self.__getattr__('di%1.1d_bus.record)' % i))
                     if bus not in self.wires :
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
@@ -181,6 +193,8 @@ class DT132(Device):
             return  1
 
         except Exception,e:
+            if error is not None:
+                e=error
             print "%s\n" % (str(e),)
             return 0
 
@@ -190,15 +204,14 @@ class DT132(Device):
         vins = UUT.uut.acq2sh('get.vin 1:32')
         vins = vins[0]
         vins = vins[:-1]
-        ans = eval('makeArray([%s])' % vins)
-        return ans
+        return makeArray(numpy.array(vins.split()).astype('int'))
 
         
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print "clock_str is -%s-" % clock_str
-        return eval('int(%s)' % clock_str)
-        
+        return int(clock_str)
+
     def store(self, arg):
         """
         Store the data from the device
@@ -213,7 +226,9 @@ class DT132(Device):
 
         debug=os.getenv("DEBUG_DEVICES")
         try:
-            boardip=self.check( 'str(self.boardip.record)', "Must specify a board ipaddress")
+            error="Must specify a board ipaddress"
+            boardip=str(self.boardip.record)
+            error=None
             UUT = acq200.Acq200(transport.factory(boardip))
             try:
                 ans = []
@@ -222,7 +237,7 @@ class DT132(Device):
                     print cmd
                     a = UUT.uut.acq2sh(cmd)
                     ans.append(a)
-                self.board_status.record = Data.compile('build_signal($,*, $)', a, cmds)
+                self.board_status.record = Signal(makeArray(ans),None,makeArray(cmds))
             except Exception, e:
                 pass
 
@@ -244,8 +259,9 @@ class DT132(Device):
             pre = int(pre)
             post = int(post)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
-        
-            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
+            error="Clock source must be a string"
+            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            error=None
             if clock_src == 'INT_CLOCK' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
             else:
@@ -261,22 +277,22 @@ class DT132(Device):
             for chan in range(32):
                 if debug:
                     print "working on channel %d" % chan
-                chan_node = eval('self.input_%2.2d' % (chan+1,))
-                chan_raw_node = eval('self.input_%2.2d_raw' % (chan+1,))
+                chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
+                chan_raw_node = self.__getattr__('input_%2.2d_raw' % (chan+1,))
                 if chan_node.on :
                     if debug:
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-                            start = eval('int(self.input_%2.2d:start_idx)'%chan+1)
+                            start = int(self.__getattr__('input_%2.2d:start_idx)'%chan+1))
                         except:
                             start = pre
                         try:
-                            end = eval('int(self.input_%2.2d:end_idx)'%chan+1)
+                            end = int(self.__getattr__('input_%2.2d:end_idx)'%chan+1))
                         except:
                             end = post
                         try:
-                            inc =  eval('int(self.input_%2.2d:inc)'%chan+1)
+                            inc =  int(self.__getattr__('input_%2.2d:inc)'%chan+1))
                         except:
                             inc = 1
                         if debug:
@@ -305,13 +321,15 @@ class DT132(Device):
                             else:
                                 dim = Data.Compile('Map($,$)', Dimension(Window(start/inc, end/inc, trigger), clock), Range(start, end, inc))
                                 raw = Data.compile('data($)', chan_raw_node)
-                                chan_node.record = eval('Signal(raw, "", dim)' % chan_node.getPath())
+                                chan_node.record = Signal(raw, None, dim)
                         else:
 			    raw = Data.compile('data($)', chan_raw_node)
-                            chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
+                            chan_node.record = Signal(raw, None, Dimension(Window(start, end, self.trig_src), clock))
         
             UUT.uut.acq2sh('mdsClose %s' % (self.boardip.tree.name,))
         except Exception,e :
+            if error is not None:
+                e=error
             print "Error storing DT132 Device\n%s" % ( str(e), )
             return 0
                 

@@ -112,7 +112,7 @@ class DT196(Device):
         Send parameters
         Arm hardware
         """
-
+        msg=None
         debug=os.getenv("DEBUG_DEVICES")
         try:
 	    boardip=str(self.node.record)
@@ -129,20 +129,37 @@ class DT196(Device):
             tree = self.local_tree
             shot = self.tree.shot
             UUT = acq200.Acq200(transport.factory(boardip))
-            active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
+            msg="Must specify active chans as int in (32,64,96)"
+            #active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
+            active_chans = int(self.active_chans)
+            msg=None
             if active_chans not in (32,64,96) :
                 print "active chans must be in (32, 64, 96 )"
                 active_chans = 96
-            trig_src=self.check("str(self.trig_src.record)", "Could not read trigger source")
+            msg="Could not read trigger source"
+            #trig_src=self.check("str(self.trig_src.record)", "Could not read trigger source")
+            trig_src=str(self.trig_src.record)
+            msg=None
             if not trig_src in self.trig_sources:
                 raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
-            clock_src=self.check("str(self.clock_src.record)", "Could not read clock source")
+            msg="Could not read clock source"
+            #clock_src=self.check("str(self.clock_src.record)", "Could not read clock source")
+            clock_src=str(self.clock_src.record)
+            msg=None
             if not clock_src in self.clock_sources:
                 raise Exception, "clock_src must be in %s" % str(self.clock_sources)
-            pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
-            post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
+            msg="Must specify pre trigger samples"
+            #pre_trig=self.check('int(self.pre_trig.data()*1024)', "Must specify pre trigger samples")
+            pre_trig=int(self.pre_trig.data()*1024)
+            msg="Must specify post trigger samples"
+            #post_trig=self.check('int(self.post_trig.data()*1024)', "Must specify post trigger samples")
+            post_trig=int(self.post_trig.data()*1024)
+            msg=None
             if clock_src == "INT" or clock_src == "MASTER":
-		clock_freq = self.check('int(self.clock_div)', "Must specify clock frequency in clock_div node for internal clock")
+                msg="Must specify clock frequency in clock_div node for internal clock"
+		#clock_freq = self.check('int(self.clock_div)', "Must specify clock frequency in clock_div node for internal clock")
+                clock_freq = int(self.clock_div)
+                msg=None
             else :
 		try:
 		    clock_div = int(self.clock_div)
@@ -168,14 +185,16 @@ class DT196(Device):
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
-                    wire = eval('str(self.di%1.1d_wire.record)' %i)
+                    #wire = eval('str(self.di%1.1d_wire.record)' %i)
+		    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if wire not in self.wires :
                         print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
-                    bus = eval('str(self.di%1.1d_bus.record)' % i)
+                    #bus = eval('str(self.di%1.1d_bus.record)' % i)
+                    bus = str(self.__getattr__('di%1.1d_bus' % 1).record)
                     if bus not in self.wires :
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
@@ -246,7 +265,8 @@ class DT196(Device):
         numSampsStr = settings['getNumSamples']
 	preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
-        vins = eval('makeArray([%s])' % settings['get.vin'])
+        #vins = eval('makeArray([%s])' % settings['get.vin'])
+        vins = makeArray(numpy.array(settings['get.vin'].split()).astype('int'))
         chanMask = settings['getChannelMask'].split('=')[-1]
 	if settings['get.extClk'] == 'none' :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
@@ -256,29 +276,34 @@ class DT196(Device):
 	else:
 	    delta = 0
         
-        trigExpr = 'self.%s'% str(self.trig_src.record)
-        trig_src = eval(trigExpr.lower())
+        #trigExpr = 'self.%s'% str(self.trig_src.record)
+        #trig_src = eval(trigExpr.lower())
+        trig_src = self.__getattr__(str(self.trig_src.record).lower())
 #
 # now store each channel
 #
 	for chan in range(96):
 	    if debug:
 		print "working on channel %d" % chan
-	    chan_node = eval('self.input_%2.2d' % (chan+1,))
+	    #chan_node = eval('self.input_%2.2d' % (chan+1,))
+            chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 if debug:
                     print "it is on so ..."
                 if chanMask[chan:chan+1] == '1' :
                     try:
-			start = max(eval('int(self.input_%2.2d:start_idx)'%(chan+1,)), preTrig)
+			#start = max(eval('int(self.input_%2.2d:start_idx)'%(chan+1,)), preTrig)
+                        start = max(int(self.__getattr__('input_%2.2d:start_idx'%(chan+1,))),preTrig)
                     except:
                         start = preTrig
                     try:
-                        end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
+                        #end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
+                        end = min(int(self.__getattr__('input_%2.2d:end_idx'%(chan+1,))),postTrig)
                     except:
                         end = postTrig
                     try:
-                        inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
+                        #inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
+                        inc = max(int(self.__getattr__('input_%2.2d:inc'%(chan+1,))),1)
                     except:
                         inc = 1
 #
@@ -293,8 +318,9 @@ class DT196(Device):
 		    if delta != 0 :
 			axis = Range(None, None, delta/inc)
 		    else:
-			clockExpr = 'self.%s'% str(self.clock_src.record)
-			clock_src = eval(clockExpr.lower())
+			#clockExpr = 'self.%s'% str(self.clock_src.record)
+			#clock_src = eval(clockExpr.lower())
+                        clock_src = self._getattr__(str(self.clock_src.record).lower())
                         axis = clock_src
 
 		    if inc == 1:
