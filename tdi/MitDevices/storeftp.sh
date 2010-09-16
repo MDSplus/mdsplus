@@ -18,46 +18,35 @@ xmlacqcmd() {
   echo "<string>$cmd</string>"
   echo "<string>`acqcmd $cmd`</string>"
 }
-
-xmlstart
-xmlacqcmd getNumSamples
-xmlacqcmd getChannelMask
-xmlacqcmd getInternalClock
-xmlcmd date
-xmlcmd hostname
-xmlcmd 'sysmon -T 0'
-xmlcmd 'sysmon -T 1'
-xmlcmd get.channelMask
-xmlcmd get.channel_mask
-xmlcmd get.d-tacq.release
-xmlcmd get.event0
-xmlcmd get.event1
-xmlcmd get.extClk 
-xmlcmd get.ext_clk
-xmlcmd get.int_clk_src
-xmlcmd get.modelspec
-xmlcmd get.numChannels
-xmlcmd get.pulse_number
-xmlcmd get.trig
-xmlcmd get.vin
-xmlfinish
+settingsf=/tmp/settings.xml
+xmlstart > $settingsf
+xmlacqcmd getNumSamples >> $settingsf
+xmlacqcmd getChannelMask >> $settingsf
+xmlacqcmd getInternalClock >> $settingsf
+xmlcmd date >> $settingsf
+xmlcmd hostname >> $settingsf
+xmlcmd 'sysmon -T 0' >> $settingsf
+xmlcmd 'sysmon -T 1' >> $settingsf
+xmlcmd get.channelMask >> $settingsf
+xmlcmd get.channel_mask >> $settingsf
+xmlcmd get.d-tacq.release >> $settingsf
+xmlcmd get.event0 >> $settingsf
+xmlcmd get.event1 >> $settingsf
+xmlcmd get.extClk  >> $settingsf
+xmlcmd get.ext_clk >> $settingsf
+xmlcmd get.int_clk_src >> $settingsf
+xmlcmd get.modelspec >> $settingsf
+xmlcmd get.numChannels >> $settingsf
+xmlcmd get.pulse_number >> $settingsf
+xmlcmd get.trig >> $settingsf
+xmlcmd get.vin >> $settingsf
+xmlfinish >> $settingsf
 tree=$1
 shot=$2
 path=$3
 host=192.168.0.254
-settings.sh > /tmp/settings.xml
 echo $tree $shot $path > /tmp/$tree.$shot.$path
-ftp $host <<EOF
-put /tmp/$tree.$shot.$path triggers/$tree.$shot.$path 
-mkdir $tree
-cd $tree
-mkdir $shot
-cd $shot
-mkdir $path
-cd $path
-lcd /tmp
-put settings.xml
-lcd /dev/acq200/data
-prompt
-mput [0-9][0-9]
-EOF
+
+curl -T "/dev/acq200/data/[01-96]" --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
+curl -T $settingsf --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
+curl -T /tmp/$tree.$shot.$path --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/triggers/$tree.$shot.$path
