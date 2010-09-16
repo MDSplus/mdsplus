@@ -114,21 +114,11 @@ class DT196(Device):
         """
         msg=None
         debug=os.getenv("DEBUG_DEVICES")
-        try:
-	    boardip=str(self.node.record)
-            if len(boardip) == 0 :
-              raise Exception, "boardid record empty"
-        except:
-	    try:
-		boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
-	    except:
-		raise Exception, "could not get board ip from either tree or hub"
 
 	try:
 	    path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
-            UUT = acq200.Acq200(transport.factory(boardip))
             msg="Must specify active chans as int in (32,64,96)"
             #active_chans = self.check("int(self.active_chans)", "Must specify active chans as int in (32,64,96)")
             active_chans = int(self.active_chans)
@@ -230,8 +220,23 @@ class DT196(Device):
             fd.flush()
 	    fd.close()
             fname = "%s_%s_%s.sh" % (tree, shot, path)
-            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
-            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
+            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s& rm -f /tmp/%(fname)s\n" % {'fname': fname}
+#            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
+#
+# now make a connection to the board
+# if the node is filled in use it
+# otherwise try to use the hub to get it
+#
+	    try:
+		boardip=str(self.node.record)
+		if len(boardip) == 0 :
+		    raise Exception, "boardid record empty"
+            except:
+		try:
+		    boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
+		except:
+		    raise Exception, "could not get board ip from either tree or hub"
+            UUT = acq200.Acq200(transport.factory(boardip))
 	    UUT.uut.acq2sh(cmd)
             return  1
 
@@ -346,7 +351,7 @@ class DT196(Device):
         state = UUT.get_state()
 	state = state[2:]
         if state == 'ST_ARM' or state == 'ST_RUN' :
-            raise  Exeption, "device Not triggered"
+            raise  Exception, "device Not triggered"
 		
 	for chan in range(96):
 	    chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
