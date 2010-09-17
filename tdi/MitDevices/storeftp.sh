@@ -39,7 +39,8 @@ xmlcmd get.modelspec >> $settingsf
 xmlcmd get.numChannels >> $settingsf
 xmlcmd get.pulse_number >> $settingsf
 xmlcmd get.trig >> $settingsf
-xmlcmd get.vin >> $settingsf
+xmlcmd 'get.vin'>> $settingsf
+
 xmlfinish >> $settingsf
 tree=$1
 shot=$2
@@ -47,6 +48,6 @@ path=$3
 host=192.168.0.254
 echo $tree $shot $path > /tmp/$tree.$shot.$path
 
-curl -T "/dev/acq200/data/[01-96]" --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
-curl -T $settingsf --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
-curl -T /tmp/$tree.$shot.$path --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/triggers/$tree.$shot.$path
+curl -s -T "/dev/acq200/data/[01-96]" --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
+curl -s -T $settingsf --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/$tree/$shot/$path/
+curl -s -T /tmp/$tree.$shot.$path --ftp-create-dirs ftp://mdsftp:mdsftp@$host/scratch/triggers/$tree.$shot.$path
