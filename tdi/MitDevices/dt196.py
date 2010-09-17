@@ -162,7 +162,7 @@ class DT196(Device):
             fname = "/home/mdsftp/scratch/%s_%s_%s.sh" % (tree, shot, path)
             fd=open(fname, 'w')
             fd.write("#!/bin/sh\n")
-	    fd.write("curl -u mdsftp:mdsftp ftp://192.168.0.254/storeftp.sh > /tmp/storeftp.sh\n")
+	    fd.write("curl -s -u mdsftp:mdsftp ftp://192.168.0.254/storeftp.sh > /tmp/storeftp.sh\n")
             fd.write("chmod a+x /tmp/storeftp.sh\n")
             fd.write("mkdir -p /etc/postshot.d\n")
 	    fd.write("echo /tmp/storeftp.sh %s %d %s > /etc/postshot.d/post_shot.sh\n" % (self.local_tree, self.tree.shot, self.local_path,))
@@ -220,8 +220,8 @@ class DT196(Device):
             fd.flush()
 	    fd.close()
             fname = "%s_%s_%s.sh" % (tree, shot, path)
-            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s& rm -f /tmp/%(fname)s\n" % {'fname': fname}
-#            cmd = "curl -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
+            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
+#            cmd = "curl -s mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
 #
 # now make a connection to the board
 # if the node is filled in use it
@@ -233,7 +233,9 @@ class DT196(Device):
 		    raise Exception, "boardid record empty"
             except:
 		try:
-		    boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
+                    print "trying to use the hub to get the ip"
+#		    boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
+		    boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
 		except:
 		    raise Exception, "could not get board ip from either tree or hub"
             UUT = acq200.Acq200(transport.factory(boardip))
@@ -271,7 +273,7 @@ class DT196(Device):
 	preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
         #vins = eval('makeArray([%s])' % settings['get.vin'])
-        vins = makeArray(numpy.array(settings['get.vin'].split()).astype('int'))
+        vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
         chanMask = settings['getChannelMask'].split('=')[-1]
 	if settings['get.extClk'] == 'none' :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
@@ -325,7 +327,7 @@ class DT196(Device):
 		    else:
 			#clockExpr = 'self.%s'% str(self.clock_src.record)
 			#clock_src = eval(clockExpr.lower())
-                        clock_src = self._getattr__(str(self.clock_src.record).lower())
+                        clock_src = self.__getattr__(str(self.clock_src.record).lower())
                         axis = clock_src
 
 		    if inc == 1:
@@ -339,14 +341,19 @@ class DT196(Device):
     STOREFTP=storeftp
 
     def waitftp(self, arg) :
-        try:
+	try:
             boardip=str(self.node.record)
+            if len(boardip) == 0 :
+                raise Exception, "boardid record empty"
         except:
             try:
-                boardip = Dt200WriteMaster(hostboard, "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)
+                print "trying to use the hub to get the ip"
+#                boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
+		boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
             except:
                 raise Exception, "could not get board ip from either tree or hub"
-
+            UUT = acq200.Acq200(transport.factory(boardip))
+ 
         UUT = acq200.Acq200(transport.factory(boardip))
         state = UUT.get_state()
 	state = state[2:]
