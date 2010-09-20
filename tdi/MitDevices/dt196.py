@@ -191,8 +191,8 @@ class DT196(Device):
                 except:
                     bus = ''
                 fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
-                fd.write("acqcmd  setChannelMask " + '1' * active_chans+"\n")
 
+            fd.write("acqcmd  setChannelMask " + '1' * active_chans+"\n")
             if clock_src == 'INT' or clock_src == 'MASTER' :
                 fd.write("acqcmd setInternalClock %d\n" % clock_freq)
                 if clock_src == 'MASTER' :
