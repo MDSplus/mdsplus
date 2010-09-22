@@ -274,8 +274,12 @@ class DT196(Device):
         numSampsStr = settings['getNumSamples']
 	preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
-        #vins = eval('makeArray([%s])' % settings['get.vin'])
-        vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
+#        vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
+        range_strs = settings['getVoltsRange'].split()[1].split('=')[1].split(',')
+	range_strs[0] = range_strs[0][:-1]
+	range_strs[1] = range_strs[1][:-1]
+        vins = makeArray(numpy.array(range_strs).astype('float32'))
+        coefficent = (vins[1]-vins[0])/(2**16-1)
         chanMask = settings['getChannelMask'].split('=')[-1]
 	if settings['get.extClk'] == 'none' :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
@@ -336,7 +340,7 @@ class DT196(Device):
 			dim = Dimension(Window(start, end, trig_src ), axis)
                     else:
 			dim = Data.compile('Map($,$)', Dimension(Window(start/inc, end/inc, trig_src), axis), Range(start, end, inc))
-                    dat = Data.compile('_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)', vins[chan*2], vins[chan*2+1], buf,dim) 
+                    dat = Data.compile('build_signal(build_with_units( $*(0. + $value), "V") ,build_with_units($,"Counts"),$)', coefficent, buf,dim) 
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
 	return 1
 
