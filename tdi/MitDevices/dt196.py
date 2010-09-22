@@ -1,11 +1,11 @@
 from MDSplus import Device,Data,Action,Dispatch,Method, makeArray, Range, Signal, Window, Dimension
-from time import sleep
+
 from tempfile import *
 import acq200
 import transport
 from Dt200WriteMaster import Dt200WriteMaster
 
-from time import sleep
+from time import sleep, time
 import os
 import numpy
 import array
@@ -26,8 +26,9 @@ class DT196(Device):
 
     for i in range(6):
         parts.append({'path':':DI%1.1d'%(i,),'type':'axis','options':('no_write_shot',)})
-        parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
         parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
+        parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
+
 
     parts2=[
         {'path':':CLOCK_SRC','type':'text','value':'INT','options':('no_write_shot',)},
@@ -112,6 +113,7 @@ class DT196(Device):
         Send parameters
         Arm hardware
         """
+        start=time()
         msg=None
         debug=os.getenv("DEBUG_DEVICES")
 
@@ -161,13 +163,6 @@ class DT196(Device):
 #
             fname = "/home/mdsftp/scratch/%s_%s_%s.sh" % (tree, shot, path)
             fd=open(fname, 'w')
-            fd.write("#!/bin/sh\n")
-	    fd.write("curl -s -u mdsftp:mdsftp ftp://192.168.0.254/storeftp.sh > /tmp/storeftp.sh\n")
-            fd.write("chmod a+x /tmp/storeftp.sh\n")
-            fd.write("mkdir -p /etc/postshot.d\n")
-	    fd.write("echo /tmp/storeftp.sh %s %d %s > /etc/postshot.d/post_shot.sh\n" % (self.local_tree, self.tree.shot, self.local_path,))
-	    fd.write("echo rm -f \$0 >> /etc/postshot.d/post_shot.sh\n")
-            fd.write("chmod a+x /etc/postshot.d/post_shot.sh\n")
             fd.write("acqcmd setAbort\n")
             for dx in ['d0', 'd1', 'd2', 'd3', 'd4', 'd5' ] :
                 fd.write("set.route " + dx + " in fpga\n")
@@ -184,7 +179,7 @@ class DT196(Device):
                     wire = 'fpga'
                 try:
                     #bus = eval('str(self.di%1.1d_bus.record)' % i)
-                    bus = str(self.__getattr__('di%1.1d_bus' % 1).record)
+                    bus = str(self.__getattr__('di%1.1d_bus' % i).record)
                     if bus not in self.wires :
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
@@ -211,17 +206,23 @@ class DT196(Device):
                     fd.write("set.route d2 in fpga out pxi\n")
                     fd.write("acqcmd '-- setDIO --1-----'\n")
                     fd.write("set.ext_clk DI0\n")
-                else :
-                    fd.write("acqcmd setExternalClock %s\n" % clock_src)
+            else :
+                fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
             fd.write("set.pre_post_mode %d %d\n" %(pre_trig,post_trig,))
 
             fd.write("acqcmd setArm\n")
             fd.flush()
 	    fd.close()
+
+	    print "Time to make init file = %g\n" % (time()-start)
+	    start=time()
+
             fname = "%s_%s_%s.sh" % (tree, shot, path)
-            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
+#            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
+#            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
 #            cmd = "curl -s mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
+	    cmd = "/ffs/user/init.sh %s %d %s\n" % (tree, shot, path)
 #
 # now make a connection to the board
 # if the node is filled in use it
@@ -240,6 +241,7 @@ class DT196(Device):
 		    raise Exception, "could not get board ip from either tree or hub"
             UUT = acq200.Acq200(transport.factory(boardip))
 	    UUT.uut.acq2sh(cmd)
+	    print "Time for board to init = %g\n" % (time()-start)
             return  1
 
         except Exception,e:
