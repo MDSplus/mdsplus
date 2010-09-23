@@ -163,10 +163,10 @@ class DT196(Device):
 #
             fname = "/home/mdsftp/scratch/%s_%s_%s.sh" % (tree, shot, path)
             fd=open(fname, 'w')
-            fd.write("acqcmd setAbort\n")
-            for dx in ['d0', 'd1', 'd2', 'd3', 'd4', 'd5' ] :
-                fd.write("set.route " + dx + " in fpga\n")
-
+#            fd.write("acqcmd setAbort\n")
+#            for dx in ['d0', 'd1', 'd2', 'd3', 'd4', 'd5' ] :
+#                fd.write("set.route " + dx + " in fpga out\n")
+#
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
@@ -361,8 +361,14 @@ class DT196(Device):
             UUT = acq200.Acq200(transport.factory(boardip))
  
         UUT = acq200.Acq200(transport.factory(boardip))
-        state = UUT.get_state()
-	state = state[2:]
+	for tries in range(3) :
+	    try:
+		print "trying to get the state \n"
+        	state = UUT.get_state()
+		state = state[2:]
+		break
+	    except:
+ 		pass
         if state == 'ST_ARM' or state == 'ST_RUN' :
             raise  Exception, "device Not triggered"
 		
@@ -372,15 +378,12 @@ class DT196(Device):
 		max_chan = chan_node
         tries = 0
 	while tries < 60 :
-	    try:
-		sz = len(max_chan)
-                if sz > 0:
-        	  break
-	    except:
-		sleep(3)
-		tries = tries+1
+	    if max_chan.rlength > 0:
+		break
+	    sleep(3)
+	    tries = tries+1
         if tries == 60:
-	    raise  Exeption, "device Not triggered"
+	    raise  Exception, "Triggered, but data not stored !"
 
 	return 1
     WAITFTP=waitftp
