@@ -379,7 +379,7 @@ class DT196(Device):
         if state == 'ARMED' or state == 'RUN':
             return 662470754
             raise Exception, "device Not triggered"
-        for chan in range(96):
+        for chan in range(int(self.active_chans)):
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 max_chan = chan_node
