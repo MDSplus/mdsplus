@@ -106,7 +106,56 @@ class DT196(Device):
             return ans
         except:
             raise Exception, message
+
+    def getBoardIp(self):
+        try:
+            boardip=str(self.node.record)
+            if len(boardip) == 0 :
+                raise Exception, "boardid record empty"
+        except:
+            try:
+                print "trying to use the hub to get the ip"
+                boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
+            except:
+                raise Exception, "could not get board ip from either tree or hub"
+        return boardip
+
+    def timeoutHandler(self,sig,stack):
+        raise Exception("Timeout occurred")
         
+    def getState(self):
+        """Get the current state"""
+        import socket,signal
+        s=socket.socket()
+        state="Unknown"
+        try:
+            signal.signal(signal.SIGALRM,self.timeoutHandler)
+            signal.alarm(60)
+            s.connect((self.getBoardIp(),54545))
+            state=s.recv(100)[0:-1]
+        except Exception,e:
+            print "Error getting board state: %s" % (str(e),)
+        signal.alarm(0)
+        s.close()
+        return state
+                  
+    def doInit(self,tree,shot,path):
+        """Get the current state"""
+        import socket,signal
+        status=1
+        s=socket.socket()
+        try:
+            signal.signal(signal.SIGALRM,self.timeoutHandler)
+            signal.alarm(15)
+            s.connect((self.getBoardIp(),54546))
+            s.send("%s %d %s" % (tree,shot,path))
+        except Exception,e:
+            status=0
+            print "Error sending doInit: %s" % (str(e),)
+        signal.alarm(0)
+        s.close()
+        return status
+
     def initftp(self, arg):
         """
         Initialize the device
@@ -218,29 +267,7 @@ class DT196(Device):
 	    print "Time to make init file = %g\n" % (time()-start)
 	    start=time()
 
-            fname = "%s_%s_%s.sh" % (tree, shot, path)
-#            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s; rm -f /tmp/%(fname)s\n" % {'fname': fname}
-#            cmd = "curl -s -u mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
-#            cmd = "curl -s mdsftp:mdsftp ftp://192.168.0.254/scratch/%(fname)s > /tmp/%(fname)s; chmod a+x /tmp/%(fname)s; /tmp/%(fname)s\n" % {'fname': fname}
-	    cmd = "/ffs/user/init.sh %s %d %s\n" % (tree, shot, path)
-#
-# now make a connection to the board
-# if the node is filled in use it
-# otherwise try to use the hub to get it
-#
-	    try:
-		boardip=str(self.node.record)
-		if len(boardip) == 0 :
-		    raise Exception, "boardid record empty"
-            except:
-		try:
-                    print "trying to use the hub to get the ip"
-#		    boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
-		    boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
-		except:
-		    raise Exception, "could not get board ip from either tree or hub"
-            UUT = acq200.Acq200(transport.factory(boardip))
-	    UUT.uut.acq2sh(cmd)
+            self.doInit(tree,shot,path)
 	    print "Time for board to init = %g\n" % (time()-start)
             return  1
 
@@ -347,43 +374,24 @@ class DT196(Device):
     STOREFTP=storeftp
 
     def waitftp(self, arg) :
-	try:
-            boardip=str(self.node.record)
-            if len(boardip) == 0 :
-                raise Exception, "boardid record empty"
-        except:
-            try:
-                print "trying to use the hub to get the ip"
-#                boardip = Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}'", 1)[0]
-		boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
-            except:
-                raise Exception, "could not get board ip from either tree or hub"
-            UUT = acq200.Acq200(transport.factory(boardip))
- 
-        UUT = acq200.Acq200(transport.factory(boardip))
-	for tries in range(3) :
-	    try:
-		print "trying to get the state \n"
-        	state = UUT.get_state()
-		state = state[2:]
-		break
-	    except:
- 		pass
-        if state == 'ST_ARM' or state == 'ST_RUN' :
-            raise  Exception, "device Not triggered"
-		
-	for chan in range(96):
-	    chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
+        """Wait for board to finish digitizing and ftp'ing data to host"""
+        state = self.getState()
+        if state == 'ARMED' or state == 'RUN':
+            return 662470754
+            raise Exception, "device Not triggered"
+        for chan in range(96):
+            chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
-		max_chan = chan_node
+                max_chan = chan_node
         tries = 0
-	while tries < 60 :
-	    if max_chan.rlength > 0:
-		break
-	    sleep(3)
-	    tries = tries+1
+        while tries < 60 :
+            if max_chan.rlength > 0:
+                break
+            sleep(3)
+            tries = tries+1
         if tries == 60:
-	    raise  Exception, "Triggered, but data not stored !"
+            print "Triggered, but data not stored !"
+            return 0
 
-	return 1
+        return 1
     WAITFTP=waitftp
