@@ -66,7 +66,7 @@ class DT196(Device):
     clock_sources.append('INT')
     clock_sources.append('MASTER')
     
-    wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi']
+    wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
     
     del i
     def getPreTrig(self,str) :
