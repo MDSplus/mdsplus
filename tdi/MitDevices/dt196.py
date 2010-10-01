@@ -79,25 +79,17 @@ class DT196(Device):
         post_trig = int(parts[3].split(' ')[0])
         return post_trig
 
-    def readRawData(self, name, start, end, inc) :
-
+    def readRawData(self, name, pre, start, end, inc) :
         f = open(name, mode='rb')
-        #try:
-        f.seek(start*2)
-        binValues = array.array('H')
-        binValues.read(f,end-start)
-        ans = numpy.array(binValues, dtype=numpy.int16)
-        f.close()
-# use the numpy reader
-# and shape as 2d  then subscript the dim
-# to get the inc
-
-        #except Exception,e:
-        #    try:
-        #        f.close()
-        #    except:
-        #        pass
-        #    raise e
+        try:
+            f.seek((pre+start)*2)
+            binValues = array.array('H')
+            binValues.read(f,end-start)
+            ans = numpy.array(binValues, dtype=numpy.int16)
+            f.close()
+        except Exception,e :
+	   print "readRawData - %s" % e
+           raise e
         return ans
 
     def check(self, expression, message):
@@ -260,7 +252,7 @@ class DT196(Device):
 
             fd.write("set.pre_post_mode %d %d\n" %(pre_trig,post_trig,))
 
-            fd.write("acqcmd setArm\n")
+#            fd.write("acqcmd setArm\n")
             fd.flush()
 	    fd.close()
 
@@ -311,7 +303,7 @@ class DT196(Device):
 	if settings['get.extClk'] == 'none' :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
             #intClock=int(intClikStr)
-	    intClock=1e6
+	    intClock = float(settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
 	else:
 	    delta = 0
@@ -333,24 +325,24 @@ class DT196(Device):
                 if chanMask[chan:chan+1] == '1' :
                     try:
 			#start = max(eval('int(self.input_%2.2d:start_idx)'%(chan+1,)), preTrig)
-                        start = max(int(self.__getattr__('input_%2.2d:start_idx'%(chan+1,))),preTrig)
+                        start = max(int(self.__getattr__('input_%2.2d_startidx'%(chan+1,))),-preTrig)
                     except:
-                        start = preTrig
+                        start = -preTrig
                     try:
                         #end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
-                        end = min(int(self.__getattr__('input_%2.2d:end_idx'%(chan+1,))),postTrig)
+                        end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig)
                     except:
                         end = postTrig
                     try:
                         #inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
-                        inc = max(int(self.__getattr__('input_%2.2d:inc'%(chan+1,))),1)
+                        inc = max(int(self.__getattr__('input_%2.2d_inc'%(chan+1,))),1)
                     except:
                         inc = 1
 #
 # could do the coeffs
 #
 		    chanFileName="%s/%2.2d"%(dataDir, chan+1,)
-                    buf = self.readRawData(chanFileName, start, end, inc)
+                    buf = self.readRawData(chanFileName, preTrig, start, end, inc)
 #                    try:
 #                        buf = self.readRawData(chanFileName, start, end, inc)
 #                    except:
