@@ -86,6 +86,8 @@ class DT196(Device):
             binValues = array.array('H')
             binValues.read(f,end-start)
             ans = numpy.array(binValues, dtype=numpy.int16)
+	    if inc > 1 :
+		asns = ans[::inc]
             f.close()
         except Exception,e :
 	   print "readRawData - %s" % e
