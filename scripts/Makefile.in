@@ -63,7 +63,5 @@ install:
 @MAKEBINDIR@job_wait : job_wait
 	cp  job_wait @MAKEBINDIR@job_wait
 
-@MAKEBINDIR@MonitorCpciData.py
-	cp MonitorCpciData.py @MAKEBINDIR@MonitorCpciData.py
-
-
+@MAKEBINDIR@MonitorCpciData.py : MonitorCpciData.py 
+	cp  MonitorCpciData.py @MAKEBINDIR@MonitorCpciData.py
