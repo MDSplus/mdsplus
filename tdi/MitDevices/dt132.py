@@ -168,14 +168,14 @@ class DT132(Device):
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
-                    wire = str(self.__getattr__('di%1.1d_wire.record)' %i))
+                    wire = str(self.__getattr__('di%1.1d_wire'%i).record)
                     if wire not in self.wires :
                         print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except:
                     wire = 'fpga'
                 try:
-                    bus = str(self.__getattr__('di%1.1d_bus.record)' % i))
+                    bus = str(self.__getattr__('di%1.1d_bus'%i).record)
                     if bus not in self.wires :
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
@@ -188,7 +188,7 @@ class DT132(Device):
                 UUT.uut.acqcmd("setInternalClock %d" % clock_freq)
             else:
                  UUT.uut.acqcmd("-- setExternalClock --fin %d --fout %d DI0" % (clock_freq/1000, clock_freq/1000,))
-            UUT.setPrePostMode(pre_trig, post_trig)
+            UUT.setPrePostMode(pre_trig, post_trig, trig_src, trig_edge)
             UUT.set_arm()
             return  1
 

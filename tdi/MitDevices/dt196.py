@@ -252,7 +252,7 @@ class DT196(Device):
             else :
                 fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
-            fd.write("set.pre_post_mode %d %d\n" %(pre_trig,post_trig,))
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig,post_trig,trig_src,'rising',))
 
 #            fd.write("acqcmd setArm\n")
             fd.flush()
@@ -373,10 +373,11 @@ class DT196(Device):
         if state == 'ARMED' or state == 'RUN':
             return 662470754
             raise Exception, "device Not triggered"
-        for chan in range(int(self.active_chans)):
-            chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
+        for chan in range(int(self.active_chans), 0, -1):
+            chan_node = self.__getattr__('input_%2.2d' % (chan,))
             if chan_node.on :
                 max_chan = chan_node
+		break
         tries = 0
         while tries < 60 :
             if max_chan.rlength > 0:
