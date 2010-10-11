@@ -46,8 +46,6 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 /* Initialize Library if the first time */
     _handle = if_error(_handle, public _handle = CAENVME_Init(_board_id));
 
-write(*, 'CACCA');
- 
    if(_handle == -1)
     {
     	DevLogErr(_nid, "Cannot Initialize VME Interface");
