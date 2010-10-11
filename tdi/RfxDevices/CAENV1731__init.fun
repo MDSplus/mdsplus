@@ -79,8 +79,6 @@ public fun CAENV1731__init(as_is _nid, optional _method)
     _segment_size = 4194304 / (2 ** _num_segments);
 
 
-write(*, 'CACCA1');
-
 /* Channel Global Configuration */
 
     DevNodeCvt(_nid, _N_TRIG_MODE, ['OVER THRESHOLD', 'UNDER THRESHOLD'], [0,1], _trig_mode = 0);
@@ -116,8 +114,6 @@ write(*, 'CACCA1');
  	    abort();
     	}
 
-write(*, 'CACCA 2');
-
 	_threshold_n = if_error(data(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_TRESH)),_INVALID);
     	if(_threshold_n == _INVALID)
     	{
@@ -152,7 +148,6 @@ write(*, 'CACCA 2');
 	DevNodeCvt(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_TRIG_STATE, ['ENABLED', 'DISABLED'], [1,0], _enabled = 0);
 	_chan_trig_enable = _chan_trig_enable | (_enabled << _c);
     }
-write(*, 'CACCA 3');
 	
     DevNodeCvt(_nid, _N_TRIG_SOFT, ['ENABLED', 'DISABLED'], [1,0], _trig_soft = 0);
     _chan_trig_enable = _chan_trig_enable | (_trig_soft << 31);
@@ -182,8 +177,6 @@ write(*, 'CACCA 3');
     	DevLogErr(_nid, 'Error setting Monitor Mode');
  	abort();
     }
-write(*, 'CACCA 4');
-    
     if(_monitor_mode == 4)
     {
     	_monitor_lev = if_error(data(DevNodeRef(_nid, _N_MONITOR_LEV)), _INVALID);
@@ -209,8 +202,6 @@ write(*, 'CACCA 4');
      	abort();
     }
 
-write(*, 'CACCA 41');
-
 
 /* Trigger source */
     _trig = if_error(data(DevNodeRef(_nid, _N_TRIG_SOURCE))  , _INVALID);
@@ -220,9 +211,7 @@ write(*, 'CACCA 41');
 	abort();
     }
 /* Clock Source */
-write(*, 'CACCA 42');
     DevNodeCvt(_nid, _N_CLOCK_MODE , ['500 MHz', '1 GHz', 'EXTERNAL'], [500E6,1E9,0], _clock_freq = 0);
-write(*, 'clock freq = ', _clock_freq);
     if(_clock_freq == 0)
     {
         _clk = DevNodeRef(_nid, _N_CLOCK_SOURCE); 
@@ -238,7 +227,6 @@ write(*, 'clock freq = ', _clock_freq);
 	_clock_val = make_range(*,*,1./ _clock_freq);
     	 DevPut(_nid, _N_CLOCK_SOURCE, _clock_val);
     }
-write(*, 'CACCA 5');
 
 /* PTS */
     _pts = if_error(data(DevNodeRef(_nid, _N_PTS))  , _INVALID);
@@ -259,7 +247,6 @@ write(*, 'CACCA 5');
  	abort();
     }
   
-write(*, 'CACCA 5');
 
 /* Time management */
     DevNodeCvt(_nid, _N_USE_TIME, ['YES', 'NO'], [1,0], _use_time=0);
@@ -293,7 +280,6 @@ write(*, 'CACCA 5');
         DevPut(_nid, _N_START_IDX, long(_start_idx));
 
    }
-write(*, 'CACCA 6');
 
 /* Run device */
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8100, 4L);
