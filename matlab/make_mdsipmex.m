@@ -7,7 +7,7 @@
 
 MDSPLUS=getenv('MDSPLUS_DIR');
 if(length(MDSPLUS)==0)
-  disp('shell variable MDSPLUS must point to MDSPLUS distribution before compilation');end
+  disp('shell variable MDSPLUS_DIR must point to MDSPLUS distribution before compilation');end
 
 if(findstr(computer,'64')); LIB = 'lib64'; else; LIB = 'lib'; end
 
