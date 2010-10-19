@@ -210,7 +210,10 @@ class DT132(Device):
     def getInternalClock(self, UUT):
         clock_str = UUT.uut.acqcmd('getInternalClock').split()[0].split('=')[1]
         print "clock_str is -%s-" % clock_str
-        return int(clock_str)
+	freq = int(clock_str)
+	if freq > 16000000 :
+	    freq = 2000000
+        return freq
 
     def store(self, arg):
         """
@@ -256,7 +259,7 @@ class DT132(Device):
             vins = self.getVins(UUT)
             self.ranges.record = vins
             (tot, pre, post, run) = UUT.get_numSamples()
-            pre = int(pre)
+            pre = int(pre)*-1
             post = int(post)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             error="Clock source must be a string"
@@ -284,15 +287,15 @@ class DT132(Device):
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-                            start = int(self.__getattr__('input_%2.2d:start_idx)'%chan+1))
+                            start = int(self.__getattr__('input_%2.2d_start_idx)'%chan+1))
                         except:
                             start = pre
                         try:
-                            end = int(self.__getattr__('input_%2.2d:end_idx)'%chan+1))
+                            end = int(self.__getattr__('input_%2.2d_end_idx)'%chan+1))
                         except:
                             end = post
                         try:
-                            inc =  int(self.__getattr__('input_%2.2d:inc)'%chan+1))
+                            inc =  int(self.__getattr__('input_%2.2d_inc)'%chan+1))
                         except:
                             inc = 1
                         if debug:
