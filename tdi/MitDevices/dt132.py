@@ -287,15 +287,18 @@ class DT132(Device):
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-                            start = int(self.__getattr__('input_%2.2d_start_idx)'%chan+1))
+                            start = int(self.__getattr__('input_%2.2d_start_idx'%(chan+1)))
+                            print "start = %d" %start
                         except:
                             start = pre
                         try:
-                            end = int(self.__getattr__('input_%2.2d_end_idx)'%chan+1))
+                            end = int(self.__getattr__('input_%2.2d_end_idx'%(chan+1)))
+                            print "end = %d" % end
                         except:
                             end = post
                         try:
-                            inc =  int(self.__getattr__('input_%2.2d_inc)'%chan+1))
+                            inc = int(self.__getattr__('input_%2.2d_inc'%(chan+1)))
+                            print "inc = %d" % inc
                         except:
                             inc = 1
                         if debug:
