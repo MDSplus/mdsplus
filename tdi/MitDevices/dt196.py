@@ -84,7 +84,7 @@ class DT196(Device):
         try:
             f.seek((pre+start)*2)
             binValues = array.array('H')
-            binValues.read(f,end-start)
+            binValues.read(f,end-start+1)
             ans = numpy.array(binValues, dtype=numpy.int16)
 	    if inc > 1 :
 		asns = ans[::inc]
@@ -302,7 +302,7 @@ class DT196(Device):
         vins = makeArray(numpy.array(range_strs).astype('float32'))
         coefficent = (vins[1]-vins[0])/(2**16-1)
         chanMask = settings['getChannelMask'].split('=')[-1]
-	if settings['get.extClk'] == 'none' :
+	if not 'ACTIVE' in settings['get.ext_clk'] :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
             #intClock=int(intClikStr)
 	    intClock = float(settings['getInternalClock'].split()[1])
@@ -332,9 +332,9 @@ class DT196(Device):
                         start = -preTrig
                     try:
                         #end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
-                        end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig)
+                        end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
                     except:
-                        end = postTrig
+                        end = postTrig-1
                     try:
                         #inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
                         inc = max(int(self.__getattr__('input_%2.2d_inc'%(chan+1,))),1)
