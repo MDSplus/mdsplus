@@ -1,0 +1,4 @@
+function(openMds)
+function(writeMds)
+function(registerMdsEvent)
+function(waitMdsEvent)

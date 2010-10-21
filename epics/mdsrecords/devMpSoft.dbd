@@ -1,0 +1,2 @@
+include "mdsputRecord.dbd"
+device(mdsput,CONSTANT,devMpSoft,"devMpSoft")

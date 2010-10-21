@@ -1,0 +1,2 @@
+include "mdsexprRecord.dbd"
+device(mdsexpr,CONSTANT,devExprSoft,"devExprSoft")

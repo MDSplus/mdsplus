@@ -1,0 +1,2 @@
+include "mdsactionRecord.dbd"
+device(mdsaction,CONSTANT,devMaSoft,"devMaSoft")
