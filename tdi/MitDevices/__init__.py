@@ -18,6 +18,7 @@ from dt216b import DT216B
 from dt196  import DT196
 from dt196b import DT196B
 from dt216  import DT216
+from dt216a import DT216A
 import acq200
 import transport
 import dt100
