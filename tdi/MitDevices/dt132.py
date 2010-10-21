@@ -260,7 +260,7 @@ class DT132(Device):
             self.ranges.record = vins
             (tot, pre, post, run) = UUT.get_numSamples()
             pre = int(pre)*-1
-            post = int(post)
+            post = int(post-1)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             error="Clock source must be a string"
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
@@ -287,12 +287,12 @@ class DT132(Device):
                         print "it is on so ..."
                     if mask[chan:chan+1] == '1' :
                         try:
-                            start = int(self.__getattr__('input_%2.2d_start_idx'%(chan+1)))
+                            start = max(int(self.__getattr__('input_%2.2d_start_idx'%(chan+1))), pre)
                             print "start = %d" %start
                         except:
                             start = pre
                         try:
-                            end = int(self.__getattr__('input_%2.2d_end_idx'%(chan+1)))
+                            end = min(int(self.__getattr__('input_%2.2d_end_idx'%(chan+1))), post)
                             print "end = %d" % end
                         except:
                             end = post
@@ -303,7 +303,7 @@ class DT132(Device):
                             inc = 1
                         if debug:
                             print "build the command"
-                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start), int(end), int(inc), chan+1)
+                        command = "mdsPutCh --field %s:raw --expr %%calsig --timebase %d,%d,%d %d" % (chan_node.getFullPath(), int(start-pre), int(end-pre), int(inc), chan+1)
                         command = command.replace('\\','\\\\')
                         if debug:
                             print "about to execute %s" % command
