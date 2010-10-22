@@ -85,7 +85,7 @@ class DT216A(Device):
         return post_trig
 
     def readRawData(self, name, pre, start, end, inc) :
-        print "readRawData(self, %s, %d, %d, %d, %d)" % (name, pre, start, end, inc)
+#        print "readRawData(self, %s, %d, %d, %d, %d)" % (name, pre, start, end, inc)
         f = open(name, mode='rb')
         try:
             f.seek((pre+start)*2)
@@ -212,10 +212,6 @@ class DT216A(Device):
 #
             fname = "/home/mdsftp/scratch/%s_%s_%s.sh" % (tree, shot, path)
             fd=open(fname, 'w')
-#            fd.write("acqcmd setAbort\n")
-#            for dx in ['d0', 'd1', 'd2', 'd3', 'd4', 'd5' ] :
-#                fd.write("set.route " + dx + " in fpga out\n")
-#
             for i in range(6):
                 line = 'd%1.1d' % i
                 try:
@@ -262,8 +258,16 @@ class DT216A(Device):
 		fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
 
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig,post_trig,trig_src,'rising',))
+            fd.write(". /usr/local/bin/xmlfunctions.sh\n")
+            fd.write("settingsf=/tmp/%s_%s_%s.xml\n"%(tree, shot, path,))
 
-#            fd.write("acqcmd setArm\n")
+	    cmds = self.status_cmds.record
+	    for cmd in cmds:
+		cmd = cmd.strip()
+		if debug:
+		    print 'adding /xmlcmd "%s" >> $settingsf/ to the file.\n'%(cmd,)
+		fd.write('xmlcmd "%s" >> $settingsf\n'%(cmd,))
+
             fd.flush()
 	    fd.close()
 
@@ -301,11 +305,27 @@ class DT216A(Device):
             settingsf.close()
 	    raise Exception, "Could not parse XML settings"
         settingsf.close()
+	if debug :
+	    print "xml is loaded\n"
+        status = []
+        cmds = self.status_cmds.record
+        for cmd in cmds:
+	    cmd = cmd.strip()
+	    if debug:
+		print "about to append answer for /%s/\n" % (cmd,)
+		print "   which is /%s/\n" %(settings[cmd],)
+	    status.append(settings[cmd])
+	    if debug:
+		print "%s returned %s\n" % (cmd, settings[cmd],)
+	if debug:
+	    print "about to write board_status signal"
+	self.board_status.record = Signal(cmds, None, status)
+
         numSampsStr = settings['getNumSamples']
 	preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
-#        vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
         vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
+	self.ranges.record = vins
         chanMask = settings['getChannelMask'].split('=')[-1]
 	if not 'ACTIVE' in settings['get.ext_clk'] :
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
