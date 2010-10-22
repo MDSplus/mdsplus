@@ -2234,6 +2234,10 @@ protected:
 		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
+//To keep them compatible with python
+		static void setevent(char *evName) {setEvent(evName); }
+		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
+		static void setevent(char *evName, Data *evData){setevent(evName, evData);}
 	};
 
 
