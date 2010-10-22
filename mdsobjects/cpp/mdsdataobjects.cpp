@@ -693,6 +693,7 @@ void Data::plot()
 		Data *dim = getDimensionAt(0);
 		Scope *scope = new Scope("");
 		scope->plot(this, dim);
+		scope->show();
 		delete scope;
 		deleteData(dim);
 }
@@ -961,7 +962,7 @@ EXPORT Data *Uint8Array::deserialize()
     return (Data *)deserializeData(ptr);
 }
 
-EXPORT void Scope::show(int x, int y, int width, int height)
+EXPORT void Scope::show()
 {
 	char expr[256];
 	sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
@@ -976,7 +977,11 @@ EXPORT Scope::Scope(char *name, int x, int y, int width, int height)
 	idx = ris->getInt();
 	deleteData(ris);
 	delete [] expr;
-	show(x,y,width, height);
+	this->x = x;
+	this->y = y;
+	this->width = width;
+	this->height = height;
+	show();
 }
 EXPORT void Scope::plot(Data *x, Data *y , int row, int col, char *color)
 {

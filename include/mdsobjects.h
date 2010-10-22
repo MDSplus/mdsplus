@@ -2347,12 +2347,13 @@ protected:
 
 	class EXPORT Scope 
 	{
+		int x, y, width, height;
 		int idx;
-		void show(int x, int y, int width, int height);
 	public:
 		Scope(char *name, int x = 100, int y = 100, int width = 400, int height = 400);
 		void plot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black");
 		void oplot(Data *x, Data *y , int row = 1, int col = 1, char *color = "black");
+		void show();
 	};
 
 
