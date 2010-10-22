@@ -260,7 +260,7 @@ class DT132(Device):
             self.ranges.record = vins
             (tot, pre, post, run) = UUT.get_numSamples()
             pre = int(pre)*-1
-            post = int(post-1)
+            post = int(post)-1
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             error="Clock source must be a string"
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
