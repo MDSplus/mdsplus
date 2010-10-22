@@ -36,6 +36,10 @@ public class Event
         disposed = true;
         unregisterEvent(eventId); 
     }
+    static public void setEvent(java.lang.String evName)
+    {
+        setEventRaw(evName, new byte[0]);
+    }
     static public void setEvent(java.lang.String evName, Data data)
     {
         setEventRaw(evName, (data == null)?new byte[0]:data.serialize());
@@ -46,7 +50,12 @@ public class Event
         dataBuf = buf;
         if(buf.length == 0)
             data = null;
-        else data = Data.deserialize(buf);
+        else
+        {
+            try {
+                data = Data.deserialize(buf);
+            }catch(Exception exc){} //No handling required, may be raw data
+        }
         run();
     }
     static public native void setEventRaw(java.lang.String evName, byte[] buf);

@@ -47,6 +47,8 @@ void Event::disconnectFromEvents()
 
 Data *Event::getData()
 {
+	if(eventBufSize == 0)
+		return NULL;
     return deserialize(eventBuf);
 
 }

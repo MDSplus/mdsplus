@@ -105,6 +105,9 @@ public class TestMdsObjects
     {
         
         testRows();
+
+ //       Connection c = new Connection("150.178.32.45")
+
       }
     
     
