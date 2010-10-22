@@ -2231,6 +2231,7 @@ protected:
 		}
 		char *getName() { return eventName;}
 	    Data *getData();
+		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
 	};
