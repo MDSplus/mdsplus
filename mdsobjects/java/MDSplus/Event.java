@@ -36,6 +36,7 @@ public class Event
         disposed = true;
         unregisterEvent(eventId); 
     }
+
     static public void setEvent(java.lang.String evName)
     {
         setEventRaw(evName, new byte[0]);
@@ -44,7 +45,15 @@ public class Event
     {
         setEventRaw(evName, (data == null)?new byte[0]:data.serialize());
     }
-    void intRun(byte []buf, long time)
+     static public void setevent(java.lang.String evName)
+    {
+        setEvent(evName);
+    }
+    static public void setevent(java.lang.String evName, Data data)
+    {
+        setEvent(evName, data);
+    }
+   void intRun(byte []buf, long time)
     {
         this.time = time;
         dataBuf = buf;
@@ -58,6 +67,7 @@ public class Event
         }
         run();
     }
+    static public void seteventRaw(java.lang.String evName, byte[] buf){setEventRaw(evName, buf);}
     static public native void setEventRaw(java.lang.String evName, byte[] buf);
     native long registerEvent(java.lang.String name);
     native void unregisterEvent(long eventId);
