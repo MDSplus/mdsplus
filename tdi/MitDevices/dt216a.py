@@ -327,7 +327,7 @@ class DT216A(Device):
         vins = makeArray(numpy.array(settings['get.vin'].split(',')).astype('float'))
 	self.ranges.record = vins
         chanMask = settings['getChannelMask'].split('=')[-1]
-	if not 'ACTIVE' in settings['get.ext_clk'] :
+	if self.clock_src.record.lower() == 'int' or self.clock_src.record.lower() == 'master':
 	    #intClkStr=settings['getInternalClock'].split()[0].split('=')[1]
             #intClock=int(intClikStr)
 	    intClock = float(settings['getInternalClock'].split()[1])
@@ -349,17 +349,14 @@ class DT216A(Device):
                     print "it is on so ..."
                 if chanMask[chan:chan+1] == '1' :
                     try:
-			#start = max(eval('int(self.input_%2.2d:start_idx)'%(chan+1,)), preTrig)
                         start = max(int(self.__getattr__('input_%2.2d_startidx'%(chan+1,))),-preTrig)
                     except:
                         start = -preTrig
                     try:
-                        #end = min(eval('int(self.input_%2.2d:end_idx)'%(chan+1,)), postTrig)
 			end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
                     except:
                         end = postTrig-1
                     try:
-                        #inc =  max(eval('int(self.input_%2.2d:inc)'%(chan+1,)), 1)
                         inc = max(int(self.__getattr__('input_%2.2d_inc'%(chan+1,))),1)
                     except:
                         inc = 1
