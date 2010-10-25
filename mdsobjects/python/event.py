@@ -57,6 +57,11 @@ class Event(Thread):
         """
         return self.time
         
+    def getName(self):
+	"""Return the name of the event
+	rtype: str
+	"""
+	return self.event
 
     def setevent(event,data):
         """Issue an MDSplus event
