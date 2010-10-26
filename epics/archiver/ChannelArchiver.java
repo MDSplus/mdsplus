@@ -199,8 +199,8 @@ public class ChannelArchiver
                 while(!terminated)
                 {
                     try {
-                        currSize = tree.getDatafileSize();
 			System.out.println("QUEUE SIZE: " + queue.size());
+                        currSize = tree.getDatafileSize();
 			System.out.println("FILE SIZE: " + currSize);
 			if(currSize > 1000000000 && currSize == prevSize)
 			    ChannelArchiver.debug = true;
