@@ -106,6 +106,17 @@ public class ChannelArchiver
         return dbr.getCount();
     }
     
+    static int CAStatus2Severity(CAStatus status)
+    {
+	CASeverity severity = status.getSeverity();
+	if(severity == CASeverity.SUCCESS) return 0;
+	if(severity == CASeverity.INFO) return 1;
+	if(severity == CASeverity.WARNING) return 2;
+	if(severity == CASeverity.ERROR) return 3;
+	if(severity == CASeverity.SEVERE) return 4;
+	if(severity == CASeverity.FATAL) return 5;
+	return 0;
+    }
     
     static class GroupHandler
     {
@@ -177,6 +188,7 @@ public class ChannelArchiver
     	}
 	double [] getVals() {return vals;}
 	long [] getTimes() { return times;}
+	int getDim() { return vals.length;}
     } //End static inner class TreeDataDescriptor
     //Manages insertion of data into MDSplus tree
     static class TreeHandler implements Runnable
@@ -199,14 +211,14 @@ public class ChannelArchiver
                 while(!terminated)
                 {
                     try {
-			System.out.println("QUEUE SIZE: " + queue.size());
                         currSize = tree.getDatafileSize();
+			System.out.println("QUEUE SIZE: " + queue.size());
 			System.out.println("FILE SIZE: " + currSize);
 			if(currSize > 1000000000 && currSize == prevSize)
 			    ChannelArchiver.debug = true;
 			prevSize = currSize;
 
-                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); /*System.exit(0);*/}
+                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); System.exit(0);}
                     try {
                         Thread.currentThread().sleep(5000); //Repeat check every 5 seconds
                     }catch(InterruptedException exc){return;}
@@ -258,7 +270,10 @@ public class ChannelArchiver
 		    }
 		}
 	    	try {
-	   	    node.makeTimestampedSegment(new Float64Array(descr.getVals()), descr.getTimes());
+		    if(descr.getDim() >1)
+	   	    	node.makeTimestampedSegment(new Float64Array(descr.getVals()), descr.getTimes());
+		    else
+			node.putRow(new Float64(descr.getVals()[0]), descr.getTimes()[0]);
 	   	}catch(Exception exc){ System.err.println("Error in putTimestampedSegment: " + exc);}
             	if(currSize > switchSize)
             	{
@@ -340,15 +355,18 @@ public class ChannelArchiver
     {
         TreeManager treeManager;
         java.lang.String treeNodeName;
+        java.lang.String severityNodeName;
         java.lang.String chanName;
         boolean isCheckChan;
         GroupHandler gh;
         boolean saveTree;
         Data currData = null;
         long currTime;
+	int currSeverity;
         long prevTime = 0;
         int ignFuture;
-        public DataMonitor(TreeManager treeManager, java.lang.String treeNodeName, int ignFuture, 
+	int prevSeverity = -1;
+        public DataMonitor(TreeManager treeManager, java.lang.String treeNodeName, java.lang.String severityNodeName, int ignFuture, 
               java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
         {
             this.treeManager = treeManager;
@@ -371,8 +389,8 @@ public class ChannelArchiver
             DBR dbr = e.getDBR();
             try {
                 Data data = DBR2Data(dbr);
-  
                 long time = DBR2Time(dbr);
+		int severity = CAStatus2Severity(e.getStatus());
                 if(isCheckChan)
                     gh.updateCheckData(chanName, data);
                 if(time <= prevTime)  //A previous sample has been received
@@ -388,12 +406,18 @@ public class ChannelArchiver
                     if (isCheckChan || !gh.isDisabled()) 
                     {
                         treeManager.putRow(treeNodeName, data, time);
-                    }
+			if(severity != prevSeverity)
+			{
+			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
+			    severity = prevSeverity;
+			}
+                   }
                 }
                 else
                 {
                     currData = data;
                     currTime = time;
+		    currSeverity = severity;
                 }
             }catch(Exception exc)
             {
@@ -404,6 +428,7 @@ public class ChannelArchiver
         {
             return new DataAndTime(currData, currTime);
         }
+	public synchronized int getSeverity() { return currSeverity;}
         
     }//End static class 
     
@@ -412,6 +437,7 @@ public class ChannelArchiver
         static final int SCAN = 1, MONITOR = 2;
         int mode;
         java.lang.String treeNodeName;
+        java.lang.String severityNodeName;
         TreeManager treeManager;
         Channel chan;
         Context ctxt;
@@ -424,12 +450,14 @@ public class ChannelArchiver
         GroupHandler gh;
         DBRType dataType = null;
         int nItems;
+	int prevSeverity;
         
-        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, Channel chan, Context ctxt, 
+        public DataScanner(TreeManager treeManager, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan, Context ctxt, 
                 long period, int ignFuture, java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+	    this.severityNodeName = severityNodeName;
             this.chan = chan;
             this.ctxt = ctxt;
             this.period = period;
@@ -440,11 +468,12 @@ public class ChannelArchiver
             mode = SCAN;
             
         }
-        public DataScanner(TreeManager treeManager, DataMonitor monitor, java.lang.String treeNodeName, Channel chan, 
+        public DataScanner(TreeManager treeManager, DataMonitor monitor, java.lang.String treeNodeName, java.lang.String severityNodeName, Channel chan, 
                 Context ctxt, long period, int ignFuture, java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+	    this.severityNodeName = severityNodeName;
             this.monitor = monitor;
             this.chan = chan;
             this.ctxt = ctxt;
@@ -454,6 +483,7 @@ public class ChannelArchiver
             this.gh = gh;
             this.ignFuture = ignFuture;
             mode = MONITOR;
+	    int prevSeverity = -1;
         }
         public void run()
         {
@@ -461,6 +491,7 @@ public class ChannelArchiver
             {
                 long time;
                 Data data;
+		int severity = -1;
                 try {
                     Thread.currentThread().sleep(period);
                 } catch(InterruptedException exc){return;}
@@ -480,12 +511,15 @@ public class ChannelArchiver
                         ctxt.pendIO(5.);
                         data = DBR2Data(dbr);
                         time = DBR2Time(dbr);
+//!!!!!!!Apparently it is not possible to get severity cform object Channel!!!!!!!!!!!
+			
                     }
                     else //mode == MONITOR
                     {
                         DataAndTime dataTime = monitor.getDataAndTime();
                         data = dataTime.getData();
                         time = dataTime.getTime();
+			severity = monitor.getSeverity();
                     }
                     if(isCheckChan)
                         gh.updateCheckData(chanName, data);
@@ -496,7 +530,14 @@ public class ChannelArchiver
                     prevTime = time;
                     
                     if (isCheckChan || !gh.isDisabled()) 
+		    {
                         treeManager.putRow(treeNodeName, data, time);
+			if(severity != prevSeverity)
+			{
+			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
+			    prevSeverity = severity;
+			}
+		    }
                 }catch(Exception exc)
                 {
                     System.err.println("Error writing sample: " + exc);
@@ -533,7 +574,7 @@ public class ChannelArchiver
              getThreshold = node.getFloat();
             }catch(Exception exc)
             {
-                getThreshold = 20;
+                getThreshold = 1;
             }
             try {
              TreeNode node = tree.getNode(":IGN_FUTURE");
@@ -548,7 +589,7 @@ public class ChannelArchiver
 	    
             }catch(Exception exc)
             {
-                fileSize = 1000000;
+                fileSize = 1000000000;
             }
             
 
@@ -643,11 +684,12 @@ public class ChannelArchiver
                         //Get SCAN mode for this channel
                         TreeNode valNode = tree.getNode(nodeName+":VAL");
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
+                        TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
                         if(scanMode.equals("MONITOR"))
                         {
                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
-                                       new DataMonitor(treeManager, valNode.getFullPath(), ignFuture, chanName, isDisable, gh));
+                                       new DataMonitor(treeManager, valNode.getFullPath(), severityNode.getFullPath(), ignFuture, chanName, isDisable, gh));
                                ctxt.pendIO(5.);
                         }
                         else //Periodic
@@ -656,7 +698,7 @@ public class ChannelArchiver
                             float period = periodNode.getFloat();
                             long periodMs = (long)(period*1000);
                             if(period > getThreshold)
-                                (new Thread(new DataScanner(treeManager, valNode.getFullPath(), valChan, ctxt, periodMs, 
+                                (new Thread(new DataScanner(treeManager, valNode.getFullPath(), severityNode.getFullPath(), valChan, ctxt, periodMs, 
                                         ignFuture, chanName, isDisable, gh))).start();
                             else
                             {
@@ -664,7 +706,7 @@ public class ChannelArchiver
                                 DataMonitor monitor = new DataMonitor(ignFuture);
                                 valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, monitor);
                                 ctxt.pendIO(5.);
-                                (new Thread(new DataScanner(treeManager, monitor, valNode.getFullPath(), valChan, ctxt, periodMs, 
+                                (new Thread(new DataScanner(treeManager, monitor, valNode.getFullPath(), severityNode.getFullPath(), valChan, ctxt, periodMs, 
                                         ignFuture, chanName, isDisable, gh))).start();
 
                             }
@@ -677,7 +719,7 @@ public class ChannelArchiver
             }
         }catch(Exception exc)
         {
-            System.err.println("Geenric error: "+ exc);
+            System.err.println("Genenric error: "+ exc);
         }
     }
 }
