@@ -218,7 +218,9 @@ public class ChannelArchiver
 			    ChannelArchiver.debug = true;
 			prevSize = currSize;
 
-                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); System.exit(0);}
+                    }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); 
+                    //System.exit(0);
+                    }
                     try {
                         Thread.currentThread().sleep(5000); //Repeat check every 5 seconds
                     }catch(InterruptedException exc){return;}
@@ -371,6 +373,7 @@ public class ChannelArchiver
         {
             this.treeManager = treeManager;
             this.treeNodeName = treeNodeName;
+            this.severityNodeName = severityNodeName;
             saveTree = true;
             this.ignFuture = ignFuture;
             this.chanName = chanName;
@@ -381,6 +384,7 @@ public class ChannelArchiver
         {
             treeManager = null;
             treeNodeName = null;
+            severityNodeName = null;
             saveTree = false;
             this.ignFuture = ignFuture;
         }
@@ -409,7 +413,7 @@ public class ChannelArchiver
 			if(severity != prevSeverity)
 			{
 			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
-			    severity = prevSeverity;
+			    prevSeverity = severity;
 			}
                    }
                 }
@@ -511,7 +515,7 @@ public class ChannelArchiver
                         ctxt.pendIO(5.);
                         data = DBR2Data(dbr);
                         time = DBR2Time(dbr);
-//!!!!!!!Apparently it is not possible to get severity cform object Channel!!!!!!!!!!!
+//!!!!!!!Apparently it is not possible to get severity from object Channel!!!!!!!!!!!
 			
                     }
                     else //mode == MONITOR
@@ -532,6 +536,7 @@ public class ChannelArchiver
                     if (isCheckChan || !gh.isDisabled()) 
 		    {
                         treeManager.putRow(treeNodeName, data, time);
+               System.out.println("Severities: " + severity + " " + prevSeverity);
 			if(severity != prevSeverity)
 			{
 			    treeManager.putRow(severityNodeName, new Int8((byte)severity), time);
@@ -620,7 +625,7 @@ public class ChannelArchiver
                          }catch(Exception exc)
                          {
                              System.err.println("Cannot get EGU for " + recName + ": " + exc);
-                             continue;
+                             //continue;
                          }
                         //HOPR
                         try {
