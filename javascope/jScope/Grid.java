@@ -461,8 +461,9 @@ public class Grid
                     }
                 }
             }
-
-            for (i = 0; i < x_dim; i++)
+            int prevIdx;
+            String currStringSubSec = "";
+            for (i = prevIdx = 0; i < x_dim; i++)
             {
                 dim = wm.XPixel(x_values[i], d);
                 switch (mode)
@@ -521,8 +522,11 @@ public class Grid
                         long datel = (long) x_values[i];
                         DateFormat df = new SimpleDateFormat("HH:mm:ss");
                         df.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                        DateFormat dfSubSec = new SimpleDateFormat("HH:mm:ss.SSS");
+                        dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         Date date = new Date();
                         date.setTime(datel);
+                        currStringSubSec = dfSubSec.format(date).toString();
                         curr_string = df.format(date).toString();
 
                         DateFormat df1 = new SimpleDateFormat("d-MMM-yyyy");
@@ -586,8 +590,13 @@ public class Grid
                 if (curr_dim >= label_width &&
                     dim + fm.stringWidth(curr_string) / 2 < d.width)
                 {
-                    g.drawString(curr_string, curr_dim,
+                    if(xAxisHMS && i > 0 && x_values[i] - x_values[prevIdx] < 1000)
+                        g.drawString(currStringSubSec, curr_dim,
                                  d.height - fm.getHeight() / 10 - label_descent);
+                    else
+                        g.drawString(curr_string, curr_dim,
+                                 d.height - fm.getHeight() / 10 - label_descent);
+                    prevIdx = i;
                 }
                 if(curr_date_string != null)
                 {
