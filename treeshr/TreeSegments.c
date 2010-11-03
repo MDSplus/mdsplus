@@ -1783,10 +1783,13 @@ old array is same size.
 	  If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment.
      ****/
      if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
+       int deleted;
        EMPTYXD(xd_data);
        EMPTYXD(xd_dim);
        sinfo = &segment_index.segment[(idx % SEGMENTS_PER_INDEX) - 1];
+       TreeUnLockNci(info_ptr,0,nidx);
        status = _TreeGetSegment(dbid, nid, idx-1, &xd_data, &xd_dim);
+       TreeLockNci(info_ptr,0,nidx,&deleted);
        if (status & 1) {
 	 int length;
          int rows;
