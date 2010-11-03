@@ -254,6 +254,7 @@ old array is same size.
     }
     local_nci.length += add_length;
     TreePutNci(info_ptr,nidx,&local_nci,0);
+    TreeUnLockNci(info_ptr,0,nidx);
   }
   return status;
 }
