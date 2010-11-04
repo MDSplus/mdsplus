@@ -2355,13 +2355,13 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	  *dtype = segment_header.dtype;
 	  *dimct = segment_header.dimct;
 	  memcpy(dims,segment_header.dims,sizeof(segment_header.dims));
-	  dims[segment_header.dimct-1]=sinfo->rows;
 	  if (idx == segment_header.idx)
 	    *next_row = segment_header.next_row;
 	  else if (sinfo->rows < 1) {
 	    status = GetCompressedSegmentRows(info_ptr, sinfo->data_offset, next_row);
           } else
 	    *next_row = sinfo->rows;
+          dims[segment_header.dimct-1]=*next_row;
 	}
       } else {
 	status = TreeFAILURE;
