@@ -666,6 +666,8 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
     }
     else {
       SEGMENT_INDEX index;
+      if (idx == -1)
+	idx=segment_header.idx;
       status = GetSegmentIndex(info_ptr, segment_header.index_offset, &index);
       while ((status &1) != 0 && idx < index.first_idx && index.previous_offset > 0)
         status = GetSegmentIndex(info_ptr, index.previous_offset, &index);
@@ -686,9 +688,14 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
           ans.arsize=ans.length;
           for (i=0;i<ans.dimct; i++) ans.arsize *= ans.m[i];
 	  if (sinfo->rows < 0) {
+	    EMPTYXD(compressed_segment_xd);
 	    int data_length=sinfo->rows & 0x7fffffff;
 	    compressed_segment=1;
-	    status = TreeGetDsc(info_ptr,sinfo->data_offset,data_length,segment);
+	    status = TreeGetDsc(info_ptr,sinfo->data_offset,data_length,&compressed_segment_xd);
+            if (status & 1) {
+	      status = MdsDecompress(&compressed_segment_xd,segment);
+	      MdsFree1Dx(&compressed_segment_xd,0);
+	    }
 	  } else {
 	    ans.pointer = malloc(ans.arsize);
 	    while (status & 1 && deleted) {
