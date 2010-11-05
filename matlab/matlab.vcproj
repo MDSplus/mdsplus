@@ -393,6 +393,10 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath=".\make_mdsipmex.m"
+				>
+			</File>
+			<File
 				RelativePath=".\mdsipmex.c"
 				>
 			</File>
