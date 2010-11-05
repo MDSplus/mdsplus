@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <exception>
+#include <config.h>
 #include <ncidef.h>
 #include <dbidef.h>
 #include <usagedef.h>
