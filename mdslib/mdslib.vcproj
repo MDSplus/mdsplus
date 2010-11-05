@@ -76,7 +76,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				LinkIncremental="1"
-				ModuleDefinitionFile=".\MdsLib.def"
+				ModuleDefinitionFile="$(InputDir)$(InputName).def"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 			/>
@@ -159,7 +159,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				ModuleDefinitionFile=".\MdsLib.def"
+				ModuleDefinitionFile="$(InputDir)$(InputName).def"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="17"
@@ -244,7 +244,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				LinkIncremental="2"
-				ModuleDefinitionFile=".\MdsLib.def"
+				ModuleDefinitionFile="$(InputDir)$(InputName).def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdslib.pdb"
 				RandomizedBaseAddress="1"
@@ -329,7 +329,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				ModuleDefinitionFile=".\MdsLib.def"
+				ModuleDefinitionFile="$(InputDir)$(InputName).def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdslib.pdb"
 				RandomizedBaseAddress="1"
