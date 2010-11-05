@@ -792,6 +792,16 @@ GRAU( XtPointer, call)
     XtFree((char *)widgets);
 }
 
+static void makeNoEdit(Widget w){
+  WidgetList children;
+  Cardinal count=0;
+  Cardinal i;
+  XtVaGetValues(w,XmNchildren,&children,XmNnumChildren,&count,NULL);
+  XtVaSetValues(w,XmNeditable,False,NULL);
+  for (i=0;i<count;i++)
+    makeNoEdit(children[i]);
+}
+
 static void display_data(Widget w, int nid, int count)
 {
   static int x, y;
@@ -817,6 +827,7 @@ static void display_data(Widget w, int nid, int count)
     args[3].value = 0;
     XtManageChild(w = XmdsCreateXdBoxDialog(BxFindTopShell(w), "Display Data", args, XtNumber(args)));
   }
+  makeNoEdit(w);
 }
 
 void
