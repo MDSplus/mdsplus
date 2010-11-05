@@ -80,8 +80,7 @@ extern void *putManyObj(char *serializedIn);
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	*xdPtr = emptyXd;
 
-
-
+ 
 	if(nDims == 1)
 	{
 		arr1Dsc.class = clazz;

@@ -5,6 +5,7 @@ import jScope.ConnectionListener;
 import javax.swing.JFrame;
 import java.io.IOException;
 import java.util.*;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 
@@ -34,8 +35,154 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         UpdateEventListener getListener() {return listener;}
         String getEvent() {return event;}
         int getEvId() {return evId;}
-    }
-    static {
+    } //EventDescriptor
+
+
+    static native boolean isSegmentedNode(String nodeName);
+    static native byte[] getSegment(String nodeName, int segIdx, int segOffset);
+    static native byte[] getAllFrames(String nodeName, int startIdx, int endIdx);
+    static native int[] getInfo(String nodeName, boolean isSegmented); //returned: width, height,  bytesPerPixel
+    static native float[] getSegmentTimes(String nodeName, String timeNames, float timeMin, float timeMax);
+    static native float[] getAllTimes(String nodeName, String timeNames);
+    static native int[] getSegmentIdxs(String nodeName, float timeMin, float timeMax);
+    class LocalFrameData implements FrameData
+    {
+        //If the frames are stored in non segmented data, all the frames are read at the same time
+        //otherwise they are read when needed
+        boolean isSegmented;
+        String nodeName;
+        float [] times;
+        int segIdxs[];
+        int width, height;
+        byte [][] frames;
+        byte []allFrames;
+        int pixelSize;
+        int startIdx, endIdx;
+
+        void configure(String nodeName, String timeName, float timeMin, float timeMax) throws IOException
+        {
+              this.nodeName = nodeName;
+              isSegmented = isSegmentedNode(nodeName);
+              if(isSegmented)
+              {
+                  times = getSegmentTimes(nodeName, timeName, timeMin, timeMax);
+                  if(times == null) throw new IOException(LocalDataProvider.this.ErrorString());
+                  frames = new byte[times.length][];
+                  segIdxs = getSegmentIdxs(nodeName, timeMin, timeMax);
+                  if(segIdxs == null) throw new IOException(LocalDataProvider.this.ErrorString());
+             }
+              else
+              {
+                 if(timeName == null || timeName.trim().equals(""))
+                     timeName = "dim_of("+nodeName+")";
+                 float[] allTimes = getAllTimes(nodeName, timeName);
+                 if(allTimes == null) throw new IOException(LocalDataProvider.this.ErrorString());
+                 for(startIdx = 0; startIdx < allTimes.length && allTimes[startIdx] < timeMin; startIdx++);
+                 for(endIdx = startIdx; endIdx < allTimes.length && allTimes[endIdx] < timeMax; endIdx++);
+                 times = new float[endIdx - startIdx];
+                 for(int i = 0; i < endIdx - startIdx; i++)
+                     times[i] = allTimes[startIdx + i];
+                 allFrames = getAllFrames(nodeName, startIdx, endIdx);
+                 if(allFrames == null) throw new IOException(LocalDataProvider.this.ErrorString());
+              }
+              int [] info = getInfo(nodeName, isSegmented);
+              if(info == null) throw new IOException(LocalDataProvider.this.ErrorString());
+              width = info[0];
+              height = info[1];
+              pixelSize = info[2];
+        }
+     /**
+     * Returns the type of the corresponding frames. Returned frames can have either of the following types:
+     * <br>
+     * -FrameData.BITMAP_IMAGE meaning that method GetFrameAt will return a byte matrix.
+     * <br>
+     * -FrameData.AWT_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
+     *  content of a gif or jpeg file.
+     * <br>
+     * -FramDeata.JAI_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
+     *  content of every image file supported by the JAI (Java Advanced Imaging) package. The JAI package needs not
+     *  to be installed unless file formats other than gif or jpeg are used.
+     *
+     * @return The type of the corresponding frame.
+     * @exception java.io.IOException
+     */
+        public int GetFrameType() throws IOException
+        {
+            switch(pixelSize) {
+                case 1:
+                     return FrameData.BITMAP_IMAGE_8;
+                case 2:
+                     return FrameData.BITMAP_IMAGE_16;
+                case 4:
+                     return FrameData.BITMAP_IMAGE_32;
+                default:
+                     return FrameData.BITMAP_IMAGE_8;
+            }
+        }
+
+    /**
+     * Returns thenumber of frames in the sequence.
+     *
+     * @return The number of frames in the sequence.
+     * @exception java.io.IOException
+     */
+        public int GetNumFrames() throws IOException
+        {
+            return times.length;
+        }
+
+    /**
+     * Return the dimension of a frame. All the frames in the sequence must have the same dimension.
+     *
+     * @return The frame dimension.
+     * @exception java.io.IOException
+     */
+        public Dimension GetFrameDimension()throws IOException
+        {
+            return new Dimension(width, height);
+        }
+
+    /**
+     * Return the times associated with every frame of the sequence. This information is required to correlate
+     * the frame sequence with the other signals displayed by jScope.
+     *
+     * @return The time array for the frame sequence.
+     * @exception java.io.IOException
+     */
+        public float[] GetFrameTimes() throws IOException
+        {
+            return times;
+        }
+
+    /**
+     * Return the frame at the given position.
+     *
+     * @param idx The index of the requested frame in the frame sequence.
+     * @return The frame as a byte array. If the frame type is FrameData.BITMAP_IMAGE, the matrix uses row major
+     * ordering.
+     * @exception java.io.IOException
+     */
+        public byte[] GetFrameAt(int idx) throws IOException
+        {
+            if(isSegmented)
+            {
+                if(frames[idx] == null)
+                {
+                    int segIdx = segIdxs[idx];
+                    int segOffset = 0;
+                    for(int i = idx-1; i >= 0 && segIdxs[i] == segIdx; i--, segOffset++);
+                    frames[idx] = getSegment(nodeName, segIdx, segOffset);
+                }
+                return frames[idx];
+            }
+            byte[] outFrame = new byte[pixelSize * width * height];
+            System.arraycopy(allFrames, idx*pixelSize * width * height, outFrame, 0, pixelSize * width * height);
+            //for(int i = 0; i < 10000; i++) System.out.println(allFrames[i]);
+            return outFrame;
+        }
+    } //LocalFrameData
+
+     static {
         try
         {
 //          System.loadLibrary("MdsShr");
@@ -159,7 +306,9 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
-        throw(new IOException("Frames visualization on LocalDataProvider not implemented"));
+        LocalFrameData frameData = new LocalFrameData();
+        frameData.configure(in_y, in_x, time_min, time_max);
+        return frameData;
     }
 
     protected synchronized boolean  CheckOpen() {return true; }

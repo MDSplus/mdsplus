@@ -103,8 +103,12 @@ public class TestMdsObjects
    
     public static void main(java.lang.String args[])
     {
-        
-        testRows();
+        try {
+        Tree tree = new Tree("test", 1);
+        long size = tree.getDatafileSize();
+        System.out.println(size);
+        }catch(Exception exc){};
+        //testRows();
 
  //       Connection c = new Connection("150.178.32.45")
 

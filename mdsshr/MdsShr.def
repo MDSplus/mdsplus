@@ -27,6 +27,7 @@ MdsCompareXd
 MdsCopyDxXd
 MdsCopyDxXdZ
 MdsDescrToCstring
+MdsDecompress
 MdsFloatToTime
 MdsFloatToDelta
 MdsTimeToFloat

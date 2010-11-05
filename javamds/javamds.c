@@ -6,7 +6,8 @@
 #include <mdstypes.h>
 #include <string.h>
 #include <stdlib.h>
-#include "LocalDataProvider.h"
+//#include "LocalDataProvider.h"
+#include "jScope_LocalDataProvider.h"
 #include "MdsHelper.h"
 
 extern int TdiCompile(), TdiData(), TdiFloat();
@@ -542,9 +543,10 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
 }
 
 
-JNIEXPORT jfloat JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
+//JNIEXPORT jfloat JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
+JNIEXPORT jdouble JNICALL Java_jScope_LocalDataProvider_GetFloatNative(JNIEnv *env, jobject obj, jstring in)
 {
-    float ris;
+    double ris;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
 
     ris = MdsGetFloat((char *)in_char);
@@ -584,9 +586,466 @@ JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_SetEnvironmentSpecific(JNIE
 
 }
 
+/////////////////Segmented stuff/////////////////
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    isSegmentedNode
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_jScope_LocalDataProvider_isSegmentedNode
+  (JNIEnv *env, jclass cls, jstring jNodeName)
+{
+    int status, nid, numSegments;
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+
+	status = TreeFindNode((char *)nodeName, &nid);
+	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+	if(status & 1)
+	{
+		status = TreeGetNumSegments(nid, &numSegments);
+		if((status & 1) && numSegments > 0)
+			return 1;
+	}
+	return 0;
+}
+
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getSegment
+ * Signature: (Ljava/lang/String;II)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
+  (JNIEnv *env, jclass cls, jstring jNodeName, jint segmentIdx, jint segmentOffset)
+{
+    int status, nid, i;
+	int numSegments;
+	jbyteArray jarr;
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+	EMPTYXD(segXd);
+	EMPTYXD(decXd);
+	EMPTYXD(dimXd);
+	ARRAY_COEFF(char, 3) *arrPtr;
+	int frameSize;
+
+	status = TreeFindNode((char *)nodeName, &nid);
+	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	status = TreeGetSegment(nid, segmentIdx, &segXd, &dimXd);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	status = TdiData(&segXd, &segXd MDS_END_ARG);
+	arrPtr = (void *)segXd.pointer;
+	if(arrPtr->dimct < 2)
+	{
+   		strcpy(error_message, "Invalid segment dimension for image frames");
+		return NULL;
+	}
+	if(arrPtr->dimct == 2 && segmentOffset > 0)
+	{
+		printf("INTERNAL ERROR IN GET SEGMENT FRAMES!!!\n");
+		return NULL;
+	}
+	if(arrPtr->dimct > 2 && arrPtr->m[2] <= segmentOffset)
+	{
+		printf("INTERNAL ERROR IN GET SEGMENT FRAMES!!!\n");
+		return NULL;
+	}
+	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
+
+	jarr = (*env)->NewByteArray(env, frameSize);
+    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize, (char *)arrPtr->pointer + (int)segmentOffset * frameSize);
+
+
+	MdsFree1Dx(&segXd, 0);
+	MdsFree1Dx(&dimXd, 0);
+	return jarr;
+}
+
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getAllFrames
+ * Signature: (Ljava/lang/String;II)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
+  (JNIEnv *env, jclass cls, jstring jNodeName , jint startIdx, jint endIdx)
+{
+	EMPTYXD(xd);
+	ARRAY_COEFF(char *, 3) *arrPtr;
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+	struct descriptor nodeNameD = {strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName};
+	int status, frameSize;
+	jbyteArray jarr;
+
+    status = TdiCompile(&nodeNameD, &xd MDS_END_ARG);
+	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+	if(status & 1) status = TdiData(&xd, &xd MDS_END_ARG);
+	if(!(status & 1))
+	{
+
+		
+		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	arrPtr = (void *)xd.pointer;
+	if(arrPtr->dimct < 2)
+	{
+		sprintf(error_message, "Invalid segment dimension for image frames: %d %d", arrPtr->dimct, arrPtr->arsize);
+		return NULL;
+	}
+	if(arrPtr->dimct == 2 && endIdx > 0)
+	{
+   		strcpy(error_message, "INTERNAL ERROR IN GET ALL FRAMES!!!");
+		printf("INTERNAL ERROR IN GET ALL FRAMES!!!\n");
+		return NULL;
+	}
+	if(arrPtr->dimct > 2 && arrPtr->m[2] < endIdx)
+	{
+   		strcpy(error_message, "INTERNAL ERROR IN GET ALL FRAMES  !!!");
+		printf("INTERNAL ERROR IN GET ALL FRAMES!!!\n");
+		return NULL;
+	}
+
+	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
+    jarr = (*env)->NewByteArray(env, frameSize * (endIdx - startIdx));
+    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize * (endIdx - startIdx), (char *)arrPtr->pointer + (int)startIdx * frameSize);
+	MdsFree1Dx(&xd, 0);
+	return jarr;
+}
+
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getInfo
+ * Signature: (Ljava/lang/String;)[I
+ */
+JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfo
+  (JNIEnv *env, jclass cls, jstring jNodeName, jboolean isSegmented)
+{
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+	EMPTYXD(xd);
+	ARRAY_COEFF(char *, 3) *arrPtr;
+	int status, nid;
+	int retInfo[3];
+	jintArray jarr;
+	char dtype, dimct;
+	int dims[64];
+	int nextRow;
+	struct descriptor nodeNameD = {strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName};
+//Returned array: [width, height, bytesPerPixel]	
+	if(isSegmented)
+	{
+		status = TreeFindNode((char *)nodeName, &nid);
+		(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
+		}
+		status = TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
+		}
+		retInfo[0] = dims[0];
+		retInfo[1] = dims[1];
+		switch (dtype)  {
+			case DTYPE_B:
+			case DTYPE_BU: 
+				retInfo[2] = 1;
+				break;
+			case DTYPE_W:
+			case DTYPE_WU: 
+				retInfo[2] = 2;
+				break;
+			case DTYPE_L:
+			case DTYPE_LU: 
+			case DTYPE_FLOAT:
+				retInfo[2] = 4;
+				break;
+			case DTYPE_Q:
+			case DTYPE_QU: 
+			case DTYPE_DOUBLE:
+				retInfo[2] = 8;
+				break;
+			default:
+				retInfo[2] = 1;
+		}
+	}
+	else
+	{
+		status = TdiCompile(&nodeNameD, &xd MDS_END_ARG);
+		(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+		if(status & 1) status = TdiData(&xd, &xd MDS_END_ARG);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
+		}
+		arrPtr = (void *)xd.pointer;
+		retInfo[0] = arrPtr->m[0];
+		retInfo[1] = arrPtr->m[1];
+		retInfo[2] = arrPtr->length;
+		MdsFree1Dx(&xd, 0);
+	}
+    jarr = (*env)->NewIntArray(env, 3);
+    (*env)->SetIntArrayRegion(env, jarr, 0, 3, retInfo);
+	return jarr;
+}
 
 
 
+static int getStartEndIdx(int nid, float startTime, float endTime, int *retStartIdx, int *retEndIdx)
+{
+	int status, nSegments, startIdx, endIdx;
+	float currStart, currEnd;
+	EMPTYXD(startXd);
+	EMPTYXD(endXd);
+
+	status = TreeGetNumSegments(nid, &nSegments);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return status;
+	}
+	for(startIdx = 0; startIdx < nSegments; startIdx++)
+	{
+		status = TreeGetSegmentLimits(nid, startIdx, &startXd, &endXd);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return status;
+		}
+    	status = TdiData(&endXd, &endXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+		currEnd = *(float *)endXd.pointer->pointer;
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+		if(currEnd >= startTime)
+			break;
+	}
+	for(endIdx = startIdx; endIdx < nSegments; endIdx++)
+	{
+		status = TreeGetSegmentLimits(nid, endIdx, &startXd, &endXd);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return status;
+		}
+    	status = TdiData(&startXd, &startXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+		currEnd = *(float *)endXd.pointer->pointer;
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+		if(currEnd >= endTime)
+			break;
+	}
+	*retStartIdx = startIdx;
+	*retEndIdx = endIdx;
+	return 1;
+}
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getSegmentTimes
+ * Signature: (Ljava/lang/String;Ljava/lang/String;FF)[F
+ */
+JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
+  (JNIEnv *env, jclass cls, jstring jNodeName, jstring jTimeName, jfloat startTime, jfloat endTime)
+{
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+	EMPTYXD(startXd);
+	EMPTYXD(endXd);
+	EMPTYXD(dimXd);
+	EMPTYXD(segXd);
+	EMPTYXD(emptyXd);
+	int status, nid, nSegments, startIdx, endIdx, idx, nTimes, actSegments, currIdx;
+	float currStart, currEnd;
+	struct descriptor_xd *timesXds;
+	struct descriptor_a *arrPtr;
+	jfloatArray jarr;
+		
+	status = TreeFindNode((char *)nodeName, &nid);
+	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	status = getStartEndIdx(nid, startTime, endTime, &startIdx, &endIdx);
+	if(!(status & 1)) return NULL;
+	actSegments = endIdx - startIdx;
+	timesXds = malloc(sizeof(struct descriptor_xd) * actSegments);
+	nTimes = 0;
+	for(idx = 0; idx < actSegments ; idx++)
+	{
+		timesXds[idx] = emptyXd;
+		status = TreeGetSegment(nid, idx + startIdx, &segXd, &timesXds[idx]);
+    	if(status & 1) status = TdiData(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+    	if(status & 1) status = TdiFloat(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
+		}
+		if(timesXds[idx].pointer->class == CLASS_S)
+			nTimes  = nTimes + 1;
+		else
+		{
+			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+			nTimes += arrPtr->arsize/arrPtr->length;
+		}
+		MdsFree1Dx(&segXd, 0);
+	}
+    jarr = (*env)->NewFloatArray(env, nTimes);
+	currIdx = 0;
+	for(idx = 0; idx < actSegments ; idx++)
+	{
+		if(timesXds[idx].pointer->class == CLASS_S)
+		{
+			(*env)->SetFloatArrayRegion(env, jarr, currIdx, 1, (float *)timesXds[idx].pointer->pointer);
+			currIdx++;
+		}
+		else
+		{
+			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+			(*env)->SetFloatArrayRegion(env, jarr, currIdx, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
+			currIdx+=arrPtr->arsize/arrPtr->length;
+		}
+		MdsFree1Dx(&timesXds[idx], 0);
+	}
+	free((char *)timesXds);
+	return jarr;
+}
+
+
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getAllTimes
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)[F
+ */
+JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getAllTimes
+  (JNIEnv *env, jclass cls, jstring jNodeName, jstring jTimeName)
+{
+	EMPTYXD(xd);
+	int status;
+	const char *timeName = (*env)->GetStringUTFChars(env, jTimeName, 0);
+	struct descriptor timeNameD = {strlen(timeName), DTYPE_T, CLASS_S, (char *)timeName};
+	struct descriptor_a *arrPtr;
+	jfloatArray jarr;
+
+	status = TdiCompile(&timeNameD, &xd MDS_END_ARG);
+	(*env)->ReleaseStringUTFChars(env, jTimeName, timeName);
+	if(status & 1) status = TdiData(&xd, &xd MDS_END_ARG);
+	if(status & 1) status = TdiFloat(&xd, &xd MDS_END_ARG);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	if(xd.pointer->class == CLASS_S)
+	{
+		jarr = (*env)->NewFloatArray(env, 1);
+		(*env)->SetFloatArrayRegion(env, jarr, 0, 1, (float *)xd.pointer->pointer);
+	}
+	else
+	{
+		arrPtr = (struct descriptor_a *)xd.pointer;
+		jarr = (*env)->NewFloatArray(env, arrPtr->arsize/arrPtr->length);
+		(*env)->SetFloatArrayRegion(env, jarr, 0, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
+	}
+	MdsFree1Dx(&xd, 0);
+	return jarr;
+}
+
+
+/*
+ * Class:     jScope_LocalDataProvider
+ * Method:    getSegmentIdxs
+ * Signature: (Ljava/lang/String;FF)[I
+ */
+JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getSegmentIdxs
+  (JNIEnv *env, jclass cls, jstring jNodeName, jfloat startTime, jfloat endTime)
+{
+	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
+	int status, nid, nSegments, startIdx, endIdx, idx, currIdx;
+	jintArray jarr;
+	int *dims;
+	int currDim[64];
+	int *arr;
+	char dtype, dimct;
+	int nextRow, nRows, rowIdx;
+		
+	status = TreeFindNode((char *)nodeName, &nid);
+	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
+	if(!(status & 1))
+	{
+   		strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+	}
+	status = getStartEndIdx(nid, startTime, endTime, &startIdx, &endIdx);
+	if(!(status & 1)) return NULL;
+	nSegments = endIdx - startIdx;
+	dims = (int *)malloc(nSegments * sizeof(int));
+	nRows = 0;
+	for(idx = 0; idx < nSegments; idx++)
+	{
+		status = TreeGetSegmentInfo(nid, idx+startIdx, &dtype, &dimct, currDim, &nextRow);
+		if(!(status & 1))
+		{
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
+		}
+		if(dimct < 2)
+		{
+			printf("INTERNAL ERROR IN SEGMENTED FRAME: DIMENSION < 2\n");
+			return NULL;
+		}
+		if(dimct == 2)
+		{
+			dims[idx] = 1;
+			nRows++;
+		}
+		else 
+		{
+			dims[idx] = currDim[2];
+			nRows += currDim[2];
+		}
+	}
+	arr = malloc(nRows * sizeof(int));
+	rowIdx = 0;
+	for(idx = 0; idx < nSegments; idx++)
+	{
+		for(currIdx = 0; currIdx < dims[idx]; currIdx++)
+			arr[rowIdx++] = startIdx + idx;
+	}
+	jarr = (*env)->NewIntArray(env, nRows);
+	(*env)->SetIntArrayRegion(env, jarr, 0, nRows, arr);
+	free((char *)arr);
+	free((char *)dims);
+	return jarr;
+}
+
+		
+
+
+
+
+
+
+
+
+/////////////////Events stuff////////////////////
 
 static JavaVM *jvm;
 static jobject localDataProviderInstance;

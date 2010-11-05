@@ -27,6 +27,7 @@ EXPORT extern MdsCOMPRESSIBLE;
 #include <mdstypes.h>
 EXPORT extern int MdsCmprs(int *nitems, struct descriptor_a *items, struct descriptor_a *pack, int *bit);
 EXPORT extern int MdsCompress(struct descriptor *cimage, struct descriptor *centry, struct descriptor *in, struct descriptor_xd *out);
+EXPORT extern int MdsDecompress(struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr);
 EXPORT extern int MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 EXPORT extern int MdsCopyDxXdZ(struct descriptor *in, struct descriptor_xd *out, void **zone, int (*fixup_nid) (), void *fixup_nid_arg,
                         int (*fixup_path) (), void *fixup_path_arg);
