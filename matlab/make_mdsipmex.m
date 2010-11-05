@@ -23,7 +23,7 @@ comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip',DEBUG,PASSWD,MD
 for(i=1:length(r))
      comm = sprintf('%s %s/mdstcpip/%s',comm,MDSPLUS,char(r(i)));end
 else
-comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip -L%s/%s -lMdsIpShr',...
-	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS,LIB);
+comm = sprintf('mex %s %s mdsipmex.c -I%s/include -I%s/mdstcpip -L%s/lib -lMdsIpShr',...
+	       DEBUG,PASSWD,MDSPLUS,MDSPLUS,MDSPLUS);
 end
 disp(comm);eval(comm);
