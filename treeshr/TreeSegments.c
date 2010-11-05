@@ -693,7 +693,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	    compressed_segment=1;
 	    status = TreeGetDsc(info_ptr,sinfo->data_offset,data_length,&compressed_segment_xd);
             if (status & 1) {
-	      status = MdsDecompress(&compressed_segment_xd,segment);
+	      status = MdsDecompress(compressed_segment_xd.pointer,segment);
 	      MdsFree1Dx(&compressed_segment_xd,0);
 	    }
 	  } else {
