@@ -10,7 +10,7 @@ const char *mdspath=";%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
 const char *envkey="SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
 static void AddMdsPath() {
-	DWORD dwReturnValue;
+	DWORD_PTR resultptr;
 	HKEY key = NULL;
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,envkey,0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS) {
 		long valtype;
@@ -29,11 +29,11 @@ static void AddMdsPath() {
 	if (key != NULL) RegCloseKey(key);
 	SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
     (LPARAM) "Environment", SMTO_ABORTIFHUNG,
-    5000, &dwReturnValue);
+    5000, &resultptr);
 }
 
 static void RemoveMdsPath() {
-	DWORD dwReturnValue;
+	DWORD_PTR resultptr;
 	int found = 0;
 	HKEY key = NULL;
 	if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,envkey,0,KEY_READ | KEY_WRITE,&key) == ERROR_SUCCESS) {
@@ -57,7 +57,7 @@ static void RemoveMdsPath() {
 	if (key != NULL) RegCloseKey(key);
 	SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
     (LPARAM) "Environment", SMTO_ABORTIFHUNG,
-    5000, &dwReturnValue);
+    5000, &resultptr);
 	return;
 }
 

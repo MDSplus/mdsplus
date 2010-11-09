@@ -111,90 +111,24 @@
 			Name="Release|x64"
 			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="true"
-				SuppressStartupBanner="true"
-				TargetEnvironment="3"
-				TypeLibraryName=".\Release/matlab.tlb"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(MATLAB_DIR)\extern\include,..\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MATLAB_EXPORTS;_CRT_SECURE_NO_WARNINGS"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Release/matlab.pch"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
-				CompileAs="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib &quot;$(MATLAB_DIR)\extern\lib\win64\microsoft\libmex.lib&quot; &quot;$(MATLAB_DIR)\extern\lib\win64\microsoft\libmx.lib&quot;"
-				OutputFile="$(OutDir)/mdsipmex.dll"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				ModuleDefinitionFile="$(InputDir)mdsipmex.def"
-				ProgramDatabaseFile=".\Release/mdsipmex.pdb"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				ImportLibrary="$(OutDir)/mdsipmex.lib"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
+				Name="VCNMakeTool"
+				BuildCommandLine="cd &quot;$(SolutionDir)$(PlatformName)\$(ConfigurationName)&quot;&#x0D;&#x0A;mex &quot;$(SolutionDir)matlab\mdsipmex.c&quot; -I&quot;$(SolutionDir)include&quot; -L&quot;.&quot; -lmdsipshr wsock32.lib"
+				ReBuildCommandLine="cd &quot;$(SolutionDir)$(PlatformName)\$(ConfigurationName)&quot;&#x0D;&#x0A;mex &quot;$(SolutionDir)matlab\mdsipmex.c&quot; -I&quot;$(SolutionDir)include&quot; -L&quot;.&quot; -lmdsipshr wsock32.lib"
+				CleanCommandLine="cd &quot;$(SolutionDir)$(PlatformName)\$(ConfigurationName)&quot;&#x0D;&#x0A;del mdsipmex.mexw64"
+				Output="$(SolutionDir)$(PlatformName)\$(ConfigurationName)\mdsipmex.mexw64"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
 			/>
 		</Configuration>
 		<Configuration

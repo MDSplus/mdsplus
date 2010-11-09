@@ -556,6 +556,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\traverser.bat"
+				>
+			</File>
+			<File
 				RelativePath=".\Tree.java"
 				>
 			</File>

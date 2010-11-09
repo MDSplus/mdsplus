@@ -248,7 +248,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="..\ntwdblib.lib &quot;$(IDL_DIR)\bin\bin.x86\idl.lib&quot;"
+				AdditionalDependencies="..\ntwdblib.lib $(IDL_DIR)\bin\bin.x86\idl.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile="$(InputDir)$(InputName).def"

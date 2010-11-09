@@ -43,29 +43,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)java\classes\"
-			IntermediateDirectory=".\Release"
-			ConfigurationType="0"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
-				CleanCommandLine="del *.class &quot;$(OutDir)jScope.jar&quot;"
-				Output="$(OutDir)jScope.jar"
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug|x64"
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
@@ -80,6 +57,29 @@
 				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
 				CleanCommandLine=""
 				Output="..\java\classes\jScope.jar"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)java\classes\"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
+				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
+				CleanCommandLine="del *.class &quot;$(OutDir)jScope.jar&quot;"
+				Output="$(OutDir)jScope.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
@@ -293,6 +293,10 @@
 			</File>
 			<File
 				RelativePath=".\jScope\JiVarImpl.java"
+				>
+			</File>
+			<File
+				RelativePath=".\jScope.bat"
 				>
 			</File>
 			<File

@@ -225,6 +225,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MDSobjectsCppShr", "mdsobje
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "javaobjects", "mdsobjects\java\java.vcproj", "{02A1CB34-AA0D-49D9-B470-031FB1E74902}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC9DEDE9-579F-414E-9BA9-39D519B58F76} = {AC9DEDE9-579F-414E-9BA9-39D519B58F76}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtevents", "rtevents\rtevents.vcproj", "{70571434-ABCB-4148-958B-B01BFD255F5B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -237,6 +240,9 @@ EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup32", "Setup\Setup32.vdproj", "{DE808DAC-7778-4EAC-BB42-4536786CFA40}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "javadevices", "javadevices\javadevices.vcproj", "{FFDA5357-22C9-497B-B85C-61DF99C0F4F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AC9DEDE9-579F-414E-9BA9-39D519B58F76} = {AC9DEDE9-579F-414E-9BA9-39D519B58F76}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
