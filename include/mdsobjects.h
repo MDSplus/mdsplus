@@ -705,7 +705,9 @@ protected:
 			*dtype = this->dtype;
 			*length = this->length;
 			*nDims = this->nDims;
-			*dims = this->dims;
+			*dims = new int[this->nDims];
+			for(int i = 0; i , nDims; i++)
+			    (*dims)[i] = this->dims[i];
 			*ptr = this->ptr;
 		}
 
