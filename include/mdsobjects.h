@@ -171,7 +171,7 @@ Tree *getActiveTree();
 			strcpy(this->msg, currMsg);
 		}
 
-		~MdsException()
+		virtual ~MdsException()
 		{
 			if(msg)
 				deleteNativeArray(msg);
@@ -706,7 +706,7 @@ protected:
 			*length = this->length;
 			*nDims = this->nDims;
 			*dims = new int[this->nDims];
-			for(int i = 0; i , nDims; i++)
+			for(int i = 0; i < this->nDims; i++)
 			    (*dims)[i] = this->dims[i];
 			*ptr = this->ptr;
 		}
@@ -2187,7 +2187,7 @@ protected:
 	public:
 		CachedTree(char *name,int shot,bool shared,int size);
 		CachedTree(char *name, int shot);
-		~CachedTree();
+		virtual ~CachedTree();
 
 		virtual void open();
 
@@ -2221,7 +2221,7 @@ protected:
 		_int64 eventTime;
 		Event(){}
 		Event(char *evName);
-		~Event();
+		virtual ~Event();
 		virtual void run() {}
 		char *getRaw(int *size)
 		{
@@ -2252,7 +2252,7 @@ protected:
 		virtual void disconnectFromEvents();
 	public:
 		REvent(char *evName);
-		~REvent();
+		virtual ~REvent(){}
 		static void setEvent(char *evName, Data *data);
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEventAndWait(char *evName, Data *data);
