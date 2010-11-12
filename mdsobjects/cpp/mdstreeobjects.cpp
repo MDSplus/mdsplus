@@ -588,9 +588,16 @@ StringArray *Tree::findTags(char *wild)
 	void *ctx = 0;
 	int nTags = 0;
 	int nidOut;
-	while(nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindTagWild(getCtx(), wild, &nidOut, &ctx)))
-		nTags++;
+	for(nTags = 0; nTags < MAX_TAGS; nTags++)
+	{
+	    char *currTag = _TreeFindTagWild(getCtx(), wild, &nidOut, &ctx);
+	    if(!currTag) break;
+	    tagNames[nTags] = new char[strlen(currTag) + 1];
+	    strcpy(tagNames[nTags], currTag);
+	}
 	StringArray *stArr = new StringArray(tagNames, nTags);
+	for(int i = 0; i < nTags; i++)
+	    delete [] tagNames[i];
 	return stArr;
 }
 void Tree::removeTag(char *tagName)
@@ -1263,7 +1270,7 @@ const char *TreeNode::getUsage()
 {
 
 	int usageLen = 4;
-	int usage;
+	int usage = 0;
 	struct nci_itm nciList[] = 
 		{{4, NciUSAGE, &usage, &usageLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
@@ -1466,7 +1473,11 @@ Array *TreeNode::getSegment(int segIdx)
 	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc, isCached());
 	//if(tree) tree->unlock();
 	if(!(status & 1))
+	{
+		freeDsc(dataDsc);
+		freeDsc(timeDsc);
 		throw new MdsException(status);
+	}
 	Array *retData = (Array *)convertFromDsc(dataDsc);
 	freeDsc(dataDsc);
 	freeDsc(timeDsc);

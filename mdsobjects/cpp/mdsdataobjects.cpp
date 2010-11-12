@@ -90,6 +90,7 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 		case DTYPE_QU: return new Uint64Array((_int64 *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_T: return new StringArray((char *)ptr, dims[0], length);
 	}
 	return 0;
 }
@@ -883,6 +884,7 @@ double *Array::getDoubleArray(int *numElements)
 
 char **Array::getStringArray(int *numElements)
 {
+printf("ARRAY GET STRING ARRAY\n");
 	int size = arsize/length;
 	char **retArr = new char*[size];
 	for(int i = 0; i < size; i++)

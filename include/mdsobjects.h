@@ -284,6 +284,12 @@ protected:
 		virtual float * getFloatArray(int *numElements);
 
 		virtual double * getDoubleArray(int *numElements);
+		virtual char ** getStringArray(int *numElements)
+		{
+			printf("GET STRING ARRAY DATA !!!!!\n");
+			*numElements = 0; 
+			return NULL;
+		}
 		virtual Data *getDimensionAt(int dimIdx);
 		virtual int getSize() {return 1;}
 
@@ -738,7 +744,7 @@ protected:
 		_int64 *getLongArray(int *numElements);
 		float *getFloatArray(int *numElements);
 		double *getDoubleArray(int *numElements);
-		char **getStringArray(int *numElements);
+		virtual char **getStringArray(int *numElements);
 
 	};
 	class Int8Array: public Array
@@ -909,6 +915,11 @@ protected:
 			setSpecific(padData, maxLen, DTYPE_T, nData);
 			setAccessory(units, error, help, validation);
 			delete[] padData;
+		}
+		StringArray(char *data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
+		{
+			setSpecific(data, stringLen, DTYPE_T, nStrings);
+			setAccessory(units, error, help, validation);
 		}
 	};
 
