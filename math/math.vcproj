@@ -444,7 +444,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="echo $(IntDir)\$(InputName).f&#x0D;&#x0A;set path=%path%;%G77_DIR%\bin&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -532,7 +532,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling..."
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -620,7 +620,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -664,7 +664,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -796,7 +796,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -884,7 +884,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -928,7 +928,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -972,7 +972,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling..."
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1016,7 +1016,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1108,7 +1108,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1152,7 +1152,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1196,7 +1196,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1240,7 +1240,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1284,7 +1284,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1328,7 +1328,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1372,7 +1372,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1416,7 +1416,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling..."
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1460,7 +1460,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling..."
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1504,7 +1504,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1528,7 +1528,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1572,7 +1572,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1616,7 +1616,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
@@ -1660,7 +1660,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling"
-					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w"
+					CommandLine="set path=%PATH%;$(SolutionDir)WinTools&#x0D;&#x0A;g77 -c $(InputName).f -o $(IntDir)\$(InputName).obj -w&#x0D;&#x0A;"
 					Outputs="$(IntDir)\$(InputName).obj"
 				/>
 			</FileConfiguration>
