@@ -14,7 +14,6 @@ mdsServer::mdsServer (Tree *tree, bool appendIn)
 	StringArray *tagsArr = tree->findTags("***");
 	char **tags = tagsArr->getStringArray(&numTags);
 	deleteData(tagsArr);
-printf("Trovato %d tags\n", numTags);
 	for(int i = 0; i < numTags; i++)
 	{
 printf("TAG: %s\n", tags[i]);
