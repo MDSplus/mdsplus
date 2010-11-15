@@ -159,7 +159,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(JDK64_DIR)\lib\jvm.lib"
+				AdditionalDependencies="&quot;$(JDK64_DIR)\lib\jvm.lib&quot;"
 				ModuleDefinitionFile=".\javamds.def"
 				ProgramDatabaseFile="$(SolutionDir)$(IntDir)/javamds.pdb"
 				RandomizedBaseAddress="1"
