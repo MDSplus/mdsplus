@@ -380,7 +380,7 @@ class Data(object):
     def __rmod__(self,y):
         """Reverse modulus: x.__rmod__(y) <==> y%x
         @rtype: Data"""
-        return Data.execute('$%x',y,self)
+        return Data.execute('$ mod $',y,self)
 
     __rmul__=__mul__
     """Reverse multiply: x.__rmul__(y) <==> y*x
