@@ -222,13 +222,14 @@ class Tree(object):
         @type wild: str
         @rtype: None
         """
-        from _treeshr import TreeDeleteNodeInitialize,TreeDeleteNode,TreeDeleteNodeExecute
+        from _treeshr import TreeDeleteNode,TreeDeleteNodeExecute
         try:
             Tree.lock()
-            TreeDeleteNodeInitialize(self)
+            first=True
             nodes=self.getNodeWild(wild)
             for node in nodes:
-                TreeDeleteNode(self,int(node.nid_number))
+                TreeDeleteNode(self,int(node.nid_number),first)
+                first=False
             TreeDeleteNodeExecute(self)
         finally:
             Tree.unlock()

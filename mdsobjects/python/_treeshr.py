@@ -460,15 +460,12 @@ def TreeAddConglom(tree,name,devname):
         raise TreeException,MdsGetMsg(status)
     return nid.value
     
-def TreeDeleteNodeInitialize(tree):
+def TreeDeleteNode(tree,nid,reset):
     count=_C.c_int(0)
-    status = __TreeDeleteNodeInitialize(tree.ctx,0,count,1)
-    if not (status & 1):
-        raise TreeException,MdsGetMsg(status)
-
-def TreeDeleteNode(tree,nid):
-    count=_C.c_int(0)
-    status = __TreeDeleteNodeInitialize(tree.ctx,nid,count,0)
+    reset_flag=0
+    if reset:
+      reset_flag=1
+    status = __TreeDeleteNodeInitialize(tree.ctx,nid,count,reset_flag)
     if not (status & 1):
         raise TreeException,MdsGetMsg(status)
 
