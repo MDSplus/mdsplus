@@ -97,7 +97,7 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
     if (count)
       *count = 0;
   }
-  if (nid)
+  if (nidin)
     check_nid(dblist, nid, count);
   return TreeNORMAL;
 }
