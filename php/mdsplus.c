@@ -189,19 +189,34 @@ PHP_MINFO_FUNCTION(mdsplus)
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
+
+static int persistent = 0;
+static char *lastHost = 0;
+static int persistentConnection = -1;
+
 PHP_FUNCTION(mdsplus_connect)
 {
 	char *arg = NULL;
 	int arg_len, len;
     int handle;
+    int persistent;
 
     mdsplus_replace_error(0,1);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-		return;
-	}
-    handle = ConnectToMds(arg);
+    persistent = 0;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &arg, &arg_len, &persistent) == FAILURE) {
+	  	RETURN_FALSE;
+    }
+    handle = (!persistent || lastHost == 0 || persistentConnection == -1 || strcmp(arg,lastHost) != 0) ? ConnectToMds(arg) : persistentConnection; 
     if (handle != -1)
 	{
+        if (persistent) {
+          if (lastHost != 0) {
+             free(lastHost);
+             lastHost=0;
+          }
+          lastHost = strcpy(malloc(strlen(arg)+1),arg);
+          persistentConnection = handle;
+        }
 		RETURN_LONG(handle);
     }
     else
@@ -229,6 +244,8 @@ PHP_FUNCTION(mdsplus_disconnect)
 		return;
 	}
     mdsplus_replace_error(0,1);
+    if (socket == persistentConnection)
+      persistentConnection=-1;
     DisconnectFromMds(socket);
     RETURN_TRUE;
 }
