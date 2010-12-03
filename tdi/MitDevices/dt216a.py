@@ -19,7 +19,7 @@ class DT216A(Device):
     """
     
     parts=[
-        {'path':':NODE','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
+        {'path':':NODE','type':'text','value':'192.168.0.254','options':('no_write_shot',)}, 
         {'path':':BOARD','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
         {'path':':RANGES','type':'text','value':'192.168.0.0','options':('write_once',)},
