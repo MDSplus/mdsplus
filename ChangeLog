@@ -1,6 +1,18 @@
 Version 2.3-0
 
 
+2010-12-06 14:49  twf
+
+	* rpm/x86_64.spec:
+	
+	Add python
+
+2010-12-06 14:28  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.3-0
+
 2010-12-06 14:28  twf
 
 	* rpm/x86_64.spec:
