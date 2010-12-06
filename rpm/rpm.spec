@@ -52,6 +52,7 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/java
 /usr/local/mdsplus/lib
 /usr/local/mdsplus/man
+/usr/local/mdsplus/mdsobjects
 /usr/local/mdsplus/rpm
 /usr/local/mdsplus/setup.csh
 /usr/local/mdsplus/setup.sh
