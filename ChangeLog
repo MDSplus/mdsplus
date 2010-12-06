@@ -1,6 +1,18 @@
 Version 2.3-0
 
 
+2010-12-06 14:28  twf
+
+	* rpm/x86_64.spec:
+	
+	Do not build java 32-bit
+
+2010-12-06 12:59  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.3-0
+
 2010-12-06 12:56  twf
 
 	* rpm/rpm.spec:
