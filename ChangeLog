@@ -1,6 +1,18 @@
 Version 2.3-0
 
 
+2010-12-06 12:56  twf
+
+	* rpm/rpm.spec:
+	
+	Add python to rpm
+
+2010-12-06 12:26  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.3-0
+
 2010-12-06 12:24  twf
 
 	* Makefile.in:
