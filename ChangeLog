@@ -1,5 +1,5261 @@
-Version 2.2-4
+Version 2.3-0
 
+
+2010-12-06 12:24  twf
+
+	* Makefile.in:
+	
+	Add python to install directories
+
+2010-12-03 15:00  twf
+
+	* mdsobjects/python/_descriptor64.py:
+	
+	file _descriptor64.py was initially added on branch
+	NEW_DESCRIPTORS_BRANCH.
+
+2010-12-03 15:00  twf
+
+	* mdsobjects/python/_descriptor32.py:
+	
+	file _descriptor32.py was initially added on branch
+	NEW_DESCRIPTORS_BRANCH.
+
+2010-12-03 15:00  twf
+
+	* mdsobjects/python/_mdsclasses64.py:
+	
+	file _mdsclasses64.py was initially added on branch
+	NEW_DESCRIPTORS_BRANCH.
+
+2010-12-03 15:00  twf
+
+	* mdsobjects/python/_mdsclasses32.py:
+	
+	file _mdsclasses32.py was initially added on branch
+	NEW_DESCRIPTORS_BRANCH.
+
+2010-12-03 14:57  twf
+
+	* mdsshr/MdsCompress.c, mdsshr/MdsSerialize.c,
+	mdsshr/MdsXdRoutines.c, include/mdsdescrip.h, include/mdsshr.h,
+	mdsobjects/python/_descriptor.py,
+	mdsobjects/python/_descriptor32.py,
+	mdsobjects/python/_descriptor64.py,
+	mdsobjects/python/_mdsclasses.py,
+	mdsobjects/python/_mdsclasses32.py,
+	mdsobjects/python/_mdsclasses64.py, mdsobjects/python/_mdsshr.py,
+	mdsobjects/python/tests/dataUnitTest.py:
+	
+	latest fixes
+
+2010-12-03 14:15  jas
+
+	* tdi/MitDevices/dt216a.py:
+	
+	added a space to try out tkcvs
+
+2010-12-02 16:18  twf
+
+	* php/mdsplus.c:
+	
+	Add persistent connections
+
+2010-12-01 09:17  twf
+
+	* mdsobjects/python/setup.py:
+	
+	new release
+
+2010-11-30 17:23  twf
+
+	* treeshr/TreeDeleteNode.c:
+	
+	Don't delete the top node
+
+2010-11-30 17:22  twf
+
+	* treeshr/TreeDeleteNode.c:
+	
+	Don't try deleting the top node
+
+2010-11-30 17:14  twf
+
+	* mdsobjects/python/: _treeshr.py, tree.py:
+	
+	Fix node delete
+
+2010-11-23 14:10  twf
+
+	* treeshr/: RemoteAccess.c, TreeFindTagWild.c, treeshrp.h:
+	
+	Latest update
+
+2010-11-23 14:10  twf
+
+	* tdishr/TdiSubscript.c:
+	
+	fix segfault
+
+2010-11-19 17:12  twf
+
+	* mdsshr/MdsCmprs.c, mdsshr/MdsCompress.c, mdsshr/MdsPk.c,
+	mdsshr/MdsSerialize.c, treeshr/RemoteAccess.c,
+	treeshr/TreeGetNci.c, treeshr/TreeGetRecord.c,
+	treeshr/TreePutRecord.c, treeshr/TreeSerializeNci.c,
+	treeshr/treeshrp.h, tdishr/TdiAdd.c, tdishr/TdiDecompress.c,
+	tdishr/TdiDtypeRange.c, tcl/tcl_directory.c, tcl/tcl_show_data.c,
+	mdslibidl/MdsLibIdl.c, idl/mdsvalue.pro:
+	
+	Latest big descriptor updates
+
+2010-11-16 09:57  twf
+
+	* tdishr/: TdiGetNci.c, TdiSql.c, TdiSubscript.c, TdiVector.c:
+	
+	Latest update
+
+2010-11-15 14:49  twf
+
+	* mdsplus.sln:
+	
+	fix build race condition
+
+2010-11-15 14:04  twf
+
+	* javadispatcher/javadispatcher.vcproj:
+	
+	Del not delete
+
+2010-11-15 13:47  twf
+
+	* Setup/: Setup32.vdproj, Setup64.vdproj:
+	
+	Eliminate duplicate library references
+
+2010-11-15 13:45  twf
+
+	* javamds/javamds.vcproj:
+	
+	Quote java library
+
+2010-11-15 13:43  twf
+
+	* javadispatcher/javadispatcher.vcproj:
+	
+	Fix delete command in clean
+
+2010-11-15 09:37  twf
+
+	* mdsobjects/python/mdsdata.py:
+	
+	Fix rmod method
+
+2010-11-12 12:45  twf
+
+	* mdslib/mdslib_client.vcproj:
+	
+	Fix to prevent race condition with mdslib build
+
+2010-11-12 12:11  twf
+
+	* Setup/Setup32.vdproj:
+	
+	new config
+
+2010-11-12 11:53  twf
+
+	* idlsql/idlsql.vcproj, javamds/javamds.vcproj, math/math.vcproj:
+	
+	Make x86 config work
+
+2010-11-12 11:24  twf
+
+	* idlmdsevent/idlmdsevent.vcproj:
+	
+	Fix x32 config
+
+2010-11-12 08:34  manduchi
+
+	* mdsobjects/cpp/mdsdataobjects.cpp,
+	mdsobjects/cpp/mdstreeobjects.cpp, include/mdsobjects.h:
+	
+	Bunch of fixes
+
+2010-11-11 10:05  manduchi
+
+	* include/mdsobjects.h:
+	
+	Fix desctructor of REvents
+
+2010-11-11 05:03  manduchi
+
+	* include/mdsobjects.h:
+	
+	Fix getInfo, need to allocate dimensions
+
+2010-11-09 17:06  twf
+
+	* Setup/.cvsignore:
+	
+	Ignore file
+
+2010-11-09 16:59  twf
+
+	* devscripts/sign_kit.bat:
+	
+	Script for signing kits
+
+2010-11-09 16:58  twf
+
+	* .cvsignore, mdsplus.sln, WinInstall/WinInstall.c,
+	idlmdsevent/idlmdsevent.vcproj, idlsql/idlsql.vcproj,
+	javamds/javamds.vcproj, javascope/javascope.vcproj,
+	javatraverser/javatraverser.vcproj, math/math.vcproj,
+	matlab/.cvsignore, matlab/matlab.vcproj, rtevents/rtevents.vcproj:
+	
+	Build update
+
+2010-11-09 16:55  twf
+
+	* Setup/: Setup32.vdproj, Setup64.vdproj:
+	
+	New build
+
+2010-11-09 16:31  twf
+
+	* javatraverser/traverser.bat:
+	
+	cmd script for traverser
+
+2010-11-09 16:29  twf
+
+	* javascope/jScope.bat:
+	
+	Add cmd script for jScope
+
+2010-11-09 14:35  twf
+
+	* Setup/Setup64.vdproj:
+	
+	New kit setup
+
+2010-11-09 14:19  jas
+
+	* mdsvb/: MDSEvent.vb, MDSplusVBC.sln, MDSplusVBC.suo,
+	MDSplusVBC.vbproj:
+	
+	adding MDSEvent Class
+
+2010-11-08 13:37  twf
+
+	* WinTools/: ar.exe, as.exe, cpp.exe, f771.exe, g77.exe, gcc.exe,
+	ld.exe, make.exe, make.hlp:
+	
+	Add g77 compiler for building math (32-bit only)
+
+2010-11-08 09:53  twf
+
+	* Setup/Setup64.vdproj:
+	
+	Add 64-bit project
+
+2010-11-08 02:17  manduchi
+
+	* javamds/LocalDataProvider.h:
+	
+	Include file changed name because jScope has been moved to a
+	package
+
+2010-11-08 02:13  manduchi
+
+	* javamds/jScope_LocalDataProvider.h:
+	
+	Name changed because jScope is in its own package now
+
+2010-11-05 16:10  twf
+
+	* matlab/matlab.vcproj:
+	
+	Fix build for vs8
+
+2010-11-05 15:55  twf
+
+	* mdsplus.sln, Setup/Setup32.vdproj, cacheshr/cacheshr.vcproj,
+	cdu/cdushr.vcproj, idlmdsevent/idlmdsevent.vcproj,
+	idlsql/idlsql.vcproj, math/math.vcproj, matlab/matlab.vcproj,
+	mdsdcl/mdsdclshr.vcproj, mdslib/mdslib.vcproj,
+	mdslib/mdslib_client.vcproj, mdslibidl/mdslibidl.vcproj,
+	mdsmisc/mdsmisc.vcproj, mdsobjects/cpp/cpp.vcproj,
+	mdsshr/mdsshr.vcproj, mdssql/mdssql.vcproj,
+	mdstcpip/mdsipshr.vcproj, remcam/remcam.vcproj,
+	servershr/servershr.vcproj, tcl/tcl_commands.vcproj,
+	tdic/tdishrext.vcproj, tdishr/tdishr.vcproj,
+	treeshr/treeshr.vcproj:
+	
+	Fix build for vs8
+
+2010-11-05 15:53  twf
+
+	* mdsdcl/MdsdclThreadSafe.c, mdsdcl/mdsdcl_do_command.c,
+	mdsdcl/mdsdcl_get_input.c, mdsdcl/mdsdcl_macros.c,
+	include/mdsobjects.h:
+	
+	Include config.h
+
+2010-11-05 15:51  twf
+
+	* matlab/make_mdsipmex.m:
+	
+	Fix for 64-bit
+
+2010-11-05 11:13  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Call decompress with class_ca pointer
+
+2010-11-05 08:41  twf
+
+	* traverser/CallbacksUil.c:
+	
+	Make display data text fields noedit
+
+2010-11-05 05:08  manduchi
+
+	* include/mdsshr.h, javamds/javamds.c, javamds/javamds.vcproj,
+	javascope/jScope/LocalDataProvider.java, mdsobjects/cpp/mdsdata.c,
+	mdsobjects/java/TestMdsObjects.java, mdsshr/MdsShr.def,
+	mdsshr/MdsShr.exports:
+	
+	Added suppor for frames in LocalDataProvider Make MdsDecompress
+	extern in Windows
+
+2010-11-04 14:21  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Allow index=-1 for TreeGetSegment and decompress the compressed
+	segments
+
+2010-11-04 09:18  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix TreeGetSegmentInfo last dimension for compressed segments
+
+2010-11-03 16:19  twf
+
+	* treeshr/TreeSegments.c:
+	
+	release nci before calling _TreeGetSegment
+
+2010-11-03 16:08  twf
+
+	* treeshr/TreeSegments.c:
+	
+	release nci before calling _TreeGetSegment
+
+2010-11-03 13:03  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Unlock nci
+
+2010-10-29 08:05  manduchi
+
+	* javascope/jScope/Grid.java:
+	
+	Allow finer absolute times when needed
+
+2010-10-28 04:07  manduchi
+
+	* epics/archiver/ChannelArchiver.java:
+	
+	Severity fixes
+
+2010-10-27 13:04  manduchi
+
+	* epics/archiver/ChannelArchiver.java:
+	
+	Store channel severity
+
+2010-10-26 14:44  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _mdsclasses.py,
+	_mdsdtypes.py, _treeshr.py, compound.py, connection.py,
+	mdsarray.py, mdsdata.py, mdsscalar.py, scope.py, setup.py,
+	treenode.py, tests/__init__.py, tests/dataUnitTest.py,
+	tests/threadsUnitTest.py:
+	
+	update from head
+
+2010-10-26 14:18  twf
+
+	* include/libroutines.h, include/mdsdescrip.h, tcl/tcl_directory.c,
+	tcl/tcl_show_data.c:
+	
+	next update
+
+2010-10-26 14:13  twf
+
+	* mdsshr/MdsCompress.c, mdsshr/MdsGet1DxA.c, mdsshr/MdsSerialize.c,
+	mdsshr/MdsXdRoutines.c, mdsshr/librtl.c, treeshr/TreeGetRecord.c,
+	tdishr/TdiArray.c, tdishr/TdiChar.c, tdishr/TdiConvert.c,
+	tdishr/TdiVector.c:
+	
+	Next update
+
+2010-10-26 11:57  manduchi
+
+	* epics/archiver/ChannelArchiver.java:
+	
+	Removed debug messages
+
+2010-10-26 11:53  manduchi
+
+	* epics/archiver/: ChannelArchiver.java, caj-1.1.5b.jar,
+	epics2mdsplus.xsl, jca-2.3.2.jar:
+	
+	Source and support files for EPICS MDSplus channel archiver
+
+2010-10-25 16:10  jas
+
+	* tdi/MitDevices/dt216a.py:
+	
+	External / Internal clock distinction different (non-existant) for
+	216
+
+2010-10-25 10:46  twf
+
+	* mdsobjects/python/event.py:
+	
+	Add getQTime method
+
+2010-10-25 09:28  twf
+
+	* mdsobjects/python/event.py:
+	
+	Add getName method
+
+2010-10-22 16:49  jas
+
+	* tdi/MitDevices/dt216a.py:
+	
+	add status commands and ranges add some conditional debug stuff
+
+2010-10-22 16:49  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	fix expression for post
+
+2010-10-22 11:55  manduchi
+
+	* mdsobjects/java/MDSplus/Event.java:
+	
+	Let method names be compatible with python
+
+2010-10-22 11:51  manduchi
+
+	* include/mdsobjects.h:
+	
+	Make event method names compatible with python
+
+2010-10-22 11:23  manduchi
+
+	* mdsobjects/: cpp/mdseventobjects.cpp, java/TestMdsObjects.java,
+	java/MDSplus/Event.java:
+	
+	Allow events with no data
+
+2010-10-22 11:21  manduchi
+
+	* include/mdsobjects.h:
+	
+	Minor fixes
+
+2010-10-22 09:55  manduchi
+
+	* mdsobjects/cpp/mdsdataobjects.cpp, include/mdsobjects.h:
+	
+	Minor fixes
+
+2010-10-21 16:23  jas
+
+	* tdi/MitDevices/: __init__.py, dt216a.py:
+	
+	adding dt216a  model - ftp version of 2nd gen 216 software
+
+2010-10-21 14:38  jas
+
+	* tdi/MitDevices/__init__.py:
+	
+	add dt216  device  with initftp, storeftp, and waitftp methods
+
+2010-10-21 14:37  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	fix pre-trigger samples (peter counts from 0 not from -pretrig
+
+2010-10-21 14:36  jas
+
+	* tdi/MitDevices/dt216.py:
+	
+	get it working.  Fix off by one error on endidx
+
+2010-10-21 04:12  manduchi
+
+	* epics/mdsrecords/: Makefile, dbCommon.dbd, devExprSoft.c,
+	devExprSoft.dbd, devMaSoft.c, devMaSoft.dbd, devMeSoft.c,
+	devMeSoft.dbd, devMpSoft.c, devMpSoft.dbd, devwftest.c,
+	devwftest.dbd, mdsactionRecord.c, mdsactionRecord.dbd,
+	mdsexprRecord.c, mdsexprRecord.dbd, mdsplusSupMain.cpp,
+	mdsplusSupUtilities.cpp, mdsplusSupUtilities.dbd, mdsputRecord.c,
+	mdsputRecord.dbd:
+	
+	EPICS IOC records for MDSplus interface
+
+2010-10-19 17:28  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	syntax still wrong on channel parameters.
+
+2010-10-19 16:12  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	The pre trigger samples number comes back positive, but needs to be
+	negative The syntax of the node references for the start and inc
+	are wrong.
+
+2010-10-19 16:06  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	Off by one sample on the timebase Different command to get internal
+	vs external clock
+
+2010-10-15 15:05  twf
+
+	* tdishr/: TdiArray.c, TdiBound.c, TdiConvert.c, TdiGetData.c,
+	TdiItoX.c, TdiSetRange.c, tdinelements.h:
+	
+	work in progress on big array handling
+
+2010-10-12 02:24  manduchi
+
+	* matlab/make_mdsipmex.m:
+	
+	Fix error message
+
+2010-10-11 12:03  manduchi
+
+	* tdi/RfxDevices/CAENV1731__init.fun:
+	
+	Remove debug messages
+
+2010-10-11 10:53  manduchi
+
+	* tdi/RfxDevices/CAENV1731__init.fun:
+	
+	Remove debug message
+
+2010-10-08 09:33  jas
+
+	* tdi/MitDevices/: acq200.py, dt132.py, dt196.py:
+	
+	set the trigger line and sense check the channels from high to low
+	in waitftp
+
+2010-10-07 05:59  manduchi
+
+	* scripts/Makefile.in:
+	
+	Fix typo
+
+2010-10-01 15:04  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	impliment the increment
+
+2010-10-01 10:41  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	working before directory change and data decimation - untested
+	clock parse
+
+2010-09-28 09:32  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	don't complain if the bus is blank
+
+2010-09-27 15:50  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	don't look at inactive chans in waitftp
+
+2010-09-27 15:38  twf
+
+	* tdi/MitDevices/dt196.py:
+	
+	New inetd methods
+
+2010-09-23 16:55  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	working better now
+
+2010-09-22 13:31  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	make the signal value expression like it used to be (one
+	coefficent)
+
+2010-09-22 12:33  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	working version - with calibration factors
+
+2010-09-20 10:46  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	take setChannelMask out of the loop
+
+2010-09-17 16:13  jas
+
+	* tdi/MitDevices/storeftp.sh:
+	
+	add -s to curl commands
+
+2010-09-17 16:12  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	fix storeftp and get it working (more) in general
+
+2010-09-16 16:51  twf
+
+	* mdsshr/MdsSerialize.c, tdishr/TdiItoX.c:
+	
+	latest round of fixes
+
+2010-09-16 16:32  twf
+
+	* cdu/cli_routines.c, cdu/cli_util.c, cdu/dasutil_routines1.c,
+	cdu/dasutil_routines3.c, dwscope/evaluate.c, include/dasutil.h,
+	include/dbidef.h, include/mdsobjects.h:
+	
+	latest round of fixes
+
+2010-09-16 16:16  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	fix the waitftp exception move the UUT creation to the end add rm
+	of the file to the command sent to the board make the main command
+	on the board async
+
+2010-09-16 16:01  jas
+
+	* tdi/dev_support/PyDoMethod.fun:
+	
+	print out the excpetion if any, before returning.
+
+2010-09-16 11:47  twf
+
+	* tdi/MitDevices/: dt132.py, dt196.py:
+	
+	remove use of eval's
+
+2010-09-16 10:01  jas
+
+	* tdi/MitDevices/storeftp.sh:
+	
+	updated to use CURL for file transfers in both directions.
+
+2010-09-16 10:00  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	version that works, sending all commands in a script to the file. 
+	Also sends storeftp.sh	to the card.
+
+2010-09-14 14:04  jas
+
+	* scripts/: Makefile.in, MonitorCpciData.py:
+	
+	adding MonitorCpciData.py - script to use fam to look for cpci data
+	aquisition trigger files using fam
+	
+	Updated Makefile.in to stick it in bin
+
+2010-09-14 11:54  jas
+
+	* tdi/MitDevices/storeftp.sh:
+	
+	change storeftp.sh  since it is no longer anonymous ftp  mkdir
+	command now works
+
+2010-09-14 11:13  jas
+
+	* tdi/MitDevices/storeftp.sh:
+	
+	shell script to be run on the cards in the /etc/postshot.d  if they
+	are going to use the storeftp method.
+	
+	This file must be installed on the cards in a directory that is in
+	~root's path.  For example /usr/local/bin/
+
+2010-09-14 11:11  jas
+
+	* tdi/MitDevices/dt196ftp.netrc:
+	
+	a .netrc file so the boards can ftp their files back.  Will need to
+	be customized for each installation and installed as : ~root/.netrc
+	 on the cards
+
+2010-09-08 14:48  twf
+
+	* mdsshr/MdsXdRoutines.c:
+	
+	copy dx changes
+
+2010-09-08 14:27  twf
+
+	* tdishr/: TdiExpt.c, TdiGetNci.c, TdiItoX.c, TdiTrans.c:
+	
+	more descriptor length changes
+
+2010-09-08 12:33  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd.Apd-class.html, MDSplus.apd.Dictionary-class.html,
+	MDSplus.apd.List-class.html, MDSplus.compound-module.html,
+	MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.connection-module.html,
+	MDSplus.connection.Connection-class.html,
+	MDSplus.connection.GetMany-class.html,
+	MDSplus.connection.PutMany-class.html, MDSplus.event-module.html,
+	MDSplus.event.Event-class.html, MDSplus.ident-module.html,
+	MDSplus.ident.Ident-class.html, MDSplus.mdsarray-module.html,
+	MDSplus.mdsarray.Array-class.html,
+	MDSplus.mdsarray.Float32Array-class.html,
+	MDSplus.mdsarray.Float64Array-class.html,
+	MDSplus.mdsarray.Int128Array-class.html,
+	MDSplus.mdsarray.Int16Array-class.html,
+	MDSplus.mdsarray.Int32Array-class.html,
+	MDSplus.mdsarray.Int64Array-class.html,
+	MDSplus.mdsarray.Int8Array-class.html,
+	MDSplus.mdsarray.StringArray-class.html,
+	MDSplus.mdsarray.Uint128Array-class.html,
+	MDSplus.mdsarray.Uint16Array-class.html,
+	MDSplus.mdsarray.Uint32Array-class.html,
+	MDSplus.mdsarray.Uint64Array-class.html,
+	MDSplus.mdsarray.Uint8Array-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html,
+	MDSplus.mdsdevice-module.html, MDSplus.mdsdevice.Device-class.html,
+	MDSplus.mdsscalar-module.html,
+	MDSplus.mdsscalar.Float32-class.html,
+	MDSplus.mdsscalar.Float64-class.html,
+	MDSplus.mdsscalar.Int128-class.html,
+	MDSplus.mdsscalar.Int16-class.html,
+	MDSplus.mdsscalar.Int32-class.html,
+	MDSplus.mdsscalar.Int64-class.html,
+	MDSplus.mdsscalar.Int8-class.html,
+	MDSplus.mdsscalar.Scalar-class.html,
+	MDSplus.mdsscalar.String-class.html,
+	MDSplus.mdsscalar.Uint128-class.html,
+	MDSplus.mdsscalar.Uint16-class.html,
+	MDSplus.mdsscalar.Uint32-class.html,
+	MDSplus.mdsscalar.Uint64-class.html,
+	MDSplus.mdsscalar.Uint8-class.html, MDSplus.tree-module.html,
+	MDSplus.tree.CachedTree-class.html, MDSplus.tree.Tree-class.html,
+	MDSplus.treenode-module.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, __builtin__.dict-class.html,
+	__builtin__.list-class.html, __builtin__.object-class.html,
+	__builtin__.type-class.html, epydoc.css, frames.html, help.html,
+	index.html, indices.html, threading.Thread-class.html,
+	toc-MDSplus.apd-module.html, toc-MDSplus.compound-module.html,
+	toc-MDSplus.connection-module.html, toc-MDSplus.event-module.html,
+	toc-MDSplus.ident-module.html, toc-MDSplus.mdsarray-module.html,
+	toc-MDSplus.mdsdata-module.html, toc-MDSplus.mdsdevice-module.html,
+	toc-MDSplus.mdsscalar-module.html, toc-MDSplus.tree-module.html,
+	toc-MDSplus.treenode-module.html, toc-everything.html, toc.html,
+	trees.html:
+	
+	Updated documentation
+
+2010-09-03 16:42  twf
+
+	* mdsobjects/python/: __init__.py, mdsdata.py, scope.py:
+	
+	Add plotting capability
+
+2010-09-03 16:42  twf
+
+	* mdsobjects/python/scope.py:
+	
+	file scope.py was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-10-26 18:44:52 +0000
+
+2010-09-03 12:15  manduchi
+
+	* mdsobjects/java/Makefile.in:
+	
+	Added Scope
+
+2010-09-03 12:12  manduchi
+
+	* mdsobjects/java/MDSplus/Scope.java:
+	
+	Added Scope class
+
+2010-09-03 12:11  manduchi
+
+	* tdi/RfxDevices/: NI6071E__add.fun, NI6071E__init.fun:
+	
+	Add trigger MASTER - SLAVE trigger functionalities
+
+2010-09-03 12:05  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	More limits
+
+2010-09-03 08:44  manduchi
+
+	* javamds/javamds.c, javascope/jScope/CompositeWaveDisplay.java,
+	mdsobjects/cpp/mdsdataobjects.cpp,
+	mdsobjects/java/MDSplus/Data.java:
+	
+	Added support for Plot() methods
+
+2010-09-03 08:23  manduchi
+
+	* include/mdsobjects.h, javascope/WaveDisplay.mak,
+	javascope/WaveDisplay.vcproj, javatraverser/ApdData.java,
+	javatraverser/ParameterSetting.java, mdsobjects/cpp/mdsdata.c,
+	mdsobjects/cpp/mdsdataobjects.cpp, mdsobjects/java/javaobjects.mak,
+	mdsobjects/java/MDSplus/Data.java, mdsobjects/python/connection.py,
+	tcl/tcl_do_method.c, tdi/MitDevices/dt196__init.fun,
+	tdi/MitDevices/dt196a__init.fun:
+	
+	Let MDSplus be built without problems by VC++ 2008
+
+2010-09-03 07:41  manduchi
+
+	* javadispatcher/MdsActionsMonitor.java:
+	
+	jScope classes moved to jScope package
+
+2010-09-03 07:29  manduchi
+
+	* javadispatcher/ActionServer.java, javadispatcher/KillServer.java,
+	javadispatcher/MdsIp.java, javadispatcher/MdsMonitor.java,
+	javadispatcher/MdsServer.java,
+	javadispatcher/jDispatchMonitor.java,
+	javadispatcher/jDispatcherIp.java, javadispatcher/jServer.java,
+	javascope/Makefile.in, javascope/jScope/ConnectionEvent.java,
+	javascope/jScope/Descriptor.java,
+	javascope/jScope/MdsConnection.java,
+	javascope/jScope/MdsMessage.java,
+	javascope/jScope/WaveformEditorListener.java:
+	
+	Handle movement of jScope classes into jScope package
+
+2010-09-03 07:09  manduchi
+
+	* javatraverser/: DeviceCustomizer.java, DeviceWave.java,
+	DeviceWaveDisplay.java, EventMonitor.java:
+	
+	Handle movement of jScope classes into jScope package
+
+2010-09-03 06:11  manduchi
+
+	* mdsdcl/mdsdcl_get_input.c:
+	
+	Added forgot check for Windows
+
+2010-09-03 06:00  manduchi
+
+	* javamds/: javamds.c, javamds.def:
+	
+	Handle the fact that jScope clesses have been moved to the jScope
+	package
+
+2010-09-03 05:59  manduchi
+
+	* javascope/MdsDataProvider.java:
+	
+	Moved to jScope package
+
+2010-09-03 05:58  manduchi
+
+	* javascope/: Makefile.in, ASCIIDataProvider.java,
+	MdsDataProvider.java, jScope.java, javascope.mak, javascope.vcproj,
+	AboutWindow.java, AsdexDataProvider.java, Base64.java,
+	ColorDialog.java, ColorMap.java, ColorMapDialog.java,
+	CompositeWaveDisplay.java, ConnectionEvent.java,
+	ConnectionListener.java, ContourSignal.java, DataAccess.java,
+	DataAccessURL.java, DataCacheObject.java, DataCached.java,
+	DataProvider.java, DataServerItem.java, DemoAccess.java,
+	DemoDataProvider.java, Descriptor.java, FontSelection.java,
+	FrameData.java, FrameJAI.java, Frames.java, FtuDataProvider.java,
+	Grid.java, ImageTransferable.java, JetDataProvider.java,
+	JetMdsDataProvider.java, JiDataSource.java, JiDim.java,
+	JiNcSource.java, JiNcVar.java, JiNcVarByte.java, JiNcVarChar.java,
+	JiNcVarDouble.java, JiNcVarFloat.java, JiNcVarImp.java,
+	JiNcVarInt.java, JiNcVarShort.java, JiSlab.java,
+	JiSlabIterator.java, JiVar.java, JiVarImpl.java,
+	LocalDataProvider.java, LocalRealtimeDataProvider.java,
+	MdsAccess.java, MdsConnection.java, MdsContinuousDataProvider.java,
+	MdsDataClient.java, MdsIOException.java, MdsMessage.java,
+	MdsPlusBrowseSignals.java, MdsWaveInterface.java,
+	MdsplusParser.java, MultiWavePopup.java, MultiWaveform.java,
+	NotConnectedDataProvider.java, ProfileDialog.java,
+	PropertiesEditor.java, RandomAccessData.java, RdaAccess.java,
+	RowColumnContainer.java, RowColumnLayout.java,
+	SetupDataDialog.java, SetupDefaults.java, SetupWaveformParams.java,
+	Signal.java, SignalBox.java, SignalCache.java,
+	SignalsBoxDialog.java, SshTunneling.java, T2DataProvider.java,
+	TSDataProvider.java, TWUFetchOptions.java, TWUProperties.java,
+	TWUSignal.java, TestCompositeWaveform.java,
+	TextorBrowseSignals.java, TwuAccess.java, TwuDataProvider.java,
+	TwuNameServices.java, TwuSimpleFrameData.java,
+	TwuSingleSignal.java, TwuWaveData.java, UniversalDataProvider.java,
+	UpdateEvent.java, UpdateEventListener.java,
+	WaveContainerEvent.java, WaveContainerListener.java, WaveData.java,
+	WaveDisplay.java, WaveInterface.java, WavePopup.java,
+	Waveform.java, WaveformContainer.java, WaveformEditor.java,
+	WaveformEditorListener.java, WaveformEvent.java,
+	WaveformListener.java, WaveformManager.java, WaveformMetrics.java,
+	jScopeBrowseSignals.java, jScopeBrowseUrl.java,
+	jScopeDefaultValues.java, jScopeMultiWave.java,
+	jScopeProperties.java, jScopeWaveContainer.java,
+	jScopeWavePopup.java, TwuTests/TestTWUFetchOptions.java,
+	TwuTests/TestTWUSignalProperties.java,
+	TwuTests/TestTwuSingleSignal.java,
+	TwuTests/TestTwuSingleSignal2.java, jScope/ASCIIDataProvider.java,
+	jScope/AboutWindow.java, jScope/AsdexDataProvider.java,
+	jScope/Base64.java, jScope/ColorDialog.java, jScope/ColorMap.java,
+	jScope/ColorMapDialog.java, jScope/CompositeWaveDisplay.java,
+	jScope/ConnectionEvent.java, jScope/ConnectionListener.java,
+	jScope/ContourSignal.java, jScope/DataAccess.java,
+	jScope/DataAccessURL.java, jScope/DataCacheObject.java,
+	jScope/DataCached.java, jScope/DataProvider.java,
+	jScope/DataServerItem.java, jScope/DemoAccess.java,
+	jScope/DemoDataProvider.java, jScope/Descriptor.java,
+	jScope/FakeTWUProperties.java, jScope/FontSelection.java,
+	jScope/FrameData.java, jScope/Frames.java,
+	jScope/FtuDataProvider.java, jScope/Grid.java,
+	jScope/ImageTransferable.java, jScope/JetDataProvider.java,
+	jScope/JetMdsDataProvider.java, jScope/JiDataSource.java,
+	jScope/JiDim.java, jScope/JiNcSource.java, jScope/JiNcVar.java,
+	jScope/JiNcVarByte.java, jScope/JiNcVarChar.java,
+	jScope/JiNcVarDouble.java, jScope/JiNcVarFloat.java,
+	jScope/JiNcVarImp.java, jScope/JiNcVarInt.java,
+	jScope/JiNcVarShort.java, jScope/JiSlab.java,
+	jScope/JiSlabIterator.java, jScope/JiVar.java,
+	jScope/JiVarImpl.java, jScope/LocalDataProvider.java,
+	jScope/LocalRealtimeDataProvider.java, jScope/MdsAccess.java,
+	jScope/MdsConnection.java, jScope/MdsContinuousDataProvider.java,
+	jScope/MdsDataClient.java, jScope/MdsDataProvider.java,
+	jScope/MdsIOException.java, jScope/MdsMessage.java,
+	jScope/MdsPlusBrowseSignals.java, jScope/MdsWaveInterface.java,
+	jScope/MdsplusParser.java, jScope/MultiWavePopup.java,
+	jScope/MultiWaveform.java, jScope/NotConnectedDataProvider.java,
+	jScope/ProfileDialog.java, jScope/PropertiesEditor.java,
+	jScope/RandomAccessData.java, jScope/RdaAccess.java,
+	jScope/RowColumnContainer.java, jScope/RowColumnLayout.java,
+	jScope/SetupDataDialog.java, jScope/SetupDefaults.java,
+	jScope/SetupWaveformParams.java, jScope/Signal.java,
+	jScope/SignalBox.java, jScope/SignalCache.java,
+	jScope/SignalsBoxDialog.java, jScope/SshTunneling.java,
+	jScope/T2DataProvider.java, jScope/TSDataProvider.java,
+	jScope/TWUFetchOptions.java, jScope/TWUProperties.java,
+	jScope/TWUSignal.java, jScope/TestCompositeWaveform.java,
+	jScope/TextorBrowseSignals.java, jScope/TwuAccess.java,
+	jScope/TwuDataProvider.java, jScope/TwuNameServices.java,
+	jScope/TwuSimpleFrameData.java, jScope/TwuSingleSignal.java,
+	jScope/TwuWaveData.java, jScope/UniversalDataProvider.java,
+	jScope/UpdateEvent.java, jScope/UpdateEventListener.java,
+	jScope/WaveContainerEvent.java, jScope/WaveContainerListener.java,
+	jScope/WaveData.java, jScope/WaveDisplay.java,
+	jScope/WaveInterface.java, jScope/WavePopup.java,
+	jScope/Waveform.java, jScope/WaveformContainer.java,
+	jScope/WaveformEditor.java, jScope/WaveformEditorListener.java,
+	jScope/WaveformEvent.java, jScope/WaveformListener.java,
+	jScope/WaveformManager.java, jScope/WaveformMetrics.java,
+	jScope/jScopeBrowseSignals.java, jScope/jScopeBrowseUrl.java,
+	jScope/jScopeDefaultValues.java, jScope/jScopeFacade.java,
+	jScope/jScopeMultiWave.java, jScope/jScopeProperties.java,
+	jScope/jScopeWaveContainer.java, jScope/jScopeWavePopup.java:
+	
+	jScope classes have been moved into jScope package Only the main
+	class jScope  is outside the package
+
+2010-09-03 03:45  manduchi
+
+	* mdsplus.sln, mdsdcl/MdsdclThreadSafe.c,
+	mdsdcl/mdsdcl_do_command.c, mdsdcl/mdsdcl_get_input.c,
+	mdsdcl/mdsdcl_macros.c, mdsdcl/mdsdclshr.vcproj,
+	tcl/tcl_commands.vcproj, treeshr/treeshr.vcproj,
+	treeshr/treethreadsafe.h:
+	
+	Neutral changes required to let the MDSplus project be built in
+	Visual C++ 2008
+
+2010-09-02 06:07  manduchi
+
+	* javascope/MdsDataProvider.java:
+	
+	Added tunneling connection management
+
+2010-09-01 06:36  manduchi
+
+	* matlab/make_mdsipmex.m:
+	
+	CVS align, nothing really changed
+
+2010-08-31 13:43  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix format for big descriptors
+
+2010-08-31 13:40  twf
+
+	* tdishr/TdiItoX.c:
+	
+	remove merge comment
+
+2010-08-26 16:29  jas
+
+	* tdi/MitDevices/dt196.py:
+	
+	fix the check for the environement variable
+
+2010-08-25 09:34  manduchi
+
+	* include/mdsobjects.h, mdsobjects/cpp/mdsdataobjects.cpp,
+	mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Let it compile
+
+2010-08-25 09:26  manduchi
+
+	* include/mdsobjects.h:
+	
+	Added support for Scope class
+
+2010-08-19 17:04  twf
+
+	* mdsobjects/python/tests/dataUnitTest.py:
+	
+	Add more testing
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/: _descriptor.py, _mdsdtypes.py, compound.py,
+	connection.py, mdsarray.py, mdsscalar.py, setup.py:
+	
+	performance improvements
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/__builtin__.list-class.html:
+	
+	file __builtin__.list-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/threading.Thread-class.html:
+	
+	file threading.Thread-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/__builtin__.type-class.html:
+	
+	file __builtin__.type-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/MDSplus.connection.PutMany-class.html:
+	
+	file MDSplus.connection.PutMany-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:34 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/__builtin__.object-class.html:
+	
+	file __builtin__.object-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/indices.html:
+	
+	file indices.html was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/trees.html:
+	
+	file trees.html was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/: MDSplus.connection.GetMany-class.html,
+	MDSplus.connection.PutMany-class.html, __builtin__.dict-class.html,
+	__builtin__.list-class.html, __builtin__.object-class.html,
+	__builtin__.type-class.html, indices.html,
+	threading.Thread-class.html, trees.html:
+	
+	Update documentation
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/__builtin__.dict-class.html:
+	
+	file __builtin__.dict-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:35 +0000
+
+2010-08-18 13:40  twf
+
+	* mdsobjects/python/doc/MDSplus.connection.GetMany-class.html:
+	
+	file MDSplus.connection.GetMany-class.html was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-09-08 16:33:34 +0000
+
+2010-08-18 13:37  twf
+
+	* mdsobjects/python/doc/: MDSplus.apd-module.html,
+	MDSplus.apd.Apd-class.html, MDSplus.apd.Dictionary-class.html,
+	MDSplus.apd.List-class.html, MDSplus.compound-module.html,
+	MDSplus.compound.Action-class.html,
+	MDSplus.compound.Call-class.html,
+	MDSplus.compound.Compound-class.html,
+	MDSplus.compound.Conglom-class.html,
+	MDSplus.compound.Dependency-class.html,
+	MDSplus.compound.Dimension-class.html,
+	MDSplus.compound.Dispatch-class.html,
+	MDSplus.compound.Function-class.html,
+	MDSplus.compound.MetaClass-class.html,
+	MDSplus.compound.Method-class.html,
+	MDSplus.compound.Procedure-class.html,
+	MDSplus.compound.Program-class.html,
+	MDSplus.compound.Range-class.html,
+	MDSplus.compound.Routine-class.html,
+	MDSplus.compound.Signal-class.html,
+	MDSplus.compound.Window-class.html, MDSplus.connection-module.html,
+	MDSplus.connection.Connection-class.html,
+	MDSplus.event-module.html, MDSplus.event.Event-class.html,
+	MDSplus.ident-module.html, MDSplus.ident.Ident-class.html,
+	MDSplus.mdsarray-module.html, MDSplus.mdsarray.Array-class.html,
+	MDSplus.mdsarray.Float32Array-class.html,
+	MDSplus.mdsarray.Float64Array-class.html,
+	MDSplus.mdsarray.Int128Array-class.html,
+	MDSplus.mdsarray.Int16Array-class.html,
+	MDSplus.mdsarray.Int32Array-class.html,
+	MDSplus.mdsarray.Int64Array-class.html,
+	MDSplus.mdsarray.Int8Array-class.html,
+	MDSplus.mdsarray.StringArray-class.html,
+	MDSplus.mdsarray.Uint128Array-class.html,
+	MDSplus.mdsarray.Uint16Array-class.html,
+	MDSplus.mdsarray.Uint32Array-class.html,
+	MDSplus.mdsarray.Uint64Array-class.html,
+	MDSplus.mdsarray.Uint8Array-class.html,
+	MDSplus.mdsdata-module.html, MDSplus.mdsdata.Data-class.html,
+	MDSplus.mdsdata.EmptyData-class.html,
+	MDSplus.mdsdevice-module.html, MDSplus.mdsdevice.Device-class.html,
+	MDSplus.mdsscalar-module.html,
+	MDSplus.mdsscalar.Float32-class.html,
+	MDSplus.mdsscalar.Float64-class.html,
+	MDSplus.mdsscalar.Int128-class.html,
+	MDSplus.mdsscalar.Int16-class.html,
+	MDSplus.mdsscalar.Int32-class.html,
+	MDSplus.mdsscalar.Int64-class.html,
+	MDSplus.mdsscalar.Int8-class.html,
+	MDSplus.mdsscalar.Scalar-class.html,
+	MDSplus.mdsscalar.String-class.html,
+	MDSplus.mdsscalar.Uint128-class.html,
+	MDSplus.mdsscalar.Uint16-class.html,
+	MDSplus.mdsscalar.Uint32-class.html,
+	MDSplus.mdsscalar.Uint64-class.html,
+	MDSplus.mdsscalar.Uint8-class.html, MDSplus.tree-module.html,
+	MDSplus.tree.CachedTree-class.html, MDSplus.tree.Tree-class.html,
+	MDSplus.treenode-module.html,
+	MDSplus.treenode.CachedTreeNode-class.html,
+	MDSplus.treenode.TreeNode-class.html,
+	MDSplus.treenode.TreeNodeArray-class.html,
+	MDSplus.treenode.TreePath-class.html, epydoc.css, frames.html,
+	help.html, index.html, toc-MDSplus.apd-module.html,
+	toc-MDSplus.compound-module.html,
+	toc-MDSplus.connection-module.html, toc-MDSplus.event-module.html,
+	toc-MDSplus.ident-module.html, toc-MDSplus.mdsarray-module.html,
+	toc-MDSplus.mdsdata-module.html, toc-MDSplus.mdsdevice-module.html,
+	toc-MDSplus.mdsscalar-module.html, toc-MDSplus.tree-module.html,
+	toc-MDSplus.treenode-module.html, toc-everything.html, toc.html:
+	
+	Update documentation
+
+2010-08-16 09:09  twf
+
+	* configure, configure.in, gen_device/GenDeviceCallData.c,
+	gen_device/lex.gen_device.c, include/mdsdescrip.h,
+	mdsshr/MdsXdRoutines.c, mdsshr/librtl.c, mitdevices/joerger_adc.c,
+	tdishr/TdiDtypeRange.c, tdishr/TdiIntrinsic.c, tdishr/TdiVector.c,
+	tditest/tditest.c:
+	
+	latest updates
+
+2010-08-13 11:58  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add local_tree and local_path properties
+
+2010-08-12 15:47  jas
+
+	* tdi/MitDevices/: __init__.py, dt196.py:
+	
+	start of ftp style device for dt196
+
+2010-08-12 12:55  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Fix TreeDoMethod
+
+2010-08-10 13:37  twf
+
+	* include/dasutil.h:
+	
+	Fix for big descriptors
+
+2010-08-10 12:01  twf
+
+	* camshr/Makefile.in:
+	
+	Remove build warnings during make depend
+
+2010-08-10 11:51  twf
+
+	* treeshr/TreeThreadSafe.c:
+	
+	Fix compile warning
+
+2010-08-10 11:39  twf
+
+	* mdsobjects/python/tests/treeUnitTest.py:
+	
+	Merge in changes from  cvs HEAD
+
+2010-08-10 11:33  twf
+
+	* MakeOptions.OSF1, configure, configure.in, cacheshr/Cache.cpp,
+	cacheshr/Cache.h, cacheshr/CachedTreeshr.c,
+	cacheshr/TreeWriter.cpp, dwscope/dwscope.c, include/mdsobjects.h,
+	include/treeshr.h, javadevices/FEMTOSetup.java,
+	javadevices/Makefile.in, javadevices/RFXDiagTimesV1Setup.java,
+	javadevices/SIS3820Setup.java, javamds/JavaTrav.c,
+	javamds/javamds.c, javascope/CompositeWaveDisplay.java,
+	javascope/javascope.mak, javatraverser/javatraverser.mak,
+	mdsdcl/Makefile.in, mdsdcl/MdsdclThreadSafe.c,
+	mdsdcl/mdsdcl_do_command.c, mdsdcl/mdsdcl_get_input.c,
+	mdsdcl/mdsdcl_macros.c, mdsdcl/mdsdclthreadsafe.h,
+	mdsobjects/cpp/mdsdataobjects.cpp, mdsobjects/cpp/mdsipobjects.cpp,
+	mdsobjects/cpp/mdstreeobjects.cpp, mdsobjects/python/_tdishr.py,
+	mdsobjects/python/_treeshr.py, mdsobjects/python/connection.py,
+	mdsobjects/python/tree.py, mdsobjects/python/treenode.py,
+	mdsobjects/python/tests/__init__.py,
+	mdsobjects/python/tests/dataUnitTest.py,
+	mdsobjects/python/tests/threadsUnitTest.py,
+	mdsobjects/python/tests/treeUnitTest.py, mdsshr/librtl.c,
+	mdstcpip/mdsip.sav, mitdevices/a14.c, mitdevices/paragon_rpt.c,
+	mitdevices/paragon_rpt.gen, roam/roam_check_access.c,
+	rtevents/AllocationManager.cpp, rtevents/EventHandler.cpp,
+	tcl/tcl_set_node.c, tdi/Ccl.fun, tdi/MdsDevices.fun, tdi/Tcl.fun,
+	tdi/MitDevices/a14__init.fun, tdi/MitDevices/a14__start.fun,
+	tdi/MitDevices/a14__stop.fun, tdi/MitDevices/a14__store.fun,
+	tdi/MitDevices/a14_clock_divide.fun,
+	tdi/MitDevices/dt216a__init.fun, tdi/MitDevices/dt216b.py,
+	tdi/RfxDevices/FEMTO.py, tdi/RfxDevices/LASER_NDRT__add.fun,
+	tdi/RfxDevices/LASER_NDRT__init.fun,
+	tdi/RfxDevices/LASER_NDRT__init_vme.fun, tdi/RfxDevices/SIS3820.py,
+	tdi/RfxDevices/__init__.py, tdi/RfxDevices/bRadCheck.fun,
+	tdi/RfxDevices/bRadField2D.fun, tdi/java/JavaNewWindow.fun,
+	tdi/java/JavaReplaceSignal.fun, tdi/roam/check_access.fun,
+	tdishr/TdiCompile.c, tdishr/TdiCull.c, tdishr/TdiDtypeRange.c,
+	tdishr/TdiGetArgs.c, tdishr/TdiGetData.c, tdishr/TdiIntrinsic.c,
+	tdishr/TdiItoX.c, tdishr/TdiSubscript.c, tdishr/TdiThreadSafe.c,
+	tdishr/tdishrp.h, tdishr/tdithreadsafe.h, treeshr/Makefile.in,
+	treeshr/RemoteAccess.c, treeshr/TreeAddNode.c,
+	treeshr/TreeAddTag.c, treeshr/TreeCleanDatafile.c,
+	treeshr/TreeCreatePulseFile.c, treeshr/TreeDeleteNode.c,
+	treeshr/TreeDeletePulseFile.c, treeshr/TreeDoMethod.c,
+	treeshr/TreeFindNode.c, treeshr/TreeFindTagWild.c,
+	treeshr/TreeGetDbi.c, treeshr/TreeGetNci.c,
+	treeshr/TreeGetRecord.c, treeshr/TreeOpen.c,
+	treeshr/TreePutRecord.c, treeshr/TreeRemoveNodesTags.c,
+	treeshr/TreeRenameNode.c, treeshr/TreeSegments.c,
+	treeshr/TreeSetDbi.c, treeshr/TreeSetDefault.c,
+	treeshr/TreeSetNci.c, treeshr/TreeThreadSafe.c,
+	treeshr/TreeVerify.c, treeshr/treethreadsafe.h,
+	xtreeshr/XTreeDefaultResample.c:
+	
+	Merge in changes from cvs HEAD
+
+2010-08-10 10:33  twf
+
+	* mdsshr/: MdsEvents.c, MdsShrThreadSafe.c, librtl.c:
+	
+	Merge in changes to HEAD
+
+2010-08-10 10:20  twf
+
+	* configure, configure.in:
+	
+	change fortran search list
+
+2010-08-06 15:02  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Make getNodeWild return empty array
+
+2010-08-06 13:28  twf
+
+	* mdsobjects/python/connection.py:
+	
+	Fix put
+
+2010-08-06 12:15  manduchi
+
+	* mdsobjects/cpp/mdsdataobjects.cpp:
+	
+	Started implementation of plot() method
+
+2010-08-06 10:03  twf
+
+	* mitdevices/a14.c:
+	
+	Use clock divide
+
+2010-08-06 09:09  twf
+
+	* tdi/MitDevices/: a14__init.fun, a14__start.fun, a14__stop.fun,
+	a14__store.fun, a14_clock_divide.fun:
+	
+	Add a14 clock divide support and remove sample a14 funs
+
+2010-08-06 09:09  twf
+
+	* tdi/MitDevices/a14_clock_divide.fun:
+	
+	file a14_clock_divide.fun was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-08-10 15:33:01 +0000
+
+2010-08-05 04:54  twf
+
+	* tdi/java/JavaReplaceSignal.fun:
+	
+	file JavaReplaceSignal.fun was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-08-10 15:33:01 +0000
+
+2010-08-05 04:54  manduchi
+
+	* tdi/java/JavaReplaceSignal.fun:
+	
+	Added replace signal fun
+
+2010-08-05 04:52  manduchi
+
+	* javamds/javamds.c:
+	
+	Added deleteAllSignals for selected waveform
+
+2010-08-05 04:51  manduchi
+
+	* javascope/CompositeWaveDisplay.java:
+	
+	Added deleteAllSIgnals for selected waveform
+
+2010-08-04 15:20  twf
+
+	* include/treeshr.h:
+	
+	Add threadsafe routines
+
+2010-08-04 15:16  twf
+
+	* tdi/: Ccl.fun, Tcl.fun:
+	
+	Always set command. Needed for threaded apps
+
+2010-08-04 15:14  twf
+
+	* mdsobjects/python/: _tdishr.py, _treeshr.py, tree.py,
+	treenode.py, tests/__init__.py, tests/dataUnitTest.py,
+	tests/threadsUnitTest.py, tests/treeUnitTest.py:
+	
+	Add thread safe code
+
+2010-08-04 15:10  twf
+
+	* mdsdcl/MdsdclThreadSafe.c:
+	
+	file MdsdclThreadSafe.c was added on branch NEW_DESCRIPTORS_BRANCH
+	on 2010-08-10 15:33:00 +0000
+
+2010-08-04 15:10  twf
+
+	* mdsdcl/mdsdclthreadsafe.h:
+	
+	file mdsdclthreadsafe.h was added on branch NEW_DESCRIPTORS_BRANCH
+	on 2010-08-10 15:33:00 +0000
+
+2010-08-04 15:10  twf
+
+	* mdsdcl/Makefile.in, mdsdcl/MdsdclThreadSafe.c,
+	mdsdcl/mdsdcl_do_command.c, mdsdcl/mdsdcl_get_input.c,
+	mdsdcl/mdsdcl_macros.c, mdsdcl/mdsdclthreadsafe.h,
+	tcl/tcl_set_node.c:
+	
+	Add thread safe code
+
+2010-08-04 15:07  twf
+
+	* tdishr/tdishrp.h:
+	
+	file tdishrp.h was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-08-04 15:05  twf
+
+	* tdishr/: TdiCompile.c, TdiCull.c, TdiDtypeRange.c, TdiGetArgs.c,
+	TdiGetData.c, TdiIntrinsic.c, TdiItoX.c, TdiSubscript.c,
+	TdiThreadSafe.c, tdithreadsafe.h, tdishrp.h:
+	
+	Add thread safe code
+
+2010-08-04 15:04  twf
+
+	* treeshr/treethreadsafe.h:
+	
+	file treethreadsafe.h was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-08-04 15:04  twf
+
+	* treeshr/TreeThreadSafe.c:
+	
+	file TreeThreadSafe.c was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-08-04 15:01  twf
+
+	* treeshr/: Makefile.in, RemoteAccess.c, TreeAddNode.c,
+	TreeAddTag.c, TreeCleanDatafile.c, TreeCreatePulseFile.c,
+	TreeDeleteNode.c, TreeDeletePulseFile.c, TreeDoMethod.c,
+	TreeFindNode.c, TreeFindTagWild.c, TreeGetDbi.c, TreeGetNci.c,
+	TreeGetRecord.c, TreeOpen.c, TreePutRecord.c,
+	TreeRemoveNodesTags.c, TreeRenameNode.c, TreeSegments.c,
+	TreeSetDbi.c, TreeSetDefault.c, TreeSetNci.c, TreeVerify.c,
+	TreeThreadSafe.c, treethreadsafe.h:
+	
+	Add thread safe code
+
+2010-08-04 08:17  manduchi
+
+	* javascope/javascope.mak, javatraverser/javatraverser.mak:
+	
+	Removed reference to non existing manifest file
+
+2010-08-04 07:47  manduchi
+
+	* mdsshr/librtl.c:
+	
+	Let vmMutex be compiled also by Windows
+
+2010-08-02 12:18  twf
+
+	* mitdevices/paragon_rpt.c:
+	
+	Do store in a fun
+
+2010-08-02 12:09  twf
+
+	* mitdevices/paragon_rpt.gen:
+	
+	Use fun's for paragon_rpt device
+
+2010-07-30 13:12  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix for threaded applications
+
+2010-07-29 13:00  twf
+
+	* tdishr/TdiThreadSafe.c:
+	
+	Fix compile recurse check
+
+2010-07-29 12:12  twf
+
+	* tdishr/: TdiCompile.c, tdithreadsafe.h:
+	
+	Fix recursion testing in TdiCompile
+
+2010-07-28 06:47  twf
+
+	* tdi/RfxDevices/bRadField2D.fun:
+	
+	file bRadField2D.fun was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-07-28 06:47  manduchi
+
+	* tdi/RfxDevices/bRadField2D.fun:
+	
+	2D radial fild
+
+2010-07-28 06:45  manduchi
+
+	* tdi/RfxDevices/bRadCheck.fun:
+	
+	Mod
+
+2010-07-28 05:13  manduchi
+
+	* include/mdsobjects.h:
+	
+	Make putLastRow consistent with putRow in CachedNode
+
+2010-07-28 05:11  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Make putLastRow COnsistent with putRow
+
+2010-07-28 05:06  manduchi
+
+	* cacheshr/: Cache.cpp, TreeWriter.cpp:
+	
+	Fixed race confition in cache instantiatiation
+
+2010-07-27 10:01  twf
+
+	* roam/roam_check_access.c, tdi/roam/check_access.fun:
+	
+	Pass account by descriptor
+
+2010-07-26 11:20  manduchi
+
+	* cacheshr/CachedTreeshr.c, cacheshr/TreeWriter.cpp,
+	mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Fix memory leaks
+
+2010-07-26 10:50  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Fix putLastRow
+
+2010-07-26 07:50  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Remove lost debug message
+
+2010-07-26 07:49  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Fix Set NCI flags
+
+2010-07-26 06:43  twf
+
+	* tdi/RfxDevices/LASER_NDRT__init_vme.fun:
+	
+	file LASER_NDRT__init_vme.fun was added on branch
+	NEW_DESCRIPTORS_BRANCH on 2010-08-10 15:33:01 +0000
+
+2010-07-26 06:43  manduchi
+
+	* tdi/RfxDevices/LASER_NDRT__init_vme.fun:
+	
+	New operation to initialize real time trigger parameter on VME node
+
+2010-07-26 06:41  manduchi
+
+	* tdi/RfxDevices/LASER_NDRT__init.fun:
+	
+	Remove real time trigger initialization on VME node
+
+2010-07-26 06:39  manduchi
+
+	* tdi/RfxDevices/LASER_NDRT__add.fun:
+	
+	Add ne action to inizialize real time trigger on VME node
+
+2010-07-23 11:56  twf
+
+	* math/iw9get.c:
+	
+	Add dummy entry  point for f77
+
+2010-07-23 11:52  twf
+
+	* math/: dsvrgn.f.in, svign.f.in, svrgn.f.in, umach.f.in:
+	
+	Fix compile errors using f77
+
+2010-07-23 10:05  twf
+
+	* math/: dsvrgn.f.in, iw9get.c, svign.f.in, svrgn.f.in, umach.f.in:
+	
+	Fix f77 compile errors
+
+2010-07-23 05:43  manduchi
+
+	* mdsshr/MdsShrThreadSafe.c:
+	
+	Make the initialization test atomic
+
+2010-07-22 17:14  twf
+
+	* cacheshr/CachedTreeshr.c, camshr/KsM.c, camshr/KsS.c,
+	camshr/Makefile.in, camshr/scsi_io.c, camshr/verbs.c,
+	ccl/Makefile.in, cdu/cdu.c, cdu/cli_routines.c, cdu/cli_util.c,
+	cdu/dasutil_routines1.c, cdu/dasutil_routines2.c,
+	cdu/dasutil_routines3.c, dwscope/dwpad.c, dwscope/dwscope.c,
+	include/dasutil.h, include/dbidef.h, include/mdsdescrip.h,
+	include/mdsobjects.h, include/mdsshr.h, javamds/JavaTrav.c,
+	javamds/javamds.c, javamds/mdsobjects.c, mdslib/mdslib_ctest.c,
+	mdsobjects/cpp/mdsdata.c, mdsobjects/cpp/mdseventobjects.cpp,
+	mdsobjects/cpp/mdsipobjects.cpp, mdsobjects/cpp/mdstreeobjects.cpp,
+	mdsshr/MdsCompress.c, mdsshr/MdsEvents.c, mdsshr/MdsGet1DxA.c,
+	mdsshr/MdsGet1DxS.c, mdsshr/MdsSerialize.c, mdsshr/MdsXdRoutines.c,
+	mdsshr/dasutil_routines4.c, mdsshr/librtl.c,
+	mdsshr/mds_dsc_string.c, mdsshr/mdsmsg.c, mdstcpip/mdsip_u.c,
+	mdstcpip/t.c, mitdevices/l8501.c, rtevents/EventConnector.cpp,
+	rtevents/EventHandler.cpp, tcl/Makefile.in, tcl/tcl_close.c,
+	tcl/tcl_directory.c, tcl/tcl_setshow_attribute.c,
+	tcl/tcl_show_data.c, tcl/tcl_show_db.c, tdic/TdiShrExt.c,
+	tdic/tdic.c, tdishr/TdiArray.c, tdishr/TdiBound.c,
+	tdishr/TdiConstant.c, tdishr/TdiDecompile.c,
+	tdishr/TdiDtypeRange.c, tdishr/TdiEvaluate.c, tdishr/TdiExpt.c,
+	tdishr/TdiExtFunction.c, tdishr/TdiGetData.c, tdishr/TdiGetDbi.c,
+	tdishr/TdiGetNci.c, tdishr/TdiGetShape.c, tdishr/TdiIntrinsic.c,
+	tdishr/TdiIo.c, tdishr/TdiItoX.c, tdishr/TdiLex.c,
+	tdishr/TdiMatrix.c, tdishr/TdiMaxVal.c, tdishr/TdiPower.c,
+	tdishr/TdiScalar.c, tdishr/TdiSql.c, tdishr/TdiSubscript.c,
+	tdishr/TdiTrans.c, tdishr/TdiTrim.c, tdishr/TdiVar.c,
+	tdishr/TdiVector.c, tdishr/TdiXxxOf.c, tdishr/tdirefcat.h,
+	tditest/tditest.c, traverser/CallbacksUil.c,
+	treeshr/RemoteAccess.c, treeshr/TreeAddNode.c,
+	treeshr/TreeDoMethod.c, treeshr/TreeFindNode.c,
+	treeshr/TreeFindTagWild.c, treeshr/TreeGetNci.c,
+	treeshr/TreeGetRecord.c, treeshr/TreeOpen.c,
+	treeshr/TreePutRecord.c, treeshr/TreeSegments.c,
+	xmdsshr/XmdsOnOffToggleButton.c:
+	
+	Next round of updates
+
+2010-07-22 16:08  twf
+
+	* mdsshr/librtl.c:
+	
+	lock around Vm zone calls
+
+2010-07-22 14:32  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Free memory when compressing data
+
+2010-07-22 12:05  manduchi
+
+	* javadevices/RFXDiagTimesV1Setup.java:
+	
+	Mod real time trigger options
+
+2010-07-22 09:51  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Add thread locking
+
+2010-07-22 09:51  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Remove invalid TreeUnLockNci calls
+
+2010-07-21 09:11  jas
+
+	* tdi/MitDevices/dt216a__init.fun:
+	
+	make sure the voltage range handed to set.vin is the correct format
+
+2010-07-20 09:35  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h:
+	
+	Remove items from Cache queue when discarding data
+
+2010-07-20 08:02  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Let copmpiler be happy
+
+2010-07-20 05:19  manduchi
+
+	* tdi/java/JavaNewWindow.fun:
+	
+	Do not display live update option by default. It is enabled by an
+	addtitional argument (only JET specific)
+
+2010-07-20 05:18  manduchi
+
+	* javamds/javamds.c:
+	
+	Do not display enable live update by default in
+	CompositeWaveDisplay
+
+2010-07-20 05:16  manduchi
+
+	* javascope/CompositeWaveDisplay.java:
+	
+	Do not display live update option by default in
+	CompositeWaveDisplay
+
+2010-07-19 17:07  twf
+
+	* camshr/Makefile.in, ccl/Makefile.in, tcl/Makefile.in:
+	
+	prevent warnings during makedepends
+
+2010-07-19 17:01  twf
+
+	* rtevents/AllocationManager.cpp, rtevents/EventConnector.cpp,
+	rtevents/EventHandler.cpp, rtevents/IPAddress.h,
+	include/mdsobjects.h:
+	
+	prevent compiler warnings
+
+2010-07-19 16:57  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix compile warnings
+
+2010-07-19 16:51  twf
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	Fix compile warnings
+
+2010-07-19 16:39  twf
+
+	* xmdsshr/XmdsOnOffToggleButton.c, dwscope/dwpad.c,
+	dwscope/dwscope.c, traverser/CallbacksUil.c:
+	
+	Use NULL instead of 0
+
+2010-07-19 12:50  manduchi
+
+	* javamds/javamds.c:
+	
+	Report status in TDI callable waveforms
+
+2010-07-19 12:49  manduchi
+
+	* javascope/CompositeWaveDisplay.java:
+	
+	Better cursor management in WaveDisplay
+
+2010-07-19 11:01  manduchi
+
+	* javamds/: JavaTrav.c, javamds.c:
+	
+	Better diagnostic messages
+
+2010-07-19 09:56  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CachedTreeshr.c:
+	
+	Fix wrong queue management
+
+2010-07-19 09:18  twf
+
+	* cdu/cdu.c, cdu/cdu_util.c, cdu/cdu_write.c, cdu/cli_routines.c,
+	cdu/cli_util.c, cdu/dasutil_routines1.c, cdu/dasutil_routines2.c,
+	cdu/dasutil_routines3.c, gsilite/Makefile, include/dasutil.h,
+	include/mdsdcldef.h, include/mdsdescrip.h, include/mdsobjects.h,
+	include/mdsshr.h, include/treeshr.h, macosx/Makefile,
+	mdsdcl/mdsdcl.c, mdsdcl/mdsdcl_dcl_parse.c,
+	mdsdcl/mdsdcl_do_command.c, mdsdcl/mdsdcl_general.c,
+	mdsdcl/mdsdcl_get_input.c, mdsdcl/mdsdcl_insert_symbols.c,
+	mdsdcl/mdsdcl_macros.c, mdsdcl/mdsdcl_set_command.c,
+	mdsdcl/mdsdcl_spawn.c, mdsdcl/mdsdcl_wait.c,
+	mdsobjects/cpp/mdstreeobjects.cpp, mdsshr/MdsCompress.c,
+	mdsshr/MdsEvents.c, mdsshr/MdsGet1DxA.c, mdsshr/MdsSerialize.c,
+	mdsshr/MdsXdRoutines.c, mdsshr/dasutil_routines4.c,
+	mdsshr/librtl.c, mdstcpip/mdsip_u.c, mdstcpip/t.c,
+	rtevents/AllocationManager.cpp, rtevents/IPAddress.h,
+	tcl/tcl_add_node.c, tcl/tcl_add_tag.c, tcl/tcl_clean_datafile.c,
+	tcl/tcl_close.c, tcl/tcl_compress_datafile.c,
+	tcl/tcl_create_pulse.c, tcl/tcl_decompile.c, tcl/tcl_delete_node.c,
+	tcl/tcl_delete_pulse.c, tcl/tcl_directory.c,
+	tcl/tcl_directory_tag.c, tcl/tcl_dispatch.c, tcl/tcl_do_method.c,
+	tcl/tcl_do_node.c, tcl/tcl_edit.c, tcl/tcl_put_expression.c,
+	tcl/tcl_remove_tag.c, tcl/tcl_rename.c, tcl/tcl_set_current.c,
+	tcl/tcl_set_default.c, tcl/tcl_set_node.c, tcl/tcl_set_tree.c,
+	tcl/tcl_set_view.c, tcl/tcl_setevent.c,
+	tcl/tcl_setshow_attribute.c, tcl/tcl_show_current.c,
+	tcl/tcl_show_data.c, tcl/tcl_show_db.c, tcl/tcl_wfevent.c,
+	tcl/tcl_write.c, tdishr/TdiArray.c, tdishr/TdiBound.c,
+	tdishr/TdiCall.c, tdishr/TdiConstant.c, tdishr/TdiConvert.c,
+	tdishr/TdiDecompile.c, tdishr/TdiDtypeRange.c,
+	tdishr/TdiEvaluate.c, tdishr/TdiExtFunction.c, tdishr/TdiGetData.c,
+	tdishr/TdiGetDbi.c, tdishr/TdiGetNci.c, tdishr/TdiGetShape.c,
+	tdishr/TdiIntrinsic.c, tdishr/TdiIo.c, tdishr/TdiItoX.c,
+	tdishr/TdiLex.c, tdishr/TdiMatrix.c, tdishr/TdiMaxVal.c,
+	tdishr/TdiPower.c, tdishr/TdiScalar.c, tdishr/TdiSql.c,
+	tdishr/TdiSubscript.c, tdishr/TdiTrans.c, tdishr/TdiTrim.c,
+	tdishr/TdiVar.c, tdishr/TdiVector.c, tdishr/TdiXxx.c,
+	tdishr/TdiXxxOf.c, tdishr/TdiYacc.c, tdishr/TdiYaccSubs.c,
+	tditest/tditest.c, treeshr/RemoteAccess.c, treeshr/TreeAddNode.c,
+	treeshr/TreeDoMethod.c, treeshr/TreeFindNode.c,
+	treeshr/TreeFindTagWild.c, treeshr/TreeGetNci.c,
+	treeshr/TreeGetRecord.c, treeshr/TreeOpen.c,
+	treeshr/TreePutRecord.c, treeshr/TreeSegments.c,
+	treeshr/TreeSerializeNci.c, treeshr/treeshrp.h:
+	
+	next round of updates for new descriptors
+
+2010-07-19 08:48  manduchi
+
+	* javadevices/Makefile.in:
+	
+	add FEMTO GUI setup device
+
+2010-07-19 08:42  manduchi
+
+	* tdi/RfxDevices/__init__.py:
+	
+	add FEMTO device
+
+2010-07-19 08:39  manduchi
+
+	* tdi/MdsDevices.fun:
+	
+	add FEMTO python devive
+
+2010-07-19 08:37  twf
+
+	* javadevices/FEMTOSetup.java:
+	
+	file FEMTOSetup.java was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:00 +0000
+
+2010-07-19 08:37  manduchi
+
+	* javadevices/FEMTOSetup.java:
+	
+	FEMTO GUI device setup
+
+2010-07-19 08:13  twf
+
+	* tdi/RfxDevices/FEMTO.py:
+	
+	file FEMTO.py was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-07-19 08:13  manduchi
+
+	* tdi/RfxDevices/FEMTO.py:
+	
+	Python FEMTO gain amplifier device operations
+
+2010-07-19 05:13  manduchi
+
+	* javadevices/Makefile.in:
+	
+	add SIS3820 setup
+
+2010-07-14 14:32  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix _TreeGetSegmentInfo with compressed segments
+
+2010-07-14 13:06  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix copy/compress of compressed segments
+
+2010-07-14 10:35  twf
+
+	* javadevices/SIS3820Setup.java:
+	
+	file SIS3820Setup.java was added on branch NEW_DESCRIPTORS_BRANCH
+	on 2010-08-10 15:33:00 +0000
+
+2010-07-14 10:35  manduchi
+
+	* javadevices/SIS3820Setup.java:
+	
+	LNE source field saved as numeric
+
+2010-07-14 10:00  manduchi
+
+	* tdi/RfxDevices/__init__.py:
+	
+	Remove EXADC
+
+2010-07-14 08:47  twf
+
+	* tdi/RfxDevices/SIS3820.py:
+	
+	file SIS3820.py was added on branch NEW_DESCRIPTORS_BRANCH on
+	2010-08-10 15:33:01 +0000
+
+2010-07-14 08:47  manduchi
+
+	* tdi/RfxDevices/SIS3820.py:
+	
+	Fix LNE source data type
+
+2010-07-12 08:02  manduchi
+
+	* javadevices/SIS3820Setup.java:
+	
+	Grapical User Interface for Struck SIS3828 module
+
+2010-07-08 15:57  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	the timbase argument to putCh  takes number of samples not end the
+	expression for endidx was missing a paren always giving the default
+	which was post.
+	
+	?  Should start  be signed.  Defaulting it to pre (positive number)
+	has to be wrong
+
+2010-07-07 13:22  twf
+
+	* include/dbidef.h, include/mdsdescrip.h, include/mdsshr.h,
+	mdsshr/MdsCompress.c, mdsshr/MdsGet1DxA.c, mdsshr/MdsGet1DxS.c,
+	mdsshr/MdsSerialize.c, mdsshr/MdsXdRoutines.c, mdsshr/librtl.c,
+	tdishr/TdiArray.c, tdishr/TdiBound.c, tdishr/TdiDecompile.c,
+	tdishr/TdiDecompileR.c, tdishr/TdiDtypeRange.c, tdishr/TdiExpt.c,
+	tdishr/TdiGetArgs.c, tdishr/TdiGetDbi.c, tdishr/TdiGetNci.c,
+	tdishr/TdiGetShape.c, tdishr/TdiIntrinsic.c, tdishr/TdiIo.c,
+	tdishr/TdiItoX.c, tdishr/TdiSubscript.c, tdishr/TdiTrans.c,
+	tdishr/TdiTrim.c, tdishr/TdiVar.c, tdishr/TdiVector.c,
+	tdishr/TdiXxx.c, tdishr/TdiYacc.c, tdishr/tdirefcat.h,
+	tdishr/tdirefzone.h, treeshr/TreeGetRecord.c:
+	
+	First round of changes for big descriptors
+
+2010-07-07 08:09  manduchi
+
+	* tdi/RfxDevices/: SIS3820.py, __init__.py:
+	
+	New python device operation SIS3820
+
+2010-07-01 15:30  twf
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Decompress data if necessary
+
+2010-06-30 13:28  jas
+
+	* tdi/MitDevices/dc1394a__init.fun:
+	
+	the minimum trigger mode is 0  not 1 !
+
+2010-06-30 09:12  twf
+
+	* tdi/: intersect1d.fun, setdiff1d.fun:
+	
+	Add new functions
+
+2010-06-29 16:41  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	write out the internal clock record if this is the MASTER
+
+2010-06-29 16:35  twf
+
+	* traverser/CallbacksUil.c:
+	
+	Fix device setup to work with just uid's, motif code, python and
+	java
+
+2010-06-28 20:08  jas
+
+	* javascope/Makefile.in:
+	
+	added ColorMapDialog.java and ColorMap.java to Makefile.in
+
+2010-06-28 15:40  jas
+
+	* traverser/CallbacksUil.c:
+	
+	Make the method lower case  for dw_setup
+
+2010-06-24 15:30  twf
+
+	* math/iw9get.c:
+	
+	Fix segfault on 64-bit
+
+2010-06-24 13:19  jas
+
+	* tdi/MitDevices/dt196b.py:
+	
+	add clock divide for external clock.
+	
+	Note: clock must be on di0  and is output on do2
+
+2010-06-24 12:53  jas
+
+	* tdi/MitDevices/dt196b.py:
+	
+	dt196b.py
+
+2010-06-24 12:41  jas
+
+	* tdi/MitDevices/Dt216Init.fun:
+	
+	Typeos
+
+2010-06-24 09:23  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Fixed memory leak in Tree destructor
+
+2010-06-23 11:48  twf
+
+	* idl/mdsdecompile.pro:
+	
+	Fix to not evaluate
+
+2010-06-23 10:00  jas
+
+	* tdi/MitDevices/Dt216Init.fun:
+	
+	do the equivalent of set.pre_post_mode
+
+2010-06-23 09:51  twf
+
+	* idl/mdsdecompile.pro:
+	
+	Avoid backquote of getnci(node,'record')
+
+2010-06-22 14:22  twf
+
+	* mdsobjects/python/compound.py:
+	
+	Make sure dispatch has trailing completion field
+
+2010-06-22 14:11  twf
+
+	* mdsobjects/python/compound.py:
+	
+	Fix Dispatch instance initialization
+
+2010-06-22 11:57  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Add mdsip parallel to util lib
+
+2010-06-21 11:50  twf
+
+	* mdsobjects/python/: _treeshr.py, tree.py:
+	
+	Free dbid's and clear DBID in tree desctructor
+
+2010-06-18 04:00  manduchi
+
+	* tdi/RfxDevices/: EDA3VmeConfig__add.fun, EDA3VmeConfig__init.fun,
+	PELLET__init.fun, getVersions.fun:
+	
+	Write VME parameters
+
+2010-06-17 12:27  manduchi
+
+	* tdi/RfxDevices/EDA3VmeConfig__init.fun:
+	
+	Minor fix
+
+2010-06-17 08:52  manduchi
+
+	* tdi/RfxDevices/ParameterSettingCheck.fun:
+	
+	Add current control check
+
+2010-06-17 08:37  manduchi
+
+	* javadevices/EDA3VmeConfigSetup.java:
+	
+	Added field
+
+2010-06-17 08:34  manduchi
+
+	* tdi/RfxDevices/: EDA3VmeConfig__add.fun, EDA3VmeConfig__init.fun:
+	
+	Field added
+
+2010-06-16 11:31  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix segment code
+
+2010-06-16 11:30  twf
+
+	* mdsobjects/python/: _treeshr.py, treenode.py:
+	
+	Fix to segments
+
+2010-06-15 15:43  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	fix clock output in master mode
+
+2010-06-14 15:58  twf
+
+	* mdsobjects/python/event.py:
+	
+	Add Event.wfevent() and Event.wfeventRaw() methods
+
+2010-06-14 15:57  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix error handling
+
+2010-06-14 13:55  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add segment compression
+
+2010-06-11 16:56  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix compressed segments when more than 128 segments (multiple
+	segment indexes)
+
+2010-06-11 16:54  twf
+
+	* treeshr/TreePutRecord.c:
+	
+	Clear extended attributes if it can't be retrieved
+
+2010-06-10 09:16  manduchi
+
+	* javadevices/Makefile.in:
+	
+	Added EDA3VmeCOnfigSetup
+
+2010-06-10 09:16  manduchi
+
+	* javadevices/EDA3VmeConfigSetup.java:
+	
+	Added Toroidal control device setup
+
+2010-06-10 09:10  manduchi
+
+	* javadevices/Makefile.in:
+	
+	Added MCUSetup.java
+
+2010-06-10 09:06  manduchi
+
+	* javadevices/Makefile.in:
+	
+	Added device for toroidal control parameter configuration
+
+2010-06-10 09:05  manduchi
+
+	* tdi/RfxDevices/: EDA3VmeConfig__add.fun, EDA3VmeConfig__init.fun:
+	
+	VME support device for Toroidal control
+
+2010-06-10 08:40  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix typo in getSegment method
+
+2010-06-09 13:10  twf
+
+	* xtreeshr/XTreeDefaultResample.c, treeshr/TreeSegments.c:
+	
+	Add compressed segments
+
+2010-06-09 11:50  manduchi
+
+	* cacheshr/SimpleAllocationManager.h:
+	
+	Fix free
+
+2010-06-09 11:17  manduchi
+
+	* include/cacheshr.h:
+	
+	Fix typo
+
+2010-06-09 09:54  manduchi
+
+	* include/mdsobjects.h:
+	
+	Handle arguments in compile and configure
+
+2010-06-09 09:52  manduchi
+
+	* cacheshr/: SharedDataManager.cpp, SharedMemTree.cpp:
+	
+	Use only local memory
+
+2010-06-09 09:51  manduchi
+
+	* mdsobjects/cpp/: mdsdataobjects.cpp, mdsipobjects.cpp, mdstree.c,
+	mdstreeobjects.cpp:
+	
+	Handle arguments in compile() and execute()
+
+2010-06-09 09:23  twf
+
+	* tdi/Py.fun:
+	
+	Fix another MDSplus package reference
+
+2010-06-08 17:28  twf
+
+	* tdi/: Py.fun, dev_support/DevAddDevice.fun,
+	dev_support/PyDoMethod.fun:
+	
+	Remove global namespace conflicts with user apps
+
+2010-06-08 14:09  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Remove _RTreeSetWarm
+
+2010-06-08 12:24  twf
+
+	* Makefile.in:
+	
+	Fix order with new dependencies
+
+2010-06-07 11:47  manduchi
+
+	* cacheshr/: Cache.cpp, Makefile.in, SharedDataManager.cpp,
+	SharedMemTree.cpp, SimpleAllocationManager.h, TreeWriter.cpp:
+	
+	use RTEvents classes use local memory via malloc
+
+2010-06-07 11:42  manduchi
+
+	* cacheshr/: SemEvent.h, SimpleAllocationManager.h:
+	
+	Use RTEvents classes
+
+2010-06-07 11:34  manduchi
+
+	* rtevents/: Notifier.cpp, Notifier.h, State.h:
+	
+	Methods added
+
+2010-06-07 11:32  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CachedTreeshr.c,
+	CallbackManager.h, Makefile.in, Segment.h, SharedDataManager.cpp,
+	SharedDataManager.h, SharedMemNode.h, SharedMemNodeData.h,
+	SharedMemTree.cpp, SharedMemTree.h, TreeWriter.h, cacheshr.vcproj:
+	
+	Use local memory via malloc
+
+2010-06-07 09:34  manduchi
+
+	* cacheshr/: ChannelFactory.cpp, CoherencyManager.cpp,
+	CoherencyManager.h, CommunicationChannel.cpp, FreeSpaceManager.cpp,
+	LockManager.h, Notifier.cpp, Notifier.h, SharedMemManager.cpp,
+	TCPChannel.cpp:
+	
+	User RTEvents classes
+
+2010-06-07 09:25  manduchi
+
+	* cacheshr/: ChannelAddress.h, ChannelFactory.h, ChannelListener.h,
+	CommunicationChannel.h, Event.h, FreeSpaceManager.h, IPAddress.h,
+	Runnable.h, SharedMemManager.h, TCPChannel.h, Thread.cpp, Thread.h,
+	UDPChannel.cpp, UDPChannel.h:
+	
+	Use RTEvents general classes
+
+2010-06-03 10:21  twf
+
+	* tdi/Py.fun:
+	
+	Use C based PyCall on linux
+
+2010-06-03 10:20  twf
+
+	* mdsmisc/: Makefile.in, pycall.c:
+	
+	Add pycall for python reentrancy
+
+2010-06-01 09:31  twf
+
+	* javamds/Makefile.in:
+	
+	Include RtEventShr in link
+
+2010-05-31 04:54  manduchi
+
+	* tdi/RfxDevices/: ParameterSettingCheck.fun, SXC__zero.fun,
+	getVersions.fun, pulseCheck_PCAT.fun:
+	
+	Minor fix and modifications
+
+2010-05-28 10:58  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Fix dw_setup from traverser which passes the Widget pointer
+
+2010-05-27 15:14  twf
+
+	* tdishr/TdiCompile.c:
+	
+	Disallow recursive calls
+
+2010-05-27 15:13  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Prevent Compile recursion
+
+2010-05-26 14:13  twf
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	Initialize last_pen_down
+
+2010-05-26 14:12  twf
+
+	* treeshr/TreeDoMethod.c:
+	
+	Fix TreeDoMethod handling of tdi fun's
+
+2010-05-26 14:11  twf
+
+	* traverser/CallbacksUil.c:
+	
+	Fix TreeDoMethod call to have answer argument
+
+2010-05-26 14:09  twf
+
+	* javamds/mdsobjects.c:
+	
+	Fix call to _TreeDoMethod
+
+2010-05-26 13:22  manduchi
+
+	* javadevices/: ParameterSetting.java, RFXPC4SetupSetup.java,
+	RFXPCSetupSetup.java, RFXPMSetupSetup.java, RFXPVSetupSetup.java,
+	RFXTFSetupSetup.java:
+	
+	Change Ansaldo units control parameter management
+
+2010-05-25 11:54  twf
+
+	* tdi/segments/MakeSegment.fun:
+	
+	Add MakeSegment
+
+2010-05-25 09:25  twf
+
+	* php/README:
+	
+	Use build.sh script
+
+2010-05-25 09:18  twf
+
+	* php/build.sh:
+	
+	Use php-config if possible
+
+2010-05-25 08:40  twf
+
+	* php/mdsplus.php:
+	
+	fix suffix append
+
+2010-05-24 12:01  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add TreeNode.getNode() and TreeNode.getNodeWild()
+
+2010-05-24 11:55  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add TreeNode.getNode() and TreeNode.getNodeWild()
+
+2010-05-24 11:22  twf
+
+	* mdsobjects/python/tree.py:
+	
+	Fix Tree.__init__
+
+2010-05-21 16:42  twf
+
+	* tdishr/TdiIntrinsic.c:
+	
+	Prevent double free
+
+2010-05-21 16:42  twf
+
+	* tdishr/TdiGetData.c:
+	
+	Don't compile expression each time in TdiGetRecord
+
+2010-05-21 16:38  twf
+
+	* tdishr/TdiCompile.c:
+	
+	Switch to recursive mode mutex
+
+2010-05-21 11:51  twf
+
+	* camshr/verbs.c:
+	
+	Fix duplicate crate check in addcrate
+
+2010-05-21 11:44  twf
+
+	* ccl/ccl_verbs.c:
+	
+	Add trailing null to show data/bin
+
+2010-05-21 11:17  twf
+
+	* ccl/ccl_verbs.c:
+	
+	Fix /binary switch
+
+2010-05-21 09:48  twf
+
+	* treeshr/TreeSetNci.c:
+	
+	Add pthread include for hp
+
+2010-05-20 13:46  jas
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	call TreeEndConglomerate
+
+2010-05-20 13:46  jas
+
+	* mdsobjects/python/_treeshr.py:
+	
+	add TreeEndConglomerate entry point
+
+2010-05-20 11:56  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	Fix R Transfer
+
+2010-05-19 11:47  manduchi
+
+	* tdi/RfxDevices/: DIO4.py, IPControl__add.fun, __init__.py:
+	
+	New field in IPControl
+
+2010-05-19 07:57  manduchi
+
+	* javadevices/: IPControlSetup.java, ParameterSetting.java,
+	javadevices.vcproj:
+	
+	IP Current control in Parameter Setting
+
+2010-05-17 10:11  manduchi
+
+	* include/mdsobjects.h:
+	
+	Fix compilation error
+
+2010-05-17 07:49  manduchi
+
+	* mdsobjects/cpp/mdseventobjects.cpp:
+	
+	Fix compilation errors
+
+2010-05-07 04:17  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Fix method execution
+
+2010-05-06 12:50  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Removed range management due to inaccurate reconstruction made by
+	tdishr
+
+2010-05-06 12:48  manduchi
+
+	* mdsobjects/cpp/: Makefile.in, mdsdataobjects.cpp,
+	mdseventobjects.cpp:
+	
+	Fixed Events, no more Tree argument in compile and execute
+	
+	-
+
+2010-05-06 03:08  manduchi
+
+	* mdsobjects/cpp/mdseventobjects.cpp:
+	
+	Use UDP Events
+
+2010-05-05 09:00  twf
+
+	* configure, configure.in:
+	
+	Support freetds
+
+2010-05-05 03:56  manduchi
+
+	* tdi/RfxDevices/RFXDiagTimesV1__add.fun:
+	
+	New RFX diagnostic times add function device
+
+2010-05-05 03:53  manduchi
+
+	* tdi/RfxDevices/ParameterSettingCheck.fun:
+	
+	RFX pulse file parameter setting check function
+
+2010-05-05 03:49  manduchi
+
+	* tdi/RfxDevices/K3115__init_new.fun:
+	
+	New K3115 DAC init funcion
+
+2010-05-05 03:15  manduchi
+
+	* tdi/RfxDevices/EDAM_CPCISetupV1__add.fun:
+	
+	New EDAM timing acquisition device
+
+2010-04-22 08:58  manduchi
+
+	* math/: dsvrgn.f.in, svign.f.in, svrgn.f.in:
+	
+	Let f95 be happy
+
+2010-04-20 11:48  twf
+
+	* tdishr/TdiGetDbi.c:
+	
+	Add TreeFreeDbid call in using
+
+2010-04-20 11:47  twf
+
+	* treeshr/TreeOpen.c, include/treeshr.h:
+	
+	Add TreeFreeDbid
+
+2010-04-14 11:14  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix removal of fifo's
+
+2010-04-14 08:14  twf
+
+	* rpm/: fusiongrid-mdsip.xinetd, fusiongrid-mdsips.xinetd,
+	mdsipd.xinetd:
+	
+	Add per_source=UNLIMITED
+
+2010-04-12 16:11  twf
+
+	* math/: dsvrgn.f.in, svign.f.in, svrgn.f.in:
+	
+	Fix for ubuntu
+
+2010-04-09 11:06  jas
+
+	* tdi/MitDevices/: DT216B.glade, dt196b.py:
+	
+	change some of the defaults for new devices.  Not sure about the
+	glade - probably fix the menus
+
+2010-04-07 13:54  twf
+
+	* tdishr/: TdiDoTask.c, TdiXxxOf.c:
+	
+	Allow action expression to be DTYPE_L,LU,W,WU,B,BU and make program
+	return success if spawn returns 0
+
+2010-04-06 08:10  twf
+
+	* tdi/MdsDevices.fun:
+	
+	Reference MitDevices again
+
+2010-04-05 17:25  twf
+
+	* tdi/MitDevices/: CP7452.glade, DT216B.glade:
+	
+	Remove library warnings
+
+2010-04-05 17:24  twf
+
+	* tdi/MitDevices/DT196B.glade:
+	
+	Change setup to include 64 and 96 channels
+
+2010-04-05 17:21  twf
+
+	* mdsobjects/python/widgets/: mdsplusonoffxdbox.py,
+	mdsplusxdbox.py:
+	
+	Synchronize on/off checkboxes
+
+2010-04-05 17:20  twf
+
+	* mdsobjects/python/widgets/mdsplusnidoptionwidget.py:
+	
+	fix popup when computed clicked
+
+2010-04-05 17:19  twf
+
+	* mdsobjects/python/widgets/mdsplusdigchans.py:
+	
+	Fix channel error message
+
+2010-04-05 17:18  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix compare method
+
+2010-04-01 08:30  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Use mdsip-client- and mdsip-server- prefixes for commands
+
+2010-03-31 17:29  twf
+
+	* mdsip_xio/Makefile.in:
+	
+	Add globus package dependency
+
+2010-03-29 15:33  jas
+
+	* scripts/Makefile.in:
+	
+	typos
+
+2010-03-29 15:20  jas
+
+	* tdi/MitDevices/: dt196b.py, dt216b.py:
+	
+	adding /fixing wait methods
+
+2010-03-29 12:11  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsip_u.c, mdsipshr.def,
+	mdsiputil.c:
+	
+	Fix for windows which currently won't support ssh etc.
+
+2010-03-29 11:21  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	adding wait method
+
+2010-03-29 11:20  jas
+
+	* scripts/: Makefile.in, job_wait:
+	
+	adding job_wait
+
+2010-03-26 17:29  twf
+
+	* mdstcpip/: mdsip_socket_io.c, mdsip_u.c, mdsiputil.c:
+	
+	Add tunneling
+
+2010-03-26 15:35  jas
+
+	* tdi/MitDevices/dt196b.py:
+	
+	use new async scheme (ala dt216b)
+
+2010-03-26 15:24  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	adding wait method (unimpimented)
+
+2010-03-26 15:11  jas
+
+	* scripts/: Makefile.in, Makefile.in:
+	
+	syntax
+
+2010-03-26 15:08  jas
+
+	* scripts/: Makefile.in, job_finish, job_functions, job_output,
+	job_que, job_start:
+	
+	scripts to help with synchronizing async daq jobs
+
+2010-03-26 14:56  jas
+
+	* tdi/MitDevices/: job_finish.fun, job_output.fun, job_que.fun,
+	job_start.fun, job_wait.fun:
+	
+	new funs for async job synchronization
+
+2010-03-26 14:55  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	send the script to the board during store, then invoke it
+
+2010-03-26 13:43  manduchi
+
+	* xtreeshr/XTreeConvertToLongTime.c:
+	
+	Fix double range limits
+
+2010-03-26 11:00  manduchi
+
+	* xtreeshr/XTreeConvertToLongTime.c:
+	
+	Fix double delta vals
+
+2010-03-24 05:37  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Remove debug message
+
+2010-03-23 11:37  twf
+
+	* treeshr/TreeSetNci.c:
+	
+	Fix for windows
+
+2010-03-23 08:58  twf
+
+	* treeshr/: TreeGetNci.c, TreeGetRecord.c, TreeOpen.c,
+	TreePutRecord.c, TreeSegments.c, TreeSetNci.c:
+	
+	Fix auto reopen code
+
+2010-03-23 05:19  manduchi
+
+	* javamds/: JavaTrav.c, mdsobjects.c:
+	
+	Remove debug message
+
+2010-03-22 14:34  twf
+
+	* treeshr/: TreeGetNci.c, TreeGetRecord.c, TreeOpen.c,
+	TreePutRecord.c, TreeSegments.c, TreeSetNci.c, treeshrp.h:
+	
+	Fix reopen mechanism on deleted files
+
+2010-03-19 14:46  twf
+
+	* treeshr/TreeAddNode.c:
+	
+	fix datafile open check in TreeGetDatafileSize
+
+2010-03-19 13:59  manduchi
+
+	* javascope/: Grid.java, jScope.java:
+	
+	Support EPICS time
+
+2010-03-19 03:31  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	Still more debug messages
+
+2010-03-19 03:28  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	More debug messages
+
+2010-03-18 11:53  jas
+
+	* tdi/MitDevices/Dt216PutSignal.fun:
+	
+	left in a debug print.	Now removed
+
+2010-03-18 11:07  manduchi
+
+	* mdsobjects/java/MDSplus/Data.java:
+	
+	Fix Immutable data
+
+2010-03-18 11:02  jas
+
+	* tdi/MitDevices/Dt216PutSignal.fun:
+	
+	move vars inside the make_signal instead of : _v1 = .... ,
+	make_signal(build_with_units(f(_v1.... 
+	make_signal(build_with_units((_v1=... ,f(_v1....), "units)....
+
+2010-03-18 11:00  jas
+
+	* tdi/math/smooth1d.fun:
+	
+	put it back - the problem was with the expressions stored by 216a
+
+2010-03-17 09:52  jas
+
+	* tdi/math/smooth1d.fun:
+	
+	Use as_is on sig argument so new dt216 signals can be processed
+
+2010-03-17 09:31  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Removed locks in segments
+
+2010-03-17 03:49  manduchi
+
+	* include/mdsobjects.h:
+	
+	Added Connection::get with one argument
+
+2010-03-16 13:37  twf
+
+	* treeshr/TreeSetNci.c:
+	
+	Add thread locking between nci locks and unlocks
+
+2010-03-16 13:01  twf
+
+	* treeshr/RemoteAccess.c:
+	
+	Thread lock only remote i/o
+
+2010-03-16 05:21  manduchi
+
+	* mdsobjects/cpp/: mdsipobjects.cpp, mdsipobjects.cpp:
+	
+	Lock Connection
+
+2010-03-16 05:14  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Lock Connection
+
+2010-03-16 05:07  manduchi
+
+	* mdsobjects/cpp/cpp.vcproj, mdsobjects/cpp/mdsipobjects.cpp,
+	include/mdsobjects.h:
+	
+	Lock Connection
+
+2010-03-12 12:39  twf
+
+	* tdi/TdiGetRecord.fun:
+	
+	Add Tdi get record plugin
+
+2010-03-11 16:05  jas
+
+	* tdi/MitDevices/DT216B.glade:
+	
+	add MASTER as one of the clock options
+
+2010-03-11 16:04  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	add MASTER capability
+
+2010-03-11 04:05  manduchi
+
+	* javadispatcher/: jDispatchMonitor.java, jDispatcherIp.java:
+	
+	Fixed race confition in jDispatcheMonitor Removed setCurrent in
+	jDIspatcherIp SET TREE <shot> command
+
+2010-03-11 03:11  manduchi
+
+	* mdsobjects/cpp/mdstreeobjects.cpp:
+	
+	Protect segment routines with a lock
+
+2010-03-10 12:22  jas
+
+	* tdi/MitDevices/dt216b.py:
+	
+	add some error checking
+
+2010-03-09 14:39  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding dt196b and dt216b devices (python)
+
+2010-03-09 14:39  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	change default hostip to be the xinetd version of the mdsip server
+
+2010-03-09 14:36  jas
+
+	* tdi/MitDevices/: __init__.py, DT196B.glade, DT216B.glade,
+	dt196b.py, dt216b.py:
+	
+	adding dt196b and dt216b devices (python)
+
+2010-03-09 10:38  twf
+
+	* xmdsshr/XmdsXdBox.c:
+	
+	Revert previous change
+
+2010-03-09 10:26  twf
+
+	* gen_device/GenDeviceSignal.c:
+	
+	nid passed in by value not by reference. status return is second
+	code
+
+2010-03-09 09:20  twf
+
+	* javadispatcher/jServer.template:
+	
+	Add options to the jServer script
+
+2010-03-08 16:30  twf
+
+	* xmdsshr/XmdsXdBox.c:
+	
+	Fix for new compiler
+
+2010-03-08 16:24  twf
+
+	* xmdsshr/: XmdsGetPutNid.c, XmdsNidOptionMenu.c, XmdsXdBox.c:
+	
+	Fix for new compiler
+
+2010-03-08 07:51  manduchi
+
+	* matlab/make_mdsipmex.m:
+	
+	Test for 64 bit machines
+
+2010-03-05 13:44  twf
+
+	* camshr/map_scsi_device.c:
+	
+	Prevent buffer overflow
+
+2010-03-05 13:33  twf
+
+	* camshr/map_data_file.c:
+	
+	Fix error message
+
+2010-03-05 12:21  twf
+
+	* camshr/map_data_file.c:
+	
+	Add mapping problem message
+
+2010-03-05 12:14  twf
+
+	* camshr/: cam_functions.c, get_crate_status.c:
+	
+	Fix string buffer sizes
+
+2010-03-05 11:17  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	Report jServer error even when action evaluation fails
+
+2010-03-05 09:56  twf
+
+	* javascope/Makefile.in:
+	
+	Use temporary directories for classes to avoid missing
+	LocalProvider
+
+2010-03-05 09:07  manduchi
+
+	* treeshr/TreeAddNode.c:
+	
+	Removed static declaration
+
+2010-03-05 06:15  manduchi
+
+	* mdsobjects/cpp/: mdsdata.c, mdsdataobjects.cpp, mdstree.c,
+	mdstreeobjects.cpp:
+	
+	Fixes on memory and tree ref
+
+2010-03-05 06:14  manduchi
+
+	* treeshr/TreeAddNode.c:
+	
+	added getDatafileSize()
+
+2010-03-05 06:13  manduchi
+
+	* javamds/MDSplus_Tree.h, javamds/mdsobjects.c,
+	include/mdsobjects.h, include/treeshr.h:
+	
+	Added getDatafileSize()
+
+2010-03-05 06:13  manduchi
+
+	* mdsobjects/java/MDSplus/: Array.java, Data.java, Float32.java,
+	Float32Array.java, Float64.java, Float64Array.java, Int16.java,
+	Int16Array.java, Int32.java, Int32Array.java, Int64.java,
+	Int64Array.java, Int8.java, Int8Array.java, Scalar.java,
+	String.java, StringArray.java, Tree.java, Uint16.java,
+	Uint16Array.java, Uint32.java, Uint32Array.java, Uint64.java,
+	Uint64Array.java, Uint8.java, Uint8Array.java:
+	
+	Fixes
+
+2010-03-04 15:39  twf
+
+	* mitdevices/Makefile.in:
+	
+	Add math lib to MitDevicesIO too
+
+2010-03-04 15:28  twf
+
+	* mitdevices/Makefile.in:
+	
+	Put math lib back in
+
+2010-03-04 14:30  twf
+
+	* mitdevices/Makefile.in:
+	
+	Remove mitdevices_msg.o on clean
+
+2010-03-04 14:19  twf
+
+	* camshr/Makefile.in:
+	
+	remove cts objects during clean
+
+2010-03-04 12:54  twf
+
+	* Makefile.in, configure, configure.in, math/Makefile.in:
+	
+	fix math library for newer fortrans
+
+2010-03-04 12:43  twf
+
+	* math/: Makefile.in, csint.f.in, dcsint.f, dsvrgn.f.in, iw9get.c,
+	svign.f.in, svrgn.f.in, umach.f.in:
+	
+	Make it work with more modern fortran compilers
+
+2010-03-04 03:54  manduchi
+
+	* mdsobjects/cpp/: mdsdata.c, mdsdataobjects.cpp:
+	
+	Fix CompileWithArgs arguments
+
+2010-03-03 15:43  twf
+
+	* dwscope/: dwscope.c, dwscope.uil:
+	
+	Add lock scales button
+
+2010-03-03 14:34  twf
+
+	* configure, configure.in:
+	
+	Skip idlmdswidgets if no mdsmath library
+
+2010-03-03 12:59  twf
+
+	* configure, configure.in:
+	
+	Add --with-idl option
+
+2010-03-02 13:59  twf
+
+	* mitdevices/Makefile.in:
+	
+	Do not need math
+
+2010-03-02 13:27  twf
+
+	* javadispatcher/jDispatchMonitor.template,
+	javadispatcher/jServer.template,
+	javadispatcher/jDispatcherIp.template, javascope/jScope.template,
+	javatraverser/jTraverser.template:
+	
+	Use exec
+
+2010-03-02 13:25  twf
+
+	* traverser/: CallbacksUil.c, main-uil.c:
+	
+	have quit and window close buttons close the tree and if last close
+	the app
+
+2010-03-02 12:12  twf
+
+	* traverser/main-uil.c:
+	
+	Close application when window close icon clicked
+
+2010-03-01 18:29  twf
+
+	* xmdsshr/XmdsXdBox.c:
+	
+	Fix bad XtFree of memory
+
+2010-03-01 15:56  manduchi
+
+	* wfevent/Makefile.in:
+	
+	Include TreeShr in libaries
+
+2010-03-01 15:32  twf
+
+	* mdsplus.sln:
+	
+	windows build update
+
+2010-03-01 15:32  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Fix for windows
+
+2010-03-01 15:31  twf
+
+	* javadevices/javadevices.vcproj, matlab/matlab.vcproj:
+	
+	Fix windows build
+
+2010-03-01 14:25  twf
+
+	* math/math.vcproj, idlmdsevent/idlmdsevent.vcproj,
+	javaclient/javaclient.vcproj, javamds/javamds.vcproj, mdsplus.sln:
+	
+	Fix windows build
+
+2010-03-01 14:25  twf
+
+	* math/MdsMath.def:
+	
+	Add toms510
+
+2010-03-01 14:25  twf
+
+	* include/mdsshr.h:
+	
+	Add MDSWfeventTimed
+
+2010-03-01 14:21  twf
+
+	* javascope/javascope.mak, javascope/javascope.vcproj,
+	javatraverser/javatraverser.mak,
+	javatraverser/javatraverser.vcproj, mdssql/mdssql.vcproj,
+	matlab/matlab.vcproj, mdsobjects/java/java.vcproj,
+	Setup/Setup32.vdproj, WinInstall/WinInstall.c,
+	WinInstall/WinInstall.vcproj:
+	
+	Fix windows build
+
+2010-03-01 14:21  twf
+
+	* mdstcpip/: mdsip.vcproj, mdsip_service.vcproj, mdsipshr.vcproj,
+	mdsiptest.vcproj:
+	
+	Windows build update
+
+2010-03-01 14:20  twf
+
+	* mdstcpip/mdsip_u.c:
+	
+	Fix CreateFileMapping call
+
+2010-03-01 14:19  twf
+
+	* mdstcpip/mdsip_socket_io.c:
+	
+	Add more information on error message
+
+2010-03-01 14:18  twf
+
+	* mdsshr/librtl.c:
+	
+	Fix registry environment vars
+
+2010-03-01 14:16  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix windows event thread release
+
+2010-03-01 14:15  twf
+
+	* mdslib/: mdslib.vcproj, mdslib_client.vcproj:
+	
+	Update windows build
+
+2010-03-01 14:15  twf
+
+	* mdslib/MdsLib.c:
+	
+	Fix status return
+
+2010-03-01 14:09  twf
+
+	* tdi/wfevent.fun:
+	
+	check status
+
+2010-03-01 14:06  twf
+
+	* tdi/wfevent.fun:
+	
+	Add timeout
+
+2010-03-01 14:03  twf
+
+	* wfevent/wfevent.c:
+	
+	Add timeout for windows
+
+2010-03-01 12:15  twf
+
+	* configure, configure.in:
+	
+	fix warning messages
+
+2010-03-01 10:03  twf
+
+	* Makefile.in, configure, configure.in:
+	
+	Output warning messages for skipped packages.
+
+2010-03-01 09:25  manduchi
+
+	* javadispatcher/jDispatcherIp.java:
+	
+	Allow shot 0 in create pulse
+
+2010-02-25 13:39  twf
+
+	* mitdevices/Makefile.in:
+	
+	remove link to MdsMath
+
+2010-02-25 13:05  twf
+
+	* Makefile.in, configure, configure.in:
+	
+	only use g77 compiler for math
+
+2010-02-25 13:04  twf
+
+	* math/Makefile.in:
+	
+	Only use g77 compiler
+
+2010-02-25 09:32  twf
+
+	* configure, configure.in, Makefile.in:
+	
+	skip motif aps if uil not found
+
+2010-02-25 04:08  manduchi
+
+	* javadispatcher/jServer.java:
+	
+	Still more messages
+
+2010-02-25 04:07  manduchi
+
+	* javadispatcher/: jDispatcher.java, jServer.java:
+	
+	More error messages
+
+2010-02-23 15:09  twf
+
+	* wfevent/wfevent.c:
+	
+	Fix help string
+
+2010-02-23 14:35  twf
+
+	* wfevent/: Makefile.in, wfevent.c:
+	
+	Add help,timeout and serialized data support
+
+2010-02-23 11:48  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix bug which corrupted vm
+
+2010-02-22 16:07  twf
+
+	* mdsobjects/python/: _mdsshr.py, event.py:
+	
+	Add event timeouts
+
+2010-02-22 15:56  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	kill thread in MDSUdpEventCan
+
+2010-02-22 12:31  twf
+
+	* mdsshr/: Makefile.in, MdsEvents.c:
+	
+	Add MDSSetEventTimeout and MDSWfeventTimed functions
+
+2010-02-22 12:08  manduchi
+
+	* javadevices/LASER_NDRTSetup.java:
+	
+	Add real time new functionalities
+
+2010-02-22 07:59  manduchi
+
+	* javadevices/RFXVISetupSetup.java:
+	
+	Mod
+
+2010-02-19 09:03  twf
+
+	* javadispatcher/Makefile.in:
+	
+	Add jServer install
+
+2010-02-19 03:48  manduchi
+
+	* mdsobjects/cpp/mdsdata.c:
+	
+	Fix CA descriptiors
+
+2010-02-18 14:40  twf
+
+	* camshr/get_crate_status.c:
+	
+	fix status check
+
+2010-02-18 14:38  twf
+
+	* camshr/verbs.c:
+	
+	Fix buffer overrun
+
+2010-02-18 09:35  twf
+
+	* camshr/verbs.c:
+	
+	avoid using null comment pointer
+
+2010-02-17 16:44  twf
+
+	* Makefile.in, mitdevices/Makefile.in, scripts/Makefile.in:
+	
+	abort make on failure
+
+2010-02-16 14:49  jas
+
+	* tdi/MitDevices/: acq200.py, dt100.py, transport.py:
+	
+	d-tacq pytion io support
+
+2010-02-16 14:47  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	store data(raw) for the value of the channels
+
+2010-02-12 13:40  twf
+
+	* treeshr/treeshrp.h:
+	
+	fix node_to_tree_nidx to prevent segfault if nid is bad
+
+2010-02-09 15:09  twf
+
+	* mdsobjects/python/: mdsdata.py, mdsdevice.py, treenode.py,
+	widgets/mdsplusnidoptionwidget.py,
+	widgets/mdsplussequentialwidget.py:
+	
+	Fix various problems
+
+2010-02-09 05:51  manduchi
+
+	* include/mdsobjects.h, mdsobjects/cpp/mdsdataobjects.cpp:
+	
+	Added getStringArray()
+
+2010-02-08 16:09  twf
+
+	* mdstcpip/mdscp.c:
+	
+	Add stats
+
+2010-02-08 16:03  twf
+
+	* mdstcpip/mdscp.c:
+	
+	Add stats
+
+2010-02-08 15:56  twf
+
+	* mdstcpip/mdscp.c:
+	
+	Add stats
+
+2010-02-06 15:37  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	do not use the waitall flag
+
+2010-02-06 13:44  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Fix parallel streams
+
+2010-02-06 10:21  manduchi
+
+	* tdi/RfxDevices/DFLUTestValues.fun:
+	
+	Fluctuation Magnetic probe signal elaboration
+
+2010-02-05 13:05  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	fix parallel I/O
+
+2010-02-04 13:37  twf
+
+	* mdstcpip/: mdsip_parallel.c, mdsiputil.c:
+	
+	Fix parallel
+
+2010-02-04 10:53  manduchi
+
+	* javadevices/Makefile.in:
+	
+	fix
+
+2010-02-04 10:10  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	Fix parallel check
+
+2010-02-04 09:48  twf
+
+	* mdstcpip/mdsiputil.c:
+	
+	fix parallel check
+
+2010-02-04 08:39  twf
+
+	* mdstcpip/: Makefile.in, mdsip_parallel.c, mdsip_u.c, mdsiputil.c:
+	
+	Add parallel I/O
+
+2010-02-04 05:27  manduchi
+
+	* mdsobjects/java/MDSplus/: Tree.java, TreeNode.java:
+	
+	Removed debug Message
+
+2010-02-04 04:44  manduchi
+
+	* include/rtevents.h:
+	
+	Newline
+
+2010-02-04 04:42  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix prototype
+
+2010-02-04 04:32  manduchi
+
+	* javamds/: MDSplus_TreeNode.h, mdsobjects.c:
+	
+	Put right include file
+
+2010-01-27 05:56  manduchi
+
+	* javascope/jScopeWaveContainer.java:
+	
+	Fix update and print event management
+
+2010-01-27 05:52  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Fix
+
+2010-01-27 04:31  manduchi
+
+	* javascope/jScope.java:
+	
+	Increase the minor revision index for some corrections and
+	improvements
+
+2010-01-27 04:22  manduchi
+
+	* javascope/MdsConnection.java:
+	
+	Added the update  pannel  on UDP event
+
+2010-01-26 15:53  twf
+
+	* tdi/MitDevices/DT132.glade:
+	
+	Add device setup
+
+2010-01-26 15:52  twf
+
+	* mdsobjects/python/widgets/: mdsplusdigchans.py, mdsplusexpr.py,
+	mdsplusnidoptionwidget.py, mdsplusonoff.py, mdsplusonoffxdbox.py,
+	mdspluspathwidget.py, mdspluswidget.py, mdsplusxdboxbutton.py:
+	
+	speed it up
+
+2010-01-26 12:12  manduchi
+
+	* tdi/RfxDevices/LASER_NDRT__init.fun:
+	
+	Fix
+
+2010-01-26 10:54  twf
+
+	* mdsobjects/python/widgets/: mdsplusWidgets.xml,
+	mdsplusdigchans.py, mdsplusexpr.py, mdsplusnidoptionwidget.py,
+	mdsplusonoffxdbox.py, mdspluswidget.py:
+	
+	various fixes
+
+2010-01-25 08:37  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Make buffer checks more resilient
+
+2010-01-22 14:54  jas
+
+	* mdsshr/UdpEvents.c:
+	
+	fix eventTopIdx handling
+
+2010-01-22 09:11  manduchi
+
+	* include/mdsobjects.h:
+	
+	Added TreeNode.makeSegment(), TreeNode.makeTimestampedSegment()
+
+2010-01-22 08:48  manduchi
+
+	* mdsobjects/cpp/: mdsdataobjects.cpp, mdstree.c,
+	mdstreeobjects.cpp:
+	
+	added TreeNode.makeSegment(), TreeNode.makeTimestampedSegment()
+
+2010-01-22 08:48  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fixed makeSegment
+
+2010-01-22 08:47  manduchi
+
+	* mdsobjects/java/MDSplus/TreeNode.java:
+	
+	Added and fixed TreeNode.makeSegment().
+	TreeNode.makeTimestampedSegment()
+
+2010-01-22 07:59  manduchi
+
+	* mdsobjects/java/: TestMdsObjects.java, MDSplus/TreeNode.java:
+	
+	Added TreeNode.makeSegment(), TreeNode.makeTimestampedSegment()
+
+2010-01-22 07:56  manduchi
+
+	* include/: mdsobjects.h, treeshr.h:
+	
+	Include TreeMakeSegment, TreeMakeTimestampedSegment
+
+2010-01-22 07:55  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Added TreeMakeSegment, TreeMakeTimestampedSegment
+
+2010-01-21 11:51  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix event code
+
+2010-01-21 11:43  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Do preliminary checking of event message to avoid segfault if
+	corrupted message
+
+2010-01-20 15:52  twf
+
+	* tdishr/: TdiGetData.c, TdiVar.c:
+	
+	let reset_public enable attempts on TdiGetRecord fun
+
+2010-01-20 15:08  twf
+
+	* tdishr/: TdiEvaluate.c, TdiGetData.c, TdiGetNci.c:
+	
+	Add TdiGetRecord capability
+
+2010-01-20 11:35  manduchi
+
+	* javascope/: jScope.java, jScopeWaveContainer.java:
+	
+	Check connection when selecting the server
+
+2010-01-20 11:28  manduchi
+
+	* javascope/jScope.html:
+	
+	Fix some typos
+
+2010-01-19 16:50  twf
+
+	* tdi/MitDevices/CP7452.glade:
+	
+	Use more of the available widgets
+
+2010-01-19 16:38  twf
+
+	* mdsobjects/python/widgets/: mdsplusWidgets.xml,
+	mdsplusdigchans.py, mdsplusexpr.py, mdsplusnidoptionwidget.py,
+	mdsplusonoff.py, mdsplusonoffxdbox.py, mdspluspathwidget.py,
+	mdspluswidget.py, mdsplusxdbox.py, mdsplusxdboxbutton.py:
+	
+	Fix widgets to operate in gui builder and in device setup
+
+2010-01-15 02:52  manduchi
+
+	* cacheshr/: CachedTreeshr.c, CachedTreeshr.c:
+	
+	Again...
+
+2010-01-15 02:50  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fix again Open
+
+2010-01-15 02:44  manduchi
+
+	* cacheshr/CachedTreeshr.c:
+	
+	Fix Open routine
+
+2010-01-14 15:31  twf
+
+	* mdsobjects/python/widgets/: __init__.py, mdsplusWidgets.xml,
+	mdsplusdigchans.py, mdsplusexpr.py, mdsplusexpressionwidget.py,
+	mdsplusnidoptionwidget.py, mdsplusokbuttons.py, mdsplusonoff.py,
+	mdsplusonoffxdbox.py, mdspluspathwidget.py, mdspluswidget.py,
+	mdsplusxdbox.py, mdsplusxdboxbutton.py:
+	
+	Add more widgets
+
+2010-01-11 10:59  twf
+
+	* dwscope/dwscopesubs.c, idlmdswidgets/cw_wveditv5.c:
+	
+	Fix cut/paste because of X windows bug
+
+2010-01-07 10:18  manduchi
+
+	* tdi/RfxDevices/RFXDiagTimesV1__dtsr_init.fun:
+	
+	Turn on/off neodimio trigger channel based on trigger mode
+
+2010-01-07 05:34  manduchi
+
+	* javadevices/LASER_NDRTSetup.java:
+	
+	Fix label
+
+2010-01-07 05:33  manduchi
+
+	* javadevices/RFXDiagTimesV1Setup.java:
+	
+	Update Diagnostic times setup
+
+2010-01-06 16:18  twf
+
+	* mdsobjects/python/widgets/: __init__.py, mdsplusWidgets.xml,
+	mdsplusexpr.py:
+	
+	Rename MDSplusExpr to MDSplusExprFieldWidget
+
+2010-01-06 16:07  twf
+
+	* mdsobjects/python/widgets/: __init__.py, mdsplusWidgets.xml,
+	mdsplusdtypeselwidget.py, mdsplusexpressionwidget.py,
+	mdsplusmethodwidget.py, mdspluspathwidget.py,
+	mdsplusrangewidget.py, mdsplusroutinewidget.py,
+	mdsplussequentialwidget.py, mdspluswidget.py,
+	mdspluswindowwidget.py, mdsplusxdbox.py:
+	
+	Add more widgets and fixes
+
+2010-01-05 11:08  manduchi
+
+	* tdi/RfxDevices/RFXDiagTimesV1__dtsr_init.fun:
+	
+	Init funtion for thomson scatering timing configuration
+
+2010-01-05 11:05  manduchi
+
+	* tdi/RfxDevices/RFXDiagTimes__add.fun:
+	
+	New Diagnostic timing setup form
+
+2010-01-05 11:03  manduchi
+
+	* tdi/RfxDevices/: LASER_NDRT__add.fun, LASER_NDRT__check.fun,
+	LASER_NDRT__dump.fun, LASER_NDRT__init.fun, LASER_NDRT__pulse.fun,
+	LASER_NDRT__reset.fun, LASER_NDRT__store.fun,
+	LASER_NDRT__trigger.fun:
+	
+	Modify neodimium laser function for new functionalities
+
+2010-01-05 11:00  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	Modify for new Diagnostic Times setup form
+
+2010-01-05 10:59  manduchi
+
+	* javadevices/LASER_NDRTSetup.java:
+	
+	Mod
+
+2010-01-04 09:44  twf
+
+	* mdsobjects/python/widgets/: mdsplusactionwidget.py,
+	mdsplusdispatchwidget.py, mdsplusdtypeselwidget.py,
+	mdspluserrormsg.py, mdsplusexpressionwidget.py,
+	mdsplusmethodwidget.py, mdsplusroutinewidget.py,
+	mdsplussequentialwidget.py, mdsplustaskwidget.py, mdsplusxdbox.py:
+	
+	Add new widgets
+
+2010-01-04 09:43  twf
+
+	* mdsobjects/python/widgets/__init__.py:
+	
+	Add xdbox
+
+2010-01-04 09:43  twf
+
+	* mdsobjects/python/widgets/mdsplusokbuttons.py:
+	
+	no need for gtk.glade
+
+2010-01-04 09:23  twf
+
+	* mdsobjects/python/__init__.py:
+	
+	Take out textdoc stuff
+
+2009-12-18 10:47  manduchi
+
+	* javadevices/RFXPoloidalSetup.java:
+	
+	Fix removed fields
+
+2009-12-18 10:13  manduchi
+
+	* javadevices/: RFXPConfigSetup.java, RFXPoloidalSetup.java,
+	javadevices.vcproj:
+	
+	Project file for VC++
+
+2009-12-18 09:13  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix times array in PutTimestampedSegment
+
+2009-12-18 09:13  manduchi
+
+	* mdsobjects/java/MDSplus/TreeNode.java:
+	
+	Fix times array in PutTimestampedRecord
+
+2009-12-16 10:29  manduchi
+
+	* javamds/JavaTrav.c:
+	
+	Removed dangerous  copy of $LD_LIBRARY_PATH in fixed length buffer
+
+2009-12-16 10:11  twf
+
+	* mdsobjects/python/connection.py:
+	
+	Change getStatus to checkStatus
+
+2009-12-16 10:09  twf
+
+	* mdsobjects/python/compound.py:
+	
+	Use argoffset
+
+2009-12-16 10:08  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	Make sure numpy array is configuous
+
+2009-12-14 10:36  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Use data_offset field to identify invalid segment index instead of
+	_start
+
+2009-12-10 03:19  manduchi
+
+	* include/: mdsobjects.h, mdsshr.h, rtevents.h:
+	
+	New class for reliable events
+
+2009-12-10 03:18  manduchi
+
+	* mdsshr/: MdsEvents.c, mdsshr.vcproj:
+	
+	Do not use .def
+
+2009-12-10 02:53  manduchi
+
+	* mdsshr/mdsshr.vcproj:
+	
+	Export symbols
+
+2009-12-10 02:52  manduchi
+
+	* javamds/: MDSplus_Event.h, MDSplus_REvent.h, javamds.vcproj,
+	mdsobjects.c:
+	
+	Added support for reliable events
+
+2009-12-10 02:22  manduchi
+
+	* mdsobjects/java/: Makefile.in, MDSplus/Event.java,
+	MDSplus/REvent.java:
+	
+	Arred Reliable Event class REvent
+
+2009-12-09 11:08  manduchi
+
+	* rtevents/MdsEvents.c:
+	
+	Minor fixes
+
+2009-12-09 11:07  manduchi
+
+	* mdsobjects/cpp/: cpp.vcproj, mdseventobjects.cpp:
+	
+	Added support for reliable events
+
+2009-12-09 09:22  manduchi
+
+	* rtevents/: Event.h, EventManager.cpp, EventManager.h:
+	
+	Start watchdog
+
+2009-12-09 08:26  manduchi
+
+	* rtevents/: MdsEvents.c, Thread.cpp:
+	
+	minor fix
+
+2009-12-09 08:24  manduchi
+
+	* rtevents/: MdsEvents.c, WindowsSystemException.h:
+	
+	Check for connection
+
+2009-12-09 05:49  manduchi
+
+	* javadevices/EDAM_CPCISetupV1Setup.java:
+	
+	EDAM_CPCISetupV1Setup.java added
+
+2009-12-07 11:35  jas
+
+	* xmdsshr/XmdsWaveform.c:
+	
+	make sure 'immediate resources' are 64 bit
+
+2009-12-04 16:50  jas
+
+	* mitdevices/b5910a.c:
+	
+	XtVaSetValues needs size of ptr for values
+
+2009-12-04 09:35  manduchi
+
+	* rtevents/MdsEvents.c:
+	
+	Fix
+
+2009-12-04 09:31  manduchi
+
+	* rtevents/MdsEvents.c:
+	
+	Fix
+
+2009-12-04 09:07  manduchi
+
+	* rtevents/MdsEvents.c:
+	
+	Fix descriptors
+
+2009-12-04 08:50  manduchi
+
+	* rtevents/: MdsEvents.c, MdsEvents.c:
+	
+	Messages
+
+2009-12-04 08:48  manduchi
+
+	* rtevents/MdsEvents.c:
+	
+	Test messages
+
+2009-12-04 07:54  manduchi
+
+	* rtevents/: MdsEvents.c, WindowsNamedSemaphore.h,
+	WindowsUnnamedSemaphore.h, rtevents.vcproj:
+	
+	Use mdsip to propagare reliable events
+
+2009-12-02 05:02  manduchi
+
+	* javadevices/javadevices.mak:
+	
+	Undo previous
+
+2009-12-02 05:00  manduchi
+
+	* javadevices/javadevices.mak:
+	
+	Include device icons
+
+2009-12-02 02:36  manduchi
+
+	* javadevices/RFXControlSetup.java:
+	
+	Added parameter AAGain
+
+2009-12-01 13:00  manduchi
+
+	* javadevices/javadevices.mak:
+	
+	Files moved
+
+2009-12-01 05:58  manduchi
+
+	* tdi/RfxDevices/RFXPRConfigV1__add.fun:
+	
+	New MHD Config version
+
+2009-11-30 11:26  manduchi
+
+	* tdi/RfxDevices/IPControl__add.fun:
+	
+	Change name
+
+2009-11-30 11:10  manduchi
+
+	* javadevices/: IPControlSetup.java, RFXControlSetup.java:
+	
+	Added support for RFP Plasma CUrrent control
+
+2009-11-30 11:05  manduchi
+
+	* tdi/RfxDevices/: IPControl__add.fun, RFXControl__add.fun:
+	
+	Added support for RFP Plasma Current Control
+
+2009-11-26 03:46  manduchi
+
+	* javamds/Makefile.in:
+	
+	Include MdsIpShr
+
+2009-11-24 06:56  manduchi
+
+	* include/: ipdesc.h, mdsobjects.h:
+	
+	Connection classes in C++
+
+2009-11-23 12:12  manduchi
+
+	* mdsobjects/java/: Makefile.in, TestMdsObjects.java,
+	MDSplus/Apd.java, MDSplus/Connection.java, MDSplus/Data.java,
+	MDSplus/Dictionary.java, MDSplus/Float32.java,
+	MDSplus/Float32Array.java, MDSplus/Float64.java,
+	MDSplus/Float64Array.java, MDSplus/GetMany.java,
+	MDSplus/Int16.java, MDSplus/Int16Array.java, MDSplus/Int32.java,
+	MDSplus/Int32Array.java, MDSplus/Int64.java,
+	MDSplus/Int64Array.java, MDSplus/Int8.java, MDSplus/Int8Array.java,
+	MDSplus/List.java, MDSplus/PutMany.java, MDSplus/String.java,
+	MDSplus/StringArray.java, MDSplus/Uint16.java,
+	MDSplus/Uint16Array.java, MDSplus/Uint32.java,
+	MDSplus/Uint32Array.java, MDSplus/Uint64.java,
+	MDSplus/Uint64Array.java, MDSplus/Uint8.java,
+	MDSplus/Uint8Array.java:
+	
+	Java support for COnnection classes
+
+2009-11-23 12:08  manduchi
+
+	* javamds/: MDSplus_Connection.h, javamds.vcproj, mdsobjects.c:
+	
+	Java interface to Connection object
+
+2009-11-23 12:07  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Use FreeMessage
+
+2009-11-23 12:06  manduchi
+
+	* mdstcpip/: mdsipshr.c, mdsipshr.def:
+	
+	Added FreeMessage exported routine
+
+2009-11-19 12:43  manduchi
+
+	* mdsobjects/cpp/: Makefile.in, mdsipobjects.cpp:
+	
+	Fixed memory leak
+
+2009-11-19 11:56  manduchi
+
+	* include/mdsobjects.h:
+	
+	New Connection support
+
+2009-11-19 11:49  manduchi
+
+	* tdi/remote/: GetManyExecute.fun, PutManyExecute.fun:
+	
+	Use C++ server size PutManyExecute  and GetManyExecute
+
+2009-11-19 11:47  manduchi
+
+	* mdsobjects/cpp/: cpp.vcproj, mdsdataobjects.cpp,
+	mdsipobjects.cpp, mdstreeobjects.cpp:
+	
+	Connection support in C++
+
+2009-11-16 10:03  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Fix leak
+
+2009-11-16 09:57  manduchi
+
+	* mdsobjects/cpp/: mdsipobjects.cpp, mdsipobjects.cpp:
+	
+	Fix leak
+
+2009-11-16 09:47  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp, include/mdsobjects.h:
+	
+	Fix leak
+
+2009-11-16 09:18  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Fix leak
+
+2009-11-16 08:56  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Fix leak
+
+2009-11-16 08:52  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Fixed memory leak
+
+2009-11-16 07:48  manduchi
+
+	* mdsobjects/cpp/: cpp.vcproj, mdsdata.c, mdsdataobjects.cpp,
+	mdseventobjects.cpp, mdsipobjects.cpp, mdstreeobjects.cpp:
+	
+	Added mdsip classes
+
+2009-11-13 16:38  twf
+
+	* dwscope/dwscope.c:
+	
+	Fix resize when loading saved settings
+
+2009-11-12 15:09  jas
+
+	* dwscope/dwscope.c:
+	
+	always turn off preventUpdates when done restoring database
+
+2009-11-12 14:24  twf
+
+	* mdsobjects/python/event.py:
+	
+	Add cancel method and cleanup code
+
+2009-11-12 14:02  twf
+
+	* tdi/remote/: GetManyExecute.fun, PutManyExecute.fun:
+	
+	Add GetMany and PutMany execute fun's
+
+2009-11-12 14:00  twf
+
+	* mdsobjects/python/connection.py:
+	
+	Use tdi functions to execute the getMany and putMany operations
+
+2009-11-06 12:22  manduchi
+
+	* javadevices/: Makefile.in, ParameterSetting.java:
+	
+	moved to javadevices
+
+2009-11-06 09:13  manduchi
+
+	* tdi/RfxDevices/: DIO2HWReset.fun, DIO4.py, DIO4HWInit.fun,
+	DIO4HWSetPulseChan.fun, DIO4HWStartChan.fun:
+	
+	Initial fixes
+
+2009-11-06 08:14  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Make TreeGetSegmentInfo accept idx=-1 for last segment
+
+2009-11-04 11:25  manduchi
+
+	* javadispatcher/jDispatcher.java:
+	
+	More debug messages
+
+2009-11-04 10:53  manduchi
+
+	* javatraverser/ParameterSetting.java:
+	
+	Restore ParameterSetting.java
+
+2009-11-03 11:11  manduchi
+
+	* tdi/RfxDevices/FASTCAM__store.fun:
+	
+	Fix
+
+2009-11-03 04:52  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fixed GetNumSegments
+
+2009-11-02 09:56  manduchi
+
+	* javadispatcher/jDispatcherIp.java:
+	
+	Fix Infinite Loop with synch numbers
+
+2009-10-29 11:02  manduchi
+
+	* javadevices/: DIO4Setup.java, DeviceSetup.java:
+	
+	DeviceSetup is in javatraverser
+
+2009-10-29 11:01  manduchi
+
+	* javatraverser/: IPControlSetup.java, MCAMERASetup.java,
+	MCUSetup.java, ParameterSetting.java, WE800Setup.java,
+	WE900Setup.java:
+	
+	Devices now go to javadevices
+
+2009-10-29 06:33  manduchi
+
+	* javadispatcher/jDispatcher.java:
+	
+	Fix null pointer exception generated when a conditional action is
+	reported after sequential noes have finished
+
+2009-10-28 07:31  manduchi
+
+	* tdi/RfxDevices/MHDReference__test.fun:
+	
+	Function for FF reference  test
+
+2009-10-28 07:30  manduchi
+
+	* tdi/RfxDevices/MHDReference__load.fun:
+	
+	Function forr FF reference load
+
+2009-10-27 17:16  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	Fix memory allocation in apd handling
+
+2009-10-27 10:17  manduchi
+
+	* tdi/RfxDevices/RfxUnitNumber.fun:
+	
+	Evaluate number of unist for RFX power subsystens
+
+2009-10-26 08:46  twf
+
+	* mdsobjects/python/mdsarray.py:
+	
+	Fix makeArray of list of MDSplus data types
+
+2009-10-21 04:01  manduchi
+
+	* tdi/RfxDevices/RFXDnbi__add.fun:
+	
+	Eiagnostic NBI device
+
+2009-10-20 04:53  manduchi
+
+	* tdi/RfxDevices/: DEQUTestValues.fun, DIO2__init.fun,
+	EM_EQU_TEST_NEW__init.fun, NBITrigger.fun:
+	
+	Trigger function for DNBI
+
+2009-10-19 16:55  twf
+
+	* idl/: set_database.pro, xtvagetvalues.pro:
+	
+	Take out debug print
+
+2009-10-19 15:12  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	make eventid's have non-zero values. Release eventids and only free
+	cancel once
+
+2009-10-19 15:11  twf
+
+	* dwscope/: dwscope.c, evaluate.c:
+	
+	Only cancel event if id is non-zero and zero eventid after
+	canceling
+
+2009-10-15 07:45  manduchi
+
+	* tdi/java/JavaOpen.fun:
+	
+	Add read_only optional parameter
+
+2009-10-15 05:03  manduchi
+
+	* tdi/RfxDevices/: DEQUTestValues.fun, EDAM_CPCISetup__add.fun,
+	EM_FLU_TEST__init_new.fun, EM_FLU_TEST__report_new.fun:
+	
+	Electromagnetic FLU test function
+
+2009-10-14 09:18  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	Missing node
+
+2009-10-14 06:02  manduchi
+
+	* javadevices/: DEQUSetupSetup.java, Makefile.in,
+	RFXPRConfigV1Setup.java:
+	
+	Forgotten device
+
+2009-10-14 05:53  manduchi
+
+	* tdi/RfxDevices/: PELLETErrorMessage.fun, PELLETHWWriteParam.fun,
+	PELLET__ReadyToFire.fun, PELLET__init.fun:
+	
+	Pellet driver function
+
+2009-10-14 05:45  manduchi
+
+	* tdi/RfxDevices/printVersions.fun:
+	
+	View real time software version installed on RT systems
+
+2009-10-14 05:38  manduchi
+
+	* tdi/RfxDevices/: I2t_PM.fun, I2t_PM_Residual.fun:
+	
+	Compute I2t maggnetizing value
+
+2009-10-14 05:28  manduchi
+
+	* tdi/RfxDevices/: XRAY__init_1.fun, XRAY__init_2.fun:
+	
+	Split Xray init operation in two funtion for parallel execution
+
+2009-10-14 05:09  manduchi
+
+	* tdi/RfxDevices/: pulseCheck_I2t.fun, pulseCheck_I2t1.fun,
+	pulseCheck_I2t_old.fun, pulseCheck_INVERTER.fun,
+	pulseCheck_MHD_AC_BC.fun, pulseCheck_MHD_CONFIG.fun,
+	pulseCheck_PCAT.fun, pulseCheck_PELLET.fun, pulseCheck_PMAT.fun,
+	pulseCheck_TOKAMAK.fun:
+	
+	Pre and Post RFX pulse execution check
+
+2009-10-14 04:58  manduchi
+
+	* tdi/RfxDevices/RfxControlInfo.fun:
+	
+	Funtion for info on Rfx pulse configuration
+
+2009-10-13 11:33  manduchi
+
+	* tdi/RfxDevices/EDAM_CPCISetup__add.fun:
+	
+	Mod
+
+2009-10-13 05:51  manduchi
+
+	* tdi/RfxDevices/EDAM_CPCISetup__add.fun:
+	
+	Mod
+
+2009-10-12 12:05  manduchi
+
+	* tdi/RfxDevices/EM_EQU_TEST_NEW__init.fun:
+	
+	Fix
+
+2009-10-12 09:03  manduchi
+
+	* tdi/RfxDevices/TRCF__store.fun:
+	
+	Remove messages
+
+2009-10-12 09:02  manduchi
+
+	* tdi/RfxDevices/: DevPutSignal1.fun, TRCF__store.fun:
+	
+	Make code more verbose
+
+2009-10-12 08:37  manduchi
+
+	* tdi/RfxDevices/: DEQUTestValues.fun, generic_pert.fun:
+	
+	Generic Perturation
+
+2009-10-12 03:54  manduchi
+
+	* tdi/RfxDevices/DEQUTestValues.fun:
+	
+	Evaluate gain, offset and deriva on electromagnetic euilibrium
+	front and hardware
+
+2009-10-09 14:00  manduchi
+
+	* cacheshr/: Cache.cpp, Cache.h, CachedTreeshr.c,
+	SharedDataManager.cpp, SharedDataManager.h:
+	
+	Add idx parameter to RTreeGetSegmentInfo, add also
+	RTreeGetLastSegmentInfo()
+
+2009-10-09 10:38  manduchi
+
+	* tdi/RfxDevices/DIO2EncoderHWInit.fun:
+	
+	Fix BBBUUUGGG
+
+2009-10-08 03:19  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	Added ParameterSetting.java
+
+2009-10-07 15:28  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Add timestamp array to TreeMakeTimestampedSegment
+
+2009-10-07 14:40  twf
+
+	* mdsobjects/python/event.py:
+	
+	New methods
+
+2009-10-07 14:38  twf
+
+	* cacheshr/CachedTreeshr.c, treeshr/TreeSegments.c,
+	tdi/segments/GetSegmentInfo.fun, include/treeshr.h,
+	mdsobjects/python/_treeshr.py:
+	
+	Change TreeGetSegmentInfo to include index argument as input
+
+2009-10-07 11:46  manduchi
+
+	* javatraverser/Makefile.in, javatraverser/jTraverser.template,
+	javadevices/Makefile.in:
+	
+	Fix build
+
+2009-10-07 10:30  manduchi
+
+	* tdi/RfxDevices/: DIO4.py, DIO4HWStartChan.fun, DIO4HWTrigger.fun:
+	
+	First fixes on DIO4
+
+2009-10-07 06:00  manduchi
+
+	* tdi/RfxDevices/: treeGetSource.fun, treeSetSource.fun:
+	
+	Set/Get tree source directory
+
+2009-10-07 05:28  manduchi
+
+	* javadevices/Makefile.in:
+	
+	Include DIO4 device
+
+2009-10-07 04:33  manduchi
+
+	* javadevices/Makefile.in:
+	
+	
+	ve device setup to javadevices
+
+2009-10-07 03:56  manduchi
+
+	* Makefile.in, configure, configure.in, javamds/JavaTrav.c,
+	javatraverser/Makefile.in, mdslib/MdsLib.c, mdsshr/MdsEvents.c,
+	mdstcpip/mdsip_u.c, tdi/RfxDevices/FASTCAM__store.fun,
+	tdi/RfxDevices/setversion.fun, treeshr/TreeOpen.c:
+	
+	Move Device Setup inti javadevices from javatraverser
+
+2009-10-07 02:36  manduchi
+
+	* mdsplus.sln, javadevices/ACQD240Setup.java,
+	javadevices/ACQD241Setup.java, javadevices/ACQD265Setup.java,
+	javadevices/ACQD270Setup.java, javadevices/ADC265Setup.java,
+	javadevices/Aurora14Setup.java, javadevices/BOLOSetup.java,
+	javadevices/BUILD_VERSIONSetup.java, javadevices/CADHSetup.java,
+	javadevices/CAENV1731Setup.java, javadevices/CAENV1740Setup.java,
+	javadevices/CAMERASetup.java, javadevices/CHVPSSetup.java,
+	javadevices/CHVPS_SETSetup.java, javadevices/DEMOADCSetup.java,
+	javadevices/DEQUSetupSetup.java, javadevices/DFLUSetupSetup.java,
+	javadevices/DIO2EncoderSetup.java, javadevices/DIO2Setup.java,
+	javadevices/DIO4Setup.java, javadevices/DPO7054Setup.java,
+	javadevices/DeviceSetup.java, javadevices/E1463Setup.java,
+	javadevices/EDAMSetupSetup.java,
+	javadevices/EDAM_CPCISetupSetup.java,
+	javadevices/EM_EQU_TESTSetup.java,
+	javadevices/EM_EQU_TEST_NEWSetup.java,
+	javadevices/EM_FLU_TESTSetup.java, javadevices/EM_GAINSetup.java,
+	javadevices/EQU_GAINSetup.java, javadevices/FASTCAMSetup.java,
+	javadevices/FEGroupSetup.java, javadevices/FLU_GAINSetup.java,
+	javadevices/FR10Setup.java, javadevices/GEN_GAINSetup.java,
+	javadevices/HMSPECTROSetup.java, javadevices/IPC901Setup.java,
+	javadevices/IPControlSetup.java, javadevices/ISIS_GAINSetup.java,
+	javadevices/J221Setup.java, javadevices/K3115Setup.java,
+	javadevices/L5613Setup.java, javadevices/L6810Setup.java,
+	javadevices/L9109Setup.java, javadevices/LASER_NDRTSetup.java,
+	javadevices/LASER_NDSetup.java, javadevices/LASER_RUSetup.java,
+	javadevices/MCAMERASetup.java, javadevices/MCUSetup.java,
+	javadevices/MHD_BR_TESTSetup.java,
+	javadevices/MPBDecoderSetup.java, javadevices/MPBEncoderSetup.java,
+	javadevices/MPBRecorderSetup.java, javadevices/NI6071ESetup.java,
+	javadevices/OAM01Setup.java, javadevices/PELLETSetup.java,
+	javadevices/PLRMSetup.java, javadevices/PXD114Setup.java,
+	javadevices/RFXABUnitsSetup.java, javadevices/RFXANSALDOSetup.java,
+	javadevices/RFXAxiControlSetup.java,
+	javadevices/RFXAxiToroidalControlSetup.java,
+	javadevices/RFXChopperSetupSetup.java,
+	javadevices/RFXClockSetup.java, javadevices/RFXControlSetup.java,
+	javadevices/RFXDClockSetup.java,
+	javadevices/RFXDiagTimesSetup.java, javadevices/RFXDnbiSetup.java,
+	javadevices/RFXFeedforwardSetupSetup.java,
+	javadevices/RFXGClockSetup.java,
+	javadevices/RFXInverterSetupSetup.java,
+	javadevices/RFXMHDSetup.java, javadevices/RFXMOPSetup.java,
+	javadevices/RFXPC4SetupSetup.java,
+	javadevices/RFXPCSetupSetup.java, javadevices/RFXPConfigSetup.java,
+	javadevices/RFXPMSetupSetup.java,
+	javadevices/RFXPRConfigSetup.java,
+	javadevices/RFXPVSetupSetup.java,
+	javadevices/RFXParametersSetup.java,
+	javadevices/RFXPolControlSetup.java,
+	javadevices/RFXPoloidalSetup.java, javadevices/RFXPulseSetup.java,
+	javadevices/RFXTFSetupSetup.java, javadevices/RFXTimesSetup.java,
+	javadevices/RFXTimingSetup.java,
+	javadevices/RFXTorControlSetup.java,
+	javadevices/RFXToroidalSetup.java,
+	javadevices/RFXVIConfigSetup.java,
+	javadevices/RFXVISetupSetup.java, javadevices/RFXVersionSetup.java,
+	javadevices/ST133Setup.java, javadevices/SXCSetup.java,
+	javadevices/T2ControlSetup.java, javadevices/TOMOSetupSetup.java,
+	javadevices/TR10Setup.java, javadevices/TR32Setup.java,
+	javadevices/TR6_3Setup.java, javadevices/TRCFSetup.java,
+	javadevices/TRCHSetup.java, javadevices/TSEdgeCCDSetup.java,
+	javadevices/VMEWavesSetup.java, javadevices/WE7000Setup.java,
+	javadevices/WE7000_9Setup.java, javadevices/WE7116Setup.java,
+	javadevices/WE7116_9Setup.java, javadevices/WE7275Setup.java,
+	javadevices/WE7275_9Setup.java, javadevices/WE800Setup.java,
+	javadevices/WE900Setup.java, javadevices/WEGroupSetup.java,
+	javadevices/XRAYSetup.java, javadevices/javadevices.dsp,
+	javadevices/javadevices.mak, javadevices/javadevices.sln,
+	javatraverser/ACQD240Setup.java, javatraverser/ACQD241Setup.java,
+	javatraverser/ACQD265Setup.java, javatraverser/ACQD270Setup.java,
+	javatraverser/ADC265Setup.java, javatraverser/Aurora14Setup.java,
+	javatraverser/BOLOSetup.java,
+	javatraverser/BUILD_VERSIONSetup.java,
+	javatraverser/CADHSetup.java, javatraverser/CAENV1731Setup.java,
+	javatraverser/CAENV1740Setup.java, javatraverser/CAMERASetup.java,
+	javatraverser/CHVPSSetup.java, javatraverser/CHVPS_SETSetup.java,
+	javatraverser/DEMOADCSetup.java, javatraverser/DEQUSetupSetup.java,
+	javatraverser/DFLUSetupSetup.java,
+	javatraverser/DIO2EncoderSetup.java, javatraverser/DIO2Setup.java,
+	javatraverser/DPO7054Setup.java, javatraverser/E1463Setup.java,
+	javatraverser/EDAMSetupSetup.java,
+	javatraverser/EDAM_CPCISetupSetup.java,
+	javatraverser/EM_EQU_TESTSetup.java,
+	javatraverser/EM_EQU_TEST_NEWSetup.java,
+	javatraverser/EM_FLU_TESTSetup.java,
+	javatraverser/EM_GAINSetup.java, javatraverser/EQU_GAINSetup.java,
+	javatraverser/FASTCAMSetup.java, javatraverser/FEGroupSetup.java,
+	javatraverser/FLU_GAINSetup.java, javatraverser/FR10Setup.java,
+	javatraverser/GEN_GAINSetup.java,
+	javatraverser/HMSPECTROSetup.java, javatraverser/IPC901Setup.java,
+	javatraverser/ISIS_GAINSetup.java, javatraverser/J221Setup.java,
+	javatraverser/K3115Setup.java, javatraverser/L5613Setup.java,
+	javatraverser/L6810Setup.java, javatraverser/L9109Setup.java,
+	javatraverser/LASER_NDRTSetup.java,
+	javatraverser/LASER_NDSetup.java, javatraverser/LASER_RUSetup.java,
+	javatraverser/MHD_BR_TESTSetup.java,
+	javatraverser/MPBDecoderSetup.java,
+	javatraverser/MPBEncoderSetup.java,
+	javatraverser/MPBRecorderSetup.java,
+	javatraverser/NI6071ESetup.java, javatraverser/OAM01Setup.java,
+	javatraverser/PELLETSetup.java, javatraverser/PLRMSetup.java,
+	javatraverser/PXD114Setup.java, javatraverser/RFXABUnitsSetup.java,
+	javatraverser/RFXANSALDOSetup.java,
+	javatraverser/RFXAxiControlSetup.java,
+	javatraverser/RFXAxiToroidalControlSetup.java,
+	javatraverser/RFXChopperSetupSetup.java,
+	javatraverser/RFXClockSetup.java,
+	javatraverser/RFXControlSetup.java,
+	javatraverser/RFXDClockSetup.java,
+	javatraverser/RFXDiagTimesSetup.java,
+	javatraverser/RFXDnbiSetup.java,
+	javatraverser/RFXFeedforwardSetupSetup.java,
+	javatraverser/RFXGClockSetup.java,
+	javatraverser/RFXInverterSetupSetup.java,
+	javatraverser/RFXMHDSetup.java, javatraverser/RFXMOPSetup.java,
+	javatraverser/RFXPC4SetupSetup.java,
+	javatraverser/RFXPCSetupSetup.java,
+	javatraverser/RFXPConfigSetup.java,
+	javatraverser/RFXPMSetupSetup.java,
+	javatraverser/RFXPRConfigSetup.java,
+	javatraverser/RFXPVSetupSetup.java,
+	javatraverser/RFXParametersSetup.java,
+	javatraverser/RFXPolControlSetup.java,
+	javatraverser/RFXPoloidalSetup.java,
+	javatraverser/RFXPulseSetup.java,
+	javatraverser/RFXTFSetupSetup.java,
+	javatraverser/RFXTimesSetup.java,
+	javatraverser/RFXTimingSetup.java,
+	javatraverser/RFXTorControlSetup.java,
+	javatraverser/RFXToroidalSetup.java,
+	javatraverser/RFXVIConfigSetup.java,
+	javatraverser/RFXVISetupSetup.java,
+	javatraverser/RFXVersionSetup.java, javatraverser/ST133Setup.java,
+	javatraverser/SXCSetup.java, javatraverser/T2ControlSetup.java,
+	javatraverser/TOMOSetupSetup.java, javatraverser/TR10Setup.java,
+	javatraverser/TR32Setup.java, javatraverser/TR6_3Setup.java,
+	javatraverser/TRCFSetup.java, javatraverser/TRCHSetup.java,
+	javatraverser/TSEdgeCCDSetup.java,
+	javatraverser/VMEWavesSetup.java, javatraverser/WE7000Setup.java,
+	javatraverser/WE7000_9Setup.java, javatraverser/WE7116Setup.java,
+	javatraverser/WE7116_9Setup.java, javatraverser/WE7275Setup.java,
+	javatraverser/WE7275_9Setup.java, javatraverser/WEGroupSetup.java,
+	javatraverser/XRAYSetup.java, javatraverser/javatraverser.mak:
+	
+	Move Device Setup into javadevices
+
+2009-10-06 06:49  manduchi
+
+	* tdi/MdsDevices.fun:
+	
+	Add DIO4
+
+2009-10-05 15:50  jas
+
+	* xmdsshr/: XmdsDigChans.c, XmdsInput.c:
+	
+	userdata is the size of a pointer
+
+2009-10-05 12:00  manduchi
+
+	* tdi/RfxDevices/: DIO4.py, DIO4HWInit.fun, DIO4HWSetClockChan.fun,
+	DIO4HWSetDClockChan.fun, DIO4HWSetEvenGenChan.fun,
+	DIO4HWSetGClockChan.fun, DIO4HWSetPulseChan.fun, __init__.py:
+	
+	Device support dor INCAA DIO4 timing device
+
+2009-09-29 17:23  twf
+
+	* Setup/Setup32.vdproj:
+	
+	32-bit kit
+
+2009-09-29 17:22  twf
+
+	* mdsplus.sln, Setup/Setup.vdproj, WinInstall/WinInstall.c,
+	WinInstall/WinInstall.vcproj, cacheshr/cacheshr.vcproj,
+	cdu/cdu.vcproj, cdu/cdushr.vcproj, icons/icons.vcproj,
+	idlmdsevent/idlmdsevent.vcproj, idlsql/idlsql.vcproj,
+	include/config.h_win32, javaclient/javaclient.vcproj,
+	javadispatcher/javadispatcher.vcproj, javamds/javamds.vcproj,
+	javascope/WaveDisplay.vcproj, javascope/javascope.vcproj,
+	javatraverser/javatraverser.vcproj, math/math.vcproj,
+	matlab/matlab.vcproj, mdsdcl/mdsdcl.vcproj,
+	mdsdcl/mdsdclshr.vcproj, mdslib/mdslib.vcproj,
+	mdslib/mdslib_client.vcproj, mdslibidl/mdslibidl.vcproj,
+	mdsmisc/mdsmisc.vcproj, mdsobjects/cpp/cpp.vcproj,
+	mdsobjects/java/java.vcproj, mdsshr/UdpEvents.c, mdsshr/librtl.c,
+	mdsshr/mdsshr.vcproj, mdssql/mdssql.vcproj, mdstcpip/mdsip.vcproj,
+	mdstcpip/mdsip_service.vcproj, mdstcpip/mdsipshr.vcproj,
+	mdstcpip/mdsiptest.vcproj, remcam/remcam.vcproj,
+	rtevents/rtevents.vcproj, servershr/servershr.vcproj,
+	setevent/setevent.vcproj, tcl/tcl_commands.vcproj,
+	tdic/tdishrext.vcproj, tdishr/tdishr.vcproj,
+	tditest/tditest.vcproj, treeshr/treeshr.vcproj,
+	wfevent/wfevent.vcproj, xtreeshr/xtreeshr.vcproj:
+	
+	Support for 64-bit windows
+
+2009-09-28 09:21  manduchi
+
+	* tdi/RfxDevices/: NI6071E__init.fun, NI6071E__store.fun:
+	
+	Update
+
+2009-09-28 08:51  manduchi
+
+	* tdi/RfxDevices/: LASER_NDRT__check.fun, LASER_NDRT__dump.fun,
+	LASER_NDRT__init.fun, LASER_NDRT__pulse.fun, LASER_NDRT__reset.fun,
+	LASER_NDRT__store.fun, LASER_NDRT__trigger.fun:
+	
+	Update
+
+2009-09-28 08:35  manduchi
+
+	* tdi/RfxDevices/ACQD265__config.fun:
+	
+	update
+
+2009-09-28 08:18  manduchi
+
+	* tdi/RfxDevices/DIO2__init.fun:
+	
+	Print debug messages removed
+
+2009-09-24 11:16  manduchi
+
+	* include/mdsshr.h:
+	
+	Let it compile under VxWorks
+
+2009-09-24 04:51  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix pathname in include
+
+2009-09-24 03:23  manduchi
+
+	* javadispatcher/Action.java, javadispatcher/Balancer.java,
+	javadispatcher/InfoServer.java, javadispatcher/jDispatcher.java,
+	javadispatcher/jDispatcherIp.java, javamds/JavaTrav.c,
+	javatraverser/NodeInfo.java, mdsobjects/java/TestMdsObjects.java:
+	
+	New jDispatcher behavior. Now sequence numbers are valid within the
+	given server class except for synchronization numbers declared in
+	jDispatcher.properties.
+
+2009-09-21 04:43  manduchi
+
+	* tdi/RfxDevices/DIO2__init.fun:
+	
+	Fix DIO2 function when aren't defined synch events
+
+2009-09-21 04:39  manduchi
+
+	* tdi/RfxDevices/DIO2HWInit.fun:
+	
+	Fix Dio2 function when aren't defined synch events
+
+2009-09-21 04:11  manduchi
+
+	* mdsobjects/java/: TestMdsObjects.java, MDSplus/CachedTree.java:
+	
+	New constructor
+
+2009-09-18 11:00  manduchi
+
+	* include/mdsobjects.h, javamds/MDSplus_Data.h,
+	javamds/mdsobjects.c, mdsobjects/cpp/mdseventobjects.cpp,
+	mdsobjects/java/TestMdsObjects.java,
+	mdsobjects/java/MDSplus/Data.java,
+	mdsobjects/java/MDSplus/Event.java,
+	mdsobjects/java/MDSplus/Uint64.java:
+	
+	Allow raw data to be passed to events
+
+2009-09-18 05:24  manduchi
+
+	* mdsobjects/java/Makefile.in:
+	
+	Added Event.java in Makefile
+
+2009-09-18 05:23  manduchi
+
+	* mdsobjects/java/MDSplus/Event.java:
+	
+	Event implementation in Java
+
+2009-09-18 05:18  manduchi
+
+	* cacheshr/cacheshr.vcproj, javamds/MDSplus_Data.h,
+	javamds/MDSplus_Event.h, javamds/ServerSupport.c,
+	javamds/javamds.vcproj, javamds/mdsobjects.c,
+	mdsobjects/java/TestMdsObjects.java,
+	mdsobjects/java/MDSplus/Data.java, mdsshr/mdsshrthreadsafe.h:
+	
+	Implemented Event objects in Java
+
+2009-09-18 05:13  manduchi
+
+	* tdi/RfxDevices/: DIO2HWInit.fun, DIO2__init.fun:
+	
+	Fix event management
+
+2009-09-17 09:56  twf
+
+	* mdsdcl/mdsdcl_wait.c:
+	
+	Fix negative hour
+
+2009-09-17 04:19  manduchi
+
+	* tdi/RfxDevices/: EM_EQU_TEST_NEW__add.fun,
+	EM_EQU_TEST_NEW__init.fun:
+	
+	Mod.
+
+2009-09-17 04:00  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Add EM_EQU_TEST_NEWSetup
+
+2009-09-17 04:00  manduchi
+
+	* javatraverser/EM_EQU_TEST_NEWSetup.java:
+	
+	New electromagnetic equilibrium signals test device
+
+2009-09-16 16:28  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	need both lower and upper case versions of the methods
+
+2009-09-16 09:07  manduchi
+
+	* tdi/RfxDevices/: EM_EQU_TEST_NEW__add.fun,
+	EM_EQU_TEST_NEW__init.fun, EM_EQU_TEST_NEW__report.fun:
+	
+	New Electromagnetic equilibrium device test function
+
+2009-09-15 12:26  manduchi
+
+	* javatraverser/EQU_GAINSetup.java:
+	
+	Electromagnetic Equilibrium gain Device setup
+
+2009-09-15 12:17  manduchi
+
+	* javatraverser/Makefile.in:
+	
+	Mod
+
+2009-09-15 12:17  manduchi
+
+	* javatraverser/EQU_GAINSetup.form:
+	
+	Electromagnetic Equilibrium gain device form setup
+
+2009-09-15 12:16  manduchi
+
+	* include/mdsobjects.h, mdsobjects/cpp/cpp.vcproj,
+	mdsobjects/cpp/mdsdata.c, mdsobjects/cpp/mdsdataobjects.cpp,
+	mdsobjects/cpp/mdseventobjects.cpp, mdsshr/UdpEvents.c:
+	
+	Export Best Effort events as C++ classes
+
+2009-09-15 11:24  manduchi
+
+	* tdi/RfxDevices/EQU_GAIN__init.fun:
+	
+	Mod.
+
+2009-09-15 09:13  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	updates for absolute path and doing data() to get values from
+	elements of device
+
+2009-09-15 07:03  manduchi
+
+	* tdi/RfxDevices/: EQU_GAIN__add.fun, EQU_GAIN__init.fun:
+	
+	Equilibrium magnetic signal gain device
+
+2009-09-14 10:55  manduchi
+
+	* mdsplus.sln, mdsshr/MdsEvents.c, mdsshr/UdpEvents.c,
+	rtevents/EventManager.h, rtevents/ExitHandler.cpp,
+	rtevents/ExitHandler.h, rtevents/WindowsExitHandler.cpp,
+	rtevents/WindowsNamedSemaphore.h,
+	rtevents/WindowsSystemException.h,
+	rtevents/WindowsUnnamedSemaphore.h, rtevents/rtevents.vcproj:
+	
+	Allow port definition in UDP events Use Visual C++ 2008
+
+2009-09-14 10:42  manduchi
+
+	* javamds/javamds.vcproj:
+	
+	Fix
+
+2009-09-11 16:17  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	Fix external clock
+
+2009-09-11 13:08  twf
+
+	* actions/actions.c, servershr/ServerBuildDispatchTable.c:
+	
+	Prevent segfault if dispatch struct has null pointer
+
+2009-09-11 12:20  twf
+
+	* mdsobjects/python/compound.py:
+	
+	Fix Dispatch to include 2 for opcode
+
+2009-09-11 11:39  manduchi
+
+	* mdsshr/mdsshr.vcproj:
+	
+	Include UDP Events
+
+2009-09-10 14:42  twf
+
+	* mdsobjects/python/: mdsdata.py, treenode.py:
+	
+	Add compare method to Data and use it in TreeNode.compare()
+
+2009-09-10 13:24  twf
+
+	* mdsobjects/python/widgets/mdspluswidget.py:
+	
+	Add error message popup
+
+2009-09-10 13:23  twf
+
+	* mdsobjects/python/widgets/mdsplusokbuttons.py:
+	
+	Use doToAll method
+
+2009-09-10 13:23  twf
+
+	* mdsobjects/python/widgets/mdsplusexpr.py:
+	
+	Let compile fail to be caught in mdspluswidget methods
+
+2009-09-10 13:21  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Add compare and setUsage methods
+
+2009-09-10 13:21  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	use doToAll method of MDSplusWidget
+
+2009-09-10 13:20  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	Add TreeSetUsage
+
+2009-09-10 13:19  twf
+
+	* mdsobjects/python/_mdsshr.py:
+	
+	Add MdsCompareXd
+
+2009-09-10 13:19  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	Fix missing descriptor
+
+2009-09-10 13:03  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	DT132 was in there twice
+
+2009-09-10 12:44  jas
+
+	* tdi/MitDevices/MitDevices.fun:
+	
+	adding DT132 Device
+
+2009-09-10 12:44  jas
+
+	* tdi/MitDevices/dt132.py:
+	
+	New digitzer support
+
+2009-09-10 12:43  jas
+
+	* tdi/MitDevices/__init__.py:
+	
+	adding DT132 device
+
+2009-09-10 12:23  twf
+
+	* include/treeshr.h:
+	
+	Add TreeSetUsage
+
+2009-09-10 12:23  twf
+
+	* treeshr/TreeSetNci.c:
+	
+	Add ability to change node usage
+
+2009-09-09 14:40  twf
+
+	* actions/actmon.c:
+	
+	Add XInitThreads call
+
+2009-09-09 14:27  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Add string.h
+
+2009-09-09 14:27  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Add stdlib.h
+
+2009-09-09 14:15  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix name of mutex being locked in getSocket!
+
+2009-09-08 11:46  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	need to upcase event names to make it case insensitive and
+	compatible with current event applications
+
+2009-09-03 10:41  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix compile warnings
+
+2009-09-03 09:26  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	make compatible with existing setup
+
+2009-09-03 08:54  twf
+
+	* tdi/MitDevices/CP7452.glade:
+	
+	Set PutOnApply
+
+2009-09-03 08:53  twf
+
+	* mdsobjects/python/widgets/: mdsplusexpr.py, mdspluswidget.py:
+	
+	fix apply
+
+2009-09-03 07:44  manduchi
+
+	* mdsshr/MdsEvents.c:
+	
+	Use UDP events
+
+2009-09-02 17:26  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	Clean up and document the dw_setup method
+
+2009-09-02 16:17  twf
+
+	* tdi/Py.fun:
+	
+	Release thread lock if necessary
+
+2009-09-02 16:16  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	release thread lock if necessary
+
+2009-09-02 16:16  twf
+
+	* mdsobjects/python/connection.py:
+	
+	Match UML spec
+
+2009-09-02 12:46  manduchi
+
+	* mdsshr/UdpEvents.c:
+	
+	Buffer size in now 4096
+
+2009-09-02 12:40  manduchi
+
+	* mdsshr/UdpEvents.c:
+	
+	Make compiler happy
+
+2009-09-02 12:29  manduchi
+
+	* mdsshr/: Makefile.in, UdpEvents.c:
+	
+	Udp Events ported on Linux
+
+2009-09-02 11:46  manduchi
+
+	* mdsshr/: MdsShr.def, UdpEvents.c, mdsshr.dsp:
+	
+	Added UDP Multicast-based events
+
+2009-09-01 17:24  twf
+
+	* mdsobjects/python/widgets/mdsplusWidgets.xml:
+	
+	Use MDSplus.widgets for the library
+
+2009-09-01 17:23  twf
+
+	* mdsobjects/python/widgets/mdsplusexpr.py:
+	
+	don't print out error if no data
+
+2009-09-01 17:22  twf
+
+	* mdsobjects/python/__init__.py:
+	
+	donot include widgets in main import
+
+2009-09-01 17:22  twf
+
+	* mdsobjects/python/mdsdevice.py:
+	
+	setup works on python 2.6
+
+2009-09-01 17:21  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	move setup code to mdsdevice.py
+
+2009-09-01 12:13  twf
+
+	* mdsobjects/python/connection.py:
+	
+	Match uml spec
+
+2009-09-01 10:00  twf
+
+	* tdi/Py.fun:
+	
+	Handle threads
+
+2009-09-01 09:58  twf
+
+	* tdi/MitDevices/cp7452.py:
+	
+	Remove dw_setup method
+
+2009-09-01 09:57  twf
+
+	* tdi/MitDevices/setup.py:
+	
+	add glade files to package
+
+2009-09-01 09:57  twf
+
+	* tdi/MitDevices/CP7452.glade:
+	
+	Add device setup
+
+2009-08-31 07:28  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.2-4
 
 2009-08-30 12:03  twf
 
