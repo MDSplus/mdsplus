@@ -320,6 +320,42 @@ PHP_FUNCTION(mdsplus_close)
 /* Every user-visible function in PHP should document itself in the source */
 /* {{{ proto string confirm_mdsplus_compiled(string arg)
    Return a string to confirm that the module is compiled in */
+
+static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
+	int i;
+	array_init(arr);
+	if (dim == (ans->ndims-1)) {
+		for (i=0;i<ans->dims[dim];i++) {
+			switch (ans->dtype) {
+			case DTYPE_UCHAR: add_next_index_long(arr,(int)((unsigned char *)ans->ptr)[*index]); break;
+			case DTYPE_USHORT:add_next_index_long(arr,(int)((unsigned short *)ans->ptr)[*index]); break;
+			case DTYPE_ULONG: add_next_index_long(arr,(int)((int *)ans->ptr)[*index]); break;
+			case DTYPE_CHAR:  add_next_index_long(arr,(int)((char *)ans->ptr)[*index]); break;
+			case DTYPE_SHORT: add_next_index_long(arr,(int)((short *)ans->ptr)[*index]); break;
+			case DTYPE_LONG:  add_next_index_long(arr,((int *)ans->ptr)[*index]); break;
+			case DTYPE_FLOAT: add_next_index_double(arr,(double)((float *)ans->ptr)[*index]); break;
+			case DTYPE_DOUBLE: add_next_index_double(arr,((double *)ans->ptr)[*index]); break;
+			case DTYPE_CSTRING: {
+				char *string = strncpy(emalloc(ans->length+1),((char *)ans->ptr) + (*index * ans->length),ans->length);
+				string[ans->length]=0;
+				add_next_index_string(arr,string,0);
+				break;
+			}
+			}
+			*index = *index + 1;
+		}
+	} else {
+		zval *arr2;;
+		for (i=0;i<ans->dims[dim];i++) {
+			arr2=(zval *)malloc(sizeof(zval));
+			memset(arr2,0,sizeof(zval));
+			MakeArray(arr2,ans,dim+1,index);
+			add_next_index_zval(arr,arr2);
+        }
+	}
+}
+
+
 PHP_FUNCTION(mdsplus_value)
 {
 	char *expression = NULL;
@@ -419,58 +455,30 @@ PHP_FUNCTION(mdsplus_value)
 					}
 				}
 			}
-            else if (ans.ndims == 1)
+			else
 			{
-                int dtype_ok=1;
-				array_init(return_value);
-                
-				switch (ans.dtype)
-					{
-					case DTYPE_UCHAR: 
-					case DTYPE_USHORT:
-					case DTYPE_ULONG: 
-					case DTYPE_CHAR:  
-					case DTYPE_SHORT: 
-					case DTYPE_LONG: 
-					case DTYPE_FLOAT: 
-					case DTYPE_DOUBLE:
-					case DTYPE_CSTRING: break;
-					default: 
-						{ char error[128];
+				int index=0;
+				switch (ans.dtype) {
+				case DTYPE_UCHAR: 
+				case DTYPE_USHORT:
+				case DTYPE_ULONG: 
+				case DTYPE_CHAR:  
+				case DTYPE_SHORT: 
+				case DTYPE_LONG: 
+				case DTYPE_FLOAT: 
+				case DTYPE_DOUBLE:
+				case DTYPE_CSTRING: break;
+				default: 
+					{ 
+						char error[128];
 						sprintf(error,"expression '%s' returned unsupported data type: %d",expression,ans.dtype);
 					    mdsplus_replace_error(error,0);
                         RETVAL_FALSE;
-						dtype_ok=0;
-						break;
-						}
+						if (ans.ptr) free(ans.ptr);
+						return;
 					}
-                for (i=0;i<ans.dims[0] && dtype_ok;i++)
-					{
-						switch (ans.dtype)
-							{
-							case DTYPE_UCHAR: add_next_index_long(return_value,(int)((unsigned char *)ans.ptr)[i]); break;
-							case DTYPE_USHORT:add_next_index_long(return_value,(int)((unsigned short *)ans.ptr)[i]); break;
-							case DTYPE_ULONG: add_next_index_long(return_value,(int)((int *)ans.ptr)[i]); break;
-							case DTYPE_CHAR:  add_next_index_long(return_value,(int)((char *)ans.ptr)[i]); break;
-							case DTYPE_SHORT: add_next_index_long(return_value,(int)((short *)ans.ptr)[i]); break;
-							case DTYPE_LONG: add_next_index_long(return_value,((int *)ans.ptr)[i]); break;
-							case DTYPE_FLOAT: add_next_index_double(return_value,(double)((float *)ans.ptr)[i]); break;
-							case DTYPE_DOUBLE: add_next_index_double(return_value,((double *)ans.ptr)[i]); break;
-							case DTYPE_CSTRING: 
-                                {
-									char *string = strncpy(emalloc(ans.length+1),((char *)ans.ptr) + (i * ans.length),ans.length);
-                                    string[ans.length]=0;
-                                    add_next_index_string(return_value,string,0);
-									break;
-								}
-							}
-					}
-			}
-			else
-			{
-				mdsplus_replace_error("mdsplus php currently cannot handle multidimensional arrays",0);
-                RETVAL_FALSE;
-                return;
+				}
+			    MakeArray(return_value,&ans,0,&index);
             }
 		}
     else
