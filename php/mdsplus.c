@@ -324,7 +324,7 @@ PHP_FUNCTION(mdsplus_close)
 static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
 	int i;
 	array_init(arr);
-	if (dim == (ans->ndims-1)) {
+	if (dim == 0) {
 		for (i=0;i<ans->dims[dim];i++) {
 			switch (ans->dtype) {
 			case DTYPE_UCHAR: add_next_index_long(arr,(int)((unsigned char *)ans->ptr)[*index]); break;
@@ -348,7 +348,7 @@ static void MakeArray(zval *arr, struct descrip *ans, int dim, int *index) {
 		for (i=0;i<ans->dims[dim];i++) {
 			zval *arr2;
 			MAKE_STD_ZVAL(arr2);
-			MakeArray(arr2,ans,dim+1,index);
+			MakeArray(arr2,ans,dim-1,index);
 			add_next_index_zval(arr,arr2);
         }
 	}
@@ -477,7 +477,7 @@ PHP_FUNCTION(mdsplus_value)
 						return;
 					}
 				}
-			    MakeArray(return_value,&ans,0,&index);
+			    MakeArray(return_value,&ans,ans.ndims-1,&index);
             }
 		}
     else
