@@ -1,6 +1,55 @@
 Version 2.3-0
 
 
+2010-12-13 09:07  twf
+
+	* Setup/: Setup32.vdproj, Setup64.vdproj:
+	
+	New version
+
+2010-12-13 08:45  twf
+
+	* mdsshr/MdsCompress.c:
+	
+	handle recursive compression
+
+2010-12-10 08:52  twf
+
+	* php/mdsplus.c:
+	
+	put multidimensional arrays in correct order
+
+2010-12-09 10:55  twf
+
+	* php/mdsplus.c:
+	
+	Fix segfault using multidimensional arrays
+
+2010-12-08 16:25  twf
+
+	* php/mdsplus.c:
+	
+	Add support for multiple dimensions
+
+2010-12-07 14:52  twf
+
+	* Makefile.in:
+	
+	include python
+
+2010-12-07 14:51  twf
+
+	* xtreeshr/XTreeDefaultResample.c, xtreeshr/XTreeDefaultSquish.c,
+	treeshr/RemoteAccess.c, treeshr/TreeSegments.c:
+	
+	Lates big descriptor fix
+
+2010-12-06 14:51  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.3-0
+
 2010-12-06 14:49  twf
 
 	* rpm/x86_64.spec:
