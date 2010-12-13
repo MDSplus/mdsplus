@@ -330,6 +330,8 @@ int       MdsDecompress(
     MdsFree1Dx(out_ptr, NULL);
     return 1;
   }
+  if (rec_ptr->class == CLASS_XD && rec_ptr->dtype == DTYPE_DSC)
+    return MdsDecompress((struct descriptor_r *)rec_ptr->pointer,out_ptr);
   if (prec->class == CLASS_CA && prec->pointer)
     prec = (struct descriptor_r *) prec->pointer;
   if (prec->class != CLASS_R
@@ -355,8 +357,16 @@ int       MdsDecompress(
     }
     if (status & 1)
       status = MdsGet1DxA(pa, &pa->length, &pa->dtype, out_ptr);
-    if (status & 1)
-      status = (*symbol) (&nitems, prec->dscptrs[3], out_ptr->pointer, &bit);
+    if (status & 1) {
+      if (prec->dscptrs[3]->class == CLASS_CA) {
+        EMPTYXD(tmp_xd);
+        status = MdsDecompress((struct descriptor_r *)prec->dscptrs[3],&tmp_xd);
+        if (status & 1)
+          status = (*symbol) (&nitems, tmp_xd.pointer, out_ptr->pointer, &bit);
+        MdsFree1Dx(&tmp_xd,0);
+      } else
+	status = (*symbol) (&nitems, prec->dscptrs[3], out_ptr->pointer, &bit);
+    }
   }
   return status;
 }
