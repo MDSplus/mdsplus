@@ -326,6 +326,7 @@ buf *buffer;
         pixel_count++;
       }
     }
+    while ((frame_count * frame_size) > words) frame_count--;
     for (i=j;status & 1 && i<(frame_count * frame_size);i++)
       data[i] = 0;
     if (status & 1)
