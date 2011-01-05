@@ -15,6 +15,7 @@
 #include <xmdsshr.h>
 #include <Xm/List.h>
 #include <stdio.h>
+#include <time.h>
 
 static void Load(Widget w);
 static unsigned int Input(InStoreStruct *setup, int code);
@@ -44,7 +45,9 @@ extern int TdiData();
 #define arm_on_error(f,retstatus) if (!((status = f) & 1))\
                                      { printf("T4012 - error sending setup informaiton - arming anyway\n");\
                                        goto arm;}
-#define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
+#define return_on_error(f,retstatus) if (!((status = f) & 1)) {max_time=-1; return retstatus;}
+
+#define retry_on_error(f, retstatus) if (!((status = f) & 1)) {if (status == DEV$_BAD_MODE && retry != 0) {retry=0; goto retry;} else return retstatus;}
 
 static int one=1;
 
@@ -54,6 +57,9 @@ static int one=1;
 
 #define T$REMOTE 0x8001
 #define T$LOCAL 0x8000
+
+static time_t start_time;
+static time_t max_time=-1;
 
 int t4012___init(struct descriptor *nid, InInitStruct *setup)
 { 
@@ -67,19 +73,23 @@ int t4012___init(struct descriptor *nid, InInitStruct *setup)
   static struct descriptor_xd xd = {0,DTYPE_T,CLASS_XD,0,0};
   int frequency_1_nid = setup->head_nid + T4012_N_FREQUENCY_1;
   int frequency_2_nid = setup->head_nid + T4012_N_FREQUENCY_2;
+  int retry=1;
+ retry:
+  start_time=time(0);
+  max_time=3;
   set[0] = setup->channels | 0x1000;
   set[1] = setup->post_samples | 0x2000;
   set[2] = (setup->smp_per_chan + 1023)/1024 | 0x3000;
   if (TreeGetRecord(frequency_1_nid,&xd) & 1)
   {
-    return_on_error(DevFloat(&frequency_1_nid,&freq),status);
+    retry_on_error(DevFloat(&frequency_1_nid,&freq),status);
     for (i=0;i<16;i++) if (freq >= freqs[i]) break;
     set[3] = i;
     set[3] |= 0x4000;
     set[5] = (setup->switch_mode < 3 ? setup->switch_mode : 0) | 0x6000;
     if (set[5] != 0x6000)
     {
-      return_on_error(DevFloat(&frequency_2_nid,&freq),status);
+      retry_on_error(DevFloat(&frequency_2_nid,&freq),status);
       for (i=0;i<16;i++) if (freq >= freqs[i]) break;
       set[4] = i;
       set[4] |= 0x5000;
@@ -128,16 +138,24 @@ arm:
   {
     pio(10,0,0);
     pio(9,0,0);
-    return_on_error(AccessTraq((InStoreStruct *)setup,14,16,0,0),status);
+    retry_on_error(AccessTraq((InStoreStruct *)setup,14,16,0,0),status);
     pio(0,0,&sampling);
     for (try = 0;(try < 30) && (!(CamQ(0)&1)) && (status &1);try++) 
     {
       DevWait((float).001);
       pio(0,0,&sampling);
     }
-    if (try == 30) return DEV$_CAM_NOSQ;
+    if (try == 30) {
+      max_time=-1;
+      if (retry != 0) {
+	retry=0;
+        goto retry;
+      }
+      return DEV$_CAM_NOSQ;
+    }
   }
-  return_on_error(AccessTraq((InStoreStruct *)setup,T$LOCAL,16,0,0),status); /* Remote control */
+  retry_on_error(AccessTraq((InStoreStruct *)setup,T$LOCAL,16,0,0),status); /* Remote control */
+  max_time=-1;
   return status;
 }
 
@@ -221,6 +239,7 @@ int t4012___store(int *niddsc, InStoreStruct *setup)
   static DESCRIPTOR_WITH_UNITS(seconds,&dimension,&seconds_str);
   static DESCRIPTOR_SIGNAL_1(signal,&volts,&counts,&seconds);
   void *ctx = 0;
+  max_time=-1;
   trigger_nid = setup->head_nid + T4012_N_TRIGGER;
   switch_trig_nid = setup->head_nid + T4012_N_SWITCH_TRIG;
   extern_clock_nid = setup->head_nid + T4012_N_EXTERN_CLOCK;
@@ -373,6 +392,12 @@ static int AccessTraq(InStoreStruct *setup, int data,int memsize,void *arglist,i
 { int try;
   int status;
   int called = 0;
+  if (max_time > 0) {
+    if ((time(0)-start_time) > max_time) {
+      printf("T4012 AccessTraq timeout, data=%d\n",data);
+      return DEV$_BAD_MODE;
+    }
+  }
   piomem(17,0,&data,memsize);
   for (try = 0;(try < 30) && (!(CamQ(0)&1)) && (status &1);try++) 
   {
