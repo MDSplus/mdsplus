@@ -7,6 +7,11 @@ Apache configuration example:
    PythonHandler MDSplus.modpython
    PythonPath "['/usr/local/myeventhandlers'] + sys.path"
    PythonDebug On
+
+   PythonOption UDP_EVENTS yes
+or
+   PythonOption EVENT_SERVER host[:port]
+
 </Location>
 
 This configuration will handle requests such as:
@@ -75,12 +80,26 @@ class myevent(Event):
         self.cancel()
 
 def handler(req):
+  try:
+    opts=req.get_options()
+    if "UDP_EVENTS" in opts:
+      value=opts["UDP_EVENTS"].upper()
+      if value=="YES":
+	os.putenv('UDP_EVENTS','yes')
+    if "EVENT_SERVER" in opts:
+      os.putenv("mds_event_server",opts['EVENT_SERVER'])
+  except:
+    pass
   os.putenv('UDP_EVENTS','yes')
   event=req.path_info.rsplit('/')[-1]
   args=parse_qs(str(req.args))
   timeout=60
   try:
       timeout=int(args['timeout'][-1])
+  except:
+      pass
+  try:
+      event=args['event'][-1]
   except:
       pass
   if 'handler' in args:
