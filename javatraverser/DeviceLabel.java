@@ -9,18 +9,18 @@ public class DeviceLabel
 {
   Data data;
   public boolean textOnly = false;
-//  public boolean showState = false;
+//public boolean showState = false;
   public boolean displayEvaluated = false;
-  public String labelString = "Label";
+  public String labelString = "<empty>";
   public int numCols = 10;
   private boolean initial_state;
   protected boolean initializing = false;
 //  GridBagLayout gridbag;
   protected int preferredWidth = -1;
   JPanel jp;
-//  protected boolean isGridBag = false;
+//protected boolean isGridBag = false;
 
-  protected String initialField;
+  protected String initialField = "<empty>";
 
   private boolean reportingChange = false;
 
@@ -117,7 +117,7 @@ public class DeviceLabel
 //   jp = new JPanel();
 //    jp.add(checkB = new JCheckBox());
 //    checkB.setVisible(false);
-    add(label = new JLabel());
+    add(label = new JLabel("<empty>"));
 //    add(jp);
 //    add(textF = new JTextField(10));
 //    textF.setEnabled(editable);
@@ -135,8 +135,9 @@ public class DeviceLabel
 
     //initialField =  Tree.dataToString(data);
 
+ /*
     Container parent = getParent();
-/*
+
     if (parent.getLayout() == null)
     {
       isGridBag = false;
@@ -227,6 +228,15 @@ public class DeviceLabel
     {}
   }
 
+   public void apply(int currBaseNid)
+   {
+       return;
+   }
+
+   public void apply()
+   {
+       return;
+   }
 /*
   void postApply()
   {
@@ -279,20 +289,16 @@ public class DeviceLabel
         textString = Tree.dataToString(data);
       if (textString != null)
       {
-/*
-        if (textOnly && textString.charAt(0) == '"')
-          textF.setText(textString.substring(1, textString.length() - 1));
-        else
-          textF.setText(textString);
-*/
+
         if (textOnly && textString.charAt(0) == '"')
           label.setText(textString.substring(1, textString.length() - 1));
         else
           label.setText(textString);
-      }
+
+       }
     }
     else
-      label.setText("");
+      label.setText("<empty>");
 /*
     label.setEnabled(is_on);
     textF.setEnabled(is_on & editable);

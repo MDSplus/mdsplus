@@ -24,7 +24,7 @@ public class DeviceLabelBeanInfo extends SimpleBeanInfo
         try {
             PropertyDescriptor[] props = {
                property("offsetNid", "Offset nid"),
-//               property("textOnly", "Deals only with text"),
+               property("textOnly", "Deals only with text"),
                property("labelString", "Field label"),
                property("numCols", "Number of columns"),
                property("identifier", "Optional field identifier"),

@@ -40,7 +40,7 @@ public class DeviceLabelCustomizer extends DeviceCustomizer implements Customize
         jp1 = new Panel();
 
 //        jp1.add(showState = new Checkbox("Show state: ", bean.getShowState()));
-//        jp1.add(textOnly = new Checkbox("Text only: ", bean.getTextOnly()));
+        jp1.add(textOnly = new Checkbox("Text only: ", bean.getTextOnly()));
 //        jp1.add(editable = new Checkbox("Editable: ", bean.getEditable()));
 
         jp1.add(new Label("Offset nid: "));
@@ -76,11 +76,12 @@ public class DeviceLabelCustomizer extends DeviceCustomizer implements Customize
             int oldCols = bean.getNumCols();
             bean.setNumCols(Integer.parseInt(colStr));
             listeners.firePropertyChange("numCols", oldCols, bean.getNumCols());
-/*
+
             boolean oldTextOnly = bean.getTextOnly();
             bean.setTextOnly(textOnly.getState());
             listeners.firePropertyChange("textOnly", oldTextOnly, bean.getTextOnly());
 
+/*
             boolean oldEditable = bean.getEditable();
             bean.setEditable(editable.getState());
             listeners.firePropertyChange("editable", oldEditable, bean.getEditable());
