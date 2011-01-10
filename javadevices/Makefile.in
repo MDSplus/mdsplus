@@ -119,7 +119,8 @@ MHD_BR_TESTSetup.java\
 EDA3VmeConfigSetup.java\
 MCUSetup.java\
 SIS3820Setup.java\
-FEMTOSetup.java
+FEMTOSetup.java\
+RFXVConfigSetup.java
 
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
