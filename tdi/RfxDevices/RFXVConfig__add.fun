@@ -16,14 +16,18 @@ public fun RFXVConfig__add(in _path, out _nidout)
     DevAddNode(_path // ':VVMC01_INI', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':VVMC01_PPC', 'NUMERIC', *, *, _nid);
 
-    for (_c = 1; _c <=9; _c++)
+    _pos = ["9D 261 30\'","6D 172 30\'","10S 277 30\'"];
+    _name = ["DPEL PELLET INJECTORS", "DNBI NEUTRAL BEAM", "DNPA NEUTRAL PARTICLE ANALYZER"];
+    _module = [19,9,8];
+
+    for ( _c = 1; _c <=9; _c++)
     {
         _cn = _path // '.VALVE_0' // TEXT(_c, 1);
         DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
-    	DevAddNode(_cn // ':POSITION', 'TEXT', *, *, _nid);
-        DevAddNode(_cn // ':NAME', 'TEXT', *, *, _nid);
-        DevAddNode(_cn // ':VD_MODULE', 'NUMERIC', *, *, _nid);
-        DevAddNode(_cn // ':CTRL_STATE', 'NUMERIC', *, *, _nid);
+    	  DevAddNode(_cn // ':POSITION', 'TEXT', _pos[ _c - 1 ] , *, _nid);
+        DevAddNode(_cn // ':NAME', 'TEXT', _name[ _c - 1 ] , *, _nid);
+        DevAddNode(_cn // ':VD_MODULE', 'NUMERIC', _module[ _c - 1 ] , *, _nid);
+        DevAddNode(_cn // ':CTRL_STATE', 'TEXT', 'NOT CONTROLLED', *, _nid);
     }
 
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
