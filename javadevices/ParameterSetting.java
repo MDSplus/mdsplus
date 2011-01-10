@@ -1074,7 +1074,8 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[12] == null)
                 {
-                    devices[12] = device = new RFXVISetupSetup();
+					devices[12] = device = new RFXVISetupSetup();
+					
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -1386,7 +1387,8 @@ public class ParameterSetting
         });
         jp.add(mhdConfigB);
 
-        buttons[22] = viConfigB = new JButton("Vi Config");
+        //buttons[22] = viConfigB = new JButton("Vi Config"); Taliercio 10 - 01 - 2011
+        buttons[22] = viConfigB = new JButton("V Config");
         viConfigB.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -1397,7 +1399,10 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[19] == null)
                 {
-                    devices[22] = device = new RFXVIConfigSetup();
+					/*
+                    devices[22] = device = new RFXVIConfigSetup(); Taliercio 10 - 1 - 2011
+					*/
+                    devices[22] = device = new RFXVConfigSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -4102,7 +4107,8 @@ System.out.println("Print Done");
             case 21:
                 return new RFXPRConfigSetup();
             case 22:
-                return new RFXVIConfigSetup();
+                //return new RFXVIConfigSetup(); Taliercio 10 - 01 - 2011
+                return new RFXVConfigSetup();
         }
         return null;
     }
