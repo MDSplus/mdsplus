@@ -132,14 +132,14 @@ public class RFXVConfigSetup extends DeviceSetup {
         jPanel5.setLayout(new java.awt.GridLayout(2, 0, 2, 0));
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("N. Group Fill. Valve:");
+        deviceField2.setLabelString("N. Group Filling Valves :");
         deviceField2.setOffsetNid(4);
         jPanel31.add(deviceField2);
 
         jPanel5.add(jPanel31);
 
         deviceField4.setIdentifier("");
-        deviceField4.setLabelString("N. Group Puff Valse::");
+        deviceField4.setLabelString("N. Group Puffing Valves:");
         deviceField4.setOffsetNid(5);
         jPanel32.add(deviceField4);
 
