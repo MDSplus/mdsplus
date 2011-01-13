@@ -48,6 +48,9 @@ public class RFXVConfigSetup extends DeviceSetup {
         deviceField1 = new DeviceField();
         deviceDispatch1 = new DeviceDispatch();
         jPanel4 = new javax.swing.JPanel();
+        jPanel33 = new javax.swing.JPanel();
+        deviceField3 = new DeviceField();
+        deviceField5 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         jPanel31 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
@@ -126,7 +129,22 @@ public class RFXVConfigSetup extends DeviceSetup {
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
 
-        jPanel4.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel4.setLayout(new java.awt.BorderLayout());
+
+        jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("DPEL PELLET INJECTORS"));
+        jPanel33.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Angle [deg] :");
+        deviceField3.setOffsetNid(61);
+        jPanel33.add(deviceField3);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("DRIGAS max [bar] :");
+        deviceField5.setOffsetNid(62);
+        jPanel33.add(deviceField5);
+
+        jPanel4.add(jPanel33, java.awt.BorderLayout.SOUTH);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("  VI  "));
         jPanel5.setLayout(new java.awt.GridLayout(2, 0, 2, 0));
@@ -159,7 +177,7 @@ public class RFXVConfigSetup extends DeviceSetup {
         deviceChoice2.setUpdateIdentifier("");
         jPanel5.add(deviceChoice2);
 
-        jPanel4.add(jPanel5);
+        jPanel4.add(jPanel5, java.awt.BorderLayout.NORTH);
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("  VD  "));
         jPanel6.setLayout(new java.awt.GridLayout(4, 0));
@@ -187,7 +205,7 @@ public class RFXVConfigSetup extends DeviceSetup {
 
         jPanel7.add(jPanel12);
 
-        jLabel5.setText("NOT CONTROLLED");
+        jLabel5.setText("UNCONTROLLED");
         jPanel13.add(jLabel5);
 
         jPanel7.add(jPanel13);
@@ -311,7 +329,7 @@ public class RFXVConfigSetup extends DeviceSetup {
 
         jPanel6.add(jPanel25);
 
-        jPanel4.add(jPanel6);
+        jPanel4.add(jPanel6, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(jPanel4, java.awt.BorderLayout.CENTER);
 
@@ -384,7 +402,7 @@ public class RFXVConfigSetup extends DeviceSetup {
        {
            NidData ctrlNid = new NidData(this.baseNid + 14 +  i  * 5);
            JCheckBox cb1 =  (JCheckBox)getComponentByBame( this, "controlled" + i );
-           String val =  cb1.isSelected() ? "CONTROLLED" : "NOT CONTROLLED";
+           String val =  cb1.isSelected() ? "CONTROLLED" : "UNCONTROLLED";
             try {
                 subtree.putData(ctrlNid, new StringData(val), Tree.context);
             }
@@ -412,7 +430,9 @@ public class RFXVConfigSetup extends DeviceSetup {
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField2;
+    private DeviceField deviceField3;
     private DeviceField deviceField4;
+    private DeviceField deviceField5;
     private DeviceLabel deviceLabel1;
     private DeviceLabel deviceLabel10;
     private DeviceLabel deviceLabel11;
@@ -453,6 +473,7 @@ public class RFXVConfigSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel30;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
