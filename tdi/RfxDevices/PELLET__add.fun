@@ -1,7 +1,7 @@
 public fun PELLET__add(in _path, out _nidout)
 {
     DevAddStart(_path,'PELLET', 146, _nidout);
-    DevAddNode(_path//':RS232_NAME', 'TEXT','/dev/ttyS0', *, _nid);
+    DevAddNode(_path//':RS232_NAME', 'TEXT','/dev/ttyaa15', *, _nid);
     DevAddNode(_path//':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path//':TSTBY', 'NUMERIC', *, *, _nid);
     DevAddNode(_path//':TAFORM', 'NUMERIC', *, *, _nid);
