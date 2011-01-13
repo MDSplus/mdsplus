@@ -40,9 +40,22 @@ public fun PELLET__init(as_is _nid, optional _method)
 /*
 	_g_param = ['TSTBY1', 'TAFORM1', 'TBFORM1', 'THOLD1', 'TBAKE1', 'DELAY'];
 	_p_param = ['SPEED', 'MASS', 'DRIGAS', 'OHOLD','OFORM','OSTBY','STBY','AFORM','BFORM','HOLD','FIRE','BAKE', 'TOFA', 'TOFB'];
-*/	
-	_p_param = ['AFORM','BFORM','HOLD', 'DRIGAS'];
+
+	_p_param_off = ['AFORM','BFORM','HOLD','FIRE','DRIGAS'];
+	_values_off  = [6,6,6,15,1];
+
+	_p_param_on = ['AFORM','BFORM','HOLD','FIRE'];
+	_values_on  = [8,7,7,20];
+
+	_p_param = ['AFORM','BFORM','HOLD','DRIGAS'];
 	_values  = [6,6,6,1];
+*/
+	_p_param_off = ['AFORM','BFORM','HOLD','FIRE','DRIGAS'];
+	_values_off  = [6,6,6,15,1];
+
+	_p_param_on = ['AFORM','BFORM','HOLD','FIRE'];
+	_p_nid_offset = [_N_AFORM,_N_BFORM,_N_HOLD, _N_FIRE];
+	_values_on  = [8,7,7,20];
 
 	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
 
@@ -93,7 +106,7 @@ write(*, _name);
 	    if(_fd == 0)
 	    {
 			DevLogErr(_nid, "Error cannot connect to rs232 port : "//_name);
-			abort();  
+			abort();
 	    }
 	}
 
@@ -120,18 +133,18 @@ Set off decoder channel
 			TreeTurnOff( _dec_chan_nid );
 
 
-			for(_i = 0; _i < size(_p_param); _i++)
+			for(_i = 0; _i < size(_p_param_off); _i++)
 			{
 	
-				_param = trim(_p_param[_i])//TEXT(_pellet, 1);
+				_param = trim(_p_param_off[_i])//TEXT(_pellet, 1);
 
 				if ( _remote )
 				{
-					_status = MdsValue('PELLETHWWriteParam($1, $2, $3)', _fd, _param, _values[ _i]);
+					_status = MdsValue('PELLETHWWriteParam($1, $2, $3)', _fd, _param, _values_off[ _i]);
 				}
 				else
 				{
-					_status = PELLETHWWriteParam( _fd, _param, _values[ _i] );
+					_status = PELLETHWWriteParam( _fd, _param, _values_off[ _i] );
 				}
 				
 			
@@ -148,7 +161,41 @@ Set off decoder channel
 /*
 Set on decoder channel
 */			
-			TreeTurnOn( _dec_chan_nid );	
+			TreeTurnOn( _dec_chan_nid );
+			
+			
+			for(_i = 0; _i < size(_p_param_on); _i++)
+			{
+
+				_val = if_error(data(DevNodeRef(_nidPel, _p_nid_offset[ _i ])), _status = 1);
+
+				if( _status )
+				{
+					DevLogErr(_nid, "Error readig pellet param "//trim(_p_param_on[_i])//".Default value is set" );
+					_val = _values_on[ _i];
+					Abort();
+				}
+				
+			
+				_param = trim(_p_param_on[_i])//TEXT(_pellet, 1);
+
+				if ( _remote )
+				{
+					_status = MdsValue('PELLETHWWriteParam($1, $2, $3)', _fd, _param, _val);
+				}
+				else
+				{
+					_status = PELLETHWWriteParam( _fd, _param, _val );
+				}
+				
+			
+				if( _status < 0)
+				{
+					_msg = "Error on "//_param//" write operation";
+					DevLogErr(_nid, _msg); 
+				}
+				
+			}
 		}
 	}
 
