@@ -1,6 +1,6 @@
 public fun RFXVConfig__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXVConfig',61, _nidout);
+    DevAddStart(_path, 'RFXVConfig',64, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':NCRIO_ON', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':NTURBO_ON', 'NUMERIC', *, *, _nid);
@@ -29,6 +29,13 @@ public fun RFXVConfig__add(in _path, out _nidout)
         DevAddNode(_cn // ':VD_MODULE', 'NUMERIC', _module[ _c - 1 ] , *, _nid);
         DevAddNode(_cn // ':CTRL_STATE', 'TEXT', 'NOT CONTROLLED', *, _nid);
     }
+
+    _cn = _path // '.CPELLET' ;
+    DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
+    DevAddNode(_cn // ':ANGLE', 'NUMERIC', *, *, _nid);
+    DevAddNode(_cn // ':DRIGAS_MAX', 'NUMERIC', *, *, _nid);
+    tcl('add tag ' // _cn // ':DRIGAS_MAX DRIGAS_MAX');
+
 
     DevAddAction(_path// ':STORE_ACTION', 'STORE', 'STORE', 25,'CAMAC_SERVER',getnci(_path, 'fullpath'), _nid);
     DevAddEnd();
