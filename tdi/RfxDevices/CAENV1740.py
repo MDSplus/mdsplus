@@ -1,45 +1,45 @@
 class CAENV1740(object):
     """CAEN V1740 64 Channels 12 Bit 65MS/S Digitizer"""
     def __init__(self,node):
-        self.node=node
-   	self.N_HEAD = 0
-    	self.N_COMMENT = 1
-    	self.N_BOARD_ID = 2
-    	self.N_VME_ADDRESS = 3
-    	self.N_TRIG_MODE = 4
-    	self.N_TRIG_SOFT = 5
-    	self.N_TRIG_EXT = 6
-    	self.N_TRIG_SOURCE = 7
-    	self.N_TRIG_INT_TIM = 8
-    	self.N_CLOCK_MODE = 9
-    	self.N_CLOCK_DIV = 10
-    	self.N_CLOCK_SOURCE = 11
-    	self.N_NUM_SEGMENTS = 12
-    	self.N_USE_TIME = 13
-    	self.N_PTS = 14
-    	self.N_START_IDX = 15
-    	self.N_END_IDX = 16
-    	self.N_START_TIME = 17
-    	self.N_END_TIME = 18
-    	self.N_CONT_SAMPLES = 19
-    	self.K_NODES_PER_CHANNEL = 6
-    	self.N_CHANNEL_0= 20
-    	self.N_CHAN_STATE = 1
-    	self.N_CHAN_TRIG_STATE = 2
-    	self.N_CHAN_TRIG_THRESH_LEV = 3
-    	self.N_CHAN_TRIG_THRESH = 4
-    	self.N_CHAN_OFFSET = 5
-    	self.N_CHAN_DATA = 6
-    	self.cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
-    	self.cvV2718 = 1L                    # V2718 PCI-VME bridge with optical link       
-    	self.cvA2818 = 2L                    # PCI board with optical link                  
-    	self.cvA2719 = 3L                    # Optical link piggy-back                      
-    	self.cvA32_S_DATA = 0x0D             # A32 supervisory data access                  */
-    	self.cvD32 = 0x04		    # D32
-    	self.cvD64 = 0x08
-    	self.N_DATA_0= 68
-
-        return
+      print "SONO IO!!!!!!"
+      self.node=node
+      self.N_HEAD = 0
+      self.N_COMMENT = 1
+      self.N_BOARD_ID = 2
+      self.N_VME_ADDRESS = 3
+      self.N_TRIG_MODE = 4
+      self.N_TRIG_SOFT = 5
+      self.N_TRIG_EXT = 6
+      self.N_TRIG_SOURCE = 7
+      self.N_TRIG_INT_TIM = 8
+      self.N_CLOCK_MODE = 9
+      self.N_CLOCK_DIV = 10
+      self.N_CLOCK_SOURCE = 11
+      self.N_NUM_SEGMENTS = 12
+      self.N_USE_TIME = 13
+      self.N_PTS = 14
+      self.N_START_IDX = 15
+      self.N_END_IDX = 16
+      self.N_START_TIME = 17
+      self.N_END_TIME = 18
+      self.N_CONT_SAMPLES = 19
+      self.K_NODES_PER_CHANNEL = 6
+      self.N_CHANNEL_0= 20
+      self.N_CHAN_STATE = 1
+      self.N_CHAN_TRIG_STATE = 2
+      self.N_CHAN_TRIG_THRESH_LEV = 3
+      self.N_CHAN_TRIG_THRESH = 4
+      self.N_CHAN_OFFSET = 5
+      self.N_CHAN_DATA = 6
+      self.cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
+      self.cvV2718 = 1L                    # V2718 PCI-VME bridge with optical link       
+      self.cvA2818 = 2L                    # PCI board with optical link                  
+      self.cvA2719 = 3L                    # Optical link piggy-back                      
+      self.cvA32_S_DATA = 0x0D             # A32 supervisory data access                  */
+      self.cvD32 = 0x04		    # D32
+      self.cvD64 = 0x08
+      self.N_DATA_0= 68
+      return
 
     def init(self,arg):
       from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range

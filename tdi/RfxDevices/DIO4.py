@@ -50,8 +50,8 @@ class DIO4(Device):
       try:
       	boardId = self.board_id.data()
       except: 
-      	Data.excute('DevLogErr($1,$2)', getNid(), 'Invalid Board ID specification')
-	return 0
+        Data.execute('DevLogErr($1,$2)', getNid(), 'Invalid Board ID specification')
+        return 0
 	
       
  #Software Mode
