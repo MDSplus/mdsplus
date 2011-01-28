@@ -19,6 +19,7 @@ from dt196  import DT196
 from dt196b import DT196B
 from dt216  import DT216
 from dt216a import DT216A
+from timeSignature import timeSignatureAnalyze, timeSignature
 import acq200
 import transport
 import dt100
