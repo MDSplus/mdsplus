@@ -22,4 +22,6 @@ public class UpdateEvent extends AWTEvent
         super(source, 0);
         name = event;
     }
+
+    public String getName() { return name;}
 }

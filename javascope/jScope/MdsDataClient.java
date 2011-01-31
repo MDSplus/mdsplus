@@ -15,7 +15,7 @@ public class MdsDataClient extends MdsConnection
      * @param provider String to define the mdsip data server to use: host_address[:port]
      * @exception MdsIOException if an I/0 error occurs
      */
-    MdsDataClient(String provider) throws MdsIOException
+    public MdsDataClient(String provider) throws MdsIOException
     {
         super(provider);
         if(ConnectToMds(false) == 0)
@@ -29,7 +29,7 @@ public class MdsDataClient extends MdsConnection
      * @param user String to define the mdsip user name
      * @exception MdsIOException if an I/0 error occurs
      */
-    MdsDataClient(String provider, String user) throws MdsIOException
+    public MdsDataClient(String provider, String user) throws MdsIOException
     {
         super(provider);
         setUser(user);
