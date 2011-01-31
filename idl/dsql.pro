@@ -47,9 +47,7 @@
 function QuoteQuotes, qry
   idxs = strsplit(qry, '\', /preserve_null, length=lens)
   qry= strjoin(strmid(qry, idxs, lens), '\\')
-  idxs = strsplit(qry, '"', escape="\", /preserve_null, length=lens)
-  qry= strjoin(strmid(qry, idxs, lens), '\"')
-  idxs = strsplit(qry, "'", escape="\",/preserve_null, length=lens)
+  idxs = strsplit(qry, "'", /preserve_null, length=lens)
   qry= strjoin(strmid(qry, idxs, lens), "\'")
   return, qry
 end
@@ -64,7 +62,12 @@ function replace_input, qry, idx, val, debug=debug
 
   sz = size(val)
   if (sz(n_elements(sz)-2) eq 7) then begin
-      ans =  strmid(qry, 0, idx-1)+'"'+STRING(val[0])+'"'+strmid(qry, idx, strlen(qry)-idx)
+      sval=val[0]
+      if debug then print,"Before: "+sval
+      idxs=strsplit(sval,"'",/preserve_null,length=lens)
+      sval=strjoin(strmid(sval,idxs,lens),"''")
+      if debug then print,"After: "+sval
+      ans =  strmid(qry, 0, idx-1)+"'"+STRING(sval)+"'"+strmid(qry, idx, strlen(qry)-idx)
       if (debug) then $
         print, "replace_input - string ("+ans+")"
   endif else begin
