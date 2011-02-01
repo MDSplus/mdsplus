@@ -693,7 +693,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
 	    compressed_segment=1;
 	    status = TreeGetDsc(info_ptr,sinfo->data_offset,data_length,&compressed_segment_xd);
             if (status & 1) {
-	      status = MdsDecompress(compressed_segment_xd.pointer,segment);
+	      status = MdsDecompress((struct descriptor_r *)compressed_segment_xd.pointer,segment);
 	      MdsFree1Dx(&compressed_segment_xd,0);
 	    }
 	  } else {
@@ -1288,7 +1288,7 @@ static int GetCompressedSegmentRows(TREE_INFO *info,_int64 offset, int *rows) {
       status = TreeReopenDatafile(info);
   }
   if (status & 1) {
-    if (buffer[3]==CLASS_CA) {
+    if (buffer[3]==CLASS_CA || buffer[3]==CLASS_A) {
       unsigned char dimct=buffer[11];
       if (dimct==1) {
         int arsize=swapint(buffer+12);
