@@ -82,6 +82,9 @@ __TreeGetViewDate=__TreeShr.TreeGetViewDate
 __TreeGetViewDate.argtypes=[_C.POINTER(_C.c_ulonglong)]
 __TreeBeginSegment=__TreeShr._TreeBeginSegment
 __TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int]
+__TreeMakeSegment=__TreeShr._TreeMakeSegment
+__TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+                            _C.POINTER(descriptor_a),_C.c_int,_C.c_int]
 __TreeBeginTimestampedSegment=__TreeShr._TreeBeginTimestampedSegment
 __TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
 __TreeMakeTimestampedSegment=__TreeShr._TreeMakeTimestampedSegment
@@ -634,12 +637,26 @@ def TreeBeginTimestampedSegment(n,value,idx):
     else:
         raise TreeException,MdsGetMsg(status)
 
+def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
+    try:
+        n.tree.lock()
+        status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
+                                 _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,
+                                 initialValue.shape[0])
+    finally:
+        n.tree.unlock()
+    if (status & 1):
+        return status
+    else:
+        raise TreeException,MdsGetMsg(status)
+    return None
+
 def TreeBeginSegment(n,start,end,dimension,initialValue,idx):
     """Begin a segment."""
     try:
         n.tree.lock()
         status=__TreeBeginSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),
+                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),
                                    idx)
     finally:
         n.tree.unlock()

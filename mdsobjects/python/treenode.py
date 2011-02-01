@@ -838,6 +838,21 @@ class TreeNode(Data):
         """
         return self.write_once
 
+    def makeSegment(self,start,end,dimension,valueArray,idx=-1):
+        """Make a record segment
+        @param start: Index of first row of data
+        @type start: Data
+        @param end: Index of last row of data
+        @type end: Data
+        @param dimension: Dimension information of segment
+        @type dimension: Dimension
+        @param valueArray: Contents of segment
+        @type valueArray: Array
+        @rtype: None
+        """
+        from _treeshr import TreeMakeSegment
+        TreeMakeSegment(self,start,end,dimension,valueArray,idx)
+
     def move(self,parent,newname=None):
         """Move node to another location in the tree and optionally rename the node
         @param parent: New parent of this node
