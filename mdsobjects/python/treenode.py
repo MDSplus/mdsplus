@@ -315,7 +315,7 @@ class TreeNode(Data):
         @rtype: None
         """
         from _treeshr import TreeBeginSegment
-        TreeBeginSegment(self,start,end,dimension,initialValue,idx)
+        TreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
