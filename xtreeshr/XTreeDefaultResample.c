@@ -587,7 +587,8 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	struct descriptor shapeExprD = {strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr};
 
 	_int64u start64, end64, delta64, *timebase64, *outDim;
-	float *timebaseFloat;
+//	float *timebaseFloat;
+	double *timebaseDouble;
 	int *dims;
 	int numDims;
 	int numTimebaseSamples;
@@ -710,7 +711,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		outDataArray.m[i] = dims[i];
 	}
 	outDataArray.m[numDims-1] = outSamples;
-
+/* OLD, Possible loss of precision!!!!
 	//If originally float, convert  dimension to float
 	if(isFloat)
 	{
@@ -722,6 +723,21 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		outDimArray.dtype = DTYPE_FLOAT;
 		outDimArray.pointer = (char *)timebaseFloat;
 	}
+*/
+	//If originally float, convert  dimension to float
+	if(isFloat)
+	{
+		timebaseDouble = (float *)malloc(outSamples * sizeof(double));
+		for(i = 0; i < outSamples; i++)
+			MdsTimeToDouble(outDim[i], &timebaseDouble[i]);
+		outDimArray.length = sizeof(double);
+		outDimArray.arsize = sizeof(double) * outSamples;
+		outDimArray.dtype = DTYPE_DOUBLE;
+		outDimArray.pointer = (char *)timebaseDouble;
+	}
+
+
+
 	else
 	{
 		outDimArray.length = 8;
@@ -735,7 +751,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	free((char *)timebase64);
 	free((char *)outDim);
 	if(isFloat)
-		free((char *)timebaseFloat);
+		free((char *)timebaseDouble);
 	free((char *)outData);
 	MdsFree1Dx(&shapeXd, 0);
 	MdsFree1Dx(&dataXd, 0);
