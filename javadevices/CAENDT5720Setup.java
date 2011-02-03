@@ -122,7 +122,7 @@ public class CAENDT5720Setup extends DeviceSetup {
 
         jPanel1.add(jPanel26);
 
-        deviceChoice15.setChoiceItems(new String[] {"TRANSIENT RECORDER", "CONTINUOUS SAMPLING"});
+        deviceChoice15.setChoiceItems(new String[] {"TRANSIENT RECORDER", "CONTINUOUS", "CONTINUOUS WITH COUNTER"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Acquisiton mode: ");
         deviceChoice15.setOffsetNid(16);
