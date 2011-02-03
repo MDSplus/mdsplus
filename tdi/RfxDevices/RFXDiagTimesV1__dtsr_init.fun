@@ -29,8 +29,11 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
     private _K_AMP		= 15;
     private _K_SLAB		= 16;
  
-
+/*
 	_diagTimesTag =  "\\DTSR_RAW::LASER_NDRT";
+*/
+	_diagTimesTag =  "\\DTSR_RAW::ACQUISITION.NEODINIUM:LASER_NDRT";
+
     _diagTimesNid = if_error(getnci( _diagTimesTag, 'nid_number'), (DevLogErr(_nid, 'Cannot resolve decoder');abort();));
 
     _trigger    = if_error(data(DevNodeRef(_nid, _N_TRIGGER)), (DevLogErr(_nid, 'Cannot resolve trigger');abort();));

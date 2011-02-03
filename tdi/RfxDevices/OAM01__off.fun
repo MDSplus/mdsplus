@@ -11,6 +11,8 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	private __INPUT = 4 ;
 	private __OUTPUT = 5 ;
 
+	private __SW_MODE = 52 ;
+	private __IP_ADDR = 53 ;
 
 	private	_CHANNELS = 8 ;
 	private	_NODES_PER_CHANNEL = 6 ;
@@ -34,12 +36,32 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	}
 
 
+    DevNodeCvt(_nid, __SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 1);
 
+	if(_remote != 0)
+	{
+		_ip_addr = if_error(data(DevNodeRef(_nid, __IP_ADDR)), "");
+		if(_ip_addr == "")
+		{
+    	    DevLogErr(_nid, "Invalid IP");
+ 		    abort();
+		}
+	}
 
 
 	/* Inizializzo GPIB */
 
-	_status = GPIBInit ( ) ;
+	if (_remote)
+	{
+		_cmd = 'MdsConnect("'//_ip_addr//'")';
+	    	execute(_cmd);
+	    	_status = MdsValue('GPIBInit()');
+	}
+	else
+	{
+		_status = GPIBInit ( ) ;
+	}
+
 	if ( 0 == _status )
 	{
 		DevLogErr ( _nid, 'GPIB initialization failed' ) ;
@@ -49,7 +71,15 @@ public fun OAM01__off ( as_is _nid, optional _method )
 
 	/* Ricavo l'identificatore GPIB */
  
-   	_gpib_id = GPIBGetId ( _gpib_addr ) ;
+	if (_remote)
+	{
+		_gpib_id = MdsValue('GPIBGetId($1)', _gpib_addr);
+	}
+	else
+	{
+	   	_gpib_id = GPIBGetId ( _gpib_addr ) ;
+	}
+
     	if ( 0 == _gpib_id )
     	{
 		DevLogErr ( _nid, 'Invalid GPIB identifier' ) ; 
@@ -58,10 +88,18 @@ public fun OAM01__off ( as_is _nid, optional _method )
 
 
 
+
 	/* predispongo il controllo in remoto */
 
 	_command = 'W5836(80)\n' ;
-	_status = GPIBWrite ( _gpib_id, _command ) ;
+	if (_remote)
+	{
+		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+	}
+	else
+	{
+		_status = GPIBWrite ( _gpib_id, _command ) ;
+	}
 	wait ( _WAIT ) ;
 	if ( 0 == _status )
 	{
@@ -79,7 +117,14 @@ public fun OAM01__off ( as_is _nid, optional _method )
 		/* seleziono il canale da spegnere */
 
 		_command = 'W5834(0' // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ')' // '\n' ;
-		_status = GPIBWrite ( _gpib_id, _command ) ;
+		if (_remote)
+		{
+			_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		}
+		else
+		{
+			_status = GPIBWrite ( _gpib_id, _command ) ;
+		}
 		wait ( _WAIT ) ;
 		if ( 0 == _status )
 		{
@@ -92,7 +137,14 @@ public fun OAM01__off ( as_is _nid, optional _method )
 		/* metto off il canale */
 
 		_command = "W5836(C400)\n" ;
-		_status = GPIBWrite ( _gpib_id, _command ) ;
+		if (_remote)
+		{
+			_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		}
+		else
+		{
+			_status = GPIBWrite ( _gpib_id, _command ) ;
+		}
 		wait ( _WAIT ) ;
 		if ( 0 == _status )
 		{
@@ -106,7 +158,14 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	/* mi posiziono sul canale virtuale */
 
  	_command = 'W5834(00)\n' ;
-	_status = GPIBWrite ( _gpib_id, _command ) ;
+	if (_remote)
+	{
+		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+	}
+	else
+	{
+		_status = GPIBWrite ( _gpib_id, _command ) ;
+	}
 	wait ( _WAIT ) ;
 	if ( 0 == _status )
 	{
@@ -119,13 +178,31 @@ public fun OAM01__off ( as_is _nid, optional _method )
 	/* predispongo il controllo in locale */
 
 	_command = 'W5836(00)\n' ;
-	_status = GPIBWrite ( _gpib_id, _command ) ;
+	if (_remote)
+	{
+		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+	}
+	else
+	{
+		_status = GPIBWrite ( _gpib_id, _command ) ;
+	}
 	wait ( _WAIT ) ;
 	if ( 0 == _status )
 	{
 		_msg = 'Command ' // _command // ' failed' ;
 		DevLogErr ( _nid, _msg ) ;
 		abort (  ) ;
+	}
+
+	if ( _remote )
+	{
+		_status = MdsValue('GPIBClean(val($1))', _gpib_id);
+
+	    	MdsDisconnect();
+	}
+	else
+	{
+	    _status = GPIBClean(_gpib_id);
 	}
 
 

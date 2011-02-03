@@ -100,7 +100,10 @@ public fun RFXControl__store(as_is _nid, optional _method)
 
 	for(_c = 0; _c < _num_adc_in; _c++)
 	{
+
+/*
 write(*, _c);
+*/
 			_sig_nid =  DevHead(_nid) + _N_ADC_IN_1  + _c;
 			_data = MdsValue('Feedback->getAdcSignal:dsc($1, $2)', _c / 64, mod(_c,64));
       		if(size(_data) == 0)
@@ -117,32 +120,40 @@ write(*, _c);
 
 			}
 	}
+	
 	for(_c = 0; _c < _num_dac_out; _c++)
 	{
+/*
 write(*, _c);
-
+*/
 			_sig_nid =  DevHead(_nid) + _N_DAC_OUT_1  + _c;
 			_data = MdsValue( 'Feedback->getDacSignal:dsc($1, $2)', _c/32, mod(_c, 32));
       		if(size(_data) == 0)
       		{
 	    			DevLogErr(_nid, 'Cannot communicate to VME');
 	    			abort();
-    			}
+			}
+			
 			if(size(_data) <= 2)
 			{
 				DevLogErr(_nid, 'VME not triggered' // _status);
 				abort();	
 			}
+			
 			_status = DevPutSignal(_sig_nid, -2048, 10/2048., word(_data), 0, _n_samples, _dim);
 			if(! _status)
 			{
 				DevLogErr(_nid, 'Error writing data in pulse file' // _status);
 
 			}
+			
 	}
 
 	for(_c = 0; _c < _num_modes; _c++)
 	{
+/*	
+write(*, _c);	
+*/	
 		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 1)', _c);
       	if(size(_data) == 0)
       	{
@@ -150,12 +161,19 @@ write(*, _c);
 	    		abort();
     		}
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c;
+/*
+write(*, "Write");
+*/
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
+
 		if(! _status)
 		{
 			DevLogErr(_nid, 'Error writing modes in pulse file');
 
 		}
+/*		
+write(*, "Read");
+*/
 		_data = MdsValue( 'Feedback->getRfxMode:dsc($1, 0)', _c);
       	if(size(_data) == 0)
       	{
@@ -163,25 +181,32 @@ write(*, _c);
 	    		abort();
     		}
 		_sig_nid =  DevHead(_nid) + _N_MODES_1  + 2 * _c + 1;
+/*		
+write(*, "Write");
+*/		
 		_status = DevPutSignal(_sig_nid, 0, 1., _data, 0, _n_samples, _dim);
 		if(! _status)
 		{
 			DevLogErr(_nid, 'Error writing mods in pulse file:'//getmsg(_status));
 		}
 	}
-
-
-	_num_user_signals = MdsValue('Feedback->getNumUserSignals()');
+/*
+write(*, "Fine modes");
+*/
+	 _num_user_signals = MdsValue('Feedback->getNumUserSignals()');
       if(size(_num_user_signals) == 0)
       {
 	    	DevLogErr(_nid, 'Cannot communicate to VME');
 	    	abort();
     	}
 	write(*, 'Num User Signals: ', _num_user_signals);
-	if(_c > 256) _c = 256;
+	if( _num_user_signals > 256 ) _num_user_signals = 256;
+	
 	for(_c = 0; _c < _num_user_signals; _c++)
 	{
+/*
 write(*, _c);
+*/
 			_sig_nid =  DevHead(_nid) + _N_USER_1  + _c;
 			_data = MdsValue('Feedback->getUserSignal:dsc($1)', _c);
       		if(size(_data) == 0)

@@ -2,13 +2,13 @@ public fun pulseCheck_PMAT()
 {
    _units = \RFX::PM_SETUP:UNITS;
    
-   _lidx = scan(_units, 'A', $TRUE);
-   if(_lidx < 0)
+   if( LEN(TRIM(_units)) == 0)
    {
       _num_units = 0;
    }
    else
    {
+	  _lidx = scan(_units, 'A', 1);
       _num_units =   _lidx / 3 + 1;
    }
    
@@ -22,10 +22,6 @@ public fun pulseCheck_PMAT()
    {
  	   return (1);
    }
-
    return(0);
-
+  
 }
-
-
-

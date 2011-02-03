@@ -1,7 +1,7 @@
 public fun OAM01__add(in _path, out _nidout) {
 
 
-    DevAddStart(_path, 'OAM01', 54, _nidout);
+    DevAddStart(_path, 'OAM01', 56, _nidout);
 
     DevAddNode(_path // ':GPIB_ADDR', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':MODULE_TYPE', 'TEXT', *, *, _nid);
@@ -69,7 +69,10 @@ public fun OAM01__add(in _path, out _nidout) {
     DevAddNode(_cn // ':COUPLING', 'TEXT', *, *, _nid);
     DevAddNode(_cn // ':SOURCE', 'TEXT', *, *, _nid);
     DevAddNode(_cn // ':INPUT', 'SIGNAL', *, '/compress_on_put/nomodel_write', _nid);
-    DevAddNode(_cn // ':OUTPUT', 'NUMERIC', *, *, _nid);  
+    DevAddNode(_cn // ':OUTPUT', 'NUMERIC', *, *, _nid);
+
+    DevAddNode(_path // ':SW_MODE', 'TEXT', 'REMOTE', *, _nid);
+    DevAddNode(_path // ':IP_ADDR', 'TEXT', '150.178.34.97', *, _nid);  
 
 
 
