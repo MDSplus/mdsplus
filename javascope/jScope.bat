@@ -1,1 +1,1 @@
-javaw -cp "%MDSPLUSDIR%\Java\Classes\jScope.jar";"%MDSPLUS_DIR%\Java\Classes" -Xmx128M  jScope
+javaw -cp "%MDSPLUSDIR%\Java\Classes\jScope.jar";"%MDSPLUSDIR%\Java\Classes" -Xmx128M  jScope
