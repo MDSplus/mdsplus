@@ -303,7 +303,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data) {
   struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
   thisEvent->data_len=data_len;
   thisEvent->next=0;
-  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0,
+  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0;
   LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
   for (q=qh->event;q && q->next; q=q->next);
   if (q)
@@ -375,6 +375,7 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
       }
     }
   } else {
+   UnlockMdsShrMutex(&eqMutex);
    status=2;
   }
   return status;
@@ -2093,7 +2094,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data) {
   struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
   thisEvent->data_len=data_len;
   thisEvent->next=0;
-  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0,
+  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0;
   LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
   for (q=qh->event;q && q->next; q=q->next);
   if (q)
@@ -2176,6 +2177,7 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
       }
     }
   } else {
+   UnlockMdsShrMutex(&eqMutex);
    status = 2;
   }
   return status;
