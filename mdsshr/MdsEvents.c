@@ -374,6 +374,8 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
 	status=0;
       }
     }
+  } else {
+   status=2;
   }
   return status;
 }
@@ -2173,6 +2175,8 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
 	status=0;
       }
     }
+  } else {
+   status = 2;
   }
   return status;
 }
