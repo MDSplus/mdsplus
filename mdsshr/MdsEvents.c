@@ -291,6 +291,7 @@ static void CancelEventQueue(int eventid) {
       }
       free(this);
     }
+    SetEvent(qh->wakeup);
     CloseHandle(qh->wakeup);
     free(qh);
   }
@@ -2081,6 +2082,9 @@ static void CancelEventQueue(int eventid) {
       }
       free(this);
     }
+    pthread_mutex_lock(&qh->mutex);
+    pthread_cond_signal(&qh->cond);
+    pthread_mutex_unlock(&qh->mutex);
     pthread_cond_destroy(&qh->cond);
     pthread_mutex_destroy(&qh->mutex);
     free(qh);
