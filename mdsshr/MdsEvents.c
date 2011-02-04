@@ -255,6 +255,129 @@ int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeou
   return (status==WAIT_TIMEOUT)?0:1;
 }
 
+
+struct eventQueue {
+  int data_len;
+  char *data;
+  struct eventQueue *next;
+};
+
+struct eventQueueHeader {
+  int eventid;
+  HANDLE wakeup;
+  struct eventQueue *event;
+  struct eventQueueHeader *next;
+} *QueuedEvents=0;
+
+STATIC_THREADSAFE pthread_mutex_t eqMutex;
+STATIC_THREADSAFE int            eqMutex_initialized = 0;
+
+static void CancelEventQueue(int eventid) {
+  struct eventQueueHeader *qh,*qh_p;
+  struct eventQueue *q;
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (qh=QueuedEvents,qh_p=0;qh && qh->eventid != eventid; qh_p=qh,qh=qh->next);
+  if (qh) {
+    if (qh_p) {
+      qh_p->next = qh->next;
+    } else {
+      QueuedEvents=qh->next;
+    }
+    for (q=qh->event; q;) {
+      struct eventQueue *this=q;
+      q=q->next;
+      if (this->data_len > 0 && this->data) {
+	free(this->data);
+      }
+      free(this);
+    }
+    CloseHandle(qh->wakeup);
+    free(qh);
+  }
+  UnlockMdsShrMutex(&eqMutex);
+}
+    
+static void MDSEventQueue_ast(void *qh_in, int data_len, char *data) {
+  struct eventQueueHeader *qh=(struct eventQueueHeader *)qh_in;
+  struct eventQueue *q;
+  struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
+  thisEvent->data_len=data_len;
+  thisEvent->next=0;
+  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0,
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (q=qh->event;q && q->next; q=q->next);
+  if (q)
+    q->next=thisEvent;
+  else
+    qh->event=thisEvent;
+  SetEvent(qh->wakeup);
+  UnlockMdsShrMutex(&eqMutex);
+}
+
+int MDSQueueEvent(char *evname,int *eventid) {
+  int status;
+  struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  status = MDSEventAst(evname,MDSEventQueue_ast,(void *)thisEventH,eventid);
+  if (status & 1) {
+    struct eventQueueHeader *qh;
+    thisEventH->eventid=*eventid;
+    thisEventH->event=0;
+    thisEventH->next=0;
+    thisEventH->wakeup = CreateEvent(NULL, TRUE, FALSE, NULL);
+    for (qh=QueuedEvents;qh && qh->next; qh=qh->next);
+    if (qh) {
+      qh->next=thisEventH;
+    } else {
+      QueuedEvents=thisEventH;
+    }
+  }
+  else {
+    free(thisEventH);
+  }
+  UnlockMdsShrMutex(&eqMutex);
+  return status;
+}
+
+int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
+  struct eventQueueHeader *qh;
+  int waited=0;
+  int status;
+ retry:
+  status=1;
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (qh=QueuedEvents;qh && qh->eventid != eventid; qh=qh->next);
+  if (qh) {
+    if (qh->event) {
+      struct eventQueue *this=qh->event;
+      *data=this->data;
+      *data_len=this->data_len;
+      qh->event=this->next;
+      free(this);
+      UnlockMdsShrMutex(&eqMutex);
+    } else {
+      UnlockMdsShrMutex(&eqMutex);
+      if (waited == 0 && timeout >= 0) {
+	status=WaitForSingleObject(qh->wakeup,(timeout > 0) ? timeout*1000 : INFINITE);
+	if (status == WAIT_TIMEOUT) {
+	  *data_len=0;
+	  *data=0;
+	  status=0;
+	} else {
+	  if (status==0) ResetEvent(qh->wakeup);
+	  waited=1;
+	  goto retry;
+	}
+      } else {
+	*data_len=0;
+	*data=0;
+	status=0;
+      }
+    }
+  }
+  return status;
+}
+
 int old_MDSEvent(char *evname_in, int data_len, char *data)
 {
   int use_local;
@@ -1919,6 +2042,141 @@ int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeou
     return(status==0);
 }
 
+struct eventQueue {
+  int data_len;
+  char *data;
+  struct eventQueue *next;
+};
+
+struct eventQueueHeader {
+  int eventid;
+  pthread_mutex_t  mutex;
+  pthread_cond_t cond;
+  struct eventQueue *event;
+  struct eventQueueHeader *next;
+} *QueuedEvents=0;
+
+STATIC_THREADSAFE pthread_mutex_t eqMutex;
+STATIC_THREADSAFE int            eqMutex_initialized = 0;
+
+static void CancelEventQueue(int eventid) {
+  struct eventQueueHeader *qh,*qh_p;
+  struct eventQueue *q;
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (qh=QueuedEvents,qh_p=0;qh && qh->eventid != eventid; qh_p=qh,qh=qh->next);
+  if (qh) {
+    if (qh_p) {
+      qh_p->next = qh->next;
+    } else {
+      QueuedEvents=qh->next;
+    }
+    for (q=qh->event; q;) {
+      struct eventQueue *this=q;
+      q=q->next;
+      if (this->data_len > 0 && this->data) {
+	free(this->data);
+      }
+      free(this);
+    }
+    pthread_cond_destroy(&qh->cond);
+    pthread_mutex_destroy(&qh->mutex);
+    free(qh);
+  }
+  UnlockMdsShrMutex(&eqMutex);
+}
+    
+static void MDSEventQueue_ast(void *qh_in, int data_len, char *data) {
+  struct eventQueueHeader *qh=(struct eventQueueHeader *)qh_in;
+  struct eventQueue *q;
+  struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
+  thisEvent->data_len=data_len;
+  thisEvent->next=0;
+  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0,
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (q=qh->event;q && q->next; q=q->next);
+  if (q)
+    q->next=thisEvent;
+  else
+    qh->event=thisEvent;
+  pthread_mutex_lock(&qh->mutex);
+  pthread_cond_signal(&qh->cond);
+  pthread_mutex_unlock(&qh->mutex);
+  UnlockMdsShrMutex(&eqMutex);
+}
+
+int MDSQueueEvent(char *evname,int *eventid) {
+  int status;
+  struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  status = MDSEventAst(evname,MDSEventQueue_ast,(void *)thisEventH,eventid);
+  if (status & 1) {
+    struct eventQueueHeader *qh;
+    thisEventH->eventid=*eventid;
+    thisEventH->event=0;
+    thisEventH->next=0;
+    pthread_mutex_init(&thisEventH->mutex,pthread_mutexattr_default);
+    pthread_cond_init(&thisEventH->cond,pthread_condattr_default);
+    for (qh=QueuedEvents;qh && qh->next; qh=qh->next);
+    if (qh) {
+      qh->next=thisEventH;
+    } else {
+      QueuedEvents=thisEventH;
+    }
+  }
+  else {
+    free(thisEventH);
+  }
+  UnlockMdsShrMutex(&eqMutex);
+  return status;
+}
+
+int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
+  struct eventQueueHeader *qh;
+  int waited=0;
+  int status=1;
+ retry:
+  LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
+  for (qh=QueuedEvents;qh && qh->eventid != eventid; qh=qh->next);
+  if (qh) {
+    if (qh->event) {
+      struct eventQueue *this=qh->event;
+      *data=this->data;
+      *data_len=this->data_len;
+      qh->event=this->next;
+      free(this);
+      UnlockMdsShrMutex(&eqMutex);
+    } else {
+      UnlockMdsShrMutex(&eqMutex);
+      if (waited == 0 && timeout >= 0) {
+	pthread_mutex_lock(&qh->mutex);
+	if (timeout>0) {
+	  static struct timespec abstime;
+	  clock_gettime(CLOCK_REALTIME,&abstime);
+	  abstime.tv_sec+=timeout;
+	  status=pthread_cond_timedwait(&qh->cond,&qh->mutex,&abstime);
+	} else {
+	  status=pthread_cond_wait(&qh->cond,&qh->mutex);
+	}
+	pthread_mutex_unlock(&qh->mutex);
+	if (status != 0) {
+	  *data_len=0;
+	  *data=0;
+	  status=0;
+	} else {
+	  status=1;
+	  waited=1;
+	  goto retry;
+	}
+      } else {
+	*data_len=0;
+	*data=0;
+	status=0;
+      }
+    }
+  }
+  return status;
+}
+
 int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
   int status = 1;
@@ -2370,7 +2628,8 @@ void RemoveMessages()
 
 int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
   char *eventName=malloc(strlen(eventNameIn)+1);
-  int i,j,status;
+  unsigned int i,j;
+  int status;
   for (i=0,j=0;i<strlen(eventNameIn);i++) 
   {
     if (eventNameIn[i] != 32)
@@ -2387,7 +2646,8 @@ int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astp
 
 int MDSEvent(char *eventNameIn, int bufLen, char *buf) {
   char *eventName=malloc(strlen(eventNameIn)+1);
-  int i,j,status;
+  unsigned int i,j;
+  int status;
   for (i=0,j=0;i<strlen(eventNameIn);i++) 
   {
     if (eventNameIn[i] != 32)
@@ -2402,10 +2662,13 @@ int MDSEvent(char *eventNameIn, int bufLen, char *buf) {
 }
 
 int MDSEventCan(int id) {
+  int status;
   if (getenv("mds_event_server") || (getenv("UDP_EVENTS")==0))
-    return old_MDSEventCan(id);
+    status = old_MDSEventCan(id);
   else
-    return MDSUdpEventCan(id);
+    status = MDSUdpEventCan(id);
+  CancelEventQueue(id);
+  return status;
 }
 
 
