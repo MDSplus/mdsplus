@@ -176,7 +176,7 @@ static int releaseEventInfo(void *ptr)
 	int i,status=0;
 	LockMdsShrMutex(&eventIdMutex,&eventIdMutex_initialized);
 
-	for(i = 0; i < eventTopIdx-1; i++)
+	for(i = 0; i < eventTopIdx; i++)
 	{
 		if(eventInfos[i] == ptr)
 		{
