@@ -97,7 +97,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 	_command = 'W5836(80)\n' ;
 	if (_remote)
 	{
-		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 	}
 	else
 	{
@@ -122,7 +122,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 		_command = 'W5834(0' // Trim ( AdjustL ( ( 1 + _channel ) ) ) // ')' // '\n' ;
 		if (_remote)
 		{
-			_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+			_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 		}
 		else
 		{
@@ -142,7 +142,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 		_command = "W5836(C501)\n" ;
 		if (_remote)
 		{
-			_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+			_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 		}
 		else
 		{
@@ -163,7 +163,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
  	_command = 'W5834(00)\n' ;
 	if (_remote)
 	{
-		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 	}
 	else
 	{
@@ -183,7 +183,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 	_command = 'W5836(00)\n' ;
 	if (_remote)
 	{
-		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 	}
 	else
 	{
@@ -199,7 +199,7 @@ public fun OAM01__calib ( as_is _nid, optional _method )
 
 	if ( _remote )
 	{
-		_status = MdsValue('GPIBClean(val($1))', _gpib_id);
+		_status = MdsValue('GPIBClean($1)', _gpib_id);
 
 	    	MdsDisconnect();
 	}

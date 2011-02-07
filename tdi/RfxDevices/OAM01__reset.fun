@@ -98,7 +98,7 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 	_command = 'W5836(80)\n' ;
 	if (_remote)
 	{
-		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 	}
 	else
 	{
@@ -122,7 +122,7 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 	_command = 'J0000\n' ;
 	if (_remote)
 	{
-		_status = MdsValue('GPIBWrite(val($1), $2)', _gpib_id, _command);
+		_status = MdsValue('GPIBWrite($1, $2)', _gpib_id, _command);
 	}
 	else
 	{
@@ -141,7 +141,7 @@ public fun OAM01__reset ( as_is _nid, optional _method )
 
 	if (_remote)
 	{
-		_status = MdsValue('GPIBClrId(val($1))', _gpib_id);
+		_status = MdsValue('GPIBClrId($1)', _gpib_id);
 	}
 	else
 	{
