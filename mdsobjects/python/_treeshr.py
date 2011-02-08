@@ -531,7 +531,7 @@ def TreeCloseAll(ctx):
 
 def TreeSetVersionDate(date):
     from _mdsshr import DateToQuad
-    status = __TreeSetViewDate(_C.c_ulonglong(DateToQuad(date)))
+    status = __TreeSetViewDate(DateToQuad(date))
     if not (status & 1):
         raise TreeException,MdsGetMsg(status)
 
