@@ -289,7 +289,7 @@ class descriptor(_C.Structure):
                 return dsc.contents.value
             except:
                 return None
-        
+
         if ((self.dtype == DTYPE_DSC) & (self.dclass != CLASS_APD)):
             try:
                 return self.pointer.contents.value
@@ -466,7 +466,10 @@ class descriptor_xd(_C.Structure):
         return str(_C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents)+" l_length="+str(self.l_length)
 
     def _getValue(self):
-        return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
+	if self.l_length==0:
+	  return None
+        else:
+          return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
 
     value=property(_getValue)
 
