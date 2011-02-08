@@ -94,8 +94,8 @@ try:
     def _event_run(self):
         while True:
             try:
-                self.exception=None
                 self.raw=self.getQueue(self.eventid,self.timeout)
+                self.exception=None
             except MdsInvalidEvent:
                 return
             except Exception,e:

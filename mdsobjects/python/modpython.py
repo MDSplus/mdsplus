@@ -131,7 +131,7 @@ def handler(req):
       req.write("</event>")
       return apache.OK
   else:
-      if 'timed out' in str(e.exception):
+      if 'Timeout' in str(e.exception):
           req.content_type="text/plain"
           return apache.HTTP_NO_CONTENT
       else:
