@@ -796,10 +796,12 @@ static void makeNoEdit(Widget w){
   WidgetList children;
   Cardinal count=0;
   Cardinal i;
-  XtVaGetValues(w,XmNchildren,&children,XmNnumChildren,&count,NULL);
-  XtVaSetValues(w,XmNeditable,False,NULL);
-  for (i=0;i<count;i++)
-    makeNoEdit(children[i]);
+  if (strcmp(XtClass(w)->core_class.class_name,"XmScrollBar")) {
+    XtVaGetValues(w,XmNchildren,&children,XmNnumChildren,&count,NULL);
+    XtVaSetValues(w,XmNeditable,False,NULL);
+    for (i=0;i<count;i++)
+      makeNoEdit(children[i]);
+  }
 }
 
 static void display_data(Widget w, int nid, int count)
