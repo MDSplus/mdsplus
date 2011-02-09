@@ -12,7 +12,7 @@ class DIO4(Device):
       {'path':':REC_TIMES', 'type':'numeric'},
       {'path':':SYNCH', 'type':'text', 'value':'NO'},
       {'path':':SYNCH_EVENT', 'type':'text'}]
-    print 'CACCACCCA'	
+    print 'DIO4'	
     for i in range(8):
       parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
       parts.append({'path':'.CHANNEL_%d:FUNCTION'%(i+1), 'type':'text', 'value':'CLOCK'})

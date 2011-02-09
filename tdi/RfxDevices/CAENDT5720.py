@@ -94,7 +94,7 @@ class CAENDT5720(Device):
       cvD32 = 0x04		    # D32
       cvD64 = 0x08
        
-      def configure(self, handle, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter):
+      def configure(self, handle, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):
         self.handle = handle
         self.startIdx = startIdx
         self.endIdx = endIdx
@@ -111,6 +111,7 @@ class CAENDT5720(Device):
         self.cv = cv
         self.readCv = readCv
         self.useCounter = useCounter
+        self.irqEvents = irqEvents
 
       def run(self):
         global caenLib
@@ -126,8 +127,6 @@ class CAENDT5720(Device):
         channels = [] 
         for chan in range(0,4):
           channels.append([])
-        for chan in range(0,4):
-          channels[chan] = ndarray(currChanSamples)
 
         segmentCounter = 0
         while not self.stopReq:
@@ -146,6 +145,8 @@ class CAENDT5720(Device):
             Data.execute('DevLogErr($1,$2)', self.nid, 'Error reading number of acquired segments' )
             return 0
           actSegments = actSegments.value
+          for chan in range(0,4):
+            channels[chan] = ndarray(currChanSamples * actSegments)
           for segmentIdx in range(0,actSegments):
             segment= DT5720Data()
             retLen = c_int(0)
@@ -162,22 +163,27 @@ class CAENDT5720(Device):
             chanSizeInShorts = chanSizeInInts * 2
             startTime = self.trigTime + (counter + self.startIdx) * self.dt
             endTime = startTime + currChanSamples * self.dt
-            if self.useCounter:
-              dim = Range(Float64(self.trigTime + (counter + self.startIdx) * self.dt), Float64(self.trigTime + (counter + self.endIdx) * self.dt), Float64(self.dt))
-            else:
-              dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + 1) * currChanSamples - 1), Float64(1.))
             for chan in range(0,4):
               if (self.chanMask & (1 << chan)) != 0:
-                channels[chan][0 : currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
-                data = Int16Array(channels[chan])
-#                try:
-#                  getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+1) * currChanSamples), dim, data)
-#                except:
-#                  Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')		  
-#                  return 0
-            segmentCounter = segmentCounter + 1
+                channels[chan][segmentIdx*currChanSamples : segmentIdx*currChanSamples + currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
             #endfor  chan in range(0,4)
           #endfor segmentIdx in range(0,actSegments):
+##############################################
+          if actSegments > 0:
+            dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + actSegments) * currChanSamples - 1), Float64(1.))
+#            print 'DIM: ', dim
+            for chan in range(0,4):
+              if (self.chanMask & (1 << chan)) != 0:
+                data = Int16Array(channels[chan])
+                try:
+                  getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+actSegments) * currChanSamples), dim, data)
+                except:
+                  Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')		  
+                  return 0
+            #endif actSegments > 0
+          #endfor chan in range(0:4) 
+          segmentCounter = segmentCounter + actSegments
+###################################################
           if(self.stopReq):
             print 'ASYNCH STORE EXITED!!!!'
             return 0
@@ -348,7 +354,7 @@ class CAENDT5720(Device):
       self.worker = self.AsynchStore()        
       self.worker.daemon = True 
       self.worker.stopReq = False
-      self.worker.configure(self.handle, startIdx, endIdx, pts, chanMask, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter)
+      self.worker.configure(self.handle, startIdx, endIdx, pts, chanMask, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, self.getNid(), self, self.cv, self.readCv, useCounter, self.irq_events.data() + 1)
       self.worker.start()
       return 1
 
@@ -516,21 +522,21 @@ class CAENDT5720(Device):
           startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + startTime), clockSource), trigSource)
         self.start_idx.putData(Int32(startIdx + 0.5))
 #Internal/External clock
-      print 'startIdx: ', startIdx
-      print 'endIdx: ', endIdx
-      print 'SEGMENT SIZE: ', segmentSize, pts
-      print 'PTS: ', pts
+#      print 'startIdx: ', startIdx
+#      print 'endIdx: ', endIdx
+#      print 'SEGMENT SIZE: ', segmentSize, pts
+#      print 'PTS: ', pts
       currStartIdx = segmentSize - pts + startIdx.data()
-      print 'currStartIdx: ', currStartIdx
+#      print 'currStartIdx: ', currStartIdx
       if currStartIdx < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/pre-trigger samples')
           return 0
 
       currEndIdx = segmentSize - pts + endIdx.data()
-      print 'segmentSize: ', segmentSize
-      print 'PTS: ', pts
-      print 'endIdx: ', endIdx
-      print 'currEndIdx: ', currEndIdx
+#      print 'segmentSize: ', segmentSize
+#      print 'PTS: ', pts
+#      print 'endIdx: ', endIdx
+#      print 'currEndIdx: ', currEndIdx
       if currEndIdx >= segmentSize:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
           return 0
