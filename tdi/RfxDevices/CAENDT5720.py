@@ -165,16 +165,16 @@ class CAENDT5720(Device):
             if self.useCounter:
               dim = Range(Float64(self.trigTime + (counter + self.startIdx) * self.dt), Float64(self.trigTime + (counter + self.endIdx) * self.dt), Float64(self.dt))
             else:
-              dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + 1) * currChanSamples), Float64(1.))
+              dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + 1) * currChanSamples - 1), Float64(1.))
             for chan in range(0,4):
               if (self.chanMask & (1 << chan)) != 0:
                 channels[chan][0 : currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
                 data = Int16Array(channels[chan])
-                try:
-                  getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+1) * currChanSamples), dim, data)
-                except:
-                  Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')		  
-                  return 0
+#                try:
+#                  getattr(self.device, 'channel_%d_seg_raw'%(chan+1)).makeSegment(Float64(segmentCounter * currChanSamples), Float64((segmentCounter+1) * currChanSamples), dim, data)
+#                except:
+#                  Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')		  
+#                  return 0
             segmentCounter = segmentCounter + 1
             #endfor  chan in range(0,4)
           #endfor segmentIdx in range(0,actSegments):
@@ -333,7 +333,7 @@ class CAENDT5720(Device):
           else:
             useCounter = False
             startTime = startIdx * dt
-            endTime = (endIdx+1) * dt
+            endTime = (endIdx-1) * dt
             segRawPath = TreePath(getattr(self, 'channel_%d_seg_raw'%(chan+1)).getFullPath())
             trigPath = TreePath(self.trig_source.getFullPath())
             data = Data.compile("BUILD_SIGNAL(2*($VALUE - 2048)/4096.+$1, DATA($2), MAKE_RANGE($3+$4, $3+$5, REPLICATE($6,0,SIZE($3))))", Float32(offset), segRawPath, trigPath, Float64(startTime), Float64(endTime), Float64(dt))
@@ -506,25 +506,31 @@ class CAENDT5720(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')
           return 0
         if endTime > 0:
-          endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), endTime + trigSource)
+          endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, segmentSize, trigSource), clockSource), Float64(endTime + trigSource))
         else:
-          endIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + endTime), clockSource), trigSource)
-        self.end_idx.putData(Int32(endIdx))
+          endIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + endTime), clockSource), Float64(trigSource))
+        self.end_idx.putData(Int32(endIdx + 0.5))
         if startTime > 0:
-          startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), startTime + trigSource)
+          startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, segmentSize, trigSource), clockSource), startTime + trigSource)
         else:
-          startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + startTime), clockSource), trigSource)
-        self.start_idx.putData(Int32(startIdx))
+          startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + startTime), clockSource), trigSource)
+        self.start_idx.putData(Int32(startIdx + 0.5))
 #Internal/External clock
+      print 'startIdx: ', startIdx
+      print 'endIdx: ', endIdx
       print 'SEGMENT SIZE: ', segmentSize, pts
-      currStartIdx = segmentSize - pts + startIdx
-      print currStartIdx
+      print 'PTS: ', pts
+      currStartIdx = segmentSize - pts + startIdx.data()
+      print 'currStartIdx: ', currStartIdx
       if currStartIdx < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/pre-trigger samples')
           return 0
 
-      currEndIdx = segmentSize - pts + endIdx
-      print currEndIdx, segmentSize
+      currEndIdx = segmentSize - pts + endIdx.data()
+      print 'segmentSize: ', segmentSize
+      print 'PTS: ', pts
+      print 'endIdx: ', endIdx
+      print 'currEndIdx: ', currEndIdx
       if currEndIdx >= segmentSize:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
           return 0
@@ -662,7 +668,7 @@ class CAENDT5720(Device):
     
       actSegments = actSegments.value
       
-      currChanSamples = currEndIdx - currStartIdx
+      currChanSamples = Int32(currEndIdx - currStartIdx + 0.5).data()
       triggers = []
       deltas = []
       channels = [] 
