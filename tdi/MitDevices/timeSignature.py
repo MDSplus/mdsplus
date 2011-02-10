@@ -126,7 +126,7 @@ def timeSignature(parent) :
     last_idx = len(y)-1
     dt = (times[-1]-times[0]) / (idxs[-1] - idxs[0])
     time_of_zero = times[0] - dt*idxs[0]
-    return Dimension(Window(0, last_idx, time_of_zero), Range( None, None, dt))
+    return (Dimension(Window(0, last_idx, time_of_zero), Range( None, None, dt)), Signal(idxs, None, times))
     
 
 
