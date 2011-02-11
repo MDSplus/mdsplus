@@ -382,6 +382,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	currInfo->astadr = astadr;
 
 	pthread_create(&currInfo->thread, 0, handleMessage, (void *)currInfo);
+        pthread_detach(currInfo->thread);
 	*eventid = getEventId((void *)currInfo);
 	return 1;
 }
