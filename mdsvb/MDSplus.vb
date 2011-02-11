@@ -254,9 +254,31 @@ Public Class MDSplus
         Dim nbytes As Short = 4
         Dim ndims As Byte = 3
         Dim i As Integer
-        dims(0) = value.GetUpperBound(0)
-        dims(1) = value.GetUpperBound(1)
-        dims(2) = value.GetUpperBound(2)
+        dims(0) = value.GetUpperBound(0) + 1
+        dims(1) = value.GetUpperBound(1) + 1
+        dims(2) = value.GetUpperBound(2) + 1
+        Dim flattened(value.Length) As Int32
+        For Each val In value
+            flattened(i) = val
+            i = i + 1
+        Next
+        Marshal.Copy(flattened, 0, ptr, flattened.Length)
+        status = mdsipshr.SendArg(socket, idx, dtype, numargs, nbytes, ndims, dims, ptr)
+        Marshal.FreeHGlobal(ptr)
+        Return status
+    End Function
+
+    Private Function SendArg(ByVal idx As Byte, ByVal numargs As Byte, ByVal value As Int32(,)) As Int32
+        Dim status As Int32
+        Dim val As Int32
+        Dim dims(7) As Int32
+        Dim dtype As Byte = 8
+        Dim ptr As IntPtr = Marshal.AllocHGlobal(value.Length * 4)
+        Dim nbytes As Short = 4
+        Dim ndims As Byte = 2
+        Dim i As Integer
+        dims(0) = value.GetUpperBound(0) + 1
+        dims(1) = value.GetUpperBound(1) + 1
         Dim flattened(value.Length) As Int32
         For Each val In value
             flattened(i) = val
@@ -345,6 +367,9 @@ Public Class MDSplus
                 status = SendArg(idx, numargs, val)
             Case "Integer()"
                 Dim val As Int32() = value
+                status = SendArg(idx, numargs, val)
+            Case "Integer(,)"
+                Dim val(,) As Int32 = value
                 status = SendArg(idx, numargs, val)
             Case "Integer(,,)"
                 Dim val(,,) As Int32 = value
@@ -729,6 +754,10 @@ Public Class MDSplus
         Dim status As Int32
         Dim temp As Int32 = MdsValue("wfevent(""" + EventName + """),1", status)
     End Sub
+    Public Sub MdsWfeventWData(ByVal EventName As String, ByVal ans As Byte())
+        Dim status As Int32
+        ans = MdsValue("wfevent(""" + EventName + """,$)", ans.Length(), status)
+     End Sub
 
     Public Sub MdsSetevent(ByVal EventName As String)
         Dim status As Int32
