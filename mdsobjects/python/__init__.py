@@ -26,3 +26,4 @@ from connection import Connection
 from event import Event
 from _tdishr import TdiException
 from scope import Scope
+from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
