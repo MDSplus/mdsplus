@@ -58,7 +58,7 @@ lastTime=time.time()
 def handler(req,e):
     if e.exception is None:
         req.content_type="text/xml"
-        data=e.getRaw()
+        data=e.getRaw().data()
         shot=int(data[range(4,8)].view(numpy.uint32).item())
         toState=states[int(data[1])]
         fromState=states[int(data[0])]
