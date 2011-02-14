@@ -11,8 +11,8 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("VB Interface to MDSplus Data System")> 
 <Assembly: AssemblyCompany("MIT - Plasma Science and Fusion Center")> 
 <Assembly: AssemblyProduct("MDSPLUS")> 
-<Assembly: AssemblyCopyright("")> 
-<Assembly: AssemblyTrademark("")> 
+<Assembly: AssemblyCopyright("1991-2011")> 
+<Assembly: AssemblyTrademark("MDSplus")> 
 <Assembly: CLSCompliant(True)> 
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
