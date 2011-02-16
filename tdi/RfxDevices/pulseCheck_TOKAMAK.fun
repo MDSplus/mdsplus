@@ -8,6 +8,7 @@ public fun pulseCheck_TOKAMAK()
 		{
 			_error = 1;
 			write(*, "Errore nella configurazione TOKAMAK il trigger INSRT_PTCB_2 deve essere OFF" );
+
 		}
 		if( getnci( build_path("\\RFX::T_INSRT_PTCB_3"), "STATE" ) == 0 )
 		{
@@ -81,7 +82,6 @@ public fun pulseCheck_TOKAMAK()
 			_error = 1;
 			write(*, "Errore nella configurazione TOKAMAK il task PT deve essere INACTIVE" );
 		}
-		
 		
 	}
 	
