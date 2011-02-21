@@ -29,6 +29,8 @@ public fun EM_FLU_TEST__init_new(as_is _nid, optional _method)
 			DevLogErr(_nid, "Missing poloidal Decoder 1 path reference"); 
 			abort();
 		};
+		_status = tcl("do/method \\"//_pol_dec_1//" reset");
+
 	
 		_pol_dec_2 = if_error(data(DevNodeRef(_nid, _N_POL_DECODER_2)), "");;
 		if(_pol_dec_2 == "")
@@ -36,6 +38,8 @@ public fun EM_FLU_TEST__init_new(as_is _nid, optional _method)
 			DevLogErr(_nid, "Missing poloidal Decoder 2 path reference"); 
 			abort();
 		};
+		_status = tcl("do/method \\"//_pol_dec_2//" reset");
+
 	}
 	
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
@@ -47,26 +51,27 @@ public fun EM_FLU_TEST__init_new(as_is _nid, optional _method)
 			abort();
 		};
 		_status = tcl("do/method \\"//_tor_dec_1//" reset");
-
-	
+/*	
 		_tor_dec_2 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_2)), "");;
 		if(_tor_dec_2 != "")
 		{
 			DevLogErr(_nid, "Toroidal Decoder 2 path reference must be undefined"); 
 			abort();
 		};
+*/
 	}	
+
+
+	write(*,"do/method \\"//_pol_dec_1//" init"); 
+	_status = tcl("do/method \\"//_pol_dec_1//" init");
+	write(*,"do/method \\"//_pol_dec_2//" init"); 
+	_status = tcl("do/method \\"//_pol_dec_2//" init");
+
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
 
 write(*, "POLOIDAL init");
-
-
-		_status = tcl("do/method \\POL_AUTOZERO init");
-		_status = tcl("do/method \\POL_TRIG init");
-		_status = tcl("do/method \\POL_CLOCK init");
-		_status = tcl("do/method \\POL_TEST_SIG init");
 
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
@@ -102,10 +107,10 @@ write(*, "POLOIDAL init");
 	{
 
 write(*, "TOROIDAL init");
-
+/*
 		write(*,"do/method \\"//_tor_dec_1//" init"); 
 		_status = tcl("do/method \\"//_tor_dec_1//" init");
-
+*/
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
@@ -140,26 +145,33 @@ write(*, "TOROIDAL init");
 
 write(*, "POLOIDAL Decoder init");
 
-		write(*,"do/method \\"//_pol_dec_1//" init"); 
-		_status = tcl("do/method \\"//_pol_dec_1//" init");
-		write(*,"do/method \\"//_pol_dec_2//" init"); 
-		_status = tcl("do/method \\"//_pol_dec_2//" init");
+		write(*,"do/method \\"//_pol_dec_1//" trigger"); 
+		_status = tcl("do/method \\"//_pol_dec_1//" trigger");
+		write(*,"do/method \\"//_pol_dec_2//" trigger"); 
+		_status = tcl("do/method \\"//_pol_dec_2//" trigger");
 	}
 
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
 	{
-write(*, "POLOIDAL DIO_2 trigger");
+write(*, "TOROIDAL DIO_2 trigger");
 
 		write(*,"do/method \\"//_tor_dec_1//" trigger"); 
 		_status = tcl("do/method \\"//_tor_dec_1//" trigger");
+		
+
 	}
 
-
+/*
 	wait(maxval([\DFLU_TRAW::CPCI_1_STOP_ACQ, \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:STOP_ACQ - \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:START_ACQ]) + 2.0);
+*/
 
+write(*, "ATTESA 5 secondi");
+	wait(5.0);
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
+
+write(*, "POLOIDAL store");
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
@@ -174,6 +186,7 @@ write(*, "POLOIDAL DIO_2 trigger");
 				{
 					write(*,"do/method \\"//_adc//" store"); 
 					_status = tcl("do/method \\"//_adc//" store");
+					
 				}
 			}
 		}
@@ -182,6 +195,8 @@ write(*, "POLOIDAL DIO_2 trigger");
 
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
 	{
+
+write(*, "TOROIDAL store");
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
@@ -196,6 +211,7 @@ write(*, "POLOIDAL DIO_2 trigger");
 				{
 					write(*,"do/method \\"//_adc//" store"); 
 					_status = tcl("do/method \\"//_adc//" store");
+					
 				}
 			}
 		}
