@@ -939,13 +939,13 @@ struct descriptor_xd *AxisUnload(Widget w)
       struct descriptor_xd *inc = (struct descriptor_xd *)XmdsExprFieldGetXd(inc_w);
       data = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
       *data = empty_xd;
-      TdiCompile(&range,start,end,inc,data);
+      TdiCompile(&range,start,end,inc,data MDS_END_ARG);
     }
     if (units && units->l_length && (units->pointer->dtype != DTYPE_T || units->pointer->length))
     {
       ans = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
       *ans = empty_xd;
-      TdiCompile(&w_units,data,units,ans);
+      TdiCompile(&w_units,data,units,ans MDS_END_ARG);
       MdsFree1Dx(units, 0);
       MdsFree1Dx(data, 0);
       XtFree((char *)units);
