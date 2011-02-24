@@ -2337,9 +2337,10 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
     else
       open_status = 1;
     if (!(open_status & 1)) {
+      TreeUnLockNci(info_ptr,0,nidx);  
       return open_status;
     } 
-   if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
+    if (((local_nci.flags2 & NciM_EXTENDED_NCI) == 0) || 
 	((TreeGetExtendedAttributes(info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1)==0)) {
       status = TreeFAILURE;
     } else if (attributes.facility_offset[SEGMENTED_RECORD_FACILITY]==0 ||
