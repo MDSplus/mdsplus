@@ -2369,7 +2369,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
 	    status = GetCompressedSegmentRows(info_ptr, sinfo->data_offset, next_row);
           } else
 	    *next_row = sinfo->rows;
-          dims[segment_header.dimct-1]=*next_row;
+	  //          dims[segment_header.dimct-1]=*next_row;
 	}
       } else {
 	status = TreeFAILURE;
