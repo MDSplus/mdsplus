@@ -82,7 +82,8 @@ WE7000Setup.java\
 WE7116Setup.java\
 WE7275Setup.java\
 WEGroupSetup.java\
-XRAYSetup.java 
+XRAYSetup.java\
+LASER_SSSetup.java
 
 
 
