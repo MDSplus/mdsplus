@@ -34,6 +34,7 @@ L5613Setup.java\
 L6810Setup.java\
 LASER_NDSetup.java\
 LASER_RUSetup.java\
+MARTESetup.java\
 MCUSetup.java\
 MHD_BR_TESTSetup.java\
 MPBDecoderSetup.java\

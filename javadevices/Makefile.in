@@ -121,7 +121,8 @@ MCUSetup.java\
 SIS3820Setup.java\
 FEMTOSetup.java\
 CAENDT5720Setup.java\
-RFXVConfigSetup.java
+RFXVConfigSetup.java\
+MARTESetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
