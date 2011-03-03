@@ -29,6 +29,12 @@ Java-Bean: True
 Name: DeviceLabel.class
 Java-Bean: True
 
+Name: DeviceParameters.class
+Java-Bean: True
+
+Name: DeviceWaveParameters.class
+Java-Bean: True
+
 
 
 

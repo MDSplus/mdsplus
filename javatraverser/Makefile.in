@@ -56,6 +56,11 @@ DeviceWave.java\
 DeviceWaveDisplay.java\
 DeviceWaveDisplayCustomizer.java\
 DeviceWaveDisplayBeanInfo.java\
+DeviceMultiComponent.java\
+DeviceParameters.java\
+DeviceParametersBeanInfo.java\
+DeviceWaveParameters.java\
+DeviceWaveParametersBeanInfo.java\
 DimensionData.java\
 DispatchData.java\
 DispatchEditor.java\

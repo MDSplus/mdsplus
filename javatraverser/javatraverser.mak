@@ -88,8 +88,11 @@ DeviceOk.java\
 DeviceLabel.java\
 DeviceLabelBeanInfo.java\
 DeviceLabelCustomizer.java\
+DeviceMultiComponent.java\
 DeviceOk.java\
 DeviceOkBeanInfo.java\
+DeviceParameters.java\
+DeviceParametersBeanInfo.java\
 DeviceReset.java\
 DeviceResetBeanInfo.java\
 DeviceSetup.java\
@@ -99,10 +102,11 @@ DeviceTableBeanInfo.java\
 DeviceTableCustomizer.java\
 DeviceWave.java\
 DeviceWaveBeanInfo.java\
-DeviceWaveCustomizer.java\
 DeviceWaveDisplay.java\
 DeviceWaveDisplayBeanInfo.java\
 DeviceWaveDisplayCustomizer.java\
+DeviceWaveParameters.java\
+DeviceWaveParametersBeanInfo.java\
 DispatchEditor.java\
 DisplayData.java\
 DisplayNci.java\
