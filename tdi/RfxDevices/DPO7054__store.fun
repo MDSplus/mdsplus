@@ -232,8 +232,9 @@ public fun DPO7054__store(as_is _nid, optional _method)
 	}
 
 
-	_trig = data(DevNodeRef(_nid, _N_COMMON_TRIGGER_TRIG_SOURCE));
-	_clock = make_range(*,*,1./ _common_horiz_acq_sample_rate);
+	_trig = ft_float(data(DevNodeRef(_nid, _N_COMMON_TRIGGER_TRIG_SOURCE)));
+	write(*,'_trig: ', _trig);
+	_clock = make_range(*,*,ft_float(1./ _common_horiz_acq_sample_rate));
 
 
 	_window01_record_length = long(ceiling(ft_float(10.) * ft_float(_window01_horiz_acq_scale) * ft_float(_common_horiz_acq_sample_rate)));

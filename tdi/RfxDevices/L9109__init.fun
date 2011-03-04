@@ -44,7 +44,7 @@ public fun L9109__init(as_is _nid, optional _method)
 
 
 
-	private _DEBUG = 1;
+	private _DEBUG = 0;
 	
 	private _ON = 1;
 	
