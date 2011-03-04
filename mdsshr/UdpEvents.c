@@ -130,7 +130,7 @@ static void *handleMessage(void *arg)
 #endif
 #endif
     	{
-			printf("Error receiving UDP messages\n");
+			perror("Error receiving UDP messages\n");
 			continue;
         }
     	
@@ -233,9 +233,9 @@ static int getSocket()
   LockMdsShrMutex(&getSocketMutex,&getSocketMutex_initialized);
   if(!sendSocket)
     {
-      if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
+      if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 	{
-	  printf("Error creating socket\n");
+	  perror("Error creating socket\n");
 	  sendSocket = -1;
 	}
     }
@@ -295,9 +295,9 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 
 	initialize();
 
-	if((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
+	if((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 	{
-		printf("Error creating socket\n");
+		perror("Error creating socket\n");
 		return 0;
 	}
 	
@@ -345,7 +345,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 	if(bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
 #endif
 	{   
-		printf("Cannot bind socket\n");
+		perror("Cannot bind socket\n");
 		return 0;
 	}
 
@@ -354,7 +354,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
     ipMreq.imr_interface.s_addr = INADDR_ANY;
 	if(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0)
     {	
-  	   	printf("Error setting socket options IP_ADD_MEMBERSHIPin udpStartReceiver\n");
+  	   	perror("Error setting socket options IP_ADD_MEMBERSHIPin udpStartReceiver\n");
 #ifdef HAVE_WINDOWS_H
 		error = WSAGetLastError();
 		switch(error)
@@ -430,7 +430,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
       	if(((sin.sin_addr.s_addr = inet_addr(multiIp)) == ERROR) &&
 	     	((sin.sin_addr.s_addr = hostGetByName(multiIp)) == ERROR))  
 
-	    	printf("Unknown recipient name in IP address  initialization\n");
+	    	perror("Unknown recipient name in IP address  initialization\n");
 #else
 	memset((char *)&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
@@ -467,7 +467,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
     if(sendto(udpSocket, msg, msgLen, 0, 
 		(struct sockaddr *)&sin, sizeof(sin))==-1)
     {
-		printf("Error sending UDP message!\n");
+		perror("Error sending UDP message!\n");
 #ifdef HAVE_WINDOWS_H
 		error = WSAGetLastError();
 		switch(error)
