@@ -84,7 +84,9 @@ WE7116Setup.java\
 WE7275Setup.java\
 WEGroupSetup.java\
 XRAYSetup.java\
-LASER_SSSetup.java
+LASER_SSSetup.java\
+DPO7054Setup.java\
+L9109Setup.java
 
 
 
