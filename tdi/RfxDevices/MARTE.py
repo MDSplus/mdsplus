@@ -99,8 +99,17 @@ class MARTE(Device):
       eventStr = eventStr + " " + str(self.input_cal.getNid())
       eventStr = eventStr + " " + str(self.output_cal.getNid())
       print eventStr
-#      Event.setevent("MARTE", eventStr)
+      Event.setevent("MARTE", eventStr)
       return 1
+    def trigger(self, arg)
+      eventStr = "TRIGGER " + str(self.id.data())
+      Event.setevent("MARTE", eventStr)
+      return 1
+ 
     def store(self,arg):
+      eventStr = "STORE " + str(self.id.data())
+      eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
+      eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
+      eventStr = eventStr + " " + str(self.signals_user.getNid())
       return 1
       
