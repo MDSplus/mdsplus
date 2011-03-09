@@ -111,5 +111,6 @@ class MARTE(Device):
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
+      Event.setevent("MARTE", eventStr)
       return 1
       
