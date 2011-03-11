@@ -1,5 +1,20 @@
 #include <config.h>
 #include <STATICdef.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <libroutines.h>
+#include <mds_stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#ifdef MDSIP_CONNECTIONS
+#include "../mdstcpip/mdsip_connections.h"
+#else
+#include "../mdstcpip/mdsip.h"
+#endif
+#include "mdsshrthreadsafe.h"
 //extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 //extern int MDSUdpEvent(char *name, int bufLen, char *buf);      
 //extern int MDSUdpEventCan(int id);
@@ -20,6 +35,96 @@ int MDSSetEventTimeout(int seconds) {
   TIMEOUT=seconds;
   return old_timeout;
 }
+static DESCRIPTOR(library_d,"MdsIpShr");
+
+static int ConnectToMds_(char *host) {
+  static DESCRIPTOR(routine_d,"ConnectToMds");
+  STATIC_THREADSAFE int (*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(host);
+  }
+  return -1;
+}
+
+static int DisconnectFromMds_(int id) {
+  static DESCRIPTOR(routine_d,"DisconnectFromMds");
+  STATIC_THREADSAFE int (*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id);
+  }
+  return -1;
+}
+
+static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t *len) {
+#ifdef MDSIP_CONNECTIONS
+  static DESCRIPTOR(routine_d,"GetConnectionInfo");
+  STATIC_THREADSAFE void *(*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id, name, readfd, len);
+  }
+  return 0;
+#else
+  *readfd = id;
+#endif
+}
+
+static int  MdsEventAst_(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid) {
+  static DESCRIPTOR(routine_d,"MdsEventAst");
+  STATIC_THREADSAFE int (*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(sock, eventnam, astadr, astprm, eventid);
+  }
+  return 0;
+}
+
+static Message *GetMdsMsg_(int id, int *stat) {
+  static DESCRIPTOR(routine_d,"GetMdsMsg");
+  STATIC_THREADSAFE  Message *(*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id, stat);
+  }
+  return 0;
+}
+
+static int MdsEventCan_(int id, int eid) {
+  static DESCRIPTOR(routine_d,"MdsEventCan");
+  STATIC_THREADSAFE  int (*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id, eid);
+  }
+  return 0;
+}
+
+static int MdsValue_(int id, char *exp, struct descrip *d1, struct descrip *d2, struct descrip *d3) {
+  static DESCRIPTOR(routine_d,"MdsValue");
+  STATIC_THREADSAFE  int (*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id, exp, d1,d2,d3);
+  }
+  return 0;
+}
+
+static int RegisterRead_(SOCKET sock) {
+  STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
+  STATIC_CONSTANT DESCRIPTOR(routine_d,"RegisterRead");
+  int status=1;
+  STATIC_THREADSAFE int (*rtn)(SOCKET) = 0;
+  if (rtn == 0)
+    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
+  if(!(status & 1))
+  {
+    printf("%s\n", MdsGetMsg(status));
+    return;
+  }
+  return ((*rtn)(sock));
+}
 
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
@@ -28,12 +133,6 @@ int MDSEvent(char *evname){}
 #elif (defined(HAVE_WINDOWS_H))
 #define NO_WINDOWS_H
 #include <process.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <libroutines.h>
-#include <mds_stdarg.h>
-#include "../mdstcpip/mdsip.h"
-#include "mdsshrthreadsafe.h"
 extern char *TranslateLogical(char *);
 STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid);
 STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local);
@@ -41,7 +140,9 @@ STATIC_ROUTINE void newRemoteId(int *id);
 STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid);
 STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data);
 STATIC_ROUTINE int getRemoteId(int id, int ofs);
+STATIC_THREADSAFE int receive_ids[256];  	/* Connections to receive external events  */
 STATIC_THREADSAFE SOCKET receive_sockets[256];  	/* Socket to receive external events  */
+STATIC_THREADSAFE int send_ids[256];  		/* Connections to send external events  */
 STATIC_THREADSAFE SOCKET send_sockets[256];  		/* Socket to send external events  */
 STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
 STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
@@ -58,30 +159,31 @@ STATIC_THREADSAFE unsigned int threadID;
 STATIC_CONSTANT int zero = 0;
 
 STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
-  int status;
-  STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-    routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
-  STATIC_THREADSAFE int (*rtn)() = 0;
+  int status=1;
   char **servers;
   int *sockets;
+  int *ids;
   int num_servers;
   if (recv) {
     servers=receive_servers;
     sockets=receive_sockets;
+    ids=receive_ids;
     num_servers = num_receive_servers;
   } else {
     servers=send_servers;
     sockets=send_sockets;
+    ids=send_ids;
     num_servers = num_send_servers;
   }
   if (idx >= num_servers || servers[idx] == 0) return;
-  status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
   if (status & 1) {
-    sockets[idx] = (*rtn) (servers[idx]);
-    if(sockets[idx] == -1) {
+    ids[idx] = ConnectToMds_(servers[idx]);
+    if(ids[idx] <= 0) {
       printf("\nError connecting to %s", servers[idx]);
-      perror("ConnectToMds");
-      sockets[idx] = 0;
+      perror("ConnectToMds_");
+      ids[idx] = 0;
+    } else {
+      GetConnectionInfo_(ids[idx],0,&sockets[i],0);
     }
   }
 }
@@ -171,18 +273,15 @@ STATIC_ROUTINE int canEventRemote(int eventid)
 {
     struct descriptor 
 	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
+	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan_"};
     int status=1, i;
-    STATIC_THREADSAFE int (*rtn)() = 0;
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
  //     KillHandler();
       for(i = 0; i < num_receive_servers; i++)
       {
-	if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
+	if(receive_ids[i]>0) status = MdsEventCan_(receive_ids[i], getRemoteId(eventid, i));
       }
   //    startRemoteAstHandler();
     }
@@ -474,16 +573,10 @@ STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_
 
 STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
 {
-    struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsgOOB"};
     int status=1, i;
-    STATIC_THREADSAFE int (*rtn)() = 0;
     Message *m;
     int  selectstat;
     fd_set readfds;
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if(!(status & 1))
     {
 		printf("%s\n", MdsGetMsg(status));
@@ -500,10 +593,11 @@ STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
 			external_thread = 0;
 			_endthreadex(0);
 		}
-        FD_ZERO(&readfds);
+		FD_ZERO(&readfds);
 		for(i = 0; i < num_receive_servers; i++)
-			if(receive_sockets[i])
-        		FD_SET(receive_sockets[i],&readfds);
+		  if(receive_ids[i]>0) {
+		    FD_SET(receive_sockets[i],&readfds);
+		  }
 		selectstat = select(0, &readfds, 0, 0, 0);
 
 		if (selectstat == -1) 
@@ -513,14 +607,14 @@ STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
 		}
 		for(i = 0; i < num_receive_servers; i++)
 		{
-			if(receive_sockets[i] && FD_ISSET( receive_sockets[i], &readfds))
+			if(receive_ids[i] > 0 && FD_ISSET( receive_sockets[i], &readfds))
 			{
 				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
 					printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
 				if(ioctlsocket(receive_sockets[i], FIONBIO, &zero) != 0)
 					printf("Error in ioctlsocket: %d\n", WSAGetLastError());
 
-				m = ((Message *(*)())(*rtn))(receive_sockets[i], &status);
+				m = GetMdsMsg_OOB(receive_ids[i], &status);
         		if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
         		{
             	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
@@ -550,11 +644,7 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 
     char *servers[256];
     int num_servers;
-    struct descriptor 
-	  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	  routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status=1, i;
-    STATIC_THREADSAFE int (*rtn)() = 0;
     LockMdsShrMutex(&initMutex,&initMutex_initialized);
 
     if(receive_initialized && receive_events)
@@ -591,41 +681,38 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 
     if(num_servers > 0)
     {
-        if (rtn == 0)
-          status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
         if (status & 1)
         {
 			for(i = 0; i < num_servers; i++)
 			{
 				if(receive_events)
 				{
-					receive_sockets[i] = searchOpenServer(servers[i]);
-	 				if(!receive_sockets[i]) receive_sockets[i] = (*rtn) (servers[i]);
-	    			if(receive_sockets[i] == -1)
-	    			{
-						printf("\nError connecting to %s", servers[i]);
-						perror("ConnectToMds");
-	    				receive_sockets[i] = 0;
-					}
-					else
-					{
-						receive_servers[i] = servers[i];
-					}
+				  if(!receive_ids[i]) receive_ids[i] = ConnectToMds_(servers[i]);
+				  if(receive_ids[i] <= 0)
+				    {
+				      printf("\nError connecting to %s", servers[i]);
+				      perror("ConnectToMds_");
+				      receive_ids[i] = 0;
+				    }
+				  else  {
+				    GetConnectionInfo_(receive_ids[i],0,&receive_sockets[i],0);
+				    receive_servers[i] = servers[i];
+				  }
 				}
 				else
 				{
-					send_sockets[i] = searchOpenServer(servers[i]);
-	 				if(!send_sockets[i]) send_sockets[i] = (*rtn) (servers[i]);
-	    			if(send_sockets[i] == -1)
-	    			{
-						printf("\nError connecting to %s", servers[i]);
-						perror("ConnectToMds");
-	    				send_sockets[i] = 0;
-					}
-					else
-					{
-						send_servers[i] = servers[i];
-					}
+				  if(!send_ids[i]) send_ids[i] = ConnectToMds_(servers[i]);
+				  if(send_ids[i] <= 0)
+				    {
+				      printf("\nError connecting to %s", servers[i]);
+				      perror("ConnectToMds_");
+				      send_ids[i] = 0;
+				    }
+				  else
+				    {
+				      GetConnectionInfo_(send_ids[i],0,&send_sockets[i],0);
+				      send_servers[i] = servers[i];
+				    }
 				}
 			}
 		}
@@ -638,16 +725,8 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 
 STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
-    struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status=1, i;
     int curr_eventid;
-    STATIC_THREADSAFE int (*rtn)() = 0;
-
-
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 
@@ -665,14 +744,14 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 		newRemoteId(eventid);
 		for(i = 0; i < num_receive_servers; i++)
 		{
-		  if (receive_sockets[i] == 0) ReconnectToServer(i,1);
-			if(receive_sockets[i])
+		  if (receive_ids[i] <= 0) ReconnectToServer(i,1);
+			if(receive_ids[i] > 0)
 			{ 
 				if(WSAEventSelect(receive_sockets[i], external_event, 0)!=0)
 					printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
 				if(ioctlsocket(receive_sockets[i], FIONBIO, &zero) != 0)
 					printf("Error in ioctlsocket: %d\n", WSAGetLastError());
-				status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
+				status = MdsEventAst_(receive_ids[i], eventnam, astadr, astprm, &curr_eventid);
 				setRemoteId(*eventid, i, curr_eventid);
 			}
 		}
@@ -682,7 +761,7 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 	ResetEvent(external_event);
 	for(i = 0; i < num_receive_servers; i++)
 	{
-		if(receive_sockets[i])
+		if(receive_ids[i]>0)
 		{ 
 			if(WSAEventSelect(receive_sockets[i], external_event, FD_READ)!=0)
 				printf("Error in WSAEventSelect: %d\n", WSAGetLastError());
@@ -763,11 +842,6 @@ STATIC_ROUTINE int getRemoteId(int id, int ofs)
 
 STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    STATIC_THREADSAFE int (*rtn)();
-    int (*curr_rtn)();
-    struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
     int status=1, i, tmp_status;
     char expression[256];
     struct descrip ansarg;
@@ -780,20 +854,17 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
     desc.dims[0] = data_len;
     ansarg.ptr = 0;
     sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
       int reconnects=0;
 	for(i = 0; i < num_send_servers; i++)
 	{
-	    curr_rtn = rtn;
-	    if(send_sockets[i])
+	    if(send_ids[i] > 0)
             {
               if (data_len > 0)
-                tmp_status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+                tmp_status = MdsValue_(send_ids[i], expression, &desc, &ansarg, NULL);
               else
-                tmp_status = (*curr_rtn) (send_sockets[i], expression, &ansarg, NULL);
+                tmp_status = MdsValue_(send_ids[i], expression, &ansarg, NULL, NULL);
             }
             if (tmp_status & 1)
               tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
@@ -854,10 +925,6 @@ struct msqid_ds {int msg_qnum; int msg_stime; int msg_rtime; int msg_ctime;};
 #endif
 #include <unistd.h>
 #endif
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <mds_stdarg.h>
-#include "../mdstcpip/mdsip.h"
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
 
@@ -947,6 +1014,8 @@ STATIC_ROUTINE void *handleMessage(void * dummy);
 STATIC_ROUTINE void removeDeadMsg(int key);
 
 
+STATIC_THREADSAFE int receive_ids[256];  	/* Connection to receive external events  */
+STATIC_THREADSAFE int send_ids[256];  		/* Connection to send external events  */
 STATIC_THREADSAFE int receive_sockets[256];  	/* Socket to receive external events  */
 STATIC_THREADSAFE int send_sockets[256];  		/* Socket to send external events  */
 STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
@@ -964,32 +1033,33 @@ STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destinati
 
 STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
   int status;
-  STATIC_CONSTANT struct descriptor library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-    routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
-  STATIC_THREADSAFE int (*rtn)() = 0;
   char **servers;
   int *sockets;
+  int *ids;
   int num_servers;
   if (recv) {
     servers=receive_servers;
     sockets=receive_sockets;
+    ids=receive_ids;
     num_servers = num_receive_servers;
   } else {
     servers=send_servers;
     sockets=send_sockets;
+    ids=send_ids;
     num_servers = num_send_servers;
   }
   if (idx >= num_servers || servers[idx] == 0) return;
-  status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
-  if (status & 1) {
-    sockets[idx] = (*rtn) (servers[idx]);
-    if(sockets[idx] == -1) {
-      printf("\nError connecting to %s", servers[idx]);
-      perror("ConnectToMds");
-      sockets[idx] = 0;
-    }
+  DisconnectFromMds_(ids[idx]);
+  ids[idx] = ConnectToMds_(servers[idx]);
+  if(ids[idx] <= 0) {
+    printf("\nError connecting to %s", servers[idx]);
+    perror("ConnectToMds_");
+    sockets[idx] = 0;
   }
+  else
+    GetConnectionInfo(ids[idx],0,&sockets[idx],0);
 }
+
 /************* OS dependent part ******************/
 
 STATIC_ROUTINE char *getEnvironmentVar(char *name)
@@ -998,7 +1068,6 @@ STATIC_ROUTINE char *getEnvironmentVar(char *name)
     if(!trans || !*trans) return NULL;
     return trans;
 }
-
 
 STATIC_ROUTINE void cleanup(int);
 STATIC_ROUTINE void handleRemoteAst();
@@ -1559,7 +1628,7 @@ STATIC_ROUTINE void *handleMessage(void * dummy)
 
 STATIC_ROUTINE void cleanup(int dummy)
 {
-/* remove all events declared by the process and not removed by MdsEventCan */
+/* remove all events declared by the process and not removed by MdsEventCan_ */
     int i, curr_id, prev_id;
 
     if(is_exiting) return;
@@ -1700,53 +1769,17 @@ STATIC_ROUTINE void KillHandler() {}
 
 STATIC_ROUTINE void handleRemoteAst()
 {
-  STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
-  STATIC_CONSTANT DESCRIPTOR(routine_d,"Poll");
-  int status=1;
-  STATIC_THREADSAFE void (*rtn)(void (*)(SOCKET)) = 0;
-  if (rtn == 0)
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
-  if(!(status & 1))
-  {
-    printf("%s\n", MdsGetMsg(status));
-    return;
-  }
-  (*rtn)(handleRemoteEvent);
+  Poll(handleRemoteEvent);
 }
 
-STATIC_ROUTINE int RegisterRead(SOCKET sock)
-{
-  STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
-  STATIC_CONSTANT DESCRIPTOR(routine_d,"RegisterRead");
-  int status=1;
-  STATIC_THREADSAFE int (*rtn)(SOCKET) = 0;
-  if (rtn == 0)
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
-  if(!(status & 1))
-  {
-    printf("%s\n", MdsGetMsg(status));
-    return;
-  }
-  return ((*rtn)(sock));
-}
   
 STATIC_ROUTINE void handleRemoteEvent(SOCKET sock)
 {
   char buf[16];
   STATIC_CONSTANT struct descriptor 
-  library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-  routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
   int status=1, i;
-  STATIC_THREADSAFE int (*rtn)() = 0;
   Message *m;
-  if (rtn == 0)
-    status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
-  if(!(status & 1))
-  {
-    printf("handleRemoteEvent error: %s\n", MdsGetMsg(status));
-    return;
-  }
-  m = ((Message *(*)())(*rtn))(sock, &status);
+  m = GetMdsMsg_(sock, &status);
   if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
   {
     MdsEventInfo *event = (MdsEventInfo *)m->bytes;
@@ -1773,17 +1806,11 @@ STATIC_CONSTANT void KillHandler()
 STATIC_ROUTINE void handleRemoteAst()
 {
     char buf[16];
-    STATIC_CONSTANT struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "GetMdsMsg"};
     int status=1, i;
-    STATIC_THREADSAFE int (*rtn)() = 0;
     Message *m;
     int tablesize = FD_SETSIZE, selectstat;
     fd_set readfds;
 
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if(!(status & 1))
     {
 	printf("%s\n", MdsGetMsg(status));
@@ -1806,9 +1833,9 @@ STATIC_ROUTINE void handleRemoteAst()
 	}
 	for(i = 0; i < num_receive_servers; i++)
 	{
-	    if(receive_sockets[i] && FD_ISSET( receive_sockets[i], &readfds))
+	    if(receive_ids[i] > 0 && FD_ISSET( receive_sockets[i], &readfds))
 	    {
-		m = ((Message *(*)())(*rtn))(receive_sockets[i], &status);
+		m = GetMdsMsg_(receive_ids[i], &status);
         	if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
         	{
             	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
@@ -1858,11 +1885,7 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 
     char *servers[256];
     int num_servers;
-    STATIC_CONSTANT struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 12, "ConnectToMds"};
     int status=1, i;
-    STATIC_THREADSAFE int (*rtn)() = 0;
     void *dummy;
 
     LockMdsShrMutex(&initMutex,&initMutex_initialized);
@@ -1896,8 +1919,6 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
     }
     if(num_servers > 0)
     {
-        if (rtn == 0)
-          status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
         if (status & 1)
         {
 	    if(external_thread_created)
@@ -1906,34 +1927,37 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 	    {
 		if(receive_events)
 		{
-		    receive_sockets[i] = searchOpenServer(servers[i]);
-	 	    if(!receive_sockets[i]) receive_sockets[i] = (*rtn) (servers[i]);
-	    	    if(receive_sockets[i] == -1)
+		    receive_ids[i] = searchOpenServer(servers[i]);
+	 	    if(receive_ids[i] <= 0) receive_ids[i] = ConnectToMds_(servers[i]);
+	    	    if(receive_ids[i] <= 0)
 	    	    {
 			printf("\nError connecting to %s", servers[i]);
-		        perror("ConnectToMds");
-	    	        receive_sockets[i] = 0;
+		        perror("ConnectToMds_");
+	    	        receive_ids[i] = 0;
 		    }
 		    else
 		    {
 #ifdef GLOBUS
-		      RegisterRead(send_sockets[i]);
+		      RegisterRead_(send_sockets[i]);
 #endif
+		      GetConnectionInfo_(receive_ids[i],0,&receive_sockets[i],0);
 		      receive_servers[i] = servers[i];
                     }
 		}
 		else
 		{
-		    send_sockets[i] = searchOpenServer(servers[i]);
-	 	    if(!send_sockets[i]) send_sockets[i] = (*rtn) (servers[i]);
-	    	    if(send_sockets[i] == -1)
+		    send_ids[i] = searchOpenServer(servers[i]);
+	 	    if(send_ids[i] <= 0) send_ids[i] = ConnectToMds_(servers[i]);
+	    	    if(send_ids[i] <= 0)
 	    	    {
 			printf("\nError connecting to %s", servers[i]);
-		        perror("ConnectToMds");
-	    	        send_sockets[i] = 0;
+		        perror("ConnectToMds_");
+	    	        send_ids[i] = 0;
 		    }
-		    else
+		    else {
 			send_servers[i] = servers[i];
+			GetConnectionInfo_(send_ids[i],0,&send_sockets[i],0);
+		    }
 		}
 	    }
 	    startRemoteAstHandler();
@@ -1948,15 +1972,9 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
 	    
 STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm, int *eventid)
 {
-    STATIC_CONSTANT struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventAst"};
     int status=1, i;
     int curr_eventid;
     void *dummy;
-    STATIC_THREADSAFE int (*rtn)() = 0;
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
 /* if external_thread running, it must be killed before sending messages over socket */
@@ -1965,13 +1983,13 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr)(), void *astprm
 	newRemoteId(eventid);
 	for(i = 0; i < num_receive_servers; i++)
 	{
-	  if (receive_sockets[i]==0) ReconnectToServer(i,1);
-	    if(receive_sockets[i])
+	  if (receive_ids[i] <= 0) ReconnectToServer(i,1);
+	    if(receive_ids[i] > 0)
 	    { 
-		status = (*rtn) (receive_sockets[i], eventnam, astadr, astprm, &curr_eventid);
+		status = MdsEventAst_(receive_ids[i], eventnam, astadr, astprm, &curr_eventid);
 #ifdef GLOBUS
 		if (status & 1)
-                  RegisterRead(receive_sockets[i]);
+                  RegisterRead_(receive_ids[i]);
 #endif
 	        setRemoteId(*eventid, i, curr_eventid);
 	    }
@@ -2225,7 +2243,7 @@ int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *even
       if(private_info[i].active && !strcmp(eventnam, private_info[i].name) &&
 	 private_info[i].astadr == astadr && private_info[i].astprm == astprm)
 	break;
-    if(i == MAX_ACTIVE_EVENTS) /* if no previous MdsEventAst to that event made by the process */
+    if(i == MAX_ACTIVE_EVENTS) /* if no previous MdsEventAst_ to that event made by the process */
     {
       for(i = 0; i < MAX_ACTIVE_EVENTS && private_info[i].active; i++);
       if(i == MAX_ACTIVE_EVENTS) /* if no free private event slot found */
@@ -2321,22 +2339,15 @@ int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *even
 
 STATIC_ROUTINE int canEventRemote(int eventid)
 {
-    STATIC_CONSTANT struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 11, "MdsEventCan"};
     int status=1, i;
     void *dummy;
-    STATIC_THREADSAFE int (*rtn)() = 0;
-
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     /* kill external thread before sending messages over the socket */
     if(status & 1)
     {
       KillHandler();
       for(i = 0; i < num_receive_servers; i++)
       {
-	if(receive_sockets[i]) status = (*rtn) (receive_sockets[i], getRemoteId(eventid, i));
+	if(receive_ids[i] > 0) status = MdsEventCan_(receive_ids[i], getRemoteId(eventid, i));
       }
       startRemoteAstHandler();
     }
@@ -2363,7 +2374,7 @@ int old_MDSEventCan(int eventid)
     deleteId(eventid);
 /* local stuff */
     evinfo = &private_info[local_eventid];
-    if(!shared_info) return 0; /*must follow MdsEventAst */
+    if(!shared_info) return 0; /*must follow MdsEventAst_ */
     name_in_use = 0;
     LockMdsShrMutex(&privateMutex,&privateMutex_initialized);
     for(i = 0; i < MAX_ACTIVE_EVENTS; i++)
@@ -2414,11 +2425,6 @@ int old_MDSEventCan(int eventid)
 
 STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
 {
-    STATIC_THREADSAFE int (*rtn)() = 0;
-    int (*curr_rtn)();
-    STATIC_CONSTANT struct descriptor 
-	library_d = {DTYPE_T, CLASS_S, 8, "MdsIpShr"},
-	routine_d = {DTYPE_T, CLASS_S, 8, "MdsValue"};
     int status=1, i, tmp_status;
     char expression[256];
     struct descrip ansarg;
@@ -2438,20 +2444,17 @@ STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
     desc.dims[0] = data_len;
     ansarg.ptr = 0;
     sprintf(expression, "setevent(\"%s\"%s)", evname,data_len > 0 ? ",$" : "");
-    if (rtn == 0)
-      status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
     if (status & 1)
     {
       int reconnects=0;
 	for(i = 0; i < num_send_servers; i++)
 	{
-	    curr_rtn = rtn;
-	    if(send_sockets[i])
+	    if(send_ids[i] > 0)
             {
               if (data_len > 0)
-                tmp_status = (*curr_rtn) (send_sockets[i], expression, &desc, &ansarg, NULL);
+                tmp_status = MdsValue_ (send_ids[i], expression, &desc, &ansarg, NULL);
               else
-                tmp_status = (*curr_rtn) (send_sockets[i], expression, &ansarg, NULL);
+                tmp_status = MdsValue_ (send_ids[i], expression, &ansarg, NULL, NULL);
             }
             if (tmp_status & 1)
               tmp_status = (ansarg.ptr != NULL) ? *(int *)ansarg.ptr : 0;
