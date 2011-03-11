@@ -83,3 +83,6 @@ Message *GetMdsMsg(int id, int *status) {
   }
   return msg;
 }
+Message *GetMdsMsgOOB(int id, int *status) {
+  return GetMdsMsg(id, status);
+}
