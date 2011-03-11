@@ -29,6 +29,7 @@ ldconfig
 #define int32 int
 #endif
 
+#include <config.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,11 +66,16 @@ static EMPTYXD(ans_xd);
 
 /* Connection record */
 typedef struct _connection  {
-   SOCKET sock;			       /* Mark the socket as unopen */
-   int ip;
-   short port;
-   char serv[STRLEN];		       /* Current server */
-   struct _connection *next;
+  SOCKET sock;			       /* Mark the socket as unopen */
+#ifdef MDSIP_CONNECTIONS
+  char *unique;               /* Unique connection name */
+  int port;
+#else
+  int ip;
+  short port;
+#endif
+  char serv[STRLEN];		       /* Current server */
+  struct _connection *next;
 } Connection;
 static  Connection *Connections = NULL;
 
@@ -113,17 +119,24 @@ struct descriptor_xd *rMdsCurrent()
 int rMdsList()
 {
    Connection *cptr;
-   unsigned char *uc;
    int i=0;
+#ifndef MDSIP_CONNECTIONS
+   unsigned char *uc;
+#endif
 
    if(!strcmp(serv,LOCAL))
       	printf("Current connection is local\n");
    for (cptr=Connections; (cptr != NULL);) {
       i++;
-      uc = (unsigned char *)&cptr->ip;
       if(cptr->sock != INVALID_SOCKET)  {
+#ifdef MDSIP_CONNECTIONS
+	 printf("Name[%20s] Id[%s] Connection[%3d]",
+		cptr->serv,cptr->unique,cptr->sock);
+#else
+	 uc = (unsigned char *)&cptr->ip;
 	 printf("Name[%20s] Port[%4d] IP[%03d.%03d.%03d.%03d] Socket[%3d]",
 		cptr->serv,cptr->port,uc[0],uc[1],uc[2],uc[3],cptr->sock);
+#endif
 	 if(cptr->sock == sock)
 	   printf("  <-- active");
       } else
@@ -160,24 +173,32 @@ struct descriptor_xd *rMdsVersion()
 /* Routine returns socket if valid */
 static SOCKET AddConnection(char *server)
 {
-   int status, ip;
-   short port;
+   int status;
    Connection *cptr;
    SOCKET nsock;
-	
+#ifdef MDSIP_CONNECTIONS
+   char *unique = malloc(128);
+#else
+   int ip;
+   short port;
+#endif
 /* Extract the ip and port numbers */
+#ifdef MDSIP_CONNECTIONS
+   if( (status = ReuseCheck(server,unique,128)) == INVALID_SOCKET)  {
+	   free(unique);
+#else
    if( (status = HostToIp((server[0] == '_') ? &server[1] : server,&ip,&port)) == INVALID_SOCKET)  {
+#endif
       printf("hostname [%s] invalid, No Connection\n",server);
       return(INVALID_SOCKET);
    }
-#ifdef DEBUG
-   uc = (unsigned char *)&ip;
-   printf("HostToIp [%s] ip[%d],port[%d] IP [%03d.%03d.%03d.%03d]\n",
-	  server,ip,port,uc[0],uc[1],uc[2],uc[3]);
-#endif
 /* scan through current list looking for an ip/port pair */
    for (cptr=Connections; (cptr != NULL);) {
-      if ((cptr->sock != INVALID_SOCKET) && (cptr->port == port) && (cptr->ip == ip)) {
+#ifdef MDSIP_CONNECTIONS
+     if ((cptr->sock != INVALID_SOCKET) && (strcmp(unique,cptr->unique)==0)) {
+#else
+     if ((cptr->sock != INVALID_SOCKET) && (cptr->port == port) && (cptr->ip == ip)) {
+#endif
 #ifdef DEBUG
 	 printf("mdsopen: Keep socket! name changed from  [%s] to [%s]\n",cptr->serv,server);
 #endif
@@ -212,8 +233,12 @@ static SOCKET AddConnection(char *server)
       Connections = cptr;
    }
 /* Copy in the connection details */
+#ifdef MDSIP_CONNECTIONS
+   cptr->unique = unique;
+#else
    cptr->port = port;
-   cptr->ip   = ip;
+   cptr->ip = ip;
+#endif
    cptr->sock = nsock;
    strcpy(cptr->serv, server);	       /* Copy in the name */
    return(nsock);
@@ -260,8 +285,15 @@ int rMdsDisconnect(int all) {
        {
          DisconnectFromMds(sock);
          cptr->sock = INVALID_SOCKET;
-         cptr->port = 0;
-         cptr->ip = 0;
+#ifdef MDSIP_CONNECTIONS
+	 if (cptr->unique) {
+	   free(cptr->unique);
+	   cptr->unique = 0;
+         }
+#else
+	 cptr->port = 0;
+	 cptr->ip = 0;
+#endif
        }
      }
    }
@@ -269,10 +301,17 @@ int rMdsDisconnect(int all) {
       status = DisconnectFromMds(sock);
       for (cptr=Connections; (cptr != NULL);)  {
         if(cptr->sock == sock)  {
-          cptr->port = cptr->ip = 0;
           cptr->sock = INVALID_SOCKET;
-	        break;
-	      }
+#ifdef MDSIP_CONNECTIONS
+	  if (cptr->unique) {
+	    free(cptr->unique);
+	    cptr->unique=0;
+	  }
+#else
+	  cptr->port = cptr->ip = 0;
+#endif
+	  break;
+	}
         cptr=cptr->next;
       }
    }
@@ -371,9 +410,10 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
 	     ,status,dtype,len,ndims,numbytes,*(int *)dptr);
 #endif
    }
-   if (!status & 1)
+   if (!status & 1) {
+     rMdsDisconnect(0);
      MdsFree1Dx(&ans_xd,0);
-   else
+     } else
    {
 /* Remap the descriptor types */
      dtype = IpToMds(dtype);
