@@ -163,6 +163,9 @@
 /* Define if you prefer to use named pipes over SysV msg */
 #undef USE_PIPED_MESSAGING
 
+/* Define if you want to use new mdsip connections features */
+#undef MDSIP_CONNECTIONS
+
 /* Define if you are using SRB */
 #undef SRB
 

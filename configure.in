@@ -24,6 +24,11 @@ fi
 dnl Check out the compiler
 AC_PROG_CC
 
+AC_ARG_ENABLE(mdsip_connections,
+        [ --enable-mdsip_connections     Use new improved mdsip connections],
+        if test "$enableval" = yes; then
+          AC_DEFINE(MDSIP_CONNECTIONS)
+        fi)
 
 AC_ARG_ENABLE(nodebug,
 	[  --enable-nodebug        compile without debug info],
@@ -956,6 +961,7 @@ AC_SUBST(MAKESHLIBDIR_RULE)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
+AC_SUBST(MDSIP_CONNECTIONS)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MDSVME)

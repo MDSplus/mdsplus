@@ -64,25 +64,27 @@ extern int   MdsSetDefault();
 extern int   MdsClose();
 #endif
 #else
-extern SOCKET ConnectToMds(char *host);
-extern SOCKET ConnectToMdsEvents(char *host);
-extern int  SendArg(SOCKET s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int *dims,
+#ifndef __MDSIP_H__
+extern int ConnectToMds(char *host);
+extern int ConnectToMdsEvents(char *host);
+extern int  SendArg(int s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int *dims,
                                  char *ptr);
-extern int   GetAnswerInfo(SOCKET s, char *dtype, short *len, char *ndims, int *dims, 
+extern int   GetAnswerInfo(int s, char *dtype, short *len, char *ndims, int *dims, 
 			  int *nbytes, void * *dptr);
-extern int   DisconnectFromMds(SOCKET sock);
+extern int   DisconnectFromMds(int conid);
 extern struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr);
 extern struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
-extern int   MdsEventAst(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
-extern int   MdsEventCan(SOCKET sock, int eventid);
+extern int   MdsEventAst(int conid, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
+extern int   MdsEventCan(int conid, int eventid);
 extern int HostToIp(char *host, int *addr, short *port);
 #ifndef MdsLib_H
-extern int   MdsValue(SOCKET sock, char *,...);
-extern int   MdsPut(SOCKET sock, char *node, char *expression,...);
-extern int   MdsOpen(SOCKET sock, char *tree, int shot);
-extern int   MdsSetDefault(SOCKET sock, char *node);
-extern int   MdsClose(SOCKET sock);
+extern int   MdsValue(int conid, char *,...);
+extern int   MdsPut(int conid, char *node, char *expression,...);
+extern int   MdsOpen(int conid, char *tree, int shot);
+extern int   MdsSetDefault(int conid, char *node);
+extern int   MdsClose(int conid);
 extern void   FreeMessage(void *m);
+#endif
 #endif
 #endif
 

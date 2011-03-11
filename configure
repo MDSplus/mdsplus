@@ -623,6 +623,7 @@ MEMCHKLIB
 MDSVME
 MDSTCPIP
 MDSSQL
+MDSIP_CONNECTIONS
 MAKEJAVADIR
 MAKEETCDIR
 MAKEUIDDIR
@@ -761,6 +762,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_mdsip_connections
 enable_nodebug
 enable_perf
 enable_camac
@@ -1406,6 +1408,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+ --enable-mdsip_connections     Use new improved mdsip connections
   --enable-nodebug        compile without debug info
   --enable-perf          enable MDSplus I/O statistics
  --enable-camac        Build CAMAC and device libraries
@@ -3621,6 +3624,14 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+
+# Check whether --enable-mdsip_connections was given.
+if test "${enable_mdsip_connections+set}" = set; then :
+  enableval=$enable_mdsip_connections; if test "$enableval" = yes; then
+          $as_echo "#define MDSIP_CONNECTIONS 1" >>confdefs.h
+
+        fi
+fi
 
 
 # Check whether --enable-nodebug was given.
@@ -8233,6 +8244,7 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
