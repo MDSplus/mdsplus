@@ -202,6 +202,7 @@ EXPORT int GetMaxCompressionLevel();
 EXPORT unsigned char GetConnectionMessageId(int);
 EXPORT int GetMdsConnectTimeout();
 EXPORT Message *GetMdsMsg(int id, int *status);
+EXPORT Message *GetMdsMsgOOB(int id, int *status);
 EXPORT unsigned char GetMode();
 EXPORT unsigned char GetMulti();
 EXPORT char *GetPortname();
