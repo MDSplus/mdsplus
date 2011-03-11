@@ -1057,7 +1057,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
     sockets[idx] = 0;
   }
   else
-    GetConnectionInfo(ids[idx],0,&sockets[idx],0);
+    GetConnectionInfo_(ids[idx],0,&sockets[idx],0);
 }
 
 /************* OS dependent part ******************/
