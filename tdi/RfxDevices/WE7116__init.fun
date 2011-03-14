@@ -332,7 +332,7 @@ Attualmente non implementati perchè non necessari
 
 			if(_curr_rec_length > _rec_length) _rec_length = long(_curr_rec_length);
 
-        } 
+        	} 
 		else
 		{
 			_state_a = [_state_a, 0];
@@ -364,7 +364,7 @@ Attualmente non implementati perchè non necessari
 	if( sum( _state_a ) == 0 )
 	{
 		DevLogErr(_nid, "WARNING : All channels OFF");
-		abort( );
+		return(1);
 	}
 
 	if(_rec_length > _K_CHAN_MEM)
