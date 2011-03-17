@@ -8,6 +8,7 @@
 #include <stdio.h>
 #ifdef HAVE_WINDOWS_H
 #include <process.h>
+#include <winuser.h>
 #else
 #include <sys/wait.h>
 #endif
