@@ -893,6 +893,17 @@ static long Connect()
   return sock;
 }
 
+static long ConnectToMdsEvents(char *event_host) {
+  char hostpart[256] = {0};
+  char portpart[256] = {0};
+  char host[512];
+  sscanf(host,"%[^:]:%s",hostpart,portpart);
+  if (strlen(portpart) == 0)
+    strcpy(portpart,"mdsipe");
+  sprintf(host,"%s:%s",hostpart,portpart);
+  return ConnectToMds(host);
+}
+
 static long ConnectEvents()
 {
   static long sock = -1;
