@@ -98,9 +98,10 @@ static void InstallService() {
     SC_HANDLE hService;
 	char *pgm;
     char *cmd;
+	unsigned char mode = GetMode();
 	_get_pgmptr(&pgm);
 	cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
-    sprintf(cmd,"%s -p %s -h \"%s\"",pgm,GetPortname(),GetHostfile());
+	sprintf(cmd,"%s -p %s -h \"%s\" %s",pgm,GetPortname(),GetHostfile(),mode == 'i' ? "" : (mode == 'M' ? "-m" : "-s"));
     hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
             SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
@@ -155,49 +156,61 @@ static int ServiceMain(int argc, char **argv) {
   RedirectOutput();
   InitializeService();
   SetThisServiceStatus(SERVICE_RUNNING,0);
-  s = socket(AF_INET, SOCK_STREAM, 0);
-  if (s == -1) {
-    printf("Error getting Connection Socket\n");
-    exit(1);
+  if (GetMulti()) {
+    IoRoutines *io;
+    io=LoadIo(GetProtocol());
+    if (io && io->listen)
+      io->listen(argc,argv);
+    else {
+      fprintf(stderr,"Protocol %s does not support servers\n",GetProtocol());
+      return 1;
+    }
+    return 0;
+  } else {
+    s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s == -1) {
+      printf("Error getting Connection Socket\n");
+      exit(1);
+    }
+    memset(&sin,0,sizeof(sin));
+    sin.sin_port = GetPort();
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = INADDR_ANY;
+    status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
+    if (status < 0)  {
+      perror("Error binding to service\n");
+      exit(1);
+    }
+    status = listen(s,128);
+    if (status < 0)  {
+      perror("Error listen on port\n");
+      exit(1);
+    }
+    FD_ZERO(&fdactive);
+    FD_SET(s,&fdactive);
+    for (readfds=fdactive;!shut;readfds=fdactive) {
+      int sstatus;
+      if ((sstatus = select(tablesize, &readfds, 0, 0, &timeout)) != SOCKET_ERROR) {
+        error_count=0;
+        if (FD_ISSET(s, &readfds)){
+		  int len = sizeof(struct sockaddr_in);
+		  SOCKET sock = accept(s, (struct sockaddr *)&sin, &len);
+		  SpawnWorker(sock);
+        }
+      } else {
+        error_count++;
+        perror("error in main select");
+        fprintf(stderr,"Error count=%d\n",error_count);
+	    fflush(stderr);
+        if (error_count > 100) {
+          fprintf(stderr,"Error count exceeded, shutting down\n");
+          shut=1;
+        }
+	  }
+    }
+    shutdown(s,2);
+    return 1;
   }
-  memset(&sin,0,sizeof(sin));
-  sin.sin_port = GetPort();
-  sin.sin_family = AF_INET;
-  sin.sin_addr.s_addr = INADDR_ANY;
-  status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
-  if (status < 0)  {
-    perror("Error binding to service\n");
-    exit(1);
-  }
-  status = listen(s,128);
-  if (status < 0)  {
-    perror("Error listen on port\n");
-    exit(1);
-  }
-  FD_ZERO(&fdactive);
-  FD_SET(s,&fdactive);
-  for (readfds=fdactive;!shut;readfds=fdactive) {
-    int sstatus;
-    if ((sstatus = select(tablesize, &readfds, 0, 0, &timeout)) != SOCKET_ERROR) {
-      error_count=0;
-      if (FD_ISSET(s, &readfds)){
-		int len = sizeof(struct sockaddr_in);
-		SOCKET sock = accept(s, (struct sockaddr *)&sin, &len);
-		SpawnWorker(sock);
-      }
-    } else {
-      error_count++;
-      perror("error in main select");
-      fprintf(stderr,"Error count=%d\n",error_count);
-	  fflush(stderr);
-      if (error_count > 100) {
-        fprintf(stderr,"Error count exceeded, shutting down\n");
-        shut=1;
-      }
-	}
-  }
-  shutdown(s,2);
-  return 1;
 }
 
 int main( int argc, char **argv) {
@@ -208,7 +221,7 @@ int main( int argc, char **argv) {
   if (mode == 'r') {
 	RemoveService();
 	exit(0);
-  } else if (mode == 'i') {
+  } else if (mode == 'i' || mode == 'M' || mode == 'S') {
 	InstallService();
 	exit(0);
   } else {
