@@ -2,7 +2,9 @@
 #define IPDESC_H
 
 #ifdef _WIN32
+#ifndef _WS2DEF_
 #include "windows.h"
+#endif
 #else
 typedef int SOCKET;
 #endif
