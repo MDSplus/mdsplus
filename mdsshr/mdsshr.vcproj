@@ -428,6 +428,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\mdstcpip\mdsip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\mdstcpip\mdsip_connections.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\mdsshr.h"
 				>
 			</File>

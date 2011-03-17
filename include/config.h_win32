@@ -203,5 +203,7 @@
 
 #define BLOCK_ALL 0xfffff
 
+#define MDSIP_CONNECTIONS 1
+
 #define _CONFIG_INCLUDED
 #endif
