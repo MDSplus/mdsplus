@@ -4,7 +4,7 @@ top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 SHELL=/bin/sh
 CFLAGS = @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
-LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L$(top_srcdir)/lib -lMdsShr -lTdiShr -lcurl -lc
+LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lcurl -lc
 EXPORTS = mdsipshr.export
 INSTALL=@top_srcdir@/conf/install-sh -c
 prefix=@prefix@
@@ -64,13 +64,13 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LDFLAGS)
+	$(GLOBUS_LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LDFLAGS)
 
 @MAKESHLIBDIR@libRoam@SHARETYPE@ :
 	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @MAKESHLIBDIR@libRoam@SHARETYPE@
 
 makefile-header:  
-	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ --static globus_xio globus_gridmap_callout_error > makefile-header
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio globus_gridmap_callout_error > makefile-header
 
 @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -81,7 +81,7 @@ makefile-header:
 
 ifdef modules
 @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ : $(OBJECTS)
-	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
+	$(GLOBUS_LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
 endif
 
 @MAKELIBDIR@ :
