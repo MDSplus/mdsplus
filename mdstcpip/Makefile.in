@@ -136,7 +136,7 @@ endif
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ &libdir@
+		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-ssh @bindir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-ssh @bindir@
         endif
