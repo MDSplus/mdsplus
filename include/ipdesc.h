@@ -48,7 +48,6 @@ extern "C" {
 
 #ifdef _NO_MDS_PROTO
 extern SOCKET ConnectToMds();
-extern SOCKET ConnectToMdsEvents();
 extern void   FreeMessage(void *m);
 extern int  SendArg();
 extern int  GetAnswerInfo();
@@ -68,7 +67,6 @@ extern int   MdsClose();
 #else
 #ifndef __MDSIP_H__
 extern int ConnectToMds(char *host);
-extern int ConnectToMdsEvents(char *host);
 extern int  SendArg(int s,unsigned char i,char dtype,unsigned char nargs,short len,char ndims,int *dims,
                                  char *ptr);
 extern int   GetAnswerInfo(int s, char *dtype, short *len, char *ndims, int *dims, 
