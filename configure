@@ -3630,6 +3630,9 @@ if test "${enable_mdsip_connections+set}" = set; then :
   enableval=$enable_mdsip_connections; if test "$enableval" = yes; then
           $as_echo "#define MDSIP_CONNECTIONS 1" >>confdefs.h
 
+	  MDSIP_CONNECTIONS="yes";
+        else
+          MDSIP_CONNECTIONS="no";
         fi
 fi
 

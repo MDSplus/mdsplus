@@ -28,6 +28,9 @@ AC_ARG_ENABLE(mdsip_connections,
         [ --enable-mdsip_connections     Use new improved mdsip connections],
         if test "$enableval" = yes; then
           AC_DEFINE(MDSIP_CONNECTIONS)
+	  MDSIP_CONNECTIONS="yes";
+        else 
+          MDSIP_CONNECTIONS="no";
         fi)
 
 AC_ARG_ENABLE(nodebug,
