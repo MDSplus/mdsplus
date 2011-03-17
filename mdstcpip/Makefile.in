@@ -121,10 +121,12 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@mkdirhier @bindir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpShr.a @libdir@; \
-ifndef MDSIP_CONNECTIONS
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
-endi
 	fi;
+ifndef MDSIP_CONNECTIONS
+	if test "@SHARETYPE@" != ".a" ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
+	fi;
+endif
 	if [ ! -d $(exec_prefix)/etc ] ; then \
                 @MAKEBINDIR@mkdirhier $(exec_prefix)/etc; \
                 chmod 755 $(exec_prefix)/etc; \
