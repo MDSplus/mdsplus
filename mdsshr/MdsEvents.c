@@ -91,6 +91,16 @@ static Message *GetMdsMsg_(int id, int *stat) {
   return 0;
 }
 
+static Message *GetMdsMsgOOB_(int id, int *stat) {
+  static DESCRIPTOR(routine_d,"GetMdsMsgOOB");
+  STATIC_THREADSAFE  Message *(*rtn)() = 0;
+  int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
+  if (status & 1) {
+    return (*rtn)(id, stat);
+  }
+  return 0;
+}
+
 static int MdsEventCan_(int id, int eid) {
   static DESCRIPTOR(routine_d,"MdsEventCan");
   STATIC_THREADSAFE  int (*rtn)() = 0;
@@ -183,7 +193,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx,int recv) {
       perror("ConnectToMds_");
       ids[idx] = 0;
     } else {
-      GetConnectionInfo_(ids[idx],0,&sockets[i],0);
+      GetConnectionInfo_(ids[idx],0,&sockets[idx],0);
     }
   }
 }
@@ -614,7 +624,7 @@ STATIC_ROUTINE unsigned __stdcall handleRemoteAst(void *p)
 				if(ioctlsocket(receive_sockets[i], FIONBIO, &zero) != 0)
 					printf("Error in ioctlsocket: %d\n", WSAGetLastError());
 
-				m = GetMdsMsg_OOB(receive_ids[i], &status);
+				m = GetMdsMsgOOB_(receive_ids[i], &status);
         		if (status == 1 && m->h.msglen == (sizeof(MsgHdr) + sizeof(MdsEventInfo)))
         		{
             	    MdsEventInfo *event = (MdsEventInfo *)m->bytes;
