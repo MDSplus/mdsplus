@@ -173,7 +173,11 @@ static int tcp_authorize(int conid, char *username) {
       free(matchString[0]);
     if (matchString[1])
       free(matchString[1]);
+  } else {
+	  perror("Error determining connection info from socket\n");
   }
+  fflush(stdout);
+  fflush(stderr);
   return ans;
 }
 
@@ -195,7 +199,9 @@ static ssize_t tcp_recv(int conid, void *bptr, size_t num) {
     PushSocket(s);
     signal(SIGABRT,ABORT);
     if (getpeername(s, (struct sockaddr *)&sin, &n)==0)
-    recved=recv(s,bptr,num,MSG_NOSIGNAL);
+      recved=recv(s,bptr,num,MSG_NOSIGNAL);
+	else
+		perror("Error getting connection information from socket\n");
     PopSocket(s);
   }
   return recved;
@@ -236,6 +242,8 @@ static int tcp_disconnect(int conid) {
     }
     status = shutdown(s,2);
   }
+  fflush(stdin);
+  fflush(stderr);
   return status;
 }
 
@@ -432,9 +440,10 @@ static int tcp_connect(int conid, char *protocol, char *host) {
 	FD_SET(s,&writefds);
 	status = select(FD_SETSIZE, &readfds, &writefds, &exceptfds, &connectTimer);
 	if (status == 0) {
-	  printf("Error in connect: Timeout on connection\n");
+	  fprintf(stderr,"Error in connect: Timeout on connection\n");
 	  shutdown(s,2);
 	  close(s);
+	  fflush(stderr);
 	  return -1;
 	}
       }
@@ -445,11 +454,11 @@ static int tcp_connect(int conid, char *protocol, char *host) {
       status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
     if (status == -1) {
       shutdown(s,2);
-      close(s);
       s=-1;
     }
     if (s == -1) {
       perror("Error in connect to service\n");
+	  fflush(stderr);
       return -1;
     }
     SetSocketOptions(s,0);
@@ -457,9 +466,11 @@ static int tcp_connect(int conid, char *protocol, char *host) {
     return 0;
   } else if (status == 0) {
     fprintf(stderr,"Connect failed, unknown host\n");
+	fflush(stderr);
     return -1;
   } else {
     fprintf(stderr,"Connect failed, unknown service\n");
+	fflush(stderr);
     return -1;
   }
 }
@@ -561,6 +572,7 @@ static int tcp_listen(int argc, char **argv) {
 	error_count++;
 	perror("error in main select");
 	fprintf(stderr,"Error count=%d\n",error_count);
+	fflush(stderr);
 	if (error_count > 100) {
 	  fprintf(stderr,"Error count exceeded, shutting down\n");
 	  exit(1);
@@ -576,6 +588,7 @@ static int tcp_listen(int argc, char **argv) {
 	    LockAsts();
 	    if (getpeername(c->sock, (struct sockaddr *)&sin, &n)) {
 	      fprintf(stderr,"Removed disconnected client\n");
+		  fflush(stderr);
 	      CloseConnection(c->id);
 	    } else {
 	      FD_SET(c->sock, &fdactive);
@@ -587,14 +600,15 @@ static int tcp_listen(int argc, char **argv) {
     }
   } else {
     int id;
-    int sock=0;
+    int sock=GetSocketHandle();
     char *username;
-    int status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);
+    int status;
+	status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);
     if (status & 1) {
 	  struct sockaddr_in sin;
       size_t n=sizeof(sin);
       Client *new=memset(malloc(sizeof(Client)),0,sizeof(Client));
-      if (getpeername(0, (struct sockaddr *)&sin, &n)==0)
+      if (getpeername(sock, (struct sockaddr *)&sin, &n)==0)
 	    MdsSetClientAddr(*(int *)&sin.sin_addr);
       new->id=id;
       new->sock=sock;

@@ -17,13 +17,17 @@ static char *protocol="tcp";
 static char *hostfile = 0;
 static unsigned char mode = 0;;
 static int flags = 0;
+static int socketHandle = 0;
 
-/*
-static int NO_SPAWN = 1;
-static int CommandParsed = 0;
-static char *Portname;
-static short port;
-*/
+int GetSocketHandle() {
+  return socketHandle;
+}
+
+int SetSocketHandle(int handle) {
+  int old=socketHandle;
+  socketHandle=handle;
+  return old;
+}
 
 int GetFlags() {
   return flags;
