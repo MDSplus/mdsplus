@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 static void PrintHelp(char *option) {
   if (option)
@@ -13,7 +16,6 @@ static void PrintHelp(char *option) {
 	 "      -p port|service    Specifies port number or tcp service name\n"
 	 "      -m                 Use multi mode (accepts multiple connections each with own context)\n"
 	 "      -s                 Use server mode (accepts multiple connections with shared context)\n"
-	 "      -I                 Use inetd mode (accepts multiple connections spawning a process to handle each connection)\n"
 	 "      -i                 Install service (WINNT only)\n"
 	 "      -r                 Remove service (WINNT only)\n"
 	 "      -h hostfile        Specify alternate mdsip_connections.hosts file\n"
@@ -139,6 +141,13 @@ static char *OptionValue(int argc, char **argv, int i) {
   return ans;
 }
 
+#ifdef HAVE_WINDOWS_H
+static void CALLBACK ShutdownEvent(void **arg, BOOLEAN fired) {
+  printf("Shutdown event triggered, shutting down\n");
+  exit(0);
+}
+#endif
+
 void ParseCommand(int argc, char **argv) {
   int i;
   unsigned char mode = 0;
@@ -166,8 +175,32 @@ void ParseCommand(int argc, char **argv) {
       case 'c': SetCompressionLevel(atoi(argv[++i])); break;
       case '0': SetCompressionLevel(0); break;
 #ifdef HAVE_WINDOWS_H
-      case 'F': SetFlags(atoi(argv[++i])); break;
-      case 'W': i += 2; mode='w'; break;
+      case 'S': 
+		  { char logfile[1024];
+			int sock;
+			int ppid=atoi(argv[++i]);
+			int psock=atoi(argv[++i]);
+			char shutdownEventName[120];
+			HANDLE shutdownEvent,waitHandle;
+		    sprintf(logfile,"C:\\MDSIP_%s_%d.log",GetPortname(),_getpid());
+		    freopen(logfile,"a",stdout);
+		    freopen(logfile,"a",stderr);
+            if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,ppid), 
+	          (HANDLE)psock,GetCurrentProcess(),(HANDLE *)&sock,
+			  PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS)) {
+			    printf("Attempting to duplicate socket from pid %d socket %d\n",ppid,psock);
+				perror("Error duplicating socket from parent");
+				exit(1);
+			}
+			sprintf(shutdownEventName,"MDSIP_%s_SHUTDOWN",GetPortname());
+			shutdownEvent = CreateEvent(NULL,FALSE,FALSE,shutdownEventName);
+			printf("About to register wait for shutdown event\n");
+			if (!RegisterWaitForSingleObject(&waitHandle,shutdownEvent,ShutdownEvent,NULL,INFINITE,0))
+				perror("Error registering for shutdown event");
+			printf("Done register\n");
+		    SetSocketHandle(sock);
+		  }
+		break;
 #endif
       default: 
 	fprintf(stderr,"Invalid option specified %s\n\n",option);

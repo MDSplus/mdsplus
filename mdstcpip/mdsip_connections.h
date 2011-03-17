@@ -4,14 +4,15 @@
 #define _GNU_SOURCE /* glibc2 needs this */
 #include <config.h>
 #include <mdsdescrip.h>
-#include <ipdesc.h>
-#include <mds_stdarg.h>
 #ifdef HAVE_WINDOWS_H
 typedef int ssize_t;
+#include <Winsock2.h>
 #else
 #include <sys/socket.h>
 #include <sys/types.h>
 #endif
+#include <ipdesc.h>
+#include <mds_stdarg.h>
 #ifndef MSG_DONTWAIT
 #define MSG_DONTWAIT 0
 #endif
@@ -208,6 +209,7 @@ EXPORT unsigned char GetMulti();
 EXPORT char *GetPortname();
 EXPORT char *GetProtocol();
 EXPORT int GetService();
+EXPORT int GetSocketHandle();
 EXPORT int GetWorker();
 EXPORT unsigned char IncrementConnectionMessageId(int);
 EXPORT IoRoutines *LoadIo(char *protocol);
@@ -248,6 +250,7 @@ EXPORT unsigned char SetMulti(unsigned char setting);
 EXPORT char *SetPortname(char *);
 EXPORT char *SetProtocol(char *);
 EXPORT int SetService(int setting);
+EXPORT int SetSocketHandle(int handle);
 EXPORT int SetWorker(int setting);
 EXPORT void UnlockAsts();
 //Deprecated ipaddr routines
