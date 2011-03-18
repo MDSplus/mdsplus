@@ -3281,8 +3281,12 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 		   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
 		}
 	}
+printf("SPEDITI ARGS\n");
+
 	free((char *)dscs);
 	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
+
+printf("RICEVUTO RISPOSTA\n");
 	if(!(status & 1))
 	{
 	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
@@ -3290,6 +3294,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 	}
 	if(nDims == 0)
 	{
+printf("DTYPE: %d NUM BYTES: %d\n", dtype, numBytes);
 		scalarDsc.length = numBytes;
 		scalarDsc.pointer = ptr;
 		switch(dtype) {
@@ -3326,9 +3331,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 			case DTYPE_CSTRING:
 				scalarDsc.dtype = DTYPE_T;
 				break;
-			default: 		
+			default: 
 				exc = (*env)->FindClass(env, "MDSplus/MdsException");
 				(*env)->ThrowNew(env, exc, "Unexpected returned data type in mdsip connection");
+				return;
 		}
 		retObj = DescripToObject(env, &scalarDsc, 0, 0, 0, 0); 
 	}
@@ -3377,6 +3383,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 		retObj = DescripToObject(env, (struct descriptor *)&arrayDsc, 0, 0, 0, 0); 
 	}
 	if(mem) FreeMessage(mem);
+printf("FINITO\n");
 	return retObj;
 }
 
