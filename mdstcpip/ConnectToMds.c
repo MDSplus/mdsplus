@@ -81,6 +81,7 @@ static int DoLogin(int id) {
     perror("Error connecting to server");
     return -1;
   }
+  return status;
 }
 
 int ReuseCheck(char *hostin, char *unique, size_t buflen) {
