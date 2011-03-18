@@ -157,7 +157,7 @@ try:
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
         if status==1:
             if dlen.value>0:
-                ans = makeArray(_N.array(_C.cast(bptr,_C.POINTER(_C.c_uint8 * dlen.value)).contents))
+                ans = makeArray(_N.array(_C.cast(bptr,_C.POINTER(_C.c_uint8 * dlen.value)).contents,dtype=_N.uint8))
                 MdsShr.MdsFree(bptr)
                 return ans
             else:
