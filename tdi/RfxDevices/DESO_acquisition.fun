@@ -77,6 +77,67 @@ public fun DESO_acquisition()
 		VALVE WAKE UP
 	*/
 	
+/*	
+	21/03/2011 
+	Codice per verificare il tipo
+	di riempimento utilizzato  H2 o He in modo da risvegliare le 
+           valvole corrette	
+*/
+	
+	_yWaveP = data( build_path("\\RFX::VI_SETUP:PUFF_WAVE") );
+	
+	_yWaveP_Max = maxval( _yWaveP );
+	
+	if( _yWaveP_Max > 0.1 )
+	{
+		/*
+		Impulso in H2 disattivo il treno su He
+		*/
+		
+		_xWaveF_deso = dim_of( build_path("\\DESO_RAW::DESO_VISETUP:FILL_WAVE") );
+
+		_yWaveF_deso = zero( size( _xWaveF_deso ), 0. );
+		
+		_nid = getnci("\\DESO_RAW::DESO_VISETUP:FILL_WAVE", "NID_NUMBER");
+			
+		_signal = compile('build_signal(`_yWaveF_deso,,`_xWaveF_deso)');
+			
+		_status = TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
+		
+		if( !( _status & 1 ) )
+		{
+			write(*, "Impossibile disattivare il treno di impulsi per le valvole He", _status);
+			abort();
+			
+		}
+		
+		
+	}
+	else
+	{
+		/*
+		Impulso in He disattivo il treno su H2
+		*/
+		
+		_xWaveP_deso = dim_of( build_path("\\DESO_RAW::DESO_VISETUP:PUFF_WAVE") );
+
+		_yWaveP_deso = zero( size( _xWaveP_deso ), 0. );
+		
+		_nid = getnci("\\DESO_RAW::DESO_VISETUP:PUFF_WAVE", "NID_NUMBER");
+			
+		_signal = compile('build_signal(`_yWaveP_deso,,`_xWaveP_deso)');
+			
+		_status = TreeShr->TreePutRecord(val(_nid),xd(_signal),val(0));
+		
+		if( !( _status & 1 ) )
+		{
+			write(*, "Impossibile disattivare il treno di impulsi per le valvole H2", _status);
+			abort();
+			
+		}
+	}
+	
+	
 	if( _EXECUTE_PULSE )
 	{
 		Write(*, "Esegue il primo impulso pre-impostato ed attende 120 secondi");
@@ -175,9 +236,12 @@ public fun DESO_acquisition()
 /*****************************************
 	FILLING
 ******************************************/
+	
 
-write(*, "Creazione segnale FILLING");
+write(*, "Creazione segnale FILLING He");
 
+
+	
 	_yWaveF = data( build_path("\\RFX::VI_SETUP:FILL_WAVE") );
 	_xWaveF = dim_of( build_path("\\RFX::VI_SETUP:FILL_WAVE") );
 	_delayF = data( build_path("\\DESO_RAW::FILL_P_DELAY") );
@@ -185,6 +249,7 @@ write(*, "Creazione segnale FILLING");
 
 	_nPointF = size( _xWaveF );
 	_delayToAdd = 0.0;
+	
 
 if(0)
 {
@@ -192,6 +257,7 @@ if(0)
    write(*, "DELAY   ", _delayF);
 }
 
+	_yWaveP = data( build_path("\\RFX::VI_SETUP:PUFF_WAVE") );
 
 
 	if( _nPointF > 3 )
@@ -239,7 +305,7 @@ if(0)
 	PUFFING
 ******************************************/
 
-write(*, "Creazione segnale PUFFING");
+write(*, "Creazione segnale PUFFING H2");
 
 	_yWaveP = data( build_path("\\RFX::VI_SETUP:PUFF_WAVE") );
 	_xWaveP = dim_of( build_path("\\RFX::VI_SETUP:PUFF_WAVE") );
