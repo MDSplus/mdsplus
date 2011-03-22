@@ -20,6 +20,7 @@ extern int pthread_mutex_init();
 extern int pthread_mutex_lock();
 extern int pthread_mutex_unlock();
 #else
+#include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>

@@ -50,6 +50,15 @@ MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
 MDSIP_CLIENT_SSH = @MAKEBINDIR@mdsip-client-ssh
 MDSIP_SERVER_SSH = @MAKEBINDIR@mdsip-server-ssh
 
+ifneq "@GLOBUS_FLAVOR@" ""
+
+MdsIpGSI = @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@
+ALL_SOURCES = $(ALL_SOURCES) $(GSI_SOURCES)
+CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS) IoRoutinesGsi.o makefile-header
+MAKEFILE_HEADER = makefile-header
+
+endif
+
 else
 
 LIB_SOURCES = mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c mdsip_parallel.c
@@ -62,13 +71,17 @@ MDSIP_UTIL = @MAKELIBDIR@libMdsIpUtil.a
 
 endif
 
+
+
 EXPORTS = mdsipshr.export
 
-all : @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
+all : $(MAKEFILE_HEADER) \
+      @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
       $(modules) \
       $(MdsIpSrvShr) \
       $(MdsIpTunnel) \
       $(MdsIpTCP) \
+      $(MdsIpGSI) \
       $(MdsIpSSH) \
       $(MDSIP_CLIENT_SSH) \
       $(MDSIP_SERVER_SSH) \
@@ -104,6 +117,9 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsip-client-ssh
 	@ $(RM) @MAKEBINDIR@mdsip-server-ssh
+        ifdef MdsIpGSI
+	@ $(RM) $(MdsIpGSI)
+        endif
         endif
 
 install:
@@ -139,6 +155,9 @@ endif
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-ssh @bindir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-ssh @bindir@
+          ifdef MdsIpGSI
+		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@ @libdir@
+          endif
         endif
 
 @MAKEBINDIR@ :
@@ -211,3 +230,14 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 @MAKEBINDIR@mdsip-server-ssh : mdsip-server-ssh
 	cp mdsip-server-ssh $@
 
+makefile-header:  
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
+
+ifdef MdsIpGSI
+
+include makefile-header
+
+$(MdsIpGSI) :  IoRoutinesGsi.c
+	$(GLOBUS_CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include  @LINKSHARED@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L@MAKESHLIBDIR@ -lMdsIpShr
+
+endif

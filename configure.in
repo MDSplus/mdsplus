@@ -158,6 +158,36 @@ EOF
           MDSTCPIP="mdstcpip"
         )
 
+AC_ARG_WITH(gsi,
+	[  --with-gsi=globus-location:flavor  use globus xio for mdsip communications],
+          MDSTCPIP="mdstcpip roam"
+          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
+          if test "$GLOBUS_FLAVOR" = ""
+	  then
+            cat <<EOF
+
+YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option
+Format:   --with-gsi=globus-install-directory:flavor
+Example:  --with-gsi=/usr/local/gt3:gcc32dbg
+
+Note do not include pthr in the flavor as it is automatically added.
+
+EOF
+            exit
+          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
+          then
+	    cat <<EOF
+
+Do NOT INCLUDE pthr in the globus flavor!
+
+EOF
+	    exit
+          fi 
+        ,
+          MDSTCPIP="mdstcpip"
+        )
+
 AC_ARG_WITH(srb,
 	[  --with-srb=srb-install-dir  Enable srb capabilities ],
           SRB_LOCATION=$withval

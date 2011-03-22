@@ -8,14 +8,10 @@
 typedef int ssize_t;
 #include <Winsock2.h>
 #else
-#include <sys/socket.h>
 #include <sys/types.h>
 #endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>
-#ifndef MSG_DONTWAIT
-#define MSG_DONTWAIT 0
-#endif
 
 #ifndef MDSIP_CONNECTIONS
 #define MDSIP_CONNECTIONS
