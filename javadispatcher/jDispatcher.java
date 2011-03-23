@@ -864,6 +864,22 @@ class jDispatcher
         return false; //no actions to be executed in this phase
     }
 
+    public void dispatchAction(String actionPath)
+    {
+        Database currTree = InfoServer.getDatabase();
+        NidData nid;
+        try {
+            nid = currTree.resolve(new PathData(actionPath), 0);
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot resolve " + actionPath);
+            return;
+        }
+        dispatchAction(nid.getInt());
+
+    }
+
+
     public synchronized boolean dispatchAction(int nid)
     {
         if (action_nids == null)

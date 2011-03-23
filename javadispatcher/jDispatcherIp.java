@@ -200,12 +200,21 @@ class jDispatcherIp
                 else
                     throw new Exception("Invalid Command");
             }
-            else if (first_part.equals("CHECK")) 
+            else if (first_part.equals("CHECK"))
             {
                 if(dispatcher.checkEssential())
                     return 1;
                 else
                     return 0;
+            }
+            else if (first_part.equals("DO"))
+            {
+                try {
+                    String second_part = st.nextToken();
+                    dispatcher.dispatchAction(second_part);
+                }catch(Exception exc) {
+                    throw new Exception("Invalid Command");
+                }
             }
             else
                 throw new Exception("Invalid Command");
