@@ -18,7 +18,7 @@
 #endif
 
 #ifdef HAVE_VXWORKS_H
-static int CheckClient(char *matchString) {
+int CheckClient(char *matchString) {
   return 1;
 }
   
