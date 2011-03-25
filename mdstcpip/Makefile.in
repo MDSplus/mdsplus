@@ -29,11 +29,12 @@ LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsLogin.
 	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
           MakeDescrip.c LoadIo.c vmshpwd.c ArgLen.c GetSetSettings.c DoMessage.c  \
-	  LockAsts.c Connections.c MdsIpFree.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c
+	  LockAsts.c Connections.c MdsIpFree.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c \
+	 CheckClient.c
 
 LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
 
-SERVER_LIB_SOURCES = ProcessMessage.c RemoveConnection.c CheckClient.c 
+SERVER_LIB_SOURCES = ProcessMessage.c RemoveConnection.c 
 SERVER_LIB_OBJECTS = $(SERVER_LIB_SOURCES:.c=.o)
 SERVER_SOURCES = mdsip.c ParseCommand.c 
 SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
