@@ -134,7 +134,6 @@ static void ABORT(int sigval) {
   lock_socket_list();
   for (s=Sockets;s;s=s->next) {
     shutdown(s->socket,2);
-    closesocket(s->socket);
   }
   unlock_socket_list();
 }
