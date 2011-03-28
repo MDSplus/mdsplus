@@ -10,46 +10,43 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-//#include <stdio.h>
 #include <config.h>
 #include <time.h>
-//#include <netdb.h>
-//#include <netinet/in.h>
-//#include <netinet/tcp.h>
-//#include <arpa/inet.h>
-//#include <sys/ioctl.h>
 #include <stropts.h>
 #include <sys/wait.h>
 
 static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t gsi_recv(int conid, void *buffer, size_t len);
 static int gsi_disconnect(int conid);
-//static int gsi_flush(int conid);
-//static int gsi_listen(int argc, char **argv);
+static int gsi_listen(int argc, char **argv);
 static int gsi_authorize(int conid, char *username);
 static int gsi_connect(int conid, char *protocol, char *host);
 static int gsi_reuseCheck(char *host,char *unique, size_t buflen);
-static IoRoutines gsi_routines = {gsi_connect,gsi_send,gsi_recv,0,0,gsi_authorize,gsi_reuseCheck,gsi_disconnect};
+static IoRoutines gsi_routines = {gsi_connect,gsi_send,gsi_recv,0,gsi_listen,gsi_authorize,gsi_reuseCheck,gsi_disconnect};
 
 static int MDSIP_SNDBUF = 32768;
 static int MDSIP_RCVBUF = 32768;
 
-typedef struct _client {
-  int sock;
-  int id;
-  char *username;
-  int addr;
-  struct _client *next;
-} Client;
+static globus_mutex_t globus_l_mutex;
+static globus_cond_t  globus_l_cond;
 
-static Client *ClientList=0;
+typedef struct _gsi_info {
+  globus_xio_handle_t xio_handle;
+  globus_xio_driver_t gsi_driver;
+  globus_xio_driver_t tcp_driver;
+  char *connection_name;
+} GSI_INFO;
+
 
 EXPORT IoRoutines *Io() {
   return &gsi_routines;
 }
 
-static void testStatus(globus_xio_handle_t xio_handle,globus_result_t res,char *msg)
-{
+static int getSecurityLevel() {
+  return 2;
+}
+
+static void testStatus(globus_xio_handle_t xio_handle,globus_result_t res,char *msg) {
   if(res != GLOBUS_SUCCESS) {
     fprintf(stderr, "ERROR:%s ---\n       %s\n", 
 	    msg,globus_object_printable_to_string(globus_error_get(res)));
@@ -58,69 +55,99 @@ static void testStatus(globus_xio_handle_t xio_handle,globus_result_t res,char *
   }
 }
 
-static void  *getIoHandle(int conid) {
+static GSI_INFO  *getGsiInfo(int conid) {
   size_t len;
   char *info_name;
   int readfd;
-  void *io_handle = GetConnectionInfo(conid,&info_name, &readfd, &len);
-  return (info_name && strcmp(info_name,"gsi")==0) && len == sizeof(io_handle) ? io_handle : 0;
+  GSI_INFO *info = (GSI_INFO *)GetConnectionInfo(conid,&info_name, &readfd, &len);
+  return (info_name && strcmp(info_name,"gsi")==0) && len == sizeof(GSI_INFO) ? info : 0;
 }
 
 static int gsi_authorize(int conid, char *username) {
-  return 1;
-}
-/*
-  void *io_handle=getIoHandle(conid);
-  time_t tim = time(0);
-  char *timestr = ctime(&tim);
-  struct sockaddr_in sin;
-  size_t n=sizeof(sin);
+  GSI_INFO *info = getGsiInfo(conid);
   int ans=0;
-  struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
-  if (getpeername(s, (struct sockaddr *)&sin, &n)==0) {
-    char *matchString[2]={0,0};
-    int num=1;
-    char *iphost=inet_ntoa(sin.sin_addr);
-    timestr[strlen(timestr)-1] = 0;
-    hp = gethostbyaddr((char *)&sin.sin_addr,sizeof(sin.sin_addr),AF_INET);
-    if (hp && hp->h_name)
-      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr,s, getpid(), username, hp->h_name, iphost);
-    else
-      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username, iphost);
-    matchString[0]=strcpy(malloc(strlen(username)+strlen(iphost)+3),username);
-    strcat(matchString[0],"@");
-    strcat(matchString[0],iphost);
-    if (hp && hp->h_name) {
-      matchString[1]=strcpy(malloc(strlen(username)+strlen(hp->h_name)+3),username);
-      strcat(matchString[1],"@");
-      strcat(matchString[1],hp->h_name);
-      num=2;
+  if (info) {
+    char *hostname;
+    char *hostip;
+    globus_result_t res;
+    gss_buffer_desc                         peer_name_buffer = GSS_C_EMPTY_BUFFER;
+    OM_uint32                               status;
+    gss_name_t peer;
+    char *match_string[2]={0,0};
+    time_t tim=time(0);
+    char *timestr = ctime(&tim);
+    timestr[strlen(timestr)-1]=0;
+    res = globus_xio_handle_cntl(info->xio_handle,
+				 info->tcp_driver,
+				 GLOBUS_XIO_TCP_GET_REMOTE_CONTACT,
+				 &hostname);
+    testStatus(info->xio_handle,res,"GET_REMOTE_CONTACT");
+    res = globus_xio_handle_cntl(info->xio_handle,
+				 info->tcp_driver,
+				 GLOBUS_XIO_TCP_GET_REMOTE_NUMERIC_CONTACT,
+				 &hostip);
+    testStatus(info->xio_handle,res,"GET_REMOTE_NUMERIC_CONTACT");
+    res = globus_xio_handle_cntl(info->xio_handle,info->gsi_driver,
+				 GLOBUS_XIO_GSI_GET_PEER_NAME,
+				 &peer);
+    testStatus(info->xio_handle,res,"GET_PEER_NAME");
+    res = gss_display_name(&status, peer, &peer_name_buffer, GLOBUS_NULL);
+    gss_release_name(&status,&peer);
+    match_string[0]=(char *)malloc(strlen(hostname)+strlen((char *)peer_name_buffer.value)+2);
+    match_string[1]=(char *)malloc(strlen(hostip)+strlen((char *)peer_name_buffer.value)+2);
+    strcpy(match_string[0],(char *)peer_name_buffer.value);
+    strcpy(match_string[1],match_string[0]);
+    strcat(match_string[0],"@");
+    strcat(match_string[1],"@");
+    strcat(match_string[0],hostname);
+    strcat(match_string[1],hostip);
+    match_string[0][strlen((char *)peer_name_buffer.value)+1+strcspn(hostname,":")]=0;
+    match_string[1][strlen((char *)peer_name_buffer.value)+1+strcspn(hostip,":")]=0;
+    info->connection_name=malloc(strlen(match_string[0])+strlen(match_string[1])+strlen(username));
+    sprintf(info->connection_name,"%s - %s@%s [%s]",(char *)peer_name_buffer.value,
+	    username, &match_string[0][strlen((char *)peer_name_buffer.value)+2],
+	    &match_string[1][strlen((char *)peer_name_buffer.value)+2]);
+    printf("%s (pid %d) Connection received from %s\r\n", timestr, getpid(), info->connection_name);
+    gss_release_buffer(&status,&peer_name_buffer);
+    ans = CheckClient(username,2,match_string);
+    if (ans) {
+      gss_cred_id_t credential;
+      OM_uint32 major_status,minor_status;
+      gss_buffer_desc buffer_desc = GSS_C_EMPTY_BUFFER;
+      res = globus_xio_handle_cntl(info->xio_handle,info->gsi_driver,
+				   GLOBUS_XIO_GSI_GET_DELEGATED_CRED,&credential);
+      testStatus(info->xio_handle,res,"openCallback,GET_DELEGATED_CRED");
+      major_status = gss_export_cred(&minor_status,credential,GSS_C_NO_OID,0,&buffer_desc);
+      if (major_status != GSS_S_COMPLETE) {
+	char *error_str;
+	globus_gss_assist_display_status_str(&error_str,NULL,major_status,minor_status,0);
+	fprintf(stderr,"\nLINE %d ERROR: %s\n\n",__LINE__,error_str);
+      } else {
+	char cred_file_name[]="/tmp/x509pp_pXXXXXX";
+	int fd=mkstemp(cred_file_name);
+	if (fd != -1) {
+	  fchmod(fd,00600);
+	  write(fd,buffer_desc.value,buffer_desc.length);
+	  fchmod(fd,00400);
+	  close(fd);
+	  setenv("X509_USER_PROXY",cred_file_name,1);
+	} else {
+	  perror("Error creating proxy credential file");
+	}
+	major_status = gss_release_buffer(&minor_status,&buffer_desc);
+      }
     }
-    ans = CheckClient(username,num,matchString);
-    if (matchString[0])
-      free(matchString[0]);
-    if (matchString[1])
-      free(matchString[1]);
-  } else {
-	  perror("Error determining connection info from socket\n");
   }
-  fflush(stdout);
-  fflush(stderr);
   return ans;
 }
-
-*/
 
 static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options) {
   globus_size_t nbytes;
   globus_result_t result;
-  void *io_handle = getIoHandle(conid);
+  GSI_INFO *info = getGsiInfo(conid);
   ssize_t sent=-1;
-  if (io_handle != 0) {
-    result = globus_xio_write((globus_xio_handle_t)io_handle, (globus_byte_t *)bptr, num, num, &nbytes, NULL);
+  if (info != 0) {
+    result = globus_xio_write(info->xio_handle, (globus_byte_t *)bptr, num, num, &nbytes, NULL);
     testStatus(0,result,"mdsip_send_message globus_xio_write");
     if (result == GLOBUS_SUCCESS)
       sent=nbytes;
@@ -130,12 +157,12 @@ static ssize_t gsi_send(int conid, const void *bptr, size_t num, int options) {
 
 static ssize_t gsi_recv(int conid, void *bptr, size_t num) {
   globus_result_t result;
-  void *io_handle = getIoHandle(conid);
+  GSI_INFO *info = getGsiInfo(conid);
   globus_size_t numreceived;
   ssize_t recved = -1;
-  if (io_handle != 0) {
-    result = globus_xio_read(io_handle, (globus_byte_t *)bptr, num, num, &numreceived, NULL);
-    testStatus(io_handle,result,"mdsip_get_message, globus_xio_read");
+  if (info != 0) {
+    result = globus_xio_read(info->xio_handle, (globus_byte_t *)bptr, num, num, &numreceived, NULL);
+    testStatus(info->xio_handle,result,"mdsip_get_message, globus_xio_read");
     if (result == GLOBUS_SUCCESS)
       recved = numreceived;
   }
@@ -145,14 +172,20 @@ static ssize_t gsi_recv(int conid, void *bptr, size_t num) {
 
 static int gsi_disconnect(int conid) {
   int status=-1;
-  void *io_handle = getIoHandle(conid);
-  if (io_handle) {
-    globus_result_t result = globus_xio_close(io_handle,NULL);
+  GSI_INFO *info = getGsiInfo(conid);
+  if (info) {
+    if (info->connection_name) {
+      time_t tim=time(0);
+      char *timestr = ctime(&tim);
+      timestr[strlen(timestr)-1]=0;
+      printf("%s (pid %d) Connection disconnected from %s\r\n",timestr,getpid(),info->connection_name);
+    }
+    globus_result_t result = globus_xio_close(info->xio_handle,NULL);
     status = (result == GLOBUS_SUCCESS) ? 0 : -1;
   }
   return status;
 }
-/*
+
 static short GetPort() {
   short port;
   char *name=GetPortname();
@@ -169,88 +202,12 @@ static short GetPort() {
   return port;
 }
 
-static int getHostAndPort(char *hostin, struct sockaddr_in *sin) {
-  struct hostent *hp = NULL;
-  int addr;
-  size_t i;
-  static char *mdsip="mdsip";
-  char *host=strcpy((char *)malloc(strlen(hostin)+1),hostin);
-  char *service;
-  unsigned short portnum;
-  InitializeSockets();
-  for (i=0;i<strlen(host) && host[i] != ':';i++);
-  if (i<strlen(host)) {
-    host[i]='\0';
-    service = &host[i+1];
-  } else {
-    service = mdsip;
-  } 
-#ifndef HAVE_VXWORKS_H
-  hp = gethostbyname(host);
-#endif
-  if (hp == NULL) {
-    addr = inet_addr(host);
-#ifndef HAVE_VXWORKS_H
-    if (addr != 0xffffffff)
-    	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-#endif
-  }
-  if (hp == 0) {
-    free(host);
-    return 0;
-  }
-#ifdef HAVE_VXWORKS_H
-  portnum = htons((atoi(service) == 0) ? 8000 : atoi(service));
-#else
-  if (atoi(service) == 0) {
-    struct servent *sp;
-    sp = getservbyname(service,"tcp");
-    if (sp != NULL)
-      portnum = sp->s_port;
-    else {
-      char *port = getenv(service);
-      port = (port == NULL) ? "8000" : port;
-      portnum = htons(atoi(port));
-    }
-  }
-  else
-    portnum = htons(atoi(service));
-  if (portnum == 0) {
-    free(host);
-    return 2;
-  }
-#endif
-  sin->sin_port = portnum;
-  sin->sin_family = AF_INET;
-#if defined( HAVE_VXWORKS_H )
-  memcpy(&sin->sin_addr, &addr, sizeof(addr));
-#elif defined(ANET)
-  memcpy(&sin->sin_addr, hp->h_addr, sizeof(sin->sin_addr));
-#else
-  memcpy(&sin->sin_addr, hp->h_addr_list[0], hp->h_length);
-#endif
-  free(host);
-  return 1;
-}
-*/
+
 
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen) {
-  /*
-  struct sockaddr_in sin;
-  int status = getHostAndPort(host,&sin);
-  if (status == 1) {
-    unsigned char *addr=(char *)&sin.sin_addr;
-    snprintf(unique,buflen,"tcp://%d.%d.%d.%d:%d",addr[0],addr[1],addr[2],addr[3],ntohs(sin.sin_port));
-    return 0;
-  } else {
-    *unique=0;
-    return -1;
-  }
-  */
-  snprintf(unique,buflen,"%s",host);
-  return 0;
+  IoRoutines *io=LoadIo("tcp");
+  return (io && io->reuseCheck) ? io->reuseCheck(host, unique, buflen) : -1;
 }
-
 
 static int gsi_connect(int conid, char *protocol, char *host) {
   static int activated=0;
@@ -327,131 +284,145 @@ static int gsi_connect(int conid, char *protocol, char *host) {
   SetConnectionInfo(conid,"tcp",0,&xio_handle,sizeof(xio_handle));
   return 0;
 }
-/*
+
+static void readCallback(
+			 globus_xio_handle_t xio_handle,
+			 globus_result_t result,
+			 globus_byte_t *buffer,
+			 globus_size_t len,
+			 globus_size_t nbytes,
+			 globus_xio_data_descriptor_t data_desc,
+			 void *userarg) {
+  int id = userarg ? *(int *)userarg : -1;
+  if (id > 0) {
+    GSI_INFO *info = getGsiInfo(id);
+    if (info) {
+      globus_result_t res;
+      DoMessage(id);
+      res = globus_xio_register_read(info->xio_handle, 0, 0, 0, 0, readCallback, userarg);
+    }
+  }
+}
+
+static void acceptCallback(
+		     globus_xio_server_t server,
+		     globus_xio_handle_t xio_handle,
+		     globus_result_t     result,
+		     void *userarg) {
+  globus_result_t res;
+  char *username;
+  int status;
+  int id;
+  GSI_INFO *info_s=(GSI_INFO *)userarg;
+  if (info_s != 0) {
+    GSI_INFO info;
+    info.tcp_driver=info_s->tcp_driver;
+    info.gsi_driver=info_s->gsi_driver;
+    info.xio_handle=xio_handle;
+    info.connection_name=0;
+    status=AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
+    if (status & 1)
+      res = globus_xio_register_read(xio_handle, 0, 0, 0, 0, readCallback, memcpy(malloc(sizeof(id)),&id,sizeof(id)));
+    res = globus_xio_server_register_accept(server,acceptCallback,userarg);
+    testStatus(0,res,"mdsip_accept_cb, error in globus_xio_server_register_accept");
+    if (res != GLOBUS_SUCCESS)
+      exit(0);
+  }
+}
+
 static int gsi_listen(int argc, char **argv) {
-#ifndef HAVE_WINDOWS_H
-  signal(SIGCHLD,ChildSignalHandler);
-#endif
-  InitializeSockets();
+  globus_xio_stack_t stack;
+  globus_result_t res;
+  globus_xio_attr_t server_attr;
+  int sl;
+  GSI_INFO info;
+  info.connection_name=0;
+  globus_mutex_init(&globus_l_mutex,NULL);
+  globus_cond_init(&globus_l_cond,NULL);
+  globus_module_activate(GLOBUS_XIO_MODULE);
+  globus_xio_stack_init(&stack, NULL);
+  globus_xio_driver_load("tcp",&info.tcp_driver);
+  globus_xio_stack_push_driver(stack,info.tcp_driver);
+  globus_xio_driver_load("gsi",&info.gsi_driver);
+  globus_xio_stack_push_driver(stack,info.gsi_driver);
+  globus_xio_attr_init(&server_attr);
   if (GetMulti()) {
-    unsigned short port=GetPort();
-    char *matchString[] = {"multi"};
-    int s;
-    struct sockaddr_in sin;
-    int tablesize = FD_SETSIZE;
-    int error_count=0;
-    fd_set readfds;
-    int one=1;
-    int status;
-    FD_ZERO(&fdactive);
-    CheckClient(0,1,matchString);
-    s = socket(AF_INET, SOCK_STREAM, 0);
-    if (s == -1) {
-      printf("Error getting Connection Socket\n");
+    res = globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			       GLOBUS_XIO_TCP_SET_PORT,
+			       GetPort());
+    res = globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			       GLOBUS_XIO_TCP_SET_SNDBUF,
+			       MDSIP_SNDBUF);
+    res = globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			       GLOBUS_XIO_TCP_SET_RCVBUF,
+			       MDSIP_RCVBUF);
+    res = globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			       GLOBUS_XIO_TCP_SET_NODELAY,
+			       GLOBUS_TRUE);
+    res = globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			       GLOBUS_XIO_TCP_SET_KEEPALIVE,
+			       GLOBUS_TRUE);
+  } else {
+    globus_xio_attr_cntl(server_attr, info.tcp_driver,
+			 GLOBUS_XIO_TCP_SET_HANDLE,
+			 STDIN_FILENO);
+  }
+  sl = getSecurityLevel();
+  if (sl > 0) {
+    int level;
+    switch (sl) {
+    case 1: 
+      level = GLOBUS_XIO_GSI_PROTECTION_LEVEL_NONE; 
+      break;
+    case 2:
+      level = GLOBUS_XIO_GSI_PROTECTION_LEVEL_INTEGRITY;
+      break;
+    case 3:
+      level = GLOBUS_XIO_GSI_PROTECTION_LEVEL_PRIVACY;
+      break;
+    default:
+      fprintf(stderr,"Invalid security level: %d\n",sl);
       exit(1);
     }
-    FD_SET(s,&fdactive);
-    SetSocketOptions(s,1);
-    memset(&sin,0,sizeof(sin));
-    sin.sin_port = port;
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = INADDR_ANY;
-    status = bind(s, (struct sockaddr *)&sin, sizeof(struct sockaddr_in));
-    if (status < 0)  {
-      perror("Error binding to service\n");
-      exit(1);
-    }
-    status = listen(s,128);
-    if (status < 0) {
-      printf("Error from listen\n");
-      exit(1);
-    }
-    while (1) {
-      readfds = fdactive;
-      if (select(tablesize, &readfds, 0, 0, 0) != -1) {
-	error_count=0;
-	if (FD_ISSET(s, &readfds)) {
-	  socklen_t len = sizeof(sin);
-	  int id=-1;
-	  int status;
-	  char *username;
-	  int sock=accept(s, (struct sockaddr *)&sin, &len);
-	  SetSocketOptions(sock,0);
-	  status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);
-	  if (status & 1) {
-	    Client *new=memset(malloc(sizeof(Client)),0,sizeof(Client));
-	    new->id=id;
-	    new->sock=sock;
-	    new->next=ClientList;
-	    new->username=username;
-		new->addr=*(int *)&sin.sin_addr;
-	    ClientList=new;
-	    FD_SET(sock,&fdactive);
-	  }      
-	} else {
-	  Client *c;
-	  for (c=ClientList;c;) {
-		if (FD_ISSET(c->sock, &readfds)) {
-		  MdsSetClientAddr(c->addr);
-	      DoMessage(c->id);
-		  c=ClientList;
-		} else
-		  c=c->next;
-	  }
-	}
-      }
+    globus_xio_attr_cntl(server_attr, info.gsi_driver,
+			 GLOBUS_XIO_GSI_SET_PROTECTION_LEVEL,
+			 level);
+    globus_xio_attr_cntl(server_attr, info.gsi_driver,
+			 GLOBUS_XIO_GSI_SET_AUTHORIZATION_MODE,
+			 GLOBUS_XIO_GSI_NO_AUTHORIZATION);
+    globus_xio_attr_cntl(server_attr, info.gsi_driver,
+			 GLOBUS_XIO_GSI_SET_DELEGATION_MODE,
+			 GLOBUS_XIO_GSI_DELEGATION_MODE_FULL);
+  }
+  if (GetMulti()) {
+    res = globus_xio_server_create((globus_xio_server_t *)&info.xio_handle, server_attr, stack);
+    testStatus(0,res,"gsi_listen,server_create");
+    if (res == GLOBUS_SUCCESS) {
+      //      int id = NewConnection("gsi");
+      // SetConnectionInfo(id, "gsi", 0, &info, sizeof(info));
+      res = globus_xio_server_register_accept((globus_xio_server_t)info.xio_handle,acceptCallback,&info);
+      if (res != GLOBUS_SUCCESS)
+	exit(1);
       else {
-	error_count++;
-	perror("error in main select");
-	fprintf(stderr,"Error count=%d\n",error_count);
-	fflush(stderr);
-	if (error_count > 100) {
-	  fprintf(stderr,"Error count exceeded, shutting down\n");
-	  exit(1);
-	}
-	else {
-	  Client *c;
-	  FD_ZERO(&fdactive);
-	  if (s != -1)
-	    FD_SET(s,&fdactive);
-	  for (c=ClientList; c; c=c->next) {
-	    struct sockaddr sin;
-	    socklen_t n = sizeof(sin);
-	    LockAsts();
-	    if (getpeername(c->sock, (struct sockaddr *)&sin, &n)) {
-	      fprintf(stderr,"Removed disconnected client\n");
-		  fflush(stderr);
-	      CloseConnection(c->id);
-	    } else {
-	      FD_SET(c->sock, &fdactive);
-	    }
-	    UnlockAsts();
-	  }
+	while (1) {
+	  res = globus_mutex_lock(&globus_l_mutex);
+	  res = globus_cond_wait(&globus_l_cond,&globus_l_mutex);
+	  res = globus_mutex_unlock(&globus_l_mutex);
 	}
       }
     }
   } else {
-    int id;
-    int sock=GetSocketHandle();
     char *username;
     int status;
-	status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);
-    if (status & 1) {
-	  struct sockaddr_in sin;
-      size_t n=sizeof(sin);
-      Client *new=memset(malloc(sizeof(Client)),0,sizeof(Client));
-      if (getpeername(sock, (struct sockaddr *)&sin, &n)==0)
-	    MdsSetClientAddr(*(int *)&sin.sin_addr);
-      new->id=id;
-      new->sock=sock;
-      new->next=ClientList;
-      new->username=username;
-      ClientList=new;
-      FD_SET(sock,&fdactive);
-    }
-    while (status & 1)
+    int id;
+    globus_xio_attr_cntl(server_attr, info.gsi_driver, GLOBUS_XIO_GSI_FORCE_SERVER_MODE, GLOBUS_TRUE);
+    globus_xio_handle_create(&info.xio_handle,stack);
+    res = globus_xio_open(info.xio_handle, NULL, server_attr);
+    testStatus(0,res,"get handle to connection");
+    status=AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
+    while (status & 1) {
       status = DoMessage(id);
+    }
   }
-  return 1;
+  return 0;
 }
-*/
