@@ -318,9 +318,8 @@ static void SetSocketOptions(SOCKET s, int reuse) {
   setsockopt(s, SOL_SOCKET,SO_OOBINLINE,(void *)&one,sizeof(one));
 }
 
-static short GetPort() {
+static short GetPort(char *name) {
   short port;
-  char *name=GetPortname();
   struct servent *sp;
   port = htons((short)atoi(name));
   if (port == 0) {
@@ -475,7 +474,35 @@ static int tcp_connect(int conid, char *protocol, char *host) {
   }
 }
 
-#ifndef HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
+static int GetSocketHandle(char *name) {
+  char logfile[1024];
+  int sock;
+  int ppid;
+  int psock;
+  char shutdownEventName[120];
+  HANDLE shutdownEvent,waitHandle;
+  if (name==0 || sscanf(name,"%d:%d",&ppid,&psock) != 2) {
+    fprintf(stderr,"Mdsip single connection server can only be started from windows service\n");
+    exit(1);
+  }
+  sprintf(logfile,"C:\\MDSIP_%s_%d.log",GetPortname(),_getpid());
+  freopen(logfile,"a",stdout);
+  freopen(logfile,"a",stderr);
+  if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,ppid), 
+		       (HANDLE)psock,GetCurrentProcess(),(HANDLE *)&sock,
+		       PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS)) {
+    fprintf(stderr,"Attempting to duplicate socket from pid %d socket %d\n",ppid,psock);
+    perror("Error duplicating socket from parent");
+    exit(1);
+  }
+  sprintf(shutdownEventName,"MDSIP_%s_SHUTDOWN",GetPortname());
+  shutdownEvent = CreateEvent(NULL,FALSE,FALSE,shutdownEventName);
+  if (!RegisterWaitForSingleObject(&waitHandle,shutdownEvent,ShutdownEvent,NULL,INFINITE,0))
+    perror("Error registering for shutdown event");
+  return sock;
+}
+#else
 static void ChildSignalHandler(int num) {
   sigset_t set, oldset;
   pid_t pid;
@@ -497,12 +524,22 @@ static void ChildSignalHandler(int num) {
 #endif
 
 static int tcp_listen(int argc, char **argv) {
+  Options options[] = {{"p","port",1,0,0},
+#ifdef HAVE_WINDOWS_H
+		       {"S","sockethandle",1,0,0},
+#endif
+		       {0,0,0,0}};
 #ifndef HAVE_WINDOWS_H
   signal(SIGCHLD,ChildSignalHandler);
 #endif
+  ParseCommand(argc,argv,options,0,0,0);
+  if (options[0].present && options[0].value)
+    SetPortname(options[0].value);
+  else if (GetPortname()==0)
+    SetPortname("mdsip");
   InitializeSockets();
   if (GetMulti()) {
-    unsigned short port=GetPort();
+    unsigned short port=GetPort(GetPortname());
     char *matchString[] = {"multi"};
     int s;
     struct sockaddr_in sin;
@@ -599,8 +636,12 @@ static int tcp_listen(int argc, char **argv) {
       }
     }
   } else {
+#ifdef HAVE_WINDOWS_H
+    int sock=GetSocketHandle(options[1].value);
+#else
+    int sock=0;
+#endif
     int id;
-    int sock=GetSocketHandle();
     char *username;
     int status;
 	status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);

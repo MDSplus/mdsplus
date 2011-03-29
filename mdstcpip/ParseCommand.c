@@ -2,230 +2,130 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#endif
+#include "mdsip_connections.h"
 
-static void PrintHelp(char *option) {
+void PrintHelp(char *option) {
   if (option)
     printf("Invalid options specified: %s\n\n",option);
   printf("mdsip - MDSplus data server\n\n"
 	 "  Format:\n\n"
-	 "    mdsip -P protocol -p port|service [-m|-s] [-i|-r] [-h hostfile] [-c|+c]\n\n"
+	 "    mdsip [-P protocol] [-m|-s] [-i|-r] [-h hostfile] [-c|+c] [-p port] [protocol-specific-options]\n\n"
 	 "      -P protocol        Specifies server protocol, defaults to tcp\n"
 	 "      -p port|service    Specifies port number or tcp service name\n"
 	 "      -m                 Use multi mode (accepts multiple connections each with own context)\n"
-	 "      -s                 Use server mode (accepts multiple connections with shared context)\n"
-	 "      -i                 Install service (WINNT only)\n"
-	 "      -r                 Remove service (WINNT only)\n"
-	 "      -h hostfile        Specify alternate mdsip_connections.hosts file\n"
-	 "      -c [level]         Specify maximum zlip compression level, 0=nocompression,1-9 fastest/least to slowest/most, 0-default\n"
-	 "      +c                 Allow compression up to maximum level 9\n\n"
+	 "      -s                 Use server mode (accepts multiple connections with shared context. Used for action servers.)\n"
+	 "      -i                 Install service (Windows only)\n"
+	 "      -r                 Remove service (Windows only)\n"
+	 "      -h hostfile        Specify alternate mdsip.hosts file. Defaults to /etc/mdsip.hosts (linux) or C:\\mdsip.hosts(windows).\n"
+	 "      -c [level]         Specify maximum zlip compression level, 0=nocompression,1-9 fastest/least to slowest/most, default=9\n\n"
 	 "    longform switches are also permitted:\n\n"
-	 "      --protocol protocal-name\n"
-	 "      --port port|service\n"
-	 "      --protocol io-protocol-name\n"
+         "      --help             This help message\n"
+	 "      --protocol=protocal-name\n"
+	 "      --port=port|service\n"
+	 "      --protocol=io-protocol-name\n"
 	 "      --multi\n"
 	 "      --server\n"
 	 "      --install\n"
 	 "      --remove\n"
-	 "      --hostfile hostfile\n"
-	 "      --cert certificatefile (globus only)\n"
-	 "      --key  keyfile (globus only)\n"
-	 "      --nocompression\n"
-	 "      --compression [level,default=9]\n\n"
-	 "  Deprecated Format:\n\n    mdsip port|service [multi|server|install|install_server|install_multi|remove] [hostfile]\n");
+	 "      --hostfile=hostfile\n"
+	 "      --compression [level,default=9]\n\n");
   exit(1);
 } 
 
-static unsigned char NewMode(unsigned char newmode, unsigned char oldmode) {
-  int multiple = 0;
-  unsigned char ans=0;
-  switch (newmode)
-  {
-  case 'X': if (oldmode == 0)
-     ans='X';
-    else
-      multiple = 1;
-    break;
-  case 'I': if (oldmode == 0)
-              ans = 'I';
-            else
-              multiple = 1;
-            break;
-  case 'm':
+void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc, char ***rem_argv) {
+  int i;
+  int extra_argc=1;
+  char **extra_argv=malloc(argc*sizeof(char *));
+  extra_argv[0]=argv[0];
+  for (i=1;i<argc;i++) {
+    char *arg=argv[i];
+    size_t arglen=strlen(arg);
+    if (arg[0]=='-') {
+      int option_found=0;
+      int opt;
+      arg++;
+      arglen--;
+      if (strcmp("help",arg)==0)
+	PrintHelp(0);
+      for (opt=0;options[opt].short_name || options[opt].long_name;opt++) {
+	if (*arg=='-' && options[opt].long_name) {
+	  char *long_name=options[opt].long_name;
+	  size_t optlen=strlen(long_name);
+	  arg++;
+	  arglen--;
+	  if (arglen>=optlen &&
+	      strncmp(arg,long_name,optlen)==0) {
+	    option_found=options[opt].present=1;
+	    if (options[opt].expects_value) {
+	      if (arglen>optlen && 
+		  arg[optlen]=='=')
+		options[opt].value=&arg[optlen+1];
+	      else {
+		options[opt].value=argv[i+1];
+		i++;
+	      }
+	    }
+	    break;
+	  }
+	} else if (options[opt].short_name && 
+		   arglen>=0 &&
+		   arg[0]==options[opt].short_name[0]) {
+	  option_found=options[opt].present=1;
+	  if (options[opt].expects_value) {
+	    if (arglen>2 && arg[1]=='=')
+	      options[opt].value=&arg[2];
+	    else {
+	      options[opt].value=argv[i+1];
+	      i++;
+	    }
+	  }
+	  break;
+	}
+      }
+      if (!option_found) {
+	if (!more)
+	  PrintHelp(argv[i]);
+	else {
+	  extra_argv[extra_argc]=argv[i];
+	  extra_argc++;
+	}
+      }
+    } else {
+      extra_argv[extra_argc]=argv[i];
+      extra_argc++;
+    }
+  }
+  if (rem_argc) {
+    *rem_argc=extra_argc;
+    *rem_argv=extra_argv;
+  }
+}
+
+void ParseStdArgs(int argc, char **argv,int *extra_argc, char ***extra_argv) {
+  Options options[] = {{"P","protocol",1,0,0},
+		       {"h","hostfile",1,0,0},
+		       {"s","server",0,0,0},
+		       {"m","multi",0,0,0},
+		       {"c","compression",1,0,0},
+		       {0,0,0,0}};
+  ParseCommand(argc,argv,options,1,extra_argc,extra_argv);
+  if (options[0].present && options[0].value)
+    SetProtocol(options[0].value);
+  if (options[1].present && options[1].value)
+    SetHostfile(options[1].value);
+  if (options[2].present) {
+    if (options[3].present) {
+      fprintf(stderr,"Cannot select both server mode and multi mode\n\n");
+      PrintHelp(0);
+    } else {
+      SetMulti(1);
+      SetContextSwitching(0);
+    }
+  }
+  if (options[3].present) {
     SetMulti(1);
     SetContextSwitching(1);
-    if (oldmode == 0)
-      ans = 'm';
-    else if (oldmode == 'i')
-      ans = 'M';
-    else
-      multiple = 1;
-    break;
-  case 's':
-    SetMulti(1);
-    SetContextSwitching(0);
-    if (oldmode == 0)
-      ans = 's';
-    else if (oldmode == 'i')
-      ans = 'S';
-    else
-      multiple = 1;
-    break;
-  case 'i': 
-    if (oldmode == 0)
-      ans = 'i';
-    else if (oldmode == 's')
-      ans = 'S';
-    else if (oldmode == 'm')
-      ans = 'M';
-    else
-      multiple = 1;
-    break;
-  case 'r':
-    if ((oldmode == 0) || (oldmode  == 's') || (oldmode == 'm'))
-      ans = 'r';
-    else
-      multiple = 1;
-    break;
   }
-  if (multiple)
-  {
-    printf("Multiple or incompatible modes selected\n\n");
-    PrintHelp(0);
-  }
-  return ans;
+  if (options[4].present && options[4].value)
+    SetCompressionLevel(atoi(options[4].value));
 }
-
-
-#ifndef HAVE_VXWORKS_H
-static char *ParseOption(char *option)
-{
-  static char *options[][2] = 
-    {{"--port","-p"},
-     {"--protocol","-P"},
-     {"--multi","-m"},
-     {"--server","-s"},
-     {"--install","-i"},
-     {"--remove","-r"},
-     {"--hostfile","-h"},
-     {"--nocompression","-0"},
-     {"--compression","-c"},
-     {0,0}};
-  char **opt;
-  int i;
-  for (i=0,opt=options[i];opt[0];i++,opt=options[i]) {
-    if (strcmp(option,opt[0])==0)
-      return opt[1];
-  }
-  fprintf(stderr,"Invalid option specified: --%s\n\n",option);
-  PrintHelp(0);
-  return (char *)0;
-}
-
-#endif
-
-
-
-#ifndef HAVE_VXWORKS_H
-
-static char *OptionValue(int argc, char **argv, int i) {
-  char *ans = 0;
-  if (argc > (i+1))
-    ans = strcpy((char *)malloc(strlen(argv[i+1])+1),argv[i+1]);
-  else {
-    fprintf(stderr,"%s requires value\n",argv[i]);
-    PrintHelp(0);
-  }
-  return ans;
-}
-
-#ifdef HAVE_WINDOWS_H
-static void CALLBACK ShutdownEvent(void **arg, BOOLEAN fired) {
-  printf("Shutdown event triggered, shutting down\n");
-  exit(0);
-}
-#endif
-
-void ParseCommand(int argc, char **argv) {
-  int i;
-  unsigned char mode = 0;
-  if (argc < 2)
-	PrintHelp(0);
-  for (i=1;i<argc;i++) {
-    char *option = argv[i];
-    switch (option[0]) {
-    case '-':
-      if (option[1] == '-')
-	option = ParseOption(option);
-      if (strlen(option) > 2) {
-	fprintf(stderr,"Invalid option specified: %s\n\n",option);
-	PrintHelp(0);
-      }
-      switch ( option[1] ) {
-      case 'P': SetProtocol(OptionValue(argc, argv, i++)); break;
-      case 'p': SetPortname(OptionValue(argc, argv, i++)); break;
-      case 'I': mode=NewMode('I',mode); break;
-      case 'm': mode=NewMode('m',mode); break;
-      case 's': mode=NewMode('s',mode); break;
-      case 'i': mode=NewMode('i',mode); break;
-      case 'r': mode=NewMode('r',mode); break;
-      case 'h': SetHostfile(OptionValue(argc, argv, i++)); break;
-      case 'c': SetCompressionLevel(atoi(argv[++i])); break;
-      case '0': SetCompressionLevel(0); break;
-#ifdef HAVE_WINDOWS_H
-      case 'S': 
-		  { char logfile[1024];
-			int sock;
-			int ppid=atoi(argv[++i]);
-			int psock=atoi(argv[++i]);
-			char shutdownEventName[120];
-			HANDLE shutdownEvent,waitHandle;
-		    sprintf(logfile,"C:\\MDSIP_%s_%d.log",GetPortname(),_getpid());
-		    freopen(logfile,"a",stdout);
-		    freopen(logfile,"a",stderr);
-            if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,ppid), 
-	          (HANDLE)psock,GetCurrentProcess(),(HANDLE *)&sock,
-			  PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS)) {
-			    printf("Attempting to duplicate socket from pid %d socket %d\n",ppid,psock);
-				perror("Error duplicating socket from parent");
-				exit(1);
-			}
-			sprintf(shutdownEventName,"MDSIP_%s_SHUTDOWN",GetPortname());
-			shutdownEvent = CreateEvent(NULL,FALSE,FALSE,shutdownEventName);
-			printf("About to register wait for shutdown event\n");
-			if (!RegisterWaitForSingleObject(&waitHandle,shutdownEvent,ShutdownEvent,NULL,INFINITE,0))
-				perror("Error registering for shutdown event");
-			printf("Done register\n");
-		    SetSocketHandle(sock);
-		  }
-		break;
-#endif
-      default: 
-	fprintf(stderr,"Invalid option specified %s\n\n",option);
-	PrintHelp(option); break;
-      }
-      break;
-    case '+':
-      if (strlen(option) != 2) {
-	fprintf(stderr,"Invalid option specified: %s\n\n",option);
-	PrintHelp(0);
-      }
-      switch ( option[1] ) {
-      case 'c':
-	SetCompressionLevel(9);
-	break;
-      default: 
-	PrintHelp(option);
-	break;
-      }
-      break;
-    default:
-      fprintf(stderr,"Invalid option specified: %s\n\n",option);
-      break;
-    }
-    SetMode(mode);
-  }
-}
-#endif

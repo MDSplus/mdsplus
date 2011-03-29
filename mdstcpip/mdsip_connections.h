@@ -60,6 +60,14 @@ typedef struct _eventlist { int          conid;
                           } MdsEventList;
 
 
+typedef struct _options {
+  char *short_name;
+  char *long_name;
+  int  expects_value;
+  int  present;
+  char *value;
+} Options;
+
 typedef struct _connection {
   int id; /* unique connection id */
   char *protocol;
@@ -228,7 +236,9 @@ EXPORT int MdsSetCompression(int id, int level);
 EXPORT int MdsSetDefault(int id, char *node);
 EXPORT int MdsValue(int id,char *exp,...);
 EXPORT int NextConnection(void **ctx,char **info_name, void **info, size_t *info_len);
-EXPORT int PrintHelp(char *);
+EXPORT void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc, char ***rem_argv);
+EXPORT void ParseStrArgs(int argc, char **argv, int *extra_argc, char ***extra_argv);
+EXPORT void PrintHelp(char *);
 
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 EXPORT int  SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims, int *dims, char *bytes);

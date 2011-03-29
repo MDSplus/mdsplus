@@ -4,10 +4,12 @@
 
 int main(int argc, char **argv) {
   IoRoutines *io;
-  ParseCommand(argc,argv);
+  int extra_argc;
+  char **extra_argv;
+  ParseStdArgs(argc,argv,&extra_argc,&extra_argv);
   io=LoadIo(GetProtocol());
   if (io && io->listen)
-    io->listen(argc,argv);
+    io->listen(extra_argc,extra_argv);
   else {
     fprintf(stderr,"Protocol %s does not support servers\n",GetProtocol());
     return 1;

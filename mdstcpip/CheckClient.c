@@ -24,8 +24,7 @@ int CheckClient(char *matchString) {
   
 #else
 
-static void CompressString(struct descriptor *in, int upcase)
-{
+static void CompressString(struct descriptor *in, int upcase) {
   unsigned short len;
   static int two=2;
   StrTrim(in,in,&len);
@@ -34,9 +33,11 @@ static void CompressString(struct descriptor *in, int upcase)
   while(in->length && (in->pointer[0] == ' ' || in->pointer[0] == '	'))
     StrRight(in,in,&two);
 }
+
 #ifdef HAVE_WINDOWS_H
 static int BecomeUser(char *remuser, struct descriptor *local_user) {return 1;}
 #else
+
 static void ChildSignalHandler(int num) {
   sigset_t set, oldset;
   pid_t pid;
@@ -55,6 +56,7 @@ static void ChildSignalHandler(int num) {
     sigprocmask(SIG_UNBLOCK, &set, &oldset);
   }
 }
+
 static int BecomeUser(char *remuser, struct descriptor *local_user) {
   int ok = 1;
   CompressString(local_user,0);
@@ -82,27 +84,15 @@ static int BecomeUser(char *remuser, struct descriptor *local_user) {
        int homelen = strlen(pwd->pw_dir); 
        char *cmd = strcpy(malloc(homelen+10),"HOME=");
        char *mds_path = getenv("MDS_PATH");
-       if (GetMode() == 'I') {
-         signal(SIGCHLD,ChildSignalHandler);
-         pid = fork();
-       }
-       else
-         pid = getpid();
-       if (!pid || GetMode() != 'I') {
-#ifdef GLOBUS
-         chown(getenv("X509_USER_PROXY"),pwd->pw_uid,pwd->pw_gid);
-#endif
-         initgroups(pwd->pw_name,pwd->pw_gid);
-         status = setgid(pwd->pw_gid);
-         status = setuid(pwd->pw_uid);
-         if (status)
+       pid = getpid();
+       initgroups(pwd->pw_name,pwd->pw_gid);
+       status = setgid(pwd->pw_gid);
+       status = setuid(pwd->pw_uid);
+       if (status)
            printf("Cannot setuid - run server as root!");
-         strcat(cmd,pwd->pw_dir);
-         putenv(cmd);
+       strcat(cmd,pwd->pw_dir);
+       putenv(cmd);
        /* DO NOT FREE CMD --- putenv requires it to stay allocated */
-       }
-       else
-         status = 0;
     }
     else
       printf("Invalid mapping, cannot find user %s\n",user);

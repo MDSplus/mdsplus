@@ -7,6 +7,8 @@
 
 static int shut=0;
 static HANDLE shutdownEventHandle;
+static int extra_argc;
+static char **extra_argv;
 
 static char *ServiceName() {
   static char name[512] = {0};
@@ -27,7 +29,7 @@ static int SpawnWorker(SOCKET sock) {
   sc_atts.nLength=sizeof(sc_atts);
   sc_atts.bInheritHandle=TRUE;
   sc_atts.lpSecurityDescriptor=NULL;
-  sprintf(cmd,"%.*s\\mdsip.exe -p %s -h %s -c %d -S %d %d",lslash-pgm,pgm,
+  sprintf(cmd,"%.*s\\mdsip.exe --port=%s --hostfile=%s --compression=%d --sockethandle=%d:%d",lslash-pgm,pgm,
 	  GetPortname(),GetHostfile(),GetMaxCompressionLevel(),_getpid(),sock);
   memset(&startupinfo,0,sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
@@ -96,16 +98,40 @@ static void InstallService() {
   hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
   if (hSCManager) {
     SC_HANDLE hService;
-	char *pgm;
+    char *pgm;
     char *cmd;
-	unsigned char mode = GetMode();
-	_get_pgmptr(&pgm);
-	cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
-	sprintf(cmd,"%s -p %s -h \"%s\" %s",pgm,GetPortname(),GetHostfile(),mode == 'i' ? "" : (mode == 'M' ? "-m" : "-s"));
+    static const char* multi_opt="--multi";
+    static const char* server_opt="--server";
+    static const char* data_opt="";
+    char *opts = GetMulti() ? (GetContextSwitching() ? "--multi" : "--server") : "";
+    SERVICE_DESCRIPTION sd;
+    LPTSTR description=(LPTSTR)malloc(4096);
+    if (GetMulti()) {
+      if (GetContextSwitching()) {
+	opts=multi_opt;
+	wsprintf(description,TEXT("MDSplus data service listening on port %s.\nPermits multiple connections each with own tdi and tree context\n"),
+		 GetPortname());
+      } else {
+	opts=server_opt;
+	wsprintf(description,TEXT("MDSplus data service listening on port %s.\nPermits multiple connections with shared tdi and tree context\n"),
+		 GetPortname());
+      }
+    } else {
+      opts=data_opt;
+      wsprintf(description,TEXT("MDSplus data service listening on port %s.\nEach connections will spawn a private server.\n"),
+	       GetPortname());
+    }
+    sd.lpDescription=description;
+    _get_pgmptr(&pgm);
+    cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
+    sprintf(cmd,"%s --port=%s --hostfile=\"%s\" %s",pgm,GetPortname(),GetHostfile(),opts));
     hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
-            SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
+			     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
       status = GetLastError();
+    else
+      ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION,&sd);
+    free(description);
     free(cmd);
     if (hService)
       CloseServiceHandle(hService);
@@ -213,24 +239,35 @@ static int ServiceMain(int argc, char **argv) {
   }
 }
 
+
 int main( int argc, char **argv) {
-  unsigned char mode;
-//  DebugBreak();
-  ParseCommand(argc, argv);
-  mode=GetMode();
-  if (mode == 'r') {
-	RemoveService();
-	exit(0);
-  } else if (mode == 'i' || mode == 'M' || mode == 'S') {
+  int x_argc;
+  char **x_argv;
+  Options options[] = {{"i","install",0,0,0},
+		       {"r","remove",0,0,0},
+		       {"p","port",1,0,0},
+		       {0,0,0,0,0}};
+  ParseStdArgs(argc, argv, &x_argc, &x_argv);
+  ParseCommand(x_argc,x_argv,options,1,&extra_argc,&extra_argv);
+  if (options[0].present) {
 	InstallService();
 	exit(0);
+  } else if (options[1].present) {
+	RemoveService();
+	exit(0);
   } else {
-    SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1,1);
-    WSAStartup(wVersionRequested,&wsaData);
-    StartServiceCtrlDispatcher(srvcTable);
+    if (options[2].present && options[2].value)
+      SetPortname(options[2].value);
+    else if (GetPortname() == 0)
+      SetPortname("mdsip");
+    {
+      SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
+      WSADATA wsaData;
+      WORD wVersionRequested;
+      wVersionRequested = MAKEWORD(1,1);
+      WSAStartup(wVersionRequested,&wsaData);
+      StartServiceCtrlDispatcher(srvcTable);
+    }
   }
   return 1;
 }
