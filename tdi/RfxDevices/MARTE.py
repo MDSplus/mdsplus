@@ -1,4 +1,6 @@
+# -*- coding: iso-8859-1 -*-
 from MDSplus import *
+import time
 
 class MARTE(Device):
     print 'MARTe'
@@ -47,10 +49,10 @@ class MARTE(Device):
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DATA'%(i+1), 'type':'signal'})
     parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
+	  'valueExpr':"Action(Dispatch('CPCI_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('MARTE_SERVER','STORE',50,None),Method(None,'store',head))",
+	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
     
     
@@ -101,10 +103,37 @@ class MARTE(Device):
       print eventStr
       Event.setevent("MARTE", eventStr)
       return 1
-    def trigger(self, arg)
+    def trigger(self, arg):
       eventStr = "TRIGGER " + str(self.id.data())
       Event.setevent("MARTE", eventStr)
       return 1
+ 
+    def pre_req(self, arg):
+      eventStr = "PRE_REQ"
+      Event.setevent("MARTE", eventStr)
+      return 1
+ 
+    def pulse_req(self, arg):
+      eventStr = "PULSE_REQ"
+      Event.setevent("MARTE", eventStr)
+      return 1
+
+    def post_req(self, arg):
+      eventStr = "POST_REQ"
+      Event.setevent("MARTE", eventStr)
+      return 1
+
+    def collection_complete(self, arg):
+      eventStr = "COLLECTION_COMPLETE"
+      Event.setevent("MARTE", eventStr)
+      return 1
+ 
+    def abort(self, arg):
+      eventStr = "ABORT"
+      Event.setevent("MARTE", eventStr)
+      return 1
+ 
+ 
  
     def store(self,arg):
       eventStr = "STORE " + str(self.id.data())
@@ -114,3 +143,22 @@ class MARTE(Device):
       Event.setevent("MARTE", eventStr)
       return 1
       
+    def seq_init(self,arg):
+      self.abort(arg)
+      time.sleep(5)
+      self.pre_req(arg)
+      time.sleep(5)
+      self.init(arg)
+      time.sleep(5)
+      self.pulse_req(arg)
+      return 1
+
+    def seq_store(self,arg):
+      self.post_req(arg)
+      time.sleep(5)
+      self.store(arg)
+      time.sleep(5)
+      self.collection_complete(arg)
+      return 1
+
+
