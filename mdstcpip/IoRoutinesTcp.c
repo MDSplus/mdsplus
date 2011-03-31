@@ -528,7 +528,7 @@ static int tcp_listen(int argc, char **argv) {
 #ifdef HAVE_WINDOWS_H
 		       {"S","sockethandle",1,0,0},
 #endif
-		       {0,0,0,0}};
+		       {0,0,0,0,0}};
 #ifndef HAVE_WINDOWS_H
   signal(SIGCHLD,ChildSignalHandler);
 #endif

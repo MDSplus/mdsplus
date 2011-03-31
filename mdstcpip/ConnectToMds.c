@@ -12,8 +12,13 @@ static void ParseHost(char *hostin, char **protocol, char **host) {
   *host=strcpy((char *)malloc(strlen(hostin)+10),"");
   sscanf(hostin,"%[^:]://%s",*protocol,*host);
   if (strlen(*host) == 0) {
-    strcpy(*protocol,"tcp");
-    strcpy(*host,hostin);
+    if (hostin[0]=='_') {
+      strcpy(*protocol,"gsi");
+      strcpy(*host,&hostin[1]);
+    } else {
+      strcpy(*protocol,"tcp");
+      strcpy(*host,hostin);
+    }
   }
   for (i=strlen(*host)-1;i>=0 && (*host)[i]==32;(*host)[i]=0,i--);
 }
@@ -111,6 +116,8 @@ int  ConnectToMds(char *hostin) {
   int id=-1;
   char *host=0;
   char *protocol=0;
+  if (hostin == 0)
+    return -1;
   ParseHost(hostin,&protocol,&host);
   id=NewConnection(protocol);
   if (id != -1) {
