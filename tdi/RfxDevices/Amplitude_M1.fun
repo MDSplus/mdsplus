@@ -14,7 +14,7 @@ public fun Amplitude_M1()
 				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_70 ),
 				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_66 ),
 				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_62 ),
-				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_55 ),
+				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_58 ),
 				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_54 ),
 				
 				data(2 * (1 / _k) * \MHD_BR::CONTROL.SIGNALS:MODE_MOD_50 ),
