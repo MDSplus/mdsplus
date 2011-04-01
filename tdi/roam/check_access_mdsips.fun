@@ -1,5 +1,5 @@
-public fun check_access_mdsips(in _ipaddr, in _host, in _name)
-{
+public fun check_access_mdsips(in _remote_username, in _match1, in _match2) {
+  _name=extract(0,index(_match1,"@"),_match1);
   _site_resource=getenv("ROAM_SITE_RESOURCE");
   _data_resource=getenv("ROAM_MDSIP_RESOURCE");
 
