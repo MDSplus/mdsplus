@@ -161,7 +161,7 @@ endif
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-ssh @bindir@
           ifdef MdsIpGSI
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKEBINDDIR@mdsipd @bindir@
+		$(INSTALL) -m 755 @MAKEBINDIR@mdsipsd @bindir@
           endif
         endif
 
@@ -246,5 +246,5 @@ $(MdsIpGSI) :  IoRoutinesGsi.c
 	$(GLOBUS_CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include  @LINKSHARED@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L@MAKESHLIBDIR@ -lMdsIpShr
 
 @MAKEBINDIR@mdsipsd : mdsipsd
-	cp mdsipd $@
+	cp mdsipsd $@
 endif
