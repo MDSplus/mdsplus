@@ -49,17 +49,17 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
 	PrintHelp(0);
       for (opt=0;options[opt].short_name || options[opt].long_name;opt++) {
 	if (*arg=='-' && options[opt].long_name) {
+	  char *lonarg=arg+1;
+	  size_t lonarglen=arglen-1;
 	  char *long_name=options[opt].long_name;
 	  size_t optlen=strlen(long_name);
-	  arg++;
-	  arglen--;
-	  if (arglen>=optlen &&
-	      strncmp(arg,long_name,optlen)==0) {
+	  if (lonarglen>=optlen &&
+	      strncmp(lonarg,long_name,optlen)==0) {
 	    option_found=options[opt].present=1;
 	    if (options[opt].expects_value) {
-	      if (arglen>optlen && 
-		  arg[optlen]=='=')
-		options[opt].value=&arg[optlen+1];
+	      if (lonarglen>optlen && 
+		  lonarg[optlen]=='=')
+		options[opt].value=&lonarg[optlen+1];
 	      else {
 		options[opt].value=argv[i+1];
 		i++;

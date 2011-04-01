@@ -18,7 +18,7 @@
 #endif
 
 #ifdef HAVE_VXWORKS_H
-int CheckClient(char *matchString) {
+int CheckClient(char *username, int num, char **matchString) {
   return 1;
 }
   
@@ -104,56 +104,95 @@ static int BecomeUser(char *remuser, struct descriptor *local_user) {
 #endif
 
 int CheckClient(char *username, int num, char **matchString) {
-  FILE *f = fopen(GetHostfile(),"r");
   int ok = 0;
-  static int zero=0, one=1, two=2;
-  if (f) {
-    static char line_c[1024];
-    static char match_c1[1024];
-    static char match_c2[1024];
-    static struct descriptor line_d = {0, DTYPE_T, CLASS_S, line_c};
-    static struct descriptor local_user = {0,DTYPE_T,CLASS_D,0};
-    static struct descriptor access_id = {0,DTYPE_T,CLASS_D,0};
-    static DESCRIPTOR(delimiter,"|");
-    while (ok==0 && fgets(line_c,1023,f)) {
-      if (line_c[0] != '#') {
-	int i;
-        line_d.length = strlen(line_c) - 1;
-	StrElement(&access_id,&zero,&delimiter,&line_d);
-        StrElement(&local_user,&one,&delimiter,&line_d);
-        CompressString(&access_id,1);
-	CompressString(&local_user,0);
-        if (access_id.length) {
-	  for (i=0;i<num;i++) {
-	    struct descriptor match_d = {strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i]};
-	    struct descriptor match = {0, DTYPE_T, CLASS_D, 0};
-	    StrUpcase(&match,&match_d);
-	    if (access_id.pointer[0] != '!') {
-	      if (match.length==strlen("multi") && 
-		  strncmp(match.pointer,"MULTI",strlen("multi"))==0 &&
-		  access_id.length==strlen("multi") &&
-		  strncmp(access_id.pointer,"MULTI",strlen("multi"))==0)
-		BecomeUser(0,&local_user);
-	      else {
+  char *hostfile=GetHostfile();
+  if (strncmp(hostfile,"TDI",3)) {
+    FILE *f = fopen(hostfile,"r");
+    static int zero=0, one=1, two=2;
+    if (f) {
+      static char line_c[1024];
+      static char match_c1[1024];
+      static char match_c2[1024];
+      static struct descriptor line_d = {0, DTYPE_T, CLASS_S, line_c};
+      static struct descriptor local_user = {0,DTYPE_T,CLASS_D,0};
+      static struct descriptor access_id = {0,DTYPE_T,CLASS_D,0};
+      static DESCRIPTOR(delimiter,"|");
+      while (ok==0 && fgets(line_c,1023,f)) {
+	if (line_c[0] != '#') {
+	  int i;
+	  line_d.length = strlen(line_c) - 1;
+	  StrElement(&access_id,&zero,&delimiter,&line_d);
+	  StrElement(&local_user,&one,&delimiter,&line_d);
+	  CompressString(&access_id,1);
+	  CompressString(&local_user,0);
+	  if (access_id.length) {
+	    for (i=0;i<num;i++) {
+	      struct descriptor match_d = {strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i]};
+	      struct descriptor match = {0, DTYPE_T, CLASS_D, 0};
+	      StrUpcase(&match,&match_d);
+	      if (access_id.pointer[0] != '!') {
+		if (match.length==strlen("multi") && 
+		    strncmp(match.pointer,"MULTI",strlen("multi"))==0 &&
+		    access_id.length==strlen("multi") &&
+		    strncmp(access_id.pointer,"MULTI",strlen("multi"))==0)
+		  BecomeUser(0,&local_user);
+		else {
+		  if (StrMatchWild(&match,&access_id) & 1)
+		    ok = GetMulti() ? 1 : BecomeUser(username,&local_user);
+		}
+	      } else {
+		StrRight(&access_id,&access_id,&two);
 		if (StrMatchWild(&match,&access_id) & 1)
-		  ok = GetMulti() ? 1 : BecomeUser(username,&local_user);
+		  ok = 2;
 	      }
-	    } else {
-	      StrRight(&access_id,&access_id,&two);
-	      if (StrMatchWild(&match,&access_id) & 1)
-		ok = 2;
+	      StrFree1Dx(&match);
 	    }
-	    StrFree1Dx(&match);
 	  }
 	}
       }
+      fclose(f);
     }
-    fclose(f);
-  }
-  else
-  {
-    printf("Unable to open hostfile: %s\n",GetHostfile());
-    exit(1);
+    else {
+	printf("Unable to open hostfile: %s\n",GetHostfile());
+	exit(1);
+    }
+  } else {
+    int i;
+    int status;
+    struct descriptor cmd_d={0,DTYPE_T,CLASS_S,0};
+    struct descriptor ans_d={0,DTYPE_T,CLASS_D,0};
+    int cmdlen=strlen(hostfile)+10+strlen(username);
+    char *cmd;
+    static int (*TdiExecute)(struct descriptor *cmd, struct descriptor *ans, void *endarg) = 0;
+    if (TdiExecute == 0) {
+      DESCRIPTOR(TdiShr,"TdiShr");
+      DESCRIPTOR(tdiexec,"TdiExecute");
+      status = LibFindImageSymbol(&TdiShr,&tdiexec,&TdiExecute);
+      if (!(status & 1)) {
+	fprintf(stderr,"Error activating TdiShr");
+	return 0;
+      }
+    }
+    for (i=0;i<num;i++)
+      cmdlen += (strlen(matchString[i])+3);
+    cmd=(char*)malloc(cmdlen);
+    sprintf(cmd,"%s(\"%s\",",hostfile+3,username);
+    for (i=0;i<num;i++)
+      sprintf(cmd+strlen(cmd),"\"%s\",",matchString[i]);
+    cmd[strlen(cmd)-1]=')';
+    cmd_d.pointer=cmd;
+    cmd_d.length=strlen(cmd);
+    status=(*TdiExecute)(&cmd_d,&ans_d MDS_END_ARG);
+    if (status & 1) {
+      ok=1;
+      if (ans_d.pointer && ans_d.length > 0) {
+	if (GetMulti())
+	  ok=BecomeUser(username,&ans_d);
+	StrFree1Dx(&ans_d);
+      }
+    } else
+      ok=0;
+    free(cmd);
   }
   return ok;
 }
