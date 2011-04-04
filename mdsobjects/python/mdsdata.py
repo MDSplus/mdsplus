@@ -1,6 +1,6 @@
 import numpy
 import copy
-from _tdishr import TdiEvaluate,TdiCompile,TdiDecompile
+from _tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiExecute
 from _mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
 
 def getUnits(item):
@@ -272,6 +272,9 @@ class Data(object):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
         from mdsarray import Array
+        from compound import Range
+        if isinstance(y,slice):
+            y=Range(y.start,y.stop,y.step)
         ans = Data.execute('$[$]',self,y)
         if isinstance(ans,Array):
             if ans.shape[0]==0:
@@ -458,7 +461,7 @@ class Data(object):
     def execute(expr,*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        return TdiCompile(expr,args).evaluate()
+        return TdiExecute(expr,args)
     execute=staticmethod(execute)
 
     def setTdiVar(self,tdivarname):
