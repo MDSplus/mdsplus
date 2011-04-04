@@ -12,10 +12,9 @@ def restoreContext():
       t.restoreContext()
         
 def TdiCompile(expression,args=None):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
+    """Compile a TDI expression. Format: TdiCompile('expression-string')"""
     from _descriptor import descriptor_xd,descriptor,MdsGetMsg
     from tree import Tree
-    __execute=TdiShr.TdiCompile
     xd=descriptor_xd()
     done=False
     try:
@@ -31,6 +30,40 @@ def TdiCompile(expression,args=None):
                         done=True
                 if not done:
                     exp='TdiShr.TdiCompile(pointer(descriptor(expression))'
+                    for i in range(len(args)):
+                        exp=exp+',pointer(descriptor(args[%d]))' % i
+                    exp=exp+',pointer(xd),c_void_p(-1))'
+                    status=eval(exp)
+            else:
+                raise TypeError,'Arguments must be passed as a tuple'
+    finally:
+        Tree.unlock()
+    if done:
+        return ans
+    if (status & 1 != 0):
+            return xd.value
+    else:
+        raise TdiException,MdsGetMsg(status,"Error compiling expression")
+
+def TdiExecute(expression,args=None):
+    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
+    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
+    from tree import Tree
+    xd=descriptor_xd()
+    done=False
+    try:
+        Tree.lock()
+        restoreContext()
+        if args is None:
+            status=TdiShr.TdiExecute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
+        else:
+            if isinstance(args,tuple):
+                if len(args) > 0:
+                    if isinstance(args[0],tuple):
+                        ans = TdiExecute(expression,args[0])
+                        done=True
+                if not done:
+                    exp='TdiShr.TdiExecute(pointer(descriptor(expression))'
                     for i in range(len(args)):
                         exp=exp+',pointer(descriptor(args[%d]))' % i
                     exp=exp+',pointer(xd),c_void_p(-1))'
@@ -63,7 +96,7 @@ def TdiDecompile(value):
         raise TdiException,MdsGetMsg(status,"Error decompiling value")
 
 def TdiEvaluate(value):
-    """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
+    """Evaluate and functions. Format: TdiEvaluate(data)"""
     from _descriptor import descriptor_xd,descriptor,MdsGetMsg
     from tree import Tree
     xd=descriptor_xd()
@@ -93,21 +126,5 @@ def TdiData(value):
         return xd.value
     else:
         raise TdiException,MdsGetMsg(status,"Error converting value to data")
-
-def tditest():
-    """Execute Tdi expressions and display results. Format: tditest()"""
-    try:
-        exp=raw_input('Enter an expression: ')
-        while exp:
-            try:
-                ans = TdiExecute(exp)
-                print type(ans)
-                print ans
-            except Exception,e:
-                print "Error executing expression: ",e
-            exp=raw_input('Enter an expression: ')
-    except EOFError:
-        exp=False
-        print ""
 
 CvtConvertFloat=TdiShr.CvtConvertFloat
