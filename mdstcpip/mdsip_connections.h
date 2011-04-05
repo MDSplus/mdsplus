@@ -237,7 +237,7 @@ EXPORT int MdsSetDefault(int id, char *node);
 EXPORT int MdsValue(int id,char *exp,...);
 EXPORT int NextConnection(void **ctx,char **info_name, void **info, size_t *info_len);
 EXPORT void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_argc, char ***rem_argv);
-EXPORT void ParseStrArgs(int argc, char **argv, int *extra_argc, char ***extra_argv);
+EXPORT void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv);
 EXPORT void PrintHelp(char *);
 
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);

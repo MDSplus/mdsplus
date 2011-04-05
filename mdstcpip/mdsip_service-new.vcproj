@@ -356,10 +356,6 @@
 			RelativePath=".\mdsip_service.c"
 			>
 		</File>
-		<File
-			RelativePath=".\ParseCommand.c"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

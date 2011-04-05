@@ -431,10 +431,6 @@
 				RelativePath=".\mdsip.c"
 				>
 			</File>
-			<File
-				RelativePath=".\ParseCommand.c"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

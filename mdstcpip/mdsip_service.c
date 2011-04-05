@@ -124,13 +124,25 @@ static void InstallService() {
     sd.lpDescription=description;
     _get_pgmptr(&pgm);
     cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
-    sprintf(cmd,"%s --port=%s --hostfile=\"%s\" %s",pgm,GetPortname(),GetHostfile(),opts));
-    hService = CreateService(hSCManager, ServiceName(), ServiceName(), 0, SERVICE_WIN32_OWN_PROCESS,
+    sprintf(cmd,"%s --port=%s --hostfile=\"%s\" %s",pgm,GetPortname(),GetHostfile(),opts);
+    hService = CreateService(hSCManager, ServiceName(), ServiceName(), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 			     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
       status = GetLastError();
-    else
+	else {
       ChangeServiceConfig2(hService,SERVICE_CONFIG_DESCRIPTION,&sd);
+	  if (GetMulti()) {
+		SERVICE_FAILURE_ACTIONS sfa;
+		SC_ACTION actions[] = {{SC_ACTION_RESTART,5000}};
+		sfa.dwResetPeriod = INFINITE;
+		sfa.lpRebootMsg = NULL;
+		sfa.lpCommand = NULL;
+		sfa.cActions = 1;
+		sfa.lpsaActions=actions;
+		status = ChangeServiceConfig2(hService,SERVICE_CONFIG_FAILURE_ACTIONS, &sfa);
+		status = GetLastError();
+	  }
+	}
     free(description);
     free(cmd);
     if (hService)
@@ -249,6 +261,10 @@ int main( int argc, char **argv) {
 		       {0,0,0,0,0}};
   ParseStdArgs(argc, argv, &x_argc, &x_argv);
   ParseCommand(x_argc,x_argv,options,1,&extra_argc,&extra_argv);
+  if (options[2].present && options[2].value)
+    SetPortname(options[2].value);
+  else if (GetPortname() == 0)
+    SetPortname("mdsip");
   if (options[0].present) {
 	InstallService();
 	exit(0);
@@ -256,18 +272,12 @@ int main( int argc, char **argv) {
 	RemoveService();
 	exit(0);
   } else {
-    if (options[2].present && options[2].value)
-      SetPortname(options[2].value);
-    else if (GetPortname() == 0)
-      SetPortname("mdsip");
-    {
       SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
       WSADATA wsaData;
       WORD wVersionRequested;
       wVersionRequested = MAKEWORD(1,1);
       WSAStartup(wVersionRequested,&wsaData);
       StartServiceCtrlDispatcher(srvcTable);
-    }
   }
   return 1;
 }

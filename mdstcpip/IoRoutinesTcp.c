@@ -12,6 +12,7 @@
 typedef int socklen_t;
 #define snprintf _snprintf
 #define MSG_NOSIGNAL 0
+#define MSG_DONTWAIT 0
 #include <io.h>
 #define close _close
 #include <process.h>
@@ -475,6 +476,11 @@ static int tcp_connect(int conid, char *protocol, char *host) {
 }
 
 #ifdef HAVE_WINDOWS_H
+VOID CALLBACK ShutdownEvent(PVOID arg,BOOLEAN fired) {
+  fprintf(stderr,"Service shut down\n");
+  exit(0);
+}
+
 static int GetSocketHandle(char *name) {
   char logfile[1024];
   int sock;

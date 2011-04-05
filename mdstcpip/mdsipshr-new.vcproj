@@ -541,6 +541,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\ParseCommand.c"
+			>
+		</File>
+		<File
 			RelativePath=".\SendArg.c"
 			>
 		</File>

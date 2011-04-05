@@ -609,7 +609,7 @@ int ServerBadSocket(int socket)
     FD_SET(socket,&fdactive);
     status = select(tablesize,&fdactive,0,0,&timeout);
   }
-  return status == 1;
+  return !(status == 0);
 }
 
 int ServerDisconnect(char *server_in) {

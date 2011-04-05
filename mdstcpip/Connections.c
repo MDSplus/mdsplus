@@ -74,7 +74,7 @@ int FlushConnection(int id) {
 static void exitHandler(void) {
   int id;
   void *ctx=0;
-  while(id=NextConnection(&ctx,0,0,0) != -1) {
+  while((id=NextConnection(&ctx,0,0,0)) != -1) {
     DisconnectConnection(id);
     ctx=0;
   }
