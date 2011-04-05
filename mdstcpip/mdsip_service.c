@@ -10,10 +10,10 @@ static HANDLE shutdownEventHandle;
 static int extra_argc;
 static char **extra_argv;
 
-static char *ServiceName() {
-  static char name[512] = {0};
-  strcpy(name,"MDSplus ");
-  strcat(name,GetMulti() ? "Action Server - Port " : "Data Server - Port ");
+static char *ServiceName(int generic) {
+  char *name=strcpy((char *)malloc(512),"MDSplus ");
+  if (!generic)
+	strcat(name,GetMulti() ? "Action Server - Port " : "Data Server - Port ");
   strcat(name,GetPortname());
   return name;
 }
@@ -73,7 +73,7 @@ VOID WINAPI serviceHandler(DWORD fdwControl) {
 
 static void InitializeService() {
   char name[120];
-  hService = RegisterServiceCtrlHandler(ServiceName(),(LPHANDLER_FUNCTION) serviceHandler);
+  hService = RegisterServiceCtrlHandler(ServiceName(1),(LPHANDLER_FUNCTION) serviceHandler);
   sprintf(name,"MDSIP_%s_SHUTDOWN",GetPortname());
   shutdownEventHandle=CreateEvent(NULL,FALSE,FALSE,name);
   SetThisServiceStatus(SERVICE_START_PENDING,1000);
@@ -82,7 +82,7 @@ static void InitializeService() {
 static void RemoveService() {
   SC_HANDLE hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE); 
   if (hSCManager) {
-    SC_HANDLE hService = OpenService(hSCManager, ServiceName(), DELETE);
+    SC_HANDLE hService = OpenService(hSCManager, ServiceName(1), DELETE);
     if (hService) {
       BOOL status;
       status = DeleteService(hService);
@@ -126,7 +126,7 @@ static void InstallService() {
     _get_pgmptr(&pgm);
     cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
     sprintf(cmd,"%s --port=%s --hostfile=\"%s\" %s",pgm,GetPortname(),GetHostfile(),opts);
-    hService = CreateService(hSCManager, ServiceName(), ServiceName(), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
+    hService = CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 			     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
       status = GetLastError();
@@ -273,7 +273,7 @@ int main( int argc, char **argv) {
 	RemoveService();
 	exit(0);
   } else {
-      SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
+      SERVICE_TABLE_ENTRY srvcTable[] = {{ServiceName(1),(LPSERVICE_MAIN_FUNCTION)ServiceMain},{NULL,NULL}};
       WSADATA wsaData;
       WORD wVersionRequested;
       wVersionRequested = MAKEWORD(1,1);
