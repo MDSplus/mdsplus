@@ -12,7 +12,8 @@ static char **extra_argv;
 
 static char *ServiceName() {
   static char name[512] = {0};
-  strcpy(name,"MDSIP_");
+  strcpy(name,"MDSplus ");
+  strcat(name,GetMulti() ? "Action Server - Port " : "Data Server - Port ");
   strcat(name,GetPortname());
   return name;
 }
