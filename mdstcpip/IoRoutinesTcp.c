@@ -182,11 +182,12 @@ static int tcp_authorize(int conid, char *username) {
   return ans;
 }
 
-static ssize_t tcp_send(int conid, const void *bptr, size_t num, int options) {
+static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait) {
   int s = getSocket(conid);
+  int options = nowait ? MSG_DONTWAIT : 0; 
   ssize_t sent=-1;
   if (s != -1) {
-    sent = send(s,bptr,num, MSG_DONTWAIT | MSG_NOSIGNAL);
+    sent = send(s,bptr,num, options | MSG_NOSIGNAL);
   }
   return sent;
 }   
