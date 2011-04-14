@@ -1,6 +1,7 @@
 SHELL=/bin/sh
+CXX=@CXX@
 CC=@CC@
-LD=g++
+LD=@CXX@
 top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
