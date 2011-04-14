@@ -1,4 +1,4 @@
-lsSHELL=/bin/sh
+SHELL=/bin/sh
 CC=@CC@
 LD=g++
 top_srcdir=@top_srcdir@
