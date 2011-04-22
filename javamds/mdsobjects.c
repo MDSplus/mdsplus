@@ -223,6 +223,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
 		  exc = (*env)->FindClass(env, "MdsException");
 		  (*env)->ThrowNew(env, exc, message);
+		  return NULL;
 		  }
 	  case CLASS_CA: 
 			status = TdiData(desc, &ca_xd MDS_END_ARG);
@@ -3279,22 +3280,20 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 			free((char *)dscs);
 		    exc = (*env)->FindClass(env, "MDSplus/MdsException");
 		   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+		   return NULL;
 		}
 	}
-printf("SPEDITI ARGS\n");
 
 	free((char *)dscs);
 	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
-
-printf("RICEVUTO RISPOSTA\n");
 	if(!(status & 1))
 	{
 	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
 	   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	   return NULL;
 	}
 	if(nDims == 0)
 	{
-printf("DTYPE: %d NUM BYTES: %d\n", dtype, numBytes);
 		scalarDsc.length = numBytes;
 		scalarDsc.pointer = ptr;
 		switch(dtype) {
@@ -3334,7 +3333,7 @@ printf("DTYPE: %d NUM BYTES: %d\n", dtype, numBytes);
 			default: 
 				exc = (*env)->FindClass(env, "MDSplus/MdsException");
 				(*env)->ThrowNew(env, exc, "Unexpected returned data type in mdsip connection");
-				return;
+				return NULL;
 		}
 		retObj = DescripToObject(env, &scalarDsc, 0, 0, 0, 0); 
 	}
@@ -3379,6 +3378,7 @@ printf("DTYPE: %d NUM BYTES: %d\n", dtype, numBytes);
 			default:
 				exc = (*env)->FindClass(env, "MDSplus/MdsException");
 				(*env)->ThrowNew(env, exc, "Unexpected returned data type in mdsip connection");
+				return NULL;
 		}
 		retObj = DescripToObject(env, (struct descriptor *)&arrayDsc, 0, 0, 0, 0); 
 	}
@@ -3461,6 +3461,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
 			free((char *)dscs);
 		    exc = (*env)->FindClass(env, "MDSplus/MdsException");
 		   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+		   return;
 		}
 	}
 	free((char *)dscs);
@@ -3469,6 +3470,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
 	{
 	   exc = (*env)->FindClass(env, "MDSplus/MdsException");
 	   (*env)->ThrowNew(env, exc, MdsGetMsg(status));
+	   return;
 	}
 	if (status & 1 && dtype == DTYPE_LONG && nDims == 0 && numBytes == sizeof(int))
 		memcpy(&status,ptr,numBytes);
