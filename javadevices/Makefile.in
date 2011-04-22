@@ -122,7 +122,8 @@ SIS3820Setup.java\
 FEMTOSetup.java\
 CAENDT5720Setup.java\
 RFXVConfigSetup.java\
-MARTESetup.java
+MARTESetup.java\
+LASER_SSSetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar

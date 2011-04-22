@@ -1495,7 +1495,7 @@ public class ParameterSetting
         jp.add(maxTempTorF = new JTextField("" + maxTempTor, 10));
         limitsListJp.add(jp);
         jp = new JPanel();
-        jp.add(new JLabel("Limite I2T (MA2s): "));
+        jp.add(new JLabel("Limite I2T avvolgimento Toroidale (MA2s): "));
         jp.add(maxI2TF = new JTextField("" + maxI2T, 10));
         limitsListJp.add(jp);
 
@@ -3699,10 +3699,12 @@ System.out.println("Print Done");
         if (decouplingName.equals("diagonal"))
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", "diagonal", -1);
+//                "\\mhd_ac::control.parameters:par236_val", "diagonal", -1);
+                "\\mhd_ac::control.parameters:par236_val", "diagonal", shot);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", "diagonal", -1);
+//                "\\mhd_bc::control.parameters:par236_val", "diagonal", -1);
+                  "\\mhd_bc::control.parameters:par236_val", "diagonal", shot);
             conv.convertMatrix();
         }
         else if(decouplingName.equals("From Shot..."))
@@ -3722,10 +3724,12 @@ System.out.println("Print Done");
         else
         {
             conv = new Convert(
-                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
+//                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
+                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
             conv.convertMatrix();
             conv = new Convert(
-                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
+//                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
+                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
             conv.convertMatrix();
         }
         decouplingD.setVisible(false);
@@ -4545,9 +4549,9 @@ System.out.println("Print Done");
     {
         String outName = null;
         try {
-            if(inShot != shot)
+//            if(inShot != shot)
             {
-                rfx.close(0);
+//                rfx.close(0);
                 rfx = new Database("rfx", inShot);
                 rfx.open();
             }
@@ -4563,11 +4567,11 @@ System.out.println("Print Done");
                     break;
                 }
             }
-            if (inShot != shot) {
+//            if (inShot != shot) {
                 rfx.close(0);
                 rfx = new Database("rfx", shot);
                 rfx.open();
-            }
+//            }
         } catch (Exception exc) {
             System.err.println(exc);
             outName = null;
