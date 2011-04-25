@@ -80,7 +80,7 @@ static void InitializeSockets() {
 }
 
 static int getSocket(int conid) {
-  int len;
+  size_t len;
   char *info_name;
   int readfd;
   void *info = GetConnectionInfo(conid,&info_name, &readfd, &len);
@@ -144,7 +144,7 @@ static int tcp_authorize(int conid, char *username) {
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   struct sockaddr_in sin;
-  size_t n=sizeof(sin);
+  socklen_t n=sizeof(sin);
   int ans=0;
   struct hostent *hp=0;
 #ifdef HAVE_VXWORKS_H
@@ -216,7 +216,7 @@ static int tcp_disconnect(int conid) {
   time_t tim = time(0);
   char *timestr = ctime(&tim);
   struct sockaddr_in sin;
-  size_t n=sizeof(sin);
+  socklen_t n=sizeof(sin);
   struct hostent *hp=0;
 #ifdef HAVE_VXWORKS_H
   char hostent_buf[512];
@@ -655,7 +655,7 @@ static int tcp_listen(int argc, char **argv) {
 	status=AcceptConnection("tcp", "tcp", sock, 0, 0,&id,&username);
     if (status & 1) {
 	  struct sockaddr_in sin;
-      size_t n=sizeof(sin);
+      socklen_t n=sizeof(sin);
       Client *new=memset(malloc(sizeof(Client)),0,sizeof(Client));
       if (getpeername(sock, (struct sockaddr *)&sin, &n)==0)
 	    MdsSetClientAddr(*(int *)&sin.sin_addr);
