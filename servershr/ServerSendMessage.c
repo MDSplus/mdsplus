@@ -122,7 +122,7 @@ extern int pthread_cond_timedwait();
 #ifdef MDSIP_CONNECTIONS
 extern void *GetConnectionInfo();
 static int getSocket(int conid) {
-  int len;
+  size_t len;
   char *info_name;
   int readfd;
   void *info = GetConnectionInfo(conid,&info_name, &readfd, &len);
