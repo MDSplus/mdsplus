@@ -1,5 +1,989 @@
-Version 2.3-0
+Version 3.0-1
 
+
+2011-04-25 13:25  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Fix compile warnings
+
+2011-04-25 13:21  twf
+
+	* mdstcpip/IoRoutinesTunnel.c:
+	
+	Fix compile warning
+
+2011-04-25 13:11  twf
+
+	* mdstcpip/IoRoutinesTcp.c:
+	
+	Fix compile warnings
+
+2011-04-22 11:46  manduchi
+
+	* javadevices/: Makefile.in, ParameterSetting.java:
+	
+	Fix Fix Decoupling Matrix
+
+2011-04-22 08:05  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix crash after exception throwing
+
+2011-04-14 09:02  twf
+
+	* rtevents/Makefile.in, cacheshr/Makefile.in:
+	
+	Allow CXX specification
+
+2011-04-14 08:58  twf
+
+	* mdsobjects/cpp/Makefile.in, configure, configure.in:
+	
+	Allow CXX specification
+
+2011-04-14 08:42  twf
+
+	* mdsobjects/cpp/Makefile.in:
+	
+	Fix first line
+
+2011-04-07 15:51  twf
+
+	* mdstcpip/IoRoutinesTcp.c:
+	
+	Fix nowait arg to send
+
+2011-04-05 17:19  twf
+
+	* mdstcpip/mdsip_service.c:
+	
+	Use descriptive service name but generic name for service control
+
+2011-04-05 17:07  twf
+
+	* mdstcpip/mdsip_service.c:
+	
+	Change service name
+
+2011-04-05 16:54  twf
+
+	* mdstcpip/IoRoutinesTcp.c:
+	
+	Fix select loop
+
+2011-04-05 15:11  twf
+
+	* servershr/ServerSendMessage.c:
+	
+	Fixes for new mipds
+
+2011-04-05 15:08  twf
+
+	* mdstcpip/Connections.c, mdstcpip/IoRoutinesTcp.c,
+	mdstcpip/mdsip-new.vcproj, mdstcpip/mdsip_connections.h,
+	mdstcpip/mdsip_service-new.vcproj, mdstcpip/mdsip_service.c,
+	mdstcpip/mdsipshr-new.vcproj, servershr/ServerSendMessage.c:
+	
+	Latest fixes for new mdsip
+
+2011-04-04 17:07  twf
+
+	* mdsobjects/python/_tdishr.py:
+	
+	Use TdiExecute instead of TdiCompile->TdiEvaluate
+
+2011-04-04 17:07  twf
+
+	* mdsobjects/python/mdsdata.py:
+	
+	Add slicing subscripting
+
+2011-04-04 07:40  manduchi
+
+	* tdi/RfxDevices/ComputeMaxPower.fun:
+	
+	Compute MT power
+
+2011-04-01 17:15  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Fix install of mdsipsd
+
+2011-04-01 16:24  twf
+
+	* tdi/roam/check_access_mdsips.fun:
+	
+	Fix for mdsip_connections
+
+2011-04-01 16:22  twf
+
+	* mdstcpip/: CheckClient.c, IoRoutinesGsi.c, ParseCommand.c:
+	
+	updates
+
+2011-03-31 11:36  manduchi
+
+	* tdi/RfxDevices/: Amplitude_M2.fun, Amplitude_M1.fun:
+	
+	Fix
+
+2011-03-31 09:49  twf
+
+	* mdstcpip/: ConnectToMds.c, IoRoutinesGsi.c, IoRoutinesTcp.c,
+	mdsipsd:
+	
+	latest updates
+
+2011-03-30 02:27  manduchi
+
+	* tdi/RfxDevices/: MARTE.py, __init__.py:
+	
+	Added MARTE device
+
+2011-03-29 12:54  twf
+
+	* mdstcpip/: CheckClient.c, GetSetSettings.c, IoRoutinesTcp.c,
+	Makefile.in, ParseCommand.c, mdsip.c, mdsip_connections.h,
+	mdsip_service.c, mdsipsd:
+	
+	updates
+
+2011-03-29 12:51  twf
+
+	* mdstcpip/IoRoutinesTcpWin.c:
+	
+	Not used
+
+2011-03-29 09:38  manduchi
+
+	* tdi/RfxDevices/: LASER_YAG_Err.fun,
+	LASER_YAG_HWReadAllStatus.fun, LASER_YAG_HWabort.fun,
+	LASER_YAG_HWarm.fun, LASER_YAG_HWinit.fun, LASER_YAG_ReadErr.fun,
+	LASER_YAG_ReadStatus.fun, LASER_YAG_SetCmd.fun,
+	LASER_YAG__abort.fun, LASER_YAG__add.fun, LASER_YAG__arm.fun,
+	LASER_YAG__init.fun:
+	
+	Solid State Laser YAG device  function
+
+2011-03-28 09:25  twf
+
+	* mdstcpip/IoRoutinesGsi.c:
+	
+	Gsi handler
+
+2011-03-25 10:23  manduchi
+
+	* tdi/RfxDevices/__init__.py:
+	
+	Remove MARTE device
+
+2011-03-25 08:46  twf
+
+	* mdstcpip/IoRoutinesTcp.c:
+	
+	remove closesocket call
+
+2011-03-25 08:45  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Move CheckClient to MdsIpShr
+
+2011-03-25 08:45  twf
+
+	* mdstcpip/CheckClient.c:
+	
+	Fix remove static
+
+2011-03-24 10:00  twf
+
+	* mdsshr/MdsSerialize.c:
+	
+	Fix a0 on compressed
+
+2011-03-23 09:29  manduchi
+
+	* javadispatcher/: jDispatcher.java, jDispatcherIp.java:
+	
+	Allow single action dispatch
+
+2011-03-22 16:17  twf
+
+	* devscripts/rm_if:
+	
+	remove symlinks
+
+2011-03-22 16:16  twf
+
+	* mdstcpip/IoRoutinesGsi.c, mdstcpip/IoRoutinesTcp.c,
+	mdstcpip/Makefile.in, mdstcpip/mdsip_connections.h, configure,
+	configure.in:
+	
+	Add gsi io routines
+
+2011-03-22 09:47  twf
+
+	* mdstcpip/IoRoutinesTcp-win.c:
+	
+	Remove
+
+2011-03-21 11:59  manduchi
+
+	* tdi/RfxDevices/DESO_acquisition.fun:
+	
+	mod
+
+2011-03-18 09:27  twf
+
+	* mdsobjects/python/_mdsshr.py:
+	
+	Fix event queue
+
+2011-03-18 09:17  twf
+
+	* mdstcpip/: ConnectToMds.c, mdsip-client-ssh:
+	
+	minor fixes
+
+2011-03-18 04:05  manduchi
+
+	* javamds/mdsobjects.c:
+	
+	Fix error management
+
+2011-03-17 17:02  twf
+
+	* mdstcpip/Makefile.in:
+	
+	fix typo in install action
+
+2011-03-17 17:02  twf
+
+	* mdslib/Makefile.in:
+	
+	Use MdsIpShr instead of MdsIpUtil with mdsip connections
+
+2011-03-17 17:01  twf
+
+	* include/ipdesc.h:
+	
+	Remove ConnectToMdsEvents
+
+2011-03-17 17:00  twf
+
+	* dwscope/evaluate.c:
+	
+	Make ConnectToMdsEvents static routine
+
+2011-03-17 16:20  twf
+
+	* configure, configure.in:
+	
+	Fix for mdsip_connections
+
+2011-03-17 16:04  twf
+
+	* mdstcpip/Makefile.in:
+	
+	Fix install
+
+2011-03-17 15:41  twf
+
+	* mdsplus.sln, Setup/Setup32.vdproj, Setup/Setup64.vdproj,
+	include/config.h_win32, mdsshr/mdsshr.vcproj,
+	tdic/tdishrext.vcproj:
+	
+	New mdsip connections
+
+2011-03-17 15:36  twf
+
+	* mdstcpip/: MdsIpTCP.vcproj, mdsipshr-new.vcproj,
+	mdsipsrvshr.vcproj:
+	
+	Windows update
+
+2011-03-17 15:29  twf
+
+	* mdstcpip/mdsip_service.c:
+	
+	Provide -s and -m support for windows
+
+2011-03-17 15:28  twf
+
+	* mdstcpip/IoRoutinesTunnel.c:
+	
+	Another include for Windows
+
+2011-03-17 15:27  twf
+
+	* mdstcpip/MdsIpTunnel.vcproj:
+	
+	Need user32.lib
+
+2011-03-17 15:26  twf
+
+	* mdstcpip/mdsip-client-ssh.bat:
+	
+	new mdsip
+
+2011-03-17 13:18  twf
+
+	* include/ipdesc.h:
+	
+	Windows fix
+
+2011-03-17 13:17  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	New mdsip
+
+2011-03-17 13:07  twf
+
+	* mdstcpip/: MdsIpTCP.vcproj, MdsIpTunnel.vcproj, mdsip_service.c,
+	mdsipsrvshr.vcproj:
+	
+	New mdsip
+
+2011-03-17 13:03  twf
+
+	* mdstcpip/: mdsipshr-new.vcproj, mdsip-new.vcproj,
+	mdsip_service-new.vcproj:
+	
+	New mdsip
+
+2011-03-17 13:01  twf
+
+	* mdstcpip/: ParseCommand.c, mdsip_connections.h:
+	
+	Update for windows
+
+2011-03-17 12:57  twf
+
+	* mdstcpip/: GetSetSettings.c, IoRoutinesTcp.c:
+	
+	Update for windows service
+
+2011-03-17 11:07  twf
+
+	* mdsip_xio/Makefile.in, roam/Makefile.in:
+	
+	Fix compiler and linker switches to work with 64-bit
+
+2011-03-14 08:56  manduchi
+
+	* tdi/RfxDevices/WE7116__init.fun:
+	
+	Fix
+
+2011-03-11 14:35  twf
+
+	* mdstcpip/: IoRoutinesTcp.c, IoRoutinesTunnel.c:
+	
+	Fix lf
+
+2011-03-11 14:23  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Fix GetConnectionInfo reference
+
+2011-03-11 14:06  twf
+
+	* mdstcpip/: IoRoutinesTcp.c, IoRoutinesTunnel.c:
+	
+	Add lf at end
+
+2011-03-11 13:55  twf
+
+	* mdstcpip/mdsip_connections.h:
+	
+	Add temporary GetMdsMsgOOB
+
+2011-03-11 13:53  twf
+
+	* mdstcpip/GetMdsMsg.c:
+	
+	Ad temporary GetMdsMsgOOB
+
+2011-03-11 13:47  twf
+
+	* mdstcpip/MdsOpen.c:
+	
+	Include mdsip_connections.h
+
+2011-03-11 12:39  twf
+
+	* tdi/remote/ListConnections.fun:
+	
+	Show active connections
+
+2011-03-11 12:37  twf
+
+	* mdstcpip/Makefile.in, mdstcpip/mdsip-client-ssh,
+	mdstcpip/mdsip-server-ssh, configure, configure.in,
+	include/config.h.in, include/ipdesc.h:
+	
+	Add mdsip connections support
+
+2011-03-11 12:29  twf
+
+	* tdic/TdiShrExt.c:
+	
+	Support for mdsip connections
+
+2011-03-11 12:24  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Support for new mdsip connections
+
+2011-03-11 09:40  twf
+
+	* mdstcpip/: ArgLen.c, CheckClient.c, ClientType.c,
+	CloseConnection.c, ConnectToMds.c, Connections.c,
+	DisconnectFromMds.c, DoMessage.c, FlipData.c, FlipHeader.c,
+	FreeMessage.c, GetAnswerInfo.c, GetMdsMsg.c,
+	GetProtocolFromCommand.c, GetSetSettings.c, IdlApi.c,
+	IoRoutinesTcp-win.c, IoRoutinesTcp.c, IoRoutinesTcpWin.c,
+	IoRoutinesTunnel.c, LoadIo.c, LockAsts.c, MakeDescrip.c,
+	MdsClose.c, MdsDispatchEvent.c, MdsEventAst.c, MdsEventCan.c,
+	MdsIpFree.c, MdsLogin.c, MdsOpen.c, MdsPut.c, MdsSetCompression.c,
+	MdsSetDefault.c, MdsValue.c, ParseCommand.c, ProcessMessage.c,
+	RemoveConnection.c, SendArg.c, SendMdsMsg.c, cvtdef.h, mdsIo.h,
+	mdsip.c, mdsip_connections.h:
+	
+	New mdsip connections implementation
+
+2011-03-11 09:37  twf
+
+	* mdstcpip/t.c:
+	
+	Cast void prt to char *
+
+2011-03-11 09:18  twf
+
+	* mdstcpip/t.c:
+	
+	cast void ptr to char *
+
+2011-03-10 06:51  manduchi
+
+	* tdi/RfxDevices/computeTF_i2t.fun:
+	
+	Compute toroidal i2t
+
+2011-03-09 12:26  manduchi
+
+	* tdi/RfxDevices/MARTE.py:
+	
+	Fix store
+
+2011-03-08 09:55  manduchi
+
+	* tdi/RfxDevices/MARTE.py:
+	
+	Added TRIGGER and STORE methods
+
+2011-03-04 15:10  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	socket can be zero, check for -1 instead
+
+2011-03-04 09:34  manduchi
+
+	* javadevices/javadevices.mak:
+	
+	Added DPO7054 and L9109 devices
+
+2011-03-03 11:18  manduchi
+
+	* tdi/MdsDevices.fun:
+	
+	Add MARTE device
+
+2011-03-03 10:35  manduchi
+
+	* tdi/RfxDevices/: MARTE.py, __init__.py:
+	
+	Support for new RFX Control system
+
+2011-03-03 10:34  manduchi
+
+	* javadevices/: MARTESetup.java, Makefile.in, javadevices.mak:
+	
+	Interface for new RFX control system
+
+2011-03-03 10:33  manduchi
+
+	* javatraverser/: DeviceBeansManifest.mf,
+	DeviceMultiComponent.java, DeviceParameters.java,
+	DeviceParametersBeanInfo.java, DeviceWaveParameters.java,
+	DeviceWaveParametersBeanInfo.java, Makefile.in, javatraverser.mak:
+	
+	Support for multiple parameters
+
+2011-03-02 16:59  twf
+
+	* tcl/tcl_dispatch.c:
+	
+	Do not print error if successful in stopping server
+
+2011-03-01 04:14  manduchi
+
+	* javadevices/: LASER_SSSetup.form, LASER_SSSetup.java,
+	javadevices.mak:
+	
+	Add setup interface for new Thomson scattering laser device
+
+2011-03-01 04:10  manduchi
+
+	* tdi/RfxDevices/: LASER_SS_CheckErr.fun, LASER_SS_Err.fun,
+	LASER_SS_HWabort.fun, LASER_SS_HWarm.fun, LASER_SS_HWiabort.fun,
+	LASER_SS_HWinit.fun, LASER_SS_ReadErr.fun, LASER_SS__abort.fun,
+	LASER_SS__add.fun, LASER_SS__arm.fun, LASER_SS__init.fun:
+	
+	New thomson scattering laser device function
+
+2011-02-28 10:45  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Return full segment dim in GetSegmentInfo
+
+2011-02-24 11:41  manduchi
+
+	* treeshr/TreeSegments.c:
+	
+	Unlock Nci when exiting on error
+
+2011-02-24 09:36  manduchi
+
+	* tdi/RfxDevices/GPIBClean.fun:
+	
+	GPIB Clean function
+
+2011-02-23 14:43  twf
+
+	* xmdsshr/XmdsXdBox.c:
+	
+	Fix axis unload
+
+2011-02-21 12:53  manduchi
+
+	* tdi/RfxDevices/EM_FLU_TEST__init_new.fun:
+	
+	Mod 2 rack CPCI
+
+2011-02-16 12:13  manduchi
+
+	* tdi/RfxDevices/pulseCheck_TOKAMAK.fun:
+	
+	Mod
+
+2011-02-16 12:11  manduchi
+
+	* tdi/RfxDevices/pulseCheck_I2T_TOROIDALE.fun:
+	
+	Check for I2t toroidal circuit
+
+2011-02-16 09:46  manduchi
+
+	* javadevices/RFXANSALDOSetup.java:
+	
+	Fix layout
+
+2011-02-15 09:53  twf
+
+	* scripts/MonitorCpciData.py:
+	
+	Use threads and clean data files
+
+2011-02-14 13:22  twf
+
+	* mdsobjects/python/modpython.py:
+	
+	Use data rtn in stateHandler example
+
+2011-02-14 13:21  twf
+
+	* mdsobjects/python/__init__.py:
+	
+	Add _mdsshr exceptions
+
+2011-02-14 13:12  twf
+
+	* mdsvb/Setup/Setup.vdproj:
+	
+	Add setup to solution
+
+2011-02-14 10:01  twf
+
+	* mdsvb/: AssemblyInfo.vb, MDSplus.vb, MDSplusVBC.sln,
+	MDSplusVBC.suo:
+	
+	Add setup
+
+2011-02-11 16:40  jas
+
+	* mdsvb/MDSplus.vb:
+	
+	fix off by one error for dimensions of 3d arrays of ints, add 2d
+	arrays of ints as an option
+
+2011-02-11 12:42  jas
+
+	* tcl/tcl_do_method.c:
+	
+	remove italian debug printout
+
+2011-02-11 10:05  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Detach thread to free resouces
+
+2011-02-10 10:40  jas
+
+	* tdi/MitDevices/timeSignature.py:
+	
+	Also return a signal with all of the times and indexes
+
+2011-02-09 11:37  manduchi
+
+	* tdi/RfxDevices/: CAENDT5720.py, DIO4.py:
+	
+	First working release CAENDT5720 :
+	-------------------------------------------------------------------
+	---
+
+2011-02-09 05:21  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Proceed ...
+
+2011-02-08 10:52  jas
+
+	* traverser/CallbacksUil.c:
+	
+	don't make the scroll bars insenstive when doing display data
+
+2011-02-08 09:37  twf
+
+	* mdsobjects/python/: event.py, modpython.py:
+	
+	Fix timeout case
+
+2011-02-08 07:38  twf
+
+	* mdsobjects/python/event.py:
+	
+	Use queued events
+
+2011-02-08 07:38  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	DatetoQuad changed to return Uint64
+
+2011-02-08 07:37  twf
+
+	* mdsobjects/python/_mdsshr.py:
+	
+	Add queued events if mdsshr has the support routines
+
+2011-02-08 07:36  twf
+
+	* mdsobjects/python/_descriptor.py:
+	
+	return None if xd l_length is 0
+
+2011-02-04 13:49  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	send event signal when canceling events
+
+2011-02-04 13:36  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	fix lock problem with queued events
+
+2011-02-04 13:33  twf
+
+	* mdsshr/UdpEvents.c:
+	
+	Fix cancel code
+
+2011-02-04 12:28  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Fisrst working version of CAENDT5720
+
+2011-02-04 11:08  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Return 2 if eventid does not match active queued event
+
+2011-02-04 10:27  twf
+
+	* mdsshr/MdsEvents.c:
+	
+	Add MDSQueueEvent and MDSGetEventQueue routines
+
+2011-02-03 08:43  twf
+
+	* javascope/jScope.bat:
+	
+	change classpath definition
+
+2011-02-03 07:47  manduchi
+
+	* javadevices/CAENDT5720Setup.java:
+	
+	Add option
+
+2011-02-03 07:47  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Proceed
+
+2011-02-03 04:05  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Proceede in debugging
+
+2011-02-02 05:22  manduchi
+
+	* xtreeshr/XTreeDefaultResample.c:
+	
+	Use double values for dimension
+
+2011-02-02 05:21  manduchi
+
+	* include/mdsshr.h:
+	
+	Export	MdsTimeToDouble
+
+2011-02-01 11:40  twf
+
+	* tdi/segments/GetSegmentInfo.fun:
+	
+	Take out debug print
+
+2011-02-01 11:39  twf
+
+	* treeshr/TreeSegments.c:
+	
+	Fix GetNumCompressedRows if not compressed
+
+2011-02-01 11:38  twf
+
+	* mdsobjects/python/: _treeshr.py, treenode.py:
+	
+	Add makeSegment
+
+2011-02-01 10:17  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix beginSegment
+
+2011-01-31 13:23  twf
+
+	* idl/dsql.pro:
+	
+	Fix quoting
+
+2011-01-31 12:07  manduchi
+
+	* javadevices/CAENDT5720Setup.java:
+	
+	Fields added
+
+2011-01-31 08:35  manduchi
+
+	* javascope/jScope/: Grid.java, MdsConnection.java,
+	MdsDataClient.java, UpdateEvent.java:
+	
+	fix
+
+2011-01-28 15:44  jas
+
+	* tdi/MitDevices/__init__.py:
+	
+	added timeSignature
+
+2011-01-28 15:44  jas
+
+	* tdi/MitDevices/timeSignature.py:
+	
+	a routine to compute a new Dim for digitizers that record the time
+	signature waveform, and use the naming convention for nodes to
+	point to the specifics.
+
+2011-01-25 11:27  manduchi
+
+	* javadevices/CAENDT5720Setup.java, tdi/RfxDevices/CAENDT5720.py:
+	
+	CAEN DT5720 support
+
+2011-01-21 13:04  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Initial commissioning device CAENDT5720
+
+2011-01-19 09:58  manduchi
+
+	* tdi/RfxDevices/CAENDT5720.py:
+	
+	Added support for CAEN DT5720
+
+2011-01-19 09:46  manduchi
+
+	* javadevices/CAENDT5720Setup.java:
+	
+	Device Setup for CAEN DT7720
+
+2011-01-19 04:10  manduchi
+
+	* javadevices/Makefile.in, javadevices/javadevices.vcproj,
+	tdi/MdsDevices.fun, tdi/RfxDevices/CAENV1740.py,
+	tdi/RfxDevices/DIO4.py, tdi/RfxDevices/__init__.py:
+	
+	Added CAEN DT5720 Device support
+
+2011-01-13 04:26  manduchi
+
+	* tdi/RfxDevices/PELLET__init.fun:
+	
+	Write active pellets configuration parameter
+
+2011-01-13 04:01  manduchi
+
+	* javadevices/RFXVConfigSetup.java:
+	
+	Add crio pellet config parameters
+
+2011-01-13 04:00  manduchi
+
+	* javadevices/PELLETSetup.java:
+	
+	Add parameters for pellets configuration
+
+2011-01-13 03:59  manduchi
+
+	* tdi/RfxDevices/PELLET__add.fun:
+	
+	Modify default tty port
+
+2011-01-13 03:58  manduchi
+
+	* tdi/RfxDevices/RFXVConfig__add.fun:
+	
+	Add PELLET config params
+
+2011-01-10 11:52  manduchi
+
+	* javadevices/ParameterSetting.java:
+	
+	Chamged RFXVIConfigSetup to RFXVConfigSetup
+
+2011-01-10 10:59  manduchi
+
+	* javadevices/RFXVConfigSetup.java:
+	
+	Mod
+
+2011-01-10 10:52  manduchi
+
+	* javatraverser/: DeviceLabel.java, DeviceLabelBeanInfo.java,
+	DeviceLabelCustomizer.java:
+	
+	Mod
+
+2011-01-10 10:42  manduchi
+
+	* javadevices/Makefile.in:
+	
+	Add RFXVConfigSetup.java
+
+2011-01-10 10:39  manduchi
+
+	* javadevices/RFXVConfigSetup.java:
+	
+	Setup for vessel configuration device
+
+2011-01-10 10:37  manduchi
+
+	* tdi/RfxDevices/RFXVConfig__add.fun:
+	
+	Mod
+
+2011-01-07 17:16  twf
+
+	* mdsobjects/python/modpython.py:
+	
+	Add PythonOptions for UDP_EVENTS and EVENT_SERVER
+
+2011-01-05 15:11  twf
+
+	* mitdevices/reticon120.c:
+	
+	Fix partial frames
+
+2011-01-05 15:10  twf
+
+	* mitdevices/t4012.c:
+	
+	Fix timeout
+
+2010-12-29 15:12  twf
+
+	* mdsobjects/python/modpython.py:
+	
+	Add apache modpython module
+
+2010-12-29 09:14  manduchi
+
+	* tdi/RfxDevices/: RFXVConfig__add.fun, RFXVConfig__store.fun:
+	
+	Rfx Vessel configuration device
+
+2010-12-22 08:22  manduchi
+
+	* tdi/RfxDevices/: RfxPerformance.fun, RfxPulseCreationDate.fun:
+	
+	Rfx funtion for annual performance report
+
+2010-12-20 09:40  twf
+
+	* matlab/matlab.vcproj:
+	
+	Use mex for 64-bit
+
+2010-12-17 09:41  twf
+
+	* Setup/Setup32.vdproj:
+	
+	Exclude excessive dependencies
+
+2010-12-13 09:08  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 2.3-0
 
 2010-12-13 09:07  twf
 
