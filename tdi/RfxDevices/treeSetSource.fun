@@ -10,6 +10,12 @@ public fun treeSetSource(in _experiment, in _version)
      _ver = -3;
    else
      _ver = _version;
-     
-   return( RfxUtils->setPulseVersion("/usr/local/mdsplus/etc/experimentsVersionPath", _experiment,  _ver  ) );
+
+    TreeShr->TreeClose( val(0), val(0) );
+
+   _fileConf = "/usr/local/mdsplus/etc/experimentsVersionPath";
+   if( getenv('activateTestRegion') == "TRUE" )
+	_fileConf = "/usr/local/rfx/data_acquisition/scripts/rfxVersioning/testExperimentVersionPath";
+
+   return( RfxUtils->setPulseVersion( _fileConf, _experiment,  _ver  ) );
 }
