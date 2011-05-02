@@ -23,7 +23,7 @@ class DT216A(Device):
         {'path':':BOARD','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
         {'path':':RANGES','type':'text','value':'192.168.0.0','options':('write_once',)},
-        {'path':':STATUS_CMDS','type':'text','value':('cat /proc/cmdline', 'get.d-tacq.release'),'options':('no_write_shot',)},
+        {'path':':STATUS_CMDS','type':'text','value':makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
         {'path':':BOARD_STATUS','type':'signal','options':('write_shot',)},
         {'path':':SEG_LENGTH','type':'numeric','options':('no_write_shot',)},
         ]
