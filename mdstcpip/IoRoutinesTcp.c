@@ -604,9 +604,12 @@ static int tcp_listen(int argc, char **argv) {
 	  Client *c;
 	  for (c=ClientList;c;) {
 		if (FD_ISSET(c->sock, &readfds)) {
+                  Client *c_chk;
 		  MdsSetClientAddr(c->addr);
 		  DoMessage(c->id);
-		  FD_CLR(c->sock,&readfds);
+                  for (c_chk=ClientList;c_chk && c_chk != c;c_chk=c_chk->next);
+                  if (c_chk)
+		    FD_CLR(c->sock,&readfds);
 		  c=ClientList;
 		} else
 		  c=c->next;
