@@ -3,7 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-
+#include "zlib.h"
 static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options) {
   char *bptr = (char *)buffer;
   IoRoutines *io = GetConnectionIo(id);

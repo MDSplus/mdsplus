@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "zlib.h"
 
 static int GetBytes(int id, void *buffer, size_t bytes_to_recv) {
   char *bptr = (char *)buffer;

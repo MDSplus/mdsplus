@@ -1,5 +1,5 @@
 /* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-1998 Jean-loup Gailly.
+ * Copyright (C) 1995-2002 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
@@ -12,41 +12,56 @@
  * If you *really* need a unique prefix for all types and library functions,
  * compile with -DZ_PREFIX. The "standard" zlib should be compiled without it.
  */
-#ifdef Z_PREFIX
-#  define deflateInit_	z_deflateInit_
-#  define deflate	z_deflate
-#  define deflateEnd	z_deflateEnd
-#  define inflateInit_ 	z_inflateInit_
-#  define inflate	z_inflate
-#  define inflateEnd	z_inflateEnd
-#  define deflateInit2_	z_deflateInit2_
-#  define deflateSetDictionary z_deflateSetDictionary
-#  define deflateCopy	z_deflateCopy
-#  define deflateReset	z_deflateReset
-#  define deflateParams	z_deflateParams
-#  define inflateInit2_	z_inflateInit2_
-#  define inflateSetDictionary z_inflateSetDictionary
-#  define inflateSync	z_inflateSync
-#  define inflateSyncPoint z_inflateSyncPoint
-#  define inflateReset	z_inflateReset
-#  define compress	z_compress
-#  define compress2	z_compress2
-#  define uncompress	z_uncompress
-#  define adler32	z_adler32
-#  define crc32		z_crc32
-#  define get_crc_table z_get_crc_table
+#  define deflateInit_	mds_deflateInit_
+#  define deflate	mds_deflate
+#  define deflateEnd	mds_deflateEnd
+#  define inflateInit_ 	mds_inflateInit_
+#  define inflate	mds_inflate
+#  define inflateEnd	mds_inflateEnd
+#  define deflateInit2_	mds_deflateInit2_
+#  define deflateSetDictionary mds_deflateSetDictionary
+#  define deflateCopy	mds_deflateCopy
+#  define deflateReset	mds_deflateReset
+#  define deflateParams	mds_deflateParams
+#  define inflateInit2_	mds_inflateInit2_
+#  define inflateSetDictionary mds_inflateSetDictionary
+#  define inflateSync	mds_inflateSync
+#  define inflateSyncPoint mds_inflateSyncPoint
+#  define inflateReset	mds_inflateReset
+#  define inflate_blocks_new mds_inflate_blocks_new
+#  define inflate_blocks mds_inflate_blocks
+#  define inflate_trees_bits mds_inflate_trees_bits
+#  define inflate_trees_dynamic mds_inflate_trees_dynamic
+#  define inflate_codes_new mds_inflate_codes_new
+#  define inflate_codes mds_inflate_codes
+#  define inflate_fast mds_inflate_fast
+#  define inflate_flush mds_inflate_flush
+#  define inflate_blocks_free mds_inflate_blocks_free
+#  define inflate_blocks_reset mds_inflate_blocks_reset
+#  define inflate_codes_free mds_inflate_codes_free
+#  define inflate_blocks_sync_point mds_inflate_blocks_sync_point
+#  define inflate_set_dictionary mds_inflate_set_dictionary
+#  define zError mds_zError
+#  define zcalloc mds_zcalloc
+#  define zcfree mds_zcfree
+#  define zlibVersion mds_zlibVersion
+#  define compress	mds_compress
+#  define compress2	mds_compress2
+#  define uncompress	mds_uncompress
+#  define adler32	mds_adler32
+#  define crc32		mds_crc32
+#  define get_crc_table mds_get_crc_table
+#  define Byte		mds_Byte
+#  define uInt		mds_uInt
+#  define uLong		mds_uLong
+#  define Bytef	        mds_Bytef
+#  define charf		mds_charf
+#  define intf		mds_intf
+#  define uIntf		mds_uIntf
+#  define uLongf	mds_uLongf
+#  define voidpf	mds_voidpf
+#  define voidp		mds_voidp
 
-#  define Byte		z_Byte
-#  define uInt		z_uInt
-#  define uLong		z_uLong
-#  define Bytef	        z_Bytef
-#  define charf		z_charf
-#  define intf		z_intf
-#  define uIntf		z_uIntf
-#  define uLongf	z_uLongf
-#  define voidpf	z_voidpf
-#  define voidp		z_voidp
-#endif
 
 #if (defined(_WIN32) || defined(__WIN32__)) && !defined(WIN32)
 #  define WIN32

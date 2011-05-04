@@ -21,6 +21,7 @@ static int CompressionLevel = 0;
 #define compress2(a,b,c,d,e) -1
 #define uncompress(a,b,c,d) -1
 #else
+#include "zlib.h"
 static int CompressionLevel = 0;
 extern int compress2();
 extern int uncompress();
