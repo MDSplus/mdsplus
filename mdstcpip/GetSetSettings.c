@@ -9,7 +9,7 @@
 static unsigned char multi = 0;
 static int ContextSwitching = 0;
 static int MaxCompressionLevel = 9;
-static int CompressionLevel = 9;
+static int CompressionLevel = 0;
 static char *Portname = 0;
 static char *protocol="tcp";
 static char *hostfile = 0;
