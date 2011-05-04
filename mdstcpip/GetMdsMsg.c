@@ -38,7 +38,7 @@ Message *GetMdsMsg(int id, int *status) {
   MsgHdr header;
   Message *msg = 0;
   int msglen = 0;
-  MdsSetClientAddr(0);
+  //MdsSetClientAddr(0);
   *status = 0;
   *status = GetBytes(id, (void *)&header, sizeof(MsgHdr));
   if (*status &1){

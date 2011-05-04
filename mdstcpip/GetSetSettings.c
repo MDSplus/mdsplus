@@ -122,7 +122,6 @@ int GetMdsConnectTimeout() {
   return connect_timeout;
 }
 
-// Deprecated ip address handling
 static int ClientAddr=0;
 int MdsGetClientAddr() {
   return ClientAddr;
