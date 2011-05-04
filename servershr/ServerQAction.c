@@ -53,10 +53,10 @@ static void WaitForJob();
 static void LockQueue();
 static void UnlockQueue();
 static void KillThread();
-static void DoSrvCommand(SrvJob *job_in);
-static void DoSrvAction(SrvJob *job_in);
-static void DoSrvClose(SrvJob *job_in);
-static void DoSrvCreatePulse(SrvJob *job_in);
+static int DoSrvCommand(SrvJob *job_in);
+static int DoSrvAction(SrvJob *job_in);
+static int DoSrvClose(SrvJob *job_in);
+static int DoSrvCreatePulse(SrvJob *job_in);
 static void DoSrvMonitor(SrvJob *job_in);
 static void AbortJob(SrvJob *job);
 static SrvJob *NextJob(int wait);
@@ -149,7 +149,10 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.tree = strcpy(malloc(strlen((char *)p1)+1),(char *)p1);
       job.shot = *(int *)p2;
       job.nid = *(int *)p3;
-      status = QJob((SrvJob *)&job);
+      if (job.h.addr)
+        status = QJob((SrvJob *)&job);
+      else
+        status = DoSrvAction((SrvJob *)&job);
       break;
     }
   case SrvClose:
@@ -161,7 +164,10 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.h.length = sizeof(job);
       job.h.flags = *flags;
       job.h.jobid = *jobid;
-      status = QJob((SrvJob *)&job);
+      if (job.h.addr)
+        status = QJob((SrvJob *)&job);
+      else
+        status = DoSrvClose((SrvJob *)&job);
       break;
     }
   case SrvCreatePulse:
@@ -175,7 +181,10 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.h.jobid = *jobid;
       job.tree = strcpy(malloc(strlen((char *)p1)+1),(char *)p1);
       job.shot = *(int *)p2;
-      status = QJob((SrvJob *)&job);
+      if (job.h.addr)
+        status = QJob((SrvJob *)&job);
+      else
+        status = DoSrvCreatePulse((SrvJob *)&job);
       break;
     }
   case SrvSetLogging:
@@ -194,7 +203,10 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.h.jobid = *jobid;
       job.table = strcpy(malloc(strlen((char *)p1)+1),(char *)p1);
       job.command = strcpy(malloc(strlen((char *)p2)+1),(char *)p2);
-      status = QJob((SrvJob *)&job);
+      if (job.h.addr)
+        status = QJob((SrvJob *)&job);
+      else
+        status = DoSrvCommand((SrvJob *)&job);
       break;
     }
   case SrvMonitor:
@@ -214,7 +226,10 @@ int ServerQAction(int *addr, short *port, int *op, int *flags, int *jobid,
       job.mode = *(int *)p6;
       job.server = strcpy(malloc(strlen((char *)p7)+1),(char *)p7);
       job.status = *(int *)p8; 
-      status = QJob((SrvJob *)&job);
+      if (job.h.addr)
+        status = QJob((SrvJob *)&job);
+      else
+        status = 0;
       break;
     }
   case SrvShow:
@@ -444,7 +459,7 @@ static char *Now()
 static int doingNid;
 int GetDoingNid() { return doingNid;}
 
-static void DoSrvAction(SrvJob *job_in)
+static int DoSrvAction(SrvJob *job_in)
 {
   int status;
   SrvActionJob *job = (SrvActionJob *)job_in;
@@ -490,20 +505,24 @@ static void DoSrvAction(SrvJob *job_in)
     if (status & 1)
       status = retstatus;
   }
-  SendReply(job_in,SrvJobFINISHED,status,0,0);
+  if (job_in->h.addr)
+    SendReply(job_in,SrvJobFINISHED,status,0,0);
+  return status;
 }
 
-static void DoSrvClose(SrvJob *job_in)
+static int DoSrvClose(SrvJob *job_in)
 {
   int status;
   char *job_text = strcpy((char *)malloc(32),"Closing trees");
   current_job_text = job_text;
   while ((status = TreeClose(0,0)) & 1);
   status = (status == TreeNOT_OPEN) ? TreeNORMAL : status;
-  SendReply(job_in,SrvJobFINISHED,status,0,0);
+  if (job_in->h.addr)
+    SendReply(job_in,SrvJobFINISHED,status,0,0);
+  return status;
 }
 
-static void DoSrvCreatePulse(SrvJob *job_in)
+static int DoSrvCreatePulse(SrvJob *job_in)
 {
   int status;
   SrvCreatePulseJob *job = (SrvCreatePulseJob *)job_in;
@@ -511,10 +530,12 @@ static void DoSrvCreatePulse(SrvJob *job_in)
   sprintf(job_text,"Creating pulse for %s shot %d",((SrvCreatePulseJob *)job)->tree,((SrvCreatePulseJob *)job)->shot);
   current_job_text = job_text;
   status = TreeCreateTreeFiles(job->tree,job->shot,-1);
-  SendReply(job_in,SrvJobFINISHED,status,0,0);
+  if (job_in->h.addr)
+    SendReply(job_in,SrvJobFINISHED,status,0,0);
+  return status;
 }
 
-static void DoSrvCommand(SrvJob *job_in)
+static int DoSrvCommand(SrvJob *job_in)
 {
   int status;
   SrvCommandJob *job = (SrvCommandJob *)job_in;
@@ -538,8 +559,10 @@ static void DoSrvCommand(SrvJob *job_in)
     ProgLoc = 68;
   }
   ProgLoc = 69;
-  SendReply(job_in,SrvJobFINISHED,status,0,0);
+  if (job_in->h.addr)
+    SendReply(job_in,SrvJobFINISHED,status,0,0);
   ProgLoc = 70;
+  return status;
 }
 
 static int AddMonitorClient(SrvJob *job)

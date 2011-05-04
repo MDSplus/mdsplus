@@ -155,7 +155,6 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *co
     void *mem=0;
     struct descrip *arg;
     if (conid_out) *conid_out = conid;
-    jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,conid);
     if (addr == 0) {
 #ifdef MDSIP_CONNECTIONS
       int sock=getSocket(conid);
@@ -167,6 +166,8 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *co
       if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
         addr = *(int *)&addr_struct.sin_addr;
     }
+    if (addr)
+      jobid = RegisterJob(msgid,retstatus,ast,astparam,before_ast,conid);
     if (before_ast) flags |= SrvJobBEFORE_NOTIFY;
     sprintf(cmd,"MdsServerShr->ServerQAction(%d,%dwu,%d,%d,%d",addr,port,op,flags,jobid);
     va_start(vlist,numargs_in);
@@ -201,6 +202,12 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *co
     SndArgChk(conid, idx++, DTYPE_CSTRING, 1, (short)strlen(cmd), 0, 0, cmd);
     status = GetAnswerInfoTS(conid, &dtype, &len, &ndims, dims, &numbytes, (void **)&dptr, &mem);
     if (mem) free(mem);
+    if (!addr) {
+      if (retstatus)
+        *retstatus = status;
+      if (ast)
+        (*ast)(astparam,"Job Done");
+    }
   }
 
   return status;
