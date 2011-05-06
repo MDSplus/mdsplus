@@ -29,39 +29,55 @@ static void UpdateLibrary();
 
 static void FreeInList();
 
-int main(int argc, char **argv)
-{
-    char *options;
-    int status, i, next_arg;
-    file_name = argv[1];
-    if((descr_file = fopen(file_name, "r")) == 0) Error("Cannot open input file");
-    options = argc > 2 ? argv[2] : "";   /* DTG ** fixed small off by one bug */
-    for (i=0,next_arg=2;i<strlen(options);i++)
-    {
-      switch(options[i])
-      {
-      case 's': single_qual = 1; break;
-      case 'x': { next_arg++; suffix = next_arg < argc ? argv[next_arg] : ""; break;}
-      case 'a': add_qual = 1; break;
-      default: ;
-      }
+int main(int argc, char **argv) {
+  char *options;
+  int status, i, next_arg;
+  char *path[]={getenv("gen_device_path"),getenv("HOME"),"/tmp"};
+  int treeopen=0;
+  file_name = argv[1];
+  if((descr_file = fopen(file_name, "r")) == 0) Error("Cannot open input file");
+  options = argc > 2 ? argv[2] : "";   /* DTG ** fixed small off by one bug */
+  for (i=0,next_arg=2;i<strlen(options);i++)  {
+    switch(options[i]) {
+    case 's': single_qual = 1; break;
+    case 'x': { next_arg++; suffix = next_arg < argc ? argv[next_arg] : ""; break;}
+    case 'a': add_qual = 1; break;
+    default: ;
     }
-    setenv("gen_device_path","/tmp",0);
-    TreeOpenNew("gen_device",-1);
+  }
+  for (i=0;i<3 && !treeopen;i++) {
+    if (path[i]) {
+      setenv("gen_device_path",path[i],0);
+      status = TreeOpenNew("gen_device",-1);
+      treeopen=status & 1;
+    }
+  }
+  if (!treeopen) {
+    fprintf(stderr,"\nError creating gen_device model in the following directory(s):\n\n");
+    if (path[0]) fprintf(stderr,"\t$gen_device_path --- (%s)\n",path[0]);
+    if (path[1]) fprintf(stderr,"\t$HOME --- (%s)\n",path[1]);
+    fprintf(stderr,"\t\%s\n\n",path[2]);
+    return 1;
+  }
+  printf("Parsing device description\n");
+  gen_deviceparse();
+  
+  if(!wrong)
+    fclose(file_h);
+  
+  if(single_qual)
+    fclose(out_file);
+  fclose(descr_file);
+  TreeClose(0,0);
+  TreeOpen("gen_device",-1,0);
+  TreeDeletePulseFile(-1,1);
+  if (path[0])
+    setenv("gen_device_path",path[0],0);
+  else
     unsetenv("gen_device_path");
-    printf("Parsing device description\n");
-    gen_deviceparse();
-
-    if(!wrong)
-	fclose(file_h);
-
-    if(single_qual)
-	fclose(out_file);
-    fclose(descr_file);
-    TreeClose(0,0);
   return 0;
 }
-    
+
 
 
 void DevGenAdd(char *device, char *library, NodeDescr *bottom)
