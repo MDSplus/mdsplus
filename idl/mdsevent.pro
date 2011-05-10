@@ -111,7 +111,8 @@ function mdsevent_get_value, id
 end
 
 function esocket
-  if mdsisclient() then sock = call_function("mds$socket") else sock = -1
+;  if mdsisclient() then sock = call_function("mds$socket") else sock = -1
+  sock=-1
   return,sock
 end
 

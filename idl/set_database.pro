@@ -329,6 +329,7 @@ function ReadDBInfo, file, name, mdshost, dbhost, dbname, username, password
   readf, lun, password
   close, lun
   free_lun, lun
+  password = strlowcase(password)
   return , 1
 end
 
