@@ -176,6 +176,7 @@ write(*, "SEND CARD GAINS");
 			}
 			else
 			{
+Write (*, "CARD_LOC or NONE");
 				if( _card_conf[_i] == _CARD_IN_LOCAL_CONF )
 				{
 					write(*, "INFO : Card"//(_i + 1)//" set in local configuration");
@@ -200,13 +201,29 @@ write(*, "SEND CARD GAINS");
 		}
 		else
 		{
-			_data = [_data, byte(_i + 1)];
-			_data = [_data, 1B];
-			_data = [_data, -1B];
-			_data = [_data, 2B];
-			_data = [_data, -1B];
-			_gain_ch2 = [_gain_ch2, 0];
-			_gain_ch1 = [_gain_ch1, 0];
+
+			if( _card_conf[_i] == 0 )
+			{
+Write (*, "CARD_OFF");
+			      _data = [_data, byte(_i + 1)];
+				_data = [_data, 1B];
+				_data = [_data, byte( 0B )];
+				_data = [_data, 2B];
+				_data = [_data, byte( 0B )];
+				_gain_ch2 = [_gain_ch2, 0B];
+				_gain_ch1 = [_gain_ch1, 0B];
+			}
+			else
+			{
+Write (*, "CARD_NOT_PRESENT");
+			      _data = [_data, byte(_i + 1)];
+				_data = [_data, 1B];
+				_data = [_data, byte( -1B )];
+				_data = [_data, 2B];
+				_data = [_data, byte( -1B )];
+				_gain_ch2 = [_gain_ch2, 0];
+				_gain_ch1 = [_gain_ch1, 0];
+			}
 		}
 	}
 
@@ -223,7 +240,7 @@ write(*, "SEND CARD GAINS");
 	_status = TcpClient->RecvData(val(_sock), ref(_ack), val(1));
 	if(_status == 0 || _ack != 0)
 	{
-		DevLogErr(_nid, "Error write gain code "//_ack); 
+		DevLogErr(_nid, "Error card" + _i + " write gain code "//_ack); 
 	      TCPCloseConnection(_sock);
 		abort();		
 	}
@@ -235,8 +252,11 @@ write(*, "SEND CARD GAINS");
  */
 write(*, "CHECK GAIN SET");
 
-	_sock = TCPOpenConnection(_ip, _port, _FREE_MODE, 8000, _sw = -1);
-	if(_sock == 0)
+wait(0.5);
+
+	_sock = TCPOpenConnection( _ip, _port, _FREE_MODE, 8000, _sw = -1 );
+
+	if( _sock == 0 )
 	{
 		DevLogErr(_nid, "Cannot connect to remote instruments"); 
 		abort();
@@ -258,7 +278,7 @@ write(*, "CHECK GAIN SET");
 					if ( _data_conf[_i * _BYTE_PER_CARD_R + 2] != _gain_ch1[_i] )
 					{
 						_error = 1;
-						DevLogErr(_nid, "Card"//(_i + 1)//" chan 1 incorrect gain set", );
+						DevLogErr(_nid, "Card"//(_i + 1)//" chan 1 incorrect gain set");
 					}
 					if ( _data_conf[_i * _BYTE_PER_CARD_R + 4] != _gain_ch2[_i] )
 					{
