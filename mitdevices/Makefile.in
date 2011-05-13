@@ -654,8 +654,8 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKESHLIBDIR@ -lCamShr -lXmdsShr -lGenDevShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS) $(MATH_LIBS)
 	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
-@MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.c ../include/mitdevices_msg.h
-	$(CC) -o $@ @LINKSHARED@ mitdevices_msg.o $(LIBS)
+@MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
+	$(LD) -o $@ @LINKSHARED@ mitdevices_msg.o $(LIBS)
 
 @MAKELIBDIR@libMitDevices.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
