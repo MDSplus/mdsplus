@@ -165,6 +165,7 @@
 #define H908$_BAD_ACTIVE_CHANS (MSG_MASK + 2015 * MSG_FACNUM_M + 1172 * MSG_MSGNUM_M + MSG_ERROR)
 #define H908$_BAD_PTS (MSG_MASK + 2015 * MSG_FACNUM_M + 1173 * MSG_MSGNUM_M + MSG_ERROR)
 #define DSP2904$_CHANNEL_READ_ERROR (MSG_MASK + 2015 * MSG_FACNUM_M + 1181 * MSG_MSGNUM_M + MSG_ERROR)
+#define PY$_UNHANDLED_EXCEPTION (MSG_MASK + 2015 * MSG_FACNUM_M + 1191 * MSG_MSGNUM_M + MSG_ERROR)
 #ifdef MSG_LIBRARY
 
 
@@ -324,6 +325,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
         ,{H908$_BAD_ACTIVE_CHANS,"H908","BAD_ACTIVE_CHANS","Bad value specified in ACTIVE_CHANS node, use Setup device to correct"}
         ,{H908$_BAD_PTS,"H908","BAD_PTS","Bad value specfiied in PTS node, must be an integer value between 1 and 131071"}
         ,{DSP2904$_CHANNEL_READ_ERROR,"DSP2904","CHANNEL_READ_ERROR","Error reading channel"}
+        ,{PY$_UNHANDLED_EXCEPTION,"PY","UNHANDLED_EXCEPTION","Python device raised and exception, see log files for more details"}
   };
   int i;
   int status = 0;
