@@ -9,16 +9,18 @@ def Dt200WriteMaster(board, cmd, rsh):
   except Exception,e:
     print "Error opening D-Tacq device %s\n\t%s" % (file ,str(e),)
     raise e
-  try:  
-    f.write(cmd+'\n')
-  except Exception,e:
-    print "Error writing %s to D-Tacq device %s\n\t%s" % (cmd, file ,str(e),)
-    raise e
   try:
-    ans = f.readlines()
-  except Exception,e:
-    print "Error reading answer to %s from D-Tacq device %s\n\t%s" % (cmd, file ,str(e),)
-    raise e
-  f.close()
+    try:  
+      f.write(cmd+'\n')
+    except Exception,e:
+      print "Error writing %s to D-Tacq device %s\n\t%s" % (cmd, file ,str(e),)
+      raise e
+    try:
+      ans = f.readlines()
+    except Exception,e:
+      print "Error reading answer to %s from D-Tacq device %s\n\t%s" % (cmd, file ,str(e),)
+      raise e
+  finally:
+    f.close()
   print "\t%s" % ans
   return(ans)
