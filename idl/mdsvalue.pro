@@ -82,7 +82,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           answer = bytarr(length)
         endelse
         MdsMemCpy,answer,ansptr,numbytes
-        answer = string(answer)
+        answer = strtrim(string(answer))
       endif else begin
         if ndims ne 0 then begin
           answer=bytarr(dims[0:ndims-1])
