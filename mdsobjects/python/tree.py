@@ -112,6 +112,9 @@ class Tree(object):
         Tree.setActiveTree(self)
         return
 
+    def __deepcopy__(self,memo):
+        return self
+
     def __setattr__(self,name,value):
         """
         Implements tree.attribute=value

@@ -16,6 +16,7 @@ import os
 class descriptor(_C.Structure):
     __cached_values={}
     indentation=0
+    tree=None
 
     def addToCache(self,value):
         try:
@@ -333,9 +334,9 @@ class descriptor(_C.Structure):
                     raise "DTYPE_DC is not yet supported"
                     return None
                 if (self.dtype == DTYPE_NID):
-                    return TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_long)).contents.value)
+                    return TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_long)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_PATH):
-                    return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
+                    return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_IDENT):
                     return Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 raise TypeError,'Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype)

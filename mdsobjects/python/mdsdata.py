@@ -253,6 +253,12 @@ class Data(object):
         @rtype: Bool"""
         return Data.execute('$ == $',self,y).bool()
 
+    def __hasBadTreeReferences__(self,tree):
+        return False
+
+    def __fixTreeReferences__(self,tree):
+        return self
+
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: Data"""

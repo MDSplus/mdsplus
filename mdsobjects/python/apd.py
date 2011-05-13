@@ -7,6 +7,23 @@ class Apd(Data):
     This structure provides a mechanism for storing an array of non-primitive items.
     """
 
+
+    def __hasBadTreeReferences__(self,tree):
+        for desc in self.descs:
+            if isinstance(desc,Data) and desc.__hasBadTreeReferences__(tree):
+                return True
+        return False
+    
+    def __fixTreeReferences__(self,tree):
+        from copy import deepcopy
+        ans=deepcopy(self)
+        descs=list(ans.descs)
+        for idx in range(len(descs)):
+            if isinstance(descs[idx],Data) and descs[idx].__hasBadTreeReferences__(tree):
+                descs[idx]=descs[idx].__fixTreeReferences__(tree)
+        ans.descs=tuple(descs)
+        return ans
+    
     def __init__(self,descs,dtype=0):
         """Initializes a Apd instance
         """
@@ -84,6 +101,21 @@ class Apd(Data):
 
 class Dictionary(dict,Data):
     """dictionary class"""
+
+    def __hasBadTreeReferences__(self,tree):
+        for v in self.itervalues():
+            if isinstance(v,Data) and v.__hasBadTreeReferences__(tree):
+                return True
+        return False
+
+    def __fixTreeReferences__(self,tree):
+        from copy import deepcopy
+        ans = deepcopy(self)
+        for key,value in ans.iteritems():
+            if isinstance(value,Data) and value.__hasBadTreeReferences__(tree):
+                ans[key]=value.__fixTreeReferences__(tree)
+        return ans
+    
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd):
@@ -142,6 +174,21 @@ class Dictionary(dict,Data):
  
 class List(list,Data):
     """list class"""
+
+    def __hasBadTreeReferences__(self,tree):
+        for v in self:
+            if isinstance(v,Data) and v.__hasBadTreeReferences__(tree):
+                return True
+        return False
+
+    def __fixTreeReferences__(self,tree):
+        from copy import deepcopy
+        ans = deepcopy(self)
+        for idx in range(len(ans)):
+            if isinstance(ans[idx],Data) and ans[idx].__hasBadTreeReferences__(tree):
+                ans[idx]=ans[idx].__fixTreeReferences__(tree)
+        return ans
+    
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd) or isinstance(value,list) or isinstance(value,tuple):

@@ -163,6 +163,9 @@ __RTreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
 class TreeException(Exception):
     pass
 
+class TreeNoDataException(TreeException):
+    pass
+
 def TreeFindNode(ctx,path):
     n=_C.c_int()
     status=__TreeFindNode(ctx,path,n)
@@ -248,7 +251,12 @@ def TreeGetRecord(n):
     value=descriptor_xd()
     status=__TreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
     if (status & 1):
-        return value.value
+        descriptor.tree=n.tree
+        ans = value.value
+	descriptor.tree=None
+        return ans
+    elif status == 265388258:
+	raise TreeNoDataException,"No data stored in node %s" % (str(n),)
     else:
         raise TreeException,MdsGetMsg(status)
     return None

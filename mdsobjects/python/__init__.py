@@ -27,3 +27,4 @@ from event import Event
 from _tdishr import TdiException
 from scope import Scope
 from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
+from _treeshr import TreeException,TreeNoDataException

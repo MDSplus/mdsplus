@@ -28,6 +28,22 @@ class TreeNode(Data):
     @type tree: Tree
     """
 
+    def __hasBadTreeReferences__(self,tree):
+       return self.tree != tree
+
+    def __fixTreeReferences__(self,tree):
+        if (self.nid >> 24) != 0:
+	    return TreePath(str(self))
+	else:
+            relpath=str(self.fullpath)
+            relpath=relpath[relpath.find('::TOP')+5:]
+            path='\\%s::TOP%s' % (tree.tree,relpath)
+	    try:
+                ans=tree.getNode(str(self))
+            except:
+                ans=TreePath(path,tree)
+            return ans
+    
     def __getattr__(self,name):
         """
         Implements value=node.attribute
@@ -877,6 +893,8 @@ class TreeNode(Data):
         """
         from _treeshr import TreePutRecord
         try:
+            if isinstance(data,Data) and data.__hasBadTreeReferences__(self.tree):
+                data=data.__fixTreeReferences__(self.tree)
             Tree.lock()
             TreePutRecord(self,data)
         finally:

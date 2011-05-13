@@ -29,6 +29,22 @@ class Compound(Data):
             if keyword in self.fields:
                 super(type(self),self).__setitem__(self._fields[keyword],params[keyword])
 
+    def __hasBadTreeReferences__(self,tree):
+        for arg in self.args:
+            if isinstance(arg,Data) and arg.__hasBadTreeReferences__(tree):
+                return True
+        return False
+
+    def __fixTreeReferences__(self,tree):
+        from copy import deepcopy
+        ans = deepcopy(self)
+        newargs=list(ans.args)
+        for idx in range(len(newargs)):
+            if isinstance(newargs[idx],Data) and newargs[idx].__hasBadTreeReferences__(tree):
+                newargs[idx]=newargs[idx].__fixTreeReferences__(tree)
+        ans.args=tuple(newargs)
+        return ans
+        
     def __getattr__(self,name,*args):
         if name in self.__dict__:
             return self.__dict__[name]
