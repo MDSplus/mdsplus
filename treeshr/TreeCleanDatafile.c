@@ -10,8 +10,7 @@
 extern void **TreeCtx();
 
 
-STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compress)
-{
+STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compress) {
   int status;
   void *dbid1 = 0, *dbid2 = 0;
   char *from_c = NULL;
@@ -112,11 +111,11 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
     _TreeClose(&dbid1, 0, 0);
     if (status & 1)
     {
-      status = remove(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
+      status = MDS_IO_REMOVE(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
       if (status & 1)
-	status = remove(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
+	status = MDS_IO_REMOVE(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
       if (status & 1)
-      status = ((rename(from_c,to_c) == 0) && (rename(from_d,to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
+      status = ((MDS_IO_RENAME(from_c,to_c) == 0) && (MDS_IO_RENAME(from_d,to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
     }
     if (from_c) free(from_c);
     if (to_c) free(to_c);
