@@ -193,7 +193,7 @@ class DT196B(Device):
 		else :
                     UUT.uut.acqcmd("setExternalClock %s" % clock_src)
 
-            UUT.setPrePostMode(pre_trig, post_trig)
+            UUT.setPrePostMode(pre_trig, post_trig, trig_src, trig_edge)
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             UUT.set_arm() 
             return  1
