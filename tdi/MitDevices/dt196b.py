@@ -255,6 +255,8 @@ class DT196B(Device):
             (tot, pre, post, run) = UUT.get_numSamples()
             pre = int(pre)
             post = int(post)
+	    if pre == 0 and post == 0 :
+		return 662480266  # DT196B$_NO_SAMPLES
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             if debug:
                 print "pre = %d, post = %d" % (pre, post, )
