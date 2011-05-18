@@ -15,12 +15,10 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 
 	private fun printURUNInfo( in _urun )
 	{
-		_out = "";
 	
-		if( _urun == 0 )
+		if( _urun == 1 )
 		{
-		    _out = "Original pulse version\n";
-		    return(0);
+		    return("Original pulse version\n");
 		}
 							
 		_path = "\\VERSIONS::TOP.URUN_0000"//trim(adjustl(text(_urun)));
@@ -29,7 +27,14 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 		if( _urun > 1000 ) _path = "\\VERSIONS::TOP.URUN_0"//trim(adjustl(_urun));
 		if( _urun > 10000 ) _path = "\\VERSIONS::TOP.URUN_"//trim(adjustl(_urun));
 
-		_expList = data( build_path( _path//":TREES_LIST" ));		
+		
+		
+		_expList = if_error( data( build_path( _path//":TREES_LIST" )) ,,  []);
+		if ( size( _expList ) == 0 )
+		{
+			return ( "Version not found in pulse" );
+		}			
+		
 		_expVer  = data( build_path( _path//":TREES_VER" ));
 		_name    = data( build_path( _path//":NAME" ));
 		_reason  = data( build_path( _path//":REASON" ));
@@ -40,29 +45,30 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 		{
 		    _modTreeFlags += _expList == _expReq[ _i ];
 		}
+		_out1 = "Update RUN : "//_urun//"\n";
 		/*
 		write( *, "URUN   = ", _urun);
 		*/
-		_out = _out//"NAME   = "//_name//"\n";
+		_out1 = _out1//"\nNAME   = "//_name//"\n";
 		/*
 		write( *, "REASON = ", _reason);
 		*/
-		_out = _out//"------------------\n";
+		_out1 = _out1//"------------------\n";
 		
 		for( _i = 0; _i < size( _expList ); _i++ )
 		{
 		    if( _modTreeFlags[ _i ] )
 		    {
-			_out = _out//_expList[ _i ]//( _expVer[ _i ]+1 )//" MOD\n";
+			_out1 = _out1//_expList[ _i ]//( _expVer[ _i ]+1 )//" MOD\n";
 		    }
 		    else
 		    {
-			_out = _out//_expList[ _i ]//( _expVer[ _i ]+1 )//"\n"; 
+			_out1 = _out1//_expList[ _i ]//( _expVer[ _i ]+1 )//"\n"; 
 		    }
 		}
-		_out = _out//"------------------\n";
+		_out1 = _out1//"------------------\n";
 
-		return( _out );
+		return( _out1 );
 	};
 	
 	private fun getUrunFromVersion(in _ver_list, in _ver )
@@ -72,18 +78,31 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 		_ver = size( _ver_list ) + _ver;
             }
 
-	    if( _ver >= 10000 || _ver == 0 ) return ( _ver );	
+	    if( _ver >= 10000  ) return ( _ver );	
 	
 	    
-	    if( _ver > 0 && _ver <= size( _ver_list ) )
+	    if( _ver > 1 && _ver <= size( _ver_list ) + 1 )
 	    {
-		return ( _ver_list[ _ver - 1 ] );
+		return ( _ver_list[ _ver - 2 ] );
+	    }
+	    
+	    if( _ver == 1 )
+	    {
+		    return (1); 
+	    }
+	    
+	    if( _ver == 0 )
+	    {
+		    return ( _ver_list[ size( _ver_list ) - 1 ] ); 
 	    }
 
 	    return ( "Version not found in pulse" );
 	}
 	
-	_out="";
+	
+	private _msg  = "";
+	private _ver = [];
+	
 	
 	if( if_error($EXPT,, *) != * )
 	{
@@ -94,30 +113,33 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 	    if( upcase( _exp ) == "RFX" && $EXPT == "RFX" )
 	    {
 		
-		_out = "Experiment : "//_exp//"\n";
+		_msg = "Experiment : "//_exp//"\n";
 		    
-		_out = _out//"Shot       : "//$SHOT//"\n";
+		_msg = _msg//"Shot       : "//$SHOT//"\n";
 		    
 		_ver = if_error( data(build_path("\\VERSIONS::URUNS")),,[]);
+		    
 
 		if( PRESENT( _version ) )
 		{
 		     _urun = getUrunFromVersion( _ver, _version );
 		     if( kind( _urun ) != 14  )
-			_out = _out//printURUNInfo( _urun );
+		     {
+			_msg = _msg//printURUNInfo( _urun );
+		     }
 		     else
 		     {
-			_out = _out//_urun//"\n";
+			_msg = _msg//_urun//"\n";
 		     }
 		}
 		else
-		{
-		
-		     _out = _out//"\tOriginal\n";
+		{	
+			
+		     _msg = _msg//"\t   1\t Original \n";
 		     
 		     for( _i = 0; _i < size( _ver ) ; _i += 1 )
 		     {
-			_out = _out//(_i+2)//_ver[ _i ]//"\n";
+			_msg = _msg//(_i+2)//_ver[ _i ]//"\n";
 		     }
 		}
 	    }
@@ -126,30 +148,30 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 		if( _exp == $EXPT || $EXPT == "RFX" )
 		{
 			
-		   _out = "Experiment : "//_exp//"\n";
+		   _msg = "Experiment : "//_exp//"\n";
 		   
-		   _out = _out//"Shot       : "//$SHOTNAME//"\n";
+		   _msg = _msg//" Shot       : "//$SHOTNAME//"\n";
 			
 		   _ver = if_error( data(build_path("\\"//_exp//"::PULSE_VER")),,[]);
 		   _k = 1;
-		   _out = _out//_k//"    "//RfxShotDate()// "Original"//"\n";
+		   _msg = _msg//_k//"    "//RfxShotDate()// " Original "//"\n";
 		   for( _i = 0; _i < size( _ver ) ; _i += 2 )
 		   {
 			_k++;
-			_out = _out//_k//"   "//_ver[ _i ]//"   "//_ver[ _i + 1 ]//"\n";
+			_msg = _msg//_k//"   "//_ver[ _i ]//"   "//_ver[ _i + 1 ]//"\n";
 		   }
 		}
 		else
 		{
-		   _out = _out//"Pulse file not open\n";
+		   _msg = _msg//"Pulse file not open\n";
 		}
 	    }
 	}
 	else
 	{
-	    _out = _out//"Pulse file not open\n";
+	    _msg = _msg//"Pulse file not open\n";
 	}
 	
-	return ( _out );
+	return ( _msg );
 
 }
