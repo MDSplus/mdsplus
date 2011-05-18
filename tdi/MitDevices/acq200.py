@@ -66,8 +66,7 @@ class Acq200:
 	def setChannelCount(self, nchan):
 		self.uut.acqcmd("setChannelMask " + '1' * nchan)
 
-	def setPrePostMode(self, pre=100000, post=100000, trig_src='di3', trig_edge='rising'):
-#		self.uut.acqcmd("setInternalClock 20000")
+	def setPrePostMode(self, pre=100000, post=100000, trig_src='DI3', trig_edge='rising'):
 		self.uut.acq2sh("set.pre_post_mode %d %d %s %s" % (pre, post, trig_src, trig_edge,))
 
 	def trigger(self):
