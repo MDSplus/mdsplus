@@ -103,8 +103,8 @@ RPM :
 MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python
 
 install: 
-	mkdirhier @exec_prefix@/local/tdi
-	mkdirhier @exec_prefix@/java
+	devscripts/mkdirhier @exec_prefix@/local/tdi
+	devscripts/mkdirhier @exec_prefix@/java
 	cdir=`pwd`;\
 	set -e; for dir in $(PARTS) ; do\
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
