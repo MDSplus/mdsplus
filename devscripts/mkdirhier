@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# Make directory hierarchy
+#
+if ! test -d $1; then
+  if ! test -d `dirname $1`; then
+    $0 `dirname $1`
+  fi
+  mkdir $1
+fi
