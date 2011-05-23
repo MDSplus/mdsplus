@@ -130,8 +130,8 @@ public class PELLETSetup extends DeviceSetup {
         setHeight(500);
         setWidth(650);
 
-        deviceButtons1.setCheckExpressions(new String[] {"_drigas1 < \\DRIGAS_MAX", "_drigas2 < \\DRIGAS_MAX", "_drigas2 < \\DRIGAS_MAX", "_drigas3 < \\DRIGAS_MAX", "_drigas4 < \\DRIGAS_MAX", "_drigas5 < \\DRIGAS_MAX", "_drigas6 < \\DRIGAS_MAX", "_drigas7 < \\DRIGAS_MAX", "_drigas7 < \\DRIGAS_MAX", "_drigas8 < \\DRIGAS_MAX"});
-        deviceButtons1.setCheckMessages(new String[] {"DRIGAS pellet 1 exceed maximum value ", "DRIGAS pellet 2 exceed maximum value ", "DRIGAS pellet 2 exceed maximum value ", "DRIGAS pellet 3 exceed maximum value ", "DRIGAS pellet 4 exceed maximum value ", "DRIGAS pellet 5 exceed maximum value ", "DRIGAS pellet 6 exceed maximum value ", "DRIGAS pellet 7 exceed maximum value ", "DRIGAS pellet 7 exceed maximum value ", "DRIGAS pellet 8 exceed maximum value "});
+        deviceButtons1.setCheckExpressions(new String[] {"_drigas1 <= \\DRIGAS_MAX", "_drigas2 <= \\DRIGAS_MAX", "_drigas3 <= \\DRIGAS_MAX", "_drigas4 <= \\DRIGAS_MAX", "_drigas5 <= \\DRIGAS_MAX", "_drigas6 <= \\DRIGAS_MAX", "_drigas7 <= \\DRIGAS_MAX", "_drigas8 <= \\DRIGAS_MAX"});
+        deviceButtons1.setCheckMessages(new String[] {"DRIGAS pellet 1 exceed maximum value ",  "DRIGAS pellet 2 exceed maximum value ", "DRIGAS pellet 3 exceed maximum value ", "DRIGAS pellet 4 exceed maximum value ", "DRIGAS pellet 5 exceed maximum value ", "DRIGAS pellet 6 exceed maximum value ",  "DRIGAS pellet 7 exceed maximum value ", "DRIGAS pellet 8 exceed maximum value "});
         deviceButtons1.setMethods(new String[] {"init", "store"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
@@ -601,7 +601,7 @@ public class PELLETSetup extends DeviceSetup {
 
         deviceChoice1.setChoiceItems(new String[] {"ENABLE", "DISABLE"});
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Valve State : ");
+        deviceChoice1.setLabelString("Pellet Sequence : ");
         deviceChoice1.setOffsetNid(144);
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
