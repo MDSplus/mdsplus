@@ -159,6 +159,9 @@ public fun PELLET__store(as_is _nid, optional _method)
 
 		if( DevIsOn(DevNodeRef(_nid, _pelNid)) )
 		{
+		
+			write(*, "Pellet "//TEXT(_pellet, 1)//" ON");
+			
 			for(_i = 0; _i < size(_p_param) && (_tree_status & 1); _i++)
 			{
 				_param = trim(_p_param[_i])//TEXT(_pellet, 1);
@@ -191,6 +194,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 					DevLogErr(_nid, _msg); 
 					Abort();
 				}
+								
 				
 				_param_nid =  DevHead(_nid) + _pelNid +  _N_SPEED + _i;
 				_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));				
