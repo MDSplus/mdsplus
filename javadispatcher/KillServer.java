@@ -25,13 +25,19 @@ public class KillServer extends MdsConnection
       System.exit(0);
     }
 
-    KillServer killServer = new KillServer(serverIp + ":"+serverPort);
-    killServer.ConnectToMds(false);
+    try {
+		KillServer killServer = new KillServer(serverIp + ":"+serverPort);
+		killServer.ConnectToMds(false);
 
-    killServer.MdsValue("kill", new Vector(), false);
+		killServer.MdsValue("kill", new Vector(), false);
 
 	
-	killServer.DisconnectFromMds();
+		killServer.DisconnectFromMds();
+	}
+	catch(Exception exc)
+    {
+      System.err.println("Cannot connect to server: " + serverIp + ":"+serverPort);
+    }
 
 	     
 	System.exit(0);
