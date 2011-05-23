@@ -54,7 +54,7 @@ public fun PELLET__init(as_is _nid, optional _method)
 	_values_off  = [6,6,6,15,1];
 
 	_p_param_on = ['AFORM','BFORM','HOLD','FIRE'];
-	_p_nid_offset = [_N_AFORM,_N_BFORM,_N_HOLD, _N_FIRE];
+	_p_nid_offset = [ _N_AFORM, _N_BFORM, _N_HOLD, _N_FIRE ];
 	_values_on  = [8,7,7,20];
 
 	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
@@ -114,11 +114,12 @@ write(*, _name);
 
 	for(_pellet = 1; _pellet <= 8; _pellet++)
 	{
+		
+		_chanNid = _N_PELLET_0  + ( ( _pellet - 1 ) * _K_NODES_PER_PELLET );
 
-		_nidPel = DevHead(_nid) + _N_PELLET_0  + ( ( _pellet - 1 ) * _K_NODES_PER_PELLET );
+		_nidPel = DevHead(_nid) + _chanNid;
 
-		 write (*, "OK", _pellet, DevIsOn( _nidPel ), getnci(_nidPel, "FULLPATH") );
-
+		
 		_pel_trig_path = "\\DPEL_RAW::FIRE_PLT_"//trim(adjustl(_pellet));
 		_dec_path      = getnci(getnci(build_path(_pel_trig_path//":DECODER"), "record"), "path");
 		_dec_chan      = data( build_path(_pel_trig_path//":CHANNEL") );
@@ -144,6 +145,9 @@ Set off decoder channel
 				}
 				else
 				{
+/*				
+				write(*, _param, _values_off[ _i] );
+*/				
 					_status = PELLETHWWriteParam( _fd, _param, _values_off[ _i] );
 				}
 				
@@ -155,6 +159,7 @@ Set off decoder channel
 				}					
 			}
 
+			write (*, "PELLET"// TEXT(_pellet, 1)//" OFF");
 		}
 		else
 		{
@@ -163,22 +168,22 @@ Set on decoder channel
 */			
 			TreeTurnOn( _dec_chan_nid );
 			
-			
 			for(_i = 0; _i < size(_p_param_on); _i++)
 			{
+				_status = 0;
+				_val = -1;
+				_val = if_error(data(DevNodeRef( _nid,  _chanNid + _p_nid_offset[ _i ] )), _status = 1);
 
-				_val = if_error(data(DevNodeRef(_nidPel, _p_nid_offset[ _i ])), _status = 1);
-
+				_param = trim(_p_param_on[_i])//TEXT(_pellet, 1);
+/*
+				write(*, _param, _val,_p_nid_offset[ _i ] );
+*/				
 				if( _status )
 				{
-					DevLogErr(_nid, "Error readig pellet param "//trim(_p_param_on[_i])//".Default value is set" );
+					DevLogErr(_nid, "Error reading pellet param "//trim(_p_param_on[_i])//" .Default value is set" );
 					_val = _values_on[ _i];
-					Abort();
 				}
-				
 			
-				_param = trim(_p_param_on[_i])//TEXT(_pellet, 1);
-
 				if ( _remote )
 				{
 					_status = MdsValue('PELLETHWWriteParam($1, $2, $3)', _fd, _param, _val);
@@ -191,11 +196,48 @@ Set on decoder channel
 			
 				if( _status < 0)
 				{
-					_msg = "Error on "//_param//" write operation";
+					_msg = "Error on set "//_param//" write operation";
 					DevLogErr(_nid, _msg); 
 				}
 				
 			}
+			
+			_status = 0;
+			_state = " ON";
+			
+			_driGas = if_error(data(DevNodeRef( _nid,  _chanNid + _N_DRIGAS )), _status = 1);
+			
+			if( _status )
+			{
+				_msg = "Error reading pellet param DRIGAS for pellet "//TEXT(_pellet, 1)//", trigger disabled";
+				TreeTurnOn( _dec_chan_nid );
+				DevLogErr(_nid, _msg); 
+				_state = " OFF";
+			}
+/*			
+			write(*, "DRIGAS"//TEXT(_pellet, 1), _driGas );
+*/			
+			if ( _remote )
+			{
+				_status = MdsValue('PELLETHWWriteParam($1, $2, $3)', _fd, "DRIGAS"//TEXT(_pellet, 1), _driGas);
+			}
+			else
+			{
+				_status = PELLETHWWriteParam( _fd, "DRIGAS"//TEXT(_pellet, 1),  _driGas );
+			}
+				
+			
+			if( _status < 0)
+			{
+				_msg = "Error on set "//_param//" write operation";
+				TreeTurnOn( _dec_chan_nid );
+				_state = " OFF";
+				DevLogErr(_nid, _msg); 
+			}			
+
+			write (*, "PELLET"// TEXT(_pellet, 1)//_state);
+			
+			
 		}
 	}
 
