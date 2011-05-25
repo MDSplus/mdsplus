@@ -20,6 +20,11 @@ public fun DESO_acquisition()
 		altrimenti proseguire
 		
 	*/
+	
+	_WAIT_FOR_ACQUISITION =	data( build_path("\\DESO_RAW::PARAMETERS:STOP_ACQ") ) + 4;
+	
+	write(*, "Wait seconds for acquisition ", _WAIT_FOR_ACQUISITION);
+	
 		
 	if( _PLC_SYNC )
 	{
@@ -136,7 +141,7 @@ public fun DESO_acquisition()
 			
 		}
 	}
-	
+
 	
 	if( _EXECUTE_PULSE )
 	{
