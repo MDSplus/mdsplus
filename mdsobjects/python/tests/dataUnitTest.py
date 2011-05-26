@@ -390,7 +390,6 @@ class dataTests(TestCase):
             Data.execute('abort()')
             self.fail("Abort did not signal an error")
         except Exception,e:
-            self.assertEqual(type(e),TdiException)
             self.assertEqual(str(e),'%TDI-E-TdiABORT, Program requested abort')
 
         """Test abs"""
