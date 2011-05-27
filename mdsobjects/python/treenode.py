@@ -922,7 +922,7 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        from __treeshr import TreePutSegment
+        from _treeshr import TreePutSegment
         TreePutSegment(self,data,idx)
 
     def putTimestampedSegment(self,timestampArray,array):
