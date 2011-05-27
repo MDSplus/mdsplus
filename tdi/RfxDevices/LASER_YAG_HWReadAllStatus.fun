@@ -1,6 +1,6 @@
 public fun LASER_YAG_HWReadStatus()
 {
-    _port = "COM1:";
+    _port = "COM7:";
     _setting = "baud=115200 parity=N data=8 stop=2 ";
     _binary = 1; /* In binary mode non considera EOF*/
     _handshake =  2; /* NONE */

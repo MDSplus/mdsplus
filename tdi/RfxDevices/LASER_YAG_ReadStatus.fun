@@ -28,9 +28,10 @@ write(*, "Handler ", _handle);
 			RS232Close(_handle);
 			return(0);
 		}
-	write(*, "Message : ", _cmdBuf );
+	write(*, "Message : ", _cmdBuf);
 
 	_status_code = LASER_YAG_ReadErr(_handle) ;
+	
 	if( _status_code[0] == 69 ) /* E = 69 acsii code */
 		{
 			LASER_YAG_Err(_status_code[1] - 48); /* 0 = 48 ascii code */
