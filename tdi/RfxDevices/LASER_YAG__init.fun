@@ -1,6 +1,6 @@
 public fun LASER_YAG__init(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 12;
+   private _K_CONG_NODES = 14;
 
 	private _N_COMMENT = 1;
 	private _N_SW_MODE = 2;
@@ -11,12 +11,20 @@ public fun LASER_YAG__init(as_is _nid, optional _method)
     private _N_PULSE_BURST = 6;
     private _SYNC_DELAY_LAMP = 7;
     private _SYNC_DELAY_DIODE = 8;
+    private _WAIT_SIMMER_ON = 9;
+
+    private _N_RS232_PORT = 10;
 
 	_error = 0;
 	
+	_port = if_error(data(DevNodeRef(_nid, _N_RS232_PORT)), _error = 1);
+    if( _error )
+    {
+		DevLogErr(_nid, "Missing RS232 Port"); 
+		abort();
+	}
 	
   	DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
-
 	if(_remote != 0)
 	{
 		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
@@ -75,15 +83,16 @@ public fun LASER_YAG__init(as_is _nid, optional _method)
 			abort();
   	}
 
+
 	if(_remote != 0)
 	{
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		_status = execute(_cmd);
 		if( _status != 0 )
 		{
-			write(*, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
+			write(*, _port, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
 
-			_status = MdsValue('LASER_YAG_HWinit($,$,$,$,$)', _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);		
+			_status = MdsValue('LASER_YAG_HWinit($,$,$,$,$,$)', _port, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);		
 			MdsDisconnect();
 			if( _status >= 0 )
 			{
@@ -99,9 +108,9 @@ public fun LASER_YAG__init(as_is _nid, optional _method)
 	}
 	else
 	{
-		write(*, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
+		write(*, _port, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
 
-		_status = LASER_YAG_HWinit(_energy, _repetition_rate, _pulse_in_burst,  _sync_delay_lamp, _sync_delay_diode);
+		_status = LASER_YAG_HWinit(_port, _energy, _repetition_rate, _pulse_in_burst,  _sync_delay_lamp, _sync_delay_diode);
 		if( _status >= 0 )
 		{
 			DevLogErr(_nid, ""//LASER_YAG_Err( _status ));

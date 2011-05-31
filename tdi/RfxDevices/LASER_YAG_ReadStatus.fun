@@ -54,17 +54,13 @@ write(*, "Handler ", _handle);
 	
 	write (*,"--------->  STATUS & ERROR BYTE", _status_byte, _error_byte);
 	
-	return( 1 );
+	/* return( 1 );
+	*/
+	
+	return( _status_byte );
  }
-
-
-
-
-
-
-
-
-
+ 
+ 
 
 
 

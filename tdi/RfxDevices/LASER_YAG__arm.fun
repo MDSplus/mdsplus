@@ -1,6 +1,6 @@
 public fun LASER_YAG__arm(as_is _nid, optional _method)
 {
-    private _K_CONG_NODES = 10;
+    private _K_CONG_NODES = 14;
 
 	private _N_COMMENT = 1;
 	private _N_SW_MODE = 2;
@@ -13,10 +13,18 @@ public fun LASER_YAG__arm(as_is _nid, optional _method)
     private _SYNC_DELAY_DIODE = 8;
     private _WAIT_SIMMER_ON = 9;
 
+    private _N_RS232_PORT = 10;
+
 	_error = 0;
 	
-  	DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
+	_port = if_error(data(DevNodeRef(_nid, _N_RS232_PORT)), _error = 1);
+    if( _error )
+    {
+		DevLogErr(_nid, "Missing RS232 Port"); 
+		abort();
+	}
 
+  	DevNodeCvt(_nid, _N_SW_MODE, ['LOCAL', 'REMOTE'], [0,1], _remote = 0);
 	if(_remote != 0)
 	{
 		_ip_addr = if_error(data(DevNodeRef(_nid, _N_IP_ADDR)), "");
@@ -52,7 +60,7 @@ public fun LASER_YAG__arm(as_is _nid, optional _method)
 		if( _status != 0 )
 		{
 
-			_status = MdsValue('LASER_YAG_HWarm($, $)', _repetition_rate, _wait_simmer_on);		
+			_status = MdsValue('LASER_YAG_HWarm($, $, $)', _port, _repetition_rate, _wait_simmer_on);		
 			MdsDisconnect();
 			if( _status >= 0 )
 			{
@@ -69,7 +77,7 @@ public fun LASER_YAG__arm(as_is _nid, optional _method)
 	else
 	{
 
-		_status = LASER_YAG_HWarm( _repetition_rate, _wait_simmer_on );
+		_status = LASER_YAG_HWarm( _port, _repetition_rate, _wait_simmer_on );
 		if( _status >= 0 )
 		{
 			DevLogErr(_nid, ""//LASER_YAG_Err( _status ));

@@ -1,7 +1,8 @@
-public fun LASER_YAG_HWabort()
+public fun LASER_YAG_HWabort(in _port, in _pulse_in_burst)
 {
-  
-     _port = "COM7:";
+
+    /* _port = "COM7:"; */
+
     _setting = "baud=115200 parity=N data=8 stop=2 ";
     _binary = 1; /* In binary mode non considera EOF*/
     _handshake =  2; /* NONE */
@@ -68,8 +69,8 @@ write(*, "Diode master oscillator switch OFF ");
 		return( _status );
 	}
 
-
-	 wait(10.0);
+	 wait(5.0);
+	 wait(_pulse_in_burst);
 
 
 	/* STOP the power supply 

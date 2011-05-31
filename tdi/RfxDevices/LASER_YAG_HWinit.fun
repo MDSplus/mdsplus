@@ -1,12 +1,12 @@
-public fun LASER_YAG_HWinit(in _energy, in _repetition_rate, in _pulse_in_burst, in  _sync_delay_lamp, in _sync_delay_diode)
+public fun LASER_YAG_HWinit(in _port, in _energy, in _repetition_rate, in _pulse_in_burst, in  _sync_delay_lamp, in _sync_delay_diode)
 {
-    _port = "COM7:";
+    /*_port = "COM7:"; */
     _setting = "baud=115200 parity=N data=8 stop=2";
     _binary = 1; /* In binary mode non considera EOF*/
     _handshake =  2; /* NONE */
     _eofChar = 0;
 
-	write(*, "LASER_YAG_HWinit ", _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
+	write(*, "LASER_YAG_HWinit ", _port, _energy, _repetition_rate, _pulse_in_burst, _sync_delay_lamp, _sync_delay_diode);
  
     _handle = RS232Open(_port,  _setting,  _binary , _handshake ,  _eofChar);
 	if( _handle == 0 )

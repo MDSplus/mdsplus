@@ -1,6 +1,6 @@
 public fun LASER_YAG__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'LASER_YAG', 13, _nidout);
+    DevAddStart(_path, 'LASER_YAG', 14, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
 	DevAddNode(_path // ':SW_MODE', 'TEXT', 'LOCAL', *, _nid);
     DevAddNode(_path // ':IP_ADDR', 'TEXT', *, *, _nid);
@@ -12,6 +12,8 @@ public fun LASER_YAG__add(in _path, out _nidout)
     DevAddNode(_path // ':DELAY_DIODE', 'NUMERIC', 0, *, _nid);
     DevAddNode(_path // ':WAIT_SIMON', 'NUMERIC', 35, *, _nid);
     
+    DevAddNode(_path // ':RS232_PORT',  'TEXT', *, *, _nid);
+
 
 	/******** ACTIONS ********/
 
