@@ -39,9 +39,13 @@ public fun PELLET__store(as_is _nid, optional _method)
 	_g_param = ['TSTBY1', 'TAFORM1', 'TBFORM1', 'THOLD1', 'TBAKE1', 'DELAY'];
 	_p_param = ['SPEED', 'MASS', 'DRIGAS', 'OHOLD','OFORM','OSTBY','STBY','AFORM','BFORM','HOLD','FIRE','BAKE', 'TOFA', 'TOFB'];
 
+
+	_p_param_off = ['AFORM','BFORM','HOLD','FIRE','DRIGAS'];
+	_p_nid_offset = [ _N_AFORM, _N_BFORM, _N_HOLD, _N_FIRE, _N_DRIGAS ];
+
 	_tree_status = 1;
 	
-	
+/*	
 	_pellet_on = 0;
 	
 	for( _i = 0; _i < 8 ; _i++)
@@ -58,7 +62,7 @@ public fun PELLET__store(as_is _nid, optional _method)
 		write(*, "All pellet off");
 		return (1);
 	}
-
+*/
 	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
 
 	if( _status )
@@ -197,6 +201,49 @@ public fun PELLET__store(as_is _nid, optional _method)
 								
 				
 				_param_nid =  DevHead(_nid) + _pelNid +  _N_SPEED + _i;
+				_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));				
+			}
+		}
+		else
+		{
+			write(*, "Pellet "//TEXT(_pellet, 1)//" OFF");
+			
+			for(_i = 0; _i < size(_p_param_off) && (_tree_status & 1); _i++)
+			{
+				_param = trim(_p_param_off[ _i ])//TEXT(_pellet, 1);
+	
+				if ( _remote )
+				{
+						 _value = MdsValue('PELLETHWReadParam($1, $2)', _fd, _param);
+				}
+				else
+				{
+					 _value = PELLETHWReadParam( _fd, _param );
+				}
+			
+				if( kind( _value ) == 14)
+				{
+				
+					write(*, "CLOSING RS232");
+				
+					if ( _remote )
+					{
+						MdsValue('PELLETHWClose($1)', _fd);
+						MdsDisconnect();
+					}								
+					else
+						PELLETHWClose( _fd );
+						
+					write(*, "CLOSED RS232");	
+					
+					_msg = "Error on "//_value//" query operation";
+					DevLogErr(_nid, _msg); 
+					Abort();
+				}
+/*								
+				write(*, _param, _value);
+*/
+				_param_nid =  DevHead(_nid) + _pelNid +  _p_nid_offset[ _i ];
 				_tree_status = TreeShr->TreePutRecord(val(_param_nid),xd(_value),val(0));				
 			}
 		}
