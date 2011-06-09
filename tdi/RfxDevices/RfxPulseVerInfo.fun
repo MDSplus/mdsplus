@@ -135,11 +135,12 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 		else
 		{	
 			
-		     _msg = _msg//"\t   1\t Original \n";
+		     _msg = _msg//"\t   1\t"//RfxShotDate()//"\t    Original\n";
 		     
 		     for( _i = 0; _i < size( _ver ) ; _i += 1 )
 		     {
-			_msg = _msg//(_i+2)//_ver[ _i ]//"\n";
+			_date = if_error(data(build_path("\\VERSIONS::TOP.URUN_"// trim(adjustl( _ver[ _i ] ))//":CREATION_DT")),,"ttt");
+			_msg = _msg//(_i+2)//"\t"//_date//" "//_ver[ _i ]//"\n";
 		     }
 		}
 	    }
@@ -154,11 +155,11 @@ public fun RfxPulseVerInfo(optional in _exp, optional in _version)
 			
 		   _ver = if_error( data(build_path("\\"//_exp//"::PULSE_VER")),,[]);
 		   _k = 1;
-		   _msg = _msg//_k//"    "//RfxShotDate()// " Original "//"\n";
+		   _msg = _msg//_k//"\t"//RfxShotDate()//"    Original "//"\n";
 		   for( _i = 0; _i < size( _ver ) ; _i += 2 )
 		   {
 			_k++;
-			_msg = _msg//_k//"   "//_ver[ _i ]//"   "//_ver[ _i + 1 ]//"\n";
+			_msg = _msg//_k//"\t"//_ver[ _i ]//"       "//_ver[ _i + 1 ]//"\n";
 		   }
 		}
 		else
