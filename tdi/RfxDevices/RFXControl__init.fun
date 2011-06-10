@@ -42,7 +42,7 @@ public fun RFXControl__init(as_is _nid, optional _method)
     private _N_PAR1_VALUE = 833; 
 
  
-	private _MAX_CONTROLS = 22;
+	private _MAX_CONTROLS = 23;
 /*	private _NUM_PARAMETERS = 321;*/
 	private _NUM_PARAMETERS = 352;
 
