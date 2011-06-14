@@ -21,10 +21,11 @@ public fun RfxControlNameToIdx(in _idx)
 			   "Open Loop F Control",
 			   "Open Loop Q Control",
 			   "Flux Control",			   
+			   "CMC + Modal Decoupling",			   
 			   "Unknow" ];
 			   
 			   
-    _code  = [ 1, 6, 5, 3, 7, 8, 4, 9, 10, 11, 12, 13, 14, 15, 16, 20, 17, 18, 19, 20];
+    _code  = [ 1, 6, 5, 3, 7, 8, 4, 9, 10, 11, 12, 13, 14, 15, 16, 20, 17, 18, 19, 20, 23];
 
 	for(_i = 0; _i < size(_code)  ; _i++)
 		if( _code[_i] == _idx )
