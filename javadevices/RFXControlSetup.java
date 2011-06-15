@@ -707,7 +707,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceTable6.setNumCols(7);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes", "Tau1", "Alpha"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes", "", ""});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable6.setUseExpressions(true);
@@ -1507,7 +1507,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceField9.setLabelString("Sys duration: ");
     deviceField9.setNumCols(5);
     deviceField9.setIdentifier("sys_duration");
-    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22});
+    deviceChoice2.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22,(int)23});
     deviceChoice2.setChoiceFloatValues(null);
     deviceChoice2.setConvert(true);
     deviceChoice2.setOffsetNid(7);
@@ -1515,7 +1515,7 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice2.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT. PERT.(FEEDBACK) ", "MODE CONTROL+ROT. PERT.(FEEDFORWARD)", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)",
         "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL", "Closer VS", "Closer VS+Rot.Pert.", "Mode Control with Shell comp.",
-        "Open Loop F Control", "Open Loop Q Control", "Flux Control", "Pseudo Decoupling VS"});
+        "Open Loop F Control", "Open Loop Q Control", "Flux Control", "Pseudo Decoupling VS", "CMC + Modal Decoupling"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22});

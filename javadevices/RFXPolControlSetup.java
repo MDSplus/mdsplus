@@ -83,7 +83,7 @@ public class RFXPolControlSetup extends DeviceSetup {
     deviceTable6.setNumCols(7);
     deviceTable6.setNumRows(1);
     deviceTable6.setIdentifier("");
-    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes", "Tau1", "Alpha"});
+    deviceTable6.setColumnNames(new String[] {"T_ip", "Bv_Gain", "Max_PVAT_Curr", "GainDecoupl", "GainCompRes", "", ""});
         deviceTable6.setRowNames(null);
     deviceTable6.setPreferredHeight(20);
     deviceTable6.setUseExpressions(true);
