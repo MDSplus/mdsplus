@@ -1518,7 +1518,7 @@ public class RFXControlSetup extends DeviceSetup {
         "Open Loop F Control", "Open Loop Q Control", "Flux Control", "Pseudo Decoupling VS", "CMC + Modal Decoupling"});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
-    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22});
+    deviceChoice3.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22,(int)23});
     deviceChoice3.setChoiceFloatValues(null);
     deviceChoice3.setConvert(true);
     deviceChoice3.setOffsetNid(8);
@@ -1526,10 +1526,10 @@ public class RFXControlSetup extends DeviceSetup {
     deviceChoice3.setChoiceItems(new String[] {"OFFSET CORRECTION", "WAVE GENERATION", "IND. PERTURBATION ", "ROT.PERTURBATION", "SIMULINK", "LOCK CONTROL", "MODE CONTROL",
         "MODE CONTROL+ROT. PERT.(FEEDBACK) ", "MODE CONTROL+ROT. PERT.(FEEDFORWARD)", "VIRTUAL SHELL", "VS+ROT.PERT.(FEEDBACK)",
         "VS+ROT.PERT.(FEEDFORW)", "Bt CONTROL", "F CONTROL", "Closer VS", "Closer VS+Rot.Pert.", "Mode Control with Shell comp.",
-        "Open Loop F Control", "Open Loop Q Control", "Flux Control"});
+        "Open Loop F Control", "Open Loop Q Control", "Flux Control", "Pseudo Decoupling VS", "CMC + Modal Decoupling"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
-    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17});
+    deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)6,(int)5,(int)3,(int)7,(int)8,(int)4,(int)9,(int)20,(int)10,(int)11,(int)12,(int)13,(int)14,(int)15,(int)16,(int)17,(int)18,(int)19,(int)21,(int)22,(int)23});
     deviceChoice1.setChoiceFloatValues(null);
     deviceChoice1.setConvert(true);
     deviceChoice1.setOffsetNid(6);
