@@ -481,9 +481,7 @@ def TreeDeleteNode(tree,nid,reset):
         raise TreeException,MdsGetMsg(status)
 
 def TreeDeleteNodeExecute(tree):
-    status = __TreeDeleteNodeExecute(tree.ctx)
-    if not (status & 1):
-        raise TreeException,MdsGetMsg(status)
+    __TreeDeleteNodeExecute(tree.ctx)
     
 def TreeDeletePulse(tree,shot):
     status = __TreeDeletePulseFile(tree.ctx,shot,1)
