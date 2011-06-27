@@ -13,7 +13,7 @@ public fun LASER_YAG__init(as_is _nid, optional _method)
     private _SYNC_DELAY_DIODE = 8;
     private _WAIT_SIMMER_ON = 9;
 
-    private _N_RS232_PORT = 10;
+    private _N_RS232_PORT = 13;
 
 	_error = 0;
 	
