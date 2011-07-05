@@ -1339,6 +1339,7 @@ int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
             info->root = info->node;
             (*dblist)->default_node = info->root;
             TreeOpenNciW(info, 0);
+            info->edit->first_in_mem=0;
             status = TreeExpandNodes(*dblist, 0, 0);
             strncpy(info->node->name,"TOP         ",sizeof(info->node->name));
             info->node->parent = 0;
