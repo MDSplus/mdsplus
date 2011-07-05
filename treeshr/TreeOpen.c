@@ -916,7 +916,8 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     perror("Error opening tree file");
     }
     */
-    free(path);
+    if (path)
+      TranslateLogicalFree(path);
   }
   if (fd != -1 && is_tree && edit_flag)
   {
