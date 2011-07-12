@@ -158,6 +158,7 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
           dummy = execute(string(anscreate_pre))
           if dummy then dummy = call_external(MdsIdlImage(),"IdlGetAns",answer,value=[0b])
           if anscreate_post(0) ne 0 then dummy = execute(string(anscreate_post))
+          if ((size(answer,/struct)).type eq 7) then answer=strtrim(answer)
         endif else begin
           if (status ne 0) then begin
             msg = mdsgetmsg(status)
