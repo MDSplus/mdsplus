@@ -22,10 +22,6 @@ class DT196A(Device):
         {'path':':NODE','type':'text','value':'192.168.0.254','options':('no_write_shot',)},
         {'path':':BOARD','type':'text','value':'192.168.0.0','options':('no_write_shot',)},
         {'path':':COMMENT','type':'text'},
-        {'path':':RANGES','type':'text','options':('write_once',)},
-        {'path':':STATUS_CMDS','type':'text','value':makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
-        {'path':':BOARD_STATUS','type':'signal','options':('write_shot',)},
-        {'path':':SEG_LENGTH','type':'numeric','options':('no_write_shot',)},
         ]
 
     for i in range(6):
@@ -42,6 +38,9 @@ class DT196A(Device):
         {'path':':TRIG_SRC','type':'text','value':'DI3','options':('no_write_shot',)},
         {'path':':POST_TRIG','type':'numeric','value':128,'options':('no_write_shot',)},
         {'path':':PRE_TRIG','type':'numeric','value':0,'options':('no_write_shot',)},
+        {'path':':RANGES','type':'text','options':('write_once',)},
+        {'path':':STATUS_CMDS','type':'text','value':makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
+        {'path':':BOARD_STATUS','type':'signal','options':('write_shot',)},
         ]
     parts.extend(parts2)
     del parts2
@@ -51,7 +50,7 @@ class DT196A(Device):
         parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:FILTER_COEFS'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:VIN'%(i+1,),'type':'NUMERIC', 'value':10, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:RAW'%(i+1,),'type':'SIGNAL', 'options':('no_write_model','write_once')})
 
     parts.append({'path':':INIT_ACTION','type':'action',
                   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INITFTP',head))",
@@ -84,6 +83,19 @@ class DT196A(Device):
         post_trig = int(parts[3].split(' ')[0])
         return post_trig
 
+    def getBoardIp(self):
+        try:
+            boardip=str(self.node.record)
+            if len(boardip) == 0 :
+                raise Exception, "boardid record empty"
+        except:
+            try:
+                print "trying to use the hub to get the ip"
+                boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
+            except:
+                raise Exception, "could not get board ip from either tree or hub"
+        return boardip
+
     def readRawData(self, name, pre, start, end, inc) :
 #        print "readRawData(self, %s, %d, %d, %d, %d)" % (name, pre, start, end, inc)
         f = open(name, mode='rb')
@@ -106,19 +118,6 @@ class DT196A(Device):
             return ans
         except:
             raise Exception, message
-
-    def getBoardIp(self):
-        try:
-            boardip=str(self.node.record)
-            if len(boardip) == 0 :
-                raise Exception, "boardid record empty"
-        except:
-            try:
-                print "trying to use the hub to get the ip"
-                boardip=Dt200WriteMaster(int(self.board), "/sbin/ifconfig eth0 | grep 'inet addr'", 1)[0].split(':')[1].split()[0]
-            except:
-                raise Exception, "could not get board ip from either tree or hub"
-        return boardip
 
     def timeoutHandler(self,sig,stack):
         raise Exception("Timeout occurred")
@@ -253,9 +252,6 @@ class DT196A(Device):
                     fd.write("set.ext_clk DI0\n")
             else :
                 fd.write("acqcmd setExternalClock %s\n" % clock_src)
-
-	    for chan in range(96):
-		fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
 
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig,post_trig,trig_src,'rising',))
             fd.write(". /usr/local/bin/xmlfunctions.sh\n")
