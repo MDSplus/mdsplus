@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "mdsip.h"
 #ifdef BUFSIZ
 #undef BUFSIZ
@@ -384,13 +385,19 @@ static SOCKET ConnectToPort(char *host, char *service)
     user_p = "vxWorks";
 #else
 	struct passwd *passStruct = getpwuid(geteuid());
-	if(!passStruct)
-		user_p = "Linux";
-	else
-		user_p = passStruct->pw_name;
-    /*
-    user_p = (cuserid(user) && strlen(user)) ? user : "?";
-    */
+	if(!passStruct) {
+        /*
+         *  On some RHEL6/64 systems 32 bit
+         *  calls to getpwuid return 0
+         *  temporary fix to call getlogin()
+         *  in that case.
+         */
+            user_p = getlogin();
+        if (!user_p)
+          user_p = "Linux";
+      }
+      else
+        user_p = passStruct->pw_name;
 
 #endif
 #endif
