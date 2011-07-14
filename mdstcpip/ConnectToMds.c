@@ -49,7 +49,7 @@ static int DoLogin(int id) {
   user_p = "vxWorks";
 #else
   struct passwd *passStruct = getpwuid(geteuid());
-  if(!passStruct)
+  if(!passStruct){
     /* 
      *  On some RHEL6/64 systems 32 bit
      *  calls to getpwuid return 0
@@ -59,6 +59,7 @@ static int DoLogin(int id) {
     user_p = getlogin();
     if (!user_p)
       user_p = "Linux";
+  }
   else
     user_p = passStruct->pw_name;
 #endif
