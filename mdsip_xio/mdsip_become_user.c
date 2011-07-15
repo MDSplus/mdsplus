@@ -61,8 +61,9 @@ int mdsip_become_user(mdsip_client_t *c)
           c->num_groups=num_groups;
         }
      	else
-	{  
-	  initgroups(user,pwd->pw_gid);
+	{
+          int stat;  
+	  stat = initgroups(user,pwd->pw_gid);
           c->num_groups = getgroups(NGROUPS,c->gids);
         }
 	strcat(cmd,pwd->pw_dir);
@@ -82,9 +83,10 @@ int mdsip_become_user(mdsip_client_t *c)
     status = 0;
   if (status == 0)
   {
+    seteuid(0);
     setgroups(c->num_groups,c->gids);
-    setgid(c->gid);
-    status = setuid(c->uid);
+    setegid(c->gid);
+    status = seteuid(c->uid);
     if (status)
       fprintf(stderr,"%s, Cannot setuid - run server as root!",mdsip_current_time());
   }
