@@ -59,7 +59,7 @@ public fun ISIS_GAIN__init(as_is _nid, optional _method)
 * READ CARD GAINS & RACK CONFIGURATION
 */
 
- write(*, "READ CARD GAINS & RACK CONFIGURATION");
+ write(*, "READ CARD GAINS & RACK CONFIGURATION ", _ip, _port);
 
 
 	_sock = TCPOpenConnection(_ip, _port, _FREE_MODE, 8000, _sw = -1);
@@ -69,8 +69,9 @@ public fun ISIS_GAIN__init(as_is _nid, optional _method)
 		abort();
 	}
 
-	_status = TcpClient->SendData(val(_sock), _READ_CODE, val(sizeof(_READ_CODE)));
+	wait(0.5);
 
+	_status = TcpClient->SendData(val(_sock), _READ_CODE, val(sizeof(_READ_CODE)));
 
 	wait(0.5);
 
@@ -102,9 +103,7 @@ write(*, "CHECK CARD CNFIGURATION");
 	      TCPCloseConnection(_sock);
 		abort();
 	}
-
 	TCPCloseConnection(_sock);
-
 
 
 /*
