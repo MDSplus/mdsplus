@@ -422,7 +422,7 @@ int IdlGetAns(int argc, void **argv)
   {
     memcpy(argv[0], mdsValueAnswer.pointer->pointer, mdsValueAnswer.pointer->length);
   }
-  else if (mdsValueAnswer.pointer->class = CLASS_A)
+  else if (mdsValueAnswer.pointer->class == CLASS_A)
   {
     memcpy(argv[0], mdsValueAnswer.pointer->pointer, ((struct descriptor_a *)mdsValueAnswer.pointer)->arsize);
   }
