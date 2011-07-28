@@ -71,9 +71,9 @@ static int Err_Handler(DBPROCESS *dbproc, int severity, int dberr, int oserr,
 #endif
           strcatn(DBMSGTEXT, dberrstr, MAXMSG);
           strcatn(DBMSGTEXT, "\n", MAXMSG);
-          if (oserr != DBNOERR) {
-            strcat(DBMSGTEXT, oserrstr); 
-            strcat(DBMSGTEXT, "\n");
+          if (oserr != DBNOERR && oserrstr) {
+            strcatn(DBMSGTEXT, oserrstr, MAXMSG); 
+            strcatn(DBMSGTEXT, "\n", MAXMSG);
           }
         }
         /* if we have run out of licences then return cancel
