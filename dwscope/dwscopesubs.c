@@ -827,11 +827,16 @@ void SetDirMask(Widget w, String *file, XmAnyCallbackStruct *callback_data)
   {
     XmString mask;
     char *tmpfile = strcpy(malloc(strlen(*file)+10),*file);
-    char *pos = strrchr(tmpfile,'/');
-    if (pos)
+    char *typpos = strrchr(tmpfile,'.');
+    char *dirpos = strrchr(tmpfile,'/');
+    if (dirpos)
     {
-        pos[1]=0;
-        strcat(tmpfile,"*.dat");
+        dirpos[1]=0;
+        strcat(tmpfile,"*");
+        if (typpos && typpos > dirpos)
+          strcat(tmpfile,typpos);
+        else
+          strcat(tmpfile,".dat");
     }
     else
       strcpy(tmpfile,"*.dat");
