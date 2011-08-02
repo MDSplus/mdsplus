@@ -12,6 +12,7 @@ FUN PUBLIC MitObsoleteDevices() {
         'DTAO32\0',      'MitDevices\0',
         'DTDO32\0',      'MitDevices\0',
         'DT_ACQ16\0',	 'MitDevices\0',		
+        'MATROX\0',      '\0',
 	'PARAGON_HIST\0',	 'MitDevices\0',		
 	'PARAGON_RPT\0',	 'MitDevices\0',		
 	'PREAMP\0',	 'MitDevices\0',
