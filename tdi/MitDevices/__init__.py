@@ -10,6 +10,7 @@ MitDevices
 
 """
 from Dt200WriteMaster import Dt200WriteMaster
+from acq196_ftp import ACQ196_FTP
 from cp7452 import CP7452
 from dtao32 import DTAO32
 from dtdo32 import DTDO32
