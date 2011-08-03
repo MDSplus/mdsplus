@@ -28,5 +28,6 @@ setup(name='MitDevices',
 #       install_requires=['numpy','ctypes'],
 #      include_package_data = True,
 #      test_suite='tests.test_all',
+     install_requires=["pexpect","PyXML"],
       zip_safe = False,
      )
