@@ -184,10 +184,25 @@ void *putManyObj(char *serializedIn)
 }
 
 
+#ifdef HAVE_WINDOWS_H
+bool Connection::globalSemHInitialized;
+HANDLE Connection::globalSemH;
+#else
+pthread_mutex_t Connection::globalMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+sem_t semStruct;
+		bool semInitialized;
+
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
 #ifdef HAVE_WINDOWS_H
 	semH = CreateSemaphore(NULL, 1, 16, NULL);
+	if(!globalSemHInitialized)
+	{
+	    globalSemH = CreateSemaphore(NULL, 1, 16, NULL);
+	    globalSemHInitialized = true;
+	}
 #else
 	int status = sem_init(&semStruct, 0, 1);
 	if(status != 0)
@@ -223,6 +238,16 @@ void Connection::unlock()
 	if(semH)
 		ReleaseSemaphore(semH, 1, NULL);
 }
+void Connection::lockGlobal() 
+{
+	if(globalSemH)
+		WaitForSingleObject(globalSemH, INFINITE);      
+}
+void Connection::unlockGlobal()
+{
+	if(globalSemH)
+		ReleaseSemaphore(globalSemH, 1, NULL);
+}
 #else
 void Connection::lock() 
 {
@@ -232,6 +257,14 @@ void Connection::unlock()
 {
 	sem_post(&semStruct);
 }
+void Connection::lockGlobal() 
+{
+	pthread_mutex_lock(&globalMutex);
+}
+void Connection::unlockGlobal()
+{
+	pthread_mutex_unlock(&globalMutex);
+}
 #endif
 
 
@@ -240,6 +273,7 @@ void Connection::unlock()
 void Connection::openTree(char *tree, int shot)
 {
 	int status = MdsOpen(sockId, tree, shot);
+printf("SOCK ID: %d\n", sockId);
 	if(!(status & 1))
 		throw new MdsException(status);
 }
@@ -268,6 +302,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			throw new MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 	lock();
+	lockGlobal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen((char *)expr), 0, 0, (char *)expr);
 	if(!(status & 1))
 	{
@@ -284,7 +319,9 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			throw new MdsException(status);
 		}
 	}
-    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+	unlockGlobal();
+	
+    	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlock();
 	if(!(status & 1))
 	{
