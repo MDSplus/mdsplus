@@ -2331,13 +2331,18 @@ protected:
 	{
 #ifdef HAVE_WINDOWS_H
 		HANDLE semH;
+		static HANDLE globalSemH;
+		static bool globalSemHInitialized;
 #else
 		sem_t semStruct;
 		bool semInitialized;
+		static pthread_mutex_t globalMutex;
 #endif
 		int sockId;
 		void lock();
 		void unlock();
+		void lockGlobal();
+		void unlockGlobal();
 	public:
 		Connection(char *mdsipAddr);
 		~Connection();
