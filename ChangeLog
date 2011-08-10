@@ -1,5 +1,471 @@
-Version 3.0-1
+Version 3.0-2
 
+
+2011-08-10 10:17  jas
+
+	* tdi/MitDevices/: ACQ196_FTP.glade, acq196_ftp.py:
+	
+	acq196_ft device support
+
+2011-08-03 10:30  manduchi
+
+	* include/mdsobjects.h:
+	
+	Fix rece condition
+
+2011-08-03 10:26  manduchi
+
+	* mdsobjects/cpp/mdsipobjects.cpp:
+	
+	Fix race condition
+
+2011-08-03 09:33  jas
+
+	* tdi/MitDevices/setup.py:
+	
+	add dependencies on pexepct and PyXML - not sure how to rebuild
+	easy_install and where to put it though
+
+2011-08-02 10:51  jas
+
+	* tdi/MitDevices/: MitCurrentDevices.fun, MitObsoleteDevices.fun:
+	
+	Add new acq196 device move matrox to obsolete
+
+2011-08-02 10:35  jas
+
+	* tdi/MitDevices/: MitCamacDevices.fun, MitCurrentDevices.fun,
+	MitDevices.fun, MitObsoleteDevices.fun, __init__.py:
+	
+	Split MitDevices.fun into chunks CurrentDevices, CamacDevices and
+	ObsoleteDevices.
+	
+	Allow Camac and Obsolete Devices to be excluded if Environment
+	variables say that they should be.
+
+2011-08-02 09:29  jas
+
+	* tdishr/TdiConvert.c:
+	
+	use memcpy instead of strncpy when converting text to text.  this
+	allows strings with \0 in them to be completely copied.
+	
+	Old behavior: _a = ['aaa\0', 'bbb  \0'] ["aaa\000  ","bbb  \000"]
+	_a = [_a, 'now is the time'] ["aaa\000\000\000	       ","bbb  \000
+		","now is the time"]
+	
+	New behavior: _a = ['aaa\0', 'bbb  \0'] ["aaa\000  ","bbb  \000"]
+	_a = [_a, 'now is the time'] ["aaa\000		 ","bbb  \000	   
+	  ","now is the time"]
+
+2011-07-28 13:17  twf
+
+	* mdssql/dynamic_syb.c:
+	
+	Avoid segfault
+
+2011-07-28 12:19  twf
+
+	* dwscope/dwscopesubs.c:
+	
+	use file type specified with the -default arg on filter
+
+2011-07-20 14:41  twf
+
+	* tdi/: TdiGetRecord-sample.fun, TdiGetRecord.fun:
+	
+	Do not include TdiGetRecord.fun by default
+
+2011-07-18 12:25  jas
+
+	* mdslibidl/MdsLibIdl.c:
+	
+	single '=' comparison instead of '=='
+
+2011-07-15 13:33  twf
+
+	* mdsip_xio/mdsip_become_user.c:
+	
+	Fix for more recent kernels
+
+2011-07-15 07:10  manduchi
+
+	* tdi/RfxDevices/ISIS_GAIN__init.fun:
+	
+	Fix, add time wait between command
+
+2011-07-14 13:12  jas
+
+	* mdstcpip/mdsiputil.c:
+	
+	On some RHEL6/64 systems 32 bit calls to getpwuid return 0
+	temporary fix to call getlogin() in that case.
+
+2011-07-14 09:31  jas
+
+	* mdstcpip/ConnectToMds.c:
+	
+	missing '{}' in last fix
+
+2011-07-14 09:22  jas
+
+	* mdstcpip/ConnectToMds.c:
+	
+	On some RHEL6/64 systems 32 bit calls to getpwuid return 0 add
+	temporary fix to call getlogin()
+
+2011-07-12 15:32  twf
+
+	* idl/mdsvalue.pro:
+	
+	Trim strings to be compatible with mdsconnect case
+
+2011-07-12 14:16  jas
+
+	* tdi/MitDevices/: __init__.py, dt196a.py:
+	
+	update dt196a python device support add it to the __init
+
+2011-07-05 10:39  twf
+
+	* treeshr/TreeOpen.c:
+	
+	Prevent segfault if opening an existing tree /new
+
+2011-07-05 10:12  jas
+
+	* treeshr/TreeOpen.c:
+	
+	Memory allocated with TranslateLogical should be freed with
+	TranslateLogicalFree :
+
+2011-06-27 09:33  manduchi
+
+	* tdi/RfxDevices/RfxGetMhdControlMode.fun:
+	
+	Utility function return as string the MHD controllo mode active in
+	the  rfx pulse file currently open
+
+2011-06-27 07:24  manduchi
+
+	* tdi/RfxDevices/LASER_YAG__init.fun:
+	
+	modificatro ordine
+
+2011-06-27 07:22  manduchi
+
+	* tdi/RfxDevices/: LASER_YAG__arm.fun, LASER_YAG__add.fun,
+	LASER_YAG__abort.fun:
+	
+	modificato ordine
+
+2011-06-16 12:17  twf
+
+	* mdsobjects/python/_treeshr.py:
+	
+	TreeDeleteNodeExecute does not return status
+
+2011-06-15 11:20  manduchi
+
+	* javadevices/: RFXControlSetup.java, RFXMHDSetup.java:
+	
+	Added new  MHD control
+
+2011-06-15 11:17  manduchi
+
+	* javadevices/: RFXControlSetup.java, RFXPolControlSetup.java:
+	
+	New MHD control
+
+2011-06-14 08:34  manduchi
+
+	* tdi/RfxDevices/: RfxControlNameToIdx.fun, RfxRotPertConfig.fun:
+	
+	Added new control mode
+
+2011-06-10 11:40  manduchi
+
+	* tdi/RfxDevices/RFXControl__init.fun:
+	
+	Added control
+
+2011-06-09 08:54  manduchi
+
+	* tdi/RfxDevices/RfxPulseVerInfo.fun:
+	
+	Mod
+
+2011-06-01 03:35  manduchi
+
+	* tdi/RfxDevices/PELLET__store.fun:
+	
+	Mod
+
+2011-05-31 05:09  manduchi
+
+	* tdi/RfxDevices/LASER_YAG_HWabort.fun,
+	tdi/RfxDevices/LASER_YAG_HWarm.fun,
+	tdi/RfxDevices/LASER_YAG_HWinit.fun,
+	tdi/RfxDevices/LASER_YAG_ReadStatus.fun,
+	tdi/RfxDevices/LASER_YAG__abort.fun,
+	tdi/RfxDevices/LASER_YAG__add.fun,
+	tdi/RfxDevices/LASER_YAG__arm.fun,
+	tdi/RfxDevices/LASER_YAG__init.fun,
+	javadevices/LASER_YAGSetup.form, javadevices/LASER_YAGSetup.java:
+	
+	modifiche al device LASER_YAG
+
+2011-05-27 10:10  twf
+
+	* mdsshr/MdsFloatToTime.c:
+	
+	Fix signed/unsigned problem
+
+2011-05-27 08:50  twf
+
+	* mdsobjects/python/treenode.py:
+	
+	Fix extra underscore in putSegment
+
+2011-05-27 04:32  manduchi
+
+	* tdi/RfxDevices/: LASER_YAG_HWReadAllStatus.fun,
+	LASER_YAG_HWabort.fun, LASER_YAG_HWarm.fun, LASER_YAG_HWinit.fun,
+	LASER_YAG_ReadErr.fun, LASER_YAG_ReadStatus.fun:
+	
+	Fix
+
+2011-05-26 13:14  twf
+
+	* mdsobjects/python/tests/dataUnitTest.py:
+	
+	Fix exception test
+
+2011-05-25 05:58  manduchi
+
+	* tdi/RfxDevices/DESO_acquisition.fun:
+	
+	Fix acquisition delay
+
+2011-05-23 09:31  manduchi
+
+	* javadevices/PELLETSetup.java:
+	
+	fix
+
+2011-05-23 08:39  manduchi
+
+	* javadispatcher/KillServer.java:
+	
+	fix
+
+2011-05-23 08:33  manduchi
+
+	* javadispatcher/KillServer.java:
+	
+	fix
+
+2011-05-23 07:37  manduchi
+
+	* tdi/RfxDevices/PELLET__store.fun:
+	
+	Fix
+
+2011-05-23 07:23  manduchi
+
+	* tdi/RfxDevices/PELLET__init.fun:
+	
+	Fix
+
+2011-05-18 16:34  twf
+
+	* Makefile.in:
+	
+	Use devscripts/mkdirhier
+
+2011-05-18 16:33  twf
+
+	* devscripts/mkdirhier:
+	
+	Use this mkdirhier instead of motif because it handles extra
+	slashes
+
+2011-05-18 14:15  jas
+
+	* tdi/MitDevices/dt196b.py:
+	
+	Return DT196B$_NO_SAMPLES (662480266) if there are no samples
+
+2011-05-18 14:10  jas
+
+	* include/mitdevices_msg.h:
+	
+	Add a no Samples error for dt196
+
+2011-05-18 11:50  manduchi
+
+	* tdi/RfxDevices/RfxPulseVerInfo.fun:
+	
+	Fix
+
+2011-05-18 09:58  jas
+
+	* tdi/MitDevices/dt196b.py:
+	
+	Send the trigger line and sense
+
+2011-05-18 09:34  jas
+
+	* tdi/MitDevices/acq200.py:
+	
+	default line should be DI3 not di3
+
+2011-05-16 09:19  twf
+
+	* treeshr/TreeCleanDatafile.c:
+	
+	allow remote io
+
+2011-05-13 12:23  twf
+
+	* idl/mdsvalue.pro:
+	
+	trim strings so local and remote are consistent
+
+2011-05-13 09:47  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _treeshr.py,
+	apd.py, compound.py, mdsdata.py, tree.py, treenode.py:
+	
+	Fix treenode context
+
+2011-05-13 08:55  twf
+
+	* tdi/MitDevices/Dt200WriteMaster.py:
+	
+	Make sure to close
+
+2011-05-13 08:37  twf
+
+	* mitdevices/Makefile.in:
+	
+	Revert
+
+2011-05-13 08:29  twf
+
+	* include/mitdevices_msg.h:
+	
+	Add python error
+
+2011-05-12 17:09  twf
+
+	* tdi/dev_support/PyDoMethod.fun:
+	
+	Add unhandled exception error
+
+2011-05-12 17:07  twf
+
+	* mitdevices/Makefile.in:
+	
+	Add dependency on mdsdevices_msg.h
+
+2011-05-12 16:33  twf
+
+	* tdi/dev_support/PyDoMethod.fun:
+	
+	Assume failure in case of thrown exceptions
+
+2011-05-10 17:08  jas
+
+	* idl/set_database.pro:
+	
+	put set_database back the way it was
+
+2011-05-10 17:04  jas
+
+	* idl/: mdsevent.pro, set_database.pro:
+	
+	Don't use the socket regardless
+
+2011-05-10 08:37  manduchi
+
+	* tdi/RfxDevices/ISIS_GAIN__init.fun:
+	
+	Fix
+
+2011-05-06 12:36  twf
+
+	* gen_device/gen_device.c:
+	
+	Try various directories to create gen_device model and cleanup
+	afterwards
+
+2011-05-04 15:20  twf
+
+	* servershr/: ServerQAction.c, ServerSendMessage.c:
+	
+	Make dispatching work through protocols where you don't have a
+	response address
+
+2011-05-04 13:48  twf
+
+	* mdstcpip/: GetMdsMsg.c, GetSetSettings.c:
+	
+	Fix client addr handling
+
+2011-05-04 13:48  twf
+
+	* mdstcpip/IoRoutinesTcp.c:
+	
+	Fix client disconnections
+
+2011-05-04 13:28  twf
+
+	* mdstcpip/GetSetSettings.c:
+	
+	Make no compression the default
+
+2011-05-04 12:03  twf
+
+	* mdstcpip/: GetMdsMsg.c, SendMdsMsg.c, mdsiputil.c, zconf.h:
+	
+	Use private copy of zlib
+
+2011-05-02 14:22  jas
+
+	* tdi/MitDevices/dt196a.py:
+	
+	Python (ftp) version of dt196a
+
+2011-05-02 12:37  jas
+
+	* tdi/MitDevices/: dt216__add.fun, dt216a__add.fun:
+	
+	use the python add methods
+
+2011-05-02 12:33  jas
+
+	* tdi/MitDevices/dt196__add.fun:
+	
+	using the python add now
+
+2011-05-02 10:41  jas
+
+	* tdi/MitDevices/dt216a.py:
+	
+	Fix the status commands (use make_array)
+
+2011-04-27 05:59  manduchi
+
+	* tdi/: java/JavaOpen.fun, RfxDevices/treeSetSource.fun:
+	
+	Fix
+
+2011-04-26 11:34  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-1
 
 2011-04-25 13:25  twf
 
