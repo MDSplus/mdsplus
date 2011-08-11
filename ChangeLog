@@ -1,6 +1,18 @@
 Version 3.0-2
 
 
+2011-08-11 15:39  twf
+
+	* rpm/: x86_64.spec, i386_on_x86_64.spec:
+	
+	add dist tag
+
+2011-08-11 15:30  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-2
+
 2011-08-11 15:30  twf
 
 	* rpm/: i386_on_x86_64.spec, x86_64.spec:
