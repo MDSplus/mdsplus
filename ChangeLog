@@ -1,6 +1,18 @@
 Version 3.0-2
 
 
+2011-08-11 11:11  twf
+
+	* rpm/i386_on_x86_64.spec, rpm/x86_64.spec, devscripts/MakeRpm:
+	
+	Updated rpm building
+
+2011-08-10 12:22  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-2
+
 2011-08-10 10:17  jas
 
 	* tdi/MitDevices/: ACQ196_FTP.glade, acq196_ftp.py:
