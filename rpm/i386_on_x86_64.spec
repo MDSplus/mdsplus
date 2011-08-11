@@ -1,6 +1,6 @@
 Name: mdsplus
 Version: #VERSION#
-Release: #RELEASE#
+Release: #RELEASE#%{?dist}
 License: GNU GPL
 Group: Applications/Acquisition
 Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
