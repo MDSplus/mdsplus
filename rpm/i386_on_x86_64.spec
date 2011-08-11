@@ -15,15 +15,12 @@ AutoReqProv: yes
 Main libraries and programs to get MDSplus operational
 
 %prep
-
+rm -rf $RPM_BUILD_ROOT
 cvs -q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co mdsplus
 chmod -R u+w mdsplus
 %build
 cd mdsplus
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --disable-java
-make clean
-make
-./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug
+./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --target=i686-linux
 make clean
 make
 cd ..
@@ -31,9 +28,6 @@ cd ..
 %install
 cd mdsplus
 make install
-cp -r bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -49,8 +43,6 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 %files
 %defattr(-,root,root)
 /usr/local/mdsplus/bin
-/usr/local/mdsplus/bin32
-/usr/local/mdsplus/bin64
 /usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/etc
 /usr/local/mdsplus/idl
@@ -58,8 +50,6 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/java
 /usr/local/mdsplus/LabView
 /usr/local/mdsplus/lib
-/usr/local/mdsplus/lib32
-/usr/local/mdsplus/lib64
 /usr/local/mdsplus/man
 /usr/local/mdsplus/mdsobjects
 /usr/local/mdsplus/rpm
@@ -68,8 +58,6 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
 /usr/local/mdsplus/uid
-/usr/local/mdsplus/uid32
-/usr/local/mdsplus/uid64
 %dir /usr/local/mdsplus/local/tdi
 
 %changelog
