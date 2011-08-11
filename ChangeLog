@@ -1,6 +1,18 @@
 Version 3.0-2
 
 
+2011-08-11 12:10  twf
+
+	* camshr/Makefile.in:
+	
+	Fix soname for rpm dependencies
+
+2011-08-11 11:47  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-2
+
 2011-08-11 11:46  twf
 
 	* devscripts/MakeRpm:
