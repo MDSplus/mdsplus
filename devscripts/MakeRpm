@@ -56,5 +56,6 @@ fi
 cd ..
 rm -Rf mdskit$globuskit
 if [ "$SPEC" == "x86_64" ]
+then
   $0 i386_on_x86_64 i686-linux
 fi
