@@ -11,6 +11,8 @@ Summary: MDSplus Data Acquisition System
 
 AutoReqProv: yes
 
+provides: libCamShr.so,libCamShr.so(64bit)
+
 %description
 Main libraries and programs to get MDSplus operational
 
