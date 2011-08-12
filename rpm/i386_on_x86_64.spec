@@ -57,7 +57,7 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/setup.sh
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
-/usr/local/mdsplus/uid
+/usr/local/mdsplus/uid32
 %dir /usr/local/mdsplus/local/tdi
 
 %changelog
