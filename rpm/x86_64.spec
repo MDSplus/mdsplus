@@ -3,7 +3,7 @@ Version: #VERSION#
 Release: #RELEASE#%{?dist}
 License: GNU GPL
 Group: Applications/Acquisition
-Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
+Source: mdsplus#GLOBUS#-#VERSION#-%{?dist}.tar.gz
 Prefix: /usr/local
 BuildRoot: /var/tmp/mdsplus
 Vendor: http://www.mdsplus.org
