@@ -51,7 +51,7 @@ if [ -z $2 ]
 then
   rpmbuild -ba rpm.spec 
 else
-  rpmbuild -ba rpm.spec --target $2
+  rpmbuild -bb rpm.spec --target $2
 fi
 cd ..
 rm -Rf mdskit$globuskit
