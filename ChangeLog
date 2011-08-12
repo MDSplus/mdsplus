@@ -1,6 +1,12 @@
 Version 3.0-2
 
 
+2011-08-12 13:21  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-2
+
 2011-08-12 13:20  twf
 
 	* devscripts/MakeRpm:
