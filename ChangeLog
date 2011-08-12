@@ -1,6 +1,24 @@
 Version 3.0-2
 
 
+2011-08-12 13:20  twf
+
+	* devscripts/MakeRpm:
+	
+	build i386
+
+2011-08-12 13:18  twf
+
+	* rpm/x86_64.spec:
+	
+	Use dist
+
+2011-08-11 15:40  twf
+
+	* ChangeLog:
+	
+	New MDSplus release 3.0-2
+
 2011-08-11 15:39  twf
 
 	* rpm/: x86_64.spec, i386_on_x86_64.spec:
