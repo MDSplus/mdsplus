@@ -11,17 +11,59 @@ then
 else
   SPEC="${1}"
 fi
+tag=`devscripts/GetRelease`
+version=`devscripts/GetRelease version $tag`
+release=`devscripts/GetRelease release $tag`
+if (test "$XIO" = "")
+then
+    if (test "$GLOBUS_KIT" = "")
+	then
+	globuskit=
+	enableglobus=
+    else
+	globuskit=-globus
+	enableglobus=--enable-globus
+    fi
+else
+    globuskit=-xio
+    enableglobus=--with-xio=$GLOBUS_LOCATION\:$GLOBUS_FLAVOR
+fi
+if !(grep topdir $HOME/.rpmmacros >/dev/null 2>&1)
+then
+  echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
+  mkdir -p $HOME/rpm/BUILD
+  mkdir -p $HOME/rpm/RPMS
+  mkdir -p $HOME/rpm/SOURCES
+  mkdir -p $HOME/rpm/SPECS
+  mkdir -p $HOME/rpm/SRPMS
+fi
+rm -Rf $HOME/rpm/BUILD/*
+tdir=$(mktemp -d -p $HOME)
+if [ -z "$tdir" ]
+then
+  echo "Error creating temporary directory"
+  exit
+fi
+cd $tdir
+cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $tag mdsplus
+mv mdsplus mdsplus$globuskit-$version
+find . -name CVS -exec rm -Rf {} \; > /dev/null 2> /dev/null
+tar zcf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar.gz --exclude CVS mdsplus$globuskit-$version
+cp mdsplus$globuskit-$version/rpm/${SPEC}.spec ./mdsplus$globuskit-$version.spec 
+rm -Rf mdsplus$globuskit-$version
 if [ -z $2 ]
 then
-  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))\
-           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))\
-           -ba rpm/${SPEC}.spec 
+  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))" \
+           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))" \
+           -ba mdsplus$globuskit-$version.spec 
 else
-  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))\ 
-           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))\ 
-           -bb rpm/${SPEC}.spec --target $2
+  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))" \
+           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))" \
+           --target=$2 -ba mdsplus$globuskit-$version.spec
 fi
+rm mdsplus$globuskit-$version.spec
 cd ..
+rmdir $tdir
 if [ "$SPEC" == "x86_64" ]
 then
   $0 i386_on_x86_64 i686-linux
