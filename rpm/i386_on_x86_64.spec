@@ -1,9 +1,8 @@
 Name: mdsplus
-Version: #VERSION#
-Release: #RELEASE#%{?dist}
+Version: %{?mdsver}
+Release: %{?mdsrel}%{?dist}
 License: GNU GPL
 Group: Applications/Acquisition
-Source: mdsplus#GLOBUS#-#VERSION#.tar.gz
 Prefix: /usr/local
 BuildRoot: /var/tmp/mdsplus
 Vendor: http://www.mdsplus.org
