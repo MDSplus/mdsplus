@@ -4,6 +4,7 @@ Release: %{?mdsrel}%{?dist}
 License: GNU GPL
 Group: Applications/Acquisition
 Prefix: /usr/local
+Source: %{?kitname}.tar.gz
 BuildRoot: /var/tmp/mdsplus
 Vendor: http://www.mdsplus.org
 Summary: MDSplus Data Acquisition System
@@ -14,9 +15,8 @@ AutoReqProv: yes
 Main libraries and programs to get MDSplus operational
 
 %prep
-rm -rf $RPM_BUILD_ROOT
-cvs -q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co mdsplus
-chmod -R u+w mdsplus
+%setup
+
 %build
 cd mdsplus
 ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --enable-nodebug --target=i686-linux
