@@ -254,8 +254,11 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
 			src.length = 32767;
 		    src.dtype = DTYPE_T;
 			if (bufs[idx].size < 32767*num) {
-				bufs[idx].vptr = realloc(bufs[idx].vptr, 32767*num);
+			  src.pointer=bufs[idx].vptr = realloc(bufs[idx].vptr, 32767*num);
 				bufs[idx].size = 32767*num;
+			}
+			if (bufs[idx].offset < 32767*num) {
+			  memset(((char *)src.pointer)+bufs[idx].offset,0,32767*num-bufs[idx].offset);
 			}
 			src.arsize = 32767*num;
 		} else {
