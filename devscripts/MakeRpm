@@ -28,6 +28,8 @@ else
     globuskit=-xio
     enableglobus=--with-xio=$GLOBUS_LOCATION\:$GLOBUS_FLAVOR
 fi
+vername="mdsplus${globuskit}-${version}"
+kitname="mdsplus${globuskit}-${version}-${release}"
 if !(grep topdir $HOME/.rpmmacros >/dev/null 2>&1)
 then
   echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
@@ -44,27 +46,30 @@ then
   echo "Error creating temporary directory"
   exit
 fi
-cd $tdir
+cp rpm/${SPEC}.spec $tdir/${kitname}.spec
+pushd $tdir
 cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $tag mdsplus
-mv mdsplus mdsplus$globuskit-$version
-find . -name CVS -exec rm -Rf {} \; > /dev/null 2> /dev/null
-tar zcf $HOME/rpm/SOURCES/mdsplus$globuskit-$version.tar.gz --exclude CVS mdsplus$globuskit-$version
-cp mdsplus$globuskit-$version/rpm/${SPEC}.spec ./mdsplus$globuskit-$version.spec 
-rm -Rf mdsplus$globuskit-$version
+mv mdsplus $vername
+tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $vername
+rm -Rf ${vername}
 if [ -z $2 ]
 then
-  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))" \
-           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))" \
-           -ba mdsplus$globuskit-$version.spec 
+  rpmbuild --define="mdsver $version" \
+           --define="mdsrel $release" \
+           --define="kitname $kitname" \
+           -ba ${kitname}.spec 
 else
-  rpmbuild --define="mdsver $(devscripts/GetRelease version $(devscripts/GetRelease))" \
-           --define="mdsrel $(devscripts/GetRelease release $(devscripts/GetRelease))" \
-           --target=$2 -ba mdsplus$globuskit-$version.spec
+  rpmbuild --define="mdsver $version" \
+           --define="mdsrel $release" \
+           --define="kitname $kitname" \
+           --target=$2 -ba ${kitname}.spec
 fi
-rm mdsplus$globuskit-$version.spec
+rm ${kitname}.spec
 cd ..
 rmdir $tdir
+popd
 if [ "$SPEC" == "x86_64" ]
 then
-  $0 i386_on_x86_64 i686-linux
+  $0 x86_64 i686-linux
 fi
+
