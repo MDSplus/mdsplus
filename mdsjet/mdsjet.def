@@ -1,0 +1,7 @@
+LIBRARY	MDSJET
+EXPORTS
+;
+mdsjet
+mdsjet_idl
+mdsjetdata
+mdsjet_setidentity
