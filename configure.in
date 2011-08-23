@@ -867,24 +867,13 @@ else
         AC_MSG_RESULT(no sybase open/client)
 fi
 
-dnl Check for Idl
-AC_MSG_CHECKING(if idlsql should be built)
-if test -n "$SYBASE_INC" -a -n "$IDL_INC"
-then
-        IDLSQL="idlsql"
-        AC_MSG_RESULT(have both idl and sql so yes.)
-else
-        IDLSQL=""
-        AC_MSG_RESULT(missing at least one of idl and sql so no.)
-fi
-
 AC_MSG_CHECKING(if mdssql should be built)
 if test -n "$SYBASE_INC"
 then
         MDSSQL="mdssql"
         AC_MSG_RESULT(have sql so yes.)
 else
-        IDLSQL=""
+        MDSSQL=""
         AC_MSG_RESULT(missing sql so no.)
 fi
 
@@ -959,7 +948,6 @@ AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLMDSWIDGETS)
-AC_SUBST(IDLSQL)
 AC_SUBST(JAR)
 AC_SUBST(JAVAC)
 AC_SUBST(JAVA_APS)

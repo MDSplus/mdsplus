@@ -54,7 +54,6 @@ PARTS = \
         @JAVA_APS@ \
 	@MOTIF_APS@ \
 	@MDSSQL@ \
-        @IDLSQL@ \
 	@IDLMDSEVENT@ \
 	@MDSVME@ \
 	@HDF5_APS@

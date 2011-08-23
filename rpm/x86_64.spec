@@ -81,6 +81,12 @@ Group: Applications/Acquisition
 %description rfxdevices
 Support for RFX Data acquisition devices
 
+%package kbsidevices
+Summary: Support for KBSI data acquisition devices
+Group: Applications/Acquisition
+%description kbsidevices
+Support for KBSI Data acquisition devices
+
 %package python
 Summary: Python interface to MDSplus
 Group: Applications/Acquisition
@@ -181,21 +187,31 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 
 %exclude /usr/local/mdsplus/lib*/libI*
 
-%exclude /usr/local/mdsplus/lib*/libMdsSql*
+%exclude /usr/local/mdsplus/lib*/lib*Sql*
 
 %exclude /usr/local/mdsplus/lib*/libMit*
 %exclude /usr/local/mdsplus/lib*/libMIT*
 %exclude /usr/local/mdsplus/tdi/MitDevices
-
 %exclude /usr/local/mdsplus/tdi/RfxDevices
+%exclude /usr/local/mdsplus/tdi/KbsiDevices
+%exclude /usr/local/mdsplus/tdi/camac
+%exclude /usr/local/mdsplus/tdi/java
+
+%exclude /usr/local/mdsplus/tdi/d3d
+%exclude /usr/local/mdsplus/tdi/roam
 
 %files java
 /usr/local/mdsplus/java
 /usr/local/mdsplus/bin*/j*
 /usr/local/mdsplus/lib*/libJava*
+/usr/local/mdsplus/tdi/java
+%exclude /usr/local/mdsplus/java/classes/jDevices.jar
 
 %files idl
+/usr/local/mdsplus/lib*/lib*Idl*
 /usr/local/mdsplus/idl
+%exclude /usr/local/mdsplus/idl/camac
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %files labview
 /usr/local/mdsplus/LabView
@@ -209,6 +225,7 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/bin*/traverser
 /usr/local/mdsplus/lib*/libXmds*
 /usr/local/mdsplus/uid*
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %files camac
 /usr/local/mdsplus/bin*/mdsccl
@@ -217,14 +234,23 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/lib*/libcts*
 /usr/local/mdsplus/lib*/libccl*
 /usr/local/mdsplus/lib*/libRemCam*
+/usr/local/mdsplus/idl/camac
+/usr/local/mdsplus/tdi/camac
+
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %files mitdevices
 /usr/local/mdsplus/lib*/libMit*
 /usr/local/mdsplus/lib*/libMIT*
 /usr/local/mdsplus/tdi/MitDevices
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %files rfxdevices
 /usr/local/mdsplus/tdi/RfxDevices
+/usr/local/mdsplus/java/classes/jDevices.jar
+
+%files kbsidevices
+/usr/local/mdsplus/tdi/KbsiDevices
 
 %files python
 /usr/local/mdsplus/mdsobjects/python
@@ -234,7 +260,8 @@ $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 /usr/local/mdsplus/lib*/*.a
 
 %files mssql
-/usr/local/mdsplus/lib*/libMdsSql*
+/usr/local/mdsplus/lib*/lib*Sql*
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %changelog
 * Wed Aug 29 2000 Basil P. DUVAL <basil.duval@epfl.ch>
