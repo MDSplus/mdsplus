@@ -1,0 +1,11 @@
+%package python
+Summary: Python interface to MDSplus
+Group: Applications/Acquisition
+requires: mdsplus-kernel,python,numpy,python-ctypes
+#BuildArch: noarch
+%description python
+Python interface to MDSplus
+
+%files python
+/usr/local/mdsplus/mdsobjects/python
+

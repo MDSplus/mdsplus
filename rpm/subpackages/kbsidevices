@@ -1,0 +1,9 @@
+%package kbsidevices
+Summary: Support for KBSI data acquisition devices
+Group: Applications/Acquisition
+%description kbsidevices
+Support for KBSI Data acquisition devices
+
+%files kbsidevices
+/usr/local/mdsplus/tdi/KbsiDevices
+

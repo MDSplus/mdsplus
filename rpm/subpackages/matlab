@@ -1,0 +1,9 @@
+%package matlab
+Summary: Mathworks MATLAB extensions
+Group: Applications/Acquisition
+%description matlab
+Mathworks MATLAB extensions
+
+%files matlab
+/usr/local/mdsplus/matlab
+

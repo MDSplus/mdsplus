@@ -1,0 +1,10 @@
+%package php
+Summary: php interface to MDSplus
+Group: Applications/Acquisition
+%description php
+php interface to MDSplus
+
+%files php
+/usr/local/mdsplus/php
+
+

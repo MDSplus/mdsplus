@@ -1,0 +1,8 @@
+%package labview
+Summary: National Instruments Labview extensions
+Group: Applications/Acquisition
+%description labview
+National Instruments Labview interface to MDSplus
+
+%files labview
+/usr/local/mdsplus/LabView
