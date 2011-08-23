@@ -1037,7 +1037,6 @@ gen_device/Makefile
 hdf5/Makefile
 idlmdsevent/Makefile
 idlmdswidgets/Makefile
-idlsql/Makefile
 javaclient/Makefile
 javadispatcher/Makefile
 javamds/Makefile 
@@ -1052,7 +1051,6 @@ math/svign.f
 math/svrgn.f
 math/umach.f 
 mdsdcl/Makefile 
-mdsjet/Makefile
 mdsip_xio/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
