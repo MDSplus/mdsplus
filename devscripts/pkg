@@ -27,8 +27,37 @@
 #             pkg list NONE  (lists all modules not in any package)
 #             pkg list ALL   (lists all modules and the package(s) they are in)
 case $1 in
-  add)
-    if [ ! -r `dirname $0`/../rpm/subpackages/$3 -a "$3" != "ignore" ]
+  "")
+  cat - <<EOF
+Usage: $0 pgkadd <module or directory (no wildcards)> <package-name>
+
+          Assigns package dependency to a module or directory tree of modules.
+
+       $0 pkgremove <module or directory (no wildcards)> <package-name>
+
+          Remove package dpendency to a module or directory tree of modules.
+
+       $0 list
+
+          Generates a module package summary in html format.
+
+       $0 list none
+
+          Generates a list of modules that currently do not have a package depency
+          assigned.
+
+       $0 list <package-name>
+
+          Generate a list of modules that updates to the package depend on.
+
+       $0 list all
+
+          Generate a module package summary in text format.
+      
+EOF
+  ;;
+  pkgadd)
+    if [ ! -r `dirname $0`/../rpm/subpackages/$3 ]
     then
       echo Package $3 does not exist
       exit
@@ -48,7 +77,7 @@ case $1 in
       popd > /dev/null
     done
   ;;
-  remove)
+  pkgremove)
     if [ ! -r `dirname $0`/../rpm/subpackages/$3 ]
     then
       echo Package $3 does not exist
@@ -71,70 +100,51 @@ case $1 in
   ;;
   list)
     case $2 in
-    NONE)
+    none)
+       tmpstatus=$(mktemp)
        dirn=$(dirname $0)
        cd $dirn/..
-       for mod in `find .`
-       do
-	 pushd `dirname $mod` > /dev/null
-	 m=$(basename $mod)
-	 if [ ! -d $m ]
-	 then
-	   tmpfile=$(mktemp)
-	   cvs status -v $m > $tmpfile 2>/dev/null
-           if ( grep -v Attic $tmpfile | grep /mdsplus/repos > /dev/null && ! grep "pkg_" $tmpfile >/dev/null 2>&1 )
-           then
-             echo $mod not in any package
-           fi
-           rm -f $tmpfile
-         fi
-	 popd > /dev/null
-       done
+       cvs -q status -Rv 2>/dev/null > $tmpstatus
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $tmpstatus | sort
+       rm -f $tmpstatus
+    ;;
+    all)
+       tmpstatus=$(mktemp)
+       dirn=$(dirname $0)
+       cd $dirn/..
+       cvs -q status -Rv 2>/dev/null > $tmpstatus
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) " "} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print F "   " PKG}; F=""}' $tmpstatus | sort
+       rm -f $tmpstatus
     ;;
     "")
+       tmpstatus=$(mktemp)
        dirn=$(dirname $0)
        cd $dirn/..
+       cvs -q status -Rv 2>/dev/null > $tmpstatus
+       echo "<head><title>MDSplus Packaging Information - Sources</title></head>"
+       echo "<h2>Modules sorted by module name</h2>"
        echo "<table><tr><td><b>Module</b></td><td><b>Package(s)</b></td></tr>"
-       for mod in `find . -depth -type f`
-       do
-	 pushd `dirname $mod` > /dev/null
-	 m=$(basename $mod)
-         tmpfile=$(mktemp)
-         cvs status -v $m > $tmpfile 2>/dev/null
-         if ( grep -v Attic $tmpfile | grep /mdsplus/repos > /dev/null)
-         then
-           packages=$(grep "pkg_" $tmpfile 2>&1 | awk '{print substr($1,5)}')
-           if [ -z "$packages" ]
-           then
-             echo "<tr><td>$mod</td><td>NONE</td></tr>"
-           else
-             echo "<tr><td>$mod</td><td>$packages</td></tr>"
-           fi
-         fi
-         rm -f $tmpfile
-	 popd > /dev/null
-       done
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) "<b/>"} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" F "</td><td>" PKG "</td></tr>"}; F=""}' $tmpstatus | sort
+       echo "</table>"
+       echo "<h2>Modules sorted by package name</hd>"
+       echo "<table><tr><td><b>Package</b></td><td><b>Module(s)</b></td></tr>"
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" PKG "</td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
+       echo "</table>"
+       rm -f $tmpstatus
     ;;
     *)
+       tmpstatus=$(mktemp)
        dirn=$(dirname $0)
        cd $dirn/..
-       for mod in `find . -depth -type f`
-       do
-	 pushd `dirname $mod` > /dev/null
-	 m=$(basename $mod)
-         tmpfile=$(mktemp)
-         cvs status -v $m > $tmpfile 2>/dev/null
-         if ( grep -v Attic $tmpfile | grep /mdsplus/repos > /dev/null && grep "pkg_"${2} $tmpfile >/dev/null 2>&1 )
-         then
-           echo $mod $2
-         fi
-         rm -f $tmpfile
-	 popd > /dev/null
-       done
+       cvs -q status -Rv 2>/dev/null > $tmpstatus
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25)} /pkg_'$2'/ {print F}' $tmpstatus | sort
+       rm -f $tmpstatus
     ;;
     esac
   ;;
   *)
-     echo "Unknown mode. Usage 'pkg mode options' where mode==add,remove or list"
+     echo "Unknown mode /$1/"
+     echo
+     $0
   ;;
 esac
