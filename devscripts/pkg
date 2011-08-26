@@ -26,6 +26,30 @@
 #   examples: pkg list kernel
 #             pkg list NONE  (lists all modules not in any package)
 #             pkg list ALL   (lists all modules and the package(s) they are in)
+#
+
+get_cvs_status()
+{
+  dirn=$(dirname $1)
+  cd $dirn/..
+  cvs -q status -Rv 2>/dev/null > $2
+}
+
+list_none()
+{
+  awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $1 | sort
+}
+
+list_all()
+{
+  awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) " "} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print F "   " PKG}; F=""}' $1 | sort
+}
+
+list_pkg()
+{
+  awk '/Repository revision/ {F=substr($4,24,length($4)-25)} /pkg_'$2'/ {print F}' $1 | sort
+}
+
 case $1 in
   "")
   cat - <<EOF
@@ -102,43 +126,58 @@ EOF
     case $2 in
     none)
        tmpstatus=$(mktemp)
-       dirn=$(dirname $0)
-       cd $dirn/..
-       cvs -q status -Rv 2>/dev/null > $tmpstatus
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $tmpstatus | sort
+       get_cvs_status $0 $tmpstatus
+       list_none $tmpstatus
        rm -f $tmpstatus
     ;;
     all)
        tmpstatus=$(mktemp)
-       dirn=$(dirname $0)
-       cd $dirn/..
-       cvs -q status -Rv 2>/dev/null > $tmpstatus
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) " "} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print F "   " PKG}; F=""}' $tmpstatus | sort
+       get_cvs_status $0 $tmpstatus
+       list_all $tmpstatus
        rm -f $tmpstatus
     ;;
     "")
        tmpstatus=$(mktemp)
-       dirn=$(dirname $0)
-       cd $dirn/..
-       cvs -q status -Rv 2>/dev/null > $tmpstatus
+       get_cvs_status $0 $tmpstatus
        echo "<head><title>MDSplus Packaging Information - Sources</title></head>"
        echo "<h2>Modules sorted by module name</h2>"
-       echo "<table><tr><td><b>Module</b></td><td><b>Package(s)</b></td></tr>"
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) "<b/>"} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" F "</td><td>" PKG "</td></tr>"}; F=""}' $tmpstatus | sort
+       echo "<table border=\"1\"><tr><td><b>Module</b></td><td><b>Package(s)</b></td></tr>"
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) "<br/>"} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" F "</td><td><a href=\"#" PKG "\">" PKG "</a></td></tr>"}; F=""}' $tmpstatus | sort
        echo "</table>"
        echo "<h2>Modules sorted by package name</hd>"
-       echo "<table><tr><td><b>Package</b></td><td><b>Module(s)</b></td></tr>"
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" PKG "</td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
+       echo "<table border=\"1\"><tr><td><b>Package</b></td><td><b>Module(s)</b></td></tr>"
+       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
        echo "</table>"
        rm -f $tmpstatus
+       for pkg in rpm/subpackages/*
+       do
+         pkgname=$(basename $pkg)
+         if [ "$pkgname" == "CVS" ]
+         then
+           continue
+         fi
+         size=$(ls -l $pkg | awk '{print $5}')
+         echo "<a name=\"$pkgname\"><h2>$pkgname</h2></a></br>"
+	 if [ $size -eq 0 ]
+         then
+           echo "Not currently packaged"
+         else
+           echo "<pre>"
+	   cat $pkg
+	   echo "</pre>"
+	 fi
+       done
     ;;
     *)
-       tmpstatus=$(mktemp)
-       dirn=$(dirname $0)
-       cd $dirn/..
-       cvs -q status -Rv 2>/dev/null > $tmpstatus
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25)} /pkg_'$2'/ {print F}' $tmpstatus | sort
-       rm -f $tmpstatus
+       if [ -r $(dirname $0)/../rpm/subpackages/$2 ]
+       then
+         tmpstatus=$(mktemp)
+         get_cvs_status $0 $tmpstatus
+	 list_pkg $tmpstatus $2
+	 rm -f $tmpstatus
+       else
+         echo "No such package /$2/"
+       fi
     ;;
     esac
   ;;
