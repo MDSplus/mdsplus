@@ -310,7 +310,7 @@ AutoReqProv: yes
 EOF
      for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
      do
-       if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       if [ -f $kitname/rpm/subpackages/$pkg -a "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
          echo "requires: mdsplus-${pkg}" >> rpm.spec
        fi
@@ -381,15 +381,18 @@ EOF
      do
        if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
-         release=$($kitname/devscripts/pkg get_release $pkg $flavor)
-         if [ -z "$release" ]
-         then
-           $release=0
-         elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
-         then
-           let release=$release+1
+         if [ -f $kitname/rpm/subpackages/$pkg ]
+         then 
+           release=$($kitname/devscripts/pkg get_release $pkg $flavor)
+           if [ -z "$release" ]
+           then
+             $release=0
+           elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
+           then
+             let release="$release"+1
+           fi
+           sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
          fi
-         sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
        fi
      done
      
