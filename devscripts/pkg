@@ -229,14 +229,14 @@ EOF
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
     dist=$($0 get_dist)
     dist=$(echo $dist | awk '{d[0]=split($1,d,".");print d[2]}')
-    awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file
+    awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file 
     if [ -z "$keep" ]
     then
       rm -f $file
     fi
   ;;
   check_release) #internal use
-    # pkg check_new_release package-name flavor [cvs status filename]
+    # pkg check_release package-name flavor [cvs status filename]
     # prints "ok" if all modules of this package contain a tag pkgrel-flavor-versionMajor-versionMinor-release-platform
     if [ -z "$4" ]
     then
@@ -264,6 +264,141 @@ EOF
     then
       rm -f $file
     fi
+  ;;
+  makeRpms)
+     # pkg makeRpms flavor
+     # example: pkg makeRpms stable
+     file=$(mktemp)
+     $0 get_cvs_status > $file
+     flavor="$2"
+     version=$($0 get_version $flavor $file)
+     kitname="mdsplus-${version}"
+     echo version=$version kitname=$kitname
+     if !(grep topdir $HOME/.rpmmacros >/dev/null 2>&1)
+     then
+	 echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
+	 mkdir -p $HOME/rpm/BUILD
+	 mkdir -p $HOME/rpm/RPMS
+	 mkdir -p $HOME/rpm/SOURCES
+	 mkdir -p $HOME/rpm/SPECS
+	 mkdir -p $HOME/rpm/SRPMS
+     fi
+     tdir=$(mktemp -d -p $HOME)
+     if [ -z "$tdir" ]
+     then
+       echo "Error creating temporary directory"
+       rm -f $file
+       exit
+     fi
+     echo "using $tdir"
+     pushd $tdir > /dev/null
+     cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $flavor -f mdsplus
+     mv mdsplus $kitname
+     tar zcf $HOME/rpm/SOURCES/${kitname}.tag.gz --exclude CVS $kitname
+     mkdir buildroot
+     cat - > rpm.spec <<EOF
+Name: mdsplus
+Version: $version
+Release: $($kitname)/devscripts/pkg get_release all "$flavor" | awk -F- '{print $5}')
+License: BSD Open Source
+Summary: The MDSplus Data System
+Group: Applications/Acquisition
+Source: ${kitname}.tar.gz
+Prefix: /usr/local
+BuildRoot: $tdir/buildroot
+AutoReqProv: yes
+EOF
+     for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+     do
+       if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       then
+         echo "requires: mdsplus-${pkg}" >> rpm.spec
+       fi
+     done
+     cat - >> rpm.spec <<EOF
+%description
+Main libraries and programs to get MDSplus operational
+
+%prep
+%setup -q
+
+
+%build
+if [ "%_target" != "i686-linux" ]
+then
+  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --disable-java
+make clean
+make
+  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug
+  make clean
+  make
+else
+  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux
+  make clean
+  make
+fi
+
+
+%install
+
+make install
+if [ "%_target" |= "i686-linux" ]
+then
+  cp -r bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  cp -r lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  cp -r uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+else
+  ln -sf bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/bin
+  ln -sf lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/lib
+fi
+cp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
+cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
+cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post 
+$RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
+
+%postun
+
+MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
+$MDSPLUS_DIR/local/mdsplus_post_uninstall_script
+
+
+
+%files
+
+
+
+%changelog
+* Wed Aug 29 2000 Basil P. DUVAL <basil.duval@epfl.ch>
+- version 1.0
+
+EOF
+     for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+     do
+       if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       then
+         release=$($kitname/devscripts/pkg get_release $pkg $flavor)
+         if [ -z "$release" -o ]
+         then
+           $release=0
+         elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
+         then
+           let release=$release+1
+         fi
+         sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
+       fi
+     done
+     
+     popd > /dev/null
+#     rm -Rf $tdir/$kitname
+#     rm -Rf $tdir/buildroot
+#     rm -f $tdir/rpm.spec
+#     rmdir $tdir
+#     rm -f $file
   ;;
   *)
      echo "Unknown mode /$1/"
