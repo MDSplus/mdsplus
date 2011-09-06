@@ -295,10 +295,18 @@ EOF
      mv mdsplus $kitname
      tar zcf $HOME/rpm/SOURCES/${kitname}.tag.gz --exclude CVS $kitname
      mkdir buildroot
+     release=$($kitname/devscripts/pkg get_release kernel $flavor)
+     if [ -z "$release" ]
+     then
+       release=0
+     elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
+     then
+       let release="$release"+1
+     fi
      cat - > rpm.spec <<EOF
 Name: mdsplus
 Version: $version
-Release: $($kitname/devscripts/pkg get_release all "$flavor" | awk -F- '{print $5}')
+Release: $release
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
@@ -362,7 +370,7 @@ $RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
 
 %postun
 
-MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
+MDSPLUS_DIR=\`cat /etc/.mdsplus_dir\`
 $MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 
 
@@ -390,11 +398,12 @@ EOF
            then
              let release="$release"+1
            fi
+           eval ${pkg}_release=$release
            sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
          fi
        fi
      done
-     
+     printenv | grep _release
      popd > /dev/null
 #     rm -Rf $tdir/$kitname
 #     rm -Rf $tdir/buildroot
