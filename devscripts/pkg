@@ -299,7 +299,7 @@ EOF
      cat - > rpm.spec <<EOF
 Name: mdsplus
 Version: $version
-Release: $($kitname)/devscripts/pkg get_release all "$flavor" | awk -F- '{print $5}')
+Release: $($kitname/devscripts/pkg get_release all "$flavor" | awk -F- '{print $5}')
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
@@ -382,7 +382,7 @@ EOF
        if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
          release=$($kitname/devscripts/pkg get_release $pkg $flavor)
-         if [ -z "$release" -o ]
+         if [ -z "$release" ]
          then
            $release=0
          elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
