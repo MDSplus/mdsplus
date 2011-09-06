@@ -1,6 +1,8 @@
 %package matlab
 Summary: Mathworks MATLAB extensions
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description matlab
 Mathworks MATLAB extensions
 

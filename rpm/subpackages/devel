@@ -1,6 +1,8 @@
 %package devel
 Summary: Header files and static libraries for code development
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description devel
 Header files and static libraries for code development
 

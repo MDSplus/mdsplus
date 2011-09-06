@@ -1,6 +1,8 @@
 %package kbsidevices
 Summary: Support for KBSI data acquisition devices
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description kbsidevices
 Support for KBSI Data acquisition devices
 

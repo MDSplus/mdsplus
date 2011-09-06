@@ -1,6 +1,8 @@
 %package kernel
 Summary: MDSplus core system
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description kernel
 Core applications, libraries and configuration files
 

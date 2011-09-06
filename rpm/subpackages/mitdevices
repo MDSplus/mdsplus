@@ -1,6 +1,8 @@
 %package mitdevices
 Summary: Support for MIT data acquisition devices
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description mitdevices
 Support for MIT Data acquisition devices
 

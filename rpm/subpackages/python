@@ -1,8 +1,10 @@
 %package python
 Summary: Python interface to MDSplus
 Group: Applications/Acquisition
+Release: --RELEASE--
 requires: mdsplus-kernel,python,numpy,python-ctypes
 #BuildArch: noarch
+
 %description python
 Python interface to MDSplus
 

@@ -1,6 +1,8 @@
 %package java
 Summary: Java Applications
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description java
 Java applications and classes
 

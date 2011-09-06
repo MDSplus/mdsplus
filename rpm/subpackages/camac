@@ -1,6 +1,8 @@
 %package camac
 Summary: Support for CAMAC devices
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description camac
 Support for accessing CAMAC devices
 

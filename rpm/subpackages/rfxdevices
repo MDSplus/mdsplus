@@ -1,6 +1,8 @@
 %package rfxdevices
 Summary: Support for RFX data acquisition devices
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description rfxdevices
 Support for RFX Data acquisition devices
 

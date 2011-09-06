@@ -1,6 +1,8 @@
 %package motif
 Summary: X-Windows Motif based application
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description motif
 X-Windows applications which use the Motif window system. This package provides the following applications:
 dwscope, dwpad, traverser, actions, actmon

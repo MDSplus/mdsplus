@@ -1,6 +1,8 @@
 %package idl
 Summary: ITT IDL extensions
 Group: Applications/Acquisition
+Release: --RELEASE--
+
 %description idl
 IDL (ITT Interactive Data Language) extensions for MDSplus
 
