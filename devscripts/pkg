@@ -273,7 +273,6 @@ EOF
      flavor="$2"
      version=$($0 get_version $flavor $file)
      kitname="mdsplus-${version}"
-     echo version=$version kitname=$kitname
      if !(grep topdir $HOME/.rpmmacros >/dev/null 2>&1)
      then
 	 echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
@@ -386,7 +385,7 @@ EOF
            release=$($kitname/devscripts/pkg get_release $pkg $flavor)
            if [ -z "$release" ]
            then
-             $release=0
+             release=0
            elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor)" != "ok" ]
            then
              let release="$release"+1
