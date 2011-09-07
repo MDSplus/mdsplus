@@ -8,7 +8,5 @@ Header files and static libraries for code development
 
 %files devel
 /usr/local/mdsplus/include
-/usr/local/mdsplus/bin*/cdu
-/usr/local/mdsplus/bin*/gen_device
 /usr/local/mdsplus/lib*/*.a
 
