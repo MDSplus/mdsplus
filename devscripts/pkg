@@ -303,7 +303,7 @@ EOF
      mv mdsplus $kitname
      tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
      mkdir buildroot
-     release=$($kitname/devscripts/pkg get_release kernel $flavor $file)
+     release=$($kitname/devscripts/pkg get_release kernel $flavor $file | awk -F- '{print $5}')
      echo "Release==================$release"
      if [ -z "$release" ]
      then
@@ -328,15 +328,16 @@ EOF
        then
          if [ -f $kitname/rpm/subpackages/$pkg ]
          then 
-           release=$($kitname/devscripts/pkg get_release $pkg $flavor $file)
+           release=$($kitname/devscripts/pkg get_release $pkg $flavor $file | awk -F- '{print $5}')
            if [ -z "$release" ]
            then
              release=0
-           elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
+           elif [ "$($kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
            then
              let release="$release"+1
            fi
            eval ${pkg}_release=$release
+           echo $pkg release = $release
            sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
          fi
        fi
