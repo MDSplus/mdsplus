@@ -301,7 +301,7 @@ EOF
      pushd $tdir > /dev/null
      cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $flavor -f mdsplus
      mv mdsplus $kitname
-     tar zcf $HOME/rpm/SOURCES/${kitname}.tag.gz --exclude CVS $kitname
+     tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
      mkdir buildroot
      release=$($kitname/devscripts/pkg get_release kernel $flavor)
      if [ -z "$release" ]
