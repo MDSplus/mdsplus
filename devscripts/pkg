@@ -154,6 +154,8 @@ EOF
        awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
        echo "</table>"
        rm -f $tmpstatus
+       pkgdir=$(dirname $0)
+       pushd ${pkgdir}/..
        for pkg in rpm/subpackages/*
        do
          pkgname=$(basename $pkg)
@@ -266,8 +268,14 @@ EOF
     fi
   ;;
   makeRpms)
-     # pkg makeRpms flavor
+     # pkg makeRpms flavor [target]
      # example: pkg makeRpms stable
+     if [ -z "$3" ]
+     then
+       target=""
+     else
+       target="--target=$3"
+     fi
      file=$(mktemp)
      $0 get_cvs_status > $file
      flavor="$2"
@@ -303,18 +311,7 @@ EOF
      then
        let release="$release"+1
      fi
-     cat - > rpm.spec <<EOF
-Name: mdsplus
-Version: $version
-Release: $release
-License: BSD Open Source
-Summary: The MDSplus Data System
-Group: Applications/Acquisition
-Source: ${kitname}.tar.gz
-Prefix: /usr/local
-BuildRoot: $tdir/buildroot
-AutoReqProv: yes
-EOF
+     sed s/--VERSION--/$version/ $kitname/rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/ | sed s\|--BUILDROOT--\|$tdir/buildroot\| > rpm.spec
      for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
      do
        if [ -f $kitname/rpm/subpackages/$pkg -a "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
@@ -322,68 +319,7 @@ EOF
          echo "requires: mdsplus-${pkg}" >> rpm.spec
        fi
      done
-     cat - >> rpm.spec <<EOF
-%description
-Main libraries and programs to get MDSplus operational
-
-%prep
-%setup -q
-
-
-%build
-if [ "%_target" != "i686-linux" ]
-then
-  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --disable-java
-make clean
-make
-  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug
-  make clean
-  make
-else
-  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux
-  make clean
-  make
-fi
-
-
-%install
-
-make install
-if [ "%_target" |= "i686-linux" ]
-then
-  cp -r bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  cp -r lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  cp -r uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-else
-  ln -sf bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/bin
-  ln -sf lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/lib
-fi
-cp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%post 
-$RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
-
-%postun
-
-MDSPLUS_DIR=\`cat /etc/.mdsplus_dir\`
-$MDSPLUS_DIR/local/mdsplus_post_uninstall_script
-
-
-
-%files
-
-
-
-%changelog
-* Wed Aug 29 2000 Basil P. DUVAL <basil.duval@epfl.ch>
-- version 1.0
-
-EOF
+     cat $kitname/rpm/mdsplus-part2.spec >> rpm.spec
      for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
      do
        if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
@@ -403,13 +339,17 @@ EOF
          fi
        fi
      done
-     printenv | grep _release
+     rpmbuild $target -ba rpm.spec
      popd > /dev/null
-#     rm -Rf $tdir/$kitname
-#     rm -Rf $tdir/buildroot
-#     rm -f $tdir/rpm.spec
-#     rmdir $tdir
-#     rm -f $file
+     rm -Rf $tdir/$kitname
+     rm -Rf $tdir/buildroot
+     rm -f $tdir/rpm.spec
+     rmdir $tdir
+     rm -f $file
+     if [ -z "$target" ]
+     then
+       $0 makeRpms $flavor i686-linux
+     fi
   ;;
   *)
      echo "Unknown mode /$1/"
