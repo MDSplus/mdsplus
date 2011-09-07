@@ -303,8 +303,9 @@ EOF
      mv mdsplus $kitname
      tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
      mkdir buildroot
+     echo doing get_release of kernel
      release=$($kitname/devscripts/pkg get_release kernel $flavor $file | awk -F- '{print $5}')
-     echo "Release==================$release"
+     echo "Got Release==================$release"
      if [ -z "$release" ]
      then
        release=0
