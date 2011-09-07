@@ -1,11 +1,11 @@
 Name: mdsplus
-Version: %{?mdsver}
-Release: %{?mdsrel}%{?dist}
+Version: --VERSION--
+Release: --RELEASE--%{?dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
-Source: %{?kitname}.tar.gz
+Source: mdsplus---VERSION--.tar.gz
 Prefix: /usr/local
-BuildRoot: /var/tmp/mdsplus
+BuildRoot: --BUILDROOT--
 Summary: MDSplus Data Acquisition System
 AutoReqProv: yes
