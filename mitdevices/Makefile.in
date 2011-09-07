@@ -245,11 +245,11 @@ install:
 	if (test @SHARETYPE@ != .a) then \
 	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a @libdir@; \
 	fi;
-        if [ ! -d @bindir@ ] ; then \
-                mkdir @bindir@; \
-                chmod 755 @bindir@; \
-        fi;
-        $(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
+	if [ ! -d @bindir@ ] ; then \
+		mkdir @bindir@; \
+		chmod 755 @bindir@; \
+	fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
 
 a12_gen.c : a12.gen
 	@MAKEBINDIR@/gen_device a12.gen sx _gentmp
