@@ -270,18 +270,30 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist
      # example: pkg newRelease camac stable 3.0 2 el5
+     if [ "$3" == "alpha" ]
+     then
+       revision="HEAD"
+     else
+       revision="$3"
+     fi
      pdir=$(dirname $0)
      pushd $pdir/..
      cvs -Q tag  -F -r HEAD pkgrel-${3}-${4}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2)
      do
-       cvs -Q tag -F -r ${3} pkgrel-${3}-${4}-${5}-${6} $mod
-       cvs -Q tag -F -r ${3} ${3} $mod
+       cvs -Q tag -F -r $revision pkgrel-${3}-${4}-${5}-${6} $mod
+       cvs -Q tag -F -r $revision $3 $mod
      done
   ;;
   makeRpms)
      # pkg makeRpms flavor [target]
      # example: pkg makeRpms stable
+     if [ "$2" == "alpha" ]
+     then
+       revision="HEAD"
+     else
+       revision="$2"
+     fi
      if [ -z "$3" ]
      then
        target=""
@@ -310,7 +322,7 @@ EOF
        exit
      fi
      pushd $tdir > /dev/null
-     cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $flavor -f mdsplus
+     cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $revision -f mdsplus
      mv mdsplus $kitname
      tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
      mkdir buildroot
@@ -331,6 +343,7 @@ EOF
        fi
      done
      cat $kitname/rpm/mdsplus-part2.spec >> rpm.spec
+     need_to_build="no"
      for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
      do
        if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
@@ -352,13 +365,19 @@ EOF
            eval update=\$${pkg}_update
            if [ "$update" == "yes" ]
            then
+             need_to_build="yes"
              sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
            fi
          fi
        fi
      done
-     rpmbuild $target -ba rpm.spec
-     status=$?
+     if [ "$need_to_build" == "yes" ]
+     then
+       rpmbuild $target -ba rpm.spec
+       status=$?
+     else
+       status="noop"
+     fi
      popd > /dev/null
      if [ "$status" == "0" ]
      then
@@ -386,6 +405,12 @@ EOF
      if [ -z "$target" ]
      then
        $0 makeRpms $flavor i686-linux
+     fi
+     if [ "$status" != "0" -a "$status" != "noop" ]
+     then
+       exit $status
+     else
+       exit 0
      fi
   ;;
   *)
