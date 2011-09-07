@@ -267,6 +267,17 @@ EOF
       rm -f $file
     fi
   ;;
+  newRelease)
+     # pkg newRelease pkg flavor version release dist
+     # example: pkg newRelease camac stable 3.0 2 el5
+     pdir=$(dirname $0)
+     pushd $pdir/..
+     cvs -Q tag  -F -r HEAD pkgrel-${3}-${4}-${5}-${6} rpm/subpackages/$2
+     for mod in $($0 list $2)
+     do
+       cvs -Q tag -F -r ${3} pkgrel-${3}-${4}-${5}-${6} $mod
+     done
+  ;;
   makeRpms)
      # pkg makeRpms flavor [target]
      # example: pkg makeRpms stable
@@ -297,15 +308,12 @@ EOF
        rm -f $file
        exit
      fi
-     echo "using $tdir"
      pushd $tdir > /dev/null
      cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $flavor -f mdsplus
      mv mdsplus $kitname
      tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
      mkdir buildroot
-     echo doing get_release of kernel
      release=$($kitname/devscripts/pkg get_release kernel $flavor $file | awk -F- '{print $5}')
-     echo "Got Release==================$release"
      if [ -z "$release" ]
      then
        release=0
@@ -313,7 +321,6 @@ EOF
      then
        let release="$release"+1
      fi
-     echo "Release is now=========$release"
      sed s/--VERSION--/$version/ $kitname/rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/ | sed s\|--BUILDROOT--\|$tdir/buildroot\| > rpm.spec
      for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
      do
@@ -329,24 +336,47 @@ EOF
        then
          if [ -f $kitname/rpm/subpackages/$pkg ]
          then 
+           eval ${pkg}_update="no"
            release=$($kitname/devscripts/pkg get_release $pkg $flavor $file | awk -F- '{print $5}')
            if [ -z "$release" ]
            then
+	     eval ${pkg}_update="yes"
              release=0
            elif [ "$($kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
            then
+             eval ${pkg}_update="yes"
              let release="$release"+1
            fi
            eval ${pkg}_release=$release
-           echo $pkg release = $release
-           echo camac_release=$camac_release
-           sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
+           eval update=\$${pkg}_update
+           if [ "$update" == "yes" ]
+           then
+             sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
+           fi
          fi
        fi
      done
-     exit
      rpmbuild $target -ba rpm.spec
+     status=$?
      popd > /dev/null
+     if [ "$status" == "0" ]
+     then
+       for pkg in $(ls $tdir/$kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+       do
+         if [ "$(ls -l $tdir/$kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+         then
+           if [ -f $tdir/$kitname/rpm/subpackages/$pkg ]
+           then 
+             eval update=\$${pkg}_update
+             if [ "$update" == "yes" ]
+             then
+               eval release=\$${pkg}_release
+               $0 newRelease $pkg $flavor $version $release $dist
+             fi
+           fi
+         fi
+       done
+     fi
      rm -Rf $tdir/$kitname
      rm -Rf $tdir/buildroot
      rm -f $tdir/rpm.spec
