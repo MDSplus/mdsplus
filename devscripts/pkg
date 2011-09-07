@@ -308,7 +308,7 @@ EOF
      if [ -z "$release" ]
      then
        release=0
-     elif [ "$(kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
+     elif [ "$($kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
      then
        let release="$release"+1
      fi
@@ -338,6 +338,7 @@ EOF
            fi
            eval ${pkg}_release=$release
            echo $pkg release = $release
+           echo camac_release=$camac_release
            sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
          fi
        fi
