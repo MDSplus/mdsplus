@@ -55,6 +55,18 @@ list_pkg()
   awk '/Repository revision/ {F=substr($4,24,length($4)-25)} /pkg_'$2'/ {print F}' $1 | sort
 }
 
+update_mdsplus()
+{
+  if [ -d mdsplus ]
+  then
+    cd mdsplus
+    cvs -Q update -d -r $revision -f
+    cd ..
+  else
+    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $revision -f mdsplus
+  fi
+}
+
 case $1 in
   "")
   cat - <<EOF
@@ -130,20 +142,37 @@ EOF
   list)
     case $2 in
     none)
-       tmpstatus=$(mktemp)
-       $0 get_cvs_status > $tmpstatus
-       list_none $tmpstatus
-       rm -f $tmpstatus
+       if [ -z "$3" ]
+       then
+         tmpstatus=$(mktemp)
+         $0 get_cvs_status > $tmpstatus
+         list_none $tmpstatus
+         rm -f $tmpstatus
+       else
+         list_none $3
+       fi
     ;;
     all)
-       tmpstatus=$(mktemp)
-       $0 get_cvs_status > $tmpstatus
-       list_all $tmpstatus
-       rm -f $tmpstatus
+       if [ -z "$3" ]
+       then
+         tmpstatus=$(mktemp)
+         $0 get_cvs_status > $tmpstatus
+         list_all $tmpstatus
+         rm -f $tmpstatus
+       else
+         list_all $3
+       fi
     ;;
     "")
-       tmpstatus=$(mktemp)
-       $0 get_cvs_status > $tmpstatus
+       if [ -z "$3" ]
+       then
+         tmpstatus=$(mktemp)
+         $0 get_cvs_status > $tmpstatus
+         clean="yes"
+       else
+         tmpstatus=$3
+         clean="no"
+       fi
        echo "<head><title>MDSplus Packaging Information - Sources</title></head>"
        echo "<h2>Modules sorted by module name</h2>"
        echo "<table border=\"1\"><tr><td><b>Module</b></td><td><b>Package(s)</b></td></tr>"
@@ -153,7 +182,10 @@ EOF
        echo "<table border=\"1\"><tr><td><b>Package</b></td><td><b>Module(s)</b></td></tr>"
        awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
        echo "</table>"
-       rm -f $tmpstatus
+       if [ "$clean" == "yes" ]
+       then
+         rm -f $tmpstatus
+       fi
        pkgdir=$(dirname $0)
        pushd ${pkgdir}/..
        for pkg in rpm/subpackages/*
@@ -178,10 +210,15 @@ EOF
     *)
        if [ -r $(dirname $0)/../rpm/subpackages/$2 ]
        then
-         tmpstatus=$(mktemp)
-         $0 get_cvs_status > $tmpstatus
-	 list_pkg $tmpstatus $2
-	 rm -f $tmpstatus
+         if [ -z "$3" ]
+         then
+           tmpstatus=$(mktemp)
+           $0 get_cvs_status > $tmpstatus
+	   list_pkg $tmpstatus $2
+	   rm -f $tmpstatus
+         else
+           list_pkg $3 $2
+         fi
        else
          echo "No such package /$2/"
        fi
@@ -194,7 +231,7 @@ EOF
     cvs -q status -Rv 2>/dev/null
   ;;
   get_dist) #internal use
-    rpmbuild --showrc | awk '/[[:space:]]dist[[:space:]]/ {print $3}'
+    rpmbuild -E '%dist' 2>/dev/null
   ;;
   get_version) #internal use
     if [ -z "$3" ]
@@ -268,7 +305,7 @@ EOF
     fi
   ;;
   newRelease)
-     # pkg newRelease pkg flavor version release dist
+     # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
      if [ "$3" == "alpha" ]
      then
@@ -277,16 +314,17 @@ EOF
        revision="$3"
      fi
      pdir=$(dirname $0)
+     tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      pushd $pdir/..
-     cvs -Q tag  -F -r HEAD pkgrel-${3}-${4}-${5}-${6} rpm/subpackages/$2
-     for mod in $($0 list $2)
+     cvs -Q tag  -F -r HEAD pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
+     for mod in $($0 list $2 $3)
      do
        cvs -Q tag -F -r $revision pkgrel-${3}-${4}-${5}-${6} $mod
        cvs -Q tag -F -r $revision $3 $mod
      done
   ;;
   makeRpms)
-     # pkg makeRpms flavor [target]
+     # pkg makeRpms flavor
      # example: pkg makeRpms stable
      if [ "$2" == "alpha" ]
      then
@@ -294,69 +332,61 @@ EOF
      else
        revision="$2"
      fi
-     if [ -z "$3" ]
-     then
-       target=""
-     else
-       target="--target=$3"
-     fi
-     file=$(mktemp)
-     $0 get_cvs_status > $file
+     cvs_status=$(mktemp)
+     $0 get_cvs_status > $cvs_status
      flavor="$2"
-     version=$($0 get_version $flavor $file)
+     version=$($0 get_version $flavor $cvs_status)
      kitname="mdsplus-${version}"
-     if !(grep topdir $HOME/.rpmmacros >/dev/null 2>&1)
-     then
-	 echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
-	 mkdir -p $HOME/rpm/BUILD
-	 mkdir -p $HOME/rpm/RPMS
-	 mkdir -p $HOME/rpm/SOURCES
-	 mkdir -p $HOME/rpm/SPECS
-	 mkdir -p $HOME/rpm/SRPMS
-     fi
-     tdir=$(mktemp -d -p $HOME)
-     if [ -z "$tdir" ]
-     then
-       echo "Error creating temporary directory"
-       rm -f $file
-       exit
-     fi
-     pushd $tdir > /dev/null
-     cvs -d :pserver:MDSguest@www.mdsplus.org:/mdsplus/repos -Q checkout -r $revision -f mdsplus
-     mv mdsplus $kitname
-     tar zcf $HOME/rpm/SOURCES/${kitname}.tar.gz --exclude CVS $kitname
-     mkdir buildroot
-     release=$($kitname/devscripts/pkg get_release kernel $flavor $file | awk -F- '{print $5}')
+     dist=$($0 get_dist)
+     rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
+     dist=${dist:1}
+     mkdir -p $rpmdir/RPMS
+     mkdir -p $rpmdir/SOURCES
+     mkdir -p $rpmdir/SPECS
+     mkdir -p $rpmdir/SRPMS
+     mkdir -p $rpmdir/BUILD/x86_64
+     mkdir -p $rpmdir/BUILDROOT/x86_64
+     mkdir -p $rpmdir/BUILD/i686
+     mkdir -p $rpmdir/BUILDROOT/i686
+     cd $rpmdir/BUILD/x86_64
+     update_mdsplus
+     cd $rpmdir/BUILD/i686
+     update_mdsplus
+     cd mdsplus
+     PATH=`pwd`/devscripts:$PATH
+     specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
+     tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
+     release=$(pkg get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
      if [ -z "$release" ]
      then
        release=0
-     elif [ "$($kitname/devscripts/pkg check_release kernel $flavor $file)" != "ok" ]
+     elif [ "$(pkg check_release kernel $flavor $cvs_status)" != "ok" ]
      then
        let release="$release"+1
      fi
-     sed s/--VERSION--/$version/ $kitname/rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/ | sed s\|--BUILDROOT--\|$tdir/buildroot\| > rpm.spec
-     for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+     sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  > $specfile
+     for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
      do
-       if [ -f $kitname/rpm/subpackages/$pkg -a "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       if [ -f rpm/subpackages/$pkg -a "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
-         echo "requires: mdsplus-${pkg}" >> rpm.spec
+         echo "requires: mdsplus-${pkg}" >> $specfile
        fi
      done
-     cat $kitname/rpm/mdsplus-part2.spec >> rpm.spec
+     cat rpm/mdsplus-part2.spec >> $specfile
      need_to_build="no"
-     for pkg in $(ls $kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+     for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
      do
-       if [ "$(ls -l $kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       if [ "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
-         if [ -f $kitname/rpm/subpackages/$pkg ]
+         if [ -f rpm/subpackages/$pkg ]
          then 
            eval ${pkg}_update="no"
-           release=$($kitname/devscripts/pkg get_release $pkg $flavor $file | awk -F- '{print $5}')
+           release=$(pkg get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
            if [ -z "$release" ]
            then
 	     eval ${pkg}_update="yes"
              release=0
-           elif [ "$($kitname/devscripts/pkg check_release $pkg $flavor $file)" != "ok" ]
+           elif [ "$(pkg check_release $pkg $flavor $cvs_status)" != "ok" ]
            then
              eval ${pkg}_update="yes"
              let release="$release"+1
@@ -366,46 +396,42 @@ EOF
            if [ "$update" == "yes" ]
            then
              need_to_build="yes"
-             sed s/--RELEASE--/$release/ $kitname/rpm/subpackages/$pkg >> rpm.spec
+             sed s/--RELEASE--/$release/ rpm/subpackages/$pkg >> $specfile
            fi
          fi
        fi
      done
      if [ "$need_to_build" == "yes" ]
      then
-       rpmbuild $target -ba rpm.spec
+       rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile
        status=$?
+       if [ "$status" == "0" ]
+       then
+         rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile
+	 status=$?
+       fi
      else
        status="noop"
      fi
-     popd > /dev/null
      if [ "$status" == "0" ]
      then
-       for pkg in $(ls $tdir/$kitname/rpm/subpackages | grep -v "~" | grep -v "#")
+       for pkg in $(ls rpm/subpackages)
        do
-         if [ "$(ls -l $tdir/$kitname/rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+         if [ "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
          then
-           if [ -f $tdir/$kitname/rpm/subpackages/$pkg ]
+           if [ -f rpm/subpackages/$pkg ]
            then 
              eval update=\$${pkg}_update
              if [ "$update" == "yes" ]
              then
                eval release=\$${pkg}_release
-               $0 newRelease $pkg $flavor $version $release $dist
+               pkg $flavor $version $release $dist $cvs_status
              fi
            fi
          fi
        done
      fi
-     rm -Rf $tdir/$kitname
-     rm -Rf $tdir/buildroot
-     rm -f $tdir/rpm.spec
-     rmdir $tdir
-     rm -f $file
-     if [ -z "$target" ]
-     then
-       $0 makeRpms $flavor i686-linux
-     fi
+     rm -f $cvs_status
      if [ "$status" != "0" -a "$status" != "noop" ]
      then
        exit $status
