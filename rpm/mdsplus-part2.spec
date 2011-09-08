@@ -3,8 +3,8 @@
 Main libraries and programs to get MDSplus operational
 
 %prep
-%setup -q
-
+#%setup -q
+cd %_builddir/mdsplus
 
 %build
 if [ "%_target" != "i686-linux" ]

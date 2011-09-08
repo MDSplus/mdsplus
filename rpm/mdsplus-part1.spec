@@ -6,6 +6,6 @@ Summary: The MDSplus Data System
 Group: Applications/Acquisition
 Source: mdsplus---VERSION--.tar.gz
 Prefix: /usr/local
-BuildRoot: --BUILDROOT--
+BuildRoot: /tmp
 Summary: MDSplus Data Acquisition System
 AutoReqProv: yes
