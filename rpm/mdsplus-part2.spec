@@ -27,15 +27,6 @@ fi
 
 cd mdsplus
 make install
-if [ "%_target" |= "i686-linux" ]
-then
-  cp -r bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  cp -r lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  cp -r uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-else
-  ln -sf bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/bin
-  ln -sf lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/lib
-fi
 cp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
 cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
 cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
