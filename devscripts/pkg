@@ -320,7 +320,6 @@ EOF
      for mod in $($0 list $2 $3)
      do
        cvs -Q tag -F -r $revision pkgrel-${3}-${4}-${5}-${6} $mod
-       cvs -Q tag -F -r $revision $3 $mod
      done
   ;;
   makeRpms)
@@ -352,10 +351,10 @@ EOF
      update_mdsplus
      cd $rpmdir/BUILD/i686
      update_mdsplus
+     tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
      cd mdsplus
      PATH=`pwd`/devscripts:$PATH
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
-     tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
      release=$(pkg get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
      if [ -z "$release" ]
      then
@@ -425,11 +424,12 @@ EOF
              if [ "$update" == "yes" ]
              then
                eval release=\$${pkg}_release
-               pkg $flavor $version $release $dist $cvs_status
+               pkg newRelease $flavor $version $release $dist $cvs_status
              fi
            fi
          fi
        done
+       cvs -Q tag -RF -r $revision $flavor
      fi
      rm -f $cvs_status
      if [ "$status" != "0" -a "$status" != "noop" ]
