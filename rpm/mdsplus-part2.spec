@@ -4,9 +4,10 @@ Main libraries and programs to get MDSplus operational
 
 %prep
 #%setup -q
-cd %_builddir/mdsplus
+cd mdsplus
 
 %build
+cd mdsplus
 if [ "%_target" != "i686-linux" ]
 then
   ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --disable-java
@@ -24,6 +25,7 @@ fi
 
 %install
 
+cd mdsplus
 make install
 if [ "%_target" |= "i686-linux" ]
 then
@@ -39,7 +41,7 @@ cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
 cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_ROOT
 
 %post 
 $RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
