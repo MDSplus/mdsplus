@@ -344,10 +344,13 @@ EOF
      mkdir -p $rpmdir/SPECS
      mkdir -p $rpmdir/SRPMS
      mkdir -p $rpmdir/BUILD/x86_64
+     mkdir -p $rpmdir/BUILD/x86_64/i686
      mkdir -p $rpmdir/BUILDROOT/x86_64
      mkdir -p $rpmdir/BUILD/i686
      mkdir -p $rpmdir/BUILDROOT/i686
      cd $rpmdir/BUILD/x86_64
+     update_mdsplus
+     cd $rpmdir/BUILD/x86_64/i686
      update_mdsplus
      cd $rpmdir/BUILD/i686
      update_mdsplus
@@ -424,7 +427,7 @@ EOF
              if [ "$update" == "yes" ]
              then
                eval release=\$${pkg}_release
-               pkg newRelease $flavor $version $release $dist $cvs_status
+               pkg newRelease "$pkg" "$flavor" "$version" "$release" "$dist" "$cvs_status"
              fi
            fi
          fi

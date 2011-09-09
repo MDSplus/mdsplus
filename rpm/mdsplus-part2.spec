@@ -7,12 +7,13 @@ Main libraries and programs to get MDSplus operational
 cd mdsplus
 
 %build
-cd mdsplus
 if [ "%_target" != "i686-linux" ]
 then
+  cd i686/mdsplus
   ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --disable-java
-make clean
-make
+  make clean
+  make
+  cd ../../mdsplus
   ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug
   make clean
   make
@@ -25,6 +26,12 @@ fi
 
 %install
 
+if [ "%_target" != "i686-linux" ]
+then
+  cd i686/mdsplus
+  make install
+  cd ../..
+fi
 cd mdsplus
 make install
 cp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
