@@ -60,10 +60,10 @@ update_mdsplus()
   if [ -d mdsplus ]
   then
     cd mdsplus
-    cvs -Q update -d -r $revision -f
+    cvs -Q update -d -r $1 -f | grep -v ?
     cd ..
   else
-    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $revision -f mdsplus
+    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $1 -f mdsplus
   fi
 }
 
@@ -315,8 +315,8 @@ EOF
      fi
      pdir=$(dirname $0)
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
-     pushd $pdir/..
-     cvs -Q tag  -F -r HEAD pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
+     cd $pdir/..
+     cvs -Q tag  -F -r $revision pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $3)
      do
        cvs -Q tag -F -r $revision pkgrel-${3}-${4}-${5}-${6} $mod
@@ -349,11 +349,11 @@ EOF
      mkdir -p $rpmdir/BUILD/i686
      mkdir -p $rpmdir/BUILDROOT/i686
      cd $rpmdir/BUILD/x86_64
-     update_mdsplus
+     update_mdsplus $revision
      cd $rpmdir/BUILD/x86_64/i686
-     update_mdsplus
+     update_mdsplus $revision
      cd $rpmdir/BUILD/i686
-     update_mdsplus
+     update_mdsplus $revision
      tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
      cd mdsplus
      PATH=`pwd`/devscripts:$PATH
