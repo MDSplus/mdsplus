@@ -340,6 +340,7 @@ EOF
      *)
        echo You can only premote alpha or beta
        ;;
+     esac
      ;; 
   makeRpms)
      # pkg makeRpms flavor
