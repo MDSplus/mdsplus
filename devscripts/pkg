@@ -330,12 +330,12 @@ EOF
      cd $(dirname $0)/..
      case $2 in
      alpha)
-       cvs tag -dB beta
-       cvs rtag -bR -r HEAD beta *
+       cvs tag -dB beta > /dev/null
+       cvs rtag -bR -r HEAD beta mdsplus
        ;;
      beta)
-       cvs tag -dB stable
-       cvs rtag -bR -r beta stable * 
+       cvs tag -dB stable > /dev/null
+       cvs rtag -bR -r beta stable mdsplus
        ;;
      *)
        echo You can only premote alpha or beta
