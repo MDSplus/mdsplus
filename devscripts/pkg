@@ -307,6 +307,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
+     echo $0 $1 $2 $3 $4 $5 $6 $7
      if [ "$3" == "alpha" ]
      then
        revision="HEAD"
