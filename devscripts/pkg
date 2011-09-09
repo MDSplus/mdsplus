@@ -331,11 +331,11 @@ EOF
      case $2 in
      alpha)
        cvs tag -dB beta
-       cvs rtag -b -r HEAD beta
+       cvs rtag -bR -r HEAD beta *
        ;;
      beta)
        cvs tag -dB stable
-       cvs rtag -b -r beta stable
+       cvs rtag -bR -r beta stable * 
        ;;
      *)
        echo You can only premote alpha or beta
