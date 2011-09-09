@@ -317,10 +317,10 @@ EOF
      pdir=$(dirname $0)
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cd $pdir/..
-     cvs -Q tag  -F -r $revision pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
+     cvs -Q tag  -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
      do
-       cvs -Q tag -F -r $revision pkgrel-${3}-${tagversion}-${5}-${6} $mod
+       cvs -Q tag -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} $mod
      done
   ;;
   makeRpms)
