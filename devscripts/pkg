@@ -323,10 +323,10 @@ EOF
        cvs -Q tag -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} $mod
      done
   ;;
-  premote)
-     # pkg premote alpha|beta
-     # example: pkg premote alpha   ### makes cvs HEAD the beta version
-     # example: pkg premote beta    ### makes current beta version the stable version
+  promote)
+     # pkg promote alpha|beta
+     # example: pkg promote alpha   ### makes cvs HEAD the beta version
+     # example: pkg promote beta    ### makes current beta version the stable version
      cd $(dirname $0)/..
      case $2 in
      alpha)
@@ -338,7 +338,7 @@ EOF
        cvs -Q rtag -bR -r beta stable mdsplus
        ;;
      *)
-       echo You can only premote alpha or beta
+       echo You can only promote alpha or beta
        ;;
      esac
      ;; 
