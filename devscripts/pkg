@@ -433,7 +433,7 @@ EOF
            fi
          fi
        done
-       cvs -Q tag -RF -r $revision $flavor
+       cvs -Q tag -RF -r $revision -f $flavor
      fi
      rm -f $cvs_status
      if [ "$status" != "0" -a "$status" != "noop" ]
