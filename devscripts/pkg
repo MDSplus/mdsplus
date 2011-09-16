@@ -234,6 +234,7 @@ EOF
     rpmbuild -E '%dist' 2>/dev/null
   ;;
   get_version) #internal use
+    # pkg get_version flavor
     if [ -z "$3" ]
     then
        file=$(mktemp)
@@ -268,11 +269,16 @@ EOF
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
     dist=$($0 get_dist)
     dist=$(echo $dist | awk '{d[0]=split($1,d,".");print d[2]}')
-    awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file 
+    release=$(awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file)
+    if [ -z "$release" ]
+    then
+      release="0"
+    fi 
     if [ -z "$keep" ]
     then
       rm -f $file
     fi
+    echo $release
   ;;
   check_release) #internal use
     # pkg check_release package-name flavor [cvs status filename]
@@ -307,7 +313,6 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     echo $0 $1 $2 $3 $4 $5 $6 $7
      if [ "$3" == "alpha" ]
      then
        revision="HEAD"
@@ -324,7 +329,7 @@ EOF
      done
   ;;
   promote)
-     # pkg promote alpha|beta
+     # pkg promote alpha|beta [major]
      # example: pkg promote alpha   ### makes cvs HEAD the beta version
      # example: pkg promote beta    ### makes current beta version the stable version
      cd $(dirname $0)/..
@@ -332,16 +337,40 @@ EOF
      alpha)
        cvs -Q rtag -dB beta mdsplus
        cvs -Q rtag -bR -r HEAD beta mdsplus
+       flavor="beta"
        ;;
      beta)
        cvs -Q rtag -dB stable mdsplus
        cvs -Q rtag -bR -r beta stable mdsplus
+       flavor="stable"
        ;;
      *)
        echo You can only promote alpha or beta
+       exit
        ;;
      esac
-     ;; 
+     version=$($0 get_version $flavor)
+     major_version=$(echo $version | awk -F. '{print $1}')
+     minor_version=$(echo $version | awk -F. '{print $2}')
+     cvs -Q tag -d pkgver-${flavor}-${major_version}-${minor_version} include/release.h
+     if [ "$3" == "major" ]
+     then
+       let major_version=$major_version+1
+       minor_version="0"
+     else
+       let minor_version=$minor_version+1
+     fi
+     cvs -Q tag pkgver-${2}-${major_version}-${minor_version} include/release.h
+     for pkg in $(ls rpm/subpackages | grep -v CVS)
+     do
+       for rel in $(cvs status -v rpm/subpackages/$pkg | grep pkgrel-${flavor} 2>/dev/null | awk '{print $1}')
+       do
+         cvs -Q tag -d $rel rpm/subpackages/$pkg
+       done
+       cvs -Q tag pkgrel-${flavor}-${major_version}-${minor_version}-0-el5 rpm/subpackages/$pkg
+       cvs -Q tag pkgrel-${flavor}-${major_version}-${minor_version}-0-el6 rpm/subpackages/$pkg
+     done
+  ;; 
   makeRpms)
      # pkg makeRpms flavor
      # example: pkg makeRpms stable
@@ -379,10 +408,8 @@ EOF
      PATH=`pwd`/devscripts:$PATH
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
      release=$(pkg get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
-     if [ -z "$release" ]
-     then
-       release=0
-     elif [ "$(pkg check_release kernel $flavor $cvs_status)" != "ok" ]
+     chk="$(pkg check_release kernel $flavor $cvs_status)"
+     if [ "$chk" != "ok" ]     
      then
        let release="$release"+1
      fi
@@ -411,6 +438,9 @@ EOF
            elif [ "$(pkg check_release $pkg $flavor $cvs_status)" != "ok" ]
            then
              eval ${pkg}_update="yes"
+             echo "New release for mdsplus-${pkg} ==================================================================="
+             pkg check_release $pkg $flavor $cvs_status
+             echo "=================================================================================================="
              let release="$release"+1
            fi
            eval ${pkg}_release=$release
