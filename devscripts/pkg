@@ -491,6 +491,19 @@ EOF
        exit 0
      fi
   ;;
+  makeRepoRpms)
+  # Make repository rpms
+     cd $(dirname $0)/../rpm
+     rpmdir=$HOME/mdsplus_rpms/repos
+     mkdir -p $rpmdir/RPMS $rpmdir/SOURCES $rpmdir/SPECS $rpmdir/SRPMS $rpmdir/BUILD
+     for flavor in alpha beta stable
+     do
+       rpmbuild -ba --define="_topdir $rpmdir" --define="flavor $flavor" repos.spec
+       rpmbuild --target=i686-linux -ba --define="_topdir $rpmdir" --define="flavor $flavor" repos.spec
+     done
+     mv $rpmdir/RPMS/*/* $rpmdir
+     rm -Rf $rpmdir/RPMS $rpmdir/SOURCES $rpmdir/SPECS $rpmdir/SRPMS $rpmdir/BUILD
+  ;;
   *)
      echo "Unknown mode /$1/"
      echo
