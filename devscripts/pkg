@@ -468,8 +468,8 @@ EOF
            if [ "$update" == "yes" ]
            then
              need_to_build="yes"
-             sed s/--RELEASE--/$release/ rpm/subpackages/$pkg >> $specfile
            fi
+           sed s/--RELEASE--/$release/ rpm/subpackages/$pkg >> $specfile
          fi
        fi
      done
