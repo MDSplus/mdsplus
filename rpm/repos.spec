@@ -35,7 +35,7 @@ EOF
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -Rf $RPM_BUILD_ROOT
 
 %files
 /etc/yum.repos.d/mdsplus-%flavor.repo
