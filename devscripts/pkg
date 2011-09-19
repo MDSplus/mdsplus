@@ -456,10 +456,12 @@ EOF
            elif [ "$(pkg check_release $pkg $flavor $cvs_status)" != "ok" ]
            then
              eval ${pkg}_update="yes"
-             echo "New release for mdsplus-${pkg} ==================================================================="
+             echo "New $flavor release for mdsplus-${pkg} ==================================================================="
              pkg check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
+           else
+             echo "mdsplus-${pkg} $flavor is currently up to date"
            fi
            eval ${pkg}_release=$release
            eval update=\$${pkg}_update
