@@ -294,7 +294,7 @@ class DT196B(Device):
                         try:
 			    end =  eval("int(self.input_%2.2d_end_idx"%(chan+1))
                         except:
-                            end = post
+                            end = post-1
                         try:
 			    inc =  eval("int(self.input_%2.2d_inc)"%(chan+1))
                         except:
