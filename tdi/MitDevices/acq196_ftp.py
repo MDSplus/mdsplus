@@ -162,7 +162,11 @@ class ACQ196_FTP(Device):
             msg="Could not read clock source"
             clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
             msg=None
-            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+	    clock_out=None
+	    try:
+        	clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+	    except:
+		pass
             msg="Must specify pre trigger samples"
             pre_trig=int(self.pre_trig.data()*1024)
             msg="Must specify post trigger samples"
