@@ -189,10 +189,10 @@ bool Connection::globalSemHInitialized;
 HANDLE Connection::globalSemH;
 #else
 pthread_mutex_t Connection::globalMutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t semStruct;
+bool semInitialized;
 #endif
 
-sem_t semStruct;
-		bool semInitialized;
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
