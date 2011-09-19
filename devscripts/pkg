@@ -297,7 +297,25 @@ EOF
     then
       echo "RPM out of data: No release for this package, flavor and platform"
     else
-      update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$2'/ {IN_PACKAGE="yes";} /'$release'/ {IN_RELEASE="yes"; RELREV=substr($3,0,length($3)-1)} /'$3'/ {if ($1=="'$3'"){CURREV=substr($3,0,length($3)-1)}} /===/ {if (IN_PACKAGE=="yes") {if (IN_RELEASE != "yes") {print F " not in latest rpm"} else if (RELREV != CURREV) {print F " current '$3' revision is " CURREV " while rpm revision is " RELREV}}; IN_PACKAGE="no"; IN_RELEASE="no";}' $file)
+      update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$2'/ {IN_PACKAGE="yes";}
+ /'$release'/ {IN_RELEASE="yes"; RELREV=substr($3,0,length($3)-1)}
+ /'$3'/ {if ($1=="'$3'"){CURREV=substr($3,0,length($3)-1)}}
+ /===/ {if (IN_PACKAGE=="yes") {
+          if (IN_RELEASE != "yes") {
+            print F " not in latest rpm"
+          } else if (RELREV != CURREV) {
+            RR[0]=0;
+            CR[0]=0; 
+            NRR=split(RELREV,RR,"."); 
+            NCR=split(CURREV,CR,".");
+            if (NRR >= NCR || substr(CURREV,0,length(RELREV)) != RELREV) {
+              print F " current '$3' revision is " CURREV " while rpm revision is " RELREV;
+            }
+          }
+       }
+       IN_PACKAGE="no"; 
+       IN_RELEASE="no";
+      }' $file)
       if [ -z "$update" ]
       then
         echo ok
