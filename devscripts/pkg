@@ -421,7 +421,7 @@ EOF
      cvs_status=$(mktemp)
      $pkgcmd get_cvs_status > $cvs_status
      flavor="$2"
-     version=$($ get_version $flavor $cvs_status)
+     version=$($pkg get_version $flavor $cvs_status)
      kitname="mdsplus-${version}"
      cd $rpmdir/BUILD/x86_64/i686
      update_mdsplus $revision
