@@ -169,7 +169,7 @@ endif
 	mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ t.c -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ t.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 ifdef MDSIP_CONNECTIONS
 @MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
