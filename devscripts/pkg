@@ -453,16 +453,16 @@ EOF
          if [ -f rpm/subpackages/$pkg ]
          then 
            eval ${pkg}_update="no"
-           release=$(pkgcmd get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
+           release=$($pkgcmd get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
            if [ -z "$release" ]
            then
 	     eval ${pkg}_update="yes"
              release=0
-           elif [ "$(pkgcmd check_release $pkg $flavor $cvs_status)" != "ok" ]
+           elif [ "$($pkgcmd check_release $pkg $flavor $cvs_status)" != "ok" ]
            then
              eval ${pkg}_update="yes"
              echo "New $flavor release for mdsplus-${pkg} ==================================================================="
-             pkgcmd check_release $pkg $flavor $cvs_status
+             $pkgcmd check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
            else
