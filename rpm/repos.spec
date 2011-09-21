@@ -5,7 +5,6 @@ License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
 Prefix: /
-BuildRoot: /tmp/mdsplusrepos
 Summary: MDSplus Data Acquisition System
 AutoReqProv: no
 
