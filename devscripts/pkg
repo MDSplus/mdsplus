@@ -61,9 +61,13 @@ update_mdsplus()
   then
     cd mdsplus
     cvs -Q update -d -r $1 -f >/dev/null
+    cvs -Q update -r HEAD devscripts/pkg
     cd ..
   else
     cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $1 -f mdsplus >/dev/null
+    cd mdsplus
+    cvs -Q update -r HEAD devscripts/pkg
+    cd ..
   fi
 }
 
@@ -286,7 +290,9 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       $0 get_cvs_status > $file
+       pushd $HOME/mdsplus_rpms/$3$($0 get_dist)/BUILD/x86_64/mdsplus > /dev/null
+       devscripts/pkg get_cvs_status > $file
+       popd > /dev/null
        keep=""
     else
        file=$4
@@ -295,11 +301,10 @@ EOF
     release=$($0 get_release $2 $3 $4)
     if [ -z release ]
     then
-      echo "RPM out of data: No release for this package, flavor and platform"
+      echo "RPM out of date: No release for this package, flavor and platform"
     else
       update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$2'/ {IN_PACKAGE="yes";}
  /'$release'/ {IN_RELEASE="yes"; RELREV=substr($3,0,length($3)-1)}
- /'$3'/ {if ($1=="'$3'"){CURREV=substr($3,0,length($3)-1)}}
  /===/ {if (IN_PACKAGE=="yes") {
           if (IN_RELEASE != "yes") {
             print F " not in latest rpm"
@@ -398,11 +403,6 @@ EOF
      else
        revision="$2"
      fi
-     cvs_status=$(mktemp)
-     $0 get_cvs_status > $cvs_status
-     flavor="$2"
-     version=$($0 get_version $flavor $cvs_status)
-     kitname="mdsplus-${version}"
      dist=$($0 get_dist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
      dist=${dist:1}
@@ -417,16 +417,21 @@ EOF
      mkdir -p $rpmdir/BUILDROOT/i686
      cd $rpmdir/BUILD/x86_64
      update_mdsplus $revision
+     pkgcmd=$(pwd)/mdsplus/devscripts/pkg
+     cvs_status=$(mktemp)
+     $pkgcmd get_cvs_status > $cvs_status
+     flavor="$2"
+     version=$($ get_version $flavor $cvs_status)
+     kitname="mdsplus-${version}"
      cd $rpmdir/BUILD/x86_64/i686
      update_mdsplus $revision
      cd $rpmdir/BUILD/i686
      update_mdsplus $revision
      tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
      cd mdsplus
-     PATH=`pwd`/devscripts:$PATH
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
-     release=$(pkg get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
-     chk="$(pkg check_release kernel $flavor $cvs_status)"
+     release=$($pkgcmd get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
+     chk="$($pkgcmd check_release kernel $flavor $cvs_status)"
      if [ "$chk" != "ok" ]     
      then
        let release="$release"+1
@@ -448,16 +453,16 @@ EOF
          if [ -f rpm/subpackages/$pkg ]
          then 
            eval ${pkg}_update="no"
-           release=$(pkg get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
+           release=$(pkgcmd get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
            if [ -z "$release" ]
            then
 	     eval ${pkg}_update="yes"
              release=0
-           elif [ "$(pkg check_release $pkg $flavor $cvs_status)" != "ok" ]
+           elif [ "$(pkgcmd check_release $pkg $flavor $cvs_status)" != "ok" ]
            then
              eval ${pkg}_update="yes"
              echo "New $flavor release for mdsplus-${pkg} ==================================================================="
-             pkg check_release $pkg $flavor $cvs_status
+             pkgcmd check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
            else
@@ -487,17 +492,22 @@ EOF
      fi
      if [ "$status" == "0" ]
      then
+       echo "Build completed successfully. Checking for new releases and tagging the modules"
        for pkg in $(ls rpm/subpackages)
        do
          if [ "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
          then
            if [ -f rpm/subpackages/$pkg ]
            then 
+             echo "Checking $pkg for new release"
              eval update=\$${pkg}_update
              if [ "$update" == "yes" ]
              then
+               echo "$pkg has a new release. Tag modules with $flavor $version $release $dist"
                eval release=\$${pkg}_release
-               pkg newRelease "$pkg" "$flavor" "$version" "$release" "$dist" "$cvs_status"
+               $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$dist" "$cvs_status"
+             else
+               echo "$pkg does not seem to be a new release"
              fi
            fi
          fi
