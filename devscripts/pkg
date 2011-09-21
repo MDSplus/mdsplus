@@ -40,6 +40,9 @@
 #             tdi/camac/CamXandQ.fun current stable revision is 1.1 while rpm revision is 1.2
 #       Returns the string "ok" if up to date otherwise lists module revisions not in latest rpm
 #
+
+export CVS_RSH=ssh
+
 list_none()
 {
   awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $1 | sort
@@ -534,6 +537,21 @@ EOF
      done
      mv $rpmdir/RPMS/*/* $rpmdir
      rm -Rf $rpmdir/RPMS $rpmdir/SOURCES $rpmdir/SPECS $rpmdir/SRPMS $rpmdir/BUILD
+  ;;
+  makeAndUpdateRepos)
+    for flavor in stable beta alpha
+    do
+      if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor )
+      then
+        rsync -a $HOME/mdsplus_rpms/${flavor}.el5/RPMS www.mdsplus.org:/bigdisk/mdsplus/html/repo/rhel5-${flavor}/
+        ssh www.mdsplus.org "cd /bigdisk/mdsplus/html/repo/rhel5-${flavor}; createrepo RPMS"
+        updateRepo $flavor
+      fi
+    done
+    if ( $HOME/mdsplus/devscripts/pkg makeRepoRpms )
+    then
+      rsync -a $HOME/mdsplus_rpms/repos/* www.psfc.mit.edu:/bigdisk/mdsplus/html/repo
+    fi
   ;;
   *)
      echo "Unknown mode /$1/"
