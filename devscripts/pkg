@@ -63,13 +63,13 @@ update_mdsplus()
   if [ -d mdsplus ]
   then
     cd mdsplus
-    cvs -Q update -d -r $1 -f >/dev/null
-    cvs -Q update -r HEAD devscripts/pkg
+    cvs -Q update -d $1 -f >/dev/null
+    cvs -Q update -A devscripts/pkg
     cd ..
   else
-    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout -r $1 -f mdsplus >/dev/null
+    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout $1 -f mdsplus >/dev/null
     cd mdsplus
-    cvs -Q update -r HEAD devscripts/pkg
+    cvs -Q update -A devscripts/pkg
     cd ..
   fi
 }
@@ -339,20 +339,14 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     if [ "$3" == "alpha" ]
-     then
-       revision="HEAD"
-     else
-       revision="$3"
-     fi
-     pdir=$(dirname $0)
+     pushd $HOME/mdsplus_rpms/$3$($0 get_dist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
-     cd $pdir/..
-     cvs -Q tag  -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
+     cvs -Q tag  -F  -f pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
      do
        cvs -Q tag -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} $mod
      done
+     popd > /dev/null
   ;;
   promote)
      # pkg promote alpha|beta [major]
@@ -402,9 +396,9 @@ EOF
      # example: pkg makeRpms stable
      if [ "$2" == "alpha" ]
      then
-       revision="HEAD"
+       revision=""
      else
-       revision="$2"
+       revision="-r $2"
      fi
      dist=$($0 get_dist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
@@ -543,14 +537,14 @@ EOF
     do
       if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor )
       then
-        rsync -a $HOME/mdsplus_rpms/${flavor}.el5/RPMS www.mdsplus.org:/bigdisk/mdsplus/html/repo/rhel5-${flavor}/
-        ssh www.mdsplus.org "cd /bigdisk/mdsplus/html/repo/rhel5-${flavor}; createrepo RPMS"
-        updateRepo $flavor
+        repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$($0 get_dist);echo ${tmp:1})-${flavor}"
+        rsync -a $HOME/mdsplus_rpms/${flavor}$($0 get_dist)/RPMS www.mdsplus.org:${repodir}/
+        ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
       fi
     done
     if ( $HOME/mdsplus/devscripts/pkg makeRepoRpms )
     then
-      rsync -a $HOME/mdsplus_rpms/repos/* www.psfc.mit.edu:/bigdisk/mdsplus/html/repo
+      rsync -a $HOME/mdsplus_rpms/repos/* www.mdsplus.org:/bigdisk/mdsplus/html/repo
     fi
   ;;
   *)
