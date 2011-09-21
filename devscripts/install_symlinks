@@ -19,7 +19,7 @@ then
   then
     ln -sf ${2}64 ${1}/${2}
   else
-    ln -sf ${2}32 {$1}/${2}
+    ln -sf ${2}32 ${1}/${2}
   fi
 fi
 
