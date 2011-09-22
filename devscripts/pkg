@@ -413,7 +413,7 @@ EOF
      mkdir -p $rpmdir/BUILD/i686
      mkdir -p $rpmdir/BUILDROOT/i686
      cd $rpmdir/BUILD/x86_64
-     update_mdsplus $revision
+     update_mdsplus "$revision"
      pkgcmd=$(pwd)/mdsplus/devscripts/pkg
      cvs_status=$(mktemp)
      $pkgcmd get_cvs_status > $cvs_status
@@ -421,9 +421,9 @@ EOF
      version=$($pkgcmd get_version $flavor $cvs_status)
      kitname="mdsplus-${version}"
      cd $rpmdir/BUILD/x86_64/i686
-     update_mdsplus $revision
+     update_mdsplus "$revision"
      cd $rpmdir/BUILD/i686
-     update_mdsplus $revision
+     update_mdsplus "$revision"
      tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
      cd mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
