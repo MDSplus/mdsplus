@@ -341,10 +341,10 @@ EOF
      # example: pkg newRelease camac stable 3.0 2 el5
      pushd $HOME/mdsplus_rpms/$3$($0 get_dist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
-     cvs -Q tag  -F  -f pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
+     cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
      do
-       cvs -Q tag -F -r $revision -f pkgrel-${3}-${tagversion}-${5}-${6} $mod
+       cvs -Q tag -F pkgrel-${3}-${tagversion}-${5}-${6} $mod
      done
      popd > /dev/null
   ;;
@@ -418,7 +418,6 @@ EOF
      pkgcmd=$(pwd)/mdsplus/devscripts/pkg
      cvs_status=$(mktemp)
      $pkgcmd get_cvs_status > $cvs_status
-     flavor="$2"
      version=$($pkgcmd get_version $flavor $cvs_status)
      kitname="mdsplus-${version}"
      cd $rpmdir/BUILD/x86_64/i686
