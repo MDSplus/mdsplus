@@ -47,7 +47,9 @@
 function QuoteQuotes, qry
   idxs = strsplit(qry, '\', /preserve_null, length=lens)
   qry= strjoin(strmid(qry, idxs, lens), '\\')
-  idxs = strsplit(qry, "'", /preserve_null, length=lens)
+  idxs = strsplit(qry, '"', escape="\", /preserve_null, length=lens)
+  qry= strjoin(strmid(qry, idxs, lens), '\"')
+  idxs = strsplit(qry, "'", escape="\",/preserve_null, length=lens)
   qry= strjoin(strmid(qry, idxs, lens), "\'")
   return, qry
 end
@@ -62,12 +64,7 @@ function replace_input, qry, idx, val, debug=debug
 
   sz = size(val)
   if (sz(n_elements(sz)-2) eq 7) then begin
-      sval=val[0]
-      if debug then print,"Before: "+sval
-      idxs=strsplit(sval,"'",/preserve_null,length=lens)
-      sval=strjoin(strmid(sval,idxs,lens),"''")
-      if debug then print,"After: "+sval
-      ans =  strmid(qry, 0, idx-1)+"'"+STRING(sval)+"'"+strmid(qry, idx, strlen(qry)-idx)
+      ans =  strmid(qry, 0, idx-1)+'"'+STRING(val[0])+'"'+strmid(qry, idx, strlen(qry)-idx)
       if (debug) then $
         print, "replace_input - string ("+ans+")"
   endif else begin
@@ -131,6 +128,8 @@ function dsql, $
                date=date, quiet=quiet, status=status, count=count, $
                error=error, debug=debug, nan=nan, _extra=ex
 
+forward_function evaluate,mdsvalue,mdsvalue_with_socket
+
 query = lquery
 status = 1
 debug = keyword_set(debug)
@@ -186,9 +185,10 @@ for i = 0, num_inputs-1 do begin
       print, 'About to replace input  - i = ', i, 'idxs(i) = ', idxs(i)
       help, idxs, query
     endif
-    cmd = 'query = replace_input(query, idxs(i), a'+string(i+1, format='(I3.3)')+',debug=debug)'
+    cmd = 'b=a'+string(i+1, format='(I3.3)')
+    ok = evaluate(cmd)
+    query = replace_input(query, idxs(i), b, debug=debug)
     old_len = strlen(query)
-    x = execute(cmd)
     if (debug) then begin
       print, "After query replace IDXs "
       help, idxs
@@ -253,8 +253,9 @@ endif else begin
         if (debug) then $
           print, 'Working on arg ', i
         arg = 'a'+string(i, format="(I3.3)")
-        cmd = arg+' = MDSVALUE("_'+arg+'",socket=!MDSDB_SOCKET)'
-        status = execute(cmd)
+        socket = !MDSDB_SOCKET
+        cmd = arg+' = MDSVALUE_WITH_SOCKET("_'+arg+'",socket)'
+        status = evaluate(cmd)
         if (debug) then $
           print, "got back "+arg
 ;
@@ -262,10 +263,10 @@ endif else begin
 ; out the delimiters (1b)
 ;
 		cmd = 'sz = size('+arg+')'
-		status = execute(cmd)
+		status = evaluate(cmd)
 		if (sz(n_elements(sz)-2) eq 7) then begin
 		  cmd = arg+' = BreakupStringAnswer('+arg+',count)'
-		  status = execute(cmd)
+		  status = evaluate(cmd)
 		endif
     endfor
 ;
