@@ -394,11 +394,12 @@ EOF
   makeRpms)
      # pkg makeRpms flavor
      # example: pkg makeRpms stable
+     flavor=$2
      if [ "$2" == "alpha" ]
      then
        revision=""
      else
-       revision="-r $2"
+       revision="-r $flavor"
      fi
      dist=$($0 get_dist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
