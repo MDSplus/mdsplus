@@ -190,6 +190,10 @@ class Device(TreeNode):
             if 'value' in elt:
                 node.record=elt['value']
             if 'valueExpr' in elt:
+                try:
+                    import MDSplus
+                except:
+                    pass
                 node.record=eval(elt['valueExpr'])
             if 'options' in elt:
                 for option in elt['options']:
