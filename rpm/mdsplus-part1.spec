@@ -1,4 +1,4 @@
-Name: mdsplus
+Name: mdsplus--RPMFLAVOR--
 Version: --VERSION--
 Release: --RELEASE--%{?dist}
 License: BSD Open Source

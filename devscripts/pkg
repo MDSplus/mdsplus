@@ -433,7 +433,13 @@ EOF
      then
        let release="$release"+1
      fi
-     sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  > $specfile
+     if [ "$flavor" == "stable" ]
+     then
+       rpmflavor=""
+     else
+       rpmflavor="$flavor"
+     fi
+     sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  | sed s/--RPMFLAVOR--/$rpmflavor/ > $specfile
      for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
      do
        if [ -f rpm/subpackages/$pkg -a "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
