@@ -74,6 +74,11 @@ update_mdsplus()
   fi
 }
 
+getdist()
+{
+  rpmbuild -E '%dist' 2>/dev/null
+}
+
 case $1 in
   "")
   cat - <<EOF
@@ -238,7 +243,7 @@ EOF
     cvs -q status -Rv 2>/dev/null
   ;;
   get_dist) #internal use
-    rpmbuild -E '%dist' 2>/dev/null
+    getdist
   ;;
   get_version) #internal use
     # pkg get_version flavor
@@ -274,7 +279,7 @@ EOF
     fi
     version=$($0 get_version $3 $file)
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
-    dist=$($0 get_dist)
+    dist=$(getdist)
     dist=$(echo $dist | awk '{d[0]=split($1,d,".");print d[2]}')
     release=$(awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file)
     if [ -z "$release" ]
@@ -293,7 +298,7 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       pushd $HOME/mdsplus_rpms/$3$($0 get_dist)/BUILD/x86_64/mdsplus > /dev/null
+       pushd $HOME/mdsplus_rpms/$3$(getdist)/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
        keep=""
@@ -339,7 +344,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $HOME/mdsplus_rpms/$3$($0 get_dist)/BUILD/x86_64/mdsplus > /dev/null
+     pushd $HOME/mdsplus_rpms/$3$($getdist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
@@ -401,7 +406,7 @@ EOF
      else
        revision="-r $flavor"
      fi
-     dist=$($0 get_dist)
+     dist=$(getdist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
@@ -475,7 +480,7 @@ EOF
            then
              need_to_build="yes"
            fi
-           sed s/--RELEASE--/$release/ rpm/subpackages/$pkg >> $specfile
+           sed s/--RELEASE--/${release}$(getdist)/ rpm/subpackages/$pkg >> $specfile
          fi
        fi
      done
@@ -541,9 +546,9 @@ EOF
     do
       if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor )
       then
-        repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$($0 get_dist);echo ${tmp:1})-${flavor}"
-        rsync -a $HOME/mdsplus_rpms/${flavor}$($0 get_dist)/RPMS www.mdsplus.org:${repodir}/
-        rsync -a $HOME/mdsplus_rpms/${flavor}$($0 get_dist)/RPMS www.mdsplus.org:${repodir}/
+        repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
+        rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
+        rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
         ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
       fi
     done
