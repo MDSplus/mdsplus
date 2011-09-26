@@ -462,8 +462,6 @@ EOF
              $pkgcmd check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
-           else
-             echo "mdsplus-${pkg} $flavor is currently up to date"
            fi
            eval ${pkg}_release=$release
            eval update=\$${pkg}_update
@@ -542,10 +540,14 @@ EOF
         ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
       fi
     done
-    if ( $HOME/mdsplus/devscripts/pkg makeRepoRpms )
+    logfile=$(mktemp)
+    if ( $HOME/mdsplus/devscripts/pkg makeRepoRpms > $logfile 2>&1)
     then
       rsync -a $HOME/mdsplus_rpms/repos/* www.mdsplus.org:/bigdisk/mdsplus/html/repo
+    else
+      cat $logfile
     fi
+    rm -f logfile
   ;;
   *)
      echo "Unknown mode /$1/"
