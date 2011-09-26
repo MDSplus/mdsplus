@@ -294,9 +294,11 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
       XtVaGetValues(pane,XmNnumChildren,&numchildren,XmNchildren,&child,0);
       for (j=0;j<numchildren;j++)
       {
-        String name = XtName(child[j]);
-        if (name && !strcmp(name,"sash"))
-  	XtAugmentTranslations(child[j], translations);
+/*
+ * String name = XtName(child[j]);
+ * if (name && !strcmp(name,"sash"))
+*/ 
+ 	XtAugmentTranslations(child[j], translations);
       }
       XtManageChildren(child,numchildren);
     }
