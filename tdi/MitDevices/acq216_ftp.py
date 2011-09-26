@@ -93,11 +93,18 @@ class ACQ216_FTP(ACQ_FTP):
 
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if clock_src == 'INT_CLOCK':
-                fd.write("acqcmd setInternalClock %d\n" % clock_freq)
-                if clock_out != None:
-                    fd.write("acqcmd '-- setDIO -1-----'\n")
-                    fd.write("set.route d2 in fpga out pxi\n")
-                    fd.write("acqcmd '-- setDIO --1-----'\n")
+		if clock_out == None:
+		    if self.debugging:
+			print "internal clock no clock out\n"
+                    fd.write("acqcmd setInternalClock %d\n" % clock_freq)
+		else:
+		    clock_out_num_str = clock_out[-1]
+		    clock_out_num = int(clock_out_num_str)
+		    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                    if self.debugging:
+                        print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+		    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+		    fd.write(setDIOcmd)		
             else:
                 if (clock_div != 1) :
                     fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
