@@ -425,12 +425,17 @@ EOF
      cvs_status=$(mktemp)
      $pkgcmd get_cvs_status > $cvs_status
      version=$($pkgcmd get_version $flavor $cvs_status)
-     kitname="mdsplus-${version}"
      cd $rpmdir/BUILD/x86_64/i686
      update_mdsplus "$revision"
      cd $rpmdir/BUILD/i686
      update_mdsplus "$revision"
-     tar zcf $rpmdir/SOURCES/${kitname}.tar.gz --exclude CVS mdsplus
+     if [ "$flavor" == "stable" ]
+     then
+       rpmflavor=""
+     else
+       rpmflavor="-${flavor}"
+     fi
+     tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${version}.tar.gz --exclude CVS mdsplus
      cd mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
      release=$($pkgcmd get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
@@ -438,12 +443,6 @@ EOF
      if [ "$chk" != "ok" ]     
      then
        let release="$release"+1
-     fi
-     if [ "$flavor" == "stable" ]
-     then
-       rpmflavor=""
-     else
-       rpmflavor="-${flavor}"
      fi
      sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  | sed s/--RPMFLAVOR--/$rpmflavor/ > $specfile
      for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
