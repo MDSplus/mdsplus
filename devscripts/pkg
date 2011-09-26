@@ -397,9 +397,10 @@ EOF
      done
   ;; 
   makeRpms)
-     # pkg makeRpms flavor
+     # pkg makeRpms flavor [force]
      # example: pkg makeRpms stable
      flavor=$2
+     force="$3"
      if [ "$2" == "alpha" ]
      then
        revision=""
@@ -442,7 +443,7 @@ EOF
      then
        rpmflavor=""
      else
-       rpmflavor="$flavor"
+       rpmflavor="-${flavor}"
      fi
      sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  | sed s/--RPMFLAVOR--/$rpmflavor/ > $specfile
      for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
@@ -473,6 +474,9 @@ EOF
              $pkgcmd check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
+           elif [ "$force" == "force" ]
+           then
+             eval ${pkg}_update="yes"
            fi
            eval ${pkg}_release=$release
            eval update=\$${pkg}_update
