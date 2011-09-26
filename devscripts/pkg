@@ -408,11 +408,11 @@ EOF
      fi
      dist=$(getdist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
-     if (find ${rpmdir}/RPMS -name 'mdsplus*-kernel*.rpm' >/dev/null 2>&1)
+     if [ "$(find ${rpmdir}/RPMS -name 'mdsplus*-kernel*.rpm' 2>/dev/null)" == "" ]
      then
-       force=""
-     else
        force="force"
+     else
+       force=""
      fi
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
