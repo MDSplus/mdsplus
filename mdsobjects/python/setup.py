@@ -1,7 +1,29 @@
 #!/usr/bin/env python
 
+
+def getRelease():
+    try:
+      import os
+      for flavor in ['','-beta','-alpha']:
+          f=os.popen("/bin/rpm -q mdsplus%s-python;echo $?" % (flavor,))
+          l=f.readlines()
+          f.close()
+          if l[1]=='0\n':
+              p=l[0].split('-')
+              for i in range(len(p)):
+                  if p[i]=='python':
+                      if p[i-1] != 'mdsplus':
+                          release=p[i-1]+'-'
+                      else:
+                          release=""
+                      release=release+p[i+1]+'-'+p[i+2][0:-1]
+                      return release
+    except Exception,e:
+        return '1.0'
+
+
 from setuptools import setup, Extension, find_packages
-version='0.5'
+version=getRelease()
 setup(name='MDSplus',
       version=version,
       description='MDSplus Python Objects',
