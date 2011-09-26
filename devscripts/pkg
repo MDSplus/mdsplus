@@ -537,6 +537,7 @@ EOF
       then
         repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$($0 get_dist);echo ${tmp:1})-${flavor}"
         rsync -a $HOME/mdsplus_rpms/${flavor}$($0 get_dist)/RPMS www.mdsplus.org:${repodir}/
+        rsync -a $HOME/mdsplus_rpms/${flavor}$($0 get_dist)/RPMS www.mdsplus.org:${repodir}/
         ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
       fi
     done
