@@ -397,10 +397,9 @@ EOF
      done
   ;; 
   makeRpms)
-     # pkg makeRpms flavor [force]
+     # pkg makeRpms flavor
      # example: pkg makeRpms stable
      flavor=$2
-     force="$3"
      if [ "$2" == "alpha" ]
      then
        revision=""
@@ -409,6 +408,12 @@ EOF
      fi
      dist=$(getdist)
      rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
+     if (find ${rpmdir}/RPMS -name 'mdsplus*-kernel*.rpm' >/dev/null 2>&1)
+     then
+       force=""
+     else
+       force="force"
+     fi
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
      mkdir -p $rpmdir/SOURCES
@@ -449,7 +454,7 @@ EOF
      do
        if [ -f rpm/subpackages/$pkg -a "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
        then
-         echo "requires: mdsplus-${pkg}" >> $specfile
+         echo "requires: mdsplus${rpmflavor}-${pkg}" >> $specfile
        fi
      done
      cat rpm/mdsplus-part2.spec >> $specfile
