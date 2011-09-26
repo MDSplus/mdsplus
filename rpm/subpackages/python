@@ -11,3 +11,8 @@ Python interface to MDSplus
 %files python
 /usr/local/mdsplus/mdsobjects/python
 
+%post python
+pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python
+python setup.py install
+popd
+
