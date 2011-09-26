@@ -27,7 +27,6 @@ extern int pthread_mutex_unlock();
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
-#include <stropts.h>
 #include <sys/wait.h>
 #endif
 #define SEND_BUF_SIZE 32768
@@ -267,11 +266,7 @@ static int tcp_flush(int conid) {
 	   (status == -1 && errno == EINTR)) && tries < 10)  {
       tries++;
       if (FD_ISSET(sock,&readfds)) {
-#if defined(__QNX__) || defined(HAVE_WINDOWS_H)
 	status = ioctl(sock, FIONREAD, &nbytes);
-#else
-	status = ioctl(sock,I_NREAD,&nbytes);
-#endif
 	if (nbytes > 0 && status != -1) {
 	  nbytes = recv(sock, buffer, sizeof(buffer) > nbytes ? nbytes : sizeof(buffer), MSG_NOSIGNAL);
 	  if (nbytes > 0) tries = 0;

@@ -355,11 +355,7 @@ void FlushSocket(SOCKET sock)
     tries++;
     if (FD_ISSET(sock,&readfds))
     {
-#ifdef __QNX__
 	status = ioctl(sock, FIONREAD, &nbytes);
-#else
-        status = ioctl(sock,I_NREAD,&nbytes);
-#endif
         if (nbytes > 0 && status != -1)
         {
 #ifdef HAVE_WINDOWS_H
