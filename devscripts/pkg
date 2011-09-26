@@ -298,7 +298,7 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       pushd $HOME/mdsplus_rpms/$3$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+       pushd $HOME/mdsplus_rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
        keep=""
@@ -344,7 +344,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $HOME/mdsplus_rpms/$3$($getdist)/BUILD/x86_64/mdsplus > /dev/null
+     pushd $HOME/mdsplus_rpms/${3}$($getdist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
