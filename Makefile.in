@@ -9,7 +9,8 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
-	   mdsobjects/java
+	   mdsobjects/java \
+           mdsobjects/cpp
 
 MOTIF_APS = xmdsshr \
 	    actions \
@@ -31,7 +32,6 @@ PARTS = \
         @MDSTCPIP@ \
 	rtevents \
         cacheshr \
-        mdsobjects/cpp \
         mdslibidl \
         cdu     \
         mdsdcl  \
