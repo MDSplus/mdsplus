@@ -203,7 +203,6 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
   Widget t_id;
   int  widx=0;
   int id;
-  static XtTranslations translations = 0;
   char *parent_rec;
   char *stub_rec;
   int numchildren;
@@ -215,8 +214,6 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
   {
     IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&t_id, (unsigned long *)&parent_w);
     if (Initialized == 0) Init(XtWidgetToApplicationContext(parent_w));
-    if (!translations)
-      translations = XtParseTranslationTable("Shift<Btn1Up>:EqualPanes(H)");
     if (MrmOpenHierarchy(1,hierarchy_name, 0, &hierarchy) != MrmSUCCESS)
       return 0;
     MrmFetchWidget(hierarchy,"cw_wvedit",parent_w,plots,&class);
@@ -294,11 +291,11 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
       XtVaGetValues(pane,XmNnumChildren,&numchildren,XmNchildren,&child,0);
       for (j=0;j<numchildren;j++)
       {
-/*
- * String name = XtName(child[j]);
- * if (name && !strcmp(name,"sash"))
-*/ 
- 	XtAugmentTranslations(child[j], translations);
+	String name = XtName(child[j]);
+        if (name && !strcmp(name,"Sash")) {
+          XtTranslations translations =  XtParseTranslationTable("Shift<Btn1Up>:EqualPanes(H)");
+ 	  XtAugmentTranslations(child[j], translations);
+        }
       }
       XtManageChildren(child,numchildren);
     }
