@@ -240,6 +240,10 @@ public fun CAENV1731__init(as_is _nid, optional _method)
 	DevLogErr(_nid, "PTS larger than segment size: " // _segment_size); 
 	abort();
     }
+    if(_clock_mode == 0)
+      _pts = _pts / 8;
+    else
+      _pts = _pts / 16;
     _status = CAENVME_WriteCycle(_handle, _vme_address + 0x8114, long(_pts));
     if(_status != 0)
     {
