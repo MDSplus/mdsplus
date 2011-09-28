@@ -557,18 +557,20 @@ EOF
      fi
   ;;
   makeAndUpdateRepos)
-    pushd 
+    logfile="$HOME/mdsplus_rpms/log$(getdist)"
+    date > $logfile
     for flavor in stable beta alpha
     do
-      if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor )
+      if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor >> $logfile 2>&1 )
       then
         repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
         rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
-        ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
+        ssh www.mdsplus.org "cd $repodir; createrepo RPMS" > /dev/null
       fi
     done
     if [ ! -z "$msgfile" ]
     then
+      cat $msgfile
       cat $msgfile | mail -s "Error updating MDSplus rpms" twf@psfc.mit.edu
       rm -f $msgfile
     fi
