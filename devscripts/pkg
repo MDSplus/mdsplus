@@ -488,7 +488,7 @@ EOF
            then
              need_to_build="yes"
            fi
-           sed s/--RELEASE--/${release}$(getdist)/ rpm/subpackages/$pkg >> $specfile
+           sed s/--RELEASE--/${release}$(getdist)/ rpm/subpackages/$pkg | sed s/--RPMFLAVOR--/$rpmflavor/>> $specfile
          fi
        fi
      done
