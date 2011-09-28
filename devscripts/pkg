@@ -503,11 +503,9 @@ EOF
          notify "Error building x86_64 $(getdist) rpms."
          status="error"
        fi
-       if [ "$status" == "0" ]
-       then
        if ! (rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile)
        then
-         notif "Error build i686 $(getdist) rpms."
+         notify "Error build i686 $(getdist) rpms."
          status="error"
        fi
      else
@@ -539,12 +537,12 @@ EOF
      rm -f $cvs_status
      buildroot=$(mktemp -d -p $HOME)
      spec=$(dirname $0)/../rpm/repos.spec
-     if ! (rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec)
+     if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
        notify "Error building repository rpm for x86_64 $(getdist) $flavor"
        status="error"
      fi
-     if ! (rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec)
+     if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
        notify "Error build repository rpm for i686 $(getdist) $flavor"
        status="error"
