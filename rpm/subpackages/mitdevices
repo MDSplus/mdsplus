@@ -7,7 +7,7 @@ Release: --RELEASE--
 Support for MIT Data acquisition devices
 
 %files mitdevices
-/usr/local/mdsplus/lib*/libMit*
-/usr/local/mdsplus/lib*/libMIT*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libMit*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libMIT*
 /usr/local/mdsplus/tdi/MitDevices
-%exclude /usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/*.a

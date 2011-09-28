@@ -8,11 +8,11 @@ Core applications, libraries and configuration files
 
 %files kernel
 %defattr(-,root,root)
-/usr/local/mdsplus/bin*
+/usr/local/mdsplus/bin[[:digit:]][[:digit:]]
 /usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/etc
 /usr/local/mdsplus/include
-/usr/local/mdsplus/lib*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]
 /usr/local/mdsplus/man
 /usr/local/mdsplus/rpm
 /usr/local/mdsplus/setup.csh
@@ -20,31 +20,31 @@ Core applications, libraries and configuration files
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
 
-%exclude /usr/local/mdsplus/bin*/dw*
-%exclude /usr/local/mdsplus/bin*/act*
-%exclude /usr/local/mdsplus/bin*/traverser
-%exclude /usr/local/mdsplus/lib*/libXmds*
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/dw*
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/act*
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/traverser
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libXmds*
 
-%exclude /usr/local/mdsplus/bin*/j*
-%exclude /usr/local/mdsplus/lib*/libJava*
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/j*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libJava*
 
-%exclude /usr/local/mdsplus/bin*/mdsccl
-%exclude /usr/local/mdsplus/bin*/mdscts
-%exclude /usr/local/mdsplus/lib*/libCam*
-%exclude /usr/local/mdsplus/lib*/libcts*
-%exclude /usr/local/mdsplus/lib*/libccl*
-%exclude /usr/local/mdsplus/lib*/libRemCam*
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/mdsccl
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/mdscts
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libCam*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libcts*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libccl*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libRemCam*
 
-%exclude /usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/*.a
 
-%exclude /usr/local/mdsplus/lib*/libI*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libI*
 
-%exclude /usr/local/mdsplus/lib*/lib*Sql*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/lib[[:digit:]][[:digit:]]Sql*
 
-%exclude /usr/local/mdsplus/lib*/libMit*
-%exclude /usr/local/mdsplus/lib*/libMIT*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libMit*
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libMIT*
 %exclude /usr/local/mdsplus/tdi/MitDevices
-%exclude /usr/local/mdsplus/bin*/reboot_dtaq_satelite
+%exclude /usr/local/mdsplus/bin[[:digit:]][[:digit:]]/reboot_dtaq_satelite
 %exclude /usr/local/mdsplus/tdi/RfxDevices
 %exclude /usr/local/mdsplus/tdi/KbsiDevices
 %exclude /usr/local/mdsplus/tdi/camac

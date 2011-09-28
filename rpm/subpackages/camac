@@ -7,14 +7,14 @@ Release: --RELEASE--
 Support for accessing CAMAC devices
 
 %files camac
-/usr/local/mdsplus/bin*/mdsccl
-/usr/local/mdsplus/bin*/mdscts
-/usr/local/mdsplus/lib*/libCam*
-/usr/local/mdsplus/lib*/libcts*
-/usr/local/mdsplus/lib*/libccl*
-/usr/local/mdsplus/lib*/libRemCam*
+/usr/local/mdsplus/bin[[:digit:]][[:digit:]]/mdsccl
+/usr/local/mdsplus/bin[[:digit:]][[:digit:]]/mdscts
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libCam*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libcts*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libccl*
+/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/libRemCam*
 /usr/local/mdsplus/idl/camac
 /usr/local/mdsplus/tdi/camac
 
-%exclude /usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib[[:digit:]][[:digit:]]/*.a
 
