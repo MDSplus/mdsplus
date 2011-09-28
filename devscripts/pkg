@@ -481,6 +481,8 @@ EOF
            elif [ "$force" == "force" ]
            then
              eval ${pkg}_update="yes"
+           elif ! (ls $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release}* > /dev/null 2>&1)
+	     eval ${pkg}_update="yes"
            fi
            eval ${pkg}_release=$release
            eval update=\$${pkg}_update
