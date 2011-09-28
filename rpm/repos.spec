@@ -28,7 +28,7 @@ then
 echo "exclude=*i686*" >> $outfile
 fi
 cat - >>$outfile <<EOF 
-gpgcheck=1
+gpgcheck=0
 metadata_expire=300
 EOF
 
