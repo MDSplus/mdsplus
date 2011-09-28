@@ -328,7 +328,7 @@ class DT196B(Device):
                             chan_node.record = eval('Signal(raw, "", dim)')
                         else:
                             raw = Data.compile('data($)', chan_raw_node)
-                            chan_node.record = Signal(raw, "", Dimension(Window(start, end, self.trig_src), clock))
+                            chan_node.record = Signal(raw, "", Dimension(Window(start, end-1, self.trig_src), clock))
 	    f.write('mdsClose %s\n' % (self.boardip.tree.name,))
             f.write("touch /tmp/finished_%d\n" % self.boardip.tree.shot)
             cmd = "mdsValue \"job_finish('%s', %d)\"" % (self.path, self.tree.shot)
