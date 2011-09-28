@@ -1,6 +1,6 @@
 Name: mdsplus-repo-%flavor
 Version: 1.0
-Release: 0.el5
+Release: 0%{dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
