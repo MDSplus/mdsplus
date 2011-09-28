@@ -803,7 +803,7 @@ void TreeNode::deleteData()
 bool TreeNode::isOn()
 {
 	resolveNid();
-	bool retOn = _TreeIsOn(tree->getCtx(), nid)?true:false;
+	bool retOn = (_TreeIsOn(tree->getCtx(), nid) & 1)?true:false;
 	return  retOn;
 }
 void TreeNode::setOn(bool on)
