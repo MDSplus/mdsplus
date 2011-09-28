@@ -43,6 +43,14 @@
 
 export CVS_RSH=ssh
 
+notify() {
+ if [ -z "$msgfile" ]
+ then
+   export msgfile = $(mktemp)
+ fi
+ echo $1 >> $msgfile
+}
+
 list_none()
 {
   awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $1 | sort
@@ -407,13 +415,7 @@ EOF
        revision="-r $flavor"
      fi
      dist=$(getdist)
-     rpmdir=$HOME/mdsplus_rpms/${flavor}${dist}
-     if [ "$(find ${rpmdir}/RPMS -name 'mdsplus*-kernel*.rpm' 2>/dev/null)" == "" ]
-     then
-       force="force"
-     else
-       force=""
-     fi
+     rpmdir=$HOME/mdsplus_rpms/${flavor}$(getdist)
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
      mkdir -p $rpmdir/SOURCES
@@ -478,12 +480,9 @@ EOF
              $pkgcmd check_release $pkg $flavor $cvs_status
              echo "=================================================================================================="
              let release="$release"+1
-           elif [ "$force" == "force" ]
-           then
-             eval ${pkg}_update="yes"
            elif ! (ls $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release}* > /dev/null 2>&1)
            then
-	     echo "RPM $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Recreating it."
+	     echo "RPM $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Creating it."
 	     eval ${pkg}_update="yes"
            fi
            eval ${pkg}_release=$release
@@ -496,19 +495,25 @@ EOF
          fi
        fi
      done
+     status="ok"
      if [ "$need_to_build" == "yes" ]
      then
-       rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile
-       status=$?
+       if ! (rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile )
+       then
+         notify "Error building x86_64 $(getdist) rpms."
+         status="error"
+       fi
        if [ "$status" == "0" ]
        then
-         rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile
-	 status=$?
+       if ! (rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile)
+       then
+         notif "Error build i686 $(getdist) rpms."
+         status="error"
        fi
      else
-       status="noop"
+       status="skip"
      fi
-     if [ "$status" == "0" ]
+     if [ "$status" == "ok" ]
      then
        echo "Build completed successfully. Checking for new releases and tagging the modules"
        for pkg in $(ls rpm/subpackages)
@@ -532,46 +537,41 @@ EOF
        done
      fi
      rm -f $cvs_status
-     if [ "$status" != "0" -a "$status" != "noop" ]
+     buildroot=$(mktemp -d -p $HOME)
+     spec=$(dirname $0)/../rpm/repos.spec
+     if ! (rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec)
      then
-       exit $status
+       notify "Error building repository rpm for x86_64 $(getdist) $flavor"
+       status="error"
+     fi
+     if ! (rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec)
+     then
+       notify "Error build repository rpm for i686 $(getdist) $flavor"
+       status="error"
+     fi
+     if [ "$status" == "error" ]
+     then
+       exit 1
      else
        exit 0
      fi
   ;;
-  makeRepoRpms)
-  # Make repository rpms
-     cd $(dirname $0)/../rpm
-     rpmdir=$HOME/mdsplus_rpms/repos
-     mkdir -p $rpmdir/RPMS $rpmdir/SOURCES $rpmdir/SPECS $rpmdir/SRPMS $rpmdir/BUILD
-     for flavor in alpha beta stable
-     do
-       buildroot=$(mktemp -d -p $HOME)
-       rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" repos.spec
-       rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" repos.spec
-     done
-     mv $rpmdir/RPMS/*/* $rpmdir
-     rm -Rf $rpmdir/RPMS $rpmdir/SOURCES $rpmdir/SPECS $rpmdir/SRPMS $rpmdir/BUILD
-  ;;
   makeAndUpdateRepos)
+    pushd 
     for flavor in stable beta alpha
     do
       if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor )
       then
         repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
         rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
-        rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
         ssh www.mdsplus.org "cd $repodir; createrepo RPMS"
       fi
     done
-    logfile=$(mktemp)
-    if ( $HOME/mdsplus/devscripts/pkg makeRepoRpms > $logfile 2>&1)
+    if [ ! -z "$msgfile" ]
     then
-      rsync -a $HOME/mdsplus_rpms/repos/* www.mdsplus.org:/bigdisk/mdsplus/html/repo
-    else
-      cat $logfile
+      cat $msgfile | mail -s "Error updating MDSplus rpms" twf@psfc.mit.edu
+      rm -f $msgfile
     fi
-    rm -f logfile
   ;;
   *)
      echo "Unknown mode /$1/"
