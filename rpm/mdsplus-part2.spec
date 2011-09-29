@@ -42,13 +42,6 @@ cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
 %clean
 #rm -rf $RPM_BUILD_ROOT
 
-%post 
-$RPM_INSTALL_PREFIX/mdsplus/rpm/post_install_script
-
-%postun
-
-MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
-$MDSPLUS_DIR/local/mdsplus_post_uninstall_script
 
 
 
