@@ -45,6 +45,7 @@ export CVS_RSH=ssh
 repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
 repohost="www.mdsplus.org"
 maillist="twf@psfc.mit.edu"
+rpmsdir=${HOME}/rpms
 
 notify() {
  if [ -z "$msgfile" ]
@@ -309,7 +310,7 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       pushd $HOME/rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+       pushd $rpmsdir/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
        keep=""
@@ -355,7 +356,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $HOME/rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+     pushd $rpmsdir/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
@@ -418,7 +419,7 @@ EOF
        revision="-r $flavor"
      fi
      dist=$(getdist)
-     rpmdir=$HOME/rpms/${flavor}$(getdist)
+     rpmdir=$rpmsdir/${flavor}$(getdist)
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
      mkdir -p $rpmdir/SOURCES
@@ -558,13 +559,13 @@ EOF
      fi
   ;;
   makeAndUpdateRepos)
-    logfile="$HOME/rpms/log$(getdist)"
+    logfile="$rpmsdir/log$(getdist)"
     date > $logfile
     for flavor in stable beta alpha
     do
       if ( $0 makeRpms $flavor >> $logfile 2>&1 )
       then
-        rsync -a $HOME/rpms/${flavor}$(getdist)/RPMS ${repohost}:${repodir}/
+        rsync -a $rpmsdir/${flavor}$(getdist)/RPMS ${repohost}:${repodir}/
         ssh ${repohost} "cd $repodir; createrepo RPMS" > /dev/null
       fi
     done
