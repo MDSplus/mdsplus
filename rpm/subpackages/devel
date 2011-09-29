@@ -8,5 +8,5 @@ Header files and static libraries for code development
 
 %files devel
 /usr/local/mdsplus/include
-/usr/local/mdsplus/lib[[:digit:]][[:digit:]]/*.a
+/usr/local/mdsplus/lib*/*.a
 
