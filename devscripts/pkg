@@ -42,11 +42,14 @@
 #
 
 export CVS_RSH=ssh
+repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
+repohost="www.mdsplus.org"
+maillist="twf@psfc.mit.edu"
 
 notify() {
  if [ -z "$msgfile" ]
  then
-   export msgfile = $(mktemp)
+   export msgfile="$(mktemp)"
  fi
  echo $1 >> $msgfile
 }
@@ -306,7 +309,7 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       pushd $HOME/mdsplus_rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+       pushd $HOME/rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
        keep=""
@@ -352,7 +355,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $HOME/mdsplus_rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+     pushd $HOME/rpms/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
@@ -415,7 +418,7 @@ EOF
        revision="-r $flavor"
      fi
      dist=$(getdist)
-     rpmdir=$HOME/mdsplus_rpms/${flavor}$(getdist)
+     rpmdir=$HOME/rpms/${flavor}$(getdist)
      dist=${dist:1}
      mkdir -p $rpmdir/RPMS
      mkdir -p $rpmdir/SOURCES
@@ -555,21 +558,20 @@ EOF
      fi
   ;;
   makeAndUpdateRepos)
-    logfile="$HOME/mdsplus_rpms/log$(getdist)"
+    logfile="$HOME/rpms/log$(getdist)"
     date > $logfile
     for flavor in stable beta alpha
     do
-      if ( $HOME/mdsplus/devscripts/pkg makeRpms $flavor >> $logfile 2>&1 )
+      if ( $0 makeRpms $flavor >> $logfile 2>&1 )
       then
-        repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
-        rsync -a $HOME/mdsplus_rpms/${flavor}$(getdist)/RPMS www.mdsplus.org:${repodir}/
-        ssh www.mdsplus.org "cd $repodir; createrepo RPMS" > /dev/null
+        rsync -a $HOME/rpms/${flavor}$(getdist)/RPMS ${repohost}:${repodir}/
+        ssh ${repohost} "cd $repodir; createrepo RPMS" > /dev/null
       fi
     done
     if [ ! -z "$msgfile" ]
     then
       cat $msgfile
-      cat $msgfile | mail -s "Error updating MDSplus rpms" twf@psfc.mit.edu
+      cat $msgfile | mail -s "Error updating MDSplus rpms" "$maillist"
       rm -f $msgfile
     fi
   ;;
