@@ -52,7 +52,7 @@ rpmsdir=${HOME}/rpms
 notify() {
  if [ -z "$msgfile" ]
  then
-   export msgfile="$(mktemp)"
+   export msgfile="$(mktemp -t mdsplus-notify.XXXXXXXXXX)"
  fi
  echo $1 >> $msgfile
 }
@@ -165,7 +165,7 @@ EOF
     none)
        if [ -z "$3" ]
        then
-         tmpstatus=$(mktemp)
+         tmpstatus=$(mktemp -t mdsplus-cvs-status.0.XXXXXXXXXX)
          $0 get_cvs_status > $tmpstatus
          list_none $tmpstatus
          rm -f $tmpstatus
@@ -176,7 +176,7 @@ EOF
     all)
        if [ -z "$3" ]
        then
-         tmpstatus=$(mktemp)
+         tmpstatus=$(mktemp -t mdsplus-cvs-status.1.XXXXXXXXXX)
          $0 get_cvs_status > $tmpstatus
          list_all $tmpstatus
          rm -f $tmpstatus
@@ -187,7 +187,7 @@ EOF
     "")
        if [ -z "$3" ]
        then
-         tmpstatus=$(mktemp)
+         tmpstatus=$(mktemp -t mdsplus-cvs-status.2.XXXXXXXXXX)
          $0 get_cvs_status > $tmpstatus
          clean="yes"
        else
@@ -233,7 +233,7 @@ EOF
        then
          if [ -z "$3" ]
          then
-           tmpstatus=$(mktemp)
+           tmpstatus=$(mktemp -t mdsplus-cvs-status.3.XXXXXXXXXX)
            $0 get_cvs_status > $tmpstatus
 	   list_pkg $tmpstatus $2
 	   rm -f $tmpstatus
@@ -255,7 +255,7 @@ EOF
     # pkg get_version flavor
     if [ -z "$3" ]
     then
-       file=$(mktemp)
+       file=$(mktemp -t mdsplus-cvs-status.4.XXXXXXXXXX)
        $0 get_cvs_status > $file
        keep=""
     else
@@ -276,7 +276,7 @@ EOF
     # this is used to identify the release number for the current version and platform
     if [ -z "$4" ]
     then
-       file=$(mktemp)
+       file=$(mktemp -t mdsplus-cvs-status.5.XXXXXXXXXX)
        $0 get_cvs_status > $file
        keep=""
     else
@@ -301,7 +301,7 @@ EOF
     # prints "ok" if all modules of this package contain a tag pkgrel-flavor-versionMajor-versionMinor-release-platform
     if [ -z "$4" ]
     then
-       file=$(mktemp)
+       file=$(mktemp -t mdsplus-cvs-status.6.XXXXXXXXXX)
        pushd $rpmsdir/${3}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
@@ -423,7 +423,7 @@ EOF
      cd $rpmdir/BUILD/x86_64
      update_mdsplus "$revision"
      pkgcmd=$(pwd)/mdsplus/devscripts/pkg
-     cvs_status=$(mktemp)
+     cvs_status=$(mktemp -t mdsplus-cvs-status.7.XXXXXXXXXX)
      $pkgcmd get_cvs_status > $cvs_status
      version=$($pkgcmd get_version $flavor $cvs_status)
      cd $rpmdir/BUILD/x86_64/i686
@@ -529,7 +529,7 @@ EOF
        done
      fi
      rm -f $cvs_status
-     buildroot=$(mktemp -d -p $HOME)
+     buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
      spec=$(dirname $0)/../rpm/repos.spec
      if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
