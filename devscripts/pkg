@@ -42,7 +42,9 @@
 #
 
 export CVS_RSH=ssh
-repodir="/bigdisk/mdsplus/html/repo/rh$(tmp=$(getdist);echo ${tmp:1})-${flavor}"
+REDHATDIST=$(rpmbuild -E '%dist' 2>/dev/null)
+REDHATDIST=${REDHATDIST:1}
+repodir="/bigdisk/mdsplus/html/repo/"
 repohost="www.mdsplus.org"
 maillist="twf@psfc.mit.edu"
 rpmsdir=${HOME}/rpms
@@ -84,11 +86,6 @@ update_mdsplus()
     cvs -Q update -A devscripts/pkg
     cd ..
   fi
-}
-
-getdist()
-{
-  rpmbuild -E '%dist' 2>/dev/null
 }
 
 case $1 in
@@ -254,9 +251,6 @@ EOF
     cd $dirn/..
     cvs -q status -Rv 2>/dev/null
   ;;
-  get_dist) #internal use
-    getdist
-  ;;
   get_version) #internal use
     # pkg get_version flavor
     if [ -z "$3" ]
@@ -291,9 +285,7 @@ EOF
     fi
     version=$($0 get_version $3 $file)
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
-    dist=$(getdist)
-    dist=$(echo $dist | awk '{d[0]=split($1,d,".");print d[2]}')
-    release=$(awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'$dist'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file)
+    release=$(awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file)
     if [ -z "$release" ]
     then
       release="0"
@@ -310,7 +302,7 @@ EOF
     if [ -z "$4" ]
     then
        file=$(mktemp)
-       pushd $rpmsdir/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+       pushd $rpmsdir/${3}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
        devscripts/pkg get_cvs_status > $file
        popd > /dev/null
        keep=""
@@ -356,7 +348,7 @@ EOF
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
      # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $rpmsdir/${3}$(getdist)/BUILD/x86_64/mdsplus > /dev/null
+     pushd $rpmsdir/${3}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
      tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
      cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
      for mod in $($0 list $2 $7)
@@ -418,9 +410,7 @@ EOF
      else
        revision="-r $flavor"
      fi
-     dist=$(getdist)
-     rpmdir=$rpmsdir/${flavor}$(getdist)
-     dist=${dist:1}
+     rpmdir=$rpmsdir/${flavor}.${REDHATDIST}
      mkdir -p $rpmdir/RPMS
      mkdir -p $rpmdir/SOURCES
      mkdir -p $rpmdir/SPECS
@@ -448,7 +438,7 @@ EOF
      fi
      tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${version}.tar.gz --exclude CVS mdsplus
      cd mdsplus
-     specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${dist}.spec"
+     specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${REDHATDIST}.spec"
      release=$($pkgcmd get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
      chk="$($pkgcmd check_release kernel $flavor $cvs_status)"
      if [ "$chk" != "ok" ]     
@@ -495,7 +485,7 @@ EOF
            then
              need_to_build="yes"
            fi
-           sed s/--RELEASE--/${release}$(getdist)/ rpm/subpackages/$pkg | sed s/--RPMFLAVOR--/$rpmflavor/>> $specfile
+           sed s/--RELEASE--/${release}.${REDHATDIST}/ rpm/subpackages/$pkg | sed s/--RPMFLAVOR--/$rpmflavor/>> $specfile
          fi
        fi
      done
@@ -504,12 +494,12 @@ EOF
      then
        if ! (rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile )
        then
-         notify "Error building x86_64 $(getdist) rpms."
+         notify "Error building x86_64 ${REDHATDIST} rpms."
          status="error"
        fi
        if ! (rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile)
        then
-         notify "Error build i686 $(getdist) rpms."
+         notify "Error build i686 ${REDHATDIST} rpms."
          status="error"
        fi
      else
@@ -528,9 +518,9 @@ EOF
              eval update=\$${pkg}_update
              if [ "$update" == "yes" ]
              then
-               echo "$pkg has a new release. Tag modules with $flavor $version $release $dist"
+               echo "$pkg has a new release. Tag modules with $flavor $version $release $REDHATDIST"
                eval release=\$${pkg}_release
-               $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$dist" "$cvs_status"
+               $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
              else
                echo "$pkg does not seem to be a new release"
              fi
@@ -543,12 +533,12 @@ EOF
      spec=$(dirname $0)/../rpm/repos.spec
      if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
-       notify "Error building repository rpm for x86_64 $(getdist) $flavor"
+       notify "Error building repository rpm for x86_64 ${REDHATDIST} $flavor"
        status="error"
      fi
      if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
-       notify "Error build repository rpm for i686 $(getdist) $flavor"
+       notify "Error build repository rpm for i686 ${REDHATDIST} $flavor"
        status="error"
      fi
      if [ "$status" == "error" ]
@@ -559,14 +549,14 @@ EOF
      fi
   ;;
   makeAndUpdateRepos)
-    logfile="$rpmsdir/log$(getdist)"
+    logfile="$rpmsdir/log.${REDHATDIST}"
     date > $logfile
     for flavor in stable beta alpha
     do
       if ( $0 makeRpms $flavor >> $logfile 2>&1 )
       then
-        rsync -a $rpmsdir/${flavor}$(getdist)/RPMS ${repohost}:${repodir}/
-        ssh ${repohost} "cd $repodir; createrepo RPMS" > /dev/null
+        rsync -a $rpmsdir/${flavor}.${REDHATDIST}/RPMS ${repohost}:${repodir}/rh${REDHATDIST}-${flavor}
+        ssh ${repohost} "cd ${repodir}/rh${REDHATDIST}-${flavor}; createrepo RPMS" > /dev/null
       fi
     done
     if [ ! -z "$msgfile" ]
