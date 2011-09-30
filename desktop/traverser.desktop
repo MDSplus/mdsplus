@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Traverser
+Type=Application
+Exec=traverser
+Icon=/usr/local/mdsplus/pixmaps/traverser.png
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=traverser
+GenericName[en_US]=traverser
+Comment[en_US]=MDSplus tree traverser
+Categories=GNOME;Application;MDSplus;X-Red-Hat-Base;

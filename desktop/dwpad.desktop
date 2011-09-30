@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Dwpad
+Type=Application
+Exec=dwpad
+Icon=/usr/local/mdsplus/pixmaps/dwpad.png
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=dwpad
+GenericName[en_US]=dwpad
+Comment[en_US]=MDSplus scope pad application used with the Dwscope application for picking and choosing panel definitions.
+Categories=Application;MDSplus;X-Red-Hat-Base;
