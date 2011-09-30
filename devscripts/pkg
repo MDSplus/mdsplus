@@ -77,7 +77,7 @@ update_mdsplus()
   if [ -d mdsplus ]
   then
     cd mdsplus
-    cvs -Q update -d $1 -f >/dev/null
+    cvs -Q update -d $1 -f
     cvs -Q update -A devscripts/pkg
     cd ..
   else
