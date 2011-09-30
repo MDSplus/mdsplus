@@ -18,3 +18,8 @@ Support for accessing CAMAC devices
 
 %exclude /usr/local/mdsplus/lib*/*.a
 
+%post camac
+ldconfig >/dev/null 2>&1
+
+%postun camac
+ldconfig >/dev/null 2>&1

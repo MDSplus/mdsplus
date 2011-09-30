@@ -19,6 +19,7 @@ Core applications, libraries and configuration files
 /usr/local/mdsplus/setup.sh
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
+/usr/local/mdsplus/desktop/kernel
 
 %exclude /usr/local/mdsplus/bin*/dw*
 %exclude /usr/local/mdsplus/bin*/act*
@@ -74,8 +75,29 @@ then
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
 fi
+if [ -d /etc/xdg/menus/applications-merged ]
+then
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/mdsplus.menu /etc/xdg/menus/applications-merged/
+fi
+if [ -d /usr/share/desktop-directories ]
+then
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/mdsplus.directory /usr/share/desktop-directories/
+fi
+if [ -d /usr/share/applications ]
+then
+  mkdir /usr/share/applications/mdsplus
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
+fi
+
 
 %postun kernel
 
-rm -f /etc/ld.so.conf.d/mdsplus.conf /etc/profile.d/mdsplus.sh /etc/profile.d/mdsplus.csh /etc/.mdsplus_dir 2>/dev/null
-ldconfig >/dev/null 2>&1
+rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null 
+rm -f /etc/profile.d/mdsplus.sh 2>/dev/null
+rm -f /etc/profile.d/mdsplus.csh 2>/dev/null
+rm -f /etc/.mdsplus_dir 2>/dev/null
+rm -f /etc/xdg/menus/applications-merged/mdsplus.menu
+rm -f /usr/share/desktop-directories/mdsplus.directory
+rm -Rf /usr/share/applications/mdsplus
+ldconfig
+

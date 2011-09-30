@@ -11,3 +11,10 @@ Support for MIT Data acquisition devices
 /usr/local/mdsplus/lib*/libMIT*
 /usr/local/mdsplus/tdi/MitDevices
 %exclude /usr/local/mdsplus/lib*/*.a
+
+%post mitdevices
+ldconfig >/dev/null 2>&1
+
+%postun mitdevices
+ldconfig >/dev/null 2>&1
+

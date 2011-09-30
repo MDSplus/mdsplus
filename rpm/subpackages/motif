@@ -13,6 +13,18 @@ dwscope, dwpad, traverser, actions, actmon
 /usr/local/mdsplus/bin*/traverser
 /usr/local/mdsplus/lib*/libXmds*
 /usr/local/mdsplus/uid*
-/usr/local/mdsplus/pixmaps
+/usr/local/mdsplus/desktop/dwpad.desktop
+/usr/local/mdsplus/desktop/dwscope.desktop
+/usr/local/mdsplus/desktop/traverser.desktop
 %exclude /usr/local/mdsplus/lib*/*.a
 
+%post motif
+if [ -d /usr/share/applications/mdsplus ]
+then
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/motif /usr/share/applications/mdsplus/
+fi
+ldconfig >/dev/null 2>&1
+
+%postun motif
+rm -f /usr/share/applications/mdsplus/motif 2>/dev/null
+ldconfig >/dev/null 2>&1

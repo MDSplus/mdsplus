@@ -12,3 +12,9 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 %exclude /usr/local/mdsplus/idl/camac
 %exclude /usr/local/mdsplus/lib*/*.a
 
+%post idl
+ldconfig >/dev/null 2>&1
+
+%postun idl
+ldconfig >/dev/null 2>&1
+

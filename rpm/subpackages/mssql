@@ -10,3 +10,9 @@ Interface to mssql databases
 /usr/local/mdsplus/lib*/lib*Sql*
 %exclude /usr/local/mdsplus/lib*/*.a
 
+%post mssql
+ldconfig >/dev/null 2>&1
+
+%postun mssql
+ldconfig >/dev/null 2>&1
+
