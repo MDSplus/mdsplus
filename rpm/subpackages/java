@@ -11,8 +11,7 @@ Java applications and classes
 /usr/local/mdsplus/bin*/j*
 /usr/local/mdsplus/lib*/libJava*
 /usr/local/mdsplus/tdi/java
-/usr/local/mdsplus/desktop/jscope.desktop
-/usr/local/mdsplus/desktop/jtraverser.desktop
+/usr/local/mdsplus/desktop/java
 %exclude /usr/local/mdsplus/java/classes/jDevices.jar
 
 %post java

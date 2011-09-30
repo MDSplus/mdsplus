@@ -13,9 +13,7 @@ dwscope, dwpad, traverser, actions, actmon
 /usr/local/mdsplus/bin*/traverser
 /usr/local/mdsplus/lib*/libXmds*
 /usr/local/mdsplus/uid*
-/usr/local/mdsplus/desktop/dwpad.desktop
-/usr/local/mdsplus/desktop/dwscope.desktop
-/usr/local/mdsplus/desktop/traverser.desktop
+/usr/local/mdsplus/desktop/motif
 %exclude /usr/local/mdsplus/lib*/*.a
 
 %post motif
