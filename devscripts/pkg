@@ -49,14 +49,6 @@ repohost="www.mdsplus.org"
 maillist="twf@psfc.mit.edu"
 rpmsdir=${HOME}/rpms
 
-notify() {
- if [ -z "$msgfile" ]
- then
-   export msgfile="$(mktemp -t mdsplus-notify.XXXXXXXXXX)"
- fi
- echo $1 >> $msgfile
-}
-
 list_none()
 {
   awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG="";} /pkg_/ {PKG=substr($1,5) " "} /====/ {if (length(F) > 0 && length(PKG) == 0) print F; F=""}' $1 | sort
@@ -401,9 +393,10 @@ EOF
      done
   ;; 
   makeRpms)
-     # pkg makeRpms flavor
+     # pkg makeRpms flavor [notify file]
      # example: pkg makeRpms stable
      flavor=$2
+     notify=$3
      if [ "$2" == "alpha" ]
      then
        revision=""
@@ -494,12 +487,18 @@ EOF
      then
        if ! (rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile )
        then
-         notify "Error building x86_64 ${REDHATDIST} rpms."
+         if [ ! -z "$notify" ]
+         then
+           echo "Error building x86_64 ${REDHATDIST} rpms." >> $notify
+         fi
          status="error"
        fi
        if ! (rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile)
        then
-         notify "Error build i686 ${REDHATDIST} rpms."
+         if [ ! -z "$notify" ]
+         then
+           echo "Error build i686 ${REDHATDIST} rpms." >> $notify
+         fi
          status="error"
        fi
      else
@@ -518,8 +517,12 @@ EOF
              eval update=\$${pkg}_update
              if [ "$update" == "yes" ]
              then
-               echo "$pkg has a new release. Tag modules with $flavor $version $release $REDHATDIST"
                eval release=\$${pkg}_release
+               echo "$pkg has a new release. Tag modules with $flavor $version $release $REDHATDIST"
+               if [ ! -z "$notify" ]
+               then
+                 echo "New Release: mdsplus${rpmflavor}-$version-${release}.${REDHATDIST}" > $notify
+               fi
                $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
              else
                echo "$pkg does not seem to be a new release"
@@ -533,12 +536,18 @@ EOF
      spec=$(dirname $0)/../rpm/repos.spec
      if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
-       notify "Error building repository rpm for x86_64 ${REDHATDIST} $flavor"
+       if [ ! -z "$notify" ]
+       then
+         echo "Error building repository rpm for x86_64 ${REDHATDIST} $flavor" >> $notify
+       fi
        status="error"
      fi
      if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
      then
-       notify "Error build repository rpm for i686 ${REDHATDIST} $flavor"
+       if [ ! -z "$notify" ]
+       then
+         echo "Error build repository rpm for i686 ${REDHATDIST} $flavor" >> $notify
+       fi
        status="error"
      fi
      if [ "$status" == "error" ]
@@ -551,20 +560,20 @@ EOF
   makeAndUpdateRepos)
     logfile="$rpmsdir/log.${REDHATDIST}"
     date > $logfile
+    msgfile="$(mktemp -t mdsplus-notify.XXXXXXXXXX)"
     for flavor in stable beta alpha
     do
-      if ( $0 makeRpms $flavor >> $logfile 2>&1 )
+      if ( $0 makeRpms $flavor $msgfile >> $logfile 2>&1 )
       then
         rsync -a $rpmsdir/${flavor}.${REDHATDIST}/RPMS ${repohost}:${repodir}/rh${REDHATDIST}-${flavor}
         ssh ${repohost} "cd ${repodir}/rh${REDHATDIST}-${flavor}; createrepo RPMS" > /dev/null
       fi
     done
-    if [ ! -z "$msgfile" ]
+    if [ ! -z "$(cat $msgfile)" ]
     then
-      cat $msgfile
       cat $msgfile | mail -s "Error updating MDSplus rpms" "$maillist"
-      rm -f $msgfile
     fi
+    rm -f $msgfile
   ;;
   *)
      echo "Unknown mode /$1/"
