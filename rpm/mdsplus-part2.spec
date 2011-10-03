@@ -37,7 +37,7 @@ cd mdsplus
 make install
 
 %clean
-#rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 
 
 
