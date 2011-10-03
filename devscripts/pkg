@@ -489,7 +489,7 @@ EOF
        then
          if [ ! -z "$notify" ]
          then
-           echo "Error building x86_64 ${REDHATDIST} rpms." >> $notify
+           echo "Error building x86_64 ${flavor}.${REDHATDIST} rpms." >> $notify
          fi
          status="error"
        fi
@@ -497,7 +497,7 @@ EOF
        then
          if [ ! -z "$notify" ]
          then
-           echo "Error building i686 ${REDHATDIST} rpms." >> $notify
+           echo "Error building i686 ${flavor}.${REDHATDIST} rpms." >> $notify
          fi
          status="error"
        fi
