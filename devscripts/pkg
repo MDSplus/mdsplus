@@ -497,7 +497,7 @@ EOF
        then
          if [ ! -z "$notify" ]
          then
-           echo "Error build i686 ${REDHATDIST} rpms." >> $notify
+           echo "Error building i686 ${REDHATDIST} rpms." >> $notify
          fi
          status="error"
        fi
