@@ -19,7 +19,12 @@ Core applications, libraries and configuration files
 /usr/local/mdsplus/setup.sh
 /usr/local/mdsplus/tdi
 /usr/local/mdsplus/trees
+/usr/local/mdsplus/desktop/mdsplus.directory
+/usr/local/mdsplus/desktop/mdsplus.menu
 /usr/local/mdsplus/desktop/kernel
+/usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg
+/usr/local/mdsplus/pixmaps/Tcl.png
+/usr/local/mdsplus/pixmaps/Tdi.png
 
 %exclude /usr/local/mdsplus/bin*/dw*
 %exclude /usr/local/mdsplus/bin*/act*

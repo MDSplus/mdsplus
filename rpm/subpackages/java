@@ -13,7 +13,8 @@ Java applications and classes
 /usr/local/mdsplus/tdi/java
 /usr/local/mdsplus/desktop/java
 %exclude /usr/local/mdsplus/java/classes/jDevices.jar
-
+/usr/local/mdsplus/pixmaps/dwscope.png
+/usr/local/mdsplus/pixmaps/traverser.png
 %post java
 if [ -d /usr/share/applications/mdsplus ]
 then
