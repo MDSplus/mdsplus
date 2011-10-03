@@ -35,9 +35,6 @@ then
 fi
 cd mdsplus
 make install
-cp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
-cp -r pixmaps $RPM_BUILD_ROOT/usr/local/mdsplus/
 
 %clean
 #rm -rf $RPM_BUILD_ROOT
