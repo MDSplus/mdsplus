@@ -2,6 +2,7 @@ bin64
 lib64
 bin32
 lib32
+uid32
 uid64
 java
 Win32
