@@ -99,7 +99,7 @@ RELEASE:
 RPM :
 	devscripts/MakeRpm
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps
 
 install: 
 	devscripts/mkdirhier @exec_prefix@/local/tdi
