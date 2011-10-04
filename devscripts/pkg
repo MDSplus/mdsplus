@@ -75,7 +75,7 @@ update_mdsplus()
     cvs -Q update -A devscripts/pkg
     cd ..
   else
-    cvs -d :ext:`whoami`@www.mdsplus.org:/mdsplus/repos -Q checkout $1 -f mdsplus >/dev/null
+    cvs -d /mdsplus/repos -Q checkout $1 -f mdsplus >/dev/null
     cd mdsplus
     cvs -Q update -A devscripts/pkg
     cd ..
