@@ -50,7 +50,7 @@ public class LASER_YAGSetup extends DeviceSetup {
         deviceField8 = new DeviceField();
         jLabel4 = new javax.swing.JLabel();
 
-        setDeviceProvider("localhost");
+        setDeviceProvider("localhost:8100");
         setDeviceTitle("Solid State Laser");
         setDeviceType("LASER_YAG");
         setHeight(550);
@@ -83,7 +83,7 @@ public class LASER_YAGSetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Port:");
-        deviceField9.setOffsetNid(10);
+        deviceField9.setOffsetNid(13);
         deviceField9.setTextOnly(true);
         jPanel5.add(deviceField9);
 
