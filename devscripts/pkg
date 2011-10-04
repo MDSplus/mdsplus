@@ -56,7 +56,9 @@ list_none()
 
 list_all()
 {
-  awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) " "} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print F "   " PKG}; F=""}' $1 | sort
+  awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) " "} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="Ncp -r matlab $RPM_BUILD_ROOT/usr/local/mdsplus/
+cp -r php    $RPM_BUILD_ROOT/usr/local/mdsplus/
+one"; print F "   " PKG}; F=""}' $1 | sort
 }
 
 list_pkg()
@@ -208,7 +210,7 @@ EOF
          then
            continue
          fi
-         size=$(ls -l $pkg | awk '{print $5}')
+         size=$(stat $pkg --format=%s)
          echo "<a name=\"$pkgname\"><h2>$pkgname</h2></a></br>"
 	 if [ $size -eq 0 ]
          then
@@ -521,7 +523,7 @@ EOF
                echo "$pkg has a new release. Tag modules with $flavor $version $release $REDHATDIST"
                if [ ! -z "$notify" ]
                then
-                 echo "New Release: mdsplus${rpmflavor}-$version-${release}.${REDHATDIST}" > $notify
+                 echo "New Release: mdsplus${rpmflavor}-${pkg}-$version-${release}.${REDHATDIST}" >> $notify
                fi
                $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
              else
@@ -571,7 +573,7 @@ EOF
     done
     if [ ! -z "$(cat $msgfile)" ]
     then
-      cat $msgfile | mail -s "Error updating MDSplus rpms" "$maillist"
+      cat $msgfile | mail -s "Auto build results" "$maillist"
     fi
     rm -f $msgfile
   ;;
