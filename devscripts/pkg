@@ -248,7 +248,7 @@ EOF
   get_version) #internal use
     # pkg get_version flavor [cvs-status-file]
     flavor=$2
-    cvs_Status=$3
+    cvs_status=$3
     if [ -z "$cvs_status" ]
     then
        cvs_status=$(mktemp -t mdsplus-cvs-status.4.XXXXXXXXXX)
@@ -257,7 +257,7 @@ EOF
     else
        keep="yes"
     fi
-    awk '/release.h,v/ {V="yes"} /pkgver-'$flavor'/ {if (V=="yes"){A[0]="";split($1,A,"-");print A[3] "." A[4];exit;}}' $cvs_status
+    awk '/release.h,v/ {V="yes"} /pkgver-'$flavor'/ {if (V=="yes"){A[0]="";split($1,A,"-");print A[3] "." A[4];exit;}}' $cvs_status 
     if [ -z "$keep" ]
     then
       rm -f $cvs_status
