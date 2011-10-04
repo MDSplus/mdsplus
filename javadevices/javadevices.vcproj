@@ -598,6 +598,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\LASER_RUSetup.java"
+			>
+		</File>
+		<File
 			RelativePath="MPBDecoderSetup.java"
 			>
 		</File>

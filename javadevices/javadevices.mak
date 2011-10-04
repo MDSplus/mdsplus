@@ -34,7 +34,6 @@ L5613Setup.java\
 L6810Setup.java\
 LASER_NDSetup.java\
 LASER_RUSetup.java\
-MARTESetup.java\
 MCUSetup.java\
 MHD_BR_TESTSetup.java\
 MPBDecoderSetup.java\
@@ -84,7 +83,7 @@ WE7116Setup.java\
 WE7275Setup.java\
 WEGroupSetup.java\
 XRAYSetup.java\
-LASER_SSSetup.java\
+LASER_YAGSetup.java\
 DPO7054Setup.java\
 L9109Setup.java
 
