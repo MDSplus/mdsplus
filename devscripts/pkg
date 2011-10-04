@@ -246,20 +246,21 @@ EOF
     cvs -q status -Rv 2>/dev/null
   ;;
   get_version) #internal use
-    # pkg get_version flavor
-    if [ -z "$3" ]
+    # pkg get_version flavor [cvs-status-file]
+    flavor=$2
+    cvs_Status=$3
+    if [ -z "$cvs_status" ]
     then
-       file=$(mktemp -t mdsplus-cvs-status.4.XXXXXXXXXX)
-       $0 get_cvs_status > $file
+       cvs_status=$(mktemp -t mdsplus-cvs-status.4.XXXXXXXXXX)
+       $0 get_cvs_status > $cvs_status
        keep=""
     else
-       file=$3
        keep="yes"
     fi
-    awk '/release.h,v/ {V="yes"} /pkgver-'$2'/ {if (V=="yes"){A[0]="";split($1,A,"-");print A[3] "." A[4];exit;}}' $file
+    awk '/release.h,v/ {V="yes"} /pkgver-'$flavor'/ {if (V=="yes"){A[0]="";split($1,A,"-");print A[3] "." A[4];exit;}}' $cvs_status
     if [ -z "$keep" ]
     then
-      rm -f $file
+      rm -f $cvs_status
     fi
   ;;
   get_release)
@@ -268,48 +269,52 @@ EOF
     # rpm/subpackages/package-name will normally have a tag: pkgrel-flavor-versionMajor-versionMinor-release-platform
     # for example: pkgrel-stable-3-0-2-rhel5
     # this is used to identify the release number for the current version and platform
-    if [ -z "$4" ]
+    pkg=$2
+    flavor=$3
+    cvs_status=$4
+    if [ -z "$cvs_status" ]
     then
-       file=$(mktemp -t mdsplus-cvs-status.5.XXXXXXXXXX)
-       $0 get_cvs_status > $file
+       cvs_status=$(mktemp -t mdsplus-cvs-status.5.XXXXXXXXXX)
+       $0 get_cvs_status > $cvs_status
        keep=""
     else
-       file=$4
        keep="yes"
     fi
-    version=$($0 get_version $3 $file)
+    version=$($0 get_version $flavor $cvs_status)
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
-    release=$(awk '/subpackages\/'$2'/ {R="yes"} /pkgrel-'$3'-'$version'-[[:digit:]]-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $file)
+    release=$(awk '/subpackages\/'$pkg'/ {R="yes"} /pkgrel-'$flavor'-'$version'-[[:digit:]]-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $cvs_status)
     if [ -z "$release" ]
     then
       release="0"
     fi 
     if [ -z "$keep" ]
     then
-      rm -f $file
+      rm -f $cvs_status
     fi
     echo $release
   ;;
   check_release) #internal use
     # pkg check_release package-name flavor [cvs status filename]
     # prints "ok" if all modules of this package contain a tag pkgrel-flavor-versionMajor-versionMinor-release-platform
-    if [ -z "$4" ]
+    pkg=$2
+    flavor=$3
+    cvs_status=$4
+    if [ -z "$cvs_status" ]
     then
-       file=$(mktemp -t mdsplus-cvs-status.6.XXXXXXXXXX)
-       pushd $rpmsdir/${3}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
-       devscripts/pkg get_cvs_status > $file
+       cvs_status=$(mktemp -t mdsplus-cvs-status.6.XXXXXXXXXX)
+       pushd $rpmsdir/${flavor}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
+       devscripts/pkg get_cvs_status > $cvs_status
        popd > /dev/null
        keep=""
     else
-       file=$4
        keep="yes"
     fi
-    release=$($0 get_release $2 $3 $4)
+    release=$($0 get_release $pkg $flavor $cvs_status)
     if [ -z release ]
     then
       echo "RPM out of date: No release for this package, flavor and platform"
     else
-      update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$2'/ {IN_PACKAGE="yes";}
+      update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$pkg'/ {IN_PACKAGE="yes";}
  /'$release'/ {IN_RELEASE="yes"; RELREV=substr($3,0,length($3)-1)}
  /===/ {if (IN_PACKAGE=="yes") {
           if (IN_RELEASE != "yes") {
@@ -320,13 +325,13 @@ EOF
             NRR=split(RELREV,RR,"."); 
             NCR=split(CURREV,CR,".");
             if (NRR >= NCR || substr(CURREV,0,length(RELREV)) != RELREV) {
-              print F " current '$3' revision is " CURREV " while rpm revision is " RELREV;
+              print F " current '$flavor' revision is " CURREV " while rpm revision is " RELREV;
             }
           }
        }
        IN_PACKAGE="no"; 
        IN_RELEASE="no";
-      }' $file)
+      }' $cvs_status)
       if [ -z "$update" ]
       then
         echo ok
@@ -336,8 +341,25 @@ EOF
     fi
     if [ -z "$keep" ]
     then
-      rm -f $file
+      rm -f $cvs_status
     fi
+  ;;
+  check_flavor_releases)
+     # pkg check_flavor_releases
+     flavor=$2
+     pushd $rpmsdir/${flavor}.${REDHATDIST}/BUILD/x86_64/mdsplus >/dev/null
+     cvs_status=$(mktemp)
+     devscripts/pkg get_cvs_status > $cvs_status
+     for pkg in $(ls rpm/subpackages | grep -v CVS | grep -v '~' | grep -v '#')
+     do
+       if [ $(stat rpm/subpackages/${pkg} --format=%s) -gt 0 ]
+       then
+         echo $flavor $pkg
+         devscripts/pkg check_release $pkg $flavor $cvs_status
+       fi
+     done
+     rm -f $cvs_status
+     popd >/dev/null
   ;;
   newRelease)
      # pkg newRelease pkg flavor version release dist [cvs-status-file]
