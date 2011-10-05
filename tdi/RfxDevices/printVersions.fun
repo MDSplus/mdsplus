@@ -91,7 +91,21 @@ public fun printVersions()
     }
 	write(*, "MHD_BR version : ", _mhd_br_ver);
 
-    
+
+	_status = MdsConnect("150.178.34.15");
+    if(_status == 0)
+    {
+    	write(*, "Cannot connect to MHD_BR_I");
+		_mhd_br_i_ver = "Unknown";
+    }
+    else
+    {
+    	_mhd_br_i_ver = MdsValue("support->getMhdBrVersion:DSC()");
+		MdsDisconnect();
+    }
+	write(*, "MHD_BR_I version : ", _mhd_br_i_ver);
+
+
     return (1);
 }
 
