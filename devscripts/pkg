@@ -82,6 +82,26 @@ update_mdsplus()
   fi
 }
 
+newRelease()
+{
+# newRelease pkg flavor version release cvs-status-file
+ pkg=$1
+ flavor=$2
+ version=$3
+ release=$4
+ cvs_status=$5
+ pushd $rpmsdir/${flavor}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
+ tagversion=$(echo ${version} | awk -F. '{print $1 "-" $2}')
+ cvs status -v rpm/subpackages/${pkg} | grep 'pkgrel-${flavor}-${tagversion}-' | grep '-${REDHATDIST}' | awk '{system("cvs tag -d " $1 "rpm/subpackages/'${pkg}'");}'
+ tag="pkgrel-${flavor}-${tagversion}-${release}-${REDHATDIST}"
+ cvs -Q tag  -F $tag rpm/subpackages/${pkg}
+ for mod in $($0 list ${pkg} ${cvs_status})
+ do
+   cvs -Q tag -F $tag $mod
+ done
+ popd > /dev/null
+}
+
 case $1 in
   "")
   cat - <<EOF
@@ -282,7 +302,7 @@ EOF
     fi
     version=$($0 get_version $flavor $cvs_status)
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
-    release=$(awk '/subpackages\/'$pkg'/ {R="yes"} /pkgrel-'$flavor'-'$version'-[[:digit:]]-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $cvs_status)
+    release=$(awk '/subpackages\/'$pkg'/ {R="yes"} /pkgrel-'$flavor'-'$version'-([[:digit:]])+-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $cvs_status)
     if [ -z "$release" ]
     then
       release="0"
@@ -360,18 +380,6 @@ EOF
      done
      rm -f $cvs_status
      popd >/dev/null
-  ;;
-  newRelease)
-     # pkg newRelease pkg flavor version release dist [cvs-status-file]
-     # example: pkg newRelease camac stable 3.0 2 el5
-     pushd $rpmsdir/${3}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
-     tagversion=$(echo $4 | awk -F. '{print $1 "-" $2}')
-     cvs -Q tag  -F pkgrel-${3}-${tagversion}-${5}-${6} rpm/subpackages/$2
-     for mod in $($0 list $2 $7)
-     do
-       cvs -Q tag -F pkgrel-${3}-${tagversion}-${5}-${6} $mod
-     done
-     popd > /dev/null
   ;;
   promote)
      # pkg promote alpha|beta [major]
@@ -547,7 +555,7 @@ EOF
                then
                  echo "New Release: mdsplus${rpmflavor}-${pkg}-$version-${release}.${REDHATDIST}" >> $notify
                fi
-               $pkgcmd newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
+               newRelease "$pkg" "$flavor" "$version" "$release" "$cvs_status"
              else
                echo "$pkg does not seem to be a new release"
              fi
