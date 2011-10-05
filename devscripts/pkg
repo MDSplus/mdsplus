@@ -71,13 +71,13 @@ update_mdsplus()
   if [ -d mdsplus ]
   then
     cd mdsplus
-    cvs -Q update -d $1 -f
-    cvs -Q update -A devscripts/pkg
+    cvs -Q update -d -C $1 -f 2>/dev/null
+    cvs -Q update -A -C devscripts/pkg
     cd ..
   else
-    cvs -d /mdsplus/repos -Q checkout $1 -f mdsplus >/dev/null
+    cvs -d /mdsplus/repos -Q checkout $1 -f mdsplus >/dev/null 2>/dev/null
     cd mdsplus
-    cvs -Q update -A devscripts/pkg
+    cvs -Q update -A -C devscripts/pkg
     cd ..
   fi
 }
@@ -243,7 +243,7 @@ EOF
   get_cvs_status) #internal use
     dirn=$(dirname $0)
     cd $dirn/..
-    cvs -q status -Rv 2>/dev/null
+    cvs -q status -Rv 2>/dev/null | grep -v /Attic/
   ;;
   get_version) #internal use
     # pkg get_version flavor [cvs-status-file]
@@ -314,7 +314,7 @@ EOF
     then
       echo "RPM out of date: No release for this package, flavor and platform"
     else
-      update=$(awk '/Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$pkg'/ {IN_PACKAGE="yes";}
+      update=$(awk '/File:/ {F="";IN_PACKAGE="no";} /Repository revision/ {F=substr($4,24,length($4)-25);CURREV=$3} /pkg_'$pkg'/ {if (F != "") IN_PACKAGE="yes";}
  /'$release'/ {IN_RELEASE="yes"; RELREV=substr($3,0,length($3)-1)}
  /===/ {if (IN_PACKAGE=="yes") {
           if (IN_RELEASE != "yes") {
