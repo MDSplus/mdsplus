@@ -84,17 +84,18 @@ update_mdsplus()
 
 newRelease()
 {
-# newRelease pkg flavor version release cvs-status-file
+# newRelease pkg flavor version release dist cvs-status-file
  pkg=$1
  flavor=$2
  version=$3
  release=$4
- cvs_status=$5
+ dist=$5
+ cvs_status=$6
  pushd $rpmsdir/${flavor}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
  tagversion=$(echo ${version} | awk -F. '{print $1 "-" $2}')
- cvs status -v rpm/subpackages/${pkg} | grep 'pkgrel-${flavor}-${tagversion}-' | grep '-${REDHATDIST}' | awk '{system("cvs tag -d " $1 "rpm/subpackages/'${pkg}'");}'
- tag="pkgrel-${flavor}-${tagversion}-${release}-${REDHATDIST}"
- cvs -Q tag  -F $tag rpm/subpackages/${pkg}
+ cvs status -v rpm/subpackages/${pkg} | grep "pkgrel-${flavor}-${tagversion}-" | grep "-${dist}" | awk '{system("cvs tag -d " $1 " rpm/subpackages/'${pkg}'");}'
+ tag="pkgrel-${flavor}-${pkg}-${tagversion}-${release}-$dist"
+ cvs -Q tag  -F "$tag" rpm/subpackages/${pkg}
  for mod in $($0 list ${pkg} ${cvs_status})
  do
    cvs -Q tag -F $tag $mod
@@ -131,6 +132,9 @@ Usage: $0 pgkadd <module or directory (no wildcards)> <package-name>
           Generate a module package summary in text format.
       
 EOF
+  ;;
+  newRel)
+    newRelease "$2" "$3" "$4" "$5" "$6" "$7"
   ;;
   pkgadd)
     if [ ! -r `dirname $0`/../rpm/subpackages/$3 ]
@@ -203,19 +207,41 @@ EOF
        then
          tmpstatus=$(mktemp -t mdsplus-cvs-status.2.XXXXXXXXXX)
          $0 get_cvs_status > $tmpstatus
-         clean="yes"
+         clean="no"
        else
          tmpstatus=$3
          clean="no"
        fi
        echo "<head><title>MDSplus Packaging Information - Sources</title></head>"
        echo "<h2>Modules sorted by module name</h2>"
-       echo "<table border=\"1\"><tr><td><b>Module</b></td><td><b>Package(s)</b></td></tr>"
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=PKG substr($1,5) "<br/>"} /====/ {if (length(F) > 0 ) { if (length(PKG) == 0) PKG="None"; print "<tr><td>" F "</td><td><a href=\"#" PKG "\">" PKG "</a></td></tr>"}; F=""}' $tmpstatus | sort
+       echo "<table border=\"1\"><tr><td><b>Module</b></td><td><b>Package(s)</b></td><td><b>Release(s)</b></td></tr>"
+       echo $(awk '/File:/ {F="";PKG="";REL="";}
+                  /Repository revision/ { F=substr($4,24,length($4)-25);PKG=""}
+                   /pkg_/ {P=substr($1,5);
+                           PKG=PKG "<tr><td><a href=\"#" P "\">" P "</a></td></tr>"}
+                   /pkgrel-/ {A[0]="";
+                              split($1,A,"-");
+                              flavor=A[2];
+                              if (flavor == "stable") flavor=""; else flavor="-" flavor;
+                              version=A[3] "." A[4] "-" A[5] "." A[6];
+                              rpm="mdsplus" flavor "-PKG-" version
+                              href="<a href=\"http://www.mdsplus.org/repo/rh" A[6] "-" A[2] "/RPMS"
+                              REL=REL "<tr><td>" rpm "<td>" href "/x86_64/" rpm ".x86_64.rpm\">64-bit</a></td><td>" href "/i686/" rpm ".i686.rpm\">32-bit</a></td><td>" $2 "</td><td>" $3 "</td></tr>";
+                             }
+                   /====/ {
+                          if (length(F) > 0 ) {
+                            if (length(PKG) == 0) PKG="None"; 
+                            print "<tr><td>" F "</td><td><table>" PKG "</table></td><td><table>" gensub("PKG",P,"g",REL) "</table></td></tr>"}; 
+                            }' $tmpstatus | sort)
        echo "</table>"
        echo "<h2>Modules sorted by package name</hd>"
        echo "<table border=\"1\"><tr><td><b>Package</b></td><td><b>Module(s)</b></td></tr>"
-       awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} /pkg_/ {PKG=substr($1,5)} /====/ {if (length(F) > 0) { if (length(PKG) == 0) PKG="None"; print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
+       echo $(awk '/Repository revision/ {F=substr($4,24,length($4)-25);PKG=""} 
+                   /pkg_/ {PKG=substr($1,5)}
+                   /====/ {
+                     if (length(F) > 0) {
+                       if (length(PKG) == 0) PKG="None"; 
+                       print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
        echo "</table>"
        if [ "$clean" == "yes" ]
        then
@@ -302,7 +328,7 @@ EOF
     fi
     version=$($0 get_version $flavor $cvs_status)
     version=$(echo $version | awk '{v[0]=split($1,v,".");print v[1] "-" v[2]}')
-    release=$(awk '/subpackages\/'$pkg'/ {R="yes"} /pkgrel-'$flavor'-'$version'-([[:digit:]])+-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $cvs_status)
+    release=$(awk '/subpackages\/'$pkg'/ {R="yes"} /pkgrel-'$flavor'-'$pkg'-'$version'-([[:digit:]])+-'${REDHATDIST}'/ {if (R=="yes") {print $1;exit;}} /====/ {R="no"}' $cvs_status)
     if [ -z "$release" ]
     then
       release="0"
@@ -555,7 +581,7 @@ EOF
                then
                  echo "New Release: mdsplus${rpmflavor}-${pkg}-$version-${release}.${REDHATDIST}" >> $notify
                fi
-               newRelease "$pkg" "$flavor" "$version" "$release" "$cvs_status"
+               newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
              else
                echo "$pkg does not seem to be a new release"
              fi
@@ -597,8 +623,8 @@ EOF
     do
       if ( $0 makeRpms $flavor $msgfile >> $logfile 2>&1 )
       then
-        rsync -a $rpmsdir/${flavor}.${REDHATDIST}/RPMS ${repohost}:${repodir}/rh${REDHATDIST}-${flavor}
-        ssh ${repohost} "cd ${repodir}/rh${REDHATDIST}-${flavor}; createrepo RPMS" > /dev/null
+        pushd $rpmsdir/${flavor}.${REDHATDIST}
+        createrepo RPMS >/dev/null
       fi
     done
     if [ ! -z "$(cat $msgfile)" ]
