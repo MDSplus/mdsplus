@@ -1,0 +1,9 @@
+#!/bin/sh
+ps | grep postshot.sh | grep -v grep
+if [ ! $? ] 
+then 
+   echo "POST" 
+else 
+  cat /proc/driver/acq200/status/status 
+fi
+
