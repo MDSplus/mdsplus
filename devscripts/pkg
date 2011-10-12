@@ -623,8 +623,9 @@ EOF
     do
       if ( $0 makeRpms $flavor $msgfile >> $logfile 2>&1 )
       then
-        pushd $rpmsdir/${flavor}.${REDHATDIST}
+        pushd $rpmsdir/${flavor}.${REDHATDIST} > /dev/null
         createrepo RPMS >/dev/null
+	popd > /dev/null
       fi
     done
     if [ ! -z "$(cat $msgfile)" ]
