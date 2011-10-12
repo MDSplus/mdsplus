@@ -11,6 +11,7 @@ MitDevices
 """
 from Dt200WriteMaster import Dt200WriteMaster
 from acq196 import ACQ196
+from acq216 import ACQ216
 from acq196_ftp import ACQ196_FTP
 from acq216_ftp import ACQ216_FTP
 from cp7452 import CP7452
