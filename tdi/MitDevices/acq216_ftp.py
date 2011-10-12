@@ -14,8 +14,8 @@ class ACQ216_FTP(ACQ_FTP):
     D-Tacq ACQ216  16 channel transient recorder
     
     """
-
-    parts=ACQ_FTP.parts
+    from copy import copy
+    parts=copy(ACQ_FTP.acq_parts)
 
     for i in range(16):
 	parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})

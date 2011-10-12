@@ -23,15 +23,15 @@ class ACQ_FTP(MDSplus.Device):
     
     """
     
-    parts=[
+    acq_parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254'},
         {'path':':COMMENT','type':'text'},
         ]
 
     for i in range(6):
-        parts.append({'path':':DI%1.1d'%(i,),'type':'axis','options':('no_write_shot',)})
-        parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
-        parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
+        acq_parts.append({'path':':DI%1.1d'%(i,),'type':'axis','options':('no_write_shot',)})
+        acq_parts.append({'path':':DI%1.1d:WIRE'%(i,),'type':'text','options':('no_write_shot',)})
+        acq_parts.append({'path':':DI%1.1d:BUS'%(i,),'type':'text','options':('no_write_shot',)})
 
 
     parts2=[
@@ -53,7 +53,7 @@ class ACQ_FTP(MDSplus.Device):
         {'path':':BOARD_STATUS','type':'signal','options':('write_shot',)},
         {'path':':CLOCK','type':'axis','options':('no_write_model','write_once')},
         ]
-    parts.extend(parts2)
+    acq_parts.extend(parts2)
     del parts2
 
     clock_parts=[
