@@ -1,0 +1,8 @@
+#!/bin/sh
+fname=""
+read fname
+until [ "$fname" = "" -o "$fname" = "done" ]
+do
+  dd if=$fname 2> /dev/null
+  read fname
+done
