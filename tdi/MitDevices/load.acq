@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# file: load.acq
+#
+# unpack /bigffs/mdsacqkit.tgz into /ffs/user
+# move the scripts to /usr/local/bin
+# append acq_inetd.conf to /etc/inetd
+#
+cd /ffs/user
+tar -xzf /bigffs/mdsacqkit.tgz
+mv xmlfunctions.sh doInit.sh get.State sendFile /usr/local/bin
+cat acq_inetd.conf >> /etc/inetd.conf
