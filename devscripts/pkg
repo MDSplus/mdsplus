@@ -592,7 +592,7 @@ EOF
      rm -f $cvs_status
      buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
      spec=$(dirname $0)/../rpm/repos.spec
-     if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
+     if ! ( rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec >/dev/null )
      then
        if [ ! -z "$notify" ]
        then
@@ -600,7 +600,7 @@ EOF
        fi
        status="error"
      fi
-     if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec )
+     if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec >/dev/null )
      then
        if [ ! -z "$notify" ]
        then
