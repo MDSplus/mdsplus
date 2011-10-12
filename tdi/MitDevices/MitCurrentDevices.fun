@@ -1,6 +1,8 @@
 FUN  PUBLIC MitCurrentDevices() {
   return([
+        'ACQ132\0',      'MitDevices\0',
         'ACQ196\0',      'MitDevices\0',
+        'ACQ216\0',      'MitDevices\0',
         'ACQ196_FTP\0',  'MitDevices\0',
         'ACQ216_FTP\0',  'MitDevices\0',
 	'CP7452\0',      'MitDevices\0',
