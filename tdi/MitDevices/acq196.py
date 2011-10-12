@@ -355,6 +355,7 @@ class ACQ196(ACQ):
                         exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
                     except Exception, e:
                         print "error processingig channel %d\n%s\n" %(chan+1, e,)
+	self.dataSocketDone()
 	return 1
 
     STORE=store

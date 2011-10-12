@@ -4,6 +4,7 @@ import numpy
 import array
 import ftplib
 import tempfile
+import socket
 from xml.marshal.generic import dumps, loads, load 
 
 import MDSplus
@@ -61,7 +62,7 @@ class ACQ(MDSplus.Device):
 
     action_parts=[
         {'path':':INIT_ACTION','type':'action',
-         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INITFTP',head))",
+         'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INITFTP',head,'auto'))",
          'options':('no_write_shot',)},
         {'path':':STORE_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAITFTP',head))",
@@ -69,6 +70,7 @@ class ACQ(MDSplus.Device):
 
 
     debug=None
+    data_socket = -1
 
     wires = [ 'fpga','mezz','rio','pxi','lemo', 'none', 'fpga pxi', ' ']
     
@@ -94,29 +96,34 @@ class ACQ(MDSplus.Device):
             raise Exception, "boardid record empty"
         return boardip
 
+    def dataSocketDone(self):
+	self.data_socket.send("done\n");
+	self.data_socket.shutdown(socket.SHUT_RDWR)
+	self.data_socket.close()
+	self.data_socket=-1
+
     def readRawData(self, chan, pre, start, end, inc) :
-        import pycurl
-        import cStringIO
-        try:
-            if self.debugging():
-                print "starting readRawData\n"
-            c=pycurl.Curl()
-            c.setopt(pycurl.HTTPHEADER,["Accept:"])
-            buf=cStringIO.StringIO()
-            c.setopt(pycurl.URL,"http://%s/dev/acq200/data/%02d" % (self.getBoardIp(), chan,))
-            c.setopt(pycurl.WRITEFUNCTION,buf.write)
-            c.perform()
-            binValues = array.array('H')
-            binValues.fromstring(buf.getvalue())
+	if self.debugging():
+	    print " starting readRawData for channel %d\n" %(chan,)
+	try:
+	    if self.data_socket == -1 :
+                self.data_socket = socket.socket()
+                self.data_socket.connect((self.getBoardIp(), 54547))
+	    self.data_socket.settimeout(10.)
+            self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
+            buf = self.data_socket.recv(2*(end+pre-1), socket.MSG_WAITALL)
+	    if self.debugging():
+		print "  asked for %d got %d\n" % (2*(end+pre-1), len(buf),) 
+            binValues = array.array('h')
+            binValues.fromstring(buf)
             if inc == 1:
                 ans = numpy.array(binValues[pre+start:end-start-1], dtype=numpy.int16)
             else :
                 ans = numpy.array(binValues[pre+start:end-start-1:inc], dtype=numpy.int16)
-        except Exception,e :
-           print "readRawData - %s" % e
-           raise e
+	except Exception, e:
+	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
+	    raise e
         return ans
-
 
     def timeoutHandler(self,sig,stack):
         raise Exception("Timeout occurred")
@@ -143,7 +150,7 @@ class ACQ(MDSplus.Device):
 
         s=socket.socket()
 	try:
-            s.connect((self.getBoardIp()),54545)
+            s.connect((self.getBoardIp(),54545))
             hostip = s.getsockname()[0]
 	except Exception,e:
 	    hostip = ""
