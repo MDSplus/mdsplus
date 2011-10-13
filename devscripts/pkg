@@ -243,7 +243,7 @@ EOF
                    /====/ {
                      if (length(F) > 0) {
                        if (length(PKG) == 0) PKG="None"; 
-                       print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort
+                       print "<tr><td><a href=\"#" PKG "\">" PKG "</a></td><td>" F "</td></tr>"}; F=""}' $tmpstatus | sort)
        echo "</table>"
        if [ "$clean" == "yes" ]
        then
