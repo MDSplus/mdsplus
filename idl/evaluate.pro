@@ -1,4 +1,4 @@
-; @(#)evaluate.pro	1.16 09/15/11
+; @(#)evaluate.pro	1.25 10/10/11
 ;******************************************************************************
 ;FILE: evaluate.pro
 ;
@@ -17,9 +17,42 @@
 ;   errstr = evaluate('3.4*20/56',result)
 ;   errstr = evaluate('d=3.4*20/56'[,result])
 ;
+;Some things that this function can do.
+; Simple arithmetic operators: +, -, *, /, ^.
+; Any expressions with parantheses.
+; Most strings and string concatenation.
+; Ending letters to specify bytes and longs like "20B", "34L".
+; Array concatenation like "[[1,2,1], [2,4,2], [1,2,1]]".
+;
+; Multi-dimensional arrays are handled as are simple structures and 
+; structure arrays.
+;
+; System variables can be created and set, but known system variables can
+; not be set unless the result is exactly the same type.
+;
+; Functions and procedures can be called but currently keywords cannot
+; be passed.
+;
+;Some things that this function cannot do.
+; Cannot evaluate "where", "if", "for", "while" expressions.
+; Cannot evaluate boolean operators (like "and").
+; Cannot evaluate relational operators (like "eq").
+; Cannot evaluate minimum operator "<" or maximum operator ">".
+; Cannot evaluate matrix multiplication operators "#" and "##".
+; Cannot handle the syntax used by complex numbers.
+; Cannot handle the syntax for hex and octal numbers or UL, LL, or ULL.
+;
 ;TODO:
-;handle hex and octal numbers
-;allow for int's (currently all integers are considered longs unless B follows)
+;Handle hex and octal numbers and allow for UL, LL, and ULL
+;Allow for int's (currently all integers are considered longs unless B follows)
+;Handle getting and setting of object fields
+;Handle passing of keywords in the expression by creating a structure extra
+;and passing it with _EXTRA=extra.
+;
+;Known problems:
+;Functions and procesures that expect an argument to exist will give a traceback
+;since the assumption here is that the argument will be set.  For example,
+;"print,a" gives a traceback if a is undefined
 ;
 ;------------------------------------------------------------------------------
 ;Modifications:
@@ -88,6 +121,7 @@ common evaluate_common,vars,dbug
       if(strmid(varname,0,1) eq '!') then begin
          defsysv,varname,value
       endif else begin
+         if(n_elements(value) gt 0) then $
          (scope_varfetch(varname,/enter,level=level)) = value
       endelse
    endif else begin
@@ -109,7 +143,9 @@ common evaluate_common,vars,dbug
       tmp.(a) = value
       if(!ERROR ne 0) then begin
          errstr = !ERR_STRING
-         if(nparams eq 2) then stop
+         if(nparams eq 2) then begin
+            print,forced_stop1
+         endif
          return
       endif
       (scope_varfetch(v,/enter,level=level)) = tmp
@@ -157,7 +193,7 @@ common evaluate_common,vars,dbug
             endif else begin
                if(strpos(output,"->") ne -1) then begin
                   value = scope_varfetch(varname) ;can't get system vars
-                  stop
+                  print,forced_stop2
                endif
                n = strpos(svalue,".")
                if(n ne -1) then begin
@@ -471,6 +507,7 @@ if( evaluate_isalnum(expression,location,1) ) then begin
    endwhile
    goto,next
 endif
+
 if(dbug eq 1) then print,string(expression),location
 if( expression[location] ) then begin
    token[ntoken] = expression[location]
@@ -479,6 +516,11 @@ if( expression[location] ) then begin
    if(dbug eq 1) then print,'gettoken: syntax error in '+string(token)
    goto,next
 endif
+
+token[ntoken] = expression[location]
+if(dbug eq 1) then print,'gettoken: return with type=',type,' "'+string(token)+'"'
+return
+
 next:
 while( evaluate_iswhite(expression,location) ) do location = location + 1
 token = token[0:ntoken-1]
@@ -775,7 +817,7 @@ end
 
 function evaluate_do_procedure,name,type,expression,location,$
          token,ntoken,result
-forward_function evaluate_level1,evaluate_getvalue,evaluate_setvalue
+forward_function evaluate_level1,evaluate_getvalue
 forward_function evaluate_isdelim2
 common evaluate_common,vars,dbug
 
@@ -832,6 +874,9 @@ common evaluate_common,vars,dbug
            n = n + 1
            if((n lt 10) and (token[0] eq byte(','))) then goto,loop1
 
+;Call the procedure, passing the arguments.
+;Note: this can lead to errors if a variable is undefined and it needs to
+;be defined, for example, if the procedure is "print".
 nomore_args:
        evaluate_gettoken,expression,location,type,token,ntoken
        case n of
@@ -883,7 +928,7 @@ end
 
 function evaluate_do_function,name,type,expression,location,$
          token,ntoken,result
-forward_function evaluate_level1,evaluate_getvalue,evaluate_setvalue
+forward_function evaluate_level1,evaluate_getvalue
 forward_function evaluate_isdelim2,evaluate_do_procedure
 common evaluate_common,vars,dbug
 
@@ -985,7 +1030,7 @@ func_done:
     endif
 
     if(evaluate_getvalue(string(token),result) eq 0) then begin
-       procedures = ['PRINT','SPAWN','RESOLVE_ROUTINE',routine_info()]
+       procedures = ['PRINT','SPAWN','RESOLVE_ROUTINE',routine_info(),'PLOT']
        name = strupcase(token)
        a = where(procedures eq name,count)
        if(count eq 0) then return,"Unknown variable3: "+name
@@ -1076,7 +1121,7 @@ top:
 
 ;at this point the token should be a number
 
-    if(type eq 'NUMBER') then begin
+    if(type eq 'NUMBER' or type eq 'STRING') then begin
        errstr = evaluate_level1(type,expression,location,token,ntoken,r1)
        if(errstr ne "OK") then return,errstr
        if(total(dims) eq 0.0) then result = r1 else result = [result,r1]
@@ -1089,7 +1134,7 @@ top:
     endif
 
     print,'unexpected token: '+string(token)
-    print,forced_stop
+    print,forced_stop3
 
 do_return:
     if(level eq 0) then begin
@@ -1352,8 +1397,8 @@ common evaluate_common,vars,dbug
              if(type eq 'VARIABLE') then begin
                 tag = strupcase(string(token))
              endif else begin
-                print,'stopping0: type='+type
-                stop
+                print,'stopping: type='+type
+                print,forced_stop4
              endelse
           endif
           expr = expression[0:strpos(expression,'=')-1]
@@ -1394,6 +1439,9 @@ common evaluate_common,vars,dbug
            var = strupcase(string(token))
            evaluate_gettoken,expression,location,type,token,ntoken ;'='
            evaluate_gettoken,expression,location,type,token,ntoken
+           if(type eq 'NONE') then begin
+               return,'Illegal character at "'+string(token)+'"'
+           endif
            if(ntoken eq 0) then begin
                evaluate_clearvar,var
                if(dbug eq 1) then print,'level1 return1 OK ',result
@@ -1541,7 +1589,7 @@ end
 ; -1 - just print the input expression
 ; any other - print the input expression and the return string value
 
-function evaluate,expr_in,result,debug=debug
+function evaluate,expr_in,result,debug=debug,quiet=quiet
 forward_function evaluate_level1,evaluate_strchar
 common evaluate_common,vars,dbug
 common evaluate_test_common,t,d,aa
@@ -1574,8 +1622,9 @@ if(ampersand ne -1) then begin
    endif
    if(index(0) eq -1) then index = ampersand $
    else index = [index,ampersand+start]
-   expr = strtrim(strmid(expr,ampersand+1),2)
-   start = ampersand + start
+   expr = strmid(expr,ampersand+1)
+   start = ampersand + start + 1
+   expr = strmid(expr_copy,start)
    if(expr gt '') then goto,loop
 endif
 loop_done:
@@ -1583,10 +1632,10 @@ if(index(0) ne -1) then begin
    expr = strarr(n_elements(index)+1)
    start = 0L
    for i=0L,n_elements(index)-1 do begin
-       expr(i) = strmid(expr_copy,start,index(i))
+       expr(i) = strtrim(strmid(expr_copy,start,index(i)-start-1),2)
        start = index(i) + 1
    endfor
-   expr(i) = strmid(expr_copy,start)
+   expr(i) = strtrim(strmid(expr_copy,start),2)
 endif
 
 for i=0, n_elements(expr)-1 do begin
@@ -1624,14 +1673,16 @@ for i=0, n_elements(expr)-1 do begin
         if(location lt n_elements(expression)) then $
            errstr = "Syntax error9 at '"+string(expression[location:*])+"'" $
         else errstr = "Syntax error9"
-print,garb
-        goto,done
+        if(not keyword_set(quiet)) then begin
+           print,forced_stop5
+        endif
     endif
 endfor
 errstr = "OK"
 
 done:
-if(dbug gt 0 or (errstr ne "OK")) then print,'*** '+errstr
+if(dbug gt 0) then print,'*** '+errstr
+if((errstr ne "OK") and (not keyword_set(quiet))) then print,'*** '+errstr
 return,errstr
 
 empty:
@@ -1759,6 +1810,12 @@ a = evaluate("aa[[4]]=[67,68]",debug=-1)
 print
 print,'should give error: subscript -1 out of range
 a = evaluate("aa[-1,20]=70",debug=-1)
+
+;try setting array of strings
+a = evaluate('BB=["Surface","Contour","Image","ZvsX","ZvsY","Grid"]',debug=-1)
+help,bb
+for i=0,n_elements(bb)-1 do print,bb(i)
+
 end
 
 pro evaluate_test

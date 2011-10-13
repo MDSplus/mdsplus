@@ -45,11 +45,6 @@
 ;-
 
 
-function MdsValue_with_socket,expression,socket
-forward_function mdsvalue
-return,MdsValue(expression,socket=socket)
-end
-
 function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,quiet=quiet,status=status,socket=socket
 
   forward_function mdsIsClient,mdsIdlImage,mds$socket,MdsRoutinePrefix,MdsIPImage,MdsGetAnsFN,evaluate

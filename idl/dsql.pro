@@ -128,7 +128,7 @@ function dsql, $
                date=date, quiet=quiet, status=status, count=count, $
                error=error, debug=debug, nan=nan, _extra=ex
 
-forward_function evaluate,mdsvalue,mdsvalue_with_socket
+forward_function evaluate,mdsvalue
 
 query = lquery
 status = 1
@@ -231,6 +231,7 @@ if (debug) then $
 ; !!!  if it is a string it is a database error
 ;
 count = mdsvalue(expr, socket=!MDSDB_SOCKET)
+
 sz = size(count)
 if (sz(n_elements(sz)-2) eq 7) then begin
 
@@ -253,9 +254,9 @@ endif else begin
         if (debug) then $
           print, 'Working on arg ', i
         arg = 'a'+string(i, format="(I3.3)")
-        socket = !MDSDB_SOCKET
-        cmd = arg+' = MDSVALUE_WITH_SOCKET("_'+arg+'",socket)'
-        status = evaluate(cmd)
+        val = MDSVALUE("_"+arg,socket=!MDSDB_SOCKET,/QUIET)
+        ok = evaluate(arg + ' = val')
+        if (ok eq "OK") then status = 1L else status = 0L
         if (debug) then $
           print, "got back "+arg
 ;
@@ -263,17 +264,19 @@ endif else begin
 ; out the delimiters (1b)
 ;
 		cmd = 'sz = size('+arg+')'
-		status = evaluate(cmd)
+		ok = evaluate(cmd)
+                if (ok eq "OK") then status = 1L else status = 0L
 		if (sz(n_elements(sz)-2) eq 7) then begin
 		  cmd = arg+' = BreakupStringAnswer('+arg+',count)'
-		  status = evaluate(cmd)
+		  ok = evaluate(cmd)
+                  if (ok eq "OK") then status = 1L else status = 0L
 		endif
     endfor
 ;
 ; free all the tdi variables returned by DSQL
 ;
     if (not debug) then $
-      dummy = MdsValue("DeAllocate('_A%%%')",socket=!MDSDB_SOCKET)
+      dummy = MdsValue("DeAllocate('_A%%%')",socket=!MDSDB_SOCKET,/QUIET)
 ;
 ; return the number of row
 ;
