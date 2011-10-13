@@ -531,6 +531,10 @@ EOF
            then
 	     echo "RPM $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Creating it."
 	     eval ${pkg}_update="yes"
+	   elif ! (ls $rpmdir/RPMS/i686/mdsplus${rpmflavor}-${pkg}-${version}-${release}* > /dev/null 2>&1)
+           then
+	     echo "RPM $rpmdir/RPMS/i686/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Creating it."
+	     eval ${pkg}_update="yes"
            fi
            eval ${pkg}_release=$release
            eval update=\$${pkg}_update
