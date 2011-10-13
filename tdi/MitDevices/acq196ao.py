@@ -19,7 +19,7 @@ class ACQ196AO(ACQ):
     parts2=[
         {'path':':AO_CLOCK','type':'numeric','valueExpr':'head.di0','options':('no_write_shot',)},
         {'path':':AO_TRIG','type':'numeric','valueExpr':'head.di3','options':('no_write_shot',)},
-        {'path':':FWAG_DIV','type':'numeric','value':1,'options':('no_write_shot',)},
+        {'path':':FAWG_DIV','type':'numeric','value':1,'options':('no_write_shot',)},
         {'path':':CYCLE_TYPE','type':'text','value':'ONCE','options':('no_write_shot',)},
         {'path':':TRIG_TYPE','type':'text','value':'HARD_TRIG','options':('no_write_shot',)},
         {'path':':MAX_SAMPLES','type':'numeric','value':16384,'options':('no_write_shot',)},
@@ -51,9 +51,8 @@ class ACQ196AO(ACQ):
 #            and then removed
 #
     def doAOInit(self,fd):
-        import tempfile
-        import time
         """Tell the board to arm"""
+        import ftplib
         if self.debugging():
 	    print "starting doInit"
         status=1
@@ -65,14 +64,17 @@ class ACQ196AO(ACQ):
             print "Error sending arm commands via ftp to %s\n%s\n" % (self.getBoardIp(), e,)
             return
 
-    def fit(self, x, y, newx, type):
+    def doFit(self, x, y, newx, type):
         import scipy.interpolate
         fitfun = scipy.interpolate.interp1d(x,y, bounds_error=False, fill_value=0.0, kind=type.lower()) 
         return fitfun(newx)
     
     def init(self, auto_store=None):
-        import ftplib
+        import tempfile
+        import time
         import uu
+        import MDSplus
+        import StringIO
         """
         Initialize the device
         Send parameters
@@ -89,37 +91,36 @@ class ACQ196AO(ACQ):
             shot = self.tree.shot
 
             message = "max_samples must be a postiive integer"
-            max_samples(int(self.max_samples))
+            max_samples = int(self.max_samples)
             if max_samples < 0 :
-                print message
-                return 0
+                raise Exception(message)
             msg="Could not read clock source"
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=self.ao_clock.record.getOriginalPartName().getString()[1:]
             msg="Clock must be filled in with valid Range value"
-            clock = self.__getattr__(str(self.clock_src.record).lower())
-
+            clock = self.__getattr__(clock_src.lower())
+            if self.debugging():
+                print "clock source is %s clock is %s\n"%(clock_src, clock,)
             msg="Could not read trigger source"
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=self.ao_trig.record.getOriginalPartName().getString()[1:]
+            msg="Trigger time must be defined  at init time"
+            trigger = self.__getattr__(trig_src.lower())
             msg="FAWG_DIV must be a postive integer"
             fawg_div = int(self.fawg_div)
             if fawg_div <= 0:
-                print msg
-                return 0
+                raise Exception(message)
             message = "Could not retrieve the slope from the specified clock"
-            slope = clock.getDelta()*fawg_div
+            slope = clock.record.getDelta()*fawg_div
 
             msg="Could not read cycle type"
-            cycle_type = str(self.cycle_type)
+            cycle_type = str(self.cycle_type.record)
             if cycle_type not in self.cycle_types :
-                print "cycle type must be one of %s\n" % (self.cycle_types,)
-                return 0
+               raise Exception("cycle type must be one of %s\n" % (self.cycle_types,))
             msg="Could not read trigger type"
-            trig_type = str(self.trig_type)
+            trig_type = str(self.trig_type.record)
             if trig_type not in self.trig_types :
-                print "Trigger type must be one of %s\n" % (self.trig_types,)
-                return 0
-
-            dim = Dimension(Window(0, max_samples-1, trigger), Range(None, None, slope))
+               raise Exception("trigger type must be one of %s\n" % (self.trig_types,))
+            msg = "Error constructing output timebase"
+            dim = MDSplus.Dimension(MDSplus.Window(0, max_samples-1, trigger), MDSplus.Range(None, None, slope)).data()
 
             msg = "Error writing initialization file"
 
@@ -138,31 +139,43 @@ class ACQ196AO(ACQ):
             for chan in range(16):
                 if self.debugging():
                     print "working on channel %d" % chan
-                chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
+                chan_node = self.__getattr__('output_%2.2d' % (chan+1,))
                 if chan_node.on :
                     if self.debugging():
                         print "it is on so ..."
-                try:
-                    sig = chan_node.record
-                    knots_x = sig.dim_of().data()
-                    knots_y = sig.data()
-                    fit = str(chan_node.getNode('fit').record)
-                    s = 1
-                    if  fit not in self.fits:
-                        raise Exception( "Error reading Fit for channel %d\n" %(chan+1,))
-                except Exception,e:
-                    print "Error on channel %d - ZEROING\n%s\n" %(e,)
+                    try:
+                        sig = chan_node.record
+                        knots_x = sig.dim_of().data()
+                        knots_y = sig.data()
+                        fit_type = str(chan_node.getNode('fit').record)
+                        if  fit_type not in self.fits:
+                            raise Exception( "Error reading Fit for channel %d\n" %(chan+1,))
+                    except Exception,e:
+                        print "Error on channel %d - ZEROING\n%s\n" %(e,)
+                        knots_x = [0.0, 1.0]
+                        knots_y = [0.0, 0.0]
+                        fit_type='LINEAR'
+                else:
+                    if self.debugging():
+                        print "   it is off so Zeroing\n"
                     knots_x = [0.0, 1.0]
                     knots_y = [0.0, 0.0]
-                    fit='LINEAR'
-                
-                wave=self.fit(knots_x, knots_y, dim, fit_type)
+                    fit_type='LINEAR'
+                if self.debugging():
+                    print "  call the fit\n"
+                wave=self.doFit(knots_x, knots_y, dim, fit_type)
+                if self.debugging():
+                    print "  have the fit now subscript and scale"
                 if len(wave) > max_samples:
                     wave = wave[0:max_samples-1]
-                wave = int(wave/10.*2^15)
+                wave = wave/10.*2**15
+                wave = wave.astype(int)
                 uuinfd = StringIO.StringIO(wave)
-                fd.write("cat - <<EOF | uudecode /dev/stdout > /dev/acq196/AO/%2.2d\n" % (chan + 1,))
-                uu.encode( uuinfd, fd)
+                outname = "/dev/acq196/AO/%2.2d\n" % (chan + 1,)
+                fd.write("cat - <<EOF | uudecode /dev/stdout > %s\n" % (outname,))
+                if self.debugging():
+                    print "   ready to uuencode"
+                uu.encode( uuinfd, fd, outname)
                 fd.write("EOF\n")
 
             fd.write("set.ao_clk %s rising\n" %(clock_src,))
