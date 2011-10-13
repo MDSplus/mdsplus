@@ -9,4 +9,4 @@
 # contents in the right places.  It should be placed in /ffs/user and invoked by 
 # /ffs/user/rc.user
 #
-tar -czf mdsacqkit.tgz xmlfunctions.sh doInit.sh get.State sendFile acq_inetd.conf load.acq
+tar -czf mdsacqkit.tgz xmlfunctions.sh doInit.sh get.State sendFile acq_inetd.conf acq.ao.zero load.acq

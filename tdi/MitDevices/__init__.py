@@ -12,6 +12,7 @@ MitDevices
 from Dt200WriteMaster import Dt200WriteMaster
 from acq132 import ACQ132
 from acq196 import ACQ196
+from acq196ao import ACQ196AO
 from acq216 import ACQ216
 from acq196_ftp import ACQ196_FTP
 from acq216_ftp import ACQ216_FTP

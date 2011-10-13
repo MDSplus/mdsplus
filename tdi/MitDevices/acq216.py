@@ -2,10 +2,8 @@ from acq import ACQ
 
 import tempfile
 import time
-import os
 import numpy
 import array
-import ftplib
 
 import MDSplus
 
