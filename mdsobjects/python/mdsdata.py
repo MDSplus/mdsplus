@@ -598,6 +598,24 @@ class Data(object):
             raise TypeError,'Value not a scalar, %s' % str(type(self))
         return ans
 
+    def getFloatArray(self):
+        """Convert this data into a float32. Implemented at this class level by returning TDI
+        data(F_FLOAT(this)).If data() fails or the returned class is not scalar,
+        generate an exception.
+        @rtype: Float32
+        """
+        ans=Data.execute('float($)',self)
+        return ans
+
+    def getDoubleArray(self):
+        """Convert this data into a float64. Implemented at this class level by returning TDI
+        data(FT_FLOAT(this)). If data() fails or the returned class is not scalar,
+        generate an exception.
+        @rtype: Float64
+        """
+        ans=Data.execute('ft_float($)',self)
+        return ans
+
     def getShape(self):
         """Get the array dimensions as an integer array. It is implemented at this class
         level by computing TDI expression SHAPE(this). If shape fails an exception is
