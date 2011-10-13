@@ -221,12 +221,14 @@ EOF
                            PKG=PKG "<tr><td><a href=\"#" P "\">" P "</a></td></tr>"}
                    /pkgrel-/ {A[0]="";
                               split($1,A,"-");
-                              flavor=A[2];
-                              if (flavor == "stable") flavor=""; else flavor="-" flavor;
-                              version=A[3] "." A[4] "-" A[5] "." A[6];
-                              rpm="mdsplus" flavor "-PKG-" version
-                              href="<a href=\"http://www.mdsplus.org/repo/rh" A[6] "-" A[2] "/RPMS"
-                              REL=REL "<tr><td>" rpm "<td>" href "/x86_64/" rpm ".x86_64.rpm\">64-bit</a></td><td>" href "/i686/" rpm ".i686.rpm\">32-bit</a></td><td>" $2 "</td><td>" $3 "</td></tr>";
+                              if (length(A) == 7 ) {
+                                flavor=A[2];
+                                if (flavor == "stable") flavor=""; else flavor="-" flavor;
+                                version=A[4] "." A[5] "-" A[6] "." A[7];
+                                rpm="mdsplus" flavor "-" A[3] "-" version
+                                href="<a href=\"http://www.mdsplus.org/repo/rh" A[7] "-" A[2] "/RPMS"
+                                REL=REL "<tr><td>" rpm "<td>" href "/x86_64/" rpm ".x86_64.rpm\">64-bit</a></td><td>" href "/i686/" rpm ".i686.rpm\">32-bit</a></td><td>" $2 "</td><td>" $3 "</td></tr>";
+                               }
                              }
                    /====/ {
                           if (length(F) > 0 ) {
