@@ -1,0 +1,18 @@
+%package hdf5
+Summary: MDSplus/HDF5 integration
+Group: Applications/Acquisition
+Release: --RELEASE--
+
+%description hdf5
+MDSplus/HDF5 integration
+
+%files hdf5
+/usr/local/mdsplus/lib*/libhdf5*
+/usr/local/mdsplus/tdi/hdf5
+
+%post hdf5
+ldconfig >/dev/null 2>&1
+
+%postun hdf5
+ldconfig >/dev/null 2>&1
+
