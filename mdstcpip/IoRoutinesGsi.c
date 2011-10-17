@@ -12,7 +12,6 @@
 #include <errno.h>
 #include <config.h>
 #include <time.h>
-#include <stropts.h>
 #include <sys/wait.h>
 
 static ssize_t gsi_send(int conid, const void *buffer, size_t buflen, int nowait);
