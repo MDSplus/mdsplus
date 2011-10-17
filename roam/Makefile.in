@@ -70,7 +70,7 @@ install:
 	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @MAKESHLIBDIR@libRoam@SHARETYPE@
 
 makefile-header:  
-	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@ globus_xio globus_gridmap_callout_error > makefile-header
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_gridmap_callout_error > makefile-header
 
 @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
