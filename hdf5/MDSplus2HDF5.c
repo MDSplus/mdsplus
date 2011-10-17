@@ -14,6 +14,8 @@
 	This program will open the tree specified on the command line 
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "mds_stdarg.h"
 #include "mdsdescrip.h"
 #include "treeshr.h"

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
