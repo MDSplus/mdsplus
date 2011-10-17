@@ -8,7 +8,7 @@ Support for secure MDSplus and Fusiongrid
 
 %files gsi
 /usr/local/mdsplus/lib*/libRoam*
-/usr/local/mdsplus/lib*/libMdsIpGsi*
+/usr/local/mdsplus/lib*/libMdsIpGSI*
 /usr/local/mdsplus/bin*/roam_check_access
 /usr/local/mdsplus/bin*/mdsipsd
 /usr/local/mdsplus/tdi/roam

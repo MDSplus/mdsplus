@@ -60,7 +60,7 @@ Core applications, libraries and configuration files
 %exclude /usr/local/mdsplus/tdi/roam
 
 %exclude /usr/local/mdsplus/lib*/libRoam*
-%exclude /usr/local/mdsplus/lib*/libMdsIpGsi*
+%exclude /usr/local/mdsplus/lib*/libMdsIpGSI*
 %exclude /usr/local/mdsplus/bin*/roam_check_access
 %exclude /usr/local/mdsplus/bin*/mdsipsd
 
