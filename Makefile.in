@@ -99,7 +99,7 @@ RELEASE:
 RPM :
 	devscripts/MakeRpm
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
 
 install: 
 	devscripts/mkdirhier @exec_prefix@/local/tdi
