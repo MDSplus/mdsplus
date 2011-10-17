@@ -1,0 +1,21 @@
+%package gsi
+Summary: Support for secure MDSplus and Fusiongrid
+Group: Applications/Acquisition
+Release: --RELEASE--
+
+%description gsi
+Support for secure MDSplus and Fusiongrid
+
+%files gsi
+/usr/local/mdsplus/lib*/libRoam*
+/usr/local/mdsplus/lib*/libMdsIpGsi*
+/usr/local/mdsplus/bin*/roam_check_access
+/usr/local/mdsplus/bin*/mdsipsd
+/usr/local/mdsplus/tdi/roam
+
+%post gsi
+ldconfig >/dev/null 2>&1
+
+%postun gsi
+ldconfig >/dev/null 2>&1
+

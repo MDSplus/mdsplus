@@ -14,6 +14,9 @@ Support for MIT Data acquisition devices
 
 %post mitdevices
 ldconfig >/dev/null 2>&1
+pushd $RPM_INSTALL_PREFIX/mdsplus/tdi/MitDevices
+python setup.py install
+popd
 
 %postun mitdevices
 ldconfig >/dev/null 2>&1
