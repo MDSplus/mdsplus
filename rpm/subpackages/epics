@@ -1,0 +1,11 @@
+%package epics
+Summary: MDSplus/EPICS integration
+Group: Applications/Acquisition
+Release: --RELEASE--
+
+%description epics
+MDSplus/EPICS integration
+
+%files epics
+/usr/local/mdsplus/epics
+

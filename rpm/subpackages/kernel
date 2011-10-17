@@ -64,6 +64,8 @@ Core applications, libraries and configuration files
 %exclude /usr/local/mdsplus/bin*/roam_check_access
 %exclude /usr/local/mdsplus/bin*/mdsipsd
 
+%exclude /usr/local/mdsplus/epics
+
 %post kernel
 if [ -d /etc/ld.so.conf.d ]
 then
