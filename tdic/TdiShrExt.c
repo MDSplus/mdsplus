@@ -411,7 +411,6 @@ struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)  /**** NOTE:
 #endif
    }
    if (!status & 1) {
-     rMdsDisconnect(0);
      MdsFree1Dx(&ans_xd,0);
      } else
    {
