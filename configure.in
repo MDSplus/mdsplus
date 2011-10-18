@@ -1051,7 +1051,6 @@ math/svign.f
 math/svrgn.f
 math/umach.f 
 mdsdcl/Makefile 
-mdsip_xio/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
 mdsobjects/cpp/Makefile
