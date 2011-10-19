@@ -27,11 +27,17 @@
 #             pkg list NONE  (lists all modules not in any package)
 #             pkg list ALL   (lists all modules and the package(s) they are in)
 #
-# get_release: Get current rpm release of an rpm subpackage
+# get_release_tag: Get current rpm release tag of an rpm subpackage
+#
+#   Usage:    pkg get_release_tag package-name flavor
+#   examples: pkg get_release_tag camac stable
+#             pkgrel-stable-camac-3-0-2-el5
+#
+# get_release: Get current release number of a subpackage
 #
 #   Usage:    pkg get_release package-name flavor
 #   examples: pkg get_release camac stable
-#             pkgrel-stable-3-0-2-el5
+#             2
 #
 # check_release: Check to see if rpm is up to date
 #
@@ -311,11 +317,11 @@ EOF
       rm -f $cvs_status
     fi
   ;;
-  get_release)
-    # pkg get_release package-name flavor [cvs status filename]
-    # prints current release for a package release for the specified flavor and platform distribution
-    # rpm/subpackages/package-name will normally have a tag: pkgrel-flavor-versionMajor-versionMinor-release-platform
-    # for example: pkgrel-stable-3-0-2-rhel5
+  get_release_tag)
+    # pkg get_release_tag package-name flavor [cvs status filename]
+    # prints current release tag for a package release for the specified flavor and platform distribution
+    # rpm/subpackages/package-name will normally have a tag: pkgrel-flavor-package-versionMajor-versionMinor-release-platform
+    # for example: pkgrel-stable-camac-3-0-2-rhel5
     # this is used to identify the release number for the current version and platform
     pkg=$2
     flavor=$3
@@ -341,6 +347,11 @@ EOF
     fi
     echo $release
   ;;
+  get_release)
+    # pkg get_release package-name flavor [cvs status filename]
+    # returns the release number from the release tag
+    echo $($0 get_release_tag $2 $3 $4 | awk -F- '{if (NF == 7) {print $6;} else {print "0";}}')
+  ;;
   check_release) #internal use
     # pkg check_release package-name flavor [cvs status filename]
     # prints "ok" if all modules of this package contain a tag pkgrel-flavor-versionMajor-versionMinor-release-platform
@@ -357,7 +368,7 @@ EOF
     else
        keep="yes"
     fi
-    release=$($0 get_release $pkg $flavor $cvs_status)
+    release=$($0 get_release_tag $pkg $flavor $cvs_status)
     if [ -z release ]
     then
       echo "RPM out of date: No release for this package, flavor and platform"
@@ -492,7 +503,7 @@ EOF
      tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${version}.tar.gz --exclude CVS mdsplus
      cd mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${REDHATDIST}.spec"
-     release=$($pkgcmd get_release kernel $flavor $cvs_status | awk -F- '{print $5}')
+     release=$($pkgcmd get_release kernel $flavor $cvs_status)
      chk="$($pkgcmd check_release kernel $flavor $cvs_status)"
      if [ "$chk" != "ok" ]     
      then
@@ -515,7 +526,7 @@ EOF
          if [ -f rpm/subpackages/$pkg ]
          then 
            eval ${pkg}_update="no"
-           release=$($pkgcmd get_release $pkg $flavor $cvs_status | awk -F- '{print $5}')
+           release=$($pkgcmd get_release $pkg $flavor $cvs_status)
            if [ -z "$release" ]
            then
 	     eval ${pkg}_update="yes"
