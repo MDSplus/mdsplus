@@ -457,6 +457,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
+		<File
 			RelativePath=".\dasutil_routines4.c"
 			>
 		</File>
