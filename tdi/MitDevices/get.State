@@ -1,2 +1,7 @@
 #!/bin/sh
-acqcmd getState
+if [ -e /tmp/ready ]
+then
+  echo "Ready"
+else
+  acqcmd getState
+fi

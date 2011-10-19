@@ -97,6 +97,7 @@ class ACQ196(ACQ):
             fd.write("tree=%s\n"%(tree,))
             fd.write("shot=%s\n"%(shot,))
             fd.write("path='%s'\n"%(path,))
+            fd.write("rm -f /tmp/ready\n")
 
             for i in range(6):
                 line = 'D%1.1d' % i
@@ -105,10 +106,10 @@ class ACQ196(ACQ):
                     if self.debugging():
                         print "wire is %s\n" % (wire,)
                     if wire not in self.wires :
-#                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except Exception,e:
-                    print "error retrieving wire %s\n" %(e,)
+                    if self.debugging():
+                        print "error retrieving wire %s\n" %(e,)
                     wire = 'fpga'
                 try:
                     bus = str(self.__getattr__('di%1.1d_bus' % i).record)
@@ -118,7 +119,8 @@ class ACQ196(ACQ):
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
                 except Exception,e:
-#                    print "error retrieving bus %s\n" %(e,)
+                    if self.debugging():
+                        print "error retrieving bus %s\n" %(e,)
                     bus = ''
                 fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
                 if self.debugging():
@@ -191,6 +193,7 @@ class ACQ196(ACQ):
             fd.write("xmlcmd 'get.vin 33:64'>> $settingsf\n")
             fd.write("xmlcmd 'get.vin 65:96'>> $settingsf\n")
             fd.write("xmlfinish >> $settingsf\n")
+            fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
                 fd.write("mdsConnect %s\n" %host)
@@ -216,18 +219,19 @@ class ACQ196(ACQ):
                 print 'error = %s\nmsg = %s\n' %(msg, str(e),)
             else:
                 print "%s\n" % (str(e),)
-            return 0
+            return ACQ.InitializationError
 
     INITFTP=initftp
         
     def store(self, arg):
+        import MitDevices
         import time
         if self.debugging():
             print "Begining store\n"
         
         if not self.triggered():
             print "ACQ196 Device not triggered\n"
-            return 0
+            return MitDevices.DevNotTriggered
 
         complete = 0
         tries = 0
@@ -242,7 +246,7 @@ class ACQ196(ACQ):
                     print "ACQ196 Error loading settings\n%s\n" %(e,)
         if settings == None :
             print "after %d tries could not load settings\n" % (tries,)
-            return 0
+            return ACQ.SettingsNotLoaded
         
         path = self.local_path
         tree = self.local_tree
@@ -252,15 +256,15 @@ class ACQ196(ACQ):
         if tree != settings['tree'] :
             print "ACQ196 expecting tree %s got tree %s\n" % (tree, settings["tree"],)
             if arg != "nochecks" :
-                return 0  # should return wrong tree error
+                return ACQ.WrongTree  # should return wrong tree error
         if path != settings['path'] :
             print "ACQ196 expecting path %s got path %s\n" % (path, settings["path"],)
             if arg != "nochecks" :
-                return 0 # should return wrong path error
+                return ACQ.WrongPath # should return wrong path error
         if shot != int(settings['shot']) :
             print "ACQ196 expecting shot %d got shot %d\n" % (shot, int(settings["shot"]),)
             if arg != "nochecks" :
-                return 0 # should return wrong shot error
+                return ACQ.WrongShot # should return wrong shot error
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:

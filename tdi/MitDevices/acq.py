@@ -1,4 +1,3 @@
-import time
 import os
 import numpy
 import array
@@ -68,6 +67,15 @@ class ACQ(MDSplus.Device):
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'WAITFTP',head))",
          'options':('no_write_shot',)}]
 
+#
+#  ACQ specific error codes
+#  defined in includes/mitdevices_msg.h
+#
+    InitializationError = 0x277CA592
+    SettingsNotLoaded = 0x277CA59A
+    WrongTree = 0x277CA5A2
+    WrongPath = 0x277CA5AA
+    WrongShot = 0x277CA5B2
 
     debug=None
     data_socket = -1
@@ -134,6 +142,7 @@ class ACQ(MDSplus.Device):
         raise Exception("Timeout occurred")
         
     def triggered(self):
+        import time
         complete = 0
         tries = 0
         while not complete and tries < 60 :
@@ -148,9 +157,9 @@ class ACQ(MDSplus.Device):
         state = self.getBoardState()
         if self.debugging():
             print "get state sfter loop returned %s\n" % (state,)
-        if state != "ACQ32:0 ST_STOP" :
+        if state != "Ready" :
             print "ACQ196 device not triggered /%s/\n"% (self.getBoardState(),)
-            return 0  # should return not triggered error
+            return 0  
         return 1
 
     def getBoardState(self):
@@ -230,6 +239,7 @@ class ACQ(MDSplus.Device):
         return status
 
     def waitftp(self, arg) :
+        import time
         """Wait for board to finish digitizing and ftp'ing data to host"""
         state = self.getBoardState()
         if state == 'ARMED' or state == 'RUN':
