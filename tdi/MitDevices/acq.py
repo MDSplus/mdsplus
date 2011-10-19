@@ -104,18 +104,23 @@ class ACQ(MDSplus.Device):
 
     def readRawData(self, chan, pre, start, end, inc) :
 	if self.debugging():
-	    print " starting readRawData for channel %d\n" %(chan,)
+	    print " starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)\n" %(chan,pre, start, end, inc,)
 	try:
 	    if self.data_socket == -1 :
                 self.data_socket = socket.socket()
                 self.data_socket.connect((self.getBoardIp(), 54547))
 	    self.data_socket.settimeout(10.)
             self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
-            buf = self.data_socket.recv(2*(end+pre-1), socket.MSG_WAITALL)
+            bytes_to_read = 2*(end+pre-1)
+            buf = []
+            while bytes_to_read > 0:
+                chunk = self.data_socket.recv(bytes_to_read, socket.MSG_WAITALL)
+                buf.append(chunk)
+                bytes_to_read = bytes_to_read-len(chunk)
 	    if self.debugging():
-		print "  asked for %d got %d\n" % (2*(end+pre-1), len(buf),) 
+		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre-1), len(''.join(buf)),len(buf),) 
             binValues = array.array('h')
-            binValues.fromstring(buf)
+            binValues.fromstring(''.join(buf))
             if inc == 1:
                 ans = numpy.array(binValues[pre+start:end-start-1], dtype=numpy.int16)
             else :
@@ -128,6 +133,26 @@ class ACQ(MDSplus.Device):
     def timeoutHandler(self,sig,stack):
         raise Exception("Timeout occurred")
         
+    def triggered(self):
+        complete = 0
+        tries = 0
+        while not complete and tries < 60 :
+            state = self.getBoardState()
+            if self.debugging():
+                print "get state returned %s\n" % (state,)
+            if state == "ACQ32:4 ST_POSTPROCESS" :
+                tries +=1
+                time.sleep(1)
+            else:
+                complete=1
+        state = self.getBoardState()
+        if self.debugging():
+            print "get state sfter loop returned %s\n" % (state,)
+        if state != "ACQ32:0 ST_STOP" :
+            print "ACQ196 device not triggered /%s/\n"% (self.getBoardState(),)
+            return 0  # should return not triggered error
+        return 1
+
     def getBoardState(self):
         """Get the current state"""
         import socket,signal

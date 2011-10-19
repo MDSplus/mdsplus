@@ -221,20 +221,13 @@ class ACQ196(ACQ):
     INITFTP=initftp
         
     def store(self, arg):
+        import time
         if self.debugging():
             print "Begining store\n"
-
-        complete = 0
-        tries = 0
-        while not complete and tries < 60 :
-            if self.getBoardState() == "POST" :
-                tries +=1
-                sleep(1)
-            else:
-                complete=1
-        if self.getBoardState() != "OK" :
-            print "ACQ196 device not triggered /%s/\n"% (self.getBoardState(),)
-            return 0  # should return not triggered error
+        
+        if not self.triggered():
+            print "ACQ196 Device not triggered\n"
+            return 0
 
         complete = 0
         tries = 0

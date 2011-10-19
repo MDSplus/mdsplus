@@ -75,6 +75,8 @@ class ACQ196AO(ACQ):
         import uu
         import MDSplus
         import StringIO
+        import subprocess
+        import numpy
         """
         Initialize the device
         Send parameters
@@ -151,7 +153,7 @@ class ACQ196AO(ACQ):
                         if  fit_type not in self.fits:
                             raise Exception( "Error reading Fit for channel %d\n" %(chan+1,))
                     except Exception,e:
-                        print "Error on channel %d - ZEROING\n%s\n" %(e,)
+                        print "Error on channel %d - ZEROING\n%s\n" %(chan+1, e,)
                         knots_x = [0.0, 1.0]
                         knots_y = [0.0, 0.0]
                         fit_type='LINEAR'
@@ -169,13 +171,16 @@ class ACQ196AO(ACQ):
                 if len(wave) > max_samples:
                     wave = wave[0:max_samples-1]
                 wave = wave/10.*2**15
-                wave = wave.astype(int)
-                uuinfd = StringIO.StringIO(wave)
-                outname = "/dev/acq196/AO/%2.2d\n" % (chan + 1,)
-                fd.write("cat - <<EOF | uudecode /dev/stdout > %s\n" % (outname,))
+                wave = wave.astype(numpy.int16)
+#                uuinfd = StringIO.StringIO(wave)
+                outname = "/dev/acq196/AO/f.%2.2d\n" % (chan + 1,)
+                fd.write("cat - <<EOF | uudecode  -o %s" % (outname,))
+                fd.flush()
                 if self.debugging():
                     print "   ready to uuencode"
-                uu.encode( uuinfd, fd, outname)
+                p = subprocess.Popen(["uuencode", "-m", "%s"%(outname,)], stdout=fd, stdin=subprocess.PIPE)
+                p.communicate(wave.tostring())
+                fd.flush()
                 fd.write("EOF\n")
 
             fd.write("set.ao_clk %s rising\n" %(clock_src,))
