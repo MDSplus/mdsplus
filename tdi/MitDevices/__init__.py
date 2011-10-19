@@ -30,3 +30,4 @@ from timeSignature import timeSignatureAnalyze, timeSignature
 import acq200
 import transport
 import dt100
+DevNotTriggered = 662470754
