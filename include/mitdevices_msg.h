@@ -167,6 +167,12 @@
 #define DSP2904$_CHANNEL_READ_ERROR (MSG_MASK + 2015 * MSG_FACNUM_M + 1181 * MSG_MSGNUM_M + MSG_ERROR)
 #define PY$_UNHANDLED_EXCEPTION (MSG_MASK + 2015 * MSG_FACNUM_M + 1191 * MSG_MSGNUM_M + MSG_ERROR)
 #define DT196B$_NO_SAMPLES          (MSG_MASK + 2015 * MSG_FACNUM_M + 1201 * MSG_MSGNUM_M + MSG_ERROR)
+#define ACQ$_INITIALIZATION_ERROR         (MSG_MASK + 2015 * MSG_FACNUM_M + 1202 * MSG_MSGNUM_M + MSG_ERROR)
+#define ACQ$_SETTINGS_NOT_LOADED         (MSG_MASK + 2015 * MSG_FACNUM_M + 1203 * MSG_MSGNUM_M + MSG_ERROR)
+#define ACQ$_WRONG_TREE         (MSG_MASK + 2015 * MSG_FACNUM_M + 1204 * MSG_MSGNUM_M + MSG_ERROR)
+#define ACQ$_WRONG_PATH         (MSG_MASK + 2015 * MSG_FACNUM_M + 1205 * MSG_MSGNUM_M + MSG_ERROR)
+#define ACQ$_WRONG_SHOT         (MSG_MASK + 2015 * MSG_FACNUM_M + 1206 * MSG_MSGNUM_M + MSG_ERROR)
+
 #ifdef MSG_LIBRARY
 
 
@@ -327,7 +333,15 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
         ,{H908$_BAD_PTS,"H908","BAD_PTS","Bad value specfiied in PTS node, must be an integer value between 1 and 131071"}
         ,{DSP2904$_CHANNEL_READ_ERROR,"DSP2904","CHANNEL_READ_ERROR","Error reading channel"}
         ,{PY$_UNHANDLED_EXCEPTION,"PY","UNHANDLED_EXCEPTION","Python device raised and exception, see log files for more details"}
-        ,{DT196B$_NO_SAMPLES,         "DT196B", "NO_SAMPLES",         "Module did not acquire any samples"}  };
+        ,{DT196B$_NO_SAMPLES,         "DT196B", "NO_SAMPLES",         "Module did not acquire any samples"}
+	,{ACQ$_INITIALIZATION_ERROR,  "ACQ", "INITIALIZATION_ERROR",  "Error during module initialization"}
+	,{ACQ$_WRONG_TREE,  "ACQ", "WRONG_TREE",  
+	                    "Attempt to store ACQ module into different tree than it was armed with"}
+	,{ACQ$_WRONG_PATH,  "ACQ", "WRONG_PATH",  
+	                    "Attempt to store ACQ module into different path than it was armed with"}
+	,{ACQ$_WRONG_SHOT,  "ACQ", "WRONG_SHOT",  
+	                    "Attempt to store ACQ module into different shot than it was armed with"}
+  };
   int i;
   int status = 0;
   for (i=0;i<sizeof(msgs)/sizeof(struct msg);i++)
