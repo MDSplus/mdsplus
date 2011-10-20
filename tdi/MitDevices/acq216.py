@@ -11,6 +11,7 @@ class ACQ216(ACQ):
     """
     D-Tacq ACQ216  16 channel transient recorder
     
+    device support for d-tacq acq216 http://www.d-tacq.com/acq216cpci.shtml
     """
     from copy import copy
     parts=copy(ACQ.acq_parts)
@@ -42,12 +43,12 @@ class ACQ216(ACQ):
 	    path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
-            msg="Must specify active chans as int in (32,64,16)"
+            msg="Must specify active chans as int in (4,8,16)"
 
             active_chan = int(self.active_chan)
             msg=None
-            if active_chan not in (4,8,12,16) :
-                print "active chans must be in (4,8,12,16)"
+            if active_chan not in (4,8,16) :
+                print "active chans must be in (4,8,16)"
                 active_chan = 16
             if self.debugging():
                 print "have active chan\n";
@@ -71,7 +72,7 @@ class ACQ216(ACQ):
             msg="Must specify post trigger samples"
             post_trig=int(self.post_trig.data()*1024)
             if self.debugging():
-                print "have active post trig\n";
+                print "have post trig\n";
             msg=None
             if clock_src == "INT_CLOCK":
                 msg="Must specify clock frequency in clock_freq node for internal clock"
@@ -97,18 +98,18 @@ class ACQ216(ACQ):
             fd.write("tree=%s\n"%(tree,))
             fd.write("shot=%s\n"%(shot,))
             fd.write("path='%s'\n"%(path,))
-
+            fd.write("rm -f /tmp/ready\n")
             for i in range(6):
                 line = 'D%1.1d' % i
                 try:
-		    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
+                    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if self.debugging():
                         print "wire is %s\n" % (wire,)
                     if wire not in self.wires :
-#                        print "DI%d:wire must be in %s" % (i, str(self.wires), )
                         wire = 'fpga'
                 except Exception,e:
-                    print "error retrieving wire %s\n" %(e,)
+                    if self.debugging():
+                        print "error retrieving wire %s\n" %(e,)
                     wire = 'fpga'
                 try:
                     bus = str(self.__getattr__('di%1.1d_bus' % i).record)
@@ -118,28 +119,37 @@ class ACQ216(ACQ):
                         print "DI%d:bus must be in %s" % (i, str(self.wires),)
                         bus = ''
                 except Exception,e:
-#                    print "error retrieving bus %s\n" %(e,)
+                    if self.debugging():
+                        print "error retrieving bus %s\n" %(e,)
                     bus = ''
                 fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
                 if self.debugging():
                     print "set.route %s in %s out %s\n" %(line, wire, bus,)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if clock_src == 'INT_CLOCK':
-		if clock_out == None:
-		    if self.debugging():
-			print "internal clock no clock out\n"
+                if clock_out == None:
+                    if self.debugging():
+                        print "internal clock no clock out\n"
                     fd.write("acqcmd setInternalClock %d\n" % clock_freq)
-		else:
-		    clock_out_num_str = clock_out[-1]
-		    clock_out_num = int(clock_out_num_str)
-		    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                else:
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                     if self.debugging():
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
-		    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-		    fd.write(setDIOcmd)		
+                    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+                    fd.write(setDIOcmd)
             else:
-                if (clock_div != 1) :
-                    fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
+ #               if (clock_div != 1) :
+ #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
+ #               else:
+ #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
+                if (clock_out != None) :
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                    fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
+                    fd.write(setDIOcmd)
                 else:
                     fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
@@ -189,8 +199,11 @@ class ACQ216(ACQ):
             fd.write("xmlcmd get.trig >> $settingsf\n")
             fd.write("xmlcmd 'get.vin'>> $settingsf\n")
             fd.write("xmlfinish >> $settingsf\n")
+            fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
+                if self.debugging():
+                    fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
                 fd.write("mdsConnect %s\n" %host)
                 fd.write("mdsOpen %s %d\n" %(tree, shot,))
                 fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
@@ -219,20 +232,14 @@ class ACQ216(ACQ):
     INITFTP=initftp
         
     def store(self, arg):
+        import MitDevices
+        import time
         if self.debugging():
             print "Begining store\n"
 
-        complete = 0
-        tries = 0
-        while not complete and tries < 60 :
-            if self.getBoardState() == "POST" :
-                tries +=1
-                sleep(1)
-            else:
-                complete=1
-        if self.getBoardState() != "OK" :
-            print "ACQ216 device not triggered /%s/\n"% (self.getBoardState(),)
-            return 0  # should return not triggered error
+        if not self.triggered():
+            print "ACQ196 Device not triggered\n"
+            return MitDevices.DevNotTriggered
 
         complete = 0
         tries = 0
@@ -243,45 +250,45 @@ class ACQ216(ACQ):
                 settings = self.loadSettings()
                 complete=1
             except Exception,e:
-                if self.debuggin():
-                    print "ACQ216 Error loading settings\n%s\n" %(e,)
+                if self.debugging():
+                    print "ACQ196 Error loading settings\n%s\n" %(e,)
         if settings == None :
             print "after %d tries could not load settings\n" % (tries,)
-            return 0
-        
+            return ACQ.SettingsNotLoaded
+
         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
-	if self.debugging() :
-	    print "xml is loaded\n"
+        if self.debugging() :
+            print "xml is loaded\n"
         if tree != settings['tree'] :
-            print "ACQ216 expecting tree %s got tree %s\n" % (tree, settings["tree"],)
+            print "ACQ196 expecting tree %s got tree %s\n" % (tree, settings["tree"],)
             if arg != "nochecks" :
-                return 0  # should return wrong tree error
+                return ACQ.WrongTree  # should return wrong tree error
         if path != settings['path'] :
-            print "ACQ216 expecting path %s got path %s\n" % (path, settings["path"],)
+            print "ACQ196 expecting path %s got path %s\n" % (path, settings["path"],)
             if arg != "nochecks" :
-                return 0 # should return wrong path error
+                return ACQ.WrongPath # should return wrong path error
         if shot != int(settings['shot']) :
-            print "ACQ216 expecting shot %d got shot %d\n" % (shot, int(settings["shot"]),)
+            print "ACQ196 expecting shot %d got shot %d\n" % (shot, int(settings["shot"]),)
             if arg != "nochecks" :
-                return 0 # should return wrong shot error
+                return ACQ.WrongShot # should return wrong shot error
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
-	    cmd = cmd.strip()
-	    if self.debugging():
-		print "about to append answer for /%s/\n" % (cmd,)
-		print "   which is /%s/\n" %(settings[cmd],)
-	    status.append(settings[cmd])
-	    if self.debugging():
-		print "%s returned %s\n" % (cmd, settings[cmd],)
-	if self.debugging():
-	    print "about to write board_status signal"
-	self.board_status.record = MDSplus.Signal(cmds, None, status)
+            cmd = cmd.strip()
+            if self.debugging():
+                print "about to append answer for /%s/\n" % (cmd,)
+                print "   which is /%s/\n" %(settings[cmd],)
+            status.append(settings[cmd])
+            if self.debugging():
+                print "%s returned %s\n" % (cmd, settings[cmd],)
+        if self.debugging():
+            print "about to write board_status signal"
+        self.board_status.record = MDSplus.Signal(cmds, None, status)
 
         numSampsStr = settings['getNumSamples']
-	preTrig = self.getPreTrig(numSampsStr)
+        preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
