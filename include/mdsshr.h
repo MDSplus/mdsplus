@@ -42,7 +42,7 @@ EXPORT extern int MdsFree1Dx(struct descriptor_xd *dsc, void **zone);
 EXPORT extern int MdsMsg(int sts, char fmt[], ...);
 EXPORT extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 EXPORT extern int MDSQueueEvent(char *event, int *eventid);
-EXPORT extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, void *data);
+EXPORT extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, char  **data);
 EXPORT extern int  MdsSetCurrentShotId(char *experiment,int shot);
 EXPORT extern int MdsSerializeDscIn(char *in, struct descriptor_xd *out);
 EXPORT extern int MdsSerializeDscOutZ(struct descriptor *in,struct descriptor_xd *out,
