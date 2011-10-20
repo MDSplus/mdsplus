@@ -127,21 +127,29 @@ class ACQ196(ACQ):
                     print "set.route %s in %s out %s\n" %(line, wire, bus,)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if clock_src == 'INT_CLOCK':
-		if clock_out == None:
-		    if self.debugging():
-			print "internal clock no clock out\n"
+                if clock_out == None:
+                    if self.debugging():
+                        print "internal clock no clock out\n"
                     fd.write("acqcmd setInternalClock %d\n" % clock_freq)
-		else:
-		    clock_out_num_str = clock_out[-1]
-		    clock_out_num = int(clock_out_num_str)
-		    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                else:
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                     if self.debugging():
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
-		    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-		    fd.write(setDIOcmd)		
+                    fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
+                    fd.write(setDIOcmd)         
             else:
-                if (clock_div != 1) :
-                    fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
+ #               if (clock_div != 1) :
+ #                   fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
+ #               else:
+ #                   fd.write("acqcmd setExternalClock %s\n" % clock_src)
+                if (clock_out != None) :
+                    clock_out_num_str = clock_out[-1]
+                    clock_out_num = int(clock_out_num_str)
+                    setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
+                    fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
+                    fd.write(setDIOcmd)         
                 else:
                     fd.write("acqcmd setExternalClock %s\n" % clock_src)
 
@@ -196,6 +204,8 @@ class ACQ196(ACQ):
             fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
+		if self.debugging():
+		    fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
                 fd.write("mdsConnect %s\n" %host)
                 fd.write("mdsOpen %s %d\n" %(tree, shot,))
                 fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
@@ -242,7 +252,7 @@ class ACQ196(ACQ):
                 settings = self.loadSettings()
                 complete=1
             except Exception,e:
-                if self.debuggin():
+                if self.debugging():
                     print "ACQ196 Error loading settings\n%s\n" %(e,)
         if settings == None :
             print "after %d tries could not load settings\n" % (tries,)
