@@ -10,7 +10,8 @@ import MDSplus
 class ACQ196(ACQ):
     """
     D-Tacq ACQ196  96 channel transient recorder
-    
+
+    device support for d-tacq acq196 http://www.d-tacq.com/acq196cpci.shtml     
     """
     from copy import copy
     parts=copy(ACQ.acq_parts)
@@ -71,7 +72,7 @@ class ACQ196(ACQ):
             msg="Must specify post trigger samples"
             post_trig=int(self.post_trig.data()*1024)
             if self.debugging():
-                print "have active post trig\n";
+                print "have post trig\n";
             msg=None
             if clock_src == "INT_CLOCK":
                 msg="Must specify clock frequency in clock_freq node for internal clock"
