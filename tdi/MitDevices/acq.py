@@ -7,7 +7,7 @@ import socket
 from xml.marshal.generic import dumps, loads, load 
 
 import MDSplus
-from MitDevices import acq200, transport
+import acq200, transport
 
 
 class ACQ(MDSplus.Device):

@@ -3,7 +3,7 @@ import array
 import MDSplus
 import acq
 
-class ACQ196(acq.ACQ):
+class ACQ216(acq.ACQ):
     """
     D-Tacq ACQ216  16 channel transient recorder
     
@@ -12,11 +12,12 @@ class ACQ196(acq.ACQ):
     from copy import copy
     parts=copy(acq.ACQ.acq_parts)
 
-    for i in range(96):
+    for i in range(16):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
         parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:VIN'%(i+1,),'type':'NUMERIC', 'value':10, 'options':('no_write_shot')})
     del i
     parts.extend(acq.ACQ.action_parts)
     for part in parts:                
@@ -92,6 +93,8 @@ class ACQ196(acq.ACQ):
             fd = tempfile.TemporaryFile()
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+            for chan in range(16):
+                fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
                     if self.debugging():
@@ -122,9 +125,7 @@ class ACQ196(acq.ACQ):
             
             self.addGenericXMLStuff(fd)
 
-            fd.write("xmlcmd 'get.vin 1:32'>> $settingsf\n")
-            fd.write("xmlcmd 'get.vin 33:64'>> $settingsf\n")
-            fd.write("xmlcmd 'get.vin 65:96'>> $settingsf\n")
+            fd.write("xmlcmd 'get.vin'>> $settingsf\n")
             self.finishXMLStuff(fd, auto_store)
 
             print "Time to make init file = %g\n" % (time.time()-start)
@@ -151,7 +152,7 @@ class ACQ196(acq.ACQ):
             print "Begining store\n"
 
         if not self.triggered():
-            print "ACQ196 Device not triggered\n"
+            print "ACQ216 Device not triggered\n"
             return MitDevices.DevNotTriggered
 
         complete = 0
@@ -206,7 +207,7 @@ class ACQ196(acq.ACQ):
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
         vin1 = settings['get.vin']
-        vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1,))
+        vins = eval('MDSplus.makeArray([%s,])' % (vin1,))
 
         if self.debugging():
             print "got the vins "
@@ -229,7 +230,7 @@ class ACQ196(acq.ACQ):
 #
 # now store each channel
 #
-        for chan in range(96):
+        for chan in range(16):
             self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
 
         self.dataSocketDone()
