@@ -14,7 +14,6 @@ from acq132 import ACQ132
 from acq196 import ACQ196
 from acq196ao import ACQ196AO
 from acq216 import ACQ216
-from acq196_ftp import ACQ196_FTP
 from acq216_ftp import ACQ216_FTP
 from cp7452 import CP7452
 from dtao32 import DTAO32
