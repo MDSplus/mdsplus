@@ -205,13 +205,13 @@ class ACQ196(ACQ):
             fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
-		if self.debugging():
-		    fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
-                fd.write("mdsConnect %s\n" %host)
-                fd.write("mdsOpen %s %d\n" %(tree, shot,))
-                fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
-                fd.write("mdsClose\n")
-                fd.write("mdsDisconnect\n")
+				if self.debugging():
+		    		fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
+            	fd.write("mdsConnect %s\n" %host)
+            	fd.write("mdsOpen %s %d\n" %(tree, shot,))
+            	fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
+            	fd.write("mdsClose\n")
+            	fd.write("mdsDisconnect\n")
 
             fd.write("EOF\n")
 
