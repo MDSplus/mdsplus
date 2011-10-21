@@ -175,17 +175,17 @@ class ACQ196(acq.ACQ):
         if self.debugging() :
             print "xml is loaded\n"
         if tree != settings['tree'] :
-            print "ACQ196 expecting tree %s got tree %s\n" % (tree, settings["tree"],)
+            print "ACQ196 open tree is %s board armed with tree %s\n" % (tree, settings["tree"],)
             if arg != "nochecks" :
-                return acq.ACQ.WrongTree  # should return wrong tree error
+                return acq.ACQ.WrongTree
         if path != settings['path'] :
-            print "ACQ196 expecting path %s got path %s\n" % (path, settings["path"],)
+            print "ACQ196 device tree path %s, board armed with path %s\n" % (path, settings["path"],)
             if arg != "nochecks" :
-                return acq.ACQ.WrongPath # should return wrong path error
+                return acq.ACQ.WrongPath
         if shot != int(settings['shot']) :
-            print "ACQ196 expecting shot %d got shot %d\n" % (shot, int(settings["shot"]),)
+            print "ACQ196 open shot is %d, board armed with shot %d\n" % (shot, int(settings["shot"]),)
             if arg != "nochecks" :
-                return acq.ACQ.WrongShot # should return wrong shot error
+                return acq.ACQ.WrongShot
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
