@@ -14,6 +14,7 @@ class ACQ216_FTP(ACQ_FTP):
     D-Tacq ACQ216  16 channel transient recorder
     
     """
+
     from copy import copy
     parts=copy(ACQ_FTP.acq_parts)
 
