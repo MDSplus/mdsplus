@@ -17,10 +17,10 @@ class ACQ196(ACQ):
     parts=copy(ACQ.acq_parts)
 
     for i in range(96):
-	parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
-	parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-	parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-	parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
+        parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
     del i
     parts.extend(ACQ.action_parts)
     for part in parts:                
@@ -37,10 +37,10 @@ class ACQ196(ACQ):
         start=time.time()
         msg=None
 
-	try:
+        try:
             if self.debugging():
                 print "starting init\n";
-	    path = self.local_path
+            path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
             msg="Must specify active chans as int in (32,64,96)"
@@ -80,10 +80,10 @@ class ACQ196(ACQ):
                 clock_div = 1
                 msg=None
             else :
-		try:
-		    clock_div = int(self.clock_div)
-		except:
-		    clock_div = 1
+                try:
+                    clock_div = int(self.clock_div)
+                except:
+                    clock_div = 1
             if self.debugging():
                 print "have the settings\n";
 
@@ -94,7 +94,7 @@ class ACQ196(ACQ):
             fd = tempfile.TemporaryFile()
             host = self.getMyIp()
             fd.write("acqcmd setAbort\n")
-	    fd.write("host=%s\n"%(host,))
+            fd.write("host=%s\n"%(host,))
             fd.write("tree=%s\n"%(tree,))
             fd.write("shot=%s\n"%(shot,))
             fd.write("path='%s'\n"%(path,))
@@ -103,7 +103,7 @@ class ACQ196(ACQ):
             for i in range(6):
                 line = 'D%1.1d' % i
                 try:
-		    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
+                    wire = str(self.__getattr__('di%1.1d_wire' %i).record)
                     if self.debugging():
                         print "wire is %s\n" % (wire,)
                     if wire not in self.wires :
@@ -171,10 +171,10 @@ class ACQ196(ACQ):
             fd.write('xmlcmd "echo $path" path >> $settingsf\n')
             
             cmds = self.status_cmds.record
-	    for cmd in cmds:
-		cmd = cmd.strip()
-		if self.debugging():
-		    print "adding xmlcmd '%s' >> $settingsf/ to the file.\n"%(cmd,)
+            for cmd in cmds:
+                cmd = cmd.strip()
+                if self.debugging():
+                    print "adding xmlcmd '%s' >> $settingsf/ to the file.\n"%(cmd,)
                 fd.write("xmlcmd '%s' >> $settingsf\n"%(cmd,))
             fd.write("cat - > /etc/postshot.d/postshot.sh <<EOF\n")
             fd.write(". /usr/local/bin/xmlfunctions.sh\n")
@@ -205,24 +205,24 @@ class ACQ196(ACQ):
             fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
-				if self.debugging():
-		    		fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
-            	fd.write("mdsConnect %s\n" %host)
-            	fd.write("mdsOpen %s %d\n" %(tree, shot,))
-            	fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
-            	fd.write("mdsClose\n")
-            	fd.write("mdsDisconnect\n")
+                                if self.debugging():
+                                fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
+                fd.write("mdsConnect %s\n" %host)
+                fd.write("mdsOpen %s %d\n" %(tree, shot,))
+                fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
+                fd.write("mdsClose\n")
+                fd.write("mdsDisconnect\n")
 
             fd.write("EOF\n")
 
             fd.flush()
             fd.seek(0,0)
-	    print "Time to make init file = %g\n" % (time.time()-start)
-	    start=time.time()
+            print "Time to make init file = %g\n" % (time.time()-start)
+            start=time.time()
             self.doInit(fd)
-	    fd.close()
+            fd.close()
 
-	    print "Time for board to init = %g\n" % (time.time()-start)
+            print "Time for board to init = %g\n" % (time.time()-start)
             return  1
 
         except Exception,e:
@@ -262,8 +262,8 @@ class ACQ196(ACQ):
         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
-	if self.debugging() :
-	    print "xml is loaded\n"
+        if self.debugging() :
+            print "xml is loaded\n"
         if tree != settings['tree'] :
             print "ACQ196 expecting tree %s got tree %s\n" % (tree, settings["tree"],)
             if arg != "nochecks" :
@@ -279,19 +279,19 @@ class ACQ196(ACQ):
         status = []
         cmds = self.status_cmds.record
         for cmd in cmds:
-	    cmd = cmd.strip()
-	    if self.debugging():
-		print "about to append answer for /%s/\n" % (cmd,)
-		print "   which is /%s/\n" %(settings[cmd],)
-	    status.append(settings[cmd])
-	    if self.debugging():
-		print "%s returned %s\n" % (cmd, settings[cmd],)
-	if self.debugging():
-	    print "about to write board_status signal"
-	self.board_status.record = MDSplus.Signal(cmds, None, status)
+            cmd = cmd.strip()
+            if self.debugging():
+                print "about to append answer for /%s/\n" % (cmd,)
+                print "   which is /%s/\n" %(settings[cmd],)
+            status.append(settings[cmd])
+            if self.debugging():
+                print "%s returned %s\n" % (cmd, settings[cmd],)
+        if self.debugging():
+            print "about to write board_status signal"
+        self.board_status.record = MDSplus.Signal(cmds, None, status)
 
         numSampsStr = settings['getNumSamples']
-	preTrig = self.getPreTrig(numSampsStr)
+        preTrig = self.getPreTrig(numSampsStr)
         postTrig = self.getPostTrig(numSampsStr)
         if self.debugging():
             print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
@@ -303,7 +303,7 @@ class ACQ196(ACQ):
         if self.debugging():
             print "got the vins "
             print vins
-	self.ranges.record = vins
+        self.ranges.record = vins
         chanMask = settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
@@ -311,7 +311,7 @@ class ACQ196(ACQ):
         if self.debugging():
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
-	    intClock = float(settings['getInternalClock'].split()[1])
+            intClock = float(settings['getInternalClock'].split()[1])
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:
@@ -321,9 +321,9 @@ class ACQ196(ACQ):
 #
 # now store each channel
 #
-	for chan in range(96):
-	    if self.debugging():
-		print "working on channel %d" % chan
+        for chan in range(96):
+            if self.debugging():
+                print "working on channel %d" % chan
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))
             if chan_node.on :
                 if self.debugging():
@@ -334,7 +334,7 @@ class ACQ196(ACQ):
                     except:
                         start = -preTrig
                     try:
-			end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
+                        end = min(int(self.__getattr__('input_%2.2d_endidx'%(chan+1,))),postTrig-1)
                     except:
                         end = postTrig-1
                     try:
@@ -346,7 +346,7 @@ class ACQ196(ACQ):
 #
 
                     if self.debugging():
-			print "about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc)
+                        print "about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc)
                     try:
                         buf = self.readRawData(chan+1, preTrig, start, end, inc)
                         if self.debugging():
@@ -361,7 +361,7 @@ class ACQ196(ACQ):
                         exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
                     except Exception, e:
                         print "error processingig channel %d\n%s\n" %(chan+1, e,)
-	self.dataSocketDone()
-	return 1
+        self.dataSocketDone()
+        return 1
 
     STORE=store
