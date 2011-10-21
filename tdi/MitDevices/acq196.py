@@ -205,8 +205,8 @@ class ACQ196(ACQ):
             fd.write("touch /tmp/ready\n")
             
             if auto_store != None :
-                                if self.debugging():
-                                fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
+                if self.debugging():
+                    fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
                 fd.write("mdsConnect %s\n" %host)
                 fd.write("mdsOpen %s %d\n" %(tree, shot,))
                 fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( path, ))
@@ -239,7 +239,7 @@ class ACQ196(ACQ):
         import time
         if self.debugging():
             print "Begining store\n"
-        
+
         if not self.triggered():
             print "ACQ196 Device not triggered\n"
             return MitDevices.DevNotTriggered
