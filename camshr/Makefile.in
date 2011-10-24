@@ -75,7 +75,7 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
 
 depend:
-	 @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
+	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 install:
 	if [ ! -d @libdir@ ] ; then \

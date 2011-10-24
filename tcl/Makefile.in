@@ -54,7 +54,7 @@ EXPORTS = tcl_commands.export
 all:	@MAKEBINDIR@mdstcl @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 
 depend: 
-	 @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
+	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 clean:
 	@ $(RM) $(OBJECTS)
