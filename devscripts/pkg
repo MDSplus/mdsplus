@@ -97,7 +97,7 @@ newRelease()
  release=$4
  dist=$5
  cvs_status=$6
- pushd $rpmsdir/${flavor}.${REDHATDIST}/BUILD/x86_64/mdsplus > /dev/null
+ pushd $(dirname $0)/..  > /dev/null
  tagversion=$(echo ${version} | awk -F. '{print $1 "-" $2}')
  cvs status -v rpm/subpackages/${pkg} | grep "pkgrel-${flavor}-${tagversion}-" | grep "-${dist}" | awk '{system("cvs tag -d " $1 " rpm/subpackages/'${pkg}'");}'
  tag="pkgrel-${flavor}-${pkg}-${tagversion}-${release}-$dist"
