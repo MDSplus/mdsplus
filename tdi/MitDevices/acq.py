@@ -322,13 +322,13 @@ class ACQ(MDSplus.Device):
             fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
             if self.debugging():
                 print "set.route %s in %s out %s\n" %(line, wire, bus,)
-            if self.debugging():
-                print "routes all set now move on to pre-post\n"
-                print "pre trig = %d\n" % (pre_trig,)
-                print "post trig = %d\n" % (post_trig,)
-                print "trig_src = %s\n" % (trig_src,)
-            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
-            if self.debugging():
+        if self.debugging():
+            print "routes all set now move on to pre-post\n"
+            print "pre trig = %d\n" % (pre_trig,)
+            print "post trig = %d\n" % (post_trig,)
+            print "trig_src = %s\n" % (trig_src,)
+        fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
+        if self.debugging():
                 print "pre-post all set now the xml and commands\n"
 
     def loadSettings(self):
