@@ -617,13 +617,201 @@ EOF
        fi
        status="error"
      fi
-     if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec >/dev/null )
+     if ! ( rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $flavor" $spec >/dev/null )
      then
        if [ ! -z "$notify" ]
        then
          echo "Error build repository rpm for i686 ${REDHATDIST} $flavor" >> $notify
        fi
        status="error"
+     fi
+     if [ "$status" == "error" ]
+     then
+       exit 1
+     else
+       exit 0
+     fi
+  ;;
+  makeRpmsHudson)
+     # pkg makeRpmsHudson
+     # example: pkg makeRpmsHudson
+     pushd ${WORKSPACE}/x86_64/mdsplus > /dev/null
+     flavor=$(cvs status configure.in | grep "Sticky Tag:" | grep "stable")
+     if [ -z "$flavor" ]
+     then
+       flavor=$(cvs status configure.in | grep "Sticky Tag:" | grep "beta")
+       if [ -z "$flavor" ]
+       then
+         flavor="alpha"
+       else
+         flavor="beta"
+       fi
+     else
+       flavor="stable"
+     fi
+     if [ -z "$flavor" ]; then flavor="alpha"; fi
+     rpmdir=$rpmsdir/${flavor}.${REDHATDIST}
+     mkdir -p $rpmdir/RPMS
+     mkdir -p $rpmdir/SOURCES
+     mkdir -p $rpmdir/SPECS
+     mkdir -p $rpmdir/SRPMS
+     mkdir -p $rpmdir/BUILD/x86_64
+     mkdir -p $rpmdir/BUILD/x86_64/i686
+     mkdir -p $rpmdir/BUILDROOT/x86_64
+     mkdir -p $rpmdir/BUILD/i686
+     mkdir -p $rpmdir/BUILDROOT/i686
+     pkgcmd=${WORKSPACE}/x86_64/mdsplus/devscripts/pkg
+     cvs_status=$(mktemp -t mdsplus-cvs-status.7.XXXXXXXXXX)
+     $pkgcmd get_cvs_status > $cvs_status
+     version=$($pkgcmd get_version $flavor $cvs_status)
+     if [ "$flavor" == "stable" ]
+     then
+       rpmflavor=""
+     else
+       rpmflavor="-${flavor}"
+     fi
+     cd ${WORKSPACE}/x86_64
+     tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${version}.tar.gz --exclude CVS mdsplus
+     cd mdsplus
+     specfile="$rpmdir/SPECS/mdsplus-${flavor}-${version}-${REDHATDIST}.spec"
+     release=$($pkgcmd get_release kernel $flavor $cvs_status)
+     chk="$($pkgcmd check_release kernel $flavor $cvs_status)"
+     if [ "$chk" != "ok" ]     
+     then
+       let release="$release"+1
+     fi
+     sed s/--VERSION--/$version/ rpm/mdsplus-part1.spec |  sed s/--RELEASE--/$release/  | sed s/--RPMFLAVOR--/$rpmflavor/ > $specfile
+     for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
+     do
+       if [ -f rpm/subpackages/$pkg -a "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       then
+         echo "requires: mdsplus${rpmflavor}-${pkg}" >> $specfile
+       fi
+     done
+     cat rpm/mdsplus-part2-hudson.spec >> $specfile
+     need_to_build="no"
+     for pkg in $(ls rpm/subpackages | grep -v "~" | grep -v "#")
+     do
+       if [ "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+       then
+         if [ -f rpm/subpackages/$pkg ]
+         then 
+           eval ${pkg}_update="no"
+           release=$($pkgcmd get_release $pkg $flavor $cvs_status)
+           if [ -z "$release" ]
+           then
+	     eval ${pkg}_update="yes"
+             release=0
+           elif [ "$($pkgcmd check_release $pkg $flavor $cvs_status)" != "ok" ]
+           then
+             eval ${pkg}_update="yes"
+             echo "New $flavor release for mdsplus-${pkg} ==================================================================="
+             $pkgcmd check_release $pkg $flavor $cvs_status
+             echo "=================================================================================================="
+             let release="$release"+1
+           elif ! (ls $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release}* > /dev/null 2>&1)
+           then
+	     echo "RPM $rpmdir/RPMS/x86_64/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Creating it."
+	     eval ${pkg}_update="yes"
+	   elif ! (ls $rpmdir/RPMS/i686/mdsplus${rpmflavor}-${pkg}-${version}-${release}* > /dev/null 2>&1)
+           then
+	     echo "RPM $rpmdir/RPMS/i686/mdsplus${rpmflavor}-${pkg}-${version}-${release} is missing. Creating it."
+	     eval ${pkg}_update="yes"
+           fi
+           eval ${pkg}_release=$release
+           eval update=\$${pkg}_update
+           if [ "$update" == "yes" ]
+           then
+             need_to_build="yes"
+           fi
+           sed s/--RELEASE--/${release}.${REDHATDIST}/ rpm/subpackages/$pkg | sed s/--RPMFLAVOR--/$rpmflavor/>> $specfile
+         fi
+       fi
+     done
+     status="ok"
+     if [ "$need_to_build" == "yes" ]
+     then
+       rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/i686" $specfile
+       rpmbuild_status=$?
+       if [ "$rpmbuild_status" != "0" ]
+       then
+         if [ ! -z "$notify" ]
+         then
+           echo "Error building i686 ${flavor}.${REDHATDIST} rpms." >> $notify
+         fi
+         echo "Error building i686 ${flavor}.$(REDHATDIST) rpms. rpmbuild returned with status=${rpmbuild_status}"
+         status="error"
+       else
+         rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir $rpmdir/BUILD/x86_64" $specfile 
+         rpmbuild_status=$?
+         if [ "$rpmbuild_status" != "0" ]
+         then
+           if [ ! -z "$notify" ]
+           then
+             echo "Error building x86_64 ${flavor}.${REDHATDIST} rpms." >> $notify
+           fi
+           echo "Error build x86_64 ${flavor}.$REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
+           status="error"
+         fi
+       fi
+     else
+       status="skip"
+     fi
+     if [ "$status" == "ok" ]
+     then
+       echo "Build completed successfully. Checking for new releases and tagging the modules"
+       for pkg in $(ls rpm/subpackages)
+       do
+         if [ "$(ls -l rpm/subpackages/$pkg | awk '{print $5}')" != "0" ]
+         then
+           if [ -f rpm/subpackages/$pkg ]
+           then 
+             echo "Checking $pkg for new release"
+             eval update=\$${pkg}_update
+             if [ "$update" == "yes" ]
+             then
+               eval release=\$${pkg}_release
+               echo "$pkg has a new release. Tag modules with $flavor $version $release $REDHATDIST"
+               if [ ! -z "$notify" ]
+               then
+                 echo "New Release: mdsplus${rpmflavor}-${pkg}-$version-${release}.${REDHATDIST}" >> $notify
+               fi
+               newRelease "$pkg" "$flavor" "$version" "$release" "$REDHATDIST" "$cvs_status"
+             else
+               echo "$pkg does not seem to be a new release"
+             fi
+           fi
+         fi
+       done
+     fi
+     rm -f $cvs_status
+     if [ "$status" == "ok" ]
+     then
+       buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
+       spec=${WORKSPACE}/x86_64/mdsplus/rpm/repos.spec
+       rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec >/dev/null
+       rpmbuild_status=$?
+       if [ "$rpmbuild_status" != "0" ]
+       then
+         if [ ! -z "$notify" ]
+         then
+           echo "Error building repository rpm for x86_64 ${REDHATDIST} $flavor" >> $notify
+         fi
+         echo "Error building repository rpm for x86_64 ${REDHATDIST} ${flavor}. rpmbuild returned status=${rpmbuild_status}."
+         status="error"
+       else
+         rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $flavor" $spec >/dev/null
+         rpmbuild_status=$?
+         if [ "$rpmbuild_status" != "0" ]
+         then
+           if [ ! -z "$notify" ]
+           then
+             echo "Error building repository rpm for i686 ${REDHATDIST} $flavor" >> $notify
+           fi
+           echo "Error building repository rpm for i686 ${REDHATDIST} ${flavor}. rpmbuild returned status=${rpmbuild_status}."
+           status="error"
+         fi
+       fi
      fi
      if [ "$status" == "error" ]
      then
