@@ -1,5 +1,5 @@
-Name: mdsplus-repo-%flavor
-Version: 1.0
+Name: mdsplus-%flavor-repo
+Version: 2.0
 Release: 0%{dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
@@ -30,7 +30,7 @@ then
 echo "exclude=*i686*" >> $outfile
 fi
 cat - >>$outfile <<EOF 
-gpgcheck=0
+gpgcheck=1
 metadata_expire=300
 EOF
 
