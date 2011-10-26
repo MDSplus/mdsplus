@@ -529,7 +529,7 @@ EOF
      then
        buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
        spec=${WORKSPACE}/x86_64/mdsplus/rpm/repos.spec
-       rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $flavor" $spec >/dev/null
+       rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $FLAVOR" $spec >/dev/null
        rpmbuild_status=$?
        if [ "$rpmbuild_status" != "0" ]
        then
@@ -557,6 +557,10 @@ EOF
      then
        exit 1
      else
+       cd $rpmdir/RPMS/i686
+       createrepo . >/dev/null
+       cd $rpmdir/RPMS/x86_64
+       createrepo . >/dev/null
        exit 0
      fi
   ;;
