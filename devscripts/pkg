@@ -471,7 +471,7 @@ EOF
      status="ok"
      if [ "$need_to_build" == "yes" ]
      then
-       rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/i686/mdsplus" $specfile
+       rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --sign --define="_signature gpg" --define="_gpg_name MDSplus" --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/i686/mdsplus" $specfile
        rpmbuild_status=$?
        if [ "$rpmbuild_status" != "0" ]
        then
@@ -482,7 +482,7 @@ EOF
          echo "Error building i686 ${FLAVOR}.${REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
          status="error"
        else
-         rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/x86_64/mdsplus" $specfile 
+         rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --sign --define="_signature gpg" --define="_gpg_name MDSplus" --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/x86_64/mdsplus" $specfile 
          rpmbuild_status=$?
          if [ "$rpmbuild_status" != "0" ]
          then
@@ -529,7 +529,7 @@ EOF
      then
        buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
        spec=${WORKSPACE}/x86_64/mdsplus/rpm/repos.spec
-       rpmbuild -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="flavor $FLAVOR" $spec >/dev/null
+       rpmbuild -ba --sign --define="_signature gpg" --define="_gpg_name MDSplus" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
        rpmbuild_status=$?
        if [ "$rpmbuild_status" != "0" ]
        then
@@ -540,7 +540,7 @@ EOF
          echo "Error building repository rpm for x86_64 ${REDHATDIST} ${flavor}. rpmbuild returned status=${rpmbuild_status}."
          status="error"
        else
-         rpmbuild --target=i686-linux -ba --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $flavor" $spec >/dev/null
+         rpmbuild --target=i686-linux -ba --sign --define="_signature gpg" --define="_gpg_name MDSplus" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
          rpmbuild_status=$?
          if [ "$rpmbuild_status" != "0" ]
          then
