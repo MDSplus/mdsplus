@@ -433,8 +433,8 @@ EOF
          if [ -f rpm/subpackages/$pkg ]
          then 
            eval ${pkg}_update="no"
-           RELEASE_TAG=$(get_release $pkg)
-           release="$RELEASE"
+           RELEASE_TAG=$(get_release_tag $pkg)
+           release=$(get_release $pkg)
            if [ -z "$RELEASE_TAG" ]
            then
              echo "No releases yet for $FLAVOR mdsplus-${pkg}. Building."
