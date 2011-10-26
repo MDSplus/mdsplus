@@ -406,13 +406,12 @@ EOF
      mkdir -p $rpmdir/SOURCES
      mkdir -p $rpmdir/SPECS
      mkdir -p $rpmdir/SRPMS
-     get_version
+     VERSION=$(get_version)
      if [ "$FLAVOR" == "stable" ]; then rpmflavor=""; else rpmflavor="-${FLAVOR}"; fi
      tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${VERSION}.tar.gz --exclude CVS ../mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${FLAVOR}-${VERSION}-${REDHATDIST}.spec"
-     get_release kernel
-     release="$RELEASE"
-     check_release kernel
+     release=$(get_release kernel)
+     CHECK=$(check_release kernel)
      if [ "$CHECK" != "ok" ]     
      then
        let release="$release"+1
@@ -478,9 +477,9 @@ EOF
        then
          if [ ! -z "$notify" ]
          then
-           echo "Error building i686 ${flavor}.${REDHATDIST} rpms." >> $notify
+           echo "Error building i686 ${FLAVOR}.${REDHATDIST} rpms." >> $notify
          fi
-         echo "Error building i686 ${flavor}.$(REDHATDIST) rpms. rpmbuild returned with status=${rpmbuild_status}"
+         echo "Error building i686 ${FLAVOR}.${REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
          status="error"
        else
          rpmbuild --target x86_64-linux --buildroot $rpmdir/BUILDROOT/x86_64 -ba --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/x86_64/mdsplus" $specfile 
