@@ -231,6 +231,7 @@ EOF
       popd > /dev/null
     done
   ;;
+
   list)
     get_cvs_status list
     case $2 in
@@ -565,25 +566,6 @@ EOF
      fi
   ;;
 
-  makeAndUpdateRepos)
-    logfile="$rpmsdir/log.${REDHATDIST}"
-    date > $logfile
-    msgfile="$(mktemp -t mdsplus-notify.XXXXXXXXXX)"
-    for flavor in stable beta alpha
-    do
-      if ( $0 makeRpms $flavor $msgfile >> $logfile 2>&1 )
-      then
-        pushd $rpmsdir/${flavor}.${REDHATDIST} > /dev/null
-        createrepo RPMS >/dev/null
-	popd > /dev/null
-      fi
-    done
-    if [ ! -z "$(cat $msgfile)" ]
-    then
-      cat $msgfile | mail -s "Auto build results" "$MAILLIST"
-    fi
-    rm -f $msgfile
-  ;;
   *)
      echo "Unknown mode /$1/"
      echo
