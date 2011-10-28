@@ -119,23 +119,29 @@ class ACQ(MDSplus.Device):
                 self.data_socket.connect((self.getBoardIp(), 54547))
 	    self.data_socket.settimeout(10.)
             self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
-            bytes_to_read = 2*(end+pre-1)
+            bytes_to_read = 2*(end+pre+1)
             buf = []
             while bytes_to_read > 0:
                 chunk = self.data_socket.recv(bytes_to_read, socket.MSG_WAITALL)
                 buf.append(chunk)
                 bytes_to_read = bytes_to_read-len(chunk)
 	    if self.debugging():
-		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre-1), len(''.join(buf)),len(buf),) 
+		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre+1), len(''.join(buf)),len(buf),) 
             binValues = array.array('h')
             binValues.fromstring(''.join(buf))
+# 
+# NOTE the 2nd value specified as array subscript is a LENGTH  not an index
+#      hence the +1  below.
+#
             if inc == 1:
-                ans = numpy.array(binValues[pre+start:end-start-1], dtype=numpy.int16)
+                ans = numpy.array(binValues[pre+start:end-start+1], dtype=numpy.int16)
             else :
-                ans = numpy.array(binValues[pre+start:end-start-1:inc], dtype=numpy.int16)
+                ans = numpy.array(binValues[pre+start:end-start+1:inc], dtype=numpy.int16)
 	except Exception, e:
 	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
 	    raise e
+	if self.debugging():
+	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
 
     def timeoutHandler(self,sig,stack):
@@ -285,7 +291,7 @@ class ACQ(MDSplus.Device):
                         vins[chan*2], vins[chan*2+1], buf,dim) 
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
                 except Exception, e:
-                    print "error processingig channel %d\n%s\n" %(chan+1, e,)
+                    print "error processing channel %d\n%s\n" %(chan+1, e,)
 
     def startInitializationFile(self, fd, trig_src, pre_trig, post_trig):
         host = self.getMyIp()
