@@ -94,7 +94,18 @@ class ACQ216(acq.ACQ):
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             for chan in range(16):
-                fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
+		vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
+		if (vin == 2.5) :
+		    vin_str = "2.5"
+		elif (vin == 4) :
+		    vin_str = "4"
+		elif (vin == 6) :
+		    vin_str = "6"
+		elif (vin == 10) :
+		    vin_str = "10"
+		else :
+		    vin_str = "10"		
+                fd.write("set.vin %d %s\n" % (chan+1, vin_str))
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
                     if self.debugging():
