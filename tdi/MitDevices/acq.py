@@ -110,7 +110,7 @@ class ACQ(MDSplus.Device):
 	self.data_socket.close()
 	self.data_socket=-1
 
-    def readRawData(self, chan, pre, start, end, inc) :
+    def readRawData(self, chan, pre, start, end, inc, retrying) :
 	if self.debugging():
 	    print " starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)\n" %(chan,pre, start, end, inc,)
 	try:
@@ -126,6 +126,7 @@ class ACQ(MDSplus.Device):
                 buf.append(chunk)
                 bytes_to_read = bytes_to_read-len(chunk)
 	    if self.debugging():
+
 		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre+1), len(''.join(buf)),len(buf),) 
             binValues = array.array('h')
             binValues.fromstring(''.join(buf))
@@ -137,9 +138,19 @@ class ACQ(MDSplus.Device):
                 ans = numpy.array(binValues[pre+start:end-start+1], dtype=numpy.int16)
             else :
                 ans = numpy.array(binValues[pre+start:end-start+1:inc], dtype=numpy.int16)
+	except socket.timeout, e:
+	    if not retrying :
+                print "Timeout - closing socket and retrying\n"
+                self.data_socket.shutdown(socket.SHUT_RDWR)
+                self.data_socket.close()
+	        self.data_socket=-1
+	        return self.readRawData(chan, pre, start, end, inc, True)
+	    else:
+		 raise Exception(e)
 	except Exception, e:
 	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
 	    raise e
+
 	if self.debugging():
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
@@ -279,7 +290,7 @@ class ACQ(MDSplus.Device):
                 if self.debugging():
                     print "about to readRawData(%d, preTrig=%d, start=%d, end=%d, inc=%d)" % (chan+1, preTrig, start, end, inc)
                 try:
-                    buf = self.readRawData(chan+1, preTrig, start, end, inc)
+                    buf = self.readRawData(chan+1, preTrig, start, end, inc, False)
                     if self.debugging():
                         print "readRawData returned %s\n" % (type(buf),)
                     if inc == 1:
