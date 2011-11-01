@@ -558,9 +558,7 @@ EOF
      then
        exit 1
      else
-       cd $rpmdir/RPMS/i686
-       createrepo . >/dev/null
-       cd $rpmdir/RPMS/x86_64
+       cd $rpmdir/RPMS
        createrepo . >/dev/null
        exit 0
      fi
