@@ -118,7 +118,14 @@ class ACQ196(acq.ACQ):
                     fd.write(setDIOcmd)
                 else:
                     fd.write("acqcmd setExternalClock %s\n" % clock_src)
-
+#
+# set the channel mask 2 times
+#
+            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
+#
+#  set the pre_post mode last
+#
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',)i)
             
             self.addGenericXMLStuff(fd)
 
