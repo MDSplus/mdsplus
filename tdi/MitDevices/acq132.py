@@ -116,6 +116,7 @@ class ACQ132(acq.ACQ):
             else:
                 fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_freq/1000, clock_freq/1000*clock_div, clock_out,))
 
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             
             self.addGenericXMLStuff(fd)
 
