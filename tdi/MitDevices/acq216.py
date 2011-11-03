@@ -132,8 +132,19 @@ class ACQ216(acq.ACQ):
                     fd.write(setDIOcmd)
                 else:
                     fd.write("acqcmd setExternalClock %s\n" % clock_src)
+#
+# set the channel mask twice as per Peter Milne
+#
+            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")            
+            if self.debugging():
+                print "routes all set now move on to pre-post\n"
+                print "pre trig = %d\n" % (pre_trig,)
+                print "post trig = %d\n" % (post_trig,)
+                print "trig_src = %s\n" % (trig_src,)
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
+            if self.debugging():
+                print "pre-post all set now the xml and commands\n"
 
-            
             self.addGenericXMLStuff(fd)
 
             fd.write("xmlcmd 'get.vin'>> $settingsf\n")
@@ -161,7 +172,7 @@ class ACQ216(acq.ACQ):
         import time
         if self.debugging():
             print "Begining store\n"
-
+	self.data_socket=-1
         if not self.triggered():
             print "ACQ216 Device not triggered\n"
             return MitDevices.DevNotTriggered
