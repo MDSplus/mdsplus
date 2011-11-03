@@ -122,11 +122,12 @@ class ACQ(MDSplus.Device):
             bytes_to_read = 2*(end+pre+1)
             buf = []
             while bytes_to_read > 0:
+                if self.debugging():
+		    print "read a chunk bytes to read = %d\n"  % (bytes_to_read,)
                 chunk = self.data_socket.recv(bytes_to_read, socket.MSG_WAITALL)
                 buf.append(chunk)
                 bytes_to_read = bytes_to_read-len(chunk)
 	    if self.debugging():
-
 		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre+1), len(''.join(buf)),len(buf),) 
             binValues = array.array('h')
             binValues.fromstring(''.join(buf))
@@ -197,7 +198,6 @@ class ACQ(MDSplus.Device):
                   
     def getMyIp(self):
         import socket
-        icmp = socket.getprotobyname("icmp")
 
         s=socket.socket()
 	try:
@@ -339,14 +339,6 @@ class ACQ(MDSplus.Device):
             fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
             if self.debugging():
                 print "set.route %s in %s out %s\n" %(line, wire, bus,)
-        if self.debugging():
-            print "routes all set now move on to pre-post\n"
-            print "pre trig = %d\n" % (pre_trig,)
-            print "post trig = %d\n" % (post_trig,)
-            print "trig_src = %s\n" % (trig_src,)
-        fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
-        if self.debugging():
-                print "pre-post all set now the xml and commands\n"
 
     def loadSettings(self):
         settingsfd = tempfile.TemporaryFile()
