@@ -2116,6 +2116,13 @@ protected:
 		Int32Array *getCompressedLength();
 		StringArray *getUsage();
 		int getNumNodes() { return numNodes;}
+		TreeNode *operator[](int idx)
+		{
+			if(idx > 0 && idx < numNodes)
+				return nodes[idx];
+			else
+				return 0;
+		}
 	};
 
 
@@ -2251,7 +2258,7 @@ protected:
 //To keep them compatible with python
 		static void setevent(char *evName) {setEvent(evName); }
 		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
-		static void setevent(char *evName, Data *evData){setevent(evName, evData);}
+		static void setevent(char *evName, Data *evData);
 	};
 
 
