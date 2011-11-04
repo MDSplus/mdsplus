@@ -367,7 +367,9 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new String(buf);
 				delete[] buf;
 				break;
-			default: throw new MdsException("Unexpected data type returned by mdsip");
+			default: 
+				printf("Unexpected data type returned by mdsip: %d\n", dtype);
+				throw new MdsException("Unexpected data type returned by mdsip");
 		}
 	}
 	else //nDims > 0
