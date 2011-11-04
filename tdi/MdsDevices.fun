@@ -6,5 +6,6 @@ fun public MdsDevices() {
 	'FEMTO\0', 		'RfxDevices\0',
 	'CAENV1740\0',    'RfxDevices\0',
     'CAENDT5720\0',  'RfxDevices\0',
-    'MARTE\0',  'RfxDevices\0']);
+    'MARTE\0',  'RfxDevices\0',
+    'SPIDER_SM\0', 'RfxDevices\0']);
 }
