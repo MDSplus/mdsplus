@@ -2118,7 +2118,7 @@ protected:
 		int getNumNodes() { return numNodes;}
 		TreeNode *operator[](int idx)
 		{
-			if(idx > 0 && idx < numNodes)
+			if(idx >= 0 && idx < numNodes)
 				return nodes[idx];
 			else
 				return 0;
