@@ -489,9 +489,9 @@ EOF
          then
            if [ ! -z "$notify" ]
            then
-             echo "Error building x86_64 ${flavor}.${REDHATDIST} rpms." >> $notify
+             echo "Error building x86_64 ${FLAVOR}.${REDHATDIST} rpms." >> $notify
            fi
-           echo "Error build x86_64 ${flavor}.$REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
+           echo "Error build x86_64 ${FLAVOR}.$REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
            status="error"
          fi
        fi
@@ -517,7 +517,7 @@ EOF
                then
                  echo "New Release: mdsplus${rpmflavor}-${pkg}-$VERSION-${release}.${REDHATDIST}" >> $notify
                fi
-               newRelease "$pkg" "$flavor" "$VERSION" "$release" "$REDHATDIST" "$cvs_status"
+               newRelease "$pkg" "$FLAVOR" "$VERSION" "$release" "$REDHATDIST" "$cvs_status"
              else
                echo "$pkg does not seem to be a new release"
              fi
@@ -536,9 +536,9 @@ EOF
        then
          if [ ! -z "$notify" ]
          then
-           echo "Error building repository rpm for x86_64 ${REDHATDIST} $flavor" >> $notify
+           echo "Error building repository rpm for x86_64 ${REDHATDIST} $FLAVOR" >> $notify
          fi
-         echo "Error building repository rpm for x86_64 ${REDHATDIST} ${flavor}. rpmbuild returned status=${rpmbuild_status}."
+         echo "Error building repository rpm for x86_64 ${REDHATDIST} ${FLAVOR}. rpmbuild returned status=${rpmbuild_status}."
          status="error"
        else
          rpmbuild --target=i686-linux -ba --sign --define="_signature gpg" --define="_gpg_name MDSplus" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
@@ -547,9 +547,9 @@ EOF
          then
            if [ ! -z "$notify" ]
            then
-             echo "Error building repository rpm for i686 ${REDHATDIST} $flavor" >> $notify
+             echo "Error building repository rpm for i686 ${REDHATDIST} $FLAVOR" >> $notify
            fi
-           echo "Error building repository rpm for i686 ${REDHATDIST} ${flavor}. rpmbuild returned status=${rpmbuild_status}."
+           echo "Error building repository rpm for i686 ${REDHATDIST} ${FLAVOR}. rpmbuild returned status=${rpmbuild_status}."
            status="error"
          fi
        fi
