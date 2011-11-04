@@ -764,8 +764,8 @@ char *TreeNode::getNodeName()
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
 	//Trim
-	for(int i = strlen(path) - 1; i > 0 && path[i] == ' '; i--)
-			path[i] = 0;
+	for(int i = strlen(retPath) - 1; i > 0 && retPath[i] == ' '; i--)
+			retPath[i] = 0;
 	return retPath;
 }
 
