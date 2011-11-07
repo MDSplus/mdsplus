@@ -125,7 +125,7 @@ class ACQ196(acq.ACQ):
 #
 #  set the pre_post mode last
 #
-            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',)i)
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',i))
             
             self.addGenericXMLStuff(fd)
 
