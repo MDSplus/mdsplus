@@ -297,5 +297,5 @@ class SPIDER_SM(Device):
       {'path':'.SAFE_SYS.CHILD_MASK:VAL', 'type':'numeric', 'value':1},
       {'path':'.SAFE_SYS.ESSENTIAL', 'type':'structure'},
       {'path':'.SAFE_SYS.ESSENTIAL:PV_NAME', 'type':'text', 'value':'SAFE_SYS:ESSENTIAL'},
-      {'path':'.SAFE_SYS.ESSENTIAL:VAL', 'type':'numeric', 'value':1},
+      {'path':'.SAFE_SYS.ESSENTIAL:VAL', 'type':'numeric', 'value':1}]
     print 'SpiderStateMachine 2'
