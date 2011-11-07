@@ -1,3 +1,4 @@
+%define __jar_repack %{nil}
 Name: mdsplus--RPMFLAVOR--
 Version: --VERSION--
 Release: --RELEASE--%{?dist}
