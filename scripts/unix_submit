@@ -47,7 +47,6 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     touch $MDS_LOGS/pid/`hostname`-$$ 2>/dev/null
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
     echo `date`: Job $1 beginning on `hostname` >> $LOG
-    echo script invoked with $1 $2 $3 $4 >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
     echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
     echo " " >> $LOG
