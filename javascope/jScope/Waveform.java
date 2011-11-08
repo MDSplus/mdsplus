@@ -1930,8 +1930,7 @@ public class Waveform
           }
         }
         catch (ArrayIndexOutOfBoundsException e) {
-          System.out.println("Excepion on " + getName() + " " +
-                             " " + idx);
+          //System.out.println("Exception on " + getName() + " " + " " + idx);
         }
       }
     }
@@ -1975,8 +1974,7 @@ public class Waveform
          }
        }
        catch (ArrayIndexOutOfBoundsException e) {
-         System.out.println("Excepion on " + getName() + " " + s.getLength() +
-                            " " + idx);
+         //System.out.println("Exception on " + getName() + " " + s.getLength() + " " + idx);
        }
      }
    }
