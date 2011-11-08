@@ -190,6 +190,8 @@ class ACQ(MDSplus.Device):
             signal.alarm(60)
             s.connect((self.getBoardIp(),54545))
             state=s.recv(100)[0:-1]
+	    if self.debugging():
+		print "getBoardState  returning /%s/\n" % (state,)
         except Exception,e:
             print "Error getting board state: %s" % (str(e),)
         signal.alarm(0)
@@ -203,9 +205,13 @@ class ACQ(MDSplus.Device):
 	try:
             s.connect((self.getBoardIp(),54545))
             hostip = s.getsockname()[0]
+            state=s.recv(100)[0:-1]
+            if self.debugging():
+                print "getMyIp  read /%s/\n" % (state,)
 	except Exception,e:
 	    hostip = ""
 	    print "could not connect to board to verify local IP address\n%s\n" %(e,)
+        s.close()
 	return hostip
 
     def addGenericXMLStuff(self, fd):
