@@ -17,6 +17,7 @@
 # param 1 = file-spec of batch job
 # param 2 = shot number
 # param 3 = PRE (create lock file only)
+# param 3 = CONNECTFAIL (delete lock file)
 # 
 
 FILE=`basename $1 ".sh"`
@@ -26,7 +27,14 @@ fi
 if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then 
     LOG="$MDS_LOGS/$FILE.$2.log"
     CUMULATIVE_LOG="$MDS_LOGS/$FILE.log"
-    if [ -e ${LOG}.lock ]
+    if [ "$3" = "CONNECTFAIL" ]
+    then
+       rm -f ${LOG}.lock
+       echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $CUMULATIVE_LOG
+       echo `date`: Job $1 --- Connection to host $4 failed. >> $CUMULATIVE_LOG
+       echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $CUMULATIVE_LOG
+       exit 0
+    elif [ -e ${LOG}.lock ]
     then
        if [ "$3" = "PRE" ]; then exit 0; fi
     elif [ "$3" = "PRE" ]
@@ -39,6 +47,7 @@ if [ -d "$MDS_LOGS" -a -w "$MDS_LOGS" ]; then
     touch $MDS_LOGS/pid/`hostname`-$$ 2>/dev/null
     echo ">>>>>>>>>>>>>>>>>>>>>   $2  >>>>>>>>>>>>>>>>>>>>" >> $LOG
     echo `date`: Job $1 beginning on `hostname` >> $LOG
+    echo script invoked with $1 $2 $3 $4 >> $LOG
     /usr/bin/time -a -f "Elapsed %E\tUser %U\tSystem %S"  -o $LOG $1 $2 < /dev/null >>$LOG 2>&1
     echo "<<<<<<<<<<<<<<<<<<<<<   $2  <<<<<<<<<<<<<<<<<<<<" >> $LOG
     echo " " >> $LOG
