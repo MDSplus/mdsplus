@@ -3,5 +3,5 @@ if [ -e /tmp/ready ]
 then
   echo "Ready"
 else
-  acqcmd getState
+  /usr/local/bin/acqcmd getState
 fi
