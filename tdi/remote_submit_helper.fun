@@ -33,6 +33,8 @@ public fun remote_submit_helper(_host,_file,_shot)
   if (_stat > 0)
   {
     _stat=mdsvalue('tcl("spawn/nowait unix_submit '//_file//' '//_shot//'")');
+  } else {
+    tcl('spawn unix_submit '//_file//' '//_shot//' CONNECTFAIL '//_host);
   }
   return(_stat);
 }
