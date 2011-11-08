@@ -123,7 +123,8 @@ FEMTOSetup.java\
 CAENDT5720Setup.java\
 RFXVConfigSetup.java\
 MARTESetup.java\
-LASER_SSSetup.java
+LASER_SSSetup.java\
+SPIDER_SMSetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
