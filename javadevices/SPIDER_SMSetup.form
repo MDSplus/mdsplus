@@ -1540,7 +1540,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Children Mask: "/>
                         <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="256"/>
+                        <Property name="offsetNid" type="int" value="257"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceChoice" name="deviceChoice62">

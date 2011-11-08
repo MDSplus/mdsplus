@@ -827,7 +827,7 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField32.setIdentifier("");
         deviceField32.setLabelString("Children Mask: ");
         deviceField32.setNumCols(4);
-        deviceField32.setOffsetNid(256);
+        deviceField32.setOffsetNid(257);
         jPanel37.add(deviceField32);
 
         deviceChoice62.setChoiceIntValues(new int[] {1, 0});
