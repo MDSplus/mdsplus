@@ -409,7 +409,7 @@ class ACQ(MDSplus.Device):
         while tries < 60 :
             if max_chan.rlength > 0:
                 break
-            time.sleep(3)
+            time.sleep(4)
             tries = tries+1
         if tries == 60:
             print "Triggered, but data not stored !"
