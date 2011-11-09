@@ -30,10 +30,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javatraverser.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javatraverser.mak&quot; /a"
-				CleanCommandLine="del *.class &quot;$(OutDir)jTraverser.jar&quot; &quot;$(OutDir)DeviceBeans.jar&quot;"
-				Output="&quot;$(OutDir)jTraverser.jar&quot;"
+				BuildCommandLine="nmake /f javatraverser.mak"
+				ReBuildCommandLine="nmake /f javatraverser.mak /a"
+				CleanCommandLine="del *.class $(OutDir)jTraverser.jar $(OutDir)DeviceBeans.jar"
+				Output="$(OutDir)jTraverser.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""

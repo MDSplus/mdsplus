@@ -76,8 +76,8 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javascope.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javascope.mak&quot; /a"
+				BuildCommandLine="nmake /f  javascope.mak"
+				ReBuildCommandLine="nmake /f  javascope.mak /a"
 				CleanCommandLine="del *.class &quot;$(OutDir)jScope.jar&quot;"
 				Output="$(OutDir)jScope.jar"
 				PreprocessorDefinitions=""
