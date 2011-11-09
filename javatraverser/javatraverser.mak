@@ -154,7 +154,8 @@ TreeDialog.java\
 TreeNode.java\
 TreeServer.java\
 UnsupportedDataException.java\
-WindowEditor.java
+WindowEditor.java\
+Convert.java
 
 
 
