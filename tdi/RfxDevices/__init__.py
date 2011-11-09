@@ -17,5 +17,7 @@ from SIS3820 import SIS3820
 from FEMTO import FEMTO
 from MARTE import MARTE
 from SPIDER_SM import SPIDER_SM
+from ZELOS2150GV import ZELOS2150GV
+
 
 
