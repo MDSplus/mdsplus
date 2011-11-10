@@ -119,7 +119,7 @@ get_release_tag()
 
 get_release()
 {
-  get_release_tag "$1" | awk -F- '{if (NF == 7) {print $6;} else {print "0";}}'
+  get_release_tag "$1" | awk -F- 'BEGIN {REL="0"} {if (NF == 7) {REL=$6;}} END {print REL}'
 }
 
 check_release()
