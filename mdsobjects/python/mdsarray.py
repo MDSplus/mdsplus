@@ -1,4 +1,4 @@
-import numpy,copy
+import numpy,copy,ctypes
 from types import NotImplementedType
 from mdsdata import Data,makeData
 from _mdsdtypes import *
@@ -9,6 +9,11 @@ def makeArray(value):
         return value
     if isinstance(value,Scalar):
         return makeArray((value._value,))
+    if isinstance(value,ctypes.Array):
+        try:
+            return makeArray(numpy.ctypeslib.as_array(value))
+        except Exception:
+            pass
     if isinstance(value,tuple) | isinstance(value,list):
         try:
             return makeArray(numpy.array(value))
@@ -37,7 +42,12 @@ class Array(Data):
         if self.__class__.__name__ == 'StringArray':
             self._value=numpy.array(value).__array__(numpy.string_)
             return
-	self._value=numpy.array(value).__array__(numpy.__dict__[self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()])
+        if isinstance(value,ctypes.Array):
+            try:
+                value=numpy.ctypeslib.as_array(value)
+            except Exception:
+                pass
+        self._value=numpy.array(value).__array__(numpy.__dict__[self.__class__.__name__[0:len(self.__class__.__name__)-5].lower()])
         return
     
     def __getattr__(self,name):

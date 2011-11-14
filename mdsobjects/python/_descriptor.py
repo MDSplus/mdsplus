@@ -36,7 +36,7 @@ class descriptor(_C.Structure):
             self.dclass=value.dclass
             self.length=value.length
             self.pointer=value.pointer
-            print self
+            return
 
         if isinstance(value,descriptor_a):
             self.dtype=DTYPE_DSC
@@ -51,6 +51,14 @@ class descriptor(_C.Structure):
             self.dtype=DTYPE_DSC
             self.pointer=None
             return
+
+        if isinstance(value,_C.Array):
+            try:
+                self.__init__(_N.ctypeslib.as_array(value))
+                return
+            except Exception:
+                pass
+
         if isinstance(value,_N.generic):
             a=_N.array(value)
             self.dtype=mdsdtypes.fromNumpy(value)
