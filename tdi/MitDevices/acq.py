@@ -119,26 +119,17 @@ class ACQ(MDSplus.Device):
                 self.data_socket.connect((self.getBoardIp(), 54547))
 	    self.data_socket.settimeout(10.)
             self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
+	    f=self.data_socket.makefile("r",32768)
             bytes_to_read = 2*(end+pre+1)
-            buf = []
-            while bytes_to_read > 0:
-                if self.debugging():
-		    print "read a chunk bytes to read = %d\n"  % (bytes_to_read,)
-                chunk = self.data_socket.recv(bytes_to_read, socket.MSG_WAITALL)
-                buf.append(chunk)
-                bytes_to_read = bytes_to_read-len(chunk)
-	    if self.debugging():
-		print "  asked for %d got %d in %d chunks\n" % (2*(end+pre+1), len(''.join(buf)),len(buf),) 
+	    buf = f.read(bytes_to_read)
             binValues = array.array('h')
-            binValues.fromstring(''.join(buf))
-# 
-# NOTE the 2nd value specified as array subscript is a LENGTH  not an index
-#      hence the +1  below.
-#
-            if inc == 1:
-                ans = numpy.array(binValues[pre+start:end-start+1], dtype=numpy.int16)
-            else :
-                ans = numpy.array(binValues[pre+start:end-start+1:inc], dtype=numpy.int16)
+            binValues.fromstring(buf)
+            ans = numpy.ndarray(buffer=binValues,
+                                dtype=numpy.int16,
+                                offset=(pre+start)*2,
+                                strides=(inc*2),
+                                shape=((end-start+1)-(pre+start)))
+
 	except socket.timeout, e:
 	    if not retrying :
                 print "Timeout - closing socket and retrying\n"
@@ -151,7 +142,6 @@ class ACQ(MDSplus.Device):
 	except Exception, e:
 	    print "ACQ error reading channel %d\n, %s\n" % (chan, e,)
 	    raise e
-
 	if self.debugging():
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
