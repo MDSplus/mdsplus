@@ -117,7 +117,7 @@ class ACQ196(acq.ACQ):
                     fd.write("acqcmd setExternalClock %s %d DO%s\n" % (clock_src, clock_div,clock_out_num_str))
                     fd.write(setDIOcmd)
                 else:
-                    fd.write("acqcmd setExternalClock %s\n" % clock_src)
+                    fd.write("acqcmd setExternalClock %s %d\n" % (clock_src, clock_div,))
 #
 # set the channel mask 2 times
 #
@@ -125,7 +125,7 @@ class ACQ196(acq.ACQ):
 #
 #  set the pre_post mode last
 #
-            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',i))
+            fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             
             self.addGenericXMLStuff(fd)
 
@@ -232,7 +232,31 @@ class ACQ196(acq.ACQ):
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:
-            self.clock.record = self.clock_src
+	    if self.debugging():
+		print "it is external clock\n"
+	    try:
+		clock_div = int(self.clock_div)
+	    except:
+		clock_div = 1
+	    if self.debugging():
+		print "clock div is %d\n" % (clock_div,)
+	    if clock_div == 1 :
+        	self.clock.record = clock_src
+	    else:
+		if self.debugging():
+		    print "external clock with divider %d  clock source is %s\n" % ( clock_div, clock_src,)
+		clk = self.clock_src
+		try : 
+		    while type(clk) != MDSplus.compound.Range :
+			clk = clk.record
+		    if self.debugging():
+			print "I found the Range record - now writing the clock with the divide\n"
+                    self.clock.record = MDSplus.Range(clk.getBegin(), clk.getEnding(), clk.getDelta()*clock_div)
+		except:
+		    print "could not find Range record for clock to construct divided clock storing it as undivided\n"
+		    self.clock.record  = clock_src
+		if self.debugging():
+		    print "divided clock stored\n"
 
         clock = self.clock.record
 #
