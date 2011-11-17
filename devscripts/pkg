@@ -407,6 +407,7 @@ EOF
      mkdir -p $rpmdir/SOURCES
      mkdir -p $rpmdir/SPECS
      mkdir -p $rpmdir/SRPMS
+     mkdir -p $rpmdir/EGGS
      VERSION=$(get_version)
      if [ "$FLAVOR" == "stable" ]
      then
@@ -508,12 +509,14 @@ EOF
 	 export MDSPLUS_PYTHON_VERSION="${pythonflavor}${VERSION}-${python_release}"
 	 python setup.py bdist_egg
 	 python_status=$?
-	 popd
 	 if [ "$python_status" != "0" ]
 	 then
 	   echo "Error building MDSplus-${pythonflavor}${VERSION}-${python_release}"
 	   status="error"
+         else
+	   mv dist/* $rpmdir/EGGS
 	 fi
+	 popd
        fi
      else
        status="skip"
