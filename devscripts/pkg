@@ -408,7 +408,14 @@ EOF
      mkdir -p $rpmdir/SPECS
      mkdir -p $rpmdir/SRPMS
      VERSION=$(get_version)
-     if [ "$FLAVOR" == "stable" ]; then rpmflavor=""; else rpmflavor="-${FLAVOR}"; fi
+     if [ "$FLAVOR" == "stable" ]
+     then
+       rpmflavor=""
+       pythonflavor=""
+     else
+       rpmflavor="-${FLAVOR}"
+       pythonflavor="${FLAVOR}-"
+     fi
      tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${VERSION}.tar.gz --exclude CVS ../mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${FLAVOR}-${VERSION}-${REDHATDIST}.spec"
      release=$(get_release kernel)
@@ -494,6 +501,12 @@ EOF
            echo "Error build x86_64 ${FLAVOR}.$REDHATDIST} rpms. rpmbuild returned with status=${rpmbuild_status}"
            status="error"
          fi
+       fi
+       if [ "$python_update" == "yes" ]
+       then
+	   pushd ${WORKSPACE}/x86_64/mdsplus/mdsobjects/python
+	   export MDSPLUS_PYTHON_VERSION="${pythonflavor}${VERSION}-${python_release}"
+	   python setup.py bdist_egg
        fi
      else
        status="skip"
