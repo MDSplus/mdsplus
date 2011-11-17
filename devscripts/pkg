@@ -407,7 +407,7 @@ EOF
      mkdir -p $rpmdir/SOURCES
      mkdir -p $rpmdir/SPECS
      mkdir -p $rpmdir/SRPMS
-     mkdir -p $rpmdir/EGGS
+     mkdir -p ${WORKSPACE}/../EGGS
      VERSION=$(get_version)
      if [ "$FLAVOR" == "stable" ]
      then
@@ -514,7 +514,7 @@ EOF
 	   echo "Error building MDSplus-${pythonflavor}${VERSION}-${python_release}"
 	   status="error"
          else
-	   mv dist/* $rpmdir/EGGS
+	   mv dist/* ${WORKSPACE}/../EGGS
 	 fi
 	 popd
        fi
