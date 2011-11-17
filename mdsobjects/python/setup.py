@@ -4,6 +4,8 @@
 def getRelease():
     try:
       import os
+      if 'MDSPLUS_PYTHON_VERSION' in os.environ:
+	return os.environ['MDSPLUS_PYTHON_VERSION']
       for flavor in ['','-beta','-alpha']:
           f=os.popen("/bin/rpm -q mdsplus%s-python;echo $?" % (flavor,))
           l=f.readlines()
