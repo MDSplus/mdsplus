@@ -504,9 +504,16 @@ EOF
        fi
        if [ "$python_update" == "yes" ]
        then
-	   pushd ${WORKSPACE}/x86_64/mdsplus/mdsobjects/python
-	   export MDSPLUS_PYTHON_VERSION="${pythonflavor}${VERSION}-${python_release}"
-	   python setup.py bdist_egg
+	 pushd ${WORKSPACE}/x86_64/mdsplus/mdsobjects/python
+	 export MDSPLUS_PYTHON_VERSION="${pythonflavor}${VERSION}-${python_release}"
+	 python setup.py bdist_egg
+	 python_status=$?
+	 popd
+	 if [ "$python_status" != "0" ]
+	 then
+	   echo "Error building MDSplus-${pythonflavor}${VERSION}-${python_release}"
+	   status="error"
+	 fi
        fi
      else
        status="skip"
