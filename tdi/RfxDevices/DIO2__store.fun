@@ -59,7 +59,7 @@ public fun DIO2__store(as_is _nid, optional _method)
 	{
 	    _cmd = 'MdsConnect("'//_ip_addr//'")';
 	    execute(_cmd);
-	    _rec_events = MdsValue('DIO2HWGetRecEvents(0, $1)');
+	    _rec_events = MdsValue('DIO2HWGetRecEvents(0, $1)',_board_id);
 	    _rec_times =  MdsValue('_DIO2_rec_times');
 	    MdsDisconnect();
 	}
@@ -95,7 +95,7 @@ public fun DIO2__store(as_is _nid, optional _method)
 				}
 				else
 					_phases_count = DIO2HWGetPhaseCount(_nid, _board_id, _c);
-				
+			        if (size(_phases_count) < 2) abort();	
  
  				_trig_path = getnci(DevNodeRef(_nid, _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_TRIGGER), 'FULLPATH');
 				_trig1_expr = _trig_path // ' + ' // _phases_count[0];
