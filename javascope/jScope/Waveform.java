@@ -1117,7 +1117,7 @@ public class Waveform
   public void UpdateImage(Frames frames) {
     SetFrames(frames);
     if (frames != null && frames.getNumFrame() > 0) {
-      frames.curr_frame_idx = 0;
+      //frames.curr_frame_idx = 0;
     }
     this.is_image = true;
     curr_rect = null;
@@ -1436,7 +1436,8 @@ public class Waveform
     if (is_image) {
       if (frames != null && frames.getNumFrame() != 0) {
         Point p = frames.getFramePoint(new Point(end_x, end_y), d);
-        int frame_type = frames.getFrameType(frames.GetFrameIdx());
+//        int frame_type = frames.getFrameType(frames.GetFrameIdx());
+        int frame_type = frames.getFrameType();
 
         we = new WaveformEvent(this, WaveformEvent.POINT_UPDATE,
                                p.x, p.y,
@@ -1502,8 +1503,8 @@ public class Waveform
       WaveformEvent we;
       Dimension d = getWaveSize();
       Point p = frames.getFramePoint(new Point(end_x, end_y), d);
-      int frame_type = frames.getFrameType(frames.GetFrameIdx());
-
+//      int frame_type = frames.getFrameType(frames.GetFrameIdx());
+      int frame_type = frames.getFrameType();
 
       if (frame_type == FrameData.BITMAP_IMAGE_32 ||
           frame_type == FrameData.BITMAP_IMAGE_16 ) {
@@ -1512,9 +1513,9 @@ public class Waveform
                                frames.getValuesX(p.y),
                                frames.getStartPixelX(),
                                frames.getValuesY(p.x),
-                               frames.getStartPixelY(),
-                               frames.getValuesSignal(p.x, p.y),
-                               frames.getFramesTime());
+                               frames.getStartPixelY());
+                               //frames.getValuesSignal(p.x, p.y),
+                               //frames.getFramesTime());
         if (show_measure) {
           Point p_pos = new Point( (int) mark_point_x, (int) mark_point_y);
           Point mp = frames.getFramePoint(p_pos, d);
@@ -1528,9 +1529,9 @@ public class Waveform
                                frames.getPixelsX(p.y),
                                frames.getStartPixelX(),
                                frames.getPixelsY(p.x),
-                               frames.getStartPixelY(),
-                               frames.getPixelsSignal(p.x, p.y),
-                               frames.getFramesTime());
+                               frames.getStartPixelY());
+                               //frames.getPixelsSignal(p.x, p.y),
+                               //frames.getFramesTime());
         if (show_measure) {
           Point p_pos = new Point( (int) mark_point_x, (int) mark_point_y);
           Point mp = frames.getFramePoint(p_pos, d);
@@ -2014,7 +2015,8 @@ public class Waveform
     }
 
     Dimension dim = frames.getFrameSize(frame_idx, getWaveSize());
-    int type = frames.frame_type[frame_idx];
+//    int type = frames.frame_type[frame_idx];
+    int type = frames.getFrameType();
 
     DrawImage(g, img, dim, type);
 

@@ -1183,7 +1183,7 @@ public class WaveInterface
                 curr_error = dp.ErrorString();
                 evaluated[0] = false;
             }
-            frames.WaitLoadFrame();
+            //frames.WaitLoadFrame();
 
             this.wave.SetMode(mode);
 

@@ -609,7 +609,11 @@ JNIEXPORT jboolean JNICALL Java_jScope_LocalDataProvider_isSegmentedNode
 	return 0;
 }
 
-
+static int needSwap()
+{
+	static char intg[] = {1, 0, 0, 0};
+	return 1 & *((int *)intg);
+}
 /*
  * Class:     jScope_LocalDataProvider
  * Method:    getSegment
@@ -618,7 +622,7 @@ JNIEXPORT jboolean JNICALL Java_jScope_LocalDataProvider_isSegmentedNode
 JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
   (JNIEnv *env, jclass cls, jstring jNodeName, jint segmentIdx, jint segmentOffset)
 {
-    int status, nid, i;
+    int status, nid, i, nSamples;
 	int numSegments;
 	jbyteArray jarr;
 	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
@@ -627,6 +631,8 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
 	EMPTYXD(dimXd);
 	ARRAY_COEFF(char, 3) *arrPtr;
 	int frameSize;
+	char tmp;
+	char *buf;
 
 	status = TreeFindNode((char *)nodeName, &nid);
 	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -659,6 +665,34 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
 		return NULL;
 	}
 	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
+	if(needSwap())
+	{
+		buf = arrPtr->pointer;
+		nSamples = arrPtr->arsize/arrPtr->length;
+		switch (arrPtr->length)
+		{
+			case 2:
+				for (i = 0; i < nSamples; i++)
+				{
+					tmp = buf[2*i];
+					buf[2*i] = buf[2*i+1];
+					buf[2*i+1] = tmp;
+				}
+				break;
+			case 4:
+				for (i = 0; i < nSamples; i++)
+				{
+					tmp = buf[2*i];
+					buf[2*i] = buf[2*i+3];
+					buf[2*i+3] = tmp;
+					tmp = buf[2*i+1];
+					buf[2*i+1] = buf[2*i+2];
+					buf[2*i+2] = tmp;
+				}
+				break;
+		}
+	}
+	
 
 	jarr = (*env)->NewByteArray(env, frameSize);
     (*env)->SetByteArrayRegion(env, jarr, 0, frameSize, (char *)arrPtr->pointer + (int)segmentOffset * frameSize);
@@ -854,6 +888,35 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
 	return 1;
 }
 
+static int isSingleFramePerSegment(int nid)
+{
+	EMPTYXD(xd);
+	EMPTYXD(dimXd);
+	ARRAY_COEFF(char *, 3) *arrPtr;
+	int isSingle;
+	int status;
+
+	status = TreeGetSegment(nid, 0, &xd, &dimXd);
+	if(!(status & 1))
+		return 0;
+	arrPtr = (void *)xd.pointer;
+	if(arrPtr->dimct != 3)
+	{
+		printf("INTERNAL ERROR IN LOCAL DATA PROVIDER: unexpected number of dimensions per segment: %d\n", arrPtr->dimct);
+		return 0;
+	}
+	printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
+	isSingle = (arrPtr->m[2] == 1);
+	MdsFree1Dx(&xd, 0);
+	MdsFree1Dx(&dimXd, 0);
+	return isSingle;
+}
+
+
+
+
+
+
 /*
  * Class:     jScope_LocalDataProvider
  * Method:    getSegmentTimes
@@ -873,6 +936,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
 	struct descriptor_xd *timesXds;
 	struct descriptor_a *arrPtr;
 	jfloatArray jarr;
+	float *farr;
 		
 	status = TreeFindNode((char *)nodeName, &nid);
 	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -886,45 +950,67 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
 	actSegments = endIdx - startIdx;
 	timesXds = malloc(sizeof(struct descriptor_xd) * actSegments);
 	nTimes = 0;
-	for(idx = 0; idx < actSegments ; idx++)
+	if(isSingleFramePerSegment(nid))
 	{
-		timesXds[idx] = emptyXd;
-		status = TreeGetSegment(nid, idx + startIdx, &segXd, &timesXds[idx]);
-    	if(status & 1) status = TdiData(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
-    	if(status & 1) status = TdiFloat(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
-		if(!(status & 1))
+		farr = malloc(actSegments * sizeof(float));
+		for(idx = 0; idx < actSegments; idx++)
 		{
-   			strncpy(error_message, MdsGetMsg(status), 512);
-			return NULL;
+			status = TreeGetSegmentLimits(nid, idx, &startXd, &endXd);
+    		if(status & 1) status = TdiData(&startXd, &startXd MDS_END_ARG);
+    		if(status & 1) status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+			if(!startXd.pointer)
+				return NULL;
+			farr[idx] = *(float *)startXd.pointer->pointer;
+			MdsFree1Dx(&startXd, 0);
+			MdsFree1Dx(&endXd, 0);
 		}
-		if(timesXds[idx].pointer->class == CLASS_S)
-			nTimes  = nTimes + 1;
-		else
-		{
-			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
-			nTimes += arrPtr->arsize/arrPtr->length;
-		}
-		MdsFree1Dx(&segXd, 0);
+		jarr = (*env)->NewFloatArray(env, actSegments);
+		(*env)->SetFloatArrayRegion(env, jarr, 0, actSegments, farr);
+		free((char *)farr);
+		return jarr;
 	}
-    jarr = (*env)->NewFloatArray(env, nTimes);
-	currIdx = 0;
-	for(idx = 0; idx < actSegments ; idx++)
+	else
 	{
-		if(timesXds[idx].pointer->class == CLASS_S)
+		for(idx = 0; idx < actSegments ; idx++)
 		{
-			(*env)->SetFloatArrayRegion(env, jarr, currIdx, 1, (float *)timesXds[idx].pointer->pointer);
-			currIdx++;
+			timesXds[idx] = emptyXd;
+			status = TreeGetSegment(nid, idx + startIdx, &segXd, &timesXds[idx]);
+    		if(status & 1) status = TdiData(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+    		if(status & 1) status = TdiFloat(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+			if(!(status & 1))
+			{
+   				strncpy(error_message, MdsGetMsg(status), 512);
+				return NULL;
+			}
+			if(timesXds[idx].pointer->class == CLASS_S)
+				nTimes  = nTimes + 1;
+			else
+			{
+				arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+				nTimes += arrPtr->arsize/arrPtr->length;
+			}
+			MdsFree1Dx(&segXd, 0);
 		}
-		else
+		jarr = (*env)->NewFloatArray(env, nTimes);
+		currIdx = 0;
+		for(idx = 0; idx < actSegments ; idx++)
 		{
-			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
-			(*env)->SetFloatArrayRegion(env, jarr, currIdx, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
-			currIdx+=arrPtr->arsize/arrPtr->length;
+			if(timesXds[idx].pointer->class == CLASS_S)
+			{
+				(*env)->SetFloatArrayRegion(env, jarr, currIdx, 1, (float *)timesXds[idx].pointer->pointer);
+				currIdx++;
+			}
+			else
+			{
+				arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+				(*env)->SetFloatArrayRegion(env, jarr, currIdx, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
+				currIdx+=arrPtr->arsize/arrPtr->length;
+			}
+			MdsFree1Dx(&timesXds[idx], 0);
 		}
-		MdsFree1Dx(&timesXds[idx], 0);
+		free((char *)timesXds);
+		return jarr;
 	}
-	free((char *)timesXds);
-	return jarr;
 }
 
 
