@@ -871,7 +871,7 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
     if (!waitflag) {
       pid = fork();
       if (pid != -1 && pid != 0)
-	exit(0);
+	_exit(0);
     }
     signal(SIGCHLD,SIG_DFL);
     arglist[0] = getenv("SHELL");
