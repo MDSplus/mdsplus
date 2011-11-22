@@ -184,6 +184,8 @@ class ACQ(MDSplus.Device):
 		print "getBoardState  returning /%s/\n" % (state,)
         except Exception,e:
             print "Error getting board state: %s" % (str(e),)
+            signal.alarm(0)
+	    return "off-line"
         signal.alarm(0)
         s.close()
         return state
@@ -387,7 +389,7 @@ class ACQ(MDSplus.Device):
         import time
         """Wait for board to finish digitizing and ftp'ing data to host"""
         state = self.getBoardState()
-        if state == 'ARMED' or state == 'RUN':
+        if state == 'ARMED' or state == 'RUN' or state == 'off-line':
             return 662470754
             raise Exception, "device Not triggered"
         for chan in range(int(self.active_chan), 0, -1):
