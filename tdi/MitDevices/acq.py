@@ -51,7 +51,7 @@ class ACQ(MDSplus.Device):
         {'path':':ACTIVE_CHAN','type':'numeric','value':16,'options':('no_write_shot',)},
         {'path':':POST_TRIG','type':'numeric','value':128,'options':('no_write_shot',)},
         {'path':':PRE_TRIG','type':'numeric','value':0,'options':('no_write_shot',)},
-        {'path':':RANGES','type':'numeric','options':('write_once',)},
+        {'path':':RANGES','type':'numeric','options':('write_once','no_write_model',)},
         {'path':':STATUS_CMDS','type':'text','value':MDSplus.makeArray(['cat /proc/cmdline', 'get.d-tacq.release']),'options':('no_write_shot',)},
         {'path':':BOARD_STATUS','type':'signal','options':('write_shot',)},
         {'path':':CLOCK','type':'axis','options':('no_write_model','write_once')},
