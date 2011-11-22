@@ -241,7 +241,7 @@ class ACQ196(acq.ACQ):
 	    if self.debugging():
 		print "clock div is %d\n" % (clock_div,)
 	    if clock_div == 1 :
-        	self.clock.record = clock_src
+        	self.clock.record = self.clock_src
 	    else:
 		if self.debugging():
 		    print "external clock with divider %d  clock source is %s\n" % ( clock_div, clock_src,)
