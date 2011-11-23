@@ -449,7 +449,7 @@ EOF
              echo "No releases yet for $FLAVOR mdsplus-${pkg}. Building."
 	     eval ${pkg}_update="yes"
            else
-             check_release $pkg
+             CHECK=$(check_release $pkg)
              if [ "$CHECK" != "ok" ]
              then
                eval ${pkg}_update="yes"
@@ -553,7 +553,7 @@ EOF
      then
        buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
        spec=${WORKSPACE}/x86_64/mdsplus/rpm/repos.spec
-       rpmbuild -ba --define="_signature gpg" --define="_gpg_name MDSplus" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
+       rpmbuild -ba --define="_signature gpg" --define="_gpg_name MDSplus" --define="s_dist ${REDHATDIST}" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
        rpmbuild_status=$?
        if [ "$rpmbuild_status" != "0" ]
        then
@@ -564,7 +564,7 @@ EOF
          echo "Error building repository rpm for x86_64 ${REDHATDIST} ${FLAVOR}. rpmbuild returned status=${rpmbuild_status}."
          status="error"
        else
-         rpmbuild --target=i686-linux -ba --define="_signature gpg" --define="_gpg_name MDSplus" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
+         rpmbuild --target=i686-linux -ba --define="_signature gpg" --define="_gpg_name MDSplus" --define="s_dist ${REDHATDIST}" --buildroot=$buildroot --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}" --define="flavor $FLAVOR" $spec >/dev/null
          rpmbuild_status=$?
          if [ "$rpmbuild_status" != "0" ]
          then
