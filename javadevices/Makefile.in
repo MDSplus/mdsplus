@@ -62,7 +62,7 @@ RFXMOPSetup.java \
 RFXANSALDOSetup.java \
 IPC901Setup.java \
 CADHSetup.java \
-J221Setup.java \
+J221RFXSetup.java \
 L6810Setup.java \
 RFXVISetupSetup.java \
 RFXVIConfigSetup.java \

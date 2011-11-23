@@ -11,7 +11,7 @@ import javax.swing.*;
  * @version 1.0
  */
 
-public class J221Setup extends DeviceSetup
+public class J221RFXSetup extends DeviceSetup
 {
   BorderLayout borderLayout1 = new BorderLayout();
   DeviceButtons deviceButtons1 = new DeviceButtons();
@@ -88,7 +88,7 @@ public class J221Setup extends DeviceSetup
   DeviceChannel deviceChannel13 = new DeviceChannel();
   DeviceField deviceField1110 = new DeviceField();
   DeviceChoice deviceChoice13 = new DeviceChoice();
-  public J221Setup()
+  public J221RFXSetup()
   {
     try
     {
@@ -103,7 +103,7 @@ public class J221Setup extends DeviceSetup
   {
     this.setWidth(617);
     this.setHeight(617);
-    this.setDeviceType("J221");
+    this.setDeviceType("J221RFX");
     this.setDeviceProvider("localhost");
     this.setDeviceTitle("Jorway J221 Timing generator");
     this.getContentPane().setLayout(borderLayout1);

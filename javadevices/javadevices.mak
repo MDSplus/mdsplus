@@ -28,7 +28,7 @@ FLU_GAINSetup.java\
 FR10Setup.java\
 IPC901Setup.java\
 IPControlSetup.java\
-J221Setup.java\
+J221RFXSetup.java\
 K3115Setup.java\
 L5613Setup.java\
 L6810Setup.java\
