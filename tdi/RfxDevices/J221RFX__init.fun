@@ -1,4 +1,4 @@
-public fun J221__init(as_is _nid, optional _method)
+public fun J221RFX__init(as_is _nid, optional _method)
 {
     private _N_HEAD = 0;
     private _N_NAME = 1;

@@ -1,6 +1,6 @@
-public fun J221__add(in _path, out _nidout)
+public fun J221RFX__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'J221', 66, _nidout);
+    DevAddStart(_path, 'J221RFX', 66, _nidout);
     DevAddNode(_path // ':NAME', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':TRIG_SOURCE', 'NUMERIC', 0, *, _nid);

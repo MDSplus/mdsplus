@@ -1,4 +1,4 @@
-public fun J221__trigger(as_is _nid, optional _method)
+public fun J221RFX__trigger(as_is _nid, optional _method)
 {
     private _N_NAME = 1;
     _name = DevNodeRef(_nid, _N_NAME);
