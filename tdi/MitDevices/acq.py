@@ -257,7 +257,7 @@ class ACQ(MDSplus.Device):
             fd.write("mdsDisconnect\n")
 
         fd.write("EOF\n")
-
+        fd.write("chmod a+x /etc/postshot.d/postshot.sh\n")
         fd.flush()
         fd.seek(0,0)
 
@@ -389,9 +389,8 @@ class ACQ(MDSplus.Device):
         import time
         """Wait for board to finish digitizing and ftp'ing data to host"""
         state = self.getBoardState()
-        if state == 'ARMED' or state == 'RUN' or state == 'off-line':
-            return 662470754
-            raise Exception, "device Not triggered"
+        if state == 'ARMED' or state == 'RUN' or state == 'off-line' or state == 'ACQ32:2 ST_RUN':
+            return 662470754  # device not triggered
         for chan in range(int(self.active_chan), 0, -1):
             chan_node = self.__getattr__('input_%2.2d' % (chan,))
             if chan_node.on :
