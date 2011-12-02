@@ -1,5 +1,5 @@
 Name: mdsplus-%flavor-repo
-Version: 2.0
+Version: 2.1
 Release: 0%{dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
@@ -22,7 +22,7 @@ outfile=$RPM_BUILD_ROOT/etc/yum.repos.d/mdsplus-%flavor.repo
 cat - > $outfile <<EOF
 [MDSplus]
 name=MDSplus-%flavor 
-baseurl=http://www.mdsplus.org/repo/rhel%{s_dist}-%{flavor}/RPMS
+baseurl=http://www.mdsplus.org/repo/%{s_dist}-%{flavor}/RPMS
 enabled=1
 EOF
 if [ "%_target" != "i686-linux" ]
@@ -44,4 +44,7 @@ rm -Rf $RPM_BUILD_ROOT
 
 %post
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+
+%postun
+for key in $(rpm -qa gpg-pubkey*); do if (rpm -qi $key 2>/dev/null | grep MDSplus >/dev/null);then rpm -e $key; fi; done
 
