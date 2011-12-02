@@ -157,6 +157,7 @@ check_release()
     CHECK="ok"
   fi
   delete_cvs_status
+  echo $CHECK
 }
 
 case $1 in
@@ -337,7 +338,6 @@ EOF
     # pkg check_release package-name 
     # prints "ok" if all modules of this package contain a tag pkgrel-flavor-versionMajor-versionMinor-release-platform
     check_release $2
-    echo $CHECK
   ;;
 
   check_releases)
@@ -349,7 +349,6 @@ EOF
        then
          echo $pkg
          check_release $pkg
-         echo $CHECK
        fi
      done
      delete_cvs_status
