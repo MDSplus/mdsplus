@@ -1,5 +1,5 @@
 Name: mdsplus-%flavor-repo
-Version: 2.1
+Version: 2.2
 Release: 0%{dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
