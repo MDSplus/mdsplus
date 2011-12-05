@@ -7,6 +7,7 @@ Group: Applications/Acquisition
 Prefix: /
 Summary: MDSplus Data Acquisition System
 AutoReqProv: no
+requires: mdsplus-%flavor-repo-signkey
 
 %description
 MDSplus Yum repository setup
@@ -34,17 +35,20 @@ gpgcheck=1
 metadata_expire=300
 EOF
 
-
 %clean
 rm -Rf $RPM_BUILD_ROOT
 
 %files
 /etc/yum.repos.d/mdsplus-%flavor.repo
+
+%package signkey
+Summary: Installs gpg key used to sign MDSplus packages
+Group: Applications/Acquisition
+Release: 0%{dist}
+
+%description signkey
+GPG Key used to sign MDSplus packages
+
+%files signkey
 /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
-
-%post
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
-
-%postun
-for key in $(rpm -qa gpg-pubkey*); do if (rpm -qi $key 2>/dev/null | grep MDSplus >/dev/null);then rpm -e $key; fi; done
 
