@@ -416,7 +416,6 @@ EOF
        rpmflavor="-${FLAVOR}"
        pythonflavor="${FLAVOR}-"
      fi
-     tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${VERSION}.tar.gz --exclude CVS ../mdsplus
      specfile="$rpmdir/SPECS/mdsplus-${FLAVOR}-${VERSION}-${REDHATDIST}.spec"
      release=$(get_release kernel)
      CHECK=$(check_release kernel)
@@ -479,6 +478,7 @@ EOF
      status="ok"
      if [ "$need_to_build" == "yes" ]
      then
+       tar zcf $rpmdir/SOURCES/mdsplus${rpmflavor}-${VERSION}.tar.gz --exclude CVS ../mdsplus
        rpmbuild --target i686-linux --buildroot $rpmdir/BUILDROOT/i686 -ba --define="_signature gpg" --define="_gpg_name MDSplus" --define="_topdir $rpmdir" --define="_builddir ${WORKSPACE}/i686/mdsplus" $specfile
        rpmbuild_status=$?
        if [ "$rpmbuild_status" != "0" ]
@@ -548,7 +548,7 @@ EOF
        done
      fi
      delete_cvs_status
-     if [ "$status" == "ok" ]
+     if [ "$status" != "error" ]
      then
        buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)
        spec=${WORKSPACE}/x86_64/mdsplus/rpm/repos.spec
