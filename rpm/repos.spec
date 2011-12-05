@@ -1,5 +1,5 @@
 Name: mdsplus-%flavor-repo
-Version: 2.2
+Version: 1.0
 Release: 0%{dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
@@ -7,7 +7,6 @@ Group: Applications/Acquisition
 Prefix: /
 Summary: MDSplus Data Acquisition System
 AutoReqProv: no
-requires: mdsplus-%flavor-repo-signkey
 
 %description
 MDSplus Yum repository setup
@@ -18,7 +17,7 @@ MDSplus Yum repository setup
 %install
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
-cp /home/mdsplus/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
+cp ${WORKSPACE}/x86_64/mdsplus/rpm/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 outfile=$RPM_BUILD_ROOT/etc/yum.repos.d/mdsplus-%flavor.repo
 cat - > $outfile <<EOF
 [MDSplus]
@@ -35,20 +34,17 @@ gpgcheck=1
 metadata_expire=300
 EOF
 
+
 %clean
 rm -Rf $RPM_BUILD_ROOT
 
 %files
 /etc/yum.repos.d/mdsplus-%flavor.repo
-
-%package signkey
-Summary: Installs gpg key used to sign MDSplus packages
-Group: Applications/Acquisition
-Release: 0%{dist}
-
-%description signkey
-GPG Key used to sign MDSplus packages
-
-%files signkey
 /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+
+%post
+dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2>/dev/null)
+
+%postun
+nohup rpm -e gpg-pubkey-b09cb563 &
 
