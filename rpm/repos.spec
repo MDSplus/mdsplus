@@ -22,7 +22,7 @@ outfile=$RPM_BUILD_ROOT/etc/yum.repos.d/mdsplus-%flavor.repo
 cat - > $outfile <<EOF
 [MDSplus]
 name=MDSplus-%flavor 
-baseurl=http://www.mdsplus.org/repo/%{dist}-%{flavor}/RPMS
+baseurl=http://www.mdsplus.org/repo/%{s_dist}-%{flavor}/RPMS
 enabled=1
 EOF
 if [ "%_target" != "i686-linux" ]
