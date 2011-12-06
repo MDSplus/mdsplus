@@ -9,6 +9,8 @@ MDSplus/HDF5 integration
 %files hdf5
 /usr/local/mdsplus/lib*/libhdf5*
 /usr/local/mdsplus/tdi/hdf5
+/usr/local/mdsplus/bin*/hdf5*
+/usr/local/mdsplus/bin*/*HDF5
 
 %post hdf5
 ldconfig >/dev/null 2>&1

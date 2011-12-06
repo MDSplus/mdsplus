@@ -68,6 +68,8 @@ Core applications, libraries and configuration files
 
 %exclude /usr/local/mdsplus/lib*/libhdf5*
 %exclude /usr/local/mdsplus/tdi/hdf5
+%exclude /usr/local/mdsplus/bin*/hdf5*
+%exclude /usr/local/mdsplus/bin*/*HDF5
 
 %post kernel
 if [ -d /etc/ld.so.conf.d ]
