@@ -7,6 +7,7 @@ MANPATH		$MDSPLUS_DIR/man: >:
 MDS_LIB_PS	$MDSPLUS_DIR/lib/dwscope_setup.ps
 @LIBPATH@       $MDSPLUS_DIR/lib >:
 MDSMSG_PATH     $MDSPLUS_DIR/lib >;
+UDP_EVENTS      yes
 include         $MDSPLUS_DIR/local/envsyms
 include         /etc/mdsplus.conf
 include         $HOME/.mdsplus
