@@ -7,7 +7,7 @@ exec_prefix=@exec_prefix@
 RM=$(top_srcdir)/devscripts/rm_if
 CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API
 LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5 @LIBS@
+LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -Bstatic -static -lhdf5 -Bdynamic -shared @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -41,6 +41,12 @@ install:
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libhdf5tdi.a @libdir@; \
 	fi;
+	if [ ! -d @bindir@ ] ; then \
+	        mkdir @bindir@; \
+	        chmod 755 @bindir@; \
+	fi;
+	$(INSTALL) -m 755  @MAKEBINDIR@hdf5ToMds @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
 
 @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS)
