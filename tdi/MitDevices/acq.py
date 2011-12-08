@@ -153,7 +153,7 @@ class ACQ(MDSplus.Device):
         import time
         complete = 0
         tries = 0
-        while not complete and tries < 60 :
+        while not complete and tries < 120 :
             state = self.getBoardState()
             if self.debugging():
                 print "get state returned %s\n" % (state,)
@@ -164,7 +164,7 @@ class ACQ(MDSplus.Device):
                 complete=1
         state = self.getBoardState()
         if self.debugging():
-            print "get state sfter loop returned %s\n" % (state,)
+            print "get state after loop returned %s\n" % (state,)
         if state != "Ready" :
             print "ACQ196 device not triggered /%s/\n"% (self.getBoardState(),)
             return 0  
@@ -174,19 +174,16 @@ class ACQ(MDSplus.Device):
         """Get the current state"""
         import socket,signal
         s=socket.socket()
+	s.settimeout(3.) 
         state="Unknown"
         try:
-            signal.signal(signal.SIGALRM,self.timeoutHandler)
-            signal.alarm(60)
             s.connect((self.getBoardIp(),54545))
             state=s.recv(100)[0:-1]
 	    if self.debugging():
 		print "getBoardState  returning /%s/\n" % (state,)
         except Exception,e:
             print "Error getting board state: %s" % (str(e),)
-            signal.alarm(0)
-	    return "off-line"
-        signal.alarm(0)
+	    state = "off-line"
         s.close()
         return state
                   
@@ -387,26 +384,35 @@ class ACQ(MDSplus.Device):
 
     def waitftp(self, arg) :
         import time
-        """Wait for board to finish digitizing and ftp'ing data to host"""
+        """Wait for board to finish digitizing and storing the data"""
         state = self.getBoardState()
-        if state == 'ARMED' or state == 'RUN' or state == 'off-line' or state == 'ACQ32:2 ST_RUN':
-            return 662470754  # device not triggered
-        for chan in range(int(self.active_chan), 0, -1):
-            chan_node = self.__getattr__('input_%2.2d' % (chan,))
-            if chan_node.on :
-                max_chan = chan_node
-		break
-        tries = 0
-        while tries < 60 :
-            if max_chan.rlength > 0:
-                break
-            time.sleep(4)
-            tries = tries+1
-        if tries == 60:
-            print "Triggered, but data not stored !"
-            return 0
+	tries = 0
+	while state == "ACQ32:4 ST_POSTPROCESS" and tries < 180 :
+	    tries = tries + 1
+	    state = self.getBoardState()
+	    time.sleep(1)
 
-        return 1
+	if state == 'off-line' :
+	    return 662470754  # device not triggered - change to offline
+	if state == "ACQ32:1 ST_ARM" or state == "ACQ32:2 ST_RUN" :
+            return 662470754  # device not triggered - change to offline
+	if state == "ACQ32:4 ST_POSTPROCESS" :
+            return 662470754  # device not triggered - change to stuck
+	if state == "ACQ32:0 ST_STOP" or state == "Ready":
+            for chan in range(int(self.active_chan), 0, -1):
+                chan_node = self.__getattr__('input_%2.2d' % (chan,))
+                if chan_node.on :
+                    max_chan = chan_node
+                    break
+            if max_chan.rlength > 0:
+		return 1
+	    else:
+		print "Triggered, but data not stored !"
+                return 0  # should be triggered but not stored
+	else:
+	    print "ACQxxx UNKOWN BOARD state /%s/\n" % (state,)
+	    return 662470754  # device not triggered - change to unknown state
+
     WAITFTP=waitftp
 
     def trigger(self, arg):

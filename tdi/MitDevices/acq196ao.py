@@ -230,4 +230,40 @@ class ACQ196AO(ACQ):
         return 0
     ZERO=zero
         
-        
+    def setvoltage(self, arg) :
+        import socket
+        if self.debugging():
+            print "starting setvoltage /%s/\n" %(arg,)
+        if arg == None:
+            print "setvoltage method requires an argument string 'N V'\n"
+            return 0
+
+        args = arg.split()
+        if len(args) != 2 :
+            print "setvoltage method takes exactly 2 arguments\n"
+            return 0
+
+        if args[0] != "XX" :
+            try :
+                chan = int(args[0])
+                if  chan < 0 or chan > 16 :
+                    raise Exception("out of range")
+            except:
+	       print "setvoltage method 1st arg must be XX or [1-16]\n"
+               return 0
+	try:
+            v = float(args[1])
+	except:
+            print "setvoltage method 2nd argument must be a floating point voltage\n"
+            return 0
+
+        s = socket.socket()
+        try :
+            s.connect((self.getBoardIp(),54549))
+            s.send(str(arg))
+	except Exception,e:
+ 	    print "setvoltage failed to set voltage %s\ntype of arg is %s\n%s\n" % (arg,type(arg),e,)
+            return 0
+        return 1
+    SETVOLTAGE=setvoltage
+	    

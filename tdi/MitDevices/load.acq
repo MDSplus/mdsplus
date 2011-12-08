@@ -8,7 +8,8 @@
 #
 cd /ffs/user
 tar -xzf /bigffs/mdsacqkit.tgz
-mv xmlfunctions.sh doInit.sh get.State sendFile acq.ao.zero /usr/local/bin
+sleep 1
+mv xmlfunctions.sh doInit.sh get.State sendFile acq.ao.zero acq.ao.setvoltage /usr/local/bin
 cat acq_inetd.conf >> /etc/inetd.conf
 rm -f acq_inetd.conf
 mkdir -p /etc/postshot.d

@@ -4,6 +4,6 @@
 #
 # must live in /usr/local/bin on the board
 # invoked by inetd when connection recieved on port 54548
-read zero
-/usr/local/bin/set.AO XX 0
+read chan_volt
+/usr/local/bin/set.AO $chan_volt
 /usr/local/bin/set.AO commit 1
