@@ -31,6 +31,7 @@ echo "exclude=*i686*" >> $outfile
 fi
 cat - >>$outfile <<EOF 
 gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
 
@@ -46,5 +47,5 @@ rm -Rf $RPM_BUILD_ROOT
 dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2>/dev/null)
 
 %postun
-nohup rpm -e gpg-pubkey-b09cb563 &
+nohup rpm -e gpg-pubkey-b09cb563 >dev/null 2>&1 &
 
