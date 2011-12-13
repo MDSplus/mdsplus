@@ -179,7 +179,9 @@ public class ChannelArchiver
     	long []times;
     	int idx;
         int type;
-    	TreeDataDescriptor(java.lang.String nodeName)
+        boolean isArray;
+        Array array;
+     	TreeDataDescriptor(java.lang.String nodeName)
     	{
 	    doubleVals = new double[SEGMENT_SIZE];
 	    floatVals = new float[SEGMENT_SIZE];
@@ -196,44 +198,55 @@ public class ChannelArchiver
     	{
  	    if(idx < SEGMENT_SIZE)
 	    {
+               
                 try {
-                    if(val instanceof Float64)
-                    {
-                        type = DOUBLE;
-                        doubleVals[idx] = val.getDouble();
-                    }
-                    else if (val instanceof Float32)
-                    {
-                        type = FLOAT;
-                        floatVals[idx] = val.getFloat();
-                    }
-                    else if (val instanceof Int64)
-                    {
-                        type = LONG;
-                        longVals[idx] = val.getLong();
-                    }
-                    else if (val instanceof Int32)
-                    {
-                        type = INT;
-                        intVals[idx] = val.getInt();
-                    }
-                    else if (val instanceof Int16)
-                    {
-                        type = SHORT;
-                        shortVals[idx] = val.getShort();
-                    }
-                    else if (val instanceof Int8)
-                    {
-                        type = BYTE;
-                         byteVals[idx] = val.getByte();
-                    }
-                    else
-                    {
-                        System.err.println("Unexpected data type");
-                        return false;
-                    }
-                    times[idx] = time;
-                    idx++;
+                   if(val instanceof Array)
+                   {
+                       isArray = true;
+                       array = (Array)val;
+                       return true;
+                   }
+                   else
+                   {
+                       isArray = false;
+                       if(val instanceof Float64)
+                       {
+                           type = DOUBLE;
+                           doubleVals[idx] = val.getDouble();
+                       }
+                       else if (val instanceof Float32)
+                       {
+                           type = FLOAT;
+                           floatVals[idx] = val.getFloat();
+                       }
+                       else if (val instanceof Int64)
+                       {
+                           type = LONG;
+                           longVals[idx] = val.getLong();
+                       }
+                       else if (val instanceof Int32)
+                       {
+                           type = INT;
+                           intVals[idx] = val.getInt();
+                       }
+                       else if (val instanceof Int16)
+                       {
+                           type = SHORT;
+                           shortVals[idx] = val.getShort();
+                       }
+                       else if (val instanceof Int8)
+                       {
+                           type = BYTE;
+                            byteVals[idx] = val.getByte();
+                       }
+                       else
+                       {
+                           System.err.println("Unexpected data type");
+                           return false;
+                       }
+                   } 
+                   times[idx] = time;
+                   idx++;
                }catch(Exception exc) {System.err.println("Internal error in data management");}
             }
             return idx == SEGMENT_SIZE;
@@ -251,6 +264,18 @@ public class ChannelArchiver
         }
 	Data getVal() 
         {
+            if(isArray)
+            {
+                int[]shape = array.getShape();
+                int[]newShape = new int[shape.length + 1];
+                for(int i = 0; i < shape.length; i++)
+                    newShape[i] = shape[i];
+                newShape[shape.length] = 1;
+                try {
+                    array.setShape(newShape);
+                    return array;
+                }catch(Exception exc){System.err.println("Cannot reshape Array"); return null;}                
+            }
             switch(type) {
                 case BYTE: return new Int8(byteVals[0]);
                 case SHORT: return new Int16(shortVals[0]);
