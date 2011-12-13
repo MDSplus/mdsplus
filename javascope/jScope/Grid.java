@@ -512,8 +512,6 @@ public class Grid
                                    d.height - label_height - 2);
                 }
 
-
-
                 g.setColor(prev_col);
                 if(xAxisHMS)
                 {
@@ -521,8 +519,9 @@ public class Grid
                     {
                         long datel = (long) x_values[i];
                         DateFormat df = new SimpleDateFormat("HH:mm:ss");
-                        //--df.setTimeZone(new SimpleTimeZone(0, "GMT"));
-                        df.setTimeZone(TimeZone.getDefault());
+                        df.setTimeZone(new SimpleTimeZone(0, "GMT"));              
+                        //df.setTimeZone(TimeZone.getDefault());
+
                         DateFormat dfSubSec = new SimpleDateFormat("HH:mm:ss.SSS");
                         //--dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         dfSubSec.setTimeZone(TimeZone.getDefault());
@@ -538,6 +537,7 @@ public class Grid
                         df1.setTimeZone(TimeZone.getDefault());
 
                         String new_date_string = df1.format(date).toString();
+
                         if(i == 0 || !new_date_string.equals(prev_date_string))
                         {
                             curr_date_string = prev_date_string =
