@@ -521,7 +521,7 @@ def makeRpmsCommand(args):
     status="ok"
     if need_to_build:
         print "%s, Starting to make source tar file" % (str(datetime.datetime.now()),)
-        #makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
+        makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
         print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
         rpmbuild_status = rpmsign('rpmbuild --target i686-linux' +
