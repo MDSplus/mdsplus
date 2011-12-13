@@ -136,6 +136,10 @@ public class ChannelArchiver
                 disabled = false;
             }
         }
+        GroupHandler()
+        {
+            disabled = false;
+        }
         void addCheckChan(java.lang.String chanName)
         {
             disableVect.add(chanName);
@@ -164,33 +168,104 @@ public class ChannelArchiver
             
     static class TreeDataDescriptor
     {
+        static final int BYTE = 1, SHORT = 3, INT = 4, LONG = 5, FLOAT = 6, DOUBLE = 7;
     	java.lang.String nodeName;
-   	double []vals;
+   	double []doubleVals;
+  	float []floatVals;
+        int [] intVals;
+        byte [] byteVals;
+        long []longVals;
+        short[] shortVals;
     	long []times;
     	int idx;
+        int type;
     	TreeDataDescriptor(java.lang.String nodeName)
     	{
-	    vals = new double[SEGMENT_SIZE];
+	    doubleVals = new double[SEGMENT_SIZE];
+	    floatVals = new float[SEGMENT_SIZE];
+	    intVals = new int[SEGMENT_SIZE];
+	    longVals = new long[SEGMENT_SIZE];
+	    shortVals = new short[SEGMENT_SIZE];
+	    byteVals = new byte[SEGMENT_SIZE];
 	    times = new long[SEGMENT_SIZE];
 	    idx = 0;
 	    this.nodeName = nodeName;
     	}
 	java.lang.String getNodeName(){return nodeName;}
-    	boolean addRow(double val, long time)
+    	boolean addRow(Data val, long time)
     	{
-	    if(idx < SEGMENT_SIZE)
+ 	    if(idx < SEGMENT_SIZE)
 	    {
-	    	vals[idx] = val;
-	    	times[idx] = time;
-	    	idx++;
-	    }
+                try {
+                    if(val instanceof Float64)
+                    {
+                        type = DOUBLE;
+                        doubleVals[idx] = val.getDouble();
+                    }
+                    else if (val instanceof Float32)
+                    {
+                        type = FLOAT;
+                        floatVals[idx] = val.getFloat();
+                    }
+                    else if (val instanceof Int64)
+                    {
+                        type = LONG;
+                        longVals[idx] = val.getLong();
+                    }
+                    else if (val instanceof Int32)
+                    {
+                        type = INT;
+                        intVals[idx] = val.getInt();
+                    }
+                    else if (val instanceof Int16)
+                    {
+                        type = SHORT;
+                        shortVals[idx] = val.getShort();
+                    }
+                    else if (val instanceof Int8)
+                    {
+                        type = BYTE;
+                         byteVals[idx] = val.getByte();
+                    }
+                    else
+                    {
+                        System.err.println("Unexpected data type");
+                        return false;
+                    }
+                    times[idx] = time;
+                    idx++;
+               }catch(Exception exc) {System.err.println("Internal error in data management");}
+            }
             return idx == SEGMENT_SIZE;
     	}
-	double [] getVals() {return vals;}
+	Array getVals() 
+        {
+            switch(type) {
+                case BYTE: return new Int8Array(byteVals);
+                case SHORT: return new Int16Array(shortVals);
+                case INT: return new Int32Array(intVals);
+                case FLOAT: return new Float32Array(floatVals);
+                case DOUBLE: return new Float64Array(doubleVals);
+                default: return null;
+            }
+        }
+	Data getVal() 
+        {
+            switch(type) {
+                case BYTE: return new Int8(byteVals[0]);
+                case SHORT: return new Int16(shortVals[0]);
+                case INT: return new Int32(intVals[0]);
+                case FLOAT: return new Float32(floatVals[0]);
+                case DOUBLE: return new Float64(doubleVals[0]);
+                default: return null;
+            }
+        }
 	long [] getTimes() { return times;}
-	int getDim() { return vals.length;}
-    } //End static inner class TreeDataDescriptor
-    //Manages insertion of data into MDSplus tree
+	//int getDim() { return vals.length;}
+        int getDim() { return idx;}
+     } //End static inner class TreeDataDescriptor
+    
+    //TreeHandler Manages insertion of data into MDSplus tree
     static class TreeHandler implements Runnable
     {
         class SizeChecker implements Runnable
@@ -208,7 +283,7 @@ public class ChannelArchiver
             public void run()
             {
 		long prevSize = 0;
-                while(!terminated)
+                //while(!terminated)
                 {
                     try {
                         currSize = tree.getDatafileSize();
@@ -273,9 +348,9 @@ public class ChannelArchiver
 		}
 	    	try {
 		    if(descr.getDim() >1)
-	   	    	node.makeTimestampedSegment(new Float64Array(descr.getVals()), descr.getTimes());
+	   	    	node.makeTimestampedSegment(descr.getVals(), descr.getTimes());
 		    else
-			node.putRow(new Float64(descr.getVals()[0]), descr.getTimes()[0]);
+			node.putRow(descr.getVal(), descr.getTimes()[0]);
 	   	}catch(Exception exc){ System.err.println("Error in putTimestampedSegment: " + exc);}
             	if(currSize > switchSize)
             	{
@@ -323,7 +398,7 @@ public class ChannelArchiver
                 }
             }
             try {
-              	if(descr.addRow(data.getDouble(), time))
+              	if(descr.addRow(data, time))
 	    	{
                     nodeHash.put(descr.getNodeName(), new TreeDataDescriptor(descr.getNodeName()));
                     if(queue.remainingCapacity() > 0)
@@ -390,12 +465,13 @@ public class ChannelArchiver
         }
  	public synchronized void monitorChanged(MonitorEvent e)
 	{
+System.out.println("Monitor: "+treeNodeName);
             DBR dbr = e.getDBR();
             try {
                 Data data = DBR2Data(dbr);
                 long time = DBR2Time(dbr);
 		int severity = CAStatus2Severity(e.getStatus());
-                if(isCheckChan)
+                if(isCheckChan && gh != null)
                     gh.updateCheckData(chanName, data);
                 if(time <= prevTime)  //A previous sample has been received
                 {
@@ -407,7 +483,7 @@ public class ChannelArchiver
                 prevTime = time;
                  if(saveTree)
                  {
-                    if (isCheckChan || !gh.isDisabled()) 
+                    if (isCheckChan || gh == null || !gh.isDisabled()) 
                     {
                         treeManager.putRow(treeNodeName, data, time);
 			if(severity != prevSeverity)
@@ -499,7 +575,7 @@ public class ChannelArchiver
                 try {
                     Thread.currentThread().sleep(period);
                 } catch(InterruptedException exc){return;}
-                if (!isCheckChan && gh.isDisabled()) 
+                if (!isCheckChan && gh != null && gh.isDisabled()) 
                     continue;
 
                 try {
@@ -525,7 +601,7 @@ public class ChannelArchiver
                         time = dataTime.getTime();
 			severity = monitor.getSeverity();
                     }
-                    if(isCheckChan)
+                    if(isCheckChan && gh != null)
                         gh.updateCheckData(chanName, data);
                    if(time <= prevTime)  //A previous sample has been received
                         continue;
@@ -533,7 +609,7 @@ public class ChannelArchiver
                         continue; 
                     prevTime = time;
                     
-                    if (isCheckChan || !gh.isDisabled()) 
+                    if (isCheckChan || gh == null || !gh.isDisabled()) 
 		    {
                         treeManager.putRow(treeNodeName, data, time);
                System.out.println("Severities: " + severity + " " + prevSeverity);
@@ -613,49 +689,56 @@ public class ChannelArchiver
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
                         System.out.println(recName);
-                        //EGU
-                        try {
-                            Channel eguChan = ctxt.createChannel(recName+".EGU");
-                            ctxt.pendIO(5.);
-                            DBR dbr = eguChan.get();
-                            ctxt.pendIO(5.);
-                            TreeNode eguNode = tree.getNode(nodeName+":EGU");
-                            eguNode.putData(DBR2Data(dbr));
-                            eguChan.destroy();
-                         }catch(Exception exc)
-                         {
-                             System.err.println("Cannot get EGU for " + recName + ": " + exc);
-                             //continue;
-                         }
-                        //HOPR
-                        try {
-                            Channel hoprChan = ctxt.createChannel(recName+".HOPR");
-                            ctxt.pendIO(5.);
-                            DBR dbr = hoprChan.get();
-                            ctxt.pendIO(5.);
-                            TreeNode hoprNode = tree.getNode(nodeName+":HOPR");
-                            hoprNode.putData(DBR2Data(dbr));
-                            hoprChan.destroy();
-                         }catch(Exception exc)
-                         {
-                             System.err.println("Cannot get HOPR for " + recName + ": " + exc);
-                         }
-                         //LOPR
-                        try {
-                            Channel loprChan = ctxt.createChannel(recName+".LOPR");
-                            ctxt.pendIO(5.);
-                            DBR dbr = loprChan.get();
-                            ctxt.pendIO(5.);
-                            TreeNode hoprNode = tree.getNode(nodeName+":LOPR");
-                            hoprNode.putData(DBR2Data(dbr));
-                            loprChan.destroy();
-                        }catch(Exception exc)
-                        {
-                            System.err.println("Cannot get LOPR for " + recName + ": " + exc);
-                        }
                         //Get VAL channel. It will remain open thorough the whole program execution
                         Channel valChan = ctxt.createChannel(recName+".VAL");
                         ctxt.pendIO(5.);
+                        DBR valDbr = valChan.get();
+                        ctxt.pendIO(5.);
+                        //valDbr.printInfo(System.out);
+                        if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
+                        {
+                            //EGU
+                            try {
+                                Channel eguChan = ctxt.createChannel(recName+".EGU");
+                                ctxt.pendIO(5.);
+                                DBR dbr = eguChan.get();
+                                ctxt.pendIO(5.);
+                                TreeNode eguNode = tree.getNode(nodeName+":EGU");
+                                eguNode.putData(DBR2Data(dbr));
+                                eguChan.destroy();
+                             }catch(Exception exc)
+                             {
+                                 System.err.println("Cannot get EGU for " + recName + ": " + exc);
+                                 //continue;
+                             }
+                            //HOPR
+                            try {
+                                Channel hoprChan = ctxt.createChannel(recName+".HOPR");
+                                ctxt.pendIO(5.);
+                                DBR dbr = hoprChan.get();
+                                ctxt.pendIO(5.);
+                                TreeNode hoprNode = tree.getNode(nodeName+":HOPR");
+                                hoprNode.putData(DBR2Data(dbr));
+                                hoprChan.destroy();
+                             }catch(Exception exc)
+                             {
+                                 System.err.println("Cannot get HOPR for " + recName + ": " + exc);
+                             }
+                             //LOPR
+                            try {
+                                Channel loprChan = ctxt.createChannel(recName+".LOPR");
+                                ctxt.pendIO(5.);
+                                DBR dbr = loprChan.get();
+                                ctxt.pendIO(5.);
+                                TreeNode hoprNode = tree.getNode(nodeName+":LOPR");
+                                hoprNode.putData(DBR2Data(dbr));
+                                loprChan.destroy();
+                            }catch(Exception exc)
+                            {
+                                System.err.println("Cannot get LOPR for " + recName + ": " + exc);
+                            }                        
+                        }
+                        
                         
                         try {
                              TreeNode node = tree.getNode(nodeName+":IS_DISABLE");
@@ -681,7 +764,7 @@ public class ChannelArchiver
                             }
                         }catch(Exception exc)
                         {
-                            System.err.println("Error Setting Group Enabling: "+exc);
+                            //System.err.println("No gropup management for var " + recName);
                             chanName = "";
                             gh = null;
                         }    
@@ -693,7 +776,11 @@ public class ChannelArchiver
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
                         if(scanMode.equals("MONITOR"))
                         {
-                               valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
+                            if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
+                               valChan.addMonitor(DBRType.TIME_INT, 1, Monitor.VALUE, 
+                                       new DataMonitor(treeManager, valNode.getFullPath(), severityNode.getFullPath(), ignFuture, chanName, isDisable, gh));
+                            else
+                                valChan.addMonitor(DBRType.TIME_DOUBLE, 1, Monitor.VALUE, 
                                        new DataMonitor(treeManager, valNode.getFullPath(), severityNode.getFullPath(), ignFuture, chanName, isDisable, gh));
                                ctxt.pendIO(5.);
                         }
