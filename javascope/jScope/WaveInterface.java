@@ -1569,14 +1569,17 @@ public class WaveInterface
             }
             else
             {
-//                if(xmin != -HUGE || !full_flag) //If we actually have some limit
-                    if(!full_flag) //If we actually have some limit
+//GAB 2011: Apparently the check wd == null waforgotten
+                if(wd == null)
                 {
-                    wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
-                                                 Waveform.MAX_POINTS);
+                    if(!full_flag) //If we actually have some limit
+                    {
+                        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
+                                                     Waveform.MAX_POINTS);
+                    }
+                    else
+                        wd = dp.GetWaveData(in_y[curr_wave]);
                 }
-                else
-                    wd = dp.GetWaveData(in_y[curr_wave]);
             }
             if (wd == null)
                 curr_data = null;

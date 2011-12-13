@@ -353,6 +353,7 @@ public class MdsDataProvider
         String in_x, in_y;
         double xmax, xmin;
         int n_points;
+        double waveMin, waveMax;
         boolean resample = false;
         boolean _jscope_set = false;
         int v_idx;
@@ -372,13 +373,41 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, double xmin, double xmax, int n_points)
         {
-          resample = true;
+            resample = true;
+            if(xmin == -1E8 && xmax == 1E8) //If no limits explicitly set
+            {
+                try {
+                    int limits[] = GetIntArray("JavaGetMinMax(\""+in_y+"\")");
+                    this.xmin = this.waveMin = limits[0];
+                    this.xmax = this.waveMax = limits[1];
+                    
+                }catch(IOException exc){System.out.println("Cannot get Min and Max of for signel " + in_y);}
+            }
+            else
+            {
+                try {
+                    int limits[] = GetIntArray("JavaGetMinMax(\""+in_y+"\")");
+                    this.waveMin = limits[0];
+                    this.waveMax = limits[1];
+                }catch(IOException exc)
+                {
+                    System.out.println("Cannot get Min and Max of for signel " + in_y);
+                    this.waveMin = xmin;
+                    this.waveMax = xmax;
+                }
+                if(xmin >= waveMin)
+                    this.xmin = xmin;
+                else
+                    this.xmin = waveMin;
+                if(xmax <= waveMax)
+                    this.xmax = xmax;
+                else
+                    this.xmax = waveMax;
+            }
             this.in_y = in_y;
-            this.xmin = xmin;
-            this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
-            setResampleLimits(xmin, xmax);
+//            setResampleLimits(this.xmin, this.xmax);
         }
 
         public SimpleWaveData(String in_y, String in_x, double xmin, double xmax,
@@ -391,12 +420,13 @@ public class MdsDataProvider
             this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
-            setResampleLimits(xmin, xmax);
+//            setResampleLimits(xmin, xmax);
         }
 
         public int GetNumDimension() throws IOException
         {
-
+            if(resample)
+                setResampleLimits(this.xmin, this.xmax);
             String expr;
             if (_jscope_set)
                 expr = "shape(_jscope_" + v_idx + ")";
@@ -415,42 +445,29 @@ public class MdsDataProvider
                 error = null;
                 return 1;
             }
+            if(resample)
+                resetResampleLimits();
             return shape.length;
         }
 
         public float[] GetFloatData() throws IOException
         {
-            // _jscope_set = true;
+            if(resample)
+                setResampleLimits(this.xmin, this.xmax);
+
             String in_y_expr = "_jscope_" + v_idx;
             String set_tdivar = "";
-            if (!_jscope_set || resample)
+            if (!_jscope_set)// || resample)
             {
                 _jscope_set = true;
                 set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
                 var_idx+=2;
             }
 
-
+            float[] res = GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
             if(resample)
-            {
-                setResampleLimits(xmin, xmax);
-            }
-
-
-
- /*           if (resample && in_x == null)
-            {
-                String limits = "FLOAT(" + xmin + "), " + "FLOAT(" + xmax + ")";
-                String resampledExpr = "_jscope_" + (v_idx+1) + " = " + "JavaResample(" + "FLOAT(" + in_y_expr +
-                   "), " + "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
-
-                //String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
-                String expr = set_tdivar + resampledExpr;
-
-                return GetFloatArray(expr);
-            }
-            else */
-                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
+                resetResampleLimits();
+            return res;
         }
 
         private double[] encodeTimeBase(String expr)
@@ -578,26 +595,16 @@ public class MdsDataProvider
             boolean isCoded = false;
             double tBaseOut[] = null;
 
+
+
+
             if (in_x == null)
             {
 
                 if (_jscope_set)
                 {
-                   if(resample && in_x == null)
-                    {
-                        //expr = "dim_of(_jscope_" + (v_idx + 1) + ")";
-                        expr = "JavaDImOf(_jscope_" + v_idx + ", _jscope_"+(v_idx+1)+")";
-          //            tBaseOut = encodeTimeBase("_jscope_" + (v_idx + 1));
-                    }
-                    else
-                   {
-                        expr = "dim_of(_jscope_" + v_idx + ")";
-              //          tBaseOut = encodeTimeBase("_jscope_" + v_idx);
-                    }
-
-                    // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
-                    // isCoded = true;
-                }
+                    expr = "dim_of(_jscope_" + v_idx + ")";
+                 }
                 else
                 {
                     _jscope_set = true;
@@ -605,26 +612,8 @@ public class MdsDataProvider
                     String set_tdivar = "( _jscope_" + v_idx + " = (" + in_y +
                         "), ";
                     var_idx+=2;
-
-                    if (resample)
-                    {
-                        String limits = "FLOAT(" + xmin + "), " + "FLOAT(" +
-                            xmax + ")";
-                        //expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
-                        //       "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
-                        expr = set_tdivar + "JavaResample(" + "FLOAT(" +
-                            in_y_expr + "), " +
-                            "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
-                    }
-                    else
-                    {
-                        //expr = "dim_of("+in_y+")";
-                        expr = set_tdivar + "dim_of(" + in_y_expr + ")";
-                        tBaseOut = encodeTimeBase(in_y);
-                        // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
-                        // isCoded = true;
-
-                    }
+                    expr = set_tdivar + "dim_of(" + in_y_expr + ")";
+                    tBaseOut = encodeTimeBase(in_y);
                 }
                 if (tBaseOut != null)
                     return new RealArray(tBaseOut);
@@ -648,30 +637,31 @@ public class MdsDataProvider
                 var_idx+=2;
             }
             return GetFloatArray(expr);
-
-            //return GetFloatArray("DIM_OF("+in_y+", 1)");
-        }
+       }
 
         public String GetTitle() throws IOException
         {
             String expr;
+            String out;
             if (_jscope_set)
+            {
                 expr = "help_of(_jscope_" + v_idx + ")";
+                out = GetStringValue(expr);
+            }
             else
             {
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), help_of(_jscope_" + v_idx + "))";
                 var_idx+=2;
+                if(resample)
+                    setResampleLimits(xmin, xmax);
+                out = GetStringValue(expr);
+                if(resample)
+                    resetResampleLimits();
+
             }
-
-            //String out = GetDefaultTitle(expr);
-            String out = GetStringValue(expr);
-
-            if (out == null)
-                _jscope_set = false;
-
-            return out;
+           return out;
             //return GetDefaultTitle(in_y);
         }
 
@@ -683,41 +673,26 @@ public class MdsDataProvider
             {
                 String expr;
                 if (_jscope_set)
-                 //   expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
-                      expr = "Units(dim_of(_jscope_" + v_idx + "))";
+                {
+                    expr = "Units(dim_of(_jscope_" + v_idx + "))";
+                    out = GetStringValue(expr);
+                }
                 else
                 {
                     _jscope_set = true;
-                    //expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                     if(resample)
+                        setResampleLimits(xmin, xmax);
                     expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
                     var_idx+=2;
+                    out = GetStringValue(expr);
+                    if(resample)
+                        resetResampleLimits();
                 }
-
-//                out = GetDefaultXLabel(expr);
-                out = GetStringValue(expr);
-                //return GetDefaultXLabel(in_y);
             }
             else
             {
-                /*
-                                 String expr;
-                                 if(_jscope_set)
-                    expr = "Units(_jscope_"+v_idx+")";
-                                 else
-                                 {
-                    _jscope_set = true;
-                     expr = "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")";
-                    var_idx++;
-                                 }
-                                 return GetDefaultYLabel(expr);
-                 */
-                //out = GetDefaultYLabel("Units(" + in_x + ")");
                 out = GetStringValue("Units(" + in_x + ")");
             }
-
-            if (out == null)
-                _jscope_set = false;
-
             return out;
         }
 
@@ -726,43 +701,48 @@ public class MdsDataProvider
         {
                         
             String expr;
-            
+            String out;
+           
             if( GetNumDimension() > 1)
-            {                
+            {
                 if (_jscope_set)
+                {
                     expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                    out = GetStringValue(expr);
+                }
                 else
                 {
                     _jscope_set = true;
                     expr = "( _jscope_" + v_idx + " = (" + in_y +
                         "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
                     var_idx+=2;
+                    if(resample)
+                        setResampleLimits(xmin, xmax);
+                    out = GetStringValue(expr);
+                    if(resample)
+                        resetResampleLimits();
+
                 }
-
-                //String out = GetDefaultZLabel(expr);
-                String out = GetStringValue(expr);
-                if (out == null)
-                    _jscope_set = false;
-
-                return out;
+               return out;
             }
             
             if (_jscope_set)
+            {
                 expr = "Units(_jscope_" + v_idx + ")";
+                out = GetStringValue(expr);
+            }
             else
             {
                 _jscope_set = true;
                 expr = "( _jscope_" + v_idx + " = (" + in_y +
                     "), Units(_jscope_" + v_idx + "))";
                 var_idx+=2;
+                if(resample)
+                    setResampleLimits(xmin, xmax);
+                out = GetStringValue(expr);
+                if(resample)
+                    resetResampleLimits();
             }
-            //String out = GetDefaultYLabel(expr);
-            String out = GetStringValue(expr);
-
-
-            if (out == null)
-                _jscope_set = false;
-
             return out;
             //return GetDefaultYLabel(in_y);
         }
@@ -1470,11 +1450,13 @@ public class MdsDataProvider
         else
         {
             double dt = (max - min) / MAX_PIXELS;
-            if(dt > 1E-3)
-                dt = 1E-3;
             limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
         }
         mds.MdsValue(limitsExpr);
+    }
+    void resetResampleLimits()
+    {
+       mds.MdsValue("TreeShr->TreeResetTimeContext()");
     }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException

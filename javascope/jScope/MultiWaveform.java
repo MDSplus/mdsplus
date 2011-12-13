@@ -1476,14 +1476,14 @@ public class MultiWaveform
 
         if (wi != null)
 
-            wi.AsynchUpdate(signals, (double) (start_xs - x_range),
-                            (double) (end_xs + x_range),
-                            (double) orig_xmin, (double) orig_xmax,
-                            update_timestamp, mode == MODE_PAN, this);
-            //wi.AsynchUpdate(signals, (float) (start_xs),
-            //                (float) (end_xs),
-            //                (float) orig_xmin, (float) orig_xmax, update_timestamp,
-            //                mode == MODE_PAN, this);
+//            wi.AsynchUpdate(signals, (double) (start_xs - x_range),
+//                            (double) (end_xs + x_range),
+//                            (double) orig_xmin, (double) orig_xmax,
+//                            update_timestamp, mode == MODE_PAN, this);
+            wi.AsynchUpdate(signals, (float) (start_xs),
+                            (float) (end_xs),
+                            (float) orig_xmin, (float) orig_xmax, update_timestamp,
+                            mode == MODE_PAN, this);
 
     }
 
