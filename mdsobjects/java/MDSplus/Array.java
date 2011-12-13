@@ -31,7 +31,7 @@ public abstract class Array extends Data
     {
         return dims;
     }
-    void setShape(int []newDims) throws MdsException
+    public void setShape(int []newDims) throws MdsException
     {
         int size = 1;
         for(int i = 0; i < newDims.length; i++)
