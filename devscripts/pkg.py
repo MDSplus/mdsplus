@@ -14,7 +14,7 @@ class CvsStatus(object):
             CvsStatus.status=CvsStatus.all.split('\n')
 
 def rpmsign(cmd):
-    child = pexpect.spawn('/bin/sh', ['-c',cmd],timeout=3600,cwd=os.getcwd())
+    child = pexpect.spawn('/bin/sh', ['-c',cmd],timeout=8600,cwd=os.getcwd())
     child.logfile=sys.stdout
     child.expect("Enter pass phrase: ")
     child.sendline("")
