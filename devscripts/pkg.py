@@ -537,7 +537,7 @@ def makeRpmsCommand(args):
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
                     ' --define="_builddir %s/i686/mdsplus"' % (WORKSPACE,)+\
-                    ' %s' %(specfile,),shell=True,cwd=os.cwd())
+                    ' %s' %(specfile,),shell=True,cwd=os.getcwd())
         rpmbuild_status=p.wait()
         print "%s, Done building 32-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
         if rpmbuild_status != 0:
@@ -552,7 +552,7 @@ def makeRpmsCommand(args):
                         ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+\
                         ' --define="_topdir %s"' % (WORKSPACE,)+
                     ' --define="_builddir %s/x86_64/mdsplus"' % (WORKSPACE,)+
-                    ' %s' %(specfile,),shell=True,cwd=os.cwd())
+                    ' %s' %(specfile,),shell=True,cwd=os.getcwd())
             rpmbuild_status=p.wait()
             print "%s, Done building 64-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
             if rpmbuild_status != 0:
