@@ -172,20 +172,23 @@ class ACQ(MDSplus.Device):
 
     def getBoardState(self):
         """Get the current state"""
-        import socket,signal
-        s=socket.socket()
-	s.settimeout(3.) 
-        state="Unknown"
-        try:
-            s.connect((self.getBoardIp(),54545))
-            state=s.recv(100)[0:-1]
-	    if self.debugging():
-		print "getBoardState  returning /%s/\n" % (state,)
-        except Exception,e:
-            print "Error getting board state: %s" % (str(e),)
-	    state = "off-line"
-        s.close()
-        return state
+        import socket,signal,time
+	for tries in range(5):
+            s=socket.socket()
+	    s.settimeout(3.) 
+            state="Unknown"
+            try:
+                s.connect((self.getBoardIp(),54545))
+                state=s.recv(100)[0:-1]
+	        if self.debugging():
+		    print "getBoardState  returning /%s/\n" % (state,)
+                s.close()
+                return state
+            except Exception,e:
+                print "Error getting board state: %s" % (str(e),)
+	        state = "off-line"
+                s.close()
+            time.sleep(3)
                   
     def getMyIp(self):
         import socket
@@ -247,11 +250,15 @@ class ACQ(MDSplus.Device):
         if auto_store != None :
             if self.debugging():
                 fd.write("mdsValue 'setenv(\"\"DEBUG_DEVICES=yes\"\")'\n")
+            fd.write("touch /tmp/ready\n")
             fd.write("mdsConnect %s\n" %self.getMyIp())
             fd.write("mdsOpen %s %d\n" %(self.local_tree, self.tree.shot,))
-            fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out)'\n" %( self.local_path, ))
+            fd.write("mdsValue 'tcl(\"\"do /meth %s store\"\", _out),_out'\n" %( self.local_path, ))
+            if self.debugging():
+                fd.write("mdsValue 'write(*,_out)'\n")
             fd.write("mdsClose\n")
             fd.write("mdsDisconnect\n")
+            fd.write("rm /tmp/ready\n")
 
         fd.write("EOF\n")
         fd.write("chmod a+x /etc/postshot.d/postshot.sh\n")
@@ -331,9 +338,10 @@ class ACQ(MDSplus.Device):
                 if self.debugging():
                     print "error retrieving bus %s\n" %(e,)
                 bus = ''
-            fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
-            if self.debugging():
-                print "set.route %s in %s out %s\n" %(line, wire, bus,)
+            if wire != 'fpga' and bus != '' :
+                fd.write("set.route %s in %s out %s\n" %(line, wire, bus,))
+                if self.debugging():
+                    print "set.route %s in %s out %s\n" %(line, wire, bus,)
 
     def loadSettings(self):
         settingsfd = tempfile.TemporaryFile()
@@ -387,10 +395,10 @@ class ACQ(MDSplus.Device):
         """Wait for board to finish digitizing and storing the data"""
         state = self.getBoardState()
 	tries = 0
-	while state == "ACQ32:4 ST_POSTPROCESS" and tries < 180 :
+	while (state == "ACQ32:4 ST_POSTPROCESS" or state == "Ready" ) and tries < 90 :
 	    tries = tries + 1
 	    state = self.getBoardState()
-	    time.sleep(1)
+	    time.sleep(2)
 
 	if state == 'off-line' :
 	    return 662470754  # device not triggered - change to offline
@@ -404,6 +412,7 @@ class ACQ(MDSplus.Device):
                 if chan_node.on :
                     max_chan = chan_node
                     break
+
             if max_chan.rlength > 0:
 		return 1
 	    else:
