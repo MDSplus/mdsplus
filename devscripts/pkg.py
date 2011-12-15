@@ -436,31 +436,27 @@ def addPkgToRpmSpec(specfile,pkg,release,DIST,rpmflavor):
 
 def makeRepoRpms():
     WORKSPACE=getWorkspace()
-    rpmbuild_status=rpmsign('rpmbuild -ba' +
-                            ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+
-                            ' --sign'+
-                            ' --define="_signature gpg"'+
-                            ' --define="_gpg_name MDSplus"'+
-                            ' --define="_topdir %s"' % (WORKSPACE,)+
-                            ' --define="_builddir %s"' % (WORKSPACE,)+
-                            ' --define="flavor %s"' % (FLAVOR,)+
-                            ' --define="s_dist %s"' % (DIST,)+
-                            ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,))
+    p=Popen('rpmbuild -ba' +\
+                ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
+                ' --define="_topdir %s"' % (WORKSPACE,)+\
+                ' --define="_builddir %s"' % (WORKSPACE,)+\
+                ' --define="flavor %s"' % (FLAVOR,)+\
+                ' --define="s_dist %s"' % (DIST,)+\
+                ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=os.getcwd())
+    rpmbuild_status=p.wait()
     if rpmbuild_status != 0:
         print "Error building repository rpm for x86_64 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
         status="error"
     else:
-        rpmbuild_status=rpmsign('rpmbuild -ba'+
-                                ' --sign'+
-                                ' --target=i686-linux'+
-                                ' --define="_signature gpg"'+
-                                ' --define="_gpg_name MDSplus"'+
-                                ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'
-                                ' --define="_topdir %s"' % (WORKSPACE,)+
-                                ' --define="_builddir %s"' % (WORKSPACE,)+
-                                ' --define="flavor %s"' % (FLAVOR,)+
-                                ' --define="s_dist %s"' % (DIST,)+
-                                ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,))
+        p=Popen('rpmbuild -ba'+\
+                    ' --target=i686-linux'+\
+                    ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
+                    ' --define="_topdir %s"' % (WORKSPACE,)+\
+                    ' --define="_builddir %s"' % (WORKSPACE,)+\
+                    ' --define="flavor %s"' % (FLAVOR,)+\
+                    ' --define="s_dist %s"' % (DIST,)+\
+                    ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=os.getcwd())
+        rpmbuild_status=p.wait()
         if rpmbuild_status != 0:
             print "Error building repository rpm for i686 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
             status="error"
@@ -592,6 +588,34 @@ def makeRpmsCommand(args):
         except Exception,e:
             print "Error creating repo: %s" (e,)
         sys.exit(p.wait())
+
+
+def vsUpdateSetups(release,changed):
+    vsUpdateSetup(release,changed,32)
+    vsupdateSetup(release,changed,34)
+
+def vsUpdateSetup(release,changed,bits):
+    os.rename('Setup/Setup%d.vdproj' % (bits,),'Setup\\Setup%d.vdproj-orig' % (bits,))
+    f_in=open('Setup/Setup%d.vdproj-orig' %(bits,),'r')
+    f_out=open('Setup/Setup%d.vdproj' %(bits,),'w')
+    line=f_in.readline()
+    while len(line) > 0:
+        if "Product Name" in line:
+            s=line.split(':')
+            line=s[0]+':'+"8:MDSplus - "+FLAVOR
+         if changed and "ProductCode" in line:
+            p=Popen("uuidgen",stdout=PIPE)
+            uuid=p.stdout.read()
+            p.wait()
+            s=line.split(':')
+            line=s[0]+':'+uuid
+        if "ProductVersion" in line:
+            s=line.split(':')
+            line=s[0]+':'+VERSION+'-'+str(release)
+        f_out.write(line)
+        line=f_in.readline()
+    f_in.close()
+    f_out.close()
 
 
 if __name__ == "__main__":
