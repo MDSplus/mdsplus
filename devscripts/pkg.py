@@ -14,13 +14,16 @@ class CvsStatus(object):
             CvsStatus.status=CvsStatus.all.split('\n')
 
 def rpmsign(cmd):
-    child = pexpect.spawn('/bin/sh', ['-c',cmd],timeout=8600,cwd=os.getcwd())
-    child.logfile=sys.stdout
-    child.expect("Enter pass phrase: ")
-    child.sendline("")
-    child.expect(pexpect.EOF)
-    child.close()
-    return child.status
+    try:
+    	child = pexpect.spawn('/bin/sh', ['-c',cmd],timeout=8600,cwd=os.getcwd())
+    	child.logfile=sys.stdout
+    	child.expect("Enter pass phrase: ")
+    	child.sendline("")
+    	child.close()
+    	return child.status
+    except Exception,e:
+        print "Error with rpmbuild - %s" % (e,)
+        return 1
 
 def getDist():
     if os.name=="nt":
