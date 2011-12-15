@@ -13,16 +13,22 @@ class CvsStatus(object):
             p.wait()
             CvsStatus.status=CvsStatus.all.split('\n')
 
-def rpmsign(cmd):
+def signrpmsCommand(args):
+    print signrpms(args[2])
+
+def signrpms(arch):
     try:
-    	child = pexpect.spawn('/bin/sh', ['-c',cmd],timeout=8600,cwd=os.getcwd())
-    	child.logfile=sys.stdout
+        WORKSPACE=getWorkspace()
+        cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" *.rpm'"
+    	child = pexpect.spawn(cmd,timeout=60,cwd=WORKSPACE+'/RPMS/'+arch)
+#    	child.logfile=sys.stdout
     	child.expect("Enter pass phrase: ")
     	child.sendline("")
+        child.expect(pexpect.EOF)
     	child.close()
     	return child.status
     except Exception,e:
-        print "Error with rpmbuild - %s" % (e,)
+        print "Error with signrpms - %s" % (e,)
         return 1
 
 def getDist():
@@ -527,30 +533,35 @@ def makeRpmsCommand(args):
         makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
         print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
-        rpmbuild_status = rpmsign('rpmbuild --target i686-linux' +
-                                  ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+
-                                  ' --define="_signature gpg" --sign'+
-                                  ' --define="_gpg_name MDSplus"'+
-                                  ' --define="_topdir %s"' % (WORKSPACE,)+
-                                  ' --define="_builddir %s/i686/mdsplus"' % (WORKSPACE,)+
-                                  ' %s' %(specfile,))
-        print "%s, Done building 32-bit rpms" % (str(datetime.datetime.now()),)
+        p=Popen('rpmbuild --target i686-linux' +\
+                    ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
+                    ' --define="_topdir %s"' % (WORKSPACE,)+\
+                    ' --define="_builddir %s/i686/mdsplus"' % (WORKSPACE,)+\
+                    ' %s' %(specfile,),shell=True,cwd=os.cwd())
+        rpmbuild_status=p.wait()
+        print "%s, Done building 32-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
         if rpmbuild_status != 0:
             print "Error build i686 %s.%s rpms. rpmbuild returned with status=%d" % (FLAVOR,DIST,rpmbuild_status)
             status="error"
         else:
+            print "%s, Starting to sign 32-bit rpms" % (str(datetime.datetime.now()),)
+            sstatus=signrpms('i686')
+            print "%s, Done signing 32-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
             print "%s, Starting to build 64-bit rpms" % (str(datetime.datetime.now()),)
-            rpmbuild_status = rpmsign('rpmbuild --target x86_64-linux'+
-                                      ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+
-                                      ' --define="_signature gpg" --sign'+
-                                      ' --define="_gpg_name MDSplus"'+
-                                      ' --define="_topdir %s"' % (WORKSPACE,)+
-                                      ' --define="_builddir %s/x86_64/mdsplus"' % (WORKSPACE,)+
-                                      ' %s' %(specfile,))
-            print "%s, Done building 32-bit rpms" % (str(datetime.datetime.now()),)
+            p=Popen('rpmbuild --target x86_64-linux'+\
+                        ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+\
+                        ' --define="_topdir %s"' % (WORKSPACE,)+
+                    ' --define="_builddir %s/x86_64/mdsplus"' % (WORKSPACE,)+
+                    ' %s' %(specfile,),shell=True,cwd=os.cwd())
+            rpmbuild_status=p.wait()
+            print "%s, Done building 64-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
             if rpmbuild_status != 0:
-                print "Error build x86_64 %s.%s rpms. rpmbuild returned with status=%d" % (FLAVOR,DIST,rpmbuild_status)
                 status="error"
+            else:
+                print "%s, Starting to sign 64-bit rpms" % (str(datetime.datetime.now()),)
+                sstatus=signrpms('x86_64')
+                print "%s, Done signing 64-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
+
         if updates['python']['Update']:
             p=Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
