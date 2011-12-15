@@ -346,6 +346,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         return null;
     }
 
+    public Action[] collectActions(String rootPath) {return null;}
 
     public synchronized Action[] collectActions() {return null; }
 
