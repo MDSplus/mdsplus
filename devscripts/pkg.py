@@ -603,7 +603,7 @@ def vsUpdateSetup(release,changed,bits):
         if "Product Name" in line:
             s=line.split(':')
             line=s[0]+':'+"8:MDSplus - "+FLAVOR
-         if changed and "ProductCode" in line:
+        if changed and "ProductCode" in line:
             p=Popen("uuidgen",stdout=PIPE)
             uuid=p.stdout.read()
             p.wait()
