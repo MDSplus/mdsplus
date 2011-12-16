@@ -72,7 +72,7 @@ class ZELOS2150GV(Device):
 	while not self.stopReq:
 #	for i in range(0,5):
           if self.device.frame_sync.data() == 'EXTERNAL': 
-	    isExternal = c_int(1)
+            isExternal = c_int(1)
           else:
             isExternal = c_int(0)
           status = self.kappaLib.kappaSaveFrame(self.device.handle, self.width, self.height, frameBuffer, isExternal, treePtr, self.device.frames.getNid(), self.device.frame_clock.getNid(), c_int(self.idx))
