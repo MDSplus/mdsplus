@@ -51,6 +51,10 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         deviceChoice8 = new DeviceChoice();
         deviceChoice9 = new DeviceChoice();
+        jPanel41 = new javax.swing.JPanel();
+        deviceField36 = new DeviceField();
+        deviceChoice70 = new DeviceChoice();
+        deviceChoice71 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel12 = new javax.swing.JPanel();
@@ -69,6 +73,10 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField10 = new DeviceField();
         deviceChoice18 = new DeviceChoice();
         deviceChoice19 = new DeviceChoice();
+        jPanel42 = new javax.swing.JPanel();
+        deviceField37 = new DeviceField();
+        deviceChoice72 = new DeviceChoice();
+        deviceChoice73 = new DeviceChoice();
         jPanel16 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
         deviceChoice20 = new DeviceChoice();
@@ -107,6 +115,10 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField18 = new DeviceField();
         deviceChoice34 = new DeviceChoice();
         deviceChoice35 = new DeviceChoice();
+        jPanel43 = new javax.swing.JPanel();
+        deviceField38 = new DeviceField();
+        deviceChoice74 = new DeviceChoice();
+        deviceChoice75 = new DeviceChoice();
         jPanel5 = new javax.swing.JPanel();
         jPanel24 = new javax.swing.JPanel();
         deviceField19 = new DeviceField();
@@ -141,6 +153,10 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField32 = new DeviceField();
         deviceChoice62 = new DeviceChoice();
         deviceChoice63 = new DeviceChoice();
+        jPanel44 = new javax.swing.JPanel();
+        deviceField39 = new DeviceField();
+        deviceChoice76 = new DeviceChoice();
+        deviceChoice77 = new DeviceChoice();
         jPanel6 = new javax.swing.JPanel();
         jPanel25 = new javax.swing.JPanel();
         deviceField20 = new DeviceField();
@@ -155,6 +171,24 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField34 = new DeviceField();
         deviceChoice66 = new DeviceChoice();
         deviceChoice67 = new DeviceChoice();
+        jPanel26 = new javax.swing.JPanel();
+        jPanel27 = new javax.swing.JPanel();
+        deviceField21 = new DeviceField();
+        deviceChoice40 = new DeviceChoice();
+        deviceChoice41 = new DeviceChoice();
+        jTabbedPane7 = new javax.swing.JTabbedPane();
+        jPanel46 = new javax.swing.JPanel();
+        deviceField41 = new DeviceField();
+        deviceChoice80 = new DeviceChoice();
+        deviceChoice81 = new DeviceChoice();
+        jPanel45 = new javax.swing.JPanel();
+        deviceField40 = new DeviceField();
+        deviceChoice78 = new DeviceChoice();
+        deviceChoice79 = new DeviceChoice();
+        jPanel40 = new javax.swing.JPanel();
+        deviceField35 = new DeviceField();
+        deviceChoice68 = new DeviceChoice();
+        deviceChoice69 = new DeviceChoice();
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
@@ -286,6 +320,32 @@ public class SPIDER_SMSetup extends DeviceSetup {
 
         jTabbedPane2.addTab("22 kV Power Distribution Board", jPanel10);
 
+        deviceField36.setIdentifier("");
+        deviceField36.setLabelString("Children Mask: ");
+        deviceField36.setNumCols(4);
+        deviceField36.setOffsetNid(327);
+        jPanel41.add(deviceField36);
+
+        deviceChoice70.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice70.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice70.setConvert(true);
+        deviceChoice70.setIdentifier("");
+        deviceChoice70.setLabelString("Is Master:");
+        deviceChoice70.setOffsetNid(324);
+        deviceChoice70.setUpdateIdentifier("");
+        jPanel41.add(deviceChoice70);
+
+        deviceChoice71.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice71.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice71.setConvert(true);
+        deviceChoice71.setIdentifier("");
+        deviceChoice71.setLabelString("Is Essential: ");
+        deviceChoice71.setOffsetNid(330);
+        deviceChoice71.setUpdateIdentifier("");
+        jPanel41.add(deviceChoice71);
+
+        jTabbedPane2.addTab("Timing", jPanel41);
+
         jPanel2.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("PRIMA", jPanel2);
@@ -395,6 +455,32 @@ public class SPIDER_SMSetup extends DeviceSetup {
         jPanel15.add(deviceChoice19);
 
         jTabbedPane3.addTab("Electric Measurements", jPanel15);
+
+        deviceField37.setIdentifier("");
+        deviceField37.setLabelString("Children Mask: ");
+        deviceField37.setNumCols(4);
+        deviceField37.setOffsetNid(337);
+        jPanel42.add(deviceField37);
+
+        deviceChoice72.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice72.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice72.setConvert(true);
+        deviceChoice72.setIdentifier("");
+        deviceChoice72.setLabelString("Is Master:");
+        deviceChoice72.setOffsetNid(334);
+        deviceChoice72.setUpdateIdentifier("");
+        jPanel42.add(deviceChoice72);
+
+        deviceChoice73.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice73.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice73.setConvert(true);
+        deviceChoice73.setIdentifier("");
+        deviceChoice73.setLabelString("Is Essential: ");
+        deviceChoice73.setOffsetNid(340);
+        deviceChoice73.setUpdateIdentifier("");
+        jPanel42.add(deviceChoice73);
+
+        jTabbedPane3.addTab("Timing", jPanel42);
 
         jPanel3.add(jTabbedPane3, java.awt.BorderLayout.CENTER);
 
@@ -636,6 +722,32 @@ public class SPIDER_SMSetup extends DeviceSetup {
 
         jTabbedPane4.addTab("Inspection Imaging", jPanel23);
 
+        deviceField38.setIdentifier("");
+        deviceField38.setLabelString("Children Mask: ");
+        deviceField38.setNumCols(4);
+        deviceField38.setOffsetNid(347);
+        jPanel43.add(deviceField38);
+
+        deviceChoice74.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice74.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice74.setConvert(true);
+        deviceChoice74.setIdentifier("");
+        deviceChoice74.setLabelString("Is Master:");
+        deviceChoice74.setOffsetNid(344);
+        deviceChoice74.setUpdateIdentifier("");
+        jPanel43.add(deviceChoice74);
+
+        deviceChoice75.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice75.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice75.setConvert(true);
+        deviceChoice75.setIdentifier("");
+        deviceChoice75.setLabelString("Is Essential: ");
+        deviceChoice75.setOffsetNid(350);
+        deviceChoice75.setUpdateIdentifier("");
+        jPanel43.add(deviceChoice75);
+
+        jTabbedPane4.addTab("Timing", jPanel43);
+
         jPanel4.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Source", jPanel4);
@@ -850,6 +962,32 @@ public class SPIDER_SMSetup extends DeviceSetup {
 
         jTabbedPane5.addTab("Beam Tomography", jPanel37);
 
+        deviceField39.setIdentifier("");
+        deviceField39.setLabelString("Children Mask: ");
+        deviceField39.setNumCols(4);
+        deviceField39.setOffsetNid(367);
+        jPanel44.add(deviceField39);
+
+        deviceChoice76.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice76.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice76.setConvert(true);
+        deviceChoice76.setIdentifier("");
+        deviceChoice76.setLabelString("Is Master:");
+        deviceChoice76.setOffsetNid(364);
+        deviceChoice76.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice76);
+
+        deviceChoice77.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice77.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice77.setConvert(true);
+        deviceChoice77.setIdentifier("");
+        deviceChoice77.setLabelString("Is Essential: ");
+        deviceChoice77.setOffsetNid(370);
+        deviceChoice77.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice77);
+
+        jTabbedPane5.addTab("Timing", jPanel44);
+
         jPanel5.add(jTabbedPane5, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Diagnostics", jPanel5);
@@ -911,7 +1049,7 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Children Mask: ");
         deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(287);
+        deviceField34.setOffsetNid(357);
         jPanel39.add(deviceField34);
 
         deviceChoice66.setChoiceIntValues(new int[] {1, 0});
@@ -919,7 +1057,7 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceChoice66.setConvert(true);
         deviceChoice66.setIdentifier("");
         deviceChoice66.setLabelString("Is Master:");
-        deviceChoice66.setOffsetNid(284);
+        deviceChoice66.setOffsetNid(354);
         deviceChoice66.setUpdateIdentifier("");
         jPanel39.add(deviceChoice66);
 
@@ -928,15 +1066,125 @@ public class SPIDER_SMSetup extends DeviceSetup {
         deviceChoice67.setConvert(true);
         deviceChoice67.setIdentifier("");
         deviceChoice67.setLabelString("Is Essential: ");
-        deviceChoice67.setOffsetNid(290);
+        deviceChoice67.setOffsetNid(360);
         deviceChoice67.setUpdateIdentifier("");
         jPanel39.add(deviceChoice67);
 
-        jTabbedPane6.addTab("Safety", jPanel39);
+        jTabbedPane6.addTab("Timing", jPanel39);
 
         jPanel6.add(jTabbedPane6, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("Interlock/Safety", jPanel6);
+        jTabbedPane1.addTab("Interlock", jPanel6);
+
+        jPanel26.setLayout(new java.awt.BorderLayout());
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Children Mask: ");
+        deviceField21.setNumCols(4);
+        deviceField21.setOffsetNid(297);
+        jPanel27.add(deviceField21);
+
+        deviceChoice40.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice40.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice40.setConvert(true);
+        deviceChoice40.setIdentifier("");
+        deviceChoice40.setLabelString("Is Master:");
+        deviceChoice40.setOffsetNid(294);
+        deviceChoice40.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice40);
+
+        deviceChoice41.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice41.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice41.setConvert(true);
+        deviceChoice41.setIdentifier("");
+        deviceChoice41.setLabelString("Is Essential: ");
+        deviceChoice41.setOffsetNid(300);
+        deviceChoice41.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice41);
+
+        jPanel26.add(jPanel27, java.awt.BorderLayout.NORTH);
+
+        deviceField41.setIdentifier("");
+        deviceField41.setLabelString("Children Mask: ");
+        deviceField41.setNumCols(4);
+        deviceField41.setOffsetNid(287);
+        jPanel46.add(deviceField41);
+
+        deviceChoice80.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice80.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice80.setConvert(true);
+        deviceChoice80.setIdentifier("");
+        deviceChoice80.setLabelString("Is Master:");
+        deviceChoice80.setOffsetNid(284);
+        deviceChoice80.setUpdateIdentifier("");
+        jPanel46.add(deviceChoice80);
+
+        deviceChoice81.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice81.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice81.setConvert(true);
+        deviceChoice81.setIdentifier("");
+        deviceChoice81.setLabelString("Is Essential: ");
+        deviceChoice81.setOffsetNid(290);
+        deviceChoice81.setUpdateIdentifier("");
+        jPanel46.add(deviceChoice81);
+
+        jTabbedPane7.addTab("Safety", jPanel46);
+
+        deviceField40.setIdentifier("");
+        deviceField40.setLabelString("Children Mask: ");
+        deviceField40.setNumCols(4);
+        deviceField40.setOffsetNid(307);
+        jPanel45.add(deviceField40);
+
+        deviceChoice78.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice78.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice78.setConvert(true);
+        deviceChoice78.setIdentifier("");
+        deviceChoice78.setLabelString("Is Master:");
+        deviceChoice78.setOffsetNid(304);
+        deviceChoice78.setUpdateIdentifier("");
+        jPanel45.add(deviceChoice78);
+
+        deviceChoice79.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice79.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice79.setConvert(true);
+        deviceChoice79.setIdentifier("");
+        deviceChoice79.setLabelString("Is Essential: ");
+        deviceChoice79.setOffsetNid(310);
+        deviceChoice79.setUpdateIdentifier("");
+        jPanel45.add(deviceChoice79);
+
+        jTabbedPane7.addTab("Timing", jPanel45);
+
+        jPanel26.add(jTabbedPane7, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Safety", jPanel26);
+
+        deviceField35.setIdentifier("");
+        deviceField35.setLabelString("Children Mask: ");
+        deviceField35.setNumCols(4);
+        deviceField35.setOffsetNid(317);
+        jPanel40.add(deviceField35);
+
+        deviceChoice68.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice68.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice68.setConvert(true);
+        deviceChoice68.setIdentifier("");
+        deviceChoice68.setLabelString("Is Master:");
+        deviceChoice68.setOffsetNid(314);
+        deviceChoice68.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice68);
+
+        deviceChoice69.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice69.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice69.setConvert(true);
+        deviceChoice69.setIdentifier("");
+        deviceChoice69.setLabelString("Is Essential: ");
+        deviceChoice69.setOffsetNid(320);
+        deviceChoice69.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice69);
+
+        jTabbedPane1.addTab("Acquisition", jPanel40);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
@@ -979,6 +1227,8 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private DeviceChoice deviceChoice38;
     private DeviceChoice deviceChoice39;
     private DeviceChoice deviceChoice4;
+    private DeviceChoice deviceChoice40;
+    private DeviceChoice deviceChoice41;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice50;
     private DeviceChoice deviceChoice51;
@@ -999,8 +1249,22 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private DeviceChoice deviceChoice65;
     private DeviceChoice deviceChoice66;
     private DeviceChoice deviceChoice67;
+    private DeviceChoice deviceChoice68;
+    private DeviceChoice deviceChoice69;
     private DeviceChoice deviceChoice7;
+    private DeviceChoice deviceChoice70;
+    private DeviceChoice deviceChoice71;
+    private DeviceChoice deviceChoice72;
+    private DeviceChoice deviceChoice73;
+    private DeviceChoice deviceChoice74;
+    private DeviceChoice deviceChoice75;
+    private DeviceChoice deviceChoice76;
+    private DeviceChoice deviceChoice77;
+    private DeviceChoice deviceChoice78;
+    private DeviceChoice deviceChoice79;
     private DeviceChoice deviceChoice8;
+    private DeviceChoice deviceChoice80;
+    private DeviceChoice deviceChoice81;
     private DeviceChoice deviceChoice9;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -1015,6 +1279,7 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
+    private DeviceField deviceField21;
     private DeviceField deviceField26;
     private DeviceField deviceField27;
     private DeviceField deviceField28;
@@ -1025,7 +1290,14 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private DeviceField deviceField32;
     private DeviceField deviceField33;
     private DeviceField deviceField34;
+    private DeviceField deviceField35;
+    private DeviceField deviceField36;
+    private DeviceField deviceField37;
+    private DeviceField deviceField38;
+    private DeviceField deviceField39;
     private DeviceField deviceField4;
+    private DeviceField deviceField40;
+    private DeviceField deviceField41;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
@@ -1049,6 +1321,8 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel23;
     private javax.swing.JPanel jPanel24;
     private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel31;
     private javax.swing.JPanel jPanel32;
@@ -1060,6 +1334,13 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel38;
     private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel40;
+    private javax.swing.JPanel jPanel41;
+    private javax.swing.JPanel jPanel42;
+    private javax.swing.JPanel jPanel43;
+    private javax.swing.JPanel jPanel44;
+    private javax.swing.JPanel jPanel45;
+    private javax.swing.JPanel jPanel46;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -1071,6 +1352,7 @@ public class SPIDER_SMSetup extends DeviceSetup {
     private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JTabbedPane jTabbedPane5;
     private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JTabbedPane jTabbedPane7;
     // End of variables declaration//GEN-END:variables
 
 }
