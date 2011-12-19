@@ -210,20 +210,17 @@ class ACQ196AO(ACQ):
 
     def zero(self) :
         import socket
-        import signal
         
         if self.debugging():
             print "starting zero\n"
         s=socket.socket()
         try:
-            signal.signal(signal.SIGALRM,self.timeoutHandler)
-            signal.alarm(15)
+            s.setimeout=(15)
             s.connect((self.getBoardIp(),54548))
             s.send("zero")
         except Exception,e:
             status=0
             print "Error sending doZero: %s" % (str(e),)
-        signal.alarm(0)
         s.close()
         if self.debugging():
             print "finishing zero\n"

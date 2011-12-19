@@ -146,9 +146,6 @@ class ACQ(MDSplus.Device):
 	    print "Read Raw data pre=%d start=%d end = %d inc=%d returning len = %d" % (pre, start, end, inc, len(ans),)
         return ans
 
-    def timeoutHandler(self,sig,stack):
-        raise Exception("Timeout occurred")
-        
     def triggered(self):
         import time
         complete = 0
@@ -172,7 +169,7 @@ class ACQ(MDSplus.Device):
 
     def getBoardState(self):
         """Get the current state"""
-        import socket,signal,time
+        import socket,time
 	for tries in range(5):
             s=socket.socket()
 	    s.settimeout(3.) 
@@ -364,7 +361,7 @@ class ACQ(MDSplus.Device):
     
     def doInit(self,fd):
         """Tell the board to arm"""
-        import socket,signal
+        import socket
         if self.debugging():
 	    print "starting doInit"
         status=1
@@ -377,14 +374,12 @@ class ACQ(MDSplus.Device):
             return
         s=socket.socket()
         try:
-            signal.signal(signal.SIGALRM,self.timeoutHandler)
-            signal.alarm(15)
+            s.settimeout(10.)
             s.connect((self.getBoardIp(),54546))
             s.send("initialize")
         except Exception,e:
             status=0
             print "Error sending doInit: %s" % (str(e),)
-        signal.alarm(0)
         s.close()
         if self.debugging():
             print "finishing doInit"
