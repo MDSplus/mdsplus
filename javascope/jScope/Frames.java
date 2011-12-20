@@ -224,6 +224,7 @@ class Frames extends Canvas
                 default:
                     return;
             }
+            tracker = new MediaTracker(Frames.this);
             tracker.addImage(img, idx);
             recentFrames.put(new Integer(idx), new FrameDescriptor(buf, img, img, 0));
             try {
@@ -303,6 +304,7 @@ class Frames extends Canvas
                     }
                 }
             }
+            tracker = new MediaTracker(Frames.this);
             tracker.addImage(img, idx);
             try {
                 tracker.waitForID(idx);
