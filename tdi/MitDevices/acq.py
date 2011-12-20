@@ -172,7 +172,7 @@ class ACQ(MDSplus.Device):
         import socket,time
 	for tries in range(5):
             s=socket.socket()
-	    s.settimeout(3.) 
+	    s.settimeout(5.) 
             state="Unknown"
             try:
                 s.connect((self.getBoardIp(),54545))
@@ -414,7 +414,7 @@ class ACQ(MDSplus.Device):
 		print "Triggered, but data not stored !"
                 return 0  # should be triggered but not stored
 	else:
-	    print "ACQxxx UNKOWN BOARD state /%s/\n" % (state,)
+	    print "ACQxxx UNKNOWN BOARD state /%s/\n" % (state,)
 	    return 662470754  # device not triggered - change to unknown state
 
     WAITFTP=waitftp
