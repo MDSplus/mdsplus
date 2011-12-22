@@ -1,7 +1,9 @@
-FUN PUBLIC JavaResample(in _y, optional in _x, in _xmin, in _xmax)
+FUN PUBLIC JavaResample(as_is(_y), as_is( _x), in _xmin, in _xmax, in _dt)
 {
 
    private _MAX_POINT = 2000;
+   write(*, 'SONO LA JAVA RESAMPLE');
+   return (JavaMds->JavaResample:DSC(_y, _x, float(_xmin), float(_xmax), float(_dt)));
    
    _out = 0;
 

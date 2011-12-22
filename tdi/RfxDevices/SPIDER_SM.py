@@ -124,7 +124,7 @@ class SPIDER_SM(Device):
       {'path':'.SPECTRO.IS_MASTER:VAL', 'type':'numeric', 'value':0},
       {'path':'.SPECTRO.CHILD_MASK', 'type':'structure'},
       {'path':'.SPECTRO.CHILD_MASK:PV_NAME', 'type':'text', 'value':'SPECTRO:CHILDREN_MASK'},
-      {'path':'.SPECTRO.CHILD_MASK:VAL', 'type':'numeric', 'value':127},
+      {'path':'.SPECTRO.CHILD_MASK:VAL', 'type':'numeric', 'value':1},
       {'path':'.SPECTRO.ESSENTIAL', 'type':'structure'},
       {'path':'.SPECTRO.ESSENTIAL:PV_NAME', 'type':'text', 'value':'SPECTRO:ESSENTIAL'},
       {'path':'.SPECTRO.ESSENTIAL:VAL', 'type':'numeric', 'value':1},
