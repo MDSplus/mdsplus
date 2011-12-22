@@ -87,7 +87,8 @@ LASER_YAGSetup.java\
 DPO7054Setup.java\
 L9109Setup.java\
 SPIDER_SMSetup.java\
-ZELOS2150GVSetup.java
+ZELOS2150GVSetup.java\
+NI6259AISetup.java
 
 
 
