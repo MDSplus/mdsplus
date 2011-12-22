@@ -45,7 +45,8 @@ public class NI6259AISetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel39 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         deviceChoice3 = new DeviceChoice();
         deviceChoice4 = new DeviceChoice();
@@ -178,7 +179,7 @@ public class NI6259AISetup extends DeviceSetup {
         setDeviceProvider("localhost");
         setDeviceTitle("National Instruments 6259 ADC");
         setDeviceType("NI6259AI");
-        setHeight(400);
+        setHeight(600);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
@@ -218,7 +219,7 @@ public class NI6259AISetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Segment Size(Bytes): ");
         deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(6);
+        deviceField4.setOffsetNid(7);
         jPanel4.add(deviceField4);
 
         jPanel1.add(jPanel4);
@@ -248,6 +249,10 @@ public class NI6259AISetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
+        jPanel39.setLayout(new java.awt.GridLayout(32, 1));
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 1"));
+
         deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice3.setIdentifier("");
         deviceChoice3.setLabelString("State: ");
@@ -269,7 +274,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice5.setUpdateIdentifier("");
         jPanel7.add(deviceChoice5);
 
-        jTabbedPane1.addTab("Ch 1", jPanel7);
+        jPanel39.add(jPanel7);
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 2"));
 
         deviceChoice6.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice6.setIdentifier("");
@@ -292,7 +299,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice8.setUpdateIdentifier("");
         jPanel8.add(deviceChoice8);
 
-        jTabbedPane1.addTab("Ch2", jPanel8);
+        jPanel39.add(jPanel8);
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 3"));
 
         deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice9.setIdentifier("");
@@ -315,7 +324,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice11.setUpdateIdentifier("");
         jPanel9.add(deviceChoice11);
 
-        jTabbedPane1.addTab("Ch 3", jPanel9);
+        jPanel39.add(jPanel9);
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 4"));
 
         deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice12.setIdentifier("");
@@ -338,7 +349,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice14.setUpdateIdentifier("");
         jPanel10.add(deviceChoice14);
 
-        jTabbedPane1.addTab("Ch 4", jPanel10);
+        jPanel39.add(jPanel10);
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 5"));
 
         deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice15.setIdentifier("");
@@ -361,7 +374,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice17.setUpdateIdentifier("");
         jPanel11.add(deviceChoice17);
 
-        jTabbedPane1.addTab("Ch 5", jPanel11);
+        jPanel39.add(jPanel11);
+
+        jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 6"));
 
         deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice18.setIdentifier("");
@@ -384,7 +399,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice20.setUpdateIdentifier("");
         jPanel12.add(deviceChoice20);
 
-        jTabbedPane1.addTab("Ch 6", jPanel12);
+        jPanel39.add(jPanel12);
+
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 7"));
 
         deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice21.setIdentifier("");
@@ -407,7 +424,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice23.setUpdateIdentifier("");
         jPanel13.add(deviceChoice23);
 
-        jTabbedPane1.addTab("Ch 7", jPanel13);
+        jPanel39.add(jPanel13);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 8"));
 
         deviceChoice24.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice24.setIdentifier("");
@@ -430,7 +449,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice26.setUpdateIdentifier("");
         jPanel14.add(deviceChoice26);
 
-        jTabbedPane1.addTab("Ch 8", jPanel14);
+        jPanel39.add(jPanel14);
+
+        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 9"));
 
         deviceChoice27.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice27.setIdentifier("");
@@ -453,7 +474,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice29.setUpdateIdentifier("");
         jPanel15.add(deviceChoice29);
 
-        jTabbedPane1.addTab("Ch 9", jPanel15);
+        jPanel39.add(jPanel15);
+
+        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 10"));
 
         deviceChoice30.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice30.setIdentifier("");
@@ -476,7 +499,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice32.setUpdateIdentifier("");
         jPanel16.add(deviceChoice32);
 
-        jTabbedPane1.addTab("Ch 10", jPanel16);
+        jPanel39.add(jPanel16);
+
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 11"));
 
         deviceChoice33.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice33.setIdentifier("");
@@ -499,7 +524,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice35.setUpdateIdentifier("");
         jPanel17.add(deviceChoice35);
 
-        jTabbedPane1.addTab("Ch 11", jPanel17);
+        jPanel39.add(jPanel17);
+
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 12"));
 
         deviceChoice36.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice36.setIdentifier("");
@@ -522,7 +549,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice38.setUpdateIdentifier("");
         jPanel18.add(deviceChoice38);
 
-        jTabbedPane1.addTab("Ch 12", jPanel18);
+        jPanel39.add(jPanel18);
+
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 13"));
 
         deviceChoice39.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice39.setIdentifier("");
@@ -545,7 +574,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice41.setUpdateIdentifier("");
         jPanel19.add(deviceChoice41);
 
-        jTabbedPane1.addTab("Ch 13", jPanel19);
+        jPanel39.add(jPanel19);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 14"));
 
         deviceChoice42.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice42.setIdentifier("");
@@ -568,7 +599,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice44.setUpdateIdentifier("");
         jPanel20.add(deviceChoice44);
 
-        jTabbedPane1.addTab("Ch 14", jPanel20);
+        jPanel39.add(jPanel20);
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 15"));
 
         deviceChoice45.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice45.setIdentifier("");
@@ -591,7 +624,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice47.setUpdateIdentifier("");
         jPanel21.add(deviceChoice47);
 
-        jTabbedPane1.addTab("Ch 15", jPanel21);
+        jPanel39.add(jPanel21);
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 16"));
 
         deviceChoice48.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice48.setIdentifier("");
@@ -614,7 +649,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice50.setUpdateIdentifier("");
         jPanel22.add(deviceChoice50);
 
-        jTabbedPane1.addTab("Ch 16", jPanel22);
+        jPanel39.add(jPanel22);
+
+        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 17"));
 
         deviceChoice51.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice51.setIdentifier("");
@@ -637,7 +674,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice53.setUpdateIdentifier("");
         jPanel23.add(deviceChoice53);
 
-        jTabbedPane1.addTab("Ch 17", jPanel23);
+        jPanel39.add(jPanel23);
+
+        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 18"));
 
         deviceChoice54.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice54.setIdentifier("");
@@ -660,7 +699,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice56.setUpdateIdentifier("");
         jPanel24.add(deviceChoice56);
 
-        jTabbedPane1.addTab("Ch 18", jPanel24);
+        jPanel39.add(jPanel24);
+
+        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 19"));
 
         deviceChoice57.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice57.setIdentifier("");
@@ -683,7 +724,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice59.setUpdateIdentifier("");
         jPanel25.add(deviceChoice59);
 
-        jTabbedPane1.addTab("Ch 19", jPanel25);
+        jPanel39.add(jPanel25);
+
+        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 20"));
 
         deviceChoice60.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice60.setIdentifier("");
@@ -706,7 +749,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice62.setUpdateIdentifier("");
         jPanel26.add(deviceChoice62);
 
-        jTabbedPane1.addTab("Ch 20", jPanel26);
+        jPanel39.add(jPanel26);
+
+        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 21"));
 
         deviceChoice63.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice63.setIdentifier("");
@@ -729,7 +774,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice65.setUpdateIdentifier("");
         jPanel27.add(deviceChoice65);
 
-        jTabbedPane1.addTab("Ch 21", jPanel27);
+        jPanel39.add(jPanel27);
+
+        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 22"));
 
         deviceChoice66.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice66.setIdentifier("");
@@ -752,7 +799,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice68.setUpdateIdentifier("");
         jPanel28.add(deviceChoice68);
 
-        jTabbedPane1.addTab("Ch 22", jPanel28);
+        jPanel39.add(jPanel28);
+
+        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 23"));
 
         deviceChoice69.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice69.setIdentifier("");
@@ -775,7 +824,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice71.setUpdateIdentifier("");
         jPanel29.add(deviceChoice71);
 
-        jTabbedPane1.addTab("Ch 23", jPanel29);
+        jPanel39.add(jPanel29);
+
+        jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 24"));
 
         deviceChoice72.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice72.setIdentifier("");
@@ -798,7 +849,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice74.setUpdateIdentifier("");
         jPanel30.add(deviceChoice74);
 
-        jTabbedPane1.addTab("Ch 24", jPanel30);
+        jPanel39.add(jPanel30);
+
+        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 25"));
 
         deviceChoice75.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice75.setIdentifier("");
@@ -821,7 +874,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice77.setUpdateIdentifier("");
         jPanel31.add(deviceChoice77);
 
-        jTabbedPane1.addTab("Ch 25", jPanel31);
+        jPanel39.add(jPanel31);
+
+        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 26"));
 
         deviceChoice78.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice78.setIdentifier("");
@@ -844,7 +899,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice80.setUpdateIdentifier("");
         jPanel32.add(deviceChoice80);
 
-        jTabbedPane1.addTab("Ch 26", jPanel32);
+        jPanel39.add(jPanel32);
+
+        jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 27"));
 
         deviceChoice81.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice81.setIdentifier("");
@@ -867,7 +924,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice83.setUpdateIdentifier("");
         jPanel33.add(deviceChoice83);
 
-        jTabbedPane1.addTab("Ch 27", jPanel33);
+        jPanel39.add(jPanel33);
+
+        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 28"));
 
         deviceChoice84.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice84.setIdentifier("");
@@ -890,7 +949,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice86.setUpdateIdentifier("");
         jPanel34.add(deviceChoice86);
 
-        jTabbedPane1.addTab("Ch 28", jPanel34);
+        jPanel39.add(jPanel34);
+
+        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 29"));
 
         deviceChoice87.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice87.setIdentifier("");
@@ -913,7 +974,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice89.setUpdateIdentifier("");
         jPanel35.add(deviceChoice89);
 
-        jTabbedPane1.addTab("Ch 29", jPanel35);
+        jPanel39.add(jPanel35);
+
+        jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 30"));
 
         deviceChoice90.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice90.setIdentifier("");
@@ -936,7 +999,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice92.setUpdateIdentifier("");
         jPanel36.add(deviceChoice92);
 
-        jTabbedPane1.addTab("Ch 30", jPanel36);
+        jPanel39.add(jPanel36);
+
+        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 31"));
 
         deviceChoice93.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice93.setIdentifier("");
@@ -959,7 +1024,9 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice95.setUpdateIdentifier("");
         jPanel37.add(deviceChoice95);
 
-        jTabbedPane1.addTab("Ch 31", jPanel37);
+        jPanel39.add(jPanel37);
+
+        jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 32"));
 
         deviceChoice96.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice96.setIdentifier("");
@@ -982,9 +1049,11 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice98.setUpdateIdentifier("");
         jPanel38.add(deviceChoice98);
 
-        jTabbedPane1.addTab("Ch 32", jPanel38);
+        jPanel39.add(jPanel38);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        jScrollPane1.setViewportView(jPanel39);
+
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -1127,13 +1196,14 @@ public class NI6259AISetup extends DeviceSetup {
     private javax.swing.JPanel jPanel36;
     private javax.swing.JPanel jPanel37;
     private javax.swing.JPanel jPanel38;
+    private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 
 }
