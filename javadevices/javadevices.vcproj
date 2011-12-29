@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="javadevices"
 	ProjectGUID="{FFDA5357-22C9-497B-B85C-61DF99C0F4F8}"
+	RootNamespace="javadevices"
 	Keyword="MakeFileProj"
 	TargetFrameworkVersion="0"
 	>
@@ -26,10 +27,10 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="nmake /f &quot;javadevices.mak&quot;"
-				ReBuildCommandLine="nmake /f &quot;javadevices.mak&quot; /a"
+				BuildCommandLine="nmake /f  javadevices.mak"
+				ReBuildCommandLine="nmake /f javadevices.mak /a"
 				CleanCommandLine=""
-				Output="..\java\classes\MDSplus.jar"
+				Output="$(SolutionDir)\java\classes\MDSplus.jar"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
 				ForcedIncludes=""
