@@ -21,6 +21,7 @@ class NI6259AI(Device):
         parts.append({'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'})
         parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'})
     del i
+    parts.append({'path':':NUM_SAMPLES', 'type':'numeric'})
     parts.append({'path':':INIT_ACTION','type':'action',
 	  'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})

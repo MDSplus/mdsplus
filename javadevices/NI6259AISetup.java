@@ -43,6 +43,7 @@ public class NI6259AISetup extends DeviceSetup {
         jPanel5 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceField5 = new DeviceField();
+        deviceField7 = new DeviceField();
         jPanel6 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -236,6 +237,12 @@ public class NI6259AISetup extends DeviceSetup {
         deviceField5.setNumCols(4);
         deviceField5.setOffsetNid(5);
         jPanel5.add(deviceField5);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Num Samples (-1 for continuous): ");
+        deviceField7.setNumCols(4);
+        deviceField7.setOffsetNid(169);
+        jPanel5.add(deviceField7);
 
         jPanel1.add(jPanel5);
 
@@ -1164,6 +1171,7 @@ public class NI6259AISetup extends DeviceSetup {
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
+    private DeviceField deviceField7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
