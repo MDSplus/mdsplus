@@ -297,7 +297,7 @@ class ACQ(MDSplus.Device):
                     else:
                         dim = MDSplus.Data.compile('Map($,$)', MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src), clock), MDSplus.Range(start, end, inc))
                     dat = MDSplus.Data.compile(
-                        '_v0=$, _v1=$, build_signal(build_with_units(( _v0+ (_v1-_v0)*($value - -32768)/(32767 - -32768 )), "V") ,build_with_units($,"Counts"),$)',
+                        'build_signal(build_with_units((($1+ ($2-$1)*($value - -32768)/(32767 - -32768 ))), "V") ,build_with_units($3,"Counts"),$4)',
                         vins[chan*2], vins[chan*2+1], buf,dim) 
                     exec('c=self.input_'+'%02d'%(chan+1,)+'.record=dat')
                 except Exception, e:
