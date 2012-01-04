@@ -589,13 +589,20 @@ def makeRpmsCommand(args):
             print "Error creating repo: %s" (e,)
         sys.exit(p.wait())
 
-
-def vsUpdateSetups(release,changed):
-    vsUpdateSetup(release,changed,32)
-    vsupdateSetup(release,changed,34)
-
-def vsUpdateSetup(release,changed,bits):
-    os.rename('Setup/Setup%d.vdproj' % (bits,),'Setup\\Setup%d.vdproj-orig' % (bits,))
+def msiUpdateSetup(VERSION,release,bits,outfile):
+    os.rename('Setup/Setup%d.vdproj' % (bits,),'Setup/Setup%d.vdproj-orig' % (bits,))
+    try:
+        os.stat(outfile+".uuid")
+    except:
+        p=Popen("uuidgen > %s.uuid" % (outfile,),shell=True)
+        p.wait()
+    u_in=open("%s.uuid" % (outfile,))
+    uuid=u_in.readline()
+    u_in.close()
+    if bits == 32:
+        setupdir="x86"
+    else:
+        setupdir="x86_64"
     f_in=open('Setup/Setup%d.vdproj-orig' %(bits,),'r')
     f_out=open('Setup/Setup%d.vdproj' %(bits,),'w')
     line=f_in.readline()
@@ -603,19 +610,93 @@ def vsUpdateSetup(release,changed,bits):
         if "Product Name" in line:
             s=line.split(':')
             line=s[0]+':'+"8:MDSplus - "+FLAVOR
-        if changed and "ProductCode" in line:
-            p=Popen("uuidgen",stdout=PIPE)
-            uuid=p.stdout.read()
-            p.wait()
-            s=line.split(':')
-            line=s[0]+':'+uuid
+        if "ProductCode" in line:
+            line=s[0]+':'+ "{" + uuid + "}"
         if "ProductVersion" in line:
             s=line.split(':')
             line=s[0]+':'+VERSION+'-'+str(release)
+        if "OutputFilename" in line:
+            s=line.split(':')
+            line=s[0]+':'+outfile+".msi"
+        if "PostBuildEvent" in line:
+            setup="%s/msi/%s/Setup.exe" % (WORKSPACE,setupdir)
+            s=line.split(':')
+            line=s[0]+'::\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (setup,)
+        if '"Url"' in line:
+            s=line.split(':')
+            line=s[0]+':http://www.mdsplus.org/msi/%s"' % (setupdir,)
         f_out.write(line)
         line=f_in.readline()
     f_in.close()
     f_out.close()
+
+def makeMsiCommand(args):
+    WORKSPACE=getWorkspace()
+    VERSION=getVersion()
+    if FLAVOR=="stable":
+        msiflavor=""
+        pythonflavor=""
+    else:
+        msiflavor="-"+FLAVOR
+        pythonflavor=FLAVOR+"-"
+    release=getRelease("windows")
+    need_to_build=False
+    if len(checkRelease("windows")) > 0:
+        need_to_build=True
+        release=release+1
+    msi32="%s/x86/MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
+    msi64="%s/x86_64/MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
+    if not need_to_build:
+        try:
+            os.stat(msi32+".msi")
+            try:
+                os.stat(msi64+".msi")
+            except:
+                print '%s missing. Rebuilding.' % (msi64,)
+                need_to_build=True
+        except:
+            print '%s missing. Rebuilding.' % (msi32,)
+            need_to_build=True
+    status="ok"
+    if need_to_build:
+        print "%s, Starting build java" % (str(datetime.datetime.now()),)
+        p=Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=WORKSPACE+"/mdsplus")
+        stat=p.wait()
+        print "%s, Java build completed with status=%d" % (str(datetime.datetime.now()),stat)
+        if (status != 0):
+            print "Build failed!"
+            sys.exit(stat)
+        print "%s, Starting to build 32-bit apps" % (str(datetime.datetime.now()),)
+        p=Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=WORKSPACE+"/mdsplus")
+        stat=p.wait()
+        print "%s, 32-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
+        if (status != 0):
+            print "Build failed!"
+            sys.exit(stat)
+        print "%s, Starting to build 64-bit apps" % (str(datetime.datetime.now()),)
+        p=Popen('devenv /build "Release|x64" mdsplus.sln',shell=True,cwd=WORKSPACE+"/mdsplus")
+        stat=p.wait()
+        print "%s, 64-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
+        if (status != 0):
+            print "Build failed!"
+            sys.exit(stat)
+        msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,32,msi32)
+        print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
+        p=Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"/mdsplus")
+        stat=p.wait()
+        print "%s, 32-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
+        if (status != 0):
+            print "Build failed!"
+            sys.exit(stat)
+        msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,64,msi64)
+        print "%s, Starting to build 64-bit setup kit" % (str(datetime.datetime.now()),)
+        p=Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE+"/mdsplus")
+        stat=p.wait()
+        print "%s, 64-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
+        if (status != 0):
+            print "Build failed!"
+            sys.exit(stat)
+
 
 
 if __name__ == "__main__":
