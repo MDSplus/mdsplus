@@ -349,10 +349,13 @@ def promoteCommand(args):
 
 def getWorkspace():
     try:
-        return os.environ['WORKSPACE']
+        ans = os.environ['WORKSPACE']
+        if os.name == 'nt':
+            ans=os.getcwd()
     except:
         print "Environment variable, WORKSPACE, is not defined. This command must only be run by hudson."
         sys.exit(1)
+    return ans
 
 def makeSrcTar(file):
     cs=CvsStatus()
