@@ -152,6 +152,7 @@ def printHelp():
     return
 
 def pkgaddCommand(args):
+    global orig_pwd
     pkg=args[2]
     path=args[3]
     try:
@@ -159,11 +160,12 @@ def pkgaddCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    p=Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=os.getcwd())
+    p=Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=orig_pwd)
     if p.wait() == 0:
         print "%s added to package %s" % (path,pkg)
 
 def pkgremoveCommand(args):
+    global orig_pwd
     pkg=args[2]
     path=args[3]
     try:
@@ -171,7 +173,7 @@ def pkgremoveCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    p=Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=os.getcwd())
+    p=Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=orig_pwd)
     if p.wait() == 0:
         print "%s removed from package %s" % (path,pkg)
 
@@ -592,7 +594,7 @@ def makeRpmsCommand(args):
             print "Error creating repo: %s" (e,)
         sys.exit(p.wait())
 
-def msiUpdateSetup(VERSION,release,bits,outfile):
+def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
     os.rename('Setup/Setup%d.vdproj' % (bits,),'Setup/Setup%d.vdproj-orig' % (bits,))
     try:
         os.stat(outfile+".uuid")
@@ -684,7 +686,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,32,msi32)
+        msiUpdateSetup(WORKSPACE,VERSION,release,32,msi32)
         print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
@@ -692,7 +694,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,64,msi64)
+        msiUpdateSetup(WORKSPACE,VERSION,release,64,msi64)
         print "%s, Starting to build 64-bit setup kit" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
@@ -704,6 +706,7 @@ def makeMsiCommand(args):
 
 
 if __name__ == "__main__":
+    orig_pwd=os.getcwd()
     if os.path.dirname(sys.argv[0]) != '':
       os.chdir(os.path.dirname(sys.argv[0]))
     os.chdir("..")
