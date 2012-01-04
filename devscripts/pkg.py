@@ -667,21 +667,21 @@ def makeMsiCommand(args):
         p=Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
         print "%s, Java build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (status != 0):
+        if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
         print "%s, Starting to build 32-bit apps" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
         print "%s, 32-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (status != 0):
+        if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
         print "%s, Starting to build 64-bit apps" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|x64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
         print "%s, 64-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (status != 0):
+        if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
         msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,32,msi32)
@@ -689,7 +689,7 @@ def makeMsiCommand(args):
         p=Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
         print "%s, 32-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (status != 0):
+        if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
         msiUpdateSetup(WORKSPACE,msiflavor,VERSION,release,changed,64,msi64)
@@ -697,7 +697,7 @@ def makeMsiCommand(args):
         p=Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
         print "%s, 64-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (status != 0):
+        if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
 
