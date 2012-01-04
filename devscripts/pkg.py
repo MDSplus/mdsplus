@@ -173,7 +173,7 @@ def pkgremoveCommand(args):
         sys.exit(1)
     p=Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=os.getcwd())
     if p.wait() == 0:
-        print "%s added to package %s" % (path,pkg)
+        print "%s removed from package %s" % (path,pkg)
 
 def listCommand(args):
     cs=CvsStatus()
