@@ -1,5 +1,4 @@
 from subprocess import Popen,PIPE
-import pexpect
 import os,sys,tarfile
 import datetime
 
@@ -18,6 +17,7 @@ def signrpmsCommand(args):
 
 def signrpms(arch):
     try:
+        import pexpect
         WORKSPACE=getWorkspace()
         cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" *.rpm'"
     	child = pexpect.spawn(cmd,timeout=60,cwd=WORKSPACE+'/RPMS/'+arch)
