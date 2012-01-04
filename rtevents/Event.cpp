@@ -37,7 +37,7 @@ EXPORT void EventReset()
 	ev.reset();
 }
 
-EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
+extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
 {
 	Event ev;
 	try {
@@ -50,7 +50,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 		return NULL;
 	}
 }
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
+extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
 {
 	Event ev;
 	try {
