@@ -351,8 +351,7 @@ def getWorkspace():
     try:
         ans = os.environ['WORKSPACE']
         if os.name == 'nt':
-            print "$WORKSPACE=%s" % (ans,)
-            ans=os.getcwd().split(':')[1]
+            ans=os.getcwd().split(':')[1][0:-8]
     except:
         print "Environment variable, WORKSPACE, is not defined. This command must only be run by hudson."
         sys.exit(1)
