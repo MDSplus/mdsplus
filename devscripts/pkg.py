@@ -608,7 +608,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         if stat != 0:
             raise Exception("Error generating uuid: %s.uuid" % (outfile,))
     u_in=open("%s.uuid" % (outfile,))
-    uuid=u_in.readline()[0:-2]
+    uuid=u_in.readline()[0:-1]
     u_in.close()
     if bits == 32:
         setupdir="x86"
@@ -627,9 +627,9 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
             else:
                 mdsplus_product=False
         elif '"ProductCode"' in line and mdsplus_product:
-            line='        "ProductCode" = "8:{%s}"' % (uuid,)
+            line='        "ProductCode" = "8:{%s}"' % (uuid.upper(),)
         elif '"ProductVersion"' in line:
-            line='        "ProductVersion" = "8:%s-%d"' % (VERSION,release)
+            line='        "ProductVersion" = "8:%s.%d"' % (VERSION,release)
         elif '"OutputFilename"' in line:
             line='        "OutputFilename" = "8:%s.msi"' % (outfile,)
         elif '"PostBuildEvent"' in line:
