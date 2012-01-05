@@ -629,7 +629,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
         if "OutputFilename" in line:
             s=line.split(':')
             line=s[0]+':'+outfile+'.msi"'+line[-1]
-        if "PostBuildEvent" in line:
+        if '"PostBuildEventx"' in line:
             setup="%s/msi/%s/Setup.exe" % (WORKSPACE,setupdir)
             s=line.split(':')
             line=s[0]+'::\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (setup,) + line[-1]
