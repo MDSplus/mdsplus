@@ -594,7 +594,7 @@ def makeRpmsCommand(args):
             print "Error creating repo: %s" (e,)
         sys.exit(p.wait())
 
-def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
+def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     try:
         os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
     except:
@@ -620,7 +620,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
     line=line[0:-1]
     while len(line) > 0:
         if '"ProductName"' in line:
-            line='%s:"8:MDSplus%s"' % (line.split(':')[0],%s)
+            line='%s:"8:MDSplus%s"' % (line.split(':')[0],msiflavor)
         elif '"ProductCode"' in line:
             line='%s:"{%s}"' % (liine.split(':')[0],uuid)
         elif '"ProductVersion"' in line:
@@ -699,7 +699,7 @@ def makeMsiCommand(args):
             if (stat != 0):
                 print "Build failed!"
                 sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,VERSION,release,32,msi32)
+        msiUpdateSetup(WORKSPACE,VERSION,release,32,msi32,msiflavor)
         print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
@@ -707,7 +707,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,VERSION,release,64,msi64)
+        msiUpdateSetup(WORKSPACE,VERSION,release,64,msi64,msiflavor)
         print "%s, Starting to build 64-bit setup kit" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
