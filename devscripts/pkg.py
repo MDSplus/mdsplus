@@ -618,24 +618,24 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
     f_out=open('Setup/Setup%d.vdproj' %(bits,),'w')
     line=f_in.readline()
     while len(line) > 0:
-        if "Product Name" in line:
+        if "ProductName" in line:
             s=line.split(':')
-            line=s[0]+':'+"8:MDSplus - "+FLAVOR
+            line=s[0]+':'+"8:MDSplus - "+FLAVOR+'"'+line[-1]
         if "ProductCode" in line:
-            line=s[0]+':'+ "{" + uuid + "}"
+            line=s[0]+':'+ "{" + uuid + '}"'+line[-1]
         if "ProductVersion" in line:
             s=line.split(':')
-            line=s[0]+':'+VERSION+'-'+str(release)
+            line=s[0]+':'+VERSION+'-'+str(release)+'"'+line[-1]
         if "OutputFilename" in line:
             s=line.split(':')
-            line=s[0]+':'+outfile+".msi"
+            line=s[0]+':'+outfile+'.msi"'+line[-1]
         if "PostBuildEvent" in line:
             setup="%s/msi/%s/Setup.exe" % (WORKSPACE,setupdir)
             s=line.split(':')
-            line=s[0]+'::\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (setup,)
+            line=s[0]+'::\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (setup,) + line[-1]
         if '"Url"' in line:
             s=line.split(':')
-            line=s[0]+':http://www.mdsplus.org/msi/%s"' % (setupdir,)
+            line=s[0]+':http://www.mdsplus.org/msi/%s"' % (setupdir,)+line[-1]
         f_out.write(line)
         line=f_in.readline()
     f_in.close()
@@ -644,6 +644,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
         os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
     except:
         pass
+    sys.exit(0)
 
 def makeMsiCommand(args):
     WORKSPACE=getWorkspace()
