@@ -666,28 +666,30 @@ def makeMsiCommand(args):
             print '%s missing. Rebuilding.' % (msi32,)
             need_to_build=True
     status="ok"
+    rebuild=False
     if need_to_build:
-        print "%s, Starting build java" % (str(datetime.datetime.now()),)
-        p=Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
-        stat=p.wait()
-        print "%s, Java build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (stat != 0):
-            print "Build failed!"
-            sys.exit(stat)
-        print "%s, Starting to build 32-bit apps" % (str(datetime.datetime.now()),)
-        p=Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
-        stat=p.wait()
-        print "%s, 32-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (stat != 0):
-            print "Build failed!"
-            sys.exit(stat)
-        print "%s, Starting to build 64-bit apps" % (str(datetime.datetime.now()),)
-        p=Popen('devenv /build "Release|x64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
-        stat=p.wait()
-        print "%s, 64-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
-        if (stat != 0):
-            print "Build failed!"
-            sys.exit(stat)
+        if rebuild:
+            print "%s, Starting build java" % (str(datetime.datetime.now()),)
+            p=Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
+            stat=p.wait()
+            print "%s, Java build completed with status=%d" % (str(datetime.datetime.now()),stat)
+            if (stat != 0):
+                print "Build failed!"
+                sys.exit(stat)
+            print "%s, Starting to build 32-bit apps" % (str(datetime.datetime.now()),)
+            p=Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
+            stat=p.wait()
+            print "%s, 32-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
+            if (stat != 0):
+                print "Build failed!"
+                sys.exit(stat)
+            print "%s, Starting to build 64-bit apps" % (str(datetime.datetime.now()),)
+            p=Popen('devenv /build "Release|x64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
+            stat=p.wait()
+            print "%s, 64-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
+            if (stat != 0):
+                print "Build failed!"
+                sys.exit(stat)
         msiUpdateSetup(WORKSPACE,VERSION,release,32,msi32)
         print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
         p=Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
