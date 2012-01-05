@@ -644,7 +644,6 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
     except:
         pass
-    sys.exit(0)
 
 def makeMsiCommand(args):
     WORKSPACE=getWorkspace()
