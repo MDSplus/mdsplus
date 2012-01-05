@@ -617,20 +617,25 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     f_in=open('Setup/Setup%d.vdproj-orig' %(bits,),'r')
     f_out=open('Setup/Setup%d.vdproj' %(bits,),'w')
     line=f_in.readline()
-    line=line[0:-1]
+    line=line[0:-2]
+    mdsplus_product=False
     while len(line) > 0:
         if '"ProductName"' in line:
-            line='%s:"8:MDSplus%s"' % (line.split(':')[0],msiflavor)
-        elif '"ProductCode"' in line:
-            line='%s:"{%s}"' % (line.split(':')[0],uuid)
+            if "MDSplus" in line:
+                mdsplus_product=True
+                line='        "ProductName" = "8:MDSplus%s"' % (msiflavor,)
+            else:
+                mdsplus_product=False
+        elif '"ProductCode"' in line and mdsplus_product:
+            line='        "ProductCode" = "8:{%s}"' % (uuid,)
         elif '"ProductVersion"' in line:
-            line='%s:"%s-%d"' % (line.split(':')[0],VERSION,release)
+            line='        "ProductVersion" = "8:%s-%d"' % (VERSION,release)
         elif '"OutputFilename"' in line:
-            line='%s:"8:%s.msi"' % (line.split(':')[0],outfile)
+            line='        "OutputFilename" = "8:%s.msi"' % (outfile,)
         elif '"PostBuildEvent"' in line:
-            line='%s:"8:$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (line.split(':')[0],WORKSPACE,setupdir)
+            line='        "PostBuildEvent" = "8:\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\""' % (WORKSPACE,setupdir)
         elif '"Url"' in line:
-            line='%s:"8:http://www.mdsplus.org/msi/%s"' % (line.split(':'),setupdir,)
+            line='        "Url" = "8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
         f_out.write(line)
         line=f_in.readline()
     f_in.close()
