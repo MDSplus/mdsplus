@@ -723,6 +723,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
+        print "Tag all modules for this release. This can take a while!"
         newRelease('windows',FLAVOR,VERSION,release,DIST)
 
 
