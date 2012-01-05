@@ -617,25 +617,20 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
     f_in=open('Setup/Setup%d.vdproj-orig' %(bits,),'r')
     f_out=open('Setup/Setup%d.vdproj' %(bits,),'w')
     line=f_in.readline()
+    line=line[0:-1]
     while len(line) > 0:
-        if "ProductName" in line:
-            s=line.split(':')
-            line=s[0]+':'+"8:MDSplus - "+FLAVOR+'"'+line[-1]
-        if "ProductCode" in line:
-            line=s[0]+':'+ "{" + uuid + '}"'+line[-1]
-        if "ProductVersion" in line:
-            s=line.split(':')
-            line=s[0]+':'+VERSION+'-'+str(release)+'"'+line[-1]
-        if "OutputFilename" in line:
-            s=line.split(':')
-            line=s[0]+':'+outfile+'.msi"'+line[-1]
-        if '"PostBuildEventx"' in line:
-            setup="%s/msi/%s/Setup.exe" % (WORKSPACE,setupdir)
-            s=line.split(':')
-            line=s[0]+'::\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (setup,) + line[-1]
-        if '"Url"' in line:
-            s=line.split(':')
-            line=s[0]+':http://www.mdsplus.org/msi/%s"' % (setupdir,)+line[-1]
+        if '"ProductName"' in line:
+            line='%s:"8:MDSplus%s"' % (line.split(':')[0],%s)
+        elif '"ProductCode"' in line:
+            line='%s:"{%s}"' % (liine.split(':')[0],uuid)
+        elif '"ProductVersion"' in line:
+            line='%s:"%s-%d"' % (line.split(':')[0],VERSION,release)
+        elif '"OutputFilename"' in line:
+            line='%s:"8:%s.msi"' % (line.split(':')[0],outfile)
+        elif '"PostBuildEvent"' in line:
+            line='%s:"8:$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\"\r\n\r\n"' % (line.split(';')[0],WORKSPACE,setupdir)
+        elif '"Url"' in line:
+            line='%s:"8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
         f_out.write(line)
         line=f_in.readline()
     f_in.close()
