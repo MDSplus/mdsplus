@@ -608,7 +608,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         if stat != 0:
             raise Exception("Error generating uuid: %s.uuid" % (outfile,))
     u_in=open("%s.uuid" % (outfile,))
-    uuid=u_in.readline()
+    uuid=u_in.readline()[0:-2]
     u_in.close()
     if bits == 32:
         setupdir="x86"
