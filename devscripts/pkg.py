@@ -631,9 +631,9 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         elif '"ProductVersion"' in line:
             line='        "ProductVersion" = "8:%s.%d"' % (VERSION,release)
         elif '"OutputFilename"' in line:
-            line='        "OutputFilename" = "8:%s.msi"' % (outfile.replace('\\','\\\\',)
+            line='        "OutputFilename" = "8:%s.msi"' % (outfile.replace('\\','\\\\'),)
         elif '"PostBuildEvent"' in line:
-            line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\msi\\\\%s\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (WORKSPACE.replace('\\','\\\\'),setupdir.replace('\\','\\\\')
+            line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\msi\\\\%s\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (WORKSPACE.replace('\\','\\\\'),setupdir.replace('\\','\\\\'))
         elif '"Url"' in line:
             line='        "Url" = "8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
         print >>f_out,line
@@ -666,8 +666,8 @@ def makeMsiCommand(args):
         os.mkdir("%s\\x86_64" % (WORKSPACE,))
     except:
         pass
-    msi32="%s\\x86\\MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
-    msi64="%s\\x86_64\\MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
+    msi32="%s\\x86\\MDSplus%s-%s.%s.x86" % (WORKSPACE,msiflavor,VERSION,release)
+    msi64="%s\\x86_64\\MDSplus%s-%s.%s.x86_64" % (WORKSPACE,msiflavor,VERSION,release)
     if not need_to_build:
         try:
             os.stat(msi32+".msi")
