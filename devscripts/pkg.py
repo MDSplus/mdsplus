@@ -660,8 +660,13 @@ def makeMsiCommand(args):
     if len(checkRelease("windows")) > 0:
         need_to_build=True
         release=release+1
-    msi32="%s/x86/MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
-    msi64="%s/x86_64/MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
+    try:
+        os.mkdir("%s\\x86" % (WORKSPACE,))
+        os.mkdir("%s\\x86_64" % (WORKSPACE,))
+    except:
+        pass
+    msi32="%s\\x86\\MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
+    msi64="%s\\x86_64\\MDSplus%s-%s.%s" % (WORKSPACE,msiflavor,VERSION,release)
     if not need_to_build:
         try:
             os.stat(msi32+".msi")
