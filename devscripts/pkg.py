@@ -631,7 +631,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         elif '"ProductVersion"' in line:
             line='        "ProductVersion" = "8:%s.%d"' % (VERSION,release)
         elif '"OutputFilename"' in line:
-            line='        "OutputFilename" = "8:%s.msi"' % (outfile,)
+            line='        "OutputFilename" = "8:%s.msi"' % (outfile.replace('\\','\\\\',)
         elif '"PostBuildEvent"' in line:
             line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\msi\\\\%s\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (WORKSPACE.replace('\\','\\\\'),setupdir.replace('\\','\\\\')
         elif '"Url"' in line:
