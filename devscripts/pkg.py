@@ -600,7 +600,9 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
         os.stat(outfile+".uuid")
     except:
         p=Popen("uuidgen > %s.uuid" % (outfile,),shell=True)
-        p.wait()
+        stat=p.wait()
+        if stat != 0:
+            raise Exception("Error generating uuid: %s.uuid" % (outfile,))
     u_in=open("%s.uuid" % (outfile,))
     uuid=u_in.readline()
     u_in.close()
@@ -702,6 +704,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
+        newRelease('windows',FLAVOR,VERSION,release,DIST)
 
 
 
