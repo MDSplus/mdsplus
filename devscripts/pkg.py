@@ -633,7 +633,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         elif '"OutputFilename"' in line:
             line='        "OutputFilename" = "8:%s.msi"' % (outfile,)
         elif '"PostBuildEvent"' in line:
-            line='        "PostBuildEvent" = "8:\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\""' % (WORKSPACE,setupdir)
+            line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\msi\\\\%s\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (WORKSPACE,setupdir)
         elif '"Url"' in line:
             line='        "Url" = "8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
         print >>f_out,line
