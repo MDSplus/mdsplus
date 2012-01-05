@@ -622,7 +622,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         if '"ProductName"' in line:
             line='%s:"8:MDSplus%s"' % (line.split(':')[0],msiflavor)
         elif '"ProductCode"' in line:
-            line='%s:"{%s}"' % (liine.split(':')[0],uuid)
+            line='%s:"{%s}"' % (line.split(':')[0],uuid)
         elif '"ProductVersion"' in line:
             line='%s:"%s-%d"' % (line.split(':')[0],VERSION,release)
         elif '"OutputFilename"' in line:
