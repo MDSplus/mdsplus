@@ -619,7 +619,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     line=f_in.readline()
     mdsplus_product=False
     while len(line) > 0:
-        line=line[0:-1]
+        line=line[0:-2]
         if '"ProductName"' in line:
             if "MDSplus" in line:
                 mdsplus_product=True
@@ -636,7 +636,7 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
             line='        "PostBuildEvent" = "8:\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\""' % (WORKSPACE,setupdir)
         elif '"Url"' in line:
             line='        "Url" = "8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
-        f_out.write(line)
+        print >>f_out,line
         line=f_in.readline()
     f_in.close()
     f_out.close()
