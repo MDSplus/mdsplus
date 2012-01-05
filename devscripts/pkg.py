@@ -595,6 +595,10 @@ def makeRpmsCommand(args):
         sys.exit(p.wait())
 
 def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
+    try:
+        os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
+    except:
+        pass
     os.rename('Setup/Setup%d.vdproj' % (bits,),'Setup/Setup%d.vdproj-orig' % (bits,))
     try:
         os.stat(outfile+".uuid")
@@ -636,6 +640,10 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile):
         line=f_in.readline()
     f_in.close()
     f_out.close()
+    try:
+        os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
+    except:
+        pass
 
 def makeMsiCommand(args):
     WORKSPACE=getWorkspace()
