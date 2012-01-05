@@ -622,20 +622,20 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         if '"ProductName"' in line:
             if "MDSplus" in line:
                 mdsplus_product=True
-                line='        "ProductName" = "8:MDSplus%s"' % (msiflavor,)
+                line='        "ProductName" = "8:MDSplus%s"\n' % (msiflavor,)
             else:
                 mdsplus_product=False
         elif '"ProductCode"' in line and mdsplus_product:
-            line='        "ProductCode" = "8:{%s}"' % (uuid,)
+            line='        "ProductCode" = "8:{%s}"\n' % (uuid,)
         elif '"ProductVersion"' in line:
-            line='        "ProductVersion" = "8:%s-%d"' % (VERSION,release)
+            line='        "ProductVersion" = "8:%s-%d"\n' % (VERSION,release)
         elif '"OutputFilename"' in line:
-            line='        "OutputFilename" = "8:%s.msi"' % (outfile,)
+            line='        "OutputFilename" = "8:%s.msi"\n' % (outfile,)
         elif '"PostBuildEvent"' in line:
-            line='        "PostBuildEvent" = "8:\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\""' % (WORKSPACE,setupdir)
+            line='        "PostBuildEvent" = "8:\"$(ProjectDir)..\\devscripts\\sign_kit.bat\" \"%s\\msi\\%s\\Setup.exe\" \"$(BuiltOuputPath)\""\n' % (WORKSPACE,setupdir)
         elif '"Url"' in line:
-            line='        "Url" = "8:http://www.mdsplus.org/msi/%s"' % (setupdir,)
-        f_out.write(line+'\n')
+            line='        "Url" = "8:http://www.mdsplus.org/msi/%s"\n' % (setupdir,)
+        f_out.write(line)
         line=f_in.readline()
     f_in.close()
     f_out.close()
