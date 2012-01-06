@@ -54,7 +54,7 @@ static void intCallbackCPP(char *c1, char *c2, int i1, void *ciPtr, bool b, int 
 {
 	intCallbackC(c1,c2,i1,ciPtr, b,i2,c3, i3);
 }
-EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
+extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
 {
 	Event ev;
 	try {
@@ -70,7 +70,7 @@ EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char 
 		return NULL;
 	}
 }
-EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
+extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
 {
 	Event ev;
 	try {
