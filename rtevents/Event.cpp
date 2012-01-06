@@ -37,11 +37,31 @@ EXPORT void EventReset()
 	ev.reset();
 }
 
-extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
+//Callback Management
+extern "C" {
+    struct CallbackInfo{
+      void (*callback)(char *, char *, int, void *, bool, int, char *, int);
+	  void *callbackArg;
+    };
+	void intCallbackC(char *c1, char *c2, int i1, void *ciPtr, bool b, int i2, char *c3, int i3)
+	{
+		CallbackInfo *ci = (CallbackInfo *)ciPtr;
+		ci->callback(c1, c2, i1, ci->callbackArg, b, i2, c3, i3);
+	}
+}
+//Indirect call to make SUN compiler happy
+static void intCallbackCPP(char *c1, char *c2, int i1, void *ciPtr, bool b, int i2, char *c3, int i3)
+{
+	intCallbackC(c1,c2,i1,ciPtr, b,i2,c3, i3);
+}
+EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
 {
 	Event ev;
 	try {
-		void *handl = ev.addListenerGlobal(name, callback, callbackArg);
+		CallbackInfo *ci = new CallbackInfo;
+		ci->callback = callback;
+		ci->callbackArg = callbackArg;
+		void *handl = ev.addListenerGlobal(name, intCallbackCPP, (void *)ci);
 		return handl;
 	}
 	catch(SystemException *exc)
@@ -50,11 +70,14 @@ extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(ch
 		return NULL;
 	}
 }
-extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
 {
 	Event ev;
 	try {
-		void *handl = ev.addListener(name, callback, callbackArg);
+		CallbackInfo *ci = new CallbackInfo;
+		ci->callback = callback;
+		ci->callbackArg = callbackArg;
+		void *handl = ev.addListener(name, intCallbackCPP, (void *)ci);
 		return handl;
 	}
 	catch(SystemException *exc)
