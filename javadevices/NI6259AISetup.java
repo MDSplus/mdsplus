@@ -204,7 +204,7 @@ public class NI6259AISetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceChoice1.setChoiceItems(new String[] {"RSE", "NRES", "DIFFERENTIAL"});
+        deviceChoice1.setChoiceItems(new String[] {"RSE", "NRSE", "DIFFERENTIAL"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Input Mode: ");
         deviceChoice1.setOffsetNid(3);
