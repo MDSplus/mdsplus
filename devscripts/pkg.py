@@ -472,6 +472,15 @@ def makeRepoRpms():
 def makeRepoRpmsCommand(args):
     print makeRepoRpms()
 
+def writeRpmInfo(outfile):
+    f=open(outfile+'-info.html','w')
+    url="http://hudson.mdsplus.org/job/%s/%s" % (os.environ['JOB_NAME'],os.environ['BUILD_NUMBER'])
+    f.write('<html>\n<head>\n'+
+            '<meta http-equiv="Refresh" content="0; url=%s" />\n' % (url,) + 
+            '</head>\n<body>\n<p>For more info please follow <a href="%s">this link</a>.</p>\n' % (url,)+
+            '</body>\n</html>\n')
+    f.close()
+
 def makeRpmsCommand(args):
     global DIST
     WORKSPACE=getWorkspace()
@@ -548,6 +557,9 @@ def makeRpmsCommand(args):
             print "%s, Starting to sign 32-bit rpms" % (str(datetime.datetime.now()),)
             sstatus=signrpms('i686')
             print "%s, Done signing 32-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
+            for pkg in getPackages():
+                if updates[pkg]['Update']:
+                    writeRpmInfo("%s/RPMS/i686/mdsplus%s-%s-%s-%s.%s.i686" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
             print "%s, Starting to build 64-bit rpms" % (str(datetime.datetime.now()),)
             p=Popen('rpmbuild --target x86_64-linux'+\
                         ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+\
@@ -562,6 +574,9 @@ def makeRpmsCommand(args):
                 print "%s, Starting to sign 64-bit rpms" % (str(datetime.datetime.now()),)
                 sstatus=signrpms('x86_64')
                 print "%s, Done signing 64-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
+                for pkg in getPackages():
+                    if updates[pkg]['Update']:
+                        writeRpmInfo("%s/RPMS/x86_64/mdsplus%s-%s-%s-%s.%s.x86_64" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
 
         if updates['python']['Update']:
             p=Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
@@ -645,6 +660,15 @@ def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     except:
         pass
 
+def writeMsiInfo(outfile):
+    f=open(outfile+'-info.html','w')
+    url="http://hudson.mdsplus.org/job/%s/%s" % (os.environ['JOB_NAME'],os.environ['BUILD_NUMBER'])
+    f.write('<html>\n<head>\n'+
+            '<meta http-equiv="Refresh" content="0; url=%s" />\n' % (url,) + 
+            '</head>\n<body>\n<p>For more info please follow <a href="%s">this link</a>.</p>\n' % (url,)+
+            '</body>\n</html>\n')
+    f.close()
+
 def makeMsiCommand(args):
     WORKSPACE=getWorkspace()
     print "WORKSPACE is %s" % (WORKSPACE,)
@@ -725,8 +749,9 @@ def makeMsiCommand(args):
             sys.exit(stat)
         print "Tag all modules for this release. This can take a while!"
         newRelease('windows',FLAVOR,VERSION,release,DIST)
-
-
+        build_url=os.environ['BUILD_URL']
+        writeMsiInfo(msi32)
+        writeMsiInfo(msi64)
 
 if __name__ == "__main__":
     orig_pwd=os.getcwd()
