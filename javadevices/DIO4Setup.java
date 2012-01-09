@@ -450,11 +450,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice90 = new DeviceChoice();
         deviceChoice91 = new DeviceChoice();
 
+
+
         setDeviceProvider("localhost");
         setDeviceTitle("INCAA DIO4 Timing Device");
         setDeviceType("DIO4");
         setHeight(400);
-        setWidth(750);
+        setWidth(800);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 0));
 
@@ -478,7 +480,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceField2.setTextOnly(true);
         jPanel2.add(deviceField2);
 
-        deviceChoice2.setChoiceItems(new String[] {"HIGHWAY", "INTERNAL", "EXT-10MHz"});
+        deviceChoice2.setChoiceItems(new String[] {"HIGHWAY", "INTERNAL", "EXTERNAL"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Clock Source:");
         deviceChoice2.setOffsetNid(5);
@@ -492,6 +494,8 @@ public class DIO4Setup extends DeviceSetup {
         deviceField3.setNumCols(30);
         deviceField3.setOffsetNid(4);
         jPanel3.add(deviceField3);
+        
+        
 
         jPanel1.add(jPanel3);
 
@@ -510,6 +514,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel4.add(deviceChoice3);
 
         deviceField5.setIdentifier("");
+	deviceField5.setTextOnly(true);        
         deviceField5.setLabelString("Synch Event:");
         deviceField5.setNumCols(15);
         deviceField5.setOffsetNid(10);
@@ -2722,6 +2727,9 @@ public class DIO4Setup extends DeviceSetup {
         jTabbedPane1.addTab("CH8", deviceChannel43);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE", "RESET"});
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);        
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -3149,6 +3157,8 @@ public class DIO4Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel98;
     private javax.swing.JPanel jPanel99;
     private javax.swing.JTabbedPane jTabbedPane1;
+    
+    
     // End of variables declaration//GEN-END:variables
 
 }
