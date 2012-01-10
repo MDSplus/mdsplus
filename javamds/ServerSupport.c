@@ -334,3 +334,187 @@ struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float 
     MdsCopyDxXd((struct descriptor *)&a_d, &xd );
     return &xd;
 }
+
+static int traverseNodeMinMax(int nid, float *xMin, float *xMax);
+
+static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
+{
+	int status, nid, size, i, isUpdated;
+	struct descriptor_a *arrD;
+	struct descriptor_r *recD;
+	char *currName;
+	float currMin, currMax, min, max;
+	EMPTYXD(xd);
+
+	if(!dsc) return 0;
+	switch(dsc->class)  {
+		case CLASS_XD:
+			return traverseExprMinMax(((struct descriptor_xd *)dsc)->pointer, xMin, xMax);
+		case CLASS_S:
+		case CLASS_D:
+			switch (dsc->dtype)  {
+				case DTYPE_PATH:
+					currName = malloc(dsc->length + 1);
+					memcpy(currName, dsc->pointer, dsc->length);
+					currName[dsc->length] = 0;
+					status = TreeFindNode(currName, &nid);
+					free(currName);
+					if(status & 1) return traverseNodeMinMax(nid, xMin, xMax);
+					return 0;
+				case DTYPE_NID:
+					return traverseNodeMinMax(*((int *)dsc->pointer), xMin, xMax);
+				default: 
+					return 0; //Other Scalar values do not affect limits
+			}
+			break;
+		case CLASS_A:
+			arrD = (struct descriptor_a *)dsc;
+			size = arrD->arsize/arrD->length;
+			switch (arrD->dtype){
+				case DTYPE_B:
+					*xMin = ((char *)arrD->pointer)[0];
+					*xMax = ((char *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_BU:
+					*xMin = ((unsigned char *)arrD->pointer)[0];
+					*xMax = ((unsigned char *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_W:
+					*xMin = ((short *)arrD->pointer)[0];
+					*xMax = ((short *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_WU:
+					*xMin = ((unsigned short *)arrD->pointer)[0];
+					*xMax = ((unsigned short *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_L:
+					*xMin = ((int *)arrD->pointer)[0];
+					*xMax = ((int *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_LU:
+					*xMin = ((unsigned int *)arrD->pointer)[0];
+					*xMax = ((unsigned int *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_Q:
+					*xMin = ((_int64 *)arrD->pointer)[0];
+					*xMax = ((_int64 *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_QU:
+					*xMin = ((_int64u *)arrD->pointer)[0];
+					*xMax = ((_int64u *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_FLOAT:
+					*xMin = ((float *)arrD->pointer)[0];
+					*xMax = ((float *)arrD->pointer)[size - 1];
+					break;
+				case DTYPE_DOUBLE:
+					*xMin = ((double *)arrD->pointer)[0];
+					*xMax = ((double *)arrD->pointer)[size - 1];
+					break;
+				default: 
+					printf("JavaGetMinMax: unsupported scalar type: %d\n", arrD->dtype);
+					return 0;
+			}
+			return 1;
+			break;
+		case CLASS_R:
+			recD = (struct descriptor_r *)dsc;
+			size = recD->ndesc;
+			min = -1E30;
+			max = 1E30;
+			isUpdated = 0;
+			switch (recD->dtype) {
+				case DTYPE_PARAM:
+				case DTYPE_WITH_UNITS:
+				case DTYPE_WITH_ERROR:
+					return (recD->dscptrs[0])?traverseExprMinMax(recD->dscptrs[0], xMin, xMax):0;
+				case DTYPE_SIGNAL:
+					if(!recD->dscptrs[2]) return 0;
+					status = TdiData(recD->dscptrs[2], &xd MDS_END_ARG);
+					if(!(status & 1) || !xd.pointer) return 0;
+					status = traverseExprMinMax(xd.pointer, xMin, xMax);
+					MdsFree1Dx(&xd, 0);
+					return status;
+				case DTYPE_FUNCTION:
+					for(i = 0; i < size; i++)
+					{
+						status = traverseExprMinMax(recD->dscptrs[i], &currMin, &currMax);
+						if(status) //something meaningful has been returned
+						{
+							if(currMin > min)
+								min = currMin;
+							if(currMax < max)
+								max = currMax;
+							isUpdated = 1;
+						}
+					}
+					if(!isUpdated) return 0;
+					*xMin = min;
+					*xMax = max;
+					return 1;
+				default:
+					return 0;
+			}
+		default:
+			printf("JavaGetMinMax: Unsupported class: %d\n", dsc->class);
+			return 0;
+	}
+}
+
+static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
+{
+	EMPTYXD(xd);
+	EMPTYXD(startXd);
+	EMPTYXD(endXd);
+	int numSegments, i, status;
+
+	status = TreeGetNumSegments(nid, &numSegments);
+	if(!(status & 1)) return 0;
+	if(numSegments == 0)
+	{
+		status = TreeGetRecord(&xd);
+		if(!(status & 1)) return 0;
+		status = traverseExprMinMax(xd.pointer, xMin, xMax);
+		MdsFree1Dx(&xd, 0);
+		return status;
+	}
+	status = TreeGetSegmentLimits(nid, 0, &startXd, &endXd);
+	if(!(status & 1)) return 0;
+	status = TdiData(&startXd, &startXd MDS_END_ARG);
+	if(status & 1)
+		status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+	if(!(status & 1)) return 0;
+	*xMin = *((float *)startXd.pointer->pointer);
+	MdsFree1Dx(&startXd, 0);
+	MdsFree1Dx(&endXd, 0);
+	status = TreeGetSegmentLimits(nid, numSegments - 1, &startXd, &endXd);
+	if(!(status & 1)) return 0;
+	status = TdiData(&endXd, &endXd MDS_END_ARG);
+	if(status & 1)
+		status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+	if(!(status & 1)) return 0;
+	*xMax = *((float *)endXd.pointer->pointer);
+	MdsFree1Dx(&startXd, 0);
+	MdsFree1Dx(&endXd, 0);
+	return 1;
+}
+
+
+
+
+
+
+//Find minimum and maximum time for an expression involving signals 
+EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
+{
+	EMPTYXD(xd);
+	int status;
+	struct descriptor sigD = {strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr};
+	 
+	status = TdiCompile(&sigD, &xd MDS_END_ARG);
+	if(!(status & 1)) return 0;
+
+	status = traverseExprMinMax(xd.pointer, xMin, xMax);
+	MdsFree1Dx(&xd, 0);
+	return status;
+}
