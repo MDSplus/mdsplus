@@ -484,7 +484,10 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
 	if(status & 1)
 		status = TdiFloat(&startXd, &startXd MDS_END_ARG);
 	if(!(status & 1)) return 0;
-	*xMin = *((float *)startXd.pointer->pointer);
+	if(startXd.pointer->length == 8)
+		*xMin = *((double *)startXd.pointer->pointer);
+	else
+		*xMin = *((float *)startXd.pointer->pointer);
 	MdsFree1Dx(&startXd, 0);
 	MdsFree1Dx(&endXd, 0);
 	status = TreeGetSegmentLimits(nid, numSegments - 1, &startXd, &endXd);
@@ -493,7 +496,10 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
 	if(status & 1)
 		status = TdiFloat(&endXd, &endXd MDS_END_ARG);
 	if(!(status & 1)) return 0;
-	*xMax = *((float *)endXd.pointer->pointer);
+	if(endXd.pointer->length == 8)
+		*xMax = *((double *)endXd.pointer->pointer);
+	else
+		*xMax = *((float *)endXd.pointer->pointer);
 	MdsFree1Dx(&startXd, 0);
 	MdsFree1Dx(&endXd, 0);
 	return 1;
