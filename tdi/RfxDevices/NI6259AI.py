@@ -185,6 +185,7 @@ class NI6259AI(Device):
                 allFinished = True
                 for chan in range(len(self.chanMap)):
                     if(numSamples < 0 or counters[chan] < numSamples):
+                        print 'START READ'
                         readSamples = self.niInterfaceLib.readAndSave(c_int(chanFd[chan]), c_int(bufSize), c_int(segmentSize), c_int(counters[chan]), getattr(self.device, 'channel_%d_data'%(chan+1)).getNid(), self.device.clock_source.getNid(), self.treePtr)
                         print 'Channel ', chan, 'READ SAMPLES: ', readSamples
                         counters[chan] = counters[chan] + readSamples
@@ -270,9 +271,7 @@ class NI6259AI(Device):
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure device clock')
                     return 0
-            print 'CHIAMO convert_clk'
             status = niLib.pxi6259_set_ai_convert_clk(aiConf, c_int(20), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
-            print 'CHIAMATO'
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Convert Clock')
                 return 0
@@ -317,18 +316,13 @@ class NI6259AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 return 0
         treePtr = c_void_p(0);
-        print 'OPEN C++ TREE CAZZONE', self.getTree().name, self.getTree().shot
         status = niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
-        print 'CONFIGURE '
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
             self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.diffChanMap, treePtr)
         else:
             self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.nonDiffChanMap, treePtr)
-        print 'CONFIGURE FATTA'
         self.saveWorker()
-        print 'WORKER SALVATO'
         self.worker.start()
-        print 'start_store fatta'
         return 1
 
     def stop_store(self,arg):
