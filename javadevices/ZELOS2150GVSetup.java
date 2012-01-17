@@ -60,15 +60,18 @@ public class ZELOS2150GVSetup extends DeviceSetup {
         jPanel7 = new javax.swing.JPanel();
         deviceField14 = new DeviceField();
         deviceField15 = new DeviceField();
+        jPanel9 = new javax.swing.JPanel();
+        deviceChoice5 = new DeviceChoice();
+        deviceField18 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Zelos 2150 GV Camera Device");
         setDeviceType("ZELOS2150GV");
-        setHeight(550);
+        setHeight(600);
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(7, 0));
+        jPanel1.setLayout(new java.awt.GridLayout(8, 0));
 
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("Name: ");
@@ -182,6 +185,7 @@ public class ZELOS2150GVSetup extends DeviceSetup {
         jPanel5.add(deviceField9);
 
         jPanel1.add(jPanel5);
+        jPanel5.getAccessibleContext().setAccessibleName("Frame Area");
 
         jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Measure Area: "));
 
@@ -210,6 +214,7 @@ public class ZELOS2150GVSetup extends DeviceSetup {
         jPanel6.add(deviceField13);
 
         jPanel1.add(jPanel6);
+        jPanel6.getAccessibleContext().setAccessibleName("Measure Area");
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Binning"));
 
@@ -227,6 +232,23 @@ public class ZELOS2150GVSetup extends DeviceSetup {
 
         jPanel1.add(jPanel7);
 
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
+
+        deviceChoice5.setChoiceItems(new String[] {"Stream and Store", "Only Stream", "Only Store"});
+        deviceChoice5.setIdentifier("");
+        deviceChoice5.setLabelString("Enable:");
+        deviceChoice5.setOffsetNid(24);
+        deviceChoice5.setUpdateIdentifier("");
+        jPanel9.add(deviceChoice5);
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("Localhost Port:");
+        deviceField18.setNumCols(4);
+        deviceField18.setOffsetNid(25);
+        jPanel9.add(deviceField18);
+
+        jPanel1.add(jPanel9);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -237,6 +259,7 @@ public class ZELOS2150GVSetup extends DeviceSetup {
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
+    private DeviceChoice deviceChoice5;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -247,6 +270,7 @@ public class ZELOS2150GVSetup extends DeviceSetup {
     private DeviceField deviceField15;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
+    private DeviceField deviceField18;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -263,6 +287,7 @@ public class ZELOS2150GVSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
 
 }
