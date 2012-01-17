@@ -95,9 +95,6 @@ EXPORT struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct
 	struct descriptor endD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)in_xmax};
 	struct descriptor deltaD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)dt};
 
-
-	printf("PARTE JavaResample start %f end %f\n", *in_xmin, *in_xmax);
-
 	retXd = emptyXd;
 	if(*in_xmax <= *in_xmin) return &retXd; 
 
@@ -123,8 +120,6 @@ EXPORT struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct
 		}
 	}
 
-	printf("JavaResample: Fatta X\n");
-
     if(y_xdptr->class == CLASS_XD && ((struct descriptor *)(y_xdptr->pointer))->dtype == DTYPE_T)
     {
 		((struct descriptor *)(y_xdptr->pointer))->dtype = DTYPE_PATH;
@@ -136,7 +131,6 @@ EXPORT struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct
 		}
 		((struct descriptor *)(y_xdptr->pointer))->dtype = DTYPE_T;
 	}  
-	printf("JavaResample: Fatta Y\n");
 /*	TreeSetTimeContext(&emptyXd, &emptyXd, &emptyXd);
 	status = TdiFloat(&x_xd, &x_xd MDS_END_ARG);
 	if(!(status & 1)) return &retXd;
@@ -153,7 +147,6 @@ EXPORT struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct
 	MdsCopyDxXd((struct descriptor *)&y_xd, &retXd);
 	MdsFree1Dx(&x_xd, NULL);
     MdsFree1Dx(&y_xd, NULL);
-	printf("JavaResample: FINITA\n");
     return &retXd;
 }
 		
@@ -523,4 +516,80 @@ EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
 	status = traverseExprMinMax(xd.pointer, xMin, xMax);
 	MdsFree1Dx(&xd, 0);
 	return status;
+}
+
+//Find estimated (by defect) number of points for segmented and not segmented signal
+EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax)
+{
+	EMPTYXD(xd);
+	EMPTYXD(startXd);
+	EMPTYXD(endXd);
+	struct descriptor_a *arrayPtr;
+	float currStart, currEnd;
+	int status, nid, numSegments, numPoints, currSegment;
+	struct descriptor sigD = {strlen(sigExpr), DTYPE_T, CLASS_S, sigExpr};
+	char dtype, dimct;
+	int dims[16], next_row;	 
+	status = TdiCompile(&sigD, &xd MDS_END_ARG);
+	if(!(status & 1)) return 0;
+	if(xd.pointer->dtype != DTYPE_NID)
+	{
+		printf("JavaGetNumPoints: Not a NID\n");
+		return 0;
+	}
+	nid = *((int *)xd.pointer->pointer);
+	status = TreeGetNumSegments(nid, &numSegments);
+	if(!(status & 1)) return 0;
+	if(numSegments == 0)
+	{
+		status = TdiData(&xd, &xd MDS_END_ARG);
+		if(!(status & 1) || !xd.pointer || xd.pointer->class != CLASS_A) 
+			numPoints = 0;
+		else
+		{
+			arrayPtr = (struct descriptor_a *)xd.pointer;
+			numPoints = arrayPtr->arsize/arrayPtr->length;
+		}
+		MdsFree1Dx(&xd, 0);
+		return numPoints;
+	}
+	for(currSegment = 0; currSegment < numSegments; currSegment++)
+	{
+		status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
+		if(!(status & 1)) return 0;
+		status = TdiData(&startXd, &startXd MDS_END_ARG);
+		if(status & 1)
+			status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+		if(!(status & 1)) return 0;
+		if(startXd.pointer->length == 8)
+			currStart = *((double *)startXd.pointer->pointer);
+		else
+			currStart = *((float *)startXd.pointer->pointer);
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+		if(currStart >= *xMin)
+			break;
+	}
+	for(numPoints = 0; currSegment < numSegments; currSegment++)
+	{
+		status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
+		if(!(status & 1)) return 0;
+		status = TdiData(&endXd, &endXd MDS_END_ARG);
+		if(status & 1)
+			status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+		if(!(status & 1)) return 0;
+		if(endXd.pointer->length == 8)
+			currEnd = *((double *)endXd.pointer->pointer);
+		else
+			currEnd = *((float *)endXd.pointer->pointer);
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+
+		if(currEnd >= *xMax)
+			break;
+		status = TreeGetSegmentInfo(nid, currSegment, &dtype, &dimct, dims, &next_row);
+		if(!(status & 1)) return 0;
+		numPoints += dims[0];
+	}
+	return numPoints;
 }
