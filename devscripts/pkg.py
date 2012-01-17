@@ -397,7 +397,7 @@ def newRelease(pkg,flavor,version,release,dist):
             ls=line.split()
             PKG=ls[0][4:]
             if PKG==pkg and F is not None:
-                p=Popen('cvs -Q tag -F "%s" %s' % (newtag,F),shell=True,cwd=os.getcwd())
+                p=Popen('cvs -Q tag -F "%s" \'%s\'' % (newtag,F),shell=True,cwd=os.getcwd())
                 p.wait()
 
 def newReleaseCommand(args):
