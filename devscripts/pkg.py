@@ -325,6 +325,8 @@ def promoteCommand(args):
 
 def newVersionCommand(args):
     flavor=args[2]
+    if len(args) <= 3 or (len(args) > 3 and args[3] == "skip"):
+	sys.exit(0)
     if flavor in ('alpha','beta','stable'):
       major = len(args) > 3 and args[3] == "major"
       version=getVersion(flavor)
