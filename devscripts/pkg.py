@@ -327,18 +327,29 @@ def newVersionCommand(args):
     flavor=args[2]
     if flavor in ('alpha','beta','stable'):
       major = len(args) > 3 and args[3] == "major"
-      v=getVersion(flavor).split(".")
+      version=getVersion(flavor)
+      v=version.split('.')
       majv=int(v[0])
       minv=int(v[1])
       p=Popen('cvs -Q tag -d pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
       if p.wait()!=0:
-        print "Error promoting"
+        print "Error deleting old version tags"
         return
       if major:
         majv=majv+1
         minv=0
-      else:
+      elif args[3]=="minor":
         minv=minv+1
+      else:
+	nversion=args[3]
+        try:
+          nv=float(nversion)
+          nv=nversion.split('.')
+          majv=int(nv[0])
+          minv=int(nv[1])
+        except:
+	  print "version must be one of 'major', 'minor' or nnn.n"
+          sys.exit(1)
       p=Popen('cvs -Q tag pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
       if p.wait()!=0:
         print "Error changing version"
@@ -352,6 +363,8 @@ def newVersionCommand(args):
                 p2=Popen('cvs -Q tag -d %s rpm/subpackages/%s' % (rel,pkg),shell=True,cwd=os.getcwd())
                 p2.wait()
             line=p.stdout.readline()
+    else:
+	print "Invalid flavor /%s/. Specify alpha, beta or stable." % (flavor,)
 
 def getWorkspace():
     try:
