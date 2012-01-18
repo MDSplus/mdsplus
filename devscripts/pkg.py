@@ -299,7 +299,6 @@ def checkReleasesCommand(args):
 
 def promoteCommand(args):
     flavor=args[2]
-    major = len(args) > 3 and args[3] == "major"
     if flavor == "alpha":
         p=Popen('cvs -Q rtag -dB beta mdsplus',shell=True,cwd=os.getcwd())
         if p.wait()!=0:
@@ -323,23 +322,28 @@ def promoteCommand(args):
     else:
         print "You can only promote alpha or beta releases"
         return
-    v=getVersion(flavor).split(".")
-    majv=int(v[0])
-    minv=int(v[1])
-    p=Popen('cvs -Q tag -d pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
-    if p.wait()!=0:
+
+def newVersionCommand(args):
+    flavor=args[2]
+    if flavor in ('alpha','beta','stable'):
+      major = len(args) > 3 and args[3] == "major"
+      v=getVersion(flavor).split(".")
+      majv=int(v[0])
+      minv=int(v[1])
+      p=Popen('cvs -Q tag -d pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
+      if p.wait()!=0:
         print "Error promoting"
         return
-    if major:
+      if major:
         majv=majv+1
         minv=0
-    else:
+      else:
         minv=minv+1
-    p=Popen('cvs -Q tag pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
-    if p.wait()!=0:
-        print "Error promoting"
+      p=Popen('cvs -Q tag pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
+      if p.wait()!=0:
+        print "Error changing version"
         return
-    for pkg in getPackages():
+      for pkg in getPackages():
         p=Popen('cvs status -v rpm/subpackages/%s' % (pkg,),shell=True,stdout=PIPE,cwd=os.getcwd())
         line=p.stdout.readline()
         while len(line) > 0:
