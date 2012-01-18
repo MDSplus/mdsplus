@@ -87,9 +87,9 @@ class NI6259AI(Device):
         try:
             idx = ni6259Nids.index(self.getNid())
             self.fd = ni6259Fds[idx]
-            print 'RESTORE INFO HANDLE TROVATO'
+            print 'RESTORE INFO HANDLE FOUND'
         except:
-            print 'RESTORE INFO HANDLE NON TROVATO'
+            print 'RESTORE INFO HANDLE NOT FOUND'
             try: 
                 boardId = self.board_id.data();
             except:
@@ -102,6 +102,18 @@ class NI6259AI(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 return 0
+        return 1
+    def closeInfo(self):
+        global ni6259Fds
+        global ni6259Nids
+        try:
+            idx = ni6259Nids.index(self.getNid())
+            self.fd = ni6259Fds[idx]
+            ni6259Fds.remove(self.fd)
+            ni6259Nids.remove(self.getNid())
+            os.close(self.fd)
+        except:
+            print 'CLOSE INFO: HANDLE NOT FOUND'
         return 1
 ###################################Worker Management
     def saveWorker(self):
@@ -135,7 +147,6 @@ class NI6259AI(Device):
 ########################AsynchStore class
     class AsynchStore(Thread):
         stopReq = False
-       
         def configure(self, device, niLib, niInterfaceLib, fd, chanMap, hwChanMap, treePtr):
             self.device = device
             self.niLib = niLib
@@ -155,6 +166,7 @@ class NI6259AI(Device):
             chanFd = []
             for chan in range(len(self.chanMap)):
                 try:
+                    print 'CHANNEL', self.chanMap[chan]
                     print '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
                     currFd = os.open('/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]]), os.O_RDWR | os.O_NONBLOCK)
                     print 'APERTO', currFd
@@ -179,15 +191,16 @@ class NI6259AI(Device):
                 if (segmentSize % bufSize > 0):
                     c = c+1
                 segmentSize = c*bufSize
-            print 'BUF SIZE ', bufSize
-            print 'SEGMENT SIZE ', segmentSize
+            saveList = c_void_p(0)
+            self.niInterfaceLib.startSave(byref(saveList))
+            count = 0
             while not self.stopReq:
                 allFinished = True
+                print 'READ', count
+                count = count+bufSize
                 for chan in range(len(self.chanMap)):
                     if(numSamples < 0 or counters[chan] < numSamples):
-                        print 'START READ'
-                        readSamples = self.niInterfaceLib.readAndSave(c_int(chanFd[chan]), c_int(bufSize), c_int(segmentSize), c_int(counters[chan]), getattr(self.device, 'channel_%d_data'%(chan+1)).getNid(), self.device.clock_source.getNid(), self.treePtr)
-                        print 'Channel ', chan, 'READ SAMPLES: ', readSamples
+                        readSamples = self.niInterfaceLib.readAndSave(c_int(chanFd[chan]), c_int(bufSize), c_int(segmentSize), c_int(counters[chan]), getattr(self.device, 'channel_%d_data'%(chan+1)).getNid(), self.device.clock_source.getNid(), self.treePtr, saveList)
                         counters[chan] = counters[chan] + readSamples
                         allFinished = False
     ##Check termination
@@ -198,6 +211,8 @@ class NI6259AI(Device):
             for chan in range(len(self.chanMap)):
                 os.close(chanFd[chan])
             print 'ASYNCH WORKER TERMINATED'
+            self.niInterfaceLib.stopSave(saveList)
+            self.device.closeInfo()
             return
         def stop(self):
             self.stopReq = True
@@ -208,8 +223,10 @@ class NI6259AI(Device):
         global niLib
         global niInterfaceLib
         self.restoreInfo()
-        niInterfaceLib.pxi6259_create_ai_conf_ptr.restype = c_void_p
-        aiConf = niInterfaceLib.pxi6259_create_ai_conf_ptr()
+        aiConf = c_void_p(0)
+        print 'CHIAMO CREATE_AI_CONF'
+        niInterfaceLib.pxi6259_create_ai_conf_ptr(byref(aiConf))
+        print 'CHIAMATO CREATE_AI_CONF'
         try:
             inputMode = self.inputModeDict[self.input_mode.data()]
         except: 
@@ -223,26 +240,23 @@ class NI6259AI(Device):
             try:
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
                 polarity = self.polarityDict[getattr(self, 'channel_%d_polarity'%(chan+1)).data()]
-                print 'POLARITY: ', polarity
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan+1)).data()]
-                print 'GAIN: ', gain
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 return 0
             if(enabled):
                 if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-                    print 'INGRESSO DIFFERENZIALE'
                     currChan = self.diffChanMap[chan]
                 else:
-                    print 'INGRESSO NON DIFFERNZIALE'
                     currChan = chan
                 #print 'POLARITY: ' + str(polarity) + ' GAIN: ' + str(gain) + ' INPUT MODE: ' + str(inputMode)
+                print 'CHIAMO ADD_AI_CHANN'
                 status = niLib.pxi6259_add_ai_channel(aiConf, c_byte(currChan), polarity, gain, inputMode, c_byte(0))
-                print 'STATUS: ', status
+                print 'CHIAMATO ADD_AI_CHANN'
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(currChan + 1))
                     return 0
-                print 'CANALE '+ str(currChan+1) + ' CONFIGURATO'
+                print 'CHAN '+ str(currChan+1) + ' CONFIGURED'
         #endfor
         try:
             nSamples = self.num_samples.data()
@@ -252,7 +266,6 @@ class NI6259AI(Device):
             clockMode = self.clock_mode.data()
             if(clockMode == 'INTERNAL'):
                 frequency = self.clock_freq.data()
-                print 'FREQUENZA: ', frequency
                 divisions = int(20000000/frequency)
                 status = niLib.pxi6259_set_ai_sample_clk(aiConf, c_int(divisions), c_int(3), self.AI_SAMPLE_SELECT_SI_TC, self.AI_SAMPLE_POLARITY_RISING_EDGE)
                 if(status != 0):
@@ -264,9 +277,7 @@ class NI6259AI(Device):
                     clockSource = Range(Float64(0), Float64(3600), Float64(divisions/20000000.))
                 print 'CLOCK: ', clockSource
                 self.clock_source.putData(clockSource)
-                print 'SCRITTO'
             else:
-                print 'CLOCK ESTERNO'
                 status = niLib.pxi6259_set_ai_sample_clk(aiConf, c_int(16), c_int(3), self.AI_SAMPLE_SELECT_PFI0, self.AI_SAMPLE_POLARITY_RISING_EDGE)
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure device clock')
@@ -311,11 +322,12 @@ class NI6259AI(Device):
         for chan in range(0, numChannels):
             try:
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
-                chanMap.append(chan)
+                if enabled:
+                    chanMap.append(chan)
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 return 0
-        treePtr = c_void_p(0);
+        treePtr = c_void_p(0)
         status = niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
             self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.diffChanMap, treePtr)
