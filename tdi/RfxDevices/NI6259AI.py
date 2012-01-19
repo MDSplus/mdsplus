@@ -169,7 +169,6 @@ class NI6259AI(Device):
                     print 'CHANNEL', self.chanMap[chan]
                     print '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
                     currFd = os.open('/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]]), os.O_RDWR | os.O_NONBLOCK)
-                    print 'APERTO', currFd
                     chanFd.append(currFd)
                 except:
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
@@ -182,8 +181,6 @@ class NI6259AI(Device):
                 numSamples = self.device.num_samples.data()
             except:
                 numSamples = -1
-            print 'BUF SIZE ', bufSize
-            print 'SEGMENT SIZE ', segmentSize
             if(bufSize > segmentSize):
                 segmentSize = bufSize
             else:
@@ -196,8 +193,6 @@ class NI6259AI(Device):
             count = 0
             while not self.stopReq:
                 allFinished = True
-                print 'READ', count
-                count = count+bufSize
                 for chan in range(len(self.chanMap)):
                     if(numSamples < 0 or counters[chan] < numSamples):
                         readSamples = self.niInterfaceLib.readAndSave(c_int(chanFd[chan]), c_int(bufSize), c_int(segmentSize), c_int(counters[chan]), getattr(self.device, 'channel_%d_data'%(chan+1)).getNid(), self.device.clock_source.getNid(), self.treePtr, saveList)
@@ -207,6 +202,8 @@ class NI6259AI(Device):
                 if allFinished:
                     self.stopReq = True
     ##endwhile                
+                print 'READ', count
+                count = count+readSamples
             status = self.niLib.pxi6259_stop_ai(c_int(self.fd))
             for chan in range(len(self.chanMap)):
                 os.close(chanFd[chan])
@@ -224,9 +221,7 @@ class NI6259AI(Device):
         global niInterfaceLib
         self.restoreInfo()
         aiConf = c_void_p(0)
-        print 'CHIAMO CREATE_AI_CONF'
         niInterfaceLib.pxi6259_create_ai_conf_ptr(byref(aiConf))
-        print 'CHIAMATO CREATE_AI_CONF'
         try:
             inputMode = self.inputModeDict[self.input_mode.data()]
         except: 
@@ -237,6 +232,7 @@ class NI6259AI(Device):
         else:
             numChannels = 32
         for chan in range(0, numChannels):
+            getattr(self, 'channel_%d_data'%(chan+1)).setCompressOnPut(False)
             try:
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
                 polarity = self.polarityDict[getattr(self, 'channel_%d_polarity'%(chan+1)).data()]
@@ -250,9 +246,7 @@ class NI6259AI(Device):
                 else:
                     currChan = chan
                 #print 'POLARITY: ' + str(polarity) + ' GAIN: ' + str(gain) + ' INPUT MODE: ' + str(inputMode)
-                print 'CHIAMO ADD_AI_CHANN'
                 status = niLib.pxi6259_add_ai_channel(aiConf, c_byte(currChan), polarity, gain, inputMode, c_byte(0))
-                print 'CHIAMATO ADD_AI_CHANN'
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(currChan + 1))
                     return 0
