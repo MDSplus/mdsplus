@@ -68,7 +68,7 @@ public class MdsDataProvider
             }
             if(startSegment == -1)
                 throw new IOException("Frames outside defined time window");
-            for(endSegment = startSegment; endSegment < numSegments; endSegment++)
+            for(endSegment = startSegment; endSegment < numSegments-1; endSegment++)
             {
                 float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
                 startTimes[endSegment] = limits[0];
