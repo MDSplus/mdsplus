@@ -1,7 +1,8 @@
-public fun DIO4HWSetClockChan(in _nid, in _board_id, in _channel, in _frequency, in _duty_cycle)
+public fun DIO4HWSetExternalClockChan(in _nid, in _board_id, in _channel, in _freq1, in _freq2, in _duty_cycle)
 {
 
 	private _DIO4_CLOCK_SOURCE_INTERNAL	=	0x0;
+	private _DIO4_CLOCK_SOURCE_IO =	0x1;
 	private _DIO4_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
 	private _DIO4_CLOCK_SOURCE_RISING_EDGE	=	0x0;
 	private _DIO4_ER_INT_DISABLE	= 0x0;
@@ -12,9 +13,9 @@ public fun DIO4HWSetClockChan(in _nid, in _board_id, in _channel, in _frequency,
 	private _DIO4_TC_SINGLE_SHOT = 0;	
 
 
-write(*, 'DIO4HWSetClockChan');
+write(*, 'DIO4HWSetExternalClockChan');
 
-	_period = 1./_frequency;
+	_period = 1./_freq2;
 	_tot_cycles = long(_period / 1E-7 + 0.5);
 
 	_cycles_1 = long(_tot_cycles * _duty_cycle / 100.) - 1; 
@@ -97,6 +98,68 @@ write(*, 'DIO4HWSetClockChan');
 		return(0);
 	}
 	
+
+
+
+
+	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(byte(_DIO4_CLOCK_SOURCE_IO)), val(byte(2*_channel+2)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting clock source in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting clock source in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+	_dwTemp = long(0);
+	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x008)), ref(_dwTemp));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error reading register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error reading register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+write(*, _dwTemp);
+_dwTemp = _dwTemp | long(0x800);
+write(*, _dwTemp);
+
+	_status = DIO4->DIO4_Tst_WriteRegister(val(_handle), val(long(0x008)), val(long(_dwTemp)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error writing register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error writing register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+
+	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x3E0)), ref(_dwTemp));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error reading register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error reading register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
+
+_dwTemp = _dwTemp & long(0xFFFFC000U);
+_dwTemp = _dwTemp | long(_freq1/5000);
+
+	_status = DIO4->DIO4_Tst_WriteRegister(val(_handle), val(long(0x3E0)), val(long(_dwTemp)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error writing register in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error writing register in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
 
 /* Close device */
 	DIO4->DIO4_Close(val(_handle));

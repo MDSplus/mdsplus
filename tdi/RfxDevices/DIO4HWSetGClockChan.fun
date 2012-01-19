@@ -1,5 +1,5 @@
 public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode, in _frequency, 
-	in _delay, in _duration, in _event, in _duty_cycle)
+	in _delay, in _duration, in _event, in _duty_cycle, in _cyclic)
 {
 
 
@@ -76,7 +76,14 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 	_levels = [byte(0), byte(0), byte(1), byte(0)];
 
-	_status = DIO4->DIO4_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(byte(_DIO4_TC_SINGLE_SHOT)), 
+	if(_cyclic)
+		_mode = byte(_DIO4_TC_CYCLIC);
+	else
+		_mode = byte(_DIO4_TC_SINGLE_SHOT);
+
+	write(*, _mode);
+
+	_status = DIO4->DIO4_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(_mode), 
 		val(byte(_DIO4_TC_INT_DISABLE)), _levels);
 	if(_status != 0)
 	{

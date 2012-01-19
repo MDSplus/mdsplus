@@ -1,18 +1,21 @@
 /*
- * DIO4Setup.java
- *
- * Created on 6 ottobre 2009, 15.51
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 
-
+/*
+ * DIO4Setup.java
+ *
+ * Created on 16-gen-2012, 9.36.23
+ */
 
 /**
  *
- * @author  manduchi
+ * @author capobianco
  */
 public class DIO4Setup extends DeviceSetup {
 
-    /** Creates new form BeanForm */
+    /** Creates new form DIO4Setup */
     public DIO4Setup() {
         initComponents();
     }
@@ -26,260 +29,256 @@ public class DIO4Setup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel6 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
-        deviceField2 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField3 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        deviceChoice3 = new DeviceChoice();
         deviceField5 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        deviceButtons1 = new DeviceButtons();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        deviceChannel1 = new DeviceChannel();
+        deviceChoice2 = new DeviceChoice();
         jPanel5 = new javax.swing.JPanel();
-        deviceChoice4 = new DeviceChoice();
-        deviceField6 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceChannel2 = new DeviceChannel();
+        deviceField3 = new DeviceField();
+        deviceDispatch1 = new DeviceDispatch();
         jPanel7 = new javax.swing.JPanel();
-        deviceChoice5 = new DeviceChoice();
-        deviceChoice6 = new DeviceChoice();
-        deviceField7 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceChoice7 = new DeviceChoice();
-        deviceChoice8 = new DeviceChoice();
-        deviceField8 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        deviceField6 = new DeviceField();
         deviceField9 = new DeviceField();
+        jPanel4 = new javax.swing.JPanel();
+        deviceChannel1 = new DeviceChannel();
+        deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
         deviceField10 = new DeviceField();
-        deviceChannel3 = new DeviceChannel();
-        deviceField11 = new DeviceField();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        deviceChannel2 = new DeviceChannel();
+        jPanel9 = new javax.swing.JPanel();
+        deviceChoice7 = new DeviceChoice();
         deviceField12 = new DeviceField();
+        jPanel11 = new javax.swing.JPanel();
         deviceChannel4 = new DeviceChannel();
         jPanel10 = new javax.swing.JPanel();
-        deviceChoice9 = new DeviceChoice();
+        deviceChoice5 = new DeviceChoice();
+        deviceChoice6 = new DeviceChoice();
+        deviceField4 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceChoice4 = new DeviceChoice();
+        deviceChoice8 = new DeviceChoice();
         deviceField13 = new DeviceField();
-        jPanel11 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
         deviceField14 = new DeviceField();
         deviceField15 = new DeviceField();
-        deviceField16 = new DeviceField();
-        jPanel12 = new javax.swing.JPanel();
-        deviceField17 = new DeviceField();
-        deviceField18 = new DeviceField();
+        deviceChannel3 = new DeviceChannel();
+        jPanel8 = new javax.swing.JPanel();
+        deviceField37 = new DeviceField();
+        deviceField2 = new DeviceField();
+        deviceField11 = new DeviceField();
         deviceChannel5 = new DeviceChannel();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChoice10 = new DeviceChoice();
-        deviceField19 = new DeviceField();
-        deviceField20 = new DeviceField();
         jPanel14 = new javax.swing.JPanel();
-        deviceField21 = new DeviceField();
-        deviceField22 = new DeviceField();
+        deviceChoice9 = new DeviceChoice();
+        deviceChoice10 = new DeviceChoice();
+        deviceField16 = new DeviceField();
         jPanel15 = new javax.swing.JPanel();
-        deviceField23 = new DeviceField();
-        deviceField24 = new DeviceField();
-        deviceChannel6 = new DeviceChannel();
+        deviceField17 = new DeviceField();
+        deviceField20 = new DeviceField();
         jPanel16 = new javax.swing.JPanel();
-        deviceField25 = new DeviceField();
+        deviceField21 = new DeviceField();
+        deviceField18 = new DeviceField();
+        deviceField19 = new DeviceField();
+        deviceChannel6 = new DeviceChannel();
+        jPanel17 = new javax.swing.JPanel();
         deviceChoice11 = new DeviceChoice();
         deviceChoice12 = new DeviceChoice();
-        jPanel17 = new javax.swing.JPanel();
-        deviceField26 = new DeviceField();
-        deviceChoice13 = new DeviceChoice();
-        deviceChoice14 = new DeviceChoice();
-        deviceChannel7 = new DeviceChannel();
+        deviceField22 = new DeviceField();
         jPanel18 = new javax.swing.JPanel();
-        deviceChoice15 = new DeviceChoice();
-        deviceField27 = new DeviceField();
+        deviceField23 = new DeviceField();
+        deviceField28 = new DeviceField();
+        deviceField24 = new DeviceField();
         jPanel19 = new javax.swing.JPanel();
+        deviceField25 = new DeviceField();
+        deviceField26 = new DeviceField();
+        deviceField27 = new DeviceField();
+        deviceChannel7 = new DeviceChannel();
+        jPanel22 = new javax.swing.JPanel();
         deviceChannel8 = new DeviceChannel();
         jPanel20 = new javax.swing.JPanel();
-        deviceChoice16 = new DeviceChoice();
-        deviceChoice17 = new DeviceChoice();
-        deviceField28 = new DeviceField();
-        jPanel21 = new javax.swing.JPanel();
-        deviceChoice18 = new DeviceChoice();
-        deviceChoice19 = new DeviceChoice();
         deviceField29 = new DeviceField();
-        jPanel22 = new javax.swing.JPanel();
         deviceField30 = new DeviceField();
         deviceField31 = new DeviceField();
+        deviceChoice13 = new DeviceChoice();
+        deviceChoice14 = new DeviceChoice();
+        jPanel23 = new javax.swing.JPanel();
         deviceChannel9 = new DeviceChannel();
+        jPanel21 = new javax.swing.JPanel();
         deviceField32 = new DeviceField();
         deviceField33 = new DeviceField();
-        deviceChannel10 = new DeviceChannel();
-        jPanel23 = new javax.swing.JPanel();
-        deviceChoice20 = new DeviceChoice();
         deviceField34 = new DeviceField();
+        deviceChoice15 = new DeviceChoice();
+        deviceChoice16 = new DeviceChoice();
+        deviceChannel10 = new DeviceChannel();
         jPanel24 = new javax.swing.JPanel();
         deviceField35 = new DeviceField();
         deviceField36 = new DeviceField();
-        deviceField37 = new DeviceField();
-        jPanel25 = new javax.swing.JPanel();
-        deviceField38 = new DeviceField();
-        deviceField39 = new DeviceField();
         deviceChannel11 = new DeviceChannel();
+        jPanel25 = new javax.swing.JPanel();
+        deviceChoice17 = new DeviceChoice();
+        deviceField38 = new DeviceField();
         jPanel26 = new javax.swing.JPanel();
+        deviceChannel12 = new DeviceChannel();
+        jPanel27 = new javax.swing.JPanel();
+        deviceChoice18 = new DeviceChoice();
+        deviceChoice19 = new DeviceChoice();
+        deviceField39 = new DeviceField();
+        jPanel28 = new javax.swing.JPanel();
+        deviceChoice20 = new DeviceChoice();
         deviceChoice21 = new DeviceChoice();
         deviceField40 = new DeviceField();
+        jPanel29 = new javax.swing.JPanel();
         deviceField41 = new DeviceField();
-        jPanel27 = new javax.swing.JPanel();
         deviceField42 = new DeviceField();
+        deviceChannel13 = new DeviceChannel();
+        jPanel30 = new javax.swing.JPanel();
         deviceField43 = new DeviceField();
-        jPanel28 = new javax.swing.JPanel();
         deviceField44 = new DeviceField();
         deviceField45 = new DeviceField();
-        deviceChannel12 = new DeviceChannel();
-        jPanel29 = new javax.swing.JPanel();
-        deviceField46 = new DeviceField();
+        deviceChannel14 = new DeviceChannel();
+        jPanel31 = new javax.swing.JPanel();
         deviceChoice22 = new DeviceChoice();
         deviceChoice23 = new DeviceChoice();
-        jPanel30 = new javax.swing.JPanel();
+        deviceField46 = new DeviceField();
+        jPanel32 = new javax.swing.JPanel();
         deviceField47 = new DeviceField();
+        deviceField48 = new DeviceField();
+        jPanel33 = new javax.swing.JPanel();
+        deviceField49 = new DeviceField();
+        deviceField50 = new DeviceField();
+        deviceField51 = new DeviceField();
+        deviceChannel15 = new DeviceChannel();
+        jPanel34 = new javax.swing.JPanel();
         deviceChoice24 = new DeviceChoice();
         deviceChoice25 = new DeviceChoice();
-        deviceChannel13 = new DeviceChannel();
-        jPanel31 = new javax.swing.JPanel();
-        deviceChoice26 = new DeviceChoice();
-        deviceField48 = new DeviceField();
-        jPanel32 = new javax.swing.JPanel();
-        deviceChannel14 = new DeviceChannel();
-        jPanel33 = new javax.swing.JPanel();
-        deviceChoice27 = new DeviceChoice();
-        deviceChoice28 = new DeviceChoice();
-        deviceField49 = new DeviceField();
-        jPanel34 = new javax.swing.JPanel();
-        deviceChoice29 = new DeviceChoice();
-        deviceChoice30 = new DeviceChoice();
-        deviceField50 = new DeviceField();
-        jPanel35 = new javax.swing.JPanel();
-        deviceField51 = new DeviceField();
         deviceField52 = new DeviceField();
-        deviceChannel15 = new DeviceChannel();
+        jPanel35 = new javax.swing.JPanel();
         deviceField53 = new DeviceField();
         deviceField54 = new DeviceField();
-        deviceChannel16 = new DeviceChannel();
-        jPanel36 = new javax.swing.JPanel();
-        deviceChoice31 = new DeviceChoice();
         deviceField55 = new DeviceField();
-        jPanel37 = new javax.swing.JPanel();
+        jPanel36 = new javax.swing.JPanel();
         deviceField56 = new DeviceField();
         deviceField57 = new DeviceField();
         deviceField58 = new DeviceField();
+        deviceChannel16 = new DeviceChannel();
+        jPanel37 = new javax.swing.JPanel();
+        deviceChannel17 = new DeviceChannel();
         jPanel38 = new javax.swing.JPanel();
         deviceField59 = new DeviceField();
         deviceField60 = new DeviceField();
-        deviceChannel17 = new DeviceChannel();
-        jPanel39 = new javax.swing.JPanel();
-        deviceChoice32 = new DeviceChoice();
         deviceField61 = new DeviceField();
-        deviceField62 = new DeviceField();
+        deviceChoice26 = new DeviceChoice();
+        deviceChoice27 = new DeviceChoice();
+        jPanel39 = new javax.swing.JPanel();
+        deviceChannel18 = new DeviceChannel();
         jPanel40 = new javax.swing.JPanel();
+        deviceField62 = new DeviceField();
         deviceField63 = new DeviceField();
         deviceField64 = new DeviceField();
+        deviceChoice28 = new DeviceChoice();
+        deviceChoice29 = new DeviceChoice();
+        deviceChannel19 = new DeviceChannel();
         jPanel41 = new javax.swing.JPanel();
         deviceField65 = new DeviceField();
         deviceField66 = new DeviceField();
-        deviceChannel18 = new DeviceChannel();
+        deviceChannel20 = new DeviceChannel();
         jPanel42 = new javax.swing.JPanel();
+        deviceChoice30 = new DeviceChoice();
         deviceField67 = new DeviceField();
+        jPanel43 = new javax.swing.JPanel();
+        deviceChannel21 = new DeviceChannel();
+        jPanel44 = new javax.swing.JPanel();
+        deviceChoice31 = new DeviceChoice();
+        deviceChoice32 = new DeviceChoice();
+        deviceField68 = new DeviceField();
+        jPanel45 = new javax.swing.JPanel();
         deviceChoice33 = new DeviceChoice();
         deviceChoice34 = new DeviceChoice();
-        jPanel43 = new javax.swing.JPanel();
-        deviceField68 = new DeviceField();
-        deviceChoice35 = new DeviceChoice();
-        deviceChoice36 = new DeviceChoice();
-        deviceChannel19 = new DeviceChannel();
-        jPanel44 = new javax.swing.JPanel();
-        deviceChoice37 = new DeviceChoice();
         deviceField69 = new DeviceField();
-        jPanel45 = new javax.swing.JPanel();
-        deviceChannel20 = new DeviceChannel();
         jPanel46 = new javax.swing.JPanel();
-        deviceChoice38 = new DeviceChoice();
-        deviceChoice39 = new DeviceChoice();
         deviceField70 = new DeviceField();
-        jPanel47 = new javax.swing.JPanel();
-        deviceChoice40 = new DeviceChoice();
-        deviceChoice41 = new DeviceChoice();
         deviceField71 = new DeviceField();
-        jPanel48 = new javax.swing.JPanel();
+        deviceChannel22 = new DeviceChannel();
+        jPanel47 = new javax.swing.JPanel();
         deviceField72 = new DeviceField();
         deviceField73 = new DeviceField();
-        deviceChannel21 = new DeviceChannel();
         deviceField74 = new DeviceField();
+        deviceChannel23 = new DeviceChannel();
+        jPanel48 = new javax.swing.JPanel();
+        deviceChoice35 = new DeviceChoice();
+        deviceChoice36 = new DeviceChoice();
         deviceField75 = new DeviceField();
-        deviceChannel22 = new DeviceChannel();
         jPanel49 = new javax.swing.JPanel();
-        deviceChoice42 = new DeviceChoice();
         deviceField76 = new DeviceField();
-        jPanel50 = new javax.swing.JPanel();
         deviceField77 = new DeviceField();
+        jPanel50 = new javax.swing.JPanel();
         deviceField78 = new DeviceField();
         deviceField79 = new DeviceField();
-        jPanel51 = new javax.swing.JPanel();
         deviceField80 = new DeviceField();
+        deviceChannel24 = new DeviceChannel();
+        jPanel51 = new javax.swing.JPanel();
+        deviceChoice37 = new DeviceChoice();
+        deviceChoice38 = new DeviceChoice();
         deviceField81 = new DeviceField();
-        deviceChannel23 = new DeviceChannel();
         jPanel52 = new javax.swing.JPanel();
-        deviceChoice43 = new DeviceChoice();
         deviceField82 = new DeviceField();
         deviceField83 = new DeviceField();
-        jPanel53 = new javax.swing.JPanel();
         deviceField84 = new DeviceField();
+        jPanel53 = new javax.swing.JPanel();
         deviceField85 = new DeviceField();
-        jPanel54 = new javax.swing.JPanel();
         deviceField86 = new DeviceField();
         deviceField87 = new DeviceField();
-        deviceChannel24 = new DeviceChannel();
+        deviceChannel25 = new DeviceChannel();
+        jPanel54 = new javax.swing.JPanel();
+        deviceChannel26 = new DeviceChannel();
         jPanel55 = new javax.swing.JPanel();
         deviceField88 = new DeviceField();
+        deviceField89 = new DeviceField();
+        deviceField90 = new DeviceField();
+        deviceChoice39 = new DeviceChoice();
+        deviceChoice40 = new DeviceChoice();
+        jPanel56 = new javax.swing.JPanel();
+        deviceChannel27 = new DeviceChannel();
+        jPanel57 = new javax.swing.JPanel();
+        deviceField91 = new DeviceField();
+        deviceField92 = new DeviceField();
+        deviceField93 = new DeviceField();
+        deviceChoice41 = new DeviceChoice();
+        deviceChoice42 = new DeviceChoice();
+        deviceChannel28 = new DeviceChannel();
+        jPanel58 = new javax.swing.JPanel();
+        deviceField94 = new DeviceField();
+        deviceField95 = new DeviceField();
+        deviceChannel29 = new DeviceChannel();
+        jPanel59 = new javax.swing.JPanel();
+        deviceChoice43 = new DeviceChoice();
+        deviceField96 = new DeviceField();
+        jPanel60 = new javax.swing.JPanel();
+        deviceChannel30 = new DeviceChannel();
+        jPanel61 = new javax.swing.JPanel();
         deviceChoice44 = new DeviceChoice();
         deviceChoice45 = new DeviceChoice();
-        jPanel56 = new javax.swing.JPanel();
-        deviceField89 = new DeviceField();
+        deviceField97 = new DeviceField();
+        jPanel62 = new javax.swing.JPanel();
         deviceChoice46 = new DeviceChoice();
         deviceChoice47 = new DeviceChoice();
-        deviceChannel25 = new DeviceChannel();
-        jPanel57 = new javax.swing.JPanel();
-        deviceChoice48 = new DeviceChoice();
-        deviceField90 = new DeviceField();
-        jPanel58 = new javax.swing.JPanel();
-        deviceChannel26 = new DeviceChannel();
-        jPanel59 = new javax.swing.JPanel();
-        deviceChoice49 = new DeviceChoice();
-        deviceChoice50 = new DeviceChoice();
-        deviceField91 = new DeviceField();
-        jPanel60 = new javax.swing.JPanel();
-        deviceChoice51 = new DeviceChoice();
-        deviceChoice52 = new DeviceChoice();
-        deviceField92 = new DeviceField();
-        jPanel61 = new javax.swing.JPanel();
-        deviceField93 = new DeviceField();
-        deviceField94 = new DeviceField();
-        deviceChannel27 = new DeviceChannel();
-        deviceField95 = new DeviceField();
-        deviceField96 = new DeviceField();
-        deviceChannel28 = new DeviceChannel();
-        jPanel62 = new javax.swing.JPanel();
-        deviceChoice53 = new DeviceChoice();
-        deviceField97 = new DeviceField();
-        jPanel63 = new javax.swing.JPanel();
         deviceField98 = new DeviceField();
+        jPanel63 = new javax.swing.JPanel();
         deviceField99 = new DeviceField();
         deviceField100 = new DeviceField();
+        deviceChannel31 = new DeviceChannel();
         jPanel64 = new javax.swing.JPanel();
         deviceField101 = new DeviceField();
         deviceField102 = new DeviceField();
-        deviceChannel29 = new DeviceChannel();
-        jPanel65 = new javax.swing.JPanel();
-        deviceChoice54 = new DeviceChoice();
         deviceField103 = new DeviceField();
+        deviceChannel32 = new DeviceChannel();
+        jPanel65 = new javax.swing.JPanel();
+        deviceChoice48 = new DeviceChoice();
+        deviceChoice49 = new DeviceChoice();
         deviceField104 = new DeviceField();
         jPanel66 = new javax.swing.JPanel();
         deviceField105 = new DeviceField();
@@ -287,2449 +286,3394 @@ public class DIO4Setup extends DeviceSetup {
         jPanel67 = new javax.swing.JPanel();
         deviceField107 = new DeviceField();
         deviceField108 = new DeviceField();
-        deviceChannel30 = new DeviceChannel();
-        jPanel68 = new javax.swing.JPanel();
         deviceField109 = new DeviceField();
-        deviceChoice55 = new DeviceChoice();
-        deviceChoice56 = new DeviceChoice();
-        jPanel69 = new javax.swing.JPanel();
+        deviceChannel33 = new DeviceChannel();
+        jPanel68 = new javax.swing.JPanel();
+        deviceChoice50 = new DeviceChoice();
+        deviceChoice51 = new DeviceChoice();
         deviceField110 = new DeviceField();
-        deviceChoice57 = new DeviceChoice();
-        deviceChoice58 = new DeviceChoice();
-        deviceChannel31 = new DeviceChannel();
-        jPanel70 = new javax.swing.JPanel();
-        deviceChoice59 = new DeviceChoice();
+        jPanel69 = new javax.swing.JPanel();
         deviceField111 = new DeviceField();
-        jPanel71 = new javax.swing.JPanel();
-        deviceChannel32 = new DeviceChannel();
-        jPanel72 = new javax.swing.JPanel();
-        deviceChoice60 = new DeviceChoice();
-        deviceChoice61 = new DeviceChoice();
         deviceField112 = new DeviceField();
-        jPanel73 = new javax.swing.JPanel();
-        deviceChoice62 = new DeviceChoice();
-        deviceChoice63 = new DeviceChoice();
         deviceField113 = new DeviceField();
-        jPanel74 = new javax.swing.JPanel();
+        jPanel70 = new javax.swing.JPanel();
         deviceField114 = new DeviceField();
         deviceField115 = new DeviceField();
-        deviceChannel33 = new DeviceChannel();
         deviceField116 = new DeviceField();
-        deviceField117 = new DeviceField();
         deviceChannel34 = new DeviceChannel();
-        jPanel75 = new javax.swing.JPanel();
-        deviceChoice64 = new DeviceChoice();
+        jPanel71 = new javax.swing.JPanel();
+        deviceChannel35 = new DeviceChannel();
+        jPanel72 = new javax.swing.JPanel();
+        deviceField117 = new DeviceField();
         deviceField118 = new DeviceField();
-        jPanel76 = new javax.swing.JPanel();
         deviceField119 = new DeviceField();
+        deviceChoice52 = new DeviceChoice();
+        deviceChoice53 = new DeviceChoice();
+        jPanel73 = new javax.swing.JPanel();
+        deviceChannel36 = new DeviceChannel();
+        jPanel74 = new javax.swing.JPanel();
         deviceField120 = new DeviceField();
         deviceField121 = new DeviceField();
-        jPanel77 = new javax.swing.JPanel();
         deviceField122 = new DeviceField();
+        deviceChoice54 = new DeviceChoice();
+        deviceChoice55 = new DeviceChoice();
+        deviceChannel37 = new DeviceChannel();
+        jPanel75 = new javax.swing.JPanel();
         deviceField123 = new DeviceField();
-        deviceChannel35 = new DeviceChannel();
-        jPanel78 = new javax.swing.JPanel();
-        deviceChoice65 = new DeviceChoice();
         deviceField124 = new DeviceField();
+        deviceChannel38 = new DeviceChannel();
+        jPanel76 = new javax.swing.JPanel();
+        deviceChoice56 = new DeviceChoice();
         deviceField125 = new DeviceField();
-        jPanel79 = new javax.swing.JPanel();
+        jPanel77 = new javax.swing.JPanel();
+        deviceChannel39 = new DeviceChannel();
+        jPanel78 = new javax.swing.JPanel();
+        deviceChoice57 = new DeviceChoice();
+        deviceChoice58 = new DeviceChoice();
         deviceField126 = new DeviceField();
+        jPanel79 = new javax.swing.JPanel();
+        deviceChoice59 = new DeviceChoice();
+        deviceChoice60 = new DeviceChoice();
         deviceField127 = new DeviceField();
         jPanel80 = new javax.swing.JPanel();
         deviceField128 = new DeviceField();
         deviceField129 = new DeviceField();
-        deviceChannel36 = new DeviceChannel();
+        deviceChannel40 = new DeviceChannel();
         jPanel81 = new javax.swing.JPanel();
         deviceField130 = new DeviceField();
-        deviceChoice66 = new DeviceChoice();
-        deviceChoice67 = new DeviceChoice();
-        jPanel82 = new javax.swing.JPanel();
         deviceField131 = new DeviceField();
-        deviceChoice68 = new DeviceChoice();
-        deviceChoice69 = new DeviceChoice();
-        deviceChannel37 = new DeviceChannel();
-        jPanel83 = new javax.swing.JPanel();
-        deviceChoice70 = new DeviceChoice();
         deviceField132 = new DeviceField();
-        jPanel84 = new javax.swing.JPanel();
-        deviceChannel38 = new DeviceChannel();
-        jPanel85 = new javax.swing.JPanel();
-        deviceChoice71 = new DeviceChoice();
-        deviceChoice72 = new DeviceChoice();
+        deviceChannel41 = new DeviceChannel();
+        jPanel82 = new javax.swing.JPanel();
+        deviceChoice61 = new DeviceChoice();
+        deviceChoice62 = new DeviceChoice();
         deviceField133 = new DeviceField();
-        jPanel86 = new javax.swing.JPanel();
-        deviceChoice73 = new DeviceChoice();
-        deviceChoice74 = new DeviceChoice();
+        jPanel83 = new javax.swing.JPanel();
         deviceField134 = new DeviceField();
-        jPanel87 = new javax.swing.JPanel();
         deviceField135 = new DeviceField();
+        jPanel84 = new javax.swing.JPanel();
         deviceField136 = new DeviceField();
-        deviceChannel39 = new DeviceChannel();
         deviceField137 = new DeviceField();
         deviceField138 = new DeviceField();
-        deviceChannel40 = new DeviceChannel();
-        jPanel88 = new javax.swing.JPanel();
-        deviceChoice75 = new DeviceChoice();
+        deviceChannel42 = new DeviceChannel();
+        jPanel85 = new javax.swing.JPanel();
+        deviceChoice63 = new DeviceChoice();
+        deviceChoice64 = new DeviceChoice();
         deviceField139 = new DeviceField();
-        jPanel89 = new javax.swing.JPanel();
+        jPanel86 = new javax.swing.JPanel();
         deviceField140 = new DeviceField();
         deviceField141 = new DeviceField();
         deviceField142 = new DeviceField();
-        jPanel90 = new javax.swing.JPanel();
+        jPanel87 = new javax.swing.JPanel();
         deviceField143 = new DeviceField();
         deviceField144 = new DeviceField();
-        deviceChannel41 = new DeviceChannel();
-        jPanel91 = new javax.swing.JPanel();
-        deviceChoice76 = new DeviceChoice();
         deviceField145 = new DeviceField();
+        deviceChannel43 = new DeviceChannel();
+        jPanel88 = new javax.swing.JPanel();
+        deviceChannel44 = new DeviceChannel();
+        jPanel89 = new javax.swing.JPanel();
         deviceField146 = new DeviceField();
-        jPanel92 = new javax.swing.JPanel();
         deviceField147 = new DeviceField();
         deviceField148 = new DeviceField();
-        jPanel93 = new javax.swing.JPanel();
+        deviceChoice65 = new DeviceChoice();
+        deviceChoice66 = new DeviceChoice();
+        jPanel90 = new javax.swing.JPanel();
+        deviceChannel45 = new DeviceChannel();
+        jPanel91 = new javax.swing.JPanel();
         deviceField149 = new DeviceField();
         deviceField150 = new DeviceField();
-        deviceChannel42 = new DeviceChannel();
-        jPanel94 = new javax.swing.JPanel();
         deviceField151 = new DeviceField();
-        deviceChoice77 = new DeviceChoice();
-        deviceChoice78 = new DeviceChoice();
-        jPanel95 = new javax.swing.JPanel();
-        deviceField152 = new DeviceField();
-        deviceChoice79 = new DeviceChoice();
-        deviceChoice80 = new DeviceChoice();
-        deviceChannel43 = new DeviceChannel();
-        jPanel96 = new javax.swing.JPanel();
-        deviceChoice81 = new DeviceChoice();
-        deviceField153 = new DeviceField();
-        jPanel97 = new javax.swing.JPanel();
-        deviceChannel44 = new DeviceChannel();
-        jPanel98 = new javax.swing.JPanel();
-        deviceChoice82 = new DeviceChoice();
-        deviceChoice83 = new DeviceChoice();
-        deviceField154 = new DeviceField();
-        jPanel99 = new javax.swing.JPanel();
-        deviceChoice84 = new DeviceChoice();
-        deviceChoice85 = new DeviceChoice();
-        deviceField155 = new DeviceField();
-        jPanel100 = new javax.swing.JPanel();
-        deviceField156 = new DeviceField();
-        deviceField157 = new DeviceField();
-        deviceChannel45 = new DeviceChannel();
-        deviceField158 = new DeviceField();
-        deviceField159 = new DeviceField();
+        deviceChoice67 = new DeviceChoice();
+        deviceChoice68 = new DeviceChoice();
         deviceChannel46 = new DeviceChannel();
-        jPanel101 = new javax.swing.JPanel();
-        deviceChoice86 = new DeviceChoice();
-        deviceField160 = new DeviceField();
-        jPanel102 = new javax.swing.JPanel();
-        deviceField161 = new DeviceField();
-        deviceField162 = new DeviceField();
-        deviceField163 = new DeviceField();
-        jPanel103 = new javax.swing.JPanel();
-        deviceField164 = new DeviceField();
-        deviceField165 = new DeviceField();
+        jPanel92 = new javax.swing.JPanel();
+        deviceField152 = new DeviceField();
+        deviceField153 = new DeviceField();
         deviceChannel47 = new DeviceChannel();
-        jPanel104 = new javax.swing.JPanel();
-        deviceChoice87 = new DeviceChoice();
+        jPanel93 = new javax.swing.JPanel();
+        deviceChoice69 = new DeviceChoice();
+        deviceField154 = new DeviceField();
+        jPanel94 = new javax.swing.JPanel();
+        deviceChannel48 = new DeviceChannel();
+        jPanel95 = new javax.swing.JPanel();
+        deviceChoice70 = new DeviceChoice();
+        deviceChoice71 = new DeviceChoice();
+        deviceField155 = new DeviceField();
+        jPanel96 = new javax.swing.JPanel();
+        deviceChoice72 = new DeviceChoice();
+        deviceChoice73 = new DeviceChoice();
+        deviceField156 = new DeviceField();
+        jPanel97 = new javax.swing.JPanel();
+        deviceField157 = new DeviceField();
+        deviceField158 = new DeviceField();
+        deviceChannel49 = new DeviceChannel();
+        jPanel98 = new javax.swing.JPanel();
+        deviceField159 = new DeviceField();
+        deviceField160 = new DeviceField();
+        deviceField161 = new DeviceField();
+        deviceChannel50 = new DeviceChannel();
+        jPanel99 = new javax.swing.JPanel();
+        deviceChoice74 = new DeviceChoice();
+        deviceChoice75 = new DeviceChoice();
+        deviceField162 = new DeviceField();
+        jPanel100 = new javax.swing.JPanel();
+        deviceField163 = new DeviceField();
+        deviceField164 = new DeviceField();
+        jPanel101 = new javax.swing.JPanel();
+        deviceField165 = new DeviceField();
         deviceField166 = new DeviceField();
         deviceField167 = new DeviceField();
-        jPanel105 = new javax.swing.JPanel();
+        deviceChannel51 = new DeviceChannel();
+        jPanel102 = new javax.swing.JPanel();
+        deviceChoice76 = new DeviceChoice();
+        deviceChoice77 = new DeviceChoice();
         deviceField168 = new DeviceField();
+        jPanel103 = new javax.swing.JPanel();
         deviceField169 = new DeviceField();
-        jPanel106 = new javax.swing.JPanel();
         deviceField170 = new DeviceField();
         deviceField171 = new DeviceField();
-        deviceChannel48 = new DeviceChannel();
-        jPanel107 = new javax.swing.JPanel();
+        jPanel104 = new javax.swing.JPanel();
         deviceField172 = new DeviceField();
-        deviceChoice88 = new DeviceChoice();
-        deviceChoice89 = new DeviceChoice();
-        jPanel108 = new javax.swing.JPanel();
         deviceField173 = new DeviceField();
+        deviceField174 = new DeviceField();
+        deviceChannel52 = new DeviceChannel();
+        jPanel105 = new javax.swing.JPanel();
+        deviceChannel53 = new DeviceChannel();
+        jPanel106 = new javax.swing.JPanel();
+        deviceField175 = new DeviceField();
+        deviceField176 = new DeviceField();
+        deviceField177 = new DeviceField();
+        deviceChoice78 = new DeviceChoice();
+        deviceChoice79 = new DeviceChoice();
+        jPanel107 = new javax.swing.JPanel();
+        deviceChannel54 = new DeviceChannel();
+        jPanel108 = new javax.swing.JPanel();
+        deviceField178 = new DeviceField();
+        deviceField179 = new DeviceField();
+        deviceField180 = new DeviceField();
+        deviceChoice80 = new DeviceChoice();
+        deviceChoice81 = new DeviceChoice();
+        deviceChannel55 = new DeviceChannel();
+        jPanel109 = new javax.swing.JPanel();
+        deviceField181 = new DeviceField();
+        deviceField182 = new DeviceField();
+        deviceChannel56 = new DeviceChannel();
+        jPanel110 = new javax.swing.JPanel();
+        deviceChoice82 = new DeviceChoice();
+        deviceField183 = new DeviceField();
+        jPanel111 = new javax.swing.JPanel();
+        deviceChannel57 = new DeviceChannel();
+        jPanel112 = new javax.swing.JPanel();
+        deviceChoice83 = new DeviceChoice();
+        deviceChoice84 = new DeviceChoice();
+        deviceField184 = new DeviceField();
+        jPanel113 = new javax.swing.JPanel();
+        deviceChoice85 = new DeviceChoice();
+        deviceChoice86 = new DeviceChoice();
+        deviceField185 = new DeviceField();
+        jPanel114 = new javax.swing.JPanel();
+        deviceField186 = new DeviceField();
+        deviceField187 = new DeviceField();
+        deviceChannel58 = new DeviceChannel();
+        jPanel115 = new javax.swing.JPanel();
+        deviceField188 = new DeviceField();
+        deviceField189 = new DeviceField();
+        deviceField190 = new DeviceField();
+        deviceChannel59 = new DeviceChannel();
+        jPanel116 = new javax.swing.JPanel();
+        deviceChoice87 = new DeviceChoice();
+        deviceChoice88 = new DeviceChoice();
+        deviceField191 = new DeviceField();
+        jPanel117 = new javax.swing.JPanel();
+        deviceField192 = new DeviceField();
+        deviceField193 = new DeviceField();
+        jPanel118 = new javax.swing.JPanel();
+        deviceField194 = new DeviceField();
+        deviceField195 = new DeviceField();
+        deviceField196 = new DeviceField();
+        deviceChannel60 = new DeviceChannel();
+        jPanel119 = new javax.swing.JPanel();
+        deviceChoice89 = new DeviceChoice();
         deviceChoice90 = new DeviceChoice();
+        deviceField197 = new DeviceField();
+        jPanel120 = new javax.swing.JPanel();
+        deviceField198 = new DeviceField();
+        deviceField199 = new DeviceField();
+        deviceField200 = new DeviceField();
+        jPanel121 = new javax.swing.JPanel();
+        deviceField201 = new DeviceField();
+        deviceField202 = new DeviceField();
+        deviceField203 = new DeviceField();
+        deviceChannel61 = new DeviceChannel();
+        jPanel122 = new javax.swing.JPanel();
+        deviceChannel62 = new DeviceChannel();
+        jPanel123 = new javax.swing.JPanel();
+        deviceField204 = new DeviceField();
+        deviceField205 = new DeviceField();
+        deviceField206 = new DeviceField();
         deviceChoice91 = new DeviceChoice();
-
-
+        deviceChoice92 = new DeviceChoice();
+        jPanel124 = new javax.swing.JPanel();
+        deviceChannel63 = new DeviceChannel();
+        jPanel125 = new javax.swing.JPanel();
+        deviceField207 = new DeviceField();
+        deviceField208 = new DeviceField();
+        deviceField209 = new DeviceField();
+        deviceChoice93 = new DeviceChoice();
+        deviceChoice94 = new DeviceChoice();
+        deviceChannel64 = new DeviceChannel();
+        jPanel126 = new javax.swing.JPanel();
+        deviceField210 = new DeviceField();
+        deviceField211 = new DeviceField();
+        deviceChannel65 = new DeviceChannel();
+        jPanel127 = new javax.swing.JPanel();
+        deviceChoice95 = new DeviceChoice();
+        deviceField212 = new DeviceField();
+        jPanel128 = new javax.swing.JPanel();
+        deviceChannel66 = new DeviceChannel();
+        jPanel129 = new javax.swing.JPanel();
+        deviceChoice96 = new DeviceChoice();
+        deviceChoice97 = new DeviceChoice();
+        deviceField213 = new DeviceField();
+        jPanel130 = new javax.swing.JPanel();
+        deviceChoice98 = new DeviceChoice();
+        deviceChoice99 = new DeviceChoice();
+        deviceField214 = new DeviceField();
+        jPanel131 = new javax.swing.JPanel();
+        deviceField215 = new DeviceField();
+        deviceField216 = new DeviceField();
+        deviceChannel67 = new DeviceChannel();
+        jPanel132 = new javax.swing.JPanel();
+        deviceField217 = new DeviceField();
+        deviceField218 = new DeviceField();
+        deviceField219 = new DeviceField();
+        deviceChannel68 = new DeviceChannel();
+        jPanel133 = new javax.swing.JPanel();
+        deviceChoice100 = new DeviceChoice();
+        deviceChoice101 = new DeviceChoice();
+        deviceField220 = new DeviceField();
+        jPanel134 = new javax.swing.JPanel();
+        deviceField221 = new DeviceField();
+        deviceField222 = new DeviceField();
+        jPanel135 = new javax.swing.JPanel();
+        deviceField223 = new DeviceField();
+        deviceField224 = new DeviceField();
+        deviceField225 = new DeviceField();
+        deviceChannel69 = new DeviceChannel();
+        jPanel136 = new javax.swing.JPanel();
+        deviceChoice102 = new DeviceChoice();
+        deviceChoice103 = new DeviceChoice();
+        deviceField226 = new DeviceField();
+        jPanel137 = new javax.swing.JPanel();
+        deviceField227 = new DeviceField();
+        deviceField228 = new DeviceField();
+        deviceField229 = new DeviceField();
+        jPanel138 = new javax.swing.JPanel();
+        deviceField230 = new DeviceField();
+        deviceField231 = new DeviceField();
+        deviceField232 = new DeviceField();
+        deviceChannel70 = new DeviceChannel();
+        jPanel139 = new javax.swing.JPanel();
+        deviceChannel71 = new DeviceChannel();
+        jPanel140 = new javax.swing.JPanel();
+        deviceField233 = new DeviceField();
+        deviceField234 = new DeviceField();
+        deviceField235 = new DeviceField();
+        deviceChoice104 = new DeviceChoice();
+        deviceChoice105 = new DeviceChoice();
+        jPanel141 = new javax.swing.JPanel();
+        deviceChannel72 = new DeviceChannel();
+        jPanel142 = new javax.swing.JPanel();
+        deviceField236 = new DeviceField();
+        deviceField237 = new DeviceField();
+        deviceField238 = new DeviceField();
+        deviceChoice106 = new DeviceChoice();
+        deviceChoice107 = new DeviceChoice();
+        deviceChannel73 = new DeviceChannel();
+        jPanel143 = new javax.swing.JPanel();
+        deviceField239 = new DeviceField();
+        deviceField240 = new DeviceField();
+        deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("INCAA DIO4 Timing Device");
+        setDeviceTitle("");
         setDeviceType("DIO4");
-        setHeight(400);
-        setWidth(800);
+        setHeight(500);
+        setWidth(850);
 
-        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
+        jPanel6.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Board Id:");
-        deviceField1.setNumCols(4);
+        deviceField1.setLabelString("BOARD ID :");
+        deviceField1.setNumCols(3);
         deviceField1.setOffsetNid(1);
         jPanel2.add(deviceField1);
 
         deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
         deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Mode:");
+        deviceChoice1.setLabelString("MODE :");
         deviceChoice1.setOffsetNid(2);
         deviceChoice1.setUpdateIdentifier("");
         jPanel2.add(deviceChoice1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Crate IP:");
-        deviceField2.setNumCols(20);
-        deviceField2.setOffsetNid(3);
-        deviceField2.setTextOnly(true);
-        jPanel2.add(deviceField2);
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("IP :");
+        deviceField5.setOffsetNid(3);
+        deviceField5.setTextOnly(true);
+        jPanel2.add(deviceField5);
 
         deviceChoice2.setChoiceItems(new String[] {"HIGHWAY", "INTERNAL", "EXTERNAL"});
         deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Clock Source:");
+        deviceChoice2.setLabelString("CLOCK SOURCE :");
         deviceChoice2.setOffsetNid(5);
         deviceChoice2.setUpdateIdentifier("");
         jPanel2.add(deviceChoice2);
 
-        jPanel1.add(jPanel2);
+        jPanel1.add(jPanel2, java.awt.BorderLayout.PAGE_START);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Comment:");
-        deviceField3.setNumCols(30);
+        deviceField3.setLabelString("COMMENT :");
+        deviceField3.setNumCols(35);
         deviceField3.setOffsetNid(4);
-        jPanel3.add(deviceField3);
-        
-        
+        deviceField3.setTextOnly(true);
+        jPanel5.add(deviceField3);
+        jPanel5.add(deviceDispatch1);
 
-        jPanel1.add(jPanel3);
+        jPanel1.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Rec. Start Event:");
-        deviceField4.setNumCols(8);
-        deviceField4.setOffsetNid(6);
-        deviceField4.setTextOnly(true);
-        jPanel4.add(deviceField4);
+        jPanel6.add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        deviceChoice3.setChoiceItems(new String[] {"NO", "YES"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Synch:");
-        deviceChoice3.setOffsetNid(9);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice3);
+        jPanel7.setLayout(new java.awt.BorderLayout());
 
-        deviceField5.setIdentifier("");
-	deviceField5.setTextOnly(true);        
-        deviceField5.setLabelString("Synch Event:");
-        deviceField5.setNumCols(15);
-        deviceField5.setOffsetNid(10);
-        jPanel4.add(deviceField5);
-        jPanel4.add(deviceDispatch1);
-
-        jPanel1.add(jPanel4);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        deviceChannel1.setInSameLine(true);
-        deviceChannel1.setLabelString("On:");
-        deviceChannel1.setOffsetNid(11);
-        deviceChannel1.setShowVal("");
-        deviceChannel1.setUpdateIdentifier("");
-        deviceChannel1.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice4.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Function:");
-        deviceChoice4.setOffsetNid(12);
-        deviceChoice4.setUpdateIdentifier("CH1");
-        jPanel5.add(deviceChoice4);
+        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Comment:");
-        deviceField6.setNumCols(20);
-        deviceField6.setOffsetNid(33);
+        deviceField6.setLabelString("REC START EV :");
+        deviceField6.setOffsetNid(6);
+        deviceField6.setShowState(true);
         deviceField6.setTextOnly(true);
-        jPanel5.add(deviceField6);
+        jPanel3.add(deviceField6);
 
-        deviceChannel1.getContainer().add(jPanel5, java.awt.BorderLayout.NORTH);
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("SYNCH EV :");
+        deviceField9.setOffsetNid(10);
+        deviceField9.setShowState(true);
+        deviceField9.setTextOnly(true);
+        jPanel3.add(deviceField9);
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel6.setLayout(new java.awt.CardLayout());
+        jPanel7.add(jPanel3, java.awt.BorderLayout.PAGE_START);
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(" SW EVENT "));
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceChannel1.setInSameLine(true);
+        deviceChannel1.setOffsetNid(243);
+        deviceChannel1.getContainer().setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("NAME :");
+        deviceField7.setOffsetNid(244);
+        deviceField7.setTextOnly(true);
+        deviceChannel1.getContainer().add(deviceField7);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("CODE :");
+        deviceField8.setOffsetNid(245);
+        deviceChannel1.getContainer().add(deviceField8);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("TIME :");
+        deviceField10.setOffsetNid(246);
+        deviceChannel1.getContainer().add(deviceField10);
+
+        jPanel4.add(deviceChannel1);
+
+        jPanel7.add(jPanel4, java.awt.BorderLayout.PAGE_END);
+
+        jPanel6.add(jPanel7, java.awt.BorderLayout.PAGE_END);
+
+        getContentPane().add(jPanel6, java.awt.BorderLayout.NORTH);
 
         deviceChannel2.setLabelString("");
         deviceChannel2.setOffsetNid(11);
-        deviceChannel2.setShowState(false);
-        deviceChannel2.setShowVal("PULSE");
-        deviceChannel2.setUpdateIdentifier("CH1");
-        deviceChannel2.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        deviceChannel2.setShowVal("");
+        deviceChannel2.setUpdateIdentifier("");
+        deviceChannel2.getContainer().setLayout(new java.awt.BorderLayout());
 
-        deviceChoice5.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Trig. Mode");
-        deviceChoice5.setOffsetNid(13);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice5);
-
-        deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Cyclic:");
-        deviceChoice6.setOffsetNid(15);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice6);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Event:");
-        deviceField7.setOffsetNid(14);
-        deviceField7.setTextOnly(true);
-        jPanel7.add(deviceField7);
-
-        deviceChannel2.getContainer().add(jPanel7);
-
-        deviceChoice7.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice7.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
         deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Init level 1:");
-        deviceChoice7.setOffsetNid(20);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice7);
-
-        deviceChoice8.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Init level 2:");
-        deviceChoice8.setOffsetNid(21);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice8);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Delay");
-        deviceField8.setOffsetNid(16);
-        jPanel8.add(deviceField8);
-
-        deviceChannel2.getContainer().add(jPanel8);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Duration:");
-        deviceField9.setOffsetNid(17);
-        jPanel9.add(deviceField9);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Trigger time:");
-        deviceField10.setOffsetNid(23);
-        jPanel9.add(deviceField10);
-
-        deviceChannel2.getContainer().add(jPanel9);
-
-        jPanel6.add(deviceChannel2, "PULSE");
-
-        deviceChannel3.setLabelString("");
-        deviceChannel3.setOffsetNid(11);
-        deviceChannel3.setShowState(false);
-        deviceChannel3.setShowVal("CLOCK");
-        deviceChannel3.setUpdateIdentifier("CH1");
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Frequency");
-        deviceField11.setOffsetNid(18);
-        deviceChannel3.getContainer().add(deviceField11);
+        deviceChoice7.setLabelString("FUNCTION :");
+        deviceChoice7.setOffsetNid(12);
+        deviceChoice7.setUpdateIdentifier("CH1");
+        jPanel9.add(deviceChoice7);
 
         deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Duty cycle:");
-        deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(22);
-        deviceChannel3.getContainer().add(deviceField12);
+        deviceField12.setLabelString("COMMENT :");
+        deviceField12.setNumCols(25);
+        deviceField12.setOffsetNid(27);
+        deviceField12.setTextOnly(true);
+        jPanel9.add(deviceField12);
 
-        jPanel6.add(deviceChannel3, "CLOCK");
+        deviceChannel2.getContainer().add(jPanel9, java.awt.BorderLayout.NORTH);
 
+        jPanel11.setLayout(new java.awt.CardLayout());
+
+        deviceChannel4.setInSameLine(true);
         deviceChannel4.setLabelString("");
         deviceChannel4.setOffsetNid(11);
         deviceChannel4.setShowState(false);
-        deviceChannel4.setShowVal("GCLOCK");
+        deviceChannel4.setShowVal("PULSE");
         deviceChannel4.setUpdateIdentifier("CH1");
         deviceChannel4.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice9.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("Trigger mode:");
-        deviceChoice9.setOffsetNid(13);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice9);
+        deviceChoice5.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice5.setIdentifier("");
+        deviceChoice5.setLabelString("TRIG MODE :");
+        deviceChoice5.setOffsetNid(13);
+        deviceChoice5.setUpdateIdentifier("");
+        jPanel10.add(deviceChoice5);
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Delay:");
-        deviceField13.setOffsetNid(16);
-        jPanel10.add(deviceField13);
+        deviceChoice6.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice6.setIdentifier("");
+        deviceChoice6.setLabelString("CYCLIC :");
+        deviceChoice6.setOffsetNid(15);
+        deviceChoice6.setUpdateIdentifier("");
+        jPanel10.add(deviceChoice6);
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("EVENT :");
+        deviceField4.setOffsetNid(14);
+        deviceField4.setTextOnly(true);
+        jPanel10.add(deviceField4);
 
         deviceChannel4.getContainer().add(jPanel10);
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Duration");
-        deviceField14.setOffsetNid(17);
-        jPanel11.add(deviceField14);
+        deviceChoice4.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("LEVEL 1 :");
+        deviceChoice4.setOffsetNid(20);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice4);
 
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("Frequency");
-        deviceField15.setOffsetNid(18);
-        jPanel11.add(deviceField15);
+        deviceChoice8.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice8.setIdentifier("");
+        deviceChoice8.setLabelString("LEVEL 2 :");
+        deviceChoice8.setOffsetNid(21);
+        deviceChoice8.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice8);
 
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Duty cycle:");
-        deviceField16.setNumCols(4);
-        deviceField16.setOffsetNid(22);
-        jPanel11.add(deviceField16);
-
-        deviceChannel4.getContainer().add(jPanel11);
-
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Event");
-        deviceField17.setNumCols(15);
-        deviceField17.setOffsetNid(14);
-        deviceField17.setTextOnly(true);
-        jPanel12.add(deviceField17);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Trigger time:");
-        deviceField18.setOffsetNid(23);
-        jPanel12.add(deviceField18);
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("DELAY :");
+        deviceField13.setOffsetNid(16);
+        jPanel12.add(deviceField13);
 
         deviceChannel4.getContainer().add(jPanel12);
 
-        jPanel6.add(deviceChannel4, "GCLOCK");
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("DURATION :");
+        deviceField14.setOffsetNid(17);
+        jPanel13.add(deviceField14);
 
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("TRIG TIME");
+        deviceField15.setOffsetNid(23);
+        jPanel13.add(deviceField15);
+
+        deviceChannel4.getContainer().add(jPanel13);
+
+        jPanel11.add(deviceChannel4, "PULSE");
+
+        deviceChannel3.setInSameLine(true);
+        deviceChannel3.setLabelString("");
+        deviceChannel3.setOffsetNid(11);
+        deviceChannel3.setShowState(false);
+        deviceChannel3.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel3.setUpdateIdentifier("CH1");
+        deviceChannel3.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField37.setIdentifier("");
+        deviceField37.setLabelString("FREQ 1 :");
+        deviceField37.setOffsetNid(18);
+        jPanel8.add(deviceField37);
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("FREQ 2:");
+        deviceField2.setOffsetNid(19);
+        jPanel8.add(deviceField2);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("DUTY CYCLE :");
+        deviceField11.setOffsetNid(22);
+        jPanel8.add(deviceField11);
+
+        deviceChannel3.getContainer().add(jPanel8);
+
+        jPanel11.add(deviceChannel3, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel5.setInSameLine(true);
         deviceChannel5.setLabelString("");
         deviceChannel5.setOffsetNid(11);
         deviceChannel5.setShowState(false);
-        deviceChannel5.setShowVal("DCLOCK");
+        deviceChannel5.setShowVal("GCLOCK");
         deviceChannel5.setUpdateIdentifier("CH1");
         deviceChannel5.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice10.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice9.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice9.setIdentifier("");
+        deviceChoice9.setLabelString("TRIG MODE :");
+        deviceChoice9.setOffsetNid(13);
+        deviceChoice9.setUpdateIdentifier("");
+        jPanel14.add(deviceChoice9);
+
+        deviceChoice10.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("Trigger mode:");
-        deviceChoice10.setOffsetNid(13);
+        deviceChoice10.setLabelString("CYCLIC :");
+        deviceChoice10.setOffsetNid(15);
         deviceChoice10.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice10);
+        jPanel14.add(deviceChoice10);
 
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Delay:");
-        deviceField19.setOffsetNid(16);
-        jPanel13.add(deviceField19);
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Duration:");
-        deviceField20.setOffsetNid(17);
-        jPanel13.add(deviceField20);
-
-        deviceChannel5.getContainer().add(jPanel13);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Freq. 1:");
-        deviceField21.setOffsetNid(18);
-        jPanel14.add(deviceField21);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Freq. 2:");
-        deviceField22.setOffsetNid(19);
-        jPanel14.add(deviceField22);
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("EVENT :");
+        deviceField16.setOffsetNid(14);
+        deviceField16.setTextOnly(true);
+        jPanel14.add(deviceField16);
 
         deviceChannel5.getContainer().add(jPanel14);
 
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Event:");
-        deviceField23.setNumCols(15);
-        deviceField23.setOffsetNid(14);
-        deviceField23.setTextOnly(true);
-        jPanel15.add(deviceField23);
+        deviceField17.setIdentifier("");
+        deviceField17.setLabelString("FREQ :");
+        deviceField17.setOffsetNid(18);
+        jPanel15.add(deviceField17);
 
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("Trigger time:");
-        deviceField24.setOffsetNid(23);
-        jPanel15.add(deviceField24);
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("DUTY CYCLE :");
+        deviceField20.setOffsetNid(22);
+        jPanel15.add(deviceField20);
 
         deviceChannel5.getContainer().add(jPanel15);
 
-        jPanel6.add(deviceChannel5, "DCLOCK");
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("DELAY :");
+        deviceField21.setOffsetNid(16);
+        jPanel16.add(deviceField21);
 
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("DURATION :");
+        deviceField18.setOffsetNid(17);
+        jPanel16.add(deviceField18);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("TRIG TIME");
+        deviceField19.setOffsetNid(23);
+        jPanel16.add(deviceField19);
+
+        deviceChannel5.getContainer().add(jPanel16);
+
+        jPanel11.add(deviceChannel5, "GCLOCK");
+
+        deviceChannel6.setInSameLine(true);
         deviceChannel6.setLabelString("");
         deviceChannel6.setOffsetNid(11);
         deviceChannel6.setShowState(false);
-        deviceChannel6.setShowVal("ENCODER");
+        deviceChannel6.setShowVal("DCLOCK");
         deviceChannel6.setUpdateIdentifier("CH1");
-        deviceChannel6.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+        deviceChannel6.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Event:");
-        deviceField25.setOffsetNid(27);
-        deviceField25.setTextOnly(true);
-        jPanel16.add(deviceField25);
-
-        deviceChoice11.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice11.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("Termination:");
-        deviceChoice11.setOffsetNid(29);
+        deviceChoice11.setLabelString("TRIG MODE :");
+        deviceChoice11.setOffsetNid(13);
         deviceChoice11.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice11);
+        jPanel17.add(deviceChoice11);
 
-        deviceChoice12.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceChoice12.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("EDGE");
-        deviceChoice12.setOffsetNid(31);
+        deviceChoice12.setLabelString("CYCLIC :");
+        deviceChoice12.setOffsetNid(15);
         deviceChoice12.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice12);
+        jPanel17.add(deviceChoice12);
 
-        deviceChannel6.getContainer().add(jPanel16);
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("Event:");
-        deviceField26.setOffsetNid(28);
-        deviceField26.setTextOnly(true);
-        jPanel17.add(deviceField26);
-
-        deviceChoice13.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("Termination:");
-        deviceChoice13.setOffsetNid(30);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice13);
-
-        deviceChoice14.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("EDGE");
-        deviceChoice14.setOffsetNid(32);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice14);
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("EVENT :");
+        deviceField22.setOffsetNid(14);
+        deviceField22.setTextOnly(true);
+        jPanel17.add(deviceField22);
 
         deviceChannel6.getContainer().add(jPanel17);
 
-        jPanel6.add(deviceChannel6, "ENCODER");
-
-        deviceChannel1.getContainer().add(jPanel6, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH1", deviceChannel1);
-
-        deviceChannel7.setInSameLine(true);
-        deviceChannel7.setLabelString("On:");
-        deviceChannel7.setOffsetNid(34);
-        deviceChannel7.setShowVal("");
-        deviceChannel7.setUpdateIdentifier("");
-        deviceChannel7.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice15.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("Function:");
-        deviceChoice15.setOffsetNid(35);
-        deviceChoice15.setUpdateIdentifier("CH2");
-        jPanel18.add(deviceChoice15);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("Comment:");
-        deviceField27.setNumCols(20);
-        deviceField27.setOffsetNid(56);
-        deviceField27.setTextOnly(true);
-        jPanel18.add(deviceField27);
-
-        deviceChannel7.getContainer().add(jPanel18, java.awt.BorderLayout.NORTH);
-
-        jPanel19.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel19.setLayout(new java.awt.CardLayout());
-
-        deviceChannel8.setLabelString("");
-        deviceChannel8.setOffsetNid(34);
-        deviceChannel8.setShowState(false);
-        deviceChannel8.setShowVal("PULSE");
-        deviceChannel8.setUpdateIdentifier("CH2");
-        deviceChannel8.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice16.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("Trig. Mode");
-        deviceChoice16.setOffsetNid(36);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice16);
-
-        deviceChoice17.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Cyclic:");
-        deviceChoice17.setOffsetNid(38);
-        deviceChoice17.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice17);
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("FREQ 1 :");
+        deviceField23.setOffsetNid(18);
+        jPanel18.add(deviceField23);
 
         deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Event:");
-        deviceField28.setOffsetNid(37);
-        deviceField28.setTextOnly(true);
-        jPanel20.add(deviceField28);
+        deviceField28.setLabelString("FREQ 2 :");
+        deviceField28.setOffsetNid(19);
+        jPanel18.add(deviceField28);
 
-        deviceChannel8.getContainer().add(jPanel20);
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("DUTY CYCLE :");
+        deviceField24.setOffsetNid(22);
+        jPanel18.add(deviceField24);
 
-        deviceChoice18.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("Init level 1:");
-        deviceChoice18.setOffsetNid(43);
-        deviceChoice18.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice18);
+        deviceChannel6.getContainer().add(jPanel18);
 
-        deviceChoice19.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("Init level 2:");
-        deviceChoice19.setOffsetNid(44);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice19);
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("DELAY :");
+        deviceField25.setOffsetNid(16);
+        jPanel19.add(deviceField25);
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("DURATION :");
+        deviceField26.setOffsetNid(17);
+        jPanel19.add(deviceField26);
+
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("TRIG TIME");
+        deviceField27.setOffsetNid(23);
+        jPanel19.add(deviceField27);
+
+        deviceChannel6.getContainer().add(jPanel19);
+
+        jPanel11.add(deviceChannel6, "DCLOCK");
+
+        deviceChannel7.setInSameLine(true);
+        deviceChannel7.setLabelString("");
+        deviceChannel7.setOffsetNid(11);
+        deviceChannel7.setShowState(false);
+        deviceChannel7.setShowVal("ENCODER");
+        deviceChannel7.setUpdateIdentifier("CH1");
+        deviceChannel7.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel22.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel8.setInSameLine(true);
+        deviceChannel8.setLabelString("");
+        deviceChannel8.setOffsetNid(28);
+        deviceChannel8.setShowVal("");
+        deviceChannel8.setUpdateIdentifier("");
+        deviceChannel8.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Delay");
-        deviceField29.setOffsetNid(39);
-        jPanel21.add(deviceField29);
-
-        deviceChannel8.getContainer().add(jPanel21);
+        deviceField29.setLabelString("NAME :");
+        deviceField29.setOffsetNid(29);
+        deviceField29.setTextOnly(true);
+        jPanel20.add(deviceField29);
 
         deviceField30.setIdentifier("");
-        deviceField30.setLabelString("Duration:");
-        deviceField30.setOffsetNid(40);
-        jPanel22.add(deviceField30);
+        deviceField30.setLabelString("CODE :");
+        deviceField30.setOffsetNid(30);
+        jPanel20.add(deviceField30);
 
         deviceField31.setIdentifier("");
-        deviceField31.setLabelString("Trigger time:");
-        deviceField31.setOffsetNid(46);
-        jPanel22.add(deviceField31);
+        deviceField31.setLabelString("TIME :");
+        deviceField31.setOffsetNid(31);
+        jPanel20.add(deviceField31);
 
-        deviceChannel8.getContainer().add(jPanel22);
+        deviceChoice13.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice13.setIdentifier("");
+        deviceChoice13.setLabelString("TERMINATION :");
+        deviceChoice13.setOffsetNid(32);
+        deviceChoice13.setUpdateIdentifier("");
+        jPanel20.add(deviceChoice13);
 
-        jPanel19.add(deviceChannel8, "PULSE");
+        deviceChoice14.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice14.setIdentifier("");
+        deviceChoice14.setLabelString("EDGE :");
+        deviceChoice14.setOffsetNid(33);
+        deviceChoice14.setUpdateIdentifier("");
+        jPanel20.add(deviceChoice14);
 
+        deviceChannel8.getContainer().add(jPanel20, java.awt.BorderLayout.CENTER);
+
+        jPanel22.add(deviceChannel8, java.awt.BorderLayout.CENTER);
+
+        deviceChannel7.getContainer().add(jPanel22);
+
+        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel23.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel9.setInSameLine(true);
         deviceChannel9.setLabelString("");
         deviceChannel9.setOffsetNid(34);
-        deviceChannel9.setShowState(false);
-        deviceChannel9.setShowVal("CLOCK");
-        deviceChannel9.setUpdateIdentifier("CH2");
+        deviceChannel9.setShowVal("");
+        deviceChannel9.setUpdateIdentifier("");
+        deviceChannel9.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField32.setIdentifier("");
-        deviceField32.setLabelString("Frequency");
-        deviceField32.setOffsetNid(41);
-        deviceChannel9.getContainer().add(deviceField32);
+        deviceField32.setLabelString("NAME :");
+        deviceField32.setOffsetNid(35);
+        deviceField32.setTextOnly(true);
+        jPanel21.add(deviceField32);
 
         deviceField33.setIdentifier("");
-        deviceField33.setLabelString("Duty cycle:");
-        deviceField33.setNumCols(4);
-        deviceField33.setOffsetNid(45);
-        deviceChannel9.getContainer().add(deviceField33);
-
-        jPanel19.add(deviceChannel9, "CLOCK");
-
-        deviceChannel10.setLabelString("");
-        deviceChannel10.setOffsetNid(34);
-        deviceChannel10.setShowState(false);
-        deviceChannel10.setShowVal("GCLOCK");
-        deviceChannel10.setUpdateIdentifier("CH2");
-        deviceChannel10.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice20.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("Trigger mode:");
-        deviceChoice20.setOffsetNid(36);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel23.add(deviceChoice20);
+        deviceField33.setLabelString("CODE :");
+        deviceField33.setOffsetNid(36);
+        jPanel21.add(deviceField33);
 
         deviceField34.setIdentifier("");
-        deviceField34.setLabelString("Delay:");
-        deviceField34.setOffsetNid(39);
-        jPanel23.add(deviceField34);
+        deviceField34.setLabelString("TIME :");
+        deviceField34.setOffsetNid(37);
+        jPanel21.add(deviceField34);
 
-        deviceChannel10.getContainer().add(jPanel23);
+        deviceChoice15.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice15.setIdentifier("");
+        deviceChoice15.setLabelString("TERMINATION :");
+        deviceChoice15.setOffsetNid(38);
+        deviceChoice15.setUpdateIdentifier("");
+        jPanel21.add(deviceChoice15);
+
+        deviceChoice16.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice16.setIdentifier("");
+        deviceChoice16.setLabelString("EDGE :");
+        deviceChoice16.setOffsetNid(39);
+        deviceChoice16.setUpdateIdentifier("");
+        jPanel21.add(deviceChoice16);
+
+        deviceChannel9.getContainer().add(jPanel21, java.awt.BorderLayout.CENTER);
+
+        jPanel23.add(deviceChannel9, java.awt.BorderLayout.CENTER);
+
+        deviceChannel7.getContainer().add(jPanel23);
+
+        jPanel11.add(deviceChannel7, "ENCODER");
+
+        deviceChannel10.setInSameLine(true);
+        deviceChannel10.setLabelString("");
+        deviceChannel10.setOffsetNid(11);
+        deviceChannel10.setShowState(false);
+        deviceChannel10.setShowVal("CLOCK");
+        deviceChannel10.setUpdateIdentifier("CH1");
+        deviceChannel10.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField35.setIdentifier("");
-        deviceField35.setLabelString("Duration");
-        deviceField35.setOffsetNid(40);
+        deviceField35.setLabelString("FREQ :");
+        deviceField35.setOffsetNid(18);
         jPanel24.add(deviceField35);
 
         deviceField36.setIdentifier("");
-        deviceField36.setLabelString("Frequency");
-        deviceField36.setOffsetNid(41);
+        deviceField36.setLabelString("DUTY CYCLE :");
+        deviceField36.setOffsetNid(22);
         jPanel24.add(deviceField36);
-
-        deviceField37.setIdentifier("");
-        deviceField37.setLabelString("Duty cycle:");
-        deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(45);
-        jPanel24.add(deviceField37);
 
         deviceChannel10.getContainer().add(jPanel24);
 
+        jPanel11.add(deviceChannel10, "CLOCK");
+
+        deviceChannel2.getContainer().add(jPanel11, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH1", deviceChannel2);
+
+        deviceChannel11.setLabelString("");
+        deviceChannel11.setOffsetNid(40);
+        deviceChannel11.setShowVal("");
+        deviceChannel11.setUpdateIdentifier("");
+        deviceChannel11.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice17.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice17.setIdentifier("");
+        deviceChoice17.setLabelString("FUNCTION :");
+        deviceChoice17.setOffsetNid(41);
+        deviceChoice17.setUpdateIdentifier("CH2");
+        jPanel25.add(deviceChoice17);
+
         deviceField38.setIdentifier("");
-        deviceField38.setLabelString("Event");
-        deviceField38.setNumCols(15);
-        deviceField38.setOffsetNid(37);
+        deviceField38.setLabelString("COMMENT :");
+        deviceField38.setNumCols(25);
+        deviceField38.setOffsetNid(56);
         deviceField38.setTextOnly(true);
         jPanel25.add(deviceField38);
 
+        deviceChannel11.getContainer().add(jPanel25, java.awt.BorderLayout.NORTH);
+
+        jPanel26.setLayout(new java.awt.CardLayout());
+
+        deviceChannel12.setInSameLine(true);
+        deviceChannel12.setLabelString("");
+        deviceChannel12.setOffsetNid(40);
+        deviceChannel12.setShowState(false);
+        deviceChannel12.setShowVal("PULSE");
+        deviceChannel12.setUpdateIdentifier("CH2");
+        deviceChannel12.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice18.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice18.setIdentifier("");
+        deviceChoice18.setLabelString("TRIG MODE :");
+        deviceChoice18.setOffsetNid(42);
+        deviceChoice18.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice18);
+
+        deviceChoice19.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice19.setIdentifier("");
+        deviceChoice19.setLabelString("CYCLIC :");
+        deviceChoice19.setOffsetNid(44);
+        deviceChoice19.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice19);
+
         deviceField39.setIdentifier("");
-        deviceField39.setLabelString("Trigger time:");
-        deviceField39.setOffsetNid(46);
-        jPanel25.add(deviceField39);
+        deviceField39.setLabelString("EVENT :");
+        deviceField39.setOffsetNid(43);
+        deviceField39.setTextOnly(true);
+        jPanel27.add(deviceField39);
 
-        deviceChannel10.getContainer().add(jPanel25);
+        deviceChannel12.getContainer().add(jPanel27);
 
-        jPanel19.add(deviceChannel10, "GCLOCK");
+        deviceChoice20.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice20.setIdentifier("");
+        deviceChoice20.setLabelString("LEVEL 1 :");
+        deviceChoice20.setOffsetNid(49);
+        deviceChoice20.setUpdateIdentifier("");
+        jPanel28.add(deviceChoice20);
 
-        deviceChannel11.setLabelString("");
-        deviceChannel11.setOffsetNid(34);
-        deviceChannel11.setShowState(false);
-        deviceChannel11.setShowVal("DCLOCK");
-        deviceChannel11.setUpdateIdentifier("CH2");
-        deviceChannel11.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice21.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice21.setChoiceItems(new String[] {"LOW", "HIGH"});
         deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("Trigger mode:");
-        deviceChoice21.setOffsetNid(36);
+        deviceChoice21.setLabelString("LEVEL 2 :");
+        deviceChoice21.setOffsetNid(50);
         deviceChoice21.setUpdateIdentifier("");
-        jPanel26.add(deviceChoice21);
+        jPanel28.add(deviceChoice21);
 
         deviceField40.setIdentifier("");
-        deviceField40.setLabelString("Delay:");
-        deviceField40.setOffsetNid(39);
-        jPanel26.add(deviceField40);
+        deviceField40.setLabelString("DELAY :");
+        deviceField40.setOffsetNid(45);
+        jPanel28.add(deviceField40);
+
+        deviceChannel12.getContainer().add(jPanel28);
 
         deviceField41.setIdentifier("");
-        deviceField41.setLabelString("Duration:");
-        deviceField41.setOffsetNid(40);
-        jPanel26.add(deviceField41);
-
-        deviceChannel11.getContainer().add(jPanel26);
+        deviceField41.setLabelString("DURATION :");
+        deviceField41.setOffsetNid(46);
+        jPanel29.add(deviceField41);
 
         deviceField42.setIdentifier("");
-        deviceField42.setLabelString("Freq. 1:");
-        deviceField42.setOffsetNid(41);
-        jPanel27.add(deviceField42);
-
-        deviceField43.setIdentifier("");
-        deviceField43.setLabelString("Freq. 2:");
-        deviceField43.setOffsetNid(42);
-        jPanel27.add(deviceField43);
-
-        deviceChannel11.getContainer().add(jPanel27);
-
-        deviceField44.setIdentifier("");
-        deviceField44.setLabelString("Event:");
-        deviceField44.setNumCols(15);
-        deviceField44.setOffsetNid(37);
-        deviceField44.setTextOnly(true);
-        jPanel28.add(deviceField44);
-
-        deviceField45.setIdentifier("");
-        deviceField45.setLabelString("Trigger time:");
-        deviceField45.setOffsetNid(46);
-        jPanel28.add(deviceField45);
-
-        deviceChannel11.getContainer().add(jPanel28);
-
-        jPanel19.add(deviceChannel11, "DCLOCK");
-
-        deviceChannel12.setLabelString("");
-        deviceChannel12.setOffsetNid(34);
-        deviceChannel12.setShowState(false);
-        deviceChannel12.setShowVal("ENCODER");
-        deviceChannel12.setUpdateIdentifier("CH2");
-        deviceChannel12.getContainer().setLayout(new java.awt.GridLayout(2, 0));
-
-        deviceField46.setIdentifier("");
-        deviceField46.setLabelString("Event:");
-        deviceField46.setOffsetNid(50);
-        deviceField46.setTextOnly(true);
-        jPanel29.add(deviceField46);
-
-        deviceChoice22.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("Termination:");
-        deviceChoice22.setOffsetNid(52);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice22);
-
-        deviceChoice23.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("EDGE");
-        deviceChoice23.setOffsetNid(54);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice23);
+        deviceField42.setLabelString("TRIG TIME");
+        deviceField42.setOffsetNid(52);
+        jPanel29.add(deviceField42);
 
         deviceChannel12.getContainer().add(jPanel29);
 
-        deviceField47.setIdentifier("");
-        deviceField47.setLabelString("Event:");
-        deviceField47.setOffsetNid(51);
-        deviceField47.setTextOnly(true);
-        jPanel30.add(deviceField47);
-
-        deviceChoice24.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString("Termination:");
-        deviceChoice24.setOffsetNid(53);
-        deviceChoice24.setUpdateIdentifier("");
-        jPanel30.add(deviceChoice24);
-
-        deviceChoice25.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString("EDGE");
-        deviceChoice25.setOffsetNid(55);
-        deviceChoice25.setUpdateIdentifier("");
-        jPanel30.add(deviceChoice25);
-
-        deviceChannel12.getContainer().add(jPanel30);
-
-        jPanel19.add(deviceChannel12, "ENCODER");
-
-        deviceChannel7.getContainer().add(jPanel19, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH2", deviceChannel7);
+        jPanel26.add(deviceChannel12, "PULSE");
 
         deviceChannel13.setInSameLine(true);
-        deviceChannel13.setLabelString("On:");
-        deviceChannel13.setOffsetNid(57);
-        deviceChannel13.setShowVal("");
-        deviceChannel13.setUpdateIdentifier("");
-        deviceChannel13.getContainer().setLayout(new java.awt.BorderLayout());
+        deviceChannel13.setLabelString("");
+        deviceChannel13.setOffsetNid(40);
+        deviceChannel13.setShowState(false);
+        deviceChannel13.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel13.setUpdateIdentifier("CH2");
+        deviceChannel13.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
-        deviceChoice26.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString("Function:");
-        deviceChoice26.setOffsetNid(58);
-        deviceChoice26.setUpdateIdentifier("CH3");
-        jPanel31.add(deviceChoice26);
+        deviceField43.setIdentifier("");
+        deviceField43.setLabelString("FREQ 1 :");
+        deviceField43.setOffsetNid(47);
+        jPanel30.add(deviceField43);
 
-        deviceField48.setIdentifier("");
-        deviceField48.setLabelString("Comment:");
-        deviceField48.setNumCols(20);
-        deviceField48.setOffsetNid(79);
-        deviceField48.setTextOnly(true);
-        jPanel31.add(deviceField48);
+        deviceField44.setIdentifier("");
+        deviceField44.setLabelString("FREQ 2:");
+        deviceField44.setOffsetNid(48);
+        jPanel30.add(deviceField44);
 
-        deviceChannel13.getContainer().add(jPanel31, java.awt.BorderLayout.NORTH);
+        deviceField45.setIdentifier("");
+        deviceField45.setLabelString("DUTY CYCLE :");
+        deviceField45.setOffsetNid(51);
+        jPanel30.add(deviceField45);
 
-        jPanel32.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel32.setLayout(new java.awt.CardLayout());
+        deviceChannel13.getContainer().add(jPanel30);
 
+        jPanel26.add(deviceChannel13, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel14.setInSameLine(true);
         deviceChannel14.setLabelString("");
-        deviceChannel14.setOffsetNid(57);
+        deviceChannel14.setOffsetNid(40);
         deviceChannel14.setShowState(false);
-        deviceChannel14.setShowVal("PULSE");
-        deviceChannel14.setUpdateIdentifier("CH3");
+        deviceChannel14.setShowVal("GCLOCK");
+        deviceChannel14.setUpdateIdentifier("CH2");
         deviceChannel14.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice27.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice27.setIdentifier("");
-        deviceChoice27.setLabelString("Trig. Mode");
-        deviceChoice27.setOffsetNid(59);
-        deviceChoice27.setUpdateIdentifier("");
-        jPanel33.add(deviceChoice27);
+        deviceChoice22.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice22.setIdentifier("");
+        deviceChoice22.setLabelString("TRIG MODE :");
+        deviceChoice22.setOffsetNid(42);
+        deviceChoice22.setUpdateIdentifier("");
+        jPanel31.add(deviceChoice22);
 
-        deviceChoice28.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice28.setIdentifier("");
-        deviceChoice28.setLabelString("Cyclic:");
-        deviceChoice28.setOffsetNid(61);
-        deviceChoice28.setUpdateIdentifier("");
-        jPanel33.add(deviceChoice28);
+        deviceChoice23.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice23.setIdentifier("");
+        deviceChoice23.setLabelString("CYCLIC :");
+        deviceChoice23.setOffsetNid(44);
+        deviceChoice23.setUpdateIdentifier("");
+        jPanel31.add(deviceChoice23);
+
+        deviceField46.setIdentifier("");
+        deviceField46.setLabelString("EVENT :");
+        deviceField46.setOffsetNid(43);
+        deviceField46.setTextOnly(true);
+        jPanel31.add(deviceField46);
+
+        deviceChannel14.getContainer().add(jPanel31);
+
+        deviceField47.setIdentifier("");
+        deviceField47.setLabelString("FREQ :");
+        deviceField47.setOffsetNid(47);
+        jPanel32.add(deviceField47);
+
+        deviceField48.setIdentifier("");
+        deviceField48.setLabelString("DUTY CYCLE :");
+        deviceField48.setOffsetNid(51);
+        jPanel32.add(deviceField48);
+
+        deviceChannel14.getContainer().add(jPanel32);
 
         deviceField49.setIdentifier("");
-        deviceField49.setLabelString("Event:");
-        deviceField49.setOffsetNid(60);
-        deviceField49.setTextOnly(true);
+        deviceField49.setLabelString("DELAY :");
+        deviceField49.setOffsetNid(45);
         jPanel33.add(deviceField49);
+
+        deviceField50.setIdentifier("");
+        deviceField50.setLabelString("DURATION :");
+        deviceField50.setOffsetNid(46);
+        jPanel33.add(deviceField50);
+
+        deviceField51.setIdentifier("");
+        deviceField51.setLabelString("TRIG TIME");
+        deviceField51.setOffsetNid(52);
+        jPanel33.add(deviceField51);
 
         deviceChannel14.getContainer().add(jPanel33);
 
-        deviceChoice29.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString("Init level 1:");
-        deviceChoice29.setOffsetNid(66);
-        deviceChoice29.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice29);
+        jPanel26.add(deviceChannel14, "GCLOCK");
 
-        deviceChoice30.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice30.setIdentifier("");
-        deviceChoice30.setLabelString("Init level 2:");
-        deviceChoice30.setOffsetNid(67);
-        deviceChoice30.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice30);
+        deviceChannel15.setInSameLine(true);
+        deviceChannel15.setLabelString("");
+        deviceChannel15.setOffsetNid(40);
+        deviceChannel15.setShowState(false);
+        deviceChannel15.setShowVal("DCLOCK");
+        deviceChannel15.setUpdateIdentifier("CH2");
+        deviceChannel15.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceField50.setIdentifier("");
-        deviceField50.setLabelString("Delay");
-        deviceField50.setOffsetNid(62);
-        jPanel34.add(deviceField50);
+        deviceChoice24.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice24.setIdentifier("");
+        deviceChoice24.setLabelString("TRIG MODE :");
+        deviceChoice24.setOffsetNid(42);
+        deviceChoice24.setUpdateIdentifier("");
+        jPanel34.add(deviceChoice24);
 
-        deviceChannel14.getContainer().add(jPanel34);
-
-        deviceField51.setIdentifier("");
-        deviceField51.setLabelString("Duration:");
-        deviceField51.setOffsetNid(63);
-        jPanel35.add(deviceField51);
+        deviceChoice25.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice25.setIdentifier("");
+        deviceChoice25.setLabelString("CYCLIC :");
+        deviceChoice25.setOffsetNid(44);
+        deviceChoice25.setUpdateIdentifier("");
+        jPanel34.add(deviceChoice25);
 
         deviceField52.setIdentifier("");
-        deviceField52.setLabelString("Trigger time:");
-        deviceField52.setOffsetNid(69);
-        jPanel35.add(deviceField52);
+        deviceField52.setLabelString("EVENT :");
+        deviceField52.setOffsetNid(43);
+        deviceField52.setTextOnly(true);
+        jPanel34.add(deviceField52);
 
-        deviceChannel14.getContainer().add(jPanel35);
-
-        jPanel32.add(deviceChannel14, "PULSE");
-
-        deviceChannel15.setLabelString("");
-        deviceChannel15.setOffsetNid(57);
-        deviceChannel15.setShowState(false);
-        deviceChannel15.setShowVal("CLOCK");
-        deviceChannel15.setUpdateIdentifier("CH3");
+        deviceChannel15.getContainer().add(jPanel34);
 
         deviceField53.setIdentifier("");
-        deviceField53.setLabelString("Frequency");
-        deviceField53.setOffsetNid(64);
-        deviceChannel15.getContainer().add(deviceField53);
+        deviceField53.setLabelString("FREQ 1 :");
+        deviceField53.setOffsetNid(47);
+        jPanel35.add(deviceField53);
 
         deviceField54.setIdentifier("");
-        deviceField54.setLabelString("Duty cycle:");
-        deviceField54.setNumCols(4);
-        deviceField54.setOffsetNid(68);
-        deviceChannel15.getContainer().add(deviceField54);
-
-        jPanel32.add(deviceChannel15, "CLOCK");
-
-        deviceChannel16.setLabelString("");
-        deviceChannel16.setOffsetNid(57);
-        deviceChannel16.setShowState(false);
-        deviceChannel16.setShowVal("GCLOCK");
-        deviceChannel16.setUpdateIdentifier("CH3");
-        deviceChannel16.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice31.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice31.setIdentifier("");
-        deviceChoice31.setLabelString("Trigger mode:");
-        deviceChoice31.setOffsetNid(59);
-        deviceChoice31.setUpdateIdentifier("");
-        jPanel36.add(deviceChoice31);
+        deviceField54.setLabelString("FREQ 2 :");
+        deviceField54.setOffsetNid(48);
+        jPanel35.add(deviceField54);
 
         deviceField55.setIdentifier("");
-        deviceField55.setLabelString("Delay:");
-        deviceField55.setOffsetNid(62);
-        jPanel36.add(deviceField55);
+        deviceField55.setLabelString("DUTY CYCLE :");
+        deviceField55.setOffsetNid(51);
+        jPanel35.add(deviceField55);
 
-        deviceChannel16.getContainer().add(jPanel36);
+        deviceChannel15.getContainer().add(jPanel35);
 
         deviceField56.setIdentifier("");
-        deviceField56.setLabelString("Duration");
-        deviceField56.setOffsetNid(63);
-        jPanel37.add(deviceField56);
+        deviceField56.setLabelString("DELAY :");
+        deviceField56.setOffsetNid(45);
+        jPanel36.add(deviceField56);
 
         deviceField57.setIdentifier("");
-        deviceField57.setLabelString("Frequency");
-        deviceField57.setOffsetNid(64);
-        jPanel37.add(deviceField57);
+        deviceField57.setLabelString("DURATION :");
+        deviceField57.setOffsetNid(46);
+        jPanel36.add(deviceField57);
 
         deviceField58.setIdentifier("");
-        deviceField58.setLabelString("Duty cycle:");
-        deviceField58.setNumCols(4);
-        deviceField58.setOffsetNid(68);
-        jPanel37.add(deviceField58);
+        deviceField58.setLabelString("TRIG TIME");
+        deviceField58.setOffsetNid(52);
+        jPanel36.add(deviceField58);
 
-        deviceChannel16.getContainer().add(jPanel37);
+        deviceChannel15.getContainer().add(jPanel36);
+
+        jPanel26.add(deviceChannel15, "DCLOCK");
+
+        deviceChannel16.setInSameLine(true);
+        deviceChannel16.setLabelString("");
+        deviceChannel16.setOffsetNid(40);
+        deviceChannel16.setShowState(false);
+        deviceChannel16.setShowVal("ENCODER");
+        deviceChannel16.setUpdateIdentifier("CH2");
+        deviceChannel16.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel37.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel17.setInSameLine(true);
+        deviceChannel17.setLabelString("");
+        deviceChannel17.setOffsetNid(57);
+        deviceChannel17.setShowVal("");
+        deviceChannel17.setUpdateIdentifier("");
+        deviceChannel17.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField59.setIdentifier("");
-        deviceField59.setLabelString("Event");
-        deviceField59.setNumCols(15);
-        deviceField59.setOffsetNid(60);
+        deviceField59.setLabelString("NAME :");
+        deviceField59.setOffsetNid(58);
         deviceField59.setTextOnly(true);
         jPanel38.add(deviceField59);
 
         deviceField60.setIdentifier("");
-        deviceField60.setLabelString("Trigger time:");
-        deviceField60.setOffsetNid(69);
+        deviceField60.setLabelString("CODE :");
+        deviceField60.setOffsetNid(59);
         jPanel38.add(deviceField60);
 
-        deviceChannel16.getContainer().add(jPanel38);
-
-        jPanel32.add(deviceChannel16, "GCLOCK");
-
-        deviceChannel17.setLabelString("");
-        deviceChannel17.setOffsetNid(57);
-        deviceChannel17.setShowState(false);
-        deviceChannel17.setShowVal("DCLOCK");
-        deviceChannel17.setUpdateIdentifier("CH3");
-        deviceChannel17.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice32.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice32.setIdentifier("");
-        deviceChoice32.setLabelString("Trigger mode:");
-        deviceChoice32.setOffsetNid(59);
-        deviceChoice32.setUpdateIdentifier("");
-        jPanel39.add(deviceChoice32);
-
         deviceField61.setIdentifier("");
-        deviceField61.setLabelString("Delay:");
-        deviceField61.setOffsetNid(62);
-        jPanel39.add(deviceField61);
+        deviceField61.setLabelString("TIME :");
+        deviceField61.setOffsetNid(60);
+        jPanel38.add(deviceField61);
+
+        deviceChoice26.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice26.setIdentifier("");
+        deviceChoice26.setLabelString("TERMINATION :");
+        deviceChoice26.setOffsetNid(61);
+        deviceChoice26.setUpdateIdentifier("");
+        jPanel38.add(deviceChoice26);
+
+        deviceChoice27.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice27.setIdentifier("");
+        deviceChoice27.setLabelString("EDGE :");
+        deviceChoice27.setOffsetNid(62);
+        deviceChoice27.setUpdateIdentifier("");
+        jPanel38.add(deviceChoice27);
+
+        deviceChannel17.getContainer().add(jPanel38, java.awt.BorderLayout.CENTER);
+
+        jPanel37.add(deviceChannel17, java.awt.BorderLayout.CENTER);
+
+        deviceChannel16.getContainer().add(jPanel37);
+
+        jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel39.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel18.setInSameLine(true);
+        deviceChannel18.setLabelString("");
+        deviceChannel18.setOffsetNid(63);
+        deviceChannel18.setShowVal("");
+        deviceChannel18.setUpdateIdentifier("");
+        deviceChannel18.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField62.setIdentifier("");
-        deviceField62.setLabelString("Duration:");
-        deviceField62.setOffsetNid(63);
-        jPanel39.add(deviceField62);
-
-        deviceChannel17.getContainer().add(jPanel39);
+        deviceField62.setLabelString("NAME :");
+        deviceField62.setOffsetNid(64);
+        deviceField62.setTextOnly(true);
+        jPanel40.add(deviceField62);
 
         deviceField63.setIdentifier("");
-        deviceField63.setLabelString("Freq. 1:");
-        deviceField63.setOffsetNid(64);
+        deviceField63.setLabelString("CODE :");
+        deviceField63.setOffsetNid(65);
         jPanel40.add(deviceField63);
 
         deviceField64.setIdentifier("");
-        deviceField64.setLabelString("Freq. 2:");
-        deviceField64.setOffsetNid(65);
+        deviceField64.setLabelString("TIME :");
+        deviceField64.setOffsetNid(66);
         jPanel40.add(deviceField64);
 
-        deviceChannel17.getContainer().add(jPanel40);
+        deviceChoice28.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice28.setIdentifier("");
+        deviceChoice28.setLabelString("TERMINATION :");
+        deviceChoice28.setOffsetNid(67);
+        deviceChoice28.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice28);
+
+        deviceChoice29.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice29.setIdentifier("");
+        deviceChoice29.setLabelString("EDGE :");
+        deviceChoice29.setOffsetNid(68);
+        deviceChoice29.setUpdateIdentifier("");
+        jPanel40.add(deviceChoice29);
+
+        deviceChannel18.getContainer().add(jPanel40, java.awt.BorderLayout.CENTER);
+
+        jPanel39.add(deviceChannel18, java.awt.BorderLayout.CENTER);
+
+        deviceChannel16.getContainer().add(jPanel39);
+
+        jPanel26.add(deviceChannel16, "ENCODER");
+
+        deviceChannel19.setInSameLine(true);
+        deviceChannel19.setLabelString("");
+        deviceChannel19.setOffsetNid(40);
+        deviceChannel19.setShowState(false);
+        deviceChannel19.setShowVal("CLOCK");
+        deviceChannel19.setUpdateIdentifier("CH2");
+        deviceChannel19.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField65.setIdentifier("");
-        deviceField65.setLabelString("Event:");
-        deviceField65.setNumCols(15);
-        deviceField65.setOffsetNid(60);
-        deviceField65.setTextOnly(true);
+        deviceField65.setLabelString("FREQ :");
+        deviceField65.setOffsetNid(47);
         jPanel41.add(deviceField65);
 
         deviceField66.setIdentifier("");
-        deviceField66.setLabelString("Trigger time:");
-        deviceField66.setOffsetNid(69);
+        deviceField66.setLabelString("DUTY CYCLE :");
+        deviceField66.setOffsetNid(51);
         jPanel41.add(deviceField66);
 
-        deviceChannel17.getContainer().add(jPanel41);
+        deviceChannel19.getContainer().add(jPanel41);
 
-        jPanel32.add(deviceChannel17, "DCLOCK");
+        jPanel26.add(deviceChannel19, "CLOCK");
 
-        deviceChannel18.setLabelString("");
-        deviceChannel18.setOffsetNid(57);
-        deviceChannel18.setShowState(false);
-        deviceChannel18.setShowVal("ENCODER");
-        deviceChannel18.setUpdateIdentifier("CH3");
-        deviceChannel18.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+        deviceChannel11.getContainer().add(jPanel26, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH2", deviceChannel11);
+
+        deviceChannel20.setLabelString("");
+        deviceChannel20.setOffsetNid(69);
+        deviceChannel20.setShowVal("");
+        deviceChannel20.setUpdateIdentifier("");
+        deviceChannel20.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice30.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice30.setIdentifier("");
+        deviceChoice30.setLabelString("FUNCTION :");
+        deviceChoice30.setOffsetNid(70);
+        deviceChoice30.setUpdateIdentifier("CH3");
+        jPanel42.add(deviceChoice30);
 
         deviceField67.setIdentifier("");
-        deviceField67.setLabelString("Event:");
-        deviceField67.setOffsetNid(73);
+        deviceField67.setLabelString("COMMENT :");
+        deviceField67.setNumCols(25);
+        deviceField67.setOffsetNid(85);
         deviceField67.setTextOnly(true);
         jPanel42.add(deviceField67);
 
-        deviceChoice33.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice33.setIdentifier("");
-        deviceChoice33.setLabelString("Termination:");
-        deviceChoice33.setOffsetNid(75);
-        deviceChoice33.setUpdateIdentifier("");
-        jPanel42.add(deviceChoice33);
+        deviceChannel20.getContainer().add(jPanel42, java.awt.BorderLayout.NORTH);
 
-        deviceChoice34.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice34.setIdentifier("");
-        deviceChoice34.setLabelString("EDGE");
-        deviceChoice34.setOffsetNid(77);
-        deviceChoice34.setUpdateIdentifier("");
-        jPanel42.add(deviceChoice34);
+        jPanel43.setLayout(new java.awt.CardLayout());
 
-        deviceChannel18.getContainer().add(jPanel42);
+        deviceChannel21.setInSameLine(true);
+        deviceChannel21.setLabelString("");
+        deviceChannel21.setOffsetNid(69);
+        deviceChannel21.setShowState(false);
+        deviceChannel21.setShowVal("PULSE");
+        deviceChannel21.setUpdateIdentifier("CH3");
+        deviceChannel21.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice31.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice31.setIdentifier("");
+        deviceChoice31.setLabelString("TRIG MODE :");
+        deviceChoice31.setOffsetNid(71);
+        deviceChoice31.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice31);
+
+        deviceChoice32.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice32.setIdentifier("");
+        deviceChoice32.setLabelString("CYCLIC :");
+        deviceChoice32.setOffsetNid(73);
+        deviceChoice32.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice32);
 
         deviceField68.setIdentifier("");
-        deviceField68.setLabelString("Event:");
-        deviceField68.setOffsetNid(74);
+        deviceField68.setLabelString("EVENT :");
+        deviceField68.setOffsetNid(72);
         deviceField68.setTextOnly(true);
-        jPanel43.add(deviceField68);
+        jPanel44.add(deviceField68);
 
-        deviceChoice35.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice35.setIdentifier("");
-        deviceChoice35.setLabelString("Termination:");
-        deviceChoice35.setOffsetNid(76);
-        deviceChoice35.setUpdateIdentifier("");
-        jPanel43.add(deviceChoice35);
+        deviceChannel21.getContainer().add(jPanel44);
 
-        deviceChoice36.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice36.setIdentifier("");
-        deviceChoice36.setLabelString("EDGE");
-        deviceChoice36.setOffsetNid(78);
-        deviceChoice36.setUpdateIdentifier("");
-        jPanel43.add(deviceChoice36);
+        deviceChoice33.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice33.setIdentifier("");
+        deviceChoice33.setLabelString("LEVEL 1 :");
+        deviceChoice33.setOffsetNid(78);
+        deviceChoice33.setUpdateIdentifier("");
+        jPanel45.add(deviceChoice33);
 
-        deviceChannel18.getContainer().add(jPanel43);
-
-        jPanel32.add(deviceChannel18, "ENCODER");
-
-        deviceChannel13.getContainer().add(jPanel32, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH3", deviceChannel13);
-
-        deviceChannel19.setInSameLine(true);
-        deviceChannel19.setLabelString("On:");
-        deviceChannel19.setOffsetNid(80);
-        deviceChannel19.setShowVal("");
-        deviceChannel19.setUpdateIdentifier("");
-        deviceChannel19.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice37.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice37.setIdentifier("");
-        deviceChoice37.setLabelString("Function:");
-        deviceChoice37.setOffsetNid(81);
-        deviceChoice37.setUpdateIdentifier("CH4");
-        jPanel44.add(deviceChoice37);
+        deviceChoice34.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice34.setIdentifier("");
+        deviceChoice34.setLabelString("LEVEL 2 :");
+        deviceChoice34.setOffsetNid(79);
+        deviceChoice34.setUpdateIdentifier("");
+        jPanel45.add(deviceChoice34);
 
         deviceField69.setIdentifier("");
-        deviceField69.setLabelString("Comment:");
-        deviceField69.setNumCols(20);
-        deviceField69.setOffsetNid(102);
-        deviceField69.setTextOnly(true);
-        jPanel44.add(deviceField69);
+        deviceField69.setLabelString("DELAY :");
+        deviceField69.setOffsetNid(74);
+        jPanel45.add(deviceField69);
 
-        deviceChannel19.getContainer().add(jPanel44, java.awt.BorderLayout.NORTH);
-
-        jPanel45.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel45.setLayout(new java.awt.CardLayout());
-
-        deviceChannel20.setLabelString("");
-        deviceChannel20.setOffsetNid(80);
-        deviceChannel20.setShowState(false);
-        deviceChannel20.setShowVal("PULSE");
-        deviceChannel20.setUpdateIdentifier("CH4");
-        deviceChannel20.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice38.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice38.setIdentifier("");
-        deviceChoice38.setLabelString("Trig. Mode");
-        deviceChoice38.setOffsetNid(82);
-        deviceChoice38.setUpdateIdentifier("");
-        jPanel46.add(deviceChoice38);
-
-        deviceChoice39.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice39.setIdentifier("");
-        deviceChoice39.setLabelString("Cyclic:");
-        deviceChoice39.setOffsetNid(84);
-        deviceChoice39.setUpdateIdentifier("");
-        jPanel46.add(deviceChoice39);
+        deviceChannel21.getContainer().add(jPanel45);
 
         deviceField70.setIdentifier("");
-        deviceField70.setLabelString("Event:");
-        deviceField70.setOffsetNid(83);
-        deviceField70.setTextOnly(true);
+        deviceField70.setLabelString("DURATION :");
+        deviceField70.setOffsetNid(75);
         jPanel46.add(deviceField70);
 
-        deviceChannel20.getContainer().add(jPanel46);
-
-        deviceChoice40.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice40.setIdentifier("");
-        deviceChoice40.setLabelString("Init level 1:");
-        deviceChoice40.setOffsetNid(89);
-        deviceChoice40.setUpdateIdentifier("");
-        jPanel47.add(deviceChoice40);
-
-        deviceChoice41.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice41.setIdentifier("");
-        deviceChoice41.setLabelString("Init level 2:");
-        deviceChoice41.setOffsetNid(90);
-        deviceChoice41.setUpdateIdentifier("");
-        jPanel47.add(deviceChoice41);
-
         deviceField71.setIdentifier("");
-        deviceField71.setLabelString("Delay");
-        deviceField71.setOffsetNid(85);
-        jPanel47.add(deviceField71);
+        deviceField71.setLabelString("TRIG TIME");
+        deviceField71.setOffsetNid(81);
+        jPanel46.add(deviceField71);
 
-        deviceChannel20.getContainer().add(jPanel47);
+        deviceChannel21.getContainer().add(jPanel46);
+
+        jPanel43.add(deviceChannel21, "PULSE");
+
+        deviceChannel22.setInSameLine(true);
+        deviceChannel22.setLabelString("");
+        deviceChannel22.setOffsetNid(69);
+        deviceChannel22.setShowState(false);
+        deviceChannel22.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel22.setUpdateIdentifier("CH3");
+        deviceChannel22.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField72.setIdentifier("");
-        deviceField72.setLabelString("Duration:");
-        deviceField72.setOffsetNid(86);
-        jPanel48.add(deviceField72);
+        deviceField72.setLabelString("FREQ 1 :");
+        deviceField72.setOffsetNid(76);
+        jPanel47.add(deviceField72);
 
         deviceField73.setIdentifier("");
-        deviceField73.setLabelString("Trigger time:");
-        deviceField73.setOffsetNid(92);
-        jPanel48.add(deviceField73);
-
-        deviceChannel20.getContainer().add(jPanel48);
-
-        jPanel45.add(deviceChannel20, "PULSE");
-
-        deviceChannel21.setLabelString("");
-        deviceChannel21.setOffsetNid(80);
-        deviceChannel21.setShowState(false);
-        deviceChannel21.setShowVal("CLOCK");
-        deviceChannel21.setUpdateIdentifier("CH4");
+        deviceField73.setLabelString("FREQ 2:");
+        deviceField73.setOffsetNid(77);
+        jPanel47.add(deviceField73);
 
         deviceField74.setIdentifier("");
-        deviceField74.setLabelString("Frequency");
-        deviceField74.setOffsetNid(87);
-        deviceChannel21.getContainer().add(deviceField74);
+        deviceField74.setLabelString("DUTY CYCLE :");
+        deviceField74.setOffsetNid(80);
+        jPanel47.add(deviceField74);
+
+        deviceChannel22.getContainer().add(jPanel47);
+
+        jPanel43.add(deviceChannel22, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel23.setInSameLine(true);
+        deviceChannel23.setLabelString("");
+        deviceChannel23.setOffsetNid(69);
+        deviceChannel23.setShowState(false);
+        deviceChannel23.setShowVal("GCLOCK");
+        deviceChannel23.setUpdateIdentifier("CH3");
+        deviceChannel23.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice35.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice35.setIdentifier("");
+        deviceChoice35.setLabelString("TRIG MODE :");
+        deviceChoice35.setOffsetNid(71);
+        deviceChoice35.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice35);
+
+        deviceChoice36.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice36.setIdentifier("");
+        deviceChoice36.setLabelString("CYCLIC :");
+        deviceChoice36.setOffsetNid(73);
+        deviceChoice36.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice36);
 
         deviceField75.setIdentifier("");
-        deviceField75.setLabelString("Duty cycle:");
-        deviceField75.setNumCols(4);
-        deviceField75.setOffsetNid(91);
-        deviceChannel21.getContainer().add(deviceField75);
+        deviceField75.setLabelString("EVENT :");
+        deviceField75.setOffsetNid(72);
+        deviceField75.setTextOnly(true);
+        jPanel48.add(deviceField75);
 
-        jPanel45.add(deviceChannel21, "CLOCK");
-
-        deviceChannel22.setLabelString("");
-        deviceChannel22.setOffsetNid(80);
-        deviceChannel22.setShowState(false);
-        deviceChannel22.setShowVal("GCLOCK");
-        deviceChannel22.setUpdateIdentifier("CH4");
-        deviceChannel22.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice42.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice42.setIdentifier("");
-        deviceChoice42.setLabelString("Trigger mode:");
-        deviceChoice42.setOffsetNid(82);
-        deviceChoice42.setUpdateIdentifier("");
-        jPanel49.add(deviceChoice42);
+        deviceChannel23.getContainer().add(jPanel48);
 
         deviceField76.setIdentifier("");
-        deviceField76.setLabelString("Delay:");
-        deviceField76.setOffsetNid(85);
+        deviceField76.setLabelString("FREQ :");
+        deviceField76.setOffsetNid(76);
         jPanel49.add(deviceField76);
 
-        deviceChannel22.getContainer().add(jPanel49);
-
         deviceField77.setIdentifier("");
-        deviceField77.setLabelString("Duration");
-        deviceField77.setOffsetNid(86);
-        jPanel50.add(deviceField77);
+        deviceField77.setLabelString("DUTY CYCLE :");
+        deviceField77.setOffsetNid(80);
+        jPanel49.add(deviceField77);
+
+        deviceChannel23.getContainer().add(jPanel49);
 
         deviceField78.setIdentifier("");
-        deviceField78.setLabelString("Frequency");
-        deviceField78.setOffsetNid(87);
+        deviceField78.setLabelString("DELAY :");
+        deviceField78.setOffsetNid(74);
         jPanel50.add(deviceField78);
 
         deviceField79.setIdentifier("");
-        deviceField79.setLabelString("Duty cycle:");
-        deviceField79.setNumCols(4);
-        deviceField79.setOffsetNid(91);
+        deviceField79.setLabelString("DURATION :");
+        deviceField79.setOffsetNid(75);
         jPanel50.add(deviceField79);
 
-        deviceChannel22.getContainer().add(jPanel50);
-
         deviceField80.setIdentifier("");
-        deviceField80.setLabelString("Event");
-        deviceField80.setNumCols(15);
-        deviceField80.setOffsetNid(83);
-        deviceField80.setTextOnly(true);
-        jPanel51.add(deviceField80);
+        deviceField80.setLabelString("TRIG TIME");
+        deviceField80.setOffsetNid(81);
+        jPanel50.add(deviceField80);
+
+        deviceChannel23.getContainer().add(jPanel50);
+
+        jPanel43.add(deviceChannel23, "GCLOCK");
+
+        deviceChannel24.setInSameLine(true);
+        deviceChannel24.setLabelString("");
+        deviceChannel24.setOffsetNid(69);
+        deviceChannel24.setShowState(false);
+        deviceChannel24.setShowVal("DCLOCK");
+        deviceChannel24.setUpdateIdentifier("CH3");
+        deviceChannel24.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice37.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice37.setIdentifier("");
+        deviceChoice37.setLabelString("TRIG MODE :");
+        deviceChoice37.setOffsetNid(71);
+        deviceChoice37.setUpdateIdentifier("");
+        jPanel51.add(deviceChoice37);
+
+        deviceChoice38.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice38.setIdentifier("");
+        deviceChoice38.setLabelString("CYCLIC :");
+        deviceChoice38.setOffsetNid(73);
+        deviceChoice38.setUpdateIdentifier("");
+        jPanel51.add(deviceChoice38);
 
         deviceField81.setIdentifier("");
-        deviceField81.setLabelString("Trigger time:");
-        deviceField81.setOffsetNid(92);
+        deviceField81.setLabelString("EVENT :");
+        deviceField81.setOffsetNid(72);
+        deviceField81.setTextOnly(true);
         jPanel51.add(deviceField81);
 
-        deviceChannel22.getContainer().add(jPanel51);
-
-        jPanel45.add(deviceChannel22, "GCLOCK");
-
-        deviceChannel23.setLabelString("");
-        deviceChannel23.setOffsetNid(80);
-        deviceChannel23.setShowState(false);
-        deviceChannel23.setShowVal("DCLOCK");
-        deviceChannel23.setUpdateIdentifier("CH4");
-        deviceChannel23.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice43.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice43.setIdentifier("");
-        deviceChoice43.setLabelString("Trigger mode:");
-        deviceChoice43.setOffsetNid(82);
-        deviceChoice43.setUpdateIdentifier("");
-        jPanel52.add(deviceChoice43);
+        deviceChannel24.getContainer().add(jPanel51);
 
         deviceField82.setIdentifier("");
-        deviceField82.setLabelString("Delay:");
-        deviceField82.setOffsetNid(85);
+        deviceField82.setLabelString("FREQ 1 :");
+        deviceField82.setOffsetNid(76);
         jPanel52.add(deviceField82);
 
         deviceField83.setIdentifier("");
-        deviceField83.setLabelString("Duration:");
-        deviceField83.setOffsetNid(86);
+        deviceField83.setLabelString("FREQ 2 :");
+        deviceField83.setOffsetNid(77);
         jPanel52.add(deviceField83);
 
-        deviceChannel23.getContainer().add(jPanel52);
-
         deviceField84.setIdentifier("");
-        deviceField84.setLabelString("Freq. 1:");
-        deviceField84.setOffsetNid(87);
-        jPanel53.add(deviceField84);
+        deviceField84.setLabelString("DUTY CYCLE :");
+        deviceField84.setOffsetNid(80);
+        jPanel52.add(deviceField84);
+
+        deviceChannel24.getContainer().add(jPanel52);
 
         deviceField85.setIdentifier("");
-        deviceField85.setLabelString("Freq. 2:");
-        deviceField85.setOffsetNid(88);
+        deviceField85.setLabelString("DELAY :");
+        deviceField85.setOffsetNid(74);
         jPanel53.add(deviceField85);
 
-        deviceChannel23.getContainer().add(jPanel53);
-
         deviceField86.setIdentifier("");
-        deviceField86.setLabelString("Event:");
-        deviceField86.setNumCols(15);
-        deviceField86.setOffsetNid(83);
-        deviceField86.setTextOnly(true);
-        jPanel54.add(deviceField86);
+        deviceField86.setLabelString("DURATION :");
+        deviceField86.setOffsetNid(75);
+        jPanel53.add(deviceField86);
 
         deviceField87.setIdentifier("");
-        deviceField87.setLabelString("Trigger time:");
-        deviceField87.setOffsetNid(92);
-        jPanel54.add(deviceField87);
+        deviceField87.setLabelString("TRIG TIME");
+        deviceField87.setOffsetNid(81);
+        jPanel53.add(deviceField87);
 
-        deviceChannel23.getContainer().add(jPanel54);
+        deviceChannel24.getContainer().add(jPanel53);
 
-        jPanel45.add(deviceChannel23, "DCLOCK");
+        jPanel43.add(deviceChannel24, "DCLOCK");
 
-        deviceChannel24.setLabelString("");
-        deviceChannel24.setOffsetNid(80);
-        deviceChannel24.setShowState(false);
-        deviceChannel24.setShowVal("ENCODER");
-        deviceChannel24.setUpdateIdentifier("CH4");
-        deviceChannel24.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+        deviceChannel25.setInSameLine(true);
+        deviceChannel25.setLabelString("");
+        deviceChannel25.setOffsetNid(69);
+        deviceChannel25.setShowState(false);
+        deviceChannel25.setShowVal("ENCODER");
+        deviceChannel25.setUpdateIdentifier("CH3");
+        deviceChannel25.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel54.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel26.setInSameLine(true);
+        deviceChannel26.setLabelString("");
+        deviceChannel26.setOffsetNid(86);
+        deviceChannel26.setShowVal("");
+        deviceChannel26.setUpdateIdentifier("");
+        deviceChannel26.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField88.setIdentifier("");
-        deviceField88.setLabelString("Event:");
-        deviceField88.setOffsetNid(96);
+        deviceField88.setLabelString("NAME :");
+        deviceField88.setOffsetNid(87);
         deviceField88.setTextOnly(true);
         jPanel55.add(deviceField88);
 
-        deviceChoice44.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice44.setIdentifier("");
-        deviceChoice44.setLabelString("Termination:");
-        deviceChoice44.setOffsetNid(98);
-        deviceChoice44.setUpdateIdentifier("");
-        jPanel55.add(deviceChoice44);
-
-        deviceChoice45.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice45.setIdentifier("");
-        deviceChoice45.setLabelString("EDGE");
-        deviceChoice45.setOffsetNid(100);
-        deviceChoice45.setUpdateIdentifier("");
-        jPanel55.add(deviceChoice45);
-
-        deviceChannel24.getContainer().add(jPanel55);
-
         deviceField89.setIdentifier("");
-        deviceField89.setLabelString("Event:");
-        deviceField89.setOffsetNid(97);
-        deviceField89.setTextOnly(true);
-        jPanel56.add(deviceField89);
-
-        deviceChoice46.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice46.setIdentifier("");
-        deviceChoice46.setLabelString("Termination:");
-        deviceChoice46.setOffsetNid(99);
-        deviceChoice46.setUpdateIdentifier("");
-        jPanel56.add(deviceChoice46);
-
-        deviceChoice47.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice47.setIdentifier("");
-        deviceChoice47.setLabelString("EDGE");
-        deviceChoice47.setOffsetNid(101);
-        deviceChoice47.setUpdateIdentifier("");
-        jPanel56.add(deviceChoice47);
-
-        deviceChannel24.getContainer().add(jPanel56);
-
-        jPanel45.add(deviceChannel24, "ENCODER");
-
-        deviceChannel19.getContainer().add(jPanel45, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH4", deviceChannel19);
-
-        deviceChannel25.setInSameLine(true);
-        deviceChannel25.setLabelString("On:");
-        deviceChannel25.setOffsetNid(103);
-        deviceChannel25.setShowVal("");
-        deviceChannel25.setUpdateIdentifier("");
-        deviceChannel25.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice48.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice48.setIdentifier("");
-        deviceChoice48.setLabelString("Function:");
-        deviceChoice48.setOffsetNid(104);
-        deviceChoice48.setUpdateIdentifier("CH5");
-        jPanel57.add(deviceChoice48);
+        deviceField89.setLabelString("CODE :");
+        deviceField89.setOffsetNid(88);
+        jPanel55.add(deviceField89);
 
         deviceField90.setIdentifier("");
-        deviceField90.setLabelString("Comment:");
-        deviceField90.setNumCols(20);
-        deviceField90.setOffsetNid(125);
-        deviceField90.setTextOnly(true);
-        jPanel57.add(deviceField90);
+        deviceField90.setLabelString("TIME :");
+        deviceField90.setOffsetNid(89);
+        jPanel55.add(deviceField90);
 
-        deviceChannel25.getContainer().add(jPanel57, java.awt.BorderLayout.NORTH);
+        deviceChoice39.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice39.setIdentifier("");
+        deviceChoice39.setLabelString("TERMINATION :");
+        deviceChoice39.setOffsetNid(90);
+        deviceChoice39.setUpdateIdentifier("");
+        jPanel55.add(deviceChoice39);
 
-        jPanel58.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel58.setLayout(new java.awt.CardLayout());
+        deviceChoice40.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice40.setIdentifier("");
+        deviceChoice40.setLabelString("EDGE :");
+        deviceChoice40.setOffsetNid(91);
+        deviceChoice40.setUpdateIdentifier("");
+        jPanel55.add(deviceChoice40);
 
-        deviceChannel26.setLabelString("");
-        deviceChannel26.setOffsetNid(103);
-        deviceChannel26.setShowState(false);
-        deviceChannel26.setShowVal("PULSE");
-        deviceChannel26.setUpdateIdentifier("CH5");
-        deviceChannel26.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        deviceChannel26.getContainer().add(jPanel55, java.awt.BorderLayout.CENTER);
 
-        deviceChoice49.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice49.setIdentifier("");
-        deviceChoice49.setLabelString("Trig. Mode");
-        deviceChoice49.setOffsetNid(105);
-        deviceChoice49.setUpdateIdentifier("");
-        jPanel59.add(deviceChoice49);
+        jPanel54.add(deviceChannel26, java.awt.BorderLayout.CENTER);
 
-        deviceChoice50.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice50.setIdentifier("");
-        deviceChoice50.setLabelString("Cyclic:");
-        deviceChoice50.setOffsetNid(107);
-        deviceChoice50.setUpdateIdentifier("");
-        jPanel59.add(deviceChoice50);
+        deviceChannel25.getContainer().add(jPanel54);
+
+        jPanel56.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel56.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel27.setInSameLine(true);
+        deviceChannel27.setLabelString("");
+        deviceChannel27.setOffsetNid(92);
+        deviceChannel27.setShowVal("");
+        deviceChannel27.setUpdateIdentifier("");
+        deviceChannel27.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField91.setIdentifier("");
-        deviceField91.setLabelString("Event:");
-        deviceField91.setOffsetNid(106);
+        deviceField91.setLabelString("NAME :");
+        deviceField91.setOffsetNid(93);
         deviceField91.setTextOnly(true);
-        jPanel59.add(deviceField91);
-
-        deviceChannel26.getContainer().add(jPanel59);
-
-        deviceChoice51.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice51.setIdentifier("");
-        deviceChoice51.setLabelString("Init level 1:");
-        deviceChoice51.setOffsetNid(112);
-        deviceChoice51.setUpdateIdentifier("");
-        jPanel60.add(deviceChoice51);
-
-        deviceChoice52.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice52.setIdentifier("");
-        deviceChoice52.setLabelString("Init level 2:");
-        deviceChoice52.setOffsetNid(113);
-        deviceChoice52.setUpdateIdentifier("");
-        jPanel60.add(deviceChoice52);
+        jPanel57.add(deviceField91);
 
         deviceField92.setIdentifier("");
-        deviceField92.setLabelString("Delay");
-        deviceField92.setOffsetNid(108);
-        jPanel60.add(deviceField92);
-
-        deviceChannel26.getContainer().add(jPanel60);
+        deviceField92.setLabelString("CODE :");
+        deviceField92.setOffsetNid(94);
+        jPanel57.add(deviceField92);
 
         deviceField93.setIdentifier("");
-        deviceField93.setLabelString("Duration:");
-        deviceField93.setOffsetNid(109);
-        jPanel61.add(deviceField93);
+        deviceField93.setLabelString("TIME :");
+        deviceField93.setOffsetNid(95);
+        jPanel57.add(deviceField93);
+
+        deviceChoice41.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice41.setIdentifier("");
+        deviceChoice41.setLabelString("TERMINATION :");
+        deviceChoice41.setOffsetNid(96);
+        deviceChoice41.setUpdateIdentifier("");
+        jPanel57.add(deviceChoice41);
+
+        deviceChoice42.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice42.setIdentifier("");
+        deviceChoice42.setLabelString("EDGE :");
+        deviceChoice42.setOffsetNid(97);
+        deviceChoice42.setUpdateIdentifier("");
+        jPanel57.add(deviceChoice42);
+
+        deviceChannel27.getContainer().add(jPanel57, java.awt.BorderLayout.CENTER);
+
+        jPanel56.add(deviceChannel27, java.awt.BorderLayout.CENTER);
+
+        deviceChannel25.getContainer().add(jPanel56);
+
+        jPanel43.add(deviceChannel25, "ENCODER");
+
+        deviceChannel28.setInSameLine(true);
+        deviceChannel28.setLabelString("");
+        deviceChannel28.setOffsetNid(69);
+        deviceChannel28.setShowState(false);
+        deviceChannel28.setShowVal("CLOCK");
+        deviceChannel28.setUpdateIdentifier("CH3");
+        deviceChannel28.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField94.setIdentifier("");
-        deviceField94.setLabelString("Trigger time:");
-        deviceField94.setOffsetNid(115);
-        jPanel61.add(deviceField94);
-
-        deviceChannel26.getContainer().add(jPanel61);
-
-        jPanel58.add(deviceChannel26, "PULSE");
-
-        deviceChannel27.setLabelString("");
-        deviceChannel27.setOffsetNid(103);
-        deviceChannel27.setShowState(false);
-        deviceChannel27.setShowVal("CLOCK");
-        deviceChannel27.setUpdateIdentifier("CH5");
+        deviceField94.setLabelString("FREQ :");
+        deviceField94.setOffsetNid(76);
+        jPanel58.add(deviceField94);
 
         deviceField95.setIdentifier("");
-        deviceField95.setLabelString("Frequency");
-        deviceField95.setOffsetNid(110);
-        deviceChannel27.getContainer().add(deviceField95);
+        deviceField95.setLabelString("DUTY CYCLE :");
+        deviceField95.setOffsetNid(80);
+        jPanel58.add(deviceField95);
+
+        deviceChannel28.getContainer().add(jPanel58);
+
+        jPanel43.add(deviceChannel28, "CLOCK");
+
+        deviceChannel20.getContainer().add(jPanel43, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH3", deviceChannel20);
+
+        deviceChannel29.setLabelString("");
+        deviceChannel29.setOffsetNid(98);
+        deviceChannel29.setShowVal("");
+        deviceChannel29.setUpdateIdentifier("");
+        deviceChannel29.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice43.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice43.setIdentifier("");
+        deviceChoice43.setLabelString("FUNCTION :");
+        deviceChoice43.setOffsetNid(99);
+        deviceChoice43.setUpdateIdentifier("CH4");
+        jPanel59.add(deviceChoice43);
 
         deviceField96.setIdentifier("");
-        deviceField96.setLabelString("Duty cycle:");
-        deviceField96.setNumCols(4);
+        deviceField96.setLabelString("COMMENT :");
+        deviceField96.setNumCols(25);
         deviceField96.setOffsetNid(114);
-        deviceChannel27.getContainer().add(deviceField96);
+        deviceField96.setTextOnly(true);
+        jPanel59.add(deviceField96);
 
-        jPanel58.add(deviceChannel27, "CLOCK");
+        deviceChannel29.getContainer().add(jPanel59, java.awt.BorderLayout.NORTH);
 
-        deviceChannel28.setLabelString("");
-        deviceChannel28.setOffsetNid(103);
-        deviceChannel28.setShowState(false);
-        deviceChannel28.setShowVal("GCLOCK");
-        deviceChannel28.setUpdateIdentifier("CH5");
-        deviceChannel28.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        jPanel60.setLayout(new java.awt.CardLayout());
 
-        deviceChoice53.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice53.setIdentifier("");
-        deviceChoice53.setLabelString("Trigger mode:");
-        deviceChoice53.setOffsetNid(105);
-        deviceChoice53.setUpdateIdentifier("");
-        jPanel62.add(deviceChoice53);
+        deviceChannel30.setInSameLine(true);
+        deviceChannel30.setLabelString("");
+        deviceChannel30.setOffsetNid(98);
+        deviceChannel30.setShowState(false);
+        deviceChannel30.setShowVal("PULSE");
+        deviceChannel30.setUpdateIdentifier("CH4");
+        deviceChannel30.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice44.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice44.setIdentifier("");
+        deviceChoice44.setLabelString("TRIG MODE :");
+        deviceChoice44.setOffsetNid(100);
+        deviceChoice44.setUpdateIdentifier("");
+        jPanel61.add(deviceChoice44);
+
+        deviceChoice45.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice45.setIdentifier("");
+        deviceChoice45.setLabelString("CYCLIC :");
+        deviceChoice45.setOffsetNid(102);
+        deviceChoice45.setUpdateIdentifier("");
+        jPanel61.add(deviceChoice45);
 
         deviceField97.setIdentifier("");
-        deviceField97.setLabelString("Delay:");
-        deviceField97.setOffsetNid(108);
-        jPanel62.add(deviceField97);
+        deviceField97.setLabelString("EVENT :");
+        deviceField97.setOffsetNid(101);
+        deviceField97.setTextOnly(true);
+        jPanel61.add(deviceField97);
 
-        deviceChannel28.getContainer().add(jPanel62);
+        deviceChannel30.getContainer().add(jPanel61);
+
+        deviceChoice46.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice46.setIdentifier("");
+        deviceChoice46.setLabelString("LEVEL 1 :");
+        deviceChoice46.setOffsetNid(107);
+        deviceChoice46.setUpdateIdentifier("");
+        jPanel62.add(deviceChoice46);
+
+        deviceChoice47.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice47.setIdentifier("");
+        deviceChoice47.setLabelString("LEVEL 2 :");
+        deviceChoice47.setOffsetNid(108);
+        deviceChoice47.setUpdateIdentifier("");
+        jPanel62.add(deviceChoice47);
 
         deviceField98.setIdentifier("");
-        deviceField98.setLabelString("Duration");
-        deviceField98.setOffsetNid(109);
-        jPanel63.add(deviceField98);
+        deviceField98.setLabelString("DELAY :");
+        deviceField98.setOffsetNid(103);
+        jPanel62.add(deviceField98);
+
+        deviceChannel30.getContainer().add(jPanel62);
 
         deviceField99.setIdentifier("");
-        deviceField99.setLabelString("Frequency");
-        deviceField99.setOffsetNid(110);
+        deviceField99.setLabelString("DURATION :");
+        deviceField99.setOffsetNid(104);
         jPanel63.add(deviceField99);
 
         deviceField100.setIdentifier("");
-        deviceField100.setLabelString("Duty cycle:");
-        deviceField100.setNumCols(4);
-        deviceField100.setOffsetNid(114);
+        deviceField100.setLabelString("TRIG TIME");
+        deviceField100.setOffsetNid(110);
         jPanel63.add(deviceField100);
 
-        deviceChannel28.getContainer().add(jPanel63);
+        deviceChannel30.getContainer().add(jPanel63);
+
+        jPanel60.add(deviceChannel30, "PULSE");
+
+        deviceChannel31.setInSameLine(true);
+        deviceChannel31.setLabelString("");
+        deviceChannel31.setOffsetNid(98);
+        deviceChannel31.setShowState(false);
+        deviceChannel31.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel31.setUpdateIdentifier("CH4");
+        deviceChannel31.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField101.setIdentifier("");
-        deviceField101.setLabelString("Event");
-        deviceField101.setNumCols(15);
-        deviceField101.setOffsetNid(106);
-        deviceField101.setTextOnly(true);
+        deviceField101.setLabelString("FREQ 1 :");
+        deviceField101.setOffsetNid(105);
         jPanel64.add(deviceField101);
 
         deviceField102.setIdentifier("");
-        deviceField102.setLabelString("Trigger time:");
-        deviceField102.setOffsetNid(115);
+        deviceField102.setLabelString("FREQ 2:");
+        deviceField102.setOffsetNid(106);
         jPanel64.add(deviceField102);
 
-        deviceChannel28.getContainer().add(jPanel64);
-
-        jPanel58.add(deviceChannel28, "GCLOCK");
-
-        deviceChannel29.setLabelString("");
-        deviceChannel29.setOffsetNid(103);
-        deviceChannel29.setShowState(false);
-        deviceChannel29.setShowVal("DCLOCK");
-        deviceChannel29.setUpdateIdentifier("CH5");
-        deviceChannel29.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice54.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice54.setIdentifier("");
-        deviceChoice54.setLabelString("Trigger mode:");
-        deviceChoice54.setOffsetNid(105);
-        deviceChoice54.setUpdateIdentifier("");
-        jPanel65.add(deviceChoice54);
-
         deviceField103.setIdentifier("");
-        deviceField103.setLabelString("Delay:");
-        deviceField103.setOffsetNid(108);
-        jPanel65.add(deviceField103);
+        deviceField103.setLabelString("DUTY CYCLE :");
+        deviceField103.setOffsetNid(109);
+        jPanel64.add(deviceField103);
+
+        deviceChannel31.getContainer().add(jPanel64);
+
+        jPanel60.add(deviceChannel31, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel32.setInSameLine(true);
+        deviceChannel32.setLabelString("");
+        deviceChannel32.setOffsetNid(98);
+        deviceChannel32.setShowState(false);
+        deviceChannel32.setShowVal("GCLOCK");
+        deviceChannel32.setUpdateIdentifier("CH4");
+        deviceChannel32.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice48.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice48.setIdentifier("");
+        deviceChoice48.setLabelString("TRIG MODE :");
+        deviceChoice48.setOffsetNid(100);
+        deviceChoice48.setUpdateIdentifier("");
+        jPanel65.add(deviceChoice48);
+
+        deviceChoice49.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice49.setIdentifier("");
+        deviceChoice49.setLabelString("CYCLIC :");
+        deviceChoice49.setOffsetNid(102);
+        deviceChoice49.setUpdateIdentifier("");
+        jPanel65.add(deviceChoice49);
 
         deviceField104.setIdentifier("");
-        deviceField104.setLabelString("Duration:");
-        deviceField104.setOffsetNid(109);
+        deviceField104.setLabelString("EVENT :");
+        deviceField104.setOffsetNid(101);
+        deviceField104.setTextOnly(true);
         jPanel65.add(deviceField104);
 
-        deviceChannel29.getContainer().add(jPanel65);
+        deviceChannel32.getContainer().add(jPanel65);
 
         deviceField105.setIdentifier("");
-        deviceField105.setLabelString("Freq. 1:");
-        deviceField105.setOffsetNid(110);
+        deviceField105.setLabelString("FREQ :");
+        deviceField105.setOffsetNid(105);
         jPanel66.add(deviceField105);
 
         deviceField106.setIdentifier("");
-        deviceField106.setLabelString("Freq. 2:");
-        deviceField106.setOffsetNid(111);
+        deviceField106.setLabelString("DUTY CYCLE :");
+        deviceField106.setOffsetNid(109);
         jPanel66.add(deviceField106);
 
-        deviceChannel29.getContainer().add(jPanel66);
+        deviceChannel32.getContainer().add(jPanel66);
 
         deviceField107.setIdentifier("");
-        deviceField107.setLabelString("Event:");
-        deviceField107.setNumCols(15);
-        deviceField107.setOffsetNid(106);
-        deviceField107.setTextOnly(true);
+        deviceField107.setLabelString("DELAY :");
+        deviceField107.setOffsetNid(103);
         jPanel67.add(deviceField107);
 
         deviceField108.setIdentifier("");
-        deviceField108.setLabelString("Trigger time:");
-        deviceField108.setOffsetNid(115);
+        deviceField108.setLabelString("DURATION :");
+        deviceField108.setOffsetNid(104);
         jPanel67.add(deviceField108);
 
-        deviceChannel29.getContainer().add(jPanel67);
-
-        jPanel58.add(deviceChannel29, "DCLOCK");
-
-        deviceChannel30.setLabelString("");
-        deviceChannel30.setOffsetNid(103);
-        deviceChannel30.setShowState(false);
-        deviceChannel30.setShowVal("ENCODER");
-        deviceChannel30.setUpdateIdentifier("CH5");
-        deviceChannel30.getContainer().setLayout(new java.awt.GridLayout(2, 0));
-
         deviceField109.setIdentifier("");
-        deviceField109.setLabelString("Event:");
-        deviceField109.setOffsetNid(119);
-        deviceField109.setTextOnly(true);
-        jPanel68.add(deviceField109);
+        deviceField109.setLabelString("TRIG TIME");
+        deviceField109.setOffsetNid(110);
+        jPanel67.add(deviceField109);
 
-        deviceChoice55.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice55.setIdentifier("");
-        deviceChoice55.setLabelString("Termination:");
-        deviceChoice55.setOffsetNid(121);
-        deviceChoice55.setUpdateIdentifier("");
-        jPanel68.add(deviceChoice55);
+        deviceChannel32.getContainer().add(jPanel67);
 
-        deviceChoice56.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice56.setIdentifier("");
-        deviceChoice56.setLabelString("EDGE");
-        deviceChoice56.setOffsetNid(123);
-        deviceChoice56.setUpdateIdentifier("");
-        jPanel68.add(deviceChoice56);
+        jPanel60.add(deviceChannel32, "GCLOCK");
 
-        deviceChannel30.getContainer().add(jPanel68);
+        deviceChannel33.setInSameLine(true);
+        deviceChannel33.setLabelString("");
+        deviceChannel33.setOffsetNid(98);
+        deviceChannel33.setShowState(false);
+        deviceChannel33.setShowVal("DCLOCK");
+        deviceChannel33.setUpdateIdentifier("CH4");
+        deviceChannel33.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice50.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice50.setIdentifier("");
+        deviceChoice50.setLabelString("TRIG MODE :");
+        deviceChoice50.setOffsetNid(100);
+        deviceChoice50.setUpdateIdentifier("");
+        jPanel68.add(deviceChoice50);
+
+        deviceChoice51.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice51.setIdentifier("");
+        deviceChoice51.setLabelString("CYCLIC :");
+        deviceChoice51.setOffsetNid(102);
+        deviceChoice51.setUpdateIdentifier("");
+        jPanel68.add(deviceChoice51);
 
         deviceField110.setIdentifier("");
-        deviceField110.setLabelString("Event:");
-        deviceField110.setOffsetNid(120);
+        deviceField110.setLabelString("EVENT :");
+        deviceField110.setOffsetNid(101);
         deviceField110.setTextOnly(true);
-        jPanel69.add(deviceField110);
+        jPanel68.add(deviceField110);
 
-        deviceChoice57.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice57.setIdentifier("");
-        deviceChoice57.setLabelString("Termination:");
-        deviceChoice57.setOffsetNid(122);
-        deviceChoice57.setUpdateIdentifier("");
-        jPanel69.add(deviceChoice57);
-
-        deviceChoice58.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice58.setIdentifier("");
-        deviceChoice58.setLabelString("EDGE");
-        deviceChoice58.setOffsetNid(124);
-        deviceChoice58.setUpdateIdentifier("");
-        jPanel69.add(deviceChoice58);
-
-        deviceChannel30.getContainer().add(jPanel69);
-
-        jPanel58.add(deviceChannel30, "ENCODER");
-
-        deviceChannel25.getContainer().add(jPanel58, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH5", deviceChannel25);
-
-        deviceChannel31.setInSameLine(true);
-        deviceChannel31.setLabelString("On:");
-        deviceChannel31.setOffsetNid(126);
-        deviceChannel31.setShowVal("");
-        deviceChannel31.setUpdateIdentifier("");
-        deviceChannel31.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice59.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice59.setIdentifier("");
-        deviceChoice59.setLabelString("Function:");
-        deviceChoice59.setOffsetNid(127);
-        deviceChoice59.setUpdateIdentifier("CH6");
-        jPanel70.add(deviceChoice59);
+        deviceChannel33.getContainer().add(jPanel68);
 
         deviceField111.setIdentifier("");
-        deviceField111.setLabelString("Comment:");
-        deviceField111.setNumCols(20);
-        deviceField111.setOffsetNid(148);
-        deviceField111.setTextOnly(true);
-        jPanel70.add(deviceField111);
-
-        deviceChannel31.getContainer().add(jPanel70, java.awt.BorderLayout.NORTH);
-
-        jPanel71.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel71.setLayout(new java.awt.CardLayout());
-
-        deviceChannel32.setLabelString("");
-        deviceChannel32.setOffsetNid(126);
-        deviceChannel32.setShowState(false);
-        deviceChannel32.setShowVal("PULSE");
-        deviceChannel32.setUpdateIdentifier("CH6");
-        deviceChannel32.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice60.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice60.setIdentifier("");
-        deviceChoice60.setLabelString("Trig. Mode");
-        deviceChoice60.setOffsetNid(128);
-        deviceChoice60.setUpdateIdentifier("");
-        jPanel72.add(deviceChoice60);
-
-        deviceChoice61.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice61.setIdentifier("");
-        deviceChoice61.setLabelString("Cyclic:");
-        deviceChoice61.setOffsetNid(130);
-        deviceChoice61.setUpdateIdentifier("");
-        jPanel72.add(deviceChoice61);
+        deviceField111.setLabelString("FREQ 1 :");
+        deviceField111.setOffsetNid(105);
+        jPanel69.add(deviceField111);
 
         deviceField112.setIdentifier("");
-        deviceField112.setLabelString("Event:");
-        deviceField112.setOffsetNid(129);
-        deviceField112.setTextOnly(true);
-        jPanel72.add(deviceField112);
-
-        deviceChannel32.getContainer().add(jPanel72);
-
-        deviceChoice62.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice62.setIdentifier("");
-        deviceChoice62.setLabelString("Init level 1:");
-        deviceChoice62.setOffsetNid(135);
-        deviceChoice62.setUpdateIdentifier("");
-        jPanel73.add(deviceChoice62);
-
-        deviceChoice63.setChoiceItems(new String[] {"LOW", "HIGH"});
-        deviceChoice63.setIdentifier("");
-        deviceChoice63.setLabelString("Init level 2:");
-        deviceChoice63.setOffsetNid(136);
-        deviceChoice63.setUpdateIdentifier("");
-        jPanel73.add(deviceChoice63);
+        deviceField112.setLabelString("FREQ 2 :");
+        deviceField112.setOffsetNid(106);
+        jPanel69.add(deviceField112);
 
         deviceField113.setIdentifier("");
-        deviceField113.setLabelString("Delay");
-        deviceField113.setOffsetNid(131);
-        jPanel73.add(deviceField113);
+        deviceField113.setLabelString("DUTY CYCLE :");
+        deviceField113.setOffsetNid(109);
+        jPanel69.add(deviceField113);
 
-        deviceChannel32.getContainer().add(jPanel73);
+        deviceChannel33.getContainer().add(jPanel69);
 
         deviceField114.setIdentifier("");
-        deviceField114.setLabelString("Duration:");
-        deviceField114.setOffsetNid(132);
-        jPanel74.add(deviceField114);
+        deviceField114.setLabelString("DELAY :");
+        deviceField114.setOffsetNid(103);
+        jPanel70.add(deviceField114);
 
         deviceField115.setIdentifier("");
-        deviceField115.setLabelString("Trigger time:");
-        deviceField115.setOffsetNid(138);
-        jPanel74.add(deviceField115);
-
-        deviceChannel32.getContainer().add(jPanel74);
-
-        jPanel71.add(deviceChannel32, "PULSE");
-
-        deviceChannel33.setLabelString("");
-        deviceChannel33.setOffsetNid(126);
-        deviceChannel33.setShowState(false);
-        deviceChannel33.setShowVal("CLOCK");
-        deviceChannel33.setUpdateIdentifier("CH6");
+        deviceField115.setLabelString("DURATION :");
+        deviceField115.setOffsetNid(104);
+        jPanel70.add(deviceField115);
 
         deviceField116.setIdentifier("");
-        deviceField116.setLabelString("Frequency");
-        deviceField116.setOffsetNid(133);
-        deviceChannel33.getContainer().add(deviceField116);
+        deviceField116.setLabelString("TRIG TIME");
+        deviceField116.setOffsetNid(110);
+        jPanel70.add(deviceField116);
+
+        deviceChannel33.getContainer().add(jPanel70);
+
+        jPanel60.add(deviceChannel33, "DCLOCK");
+
+        deviceChannel34.setInSameLine(true);
+        deviceChannel34.setLabelString("");
+        deviceChannel34.setOffsetNid(98);
+        deviceChannel34.setShowState(false);
+        deviceChannel34.setShowVal("ENCODER");
+        deviceChannel34.setUpdateIdentifier("CH4");
+        deviceChannel34.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel71.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel35.setInSameLine(true);
+        deviceChannel35.setLabelString("");
+        deviceChannel35.setOffsetNid(115);
+        deviceChannel35.setShowVal("");
+        deviceChannel35.setUpdateIdentifier("");
+        deviceChannel35.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField117.setIdentifier("");
-        deviceField117.setLabelString("Duty cycle:");
-        deviceField117.setNumCols(4);
-        deviceField117.setOffsetNid(137);
-        deviceChannel33.getContainer().add(deviceField117);
-
-        jPanel71.add(deviceChannel33, "CLOCK");
-
-        deviceChannel34.setLabelString("");
-        deviceChannel34.setOffsetNid(126);
-        deviceChannel34.setShowState(false);
-        deviceChannel34.setShowVal("GCLOCK");
-        deviceChannel34.setUpdateIdentifier("CH6");
-        deviceChannel34.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice64.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice64.setIdentifier("");
-        deviceChoice64.setLabelString("Trigger mode:");
-        deviceChoice64.setOffsetNid(128);
-        deviceChoice64.setUpdateIdentifier("");
-        jPanel75.add(deviceChoice64);
+        deviceField117.setLabelString("NAME :");
+        deviceField117.setOffsetNid(116);
+        deviceField117.setTextOnly(true);
+        jPanel72.add(deviceField117);
 
         deviceField118.setIdentifier("");
-        deviceField118.setLabelString("Delay:");
-        deviceField118.setOffsetNid(131);
-        jPanel75.add(deviceField118);
-
-        deviceChannel34.getContainer().add(jPanel75);
+        deviceField118.setLabelString("CODE :");
+        deviceField118.setOffsetNid(117);
+        jPanel72.add(deviceField118);
 
         deviceField119.setIdentifier("");
-        deviceField119.setLabelString("Duration");
-        deviceField119.setOffsetNid(132);
-        jPanel76.add(deviceField119);
+        deviceField119.setLabelString("TIME :");
+        deviceField119.setOffsetNid(118);
+        jPanel72.add(deviceField119);
+
+        deviceChoice52.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice52.setIdentifier("");
+        deviceChoice52.setLabelString("TERMINATION :");
+        deviceChoice52.setOffsetNid(119);
+        deviceChoice52.setUpdateIdentifier("");
+        jPanel72.add(deviceChoice52);
+
+        deviceChoice53.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice53.setIdentifier("");
+        deviceChoice53.setLabelString("EDGE :");
+        deviceChoice53.setOffsetNid(120);
+        deviceChoice53.setUpdateIdentifier("");
+        jPanel72.add(deviceChoice53);
+
+        deviceChannel35.getContainer().add(jPanel72, java.awt.BorderLayout.CENTER);
+
+        jPanel71.add(deviceChannel35, java.awt.BorderLayout.CENTER);
+
+        deviceChannel34.getContainer().add(jPanel71);
+
+        jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel73.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel36.setInSameLine(true);
+        deviceChannel36.setLabelString("");
+        deviceChannel36.setOffsetNid(121);
+        deviceChannel36.setShowVal("");
+        deviceChannel36.setUpdateIdentifier("");
+        deviceChannel36.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField120.setIdentifier("");
-        deviceField120.setLabelString("Frequency");
-        deviceField120.setOffsetNid(133);
-        jPanel76.add(deviceField120);
+        deviceField120.setLabelString("NAME :");
+        deviceField120.setOffsetNid(122);
+        deviceField120.setTextOnly(true);
+        jPanel74.add(deviceField120);
 
         deviceField121.setIdentifier("");
-        deviceField121.setLabelString("Duty cycle:");
-        deviceField121.setNumCols(4);
-        deviceField121.setOffsetNid(137);
-        jPanel76.add(deviceField121);
-
-        deviceChannel34.getContainer().add(jPanel76);
+        deviceField121.setLabelString("CODE :");
+        deviceField121.setOffsetNid(123);
+        jPanel74.add(deviceField121);
 
         deviceField122.setIdentifier("");
-        deviceField122.setLabelString("Event");
-        deviceField122.setNumCols(15);
-        deviceField122.setOffsetNid(106);
-        deviceField122.setTextOnly(true);
-        jPanel77.add(deviceField122);
+        deviceField122.setLabelString("TIME :");
+        deviceField122.setOffsetNid(124);
+        jPanel74.add(deviceField122);
+
+        deviceChoice54.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice54.setIdentifier("");
+        deviceChoice54.setLabelString("TERMINATION :");
+        deviceChoice54.setOffsetNid(125);
+        deviceChoice54.setUpdateIdentifier("");
+        jPanel74.add(deviceChoice54);
+
+        deviceChoice55.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice55.setIdentifier("");
+        deviceChoice55.setLabelString("EDGE :");
+        deviceChoice55.setOffsetNid(126);
+        deviceChoice55.setUpdateIdentifier("");
+        jPanel74.add(deviceChoice55);
+
+        deviceChannel36.getContainer().add(jPanel74, java.awt.BorderLayout.CENTER);
+
+        jPanel73.add(deviceChannel36, java.awt.BorderLayout.CENTER);
+
+        deviceChannel34.getContainer().add(jPanel73);
+
+        jPanel60.add(deviceChannel34, "ENCODER");
+
+        deviceChannel37.setInSameLine(true);
+        deviceChannel37.setLabelString("");
+        deviceChannel37.setOffsetNid(98);
+        deviceChannel37.setShowState(false);
+        deviceChannel37.setShowVal("CLOCK");
+        deviceChannel37.setUpdateIdentifier("CH4");
+        deviceChannel37.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField123.setIdentifier("");
-        deviceField123.setLabelString("Trigger time:");
-        deviceField123.setOffsetNid(138);
-        jPanel77.add(deviceField123);
-
-        deviceChannel34.getContainer().add(jPanel77);
-
-        jPanel71.add(deviceChannel34, "GCLOCK");
-
-        deviceChannel35.setLabelString("");
-        deviceChannel35.setOffsetNid(126);
-        deviceChannel35.setShowState(false);
-        deviceChannel35.setShowVal("DCLOCK");
-        deviceChannel35.setUpdateIdentifier("CH6");
-        deviceChannel35.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice65.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice65.setIdentifier("");
-        deviceChoice65.setLabelString("Trigger mode:");
-        deviceChoice65.setOffsetNid(128);
-        deviceChoice65.setUpdateIdentifier("");
-        jPanel78.add(deviceChoice65);
+        deviceField123.setLabelString("FREQ :");
+        deviceField123.setOffsetNid(105);
+        jPanel75.add(deviceField123);
 
         deviceField124.setIdentifier("");
-        deviceField124.setLabelString("Delay:");
-        deviceField124.setOffsetNid(131);
-        jPanel78.add(deviceField124);
+        deviceField124.setLabelString("DUTY CYCLE :");
+        deviceField124.setOffsetNid(109);
+        jPanel75.add(deviceField124);
+
+        deviceChannel37.getContainer().add(jPanel75);
+
+        jPanel60.add(deviceChannel37, "CLOCK");
+
+        deviceChannel29.getContainer().add(jPanel60, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH4", deviceChannel29);
+
+        deviceChannel38.setLabelString("");
+        deviceChannel38.setOffsetNid(127);
+        deviceChannel38.setShowVal("");
+        deviceChannel38.setUpdateIdentifier("");
+        deviceChannel38.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice56.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice56.setIdentifier("");
+        deviceChoice56.setLabelString("FUNCTION :");
+        deviceChoice56.setOffsetNid(128);
+        deviceChoice56.setUpdateIdentifier("CH5");
+        jPanel76.add(deviceChoice56);
 
         deviceField125.setIdentifier("");
-        deviceField125.setLabelString("Duration:");
-        deviceField125.setOffsetNid(132);
-        jPanel78.add(deviceField125);
+        deviceField125.setLabelString("COMMENT :");
+        deviceField125.setNumCols(25);
+        deviceField125.setOffsetNid(143);
+        deviceField125.setTextOnly(true);
+        jPanel76.add(deviceField125);
 
-        deviceChannel35.getContainer().add(jPanel78);
+        deviceChannel38.getContainer().add(jPanel76, java.awt.BorderLayout.NORTH);
+
+        jPanel77.setLayout(new java.awt.CardLayout());
+
+        deviceChannel39.setInSameLine(true);
+        deviceChannel39.setLabelString("");
+        deviceChannel39.setOffsetNid(127);
+        deviceChannel39.setShowState(false);
+        deviceChannel39.setShowVal("PULSE");
+        deviceChannel39.setUpdateIdentifier("CH5");
+        deviceChannel39.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice57.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice57.setIdentifier("");
+        deviceChoice57.setLabelString("TRIG MODE :");
+        deviceChoice57.setOffsetNid(129);
+        deviceChoice57.setUpdateIdentifier("");
+        jPanel78.add(deviceChoice57);
+
+        deviceChoice58.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice58.setIdentifier("");
+        deviceChoice58.setLabelString("CYCLIC :");
+        deviceChoice58.setOffsetNid(131);
+        deviceChoice58.setUpdateIdentifier("");
+        jPanel78.add(deviceChoice58);
 
         deviceField126.setIdentifier("");
-        deviceField126.setLabelString("Freq. 1:");
-        deviceField126.setOffsetNid(133);
-        jPanel79.add(deviceField126);
+        deviceField126.setLabelString("EVENT :");
+        deviceField126.setOffsetNid(130);
+        deviceField126.setTextOnly(true);
+        jPanel78.add(deviceField126);
+
+        deviceChannel39.getContainer().add(jPanel78);
+
+        deviceChoice59.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice59.setIdentifier("");
+        deviceChoice59.setLabelString("LEVEL 1 :");
+        deviceChoice59.setOffsetNid(136);
+        deviceChoice59.setUpdateIdentifier("");
+        jPanel79.add(deviceChoice59);
+
+        deviceChoice60.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice60.setIdentifier("");
+        deviceChoice60.setLabelString("LEVEL 2 :");
+        deviceChoice60.setOffsetNid(137);
+        deviceChoice60.setUpdateIdentifier("");
+        jPanel79.add(deviceChoice60);
 
         deviceField127.setIdentifier("");
-        deviceField127.setLabelString("Freq. 2:");
-        deviceField127.setOffsetNid(134);
+        deviceField127.setLabelString("DELAY :");
+        deviceField127.setOffsetNid(132);
         jPanel79.add(deviceField127);
 
-        deviceChannel35.getContainer().add(jPanel79);
+        deviceChannel39.getContainer().add(jPanel79);
 
         deviceField128.setIdentifier("");
-        deviceField128.setLabelString("Event:");
-        deviceField128.setNumCols(15);
-        deviceField128.setOffsetNid(129);
-        deviceField128.setTextOnly(true);
+        deviceField128.setLabelString("DURATION :");
+        deviceField128.setOffsetNid(133);
         jPanel80.add(deviceField128);
 
         deviceField129.setIdentifier("");
-        deviceField129.setLabelString("Trigger time:");
-        deviceField129.setOffsetNid(138);
+        deviceField129.setLabelString("TRIG TIME");
+        deviceField129.setOffsetNid(139);
         jPanel80.add(deviceField129);
 
-        deviceChannel35.getContainer().add(jPanel80);
+        deviceChannel39.getContainer().add(jPanel80);
 
-        jPanel71.add(deviceChannel35, "DCLOCK");
+        jPanel77.add(deviceChannel39, "PULSE");
 
-        deviceChannel36.setLabelString("");
-        deviceChannel36.setOffsetNid(126);
-        deviceChannel36.setShowState(false);
-        deviceChannel36.setShowVal("ENCODER");
-        deviceChannel36.setUpdateIdentifier("CH6");
-        deviceChannel36.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+        deviceChannel40.setInSameLine(true);
+        deviceChannel40.setLabelString("");
+        deviceChannel40.setOffsetNid(127);
+        deviceChannel40.setShowState(false);
+        deviceChannel40.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel40.setUpdateIdentifier("CH5");
+        deviceChannel40.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
         deviceField130.setIdentifier("");
-        deviceField130.setLabelString("Event:");
-        deviceField130.setOffsetNid(142);
-        deviceField130.setTextOnly(true);
+        deviceField130.setLabelString("FREQ 1 :");
+        deviceField130.setOffsetNid(134);
         jPanel81.add(deviceField130);
 
-        deviceChoice66.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice66.setIdentifier("");
-        deviceChoice66.setLabelString("Termination:");
-        deviceChoice66.setOffsetNid(144);
-        deviceChoice66.setUpdateIdentifier("");
-        jPanel81.add(deviceChoice66);
-
-        deviceChoice67.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice67.setIdentifier("");
-        deviceChoice67.setLabelString("EDGE");
-        deviceChoice67.setOffsetNid(146);
-        deviceChoice67.setUpdateIdentifier("");
-        jPanel81.add(deviceChoice67);
-
-        deviceChannel36.getContainer().add(jPanel81);
-
         deviceField131.setIdentifier("");
-        deviceField131.setLabelString("Event:");
-        deviceField131.setOffsetNid(143);
-        deviceField131.setTextOnly(true);
-        jPanel82.add(deviceField131);
-
-        deviceChoice68.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice68.setIdentifier("");
-        deviceChoice68.setLabelString("Termination:");
-        deviceChoice68.setOffsetNid(145);
-        deviceChoice68.setUpdateIdentifier("");
-        jPanel82.add(deviceChoice68);
-
-        deviceChoice69.setChoiceItems(new String[] {"RISING", "FALLING"});
-        deviceChoice69.setIdentifier("");
-        deviceChoice69.setLabelString("EDGE");
-        deviceChoice69.setOffsetNid(147);
-        deviceChoice69.setUpdateIdentifier("");
-        jPanel82.add(deviceChoice69);
-
-        deviceChannel36.getContainer().add(jPanel82);
-
-        jPanel71.add(deviceChannel36, "ENCODER");
-
-        deviceChannel31.getContainer().add(jPanel71, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH6", deviceChannel31);
-
-        deviceChannel37.setInSameLine(true);
-        deviceChannel37.setLabelString("On:");
-        deviceChannel37.setOffsetNid(149);
-        deviceChannel37.setShowVal("");
-        deviceChannel37.setUpdateIdentifier("");
-        deviceChannel37.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice70.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
-        deviceChoice70.setIdentifier("");
-        deviceChoice70.setLabelString("Function:");
-        deviceChoice70.setOffsetNid(150);
-        deviceChoice70.setUpdateIdentifier("CH7");
-        jPanel83.add(deviceChoice70);
+        deviceField131.setLabelString("FREQ 2:");
+        deviceField131.setOffsetNid(135);
+        jPanel81.add(deviceField131);
 
         deviceField132.setIdentifier("");
-        deviceField132.setLabelString("Comment:");
-        deviceField132.setNumCols(20);
-        deviceField132.setOffsetNid(171);
-        deviceField132.setTextOnly(true);
-        jPanel83.add(deviceField132);
+        deviceField132.setLabelString("DUTY CYCLE :");
+        deviceField132.setOffsetNid(138);
+        jPanel81.add(deviceField132);
 
-        deviceChannel37.getContainer().add(jPanel83, java.awt.BorderLayout.NORTH);
+        deviceChannel40.getContainer().add(jPanel81);
 
-        jPanel84.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel84.setLayout(new java.awt.CardLayout());
+        jPanel77.add(deviceChannel40, "CLOCK SOURCE + CLOCK");
 
-        deviceChannel38.setLabelString("");
-        deviceChannel38.setOffsetNid(149);
-        deviceChannel38.setShowState(false);
-        deviceChannel38.setShowVal("PULSE");
-        deviceChannel38.setUpdateIdentifier("CH7");
-        deviceChannel38.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        deviceChannel41.setInSameLine(true);
+        deviceChannel41.setLabelString("");
+        deviceChannel41.setOffsetNid(127);
+        deviceChannel41.setShowState(false);
+        deviceChannel41.setShowVal("GCLOCK");
+        deviceChannel41.setUpdateIdentifier("CH5");
+        deviceChannel41.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
-        deviceChoice71.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
-        deviceChoice71.setIdentifier("");
-        deviceChoice71.setLabelString("Trig. Mode");
-        deviceChoice71.setOffsetNid(151);
-        deviceChoice71.setUpdateIdentifier("");
-        jPanel85.add(deviceChoice71);
+        deviceChoice61.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice61.setIdentifier("");
+        deviceChoice61.setLabelString("TRIG MODE :");
+        deviceChoice61.setOffsetNid(129);
+        deviceChoice61.setUpdateIdentifier("");
+        jPanel82.add(deviceChoice61);
 
-        deviceChoice72.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice72.setIdentifier("");
-        deviceChoice72.setLabelString("Cyclic:");
-        deviceChoice72.setOffsetNid(153);
-        deviceChoice72.setUpdateIdentifier("");
-        jPanel85.add(deviceChoice72);
+        deviceChoice62.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice62.setIdentifier("");
+        deviceChoice62.setLabelString("CYCLIC :");
+        deviceChoice62.setOffsetNid(131);
+        deviceChoice62.setUpdateIdentifier("");
+        jPanel82.add(deviceChoice62);
 
         deviceField133.setIdentifier("");
-        deviceField133.setLabelString("Event:");
-        deviceField133.setOffsetNid(152);
+        deviceField133.setLabelString("EVENT :");
+        deviceField133.setOffsetNid(130);
         deviceField133.setTextOnly(true);
-        jPanel85.add(deviceField133);
+        jPanel82.add(deviceField133);
 
-        deviceChannel38.getContainer().add(jPanel85);
+        deviceChannel41.getContainer().add(jPanel82);
+
+        deviceField134.setIdentifier("");
+        deviceField134.setLabelString("FREQ :");
+        deviceField134.setOffsetNid(134);
+        jPanel83.add(deviceField134);
+
+        deviceField135.setIdentifier("");
+        deviceField135.setLabelString("DUTY CYCLE :");
+        deviceField135.setOffsetNid(138);
+        jPanel83.add(deviceField135);
+
+        deviceChannel41.getContainer().add(jPanel83);
+
+        deviceField136.setIdentifier("");
+        deviceField136.setLabelString("DELAY :");
+        deviceField136.setOffsetNid(132);
+        jPanel84.add(deviceField136);
+
+        deviceField137.setIdentifier("");
+        deviceField137.setLabelString("DURATION :");
+        deviceField137.setOffsetNid(133);
+        jPanel84.add(deviceField137);
+
+        deviceField138.setIdentifier("");
+        deviceField138.setLabelString("TRIG TIME");
+        deviceField138.setOffsetNid(139);
+        jPanel84.add(deviceField138);
+
+        deviceChannel41.getContainer().add(jPanel84);
+
+        jPanel77.add(deviceChannel41, "GCLOCK");
+
+        deviceChannel42.setInSameLine(true);
+        deviceChannel42.setLabelString("");
+        deviceChannel42.setOffsetNid(127);
+        deviceChannel42.setShowState(false);
+        deviceChannel42.setShowVal("DCLOCK");
+        deviceChannel42.setUpdateIdentifier("CH5");
+        deviceChannel42.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice63.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice63.setIdentifier("");
+        deviceChoice63.setLabelString("TRIG MODE :");
+        deviceChoice63.setOffsetNid(129);
+        deviceChoice63.setUpdateIdentifier("");
+        jPanel85.add(deviceChoice63);
+
+        deviceChoice64.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice64.setIdentifier("");
+        deviceChoice64.setLabelString("CYCLIC :");
+        deviceChoice64.setOffsetNid(131);
+        deviceChoice64.setUpdateIdentifier("");
+        jPanel85.add(deviceChoice64);
+
+        deviceField139.setIdentifier("");
+        deviceField139.setLabelString("EVENT :");
+        deviceField139.setOffsetNid(130);
+        deviceField139.setTextOnly(true);
+        jPanel85.add(deviceField139);
+
+        deviceChannel42.getContainer().add(jPanel85);
+
+        deviceField140.setIdentifier("");
+        deviceField140.setLabelString("FREQ 1 :");
+        deviceField140.setOffsetNid(134);
+        jPanel86.add(deviceField140);
+
+        deviceField141.setIdentifier("");
+        deviceField141.setLabelString("FREQ 2 :");
+        deviceField141.setOffsetNid(135);
+        jPanel86.add(deviceField141);
+
+        deviceField142.setIdentifier("");
+        deviceField142.setLabelString("DUTY CYCLE :");
+        deviceField142.setOffsetNid(138);
+        jPanel86.add(deviceField142);
+
+        deviceChannel42.getContainer().add(jPanel86);
+
+        deviceField143.setIdentifier("");
+        deviceField143.setLabelString("DELAY :");
+        deviceField143.setOffsetNid(132);
+        jPanel87.add(deviceField143);
+
+        deviceField144.setIdentifier("");
+        deviceField144.setLabelString("DURATION :");
+        deviceField144.setOffsetNid(133);
+        jPanel87.add(deviceField144);
+
+        deviceField145.setIdentifier("");
+        deviceField145.setLabelString("TRIG TIME");
+        deviceField145.setOffsetNid(139);
+        jPanel87.add(deviceField145);
+
+        deviceChannel42.getContainer().add(jPanel87);
+
+        jPanel77.add(deviceChannel42, "DCLOCK");
+
+        deviceChannel43.setInSameLine(true);
+        deviceChannel43.setLabelString("");
+        deviceChannel43.setOffsetNid(127);
+        deviceChannel43.setShowState(false);
+        deviceChannel43.setShowVal("ENCODER");
+        deviceChannel43.setUpdateIdentifier("CH5");
+        deviceChannel43.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel88.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel88.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel44.setInSameLine(true);
+        deviceChannel44.setLabelString("");
+        deviceChannel44.setOffsetNid(144);
+        deviceChannel44.setShowVal("");
+        deviceChannel44.setUpdateIdentifier("");
+        deviceChannel44.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField146.setIdentifier("");
+        deviceField146.setLabelString("NAME :");
+        deviceField146.setOffsetNid(145);
+        deviceField146.setTextOnly(true);
+        jPanel89.add(deviceField146);
+
+        deviceField147.setIdentifier("");
+        deviceField147.setLabelString("CODE :");
+        deviceField147.setOffsetNid(146);
+        jPanel89.add(deviceField147);
+
+        deviceField148.setIdentifier("");
+        deviceField148.setLabelString("TIME :");
+        deviceField148.setOffsetNid(147);
+        jPanel89.add(deviceField148);
+
+        deviceChoice65.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice65.setIdentifier("");
+        deviceChoice65.setLabelString("TERMINATION :");
+        deviceChoice65.setOffsetNid(148);
+        deviceChoice65.setUpdateIdentifier("");
+        jPanel89.add(deviceChoice65);
+
+        deviceChoice66.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice66.setIdentifier("");
+        deviceChoice66.setLabelString("EDGE :");
+        deviceChoice66.setOffsetNid(149);
+        deviceChoice66.setUpdateIdentifier("");
+        jPanel89.add(deviceChoice66);
+
+        deviceChannel44.getContainer().add(jPanel89, java.awt.BorderLayout.CENTER);
+
+        jPanel88.add(deviceChannel44, java.awt.BorderLayout.CENTER);
+
+        deviceChannel43.getContainer().add(jPanel88);
+
+        jPanel90.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel90.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel45.setInSameLine(true);
+        deviceChannel45.setLabelString("");
+        deviceChannel45.setOffsetNid(150);
+        deviceChannel45.setShowVal("");
+        deviceChannel45.setUpdateIdentifier("");
+        deviceChannel45.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField149.setIdentifier("");
+        deviceField149.setLabelString("NAME :");
+        deviceField149.setOffsetNid(151);
+        deviceField149.setTextOnly(true);
+        jPanel91.add(deviceField149);
+
+        deviceField150.setIdentifier("");
+        deviceField150.setLabelString("CODE :");
+        deviceField150.setOffsetNid(152);
+        jPanel91.add(deviceField150);
+
+        deviceField151.setIdentifier("");
+        deviceField151.setLabelString("TIME :");
+        deviceField151.setOffsetNid(153);
+        jPanel91.add(deviceField151);
+
+        deviceChoice67.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice67.setIdentifier("");
+        deviceChoice67.setLabelString("TERMINATION :");
+        deviceChoice67.setOffsetNid(154);
+        deviceChoice67.setUpdateIdentifier("");
+        jPanel91.add(deviceChoice67);
+
+        deviceChoice68.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice68.setIdentifier("");
+        deviceChoice68.setLabelString("EDGE :");
+        deviceChoice68.setOffsetNid(155);
+        deviceChoice68.setUpdateIdentifier("");
+        jPanel91.add(deviceChoice68);
+
+        deviceChannel45.getContainer().add(jPanel91, java.awt.BorderLayout.CENTER);
+
+        jPanel90.add(deviceChannel45, java.awt.BorderLayout.CENTER);
+
+        deviceChannel43.getContainer().add(jPanel90);
+
+        jPanel77.add(deviceChannel43, "ENCODER");
+
+        deviceChannel46.setInSameLine(true);
+        deviceChannel46.setLabelString("");
+        deviceChannel46.setOffsetNid(127);
+        deviceChannel46.setShowState(false);
+        deviceChannel46.setShowVal("CLOCK");
+        deviceChannel46.setUpdateIdentifier("CH5");
+        deviceChannel46.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField152.setIdentifier("");
+        deviceField152.setLabelString("FREQ :");
+        deviceField152.setOffsetNid(134);
+        jPanel92.add(deviceField152);
+
+        deviceField153.setIdentifier("");
+        deviceField153.setLabelString("DUTY CYCLE :");
+        deviceField153.setOffsetNid(138);
+        jPanel92.add(deviceField153);
+
+        deviceChannel46.getContainer().add(jPanel92);
+
+        jPanel77.add(deviceChannel46, "CLOCK");
+
+        deviceChannel38.getContainer().add(jPanel77, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH5", deviceChannel38);
+
+        deviceChannel47.setLabelString("");
+        deviceChannel47.setOffsetNid(156);
+        deviceChannel47.setShowVal("");
+        deviceChannel47.setUpdateIdentifier("");
+        deviceChannel47.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice69.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice69.setIdentifier("");
+        deviceChoice69.setLabelString("FUNCTION :");
+        deviceChoice69.setOffsetNid(157);
+        deviceChoice69.setUpdateIdentifier("CH6");
+        jPanel93.add(deviceChoice69);
+
+        deviceField154.setIdentifier("");
+        deviceField154.setLabelString("COMMENT :");
+        deviceField154.setNumCols(25);
+        deviceField154.setOffsetNid(172);
+        deviceField154.setTextOnly(true);
+        jPanel93.add(deviceField154);
+
+        deviceChannel47.getContainer().add(jPanel93, java.awt.BorderLayout.NORTH);
+
+        jPanel94.setLayout(new java.awt.CardLayout());
+
+        deviceChannel48.setInSameLine(true);
+        deviceChannel48.setLabelString("");
+        deviceChannel48.setOffsetNid(156);
+        deviceChannel48.setShowState(false);
+        deviceChannel48.setShowVal("PULSE");
+        deviceChannel48.setUpdateIdentifier("CH6");
+        deviceChannel48.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice70.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice70.setIdentifier("");
+        deviceChoice70.setLabelString("TRIG MODE :");
+        deviceChoice70.setOffsetNid(158);
+        deviceChoice70.setUpdateIdentifier("");
+        jPanel95.add(deviceChoice70);
+
+        deviceChoice71.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice71.setIdentifier("");
+        deviceChoice71.setLabelString("CYCLIC :");
+        deviceChoice71.setOffsetNid(160);
+        deviceChoice71.setUpdateIdentifier("");
+        jPanel95.add(deviceChoice71);
+
+        deviceField155.setIdentifier("");
+        deviceField155.setLabelString("EVENT :");
+        deviceField155.setOffsetNid(159);
+        deviceField155.setTextOnly(true);
+        jPanel95.add(deviceField155);
+
+        deviceChannel48.getContainer().add(jPanel95);
+
+        deviceChoice72.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice72.setIdentifier("");
+        deviceChoice72.setLabelString("LEVEL 1 :");
+        deviceChoice72.setOffsetNid(165);
+        deviceChoice72.setUpdateIdentifier("");
+        jPanel96.add(deviceChoice72);
 
         deviceChoice73.setChoiceItems(new String[] {"LOW", "HIGH"});
         deviceChoice73.setIdentifier("");
-        deviceChoice73.setLabelString("Init level 1:");
-        deviceChoice73.setOffsetNid(158);
+        deviceChoice73.setLabelString("LEVEL 2 :");
+        deviceChoice73.setOffsetNid(166);
         deviceChoice73.setUpdateIdentifier("");
-        jPanel86.add(deviceChoice73);
+        jPanel96.add(deviceChoice73);
 
-        deviceChoice74.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceField156.setIdentifier("");
+        deviceField156.setLabelString("DELAY :");
+        deviceField156.setOffsetNid(161);
+        jPanel96.add(deviceField156);
+
+        deviceChannel48.getContainer().add(jPanel96);
+
+        deviceField157.setIdentifier("");
+        deviceField157.setLabelString("DURATION :");
+        deviceField157.setOffsetNid(162);
+        jPanel97.add(deviceField157);
+
+        deviceField158.setIdentifier("");
+        deviceField158.setLabelString("TRIG TIME");
+        deviceField158.setOffsetNid(168);
+        jPanel97.add(deviceField158);
+
+        deviceChannel48.getContainer().add(jPanel97);
+
+        jPanel94.add(deviceChannel48, "PULSE");
+
+        deviceChannel49.setInSameLine(true);
+        deviceChannel49.setLabelString("");
+        deviceChannel49.setOffsetNid(156);
+        deviceChannel49.setShowState(false);
+        deviceChannel49.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel49.setUpdateIdentifier("CH6");
+        deviceChannel49.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField159.setIdentifier("");
+        deviceField159.setLabelString("FREQ 1 :");
+        deviceField159.setOffsetNid(163);
+        jPanel98.add(deviceField159);
+
+        deviceField160.setIdentifier("");
+        deviceField160.setLabelString("FREQ 2:");
+        deviceField160.setOffsetNid(164);
+        jPanel98.add(deviceField160);
+
+        deviceField161.setIdentifier("");
+        deviceField161.setLabelString("DUTY CYCLE :");
+        deviceField161.setOffsetNid(167);
+        jPanel98.add(deviceField161);
+
+        deviceChannel49.getContainer().add(jPanel98);
+
+        jPanel94.add(deviceChannel49, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel50.setInSameLine(true);
+        deviceChannel50.setLabelString("");
+        deviceChannel50.setOffsetNid(156);
+        deviceChannel50.setShowState(false);
+        deviceChannel50.setShowVal("GCLOCK");
+        deviceChannel50.setUpdateIdentifier("CH6");
+        deviceChannel50.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice74.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice74.setIdentifier("");
-        deviceChoice74.setLabelString("Init level 2:");
-        deviceChoice74.setOffsetNid(159);
+        deviceChoice74.setLabelString("TRIG MODE :");
+        deviceChoice74.setOffsetNid(158);
         deviceChoice74.setUpdateIdentifier("");
-        jPanel86.add(deviceChoice74);
+        jPanel99.add(deviceChoice74);
 
-        deviceField134.setIdentifier("");
-        deviceField134.setLabelString("Delay");
-        deviceField134.setOffsetNid(154);
-        jPanel86.add(deviceField134);
-
-        deviceChannel38.getContainer().add(jPanel86);
-
-        deviceField135.setIdentifier("");
-        deviceField135.setLabelString("Duration:");
-        deviceField135.setOffsetNid(155);
-        jPanel87.add(deviceField135);
-
-        deviceField136.setIdentifier("");
-        deviceField136.setLabelString("Trigger time:");
-        deviceField136.setOffsetNid(161);
-        jPanel87.add(deviceField136);
-
-        deviceChannel38.getContainer().add(jPanel87);
-
-        jPanel84.add(deviceChannel38, "PULSE");
-
-        deviceChannel39.setLabelString("");
-        deviceChannel39.setOffsetNid(149);
-        deviceChannel39.setShowState(false);
-        deviceChannel39.setShowVal("CLOCK");
-        deviceChannel39.setUpdateIdentifier("CH7");
-
-        deviceField137.setIdentifier("");
-        deviceField137.setLabelString("Frequency");
-        deviceField137.setOffsetNid(156);
-        deviceChannel39.getContainer().add(deviceField137);
-
-        deviceField138.setIdentifier("");
-        deviceField138.setLabelString("Duty cycle:");
-        deviceField138.setNumCols(4);
-        deviceField138.setOffsetNid(160);
-        deviceChannel39.getContainer().add(deviceField138);
-
-        jPanel84.add(deviceChannel39, "CLOCK");
-
-        deviceChannel40.setLabelString("");
-        deviceChannel40.setOffsetNid(149);
-        deviceChannel40.setShowState(false);
-        deviceChannel40.setShowVal("GCLOCK");
-        deviceChannel40.setUpdateIdentifier("CH7");
-        deviceChannel40.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice75.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice75.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice75.setIdentifier("");
-        deviceChoice75.setLabelString("Trigger mode:");
-        deviceChoice75.setOffsetNid(151);
+        deviceChoice75.setLabelString("CYCLIC :");
+        deviceChoice75.setOffsetNid(160);
         deviceChoice75.setUpdateIdentifier("");
-        jPanel88.add(deviceChoice75);
+        jPanel99.add(deviceChoice75);
 
-        deviceField139.setIdentifier("");
-        deviceField139.setLabelString("Delay:");
-        deviceField139.setOffsetNid(154);
-        jPanel88.add(deviceField139);
+        deviceField162.setIdentifier("");
+        deviceField162.setLabelString("EVENT :");
+        deviceField162.setOffsetNid(159);
+        deviceField162.setTextOnly(true);
+        jPanel99.add(deviceField162);
 
-        deviceChannel40.getContainer().add(jPanel88);
+        deviceChannel50.getContainer().add(jPanel99);
 
-        deviceField140.setIdentifier("");
-        deviceField140.setLabelString("Duration");
-        deviceField140.setOffsetNid(155);
-        jPanel89.add(deviceField140);
+        deviceField163.setIdentifier("");
+        deviceField163.setLabelString("FREQ :");
+        deviceField163.setOffsetNid(163);
+        jPanel100.add(deviceField163);
 
-        deviceField141.setIdentifier("");
-        deviceField141.setLabelString("Frequency");
-        deviceField141.setOffsetNid(156);
-        jPanel89.add(deviceField141);
+        deviceField164.setIdentifier("");
+        deviceField164.setLabelString("DUTY CYCLE :");
+        deviceField164.setOffsetNid(167);
+        jPanel100.add(deviceField164);
 
-        deviceField142.setIdentifier("");
-        deviceField142.setLabelString("Duty cycle:");
-        deviceField142.setNumCols(4);
-        deviceField142.setOffsetNid(160);
-        jPanel89.add(deviceField142);
+        deviceChannel50.getContainer().add(jPanel100);
 
-        deviceChannel40.getContainer().add(jPanel89);
+        deviceField165.setIdentifier("");
+        deviceField165.setLabelString("DELAY :");
+        deviceField165.setOffsetNid(161);
+        jPanel101.add(deviceField165);
 
-        deviceField143.setIdentifier("");
-        deviceField143.setLabelString("Event");
-        deviceField143.setNumCols(15);
-        deviceField143.setOffsetNid(152);
-        deviceField143.setTextOnly(true);
-        jPanel90.add(deviceField143);
+        deviceField166.setIdentifier("");
+        deviceField166.setLabelString("DURATION :");
+        deviceField166.setOffsetNid(162);
+        jPanel101.add(deviceField166);
 
-        deviceField144.setIdentifier("");
-        deviceField144.setLabelString("Trigger time:");
-        deviceField144.setOffsetNid(161);
-        jPanel90.add(deviceField144);
+        deviceField167.setIdentifier("");
+        deviceField167.setLabelString("TRIG TIME");
+        deviceField167.setOffsetNid(168);
+        jPanel101.add(deviceField167);
 
-        deviceChannel40.getContainer().add(jPanel90);
+        deviceChannel50.getContainer().add(jPanel101);
 
-        jPanel84.add(deviceChannel40, "GCLOCK");
+        jPanel94.add(deviceChannel50, "GCLOCK");
 
-        deviceChannel41.setLabelString("");
-        deviceChannel41.setOffsetNid(149);
-        deviceChannel41.setShowState(false);
-        deviceChannel41.setShowVal("DCLOCK");
-        deviceChannel41.setUpdateIdentifier("CH7");
-        deviceChannel41.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        deviceChannel51.setInSameLine(true);
+        deviceChannel51.setLabelString("");
+        deviceChannel51.setOffsetNid(156);
+        deviceChannel51.setShowState(false);
+        deviceChannel51.setShowVal("DCLOCK");
+        deviceChannel51.setUpdateIdentifier("CH6");
+        deviceChannel51.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
         deviceChoice76.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice76.setIdentifier("");
-        deviceChoice76.setLabelString("Trigger mode:");
-        deviceChoice76.setOffsetNid(151);
+        deviceChoice76.setLabelString("TRIG MODE :");
+        deviceChoice76.setOffsetNid(158);
         deviceChoice76.setUpdateIdentifier("");
-        jPanel91.add(deviceChoice76);
+        jPanel102.add(deviceChoice76);
 
-        deviceField145.setIdentifier("");
-        deviceField145.setLabelString("Delay:");
-        deviceField145.setOffsetNid(154);
-        jPanel91.add(deviceField145);
-
-        deviceField146.setIdentifier("");
-        deviceField146.setLabelString("Duration:");
-        deviceField146.setOffsetNid(155);
-        jPanel91.add(deviceField146);
-
-        deviceChannel41.getContainer().add(jPanel91);
-
-        deviceField147.setIdentifier("");
-        deviceField147.setLabelString("Freq. 1:");
-        deviceField147.setOffsetNid(156);
-        jPanel92.add(deviceField147);
-
-        deviceField148.setIdentifier("");
-        deviceField148.setLabelString("Freq. 2:");
-        deviceField148.setOffsetNid(157);
-        jPanel92.add(deviceField148);
-
-        deviceChannel41.getContainer().add(jPanel92);
-
-        deviceField149.setIdentifier("");
-        deviceField149.setLabelString("Event:");
-        deviceField149.setNumCols(15);
-        deviceField149.setOffsetNid(152);
-        deviceField149.setTextOnly(true);
-        jPanel93.add(deviceField149);
-
-        deviceField150.setIdentifier("");
-        deviceField150.setLabelString("Trigger time:");
-        deviceField150.setOffsetNid(161);
-        jPanel93.add(deviceField150);
-
-        deviceChannel41.getContainer().add(jPanel93);
-
-        jPanel84.add(deviceChannel41, "DCLOCK");
-
-        deviceChannel42.setLabelString("");
-        deviceChannel42.setOffsetNid(149);
-        deviceChannel42.setShowState(false);
-        deviceChannel42.setShowVal("ENCODER");
-        deviceChannel42.setUpdateIdentifier("CH7");
-        deviceChannel42.getContainer().setLayout(new java.awt.GridLayout(2, 0));
-
-        deviceField151.setIdentifier("");
-        deviceField151.setLabelString("Event:");
-        deviceField151.setOffsetNid(165);
-        deviceField151.setTextOnly(true);
-        jPanel94.add(deviceField151);
-
-        deviceChoice77.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice77.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice77.setIdentifier("");
-        deviceChoice77.setLabelString("Termination:");
-        deviceChoice77.setOffsetNid(167);
+        deviceChoice77.setLabelString("CYCLIC :");
+        deviceChoice77.setOffsetNid(160);
         deviceChoice77.setUpdateIdentifier("");
-        jPanel94.add(deviceChoice77);
+        jPanel102.add(deviceChoice77);
 
-        deviceChoice78.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceField168.setIdentifier("");
+        deviceField168.setLabelString("EVENT :");
+        deviceField168.setOffsetNid(159);
+        deviceField168.setTextOnly(true);
+        jPanel102.add(deviceField168);
+
+        deviceChannel51.getContainer().add(jPanel102);
+
+        deviceField169.setIdentifier("");
+        deviceField169.setLabelString("FREQ 1 :");
+        deviceField169.setOffsetNid(163);
+        jPanel103.add(deviceField169);
+
+        deviceField170.setIdentifier("");
+        deviceField170.setLabelString("FREQ 2 :");
+        deviceField170.setOffsetNid(164);
+        jPanel103.add(deviceField170);
+
+        deviceField171.setIdentifier("");
+        deviceField171.setLabelString("DUTY CYCLE :");
+        deviceField171.setOffsetNid(167);
+        jPanel103.add(deviceField171);
+
+        deviceChannel51.getContainer().add(jPanel103);
+
+        deviceField172.setIdentifier("");
+        deviceField172.setLabelString("DELAY :");
+        deviceField172.setOffsetNid(161);
+        jPanel104.add(deviceField172);
+
+        deviceField173.setIdentifier("");
+        deviceField173.setLabelString("DURATION :");
+        deviceField173.setOffsetNid(162);
+        jPanel104.add(deviceField173);
+
+        deviceField174.setIdentifier("");
+        deviceField174.setLabelString("TRIG TIME");
+        deviceField174.setOffsetNid(168);
+        jPanel104.add(deviceField174);
+
+        deviceChannel51.getContainer().add(jPanel104);
+
+        jPanel94.add(deviceChannel51, "DCLOCK");
+
+        deviceChannel52.setInSameLine(true);
+        deviceChannel52.setLabelString("");
+        deviceChannel52.setOffsetNid(156);
+        deviceChannel52.setShowState(false);
+        deviceChannel52.setShowVal("ENCODER");
+        deviceChannel52.setUpdateIdentifier("CH6");
+        deviceChannel52.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel105.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel105.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel53.setInSameLine(true);
+        deviceChannel53.setLabelString("");
+        deviceChannel53.setOffsetNid(173);
+        deviceChannel53.setShowVal("");
+        deviceChannel53.setUpdateIdentifier("");
+        deviceChannel53.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField175.setIdentifier("");
+        deviceField175.setLabelString("NAME :");
+        deviceField175.setOffsetNid(174);
+        deviceField175.setTextOnly(true);
+        jPanel106.add(deviceField175);
+
+        deviceField176.setIdentifier("");
+        deviceField176.setLabelString("CODE :");
+        deviceField176.setOffsetNid(175);
+        jPanel106.add(deviceField176);
+
+        deviceField177.setIdentifier("");
+        deviceField177.setLabelString("TIME :");
+        deviceField177.setOffsetNid(176);
+        jPanel106.add(deviceField177);
+
+        deviceChoice78.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice78.setIdentifier("");
-        deviceChoice78.setLabelString("EDGE");
-        deviceChoice78.setOffsetNid(169);
+        deviceChoice78.setLabelString("TERMINATION :");
+        deviceChoice78.setOffsetNid(177);
         deviceChoice78.setUpdateIdentifier("");
-        jPanel94.add(deviceChoice78);
+        jPanel106.add(deviceChoice78);
 
-        deviceChannel42.getContainer().add(jPanel94);
-
-        deviceField152.setIdentifier("");
-        deviceField152.setLabelString("Event:");
-        deviceField152.setOffsetNid(166);
-        deviceField152.setTextOnly(true);
-        jPanel95.add(deviceField152);
-
-        deviceChoice79.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice79.setChoiceItems(new String[] {"FALLING", "RISING"});
         deviceChoice79.setIdentifier("");
-        deviceChoice79.setLabelString("Termination:");
-        deviceChoice79.setOffsetNid(168);
+        deviceChoice79.setLabelString("EDGE :");
+        deviceChoice79.setOffsetNid(178);
         deviceChoice79.setUpdateIdentifier("");
-        jPanel95.add(deviceChoice79);
+        jPanel106.add(deviceChoice79);
 
-        deviceChoice80.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceChannel53.getContainer().add(jPanel106, java.awt.BorderLayout.CENTER);
+
+        jPanel105.add(deviceChannel53, java.awt.BorderLayout.CENTER);
+
+        deviceChannel52.getContainer().add(jPanel105);
+
+        jPanel107.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel107.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel54.setInSameLine(true);
+        deviceChannel54.setLabelString("");
+        deviceChannel54.setOffsetNid(179);
+        deviceChannel54.setShowVal("");
+        deviceChannel54.setUpdateIdentifier("");
+        deviceChannel54.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField178.setIdentifier("");
+        deviceField178.setLabelString("NAME :");
+        deviceField178.setOffsetNid(180);
+        deviceField178.setTextOnly(true);
+        jPanel108.add(deviceField178);
+
+        deviceField179.setIdentifier("");
+        deviceField179.setLabelString("CODE :");
+        deviceField179.setOffsetNid(181);
+        jPanel108.add(deviceField179);
+
+        deviceField180.setIdentifier("");
+        deviceField180.setLabelString("TIME :");
+        deviceField180.setOffsetNid(182);
+        jPanel108.add(deviceField180);
+
+        deviceChoice80.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice80.setIdentifier("");
-        deviceChoice80.setLabelString("EDGE");
-        deviceChoice80.setOffsetNid(170);
+        deviceChoice80.setLabelString("TERMINATION :");
+        deviceChoice80.setOffsetNid(183);
         deviceChoice80.setUpdateIdentifier("");
-        jPanel95.add(deviceChoice80);
+        jPanel108.add(deviceChoice80);
 
-        deviceChannel42.getContainer().add(jPanel95);
-
-        jPanel84.add(deviceChannel42, "ENCODER");
-
-        deviceChannel37.getContainer().add(jPanel84, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("CH7", deviceChannel37);
-
-        deviceChannel43.setInSameLine(true);
-        deviceChannel43.setLabelString("On:");
-        deviceChannel43.setOffsetNid(172);
-        deviceChannel43.setShowVal("");
-        deviceChannel43.setUpdateIdentifier("");
-        deviceChannel43.getContainer().setLayout(new java.awt.BorderLayout());
-
-        deviceChoice81.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER"});
+        deviceChoice81.setChoiceItems(new String[] {"FALLING", "RISING"});
         deviceChoice81.setIdentifier("");
-        deviceChoice81.setLabelString("Function:");
-        deviceChoice81.setOffsetNid(173);
-        deviceChoice81.setUpdateIdentifier("CH8");
-        jPanel96.add(deviceChoice81);
+        deviceChoice81.setLabelString("EDGE :");
+        deviceChoice81.setOffsetNid(184);
+        deviceChoice81.setUpdateIdentifier("");
+        jPanel108.add(deviceChoice81);
 
-        deviceField153.setIdentifier("");
-        deviceField153.setLabelString("Comment:");
-        deviceField153.setNumCols(20);
-        deviceField153.setOffsetNid(194);
-        deviceField153.setTextOnly(true);
-        jPanel96.add(deviceField153);
+        deviceChannel54.getContainer().add(jPanel108, java.awt.BorderLayout.CENTER);
 
-        deviceChannel43.getContainer().add(jPanel96, java.awt.BorderLayout.NORTH);
+        jPanel107.add(deviceChannel54, java.awt.BorderLayout.CENTER);
 
-        jPanel97.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel97.setLayout(new java.awt.CardLayout());
+        deviceChannel52.getContainer().add(jPanel107);
 
-        deviceChannel44.setLabelString("");
-        deviceChannel44.setOffsetNid(172);
-        deviceChannel44.setShowState(false);
-        deviceChannel44.setShowVal("PULSE");
-        deviceChannel44.setUpdateIdentifier("CH8");
-        deviceChannel44.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        jPanel94.add(deviceChannel52, "ENCODER");
 
-        deviceChoice82.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChannel55.setInSameLine(true);
+        deviceChannel55.setLabelString("");
+        deviceChannel55.setOffsetNid(156);
+        deviceChannel55.setShowState(false);
+        deviceChannel55.setShowVal("CLOCK");
+        deviceChannel55.setUpdateIdentifier("CH6");
+        deviceChannel55.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField181.setIdentifier("");
+        deviceField181.setLabelString("FREQ :");
+        deviceField181.setOffsetNid(163);
+        jPanel109.add(deviceField181);
+
+        deviceField182.setIdentifier("");
+        deviceField182.setLabelString("DUTY CYCLE :");
+        deviceField182.setOffsetNid(167);
+        jPanel109.add(deviceField182);
+
+        deviceChannel55.getContainer().add(jPanel109);
+
+        jPanel94.add(deviceChannel55, "CLOCK");
+
+        deviceChannel47.getContainer().add(jPanel94, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH6", deviceChannel47);
+
+        deviceChannel56.setLabelString("");
+        deviceChannel56.setOffsetNid(185);
+        deviceChannel56.setShowVal("");
+        deviceChannel56.setUpdateIdentifier("");
+        deviceChannel56.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice82.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
         deviceChoice82.setIdentifier("");
-        deviceChoice82.setLabelString("Trig. Mode");
-        deviceChoice82.setOffsetNid(174);
-        deviceChoice82.setUpdateIdentifier("");
-        jPanel98.add(deviceChoice82);
+        deviceChoice82.setLabelString("FUNCTION :");
+        deviceChoice82.setOffsetNid(186);
+        deviceChoice82.setUpdateIdentifier("CH7");
+        jPanel110.add(deviceChoice82);
 
-        deviceChoice83.setChoiceItems(new String[] {"YES", "NO"});
+        deviceField183.setIdentifier("");
+        deviceField183.setLabelString("COMMENT :");
+        deviceField183.setNumCols(25);
+        deviceField183.setOffsetNid(201);
+        deviceField183.setTextOnly(true);
+        jPanel110.add(deviceField183);
+
+        deviceChannel56.getContainer().add(jPanel110, java.awt.BorderLayout.NORTH);
+
+        jPanel111.setLayout(new java.awt.CardLayout());
+
+        deviceChannel57.setInSameLine(true);
+        deviceChannel57.setLabelString("");
+        deviceChannel57.setOffsetNid(185);
+        deviceChannel57.setShowState(false);
+        deviceChannel57.setShowVal("PULSE");
+        deviceChannel57.setUpdateIdentifier("CH7");
+        deviceChannel57.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice83.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice83.setIdentifier("");
-        deviceChoice83.setLabelString("Cyclic:");
-        deviceChoice83.setOffsetNid(176);
+        deviceChoice83.setLabelString("TRIG MODE :");
+        deviceChoice83.setOffsetNid(187);
         deviceChoice83.setUpdateIdentifier("");
-        jPanel98.add(deviceChoice83);
+        jPanel112.add(deviceChoice83);
 
-        deviceField154.setIdentifier("");
-        deviceField154.setLabelString("Event:");
-        deviceField154.setOffsetNid(175);
-        deviceField154.setTextOnly(true);
-        jPanel98.add(deviceField154);
-
-        deviceChannel44.getContainer().add(jPanel98);
-
-        deviceChoice84.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice84.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice84.setIdentifier("");
-        deviceChoice84.setLabelString("Init level 1:");
-        deviceChoice84.setOffsetNid(181);
+        deviceChoice84.setLabelString("CYCLIC :");
+        deviceChoice84.setOffsetNid(189);
         deviceChoice84.setUpdateIdentifier("");
-        jPanel99.add(deviceChoice84);
+        jPanel112.add(deviceChoice84);
+
+        deviceField184.setIdentifier("");
+        deviceField184.setLabelString("EVENT :");
+        deviceField184.setOffsetNid(188);
+        deviceField184.setTextOnly(true);
+        jPanel112.add(deviceField184);
+
+        deviceChannel57.getContainer().add(jPanel112);
 
         deviceChoice85.setChoiceItems(new String[] {"LOW", "HIGH"});
         deviceChoice85.setIdentifier("");
-        deviceChoice85.setLabelString("Init level 2:");
-        deviceChoice85.setOffsetNid(182);
+        deviceChoice85.setLabelString("LEVEL 1 :");
+        deviceChoice85.setOffsetNid(194);
         deviceChoice85.setUpdateIdentifier("");
-        jPanel99.add(deviceChoice85);
+        jPanel113.add(deviceChoice85);
 
-        deviceField155.setIdentifier("");
-        deviceField155.setLabelString("Delay");
-        deviceField155.setOffsetNid(177);
-        jPanel99.add(deviceField155);
-
-        deviceChannel44.getContainer().add(jPanel99);
-
-        deviceField156.setIdentifier("");
-        deviceField156.setLabelString("Duration:");
-        deviceField156.setOffsetNid(178);
-        jPanel100.add(deviceField156);
-
-        deviceField157.setIdentifier("");
-        deviceField157.setLabelString("Trigger time:");
-        deviceField157.setOffsetNid(184);
-        jPanel100.add(deviceField157);
-
-        deviceChannel44.getContainer().add(jPanel100);
-
-        jPanel97.add(deviceChannel44, "PULSE");
-
-        deviceChannel45.setLabelString("");
-        deviceChannel45.setOffsetNid(172);
-        deviceChannel45.setShowState(false);
-        deviceChannel45.setShowVal("CLOCK");
-        deviceChannel45.setUpdateIdentifier("CH8");
-
-        deviceField158.setIdentifier("");
-        deviceField158.setLabelString("Frequency");
-        deviceField158.setOffsetNid(179);
-        deviceChannel45.getContainer().add(deviceField158);
-
-        deviceField159.setIdentifier("");
-        deviceField159.setLabelString("Duty cycle:");
-        deviceField159.setNumCols(4);
-        deviceField159.setOffsetNid(183);
-        deviceChannel45.getContainer().add(deviceField159);
-
-        jPanel97.add(deviceChannel45, "CLOCK");
-
-        deviceChannel46.setLabelString("");
-        deviceChannel46.setOffsetNid(172);
-        deviceChannel46.setShowState(false);
-        deviceChannel46.setShowVal("GCLOCK");
-        deviceChannel46.setUpdateIdentifier("CH8");
-        deviceChannel46.getContainer().setLayout(new java.awt.GridLayout(3, 0));
-
-        deviceChoice86.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice86.setChoiceItems(new String[] {"LOW", "HIGH"});
         deviceChoice86.setIdentifier("");
-        deviceChoice86.setLabelString("Trigger mode:");
-        deviceChoice86.setOffsetNid(174);
+        deviceChoice86.setLabelString("LEVEL 2 :");
+        deviceChoice86.setOffsetNid(195);
         deviceChoice86.setUpdateIdentifier("");
-        jPanel101.add(deviceChoice86);
+        jPanel113.add(deviceChoice86);
 
-        deviceField160.setIdentifier("");
-        deviceField160.setLabelString("Delay:");
-        deviceField160.setOffsetNid(177);
-        jPanel101.add(deviceField160);
+        deviceField185.setIdentifier("");
+        deviceField185.setLabelString("DELAY :");
+        deviceField185.setOffsetNid(190);
+        jPanel113.add(deviceField185);
 
-        deviceChannel46.getContainer().add(jPanel101);
+        deviceChannel57.getContainer().add(jPanel113);
 
-        deviceField161.setIdentifier("");
-        deviceField161.setLabelString("Duration");
-        deviceField161.setOffsetNid(178);
-        jPanel102.add(deviceField161);
+        deviceField186.setIdentifier("");
+        deviceField186.setLabelString("DURATION :");
+        deviceField186.setOffsetNid(191);
+        jPanel114.add(deviceField186);
 
-        deviceField162.setIdentifier("");
-        deviceField162.setLabelString("Frequency");
-        deviceField162.setOffsetNid(179);
-        jPanel102.add(deviceField162);
+        deviceField187.setIdentifier("");
+        deviceField187.setLabelString("TRIG TIME");
+        deviceField187.setOffsetNid(197);
+        jPanel114.add(deviceField187);
 
-        deviceField163.setIdentifier("");
-        deviceField163.setLabelString("Duty cycle:");
-        deviceField163.setNumCols(4);
-        deviceField163.setOffsetNid(183);
-        jPanel102.add(deviceField163);
+        deviceChannel57.getContainer().add(jPanel114);
 
-        deviceChannel46.getContainer().add(jPanel102);
+        jPanel111.add(deviceChannel57, "PULSE");
 
-        deviceField164.setIdentifier("");
-        deviceField164.setLabelString("Event");
-        deviceField164.setNumCols(15);
-        deviceField164.setOffsetNid(175);
-        deviceField164.setTextOnly(true);
-        jPanel103.add(deviceField164);
+        deviceChannel58.setInSameLine(true);
+        deviceChannel58.setLabelString("");
+        deviceChannel58.setOffsetNid(185);
+        deviceChannel58.setShowState(false);
+        deviceChannel58.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel58.setUpdateIdentifier("CH7");
+        deviceChannel58.getContainer().setLayout(new java.awt.GridLayout(1, 0));
 
-        deviceField165.setIdentifier("");
-        deviceField165.setLabelString("Trigger time:");
-        deviceField165.setOffsetNid(184);
-        jPanel103.add(deviceField165);
+        deviceField188.setIdentifier("");
+        deviceField188.setLabelString("FREQ 1 :");
+        deviceField188.setOffsetNid(192);
+        jPanel115.add(deviceField188);
 
-        deviceChannel46.getContainer().add(jPanel103);
+        deviceField189.setIdentifier("");
+        deviceField189.setLabelString("FREQ 2:");
+        deviceField189.setOffsetNid(193);
+        jPanel115.add(deviceField189);
 
-        jPanel97.add(deviceChannel46, "GCLOCK");
+        deviceField190.setIdentifier("");
+        deviceField190.setLabelString("DUTY CYCLE :");
+        deviceField190.setOffsetNid(196);
+        jPanel115.add(deviceField190);
 
-        deviceChannel47.setLabelString("");
-        deviceChannel47.setOffsetNid(172);
-        deviceChannel47.setShowState(false);
-        deviceChannel47.setShowVal("DCLOCK");
-        deviceChannel47.setUpdateIdentifier("CH8");
-        deviceChannel47.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+        deviceChannel58.getContainer().add(jPanel115);
+
+        jPanel111.add(deviceChannel58, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel59.setInSameLine(true);
+        deviceChannel59.setLabelString("");
+        deviceChannel59.setOffsetNid(185);
+        deviceChannel59.setShowState(false);
+        deviceChannel59.setShowVal("GCLOCK");
+        deviceChannel59.setUpdateIdentifier("CH7");
+        deviceChannel59.getContainer().setLayout(new java.awt.GridLayout(3, 0));
 
         deviceChoice87.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice87.setIdentifier("");
-        deviceChoice87.setLabelString("Trigger mode:");
-        deviceChoice87.setOffsetNid(174);
+        deviceChoice87.setLabelString("TRIG MODE :");
+        deviceChoice87.setOffsetNid(187);
         deviceChoice87.setUpdateIdentifier("");
-        jPanel104.add(deviceChoice87);
+        jPanel116.add(deviceChoice87);
 
-        deviceField166.setIdentifier("");
-        deviceField166.setLabelString("Delay:");
-        deviceField166.setOffsetNid(177);
-        jPanel104.add(deviceField166);
-
-        deviceField167.setIdentifier("");
-        deviceField167.setLabelString("Duration:");
-        deviceField167.setOffsetNid(178);
-        jPanel104.add(deviceField167);
-
-        deviceChannel47.getContainer().add(jPanel104);
-
-        deviceField168.setIdentifier("");
-        deviceField168.setLabelString("Freq. 1:");
-        deviceField168.setOffsetNid(179);
-        jPanel105.add(deviceField168);
-
-        deviceField169.setIdentifier("");
-        deviceField169.setLabelString("Freq. 2:");
-        deviceField169.setOffsetNid(180);
-        jPanel105.add(deviceField169);
-
-        deviceChannel47.getContainer().add(jPanel105);
-
-        deviceField170.setIdentifier("");
-        deviceField170.setLabelString("Event:");
-        deviceField170.setNumCols(15);
-        deviceField170.setOffsetNid(175);
-        deviceField170.setTextOnly(true);
-        jPanel106.add(deviceField170);
-
-        deviceField171.setIdentifier("");
-        deviceField171.setLabelString("Trigger time:");
-        deviceField171.setOffsetNid(184);
-        jPanel106.add(deviceField171);
-
-        deviceChannel47.getContainer().add(jPanel106);
-
-        jPanel97.add(deviceChannel47, "DCLOCK");
-
-        deviceChannel48.setLabelString("");
-        deviceChannel48.setOffsetNid(172);
-        deviceChannel48.setShowState(false);
-        deviceChannel48.setShowVal("ENCODER");
-        deviceChannel48.setUpdateIdentifier("CH8");
-        deviceChannel48.getContainer().setLayout(new java.awt.GridLayout(2, 0));
-
-        deviceField172.setIdentifier("");
-        deviceField172.setLabelString("Event:");
-        deviceField172.setOffsetNid(188);
-        deviceField172.setTextOnly(true);
-        jPanel107.add(deviceField172);
-
-        deviceChoice88.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice88.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice88.setIdentifier("");
-        deviceChoice88.setLabelString("Termination:");
-        deviceChoice88.setOffsetNid(190);
+        deviceChoice88.setLabelString("CYCLIC :");
+        deviceChoice88.setOffsetNid(189);
         deviceChoice88.setUpdateIdentifier("");
-        jPanel107.add(deviceChoice88);
+        jPanel116.add(deviceChoice88);
 
-        deviceChoice89.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceField191.setIdentifier("");
+        deviceField191.setLabelString("EVENT :");
+        deviceField191.setOffsetNid(188);
+        deviceField191.setTextOnly(true);
+        jPanel116.add(deviceField191);
+
+        deviceChannel59.getContainer().add(jPanel116);
+
+        deviceField192.setIdentifier("");
+        deviceField192.setLabelString("FREQ :");
+        deviceField192.setOffsetNid(192);
+        jPanel117.add(deviceField192);
+
+        deviceField193.setIdentifier("");
+        deviceField193.setLabelString("DUTY CYCLE :");
+        deviceField193.setOffsetNid(196);
+        jPanel117.add(deviceField193);
+
+        deviceChannel59.getContainer().add(jPanel117);
+
+        deviceField194.setIdentifier("");
+        deviceField194.setLabelString("DELAY :");
+        deviceField194.setOffsetNid(190);
+        jPanel118.add(deviceField194);
+
+        deviceField195.setIdentifier("");
+        deviceField195.setLabelString("DURATION :");
+        deviceField195.setOffsetNid(191);
+        jPanel118.add(deviceField195);
+
+        deviceField196.setIdentifier("");
+        deviceField196.setLabelString("TRIG TIME");
+        deviceField196.setOffsetNid(197);
+        jPanel118.add(deviceField196);
+
+        deviceChannel59.getContainer().add(jPanel118);
+
+        jPanel111.add(deviceChannel59, "GCLOCK");
+
+        deviceChannel60.setInSameLine(true);
+        deviceChannel60.setLabelString("");
+        deviceChannel60.setOffsetNid(185);
+        deviceChannel60.setShowState(false);
+        deviceChannel60.setShowVal("DCLOCK");
+        deviceChannel60.setUpdateIdentifier("CH7");
+        deviceChannel60.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice89.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
         deviceChoice89.setIdentifier("");
-        deviceChoice89.setLabelString("EDGE");
-        deviceChoice89.setOffsetNid(192);
+        deviceChoice89.setLabelString("TRIG MODE :");
+        deviceChoice89.setOffsetNid(187);
         deviceChoice89.setUpdateIdentifier("");
-        jPanel107.add(deviceChoice89);
+        jPanel119.add(deviceChoice89);
 
-        deviceChannel48.getContainer().add(jPanel107);
-
-        deviceField173.setIdentifier("");
-        deviceField173.setLabelString("Event:");
-        deviceField173.setOffsetNid(189);
-        deviceField173.setTextOnly(true);
-        jPanel108.add(deviceField173);
-
-        deviceChoice90.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice90.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice90.setIdentifier("");
-        deviceChoice90.setLabelString("Termination:");
-        deviceChoice90.setOffsetNid(191);
+        deviceChoice90.setLabelString("CYCLIC :");
+        deviceChoice90.setOffsetNid(189);
         deviceChoice90.setUpdateIdentifier("");
-        jPanel108.add(deviceChoice90);
+        jPanel119.add(deviceChoice90);
 
-        deviceChoice91.setChoiceItems(new String[] {"RISING", "FALLING"});
+        deviceField197.setIdentifier("");
+        deviceField197.setLabelString("EVENT :");
+        deviceField197.setOffsetNid(188);
+        deviceField197.setTextOnly(true);
+        jPanel119.add(deviceField197);
+
+        deviceChannel60.getContainer().add(jPanel119);
+
+        deviceField198.setIdentifier("");
+        deviceField198.setLabelString("FREQ 1 :");
+        deviceField198.setOffsetNid(192);
+        jPanel120.add(deviceField198);
+
+        deviceField199.setIdentifier("");
+        deviceField199.setLabelString("FREQ 2 :");
+        deviceField199.setOffsetNid(193);
+        jPanel120.add(deviceField199);
+
+        deviceField200.setIdentifier("");
+        deviceField200.setLabelString("DUTY CYCLE :");
+        deviceField200.setOffsetNid(196);
+        jPanel120.add(deviceField200);
+
+        deviceChannel60.getContainer().add(jPanel120);
+
+        deviceField201.setIdentifier("");
+        deviceField201.setLabelString("DELAY :");
+        deviceField201.setOffsetNid(190);
+        jPanel121.add(deviceField201);
+
+        deviceField202.setIdentifier("");
+        deviceField202.setLabelString("DURATION :");
+        deviceField202.setOffsetNid(191);
+        jPanel121.add(deviceField202);
+
+        deviceField203.setIdentifier("");
+        deviceField203.setLabelString("TRIG TIME");
+        deviceField203.setOffsetNid(197);
+        jPanel121.add(deviceField203);
+
+        deviceChannel60.getContainer().add(jPanel121);
+
+        jPanel111.add(deviceChannel60, "DCLOCK");
+
+        deviceChannel61.setInSameLine(true);
+        deviceChannel61.setLabelString("");
+        deviceChannel61.setOffsetNid(185);
+        deviceChannel61.setShowState(false);
+        deviceChannel61.setShowVal("ENCODER");
+        deviceChannel61.setUpdateIdentifier("CH7");
+        deviceChannel61.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel122.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel122.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel62.setInSameLine(true);
+        deviceChannel62.setLabelString("");
+        deviceChannel62.setOffsetNid(202);
+        deviceChannel62.setShowVal("");
+        deviceChannel62.setUpdateIdentifier("");
+        deviceChannel62.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField204.setIdentifier("");
+        deviceField204.setLabelString("NAME :");
+        deviceField204.setOffsetNid(203);
+        deviceField204.setTextOnly(true);
+        jPanel123.add(deviceField204);
+
+        deviceField205.setIdentifier("");
+        deviceField205.setLabelString("CODE :");
+        deviceField205.setOffsetNid(204);
+        jPanel123.add(deviceField205);
+
+        deviceField206.setIdentifier("");
+        deviceField206.setLabelString("TIME :");
+        deviceField206.setOffsetNid(205);
+        jPanel123.add(deviceField206);
+
+        deviceChoice91.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice91.setIdentifier("");
-        deviceChoice91.setLabelString("EDGE");
-        deviceChoice91.setOffsetNid(193);
+        deviceChoice91.setLabelString("TERMINATION :");
+        deviceChoice91.setOffsetNid(206);
         deviceChoice91.setUpdateIdentifier("");
-        jPanel108.add(deviceChoice91);
+        jPanel123.add(deviceChoice91);
 
-        deviceChannel48.getContainer().add(jPanel108);
+        deviceChoice92.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice92.setIdentifier("");
+        deviceChoice92.setLabelString("EDGE :");
+        deviceChoice92.setOffsetNid(207);
+        deviceChoice92.setUpdateIdentifier("");
+        jPanel123.add(deviceChoice92);
 
-        jPanel97.add(deviceChannel48, "ENCODER");
+        deviceChannel62.getContainer().add(jPanel123, java.awt.BorderLayout.CENTER);
 
-        deviceChannel43.getContainer().add(jPanel97, java.awt.BorderLayout.CENTER);
+        jPanel122.add(deviceChannel62, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("CH8", deviceChannel43);
+        deviceChannel61.getContainer().add(jPanel122);
+
+        jPanel124.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel124.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel63.setInSameLine(true);
+        deviceChannel63.setLabelString("");
+        deviceChannel63.setOffsetNid(208);
+        deviceChannel63.setShowVal("");
+        deviceChannel63.setUpdateIdentifier("");
+        deviceChannel63.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField207.setIdentifier("");
+        deviceField207.setLabelString("NAME :");
+        deviceField207.setOffsetNid(209);
+        deviceField207.setTextOnly(true);
+        jPanel125.add(deviceField207);
+
+        deviceField208.setIdentifier("");
+        deviceField208.setLabelString("CODE :");
+        deviceField208.setOffsetNid(210);
+        jPanel125.add(deviceField208);
+
+        deviceField209.setIdentifier("");
+        deviceField209.setLabelString("TIME :");
+        deviceField209.setOffsetNid(211);
+        jPanel125.add(deviceField209);
+
+        deviceChoice93.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice93.setIdentifier("");
+        deviceChoice93.setLabelString("TERMINATION :");
+        deviceChoice93.setOffsetNid(212);
+        deviceChoice93.setUpdateIdentifier("");
+        jPanel125.add(deviceChoice93);
+
+        deviceChoice94.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice94.setIdentifier("");
+        deviceChoice94.setLabelString("EDGE :");
+        deviceChoice94.setOffsetNid(213);
+        deviceChoice94.setUpdateIdentifier("");
+        jPanel125.add(deviceChoice94);
+
+        deviceChannel63.getContainer().add(jPanel125, java.awt.BorderLayout.CENTER);
+
+        jPanel124.add(deviceChannel63, java.awt.BorderLayout.CENTER);
+
+        deviceChannel61.getContainer().add(jPanel124);
+
+        jPanel111.add(deviceChannel61, "ENCODER");
+
+        deviceChannel64.setInSameLine(true);
+        deviceChannel64.setLabelString("");
+        deviceChannel64.setOffsetNid(185);
+        deviceChannel64.setShowState(false);
+        deviceChannel64.setShowVal("CLOCK");
+        deviceChannel64.setUpdateIdentifier("CH7");
+        deviceChannel64.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField210.setIdentifier("");
+        deviceField210.setLabelString("FREQ :");
+        deviceField210.setOffsetNid(192);
+        jPanel126.add(deviceField210);
+
+        deviceField211.setIdentifier("");
+        deviceField211.setLabelString("DUTY CYCLE :");
+        deviceField211.setOffsetNid(196);
+        jPanel126.add(deviceField211);
+
+        deviceChannel64.getContainer().add(jPanel126);
+
+        jPanel111.add(deviceChannel64, "CLOCK");
+
+        deviceChannel56.getContainer().add(jPanel111, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH7", deviceChannel56);
+
+        deviceChannel65.setLabelString("");
+        deviceChannel65.setOffsetNid(214);
+        deviceChannel65.setShowVal("");
+        deviceChannel65.setUpdateIdentifier("");
+        deviceChannel65.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceChoice95.setChoiceItems(new String[] {"PULSE", "CLOCK", "GCLOCK", "DCLOCK", "ENCODER", "CLOCK SOURCE + CLOCK"});
+        deviceChoice95.setIdentifier("");
+        deviceChoice95.setLabelString("FUNCTION :");
+        deviceChoice95.setOffsetNid(215);
+        deviceChoice95.setUpdateIdentifier("CH8");
+        jPanel127.add(deviceChoice95);
+
+        deviceField212.setIdentifier("");
+        deviceField212.setLabelString("COMMENT :");
+        deviceField212.setNumCols(25);
+        deviceField212.setOffsetNid(230);
+        deviceField212.setTextOnly(true);
+        jPanel127.add(deviceField212);
+
+        deviceChannel65.getContainer().add(jPanel127, java.awt.BorderLayout.NORTH);
+
+        jPanel128.setLayout(new java.awt.CardLayout());
+
+        deviceChannel66.setInSameLine(true);
+        deviceChannel66.setLabelString("");
+        deviceChannel66.setOffsetNid(214);
+        deviceChannel66.setShowState(false);
+        deviceChannel66.setShowVal("PULSE");
+        deviceChannel66.setUpdateIdentifier("CH8");
+        deviceChannel66.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice96.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice96.setIdentifier("");
+        deviceChoice96.setLabelString("TRIG MODE :");
+        deviceChoice96.setOffsetNid(216);
+        deviceChoice96.setUpdateIdentifier("");
+        jPanel129.add(deviceChoice96);
+
+        deviceChoice97.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice97.setIdentifier("");
+        deviceChoice97.setLabelString("CYCLIC :");
+        deviceChoice97.setOffsetNid(218);
+        deviceChoice97.setUpdateIdentifier("");
+        jPanel129.add(deviceChoice97);
+
+        deviceField213.setIdentifier("");
+        deviceField213.setLabelString("EVENT :");
+        deviceField213.setOffsetNid(217);
+        deviceField213.setTextOnly(true);
+        jPanel129.add(deviceField213);
+
+        deviceChannel66.getContainer().add(jPanel129);
+
+        deviceChoice98.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice98.setIdentifier("");
+        deviceChoice98.setLabelString("LEVEL 1 :");
+        deviceChoice98.setOffsetNid(223);
+        deviceChoice98.setUpdateIdentifier("");
+        jPanel130.add(deviceChoice98);
+
+        deviceChoice99.setChoiceItems(new String[] {"LOW", "HIGH"});
+        deviceChoice99.setIdentifier("");
+        deviceChoice99.setLabelString("LEVEL 2 :");
+        deviceChoice99.setOffsetNid(224);
+        deviceChoice99.setUpdateIdentifier("");
+        jPanel130.add(deviceChoice99);
+
+        deviceField214.setIdentifier("");
+        deviceField214.setLabelString("DELAY :");
+        deviceField214.setOffsetNid(219);
+        jPanel130.add(deviceField214);
+
+        deviceChannel66.getContainer().add(jPanel130);
+
+        deviceField215.setIdentifier("");
+        deviceField215.setLabelString("DURATION :");
+        deviceField215.setOffsetNid(220);
+        jPanel131.add(deviceField215);
+
+        deviceField216.setIdentifier("");
+        deviceField216.setLabelString("TRIG TIME");
+        deviceField216.setOffsetNid(226);
+        jPanel131.add(deviceField216);
+
+        deviceChannel66.getContainer().add(jPanel131);
+
+        jPanel128.add(deviceChannel66, "PULSE");
+
+        deviceChannel67.setInSameLine(true);
+        deviceChannel67.setLabelString("");
+        deviceChannel67.setOffsetNid(214);
+        deviceChannel67.setShowState(false);
+        deviceChannel67.setShowVal("CLOCK SOURCE + CLOCK");
+        deviceChannel67.setUpdateIdentifier("CH8");
+        deviceChannel67.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField217.setIdentifier("");
+        deviceField217.setLabelString("FREQ 1 :");
+        deviceField217.setOffsetNid(221);
+        jPanel132.add(deviceField217);
+
+        deviceField218.setIdentifier("");
+        deviceField218.setLabelString("FREQ 2:");
+        deviceField218.setOffsetNid(222);
+        jPanel132.add(deviceField218);
+
+        deviceField219.setIdentifier("");
+        deviceField219.setLabelString("DUTY CYCLE :");
+        deviceField219.setOffsetNid(225);
+        jPanel132.add(deviceField219);
+
+        deviceChannel67.getContainer().add(jPanel132);
+
+        jPanel128.add(deviceChannel67, "CLOCK SOURCE + CLOCK");
+
+        deviceChannel68.setInSameLine(true);
+        deviceChannel68.setLabelString("");
+        deviceChannel68.setOffsetNid(214);
+        deviceChannel68.setShowState(false);
+        deviceChannel68.setShowVal("GCLOCK");
+        deviceChannel68.setUpdateIdentifier("CH8");
+        deviceChannel68.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice100.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice100.setIdentifier("");
+        deviceChoice100.setLabelString("TRIG MODE :");
+        deviceChoice100.setOffsetNid(216);
+        deviceChoice100.setUpdateIdentifier("");
+        jPanel133.add(deviceChoice100);
+
+        deviceChoice101.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice101.setIdentifier("");
+        deviceChoice101.setLabelString("CYCLIC :");
+        deviceChoice101.setOffsetNid(218);
+        deviceChoice101.setUpdateIdentifier("");
+        jPanel133.add(deviceChoice101);
+
+        deviceField220.setIdentifier("");
+        deviceField220.setLabelString("EVENT :");
+        deviceField220.setOffsetNid(217);
+        deviceField220.setTextOnly(true);
+        jPanel133.add(deviceField220);
+
+        deviceChannel68.getContainer().add(jPanel133);
+
+        deviceField221.setIdentifier("");
+        deviceField221.setLabelString("FREQ :");
+        deviceField221.setOffsetNid(221);
+        jPanel134.add(deviceField221);
+
+        deviceField222.setIdentifier("");
+        deviceField222.setLabelString("DUTY CYCLE :");
+        deviceField222.setOffsetNid(225);
+        jPanel134.add(deviceField222);
+
+        deviceChannel68.getContainer().add(jPanel134);
+
+        deviceField223.setIdentifier("");
+        deviceField223.setLabelString("DELAY :");
+        deviceField223.setOffsetNid(219);
+        jPanel135.add(deviceField223);
+
+        deviceField224.setIdentifier("");
+        deviceField224.setLabelString("DURATION :");
+        deviceField224.setOffsetNid(220);
+        jPanel135.add(deviceField224);
+
+        deviceField225.setIdentifier("");
+        deviceField225.setLabelString("TRIG TIME");
+        deviceField225.setOffsetNid(226);
+        jPanel135.add(deviceField225);
+
+        deviceChannel68.getContainer().add(jPanel135);
+
+        jPanel128.add(deviceChannel68, "GCLOCK");
+
+        deviceChannel69.setInSameLine(true);
+        deviceChannel69.setLabelString("");
+        deviceChannel69.setOffsetNid(214);
+        deviceChannel69.setShowState(false);
+        deviceChannel69.setShowVal("DCLOCK");
+        deviceChannel69.setUpdateIdentifier("CH8");
+        deviceChannel69.getContainer().setLayout(new java.awt.GridLayout(3, 0));
+
+        deviceChoice102.setChoiceItems(new String[] {"EVENT", "RISING EDGE", "FALLING EDGE", "SOFTWARE"});
+        deviceChoice102.setIdentifier("");
+        deviceChoice102.setLabelString("TRIG MODE :");
+        deviceChoice102.setOffsetNid(216);
+        deviceChoice102.setUpdateIdentifier("");
+        jPanel136.add(deviceChoice102);
+
+        deviceChoice103.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice103.setIdentifier("");
+        deviceChoice103.setLabelString("CYCLIC :");
+        deviceChoice103.setOffsetNid(218);
+        deviceChoice103.setUpdateIdentifier("");
+        jPanel136.add(deviceChoice103);
+
+        deviceField226.setIdentifier("");
+        deviceField226.setLabelString("EVENT :");
+        deviceField226.setOffsetNid(217);
+        deviceField226.setTextOnly(true);
+        jPanel136.add(deviceField226);
+
+        deviceChannel69.getContainer().add(jPanel136);
+
+        deviceField227.setIdentifier("");
+        deviceField227.setLabelString("FREQ 1 :");
+        deviceField227.setOffsetNid(221);
+        jPanel137.add(deviceField227);
+
+        deviceField228.setIdentifier("");
+        deviceField228.setLabelString("FREQ 2 :");
+        deviceField228.setOffsetNid(222);
+        jPanel137.add(deviceField228);
+
+        deviceField229.setIdentifier("");
+        deviceField229.setLabelString("DUTY CYCLE :");
+        deviceField229.setOffsetNid(225);
+        jPanel137.add(deviceField229);
+
+        deviceChannel69.getContainer().add(jPanel137);
+
+        deviceField230.setIdentifier("");
+        deviceField230.setLabelString("DELAY :");
+        deviceField230.setOffsetNid(219);
+        jPanel138.add(deviceField230);
+
+        deviceField231.setIdentifier("");
+        deviceField231.setLabelString("DURATION :");
+        deviceField231.setOffsetNid(220);
+        jPanel138.add(deviceField231);
+
+        deviceField232.setIdentifier("");
+        deviceField232.setLabelString("TRIG TIME");
+        deviceField232.setOffsetNid(226);
+        jPanel138.add(deviceField232);
+
+        deviceChannel69.getContainer().add(jPanel138);
+
+        jPanel128.add(deviceChannel69, "DCLOCK");
+
+        deviceChannel70.setInSameLine(true);
+        deviceChannel70.setLabelString("");
+        deviceChannel70.setOffsetNid(214);
+        deviceChannel70.setShowState(false);
+        deviceChannel70.setShowVal("ENCODER");
+        deviceChannel70.setUpdateIdentifier("CH8");
+        deviceChannel70.getContainer().setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel139.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
+        jPanel139.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel71.setInSameLine(true);
+        deviceChannel71.setLabelString("");
+        deviceChannel71.setOffsetNid(231);
+        deviceChannel71.setShowVal("");
+        deviceChannel71.setUpdateIdentifier("");
+        deviceChannel71.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField233.setIdentifier("");
+        deviceField233.setLabelString("NAME :");
+        deviceField233.setOffsetNid(232);
+        deviceField233.setTextOnly(true);
+        jPanel140.add(deviceField233);
+
+        deviceField234.setIdentifier("");
+        deviceField234.setLabelString("CODE :");
+        deviceField234.setOffsetNid(233);
+        jPanel140.add(deviceField234);
+
+        deviceField235.setIdentifier("");
+        deviceField235.setLabelString("TIME :");
+        deviceField235.setOffsetNid(234);
+        jPanel140.add(deviceField235);
+
+        deviceChoice104.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice104.setIdentifier("");
+        deviceChoice104.setLabelString("TERMINATION :");
+        deviceChoice104.setOffsetNid(235);
+        deviceChoice104.setUpdateIdentifier("");
+        jPanel140.add(deviceChoice104);
+
+        deviceChoice105.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice105.setIdentifier("");
+        deviceChoice105.setLabelString("EDGE :");
+        deviceChoice105.setOffsetNid(236);
+        deviceChoice105.setUpdateIdentifier("");
+        jPanel140.add(deviceChoice105);
+
+        deviceChannel71.getContainer().add(jPanel140, java.awt.BorderLayout.CENTER);
+
+        jPanel139.add(deviceChannel71, java.awt.BorderLayout.CENTER);
+
+        deviceChannel70.getContainer().add(jPanel139);
+
+        jPanel141.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel141.setLayout(new java.awt.BorderLayout());
+
+        deviceChannel72.setInSameLine(true);
+        deviceChannel72.setLabelString("");
+        deviceChannel72.setOffsetNid(237);
+        deviceChannel72.setShowVal("");
+        deviceChannel72.setUpdateIdentifier("");
+        deviceChannel72.getContainer().setLayout(new java.awt.BorderLayout());
+
+        deviceField236.setIdentifier("");
+        deviceField236.setLabelString("NAME :");
+        deviceField236.setOffsetNid(238);
+        deviceField236.setTextOnly(true);
+        jPanel142.add(deviceField236);
+
+        deviceField237.setIdentifier("");
+        deviceField237.setLabelString("CODE :");
+        deviceField237.setOffsetNid(239);
+        jPanel142.add(deviceField237);
+
+        deviceField238.setIdentifier("");
+        deviceField238.setLabelString("TIME :");
+        deviceField238.setOffsetNid(240);
+        jPanel142.add(deviceField238);
+
+        deviceChoice106.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice106.setIdentifier("");
+        deviceChoice106.setLabelString("TERMINATION :");
+        deviceChoice106.setOffsetNid(241);
+        deviceChoice106.setUpdateIdentifier("");
+        jPanel142.add(deviceChoice106);
+
+        deviceChoice107.setChoiceItems(new String[] {"FALLING", "RISING"});
+        deviceChoice107.setIdentifier("");
+        deviceChoice107.setLabelString("EDGE :");
+        deviceChoice107.setOffsetNid(242);
+        deviceChoice107.setUpdateIdentifier("");
+        jPanel142.add(deviceChoice107);
+
+        deviceChannel72.getContainer().add(jPanel142, java.awt.BorderLayout.CENTER);
+
+        jPanel141.add(deviceChannel72, java.awt.BorderLayout.CENTER);
+
+        deviceChannel70.getContainer().add(jPanel141);
+
+        jPanel128.add(deviceChannel70, "ENCODER");
+
+        deviceChannel73.setInSameLine(true);
+        deviceChannel73.setLabelString("");
+        deviceChannel73.setOffsetNid(214);
+        deviceChannel73.setShowState(false);
+        deviceChannel73.setShowVal("CLOCK");
+        deviceChannel73.setUpdateIdentifier("CH8");
+        deviceChannel73.getContainer().setLayout(new java.awt.GridLayout(1, 0));
+
+        deviceField239.setIdentifier("");
+        deviceField239.setLabelString("FREQ :");
+        deviceField239.setOffsetNid(221);
+        jPanel143.add(deviceField239);
+
+        deviceField240.setIdentifier("");
+        deviceField240.setLabelString("DUTY CYCLE :");
+        deviceField240.setOffsetNid(225);
+        jPanel143.add(deviceField240);
+
+        deviceChannel73.getContainer().add(jPanel143);
+
+        jPanel128.add(deviceChannel73, "CLOCK");
+
+        deviceChannel65.getContainer().add(jPanel128, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("CH8", deviceChannel65);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
+        deviceButtons1.setCheckExpressions(new String[] {});
+        deviceButtons1.setCheckMessages(new String[] {});
         deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE", "RESET"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);        
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -2778,13 +3722,46 @@ public class DIO4Setup extends DeviceSetup {
     private DeviceChannel deviceChannel46;
     private DeviceChannel deviceChannel47;
     private DeviceChannel deviceChannel48;
+    private DeviceChannel deviceChannel49;
     private DeviceChannel deviceChannel5;
+    private DeviceChannel deviceChannel50;
+    private DeviceChannel deviceChannel51;
+    private DeviceChannel deviceChannel52;
+    private DeviceChannel deviceChannel53;
+    private DeviceChannel deviceChannel54;
+    private DeviceChannel deviceChannel55;
+    private DeviceChannel deviceChannel56;
+    private DeviceChannel deviceChannel57;
+    private DeviceChannel deviceChannel58;
+    private DeviceChannel deviceChannel59;
     private DeviceChannel deviceChannel6;
+    private DeviceChannel deviceChannel60;
+    private DeviceChannel deviceChannel61;
+    private DeviceChannel deviceChannel62;
+    private DeviceChannel deviceChannel63;
+    private DeviceChannel deviceChannel64;
+    private DeviceChannel deviceChannel65;
+    private DeviceChannel deviceChannel66;
+    private DeviceChannel deviceChannel67;
+    private DeviceChannel deviceChannel68;
+    private DeviceChannel deviceChannel69;
     private DeviceChannel deviceChannel7;
+    private DeviceChannel deviceChannel70;
+    private DeviceChannel deviceChannel71;
+    private DeviceChannel deviceChannel72;
+    private DeviceChannel deviceChannel73;
     private DeviceChannel deviceChannel8;
     private DeviceChannel deviceChannel9;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice10;
+    private DeviceChoice deviceChoice100;
+    private DeviceChoice deviceChoice101;
+    private DeviceChoice deviceChoice102;
+    private DeviceChoice deviceChoice103;
+    private DeviceChoice deviceChoice104;
+    private DeviceChoice deviceChoice105;
+    private DeviceChoice deviceChoice106;
+    private DeviceChoice deviceChoice107;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
     private DeviceChoice deviceChoice13;
@@ -2805,7 +3782,6 @@ public class DIO4Setup extends DeviceSetup {
     private DeviceChoice deviceChoice27;
     private DeviceChoice deviceChoice28;
     private DeviceChoice deviceChoice29;
-    private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice30;
     private DeviceChoice deviceChoice31;
     private DeviceChoice deviceChoice32;
@@ -2874,6 +3850,14 @@ public class DIO4Setup extends DeviceSetup {
     private DeviceChoice deviceChoice9;
     private DeviceChoice deviceChoice90;
     private DeviceChoice deviceChoice91;
+    private DeviceChoice deviceChoice92;
+    private DeviceChoice deviceChoice93;
+    private DeviceChoice deviceChoice94;
+    private DeviceChoice deviceChoice95;
+    private DeviceChoice deviceChoice96;
+    private DeviceChoice deviceChoice97;
+    private DeviceChoice deviceChoice98;
+    private DeviceChoice deviceChoice99;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -2958,14 +3942,81 @@ public class DIO4Setup extends DeviceSetup {
     private DeviceField deviceField171;
     private DeviceField deviceField172;
     private DeviceField deviceField173;
+    private DeviceField deviceField174;
+    private DeviceField deviceField175;
+    private DeviceField deviceField176;
+    private DeviceField deviceField177;
+    private DeviceField deviceField178;
+    private DeviceField deviceField179;
     private DeviceField deviceField18;
+    private DeviceField deviceField180;
+    private DeviceField deviceField181;
+    private DeviceField deviceField182;
+    private DeviceField deviceField183;
+    private DeviceField deviceField184;
+    private DeviceField deviceField185;
+    private DeviceField deviceField186;
+    private DeviceField deviceField187;
+    private DeviceField deviceField188;
+    private DeviceField deviceField189;
     private DeviceField deviceField19;
+    private DeviceField deviceField190;
+    private DeviceField deviceField191;
+    private DeviceField deviceField192;
+    private DeviceField deviceField193;
+    private DeviceField deviceField194;
+    private DeviceField deviceField195;
+    private DeviceField deviceField196;
+    private DeviceField deviceField197;
+    private DeviceField deviceField198;
+    private DeviceField deviceField199;
     private DeviceField deviceField2;
     private DeviceField deviceField20;
+    private DeviceField deviceField200;
+    private DeviceField deviceField201;
+    private DeviceField deviceField202;
+    private DeviceField deviceField203;
+    private DeviceField deviceField204;
+    private DeviceField deviceField205;
+    private DeviceField deviceField206;
+    private DeviceField deviceField207;
+    private DeviceField deviceField208;
+    private DeviceField deviceField209;
     private DeviceField deviceField21;
+    private DeviceField deviceField210;
+    private DeviceField deviceField211;
+    private DeviceField deviceField212;
+    private DeviceField deviceField213;
+    private DeviceField deviceField214;
+    private DeviceField deviceField215;
+    private DeviceField deviceField216;
+    private DeviceField deviceField217;
+    private DeviceField deviceField218;
+    private DeviceField deviceField219;
     private DeviceField deviceField22;
+    private DeviceField deviceField220;
+    private DeviceField deviceField221;
+    private DeviceField deviceField222;
+    private DeviceField deviceField223;
+    private DeviceField deviceField224;
+    private DeviceField deviceField225;
+    private DeviceField deviceField226;
+    private DeviceField deviceField227;
+    private DeviceField deviceField228;
+    private DeviceField deviceField229;
     private DeviceField deviceField23;
+    private DeviceField deviceField230;
+    private DeviceField deviceField231;
+    private DeviceField deviceField232;
+    private DeviceField deviceField233;
+    private DeviceField deviceField234;
+    private DeviceField deviceField235;
+    private DeviceField deviceField236;
+    private DeviceField deviceField237;
+    private DeviceField deviceField238;
+    private DeviceField deviceField239;
     private DeviceField deviceField24;
+    private DeviceField deviceField240;
     private DeviceField deviceField25;
     private DeviceField deviceField26;
     private DeviceField deviceField27;
@@ -3059,10 +4110,45 @@ public class DIO4Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel106;
     private javax.swing.JPanel jPanel107;
     private javax.swing.JPanel jPanel108;
+    private javax.swing.JPanel jPanel109;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel110;
+    private javax.swing.JPanel jPanel111;
+    private javax.swing.JPanel jPanel112;
+    private javax.swing.JPanel jPanel113;
+    private javax.swing.JPanel jPanel114;
+    private javax.swing.JPanel jPanel115;
+    private javax.swing.JPanel jPanel116;
+    private javax.swing.JPanel jPanel117;
+    private javax.swing.JPanel jPanel118;
+    private javax.swing.JPanel jPanel119;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel120;
+    private javax.swing.JPanel jPanel121;
+    private javax.swing.JPanel jPanel122;
+    private javax.swing.JPanel jPanel123;
+    private javax.swing.JPanel jPanel124;
+    private javax.swing.JPanel jPanel125;
+    private javax.swing.JPanel jPanel126;
+    private javax.swing.JPanel jPanel127;
+    private javax.swing.JPanel jPanel128;
+    private javax.swing.JPanel jPanel129;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel130;
+    private javax.swing.JPanel jPanel131;
+    private javax.swing.JPanel jPanel132;
+    private javax.swing.JPanel jPanel133;
+    private javax.swing.JPanel jPanel134;
+    private javax.swing.JPanel jPanel135;
+    private javax.swing.JPanel jPanel136;
+    private javax.swing.JPanel jPanel137;
+    private javax.swing.JPanel jPanel138;
+    private javax.swing.JPanel jPanel139;
     private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel140;
+    private javax.swing.JPanel jPanel141;
+    private javax.swing.JPanel jPanel142;
+    private javax.swing.JPanel jPanel143;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -3157,8 +4243,6 @@ public class DIO4Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel98;
     private javax.swing.JPanel jPanel99;
     private javax.swing.JTabbedPane jTabbedPane1;
-    
-    
     // End of variables declaration//GEN-END:variables
 
 }

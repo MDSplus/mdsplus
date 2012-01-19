@@ -1,4 +1,4 @@
-public fun DIO4HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch_event)
+public fun DIO4HWStartChan(in _nid, in _board_id, in _chan_mask, in _synch)
 {
 write(*, 'DIO4HWStartChan');
 /* Initialize Library if the first time */
@@ -27,8 +27,11 @@ write(*, 'DIO4HWStartChan');
 		return(0);
 	}
 
+
+
 /*Start Channels if no synch event */
-	if((size(_synch_event) == 1) && (_synch_event[0] == -1)) /*if _synch_event == [-1] */
+if(_synch == "NO")
+
 	{
 		_status = DIO4->DIO4_Cmd_TimingChannelStart(val(_handle), val(byte(_chan_mask)));
 		if(_status != 0)
@@ -40,6 +43,8 @@ write(*, 'DIO4HWStartChan');
 			return(0);
 		}
 	}
+
+
 	
 /* Close device */
 	DIO4->DIO4_Close(val(_handle));

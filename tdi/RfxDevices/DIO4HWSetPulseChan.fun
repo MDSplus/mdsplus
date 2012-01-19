@@ -20,9 +20,10 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	private _DIO4_EC_GENERAL_TRIGGER = 0x00;
 
 
-
+write(*, 'DIO4HWSetPulseChan');
 _s = size(_event);
-write(*, '_event', _event);
+write(*, '_event: ', _event);
+write(*, 'event size: ', _s);
 
 /* Initialize Library if the first time */
     if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
@@ -120,6 +121,7 @@ write(*, '_event', _event);
 	
 	if(_trig_mode == 0)
 	{
+		write(*, 'EVENT');
 		_status = 1;
 		for(_i = 0; _i < size(_event); _i++)
 		{
@@ -135,6 +137,7 @@ write(*, '_event', _event);
 			{
 			    _found = 1;
 			    _ev_chan = _ev_chan | (1 << _channel);
+				write(*, '_ev: ', _ev);
 			    _status = DIO4->DIO4_EC_SetEventDecoder(val(_handle), val(byte(_ev)), val(byte(_event[_i])),
 				val(byte(_ev_chan)), val(byte(_DIO4_EC_GENERAL_TRIGGER))); 
 			}
