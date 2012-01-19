@@ -110,7 +110,8 @@ class ZELOS2150GV(Device):
           if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
               self.kappaLib.kappaSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frameBuffer, frame8bit);
 
-          self.idx = self.idx + 1
+          if status == 0:
+              self.idx = self.idx + 1
 
         #endwhile
         self.kappaLib.kappaCloseTcpConnection(byref(tcpStreamHandle))
@@ -217,13 +218,14 @@ class ZELOS2150GV(Device):
         zelosHandles.remove(self.handle)
       except:
         print 'ERROR TRYING TO REMOVE INFO'
-      return
+      returnS
 
 
 ##########init############################################################################    
     def init(self,arg):
       global kappaLib
       self.restoreInfo()
+      self.frames.setCompressOnPut(False)	
       try: 
        # kappaLib.kappaBaseSetup(self.handle, c_int(0), c_int(0))
 	kappaLib.kappaSetColorCoding(self.handle, c_int(6));  #Y14
