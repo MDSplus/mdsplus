@@ -241,6 +241,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Configure Outputs: channel i: output, channel i + 1 corresponding trigger */
+/*
 	for(_c = 0; _c < 8; _c++)
 	{
 
@@ -268,7 +269,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
-
+*/
 
 
 /* Close device */

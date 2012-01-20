@@ -44,14 +44,14 @@ class DIO4(Device):
         parts.append({'path':'.CHANNEL_%d.OUT_EV1:NAME'%(i+1), 'type':'text'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV1:CODE'%(i+1), 'type':'numeric'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV1:TIME'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d.OUT_EV1:TERM'%(i+1), 'type':'text', 'value':'ON'})
+        parts.append({'path':'.CHANNEL_%d.OUT_EV1:TERM'%(i+1), 'type':'text', 'value':'NO'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV1:EDGE'%(i+1), 'type':'text', 'value':'RISING'})
 
         parts.append({'path':'.CHANNEL_%d:OUT_EV2'%(i+1), 'type':'structure'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV2:NAME'%(i+1), 'type':'text'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV2:CODE'%(i+1), 'type':'numeric'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV2:TIME'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d.OUT_EV2:TERM'%(i+1), 'type':'text', 'value':'ON'})
+        parts.append({'path':'.CHANNEL_%d.OUT_EV2:TERM'%(i+1), 'type':'text', 'value':'NO'})
         parts.append({'path':'.CHANNEL_%d.OUT_EV2:EDGE'%(i+1), 'type':'text', 'value':'RISING'})
 
 
@@ -65,6 +65,14 @@ class DIO4(Device):
 
 
 
+    parts.append({'path':'.CHANNEL_1:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_2:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_3:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_4:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_5:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_6:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_7:TERM', 'type':'text', 'value':'NO'})
+    parts.append({'path':'.CHANNEL_8:TERM', 'type':'text', 'value':'NO'})
 
 
 
@@ -377,6 +385,7 @@ class DIO4(Device):
                 setattr(self,'out_ev_sw_code', evCode)
             else:
                 try:
+                    print 'LEGGO evCode'
                     evCode = getattr(self, 'out_ev_sw_code').data()
                 except:
                     evCode = 0
@@ -385,6 +394,7 @@ class DIO4(Device):
                 return 0
         
             try:
+                print 'LEGGO evTime'
                 evTime = getattr(self, 'out_ev_sw_time').data()
             except:
                 evTime = huge
@@ -392,7 +402,10 @@ class DIO4(Device):
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software channel')
                 return 0
             nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
-            status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
+            print 'NAME: ' + evName
+            print 'PATH: ' + nodePath
+            status = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
+            print 'FATTO'
             if status == -1:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
                 return 0
@@ -418,18 +431,23 @@ class DIO4(Device):
                         frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
                         print 'FREQ: ' + str(frequency)
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
+
+                        evTermDict = {'NO':0, 'YES':1}
+                        evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
+                        evTermCode = evTermDict[evTerm]
                     except:
                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock parameters for channel %d'%(c+1))
                         return 0
 
+
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO4HWSetClockChan(0, $1, $2, $3, $4)", $1,$2,$3,$4)', boardId, c, frequency, dutyCycle)
+                        status = Data.execute('MdsValue("DIO4HWSetClockChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4, $5)', boardId, c, frequency, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW clock setup. See CPCI console for details')
                             return 0
                     else:
-                        status = Data.execute("DIO4HWSetClockChan(0, $1, $2, $3, $4)", boardId, c, frequency, dutyCycle)
+                        status = Data.execute("DIO4HWSetClockChan(0, $1, $2, $3, $4, $5)", boardId, c, frequency, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW clock setup')
                             return 0
@@ -480,6 +498,10 @@ class DIO4(Device):
                         print duration
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         print delay
+                        evTermDict = {'NO':0, 'YES':1}
+                        evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
+                        evTermCode = evTermDict[evTerm]
+
 
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Pulse parameters for channel %d'%(c+1))
@@ -487,13 +509,13 @@ class DIO4(Device):
 
 
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO4HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute('MdsValue("DIO4HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9,$10)", $1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes), evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW pulse setup. See CPCI console for details')
                             return 0
                     else:
-                        status = Data.execute("DIO4HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute("DIO4HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes), evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW pulse setup')
                             return 0
@@ -553,18 +575,22 @@ class DIO4(Device):
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
                         cyclicDict = {'NO':0, 'YES':1}
                         cyclic = cyclicDict[getattr(self,'channel_%d_cyclic'%(c+1)).data()]
+                        evTermDict = {'NO':0, 'YES':1}
+                        evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
+                        evTermCode = evTermDict[evTerm]
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
                         return 0
 
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO4HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7, $8, $9)', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic)
+                        status = Data.execute('MdsValue("DIO4HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", $1,$2,$3,$4,$5,$6,$7, $8, $9, $10)', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic, evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
                             return 0
                     else:
-                        status = Data.execute("DIO4HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic)
+                        status = Data.execute("DIO4HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle, cyclic, evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW GClock setup')
                             return 0
@@ -624,18 +650,22 @@ class DIO4(Device):
                         freq2 = getattr(self,'channel_%d_freq_2'%(c+1)).data()
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
+                        evTermDict = {'NO':0, 'YES':1}
+                        evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
+                        evTermCode = evTermDict[evTerm]
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Dual Speed Clock parameters for channel %d'%(c+1))
                         return 0
 
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute('MdsValue("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
                             return 0
                     else:
-                        status = Data.execute("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW DClock setup')
                             return 0
@@ -743,17 +773,21 @@ class DIO4(Device):
                         freq1 = getattr(self,'channel_%d_freq_1'%(c+1)).data() # Frequenza del clock esterno
                         freq2 = getattr(self,'channel_%d_freq_2'%(c+1)).data() # Frequenza del clock da generare
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
+                        evTermDict = {'NO':0, 'YES':1}
+                        evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
+                        evTermCode = evTermDict[evTerm]
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid CLOCK SOURCE + CLOCK parameters for channel %d'%(c+1))
                         return 0
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, c, freq1, freq2, dutyCycle)
+                        status = Data.execute('MdsValue("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5, $6)", $1,$2,$3,$4,$5,$6)', boardId, c, freq1, freq2, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW clock setup. See CPCI console for details')
                             return 0
                     else:
-                        status = Data.execute("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5)", boardId, c, freq1, freq2, dutyCycle)
+                        status = Data.execute("DIO4HWSetExternalClockChan(0, $1, $2, $3, $4, $5, $6)", boardId, c, freq1, freq2, dutyCycle, evTermCode)
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW clock setup')
                             return 0

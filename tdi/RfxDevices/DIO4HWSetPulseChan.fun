@@ -1,5 +1,5 @@
 public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode, in _cyclic,
-		in _init_level_1, in _init_level_2, in _delay, in _duration, in _event)
+		in _init_level_1, in _init_level_2, in _delay, in _duration, in _event, in _evTermCode)
 {
 
 	private _DIO4_CLOCK_SOURCE_INTERNAL	=	0x0;
@@ -19,6 +19,27 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	private _DIO4_TC_SOURCE_IO = 0x01;
 	private _DIO4_EC_GENERAL_TRIGGER = 0x00;
 
+	private _DIO4_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
+	private _DIO4_CLOCK_SOURCE_INTERNAL	=	0x0;
+	private _DIO4_CLOCK_SOURCE_IO =	0x1;
+	private _DIO4_TH_ASYNCHRONOUS  =  0;
+	private _DIO4_TH_SYNCHRONOUS   =  1;
+	private _DIO4_TH_OUTPUT_DISABLE  = 0;
+	private _DIO4_TH_OUTPUT_ENABLE =  1;
+	private _DIO4_TH_INT_DISABLE = 0; 
+	private _DIO4_TH_INT_ENABLE =1;
+	private _DIO4_CLOCK_SOURCE_RISING_EDGE	=	0x0;
+	private _DIO4_ER_INT_DISABLE = 0x0;
+	private _DIO4_ER_INT_ENABLE = 0x1;
+	private _DIO4_EC_START_TRIGGER		=		0x01;
+	private _DIO4_EC_GENERAL_TRIGGER = 0x00;
+	private _DIO4_IO_SIDE_FRONT = 0x00;
+	private _DIO4_IO_SIDE_REAR = 0x01;
+	private _DIO4_IO_TERMINATION_ON = 0x01;
+	private _DIO4_IO_TERMINATION_OFF	= 0x00;
+	private _DIO4_IO_SOURCE_TIMING = 0x03;
+	private _DIO4_IO_INT_ENABLE =0x1;
+	private _DIO4_IO_INT_DISABLE= 0x0;
 
 write(*, 'DIO4HWSetPulseChan');
 _s = size(_event);
@@ -154,6 +175,37 @@ write(*, 'event size: ', _s);
 
 	}
 	
+
+
+		if(_evTermCode)
+		  _term = _DIO4_IO_TERMINATION_ON;
+		else
+		  _term = _DIO4_IO_TERMINATION_OFF;
+
+		_status = DIO4->DIO4_IO_SetIOConnectionOutput(val(_handle), val(byte(2 * _channel + 1)), 
+			val(byte(_DIO4_IO_SIDE_FRONT)), val(byte(_DIO4_IO_SOURCE_TIMING)),
+			val(byte(_channel + 1)), val(byte(_term)), 
+			val(byte(_DIO4_IO_INT_DISABLE))); 
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting output configuration in DIO4 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting output configuration  in DIO4 device, board ID = "// _board_id);
+			return(0);
+		}
+
+		_status = DIO4->DIO4_IO_SetIOConnectionInput(val(_handle), val(byte(2 * _channel + 2)),
+			val(byte(_DIO4_IO_SIDE_FRONT)), val(byte(_DIO4_IO_TERMINATION_OFF)));
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting input configuration in DIO4 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting input configuration  in DIO4 device, board ID = "// _board_id);
+			return(0);
+		}
+
 
 /* Close device */
 	DIO4->DIO4_Close(val(_handle));
