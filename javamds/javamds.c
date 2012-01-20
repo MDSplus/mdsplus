@@ -859,9 +859,12 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
    			strncpy(error_message, MdsGetMsg(status), 512);
 			return status;
 		}
-    	status = TdiData(&endXd, &endXd MDS_END_ARG);
+    		status = TdiData(&endXd, &endXd MDS_END_ARG);
 		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-		currEnd = *(float *)endXd.pointer->pointer;
+		if(endXd.pointer->length == sizeof(float))
+			currEnd = *(float *)endXd.pointer->pointer;
+		else
+			currEnd = *(double *)endXd.pointer->pointer;
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		if(currEnd >= startTime)
@@ -875,9 +878,12 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
    			strncpy(error_message, MdsGetMsg(status), 512);
 			return status;
 		}
-    	status = TdiData(&startXd, &startXd MDS_END_ARG);
+    		status = TdiData(&startXd, &startXd MDS_END_ARG);
 		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-		currEnd = *(float *)endXd.pointer->pointer;
+		if(endXd.pointer->length == sizeof(float))
+			currEnd = *(float *)endXd.pointer->pointer;
+		else
+			currEnd = *(double *)endXd.pointer->pointer;
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		if(currEnd >= endTime)
@@ -960,7 +966,10 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
     		if(status & 1) status = TdiFloat(&startXd, &startXd MDS_END_ARG);
 			if(!startXd.pointer)
 				return NULL;
-			farr[idx] = *(float *)startXd.pointer->pointer;
+			if(startXd.pointer->length == sizeof(float))
+				farr[idx] = *(float *)startXd.pointer->pointer;
+			else
+				farr[idx] = *(double *)startXd.pointer->pointer;
 			MdsFree1Dx(&startXd, 0);
 			MdsFree1Dx(&endXd, 0);
 		}
