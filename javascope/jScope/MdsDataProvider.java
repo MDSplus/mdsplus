@@ -70,10 +70,12 @@ public class MdsDataProvider
                 throw new IOException("Frames outside defined time window");
             for(endSegment = startSegment; endSegment < numSegments-1; endSegment++)
             {
-                float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
-                startTimes[endSegment] = limits[0];
-                if(limits[0] > timeMax)
-                    break;
+                try {
+                    float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
+                    startTimes[endSegment] = limits[0];
+                    if(limits[0] > timeMax)
+                        break;
+                }catch(Exception exc){break;}
             }
             actSegments = endSegment - startSegment;
 //Get Frame Dimension and frames per segment
