@@ -361,6 +361,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice113">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="247"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel12">
@@ -471,6 +485,20 @@
                             <Property name="offsetNid" type="int" value="22"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice114">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="247"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -535,6 +563,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="14"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice115">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="247"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -648,6 +690,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="14"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice116">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="247"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -952,6 +1008,20 @@
                             <Property name="offsetNid" type="int" value="22"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice117">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="247"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -1086,6 +1156,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice108">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="248"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel28">
@@ -1196,6 +1280,20 @@
                             <Property name="offsetNid" type="int" value="51"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice109">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="248"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -1260,6 +1358,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="43"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice110">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="248"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1373,6 +1485,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="43"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice111">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="248"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -1677,6 +1803,20 @@
                             <Property name="offsetNid" type="int" value="51"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice112">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="248"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -1811,6 +1951,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice118">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="249"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel45">
@@ -1921,6 +2075,20 @@
                             <Property name="offsetNid" type="int" value="80"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice119">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="249"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -1985,6 +2153,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="72"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice120">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="249"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -2098,6 +2280,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="72"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice121">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="249"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -2402,6 +2598,20 @@
                             <Property name="offsetNid" type="int" value="80"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice122">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="249"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -2536,6 +2746,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice123">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="250"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel62">
@@ -2646,6 +2870,20 @@
                             <Property name="offsetNid" type="int" value="109"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice124">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="250"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -2710,6 +2948,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="101"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice125">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="250"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -2823,6 +3075,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="101"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice126">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="250"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -3127,6 +3393,20 @@
                             <Property name="offsetNid" type="int" value="109"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice127">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="250"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -3261,6 +3541,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice128">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="251"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel79">
@@ -3371,6 +3665,20 @@
                             <Property name="offsetNid" type="int" value="138"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice129">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="251"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -3435,6 +3743,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="130"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice130">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="251"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -3548,6 +3870,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="130"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice131">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="251"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -3852,6 +4188,20 @@
                             <Property name="offsetNid" type="int" value="138"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice132">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="251"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -3986,6 +4336,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice133">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="252"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel96">
@@ -4096,6 +4460,20 @@
                             <Property name="offsetNid" type="int" value="167"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice134">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="252"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -4160,6 +4538,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="159"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice135">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="252"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -4273,6 +4665,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="159"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice136">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="252"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -4577,6 +4983,20 @@
                             <Property name="offsetNid" type="int" value="167"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice137">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="252"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -4711,6 +5131,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice138">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="253"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel113">
@@ -4821,6 +5255,20 @@
                             <Property name="offsetNid" type="int" value="196"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice139">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="253"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -4885,6 +5333,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="188"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice140">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="253"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -4998,6 +5460,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="188"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice141">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="253"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -5302,6 +5778,20 @@
                             <Property name="offsetNid" type="int" value="196"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice142">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="253"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -5436,6 +5926,20 @@
                             <Property name="textOnly" type="boolean" value="true"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice143">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="254"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel130">
@@ -5546,6 +6050,20 @@
                             <Property name="offsetNid" type="int" value="225"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceChoice" name="deviceChoice144">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="254"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                   </SubComponents>
@@ -5610,6 +6128,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="217"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice145">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="254"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -5723,6 +6255,20 @@
                             <Property name="labelString" type="java.lang.String" value="EVENT :"/>
                             <Property name="offsetNid" type="int" value="217"/>
                             <Property name="textOnly" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice146">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="254"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -6025,6 +6571,20 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="DUTY CYCLE :"/>
                             <Property name="offsetNid" type="int" value="225"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceChoice" name="deviceChoice147">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="NO"/>
+                                <StringItem index="1" value="YES"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TERMINATION :"/>
+                            <Property name="offsetNid" type="int" value="254"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>

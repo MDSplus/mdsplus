@@ -59,6 +59,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice5 = new DeviceChoice();
         deviceChoice6 = new DeviceChoice();
         deviceField4 = new DeviceField();
+        deviceChoice113 = new DeviceChoice();
         jPanel12 = new javax.swing.JPanel();
         deviceChoice4 = new DeviceChoice();
         deviceChoice8 = new DeviceChoice();
@@ -71,11 +72,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField37 = new DeviceField();
         deviceField2 = new DeviceField();
         deviceField11 = new DeviceField();
+        deviceChoice114 = new DeviceChoice();
         deviceChannel5 = new DeviceChannel();
         jPanel14 = new javax.swing.JPanel();
         deviceChoice9 = new DeviceChoice();
         deviceChoice10 = new DeviceChoice();
         deviceField16 = new DeviceField();
+        deviceChoice115 = new DeviceChoice();
         jPanel15 = new javax.swing.JPanel();
         deviceField17 = new DeviceField();
         deviceField20 = new DeviceField();
@@ -88,6 +91,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice11 = new DeviceChoice();
         deviceChoice12 = new DeviceChoice();
         deviceField22 = new DeviceField();
+        deviceChoice116 = new DeviceChoice();
         jPanel18 = new javax.swing.JPanel();
         deviceField23 = new DeviceField();
         deviceField28 = new DeviceField();
@@ -117,6 +121,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel24 = new javax.swing.JPanel();
         deviceField35 = new DeviceField();
         deviceField36 = new DeviceField();
+        deviceChoice117 = new DeviceChoice();
         deviceChannel11 = new DeviceChannel();
         jPanel25 = new javax.swing.JPanel();
         deviceChoice17 = new DeviceChoice();
@@ -127,6 +132,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice18 = new DeviceChoice();
         deviceChoice19 = new DeviceChoice();
         deviceField39 = new DeviceField();
+        deviceChoice108 = new DeviceChoice();
         jPanel28 = new javax.swing.JPanel();
         deviceChoice20 = new DeviceChoice();
         deviceChoice21 = new DeviceChoice();
@@ -139,11 +145,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField43 = new DeviceField();
         deviceField44 = new DeviceField();
         deviceField45 = new DeviceField();
+        deviceChoice109 = new DeviceChoice();
         deviceChannel14 = new DeviceChannel();
         jPanel31 = new javax.swing.JPanel();
         deviceChoice22 = new DeviceChoice();
         deviceChoice23 = new DeviceChoice();
         deviceField46 = new DeviceField();
+        deviceChoice110 = new DeviceChoice();
         jPanel32 = new javax.swing.JPanel();
         deviceField47 = new DeviceField();
         deviceField48 = new DeviceField();
@@ -156,6 +164,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice24 = new DeviceChoice();
         deviceChoice25 = new DeviceChoice();
         deviceField52 = new DeviceField();
+        deviceChoice111 = new DeviceChoice();
         jPanel35 = new javax.swing.JPanel();
         deviceField53 = new DeviceField();
         deviceField54 = new DeviceField();
@@ -185,6 +194,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel41 = new javax.swing.JPanel();
         deviceField65 = new DeviceField();
         deviceField66 = new DeviceField();
+        deviceChoice112 = new DeviceChoice();
         deviceChannel20 = new DeviceChannel();
         jPanel42 = new javax.swing.JPanel();
         deviceChoice30 = new DeviceChoice();
@@ -195,6 +205,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice31 = new DeviceChoice();
         deviceChoice32 = new DeviceChoice();
         deviceField68 = new DeviceField();
+        deviceChoice118 = new DeviceChoice();
         jPanel45 = new javax.swing.JPanel();
         deviceChoice33 = new DeviceChoice();
         deviceChoice34 = new DeviceChoice();
@@ -207,11 +218,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField72 = new DeviceField();
         deviceField73 = new DeviceField();
         deviceField74 = new DeviceField();
+        deviceChoice119 = new DeviceChoice();
         deviceChannel23 = new DeviceChannel();
         jPanel48 = new javax.swing.JPanel();
         deviceChoice35 = new DeviceChoice();
         deviceChoice36 = new DeviceChoice();
         deviceField75 = new DeviceField();
+        deviceChoice120 = new DeviceChoice();
         jPanel49 = new javax.swing.JPanel();
         deviceField76 = new DeviceField();
         deviceField77 = new DeviceField();
@@ -224,6 +237,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice37 = new DeviceChoice();
         deviceChoice38 = new DeviceChoice();
         deviceField81 = new DeviceField();
+        deviceChoice121 = new DeviceChoice();
         jPanel52 = new javax.swing.JPanel();
         deviceField82 = new DeviceField();
         deviceField83 = new DeviceField();
@@ -253,6 +267,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel58 = new javax.swing.JPanel();
         deviceField94 = new DeviceField();
         deviceField95 = new DeviceField();
+        deviceChoice122 = new DeviceChoice();
         deviceChannel29 = new DeviceChannel();
         jPanel59 = new javax.swing.JPanel();
         deviceChoice43 = new DeviceChoice();
@@ -263,6 +278,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice44 = new DeviceChoice();
         deviceChoice45 = new DeviceChoice();
         deviceField97 = new DeviceField();
+        deviceChoice123 = new DeviceChoice();
         jPanel62 = new javax.swing.JPanel();
         deviceChoice46 = new DeviceChoice();
         deviceChoice47 = new DeviceChoice();
@@ -275,11 +291,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField101 = new DeviceField();
         deviceField102 = new DeviceField();
         deviceField103 = new DeviceField();
+        deviceChoice124 = new DeviceChoice();
         deviceChannel32 = new DeviceChannel();
         jPanel65 = new javax.swing.JPanel();
         deviceChoice48 = new DeviceChoice();
         deviceChoice49 = new DeviceChoice();
         deviceField104 = new DeviceField();
+        deviceChoice125 = new DeviceChoice();
         jPanel66 = new javax.swing.JPanel();
         deviceField105 = new DeviceField();
         deviceField106 = new DeviceField();
@@ -292,6 +310,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice50 = new DeviceChoice();
         deviceChoice51 = new DeviceChoice();
         deviceField110 = new DeviceField();
+        deviceChoice126 = new DeviceChoice();
         jPanel69 = new javax.swing.JPanel();
         deviceField111 = new DeviceField();
         deviceField112 = new DeviceField();
@@ -321,6 +340,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel75 = new javax.swing.JPanel();
         deviceField123 = new DeviceField();
         deviceField124 = new DeviceField();
+        deviceChoice127 = new DeviceChoice();
         deviceChannel38 = new DeviceChannel();
         jPanel76 = new javax.swing.JPanel();
         deviceChoice56 = new DeviceChoice();
@@ -331,6 +351,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice57 = new DeviceChoice();
         deviceChoice58 = new DeviceChoice();
         deviceField126 = new DeviceField();
+        deviceChoice128 = new DeviceChoice();
         jPanel79 = new javax.swing.JPanel();
         deviceChoice59 = new DeviceChoice();
         deviceChoice60 = new DeviceChoice();
@@ -343,11 +364,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField130 = new DeviceField();
         deviceField131 = new DeviceField();
         deviceField132 = new DeviceField();
+        deviceChoice129 = new DeviceChoice();
         deviceChannel41 = new DeviceChannel();
         jPanel82 = new javax.swing.JPanel();
         deviceChoice61 = new DeviceChoice();
         deviceChoice62 = new DeviceChoice();
         deviceField133 = new DeviceField();
+        deviceChoice130 = new DeviceChoice();
         jPanel83 = new javax.swing.JPanel();
         deviceField134 = new DeviceField();
         deviceField135 = new DeviceField();
@@ -360,6 +383,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice63 = new DeviceChoice();
         deviceChoice64 = new DeviceChoice();
         deviceField139 = new DeviceField();
+        deviceChoice131 = new DeviceChoice();
         jPanel86 = new javax.swing.JPanel();
         deviceField140 = new DeviceField();
         deviceField141 = new DeviceField();
@@ -389,6 +413,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel92 = new javax.swing.JPanel();
         deviceField152 = new DeviceField();
         deviceField153 = new DeviceField();
+        deviceChoice132 = new DeviceChoice();
         deviceChannel47 = new DeviceChannel();
         jPanel93 = new javax.swing.JPanel();
         deviceChoice69 = new DeviceChoice();
@@ -399,6 +424,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice70 = new DeviceChoice();
         deviceChoice71 = new DeviceChoice();
         deviceField155 = new DeviceField();
+        deviceChoice133 = new DeviceChoice();
         jPanel96 = new javax.swing.JPanel();
         deviceChoice72 = new DeviceChoice();
         deviceChoice73 = new DeviceChoice();
@@ -411,11 +437,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField159 = new DeviceField();
         deviceField160 = new DeviceField();
         deviceField161 = new DeviceField();
+        deviceChoice134 = new DeviceChoice();
         deviceChannel50 = new DeviceChannel();
         jPanel99 = new javax.swing.JPanel();
         deviceChoice74 = new DeviceChoice();
         deviceChoice75 = new DeviceChoice();
         deviceField162 = new DeviceField();
+        deviceChoice135 = new DeviceChoice();
         jPanel100 = new javax.swing.JPanel();
         deviceField163 = new DeviceField();
         deviceField164 = new DeviceField();
@@ -428,6 +456,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice76 = new DeviceChoice();
         deviceChoice77 = new DeviceChoice();
         deviceField168 = new DeviceField();
+        deviceChoice136 = new DeviceChoice();
         jPanel103 = new javax.swing.JPanel();
         deviceField169 = new DeviceField();
         deviceField170 = new DeviceField();
@@ -457,6 +486,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel109 = new javax.swing.JPanel();
         deviceField181 = new DeviceField();
         deviceField182 = new DeviceField();
+        deviceChoice137 = new DeviceChoice();
         deviceChannel56 = new DeviceChannel();
         jPanel110 = new javax.swing.JPanel();
         deviceChoice82 = new DeviceChoice();
@@ -467,6 +497,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice83 = new DeviceChoice();
         deviceChoice84 = new DeviceChoice();
         deviceField184 = new DeviceField();
+        deviceChoice138 = new DeviceChoice();
         jPanel113 = new javax.swing.JPanel();
         deviceChoice85 = new DeviceChoice();
         deviceChoice86 = new DeviceChoice();
@@ -479,11 +510,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField188 = new DeviceField();
         deviceField189 = new DeviceField();
         deviceField190 = new DeviceField();
+        deviceChoice139 = new DeviceChoice();
         deviceChannel59 = new DeviceChannel();
         jPanel116 = new javax.swing.JPanel();
         deviceChoice87 = new DeviceChoice();
         deviceChoice88 = new DeviceChoice();
         deviceField191 = new DeviceField();
+        deviceChoice140 = new DeviceChoice();
         jPanel117 = new javax.swing.JPanel();
         deviceField192 = new DeviceField();
         deviceField193 = new DeviceField();
@@ -496,6 +529,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice89 = new DeviceChoice();
         deviceChoice90 = new DeviceChoice();
         deviceField197 = new DeviceField();
+        deviceChoice141 = new DeviceChoice();
         jPanel120 = new javax.swing.JPanel();
         deviceField198 = new DeviceField();
         deviceField199 = new DeviceField();
@@ -525,6 +559,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel126 = new javax.swing.JPanel();
         deviceField210 = new DeviceField();
         deviceField211 = new DeviceField();
+        deviceChoice142 = new DeviceChoice();
         deviceChannel65 = new DeviceChannel();
         jPanel127 = new javax.swing.JPanel();
         deviceChoice95 = new DeviceChoice();
@@ -535,6 +570,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice96 = new DeviceChoice();
         deviceChoice97 = new DeviceChoice();
         deviceField213 = new DeviceField();
+        deviceChoice143 = new DeviceChoice();
         jPanel130 = new javax.swing.JPanel();
         deviceChoice98 = new DeviceChoice();
         deviceChoice99 = new DeviceChoice();
@@ -547,11 +583,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField217 = new DeviceField();
         deviceField218 = new DeviceField();
         deviceField219 = new DeviceField();
+        deviceChoice144 = new DeviceChoice();
         deviceChannel68 = new DeviceChannel();
         jPanel133 = new javax.swing.JPanel();
         deviceChoice100 = new DeviceChoice();
         deviceChoice101 = new DeviceChoice();
         deviceField220 = new DeviceField();
+        deviceChoice145 = new DeviceChoice();
         jPanel134 = new javax.swing.JPanel();
         deviceField221 = new DeviceField();
         deviceField222 = new DeviceField();
@@ -564,6 +602,7 @@ public class DIO4Setup extends DeviceSetup {
         deviceChoice102 = new DeviceChoice();
         deviceChoice103 = new DeviceChoice();
         deviceField226 = new DeviceField();
+        deviceChoice146 = new DeviceChoice();
         jPanel137 = new javax.swing.JPanel();
         deviceField227 = new DeviceField();
         deviceField228 = new DeviceField();
@@ -593,6 +632,7 @@ public class DIO4Setup extends DeviceSetup {
         jPanel143 = new javax.swing.JPanel();
         deviceField239 = new DeviceField();
         deviceField240 = new DeviceField();
+        deviceChoice147 = new DeviceChoice();
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
@@ -752,6 +792,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField4.setTextOnly(true);
         jPanel10.add(deviceField4);
 
+        deviceChoice113.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice113.setIdentifier("");
+        deviceChoice113.setLabelString("TERMINATION :");
+        deviceChoice113.setOffsetNid(247);
+        deviceChoice113.setUpdateIdentifier("");
+        jPanel10.add(deviceChoice113);
+
         deviceChannel4.getContainer().add(jPanel10);
 
         deviceChoice4.setChoiceItems(new String[] {"LOW", "HIGH"});
@@ -812,6 +859,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField11.setOffsetNid(22);
         jPanel8.add(deviceField11);
 
+        deviceChoice114.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice114.setIdentifier("");
+        deviceChoice114.setLabelString("TERMINATION :");
+        deviceChoice114.setOffsetNid(247);
+        deviceChoice114.setUpdateIdentifier("");
+        jPanel8.add(deviceChoice114);
+
         deviceChannel3.getContainer().add(jPanel8);
 
         jPanel11.add(deviceChannel3, "CLOCK SOURCE + CLOCK");
@@ -843,6 +897,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField16.setOffsetNid(14);
         deviceField16.setTextOnly(true);
         jPanel14.add(deviceField16);
+
+        deviceChoice115.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice115.setIdentifier("");
+        deviceChoice115.setLabelString("TERMINATION :");
+        deviceChoice115.setOffsetNid(247);
+        deviceChoice115.setUpdateIdentifier("");
+        jPanel14.add(deviceChoice115);
 
         deviceChannel5.getContainer().add(jPanel14);
 
@@ -904,6 +965,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField22.setOffsetNid(14);
         deviceField22.setTextOnly(true);
         jPanel17.add(deviceField22);
+
+        deviceChoice116.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice116.setIdentifier("");
+        deviceChoice116.setLabelString("TERMINATION :");
+        deviceChoice116.setOffsetNid(247);
+        deviceChoice116.setUpdateIdentifier("");
+        jPanel17.add(deviceChoice116);
 
         deviceChannel6.getContainer().add(jPanel17);
 
@@ -1063,6 +1131,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField36.setOffsetNid(22);
         jPanel24.add(deviceField36);
 
+        deviceChoice117.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice117.setIdentifier("");
+        deviceChoice117.setLabelString("TERMINATION :");
+        deviceChoice117.setOffsetNid(247);
+        deviceChoice117.setUpdateIdentifier("");
+        jPanel24.add(deviceChoice117);
+
         deviceChannel10.getContainer().add(jPanel24);
 
         jPanel11.add(deviceChannel10, "CLOCK");
@@ -1122,6 +1197,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField39.setOffsetNid(43);
         deviceField39.setTextOnly(true);
         jPanel27.add(deviceField39);
+
+        deviceChoice108.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice108.setIdentifier("");
+        deviceChoice108.setLabelString("TERMINATION :");
+        deviceChoice108.setOffsetNid(248);
+        deviceChoice108.setUpdateIdentifier("");
+        jPanel27.add(deviceChoice108);
 
         deviceChannel12.getContainer().add(jPanel27);
 
@@ -1183,6 +1265,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField45.setOffsetNid(51);
         jPanel30.add(deviceField45);
 
+        deviceChoice109.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice109.setIdentifier("");
+        deviceChoice109.setLabelString("TERMINATION :");
+        deviceChoice109.setOffsetNid(248);
+        deviceChoice109.setUpdateIdentifier("");
+        jPanel30.add(deviceChoice109);
+
         deviceChannel13.getContainer().add(jPanel30);
 
         jPanel26.add(deviceChannel13, "CLOCK SOURCE + CLOCK");
@@ -1214,6 +1303,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField46.setOffsetNid(43);
         deviceField46.setTextOnly(true);
         jPanel31.add(deviceField46);
+
+        deviceChoice110.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice110.setIdentifier("");
+        deviceChoice110.setLabelString("TERMINATION :");
+        deviceChoice110.setOffsetNid(248);
+        deviceChoice110.setUpdateIdentifier("");
+        jPanel31.add(deviceChoice110);
 
         deviceChannel14.getContainer().add(jPanel31);
 
@@ -1275,6 +1371,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField52.setOffsetNid(43);
         deviceField52.setTextOnly(true);
         jPanel34.add(deviceField52);
+
+        deviceChoice111.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice111.setIdentifier("");
+        deviceChoice111.setLabelString("TERMINATION :");
+        deviceChoice111.setOffsetNid(248);
+        deviceChoice111.setUpdateIdentifier("");
+        jPanel34.add(deviceChoice111);
 
         deviceChannel15.getContainer().add(jPanel34);
 
@@ -1434,6 +1537,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField66.setOffsetNid(51);
         jPanel41.add(deviceField66);
 
+        deviceChoice112.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice112.setIdentifier("");
+        deviceChoice112.setLabelString("TERMINATION :");
+        deviceChoice112.setOffsetNid(248);
+        deviceChoice112.setUpdateIdentifier("");
+        jPanel41.add(deviceChoice112);
+
         deviceChannel19.getContainer().add(jPanel41);
 
         jPanel26.add(deviceChannel19, "CLOCK");
@@ -1493,6 +1603,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField68.setOffsetNid(72);
         deviceField68.setTextOnly(true);
         jPanel44.add(deviceField68);
+
+        deviceChoice118.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice118.setIdentifier("");
+        deviceChoice118.setLabelString("TERMINATION :");
+        deviceChoice118.setOffsetNid(249);
+        deviceChoice118.setUpdateIdentifier("");
+        jPanel44.add(deviceChoice118);
 
         deviceChannel21.getContainer().add(jPanel44);
 
@@ -1554,6 +1671,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField74.setOffsetNid(80);
         jPanel47.add(deviceField74);
 
+        deviceChoice119.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice119.setIdentifier("");
+        deviceChoice119.setLabelString("TERMINATION :");
+        deviceChoice119.setOffsetNid(249);
+        deviceChoice119.setUpdateIdentifier("");
+        jPanel47.add(deviceChoice119);
+
         deviceChannel22.getContainer().add(jPanel47);
 
         jPanel43.add(deviceChannel22, "CLOCK SOURCE + CLOCK");
@@ -1585,6 +1709,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField75.setOffsetNid(72);
         deviceField75.setTextOnly(true);
         jPanel48.add(deviceField75);
+
+        deviceChoice120.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice120.setIdentifier("");
+        deviceChoice120.setLabelString("TERMINATION :");
+        deviceChoice120.setOffsetNid(249);
+        deviceChoice120.setUpdateIdentifier("");
+        jPanel48.add(deviceChoice120);
 
         deviceChannel23.getContainer().add(jPanel48);
 
@@ -1646,6 +1777,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField81.setOffsetNid(72);
         deviceField81.setTextOnly(true);
         jPanel51.add(deviceField81);
+
+        deviceChoice121.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice121.setIdentifier("");
+        deviceChoice121.setLabelString("TERMINATION :");
+        deviceChoice121.setOffsetNid(249);
+        deviceChoice121.setUpdateIdentifier("");
+        jPanel51.add(deviceChoice121);
 
         deviceChannel24.getContainer().add(jPanel51);
 
@@ -1805,6 +1943,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField95.setOffsetNid(80);
         jPanel58.add(deviceField95);
 
+        deviceChoice122.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice122.setIdentifier("");
+        deviceChoice122.setLabelString("TERMINATION :");
+        deviceChoice122.setOffsetNid(249);
+        deviceChoice122.setUpdateIdentifier("");
+        jPanel58.add(deviceChoice122);
+
         deviceChannel28.getContainer().add(jPanel58);
 
         jPanel43.add(deviceChannel28, "CLOCK");
@@ -1864,6 +2009,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField97.setOffsetNid(101);
         deviceField97.setTextOnly(true);
         jPanel61.add(deviceField97);
+
+        deviceChoice123.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice123.setIdentifier("");
+        deviceChoice123.setLabelString("TERMINATION :");
+        deviceChoice123.setOffsetNid(250);
+        deviceChoice123.setUpdateIdentifier("");
+        jPanel61.add(deviceChoice123);
 
         deviceChannel30.getContainer().add(jPanel61);
 
@@ -1925,6 +2077,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField103.setOffsetNid(109);
         jPanel64.add(deviceField103);
 
+        deviceChoice124.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice124.setIdentifier("");
+        deviceChoice124.setLabelString("TERMINATION :");
+        deviceChoice124.setOffsetNid(250);
+        deviceChoice124.setUpdateIdentifier("");
+        jPanel64.add(deviceChoice124);
+
         deviceChannel31.getContainer().add(jPanel64);
 
         jPanel60.add(deviceChannel31, "CLOCK SOURCE + CLOCK");
@@ -1956,6 +2115,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField104.setOffsetNid(101);
         deviceField104.setTextOnly(true);
         jPanel65.add(deviceField104);
+
+        deviceChoice125.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice125.setIdentifier("");
+        deviceChoice125.setLabelString("TERMINATION :");
+        deviceChoice125.setOffsetNid(250);
+        deviceChoice125.setUpdateIdentifier("");
+        jPanel65.add(deviceChoice125);
 
         deviceChannel32.getContainer().add(jPanel65);
 
@@ -2017,6 +2183,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField110.setOffsetNid(101);
         deviceField110.setTextOnly(true);
         jPanel68.add(deviceField110);
+
+        deviceChoice126.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice126.setIdentifier("");
+        deviceChoice126.setLabelString("TERMINATION :");
+        deviceChoice126.setOffsetNid(250);
+        deviceChoice126.setUpdateIdentifier("");
+        jPanel68.add(deviceChoice126);
 
         deviceChannel33.getContainer().add(jPanel68);
 
@@ -2176,6 +2349,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField124.setOffsetNid(109);
         jPanel75.add(deviceField124);
 
+        deviceChoice127.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice127.setIdentifier("");
+        deviceChoice127.setLabelString("TERMINATION :");
+        deviceChoice127.setOffsetNid(250);
+        deviceChoice127.setUpdateIdentifier("");
+        jPanel75.add(deviceChoice127);
+
         deviceChannel37.getContainer().add(jPanel75);
 
         jPanel60.add(deviceChannel37, "CLOCK");
@@ -2235,6 +2415,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField126.setOffsetNid(130);
         deviceField126.setTextOnly(true);
         jPanel78.add(deviceField126);
+
+        deviceChoice128.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice128.setIdentifier("");
+        deviceChoice128.setLabelString("TERMINATION :");
+        deviceChoice128.setOffsetNid(251);
+        deviceChoice128.setUpdateIdentifier("");
+        jPanel78.add(deviceChoice128);
 
         deviceChannel39.getContainer().add(jPanel78);
 
@@ -2296,6 +2483,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField132.setOffsetNid(138);
         jPanel81.add(deviceField132);
 
+        deviceChoice129.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice129.setIdentifier("");
+        deviceChoice129.setLabelString("TERMINATION :");
+        deviceChoice129.setOffsetNid(251);
+        deviceChoice129.setUpdateIdentifier("");
+        jPanel81.add(deviceChoice129);
+
         deviceChannel40.getContainer().add(jPanel81);
 
         jPanel77.add(deviceChannel40, "CLOCK SOURCE + CLOCK");
@@ -2327,6 +2521,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField133.setOffsetNid(130);
         deviceField133.setTextOnly(true);
         jPanel82.add(deviceField133);
+
+        deviceChoice130.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice130.setIdentifier("");
+        deviceChoice130.setLabelString("TERMINATION :");
+        deviceChoice130.setOffsetNid(251);
+        deviceChoice130.setUpdateIdentifier("");
+        jPanel82.add(deviceChoice130);
 
         deviceChannel41.getContainer().add(jPanel82);
 
@@ -2388,6 +2589,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField139.setOffsetNid(130);
         deviceField139.setTextOnly(true);
         jPanel85.add(deviceField139);
+
+        deviceChoice131.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice131.setIdentifier("");
+        deviceChoice131.setLabelString("TERMINATION :");
+        deviceChoice131.setOffsetNid(251);
+        deviceChoice131.setUpdateIdentifier("");
+        jPanel85.add(deviceChoice131);
 
         deviceChannel42.getContainer().add(jPanel85);
 
@@ -2547,6 +2755,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField153.setOffsetNid(138);
         jPanel92.add(deviceField153);
 
+        deviceChoice132.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice132.setIdentifier("");
+        deviceChoice132.setLabelString("TERMINATION :");
+        deviceChoice132.setOffsetNid(251);
+        deviceChoice132.setUpdateIdentifier("");
+        jPanel92.add(deviceChoice132);
+
         deviceChannel46.getContainer().add(jPanel92);
 
         jPanel77.add(deviceChannel46, "CLOCK");
@@ -2606,6 +2821,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField155.setOffsetNid(159);
         deviceField155.setTextOnly(true);
         jPanel95.add(deviceField155);
+
+        deviceChoice133.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice133.setIdentifier("");
+        deviceChoice133.setLabelString("TERMINATION :");
+        deviceChoice133.setOffsetNid(252);
+        deviceChoice133.setUpdateIdentifier("");
+        jPanel95.add(deviceChoice133);
 
         deviceChannel48.getContainer().add(jPanel95);
 
@@ -2667,6 +2889,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField161.setOffsetNid(167);
         jPanel98.add(deviceField161);
 
+        deviceChoice134.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice134.setIdentifier("");
+        deviceChoice134.setLabelString("TERMINATION :");
+        deviceChoice134.setOffsetNid(252);
+        deviceChoice134.setUpdateIdentifier("");
+        jPanel98.add(deviceChoice134);
+
         deviceChannel49.getContainer().add(jPanel98);
 
         jPanel94.add(deviceChannel49, "CLOCK SOURCE + CLOCK");
@@ -2698,6 +2927,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField162.setOffsetNid(159);
         deviceField162.setTextOnly(true);
         jPanel99.add(deviceField162);
+
+        deviceChoice135.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice135.setIdentifier("");
+        deviceChoice135.setLabelString("TERMINATION :");
+        deviceChoice135.setOffsetNid(252);
+        deviceChoice135.setUpdateIdentifier("");
+        jPanel99.add(deviceChoice135);
 
         deviceChannel50.getContainer().add(jPanel99);
 
@@ -2759,6 +2995,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField168.setOffsetNid(159);
         deviceField168.setTextOnly(true);
         jPanel102.add(deviceField168);
+
+        deviceChoice136.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice136.setIdentifier("");
+        deviceChoice136.setLabelString("TERMINATION :");
+        deviceChoice136.setOffsetNid(252);
+        deviceChoice136.setUpdateIdentifier("");
+        jPanel102.add(deviceChoice136);
 
         deviceChannel51.getContainer().add(jPanel102);
 
@@ -2918,6 +3161,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField182.setOffsetNid(167);
         jPanel109.add(deviceField182);
 
+        deviceChoice137.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice137.setIdentifier("");
+        deviceChoice137.setLabelString("TERMINATION :");
+        deviceChoice137.setOffsetNid(252);
+        deviceChoice137.setUpdateIdentifier("");
+        jPanel109.add(deviceChoice137);
+
         deviceChannel55.getContainer().add(jPanel109);
 
         jPanel94.add(deviceChannel55, "CLOCK");
@@ -2977,6 +3227,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField184.setOffsetNid(188);
         deviceField184.setTextOnly(true);
         jPanel112.add(deviceField184);
+
+        deviceChoice138.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice138.setIdentifier("");
+        deviceChoice138.setLabelString("TERMINATION :");
+        deviceChoice138.setOffsetNid(253);
+        deviceChoice138.setUpdateIdentifier("");
+        jPanel112.add(deviceChoice138);
 
         deviceChannel57.getContainer().add(jPanel112);
 
@@ -3038,6 +3295,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField190.setOffsetNid(196);
         jPanel115.add(deviceField190);
 
+        deviceChoice139.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice139.setIdentifier("");
+        deviceChoice139.setLabelString("TERMINATION :");
+        deviceChoice139.setOffsetNid(253);
+        deviceChoice139.setUpdateIdentifier("");
+        jPanel115.add(deviceChoice139);
+
         deviceChannel58.getContainer().add(jPanel115);
 
         jPanel111.add(deviceChannel58, "CLOCK SOURCE + CLOCK");
@@ -3069,6 +3333,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField191.setOffsetNid(188);
         deviceField191.setTextOnly(true);
         jPanel116.add(deviceField191);
+
+        deviceChoice140.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice140.setIdentifier("");
+        deviceChoice140.setLabelString("TERMINATION :");
+        deviceChoice140.setOffsetNid(253);
+        deviceChoice140.setUpdateIdentifier("");
+        jPanel116.add(deviceChoice140);
 
         deviceChannel59.getContainer().add(jPanel116);
 
@@ -3130,6 +3401,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField197.setOffsetNid(188);
         deviceField197.setTextOnly(true);
         jPanel119.add(deviceField197);
+
+        deviceChoice141.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice141.setIdentifier("");
+        deviceChoice141.setLabelString("TERMINATION :");
+        deviceChoice141.setOffsetNid(253);
+        deviceChoice141.setUpdateIdentifier("");
+        jPanel119.add(deviceChoice141);
 
         deviceChannel60.getContainer().add(jPanel119);
 
@@ -3289,6 +3567,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField211.setOffsetNid(196);
         jPanel126.add(deviceField211);
 
+        deviceChoice142.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice142.setIdentifier("");
+        deviceChoice142.setLabelString("TERMINATION :");
+        deviceChoice142.setOffsetNid(253);
+        deviceChoice142.setUpdateIdentifier("");
+        jPanel126.add(deviceChoice142);
+
         deviceChannel64.getContainer().add(jPanel126);
 
         jPanel111.add(deviceChannel64, "CLOCK");
@@ -3348,6 +3633,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField213.setOffsetNid(217);
         deviceField213.setTextOnly(true);
         jPanel129.add(deviceField213);
+
+        deviceChoice143.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice143.setIdentifier("");
+        deviceChoice143.setLabelString("TERMINATION :");
+        deviceChoice143.setOffsetNid(254);
+        deviceChoice143.setUpdateIdentifier("");
+        jPanel129.add(deviceChoice143);
 
         deviceChannel66.getContainer().add(jPanel129);
 
@@ -3409,6 +3701,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField219.setOffsetNid(225);
         jPanel132.add(deviceField219);
 
+        deviceChoice144.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice144.setIdentifier("");
+        deviceChoice144.setLabelString("TERMINATION :");
+        deviceChoice144.setOffsetNid(254);
+        deviceChoice144.setUpdateIdentifier("");
+        jPanel132.add(deviceChoice144);
+
         deviceChannel67.getContainer().add(jPanel132);
 
         jPanel128.add(deviceChannel67, "CLOCK SOURCE + CLOCK");
@@ -3440,6 +3739,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField220.setOffsetNid(217);
         deviceField220.setTextOnly(true);
         jPanel133.add(deviceField220);
+
+        deviceChoice145.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice145.setIdentifier("");
+        deviceChoice145.setLabelString("TERMINATION :");
+        deviceChoice145.setOffsetNid(254);
+        deviceChoice145.setUpdateIdentifier("");
+        jPanel133.add(deviceChoice145);
 
         deviceChannel68.getContainer().add(jPanel133);
 
@@ -3501,6 +3807,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField226.setOffsetNid(217);
         deviceField226.setTextOnly(true);
         jPanel136.add(deviceField226);
+
+        deviceChoice146.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice146.setIdentifier("");
+        deviceChoice146.setLabelString("TERMINATION :");
+        deviceChoice146.setOffsetNid(254);
+        deviceChoice146.setUpdateIdentifier("");
+        jPanel136.add(deviceChoice146);
 
         deviceChannel69.getContainer().add(jPanel136);
 
@@ -3660,6 +3973,13 @@ public class DIO4Setup extends DeviceSetup {
         deviceField240.setOffsetNid(225);
         jPanel143.add(deviceField240);
 
+        deviceChoice147.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice147.setIdentifier("");
+        deviceChoice147.setLabelString("TERMINATION :");
+        deviceChoice147.setOffsetNid(254);
+        deviceChoice147.setUpdateIdentifier("");
+        jPanel143.add(deviceChoice147);
+
         deviceChannel73.getContainer().add(jPanel143);
 
         jPanel128.add(deviceChannel73, "CLOCK");
@@ -3762,10 +4082,50 @@ public class DIO4Setup extends DeviceSetup {
     private DeviceChoice deviceChoice105;
     private DeviceChoice deviceChoice106;
     private DeviceChoice deviceChoice107;
+    private DeviceChoice deviceChoice108;
+    private DeviceChoice deviceChoice109;
     private DeviceChoice deviceChoice11;
+    private DeviceChoice deviceChoice110;
+    private DeviceChoice deviceChoice111;
+    private DeviceChoice deviceChoice112;
+    private DeviceChoice deviceChoice113;
+    private DeviceChoice deviceChoice114;
+    private DeviceChoice deviceChoice115;
+    private DeviceChoice deviceChoice116;
+    private DeviceChoice deviceChoice117;
+    private DeviceChoice deviceChoice118;
+    private DeviceChoice deviceChoice119;
     private DeviceChoice deviceChoice12;
+    private DeviceChoice deviceChoice120;
+    private DeviceChoice deviceChoice121;
+    private DeviceChoice deviceChoice122;
+    private DeviceChoice deviceChoice123;
+    private DeviceChoice deviceChoice124;
+    private DeviceChoice deviceChoice125;
+    private DeviceChoice deviceChoice126;
+    private DeviceChoice deviceChoice127;
+    private DeviceChoice deviceChoice128;
+    private DeviceChoice deviceChoice129;
     private DeviceChoice deviceChoice13;
+    private DeviceChoice deviceChoice130;
+    private DeviceChoice deviceChoice131;
+    private DeviceChoice deviceChoice132;
+    private DeviceChoice deviceChoice133;
+    private DeviceChoice deviceChoice134;
+    private DeviceChoice deviceChoice135;
+    private DeviceChoice deviceChoice136;
+    private DeviceChoice deviceChoice137;
+    private DeviceChoice deviceChoice138;
+    private DeviceChoice deviceChoice139;
     private DeviceChoice deviceChoice14;
+    private DeviceChoice deviceChoice140;
+    private DeviceChoice deviceChoice141;
+    private DeviceChoice deviceChoice142;
+    private DeviceChoice deviceChoice143;
+    private DeviceChoice deviceChoice144;
+    private DeviceChoice deviceChoice145;
+    private DeviceChoice deviceChoice146;
+    private DeviceChoice deviceChoice147;
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;
     private DeviceChoice deviceChoice17;
