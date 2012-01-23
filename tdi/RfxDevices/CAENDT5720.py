@@ -382,7 +382,7 @@ class CAENDT5720(Device):
         return 0
 	
     #give some time
-      time.sleep(0.01)
+      time.sleep(0.1)
 
 #Module type
       devType = c_int(0)
