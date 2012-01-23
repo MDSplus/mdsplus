@@ -729,7 +729,7 @@ def makeMsiCommand(args):
             print '%s missing. Rebuilding.' % (msi32,)
             need_to_build=True
     status="ok"
-    rebuild=False
+    rebuild=True
     if need_to_build:
         if rebuild:
             print "%s, Starting build java" % (str(datetime.datetime.now()),)
