@@ -375,6 +375,10 @@ class jDispatcher
 
     public void setTree(String tree, int shot)
     {
+	Database mdsTree = new Database(tree, shot);
+	try {
+		mdsTree.open();
+	}catch(Exception exc) {System.err.println("Cannot open tree " + tree + " " + shot);} 
         this.tree = tree;
         this.shot = shot;
         Enumeration server_list = servers.elements();
