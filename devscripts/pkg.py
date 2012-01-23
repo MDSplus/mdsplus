@@ -626,6 +626,9 @@ def makeRpmsCommand(args):
             p=Popen('createrepo . >/dev/null',shell=True,cwd=WORKSPACE+"/RPMS")
         except Exception,e:
             print "Error creating repo: %s" (e,)
+            sys.exit(p.wait())
+    if status in ('ok','skip'):
+        p=Popen('rsync -a RPMS ../%s;rsync -a SOURCES ../%s;rsync -a EGGS ../%s' % (FLAVOR,FLAVOR,FLAVOR),shell=True,cvs=WORKSPACE)
         sys.exit(p.wait())
 
 def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
