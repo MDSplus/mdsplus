@@ -259,6 +259,7 @@ class CAENDT5720(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
           return 0
         self.handle = c_long(0)
+        print 'HANDLE NON TROVATO ADESSO INIZIA:IZZO DRIVER'
         status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
         if status != 0:
           print 'Error initializing CAENVME' 
