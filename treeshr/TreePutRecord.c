@@ -493,7 +493,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   TreePutNci(info, nodenum, nci_ptr, 1);
   if (locked)
     TreeUnLockDatafile(info, 0, 0);
-  if (buffer)
+  if (buffer && (!nonvms_compatible))
     free(buffer);
   return status;
 }
