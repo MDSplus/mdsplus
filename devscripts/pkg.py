@@ -108,6 +108,7 @@ def getRelease(package):
     return 0
 
 def checkRelease(package):
+    print "Checking release of %s" % (package,)
     ans=list()
     tag=getReleaseTag(package)
     if tag is None:
@@ -144,6 +145,12 @@ def checkRelease(package):
                             ans.append("%s current %s revision is %s while rpm revision is %s" % (F,FLAVOR,CURREV,RELREV))
                 IN_PACKAGE=False
                 IN_RELEASE=False
+    if len(ans)==0:
+	print "Package %s is up to date" % (package,)
+    else:
+        print "Package %s needs updating: " % (package,)
+        for l in ans:
+          print l
     return ans
 
 def printHelp():
