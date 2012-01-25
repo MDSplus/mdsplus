@@ -365,6 +365,7 @@ def newVersionCommand(args):
                 p2=Popen('cvs -Q tag -d %s rpm/subpackages/%s' % (rel,pkg),shell=True,cwd=os.getcwd())
                 p2.wait()
             line=p.stdout.readline()
+        p.wait()
     else:
 	print "Invalid flavor /%s/. Specify alpha, beta or stable." % (flavor,)
 
@@ -624,6 +625,9 @@ def makeRpmsCommand(args):
     else:
         try:
             p=Popen('createrepo . >/dev/null',shell=True,cwd=WORKSPACE+"/RPMS")
+            stat=p.wait()
+	    if stat != 0:
+              raise Exception("Repository creation return status=%d" % (stat,))
         except Exception,e:
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
