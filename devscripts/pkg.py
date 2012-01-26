@@ -717,17 +717,21 @@ def makeMsiCommand(args):
     if len(checkRelease("windows")) > 0:
         need_to_build=True
         release=release+1
+    try:
+      os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR)
+    except:
+      pass
     for p in ('x86','x86_64'):
         try:
-            os.mkdir("%s\\%s" % (WORKSPACE,p))
+            os.mkdir("%s\\..\\%s\\%s" % (WORKSPACE,FLAVOR,p))
         except:
             pass
         try:
-            os.mkdir("%s\\%s\\%s.%d" % (WORKSPACE,p,VERSION,release))
+            os.mkdir("%s\\..\\%s\\%s\\%s.%d" % (WORKSPACE,FLAVOR,p,VERSION,release))
         except:
             pass
-    msi32="%s\\x86\\%s.%s\\MDSplus%s-%s.%d.x86" % (WORKSPACE,VERSION,release,msiflavor,VERSION,release)
-    msi64="%s\\x86_64\\%s.%s\\MDSplus%s-%s.%d.x86_64" % (WORKSPACE,VERSION,release,msiflavor,VERSION,release)
+    msi32="%s\\..\\%s\\x86\\%s.%s\\MDSplus%s-%s.%d.x86" % (WORKSPACE,FLAVOR,VERSION,release,msiflavor,VERSION,release)
+    msi64="%s\\..\\%s\\x86_64\\%s.%s\\MDSplus%s-%s.%d.x86_64" % (WORKSPACE,FLAVOR,VERSION,release,msiflavor,VERSION,release)
     if not need_to_build:
         try:
             os.stat(msi32+".msi")
