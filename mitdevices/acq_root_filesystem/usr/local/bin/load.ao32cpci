@@ -1,0 +1,81 @@
+#!/bin/sh
+
+MODULE=${MODULE:-/usr/local/lib/modules/ao32cpci_drv.ko}
+PRAMS=$*
+DEFAULTS=${DEFAULTS:-AO_awg_tblocks_count=2 DO_awg_tblocks_count=2}
+
+# device spec SLOT or RESOURCE
+DSPEC=SLOT
+#DSPEC=RES
+
+DROOT=/dev/ao32cpci
+
+log() {
+	logger -t ao32cpci $*
+}
+
+get_lun() {
+	dev=$1
+	DEV=$(basename $dev)
+	DPATH=$dev/device
+# warning: $SLOT and $LDEV $DEV, $DPATH are GLOBALS
+	SLOT=$(cat $DPATH/cpci_slot)
+	if [ "$DSPEC" = "SLOT" ]; then
+		LDEV=$DROOT/ctrl/ao32cpci.$SLOT
+	else
+		LDEV=$DROOT/ctrl/$DEV
+	fi
+
+	echo ao32cpci device $DEV found in cpci slot $SLOT use $LDEV
+	log device $DEV found in cpci slot $SLOT use $LDEV
+}
+linkup() {	
+	ln -s $DPATH $LDEV
+	mm=$(cat $dev/dev)
+	MAJOR=${mm%:*}
+	mknod $DROOT/raw/ao32.$SLOT.regs	c $MAJOR 0	
+	mknod $DROOT/raw/ao32.$SLOT.fifo	c $MAJOR 1
+	mknod $DROOT/raw/ao32.$SLOT.flash   c $MAJOR 2
+
+	cat - >$DROOT/raw/ao32.$SLOT.map <<EOF
+a${SLOT}_regs	ao32.$SLOT.regs 0 0x0400 rw 0x0
+a${SLOT}_fifo	ao32.$SLOT.fifo 0 0x1000 rw 0x1000
+a${SLOT}_flsh	ao32.$SLOT.flash 0 0x1000 rw 0x2000
+EOF
+}
+
+add_cgi_buttons() {
+	add_cgi_button ao32_setup.cgi\?SLOT=$1 "AO32.$1"
+	add_cgi_button ao32regs.cgi\?SLOT=$1 "AO32.$1" "botrow"	
+}
+make_spi_node() {
+	SN=${1##*.}
+	MTD=/sys/class/mtd/mtd1$SN
+	SPF=$DROOT/raw/ao32.$SLOT.spiflash
+	mknod $SPF c $(tr : ' ' <$MTD/dev)
+	ls -l $SPF
+}
+
+/sbin/insmod /usr/local/lib/modules/mtd_dataflash.ko
+
+mkdir -p $DROOT/data $DROOT/ctrl $DROOT/raw
+/sbin/insmod $MODULE $DEFAULTS $PRAMS
+
+# special: avoid DMAC channel clash:
+set.sys /dev/dtacq_drv/transformer_blt 0
+
+
+
+
+ls /sys/class/ao32cpci/ao32cpci.? >/dev/null
+if [ $? -eq 0 ]; then
+	for dev in /sys/class/ao32cpci/ao32cpci.?
+	do	
+		get_lun $dev
+		linkup $dev
+		make_spi_node $dev
+		add_cgi_buttons $SLOT
+	done
+fi
+
+

@@ -1,0 +1,6 @@
+CC="arm-xscale-linux-gnu-gcc -L ../Driver/library "
+$CC clock_gen.c -o clock_gen -lDIO2
+$CC event_duplicate.c -o event_duplicate -lDIO2
+$CC interrupt.c -o interrupt -lDIO2
+$CC star_network.c -o star_network -lDIO2
+$CC trigger_delay.c -o trigger_delay -lDIO2

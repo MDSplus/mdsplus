@@ -1,0 +1,12 @@
+#!/bin/sh
+
+SLOT=$1
+
+echo ao32cpci slot $SLOT
+echo
+grep ao32 /proc/interrupts
+echo --------------------------------------- 
+cat /dev/ao32cpci/ctrl/ao32cpci.$SLOT/regs
+echo --------------------------------------- 
+cat /dev/ao32cpci/data/ao32cpci.$SLOT/histo
+

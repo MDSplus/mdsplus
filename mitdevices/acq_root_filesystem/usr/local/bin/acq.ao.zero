@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# script to zero all of the outputs on an acq196ao device
+#
+# must live in /usr/local/bin on the board
+# invoked by inetd when connection recieved on port 54548
+read zero
+/usr/local/bin/set.AO XX 0
+/usr/local/bin/set.AO commit 1

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+MODULE=${1:-cp7452_drv.ko}
+
+# device spec SLOT or RESOURCE
+DSPEC=SLOT
+#DSPEC=RES
+
+/sbin/insmod /lib/modules/$MODULE
+
+for dev in /sys/class/cp7452/cp7452.?
+do
+	DEV=$(basename $dev)
+	DPATH=$dev/device
+	SLOT=$(cat $DPATH/cpci_slot)
+	if [ "$DSPEC" = "SLOT" ]; then
+		LDEV=/dev/cp7452.$SLOT
+	else
+		LDEV=/dev/$dev
+	fi
+
+	echo cp7452 device $DEV found in cpci slot $SLOT use $LDEV
+	logger -t cp7452 cp7452 device $DEV found in cpci slot $SLOT use $LDEV
+	ln -s $DPATH $LDEV
+done

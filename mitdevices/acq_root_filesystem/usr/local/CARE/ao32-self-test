@@ -1,0 +1,93 @@
+#!/bin/sh
+
+SLOT=${SLOT:-2}
+NP=${NP:-256}
+MODE=${MODE:-M_AWGT}
+AO_CLKSRC=${AO_CLKSRC:-S_INTERNAL}
+AO_CLKDIV=${AO_CLKDIV:-330}
+DO_CLKSRC=${DO_CLKSRC:-S_INTERNAL}
+DO_CLKDIV=${DO_CLKDIV:-100}
+DEBUG=${DEBUG:-0}
+RUN_DO=${RUN_DO:-1}
+RUN_AO=${RUN_AO:-1}
+TRGBIT=${TRGBIT:-3}
+
+set.sys /sys/module/ao32cpci_drv/parameters/ao32cpci_debug 0
+
+echo commit 0
+set.ao32.data $SLOT commit 0
+
+echo setup AI
+set.route d$TRGBIT in fpga out pxi
+set.dtacq dio_bit $TRGBIT 1
+set.trig DI$TRGBIT falling
+set.channelBlockMask 111
+let AICLK=$(get.modelspec CalClock)
+if [ $AICLK -eq 0 ]; then
+	AICLK=100000
+fi
+acqcmd setInternalClock $AICLK
+acqcmd setMode GATED_TRANSIENT 10000
+
+export FUNGEN_ROOT=/dev/ao32cpci/data/ao32cpci.$SLOT/
+export FUNGEN_MAXCHAN=32
+
+_fungen() {
+	fungen -- $1 $2 $3 $NP	
+}
+
+AO0116() {
+echo AO0116 ...
+for ch in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+do
+	K=$(echo $ch | awk '{ print $1*0.2 }')
+	_fungen $ch $K 2 
+done
+}
+
+AO1732() {
+echo AO1732 ...
+for ch in 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32
+do
+	K=$(echo $ch | awk '{ print $1*0.2 }')
+	_fungen $ch -$K 2
+done
+}
+
+
+if [ $RUN_AO -gt 0 ]; then
+	AO0116
+	AO1732
+	set.ao32 $SLOT AO_CLK $AO_CLKSRC $AO_CLKDIV
+	set.ao32 $SLOT AO_TRG S_PXI_$TRGBIT FALLING
+	set.ao32 $SLOT AO_MODE $MODE
+else
+	set.ao32 $SLOT AO_MODE M_RIM
+fi
+
+if [ $RUN_DO -gt 0 ]; then
+#csv2do64 --slot $SLOT d0=/bigffs/sos.csv d16=/bigffs/sos.csv d33=/bigffs/sos.csv d63=/tmp/do64.csv
+	echo walking the bits...
+	(cd do64-walking-bit-test;./walk-bits $SLOT)
+	set.ao32 $SLOT DO_CLK $DO_CLKSRC $DO_CLKDIV
+	set.ao32 $SLOT DO_TRG S_PXI_$TRGBIT FALLING
+	set.ao32 $SLOT DO_MODE $MODE
+else
+	set.ao32 $SLOT DO_MODE M_RIM
+fi
+
+echo finally - commit
+set.sys /sys/module/ao32cpci_drv/parameters/ao32cpci_debug $DEBUG
+set.ao32.data $SLOT commit 0x22
+
+acqcmd setArm
+echo acq196 ARM 
+
+
+echo BLIP D$TRGBIT to start
+sleep 1
+set.dtacq dio_bit $TRGBIT N
+echo Trigger sent
+sleep 1
+acqcmd --until ST_STOP
+echo DONE

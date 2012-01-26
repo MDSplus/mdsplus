@@ -1,0 +1,19 @@
+#!/bin/sh
+# set.ao32.data
+
+ROOT=/dev/ao32cpci/data/ao32cpci
+let SLOT=$1
+KNOB=$2
+shift;shift
+
+if [ $SLOT -lt 1 -o $SLOT -gt 8 ]; then
+	echo ERROR: slot must be in range 1:8
+	exit 1;
+fi
+
+if [ -e $ROOT.$SLOT/$KNOB ]; then
+	echo $* > $ROOT.$SLOT/$KNOB
+else
+	echo ERROR: KNOB $ROOT.$SLOT/$KNOB does not exist
+	exit 1
+fi

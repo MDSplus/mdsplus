@@ -1,0 +1,14 @@
+#!/bin/sh
+
+
+for card in /dev/ao32cpci/ctrl/*
+do
+	SLOT=${card#*.}
+	let ch=1
+	while [ $ch -le 32 ];
+	do
+		ao32cal $SLOT $ch 0
+		let ch="$ch+1"
+	done
+done
+

@@ -1,0 +1,165 @@
+public fun DIO2HWSetDClockChan(in _nid, in _board_id, in _channel, in _trig_mode, in _frequency_1, 
+	in _frequency_2, in _delay, in _duration, in _event)
+{
+
+
+	private _DIO2_CLOCK_SOURCE_INTERNAL	=	0x0;
+	private _DIO2_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
+	private _DIO2_CLOCK_SOURCE_RISING_EDGE	=	0x0;
+	private _DIO2_ER_START_EVENT_INT_DISABLE	= 0x0;
+	private _DIO2_TC_NO_TRIGGER		=			0x00;
+	private _DIO2_TC_IO_TRIGGER_RISING	=		0x01;
+	private _DIO2_TC_IO_TRIGGER_FALLING	=		0x02;
+	private _DIO2_TC_TIMING_EVENT		=		0x03;
+	private _DIO2_TC_GATE_DISABLED	=			0x00;
+	private _DIO2_TC_INTERRUPT_DISABLE	=		0x00;
+	private _DIO2_TC_SOURCE_FRONT_REAR	=		0x01;
+	private _DIO2_TC_CYCLIC			=			0x1;
+	private _DIO2_EC_GENERAL_TRIGGER =			0x00;
+	private _DIO2_EC_START_TRIGGER		=		0x01;
+	private _DIO2_EC_STOP_TRIGGER		=		0x02;
+
+
+
+
+
+/* Initialize Library if the first time */
+    if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
+
+
+/* Open device */
+	_handle = 0L;
+	_status = DIO2->DIO2_Open(val(long(_board_id)), ref(_handle));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error opening DIO2 device, board ID = "// _board_id);
+		else
+			write(*, "Error opening DIO2 device, board ID = "// _board_id);
+		return(0);
+	}
+
+
+
+/* Set trigger mode*/
+	if(_trig_mode == 0 || _trig_mode == 3) _hw_trig_mode = byte(_DIO2_TC_TIMING_EVENT);
+	if(_trig_mode == 1) _hw_trig_mode = byte(_DIO2_TC_IO_TRIGGER_RISING);
+	if(_trig_mode == 2) _hw_trig_mode = byte(_DIO2_TC_IO_TRIGGER_FALLING);
+
+	_status = DIO2->DIO2_TC_SetTrigger(val(_handle), val(byte( _channel + 1)), val(_hw_trig_mode), 
+		val(byte(_DIO2_TC_SOURCE_FRONT_REAR)), val(byte(2 * _channel + 2)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting trigger in DIO2 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting trigger in DIO2 device, board ID = "// _board_id);
+		return(0);
+	}
+
+/* No Gating */
+	_status = DIO2->DIO2_TC_SetGate(val(_handle), val(byte(_channel + 1)), val(byte(_DIO2_TC_GATE_DISABLED)), val(byte(0)),
+		val(byte(0)), val(byte(0)));
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting trigger in DIO2 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting trigger in DIO2 device, board ID = "// _board_id);
+		return(0);
+	}
+
+/* Phase setting */
+
+	_levels = [byte(1), byte(0), byte(1), byte(0)];
+
+	_status = DIO2->DIO2_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(byte(0)), 
+		val(byte(_DIO2_TC_INTERRUPT_DISABLE)), _levels);
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting phase in DIO2 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting phase in DIO2 device, board ID = "// _board_id);
+		return(0);
+	}
+
+
+/* Timing setting */
+/*
+Cesare
+
+	_delay_cycles = long(_delay / 1E-7 +1);
+	_duration_cycles = long(_duration / 1E-7 +1);
+
+	_period_1 = 1./_frequency_1;
+	_tot_cycles_1 = long(_period_1 / 1E-7);
+	_cycles_11 = _tot_cycles_1 /2;
+	_cycles_12 = _tot_cycles_1 - _cycles_11;
+	_cycles_11++;
+	_cycles_12++;
+
+	_period_2 = 1./_frequency_2;
+	_tot_cycles_2 = long(_period_2 / 1E-7);
+	_cycles_21 = _tot_cycles_2 /2;
+	_cycles_22 = _tot_cycles_2 - _cycles_21;
+	_cycles_21++;
+	_cycles_22++;
+*/
+	_delay_cycles = long(_delay / 1E-7) - 1 ;
+        if(_delay_cycles < 0)	_delay_cycles = 0;
+ 
+	_duration_cycles = long(_duration / 1E-7) - 1;
+        if(_duration_cycles < 0) _duration_cycles = 0;
+
+
+	_period_1 = 1./_frequency_1;
+	_tot_cycles_1 = long(_period_1 / 1E-7);
+	_cycles_11 = _tot_cycles_1 / 2;
+	_cycles_12 = _tot_cycles_1 - _cycles_11;
+	_cycles_11--;
+	_cycles_12--;
+
+	_period_2 = 1./_frequency_2;
+	_tot_cycles_2 = long(_period_2 / 1E-7);
+	_cycles_21 = _tot_cycles_2 /2;
+	_cycles_22 = _tot_cycles_2 - _cycles_21;
+	_cycles_21--;
+	_cycles_22--;
+
+	_cycles = [long(_cycles_11), long(_cycles_12), long(_cycles_21), long(_cycles_22)];
+
+	_status = DIO2->DIO2_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 
+		val(_duration_cycles)); 
+	if(_status != 0)
+	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting phase timing in DIO2 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting phase timing in DIO2 device, board ID = "// _board_id);
+		return(0);
+	}
+	
+
+/* Set event if trigger mode == event */
+	if(_trig_mode == 0)
+	{
+		_status = DIO2->DIO2_EC_SetEventDecoder(val(_handle), val(byte(_channel + 1)), val(byte(_event)),
+			val(byte(1 << _channel)), val(byte(_DIO2_EC_GENERAL_TRIGGER))); 
+		if(_status != 0)
+		{
+			if(_nid != 0)
+				DevLogErr(_nid, "Error setting event in DIO2 device, board ID = "// _board_id);
+			else
+				write(*, "Error setting event in DIO2 device, board ID = "// _board_id);
+			return(0);
+		}
+	}
+	
+
+/* Close device */
+	DIO2->DIO2_Close(val(_handle));
+
+    return(1);
+}
+

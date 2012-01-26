@@ -1,0 +1,7 @@
+# Options for rc.user
+#
+MDSPLUS=NO
+DIO2=NO
+CP7452=NO
+MDSACQ=NO
+AO32=NO

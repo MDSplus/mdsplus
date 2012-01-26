@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# file: load.acq
+#
+# move the scripts to /usr/local/bin
+# append acq_inetd.conf to /etc/inetd
+#
+cat acq_inetd.conf >> /etc/inetd.conf
+mkdir -p /etc/postshot.d

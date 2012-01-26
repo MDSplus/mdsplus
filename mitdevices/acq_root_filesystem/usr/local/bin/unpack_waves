@@ -1,0 +1,8 @@
+#!/bin/sh
+cd /tmp
+tar -xvzf /home/ftp/$1.$2.tgz
+cd /tmp/ao32cpci.$2 
+cp * /dev/ao32cpci/data/ao32cpci.$2/
+cd / 
+rm -rf /tmp/ao32cpci.$2
+rm -f /home/ftp/$1.$2.tgz
