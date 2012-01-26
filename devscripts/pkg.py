@@ -718,7 +718,7 @@ def makeMsiCommand(args):
         need_to_build=True
         release=release+1
     try:
-      os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR)
+      os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR))
     except:
       pass
     for p in ('x86','x86_64'):
