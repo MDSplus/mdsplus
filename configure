@@ -4577,17 +4577,23 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        then
          if ( echo $target | grep 64 > /dev/null )
          then
-           SYB64="64"
+           if  -d /usr/lib64
+           then
+             D64="64"
+           else
+             D64=""
+           fi
+           SYB64=$D64
            CFLAGS="$CFLAGS -m64"
            LD="ld -m elf_x86_64 --oformat elf64-x86-64 --no-warn-mismatch"
            FFLAGS="$FFLAGS -m64"
            FORLD="$F77 -m64"
            UILCMD=uil
-           uiddir="${uiddir}64"
-	   MAKELIBDIR="\$(top_srcdir)/lib64/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib64/"
-           MAKEUIDDIR="\$(top_srcdir)/uid64/"
-	   MAKEBINDIR="\$(top_srcdir)/bin64/"
+           uiddir="${uiddir}${D64}"
+	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
            JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava -L$jdk_dir/jre/lib/amd64/native_threads -lhpi";
          else
            CFLAGS="$CFLAGS -m32";
