@@ -52,9 +52,9 @@ int TclPutExpression()
                 else if (!val_part.dscW_length)
                     break;
                 if (use_lf)
-                    str_concat(&dsc_ascValue,&dsc_ascValue,&val_part,"\n",0);
+                    StrConcat(&dsc_ascValue,&dsc_ascValue,&val_part,"\n",0);
                 else
-                    str_append(&dsc_ascValue,&val_part);
+                    StrAppend(&dsc_ascValue,&val_part);
                }
             str_free1_dx(&val_part);
            }
