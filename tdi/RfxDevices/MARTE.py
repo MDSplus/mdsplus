@@ -145,19 +145,19 @@ class MARTE(Device):
       
     def seq_init(self,arg):
       self.abort(arg)
-      time.sleep(5)
+      time.sleep(3)
       self.pre_req(arg)
-      time.sleep(5)
+      time.sleep(3)
       self.init(arg)
-      time.sleep(5)
+      time.sleep(3)
       self.pulse_req(arg)
       return 1
 
     def seq_store(self,arg):
       self.post_req(arg)
-      time.sleep(5)
+      time.sleep(3)
       self.store(arg)
-      time.sleep(5)
+      time.sleep(3)
       self.collection_complete(arg)
       return 1
 
