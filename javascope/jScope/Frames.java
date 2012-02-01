@@ -143,6 +143,9 @@ class Frames extends Canvas
                         right = true;
                     else
                         right = false;
+                    
+                    bitShift = colorMap.bitShift;
+
                     FlipFrame(buf, frameDim, 2);
                     int n_pix = frameDim.width * frameDim.height;
                     short buf_out[] = new short[n_pix];
