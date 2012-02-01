@@ -63,6 +63,7 @@ def writeMsiInfo(outfile):
 
 def makeMsiCommand(args):
     WORKSPACE=getWorkspace()
+    FLAVOR=getFlavor()
     print "WORKSPACE is %s" % (WORKSPACE,)
     VERSION=getVersion()
     if FLAVOR=="stable":
