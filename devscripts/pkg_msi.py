@@ -1,7 +1,7 @@
 import os,subprocess,datetime
 from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor
 
-def msiUpdateSetup(WORKSPACE,VERSION,release,bits,outfile,msiflavor):
+def msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     try:
         os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
     except:
@@ -128,7 +128,7 @@ def makeMsiCommand(args):
             if (stat != 0):
                 print "Build failed!"
                 sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,VERSION,release,32,msi32,msiflavor)
+        msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,32,msi32,msiflavor)
         print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
         p=subprocess.Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
@@ -136,7 +136,7 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
-        msiUpdateSetup(WORKSPACE,VERSION,release,64,msi64,msiflavor)
+        msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,64,msi64,msiflavor)
         print "%s, Starting to build 64-bit setup kit" % (str(datetime.datetime.now()),)
         p=subprocess.Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE+"\\mdsplus")
         stat=p.wait()
