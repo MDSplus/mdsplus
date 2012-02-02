@@ -1,5 +1,5 @@
 import subprocess,datetime,os
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease
 def signrpmsCommand(args):
     print signrpms(args[2])
 
@@ -154,11 +154,13 @@ def makeRpmsCommand(args):
         addPkgToRpmSpec(specfile,pkg,updates[pkg]['Release'],DIST,rpmflavor)
     status="ok"
     if need_to_build:
-        print "%s, Starting to make source tar file" % (str(datetime.datetime.now()),)
-        makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
-        print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
+        if False:
+            print "%s, Starting to make source tar file" % (str(datetime.datetime.now()),)
+            makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
+            print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
-        p=subprocess.Popen('rpmbuild --target i686-linux' +\
+        p=subprocess.Popen('tar zcf "%s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,rpmflavor,VERSION) +\
+                    'rpmbuild --target i686-linux' +\
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
                     ' --define="_builddir %s/i686/mdsplus"' % (WORKSPACE,)+\
