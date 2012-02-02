@@ -9,5 +9,7 @@ fun public MdsDevices() {
     'MARTE\0',  'RfxDevices\0',
     'ZELOS2150GV\0',  'RfxDevices\0',
     'NI6259AI\0',  'RfxDevices\0',
+    'NI6682\0',  'RfxDevices\0',
+    'SPIDER\0',  'RfxDevices\0',
     'SPIDER_SM\0', 'RfxDevices\0']);
 }
