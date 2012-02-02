@@ -159,7 +159,7 @@ def makeRpmsCommand(args):
             makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
             print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
-        p=subprocess.Popen('tar zcf "%s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,rpmflavor,VERSION) +\
+        p=subprocess.Popen('tar zcf %s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,rpmflavor,VERSION) +\
                     'rpmbuild --target i686-linux' +\
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
