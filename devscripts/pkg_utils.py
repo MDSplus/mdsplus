@@ -253,7 +253,7 @@ def newRelease(pkg,flavor,version,release,dist):
             ls=line.split()
             PKG=ls[0][4:]
             if PKG==pkg and F is not None:
-                p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F.replace('$','\\$'),shell=True,cwd=os.getcwd())
+                p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F.replace('$','\\$')),shell=True,cwd=os.getcwd())
                 p.wait()
 
 def getPackages(includeEmpty=False):
