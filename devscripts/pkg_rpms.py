@@ -1,4 +1,4 @@
-import subprocess,datetime,os
+import subprocess,datetime,os,sys
 from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease
 def signrpmsCommand(args):
     print signrpms(args[2])
