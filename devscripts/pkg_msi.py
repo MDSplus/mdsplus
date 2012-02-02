@@ -145,7 +145,7 @@ def makeMsiCommand(args):
             print "Build failed!"
             sys.exit(stat)
         print "Tag all modules for this release. This can take a while!"
-        newRelease('windows',FLAVOR,VERSION,release,DIST)
+        newRelease('windows',FLAVOR,VERSION,release,'win')
         build_url=os.environ['BUILD_URL']
         writeMsiInfo(msi32)
         writeMsiInfo(msi64)
