@@ -125,6 +125,7 @@ RFXVConfigSetup.java\
 MARTESetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
+SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java
 

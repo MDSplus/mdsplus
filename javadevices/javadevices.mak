@@ -70,6 +70,8 @@ RFXVIConfigSetup.java\
 RFXVISetupSetup.java\
 ST133Setup.java\
 SXCSetup.java\
+SPIDERSetup.java\
+SPIDER_SMSetup.java\
 T2ControlSetup.java\
 TOMOSetupSetup.java\
 TR10Setup.java\
