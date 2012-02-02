@@ -19,7 +19,7 @@ from MARTE import MARTE
 from SPIDER_SM import SPIDER_SM
 from ZELOS2150GV import ZELOS2150GV
 from NI6259AI import NI6259AI
-from NI6682 import NI6682
+from SPIDER import SPIDER
 
 
 
