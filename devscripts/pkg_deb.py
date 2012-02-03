@@ -72,7 +72,7 @@ def makeDebsCommand(args):
         else:
             for pkg in getPackages():
                 if updates[pkg]['Update']:
-                    debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                    debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                     build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
                     if build_status != 0:
                         print "Error building debian package %s, status=%d" % (debfile,build_status)
