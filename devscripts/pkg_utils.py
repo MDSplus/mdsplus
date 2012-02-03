@@ -22,6 +22,25 @@ def getDist():
         pass
     return dist
 
+def getLsbReleaseDist():
+    p=subprocess.Popen('lsb_release -a -s 2>/dev/null',stdout=subprocess.PIPE,shell=True)
+    info=p.stdout.readlines()
+    p.wait()
+    platform=info[0][0:-2]
+    version=info[2][0:-1].split('.')[0]
+    return platform+version
+
+def getHardwarePlatform():
+    p=subprocess.Popen('uname -a',stdout=subprocess.PIPE,shell=True)
+    hp=p.stdout.readline()
+    p.wait()
+    if hp=='x86_64':
+        bits=64
+    else:
+        bits=32
+    return (hp,bits)
+
+
 def getFlavor():
     p=subprocess.Popen('cvs status configure.in',stdout=subprocess.PIPE,shell=True,cwd=os.getcwd())
     stat=p.stdout.readline()
