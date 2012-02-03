@@ -1,0 +1,8 @@
+Package: mdsplus---FLAVOR---gsi
+Version: --VERSION--.--RELEASE--
+Section: admin
+Priority: optional
+Architecture: --ARCH--
+Maintainer: Tom Fredian <twf@www.mdsplus.org>
+Description: MDSplus security package for using Globus Security Infrastructure for connection authentication and authorization.
+EOF

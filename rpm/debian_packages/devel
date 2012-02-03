@@ -1,0 +1,8 @@
+Package: mdsplus---FLAVOR---devel
+Version: --VERSION--.--RELEASE--
+Section: admin
+Priority: optional
+Architecture: --ARCH--
+Maintainer: Tom Fredian <twf@www.mdsplus.org>
+Description: MDSplus development package includes include files and static libraries.
+EOF
