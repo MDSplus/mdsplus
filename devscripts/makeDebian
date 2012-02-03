@@ -4,7 +4,6 @@ pkg=$2
 version=$3
 release=$4
 dist=$5
-mkdir -p ${WORKSPACE}/../${flavor}
 rm -Rf ${WORKSPACE}/debian/${pkg}
 for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/mdsplus/rpm/subpackages/${pkg}`
 do 
@@ -29,9 +28,10 @@ else
   debflavor="-${flavor}"
 fi
 sed s/--FLAVOR--/${debflavor}/ ${WORKSPACE}/mdsplus/rpm/debian_packages/${pkg} | \
-    s/--VERSION--/${version}/ | \
-    s/--RELEASE--/${release}/ | \
-    s/--ARCH--/${arch}/ > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
+sed s/--VERSION--/${version}/ | \
+sed s/--RELEASE--/${release}/ | \
+sed s/--ARCH--/${arch}/ > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
+mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
 dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}.${release}.${dist}.$(uname -p).deb
 
 
