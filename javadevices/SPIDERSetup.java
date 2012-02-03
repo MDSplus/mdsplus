@@ -130,7 +130,7 @@ public class SPIDERSetup extends DeviceSetup {
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Frequency: ");
         deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(11);
+        deviceField9.setOffsetNid(8);
         jPanel5.add(deviceField9);
 
         jPanel1.add(jPanel5);

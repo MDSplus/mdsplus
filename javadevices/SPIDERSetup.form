@@ -162,7 +162,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Frequency: "/>
                     <Property name="numCols" type="int" value="4"/>
-                    <Property name="offsetNid" type="int" value="11"/>
+                    <Property name="offsetNid" type="int" value="8"/>
                   </Properties>
                 </Component>
               </SubComponents>
