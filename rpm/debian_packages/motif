@@ -5,4 +5,3 @@ Priority: optional
 Architecture: --ARCH--
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus application and libraries which use the openmotif graphics system such as traverser, dwscope, dwpad, etc..
-EOF

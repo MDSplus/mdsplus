@@ -5,4 +5,3 @@ Priority: optional
 Architecture: --ARCH--
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus support for data acquisition devices used at the C-Mod experiment at MIT.
-EOF

@@ -5,4 +5,3 @@ Priority: optional
 Architecture: --ARCH--
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus HDF5 integration. Utilities to access HDF5 files from MDSplus and to convert HDF5 files to MDSplus trees.
-EOF

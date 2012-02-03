@@ -5,4 +5,3 @@ Priority: optional
 Architecture: --ARCH--
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus development package includes include files and static libraries.
-EOF

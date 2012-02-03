@@ -5,4 +5,3 @@ Priority: optional
 Architecture: --ARCH--
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus php modules for web cgi development.
-EOF
