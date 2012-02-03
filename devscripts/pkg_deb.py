@@ -51,7 +51,7 @@ def makeDebsCommand(args):
                     print line
                 print "================================="
             else:
-                debfile="%s/../%s/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,FLAVOR,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                 try:
                     os.stat(debfile)
                 except Exception,e:
@@ -72,12 +72,12 @@ def makeDebsCommand(args):
         else:
             for pkg in getPackages():
                 if updates[pkg]['Update']:
-                    debfile="%s/../%s/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,FLAVOR,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                    debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                     build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
                     if build_status != 0:
                         print "Error building debian package %s, status=%d" % (debfile,build_status)
                         sys.exit(build_status)
-                    writeRpmInfo("%s/DEBS/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
+                    writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
         if updates['python']['Update']:
             p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
