@@ -1,6 +1,6 @@
 import subprocess,datetime,os,sys
 from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform
-
+from pkg_rpms import writeRpmInfo
 def writeDebInfo(outfile):
     f=open(outfile+'-info.html','w')
     url="http://hudson.mdsplus.org/job/%s/%s" % (os.environ['JOB_NAME'],os.environ['BUILD_NUMBER'])
@@ -53,9 +53,9 @@ def makeDebsCommand(args):
             else:
                 try:
                     debfile="%s/../%s/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,FLAVOR,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
-                    os.stat(rpmfile)
+                    os.stat(debfile)
                 except Exception,e:
-                    print "%s missing. Rebuilding." % (rpmfile,)
+                    print "%s missing. Rebuilding." % (debfile,)
                     updates[pkg]['Update']=True
         if updates[pkg]['Update']:
             need_to_build=True
