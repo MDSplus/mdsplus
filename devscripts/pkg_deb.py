@@ -51,6 +51,8 @@ def makeDebsCommand(args):
                     print line
                 print "================================="
             else:
+                for i in (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW):
+                    print "%s = %s" % (str(type(i)),str(i))
                 debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                 try:
                     os.stat(debfile)
