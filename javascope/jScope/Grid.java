@@ -519,12 +519,12 @@ public class Grid
                     {
                         long datel = (long) x_values[i];
                         DateFormat df = new SimpleDateFormat("HH:mm:ss");
-                        df.setTimeZone(new SimpleTimeZone(0, "GMT"));              
+                        //GABdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //df.setTimeZone(TimeZone.getDefault());
 
                         DateFormat dfSubSec = new SimpleDateFormat("HH:mm:ss.SSS");
                         //--dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
-                        dfSubSec.setTimeZone(TimeZone.getDefault());
+                        //GABdfSubSec.setTimeZone(TimeZone.getDefault());
 
                         Date date = new Date();
                         date.setTime(datel);
@@ -534,7 +534,7 @@ public class Grid
                         DateFormat df1 = new SimpleDateFormat("d-MMM-yyyy");
 
                         //--df1.setTimeZone(new SimpleTimeZone(0, "GMT"));
-                        df1.setTimeZone(TimeZone.getDefault());
+                        //GABdf1.setTimeZone(TimeZone.getDefault());
 
                         String new_date_string = df1.format(date).toString();
 
@@ -664,11 +664,11 @@ public class Grid
     public long calculateDifference(Date a, Date b)
     {
         Calendar cal1 = Calendar.getInstance();
-        cal1.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        //GABcal1.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal1.setTime(a);
         cal1.set(cal1.get(Calendar.YEAR), cal1.get(Calendar.MONTH), cal1.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
         Calendar cal2 = Calendar.getInstance();
-        cal2.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        //GABcal2.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal2.setTime(b);
         cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();

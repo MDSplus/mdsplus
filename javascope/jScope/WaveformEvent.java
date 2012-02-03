@@ -202,8 +202,8 @@ public class WaveformEvent
                 {
                     DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
                     DateFormat format1 = new SimpleDateFormat("HHH:mm:ss");
-                    format.setTimeZone(new SimpleTimeZone(0, "GMT") );
-                    format1.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                    //format.setTimeZone(new SimpleTimeZone(0, "GMT") );
+                    //format1.setTimeZone(new SimpleTimeZone(0, "GMT"));
                     Date date = new Date();
                     date.setTime(dateValue + (long)point_x);
                     Date date1 = new Date();
@@ -252,7 +252,7 @@ public class WaveformEvent
                             if(showXasDate)
                             {
                                 DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
-                                format.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                                //format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                                 Date date = new Date();
                                 date.setTime(dateValue + (long)time_value);
                                 xt_string = ", T = " + format.format(date).toString();
@@ -271,7 +271,7 @@ public class WaveformEvent
                         if(showXasDate)
                         {
                             DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
-                            format.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                            //format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                             Date date = new Date();
                             date.setTime(dateValue + (long)point_x);
                             x_string = format.format(date).toString();

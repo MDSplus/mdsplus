@@ -1276,7 +1276,7 @@ public class MdsDataProvider
             seconds = -seconds;
         }
         Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal.setTime(new Date());
         cal.add(Calendar.HOUR, hours);
         cal.add(Calendar.MINUTE, minutes);
@@ -1293,7 +1293,7 @@ public class MdsDataProvider
         //First check Whether this is a date
         try {
             Calendar cal = Calendar.getInstance();
-            cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+            //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
             //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
             Date date = df.parse(in + " GMT");
