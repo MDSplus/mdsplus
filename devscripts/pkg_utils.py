@@ -31,7 +31,7 @@ def getLsbReleaseDist():
     return platform+version
 
 def getHardwarePlatform():
-    p=subprocess.Popen('uname -a',stdout=subprocess.PIPE,shell=True)
+    p=subprocess.Popen('uname -p',stdout=subprocess.PIPE,shell=True)
     hp=p.stdout.readline()
     p.wait()
     if hp=='x86_64':
