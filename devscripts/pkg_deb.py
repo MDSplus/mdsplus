@@ -51,8 +51,8 @@ def makeDebsCommand(args):
                     print line
                 print "================================="
             else:
+                debfile="%s/../%s/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,FLAVOR,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                 try:
-                    debfile="%s/../%s/%s/mdsplus%s-%s-%s-%d.%s.$s.deb" % (WORKSPACE,FLAVOR,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                     os.stat(debfile)
                 except Exception,e:
                     print "%s missing. Rebuilding." % (debfile,)
