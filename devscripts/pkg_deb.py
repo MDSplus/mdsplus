@@ -79,7 +79,7 @@ def makeDebsCommand(args):
                         sys.exit(build_status)
                     writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
         if updates['python']['Update']:
-            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
+            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsplus/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
             if python_status != 0:
                 print "Error building MDSplus-%s%s-%s" % (pythonflavor,VERSION,updates['python']['Release'])
