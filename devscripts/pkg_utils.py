@@ -32,7 +32,7 @@ def getLsbReleaseDist():
 
 def getHardwarePlatform():
     p=subprocess.Popen('uname -p',stdout=subprocess.PIPE,shell=True)
-    hp=p.stdout.readline()
+    hp=p.stdout.readline()[0:-2]
     p.wait()
     if hp=='x86_64':
         bits=64
