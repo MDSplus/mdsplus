@@ -580,6 +580,7 @@ class DIO4(Device):
                         evTerm = getattr(self, 'channel_%d_term'%(c+1)).data()
                         evTermCode = evTermDict[evTerm]
 
+
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
                         return 0
