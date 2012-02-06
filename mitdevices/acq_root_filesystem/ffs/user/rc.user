@@ -25,6 +25,12 @@ chmod a+rx /etc/acq200control.init
 
 # uncomment next line to activate the stored procedure
 #create_stored_init_procedure
+#
+# expand the tar file with all the optional software
+# in it.
+#
+(cd /; tar -xzf /bigffs/acq_root_filesystem.tgz)
+#
 ifyesrun $MDSPLUS /ffs/user/load.mdsplus
 ifyesrun $DIO2 /ffs/user/load.dio2
 ifyesrun $CP7452 /ffs/user/load.cp7452

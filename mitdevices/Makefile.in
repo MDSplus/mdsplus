@@ -795,7 +795,7 @@ dc1394_support2.o : dc1394_support2.c
 
 @MAKESHLIBDIR@acq_root_filesystem.tgz : $(DTACQ_FILESYSTEM)
 	echo $(DC) > acq_root_filesystem/ffs/user/MitFilesDate  
-	( cd acq_root_filesystem; tar -czf ../$@ . )
+	( cd acq_root_filesystem;  tar  --exclude=ffs -cvzf ../$@  . ; tar -cvzf ../$(@)_ffs ffs/user )
 
 @MAKEBINDIR@dtaq_update_board.sh : dtaq_update_board.sh
 	cp $< $@

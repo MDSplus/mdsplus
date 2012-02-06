@@ -7,7 +7,8 @@ fi
 board=$1
 
 scp $MDSPLUS_DIR/lib/acq_root_filesystem.tgz root@$board:/bigffs
-ssh root@$board '(cd /; tar -xzf /bigffs/acq_root_filesystem.tgz)'
+scp $MDSPLUS_DIR/lib/acq_root_filesystem.tgz_ffs root@$board:/bigffs
+ssh root@$board '(cd /; tar -xzf /bigffs/acq_root_filesystem.tgz_ffs)'
 echo "***********************************************************************"
 echo 
 echo "       do not forget to set options in /ffs/user/rc.user.options       "
