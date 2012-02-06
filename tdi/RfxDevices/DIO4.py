@@ -571,6 +571,7 @@ class DIO4(Device):
                                 return 0
                         frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
+                        print 'duration: ' + str(duration)
                         delay = getattr(self,'channel_%d_delay'%(c+1)).data()
                         dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
                         cyclicDict = {'NO':0, 'YES':1}

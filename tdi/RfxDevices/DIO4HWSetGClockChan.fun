@@ -11,7 +11,9 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 	private _DIO4_TC_GATE_DISABLED	=			0x00;
 	private _DIO4_TC_INT_DISABLE	=		0x00;
 	private _DIO4_TC_GATE_DISABLED = 0x00;
-	private _DIO4_TC_SINGLE_SHOT = 0;	
+	private _DIO4_TC_SINGLE_SHOT = 0;
+	private _DIO4_TC_TERMINATE_PHASE_2 = 0x2;
+	private _DIO4_TC_IDLE_LEVEL_0 = 0x0;
 	private _DIO4_TC_CYCLIC = 0x1;
 	private _DIO4_TC_TIMING_EVENT= 0x03;
 	private _DIO4_TC_TRIGGER_DISABLED= 0x00;
@@ -101,7 +103,14 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 	else
 		_mode = byte(_DIO4_TC_SINGLE_SHOT);
 
-	write(*, _mode);
+
+
+	if(_duration == -1)
+	{
+		write(*, 'continuous');
+		_mode = byte(_mode | _DIO4_TC_TERMINATE_PHASE_2);
+	}
+
 
 	_status = DIO4->DIO4_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(_mode), 
 		val(byte(_DIO4_TC_INT_DISABLE)), _levels);
@@ -121,6 +130,8 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
  
 	_duration_cycles = long(_duration / 1E-7 + 0.5) - 1;
         if(_duration_cycles < 0) _duration_cycles = 0;
+	write(*, '_duration_cycles', _duration_cycles);
+
 
 	_period = 1./_frequency;
 	_tot_cycles = long(_period / 1E-7 + 0.5);
@@ -142,6 +153,13 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 	_cycles = [long(1), long(1), long(_cycles_1), long(_cycles_2)];
 
 	write(*,'------>',_cycles);
+
+
+	if(_duration == -1)
+	{
+		_duration_cycles = 99999999;
+	}
+
 
 	_status = DIO4->DIO4_TC_SetPhaseTiming(val(_handle), val(byte(_channel + 1)), _cycles, val(_delay_cycles), 
 		val(_duration_cycles)); 
