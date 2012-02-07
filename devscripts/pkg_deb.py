@@ -100,6 +100,6 @@ def makeDebsCommand(args):
                 print "      No changes, skipping"
     if status=="error":
         sys.exit(1)
-    p=subprocess.Popen('rsync -a DEBS ../%s/;rsync -a SOURCES ../%s/;rsync -a EGGS ../%s/' % (FLAVOR,FLAVOR,FLAVOR),shell=True,cwd=WORKSPACE)
+    p=subprocess.Popen('rsync -av DEBS ../%s/;rsync -av SOURCES ../%s/;rsync -av EGGS ../%s/' % (FLAVOR,FLAVOR,FLAVOR),shell=True,cwd=WORKSPACE)
     sys.exit(p.wait())
 #!/bin/bash
