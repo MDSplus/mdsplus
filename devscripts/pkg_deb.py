@@ -63,7 +63,7 @@ def makeDebsCommand(args):
     if need_to_build:
         p=subprocess.Popen('tar zcf %s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,debflavor,VERSION) +\
                     './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
-                    'make',shell=True,cwd=os.getcwd())
+                    'make;make install',shell=True,cwd=os.getcwd())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
