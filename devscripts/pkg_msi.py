@@ -108,21 +108,21 @@ def makeMsiCommand(args):
     if need_to_build:
         if rebuild:
             print "%s, Starting build java" % (str(datetime.datetime.now()),)
-            p=subprocess.Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=WORKSPACE)
+            p=subprocess.Popen('pushd %s & devenv /build "Release|Java" mdsplus.sln' % (WORKSPACE,),shell=True)
             stat=p.wait()
             print "%s, Java build completed with status=%d" % (str(datetime.datetime.now()),stat)
             if (stat != 0):
                 print "Build failed!"
                 sys.exit(stat)
             print "%s, Starting to build 32-bit apps" % (str(datetime.datetime.now()),)
-            p=subprocess.Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=WORKSPACE)
+            p=subprocess.Popen('pushd %s & devenv /build "Release|Win32" mdsplus.sln' % (WORKSPACE,),shell=True)
             stat=p.wait()
             print "%s, 32-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
             if (stat != 0):
                 print "Build failed!"
                 sys.exit(stat)
             print "%s, Starting to build 64-bit apps" % (str(datetime.datetime.now()),)
-            p=subprocess.Popen('devenv /build "Release|x64" mdsplus.sln',shell=True,cwd=WORKSPACE)
+            p=subprocess.Popen('pushd %s & devenv /build "Release|x64" mdsplus.sln' % (WORKSPACE,),shell=True)
             stat=p.wait()
             print "%s, 64-bit apps build completed with status=%d" % (str(datetime.datetime.now()),stat)
             if (stat != 0):
@@ -130,7 +130,7 @@ def makeMsiCommand(args):
                 sys.exit(stat)
         msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,32,msi32,msiflavor)
         print "%s, Starting to build 32-bit setup kit" % (str(datetime.datetime.now()),)
-        p=subprocess.Popen('devenv /build "Release|Setup32" mdsplus.sln',shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('pushd %s & devenv /build "Release|Setup32" mdsplus.sln' % (WORKSPACE,),shell=True)
         stat=p.wait()
         print "%s, 32-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
         if (stat != 0):
@@ -138,7 +138,7 @@ def makeMsiCommand(args):
             sys.exit(stat)
         msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,64,msi64,msiflavor)
         print "%s, Starting to build 64-bit setup kit" % (str(datetime.datetime.now()),)
-        p=subprocess.Popen('devenv /build "Release|Setup64" mdsplus.sln',shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('pushd %s & devenv /build "Release|Setup64" mdsplus.sln' % (WORKSPACE,),shell=True)
         stat=p.wait()
         print "%s, 64-bit setup kit build completed with status=%d" % (str(datetime.datetime.now()),stat)
         if (stat != 0):
