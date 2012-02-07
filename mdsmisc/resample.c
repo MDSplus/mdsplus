@@ -114,7 +114,10 @@ int sig_elements;
     else
     {
       for (;j<sig_elements;j++) if (new_x_f[i] <= sig_x_f[j]) break;
-      new_y_f[i] = interp(sig_x_f[j-1],sig_y_f[j-1],sig_x_f[j],sig_y_f[j],new_x_f[i]);
+      if (new_x_f[i]==sig_x_f[j])
+        new_y_f[i]=sig_y_f[j];
+      else
+        new_y_f[i] = interp(sig_x_f[j-1],sig_y_f[j-1],sig_x_f[j],sig_y_f[j],new_x_f[i]);
     }
   }
   {
