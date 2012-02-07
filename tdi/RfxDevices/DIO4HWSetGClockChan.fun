@@ -105,7 +105,7 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 
 
 
-	if(_duration == -1)
+	if(_duration > 214)
 	{
 		write(*, 'continuous');
 		_mode = byte(_mode | _DIO4_TC_TERMINATE_PHASE_2);
@@ -155,9 +155,12 @@ public fun DIO4HWSetGClockChan(in _nid, in _board_id, in _channel, in _trig_mode
 	write(*,'------>',_cycles);
 
 
-	if(_duration == -1)
+	if(_duration > 214)
 	{
+		_duration_cycles = 0;
+/*
 		_duration_cycles = 99999999;
+*/
 	}
 
 
