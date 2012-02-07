@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---epics
+Package: mdsplus--FLAVOR---epics
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

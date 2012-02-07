@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---kernel
+Package: mdsplus--FLAVOR---kernel
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---camac
+Package: mdsplus--FLAVOR---camac
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

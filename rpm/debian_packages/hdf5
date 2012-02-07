@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---hdf5
+Package: mdsplus--FLAVOR---hdf5
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

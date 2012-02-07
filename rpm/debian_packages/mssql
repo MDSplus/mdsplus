@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---mssql
+Package: mdsplus--FLAVOR---mssql
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

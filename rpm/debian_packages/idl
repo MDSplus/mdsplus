@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---idl
+Package: mdsplus--FLAVOR---idl
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional

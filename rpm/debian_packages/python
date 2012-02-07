@@ -1,4 +1,4 @@
-Package: mdsplus---FLAVOR---python
+Package: mdsplus--FLAVOR---python
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
