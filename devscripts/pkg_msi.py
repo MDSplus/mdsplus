@@ -77,9 +77,11 @@ def makeMsiCommand(args):
     if len(checkRelease("windows")) > 0:
         need_to_build=True
         release=release+1
+    print "Making directory: %s\\..\\%s" % (WORKSPACE,FLAVOR) 
     try:
       os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR))
-    except:
+    except Exception,e:
+      print e
       pass
     for p in ('x86','x86_64'):
         try:
