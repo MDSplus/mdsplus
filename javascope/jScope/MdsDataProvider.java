@@ -68,16 +68,27 @@ public class MdsDataProvider
             }
             if(startSegment == -1)
                 throw new IOException("Frames outside defined time window");
-            //for(endSegment = startSegment; endSegment < numSegments-1; endSegment++)
-            for(endSegment = startSegment; endSegment < numSegments; endSegment++)
+//Check first if endTime is greated than the end of the last segment, to avoid rolling over all segments
+            float endLimits[] = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
+            if(numSegments > 100 && endLimits[0] < timeMax)
             {
-                try {
-                    float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
-                    startTimes[endSegment] = limits[0];
-                    if(limits[0] > timeMax)
-                        break;
-                }catch(Exception exc){break;}
+                endSegment = numSegments - 1;
+                for(int i = startSegment; i < numSegments; i++)
+                      startTimes[i] = startTimes[0] + i*(endLimits[0] - startTimes[0])/numSegments;
             }
+            else
+            {
+                for(endSegment = startSegment; endSegment < numSegments; endSegment++)
+                {
+                    try {
+                        float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
+                        startTimes[endSegment] = limits[0];
+                        if(limits[0] > timeMax)
+                            break;
+                    }catch(Exception exc){break;}
+                }
+            }
+
             actSegments = endSegment - startSegment;
 //Get Frame Dimension and frames per segment
             int dims[] = GetIntArray("shape(GetSegment("+inY+", 0))");
