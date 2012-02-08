@@ -401,7 +401,7 @@ def listCommand(args):
             print o
 
 def pkgaddCommand(args):
-    global orig_pwd
+    from __main__ import orig_pwd
     pkg=args[2]
     path=args[3]
     try:
@@ -409,12 +409,14 @@ def pkgaddCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    p=subprocess.Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path.replace('$','\\$'),os.devnull),shell=True,cwd=orig_pwd)
+    if 'win' not in sys.platform:
+        path=path.replace('$','\\$')
+    p=subprocess.Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=orig_pwd)
     if p.wait() == 0:
         print "%s added to package %s" % (path,pkg)
 
 def pkgremoveCommand(args):
-    global orig_pwd
+    from __main__ import orig_pwd
     pkg=args[2]
     path=args[3]
     try:
