@@ -99,6 +99,7 @@ def makeRpmsCommand(args):
     DIST=getDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
+    DISTPATH=args[2]+"/"+DIST+"/"+FLAVOR+"/"
     for d in ['RPMS','SOURCES','SPECS','SRPMS','EGGS']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
@@ -229,5 +230,6 @@ def makeRpmsCommand(args):
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
     if status in ('ok','skip'):
-        p=subprocess.Popen('rsync -a RPMS ../%s;rsync -a SOURCES ../%s;rsync -a EGGS ../%s' % (FLAVOR,FLAVOR,FLAVOR),shell=True,cwd=WORKSPACE)
+        
+        p=subprocess.Popen('mkdir -p %s;rsync -a RPMS %s;rsync -a SOURCES %s;rsync -a EGGS %s' % (DISTPATH,DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         sys.exit(p.wait())
