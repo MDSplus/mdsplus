@@ -1,4 +1,4 @@
-import os,subprocess,datetime
+import os,subprocess,datetime,sys
 from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor, newRelease
 
 def msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,bits,outfile,msiflavor):
