@@ -66,6 +66,7 @@ def makeMsiCommand(args):
     FLAVOR=getFlavor()
     print "WORKSPACE is %s" % (WORKSPACE,)
     VERSION=getVersion()
+    DISTPATH=args[2]+'\\Windows\\'+FLAVOR
     if FLAVOR=="stable":
         msiflavor=""
         pythonflavor=""
@@ -150,4 +151,6 @@ def makeMsiCommand(args):
         newRelease('windows',FLAVOR,VERSION,release,'win')
         build_url=os.environ['BUILD_URL']
         writeMsiInfo(msi32)
-        writeMsiInfo(msi64)
+        writeMsiInfo(msi64)    
+    p=subprocess.Popen('pushd %s & mkdir %s & xcopy /e/y ..\\%s %s' % (WORKSPACE,DISTPATH,FLAVOR,DISTPATH),shell=True)
+    sys.exit(p.wait())
