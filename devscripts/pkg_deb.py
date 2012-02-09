@@ -18,6 +18,7 @@ def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
+    DISTPATH=args[2]+'/'+DIST+'/'+FLAVOR+'/'
     for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
@@ -100,6 +101,5 @@ def makeDebsCommand(args):
                 print "      No changes, skipping"
     if status=="error":
         sys.exit(1)
-    p=subprocess.Popen('rsync -av DEBS ../%s/;rsync -av SOURCES ../%s/;rsync -av EGGS ../%s/' % (FLAVOR,FLAVOR,FLAVOR),shell=True,cwd=WORKSPACE)
+    p=subprocess.Popen('mkdir %s;rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
     sys.exit(p.wait())
-#!/bin/bash
