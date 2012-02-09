@@ -70,6 +70,14 @@ public class MdsDataProvider
                 throw new IOException("Frames outside defined time window");
 //Check first if endTime is greated than the end of the last segment, to avoid rolling over all segments
             float endLimits[] = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
+//Throw away spurious frames at the end
+            while(endLimits == null || endLimits.length != 2)
+            {
+                numSegments--;
+                if(numSegments == 0)
+                    break;
+                endLimits = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
+            }
             if(numSegments > 100 && endLimits[0] < timeMax)
             {
                 endSegment = numSegments - 1;
