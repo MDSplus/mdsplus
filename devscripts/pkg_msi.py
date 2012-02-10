@@ -42,7 +42,7 @@ def msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,bits,outfile,msiflavor):
         elif '"PostBuildEvent"' in line:
             line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\..\\\\%s\\\\%s\\\\%s.%d\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (WORKSPACE.replace('\\','\\\\'),FLAVOR,setupdir,VERSION,release)
         elif '"Url"' in line:
-            line='        "Url" = "8:http://www.mdsplus.org/windows-%s/%s/%s.%d"' % (FLAVOR,setupdir,VERSION,release)
+            line='        "Url" = "8:http://www.mdsplus.org/dist/%s/%s/%s.%d"' % (FLAVOR,setupdir,VERSION,release)
         print >>f_out,line
         line=f_in.readline()
     f_in.close()
