@@ -26,7 +26,7 @@ def getLsbReleaseDist():
     p=subprocess.Popen('lsb_release -a -s 2>/dev/null',stdout=subprocess.PIPE,shell=True)
     info=p.stdout.readlines()
     p.wait()
-    platform=info[0][0:-2]
+    platform=info[0][0:-1]
     version=info[2][0:-1].split('.')[0]
     return platform+version
 

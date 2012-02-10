@@ -32,6 +32,6 @@ sed s/--VERSION--/${version}/ | \
 sed s/--RELEASE--/${release}/ | \
 sed s/--ARCH--/${arch}/ > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
 mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
-dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}.${release}.${dist}.$(uname -p).deb
+dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}-${release}.${dist}.$(uname -p).deb
 
 
