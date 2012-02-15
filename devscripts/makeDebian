@@ -5,12 +5,12 @@ version=$3
 release=$4
 dist=$5
 rm -Rf ${WORKSPACE}/debian/${pkg}
-for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/mdsplus/rpm/subpackages/${pkg}`
+for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/rpm/subpackages/${pkg}`
 do 
     mkdir -p ${WORKSPACE}/debian/${pkg}$(dirname ${f})
     rsync -a ${WORKSPACE}/BUILDROOT${f} ${WORKSPACE}/debian/${pkg}$(dirname ${f})
 done
-for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/mdsplus/rpm/subpackages/${pkg}`
+for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/rpm/subpackages/${pkg}`
 do
     rm -Rf ${WORKSPACE}/debian/${pkg}${f}
 done
@@ -27,7 +27,7 @@ then
 else
   debflavor="-${flavor}"
 fi
-sed s/--FLAVOR--/${debflavor}/ ${WORKSPACE}/mdsplus/rpm/debian_packages/${pkg} | \
+sed s/--FLAVOR--/${debflavor}/ ${WORKSPACE}/rpm/debian_packages/${pkg} | \
 sed s/--VERSION--/${version}/ | \
 sed s/--RELEASE--/${release}/ | \
 sed s/--ARCH--/${arch}/ > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
