@@ -11,7 +11,7 @@ def writeDebInfo(outfile):
     f.close()
 
 def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
-    p=subprocess.Popen('%s/mdsplus/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
     return p.wait()
 
 def makeDebsCommand(args):
@@ -80,12 +80,12 @@ def makeDebsCommand(args):
                         sys.exit(build_status)
                     writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
         if updates['python']['Update']:
-            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsplus/mdsobjects/python"%(WORKSPACE))
+            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
             if python_status != 0:
                 print "Error building MDSplus-%s%s-%s" % (pythonflavor,VERSION,updates['python']['Release'])
             else:
-                p=subprocess.Popen('mv dist/* %s/EGGS/;rm -Rf dist'%(WORKSPACE,),shell=True,cwd="%s/mdsplus/mdsobjects/python"%(WORKSPACE))
+                p=subprocess.Popen('mv dist/* %s/EGGS/;rm -Rf dist'%(WORKSPACE,),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
                 p.wait()
     else:
         print 'All DEBS are up to date'
