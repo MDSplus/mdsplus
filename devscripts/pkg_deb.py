@@ -37,15 +37,18 @@ def makeDebsCommand(args):
     for pkg in getPackages():
         updates[pkg]=dict()
         updates[pkg]['Update']=False
+        updates[pkg]['Tag']=False
         RELEASE_TAG=getReleaseTag(pkg)
         updates[pkg]['Release']=getRelease(pkg)
         if RELEASE_TAG is None:
             print "No releases yet for %s mdsplus-%s. Building." % (FLAVOR,pkg)
             updates[pkg]['Update']=True
+            updates[pkg]['Tag']=True
         else:
             c=checkRelease(pkg)
             if len(c) > 0:
                 updates[pkg]['Update']=True
+		updates[pkg]['Tag']=True
                 updates[pkg]['Release']=updates[pkg]['Release']+1
                 print "New %s release for mdsplus-%s. Building.\n==========================" % (FLAVOR,pkg)
                 for line in c:
@@ -93,12 +96,9 @@ def makeDebsCommand(args):
     if status=="ok":
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
-            print "Checking %s for new release" % (pkg,)
-            if updates[pkg]['Update']:
-                print "      New release. Tag modules with %s %s %s %s" % (FLAVOR,VERSION,updates[pkg]['Release'],DIST)
+            if updates[pkg]['Tag']:
+                print "New release. Tag %s modules with %s %s %s %s" % (pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
                 newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
-            else:
-                print "      No changes, skipping"
     if status=="error":
         sys.exit(1)
     p=subprocess.Popen('mkdir -p %s;rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
