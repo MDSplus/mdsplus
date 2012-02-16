@@ -11,5 +11,6 @@ fun public MdsDevices() {
     'NI6259AI\0',  'RfxDevices\0',
     'NI6682\0',  'RfxDevices\0',
     'SPIDER\0',  'RfxDevices\0',
-    'SPIDER_SM\0', 'RfxDevices\0']);
+    'SPIDER_SM\0', 'RfxDevices\0',
+    'FAKECAMERA\0', 'RfxDevices\0']);
 }
