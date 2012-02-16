@@ -65,7 +65,7 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        p=subprocess.Popen('ln -sf $(pwd) ../mdsplus%s-%s;tar zcfh ../SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus%s-%s;rm -f ../mdsplus%s-%s;' % (debflavor,VERSION,debflavor,VERSION,debflavor,VERSION,debflavor,VERSION) +\
+        p=subprocess.Popen('ln -sf $(pwd) ../mdsplus%s-%s;tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus%s-%s;rm -f ../mdsplus%s-%s;' % (debflavor,VERSION,debflavor,VERSION,debflavor,VERSION,debflavor,VERSION) +\
                     './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
                     'make;make install',shell=True,cwd=os.getcwd())
         build_status=p.wait()
