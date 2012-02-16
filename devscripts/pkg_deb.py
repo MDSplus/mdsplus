@@ -103,7 +103,7 @@ def makeDebsCommand(args):
         sys.exit(1)
     p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
     pstat=p.wait()
-    if (pstart == 0):
+    if (pstat == 0):
       p=subprocess.Popen('rm -Rf DEBS sources EGGS',shell=True,cwd=WORKSPACE)
       pstat=p.wait()
     sys.exit(pstat)
