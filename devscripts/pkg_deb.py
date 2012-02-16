@@ -18,7 +18,7 @@ def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
-    DISTPATH=args[2]
+    DISTPATH=args[2]+'/'+DIST+'/'+FLAVOR+'/'
     for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
