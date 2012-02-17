@@ -94,6 +94,16 @@ def makeDebsCommand(args):
         print 'All DEBS are up to date'
         status="skip"
     if status=="ok":
+        p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
+        pstat=p.wait()
+        if pstat != 0:
+            print "Error copying files to destination"
+            sys.exit(1)
+        p=subprocess.Popen('rm -Rf DEBS SOURCES EGGS',shell=True,cwd=WORKSPACE)
+        pstat=p.wait()
+        if pstat!=0:
+            print "Error removing temporary buld directories"
+            sys.exit(1)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
             if updates[pkg]['Tag']:
@@ -101,9 +111,3 @@ def makeDebsCommand(args):
                 newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
     if status=="error":
         sys.exit(1)
-    p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
-    pstat=p.wait()
-    if (pstat == 0):
-      p=subprocess.Popen('rm -Rf DEBS sources EGGS',shell=True,cwd=WORKSPACE)
-      pstat=p.wait()
-    sys.exit(pstat)
