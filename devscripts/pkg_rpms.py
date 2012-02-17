@@ -136,20 +136,6 @@ def makeRpmsCommand(args):
                 for line in c:
                     print line
                 print "================================="
-#            else:
-#                try:
-#                    rpmfile="%s/RPMS/x86_64/mdsplus%s-%s-%s-%s.%s.x86_64.rpm" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST)
-#                    os.stat(rpmfile)
-#                except Exception,e:
-#                    print "%s missing. Rebuilding." % (rpmfile,)
-#                    updates[pkg]['Update']=True
-#                try:
-#                    rpmfile="%s/RPMS/i686/mdsplus%s-%s-%s-%s.%s.i686.rpm" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST)
-#                    os.stat(rpmfile)
-#                except Exception,e:
-#                    print "%s missing. Rebuilding." % (rpmfile,)
-#                    updates[pkg]['Update']=True
-                
         if updates[pkg]['Update']:
             need_to_build=True
         addPkgToRpmSpec(specfile,pkg,updates[pkg]['Release'],DIST,rpmflavor)
@@ -208,19 +194,9 @@ def makeRpmsCommand(args):
         print 'All RPMS are up to date'
         status="skip"
     if status=="ok":
-        print "Build completed successfully. Checking for new releaseas and tagging the modules"
-        for pkg in getPackages():
-            print "Checking %s for new release" % (pkg,)
-            if updates[pkg]['Update']:
-                print "      New release. Tag modules with %s %s %s %s" % (FLAVOR,VERSION,updates[pkg]['Release'],DIST)
-                newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
-            else:
-                print "      No changes, skipping"
         print "Updating repository rpms"
         status=makeRepoRpms()
-    if status=="error":
-        sys.exit(1)
-    elif status=="ok":
+    if status=="ok":
         try:
             p=subprocess.Popen('createrepo . >/dev/null',shell=True,cwd=WORKSPACE+"/RPMS")
             stat=p.wait()
@@ -229,8 +205,7 @@ def makeRpmsCommand(args):
         except Exception,e:
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
-    if status=='ok':
-        p=subprocess.Popen('rsync -a RPMS %s;rsync -a SOURCES %s;rsync -a EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
 	  print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
@@ -238,4 +213,14 @@ def makeRpmsCommand(args):
           p=subprocess.Popen('rm -Rf RPMS SOURCES EGGS',shell=True,cwd=WORKSPACE)
           pstat=p.wait()
         sys.exit(pstat)
+        print "Build completed successfully. Checking for new releaseas and tagging the modules"
+        for pkg in getPackages():
+            print "Checking %s for new release" % (pkg,)
+            if updates[pkg]['Update']:
+                print "      New release. Tag modules with %s %s %s %s" % (FLAVOR,VERSION,updates[pkg]['Release'],DIST)
+                newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
+            else:
+                print "      No changes, skipping"
+    if status=="error":
+        sys.exit(1)
     sys.exit(0)
