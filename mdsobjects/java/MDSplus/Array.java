@@ -16,7 +16,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.22
  */
-public abstract class Array extends Data 
+public abstract class Array extends Data
 {
     int [] dims = new int[0];
     public Array(){}
@@ -131,4 +131,5 @@ public abstract class Array extends Data
                 setElementAt(startIdx + i, data);
         }
     }
+
 }
