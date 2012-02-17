@@ -230,7 +230,7 @@ def makeRpmsCommand(args):
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
     if status=='ok':
-        p=subprocess.Popen('rsync -a RPMS %s;rsync -a SOURCES %s;rsync -a EGGS %s' % (DISTPATH,DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('rsync -a RPMS %s;rsync -a SOURCES %s;rsync -a EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
 	  print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
