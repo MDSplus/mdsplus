@@ -220,7 +220,7 @@ def makeRpmsCommand(args):
         status=makeRepoRpms()
     if status=="error":
         sys.exit(1)
-    else:
+    elif status=="ok":
         try:
             p=subprocess.Popen('createrepo . >/dev/null',shell=True,cwd=WORKSPACE+"/RPMS")
             stat=p.wait()
@@ -229,8 +229,7 @@ def makeRpmsCommand(args):
         except Exception,e:
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
-    if status in ('ok','skip'):
-        
+    if status=='ok':
         p=subprocess.Popen('rsync -a RPMS %s;rsync -a SOURCES %s;rsync -a EGGS %s' % (DISTPATH,DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
@@ -239,3 +238,4 @@ def makeRpmsCommand(args):
           p=subprocess.Popen('rm -Rf RPMS SOURCES EGGS',shell=True,cwd=WORKSPACE)
           pstat=p.wait()
         sys.exit(pstat)
+     sys.exit(0)
