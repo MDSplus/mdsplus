@@ -238,4 +238,4 @@ def makeRpmsCommand(args):
           p=subprocess.Popen('rm -Rf RPMS SOURCES EGGS',shell=True,cwd=WORKSPACE)
           pstat=p.wait()
         sys.exit(pstat)
-     sys.exit(0)
+    sys.exit(0)
