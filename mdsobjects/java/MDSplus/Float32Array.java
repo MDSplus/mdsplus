@@ -51,7 +51,7 @@ public class Float32Array extends Array
         int currSize = 0;
         for(int i = 0; i < arr.length; i++)
         {
-            System.arraycopy(linArr, currSize, arr[i], 0, arr[i].length);
+            System.arraycopy(arr[i], 0, linArr, currSize, arr[i].length);
             currSize+= arr[i].length;
          }
         return linArr;

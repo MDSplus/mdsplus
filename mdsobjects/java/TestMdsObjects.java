@@ -6,6 +6,9 @@ public class TestMdsObjects
    static void testRows()
    {
        try {
+
+
+
             Tree tree = new Tree("test",1);
             TreeNode sig=tree.getNode("\\sig_1");
             sig.deleteData();
@@ -104,6 +107,16 @@ public class TestMdsObjects
     public static void main(java.lang.String args[])
     {
         try {
+           int m[][];
+           m = new int[2][2];
+           m[0][0] = 0;
+           m[0][1] = 1;
+           m[1][0] = 2;
+           m[1][1] = 3;
+
+           Int32Array ia = new Int32Array(m);
+           System.out.println(ia);
+           System.exit(0);
         Tree tree = new Tree("test", 1);
         long size = tree.getDatafileSize();
         System.out.println(size);
