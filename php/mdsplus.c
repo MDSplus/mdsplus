@@ -200,12 +200,16 @@ PHP_FUNCTION(mdsplus_connect)
 	int arg_len, len;
     int handle;
     int persistent;
+    long zarg_len;
+    long zpersistent;
 
     mdsplus_replace_error(0,1);
     persistent = 0;
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &arg, &arg_len, &persistent) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &arg, &zarg_len, &zpersistent) == FAILURE) {
 	  	RETURN_FALSE;
     }
+    arg_len=(int)zarg_len;
+    persistent=(int)zpersistent;
     handle = (!persistent || lastHost == 0 || persistentConnection == -1 || strcmp(arg,lastHost) != 0) ? ConnectToMds(arg) : persistentConnection; 
     if (handle != -1)
 	{
@@ -239,10 +243,11 @@ PHP_FUNCTION(mdsplus_connect)
 PHP_FUNCTION(mdsplus_disconnect)
 {
 	int socket;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &socket) == FAILURE) {
+        long int zsocket;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &zsocket) == FAILURE) {
 		return;
 	}
+        socket=(int)zsocket;
     mdsplus_replace_error(0,1);
     if (socket == persistentConnection)
       persistentConnection=-1;
@@ -262,13 +267,19 @@ PHP_FUNCTION(mdsplus_open)
 {
 	char *tree = NULL;
 	int arg_len, len;
+        long zarg_len;
     int shot;
+    long zshot;
     int socket;
+    long zsocket;
     int status;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsl", &socket, &tree, &arg_len, &shot) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsl", &zsocket, &tree, &zarg_len, &zshot) == FAILURE) {
 		return;
 	}
+    socket=(int)zsocket;
+    arg_len=(int)zarg_len;
+    shot=(int)zshot;
     mdsplus_replace_error(0,1);
     status = MdsOpen(socket,tree,shot);
     if (status & 1)
@@ -293,11 +304,13 @@ PHP_FUNCTION(mdsplus_open)
 PHP_FUNCTION(mdsplus_close)
 {
     int socket;
+    long zsocket;
     int status;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &socket) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &zsocket) == FAILURE) {
 		return;
 	}
+    socket=(int)zsocket;
     mdsplus_replace_error(0,1);
     status = MdsClose(socket);
     if (status & 1)
@@ -360,6 +373,8 @@ PHP_FUNCTION(mdsplus_value)
 	char *expression = NULL;
 	int expression_len, len;
     int socket;
+    long zsocket;
+    long zexpression_len;
     struct descrip ans;
     int status;
     char *error=NULL;
@@ -370,8 +385,10 @@ PHP_FUNCTION(mdsplus_value)
     if (num_args < 2 || num_args > 252)
 		WRONG_PARAM_COUNT;
 
-	if (zend_parse_parameters(2 TSRMLS_CC, "ls!", &socket, &expression, &expression_len) == FAILURE)
+	if (zend_parse_parameters(2 TSRMLS_CC, "ls!", &zsocket, &expression, &zexpression_len) == FAILURE)
 		return;
+    socket=(int)zsocket;
+    expression_len=(int)zexpression_len;
     mdsplus_replace_error(0,1);
     if (num_args == 2)
 		status = MdsValue(socket,expression,&ans,0);
@@ -514,6 +531,9 @@ PHP_FUNCTION(mdsplus_put)
 	char *expression = NULL;
 	int expression_len, len;
     int socket;
+    long zsocket;
+    long znode_len;
+    long zexpression_len;
     struct descrip ans;
     int status;
     int num_args = ZEND_NUM_ARGS();
@@ -523,8 +543,11 @@ PHP_FUNCTION(mdsplus_put)
     if (num_args < 3 || num_args > 252)
 		WRONG_PARAM_COUNT;
 
-	if (zend_parse_parameters(3 TSRMLS_CC, "lss!", &socket, &node, &node_len, &expression, &expression_len) == FAILURE)
+	if (zend_parse_parameters(3 TSRMLS_CC, "lss!", &zsocket, &node, &znode_len, &expression, &zexpression_len) == FAILURE)
 		return;
+    socket=(int)zsocket;
+    node_len=(int)znode_len;
+    expression_len=(int)zexpression_len;
     mdsplus_replace_error(0,1);
     if (num_args == 3)
 		status = MdsPut(socket,node,expression,&ans,0);
