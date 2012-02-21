@@ -10,7 +10,7 @@ do
     mkdir -p ${WORKSPACE}/debian/${pkg}$(dirname ${f})
     rsync -a ${WORKSPACE}/BUILDROOT${f} ${WORKSPACE}/debian/${pkg}$(dirname ${f})
 done
-for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/rpm/subpackages/${pkg}`
+for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
 do
     rm -Rf ${WORKSPACE}/debian/${pkg}${f}
 done
