@@ -3,6 +3,6 @@ Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
 Architecture: --ARCH--
-Requires: mdsplus--FLAVOR---kernel
+Depends: mdsplus--FLAVOR---kernel
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus development package includes include files and static libraries.
