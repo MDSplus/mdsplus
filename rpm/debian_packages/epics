@@ -1,0 +1,8 @@
+Package: mdsplus--FLAVOR---epics
+Version: --VERSION--.--RELEASE--
+Section: admin
+Priority: optional
+Architecture: --ARCH--
+Depends: mdsplus--FLAVOR---kernel
+Maintainer: Tom Fredian <twf@www.mdsplus.org>
+Description: MDSplus EPICS integration.

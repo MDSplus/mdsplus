@@ -1,2 +1,0 @@
-#!/bin/sh
-`dirname $0`/mdsdcl -prep 'set command cts_commands -prompt="CTS> " -def_file="*.cts"' $1 $2 $3 $4 $5 $6 $7 $8
