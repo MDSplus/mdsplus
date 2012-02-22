@@ -19,6 +19,7 @@ def makeDebsCommand(args):
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
     DISTPATH=args[2]+'/'+DIST+'/'+FLAVOR+'/'
+    need_to_build=len(args) > 3:
     for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
@@ -32,7 +33,6 @@ def makeDebsCommand(args):
     else:
         debflavor="-"+FLAVOR
         pythonflavor=FLAVOR+"-"
-    need_to_build=False
     updates=dict()
     for pkg in getPackages():
         updates[pkg]=dict()
