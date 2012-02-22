@@ -1,8 +1,0 @@
-#!/bin/sh
-#
-#
-#  put globus libraries referenced by libMdsIpShr in MDSplus lib directory
-#
-#  $1 = globus library location
-#
-for i in `ldd ../lib/libMdsIpShr.so | grep libglobus | sort -u | awk '{print $1}'`; do cp $1/$i ../lib/; done

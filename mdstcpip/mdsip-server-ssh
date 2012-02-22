@@ -1,2 +1,0 @@
-#!/bin/sh
-exec mdsip -P ssh 2>> ~/mdsip-ssh.log
