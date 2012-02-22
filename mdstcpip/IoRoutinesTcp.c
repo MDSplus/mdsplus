@@ -244,7 +244,7 @@ static int tcp_disconnect(int conid) {
     status = close(s);
     status = shutdown(s,2);
   }
-  fflush(stdin);
+  fflush(stdout);
   fflush(stderr);
   return status;
 }
