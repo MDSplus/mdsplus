@@ -1,8 +1,0 @@
-LIBRARY	tdishrext
-EXPORTS
-;
-rMdsConnect
-rMdsDisconnect
-rMdsList
-rMdsValue
-rMdsCurrent
