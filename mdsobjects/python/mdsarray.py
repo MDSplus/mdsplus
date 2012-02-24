@@ -168,8 +168,14 @@ class Uint64Array(Array):
 class Float32Array(Array):
     """32-bit floating point number"""
 
+class Complex64Array(Array):
+    """32-bit complex number"""
+
 class Float64Array(Array):
     """64-bit floating point number"""
+
+class Complex128Array(Array):
+    """64-bit complex number"""
 
 class StringArray(Array):
     """String"""

@@ -65,7 +65,7 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
+    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
         from mdsscalar import makeScalar
         return makeScalar(value)
     if isinstance(value,tuple) or isinstance(value,list):

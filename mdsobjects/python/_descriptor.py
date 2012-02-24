@@ -92,6 +92,12 @@ class descriptor(_C.Structure):
             self.pointer=_C.cast(_C.pointer(_C.c_double(value)),_C.POINTER(descriptor))
             self.addToCache(value)
             return
+        if isinstance(value,complex):
+            self.length=8
+            self.dtype=DTYPE_FLOAT_COMPLEX
+            self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),_C.POINTER(descriptor))
+	    self.addToCache(value)
+	    return
         
         if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
             value=makeData(value)
@@ -311,6 +317,12 @@ class descriptor(_C.Structure):
                     return makeScalar('')
                 else:
                     return makeScalar(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
+            if (self.dtype == DTYPE_FSC):
+                ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
+		return makeScalar(complex(ans[0],ans[1]))
+            if (self.dtype == DTYPE_FTC):
+                ans=_C.cast(self.pointer,_C.POINTER((_C.c_double*2))).contents
+                return makeScalar(complex(ans[0],ans[1]))
             if (self.length == 0):
                 return makeData(None)
             try:
@@ -417,6 +429,14 @@ class descriptor(_C.Structure):
                 return makeArray(Data.execute("float($)",(descr,)))
             if self.dtype == DTYPE_D or self.dtype == DTYPE_G:
                 return makeArray(Data.execute("FT_FLOAT($)",(descr,)))
+            if self.dtype == DTYPE_FSC:
+		return makeArray(_N.ndarray(shape=shape,
+                                            dtype=_N.complex64,
+                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_float * (descr.arsize*2/descr.length))).contents)))
+            if self.dtype == DTYPE_FTC:
+                return makeArray(_N.ndarray(shape=shape,
+                                            dtype=_N.complex128,
+                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_double * (descr.arsize*2/descr.length))).contents)))
             try:
                 a=_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
                                   buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents))
