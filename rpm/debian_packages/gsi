@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---gsi
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Depends: mdsplus--FLAVOR---kernel,libglobus-gridmap-callout-error0,libglobus-gssapi-error2,libglobus-xio-gsi-driver0,libcurl3
-Description: MDSplus security package for using Globus Security Infrastructure for connection authentication and authorization.

@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---motif
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---kernel,libmotif4
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus application and libraries which use the openmotif graphics system such as traverser, dwscope, dwpad, etc..

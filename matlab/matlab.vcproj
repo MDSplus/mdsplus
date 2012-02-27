@@ -119,7 +119,7 @@
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd &quot;$(SolutionDir)$(PlatformName)\$(ConfigurationName)&quot;&#x0D;&#x0A;&quot;$(MATLAB_DIR)\bin\mex.bat&quot; &quot;$(SolutionDir)matlab\mdsipmex.c&quot; -I&quot;$(SolutionDir)include&quot; -L&quot;.&quot; -lmdsipshr wsock32.lib"
+				BuildCommandLine="cd &quot;$(SolutionDir)$(PlatformName)\$(ConfigurationName)&quot;&#x0D;&#x0A;mex &quot;$(SolutionDir)matlab\mdsipmex.c&quot; -I&quot;$(SolutionDir)include&quot; -L&quot;.&quot; -lmdsipshr wsock32.lib"
 				ReBuildCommandLine=""
 				CleanCommandLine="del $(SolutionDir)$(PlatformName)\$(ConfigurationName)\mdsipmex.mexw64"
 				Output="$(SolutionDir)$(PlatformName)\$(ConfigurationName)\mdsipmex.mexw64"
@@ -329,14 +329,26 @@
 			<File
 				RelativePath=".\make_mdsipmex.m"
 				>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\mdsipmex.c"
 				>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\mdsipmex.def"
 				>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>
