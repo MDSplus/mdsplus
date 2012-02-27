@@ -99,6 +99,11 @@ def makeDebsCommand(args):
         if pstat != 0:
             print "Error copying files to destination"
             sys.exit(1)
+        p=subprocess.Popen('rsync -av --delete dist/* %s/' % (DISTPATH,),shell=True,cwd=WORKSPACE)
+        pstat=p.wait()
+        if pstat != 0:
+            print "Error copying repository to destination"
+            sys.exit(1)
         p=subprocess.Popen('rm -Rf EGGS',shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat!=0:
