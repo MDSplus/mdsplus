@@ -38,7 +38,7 @@ Label: MDSplus
 Suite: --FLAVOR--
 Codename: MDSplus
 Version: 1.0
-Architectures: --ARCH--
+Architectures: --ARCH-- source
 Components: main
 Description: MDSplus packages
 EOF
