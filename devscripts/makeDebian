@@ -27,10 +27,10 @@ then
 else
   debflavor="-${flavor}"
 fi
-sed s/--FLAVOR--/${debflavor}/ ${WORKSPACE}/rpm/debian_packages/${pkg} | \
-sed s/--VERSION--/${version}/ | \
-sed s/--RELEASE--/${release}/ | \
-sed s/--ARCH--/${arch}/ > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
+sed s/--FLAVOR--/${debflavor}/g ${WORKSPACE}/rpm/debian_packages/${pkg} | \
+sed s/--VERSION--/${version}/g | \
+sed s/--RELEASE--/${release}/g | \
+sed s/--ARCH--/${arch}/g > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
 mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
 dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}-${release}.${dist}.$(uname -p).deb
 
