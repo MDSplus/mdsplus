@@ -1345,12 +1345,13 @@ int clearWindow(char *name, int idx)
 	}
 }
 
-int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row, int column,
+int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
 			   char *colour, char *name, int inter, int marker)
 {
 	jstring jname, jcolour;
 	jobject jobj = jobjects[obj_idx];
 	jfloatArray jx, jy;
+	jdoubleArray jxDouble;
 	jclass cls;
 	jmethodID mid;
 	jboolean jinter;
@@ -1361,10 +1362,18 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row,
 		return -1;
 	}
 	jinter = inter;
-	jx = (*env)->NewFloatArray(env,  num_points);
 	jy = (*env)->NewFloatArray(env,  num_points);
-	(*env)->SetFloatArrayRegion(env,  jx, 0, num_points, (jfloat *)x);
 	(*env)->SetFloatArrayRegion(env,  jy, 0, num_points, (jfloat *)y);
+	if(xType == DTYPE_FLOAT)
+	{	
+	    jx = (*env)->NewFloatArray(env,  num_points);
+	    (*env)->SetFloatArrayRegion(env,  jx, 0, num_points, (jfloat *)x);
+	}
+	else
+	{	
+	    jxDouble = (*env)->NewDoubleArray(env,  num_points);
+	    (*env)->SetDoubleArrayRegion(env,  jxDouble, 0, num_points, (jdouble *)x);
+	}
 	if(name)
 		jname = (*env)->NewStringUTF(env,  name);
 	else
@@ -1379,21 +1388,30 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row,
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
 		return -1;
 	}
-	mid = (*env)->GetMethodID(env,  cls, "addSignal",
+	if(xType == DTYPE_FLOAT)
+	    mid = (*env)->GetMethodID(env,  cls, "addSignal",
 		"([F[FIILjava/lang/String;Ljava/lang/String;ZI)V");
-    if (mid == 0)
+	else if(xType == DTYPE_DOUBLE)
+	    mid = (*env)->GetMethodID(env,  cls, "addSignal",
+		"([D[FIILjava/lang/String;Ljava/lang/String;ZI)V");
+	else
+	{
+		printf("\nUnsupported type for X array in CompositeWaveDisplay: %d!\n", xType);
+		return -1;
+	}
+
+    	if (mid == 0)
 	{
 		printf("\nCannot find method addSignal in CompositeWaveDisplay classes!\n");
 		return -1;
 	}
-
-    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour, jinter, marker);
-    return 0;
+        (*env)->CallVoidMethod(env, jobj, mid, (xType == DTYPE_FLOAT)?jx:jxDouble, jy, row, column, jname, jcolour, jinter, marker);
+        return 0;
 }
-void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column,
+void addSignal(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
 			   char *colour, char *name)
 {
-   addSignalWithParam(obj_idx, x, y, num_points, row, column, name, colour, 1, 0);
+   addSignalWithParam(obj_idx, x, y, xType, num_points, row, column, name, colour, 1, 0);
 }
 
 int showWindow(int obj_idx, int x, int y, int width, int height)
