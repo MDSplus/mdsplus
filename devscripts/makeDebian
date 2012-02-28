@@ -1,15 +1,20 @@
 #!/bin/bash
+if [ "$1" == "copy_it" ]
+then
+  ddn=${WORKSPACE}/debian/$2
+  fn=${3:1}
+  dn=$(dirname $fn)
+  mkdir -p ${ddn}${dn}
+  rsync -a ${WORKSPACE}/BUILDROOT${fn} ${ddn}${dn}
+else
 flavor=$1
 pkg=$2
 version=$3
 release=$4
 dist=$5
 rm -Rf ${WORKSPACE}/debian/${pkg}
-for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") print $1}' ${WORKSPACE}/rpm/subpackages/${pkg}`
-do 
-    mkdir -p ${WORKSPACE}/debian/${pkg}$(dirname ${f})
-    rsync -a ${WORKSPACE}/BUILDROOT${f} ${WORKSPACE}/debian/${pkg}$(dirname ${f})
-done
+mkdir ${WORKSPACE}/debian/${pkg}
+awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") {system("cd ${WORKSPACE}/BUILDROOT; find . -wholename \"*" $1 "*\" -exec '$0' copy_it '$pkg' {} \;");}}' ${WORKSPACE}/rpm/subpackages/${pkg}
 for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
 do
     rm -Rf ${WORKSPACE}/debian/${pkg}${f}
@@ -47,5 +52,6 @@ mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
 dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
 
 cd ${WORKSPACE}/dist
-reprepro -Vb . includedeb MDSplus ${DEB}
-
+reprepro -b .  remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
+reprepro -b . includedeb MDSplus ${DEB}
+fi
