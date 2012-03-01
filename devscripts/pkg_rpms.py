@@ -7,7 +7,7 @@ def signrpms(arch):
     try:
         import pexpect
         WORKSPACE=getWorkspace()
-        cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" *.rpm'"
+        cmd="scp alchome.psfc.mit.edu:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~/;tar xfC ~/rpm-signing-keys.tgz ~;/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" *.rpm'"
     	child = pexpect.spawn(cmd,timeout=60,cwd=WORKSPACE+'/RPMS/'+arch)
 #    	child.logfile=sys.stdout
     	child.expect("Enter pass phrase: ")
@@ -170,7 +170,7 @@ def makeRpmsCommand(args):
             print "%s, Done signing 32-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
             if sstatus != 0:
 		print "Error signing package"
-                sys.exit(sstatus)
+                sys.exit(1)
             for pkg in getPackages():
                 if updates[pkg]['Update']:
                     writeRpmInfo("%s/RPMS/i686/mdsplus%s-%s-%s-%s.%s.i686" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
