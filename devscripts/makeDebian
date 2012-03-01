@@ -48,6 +48,11 @@ Components: main
 Description: MDSplus packages
 SignWith: MDSplus
 EOF
+for f in $(ls ${WORKSPACE}/rpm/debian_packages/${pkg}.* 2>/dev/null)
+do
+  file=$(echo $(basename $f) | awk -F. '{print $1}')
+  rsync -a $f ${WORKSPACE}/debian/${pkg}/DEBIAN/control/
+done
 DEB="${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}-${release}.${dist}.$(uname -p).deb"
 mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
 dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
