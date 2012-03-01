@@ -46,7 +46,7 @@ Version: 1.0
 Architectures: --ARCH-- source
 Components: main
 Description: MDSplus packages
-SignWith: 674D9C60
+SignWith: MDSplus
 EOF
 DEB="${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}-${release}.${dist}.$(uname -p).deb"
 mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
@@ -56,5 +56,5 @@ cd ${WORKSPACE}/dist
 rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
 tar zxfC ~/rpm-signing-keys.tgz ~/
 reprepro -b .  remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
-reprepro -b . includedeb MDSplus ${DEB}
+reprepro -Vb . includedeb MDSplus ${DEB}
 fi
