@@ -122,31 +122,38 @@ def makeRpmsCommand(args):
     for pkg in getPackages():
         updates[pkg]=dict()
         updates[pkg]['Update']=False
+        updates[pkg]['Tag']=False
         RELEASE_TAG=getReleaseTag(pkg)
         updates[pkg]['Release']=getRelease(pkg)
         if RELEASE_TAG is None:
             print "No releases yet for %s mdsplus-%s. Building." % (FLAVOR,pkg)
             updates[pkg]['Update']=True
+            updates[pkg]['Tag']=True
         else:
             c=checkRelease(pkg)
             if len(c) > 0:
+                updates[pkg]['Tag']=True
                 updates[pkg]['Update']=True
                 updates[pkg]['Release']=updates[pkg]['Release']+1
                 print "New %s release for mdsplus-%s. Building.\n==========================" % (FLAVOR,pkg)
                 for line in c:
                     print line
                 print "================================="
+            else:
+                for p in ('x86_64','i686'):
+                  try:
+                    rpm="%s/RPMS/%s/mdsplus%s-%s-%s-%s.%s.%s.rpm" % (WORKSPACE,p,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST,p)
+		    os.stat(rpm)
+                  except:
+                    print "%s missing, rebuilding" % (rpm)
+                    updates[pkg]['Update']=True
         if updates[pkg]['Update']:
             need_to_build=True
         addPkgToRpmSpec(specfile,pkg,updates[pkg]['Release'],DIST,rpmflavor)
     status="ok"
     if need_to_build:
-        if False:
-            print "%s, Starting to make source tar file" % (str(datetime.datetime.now()),)
-            makeSrcTar("%s/SOURCES/mdsplus%s-%s.tar.gz" % (WORKSPACE,rpmflavor,VERSION))
-            print "%s, Done making source tar file" % (str(datetime.datetime.now()),)
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
-        p=subprocess.Popen('tar zcf %s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,rpmflavor,VERSION) +\
+        p=subprocess.Popen('rm -Rf %s/RPMS; tar zcf %s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,WORKSPACE,rpmflavor,VERSION) +\
                     'rpmbuild --target i686-linux' +\
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
@@ -161,6 +168,9 @@ def makeRpmsCommand(args):
             print "%s, Starting to sign 32-bit rpms" % (str(datetime.datetime.now()),)
             sstatus=signrpms('i686')
             print "%s, Done signing 32-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
+            if sstatus != 0:
+		print "Error signing package"
+                sys.exit(sstatus)
             for pkg in getPackages():
                 if updates[pkg]['Update']:
                     writeRpmInfo("%s/RPMS/i686/mdsplus%s-%s-%s-%s.%s.i686" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
@@ -177,6 +187,9 @@ def makeRpmsCommand(args):
             else:
                 print "%s, Starting to sign 64-bit rpms" % (str(datetime.datetime.now()),)
                 sstatus=signrpms('x86_64')
+                if sstatus != 0:
+                  print "Error signing rpm"
+                  sys.exit(sstatus)
                 print "%s, Done signing 64-bit rpms - status=%d" % (str(datetime.datetime.now()),sstatus)
                 for pkg in getPackages():
                     if updates[pkg]['Update']:
@@ -210,13 +223,13 @@ def makeRpmsCommand(args):
         if pstat != 0:
 	  print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
         else:
-          p=subprocess.Popen('rm -Rf RPMS SOURCES EGGS',shell=True,cwd=WORKSPACE)
+          p=subprocess.Popen('rm -Rf SOURCES EGGS',shell=True,cwd=WORKSPACE)
           pstat=p.wait()
         sys.exit(pstat)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
             print "Checking %s for new release" % (pkg,)
-            if updates[pkg]['Update']:
+            if updates[pkg]['Tag']:
                 print "      New release. Tag modules with %s %s %s %s" % (FLAVOR,VERSION,updates[pkg]['Release'],DIST)
                 newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
             else:
