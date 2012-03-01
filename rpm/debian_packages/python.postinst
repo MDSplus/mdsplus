@@ -1,3 +1,5 @@
-#!/bin/sh
-cd /usr/local/mdsplus/mdsobjects/python
+#!/bin/bash
+pushd /usr/local/mdsplus/mdsobjects/python
 python setup.py install
+popd
+
