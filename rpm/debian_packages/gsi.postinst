@@ -1,0 +1,10 @@
+#!/bin/sh
+/sbin/ldconfig
+if [ ! -r /etc/xinetd.d/mdsips ]
+then
+  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipsd.xinetd /etc/xinetd.d/mdsips
+  if ( ! grep '^mdsips[[:space:]]' /etc/services >/dev/null 2>&1)
+  then
+    echo 'mdsips 8200/tcp # MDSplus mdsip service' >> /etc/services
+  fi
+fi
