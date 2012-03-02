@@ -65,7 +65,7 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        p=subprocess.Popen('rm -Rf DEBS/* SOURCES/*;' +\
+       cmd='rm -Rf DEBS/* SOURCES/*;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
                  '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
@@ -76,7 +76,9 @@ def makeDebsCommand(args):
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
              'rm -Rf dist;' +\
              'python setup.py bdist_egg;' +\
-             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/',shell=True,cwd=os.getcwd())
+             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/'
+        print "Building using cmd: '%s'" % (cmd,)
+        p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
