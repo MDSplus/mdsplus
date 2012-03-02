@@ -15,9 +15,6 @@ else
   cd ${WORKSPACE}/i686/mdsplus
   ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --enable-mdsip_connections --with-gsi=/usr:gcc32
   make
-  cd mdsobjects/python
-  python setup.py bdist_egg
-  rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python
 fi
 
 
@@ -33,6 +30,10 @@ then
 else
   cd ${WORKSPACE}/i686/mdsplus
   make install
+  pushd mdsobjects/python
+  python setup.py bdist_egg
+  rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python
+  popd
 fi
 
 %clean
