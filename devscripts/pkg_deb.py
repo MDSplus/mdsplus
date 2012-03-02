@@ -72,11 +72,13 @@ def makeDebsCommand(args):
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
              'make;make install;' +\
-             'pushd mdsobjects/python;' +\
+             'olddir=$(pwd);' +\
+             'cd mdsobjects/python;' +\
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
              'rm -Rf dist;' +\
              'python setup.py bdist_egg;' +\
-             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/'
+             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' +\
+             'cd $olddir'
         print "Building using cmd: '%s'" % (cmd,)
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
