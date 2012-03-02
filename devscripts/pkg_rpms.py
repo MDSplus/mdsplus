@@ -216,10 +216,10 @@ def makeRpmsCommand(args):
         pstat=p.wait()
         if pstat != 0:
 	  print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
+          sys.exit(pstat)
         else:
           p=subprocess.Popen('rm -Rf SOURCES EGGS',shell=True,cwd=WORKSPACE)
           pstat=p.wait()
-        sys.exit(pstat)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
             print "Checking %s for new release" % (pkg,)
