@@ -65,9 +65,18 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        p=subprocess.Popen('rm -Rf DEBS/* SOURCES/*; ln -sf $(pwd) ../mdsplus%s-%s;tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS --exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;rm -f ../mdsplus%s-%s;' % (debflavor,VERSION,debflavor,VERSION,debflavor,VERSION,debflavor,VERSION) +\
-                    './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
-                    'make;make install',shell=True,cwd=os.getcwd())
+        p=subprocess.Popen('rm -Rf DEBS/* SOURCES/*;' +\
+             'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
+             'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
+                 '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
+             'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
+             './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
+             'make;make install;' \+
+             'pushd mdsobjects/python;' \+
+             'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) \+
+             'rm -Rf dist;' \+
+             'python setup.py bdist_egg;' \+
+             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/',shell=True,cwd=os.getcwd())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
