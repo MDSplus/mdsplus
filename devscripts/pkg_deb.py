@@ -71,11 +71,11 @@ def makeDebsCommand(args):
                  '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
-             'make;make install;' \+
-             'pushd mdsobjects/python;' \+
-             'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) \+
-             'rm -Rf dist;' \+
-             'python setup.py bdist_egg;' \+
+             'make;make install;' +\
+             'pushd mdsobjects/python;' +\
+             'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
+             'rm -Rf dist;' +\
+             'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/',shell=True,cwd=os.getcwd())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
