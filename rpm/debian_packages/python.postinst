@@ -1,5 +1,2 @@
 #!/bin/bash
-pushd /usr/local/mdsplus/mdsobjects/python
-python setup.py install
-popd
-
+easy_install /usr/local/mdsplus/mdsobjects/python/dist/*.egg
