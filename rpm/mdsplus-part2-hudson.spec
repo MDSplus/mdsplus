@@ -32,7 +32,7 @@ else
   make install
   pushd mdsobjects/python
   python setup.py bdist_egg
-  rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python
+  rsync -av dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
   popd
 fi
 
