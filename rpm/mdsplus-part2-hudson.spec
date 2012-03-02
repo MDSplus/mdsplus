@@ -27,12 +27,13 @@ then
   rsync -a ${WORKSPACE}/i686/mdsplus/bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  rsync -a ${WORKSPACE}/i686/mdsplus/mdsobjects/python/dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
 else
   cd ${WORKSPACE}/i686/mdsplus
   make install
   pushd mdsobjects/python
   python setup.py bdist_egg
-  rsync -av dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
+  rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
   popd
 fi
 
