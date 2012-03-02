@@ -197,13 +197,6 @@ def makeRpmsCommand(args):
                 for pkg in getPackages():
                     if updates[pkg]['Update']:
                         writeRpmInfo("%s/RPMS/x86_64/mdsplus%s-%s-%s-%s.%s.x86_64" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
-
-        if updates['python']['Update']:
-            p=subprocess.Popen('mv ${WORKSPACE}/x86_64/mdsplus/mdsobjects/python/dist/* ${WORKSPACE}/EGGS',shell=True)
-            python_status=p.wait()
-            if python_status != 0:
-                print "Error moving egg to dist"
-                sys.exit(python_status);
     else:
         print 'All RPMS are up to date'
         status="skip"
