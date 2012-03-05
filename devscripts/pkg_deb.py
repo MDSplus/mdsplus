@@ -65,7 +65,7 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        cmd='rm -Rf DEBS/* SOURCES/*;' +\
+        cmd='rm DEBS/* SOURCES/*;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
                  '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
@@ -88,13 +88,12 @@ def makeDebsCommand(args):
             status="error"
         else:
             for pkg in getPackages():
-                if updates[pkg]['Update']:
-                    debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
-                    build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
-                    if build_status != 0:
-                        print "Error building debian package %s, status=%d" % (debfile,build_status)
-                        sys.exit(build_status)
-                    writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
+                debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
+                if build_status != 0:
+                    print "Error building debian package %s, status=%d" % (debfile,build_status)
+                    sys.exit(build_status)
+                writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
         if updates['python']['Update']:
             p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
