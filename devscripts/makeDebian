@@ -7,6 +7,7 @@ then
   mkdir -p ${ddn}${dn}
   rsync -a ${WORKSPACE}/BUILDROOT${fn} ${ddn}${dn}
 else
+repo=/mnt/repo
 flavor=$1
 pkg=$2
 version=$3
@@ -34,16 +35,15 @@ else
 fi
 sed s/--FLAVOR--/${debflavor}/g ${WORKSPACE}/rpm/debian_packages/${pkg} | \
 sed s/--VERSION--/${version}/g | \
-sed s/--RELEASE--/${release}/g | \
-sed s/--ARCH--/${arch}/g > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
-mkdir ${WORKSPACE}/dist/conf -p
+sed s/--RELEASE--/${release}/g > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
+mkdir ${repo}/${flavor} -p
 sed s/--ARCH--/${arch}/g <<EOF | sed s/--FLAVOR--/${flavor}/g > dist/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Suite: --FLAVOR--
 Codename: MDSplus
 Version: 1.0
-Architectures: --ARCH-- source
+Architectures: amd64 i686 source
 Components: main
 Description: MDSplus packages
 SignWith: MDSplus
@@ -58,9 +58,9 @@ DEB="${WORKSPACE}/DEBS/$(uname -p)/mdsplus${debflavor}-${pkg}-${version}-${relea
 mkdir ${WORKSPACE}/DEBS/$(uname -p) -p
 dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
 
-cd ${WORKSPACE}/dist
+cd ${repo}/${flavor}
 rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
 tar zxfC ~/rpm-signing-keys.tgz ~/
-reprepro -b .  remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
+reprepro -b .  remove ${arch} MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
 reprepro -Vb . includedeb MDSplus ${DEB}
 fi
