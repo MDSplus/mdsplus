@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null
 rm -f /etc/profile.d/mdsplus.sh 2>/dev/null
 rm -f /etc/profile.d/mdsplus.csh 2>/dev/null
