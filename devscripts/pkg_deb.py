@@ -65,7 +65,7 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        cmd='rm DEBS/* SOURCES/*;' +\
+        cmd='rm -Rf DEBS/* SOURCES/*;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
                  '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
