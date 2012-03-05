@@ -272,6 +272,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField32.setOffsetNid(18);
     deviceField32.setLabelString("ITH_INV_END_FORCE: ");
     deviceField32.setIdentifier("");
+    deviceField32.setEditable(false);
+
     jPanel4.setLayout(borderLayout3);
     deviceField3.setOffsetNid(22);
     deviceField3.setLabelString("Phase (rad.):");
@@ -305,6 +307,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
         deviceField33.setIdentifier("");
     deviceField33.setLabelString("ITH_INV_END_FORCE: ");
     deviceField33.setOffsetNid(37);
+    deviceField33.setEditable(false);
+
     deviceField5.setIdentifier("");
     deviceField5.setNumCols(4);
     deviceField5.setLabelString("Phase (rad.):");
@@ -343,6 +347,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField34.setIdentifier("");
     deviceField34.setLabelString("ITH_INV_END_FORCE: ");
     deviceField34.setOffsetNid(56);
+    deviceField34.setEditable(false);
+
     deviceField8.setIdentifier("");
     deviceField8.setNumCols(4);
     deviceField8.setLabelString("Phase (rad.):");
@@ -381,6 +387,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField35.setIdentifier("");
     deviceField35.setLabelString("ITH_INV_END_FORCE: ");
     deviceField35.setOffsetNid(75);
+    deviceField35.setEditable(false);
+
     deviceField11.setIdentifier("");
     deviceField11.setNumCols(4);
     deviceField11.setLabelString("Phase (rad.):");
@@ -419,6 +427,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField36.setIdentifier("");
     deviceField36.setLabelString("ITH_INV_END_FORCE: ");
     deviceField36.setOffsetNid(94);
+    deviceField36.setEditable(false);
+
     deviceField14.setIdentifier("");
     deviceField14.setNumCols(4);
     deviceField14.setLabelString("Phase (rad.):");
@@ -457,6 +467,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField37.setIdentifier("");
     deviceField37.setLabelString("ITH_INV_END_FORCE: ");
     deviceField37.setOffsetNid(113);
+    deviceField37.setEditable(false);
+
     deviceField17.setIdentifier("");
     deviceField17.setNumCols(4);
     deviceField17.setLabelString("Phase (rad.):");
@@ -495,6 +507,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField38.setIdentifier("");
     deviceField38.setLabelString("ITH_INV_END_FORCE: ");
     deviceField38.setOffsetNid(132);
+    deviceField38.setEditable(false);
+
     deviceField110.setIdentifier("");
     deviceField110.setNumCols(4);
     deviceField110.setLabelString("Phase (rad.):");
@@ -533,6 +547,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField39.setIdentifier("");
     deviceField39.setLabelString("ITH_INV_END_FORCE: ");
     deviceField39.setOffsetNid(151);
+    deviceField39.setEditable(false);
+
     deviceField113.setIdentifier("");
     deviceField113.setNumCols(4);
     deviceField113.setLabelString("Phase (rad.):");
@@ -571,6 +587,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField310.setIdentifier("");
     deviceField310.setLabelString("ITH_INV_END_FORCE: ");
     deviceField310.setOffsetNid(170);
+    deviceField310.setEditable(false);
+
     deviceField116.setIdentifier("");
     deviceField116.setNumCols(4);
     deviceField116.setLabelString("Phase (rad.):");
@@ -609,6 +627,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField311.setIdentifier("");
     deviceField311.setLabelString("ITH_INV_END_FORCE: ");
     deviceField311.setOffsetNid(189);
+    deviceField311.setEditable(false);
+
     deviceField119.setIdentifier("");
     deviceField119.setNumCols(4);
     deviceField119.setLabelString("Phase (rad.):");
@@ -647,6 +667,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField314.setIdentifier("");
     deviceField314.setLabelString("ITH_INV_END_FORCE: ");
     deviceField314.setOffsetNid(208);
+    deviceField314.setEditable(false);
+
     deviceField1118.setIdentifier("");
     deviceField1118.setNumCols(4);
     deviceField1118.setLabelString("Phase (rad.):");
@@ -685,6 +707,8 @@ public class RFXInverterSetupSetup extends DeviceSetup {
     deviceField315.setIdentifier("");
     deviceField315.setLabelString("ITH_INV_END_FORCE: ");
     deviceField315.setOffsetNid(227);
+    deviceField315.setEditable(false);
+
     deviceField11111.setIdentifier("");
     deviceField11111.setNumCols(4);
     deviceField11111.setLabelString("Phase (rad.):");
