@@ -1,11 +1,10 @@
-# default: on
-# description: The mdsip server serves mdsip sessions; it the \
 #       standard mdsip.hosts and logs into /var/log/mdsplus.
 service mdsip
 {
+        disable         = yes
         socket_type     = stream
         wait            = no
-        cps             = 1000 5
+        cps             = 10000 1
         instances       = UNLIMITED
         per_source      = UNLIMITED
         user            = root
@@ -13,4 +12,5 @@ service mdsip
         server_args     = mdsip /var/log/mdsplus/mdsipd
         log_on_failure  += HOST
         log_on_success  += HOST
+        flags           = KEEPALIVE NODELAY NOLIBWRAP
 }
