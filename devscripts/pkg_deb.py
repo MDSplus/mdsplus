@@ -79,7 +79,8 @@ def makeDebsCommand(args):
              'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
-        print "Building using cmd: '%s'" % (cmd,)
+#        print "Building using cmd: '%s'" % (cmd,)
+        sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
@@ -95,17 +96,20 @@ def makeDebsCommand(args):
                     sys.exit(build_status)
                 writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
         if updates['python']['Update']:
+            sys.stdout.flush()     
             p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
             if python_status != 0:
                 print "Error building MDSplus-%s%s-%s" % (pythonflavor,VERSION,updates['python']['Release'])
             else:
+                sys.stdout.flush()
                 p=subprocess.Popen('mv dist/* %s/EGGS/;rm -Rf dist'%(WORKSPACE,),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
                 p.wait()
     else:
         print 'All DEBS are up to date'
         status="skip"
     if status=="ok":
+        sys.stdout.flush()
         p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
@@ -125,6 +129,7 @@ def makeDebsCommand(args):
         for pkg in getPackages():
             if updates[pkg]['Tag']:
                 print "New release. Tag %s modules with %s %s %s %s" % (pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
+                sys.stdout.flush()
                 newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
     if status=="error":
         sys.exit(1)
