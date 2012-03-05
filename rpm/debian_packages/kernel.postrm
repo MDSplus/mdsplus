@@ -6,7 +6,7 @@ rm -f /etc/.mdsplus_dir 2>/dev/null
 if [ -r /etc/xinetd.d/mdsip ]
 then
   rm -f /etc/xinetd.d/mdsip
-  /sbin/service xinetd reload
+  /usr/sbin/service xinetd reload
 fi
 if ( grep '^mdsip[[:space::]]' /etc/services >/dev/null 2>&1 )
 then

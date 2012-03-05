@@ -2,7 +2,7 @@
 if [ -r /etc/xinetd.d/mdsip ]
 then
   rm -f /etc/xinetd.d/mdsips
-  /sbin/service xinetd reload
+  /usr/sbin/service xinetd reload
 fi
 if ( grep '^mdsips[[:space::]]' /etc/services >/dev/null 2>&1 )
 then

@@ -26,5 +26,5 @@ then
     echo 'mdsip 8000/tcp # MDSplus mdsip service' >> /etc/services
   fi
 fi
-/sbin/service xinetd reload
+/usr/sbin/service xinetd reload
 
