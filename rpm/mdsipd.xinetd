@@ -1,7 +1,8 @@
+# default: off
 #       standard mdsip.hosts and logs into /var/log/mdsplus.
 service mdsip
 {
-        disable         = yes
+        disabled        = yes
         socket_type     = stream
         wait            = no
         cps             = 10000 1
