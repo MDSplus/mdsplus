@@ -1,0 +1,4 @@
+This module is selected by using the configure --with-xio option. You must also supply the --with-globus-location
+and --with-globus-flavor options when configuring for use with globus.
+
+You must have the Globus Toolkit 3.2 or greater to configure with xio.

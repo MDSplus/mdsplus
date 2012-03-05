@@ -1,0 +1,23 @@
+#! /bin/sh
+#
+#  File:
+#     $MDSPLUS_DIR/bin/logbook
+#
+#  Calling Sequence
+#     $ logbook
+#
+#  a script to invoke the entry_display logbook program
+#
+#  Requires
+#     a logbook database served by SQLServer
+#     SYBASE Open/CLient or freetds (www.freetds.org)
+#     idl  research systems inc
+#
+# Environment vars
+#     SYBASE - directory containing interfaces file describing database server
+#     SYBASE_HOST - name of the database server from interfaces file to use
+#     MDS_HOST - name of computer serving mds events
+#
+# Josh Stillerman 2/11/2001
+#
+idl entry_display_main
