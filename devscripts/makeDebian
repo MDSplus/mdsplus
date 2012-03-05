@@ -61,6 +61,6 @@ dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
 cd ${repo}/${flavor}
 rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
 tar zxfC ~/rpm-signing-keys.tgz ~/
-reprepro -b . -A ${arch} remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
-reprepro -Vb . includedeb MDSplus ${DEB}
+reprepro -b . -A ${arch} --waitforlock 20 remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
+reprepro -Vb . --waitforlock 20 includedeb MDSplus ${DEB}
 fi
