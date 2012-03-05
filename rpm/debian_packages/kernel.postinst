@@ -10,7 +10,6 @@ then
       echo "/usr/local/mdsplus/$l" >> /etc/ld.so.conf.d/mdsplus.conf
     fi
   done
-  ldconfig > /dev/null 2>&1
 fi
 echo /usr/local/mdsplus > /etc/.mdsplus_dir
 if [ -d /etc/profile.d ]

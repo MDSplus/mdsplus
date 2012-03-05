@@ -17,4 +17,3 @@ then
     mv $tmpfile /etc/services
   fi
 fi
-ldconfig
