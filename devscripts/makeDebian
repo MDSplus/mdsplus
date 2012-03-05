@@ -50,6 +50,7 @@ SignWith: MDSplus
 EOF
 for f in $(ls ${WORKSPACE}/rpm/debian_packages/${pkg}.* 2>/dev/null)
 do
+  chmod a+rx $f
   file=$(echo $(basename $f) | awk -F. '{print $2}')
   rsync -a $f ${WORKSPACE}/debian/${pkg}/DEBIAN/${file}
 done
