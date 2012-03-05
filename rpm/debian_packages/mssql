@@ -2,7 +2,7 @@ Package: mdsplus--FLAVOR---mssql
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
-Architecture: --ARCH--
+Architecture: amd64 i686
 Depends: mdsplus--FLAVOR---kernel,libsybdb5
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus MSSQL package provides access to Microsoft SQL Server databases.
