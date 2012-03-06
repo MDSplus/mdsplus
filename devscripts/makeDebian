@@ -62,6 +62,6 @@ EOF
     rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
     tar zxfC ~/rpm-signing-keys.tgz ~/
   fi
-  reprepro -b ${repodir} -C $flavor --waitforlock 20 remove MDSplus mdsplus-${flavor}-${pkg} >/dev/null 2>&1
-  reprepro -Vb ${repodir} -C $flavor --waitforlock 20 includedeb MDSplus ${DEB}
+  reprepro -Vb ${repodir} -A ${arch} -C $flavor --waitforlock 20 remove MDSplus mdsplus-${flavor}-${pkg}
+  reprepro -Vb ${repodir} -A ${arch} -C $flavor --waitforlock 20 includedeb MDSplus ${DEB}
 fi
