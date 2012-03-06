@@ -64,7 +64,7 @@ EOF
     rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
     tar zxfC ~/rpm-signing-keys.tgz ~/
   fi
-  if [ "$flavor" == "all" ]
+  if [ "$pkg" == "all" ]
   then
     reprepro -Vb ${repodir} -A ${arch} -C $flavor --waitforlock 20 remove MDSplus mdsplus${debflavor}
   else
