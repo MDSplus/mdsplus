@@ -88,6 +88,10 @@ def makeDebsCommand(args):
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
         else:
+            build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
+            if build_status != 0:
+		print "Error build catch all package, status=%d" $(build_status,)
+                sys.exit(build_status)
             for pkg in getPackages():
                 debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
                 build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
