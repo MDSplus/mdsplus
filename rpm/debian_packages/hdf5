@@ -2,7 +2,7 @@ Package: mdsplus--FLAVOR---hdf5
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
-Architecture: amd64 i686
+Architecture: --ARCH--
 Depends: mdsplus--FLAVOR---kernel,libhdf5-serial-1.8.4
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus HDF5 integration. Utilities to access HDF5 files from MDSplus and to convert HDF5 files to MDSplus trees.

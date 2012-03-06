@@ -2,7 +2,7 @@ Package: mdsplus--FLAVOR---php
 Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
-Architecture: amd64 i686
+Architecture: --ARCH--
 Depends: mdsplus--FLAVOR---kernel,php5-dev
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus php modules for web cgi development.
