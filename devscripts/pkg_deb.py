@@ -115,13 +115,7 @@ def makeDebsCommand(args):
         if pstat != 0:
             print "Error copying files to destination"
             sys.exit(1)
-        REPOPATH=DISTPATH+'/'+{32:'i686',64:'amd64'}[BITS]
-        p=subprocess.Popen('mkdir %s;rsync -av --delete dist/* %s/' % (REPOPATH,REPOPATH),shell=True,cwd=WORKSPACE)
-        pstat=p.wait()
-        if pstat != 0:
-            print "Error copying repository to destination"
-            sys.exit(1)
-        p=subprocess.Popen('rm -Rf EGGS dist',shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('rm -Rf EGGS',shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat!=0:
             print "Error removing temporary buld directories"
