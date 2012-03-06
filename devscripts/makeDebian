@@ -14,12 +14,6 @@ else
   release=$4
   dist=$5
   rm -Rf ${WORKSPACE}/debian/${pkg}
-  mkdir ${WORKSPACE}/debian/${pkg}
-  awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") {system("cd ${WORKSPACE}/BUILDROOT; find . -wholename \"*" $1 "*\" -exec '$0' copy_it '$pkg' {} \;");}}' ${WORKSPACE}/rpm/subpackages/${pkg}
-  for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
-  do
-    rm -Rf ${WORKSPACE}/debian/${pkg}${f}
-  done
   mkdir -p ${WORKSPACE}/debian/${pkg}/DEBIAN
   if [ $(uname -p) == "x86_64" ]
   then
@@ -32,6 +26,14 @@ else
     debflavor=""
   else
     debflavor="-${flavor}"
+  fi
+  if [ ! "${pkg}" == "all" ]
+  then
+    awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") {system("cd ${WORKSPACE}/BUILDROOT; find . -wholename \"*" $1 "*\" -exec '$0' copy_it '$pkg' {} \;");}}' ${WORKSPACE}/rpm/subpackages/${pkg}
+    for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
+    do
+      rm -Rf ${WORKSPACE}/debian/${pkg}${f}
+    done
   fi
   sed s/--FLAVOR--/${debflavor}/g ${WORKSPACE}/rpm/debian_packages/${pkg} | \
   sed s/--VERSION--/${version}/g | \
