@@ -13,8 +13,7 @@ Support for secure MDSplus and Fusiongrid
 /usr/local/mdsplus/bin*/mdsipsd
 /usr/local/mdsplus/tdi/roam
 
-%exclude gsi
-/usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib*/*.a
 
 %post gsi
 ldconfig >/dev/null 2>&1
