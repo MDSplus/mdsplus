@@ -20,8 +20,8 @@ grep -v MDSplus /etc/apt/sources.list > /etc/apt/sources.list.save
 mv -f /etc/apt/sources.list.save /etc/apt/sources.list
 echo "deb http://www.mdsplus.org/dist/Ubuntu11/repo MDSplus $1" >>/etc/apt/sources.list
 check "/usr/bin/apt-get update" "Error doing update"
-check "/usr/bin/apt-get install -y mdsplus${flav}-python" "Error doing $1 python install"
-check "/usr/bin/apt-get autoremove -y mdsplus${flav}-python" "Error doing $1 python remove"
-check "/usr/bin/apt-get install -y mdsplus${flav}" "Error doing full $1 install"
-check "/usr/bin/apt-get autoremove -y mdsplus${flav}" "Error doing $1 stable remove"
+check "/usr/bin/apt-get install -y mdsplus${flav}-python" "Error doing ${flavor} python install"
+check "/usr/bin/apt-get autoremove -y mdsplus${flav}-python" "Error doing ${flavor} python remove"
+check "/usr/bin/apt-get install -y mdsplus${flav}" "Error doing full ${flavor} install"
+check "/usr/bin/apt-get autoremove -y mdsplus${flav}" "Error doing ${flavor} remove"
 
