@@ -1,0 +1,27 @@
+#!/bin/sh
+check() {
+if (!$1)
+then
+  stat=$?
+  echo $2
+  exit $stat
+fi
+}
+
+flavor=$1
+if [ "$flavor" == "stable" ]
+then
+  flav=""
+else
+  flav="-${flavor}"
+fi
+
+grep -v MDSplus /etc/sources.list > /etc/sources.list.save
+mv -f /etc/sources.list.save /etc/sources.list
+echo "deb http://www.mdsplus.org/dist/Ubuntu11/repo MDSplus $1" >>/etc/atp/sources.list
+check "apt-get update" "Error doing update"
+check "apt-get install -y mdsplus${flav}-python" "Error doing $1 python install"
+check "apt-get autoremove -y mdsplus${flav}-python" "Error doing $1 python remove"
+check "apt-get install -y mdsplus${flav}" "Error doing full $1 install"
+check "apt-get autoremove -y mdsplus${flav}" "Error doing $1 stable remove"
+
