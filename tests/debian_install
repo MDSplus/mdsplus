@@ -2,9 +2,8 @@
 check() {
 if (! $1)
 then
-  stat=$?
   echo $2
-  exit $stat
+  exit 1
 fi
 }
 
