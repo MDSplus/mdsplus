@@ -1,6 +1,6 @@
 #!/bin/sh
 check() {
-if (!$1)
+if (! $1)
 then
   stat=$?
   echo $2
@@ -16,12 +16,12 @@ else
   flav="-${flavor}"
 fi
 
-grep -v MDSplus /etc/sources.list > /etc/sources.list.save
-mv -f /etc/sources.list.save /etc/sources.list
-echo "deb http://www.mdsplus.org/dist/Ubuntu11/repo MDSplus $1" >>/etc/atp/sources.list
-check "apt-get update" "Error doing update"
-check "apt-get install -y mdsplus${flav}-python" "Error doing $1 python install"
-check "apt-get autoremove -y mdsplus${flav}-python" "Error doing $1 python remove"
-check "apt-get install -y mdsplus${flav}" "Error doing full $1 install"
-check "apt-get autoremove -y mdsplus${flav}" "Error doing $1 stable remove"
+grep -v MDSplus /etc/apt/sources.list > /etc/apt/sources.list.save
+mv -f /etc/apt/sources.list.save /etc/apt/sources.list
+echo "deb http://www.mdsplus.org/dist/Ubuntu11/repo MDSplus $1" >>/etc/apt/sources.list
+check "/usr/bin/apt-get update" "Error doing update"
+check "/usr/bin/apt-get install -y mdsplus${flav}-python" "Error doing $1 python install"
+check "/usr/bin/apt-get autoremove -y mdsplus${flav}-python" "Error doing $1 python remove"
+check "/usr/bin/apt-get install -y mdsplus${flav}" "Error doing full $1 install"
+check "/usr/bin/apt-get autoremove -y mdsplus${flav}" "Error doing $1 stable remove"
 
