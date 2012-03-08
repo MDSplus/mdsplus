@@ -125,8 +125,8 @@ def makeDebsCommand(args):
             print "Error removing temporary buld directories"
             sys.exit(1)
         sys.path.insert(0,WORKSPACE+'/tests')
-        from distribution_tests import test_all
-        test_all(WORKSPACE,FLAVOR)
+        from distribution_tests import test
+        test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
             if updates[pkg]['Tag']:
