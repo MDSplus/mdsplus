@@ -43,7 +43,6 @@ Core applications, libraries and configuration files
 %exclude /usr/local/mdsplus/lib*/*.a
 
 %exclude /usr/local/mdsplus/lib*/lib*Idl*
-%exclude /usr/local/mdsplus/lib*/lib*IDL*
 
 %exclude /usr/local/mdsplus/lib*/lib*Sql*
 
