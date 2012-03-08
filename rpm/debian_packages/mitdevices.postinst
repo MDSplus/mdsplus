@@ -1,4 +1,3 @@
 #!/bin/sh
-pushd /usr/local/mdsplus/tdi/MitDevices
+cd /usr/local/mdsplus/tdi/MitDevices
 python setup.py install >/dev/null 2>&1
-popd
