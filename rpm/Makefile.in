@@ -35,4 +35,5 @@ install:
 		$(INSTALL) -m 755  globus-gridftp.xinetd $(exec_prefix)/rpm; \
 	else \
 		$(INSTALL) -m 755  mdsipd.xinetd	 $(exec_prefix)/rpm; \
+                $(INSTALL) -m 755  mdsipsd.xinetd        $(exec_prefix)/rpm; \
 	fi
