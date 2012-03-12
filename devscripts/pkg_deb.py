@@ -41,7 +41,7 @@ SignWith: MDSplus
             for f in os.listdir(debdir):
                 if  len(f)>5 and f[-4:]=='.deb':
                     p=subprocess.Popen('reprepro -V -b %s -A %s -C %s --keepunusednewfiles includedeb MDSplus %s' %
-                                       (repodir,{'x86_64':'amd64','i686':'i686'}[arch],flavor,debdir+'/'+f),
+                                       (repodir,{'x86_64':'amd64','i686':'i386'}[arch],flavor,debdir+'/'+f),
                                        shell=True)
                     s=p.wait()
     
