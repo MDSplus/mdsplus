@@ -1,4 +1,4 @@
-import subprocess,datetime,os,sys
+import subprocess,datetime,os,sys,shutil
 from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform
 from pkg_rpms import writeRpmInfo
 def writeDebInfo(outfile):
@@ -14,6 +14,34 @@ def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
     p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
     return p.wait()
 
+def makeRepoCommand(args):
+    repodir=args[2]
+    debsdir=args[3]
+    for f in ('conf','pool','dists'):
+        shutil.rmtree(repodir+'/'+f)
+        os.mkdir(repodir+'/'+f)
+    f=open(repodir+'/conf/distributions','w')
+    f.write(
+"""Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: 1.0
+Architectures: i386 amd64 source
+Components: alpha beta stable
+Description: MDSplus packages
+SignWith: MDSplus
+""")
+    f.close()
+    for flavor in ('alpha','beta','stable'):
+        for arch in ('i686','x86_64'):
+            debdir=debsdir+'/'+flavor+'/'arch
+            for f in os.listdir(debdir):
+                if  len(f)>5 and f[-4:]=='.deb':
+                    p=subprocess.Popen('reprepro -V -b %s -A %s -C %s --keepunsednew includedeb MDSplus %s' %
+                                       (repodir,{'x86_64':'amd64','i686':'i686'}[arch],flavor,debdir+'/'+f),
+                                       shell=True)
+                    s=p.wait()
+    
 def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
     WORKSPACE=getWorkspace()
@@ -79,7 +107,6 @@ def makeDebsCommand(args):
              'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
-#        print "Building using cmd: '%s'" % (cmd,)
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
