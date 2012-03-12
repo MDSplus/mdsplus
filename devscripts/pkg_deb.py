@@ -14,7 +14,7 @@ def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
     p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
     return p.wait()
 
-def makeRepoCommand(args):
+def makeDebianRepoCommand(args):
     repodir=args[2]
     debsdir=args[3]
     for f in ('conf','pool','dists'):
@@ -34,7 +34,7 @@ SignWith: MDSplus
     f.close()
     for flavor in ('alpha','beta','stable'):
         for arch in ('i686','x86_64'):
-            debdir=debsdir+'/'+flavor+'/'arch
+            debdir=debsdir+'/'+flavor+'/'+arch
             for f in os.listdir(debdir):
                 if  len(f)>5 and f[-4:]=='.deb':
                     p=subprocess.Popen('reprepro -V -b %s -A %s -C %s --keepunsednew includedeb MDSplus %s' %
