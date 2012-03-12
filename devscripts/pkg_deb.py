@@ -37,7 +37,7 @@ SignWith: MDSplus
     f.close()
     for flavor in ('alpha','beta','stable'):
         for arch in ('i686','x86_64'):
-            debdir=debsdir+'/'+flavor+'/'+arch
+            debdir=debsdir+'/'+flavor+'/DEBS/'+arch
             for f in os.listdir(debdir):
                 if  len(f)>5 and f[-4:]=='.deb':
                     p=subprocess.Popen('reprepro -V -b %s -A %s -C %s --keepunsednew includedeb MDSplus %s' %
