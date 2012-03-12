@@ -18,7 +18,10 @@ def makeDebianRepoCommand(args):
     repodir=args[2]
     debsdir=args[3]
     for f in ('conf','pool','dists'):
-        shutil.rmtree(repodir+'/'+f)
+        try:
+            shutil.rmtree(repodir+'/'+f)
+        except:
+            pass
         os.mkdir(repodir+'/'+f)
     f=open(repodir+'/conf/distributions','w')
     f.write(
