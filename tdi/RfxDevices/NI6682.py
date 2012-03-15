@@ -238,6 +238,7 @@ class NI6682(Device):
                     while tmp != -1:
                     
                         t = Int64(sec.value*1000000000) + Int64(nsec.value);
+                        #t = Int64(sec.value<<32) + Int64(nsec.value);
                         #print "Storeman::run(): time = ", t.value
                         
                         # Int64Array([sec.value]) is necessary, Int64Array(sec.value) does not work.

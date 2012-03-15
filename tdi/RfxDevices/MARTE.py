@@ -44,8 +44,10 @@ class MARTE(Device):
     for i in range(96):
       parts.append({'path':'.SIGNALS.DAC_OUT:DAC_OUT_%03d'%(i+1), 'type':'signal'})
     parts.append({'path':'.SIGNALS.USER', 'type':'structure'})
+    parts.append({'path':'.SIGNALS.USER:NAMES', 'type':'text'})
     for i in range(256):
       parts.append({'path':'.SIGNALS.USER.USER_%03d'%(i+1), 'type':'structure'})
+      parts.append({'path':'.SIGNALS.USER.USER_%03d:NAME'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DATA'%(i+1), 'type':'signal'})
     parts.append({'path':':INIT_ACTION','type':'action',
@@ -57,6 +59,7 @@ class MARTE(Device):
     
     
     def init(self,arg):
+      print 'CIAO SONO LA INIT'
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
       eventStr = eventStr + " " + str(Tree.getActiveTree().shot)
       try:
@@ -100,6 +103,12 @@ class MARTE(Device):
       eventStr = eventStr + " " + str(self.wave_params.getNid())
       eventStr = eventStr + " " + str(self.input_cal.getNid())
       eventStr = eventStr + " " + str(self.output_cal.getNid())
+      try:        
+        eventStr = eventStr + " " + self.control.data()
+      except:
+        Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
+        return 0
+      
       print eventStr
       Event.setevent("MARTE", eventStr)
       return 1
