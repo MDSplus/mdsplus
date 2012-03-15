@@ -99,7 +99,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         jPanel2.add(jPanel7);
 
-        deviceChoice1.setChoiceItems(new String[] {"NONE", "MODE CONTROL"});
+        deviceChoice1.setChoiceItems(new String[] {"MhdBrControl"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control: ");
         deviceChoice1.setOffsetNid(12);
