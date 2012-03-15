@@ -373,7 +373,7 @@ public class DeviceTable extends DeviceComponent
            items[i] = "";
         if(decompiled != null)
         {
-            StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
+            StringTokenizer st = new StringTokenizer(decompiled, ",[]");
             if (!decompiled.startsWith("["))
                 st.nextToken();
             while (idx < numCols * numRows && st.hasMoreTokens())
@@ -573,7 +573,7 @@ public class DeviceTable extends DeviceComponent
     {
         state = is_on;
         String decompiled = Tree.dataToString(data);
-        StringTokenizer st = new StringTokenizer(decompiled, " ,[]");
+        StringTokenizer st = new StringTokenizer(decompiled, ",[]");
         items = new String[numCols * numRows];
         int idx = 0;
         while( idx < numCols * numRows && st.hasMoreTokens())
@@ -674,7 +674,7 @@ public class DeviceTable extends DeviceComponent
         try {
           String tableText = (String) transferable.getTransferData(DataFlavor.
               stringFlavor);
-          StringTokenizer st = new StringTokenizer(tableText, " ,\n");
+          StringTokenizer st = new StringTokenizer(tableText, ",\n");
           int idx = 0;
           while (st.hasMoreTokens() && items.length > idx)
             items[idx++] = st.nextToken();
