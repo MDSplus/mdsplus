@@ -61,7 +61,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         setDeviceTitle("MARTe MhdBr Setup");
         setDeviceType("MARTE_MHD_BR");
         setHeight(400);
-        setWidth(500);
+        setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel2.setLayout(new java.awt.GridLayout(5, 0));
