@@ -171,6 +171,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceTable1.setNumCols(2);
         deviceTable1.setNumRows(192);
         deviceTable1.setOffsetNid(10);
+        deviceTable1.setUseExpressions(true);
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
