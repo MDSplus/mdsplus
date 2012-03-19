@@ -56,8 +56,6 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceField11 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
-        jPanel11 = new javax.swing.JPanel();
-        deviceTable2 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe MhdBr Setup");
@@ -159,20 +157,20 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         jTabbedPane1.addTab("Mapping&Offset", jPanel3);
 
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Max. Br Horizontal Probes: ");
-        deviceField9.setNumCols(4);
+        deviceField9.setLabelString("Max. Br Horizontal Probes (T): ");
+        deviceField9.setNumCols(6);
         deviceField9.setOffsetNid(32);
         jPanel4.add(deviceField9);
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Max. Br VerticalProbes: ");
-        deviceField10.setNumCols(4);
+        deviceField10.setLabelString("Max. Br VerticalProbes (T): ");
+        deviceField10.setNumCols(6);
         deviceField10.setOffsetNid(38);
         jPanel4.add(deviceField10);
 
         deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Max time period above threshold:");
-        deviceField11.setNumCols(4);
+        deviceField11.setLabelString("Max time period above threshold (s):");
+        deviceField11.setNumCols(6);
         deviceField11.setOffsetNid(44);
         jPanel4.add(deviceField11);
 
@@ -190,18 +188,6 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
-
-        jPanel11.setLayout(new java.awt.BorderLayout());
-
-        deviceTable2.setColumnNames(new String[] {"Gain", "Offset"});
-        deviceTable2.setDisplayRowNumber(true);
-        deviceTable2.setIdentifier("");
-        deviceTable2.setNumCols(2);
-        deviceTable2.setNumRows(192);
-        deviceTable2.setOffsetNid(11);
-        jPanel11.add(deviceTable2, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Out Calibration", jPanel11);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -224,12 +210,10 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private DeviceTable deviceTable1;
-    private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
