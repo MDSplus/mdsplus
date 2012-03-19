@@ -119,9 +119,9 @@ def makeDebsCommand(args):
              'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
-        sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
+        sys.stdout.flush()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
             print "Error building mdsplus. Status=%d" % (build_status,)

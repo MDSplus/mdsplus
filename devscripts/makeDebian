@@ -11,7 +11,6 @@ else
   pkg=$2
   version=$3
   release=$4
-  dist=$5
   rm -Rf ${WORKSPACE}/debian/${pkg}
   mkdir -p ${WORKSPACE}/debian/${pkg}/DEBIAN
   if [ $(uname -p) == "x86_64" ]
@@ -34,6 +33,21 @@ else
       rm -Rf ${WORKSPACE}/debian/${pkg}${f}
     done
   fi
+  sed s/--FLAVOR--/${debflavor}/g ${WORKSPACE}/rpm/debian_packages/${pkg} | \
+  sed s/--VERSION--/${version}/g | \
+  sed s/--RELEASE--/${release}/g | \
+  sed s/--ARCH--/${arch}/g > ${WORKSPACE}/debian/${pkg}/DEBIAN/control
+  mkdir ${repodir}/{conf,pool,dists} -p
+  cat <<EOF > ${repodir}/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: 1.0
+Architectures: i386 amd64 source
+Components: alpha beta stable
+Description: MDSplus packages
+SignWith: MDSplus
+EOF
   for f in $(ls ${WORKSPACE}/rpm/debian_packages/${pkg}.* 2>/dev/null)
   do
     chmod a+rx $f
