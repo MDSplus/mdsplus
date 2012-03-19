@@ -17,6 +17,9 @@ from SIS3820 import SIS3820
 from FEMTO import FEMTO
 from MARTE import MARTE
 from MARTE_MHD_BR import MARTE_MHD_BR
+from MARTE_MHD_I import MARTE_MHD_I
+from MARTE_MHD_BT import MARTE_MHD_BT
+from MARTE_MHD_CTRL import MARTE_MHD_CTRL
 from SPIDER_SM import SPIDER_SM
 from ZELOS2150GV import ZELOS2150GV
 from NI6259AI import NI6259AI

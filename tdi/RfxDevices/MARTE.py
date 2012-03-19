@@ -118,7 +118,7 @@ class MARTE(Device):
       return 1
  
     def pre_req(self, arg):
-      eventStr = "PRE_REQ"
+      eventStr = "PRE_REQ " + str(self.id.data())
       Event.setevent("MARTE", eventStr)
       return 1
  
