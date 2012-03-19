@@ -51,7 +51,9 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceTable3 = new DeviceTable();
         deviceTable4 = new DeviceTable();
         jPanel4 = new javax.swing.JPanel();
-        deviceWaveParameters1 = new DeviceWaveParameters();
+        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
+        deviceField11 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
         jPanel11 = new javax.swing.JPanel();
@@ -154,14 +156,27 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceTable4.setPreferredHeight(200);
         jPanel3.add(deviceTable4);
 
-        jTabbedPane1.addTab("Parameters", jPanel3);
+        jTabbedPane1.addTab("Mapping&Offset", jPanel3);
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Max. Br Horizontal Probes: ");
+        deviceField9.setNumCols(4);
+        deviceField9.setOffsetNid(32);
+        jPanel4.add(deviceField9);
 
-        deviceWaveParameters1.setBaseName(".WAVE_PARAMS");
-        jPanel4.add(deviceWaveParameters1, java.awt.BorderLayout.CENTER);
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("Max. Br VerticalProbes: ");
+        deviceField10.setNumCols(4);
+        deviceField10.setOffsetNid(38);
+        jPanel4.add(deviceField10);
 
-        jTabbedPane1.addTab("Waveforms", jPanel4);
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("Max time period above threshold:");
+        deviceField11.setNumCols(4);
+        deviceField11.setOffsetNid(44);
+        jPanel4.add(deviceField11);
+
+        jTabbedPane1.addTab("Alarms", jPanel4);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -198,6 +213,8 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -205,11 +222,11 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
-    private DeviceWaveParameters deviceWaveParameters1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
