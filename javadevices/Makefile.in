@@ -123,6 +123,7 @@ FEMTOSetup.java\
 CAENDT5720Setup.java\
 RFXVConfigSetup.java\
 MARTESetup.java\
+MARTE_MHD_BRSetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
 SPIDERSetup.java\
