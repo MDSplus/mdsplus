@@ -37,15 +37,15 @@ SignWith: MDSplus
 
 def getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates):
     if pkg == 'all':
-        return "%s/DEBS/%s/mdsplus%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,VERSION,updates[pkg]['Release'],arch)
+        return "%s/DEBS/%s/mdsplus%s_%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,VERSION,updates[pkg]['Release'],arch)
     else:
-        return "%s/DEBS/%s/mdsplus%s-%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
+        return "%s/DEBS/%s/mdsplus%s_%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
     
 def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
-    DISTPATH=args[2]+'/'+DIST+'/'+FLAVOR+'/'
+    DISTPATH='/mnt/dist/'+FLAVOR+'/'
     need_to_build=len(args) > 3
     for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS','REPO']:
         try:
@@ -84,7 +84,7 @@ def makeDebsCommand(args):
                     print line
                 print "================================="
             else:
-                debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
+                debfile=getDebfile('/mnt/dist/%s' % (FLAVOR,),arch,debflavor,pkg,VERSION,updates)
                 try:
                     os.stat(debfile)
                 except Exception,e:
@@ -146,12 +146,16 @@ def makeDebsCommand(args):
         test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         sys.stdout.flush()
-        p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen(
+            'find DEBS -name "*.deb" -exec reprepro -V --waitforlock 20 -b /mnt/dist/repo -C %s includedeb MDSplus {} \;' % (FLAVOR,),
+            shell=True,cwd=WORKSPACE)
+        pstat=p.wait()
+        p=subprocess.Popen('rsync -av DEBS SOURCES EGGS /mnt/dist/%s/' % (FLAVOR,),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying files to destination"
             sys.exit(1)
-        for d in ('EGGS','REPO'):
+        for d in ('EGGS','REPO','DEBS'):
             try:
                 shutil.rmtree(WORKSPACE+'/'+d)
             except:
