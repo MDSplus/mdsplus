@@ -48,7 +48,7 @@ def makeDebsCommand(args):
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
             pass
-    prepareRepo("%s/REPO",WORKSPACE)
+    prepareRepo("%s/REPO" % (WORKSPACE,))
     VERSION=getVersion()
     HW,BITS=getHardwarePlatform()
     arch={32:'i386',64:'amd64'}[BITS]
