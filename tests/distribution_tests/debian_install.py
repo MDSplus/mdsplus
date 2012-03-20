@@ -29,7 +29,7 @@ def debian_install_tests(WORKSPACE,FLAVOR):
       sys.exit(1)
     else:
       print "Successfully installed package %s" % (package,)
-    p=subprocess.Popen('sudo /usr/bin/apt-get autoremove -y %s' % (package,),stdout=subprocess.PIPE.shell=True)
+    p=subprocess.Popen('sudo /usr/bin/apt-get autoremove -y %s' % (package,),stdout=subprocess.PIPE,shell=True)
     if p.wait() != 0:
       print p.stdout.read()
       print "Error removing package %s" % (package,)
