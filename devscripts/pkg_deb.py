@@ -11,6 +11,7 @@ def writeDebInfo(outfile):
     f.close()
 
 def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
+    sys.stdout.flush()
     p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
     return p.wait()
 
@@ -93,7 +94,7 @@ def makeDebsCommand(args):
         cmd='rm -Rf DEBS/* SOURCES/*;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
-                 '--exclude SOURCES --exclude DEBS --exclude EGGS ../mdsplus%s-%s;' % (debflavor,VERSION) +\
+                 '--exclude SOURCES --exclude DEBS --exclude EGGS --exclude REPO ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
              'make;make install;' +\
@@ -104,9 +105,9 @@ def makeDebsCommand(args):
              'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
+        sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
-        sys.stdout.flush()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
             print "Error building mdsplus. Status=%d" % (build_status,)
@@ -137,11 +138,11 @@ def makeDebsCommand(args):
         print 'All DEBS are up to date'
         status="skip"
     if status=="ok":
-        sys.stdout.flush()
         sys.path.insert(0,WORKSPACE+'/tests')
-        from distribution_tests import test
+        from distribution_tests import test_debian as test
         test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
+        sys.stdout.flush()
         p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
