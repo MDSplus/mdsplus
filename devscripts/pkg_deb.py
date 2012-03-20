@@ -36,7 +36,10 @@ SignWith: MDSplus
     f.close()
 
 def getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates):
-    return "%s/DEBS/%s/mdsplus%s-%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
+    if pkg == 'all':
+        return "%s/DEBS/%s/mdsplus%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,VERSION,updates[pkg]['Release'],arch)
+    else:
+        return "%s/DEBS/%s/mdsplus%s-%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
     
 def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
