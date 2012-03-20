@@ -39,7 +39,7 @@ def getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates):
     if pkg == 'all':
         return "%s/DEBS/%s/mdsplus%s_%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,VERSION,updates[pkg]['Release'],arch)
     else:
-        return "%s/DEBS/%s/mdsplus%s_%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
+        return "%s/DEBS/%s/mdsplus%s-%s_%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
     
 def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
