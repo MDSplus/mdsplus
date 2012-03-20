@@ -163,7 +163,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         jPanel4.add(deviceField9);
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Max. Br VerticalProbes (T): ");
+        deviceField10.setLabelString("Max. Br Vertical Probes (T): ");
         deviceField10.setNumCols(6);
         deviceField10.setOffsetNid(38);
         jPanel4.add(deviceField10);

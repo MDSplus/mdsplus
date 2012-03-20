@@ -51,11 +51,9 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
         deviceTable3 = new DeviceTable();
         deviceTable4 = new DeviceTable();
         jPanel4 = new javax.swing.JPanel();
-        deviceWaveParameters1 = new DeviceWaveParameters();
+        deviceField9 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
-        jPanel11 = new javax.swing.JPanel();
-        deviceTable2 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe MhdBr Setup");
@@ -154,14 +152,14 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
         deviceTable4.setPreferredHeight(200);
         jPanel3.add(deviceTable4);
 
-        jTabbedPane1.addTab("Parameters", jPanel3);
+        jTabbedPane1.addTab("Mapping&Offset", jPanel3);
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("I2T Limit (A): ");
+        deviceField9.setOffsetNid(32);
+        jPanel4.add(deviceField9);
 
-        deviceWaveParameters1.setBaseName(".WAVE_PARAMS");
-        jPanel4.add(deviceWaveParameters1, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Waveforms", jPanel4);
+        jTabbedPane1.addTab("Alarms", jPanel4);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -175,18 +173,6 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
-
-        jPanel11.setLayout(new java.awt.BorderLayout());
-
-        deviceTable2.setColumnNames(new String[] {"Gain", "Offset"});
-        deviceTable2.setDisplayRowNumber(true);
-        deviceTable2.setIdentifier("");
-        deviceTable2.setNumCols(2);
-        deviceTable2.setNumRows(192);
-        deviceTable2.setOffsetNid(11);
-        jPanel11.add(deviceTable2, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Out Calibration", jPanel11);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -205,14 +191,12 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private DeviceTable deviceTable1;
-    private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
-    private DeviceWaveParameters deviceWaveParameters1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
