@@ -138,20 +138,20 @@ def makeDebsCommand(args):
         status="skip"
     if status=="ok":
         sys.stdout.flush()
+        sys.path.insert(0,WORKSPACE+'/tests')
+        from distribution_tests import test
+        test(WORKSPACE,FLAVOR)
+        print "Build completed successfully. Checking for new releaseas and tagging the modules"
         p=subprocess.Popen('rsync -av DEBS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying files to destination"
             sys.exit(1)
-        p=subprocess.Popen('rm -Rf EGGS',shell=True,cwd=WORKSPACE)
-        pstat=p.wait()
-        if pstat!=0:
-            print "Error removing temporary buld directories"
-            sys.exit(1)
-        sys.path.insert(0,WORKSPACE+'/tests')
-        from distribution_tests import test
-        test(WORKSPACE,FLAVOR)
-        print "Build completed successfully. Checking for new releaseas and tagging the modules"
+        for d in ('EGGS','REPO'):
+            try:
+                shutil.rmtree(WORKSPACE+'/'+d)
+            except:
+                pass
         for pkg in getPackages():
             if updates[pkg]['Tag']:
                 print "New release. Tag %s modules with %s %s %s %s" % (pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)

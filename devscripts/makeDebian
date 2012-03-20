@@ -53,7 +53,7 @@ else
   dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
   if [ "$?" == "0" ]
   then
-      reprepro -V -b ${WORKSPACE}/REPO -C $flavor includdeb MDSplus ${DEB}
+      reprepro -V -b ${WORKSPACE}/REPO -C $flavor includedeb MDSplus ${DEB}
   fi
   exit $?
 fi
