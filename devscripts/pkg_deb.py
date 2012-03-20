@@ -34,25 +34,8 @@ SignWith: MDSplus
 """)
     f.close()
 
-def addDebToRepo(repodir,flavor,f):
-    p=subprocess.Popen('reprepro -V -b %s -C %s --keepunusednewfiles includedeb MDSplus %s' %
-                       (repodir,flavor,f),shell=True)
-    return p.wait()
-    
-def makeDebianRepoCommand(args):
-    repodir=args[2]
-    debsdir=args[3]
-    prepareRepo(repodir)
-    for r,d,f in os.walk(debsdir):
-        for filename in f:
-            if filename.endswith(".deb"):
-                if 'alpha' in filename:
-                    flavor='alpha'
-                elif 'beta' in filename:
-                    flavor='beta'
-                else:
-                    flavor='stable'
-                    addDebToRepo(repodir,flavor,os.path.join(r,filename))
+def getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates):
+    return "%s/DEBS/%s/mdsplus%s-%s-%s.%d_%s.deb" % (WORKSPACE,arch,debflavor,pkg,VERSION,updates[pkg]['Release'],arch)
     
 def makeDebsCommand(args):
     DIST=getLsbReleaseDist()
@@ -60,13 +43,15 @@ def makeDebsCommand(args):
     FLAVOR=getFlavor()
     DISTPATH=args[2]+'/'+DIST+'/'+FLAVOR+'/'
     need_to_build=len(args) > 3
-    for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS']:
+    for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS','REPO']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
             pass
+    prepareRepo("%s/REPO",WORKSPACE)
     VERSION=getVersion()
     HW,BITS=getHardwarePlatform()
+    arch={32:'i386',64:'amd64'}[BITS]
     if FLAVOR=="stable":
         debflavor=""
         pythonflavor=""
@@ -95,7 +80,7 @@ def makeDebsCommand(args):
                     print line
                 print "================================="
             else:
-                debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
                 try:
                     os.stat(debfile)
                 except Exception,e:
@@ -132,12 +117,12 @@ def makeDebsCommand(args):
 		print "Error build catch all package, status=%d" % (build_status,)
                 sys.exit(build_status)
             for pkg in getPackages():
-                debfile="%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s.deb" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW)
+                debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
                 build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
                 if build_status != 0:
                     print "Error building debian package %s, status=%d" % (debfile,build_status)
                     sys.exit(build_status)
-                writeRpmInfo("%s/DEBS/%s/mdsplus%s-%s-%s-%d.%s.%s" % (WORKSPACE,HW,debflavor,pkg,VERSION,updates[pkg]['Release'],DIST,HW))
+                writeRpmInfo(debfile[0:-3])
         if updates['python']['Update']:
             sys.stdout.flush()     
             p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
