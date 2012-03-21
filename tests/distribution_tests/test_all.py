@@ -13,9 +13,12 @@ def python_test():
 def test_debian(WORKSPACE,FLAVOR):
   from debian_install import debian_install_tests,debian_install,debian_remove
   debian_install_tests(WORKSPACE,FLAVOR)
-  debian_install('python',FLAVOR)
+  sys.stdout.flush()
+  debian_install('mitdevices',FLAVOR)
+  sys.stdout.flush()
   ok=python_test()
-  debian_remove('python',FLAVOR)
+  sys.stdout.flush()
+  debian_remove('mitdevices',FLAVOR)
   if not ok:
     sys.exit(1)
  
