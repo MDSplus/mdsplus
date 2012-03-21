@@ -13,3 +13,4 @@ then
     mv $tmpfile /etc/services
   fi
 fi
+/sbin/ldconfig

@@ -8,3 +8,4 @@ then
   fi
   /usr/sbin/service xinetd reload
 fi
+/sbin/ldconfig

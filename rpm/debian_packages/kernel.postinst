@@ -27,4 +27,4 @@ then
   fi
 fi
 /usr/sbin/service xinetd reload
-
+/sbin/ldconfig
