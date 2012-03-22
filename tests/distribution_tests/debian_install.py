@@ -1,9 +1,13 @@
 import subprocess
+
 from pkg_utils import getPackages
 
-def config_apt(WORKSPACE,FLAVOR):
+def initApt(WORKSPACE,FLAVOR):
   p=subprocess.Popen('devscripts/debianApt init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
   return p.wait()
+
+def cleanApt():
+  shutil.rmtree('./apt')
   
 def debian_install(pkg,FLAVOR):
   if FLAVOR=='stable':
