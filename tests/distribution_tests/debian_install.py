@@ -1,6 +1,8 @@
 import subprocess
-
+import os
 from pkg_utils import getPackages
+
+WORKSPACE=os.environ['WORKSPACE']
 
 def initApt(WORKSPACE,FLAVOR):
   p=subprocess.Popen('devscripts/debianApt init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
