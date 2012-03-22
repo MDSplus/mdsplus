@@ -1,6 +1,6 @@
 #/bin/sh
 #
-if [ "$1"="init" ]
+if [ "$1" = "init" ]
 then
   mkdir ./apt/etc -p
   mkdir ./apt/var/lib/apt -p
