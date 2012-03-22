@@ -5,7 +5,7 @@ then
   rm -Rf ${WORKSPACE}/apt
   mkdir ./apt/etc -p
   mkdir ./apt/var/lib/apt -p
-  rsync -a --exclude="*.gpg" /etc/apt ./apt/etc/
+  rsync -a /etc/apt ./apt/etc/
   echo "deb file://${WORKSPACE}/REPO/ MDSplus $2" > ./apt/etc/apt/sources.list.d/mdsplus.list
 elif [ "$1" = "clean" ]
 then
