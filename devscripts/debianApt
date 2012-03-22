@@ -5,8 +5,8 @@ then
   mkdir ./apt/etc -p
   mkdir ./apt/var/lib/apt -p
   rsync -a --exclude="*.gpg" /etc/apt ./apt/etc/
-  echo "deb://${WORKSPACE}/REPO/ MDSplus $2" > ./apt/etc/apt/sources.list.d/mdsplus.list
+  echo "deb file://${WORKSPACE}/REPO/ MDSplus $2" > ./apt/etc/apt/sources.list.d/mdsplus.list
 else
-  exec sudo apt-get -o Dir::State=${WORKSPACE}/apt/var/lib/apt/ -o Dir::Etc=${WORKSPACE}/apt/etc $1 $2 $3 $4 $5 $6
+  exec sudo apt-get -o Dir::State=${WORKSPACE}/apt/var/lib/apt/ -o Dir::Etc=${WORKSPACE}/apt/etc/apt $1 $2 $3 $4 $5 $6
 fi
 exit $?
