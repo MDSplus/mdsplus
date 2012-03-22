@@ -1,6 +1,7 @@
 import subprocess
 import os
 from pkg_utils import getPackages
+import sys
 
 WORKSPACE=os.environ['WORKSPACE']
 
