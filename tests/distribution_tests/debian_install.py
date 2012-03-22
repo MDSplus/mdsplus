@@ -1,6 +1,10 @@
 import subprocess
 from pkg_utils import getPackages
 
+def config_apt(WORKSPACE,FLAVOR):
+  p=subprocess.Popen('devscripts/debianApt init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
+  return p.wait()
+  
 def debian_install(pkg,FLAVOR):
   if FLAVOR=='stable':
 	flav=""
@@ -10,7 +14,7 @@ def debian_install(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo /usr/bin/apt-get install -y %s' % (package),stdout=subprocess.PIPE,shell=True)
+  p=subprocess.Popen('devscripts/debianApt install -y %s' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error installing package %s" % (package,)
@@ -27,7 +31,7 @@ def debian_remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo /usr/bin/apt-get autoremove -y %s' % (package,),stdout=subprocess.PIPE,shell=True)
+  p=subprocess.Popen('devscripts/debianApt autoremove -y %s' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
@@ -37,9 +41,9 @@ def debian_remove(pkg,FLAVOR):
 
 def debian_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
-  p=subprocess.Popen('sudo /usr/bin/apt-get autoremove -y "mdsplus*"',stdout=subprocess.PIPE,shell=True)
+  p=subprocess.Popen('devscripts/debianApt autoremove -y "mdsplus*"',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   p.wait()
-  p=subprocess.Popen('sudo /usr/bin/apt-get update 2>&1',stdout=subprocess.PIPE,shell=True)
+  p=subprocess.Popen('devscripts/debianApt update 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error doing apt-get update command"
