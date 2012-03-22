@@ -2,11 +2,15 @@
 #
 if [ "$1" = "init" ]
 then
+  rm -Rf ${WORKSPACE}/apt
   mkdir ./apt/etc -p
   mkdir ./apt/var/lib/apt -p
   rsync -a --exclude="*.gpg" /etc/apt ./apt/etc/
   echo "deb file://${WORKSPACE}/REPO/ MDSplus $2" > ./apt/etc/apt/sources.list.d/mdsplus.list
+elif [ "$1" = "clean" ]
+then
+  rm -Rf ${WORKSPACE}/apt
 else
-  exec sudo apt-get -o Dir::State=${WORKSPACE}/apt/var/lib/apt/ -o Dir::Etc=${WORKSPACE}/apt/etc/apt $1 $2 $3 $4 $5 $6
+  apt-get -o Dir::State=${WORKSPACE}/apt/var/lib/apt/ -o Dir::Etc=${WORKSPACE}/apt/etc/apt $1 $2 $3 $4 $5 $6
 fi
 exit $?
