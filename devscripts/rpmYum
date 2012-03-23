@@ -3,9 +3,16 @@
 WORKSPACE=$(pwd)
 if [ "$1" = "init" ]
 then
-  rpm -i RPMS/x86_64/mdsplus-${2}-repo*.rpm
+  cat - > /etc/yum.repos.d/mdsplus-${2}.repo <<EOF
+[MDSplus]
+name=MDSplus-${2}
+baseurl=file://${WORKSPACE}/RPMS
+enabled=1
+EOF
+  rpm --import ${WORKSPACE}/x86_64/mdsplus/rpm/RPM-GPG-KEY-MDSplus
 elif [ "$1" = "clean" ]
 then
+  rpm -e gpg-pubkey-b09cv563
   for i in $(rpm -qa | grep mdsplus | grep repo)
   do
     rpm -e $i
