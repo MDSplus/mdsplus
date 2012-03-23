@@ -28,3 +28,19 @@ def test_debian(WORKSPACE,FLAVOR):
   if not ok:
     sys.exit(1)
  
+def test_rpms(WORKSPACE,FLAVOR):
+  from rpm_install import rpm_install_tests,rpm_install,rpm_remove
+  ok=False
+  try:
+    rpm_install_tests(WORKSPACE,FLAVOR)
+    sys.stdout.flush()
+    rpm_install('mitdevices',FLAVOR)
+    sys.stdout.flush()
+    ok=python_test()
+    sys.stdout.flush()
+    rpm_remove('mitdevices',FLAVOR)
+  except Exception,e:
+    print "Error %s" % (e,)
+  if not ok:
+    sys.exit(1)
+ 

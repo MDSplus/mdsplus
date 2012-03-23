@@ -56,6 +56,7 @@ def makeRepoRpms():
     WORKSPACE=getWorkspace()
     DIST=getDist()
     FLAVOR=getFlavor()
+    sys.stdout.flush()
     p=subprocess.Popen('rpmbuild -ba' +\
                 ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                 ' --define="_topdir %s"' % (WORKSPACE,)+\
@@ -68,6 +69,7 @@ def makeRepoRpms():
         print "Error building repository rpm for x86_64 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
         status="error"
     else:
+        sys.stdout.flush()
         p=subprocess.Popen('rpmbuild -ba'+\
                     ' --target=i686-linux'+\
                     ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
@@ -153,6 +155,7 @@ def makeRpmsCommand(args):
     status="ok"
     if need_to_build:
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
+        sys.stdout.flush()
         p=subprocess.Popen('export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
                     'scp alchome.psfc.mit.edu:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~/;tar xfC ~/rpm-signing-keys.tgz ~;' +\
                     'rm -Rf %s/RPMS/*;' % (WORKSPACE,) +\
@@ -178,6 +181,7 @@ def makeRpmsCommand(args):
                 if updates[pkg]['Update']:
                     writeRpmInfo("%s/RPMS/i686/mdsplus%s-%s-%s-%s.%s.i686" % (WORKSPACE,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST))
             print "%s, Starting to build 64-bit rpms" % (str(datetime.datetime.now()),)
+            sys.stdout.flush()
             p=subprocess.Popen('rpmbuild --target x86_64-linux'+\
                         ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+\
                         ' --define="_topdir %s"' % (WORKSPACE,)+
@@ -205,6 +209,7 @@ def makeRpmsCommand(args):
         status=makeRepoRpms()
     if status=="ok":
         try:
+            sys.stdout.flush()
             p=subprocess.Popen('createrepo . >/dev/null',shell=True,cwd=WORKSPACE+"/RPMS")
             stat=p.wait()
 	    if stat != 0:
@@ -212,14 +217,19 @@ def makeRpmsCommand(args):
         except Exception,e:
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
+        sys.path.insert(0,WORKSPACE+'/tests')
+        from distribution_tests import test_rpms as test
+        test(WORKSPACE,FLAVOR)
+        sys.stdout.flush()
         p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
-	  print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
-          sys.exit(pstat)
+            print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
+            sys.exit(pstat)
         else:
-          p=subprocess.Popen('rm -Rf SOURCES EGGS',shell=True,cwd=WORKSPACE)
-          pstat=p.wait()
+            sys.stdout.flush()
+            p=subprocess.Popen('rm -Rf SOURCES EGGS',shell=True,cwd=WORKSPACE)
+            pstat=p.wait()
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         for pkg in getPackages():
             print "Checking %s for new release" % (pkg,)
